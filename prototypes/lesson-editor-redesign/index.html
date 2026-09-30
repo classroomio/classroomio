@@ -396,6 +396,11 @@
 
   .image-block { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: var(--radius-xl); overflow: hidden; background: var(--muted); }
   .image-block img, .image-block .image-sample-art { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .image-toolbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; opacity: 0; transition: opacity .12s; }
+  .image-block:hover .image-toolbar, .image-block:focus-within .image-toolbar { opacity: 1; }
+  .image-toolbar button { width: 34px; height: 34px; flex-shrink: 0; border-radius: 999px; border: none; background: rgb(0 0 0 / .6); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .image-toolbar button:hover { background: rgb(0 0 0 / .8); }
+  .image-toolbar button svg { width: 15px; height: 15px; stroke-width: 2.1; }
 
   .chart-block { display: flex; flex-direction: column; gap: 10px; }
   .chart-title-input { font-size: 16px; font-weight: 700; border: none; background: transparent; padding: 2px 0; outline: none; border-bottom: 1px solid transparent; color: var(--foreground); width: 100%; }
@@ -426,22 +431,45 @@
   .flash-edit-row { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px; margin-bottom: 10px; }
 
   .tabs-block { display: flex; flex-direction: column; gap: 14px; }
-  .tabs-pill-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
-  .tabs-pill { display: inline-flex; align-items: center; gap: 2px; border-radius: var(--radius-md) var(--radius-md) 0 0; padding: 2px 2px 2px 4px; }
-  .tabs-pill-input { font-size: 13px; font-weight: 500; color: var(--muted-foreground); border: none; background: transparent; padding: 7px 6px; border-radius: var(--radius-sm); outline: none; min-width: 40px; }
+  .tabs-pill-row { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+  .tabs-pill { display: inline-flex; align-items: center; gap: 4px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+  .tabs-pill.active { border-bottom-color: var(--primary); }
+  .tabs-pill-input { font-size: 14.5px; font-weight: 500; color: var(--muted-foreground); border: none; background: transparent; padding: 11px 10px; border-radius: var(--radius-sm); outline: none; min-width: 50px; text-align: center; }
   .tabs-pill-input:hover { background: var(--accent); }
   .tabs-pill-input:focus { background: var(--accent); color: var(--foreground); }
-  .tabs-pill.active .tabs-pill-input { color: var(--foreground); font-weight: 600; }
-  .tabs-pill.active { box-shadow: inset 0 -2px 0 var(--primary); }
-  .tabs-pill-remove { width: 20px; height: 20px; flex-shrink: 0; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .tabs-pill-remove:hover { background: var(--accent); color: var(--foreground); }
-  .tabs-pill-remove svg { width: 11px; height: 11px; stroke-width: 2.2; }
-  .tabs-icon-btn { width: 26px; height: 26px; flex-shrink: 0; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .tabs-icon-btn:hover { background: var(--accent); color: var(--foreground); }
-  .tabs-icon-btn svg { width: 14px; height: 14px; stroke-width: 2.2; }
-  .tabs-reorder-group { display: inline-flex; gap: 1px; margin-left: auto; }
+  .tabs-pill.active .tabs-pill-input { color: var(--foreground); font-weight: 700; }
+  .tabs-pill-remove { width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--card); box-shadow: var(--shadow-md); color: var(--foreground); align-items: center; justify-content: center; cursor: pointer; display: none; }
+  .tabs-pill.active .tabs-pill-remove.edit-only { display: flex; }
+  .tabs-pill-remove:hover { background: var(--accent); }
+  .tabs-pill-remove svg { width: 13px; height: 13px; stroke-width: 2; }
+  .tabs-add-btn { width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--primary); color: var(--primary-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 8px; box-shadow: var(--shadow-md); }
+  .tabs-add-btn:hover { background: color-mix(in oklab, var(--primary) 90%, transparent); }
+  .tabs-add-btn svg { width: 16px; height: 16px; stroke-width: 2.4; }
   .tabs-pane .canvas { padding: 2px 0 0; }
   .tabs-pane .empty-page { max-width: none; margin: 0; padding: 24px 20px; }
+
+  .quiz-block { display: flex; flex-direction: column; gap: 18px; }
+  .quiz-toolbar { display: flex; justify-content: flex-end; }
+  .quiz-media-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--muted); border: none; border-radius: 999px; padding: 7px 14px; font-size: 12.5px; font-weight: 500; color: var(--foreground); cursor: pointer; }
+  .quiz-media-btn svg { width: 14px; height: 14px; stroke-width: 2; }
+  .quiz-media { margin-bottom: 2px; }
+  .quiz-media img { width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--radius-lg); display: block; }
+  .quiz-question { font-size: 19px; font-weight: 600; letter-spacing: -.01em; outline: none; border-radius: var(--radius-sm); }
+  .quiz-question:focus { background: var(--accent); }
+  .quiz-options { display: flex; flex-direction: column; gap: 6px; }
+  .quiz-option { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 6px 8px; border-radius: var(--radius-md); }
+  .quiz-option input[type="radio"] { width: 20px; height: 20px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer; }
+  .quiz-option-text { font-size: 15px; outline: none; flex: 1; border-radius: var(--radius-sm); }
+  .quiz-option-text:focus { background: var(--accent); }
+  .quiz-option-badge { display: none; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: oklch(0.55 0.15 150); background: oklch(0.96 0.05 150); padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
+  .quiz-option.is-correct .quiz-option-badge { display: inline-flex; }
+  .quiz-option-remove { width: 22px; height: 22px; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .quiz-option-remove:hover { background: var(--accent); color: var(--foreground); }
+  .quiz-option-remove svg { width: 12px; height: 12px; stroke-width: 2.2; }
+  .quiz-add-option { align-self: flex-start; font-size: 13px; font-weight: 500; color: var(--primary); background: none; border: none; cursor: pointer; padding: 4px 8px; }
+  .quiz-submit { align-self: center; min-width: 140px; }
+  .quiz-option.submitted-correct { background: color-mix(in oklab, oklch(0.6 0.15 150), transparent 90%); }
+  .quiz-option.submitted-wrong { background: color-mix(in oklab, oklch(0.55 0.2 25), transparent 90%); }
 
   .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
@@ -908,6 +936,7 @@
     <button type="button" class="dock-icon" aria-label="Add chart" onclick="insertFromDock('chart')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span class="lb">Chart</span></button>
     <button type="button" class="dock-icon" aria-label="Add flashcards" onclick="insertFromDock('flashcards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg><span class="lb">Flashcards</span></button>
     <button type="button" class="dock-icon" aria-label="Add tabs" onclick="insertFromDock('tabs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18"/><path d="M3 5h18v14H3z"/><path d="M9 9v10"/></svg><span class="lb">Tabs</span></button>
+    <button type="button" class="dock-icon" aria-label="Add multiple choice" onclick="insertFromDock('quiz')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="lb">Quiz</span></button>
   </div>
 </section>
 
@@ -1113,6 +1142,22 @@
     document.getElementById('screen-desktop').classList.toggle('mode-preview', isPreview);
     // Tab pills stay clickable so a learner can switch tabs, but must not be renamable.
     document.querySelectorAll('.tabs-pill-input').forEach((input) => (input.readOnly = isPreview));
+    // Quizzes: entering Preview clears the author's answer-key selection so it isn't a giveaway,
+    // and resets any previous submit; leaving Preview restores the marked-correct radio.
+    document.querySelectorAll('.quiz-block').forEach((block) => {
+      const submitBtn = block.querySelector('.quiz-submit');
+      if (isPreview) {
+        block.querySelectorAll('input[type="radio"]').forEach((r) => (r.checked = false));
+        block.querySelectorAll('.quiz-option').forEach((o) => o.classList.remove('submitted-correct', 'submitted-wrong'));
+        if (submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Submit';
+        }
+      } else {
+        const correctRadio = block.querySelector('.quiz-option.is-correct input[type="radio"]');
+        if (correctRadio) correctRadio.checked = true;
+      }
+    });
   });
 
   // ---- Settings slider (desktop + mobile, each scoped to their own screen) ----
@@ -1382,6 +1427,13 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg>';
   const ICON_TABS =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18"/><path d="M3 5h18v14H3z"/><path d="M9 9v10"/></svg>';
+  const ICON_SETTINGS =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="4" x2="20" y1="6" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" x2="20" y1="12" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" x2="20" y1="18" y2="18"/><circle cx="7" cy="18" r="2"/></svg>';
+  const ICON_QUIZ =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
+  const ICON_CHECK_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>';
+  const ICON_CLOSE_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+  const ICON_CHEVRON_DOWN_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
   const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
   const ICON_EDIT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
@@ -1679,9 +1731,40 @@
         ${blockHead('Image', ICON_IMAGE, 'image')}
         <div class="image-block">
           <img src="${objectUrl}" alt="${altText}" />
-          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'image')">${ICON_EDIT}Replace image</button>
+          <div class="image-toolbar edit-only">
+            <button type="button" onclick="editBlock(this, 'image')" aria-label="Replace image">${ICON_IMAGE}</button>
+            <button type="button" onclick="openImageSettings(this)" aria-label="Image settings">${ICON_SETTINGS}</button>
+            <button type="button" onclick="removeBlock(this)" aria-label="Delete image">${ICON_TRASH}</button>
+          </div>
         </div>
       </section>`;
+  }
+
+  let activeImageSettingsEl = null;
+
+  function openImageSettings(btn) {
+    activeImageSettingsEl = btn.closest('.content-section');
+    const img = activeImageSettingsEl.querySelector('.image-block img');
+    document.getElementById('dialogBox').style.maxWidth = '420px';
+    document.getElementById('dialogBox').innerHTML = `
+      <div class="dialog-head"><h2 class="dialog-title">Image settings</h2></div>
+      <div class="dialog-body">
+        <div class="field"><label class="label" for="imgAltInput">Alt text</label><input class="input" id="imgAltInput" value="${escapeHtml(img.alt || '')}" placeholder="Describe this image for screen readers" /></div>
+        <div class="field" style="margin-top:12px"><label class="label" for="imgFitSelect">Fit</label><select class="select" id="imgFitSelect"><option value="cover">Fill (crop to fit)</option><option value="contain">Fit (show whole image)</option></select></div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmImageSettings()">Save</button></div>`;
+    document.getElementById('imgFitSelect').value = img.style.objectFit || 'cover';
+    document.body.classList.add('dialog-open');
+  }
+
+  function confirmImageSettings() {
+    if (!activeImageSettingsEl) return;
+    const img = activeImageSettingsEl.querySelector('.image-block img');
+    img.alt = document.getElementById('imgAltInput').value;
+    img.style.objectFit = document.getElementById('imgFitSelect').value;
+    closeDialog();
+    activeImageSettingsEl = null;
+    simulateSave();
   }
 
   // ---- Chart: bar / line / pie / donut, generated as inline SVG from a small data model ----
@@ -2046,7 +2129,7 @@
     return `
       <span class="tabs-pill${isActive ? ' active' : ''}" data-tab-id="${tab.id}">
         <input class="tabs-pill-input" value="${escapeHtml(tab.label)}" onfocus="selectTabFromInput(this)" oninput="renameTab(this)" />
-        <button type="button" class="tabs-pill-remove edit-only" onclick="removeTab(this)" aria-label="Remove tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        <button type="button" class="tabs-pill-remove edit-only" onclick="removeTab(this)" aria-label="Remove tab">${ICON_TRASH}</button>
       </span>`;
   }
 
@@ -2069,11 +2152,7 @@
         <div class="tabs-block">
           <div class="tabs-pill-row">
             ${pills}
-            <button type="button" class="tabs-icon-btn edit-only" onclick="addTab(this)" aria-label="Add tab">${ICON_PLUS}</button>
-            <span class="tabs-reorder-group edit-only">
-              <button type="button" class="tabs-icon-btn" onclick="moveActiveTab(this,-1)" aria-label="Move tab left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
-              <button type="button" class="tabs-icon-btn" onclick="moveActiveTab(this,1)" aria-label="Move tab right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
-            </span>
+            <button type="button" class="tabs-add-btn edit-only" onclick="addTab(this)" aria-label="Add tab">${ICON_PLUS}</button>
           </div>
           <div class="tabs-panes">${panes}</div>
         </div>
@@ -2135,22 +2214,117 @@
     simulateSave();
   }
 
-  function moveActiveTab(btn, dir) {
-    const block = btn.closest('.tabs-block');
-    const activePill = block.querySelector('.tabs-pill.active');
-    if (!activePill) return;
-    const tabId = activePill.dataset.tabId;
-    const sibling = dir === -1 ? activePill.previousElementSibling : activePill.nextElementSibling;
-    if (!sibling || !sibling.classList.contains('tabs-pill')) return;
-    if (dir === -1) activePill.parentElement.insertBefore(activePill, sibling);
-    else activePill.parentElement.insertBefore(sibling, activePill);
-    const pane = block.querySelector(`.tabs-pane[data-tab-id="${CSS.escape(tabId)}"]`);
-    const siblingPane = dir === -1 ? pane.previousElementSibling : pane.nextElementSibling;
-    if (pane && siblingPane) {
-      if (dir === -1) pane.parentElement.insertBefore(pane, siblingPane);
-      else pane.parentElement.insertBefore(siblingPane, pane);
+  // ---- Multiple Choice: direct-edit question/options, real submit/grade in Preview ----
+  let quizInstanceCounter = 0;
+
+  function buildQuizOptionHtml(option) {
+    return `
+      <label class="quiz-option${option.correct ? ' is-correct' : ''}">
+        <input type="radio" name="__quizGroup__" onclick="onQuizOptionClick(this)" />
+        <span class="quiz-option-text" contenteditable="true" oninput="simulateSave()">${escapeHtml(option.text)}</span>
+        <span class="quiz-option-badge edit-only">${ICON_CHECK_SMALL}Correct</span>
+        <button type="button" class="quiz-option-remove edit-only" onclick="removeQuizOption(this)" aria-label="Remove option">${ICON_CLOSE_SMALL}</button>
+      </label>`;
+  }
+
+  function buildQuizBlockHtml(data) {
+    quizInstanceCounter += 1;
+    const groupName = 'quizGroup' + quizInstanceCounter;
+    const optionsHtml = data.options.map((o) => buildQuizOptionHtml(o)).join('').split('__quizGroup__').join(groupName);
+    return `
+      <section class="content-section" data-type="quiz">
+        ${blockHead('Multiple Choice', ICON_QUIZ)}
+        <div class="quiz-block">
+          <div class="quiz-toolbar edit-only">
+            <input type="file" accept="image/*" hidden class="quiz-image-input" onchange="onQuizImageChosen(this)" />
+            <div class="dd-menu">
+              <button type="button" class="quiz-media-btn" onclick="toggleBlockMenu(this)">${ICON_IMAGE}Add media${ICON_CHEVRON_DOWN_SMALL}</button>
+              <div class="dd-menu-panel">
+                <button type="button" class="dd-menu-item" onclick="triggerQuizImageUpload(this)">${ICON_IMAGE}Image</button>
+              </div>
+            </div>
+          </div>
+          <div class="quiz-question" contenteditable="true" oninput="simulateSave()">${escapeHtml(data.question)}</div>
+          <div class="quiz-options">
+            ${optionsHtml}
+            <button type="button" class="quiz-add-option edit-only" onclick="addQuizOption(this)">${ICON_PLUS}Add option</button>
+          </div>
+          <button type="button" class="btn btn-primary quiz-submit" disabled onclick="submitQuiz(this)">Submit</button>
+        </div>
+      </section>`;
+  }
+
+  function buildQuizBlockSample() {
+    return buildQuizBlockHtml({
+      question: 'What is the capital city of Italy?',
+      options: [
+        { text: 'Rome', correct: true },
+        { text: 'Athens', correct: false }
+      ]
+    });
+  }
+
+  function triggerQuizImageUpload(btn) {
+    const block = btn.closest('.quiz-block');
+    block.querySelector('.quiz-image-input').click();
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+  }
+
+  function onQuizImageChosen(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const block = input.closest('.quiz-block');
+    const objectUrl = URL.createObjectURL(file);
+    let mediaEl = block.querySelector('.quiz-media');
+    if (!mediaEl) {
+      mediaEl = document.createElement('div');
+      mediaEl.className = 'quiz-media';
+      block.querySelector('.quiz-question').insertAdjacentElement('beforebegin', mediaEl);
     }
+    mediaEl.innerHTML = `<img src="${objectUrl}" alt="" />`;
     simulateSave();
+  }
+
+  function onQuizOptionClick(radio) {
+    const block = radio.closest('.quiz-block');
+    const isPreview = document.getElementById('screen-desktop').classList.contains('mode-preview');
+    if (!isPreview) {
+      block.querySelectorAll('.quiz-option').forEach((opt) => opt.classList.remove('is-correct'));
+      radio.closest('.quiz-option').classList.add('is-correct');
+      simulateSave();
+      return;
+    }
+    const submitBtn = block.querySelector('.quiz-submit');
+    if (submitBtn) submitBtn.disabled = false;
+  }
+
+  function addQuizOption(btn) {
+    btn.insertAdjacentHTML('beforebegin', buildQuizOptionHtml({ text: 'New option', correct: false }).replace('__quizGroup__', btn.closest('.quiz-options').querySelector('input[type="radio"]').name));
+    simulateSave();
+  }
+
+  function removeQuizOption(btn) {
+    const options = btn.closest('.quiz-options');
+    if (options.querySelectorAll('.quiz-option').length <= 2) return;
+    btn.closest('.quiz-option').remove();
+    simulateSave();
+  }
+
+  function submitQuiz(btn) {
+    const block = btn.closest('.quiz-block');
+    const selected = block.querySelector('input[type="radio"]:checked');
+    let wasCorrect = false;
+    block.querySelectorAll('.quiz-option').forEach((opt) => {
+      const isCorrectOpt = opt.classList.contains('is-correct');
+      opt.classList.toggle('submitted-correct', isCorrectOpt);
+      const radio = opt.querySelector('input[type="radio"]');
+      if (radio === selected) {
+        if (isCorrectOpt) wasCorrect = true;
+        else opt.classList.add('submitted-wrong');
+      }
+    });
+    btn.disabled = true;
+    btn.textContent = wasCorrect ? 'Correct!' : 'Incorrect';
   }
 
   let activeCanvasId = 'canvas';
@@ -2267,6 +2441,7 @@
         <button class="content-type-btn" onclick="chooseContentType('chart')"><span class="ic">${ICON_CHART}</span><span class="nm">Chart</span></button>
         <button class="content-type-btn" onclick="chooseContentType('flashcards')"><span class="ic">${ICON_FLASHCARDS}</span><span class="nm">Flashcards</span></button>
         <button class="content-type-btn" onclick="chooseContentType('tabs')"><span class="ic">${ICON_TABS}</span><span class="nm">Tabs</span></button>
+        <button class="content-type-btn" onclick="chooseContentType('quiz')"><span class="ic">${ICON_QUIZ}</span><span class="nm">Multiple Choice</span></button>
       </div></div>`;
     document.body.classList.add('dialog-open');
   }
@@ -2278,7 +2453,8 @@
     image: buildImageBlockSample,
     chart: buildChartBlockSample,
     flashcards: buildFlashcardsBlockSample,
-    tabs: buildTabsBlockSample
+    tabs: buildTabsBlockSample,
+    quiz: buildQuizBlockSample
   };
 
   function chooseContentType(type) {
