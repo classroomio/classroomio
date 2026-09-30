@@ -345,7 +345,7 @@
   .preview-media-caption { margin-top: 12px; }
   .preview-media-title { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
   .preview-media-sub { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; }
-  .preview-slide-frame { width: 100%; aspect-ratio: 16/9; background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted-foreground); overflow: hidden; }
+  .preview-slide-frame { position: relative; width: 100%; aspect-ratio: 16/9; background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted-foreground); overflow: hidden; }
   .preview-slide-frame svg { width: 42px; height: 42px; stroke-width: 1.4; }
   .preview-slide-frame .real-media { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
   .preview-doc-link { display: flex; align-items: center; gap: 12px; }
@@ -353,6 +353,49 @@
   .preview-doc-link .name { font-size: 13.5px; font-weight: 600; }
   .preview-doc-link .open { font-size: 12.5px; font-weight: 500; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; }
   .preview-doc-link .open svg { width: 13px; height: 13px; stroke-width: 2.2; }
+
+  /* Instant realistic preview states: a freshly-inserted, not-yet-configured block looks like
+     the real thing (not an empty placeholder), with a hover overlay to configure or replace it. */
+  .media-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    background: rgb(0 0 0 / .45); opacity: 0; transition: opacity .12s;
+  }
+  .preview-video-player:hover .media-overlay, .preview-video-player:focus-within .media-overlay,
+  .preview-slide-frame:hover .media-overlay, .preview-slide-frame:focus-within .media-overlay,
+  .image-block:hover .media-overlay, .image-block:focus-within .media-overlay,
+  .doc-sample:hover .media-overlay, .doc-sample:focus-within .media-overlay { opacity: 1; }
+  .media-overlay-btn {
+    display: inline-flex; align-items: center; gap: 6px; background: #fff; color: var(--foreground);
+    border: none; font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 999px; cursor: pointer;
+  }
+  .media-overlay-btn svg { width: 14px; height: 14px; stroke-width: 2.2; }
+  .media-edit-corner {
+    position: absolute; top: 10px; right: 10px; opacity: 0; transition: opacity .12s;
+    display: inline-flex; align-items: center; gap: 6px; background: rgb(0 0 0 / .6); color: #fff;
+    border: none; font-size: 12px; font-weight: 500; padding: 6px 11px; border-radius: 999px; cursor: pointer;
+  }
+  .preview-video-player:hover .media-edit-corner, .preview-video-player:focus-within .media-edit-corner,
+  .preview-slide-frame:hover .media-edit-corner, .preview-slide-frame:focus-within .media-edit-corner,
+  .image-block:hover .media-edit-corner, .image-block:focus-within .media-edit-corner { opacity: 1; }
+  .media-edit-corner svg { width: 13px; height: 13px; stroke-width: 2.2; }
+
+  .slide-sample { width: 100%; height: 100%; background: #fff; padding: 8% 9%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; color: var(--foreground); }
+  .slide-sample-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); }
+  .slide-sample-heading { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+  .slide-sample-body { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .slide-sample-line { height: 7px; border-radius: 4px; background: var(--border); }
+  .slide-sample-visual { margin-top: auto; height: 34%; border-radius: var(--radius-md); background: linear-gradient(135deg, color-mix(in oklab, var(--primary), transparent 75%), color-mix(in oklab, var(--primary), transparent 40%)); }
+
+  .doc-sample { position: relative; display: flex; gap: 16px; padding: 18px; border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--card); overflow: hidden; }
+  .doc-sample-icon { width: 52px; height: 52px; flex-shrink: 0; border-radius: var(--radius-lg); background: color-mix(in oklab, var(--primary), transparent 88%); color: var(--primary); display: flex; align-items: center; justify-content: center; }
+  .doc-sample-icon svg { width: 24px; height: 24px; stroke-width: 1.6; }
+  .doc-sample-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 2px; }
+  .doc-sample-title { font-size: 14.5px; font-weight: 600; }
+  .doc-sample-line { height: 7px; border-radius: 4px; background: var(--muted); }
+  .doc-sample-pages { margin-top: 4px; font-size: 11.5px; color: var(--muted-foreground); }
+
+  .image-block { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: var(--radius-xl); overflow: hidden; background: var(--muted); }
+  .image-block img, .image-block .image-sample-art { width: 100%; height: 100%; display: block; object-fit: cover; }
 
   .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
@@ -604,6 +647,7 @@
             </div>
             <div class="preview-video-player">
               <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
+              <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'video-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Change video</button>
             </div>
             <div class="preview-media-caption">
               <div class="preview-media-title">React Props Explained in 10 Minutes</div>
@@ -675,6 +719,7 @@
             </div>
             <div class="preview-slide-frame">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
+              <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'slide-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Change slide</button>
             </div>
             <div class="preview-media-caption">
               <div class="preview-media-title">Google Slides</div>
@@ -784,6 +829,7 @@
     <button type="button" class="dock-icon dock-icon-ai" aria-label="Ask AI assistant" onclick="openAiAssistant()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg><span class="lb">AI Assistant</span></button>
     <span class="dock-divider"></span>
     <button type="button" class="dock-icon" aria-label="Add video" onclick="insertFromDock('video')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="lb">Video</span></button>
+    <button type="button" class="dock-icon" aria-label="Add image" onclick="insertFromDock('image')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span class="lb">Image</span></button>
     <button type="button" class="dock-icon" aria-label="Add slides" onclick="insertFromDock('slide')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><span class="lb">Slides</span></button>
     <button type="button" class="dock-icon" aria-label="Add note" onclick="insertFromDock('note')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="lb">Note</span></button>
     <button type="button" class="dock-icon" aria-label="Add document" onclick="insertFromDock('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="lb">Document</span></button>
@@ -1025,6 +1071,22 @@
         </div>
       </div>
       <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="docAddBtn" disabled onclick="confirmAdd('document')">Add document</button></div>`,
+    image: `
+      <div class="dialog-head"><h2 class="dialog-title">Add image</h2></div>
+      <div class="dialog-body">
+        <input type="file" id="imageFileInput" accept="image/*" hidden onchange="onImageFileInputChange(this)" />
+        <div id="imageFileArea">
+          <button type="button" class="drop" onclick="document.getElementById('imageFileInput').click()"
+            ondragover="event.preventDefault(); this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="onImageFileDrop(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg>
+            <p class="t">Drag and drop, or click to upload</p>
+            <p class="h">PNG, JPG, GIF up to 10MB</p>
+          </button>
+        </div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="imageAddBtn" disabled onclick="confirmAdd('image')">Add image</button></div>`,
     'video-more': `
       <div class="dialog-head"><h2 class="dialog-title">Add video</h2><p class="dialog-desc">Paste a real link or choose a file — the actual video plays in the lesson.</p></div>
       <div class="dialog-body">
@@ -1234,6 +1296,8 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>';
   const ICON_DOCUMENT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
+  const ICON_IMAGE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
   const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
   const ICON_EDIT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
@@ -1277,10 +1341,30 @@
     return `
       <section class="content-section" data-type="video" data-platform="${escapeHtml(source.platform)}" data-source-url="${escapeHtml(source.originalUrl || '')}" data-thumb-url="${escapeHtml(source.thumbnailUrl || '')}">
         ${blockHead('Video', ICON_VIDEO, 'video-more')}
-        <div class="preview-video-player">${media}</div>
+        <div class="preview-video-player">
+          ${media}
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'video-more')">${ICON_EDIT}Change video</button>
+        </div>
         <div class="preview-media-caption">
           <div class="preview-media-title">${escapeHtml(source.title)}</div>
           <div class="preview-media-sub">${escapeHtml(source.sub)}</div>
+        </div>
+      </section>`;
+  }
+
+  function buildVideoBlockSample() {
+    return `
+      <section class="content-section" data-type="video" data-sample="true">
+        ${blockHead('Video', ICON_VIDEO, 'video-more')}
+        <div class="preview-video-player">
+          <button type="button" class="play-btn" aria-label="Play video" tabindex="-1"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
+          <div class="media-overlay edit-only">
+            <button type="button" class="media-overlay-btn" onclick="editBlock(this, 'video-more')">${ICON_PLUS}Add video</button>
+          </div>
+        </div>
+        <div class="preview-media-caption">
+          <div class="preview-media-title">Untitled video</div>
+          <div class="preview-media-sub">Click to add a YouTube or Vimeo link</div>
         </div>
       </section>`;
   }
@@ -1320,10 +1404,38 @@
     return `
       <section class="content-section" data-type="slide" data-platform="${escapeHtml(platformId)}" data-source-url="${escapeHtml(embedSrc || '')}">
         ${blockHead('Slide', ICON_SLIDE, 'slide-more')}
-        <div class="preview-slide-frame">${frame}</div>
+        <div class="preview-slide-frame">
+          ${frame}
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'slide-more')">${ICON_EDIT}Change slide</button>
+        </div>
         <div class="preview-media-caption">
           <div class="preview-media-title">${platform.name}</div>
           <div class="preview-media-sub">${escapeHtml(hostname)}</div>
+        </div>
+      </section>`;
+  }
+
+  function buildSlideBlockSample() {
+    return `
+      <section class="content-section" data-type="slide" data-sample="true">
+        ${blockHead('Slide', ICON_SLIDE, 'slide-more')}
+        <div class="preview-slide-frame">
+          <div class="slide-sample">
+            <div class="slide-sample-eyebrow">Slide title</div>
+            <div class="slide-sample-heading">Add your key point</div>
+            <div class="slide-sample-body">
+              <div class="slide-sample-line" style="width:88%"></div>
+              <div class="slide-sample-line" style="width:64%"></div>
+            </div>
+            <div class="slide-sample-visual"></div>
+          </div>
+          <div class="media-overlay edit-only">
+            <button type="button" class="media-overlay-btn" onclick="editBlock(this, 'slide-more')">${ICON_PLUS}Add slides</button>
+          </div>
+        </div>
+        <div class="preview-media-caption">
+          <div class="preview-media-title">Untitled slide deck</div>
+          <div class="preview-media-sub">Click to connect Google Slides, PowerPoint, or an embed link</div>
         </div>
       </section>`;
   }
@@ -1362,6 +1474,62 @@
               <a class="open" href="${objectUrl}" download="${fileName}">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
             </div>
           </div>
+        </div>
+      </section>`;
+  }
+
+  function buildDocumentBlockSample() {
+    return `
+      <section class="content-section" data-type="document" data-sample="true">
+        ${blockHead('Document', ICON_DOCUMENT, 'document')}
+        <div class="doc-sample">
+          <div class="doc-sample-icon">${ICON_DOCUMENT}</div>
+          <div class="doc-sample-body">
+            <div class="doc-sample-title">Untitled document</div>
+            <div class="doc-sample-line" style="width:92%"></div>
+            <div class="doc-sample-line" style="width:78%"></div>
+            <div class="doc-sample-line" style="width:60%"></div>
+            <div class="doc-sample-pages">Page 1 of 4</div>
+          </div>
+          <div class="media-overlay edit-only">
+            <button type="button" class="media-overlay-btn" onclick="editBlock(this, 'document')">${ICON_PLUS}Add document</button>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  let imageBlockCounter = 0;
+
+  function buildImageBlockSample() {
+    imageBlockCounter += 1;
+    const gradId = 'imgGrad' + imageBlockCounter;
+    return `
+      <section class="content-section" data-type="image" data-sample="true">
+        ${blockHead('Image', ICON_IMAGE, 'image')}
+        <div class="image-block">
+          <svg class="image-sample-art" viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs><linearGradient id="${gradId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--primary)"/><stop offset="1" style="stop-color:#7dd3fc"/></linearGradient></defs>
+            <rect width="400" height="225" fill="url(#${gradId})"/>
+            <circle cx="320" cy="55" r="26" fill="#fff" opacity=".85"/>
+            <polygon points="0,225 130,110 210,170 260,120 400,225" fill="#ffffff" opacity=".55"/>
+            <polygon points="120,225 230,95 400,225" fill="#ffffff" opacity=".8"/>
+          </svg>
+          <div class="media-overlay edit-only">
+            <button type="button" class="media-overlay-btn" onclick="editBlock(this, 'image')">${ICON_PLUS}Add image</button>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function buildImageBlock(file) {
+    const objectUrl = URL.createObjectURL(file);
+    const altText = escapeHtml(file.name.replace(/\.[^./]+$/, ''));
+    return `
+      <section class="content-section" data-type="image">
+        ${blockHead('Image', ICON_IMAGE, 'image')}
+        <div class="image-block">
+          <img src="${objectUrl}" alt="${altText}" />
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'image')">${ICON_EDIT}Replace image</button>
         </div>
       </section>`;
   }
@@ -1459,12 +1627,20 @@
       <div class="dialog-head"><h2 class="dialog-title">Add content</h2><p class="dialog-desc">Choose a content type to add to this lesson.</p></div>
       <div class="dialog-body"><div class="content-type-grid">
         <button class="content-type-btn" onclick="chooseContentType('video')"><span class="ic">${ICON_VIDEO}</span><span class="nm">Video</span></button>
+        <button class="content-type-btn" onclick="chooseContentType('image')"><span class="ic">${ICON_IMAGE}</span><span class="nm">Image</span></button>
         <button class="content-type-btn" onclick="chooseContentType('slide')"><span class="ic">${ICON_SLIDE}</span><span class="nm">Slides</span></button>
         <button class="content-type-btn" onclick="chooseContentType('note')"><span class="ic">${ICON_NOTE}</span><span class="nm">Note</span></button>
         <button class="content-type-btn" onclick="chooseContentType('document')"><span class="ic">${ICON_DOCUMENT}</span><span class="nm">Document</span></button>
       </div></div>`;
     document.body.classList.add('dialog-open');
   }
+
+  const SAMPLE_BUILDERS = {
+    video: buildVideoBlockSample,
+    slide: buildSlideBlockSample,
+    document: buildDocumentBlockSample,
+    image: buildImageBlockSample
+  };
 
   function chooseContentType(type) {
     if (type === 'note') {
@@ -1473,23 +1649,18 @@
       simulateSave();
       return;
     }
-    if (type === 'video') {
-      openAddDialog('video-more');
-      return;
-    }
-    if (type === 'slide') {
-      openAddDialog('slide-more');
-      return;
-    }
-    if (type === 'document') {
-      openAddDialog('document');
-      return;
+    const sampleBuilder = SAMPLE_BUILDERS[type];
+    if (sampleBuilder) {
+      closeDialog();
+      insertBlock(activeCanvasId, sampleBuilder());
+      simulateSave();
     }
   }
 
   function applyEditDialogLabels() {
     if (!activeEditBlockEl) return;
-    const titleMap = { 'Add video': 'Edit video', 'Add a slide': 'Edit slide', 'Add document': 'Edit document' };
+    if (activeEditBlockEl.dataset.sample === 'true') return;
+    const titleMap = { 'Add video': 'Edit video', 'Add a slide': 'Edit slide', 'Add document': 'Edit document', 'Add image': 'Edit image' };
     const title = document.querySelector('.dialog-title');
     if (title && titleMap[title.textContent]) title.textContent = titleMap[title.textContent];
     const confirmBtn = document.querySelector('.dialog-foot .btn-primary');
@@ -1498,6 +1669,7 @@
 
   function openAddDialog(kind) {
     const dialogBox = document.getElementById('dialogBox');
+    const editingConfigured = activeEditBlockEl && activeEditBlockEl.dataset.sample !== 'true';
     if (kind === 'slide-more') {
       const currentPlatform = activeEditBlockEl && activeEditBlockEl.dataset.platform;
       slideSelectedId = (currentPlatform && SLIDE_PLATFORMS.some((p) => p.id === currentPlatform)) ? currentPlatform : SLIDE_PLATFORMS[0].id;
@@ -1505,10 +1677,11 @@
       dialogBox.innerHTML = buildSlidePickerDialog();
       document.body.classList.add('dialog-open');
       applyEditDialogLabels();
-      if (activeEditBlockEl) primeSlideEditDialog(activeEditBlockEl);
+      if (editingConfigured) primeSlideEditDialog(activeEditBlockEl);
       return;
     }
     if (kind === 'document') selectedDocFile = null;
+    if (kind === 'image') selectedImageFile = null;
     if (kind === 'video-more') {
       activeVideoTab = 'yt';
       selectedVideoFile = null;
@@ -1517,7 +1690,8 @@
     dialogBox.innerHTML = dialogTemplates[kind];
     document.body.classList.add('dialog-open');
     applyEditDialogLabels();
-    if (kind === 'document' && activeEditBlockEl) primeDocumentEditDialog(activeEditBlockEl);
+    if (kind === 'document' && editingConfigured) primeDocumentEditDialog(activeEditBlockEl);
+    if (kind === 'image' && editingConfigured) primeImageEditDialog(activeEditBlockEl);
     const tabs = document.getElementById('videoTabs');
     if (tabs) {
       tabs.addEventListener('click', (e) => {
@@ -1530,7 +1704,7 @@
         onVideoSourceInput();
       });
     }
-    if (kind === 'video-more' && activeEditBlockEl) primeVideoEditDialog(activeEditBlockEl);
+    if (kind === 'video-more' && editingConfigured) primeVideoEditDialog(activeEditBlockEl);
   }
 
   function buildCurrentVideoBanner(section) {
@@ -1618,6 +1792,21 @@
     }
   }
 
+  function buildCurrentImageBanner(src) {
+    return `
+      <div class="current-content-banner">
+        <div class="thumb"><img src="${escapeHtml(src)}" alt="" /></div>
+        <div class="txt"><div class="lbl">Current image</div><div class="url">Choose a new file below to replace it</div></div>
+      </div>`;
+  }
+
+  function primeImageEditDialog(section) {
+    const img = section.querySelector('.image-block img');
+    if (!img) return;
+    const dialogBody = document.querySelector('.dialog-body');
+    if (dialogBody) dialogBody.insertAdjacentHTML('afterbegin', buildCurrentImageBanner(img.src));
+  }
+
   function closeDialog() {
     document.body.classList.remove('dialog-open');
     activeEditBlockEl = null;
@@ -1661,6 +1850,33 @@
     e.preventDefault();
     e.currentTarget.classList.remove('drag-over');
     onDocFileChosen(e.dataTransfer.files && e.dataTransfer.files[0]);
+  }
+
+  let selectedImageFile = null;
+
+  function onImageFileChosen(file) {
+    if (!file) return;
+    selectedImageFile = file;
+    const objectUrl = URL.createObjectURL(file);
+    document.getElementById('imageFileArea').innerHTML = `
+      <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
+        <div class="file-icon" style="overflow:hidden;padding:0"><img src="${objectUrl}" alt="" style="width:100%;height:100%;object-fit:cover" /></div>
+        <div class="file-info"><div class="file-name">${escapeHtml(file.name)}</div><div class="file-size">${escapeHtml(formatFileSize(file.size))}</div></div>
+        <div class="file-actions">
+          <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Replace file" onclick="document.getElementById('imageFileInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        </div>
+      </div>`;
+    document.getElementById('imageAddBtn').disabled = false;
+  }
+
+  function onImageFileInputChange(input) {
+    onImageFileChosen(input.files && input.files[0]);
+  }
+
+  function onImageFileDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    onImageFileChosen(e.dataTransfer.files && e.dataTransfer.files[0]);
   }
 
   // ---- Video sources: real embeds/playback, no canned demo output ----
@@ -1808,6 +2024,15 @@
       }
       html = await buildDocumentBlock(selectedDocFile);
       selectedDocFile = null;
+    }
+    if (kind === 'image') {
+      if (!selectedImageFile) return;
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Adding…';
+      }
+      html = buildImageBlock(selectedImageFile);
+      selectedImageFile = null;
     }
     if (kind === 'video-more') {
       if (confirmBtn) {
