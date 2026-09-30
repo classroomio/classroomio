@@ -2556,7 +2556,11 @@
     else canvas.querySelector('.empty-page').insertAdjacentElement('beforebegin', block);
     const gapWrapper = document.createElement('div');
     gapWrapper.innerHTML = blockGap().trim();
-    block.insertAdjacentElement('afterend', gapWrapper.firstElementChild);
+    const newGap = gapWrapper.firstElementChild;
+    block.insertAdjacentElement('afterend', newGap);
+    // Advance the insertion point past what was just added, so the next add (without
+    // re-clicking) lands below it instead of repeatedly at the same old spot.
+    setActiveGapEl(newGap);
     updateEmptyState(canvasId);
   }
 
