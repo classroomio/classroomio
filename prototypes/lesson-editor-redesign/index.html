@@ -445,6 +445,13 @@
   .utab { padding: 8px 10px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; white-space: nowrap; }
   .utab:hover { color: var(--foreground); }
   .utab.active { color: var(--foreground); border-bottom-color: var(--primary); }
+  .current-video-banner { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .current-video-banner .thumb { width: 72px; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+  .current-video-banner .thumb svg { width: 16px; height: 16px; fill: #fff; stroke: none; }
+  .current-video-banner .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .current-video-banner .txt { min-width: 0; }
+  .current-video-banner .lbl { font-size: 12.5px; font-weight: 500; }
+  .current-video-banner .url { font-size: 11.5px; color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .drop { border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 24px 16px; text-align: center; background: var(--muted); }
   .drop svg { width: 22px; height: 22px; stroke-width: 1.7; color: var(--muted-foreground); margin-bottom: 8px; }
   .drop .t { font-size: 13px; font-weight: 500; margin: 0 0 3px; }
@@ -1241,7 +1248,7 @@
         ? `<video class="real-media" src="${escapeHtml(source.src)}" controls preload="metadata"></video>`
         : `<iframe class="real-media" src="${escapeHtml(source.src)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     return `
-      <section class="content-section" data-type="video">
+      <section class="content-section" data-type="video" data-platform="${escapeHtml(source.platform)}" data-source-url="${escapeHtml(source.originalUrl || '')}" data-thumb-url="${escapeHtml(source.thumbnailUrl || '')}">
         ${blockHead('Video', ICON_VIDEO, 'video-more')}
         <div class="preview-video-player">${media}</div>
         <div class="preview-media-caption">
@@ -1471,6 +1478,46 @@
         onVideoSourceInput();
       });
     }
+    if (kind === 'video-more' && activeEditBlockEl) primeVideoEditDialog(activeEditBlockEl);
+  }
+
+  function buildCurrentVideoBanner(section) {
+    const platform = section.dataset.platform || '';
+    const sourceUrl = section.dataset.sourceUrl || '';
+    const thumbUrl = section.dataset.thumbUrl || '';
+    const label =
+      platform === 'youtube' ? 'YouTube' : platform === 'vimeo' ? 'Vimeo' : platform === 'file' ? 'Uploaded file' : 'Embedded video';
+    const thumb = thumbUrl
+      ? `<img src="${escapeHtml(thumbUrl)}" alt="" />`
+      : '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
+    return `
+      <div class="current-video-banner">
+        <div class="thumb">${thumb}</div>
+        <div class="txt"><div class="lbl">Currently playing</div><div class="url">${escapeHtml(sourceUrl || label)}</div></div>
+      </div>`;
+  }
+
+  function primeVideoEditDialog(section) {
+    const platform = section.dataset.platform || '';
+    const sourceUrl = section.dataset.sourceUrl || '';
+    const dialogBody = document.querySelector('.dialog-body');
+    if (dialogBody) dialogBody.insertAdjacentHTML('afterbegin', buildCurrentVideoBanner(section));
+    const tabForPlatform = { youtube: 'yt', vimeo: 'vm', embed: 'em', file: 'up' }[platform];
+    if (tabForPlatform && tabForPlatform !== 'yt') {
+      const tabBtn = document.querySelector(`.utab[data-tab="${tabForPlatform}"]`);
+      if (tabBtn) tabBtn.click();
+    }
+    if (platform === 'youtube') {
+      const input = document.getElementById('videoYoutubeInput');
+      if (input) input.value = sourceUrl;
+    } else if (platform === 'vimeo') {
+      const input = document.getElementById('videoVimeoInput');
+      if (input) input.value = sourceUrl;
+    } else if (platform === 'embed') {
+      const input = document.getElementById('videoEmbedInput');
+      if (input) input.value = sourceUrl;
+    }
+    onVideoSourceInput();
   }
   function closeDialog() {
     document.body.classList.remove('dialog-open');
@@ -1594,7 +1641,7 @@
       const res = await fetch(endpoint);
       if (!res.ok) return null;
       const data = await res.json();
-      return { title: data.title, author: data.author_name };
+      return { title: data.title, author: data.author_name, thumbnailUrl: data.thumbnail_url };
     } catch (err) {
       return null;
     }
@@ -1608,20 +1655,36 @@
         kind: 'file',
         src: URL.createObjectURL(raw.file),
         title: raw.file.name.replace(/\.[^./]+$/, ''),
-        sub: 'Uploaded video'
+        sub: 'Uploaded video',
+        platform: 'file',
+        originalUrl: raw.file.name,
+        thumbnailUrl: null
       };
     }
     if (raw.platform === 'youtube' || raw.platform === 'vimeo') {
       const label = raw.platform === 'youtube' ? 'YouTube' : 'Vimeo';
       const meta = await fetchOEmbedTitle(raw.platform, raw.url);
+      const id = raw.platform === 'youtube' ? extractYouTubeId(raw.url) : null;
+      const thumbnailUrl = (meta && meta.thumbnailUrl) || (id ? 'https://img.youtube.com/vi/' + id + '/mqdefault.jpg' : null);
       return {
         kind: 'iframe',
         src: raw.src,
         title: meta && meta.title ? meta.title : label + ' video',
-        sub: meta && meta.author ? meta.author + ' · ' + label : label
+        sub: meta && meta.author ? meta.author + ' · ' + label : label,
+        platform: raw.platform,
+        originalUrl: raw.url,
+        thumbnailUrl
       };
     }
-    return { kind: 'iframe', src: raw.src, title: 'Embedded video', sub: 'Custom embed' };
+    return {
+      kind: 'iframe',
+      src: raw.src,
+      title: 'Embedded video',
+      sub: 'Custom embed',
+      platform: 'embed',
+      originalUrl: raw.src,
+      thumbnailUrl: null
+    };
   }
 
   function simulateSave() {
