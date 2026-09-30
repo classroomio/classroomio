@@ -11,6 +11,9 @@
     if (data.paths) {
       learningPathApi.paths = data.paths;
     }
+    if (data.pathsPagination !== undefined) {
+      learningPathApi.pathsPagination = data.pathsPagination;
+    }
   });
 </script>
 

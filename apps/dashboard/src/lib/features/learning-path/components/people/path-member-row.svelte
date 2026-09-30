@@ -31,8 +31,11 @@
     canManage?: boolean;
     canView?: boolean;
     navigable?: boolean;
+    /** False hides the promote-to-tutor option (only org admins may assign it). */
+    canAssignTutor?: boolean;
     onView?: (member: LearningPathMemberItem) => void;
     onRemove?: (member: LearningPathMemberItem) => void;
+    onChangeRole?: (member: LearningPathMemberItem) => void;
     onRowClick?: (member: LearningPathMemberItem, event: MouseEvent) => void;
     onRowKeydown?: (member: LearningPathMemberItem, event: KeyboardEvent) => void;
   }
@@ -44,8 +47,10 @@
     canManage = true,
     canView = true,
     navigable = false,
+    canAssignTutor = false,
     onView,
     onRemove,
+    onChangeRole,
     onRowClick,
     onRowKeydown
   }: Props = $props();
@@ -238,6 +243,19 @@
               >
                 <TrashIcon class="custom mr-2 size-4" />
                 {$t('learningPath.people.delete_profile')}
+              </DropdownMenu.Item>
+            {/if}
+            {#if onChangeRole && (isStudent ? canAssignTutor : true)}
+              <DropdownMenu.Item
+                onclick={(event) => {
+                  event.stopPropagation();
+                  onChangeRole?.(member);
+                }}
+              >
+                <UserIcon class="custom mr-2 size-4" />
+                {isStudent
+                  ? $t('learningPath.people.change_role_to_tutor')
+                  : $t('learningPath.people.change_role_to_student')}
               </DropdownMenu.Item>
             {/if}
           </DropdownMenu.Content>

@@ -1,17 +1,28 @@
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   AddPathMembersRequest,
+  AddPathMembersSuccess,
+  GetBulkEnrollStatusRequest,
+  GetBulkEnrollStatusSuccess,
   GetPathMemberDetailRequest,
   LearningPathMemberItem,
   ListPathMembersRequest,
   PathMemberDetail,
   PathMembersListOptions,
   PathMembersPagination,
-  RemovePathMemberRequest
+  QueuedAddMembersResult,
+  RemovePathMemberRequest,
+  UpdatePathMemberRoleRequest
 } from '../utils/types';
 import { ROLE } from '@cio/utils/constants';
+import { t } from '$lib/utils/functions/translations';
 import { snackbar } from '$features/ui/snackbar/store';
 import { toPathMembersRequestQuery } from '../utils/path-people-utils';
+
+/** True when the add-members call was queued for background processing. */
+export function isQueuedAddMembersResult(data: AddPathMembersSuccess['data']): data is QueuedAddMembersResult {
+  return typeof data === 'object' && data !== null && 'mode' in data && data.mode === 'queued';
+}
 
 class PathMembersApi extends BaseApiWithErrors {
   members = $state<LearningPathMemberItem[]>([]);
@@ -48,9 +59,9 @@ class PathMembersApi extends BaseApiWithErrors {
       logContext: 'listing path members',
       onSuccess: (result) => {
         if (seq !== this.membersRequestSeq) return;
-        this.members = result.data.data;
-        this.membersPagination = result.data.pagination;
-        this.membersEnrolledTotal = result.data.enrolledTotal;
+        this.members = result.data;
+        this.membersPagination = result.pagination;
+        this.membersEnrolledTotal = result.enrolledTotal;
       }
     });
     if (seq === this.membersRequestSeq) {
@@ -61,22 +72,44 @@ class PathMembersApi extends BaseApiWithErrors {
   async addMembers(
     pathId: string,
     members: Array<{ profileId?: string; email?: string; roleId: (typeof ROLE)['TUTOR' | 'STUDENT'] }>,
-    options: { successKey?: string } = {}
+    sendEmail = true
   ) {
-    const { successKey = 'learningPath.snackbar.members_added' } = options;
     const res = await this.execute<AddPathMembersRequest>({
       requestFn: () =>
         classroomio['learning-path'][':pathId']['members'].$post({
           param: { pathId },
-          json: { members }
+          json: { members, sendEmail }
         }),
       logContext: 'adding path members',
-      onSuccess: () => {
-        snackbar.success(successKey);
+      onSuccess: (result) => {
+        // Queued bulk adds resolve their toast when polling finishes.
+        if (isQueuedAddMembersResult(result.data)) {
+          return;
+        }
+        const count = Array.isArray(result.data) ? result.data.length : 0;
+        snackbar.success(t.get('course.navItem.people.invite_modal.members_added', { count }));
       }
     });
 
     return res;
+  }
+
+  async getBulkEnrollStatus(pathId: string, jobId: string, pollCount = 0) {
+    let envelope: GetBulkEnrollStatusSuccess['data'] | null = null;
+
+    await this.execute<GetBulkEnrollStatusRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['bulk-enrollment'][':jobId'].$get({
+          param: { pathId, jobId },
+          query: { pollCount: String(pollCount) }
+        }),
+      logContext: 'reading bulk enrollment status',
+      onSuccess: (result) => {
+        envelope = result.data;
+      }
+    });
+
+    return envelope;
   }
 
   async removeMember(pathId: string, memberId: string, options: { isStudent?: boolean } = {}) {
@@ -90,6 +123,22 @@ class PathMembersApi extends BaseApiWithErrors {
       onSuccess: () => {
         this.members = this.members.filter((m) => m.id !== memberId);
         snackbar.success(isStudent ? 'learningPath.snackbar.member_removed' : 'learningPath.snackbar.tutor_removed');
+      }
+    });
+
+    return res;
+  }
+
+  async updateMemberRole(pathId: string, memberId: string, roleId: (typeof ROLE)['STUDENT' | 'TUTOR']) {
+    const res = await this.execute<UpdatePathMemberRoleRequest>({
+      requestFn: () =>
+        classroomio['learning-path'][':pathId']['members'][':memberId'].$patch({
+          param: { pathId, memberId },
+          json: { roleId }
+        }),
+      logContext: 'updating path member role',
+      onSuccess: () => {
+        snackbar.success('learningPath.snackbar.member_role_updated');
       }
     });
 

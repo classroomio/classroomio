@@ -477,6 +477,14 @@ export type DeletePeopleResponse = InferResponseType<DeletePeopleRequest>;
 export type DeletePeopleSuccess = Extract<DeletePeopleResponse, { success: true }>;
 export type DeletePeopleData = DeletePeopleSuccess['data'];
 
+/**
+ * The course People roster's source filter ("how did this member reach the course").
+ * TODO(#1226): fold `source` into `ListPeopleQuery` once the URL-backed roster merges,
+ * then replace `ListPeopleQueryWithSource` with `ListPeopleQuery` at its call sites.
+ */
+export type PeopleSourceFilter = NonNullable<ListPeopleRequestQuery['source']>;
+export type ListPeopleQueryWithSource = ListPeopleQuery & { source?: PeopleSourceFilter };
+
 export type GetUserCourseAnalyticsRequest =
   (typeof classroomio.course)[':courseId']['members'][':userId']['analytics']['$get'];
 export type GetUserCourseAnalyticsResponse = InferResponseType<GetUserCourseAnalyticsRequest>;

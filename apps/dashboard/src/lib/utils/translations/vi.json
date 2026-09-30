@@ -767,7 +767,9 @@
       "cancel": "Hủy bỏ",
       "snackbar_success": "Đã chỉ định người dùng {assigned} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
       "snackbar_no_courses": "Vui lòng chọn ít nhất một khóa học",
-      "snackbar_failed": "Không thể chỉ định khóa học"
+      "snackbar_failed": "Không thể chỉ định khóa học",
+      "snackbar_partial": "Người dùng {assigned} được chỉ định ({alreadyEnrolled} đã có quyền truy cập, email {emailsSent} đã được gửi). Các khóa học chỉ có lộ trình bị bỏ qua: {names} — chỉ định lộ trình học tập chứa hoặc tắt 'Yêu cầu lộ trình học tập' trong cài đặt khóa học.",
+      "path_only_badge": "Chỉ đường dẫn"
     },
     "import": {
       "title": "Nhập người dùng",
@@ -818,7 +820,9 @@
       },
       "submit_count": "Nhập {count} học viên",
       "result_heading": "{count} học viên đã được nhập",
-      "start_over": "Chọn một tập tin khác"
+      "start_over": "Chọn một tập tin khác",
+      "skipped_path_gated_title": "Đã bỏ qua {count} khóa học chỉ có đường dẫn",
+      "skipped_path_gated_description": "{names}. Các khóa học này yêu cầu đăng ký thông qua một lộ trình học tập. Chỉ định lộ trình học tập chứa (điều này cũng cấp cho các khóa học khác) hoặc tắt 'Yêu cầu lộ trình học tập' trong cài đặt khóa học."
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
@@ -954,7 +958,8 @@
       "custom": "Bộ lọc tùy chỉnh",
       "all": "Tất cả học viên"
     },
-    "learner_count": "{count} học sinh"
+    "learner_count": "{count} học sinh",
+    "path_only_badge": "Chỉ đường dẫn"
   },
   "community": {
     "title": "cộng đồng",
@@ -1112,7 +1117,9 @@
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
         "copy_link": "Sao chép liên kết",
-        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản."
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
+        "requires_learning_path": "Yêu cầu lộ trình học tập",
+        "requires_learning_path_desc": "Khi bật, người học chỉ có thể truy cập khóa học này thông qua lộ trình học tập. Tuyển sinh hiện tại được bảo tồn."
       },
       "analytics": {
         "title": "Phân tích"
@@ -1481,7 +1488,8 @@
             "title": "Cấp quyền truy cập cho học viên",
             "description": "Cấp cho {email} quyền truy cập khóa học này. Chúng tôi sẽ gửi email mời để tham gia tổ chức của bạn và đăng ký khóa học.",
             "cancel": "Hủy",
-            "send_invite": "Gửi lời mời"
+            "send_invite": "Gửi lời mời",
+            "path_gated_notice": "Khóa học này yêu cầu đăng ký thông qua lộ trình học tập nên không thể cấp quyền truy cập trực tiếp. Thay vào đó, hãy chỉ định lộ trình học tập có chứa — hoặc tắt 'Yêu cầu lộ trình học tập' trong cài đặt khóa học."
           },
           "invite_new_students_title": "Mời học viên mới",
           "invite_new_students_description": "Mời người mới vào tổ chức của bạn và gán trước cho khóa học này. Họ sẽ tạo tài khoản, chấp nhận lời mời và nhận quyền truy cập.",
@@ -1526,9 +1534,17 @@
             "multi_use_30d": "Sử dụng nhiều lần (30 ngày)",
             "custom": "tùy chỉnh"
           },
-          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
+          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên.",
+          "path_gated_notice_title": "Học sinh tham gia thông qua lộ trình học tập",
+          "path_gated_notice_description": "Khóa học này yêu cầu đăng ký thông qua lộ trình học tập nên sinh viên không thể được mời vào đây. Bạn vẫn có thể mời gia sư dưới đây. Để cấp cho học viên quyền truy cập, hãy chỉ định lộ trình học tập có sẵn — hoặc tắt 'Yêu cầu lộ trình học tập' trong cài đặt khóa học.",
+          "members_added": "{count, plural, one {# thành viên được thêm thành công} other {# thành viên được thêm thành công}}"
         },
-        "learner": "Học viên"
+        "learner": "Học viên",
+        "source": "Nguồn",
+        "source_learning_path": "Lộ trình học tập",
+        "source_cohort": "đoàn hệ",
+        "source_filter_all": "Tất cả các nguồn",
+        "source_filter_direct": "trực tiếp"
       },
       "marks": {
         "title": "Điểm",
@@ -4226,9 +4242,6 @@
       "command_palette": {
         "title": "Bảng lệnh",
         "description": "Tìm kiếm và điều hướng trong tổ chức của bạn",
-        "placeholder": "Tìm kiếm khóa học, nhóm học tập, widget, sinh viên, thẻ, cài đặt...",
-        "org_placeholder": "Tìm kiếm khóa học, nhóm học tập, widget, sinh viên, thẻ, cài đặt...",
-        "lms_placeholder": "Tìm kiếm các khóa học, nhóm học tập và trang học tập của bạn...",
         "lms_description": "Tìm kiếm và điều hướng không gian học tập của bạn",
         "empty": "Không tìm thấy kết quả nào",
         "loading": "Đang tìm kiếm...",
@@ -4244,8 +4257,12 @@
           "tags": "Thẻ",
           "students": "Sinh viên",
           "settings": "Cài đặt",
-          "cohorts": "Nhóm học tập"
-        }
+          "cohorts": "Nhóm học tập",
+          "learning_paths": "Lộ trình học tập"
+        },
+        "placeholder": "Tìm kiếm các khóa học, nhóm thuần tập, lộ trình học tập, tiện ích, sinh viên, thẻ, cài đặt...",
+        "org_placeholder": "Tìm kiếm các khóa học, nhóm thuần tập, lộ trình học tập, tiện ích, sinh viên, thẻ, cài đặt...",
+        "lms_placeholder": "Tìm kiếm các khóa học, nhóm thuần tập, lộ trình học tập và trang học tập của bạn..."
       }
     },
     "cancel": "Hủy bỏ",
@@ -5966,16 +5983,15 @@
       "course_added": "Đã thêm khóa học",
       "courses_added": "Đã thêm khóa học",
       "course_removed": "Đã xóa khóa học",
-      "members_added": "Người học được thêm vào đường dẫn",
       "member_removed": "Người học đã bị xóa khỏi đường dẫn",
-      "tutors_added": "Đã thêm gia sư vào đường dẫn",
-      "tutor_added": "Đã thêm gia sư vào lộ trình",
       "tutor_removed": "Đã xóa gia sư khỏi lộ trình",
       "certificate_saved": "Đã lưu cài đặt chứng chỉ",
       "landing_saved": "Đã cập nhật trang đích",
       "landing_save_failed": "Không thể lưu trang đích",
       "link_generated": "Đã tạo liên kết mời và sao chép vào bảng nhớ tạm",
-      "settings_saved": "Đã cập nhật cài đặt lộ trình học tập"
+      "settings_saved": "Đã cập nhật cài đặt lộ trình học tập",
+      "member_role_updated": "Đã cập nhật vai trò thành viên",
+      "delete_failed": "Không xóa được lộ trình học tập"
     },
     "analytics": {
       "title": "Phân tích",
@@ -6091,8 +6107,15 @@
         "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong gói của mình. Nâng cấp để thêm sinh viên.",
         "invite": "Mời gia sư",
         "invite_students": "Mời sinh viên",
-        "finish": "Kết thúc"
-      }
+        "finish": "Kết thúc",
+        "bulk_enroll_queued": "Đang đăng ký {count} thành viên ở chế độ nền…",
+        "bulk_enroll_success": "Đã đăng ký {enrolled} thành viên ({invited} đã mời)",
+        "bulk_enroll_partial": "Đã đăng ký {enrolled} thành viên ({invited} đã mời, {failed} không thành công)",
+        "bulk_enroll_failed": "Đăng ký nền không thành công",
+        "bulk_enroll_lost": "Mất dấu vết đăng ký nền"
+      },
+      "change_role_to_tutor": "Làm gia sư",
+      "change_role_to_student": "Làm sinh viên"
     },
     "certificate": {
       "title": "Chứng chỉ",

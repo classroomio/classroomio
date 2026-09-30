@@ -293,6 +293,7 @@
           isRequired
           bind:value={name}
           errorMessage={errors.name}
+          testId="path-settings-title"
           onInputChange={() => {
             hasUnsavedChanges = true;
           }}
@@ -460,6 +461,7 @@
     <Field.Field orientation="horizontal">
       <Switch
         id="publish-path-switch"
+        data-testid="path-settings-publish"
         checked={isPublished}
         onCheckedChange={(checked) => {
           isPublished = checked;
@@ -487,6 +489,7 @@
           loading={isDeleting}
           disabled={isDeleting}
           class="w-fit!"
+          testId="path-settings-delete"
         >
           {$t('learningPath.settings.danger.delete_button')}
         </Button>
