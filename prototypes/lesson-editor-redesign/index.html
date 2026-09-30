@@ -713,8 +713,18 @@
                 </div>
                 <div class="note-content" contenteditable="true">
                   <h3>Product Setup Guide</h3>
-                  <p><strong>Getting Started</strong></p>
+                  <p>This guide walks through everything your team needs to get a new workspace ready before inviting learners. Read through each section in order — later steps assume the ones before them are already done.</p>
+                  <h3>Getting started</h3>
                   <p>To set up your account, first verify your email address, then complete your organization profile. Once verified, invite your team members from the People tab so they can start collaborating right away.</p>
+                  <ul>
+                    <li>Verify your email address from the confirmation link</li>
+                    <li>Complete your organization profile, including logo and branding</li>
+                    <li>Invite your team from the People tab before adding content</li>
+                  </ul>
+                  <h3>Assigning roles</h3>
+                  <p>Each workspace member has a role that controls what they can see and do. Admins manage billing and settings, tutors manage course content and grading, and students access enrolled courses only. Set roles correctly from the start — changing them later can affect access to in-progress courses.</p>
+                  <h3>Next steps</h3>
+                  <p>Once your team is in place, move on to creating your first course. The next lesson picks up exactly where this guide leaves off, so keep it open for reference if anything here needs a second look.</p>
                 </div>
               </div>
               <div class="preview-doc-link preview-only doc-preview-link" hidden>
@@ -1399,11 +1409,28 @@
       }
     }
     // Legacy .doc, PowerPoint files, or a failed .docx conversion have no reliable client-side
-    // parser here. Simulate the end state with realistic lesson copy instead of a "can't preview
-    // this" placeholder.
-    return `${chip}${buildNoteToolbarHtml()}<div class="note-content" contenteditable="true"><h3>${displayName}</h3>
-      <p>This section covers the key points learners need to understand before moving on. Read through each part carefully, since later lessons build directly on the concepts introduced here.</p>
-      <p>Take your time working through the material, and revisit any part that feels unclear — the goal is a solid understanding, not just getting to the end.</p></div>`;
+    // parser here. Simulate the full end state — a whole document's worth of content, not a
+    // one-paragraph blurb — instead of a "can't preview this" placeholder.
+    return `${chip}${buildNoteToolbarHtml()}<div class="note-content" contenteditable="true">${buildMockDocumentBody(displayName)}</div>`;
+  }
+
+  function buildMockDocumentBody(displayName) {
+    return `
+      <h3>${displayName}</h3>
+      <p>This document walks through everything you need before moving on to the next lesson. Read through each section in order — later lessons build directly on the concepts introduced here, so it's worth taking your time.</p>
+      <h3>Getting started</h3>
+      <p>Before you begin, make sure you have access to everything referenced in this guide. If a link or a file doesn't open, check with your instructor before continuing rather than guessing at the missing piece.</p>
+      <ul>
+        <li>Confirm you can access every tool or account mentioned below</li>
+        <li>Set aside enough time to finish a full section in one sitting</li>
+        <li>Keep a notebook or a blank note handy for anything you want to revisit</li>
+      </ul>
+      <h3>Key concepts</h3>
+      <p>The core ideas in this document connect directly to what you've already covered. Where something feels new, it's usually a small extension of a concept from an earlier lesson rather than something entirely unfamiliar.</p>
+      <p>Pay particular attention to any numbered steps — they're written in the order they need to happen in, and skipping ahead is the most common reason this material feels harder than it actually is.</p>
+      <h3>Wrapping up</h3>
+      <p>Once you've worked through every section above, you should be able to explain the material in your own words without looking back at this document. If you can't yet, that's a normal part of learning — revisit the section that felt least clear before moving on.</p>
+      <p>The next lesson picks up right where this document leaves off, so keep it open for reference if you need to double-check anything while you continue.</p>`;
   }
 
   async function buildDocumentBlock(mode, file) {
