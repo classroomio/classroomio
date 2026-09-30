@@ -445,13 +445,15 @@
   .utab { padding: 8px 10px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; white-space: nowrap; }
   .utab:hover { color: var(--foreground); }
   .utab.active { color: var(--foreground); border-bottom-color: var(--primary); }
-  .current-video-banner { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
-  .current-video-banner .thumb { width: 72px; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
-  .current-video-banner .thumb svg { width: 16px; height: 16px; fill: #fff; stroke: none; }
-  .current-video-banner .thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .current-video-banner .txt { min-width: 0; }
-  .current-video-banner .lbl { font-size: 12.5px; font-weight: 500; }
-  .current-video-banner .url { font-size: 11.5px; color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .current-content-banner { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .current-content-banner .thumb { width: 72px; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+  .current-content-banner .thumb svg { width: 16px; height: 16px; fill: #fff; stroke: none; }
+  .current-content-banner .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .current-content-banner .thumb.icon { background: var(--muted); color: var(--muted-foreground); }
+  .current-content-banner .thumb.icon > svg { width: 22px; height: 22px; fill: none; stroke: currentColor; }
+  .current-content-banner .txt { min-width: 0; }
+  .current-content-banner .lbl { font-size: 12.5px; font-weight: 500; }
+  .current-content-banner .url { font-size: 11.5px; color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .drop { border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 24px 16px; text-align: center; background: var(--muted); }
   .drop svg { width: 22px; height: 22px; stroke-width: 1.7; color: var(--muted-foreground); margin-bottom: 8px; }
   .drop .t { font-size: 13px; font-weight: 500; margin: 0 0 3px; }
@@ -677,6 +679,7 @@
               <div class="dd-menu">
                 <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Document actions" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
                 <div class="dd-menu-panel">
+                  <button class="dd-menu-item" onclick="editBlock(this, 'document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit document</button>
                   <button class="dd-menu-item danger" onclick="removeBlock(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove block</button>
                 </div>
               </div>
@@ -1124,6 +1127,16 @@
   function selectSlidePlatform(id) {
     slideSelectedId = id;
     document.getElementById('dialogBox').innerHTML = buildSlidePickerDialog();
+    applyEditDialogLabels();
+    if (activeEditBlockEl) {
+      const dialogBody = document.querySelector('.dialog-body');
+      if (dialogBody) {
+        dialogBody.insertAdjacentHTML(
+          'afterbegin',
+          buildCurrentSlideBanner(activeEditBlockEl.dataset.platform, activeEditBlockEl.dataset.sourceUrl || '')
+        );
+      }
+    }
   }
 
   function filterSlidePlatforms(query) {
@@ -1291,7 +1304,7 @@
       ? `<iframe class="real-media" src="${escapeHtml(embedSrc)}" loading="lazy" allowfullscreen></iframe>`
       : ICON_SLIDE;
     return `
-      <section class="content-section" data-type="slide">
+      <section class="content-section" data-type="slide" data-platform="${escapeHtml(platformId)}" data-source-url="${escapeHtml(embedSrc || '')}">
         ${blockHead('Slide', ICON_SLIDE, 'slide-more')}
         <div class="preview-slide-frame">${frame}</div>
         <div class="preview-media-caption">
@@ -1356,7 +1369,7 @@
     const notePreview = await buildDocumentNotePreview(file, objectUrl, displayName);
     return `
       <section class="content-section" data-type="document">
-        ${blockHead('Document', ICON_DOCUMENT)}
+        ${blockHead('Document', ICON_DOCUMENT, 'document')}
         <div class="doc-entry" data-mode="${mode}">
           <div class="file-row edit-only">
             <div class="file-icon">${ICON_DOCUMENT}</div>
@@ -1440,7 +1453,7 @@
 
   function applyEditDialogLabels() {
     if (!activeEditBlockEl) return;
-    const titleMap = { 'Add video': 'Edit video', 'Add a slide': 'Edit slide' };
+    const titleMap = { 'Add video': 'Edit video', 'Add a slide': 'Edit slide', 'Add document': 'Edit document' };
     const title = document.querySelector('.dialog-title');
     if (title && titleMap[title.textContent]) title.textContent = titleMap[title.textContent];
     const confirmBtn = document.querySelector('.dialog-foot .btn-primary');
@@ -1450,11 +1463,13 @@
   function openAddDialog(kind) {
     const dialogBox = document.getElementById('dialogBox');
     if (kind === 'slide-more') {
-      slideSelectedId = SLIDE_PLATFORMS[0].id;
+      const currentPlatform = activeEditBlockEl && activeEditBlockEl.dataset.platform;
+      slideSelectedId = (currentPlatform && SLIDE_PLATFORMS.some((p) => p.id === currentPlatform)) ? currentPlatform : SLIDE_PLATFORMS[0].id;
       dialogBox.style.maxWidth = '860px';
       dialogBox.innerHTML = buildSlidePickerDialog();
       document.body.classList.add('dialog-open');
       applyEditDialogLabels();
+      if (activeEditBlockEl) primeSlideEditDialog(activeEditBlockEl);
       return;
     }
     if (kind === 'document') selectedDocFile = null;
@@ -1466,6 +1481,7 @@
     dialogBox.innerHTML = dialogTemplates[kind];
     document.body.classList.add('dialog-open');
     applyEditDialogLabels();
+    if (kind === 'document' && activeEditBlockEl) primeDocumentEditDialog(activeEditBlockEl);
     const tabs = document.getElementById('videoTabs');
     if (tabs) {
       tabs.addEventListener('click', (e) => {
@@ -1491,9 +1507,32 @@
       ? `<img src="${escapeHtml(thumbUrl)}" alt="" />`
       : '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
     return `
-      <div class="current-video-banner">
+      <div class="current-content-banner">
         <div class="thumb">${thumb}</div>
         <div class="txt"><div class="lbl">Current video</div><div class="url">${escapeHtml(sourceUrl || label)}</div></div>
+      </div>`;
+  }
+
+  function buildCurrentSlideBanner(platformId, sourceUrl) {
+    const platform = SLIDE_PLATFORMS.find((p) => p.id === platformId);
+    let hostname = sourceUrl;
+    try {
+      hostname = new URL(sourceUrl, location.href).hostname;
+    } catch (err) {
+      // keep the raw value if it isn't a full URL
+    }
+    return `
+      <div class="current-content-banner">
+        <div class="thumb icon"><span class="slide-platform-ic" style="width:26px;height:26px">${SLIDE_PLATFORM_ICONS[platformId]}</span></div>
+        <div class="txt"><div class="lbl">Current slide</div><div class="url">${escapeHtml(hostname)}${platform ? ' · ' + escapeHtml(platform.name) : ''}</div></div>
+      </div>`;
+  }
+
+  function buildCurrentDocumentBanner(name, size) {
+    return `
+      <div class="current-content-banner">
+        <div class="thumb icon">${ICON_DOCUMENT}</div>
+        <div class="txt"><div class="lbl">Current document</div><div class="url">${escapeHtml(name)} · ${escapeHtml(size)}</div></div>
       </div>`;
   }
 
@@ -1519,6 +1558,30 @@
     }
     onVideoSourceInput();
   }
+
+  function primeSlideEditDialog(section) {
+    const platformId = section.dataset.platform || slideSelectedId;
+    const sourceUrl = section.dataset.sourceUrl || '';
+    const dialogBody = document.querySelector('.dialog-body');
+    if (dialogBody) dialogBody.insertAdjacentHTML('afterbegin', buildCurrentSlideBanner(platformId, sourceUrl));
+    const embedInput = document.getElementById('slideEmbedInput');
+    if (embedInput && sourceUrl) embedInput.value = sourceUrl;
+    onSlideEmbedInput();
+  }
+
+  function primeDocumentEditDialog(section) {
+    const nameEl = section.querySelector('.file-name');
+    const sizeEl = section.querySelector('.file-size');
+    if (!nameEl) return;
+    const dialogBody = document.querySelector('.dialog-body');
+    if (dialogBody) {
+      dialogBody.insertAdjacentHTML(
+        'afterbegin',
+        buildCurrentDocumentBanner(nameEl.textContent, sizeEl ? sizeEl.textContent : '')
+      );
+    }
+  }
+
   function closeDialog() {
     document.body.classList.remove('dialog-open');
     activeEditBlockEl = null;
