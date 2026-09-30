@@ -24,7 +24,8 @@ vi.mock('@cio/db/queries/organization', () => ({
 vi.mock('@cio/db/queries/course', () => ({
   getCourseGroupIds: vi.fn().mockResolvedValue([]),
   getOrgCourseGroups: vi.fn().mockResolvedValue([]),
-  getOrgCourses: vi.fn().mockResolvedValue([])
+  getOrgCourses: vi.fn().mockResolvedValue([]),
+  getRequiresLearningPathCourses: vi.fn().mockResolvedValue([])
 }));
 
 vi.mock('@cio/db/queries/cohort', () => ({
@@ -37,19 +38,30 @@ vi.mock('@cio/db/queries/cohort', () => ({
 vi.mock('@cio/db/queries/group', () => ({
   addGroupMembers: vi.fn(),
   enrollUsersInCourseGroups: vi.fn().mockResolvedValue(undefined),
-  getExistingGroupMembers: vi.fn().mockResolvedValue([])
+  getExistingGroupMembers: vi.fn().mockResolvedValue([]),
+  getGroupMemberIdByGroupAndProfile: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/learning-path', () => ({
   enrollMember: vi.fn(),
-  getCourseIdsByLearningPathId: vi.fn().mockResolvedValue([]),
+  getCourseIdsInPath: vi.fn().mockResolvedValue([]),
   getExistingPathMembers: vi.fn().mockResolvedValue(new Set()),
   getOrgLearningPathsByIds: vi.fn().mockResolvedValue([]),
-  listLearningPaths: vi.fn().mockResolvedValue([])
+  grantCourseAccess: vi.fn(),
+  listLearningPaths: vi.fn().mockResolvedValue({ data: [], pagination: { page: 1, limit: 0, total: 0, totalPages: 0 } })
 }));
 
 vi.mock('@api/services/learning-path/member-management', () => ({
   enrollProfileInLearningPath: vi.fn().mockResolvedValue({ id: 'path-member-1' })
+}));
+
+vi.mock('@api/services/course/compliance', () => ({
+  ensureComplianceEnrollmentRecordsForProfiles: vi.fn().mockResolvedValue({ createdCount: 0 })
+}));
+
+vi.mock('@api/services/course/enrollment-grants', () => ({
+  recordDirectCourseGrant: vi.fn().mockResolvedValue(undefined),
+  recordDirectCourseGrantsBulk: vi.fn().mockResolvedValue(0)
 }));
 
 vi.mock('@cio/db/queries/auth', () => ({
@@ -76,7 +88,20 @@ import {
   getOrganizationMembersByNormalizedEmails,
   getOrgMembersByProfileIds
 } from '@cio/db/queries/organization';
-import { getExistingPathMembers, getOrgLearningPathsByIds, listLearningPaths } from '@cio/db/queries/learning-path';
+import {
+  getExistingPathMembers,
+  getOrgLearningPathsByIds,
+  grantCourseAccess,
+  listLearningPaths
+} from '@cio/db/queries/learning-path';
+import { getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
+import { getCourseGroupIds } from '@cio/db/queries/course';
+import { getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { getOrgCourses, getOrgCourseGroups, getRequiresLearningPathCourses } from '@cio/db/queries/course';
+import { getCohortsByOrg } from '@cio/db/queries/cohort';
+import { recordDirectCourseGrantsBulk } from '@api/services/course/enrollment-grants';
+import { addGroupMembers, getExistingGroupMembers } from '@cio/db/queries/group';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
 import { getRemainingStudentSeats } from '@api/services/organization/student-limit';
 import { importAudienceMembers } from '@api/services/organization/audience';
@@ -236,6 +261,7 @@ describe('importAudienceMembers — learning paths', () => {
       expect.objectContaining({ id: 'path-1' }),
       expect.objectContaining({ profileId: 'p-1', roleId: ROLE.STUDENT })
     );
+    expect(vi.mocked(ensureComplianceEnrollmentRecordsForProfiles)).toHaveBeenCalledWith([], ['p-1']);
     expect(result.enrolled).toBe(1);
   });
 
@@ -323,6 +349,40 @@ describe('importAudienceMembers — learning paths', () => {
     expect(result.enrolled).toBe(2);
   });
 
+  it('enrolls every student-path pair in a multi-student multi-path batch', async () => {
+    vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
+      { id: 'path-1', name: 'Path One', autoEnroll: false, sequentialUnlock: false },
+      { id: 'path-2', name: 'Path Two', autoEnroll: false, sequentialUnlock: false }
+    ] as never);
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT },
+      { normalizedEmail: 'grace@test.dev', profileId: 'p-2', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' },
+      { profileId: 'p-2', roleId: ROLE.STUDENT, email: 'grace@test.dev' }
+    ] as never);
+
+    const result = await importAudienceMembers(
+      ORG,
+      pathImport(['ada@test.dev', 'grace@test.dev'], ['path-1', 'path-2']),
+      ACTOR
+    );
+
+    expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledTimes(4);
+
+    for (const pathId of ['path-1', 'path-2']) {
+      for (const profileId of ['p-1', 'p-2']) {
+        expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledWith(
+          expect.objectContaining({ id: pathId }),
+          expect.objectContaining({ profileId, roleId: ROLE.STUDENT })
+        );
+      }
+    }
+
+    expect(result.enrolled).toBe(4);
+  });
+
   it('stores pathIds on the org invite for new emails so they enroll on acceptance', async () => {
     const result = await importAudienceMembers(ORG, pathImport(['new@test.dev'], ['path-1']), ACTOR);
 
@@ -352,10 +412,13 @@ describe('importAudienceMembers — learning paths', () => {
   });
 
   it('resolves all organization paths when allPaths is true', async () => {
-    vi.mocked(listLearningPaths).mockResolvedValue([
-      { id: 'path-1', name: 'Path 1' },
-      { id: 'path-2', name: 'Path 2' }
-    ] as never);
+    vi.mocked(listLearningPaths).mockResolvedValue({
+      data: [
+        { id: 'path-1', name: 'Path 1' },
+        { id: 'path-2', name: 'Path 2' }
+      ],
+      pagination: { page: 1, limit: 2, total: 2, totalPages: 1 }
+    } as never);
     vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
       { id: 'path-1', name: 'Path 1', autoEnroll: false, sequentialUnlock: false },
       { id: 'path-2', name: 'Path 2', autoEnroll: false, sequentialUnlock: false }
@@ -380,5 +443,103 @@ describe('importAudienceMembers — learning paths', () => {
     expect(vi.mocked(listLearningPaths)).toHaveBeenCalledWith(ORG);
     expect(vi.mocked(enrollProfileInLearningPath)).toHaveBeenCalledTimes(2);
     expect(result.enrolled).toBe(2);
+  });
+});
+
+describe('importAudienceMembers — path-gated courses', () => {
+  const gatedImport = {
+    recipientCsv: ['email', 'ada@test.dev'].join('\n'),
+    courseIds: ['c-direct', 'c-gated'],
+    sendEmail: false
+  } as never;
+
+  beforeEach(() => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+    vi.mocked(getOrgCourses).mockResolvedValue({
+      items: [
+        { id: 'c-direct', title: 'Direct Course' },
+        { id: 'c-gated', title: 'Gated Course' }
+      ],
+      total: 2,
+      page: 1,
+      limit: 20,
+      totalPages: 1
+    } as never);
+    vi.mocked(getRequiresLearningPathCourses).mockResolvedValue([{ id: 'c-gated', title: 'Gated Course' }]);
+    vi.mocked(getExistingGroupMembers).mockResolvedValue(new Set() as never);
+    vi.mocked(getOrgCourseGroups).mockResolvedValue([
+      { groupId: 'g-direct', courseId: 'c-direct', courseTitle: 'Direct Course', welcomeEmailMessage: null }
+    ] as never);
+  });
+
+  it('skips direct assignment into gated courses but still assigns the rest', async () => {
+    const result = await importAudienceMembers(ORG, gatedImport, ACTOR);
+
+    expect(vi.mocked(addGroupMembers)).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(addGroupMembers)).toHaveBeenCalledWith([
+      expect.objectContaining({ groupId: 'g-direct', profileId: 'p-1', roleId: ROLE.STUDENT })
+    ]);
+    expect(vi.mocked(ensureComplianceEnrollmentRecordsForProfiles)).toHaveBeenCalledWith(['c-direct'], ['p-1']);
+    expect(vi.mocked(recordDirectCourseGrantsBulk)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        groupIds: ['g-direct'],
+        profileIds: ['p-1'],
+        courseIds: ['c-direct'],
+        source: 'ORG_AUDIENCE'
+      })
+    );
+    expect(result.assigned).toBe(1);
+    expect(result.skippedPathGatedCourses).toEqual(['c-gated']);
+    expect(result.skippedPathGatedCourseNames).toEqual(['Gated Course']);
+  });
+
+  it('reports no skips when every course accepts direct enrollment', async () => {
+    vi.mocked(getRequiresLearningPathCourses).mockResolvedValue([]);
+
+    const result = await importAudienceMembers(ORG, gatedImport, ACTOR);
+
+    expect(result.skippedPathGatedCourses).toEqual([]);
+    expect(result.skippedPathGatedCourseNames).toEqual([]);
+  });
+});
+
+describe('importAudienceMembers — cohort provenance', () => {
+  beforeEach(() => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
+    ] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-1', roleId: ROLE.STUDENT, email: 'ada@test.dev' }
+    ] as never);
+    vi.mocked(getCohortsByOrg).mockResolvedValue([{ id: 'cohort-1', name: 'Cohort One' }] as never);
+    vi.mocked(getExistingCohortMembers).mockResolvedValue(new Set() as never);
+    vi.mocked(getCourseIdsByCohortIds).mockResolvedValue(['c-1']);
+    vi.mocked(getCourseGroupIds).mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
+    vi.mocked(getGroupMemberIdByGroupAndProfile).mockResolvedValue('gm-1');
+  });
+
+  it('records COHORT grants when assigning students through cohorts', async () => {
+    const result = await importAudienceMembers(
+      ORG,
+      { recipientCsv: ['email', 'ada@test.dev'].join('\n'), cohortIds: ['cohort-1'], sendEmail: false } as never,
+      ACTOR
+    );
+
+    expect(vi.mocked(grantCourseAccess)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        groupmemberId: 'gm-1',
+        courseId: 'c-1',
+        profileId: 'p-1',
+        source: 'COHORT',
+        cohortId: 'cohort-1'
+      }),
+      expect.anything()
+    );
+    expect(result.assigned).toBe(1);
   });
 });

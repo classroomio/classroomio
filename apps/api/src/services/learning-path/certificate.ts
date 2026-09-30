@@ -1,6 +1,10 @@
-import { AppError, ErrorCodes } from '@api/utils/errors';
+import { AppError, ErrorCodes, throwAsInternal } from '@api/utils/errors';
 import type { TLearningPathCertificateDownloadRequest } from '@cio/utils/validation/learning-path';
-import { getLearningPathCertificate, getMemberByPathAndProfile } from '@cio/db/queries/learning-path';
+import {
+  getLearningPathCertificate,
+  getMemberByPathAndProfile,
+  listLearnerPathCertificates
+} from '@cio/db/queries/learning-path';
 import { getOrganizationById } from '@cio/db/queries';
 import {
   buildCertificateRenderInput,
@@ -10,6 +14,7 @@ import {
 } from '@api/utils/certificate';
 
 import { assertCanManageLearningPath, resolveLearningPath } from './learning-path';
+import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
 
 export type TIssuedLearningPathCertificate = {
   certificateId: string;
@@ -59,6 +64,12 @@ export async function assertLearningPathCertificateDownloadAllowed(
     throw new AppError('Certificate not available', ErrorCodes.UNAUTHORIZED, 403);
   }
 
+  const certificatesEnabled = await orgHasCertificatesEnabled(path.organizationId);
+
+  if (!certificatesEnabled) {
+    throw new AppError('Certificates are not available on your plan', ErrorCodes.UNAUTHORIZED, 403);
+  }
+
   const issued = await getLearningPathCertificate(member.id);
 
   if (!issued) {
@@ -69,6 +80,25 @@ export async function assertLearningPathCertificateDownloadAllowed(
   const issuedAt = issued.issuedAt;
 
   return { certificateId, issuedAt };
+}
+
+/**
+ * The caller's path certificates in an organization for the LMS Certificates
+ * page: exactly the ones `assertLearningPathCertificateDownloadAllowed` would
+ * let them download, so every listed certificate opens.
+ */
+export async function listMyPathCertificatesService(organizationId: string, profileId: string) {
+  try {
+    const certificatesEnabled = await orgHasCertificatesEnabled(organizationId);
+
+    if (!certificatesEnabled) {
+      return [];
+    }
+
+    return await listLearnerPathCertificates(organizationId, profileId);
+  } catch (error) {
+    throwAsInternal(error, 'Failed to list learning path certificates');
+  }
 }
 
 /**

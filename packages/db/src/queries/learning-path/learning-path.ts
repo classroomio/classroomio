@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, inArray, isNull, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, ilike, inArray, isNull, or, sql } from 'drizzle-orm';
 import { randomBytes } from 'node:crypto';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -6,7 +6,7 @@ import { getPostgresError } from '@cio/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 
 import * as schema from '../../schema';
-import type { TLearningPath, TLearningPathMember, TNewLearningPath } from '../../types';
+import type { TLearningPath, TNewLearningPath } from '../../types';
 
 export interface TLearningPathWithCounts extends TLearningPath {
   courseCount: number;
@@ -49,11 +49,11 @@ export function buildTutorLearningPathCondition(tutorProfileId: string) {
 
 /**
  * Counts total learning paths in an organization.
- * Optionally filters to paths assigned to a tutor.
+ * Optionally filters to paths assigned to a tutor and/or matching a search term.
  */
 export async function countLearningPathsByOrg(
   orgId: string,
-  options?: { tutorProfileId?: string },
+  options?: { tutorProfileId?: string; search?: string },
   dbClient: DbOrTxClient = db
 ): Promise<number> {
   try {
@@ -61,6 +61,14 @@ export async function countLearningPathsByOrg(
 
     if (options?.tutorProfileId) {
       whereConditions.push(buildTutorLearningPathCondition(options.tutorProfileId));
+    }
+
+    const search = options?.search?.trim();
+    if (search) {
+      const pattern = `%${search}%`;
+      whereConditions.push(
+        or(ilike(schema.learningPath.name, pattern), ilike(schema.learningPath.description, pattern))!
+      );
     }
 
     const [countRow] = await dbClient
@@ -77,15 +85,33 @@ export async function countLearningPathsByOrg(
   }
 }
 
+export interface TListLearningPathsOptions {
+  tutorProfileId?: string;
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export interface TPaginatedLearningPaths {
+  data: TLearningPathWithCounts[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 /**
  * Lists learning paths for an organization with course, member, and completion counts.
- * Optionally filters to paths assigned to a tutor.
+ * Optionally filters to paths assigned to a tutor and/or matching a search term.
+ * Paginates with limit/offset when a limit is provided; otherwise returns all rows.
  */
 export async function listLearningPaths(
   organizationId: string,
-  options?: { tutorProfileId?: string },
+  options?: TListLearningPathsOptions,
   dbClient: DbOrTxClient = db
-): Promise<TLearningPathWithCounts[]> {
+): Promise<TPaginatedLearningPaths> {
   try {
     const courseCountSql = sql<number>`
       COALESCE(
@@ -133,18 +159,40 @@ export async function listLearningPaths(
       whereConditions.push(buildTutorLearningPathCondition(options.tutorProfileId));
     }
 
-    const rows = await dbClient
-      .select({
-        learningPath: schema.learningPath,
-        courseCount: courseCountSql,
-        memberCount: memberCountSql,
-        completionsCount: completionsCountSql
-      })
-      .from(schema.learningPath)
-      .where(and(...whereConditions))
-      .orderBy(desc(schema.learningPath.createdAt));
+    const search = options?.search?.trim();
+    if (search) {
+      const pattern = `%${search}%`;
+      whereConditions.push(
+        or(ilike(schema.learningPath.name, pattern), ilike(schema.learningPath.description, pattern))!
+      );
+    }
 
-    return rows.map((row) => {
+    const page = options?.page && options.page > 0 ? Math.floor(options.page) : 1;
+    const limit = options?.limit && options.limit > 0 ? Math.floor(options.limit) : undefined;
+
+    const [total, rows] = await Promise.all([
+      countLearningPathsByOrg(organizationId, { tutorProfileId: options?.tutorProfileId, search }, dbClient),
+      (async () => {
+        const baseQuery = dbClient
+          .select({
+            learningPath: schema.learningPath,
+            courseCount: courseCountSql,
+            memberCount: memberCountSql,
+            completionsCount: completionsCountSql
+          })
+          .from(schema.learningPath)
+          .where(and(...whereConditions))
+          .orderBy(desc(schema.learningPath.createdAt));
+
+        if (limit !== undefined) {
+          return baseQuery.limit(limit).offset((page - 1) * limit);
+        }
+
+        return baseQuery;
+      })()
+    ]);
+
+    const data = rows.map((row) => {
       const memberCount = Number(row.memberCount || 0);
       const completionsCount = Number(row.completionsCount || 0);
       const completionRate = memberCount > 0 ? Math.round((completionsCount / memberCount) * 100) : 0;
@@ -157,10 +205,139 @@ export async function listLearningPaths(
         completionRate
       };
     });
+
+    const effectiveLimit = limit ?? total;
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit: effectiveLimit,
+        total,
+        totalPages: effectiveLimit > 0 ? Math.ceil(total / effectiveLimit) : 0
+      }
+    };
   } catch (error) {
     console.error('listLearningPaths error:', error);
     throw new Error(
       `Failed to list learning paths for org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Public catalog row: only the fields an org-site visitor may see.
+ * Post-enrollment content (welcome messages, certificate email copy) and
+ * team internals (member counts, completion rates) are excluded here; the
+ * public detail endpoint serves the full landing payload per path.
+ */
+export interface TPublicLearningPathListItem {
+  id: string;
+  publicId: string;
+  slug: string | null;
+  name: string;
+  description: string;
+  coverImage: string | null;
+  cost: number;
+  currency: string;
+  landingPage: TLearningPath['landingPage'];
+  courseCount: number;
+}
+
+export interface TPublicLearningPathsOptions {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+/**
+ * Lists published learning paths for an organization's public catalog.
+ * Unauthenticated-safe: published + ACTIVE only, with a public projection.
+ * Paginates with limit/offset when a limit is provided.
+ */
+export async function listPublicLearningPaths(
+  organizationId: string,
+  options?: TPublicLearningPathsOptions,
+  dbClient: DbOrTxClient = db
+): Promise<{ data: TPublicLearningPathListItem[]; pagination: TPaginatedLearningPaths['pagination'] }> {
+  try {
+    const courseCountSql = sql<number>`
+      COALESCE(
+        (SELECT COUNT(*)::int
+         FROM ${schema.learningPathCourse}
+         WHERE ${and(
+           eq(schema.learningPathCourse.learningPathId, schema.learningPath.id),
+           sql`${schema.learningPathCourse.removedAt} IS NULL`
+         )}),
+        0
+      )
+    `.as('courseCount');
+
+    const whereConditions = [
+      eq(schema.learningPath.organizationId, organizationId),
+      eq(schema.learningPath.status, 'ACTIVE'),
+      eq(schema.learningPath.isPublished, true)
+    ];
+
+    const search = options?.search?.trim();
+    if (search) {
+      const pattern = `%${search}%`;
+      whereConditions.push(
+        or(ilike(schema.learningPath.name, pattern), ilike(schema.learningPath.description, pattern))!
+      );
+    }
+
+    const page = options?.page && options.page > 0 ? Math.floor(options.page) : 1;
+    const limit = options?.limit && options.limit > 0 ? Math.floor(options.limit) : undefined;
+
+    const [totalRows, rows] = await Promise.all([
+      dbClient
+        .select({ total: count() })
+        .from(schema.learningPath)
+        .where(and(...whereConditions)),
+      (async () => {
+        const baseQuery = dbClient
+          .select({
+            id: schema.learningPath.id,
+            publicId: schema.learningPath.publicId,
+            slug: schema.learningPath.slug,
+            name: schema.learningPath.name,
+            description: schema.learningPath.description,
+            coverImage: schema.learningPath.coverImage,
+            cost: schema.learningPath.cost,
+            currency: schema.learningPath.currency,
+            landingPage: schema.learningPath.landingPage,
+            courseCount: courseCountSql
+          })
+          .from(schema.learningPath)
+          .where(and(...whereConditions))
+          .orderBy(desc(schema.learningPath.createdAt));
+
+        if (limit !== undefined) {
+          return baseQuery.limit(limit).offset((page - 1) * limit);
+        }
+
+        return baseQuery;
+      })()
+    ]);
+
+    const total = Number(totalRows[0]?.total ?? 0);
+    const data = rows.map((row) => ({ ...row, courseCount: Number(row.courseCount || 0) }));
+    const effectiveLimit = limit ?? total;
+
+    return {
+      data,
+      pagination: {
+        page,
+        limit: effectiveLimit,
+        total,
+        totalPages: effectiveLimit > 0 ? Math.ceil(total / effectiveLimit) : 0
+      }
+    };
+  } catch (error) {
+    console.error('listPublicLearningPaths error:', error);
+    throw new Error(
+      `Failed to list public learning paths for org "${organizationId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -339,7 +516,14 @@ export async function getOrgLearningPathsByIds(
   orgId: string,
   pathIds: string[],
   dbClient: DbOrTxClient = db
-): Promise<Array<Pick<TLearningPath, 'id' | 'name' | 'autoEnroll' | 'sequentialUnlock' | 'welcomeEmailMessage'>>> {
+): Promise<
+  Array<
+    Pick<
+      TLearningPath,
+      'id' | 'name' | 'autoEnroll' | 'sequentialUnlock' | 'welcomeEmailMessage' | 'organizationId' | 'publicId'
+    >
+  >
+> {
   if (pathIds.length === 0) {
     return [];
   }
@@ -351,7 +535,9 @@ export async function getOrgLearningPathsByIds(
         name: schema.learningPath.name,
         autoEnroll: schema.learningPath.autoEnroll,
         sequentialUnlock: schema.learningPath.sequentialUnlock,
-        welcomeEmailMessage: schema.learningPath.welcomeEmailMessage
+        welcomeEmailMessage: schema.learningPath.welcomeEmailMessage,
+        organizationId: schema.learningPath.organizationId,
+        publicId: schema.learningPath.publicId
       })
       .from(schema.learningPath)
       .where(
@@ -368,6 +554,92 @@ export async function getOrgLearningPathsByIds(
     throw new Error(
       `Failed to get learning paths by organization: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+export interface TSearchLearningPath {
+  id: string;
+  publicId: string;
+  name: string;
+  description: string | null;
+  status: string;
+  updatedAt: string | null;
+}
+
+/**
+ * Searches an organization's learning paths by name or description.
+ * Powers the team command palette; includes unpublished paths since the
+ * callers are team members managing the catalog.
+ */
+export async function searchOrgLearningPaths(
+  orgId: string,
+  search: string,
+  limit: number
+): Promise<TSearchLearningPath[]> {
+  try {
+    const searchValue = `%${search.trim()}%`;
+
+    return await db
+      .select({
+        id: schema.learningPath.id,
+        publicId: schema.learningPath.publicId,
+        name: schema.learningPath.name,
+        description: schema.learningPath.description,
+        status: schema.learningPath.status,
+        updatedAt: schema.learningPath.updatedAt
+      })
+      .from(schema.learningPath)
+      .where(
+        and(
+          eq(schema.learningPath.organizationId, orgId),
+          or(ilike(schema.learningPath.name, searchValue), ilike(schema.learningPath.description, searchValue))
+        )
+      )
+      .orderBy(desc(schema.learningPath.updatedAt))
+      .limit(limit);
+  } catch (error) {
+    console.error('searchOrgLearningPaths error:', error);
+    throw new Error(`Failed to search org learning paths: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Searches the learning paths a learner is enrolled in.
+ * Powers the LMS palette; never surfaces paths the learner has not joined.
+ */
+export async function searchLmsLearningPaths(
+  orgId: string,
+  profileId: string,
+  search: string,
+  limit: number
+): Promise<TSearchLearningPath[]> {
+  try {
+    const searchValue = `%${search.trim()}%`;
+
+    return await db
+      .select({
+        id: schema.learningPath.id,
+        publicId: schema.learningPath.publicId,
+        name: schema.learningPath.name,
+        description: schema.learningPath.description,
+        status: schema.learningPath.status,
+        updatedAt: schema.learningPath.updatedAt
+      })
+      .from(schema.learningPathMember)
+      .innerJoin(schema.learningPath, eq(schema.learningPathMember.learningPathId, schema.learningPath.id))
+      .where(
+        and(
+          eq(schema.learningPathMember.profileId, profileId),
+          isNull(schema.learningPathMember.removedAt),
+          eq(schema.learningPath.organizationId, orgId),
+          or(ilike(schema.learningPath.name, searchValue), ilike(schema.learningPath.description, searchValue))
+        )
+      )
+      .orderBy(desc(schema.learningPath.updatedAt))
+      .limit(limit);
+  } catch (error) {
+    console.error('searchLmsLearningPaths error:', error);
+    throw new Error(`Failed to search LMS learning paths: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -390,63 +662,6 @@ export async function getLearningPathOrgId(
     console.error('getLearningPathOrgId error:', error);
     throw new Error(
       `Failed to get organization ID for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
- * Returns ordered list of active course UUIDs in a learning path (with transaction support).
- */
-export async function getCourseIdsByLearningPathId(
-  learningPathId: string,
-  dbClient: DbOrTxClient = db
-): Promise<string[]> {
-  try {
-    const rows = await dbClient
-      .select({ courseId: schema.learningPathCourse.courseId })
-      .from(schema.learningPathCourse)
-      .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-      )
-      .orderBy(asc(schema.learningPathCourse.order));
-
-    return rows.map((r) => r.courseId);
-  } catch (error) {
-    console.error('getCourseIdsByLearningPathId error:', error);
-    throw new Error(
-      `Failed to get course ids in learning path: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
- * Inserts a learning path member if not already present. Returns the created member or null if already exists.
- */
-export async function insertLearningPathMemberIfAbsent(
-  data: { learningPathId: string; roleId: number; profileId: string; email: string },
-  dbClient: DbOrTxClient = db
-): Promise<TLearningPathMember | null> {
-  try {
-    const [member] = await dbClient
-      .insert(schema.learningPathMember)
-      .values({
-        learningPathId: data.learningPathId,
-        profileId: data.profileId,
-        email: data.email,
-        roleId: data.roleId,
-        status: 'NOT_STARTED',
-        enrolledAt: new Date().toISOString()
-      })
-      .onConflictDoNothing({
-        target: [schema.learningPathMember.learningPathId, schema.learningPathMember.profileId]
-      })
-      .returning();
-
-    return member ?? null;
-  } catch (error) {
-    console.error('insertLearningPathMemberIfAbsent error:', error);
-    throw new Error(
-      `Failed to insert learning path member: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

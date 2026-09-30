@@ -17,6 +17,7 @@ import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothin
 import type { TLearningPathCourse } from '@cio/db/types';
 
 import { resolveLearningPath, assertCanManageLearningPath } from './learning-path';
+import { scheduleLearningPathProgressSync } from './progress-sync-jobs';
 
 /**
  * Adds one or more courses to a learning path and auto-enrolls existing path members.
@@ -37,7 +38,7 @@ export async function addCoursesToPathService(
       throw new AppError('At least one courseId must be provided', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    return await db.transaction(async (tx) => {
+    const addedCourses = await db.transaction(async (tx) => {
       const addedCourses: TLearningPathCourse[] = [];
       const members = await listActivePathMemberIds(path.id, tx);
       const activeMemberIds = members.map((member) => member.id);
@@ -92,6 +93,13 @@ export async function addCoursesToPathService(
 
       return addedCourses;
     });
+
+    // Members may already have done the new courses, and a finished path is now unfinished.
+    if (addedCourses.length > 0) {
+      scheduleLearningPathProgressSync({ pathId: path.id });
+    }
+
+    return addedCourses;
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -121,6 +129,9 @@ export async function removeCourseFromPathService(
       throw new AppError('Course not found in learning path', ErrorCodes.LEARNING_PATH_COURSE_NOT_FOUND, 404);
     }
 
+    // Removing the last unfinished course can complete the path for its members.
+    scheduleLearningPathProgressSync({ pathId: path.id });
+
     return removed;
   } catch (error) {
     if (error instanceof AppError) throw error;
@@ -143,7 +154,7 @@ export async function reorderPathCoursesService(
   orgRoles?: Record<string, number>
 ): Promise<{ reordered: true }> {
   try {
-    await db.transaction(async (tx) => {
+    const reorderedPathId = await db.transaction(async (tx) => {
       const path = await resolveLearningPath(pathId, tx);
       await assertCanManageLearningPath(path, userId, orgRoles, tx);
 
@@ -163,7 +174,12 @@ export async function reorderPathCoursesService(
 
       const nowIso = new Date().toISOString();
       await updateLearningPath(path.id, { courseOrderSetAt: nowIso }, tx);
+
+      return path.id;
     });
+
+    // With sequential unlock, the new order changes which courses are locked.
+    scheduleLearningPathProgressSync({ pathId: reorderedPathId });
 
     return { reordered: true };
   } catch (error) {

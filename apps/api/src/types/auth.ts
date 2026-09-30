@@ -1,5 +1,5 @@
 import { auth } from '@cio/db/auth';
-import type { TOrganizationApiKey } from '@db/types';
+import type { TLearningPath, TLearningPathMember, TOrganizationApiKey } from '@db/types';
 
 export type AuthSession = {
   Variables: {
@@ -10,5 +10,7 @@ export type AuthSession = {
     session: typeof auth.$Infer.Session.session | null;
     user: typeof auth.$Infer.Session.user | null;
     userRole: number | null;
+    learningPath: TLearningPath | null;
+    learningPathMember: TLearningPathMember | null;
   };
 };

@@ -12,19 +12,21 @@ import { assertCourseNotLockedForStudent } from '@api/services/learning-path';
  */
 export const courseMemberMiddleware = async (c: Context, next: Next) => {
   try {
-    const user = c.get('user');
+    const user = c.get('user') as { id: string } | undefined;
+
     if (!user) {
       return c.json(
         {
           success: false,
           error: 'Unauthorized',
-          code: 'UNAUTHORIZED'
+          code: ErrorCodes.UNAUTHORIZED
         },
         401
       );
     }
 
     const courseId = c.req.param('courseId') || c.req.query('courseId');
+
     if (!courseId) {
       return c.json(
         {
@@ -36,17 +38,21 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const { isMember, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, user.id);
-    if (isMember) {
+    const { hasLiveGrant, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, user.id);
+
+    if (hasLiveGrant || isTeamMemberOrAdmin) {
       if (!isTeamMemberOrAdmin) {
         await assertCourseNotLockedForStudent(courseId, user.id);
       }
+
       return next();
     }
 
     const backfilledFromProgram = await ensureProgramCourseAccess(courseId, user.id);
+
     if (backfilledFromProgram) {
       await assertCourseNotLockedForStudent(courseId, user.id);
+
       return next();
     }
 

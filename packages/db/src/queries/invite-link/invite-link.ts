@@ -144,6 +144,8 @@ export type TInviteLinkWithContext = {
     slug: string | null;
     status: string;
     isPublished: boolean;
+    /** Path-only courses take no link joins; learners join through the path. */
+    requiresLearningPath: boolean;
     welcomeEmailMessage: string | null;
   } | null;
   cohort: { id: string; name: string; description: string | null; coverImage: string | null; status: string } | null;
@@ -153,6 +155,7 @@ export type TInviteLinkWithContext = {
     description: string | null;
     coverImage: string | null;
     slug: string | null;
+    publicId: string | null;
     status: string;
     isPublished: boolean;
     welcomeEmailMessage: string | null;
@@ -183,6 +186,7 @@ export async function getInviteLinkByTokenHash(
         courseSlug: schema.course.slug,
         courseStatus: schema.course.status,
         courseIsPublished: schema.course.isPublished,
+        courseRequiresLearningPath: schema.course.requiresLearningPath,
         courseMetadata: schema.course.metadata,
         cohortId: schema.cohort.id,
         cohortName: schema.cohort.name,
@@ -194,6 +198,7 @@ export async function getInviteLinkByTokenHash(
         learningPathDescription: schema.learningPath.description,
         learningPathCoverImage: schema.learningPath.coverImage,
         learningPathSlug: schema.learningPath.slug,
+        learningPathPublicId: schema.learningPath.publicId,
         learningPathStatus: schema.learningPath.status,
         learningPathIsPublished: schema.learningPath.isPublished,
         learningPathWelcomeEmailMessage: schema.learningPath.welcomeEmailMessage
@@ -219,6 +224,7 @@ export async function getInviteLinkByTokenHash(
             slug: row.courseSlug ?? null,
             status: row.courseStatus ?? '',
             isPublished: !!row.courseIsPublished,
+            requiresLearningPath: !!row.courseRequiresLearningPath,
             welcomeEmailMessage:
               (row.courseMetadata as { welcomeEmailMessage?: string | null } | null)?.welcomeEmailMessage ?? null
           }
@@ -239,6 +245,7 @@ export async function getInviteLinkByTokenHash(
             description: row.learningPathDescription ?? null,
             coverImage: row.learningPathCoverImage ?? null,
             slug: row.learningPathSlug ?? null,
+            publicId: row.learningPathPublicId ?? null,
             status: row.learningPathStatus ?? '',
             isPublished: !!row.learningPathIsPublished,
             welcomeEmailMessage: row.learningPathWelcomeEmailMessage ?? null

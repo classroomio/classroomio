@@ -44,3 +44,22 @@ export const ZResetCourseMemberProgressParam = z.object({
   memberId: z.string().uuid()
 });
 export type TResetCourseMemberProgressParam = z.infer<typeof ZResetCourseMemberProgressParam>;
+
+/**
+ * How a member reached the course, read from their latest non-revoked grant.
+ * `direct` is everything that did not come through a learning path or cohort,
+ * including members with no grant row (pre-ledger enrollments).
+ */
+export const CoursePeopleSource = z.enum(['direct', 'learning_path', 'cohort']);
+export type TCoursePeopleSource = z.infer<typeof CoursePeopleSource>;
+
+/**
+ * Query for the dashboard's course People roster: the shared members query plus
+ * the source filter. Extending rather than editing `ZCourseMembersQuery` keeps the
+ * v1 public members route on the shared shape, and picks up any fields added to
+ * the shared query automatically.
+ */
+export const ZCourseMembersListQuery = ZCourseMembersQuery.extend({
+  source: CoursePeopleSource.optional()
+});
+export type TCourseMembersListQuery = z.infer<typeof ZCourseMembersListQuery>;

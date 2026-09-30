@@ -275,7 +275,6 @@ export type TNewLearningPathCertificateIssue = typeof schema.learningPathCertifi
 export type TCourseEnrollmentGrant = typeof schema.courseEnrollmentGrant.$inferSelect;
 export type TNewCourseEnrollmentGrant = typeof schema.courseEnrollmentGrant.$inferInsert;
 
-export type TLearningPathDifficulty = (typeof schema.learningPathDifficulty.enumValues)[number];
 export type TLearningPathMemberStatus = (typeof schema.learningPathMemberStatus.enumValues)[number];
 export type TLearningPathCourseStatus = (typeof schema.learningPathCourseStatus.enumValues)[number];
 export type TCourseEnrollmentSource = (typeof schema.courseEnrollmentSource.enumValues)[number];

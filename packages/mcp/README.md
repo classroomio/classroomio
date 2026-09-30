@@ -58,6 +58,13 @@ Current tools:
 - `tag_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
+- `list_learning_paths`
+- `get_learning_path_detail`
+- `create_learning_path`
+- `add_courses_to_learning_path`
+- `update_learning_path_landing_page`
+- `reorder_path_courses`
+- `remove_course_from_learning_path`
 
 ## Auth Model
 
@@ -382,6 +389,42 @@ What it does not do today:
 - automatically delete lesson locales that are absent from the draft
 
 That behavior is intentional. The current update path is non-destructive by default.
+
+### Flow 8: Create a learning path from existing courses
+
+User says:
+
+```text
+Bundle my Python courses into a "Python Pro" learning path.
+```
+
+Expected tool sequence:
+
+1. Agent calls `list_org_courses` to resolve the course IDs by name.
+2. Agent calls `create_learning_path`.
+3. Agent calls `add_courses_to_learning_path` with the ordered course IDs.
+4. Agent calls `get_learning_path_detail` to confirm the curriculum and order.
+
+Result:
+
+- a learning path is created (there's no draft state like courses)
+- courses are linked in order
+
+### Flow 9: Add courses to a live learning path
+
+User says:
+
+```text
+Add the new Advanced Python course to the Python Pro path and rewrite its landing page.
+```
+
+Expected tool sequence:
+
+1. Agent calls `list_learning_paths` if it needs to resolve the path ID by name.
+2. Agent calls `get_learning_path_detail` to see the current order.
+3. Agent calls `add_courses_to_learning_path` (appends; members auto-enroll).
+4. Agent calls `reorder_path_courses` if the new course belongs earlier in the sequence.
+5. Agent calls `update_learning_path_landing_page` for the public copy.
 
 ## How Existing-Course Updates Work
 
