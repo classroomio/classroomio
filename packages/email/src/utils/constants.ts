@@ -20,6 +20,8 @@ export const EMAIL_IDS = [
   'studentOrgInvite',
   'studentCohortWelcome',
   'studentLearningPathWelcome',
+  'studentLearningPathCompletion',
+  'studentLearningPathInvite',
   'studentProvePayment',
   'teacherCourseWelcome',
   'teacherStudentBuyRequest',

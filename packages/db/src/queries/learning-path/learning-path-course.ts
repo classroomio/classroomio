@@ -248,35 +248,6 @@ export async function addCourseToPath(
 }
 
 /**
- * Adds multiple courses to a learning path sequentially.
- */
-export async function addCoursesToPath(
-  learningPathId: string,
-  courseIds: string[],
-  dbClient: DbOrTxClient = db
-): Promise<TLearningPathCourse[]> {
-  const runAll = async (tx: DbOrTxClient): Promise<TLearningPathCourse[]> => {
-    const addedCourses: TLearningPathCourse[] = [];
-
-    for (const courseId of courseIds) {
-      const row = await addCourseToPath(learningPathId, courseId, tx);
-      addedCourses.push(row);
-    }
-
-    return addedCourses;
-  };
-
-  try {
-    return await (dbClient === db ? db.transaction(runAll) : runAll(dbClient));
-  } catch (error) {
-    console.error('addCoursesToPath error:', error);
-    throw new Error(
-      `Failed to add courses to learning path: ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
  * Soft-removes a course from a learning path and recompacts subsequent orders.
  * Preserves member progress cache, enrollments, and the course entity so
  * re-adding the course restores prior progress.

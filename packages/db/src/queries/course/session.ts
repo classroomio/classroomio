@@ -108,6 +108,11 @@ export type CourseUpcomingSession = {
   sessionTimezone: string | null;
 };
 
+/** A lesson that is an upcoming live session: it has a call link and starts after `now`. */
+export function isUpcomingSessionLessonSql(now: string) {
+  return and(isNotNull(schema.lesson.callUrl), isNotNull(schema.lesson.lessonAt), gt(schema.lesson.lessonAt, now));
+}
+
 /**
  * The next upcoming live session (earliest future lesson with a `callUrl`) for
  * each of the given course ids. Used to show a "Join session" button on /lms.
@@ -131,14 +136,7 @@ export async function getUpcomingSessionsForCourseIds(
       })
       .from(schema.lesson)
       .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
-      .where(
-        and(
-          inArray(schema.lesson.courseId, courseIds),
-          isNotNull(schema.lesson.callUrl),
-          isNotNull(schema.lesson.lessonAt),
-          gt(schema.lesson.lessonAt, now)
-        )
-      )
+      .where(and(inArray(schema.lesson.courseId, courseIds), isUpcomingSessionLessonSql(now)))
       .orderBy(schema.lesson.lessonAt);
 
     const byCourse = new Map<string, CourseUpcomingSession>();

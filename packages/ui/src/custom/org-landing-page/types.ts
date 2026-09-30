@@ -408,13 +408,7 @@ export interface OrgLandingPageProps {
   /** When false, templates suppress the empty catalog state while courses are still loading. */
   coursesLoaded?: boolean;
   disableCourseLinks?: boolean;
-  /**
-   * Optional — no `learning_path` API exists yet, so this is undefined on the real,
-   * live org home page today. Templates only render the Learning Paths section when
-   * this is provided and non-empty; they never show a permanent empty state for it,
-   * unlike Courses. Pass mock/real data once available to opt an org site in.
-   */
-  learningPaths?: LearningPathItem[];
+  learningPaths: LearningPathItem[];
   hasMoreLearningPaths?: boolean;
   embed?: LandingPageEmbed;
   callout?: LandingPageCallout;

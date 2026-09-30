@@ -1,5 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import { and, count, eq } from 'drizzle-orm';
+import { and, count, desc, eq, isNull, sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getPostgresError } from '@cio/utils/errors';
@@ -239,6 +239,63 @@ export async function countIssuedCertificates(learningPathId: string, dbClient: 
     console.error('countIssuedCertificates error:', error);
     throw new Error(
       `Failed to count issued certificates for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export interface TLearnerPathCertificate {
+  certificateId: string;
+  issuedAt: string;
+  learningPathId: string;
+  publicId: string;
+  name: string;
+  coverImage: string | null;
+}
+
+/**
+ * A learner's path certificates in one organization, newest first, limited to
+ * the ones they can download: a valid issue, an active completed membership,
+ * and a path whose certificate is downloadable. The plan check stays in the
+ * service because it is org-wide.
+ */
+export async function listLearnerPathCertificates(
+  organizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TLearnerPathCertificate[]> {
+  try {
+    return await dbClient
+      .select({
+        certificateId: schema.learningPathCertificateIssue.certificateId,
+        issuedAt: schema.learningPathCertificateIssue.issuedAt,
+        learningPathId: schema.learningPath.id,
+        publicId: schema.learningPath.publicId,
+        name: schema.learningPath.name,
+        coverImage: schema.learningPath.coverImage
+      })
+      .from(schema.learningPathCertificateIssue)
+      .innerJoin(schema.learningPath, eq(schema.learningPath.id, schema.learningPathCertificateIssue.learningPathId))
+      .innerJoin(
+        schema.learningPathMember,
+        eq(schema.learningPathMember.id, schema.learningPathCertificateIssue.learningPathMemberId)
+      )
+      .where(
+        and(
+          eq(schema.learningPathCertificateIssue.profileId, profileId),
+          eq(schema.learningPathCertificateIssue.status, 'valid'),
+          isNull(schema.learningPathCertificateIssue.revokedAt),
+          eq(schema.learningPath.organizationId, organizationId),
+          eq(schema.learningPath.status, 'ACTIVE'),
+          sql`${schema.learningPath.certificate}->>'isDownloadable' = 'true'`,
+          isNull(schema.learningPathMember.removedAt),
+          eq(schema.learningPathMember.status, 'COMPLETED')
+        )
+      )
+      .orderBy(desc(schema.learningPathCertificateIssue.issuedAt));
+  } catch (error) {
+    console.error('listLearnerPathCertificates error:', error);
+    throw new Error(
+      `Failed to list path certificates for profile "${profileId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

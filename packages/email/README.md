@@ -54,17 +54,17 @@ Import helpers from `@cio/core/config/dashboard-url`:
 
 | Recipient | Helper | Use for |
 | --- | --- | --- |
-| Teacher, tutor, admin | `getAppBaseUrl()` | Course management, grading, team invites, auto-enroll |
-| Student, learner | `getDashboardBaseUrl(org)` | Course enroll, audience invites, login |
+| Teacher, tutor, admin | `buildTeamInviteLink(token)` | Course management, grading, team invites, auto-enroll |
+| Student, learner | `buildOrgInviteLink(token, org)` | Course enroll, audience invites, login |
 
 ```typescript
-import { getAppBaseUrl, getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { buildOrgInviteLink, getAppBaseUrl } from '@cio/core/config/dashboard-url';
 
 // Staff dashboard action (admin app — not org custom domain)
 const autoEnrollUrl = `${getAppBaseUrl()}/courses/${courseId}/people?grantAccess=${encodeURIComponent(email)}`;
 
 // Learner-facing invite (org public site)
-const inviteUrl = `${getDashboardBaseUrl(org)}/invite/${encodeURIComponent(token)}`;
+const inviteUrl = buildOrgInviteLink(token, org);
 ```
 
 See also `AGENTS.md` § Email link URLs.

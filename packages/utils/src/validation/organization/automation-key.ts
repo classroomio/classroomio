@@ -13,6 +13,8 @@ export const ZOrganizationApiKeyScope = z.enum([
   'course:tag:write',
   'course:exercise:read',
   'course:exercise:write',
+  'learning_path:read',
+  'learning_path:write',
   'public_api:*'
 ]);
 export type TOrganizationApiKeyScope = z.infer<typeof ZOrganizationApiKeyScope>;

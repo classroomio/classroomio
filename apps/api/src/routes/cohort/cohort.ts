@@ -215,9 +215,10 @@ export const cohortRouter = new Hono()
     zValidator('json', ZAddCohortMembers),
     async (c) => {
       try {
+        const user = c.get('user')!;
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await addCohortMembers(cohortId, data);
+        const result = await addCohortMembers(cohortId, data, user.id);
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to add cohort members');

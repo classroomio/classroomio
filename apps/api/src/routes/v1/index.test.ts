@@ -59,6 +59,14 @@ vi.mock('@api/routes/v1/courses', () => ({
   v1CoursesRouter: new Hono().get('/', (c) => c.json({ success: true }))
 }));
 
+vi.mock('@api/routes/v1/enrolled', () => ({
+  v1EnrolledRouter: new Hono().get('/', (c) => c.json({ success: true }))
+}));
+
+vi.mock('@api/routes/v1/learning-paths', () => ({
+  v1LearningPathsRouter: new Hono().get('/', (c) => c.json({ success: true }))
+}));
+
 import { v1Router } from './index';
 
 const CLIENT_IP = '203.0.113.10';

@@ -1,4 +1,5 @@
 export * from './audience';
+export * from './learning-path';
 export * from './media';
 export * from './youtube-captions';
 export * from './emails';
