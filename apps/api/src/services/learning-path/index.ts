@@ -5,3 +5,5 @@ export * from './unlock';
 export * from './enrollment';
 export * from './member-management';
 export * from './email';
+export * from './progress-sync-jobs';
+export * from './journey';

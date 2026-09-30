@@ -20,6 +20,14 @@ import type {
   TExerciseUpdate
 } from '@cio/utils/validation/exercise';
 
+import type {
+  TAddLearningPathCourse,
+  TCreateLearningPathInput,
+  TLandingPage,
+  TLearningPathCourseParam,
+  TLearningPathIdParam,
+  TReorderLearningPathCourses
+} from '@cio/utils/validation/learning-path';
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 
@@ -179,10 +187,59 @@ export class ClassroomIoApiClient {
     });
   }
 
+  async listLearningPaths() {
+    return this.request('/learning-path', {
+      method: 'GET'
+    });
+  }
+
+  async getLearningPathDetail(pathId: TLearningPathIdParam['pathId']) {
+    return this.request(`/learning-path/${pathId}`, {
+      method: 'GET'
+    });
+  }
+
+  async createLearningPath(payload: TCreateLearningPathInput) {
+    return this.request('/learning-path', {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async addCoursesToLearningPath(pathId: TLearningPathIdParam['pathId'], payload: TAddLearningPathCourse) {
+    return this.request(`/learning-path/${pathId}/courses`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateLearningPathLandingPage(pathId: TLearningPathIdParam['pathId'], payload: { landingPage: TLandingPage }) {
+    return this.request(`/learning-path/${pathId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async reorderLearningPathCourses(pathId: TLearningPathIdParam['pathId'], payload: TReorderLearningPathCourses) {
+    return this.request(`/learning-path/${pathId}/courses/order`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async removeCourseFromLearningPath(
+    pathId: TLearningPathCourseParam['pathId'],
+    courseId: TLearningPathCourseParam['courseId']
+  ) {
+    return this.request(`/learning-path/${pathId}/courses/${courseId}`, {
+      method: 'DELETE'
+    });
+  }
+
   private async request<TResponse>(
     path: string,
     options: {
-      method: 'GET' | 'POST' | 'PUT';
+      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
       body?: unknown;
     }
   ): Promise<TResponse> {

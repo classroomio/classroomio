@@ -7,9 +7,6 @@ import { isAllowedHref } from '../shared';
 import { ZLearningPathCertificateConfig } from './certificate';
 import { ZLandingPage } from './landing-page';
 
-export const LEARNING_PATH_DIFFICULTY = ['BEGINNER', 'INTERMEDIATE', 'ADVANCED'] as const;
-export type TLearningPathDifficultyValue = (typeof LEARNING_PATH_DIFFICULTY)[number];
-
 export const LEARNING_PATH_MEMBER_STATUS = ['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'] as const;
 export type TLearningPathMemberStatusValue = (typeof LEARNING_PATH_MEMBER_STATUS)[number];
 
@@ -19,7 +16,9 @@ export type TLearningPathCourseStatusValue = (typeof LEARNING_PATH_COURSE_STATUS
 export const ZCreateLearningPath = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255),
   description: z.string().trim().min(1, 'Description is required').max(5000),
-  organizationId: z.string().min(1)
+  // Optional for org-scoped automation keys, which resolve the organization
+  // server-side from the key. Dashboard callers always send it explicitly.
+  organizationId: z.string().min(1).optional()
 });
 export type TCreateLearningPath = z.infer<typeof ZCreateLearningPath>;
 export type TCreateLearningPathInput = Omit<TCreateLearningPath, 'organizationId'>;
@@ -38,8 +37,6 @@ export const ZUpdateLearningPath = z.object({
     .optional(),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   isPublished: z.boolean().optional(),
-  difficulty: z.enum(LEARNING_PATH_DIFFICULTY).nullable().optional(),
-  estimatedDurationMinutes: z.number().int().min(0).nullable().optional(),
   cost: z.number().int().min(0).optional(),
   currency: z.enum(['NGN', 'USD']).optional(),
   sequentialUnlock: z.boolean().optional(),
@@ -66,11 +63,7 @@ export const ZReorderLearningPathCourses = z.object({
 });
 export type TReorderLearningPathCourses = z.infer<typeof ZReorderLearningPathCourses>;
 
-export const ZEnrollInLearningPath = z
-  .object({
-    paymentReference: z.string().optional()
-  })
-  .optional();
+export const ZEnrollInLearningPath = z.object({}).optional();
 export type TEnrollInLearningPath = z.infer<typeof ZEnrollInLearningPath>;
 
 export const ZPathMembersQuery = z.object({
@@ -81,6 +74,22 @@ export const ZPathMembersQuery = z.object({
   search: z.string().optional()
 });
 export type TPathMembersQuery = z.infer<typeof ZPathMembersQuery>;
+
+/**
+ * Member adds above this size run on the queue instead of in the request.
+ * Mirrors `AUDIENCE_BULK_SYNC_MAX` for audience lifecycle actions.
+ */
+export const LEARNING_PATH_BULK_SYNC_MAX = 50;
+
+export const ZGetLearningPathsQuery = z.object({
+  // Optional for org-scoped automation keys, which resolve the organization
+  // server-side from the key. Dashboard callers always send it explicitly.
+  organizationId: z.string().uuid().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().optional()
+});
+export type TGetLearningPathsQuery = z.infer<typeof ZGetLearningPathsQuery>;
 
 export const ZAddLearningPathMembers = z.object({
   members: z
@@ -96,14 +105,25 @@ export const ZAddLearningPathMembers = z.object({
     .min(1)
     .refine((members) => members.every((member) => Boolean(member.profileId) || Boolean(member.email)), {
       message: 'Each member must provide a profileId or email'
-    })
+    }),
+  sendEmail: z.boolean().optional().default(true)
 });
 export type TAddLearningPathMembers = z.infer<typeof ZAddLearningPathMembers>;
+/** Payload as received (pre-default); the service treats a missing flag as send. */
+export type TAddLearningPathMembersInput = z.input<typeof ZAddLearningPathMembers>;
 
 export const ZPublicLearningPathQuery = z.object({
   organizationId: z.string().uuid()
 });
 export type TPublicLearningPathQuery = z.infer<typeof ZPublicLearningPathQuery>;
+
+export const ZPublicLearningPathsQuery = z.object({
+  organizationId: z.string().uuid(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().optional()
+});
+export type TPublicLearningPathsQuery = z.infer<typeof ZPublicLearningPathsQuery>;
 
 export const ZVerifyLearningPathCertificateParam = z.object({
   certificateId: z.string().min(1)
@@ -126,6 +146,13 @@ export const ZLearningPathMemberParam = z.object({
   memberId: z.string().min(1)
 });
 export type TLearningPathMemberParam = z.infer<typeof ZLearningPathMemberParam>;
+
+export const ZUpdateLearningPathMemberRole = z.object({
+  roleId: z.union([z.literal(ROLE.STUDENT), z.literal(ROLE.TUTOR)], {
+    error: 'roleId must be STUDENT or TUTOR'
+  })
+});
+export type TUpdateLearningPathMemberRole = z.infer<typeof ZUpdateLearningPathMemberRole>;
 
 export const ZLearningPathCertificateDownloadRequest = z.object({
   studentName: z.string().max(255).optional(),

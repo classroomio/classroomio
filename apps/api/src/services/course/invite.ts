@@ -37,6 +37,8 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/queries/auth';
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
+import { recordDirectCourseGrant } from './enrollment-grants';
+import { assertCourseNotPathGated } from './path-gate';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
 import { getWelcomeSessionIcs } from './session-invite';
@@ -511,6 +513,10 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
+  // Acceptance already rejects path-gated courses; refuse the invite up front
+  // so no learner receives a link that can never work.
+  assertCourseNotPathGated(course[0]);
+
   const courseOrgData = await getCourseWithOrgData(courseId);
   if (!courseOrgData) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
@@ -661,9 +667,7 @@ export async function enrollInCourse(
     throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  if (courseWithRelations.requiresLearningPath) {
-    throw new AppError('This course can only be accessed through a learning path', ErrorCodes.VALIDATION_ERROR, 400);
-  }
+  assertCourseNotPathGated(courseWithRelations);
 
   const courseMetadata =
     (courseWithRelations.metadata as {
@@ -713,12 +717,19 @@ export async function enrollInCourse(
     });
   }
 
-  await addGroupMember({
+  const [createdMember] = await addGroupMember({
     groupId,
     roleId: ROLE.STUDENT,
     profileId: user.id,
     email: normalizedEmail
   });
+
+  if (createdMember) {
+    await recordDirectCourseGrant(
+      { groupmemberId: createdMember.id, courseId, profileId: user.id },
+      { source: 'SELF_ENROLL' }
+    );
+  }
 
   await invalidateOrgStats(org.id);
 
@@ -962,9 +973,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
 
     const { invite, course, organization } = inviteRow;
 
-    if (course.requiresLearningPath) {
-      throw new AppError('This course can only be accessed through a learning path', ErrorCodes.VALIDATION_ERROR, 400);
-    }
+    assertCourseNotPathGated(course);
 
     const sinceIso = new Date(Date.now() - ANOMALY_WINDOW_MINUTES * 60 * 1000).toISOString();
     const ipDiversity = await countInviteDistinctPreviewIps(invite.id, sinceIso);
@@ -1060,7 +1069,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       );
     }
 
-    await addGroupMember(
+    const [createdMember] = await addGroupMember(
       {
         groupId: course.groupId,
         roleId: ROLE.STUDENT,
@@ -1069,6 +1078,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       },
       tx
     );
+
+    if (createdMember) {
+      await recordDirectCourseGrant(
+        { groupmemberId: createdMember.id, courseId: course.id, profileId: user.id },
+        { source: 'INVITE', grantedByProfileId: invite.createdByProfileId ?? undefined },
+        tx
+      );
+    }
 
     await markUserAndProfileEmailVerified(user.id, tx);
 

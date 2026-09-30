@@ -2,7 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
-  enrollMember,
+  getCourseIdsInPath,
   getMemberById,
   getMemberByPathAndProfile,
   getPathAnalyticsStudents,
@@ -10,23 +10,56 @@ import {
   getPathCourseFunnelWithDropoff,
   getPathMemberDetail,
   getStuckItems,
-  grantCourseAccess,
-  initializeMemberCourseProgress,
-  listLearningPathCourses,
   listLearningPathMembers,
   removeMember,
-  revokeLearningPathGrants
+  revokeLearningPathGrants,
+  updateMemberRole
 } from '@cio/db/queries/learning-path';
-import { getCourseGroupIds } from '@cio/db/queries/course/course';
-import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
-import { getOrganizationById } from '@cio/db/queries/organization';
+import {
+  createOrganizationInviteAudits,
+  createOrganizationInvites,
+  createOrganizationMembers,
+  getOrganizationById,
+  getOrganizationMembersByNormalizedEmails,
+  revokeActiveOrganizationInvitesByEmails
+} from '@cio/db/queries/organization';
 import { getProfileById } from '@cio/db/queries/auth';
-import type { TAddLearningPathMembers, TPathMembersQuery } from '@cio/utils/validation/learning-path';
+import type { TAddLearningPathMembersInput, TPathMembersQuery } from '@cio/utils/validation/learning-path';
+import { LEARNING_PATH_BULK_SYNC_MAX } from '@cio/utils/validation/learning-path';
 import type { TListMembersResult } from '@cio/db/queries/learning-path';
+import type { TLearningPathMember } from '@cio/db/types';
+import { enqueuePathBulkEnroll } from '@cio/jobs';
+import { enrollProfileCore } from '@cio/core/services/learning-path/enroll-profile-core';
+import { EMAIL_FANOUT_CONCURRENCY, mapWithConcurrency } from '@cio/core/services/learning-path/fanout';
+import {
+  buildPathInviteLink,
+  getInviteExpiryLabel,
+  hashInviteToken,
+  normalizeInviteEmails,
+  ORG_INVITE_EXPIRY_MS
+} from '@cio/core/services/learning-path/path-invite-utils';
+import { resolveBulkMembers } from '@cio/core/services/learning-path/member-resolve';
 
 import { assertCanManageLearningPath, resolveLearningPath } from './learning-path';
-import { sendLearningPathWelcomeEmail } from './email';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
+import { sendLearningPathInviteEmail, sendLearningPathWelcomeEmail } from './email';
+import { scheduleLearningPathProgressSync } from './progress-sync-jobs';
 import { throwAsInternal } from '@api/utils/errors';
+import { assertStudentCapacityOrThrow } from '@api/services/organization/student-limit';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import crypto from 'node:crypto';
+
+function assertOnlyAdminsCanAssignTutors(
+  members: Array<{ roleId: number }>,
+  organizationId: string,
+  orgRoles?: Record<string, number>
+): void {
+  const hasTutorRole = members.some((member) => member.roleId === ROLE.TUTOR);
+
+  if (hasTutorRole && orgRoles?.[organizationId] !== ROLE.ADMIN) {
+    throw new AppError('Only organization admins can assign tutor roles', ErrorCodes.UNAUTHORIZED, 403);
+  }
+}
 
 /**
  * Lists active members in a learning path.
@@ -52,39 +85,18 @@ export async function listPathMembersService(
  * and auto-enrolls into the path's courses when autoEnroll is enabled.
  * Shared by manual adds, audience bulk imports and invite acceptance so every
  * front creates exactly the same rows.
+ *
+ * Also ensures org membership (with student quota) for STUDENT enrollments and
+ * skips creating a STUDENT org row when the profile already holds a team role
+ * (ADMIN/TUTOR) anywhere.
  */
 export async function enrollProfileInLearningPath(
-  path: { id: string; autoEnroll: boolean; sequentialUnlock: boolean },
+  path: { id: string; autoEnroll: boolean; sequentialUnlock: boolean; organizationId: string },
   input: { profileId: string; email?: string | null; roleId: number; grantedByProfileId?: string },
   dbClient: DbOrTxClient = db
 ) {
   const run = async (tx: DbOrTxClient) => {
-    const member = await enrollMember(
-      {
-        learningPathId: path.id,
-        profileId: input.profileId,
-        email: input.email ?? null,
-        roleId: input.roleId,
-        status: 'NOT_STARTED'
-      },
-      tx
-    );
-
-    const courses = await listLearningPathCourses(path.id, tx);
-
-    await initializeMemberCourseProgress(
-      member.id,
-      courses.map((course) => ({ id: course.id, order: course.order })),
-      path.sequentialUnlock,
-      tx
-    );
-
-    if (path.autoEnroll) {
-      const courseIds = courses.map((course) => course.courseId);
-      await ensureLearningPathCourseGrants(path.id, input.profileId, input.grantedByProfileId, tx, courseIds);
-    }
-
-    return member;
+    return enrollProfileCore(path, input, tx, assertStudentCapacityOrThrow);
   };
 
   try {
@@ -92,43 +104,229 @@ export async function enrollProfileInLearningPath(
       return await run(dbClient);
     }
 
-    return await db.transaction(run);
+    const member = await db.transaction(run);
+
+    void invalidateOrgStats(path.organizationId).catch(() => {});
+
+    return member;
   } catch (error) {
     throwAsInternal(error, 'Failed to enroll profile in learning path');
   }
 }
 
 /**
+ * Creates org invites targeting a learning path for emails without an account.
+ * The invite metadata carries `pathIds` so acceptance auto-enrolls via
+ * `enrollOrganizationInviteUser`. Returns the normalized emails that were invited.
+ */
+async function inviteEmailsWithoutProfilesToPath(
+  organizationId: string,
+  pathId: string,
+  pathName: string,
+  emails: string[],
+  invitedByProfileId: string,
+  options: { sendEmail?: boolean } = {}
+): Promise<string[]> {
+  if (emails.length === 0) {
+    return [];
+  }
+
+  const normalizedEmails = normalizeInviteEmails(emails);
+
+  if (normalizedEmails.length === 0) {
+    return [];
+  }
+
+  const organization = await getOrganizationById(organizationId);
+
+  if (!organization) {
+    throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
+  }
+
+  const existingMembers = await getOrganizationMembersByNormalizedEmails(organizationId, normalizedEmails);
+  const existingEmails = new Set(existingMembers.map((member) => member.normalizedEmail));
+  const newEmails = normalizedEmails.filter((email) => !existingEmails.has(email));
+
+  const emailsToInvite = normalizedEmails;
+
+  if (newEmails.length > 0) {
+    await assertStudentCapacityOrThrow(organizationId, newEmails.length);
+
+    await createOrganizationMembers(
+      newEmails.map((email) => ({
+        organizationId,
+        email,
+        roleId: ROLE.STUDENT,
+        verified: false
+      }))
+    );
+  }
+
+  await revokeActiveOrganizationInvitesByEmails(organizationId, emailsToInvite, invitedByProfileId);
+
+  const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
+  const tokenPairs = emailsToInvite.map((email) => ({
+    email,
+    token: crypto.randomBytes(32).toString('base64url')
+  }));
+
+  const inviteRows = tokenPairs.map(({ email, token }) => ({
+    organizationId,
+    roleId: ROLE.STUDENT,
+    email,
+    tokenHash: hashInviteToken(token),
+    createdByProfileId: invitedByProfileId,
+    expiresAt,
+    isRevoked: false,
+    metadata: {
+      source: 'LEARNING_PATH_MANUAL_ADD',
+      pathIds: [pathId]
+    }
+  }));
+
+  const createdInvites = await createOrganizationInvites(inviteRows);
+  const inviteByEmail = new Map(createdInvites.map((invite) => [(invite.email ?? '').toLowerCase(), invite]));
+  const rawTokenByEmail = new Map(tokenPairs.map((pair) => [pair.email, pair.token]));
+
+  await createOrganizationInviteAudits(
+    createdInvites.map((invite) => ({
+      inviteId: invite.id,
+      organizationId,
+      eventType: 'CREATED' as const,
+      actorProfileId: invitedByProfileId,
+      targetEmail: invite.email,
+      ipAddress: null,
+      userAgent: null,
+      metadata: {
+        roleId: ROLE.STUDENT,
+        roleName: 'Student',
+        expiresAt,
+        pathIds: [pathId]
+      }
+    }))
+  );
+
+  const sendEmail = options.sendEmail ?? true;
+
+  await mapWithConcurrency(emailsToInvite, EMAIL_FANOUT_CONCURRENCY, async (email) => {
+    const invite = inviteByEmail.get(email);
+    const token = rawTokenByEmail.get(email);
+
+    if (!invite || !token) {
+      return;
+    }
+
+    // Invites and CREATED audits above are membership plumbing and always
+    // written; only the send respects the toggle, mirroring course assigns.
+    if (!sendEmail) {
+      return;
+    }
+
+    try {
+      const inviteSent = await sendLearningPathInviteEmail({
+        organization,
+        learningPath: { id: pathId, name: pathName },
+        email,
+        inviteLink: buildPathInviteLink(token, organization),
+        expiresAt: getInviteExpiryLabel(expiresAt),
+        idempotencyKey: `learning-path-manual-invite:${invite.id}`
+      });
+
+      await createOrganizationInviteAudits([
+        {
+          inviteId: invite.id,
+          organizationId,
+          eventType: inviteSent ? ('EMAIL_SENT' as const) : ('EMAIL_FAILED' as const),
+          actorProfileId: invitedByProfileId,
+          targetEmail: email,
+          ipAddress: null,
+          userAgent: null,
+          metadata: inviteSent ? {} : { error: 'enqueue failed' }
+        }
+      ]);
+    } catch (error) {
+      console.error('inviteEmailsWithoutProfilesToPath email error', { pathId, email, error });
+    }
+  });
+
+  return emailsToInvite;
+}
+
+/**
  * Adds one or more members to a learning path, initializes progress cache,
  * and auto-enrolls them in the path's courses if autoEnroll is enabled.
+ *
+ * Entries with a `profileId` enroll immediately. Entries with only an `email`
+ * resolve to an existing profile when one exists; otherwise an organization
+ * invite targeting the path is issued so the learner joins on acceptance
+ * (learning_path_member.profile_id is NOT NULL, so no pending path rows).
+ *
+ * Adds above `LEARNING_PATH_BULK_SYNC_MAX` run on the queue instead: auth is
+ * verified here, then the worker applies the same batch mechanics in chunks.
  */
+export type TAddPathMembersResult = TLearningPathMember[] | { mode: 'queued'; jobId: string; requested: number };
+
 export async function addPathMembersService(
   pathId: string,
-  payload: TAddLearningPathMembers,
+  payload: TAddLearningPathMembersInput,
   userId: string,
   orgRoles?: Record<string, number>
-) {
+): Promise<TAddPathMembersResult> {
   const path = await resolveLearningPath(pathId);
   await assertCanManageLearningPath(path, userId, orgRoles);
+  assertOnlyAdminsCanAssignTutors(payload.members, path.organizationId, orgRoles);
 
-  const hasTutorRole = payload.members.some((member) => member.roleId === ROLE.TUTOR);
-  if (hasTutorRole && orgRoles?.[path.organizationId] !== ROLE.ADMIN) {
-    throw new AppError('Only organization admins can assign tutor roles', ErrorCodes.UNAUTHORIZED, 403);
+  if (payload.members.length > LEARNING_PATH_BULK_SYNC_MAX) {
+    const jobId = await enqueuePathBulkEnroll({
+      organizationId: path.organizationId,
+      actorProfileId: userId,
+      pathId: path.id,
+      members: payload.members.map((member) => ({
+        profileId: member.profileId,
+        email: member.email,
+        roleId: member.roleId
+      })),
+      chunkSize: LEARNING_PATH_BULK_SYNC_MAX,
+      sendEmail: payload.sendEmail ?? true
+    });
+
+    if (!jobId) {
+      throw new AppError('Could not queue this enrollment', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    return { mode: 'queued', jobId, requested: payload.members.length };
   }
+
+  const emailOnlyEntries = payload.members.filter((member) => !member.profileId);
+
+  for (const entry of emailOnlyEntries) {
+    if (!entry.email) {
+      throw new AppError('Each member must provide a profileId or email', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    if (entry.roleId === ROLE.TUTOR) {
+      throw new AppError(
+        'Tutors must have an account before they can be added to a learning path',
+        ErrorCodes.VALIDATION_ERROR,
+        400
+      );
+    }
+  }
+
+  const resolved = await resolveBulkMembers(payload.members);
+
+  if (resolved.failed.length > 0) {
+    throw new AppError('Each member must provide a profileId or email', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  const directEnrollments = resolved.direct;
+  const inviteEmails = resolved.inviteEmails;
 
   const { enrolledMembers, welcomeCandidates } = await db.transaction(async (tx) => {
     const enrolledMembers = [];
     const welcomeCandidates: Array<{ profileId: string; email: string | null }> = [];
 
-    for (const memberInput of payload.members) {
-      if (!memberInput.profileId) {
-        throw new AppError(
-          'Learning path members must have a profile. Invite new learners by email so they join the path when they accept the invite.',
-          ErrorCodes.VALIDATION_ERROR,
-          400
-        );
-      }
-
+    for (const memberInput of directEnrollments) {
       const existingMember = await getMemberByPathAndProfile(path.id, memberInput.profileId, tx);
       const isFreshJoin = !existingMember;
 
@@ -156,19 +354,47 @@ export async function addPathMembersService(
     return { enrolledMembers, welcomeCandidates };
   });
 
-  if (welcomeCandidates.length > 0) {
+  if (enrolledMembers.length > 0) {
+    void invalidateOrgStats(path.organizationId).catch(() => {});
+  }
+
+  // Compliance courses track enrollment records for due dates and renewals.
+  // The helper no-ops for non-compliance courses and existing records.
+  const addedStudentProfileIds = directEnrollments
+    .filter((memberInput) => memberInput.roleId === ROLE.STUDENT)
+    .map((memberInput) => memberInput.profileId);
+
+  if (addedStudentProfileIds.length > 0) {
+    const pathCourseIds = await getCourseIdsInPath(path.id);
+    await ensureComplianceEnrollmentRecordsForProfiles(pathCourseIds, addedStudentProfileIds);
+
+    // Prior work in these courses counts, so an effectively finished path completes now.
+    scheduleLearningPathProgressSync({ pathId: path.id, profileIds: addedStudentProfileIds });
+  }
+
+  if (inviteEmails.length > 0) {
+    await inviteEmailsWithoutProfilesToPath(path.organizationId, path.id, path.name, inviteEmails, userId, {
+      sendEmail: payload.sendEmail ?? true
+    });
+  }
+
+  if (payload.sendEmail !== false && welcomeCandidates.length > 0) {
     const organization = await getOrganizationById(path.organizationId);
 
     if (organization) {
-      for (const candidate of welcomeCandidates) {
-        let recipientEmail = candidate.email;
+      await mapWithConcurrency(welcomeCandidates, EMAIL_FANOUT_CONCURRENCY, async (candidate) => {
+        try {
+          let recipientEmail = candidate.email;
 
-        if (!recipientEmail) {
-          const profile = await getProfileById(candidate.profileId);
-          recipientEmail = profile?.email ?? null;
-        }
+          if (!recipientEmail) {
+            const profile = await getProfileById(candidate.profileId);
+            recipientEmail = profile?.email ?? null;
+          }
 
-        if (recipientEmail) {
+          if (!recipientEmail) {
+            return;
+          }
+
           await sendLearningPathWelcomeEmail({
             organization,
             learningPath: path,
@@ -176,12 +402,56 @@ export async function addPathMembersService(
             email: recipientEmail,
             idempotencyKey: `learning-path-members-welcome:${path.id}:${candidate.profileId}`
           });
+        } catch (error) {
+          console.error('addPathMembersService welcome email error', {
+            pathId: path.id,
+            profileId: candidate.profileId,
+            error
+          });
         }
-      }
+      });
     }
   }
 
   return enrolledMembers;
+}
+
+/**
+ * Changes a member's role between student and tutor. Only organization admins
+ * can assign the tutor role, mirroring member adds. Student-role changes
+ * refresh org stats since the enrolled-learner count moves.
+ */
+export async function updatePathMemberRoleService(
+  pathId: string,
+  memberId: string,
+  roleId: number,
+  userId: string,
+  orgRoles?: Record<string, number>
+) {
+  const path = await resolveLearningPath(pathId);
+  await assertCanManageLearningPath(path, userId, orgRoles);
+
+  if (roleId === ROLE.TUTOR && orgRoles?.[path.organizationId] !== ROLE.ADMIN) {
+    throw new AppError('Only organization admins can assign tutor roles', ErrorCodes.UNAUTHORIZED, 403);
+  }
+
+  const member = await getMemberById(memberId);
+
+  if (!member || member.learningPathId !== path.id) {
+    throw new AppError('Learning path member not found', ErrorCodes.LEARNING_PATH_MEMBER_NOT_FOUND, 404);
+  }
+
+  const updated = await updateMemberRole(memberId, roleId);
+
+  if (!updated) {
+    throw new AppError('Learning path member not found', ErrorCodes.LEARNING_PATH_MEMBER_NOT_FOUND, 404);
+  }
+
+  if (member.roleId === ROLE.STUDENT || roleId === ROLE.STUDENT) {
+    void invalidateOrgStats(path.organizationId).catch(() => {});
+  }
+
+  return updated;
 }
 
 /**
@@ -266,59 +536,5 @@ export async function getPathAnalyticsService(pathId: string, userId: string, or
     };
   } catch (error) {
     throwAsInternal(error, 'Failed to get learning path analytics');
-  }
-}
-
-/**
- * Ensures LEARNING_PATH course grants for a profile across the path's courses.
- * Enrolls the profile into each course's default student group.
- */
-export async function ensureLearningPathCourseGrants(
-  pathId: string,
-  profileId: string,
-  grantedByProfileId: string | undefined,
-  dbClient: DbOrTxClient,
-  courseIds: string[]
-): Promise<void> {
-  if (courseIds.length === 0) {
-    return;
-  }
-
-  const courseGroups = await getCourseGroupIds(courseIds, dbClient);
-
-  if (courseGroups.length === 0) {
-    return;
-  }
-
-  const groupMemberValues = courseGroups
-    .filter((entry): entry is { courseId: string; groupId: string } => Boolean(entry.groupId))
-    .map((entry) => ({
-      groupId: entry.groupId,
-      profileId,
-      roleId: ROLE.STUDENT
-    }));
-
-  await insertGroupMembersOnConflictDoNothing(groupMemberValues, dbClient);
-
-  for (const entry of courseGroups) {
-    if (!entry.groupId) {
-      continue;
-    }
-
-    const groupMemberId = await getGroupMemberIdByGroupAndProfile(entry.groupId, profileId, dbClient);
-
-    if (groupMemberId) {
-      await grantCourseAccess(
-        {
-          groupmemberId: groupMemberId,
-          courseId: entry.courseId,
-          profileId,
-          source: 'LEARNING_PATH',
-          learningPathId: pathId,
-          grantedByProfileId
-        },
-        dbClient
-      );
-    }
   }
 }

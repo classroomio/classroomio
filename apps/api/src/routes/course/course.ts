@@ -34,6 +34,7 @@ import { Hono } from '@api/utils/hono';
 import { attendanceRouter } from '@api/routes/course/attendance';
 import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
 import { authMiddleware } from '@api/middlewares/auth';
+import { resolveCourseRedirect } from '@api/services/course/redirect';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
 import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
@@ -432,6 +433,28 @@ export const courseRouter = new Hono()
       }
     }
   )
+  /**
+   * GET /course/:courseId/redirect
+   * Data-only redirect decision for learning-path URL routing.
+   * The LMS branch owns navigation; this only answers course vs path vs hub.
+   */
+  .get('/:courseId/redirect', authMiddleware, zValidator('param', ZCourseProgressParam), async (c) => {
+    try {
+      const { courseId } = c.req.valid('param');
+      const user = c.get('user')!;
+      const target = await resolveCourseRedirect(courseId, user.id);
+
+      return c.json(
+        {
+          success: true,
+          data: target
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to resolve course redirect');
+    }
+  })
   /**
    * GET /course/:courseId/certification-evaluation
    * Full certification eligibility for the current user (blockers for UI).
