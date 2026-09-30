@@ -767,7 +767,9 @@
       "cancel": "Annuler",
       "snackbar_success": "{assigned} utilisateurs affectés aux cours ({alreadyEnrolled} déjà inscrits, {emailsSent} e-mails envoyés)",
       "snackbar_no_courses": "Veuillez sélectionner au moins un cours",
-      "snackbar_failed": "Échec de l'attribution des cours"
+      "snackbar_failed": "Échec de l'attribution des cours",
+      "snackbar_partial": "Utilisateurs {assigned} attribués ({alreadyEnrolled} y avait déjà accès, {emailsSent} e-mails envoyés). Cours ignorés uniquement : {names} : attribuez le parcours d'apprentissage contenant ou désactivez « Nécessite un parcours d'apprentissage » dans les paramètres du cours.",
+      "path_only_badge": "Chemin uniquement"
     },
     "import": {
       "title": "Importer des utilisateurs",
@@ -818,7 +820,9 @@
       },
       "submit_count": "Importer {count} étudiants",
       "result_heading": "{count} étudiants importés",
-      "start_over": "Choisissez un autre fichier"
+      "start_over": "Choisissez un autre fichier",
+      "skipped_path_gated_title": "{count} cours à parcours uniquement ignorés",
+      "skipped_path_gated_description": "{names}. Ces cours nécessitent une inscription via un parcours d’apprentissage. Soit vous attribuez le parcours d'apprentissage contenant (cela accorde également ses autres cours), soit vous désactivez « Nécessite un parcours d'apprentissage » dans les paramètres du cours."
     },
     "page_subtitle": "Découvrez qui appartient à votre organisation, qui apprend, qui est invité et comment les contacter.",
     "user_analytics": {
@@ -954,7 +958,8 @@
       "custom": "Filtres personnalisés",
       "all": "Tous les étudiants"
     },
-    "learner_count": "{count} étudiants"
+    "learner_count": "{count} étudiants",
+    "path_only_badge": "Chemin uniquement"
   },
   "community": {
     "title": "Communauté",
@@ -1112,7 +1117,9 @@
         "generate_link": "Générer un nouveau lien",
         "open_link": "Ouvrir le lien dans un nouvel onglet",
         "copy_link": "Copier le lien",
-        "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication."
+        "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication.",
+        "requires_learning_path": "Exiger un parcours d'apprentissage",
+        "requires_learning_path_desc": "Lorsque cette option est activée, les apprenants ne peuvent accéder à ce cours que via un parcours d'apprentissage. Les inscriptions existantes sont conservées."
       },
       "analytics": {
         "title": "Analytique"
@@ -1481,7 +1488,8 @@
             "title": "Accorder l'accès à l'étudiant",
             "description": "Accordez à {email} l'accès à ce cours. Nous lui enverrons un e-mail d'invitation pour rejoindre votre organisation et s'inscrire à ce cours.",
             "cancel": "Annuler",
-            "send_invite": "Envoyer l'invitation"
+            "send_invite": "Envoyer l'invitation",
+            "path_gated_notice": "Ce cours nécessite une inscription via un parcours d'apprentissage, l'accès direct ne peut donc pas être accordé. Attribuez plutôt le parcours d'apprentissage contenant le cours ou désactivez « Nécessite un parcours d'apprentissage » dans les paramètres du cours."
           },
           "invite_new_students_title": "Inviter de nouveaux étudiants",
           "invite_new_students_description": "Invitez de nouvelles personnes dans votre organisation et pré-assignez-les à ce cours. Elles créeront un compte, accepteront l'invitation et obtiendront l'accès.",
@@ -1526,9 +1534,17 @@
             "multi_use_30d": "Multi-usage (30 jours)",
             "custom": "Personnalisé"
           },
-          "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants."
+          "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants.",
+          "path_gated_notice_title": "Les étudiants rejoignent via un parcours d’apprentissage",
+          "path_gated_notice_description": "Ce cours nécessite une inscription via un parcours d'apprentissage, les étudiants ne peuvent donc pas être invités ici. Vous pouvez toujours inviter des tuteurs ci-dessous. Pour accorder l'accès aux étudiants, attribuez le parcours d'apprentissage correspondant ou désactivez « Nécessite un parcours d'apprentissage » dans les paramètres du cours.",
+          "members_added": "{count, plural, one {# membre ajouté avec succès} other {# membres ajoutés avec succès}}"
         },
-        "learner": "Étudiant"
+        "learner": "Étudiant",
+        "source": "Source",
+        "source_learning_path": "Parcours d'apprentissage",
+        "source_cohort": "Cohorte",
+        "source_filter_all": "Toutes les sources",
+        "source_filter_direct": "Direct"
       },
       "marks": {
         "title": "Marques",
@@ -4226,9 +4242,6 @@
       "command_palette": {
         "title": "Palette de commandes",
         "description": "Recherchez et naviguez dans votre organisation",
-        "placeholder": "Rechercher des cours, des cohortes, des widgets, des étudiants, des tags, des paramètres...",
-        "org_placeholder": "Rechercher des cours, des cohortes, des widgets, des étudiants, des tags, des paramètres...",
-        "lms_placeholder": "Recherchez vos cours, cohortes et pages d’apprentissage...",
         "lms_description": "Recherchez et parcourez votre espace de travail d'apprentissage",
         "empty": "Aucun résultat trouvé",
         "loading": "Recherche...",
@@ -4244,8 +4257,12 @@
           "tags": "Étiquettes",
           "students": "Étudiants",
           "settings": "Paramètres",
-          "cohorts": "Cohortes"
-        }
+          "cohorts": "Cohortes",
+          "learning_paths": "Parcours d'apprentissage"
+        },
+        "placeholder": "Recherchez des cours, des cohortes, des parcours d'apprentissage, des widgets, des étudiants, des tags, des paramètres...",
+        "org_placeholder": "Recherchez des cours, des cohortes, des parcours d'apprentissage, des widgets, des étudiants, des tags, des paramètres...",
+        "lms_placeholder": "Recherchez vos cours, cohortes, parcours d'apprentissage et pages d'apprentissage..."
       }
     },
     "cancel": "Annuler",
@@ -5966,16 +5983,15 @@
       "course_added": "Cours ajouté",
       "courses_added": "Cours ajoutés",
       "course_removed": "Cours supprimé",
-      "members_added": "Apprenants ajoutés au parcours",
       "member_removed": "Apprenant retiré du chemin",
-      "tutors_added": "Tuteurs ajoutés au parcours",
-      "tutor_added": "Tuteur ajouté au parcours",
       "tutor_removed": "Tuteur retiré du parcours",
       "certificate_saved": "Paramètres du certificat enregistrés",
       "landing_saved": "Page d'accueil mise à jour",
       "landing_save_failed": "Échec de l’enregistrement de la page d’accueil",
       "link_generated": "Lien d'invitation généré et copié dans le presse-papiers",
-      "settings_saved": "Paramètres du parcours mis à jour"
+      "settings_saved": "Paramètres du parcours mis à jour",
+      "member_role_updated": "Rôle de membre mis à jour",
+      "delete_failed": "Échec de la suppression du parcours d'apprentissage"
     },
     "analytics": {
       "title": "Analyse",
@@ -6091,8 +6107,15 @@
         "student_limit_reached": "Vous avez atteint votre limite d'étudiants. Passez à un plan supérieur pour ajouter plus d'étudiants.",
         "invite": "Inviter des tuteurs",
         "invite_students": "Inviter des étudiants",
-        "finish": "Terminer"
-      }
+        "finish": "Terminer",
+        "bulk_enroll_queued": "Inscription de {count} membres en arrière-plan…",
+        "bulk_enroll_success": "Membres {enrolled} inscrits ({invited} invités)",
+        "bulk_enroll_partial": "Membres {enrolled} inscrits ({invited} invité, {failed} échec)",
+        "bulk_enroll_failed": "Échec de l’inscription en arrière-plan",
+        "bulk_enroll_lost": "Perte de trace de l'inscription en arrière-plan"
+      },
+      "change_role_to_tutor": "Faire un tuteur",
+      "change_role_to_student": "Faire étudiant"
     },
     "certificate": {
       "title": "Certificats",

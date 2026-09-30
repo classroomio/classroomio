@@ -9,7 +9,6 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import { PathSidebar, PathHeader } from '$features/learning-path';
   import { learningPathApi, pathMembersApi } from '$features/learning-path/api';
-  import type { LearningPathDetail } from '$features/learning-path/utils/types';
   import { DeleteModal } from '$features/ui';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
@@ -21,7 +20,6 @@
     children?: Snippet;
     data: {
       publicId: string;
-      path?: LearningPathDetail;
     };
   }
 
@@ -36,32 +34,31 @@
   let viewerFetchKey: string | null = $state(null);
 
   $effect(() => {
-    if (!data.publicId) return;
-
-    if (data.path) {
-      learningPathApi.currentPath = data.path;
-      return;
-    }
+    if (!data.publicId || !$profile.id) return;
 
     learningPathApi.ensurePath(data.publicId);
   });
 
   const activePath = $derived(learningPathApi.currentPath);
-  const isPathReady = $derived.by(() => {
-    if (!activePath) return false;
-    return activePath.publicId === data.publicId;
-  });
+  const isPathLoaded = $derived(activePath?.publicId === data.publicId || activePath?.id === data.publicId);
 
   $effect(() => {
     const pathId = activePath?.id;
     const profileId = $profile.id;
-    if (!isPathReady || !pathId || !profileId) return;
+    if (!isPathLoaded || !pathId || !profileId) return;
 
     const key = `${pathId}:${profileId}`;
     if (viewerFetchKey === key) return;
 
     viewerFetchKey = key;
     void pathMembersApi.fetchViewerRole(pathId, profileId);
+  });
+
+  const isPathReady = $derived.by(() => {
+    if (!isPathLoaded || !activePath) return false;
+
+    const isViewerRoleForPath = viewerFetchKey === `${activePath.id}:${$profile.id}`;
+    return isViewerRoleForPath && pathMembersApi.viewerRole !== undefined;
   });
 
   const currentUserRole = $derived.by(() => {
@@ -105,7 +102,7 @@
       }
     } catch (err) {
       console.error('Failed to delete learning path:', err);
-      snackbar.error();
+      snackbar.error('learningPath.snackbar.delete_failed');
     } finally {
       deleteModalOpen = false;
       isDeleting = false;

@@ -54,7 +54,7 @@
         <Button variant="outline" onclick={handleToggleReorder}>
           {$t(`learningPath.builder.${reorder ? 'end_reorder' : 'start_reorder'}`)}
         </Button>
-        <Button onclick={() => (showAddDialog = true)}>
+        <Button onclick={() => (showAddDialog = true)} testId="path-builder-add-course">
           {$t('learningPath.builder.add_course_button')}
         </Button>
         <RefreshPageData onRefresh={handleRefresh} />

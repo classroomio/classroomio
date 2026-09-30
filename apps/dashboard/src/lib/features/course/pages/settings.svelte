@@ -256,6 +256,7 @@
         type: $settings.type,
         logo: logoUrl,
         isPublished: $settings.isPublished,
+        requiresLearningPath: $settings.requiresLearningPath,
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
@@ -334,6 +335,7 @@
         lessonDownload: !!course.metadata?.lessonDownload,
         isPublished: !!course.isPublished,
         allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
+        requiresLearningPath: !!course.requiresLearningPath,
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
@@ -1122,6 +1124,29 @@
       />
       <Label for="allow-self-enrollment">
         {$settings.allowSelfEnrollment ? $t('course.navItem.settings.enabled') : $t('course.navItem.settings.disabled')}
+      </Label>
+    </Field.Field>
+  </Field.Set>
+
+  <Field.Separator />
+
+  <Field.Set>
+    <Field.Legend>{$t('course.navItem.settings.requires_learning_path')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.requires_learning_path_desc')}</Field.Description>
+    <Field.Field orientation="horizontal">
+      <Switch
+        id="requires-learning-path"
+        data-testid="course-settings-requires-learning-path"
+        checked={$settings.requiresLearningPath}
+        onCheckedChange={(checked) => {
+          $settings.requiresLearningPath = checked;
+          hasUnsavedChanges = true;
+        }}
+      />
+      <Label for="requires-learning-path">
+        {$settings.requiresLearningPath
+          ? $t('course.navItem.settings.enabled')
+          : $t('course.navItem.settings.disabled')}
       </Label>
     </Field.Field>
   </Field.Set>
