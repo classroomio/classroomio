@@ -287,16 +287,19 @@
 
   .insert-dock {
     position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 30;
-    display: flex; align-items: center; gap: 2px; background: var(--card); border: 1px solid var(--border);
-    border-radius: 999px; padding: 6px; box-shadow: 0 10px 25px -5px rgb(0 0 0 / .15), 0 8px 10px -6px rgb(0 0 0 / .1);
+    display: flex; align-items: stretch; gap: 1px; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 6px 8px; box-shadow: 0 10px 25px -5px rgb(0 0 0 / .15), 0 8px 10px -6px rgb(0 0 0 / .1);
   }
   .dock-icon {
-    width: 38px; height: 38px; flex-shrink: 0; border-radius: 999px; border: none; background: transparent;
-    color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer;
-    padding: 0; transition: background .12s, color .12s;
+    display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; border-radius: var(--radius-md);
+    border: none; background: transparent; color: var(--muted-foreground); cursor: pointer;
+    padding: 8px 12px; transition: background .12s, color .12s;
   }
   .dock-icon svg { width: 17px; height: 17px; stroke-width: 2; }
+  .dock-icon .lb { font-size: 9.5px; font-weight: 600; }
   .dock-icon:hover, .dock-icon:focus-visible { background: var(--accent); color: var(--foreground); }
+  .dock-icon.dock-icon-ai { color: var(--primary); }
+  .dock-divider { width: 1px; align-self: stretch; background: var(--border); margin: 4px 3px; }
   .content-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .content-type-btn {
     display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 12px; border: 1px solid var(--border);
@@ -777,10 +780,12 @@
   </aside>
 
   <div class="insert-dock edit-only" role="toolbar" aria-label="Add content">
-    <button type="button" class="dock-icon" data-tip="Video" aria-label="Add video" onclick="insertFromDock('video')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg></button>
-    <button type="button" class="dock-icon" data-tip="Slides" aria-label="Add slides" onclick="insertFromDock('slide')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></button>
-    <button type="button" class="dock-icon" data-tip="Note" aria-label="Add note" onclick="insertFromDock('note')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></button>
-    <button type="button" class="dock-icon" data-tip="Document" aria-label="Add document" onclick="insertFromDock('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></button>
+    <button type="button" class="dock-icon dock-icon-ai" aria-label="Ask AI assistant" onclick="openAiAssistant()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg><span class="lb">AI Assistant</span></button>
+    <span class="dock-divider"></span>
+    <button type="button" class="dock-icon" aria-label="Add video" onclick="insertFromDock('video')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="lb">Video</span></button>
+    <button type="button" class="dock-icon" aria-label="Add slides" onclick="insertFromDock('slide')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><span class="lb">Slides</span></button>
+    <button type="button" class="dock-icon" aria-label="Add note" onclick="insertFromDock('note')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="lb">Note</span></button>
+    <button type="button" class="dock-icon" aria-label="Add document" onclick="insertFromDock('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="lb">Document</span></button>
   </div>
 </section>
 
@@ -1279,7 +1284,7 @@
       </section>`;
   }
 
-  function buildNoteBlock() {
+  function buildNoteBlock(bodyHtml) {
     return `
       <section class="content-section" data-type="note">
         ${blockHead('Note', ICON_NOTE)}
@@ -1294,7 +1299,7 @@
           <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 6.1H3M21 12.1H3M15.1 18H3"/></svg></button>
           <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
         </div>
-        <div class="note-content" contenteditable="true"><p style="color:var(--muted-foreground)">Start writing…</p></div>
+        <div class="note-content" contenteditable="true">${bodyHtml || '<p style="color:var(--muted-foreground)">Start writing…</p>'}</div>
       </section>`;
   }
 
@@ -1383,11 +1388,51 @@
     }
   });
 
+  function resolveDockGapEl() {
+    const gaps = [...document.querySelectorAll('#canvas > .block-gap')];
+    return dockGapEl && dockGapEl.isConnected && dockGapEl.closest('#canvas') ? dockGapEl : gaps[gaps.length - 1] || null;
+  }
+
   function insertFromDock(type) {
     activeCanvasId = 'canvas';
-    const gaps = [...document.querySelectorAll('#canvas > .block-gap')];
-    activeGapEl = dockGapEl && dockGapEl.isConnected && dockGapEl.closest('#canvas') ? dockGapEl : gaps[gaps.length - 1] || null;
+    activeGapEl = resolveDockGapEl();
     chooseContentType(type);
+  }
+
+  function openAiAssistant() {
+    activeCanvasId = 'canvas';
+    activeGapEl = resolveDockGapEl();
+    document.getElementById('dialogBox').style.maxWidth = '480px';
+    document.getElementById('dialogBox').innerHTML = `
+      <div class="dialog-head"><h2 class="dialog-title">Ask AI assistant</h2><p class="dialog-desc">Describe what this part of the lesson should cover — a draft note is added for you to edit.</p></div>
+      <div class="dialog-body">
+        <div class="field"><label class="label" for="aiPrompt">Prompt</label><textarea class="textarea" id="aiPrompt" placeholder="e.g. Summarize the difference between props and state" oninput="onAiPromptInput()"></textarea></div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="aiGenerateBtn" disabled onclick="confirmAiGenerate()">Generate</button></div>`;
+    document.body.classList.add('dialog-open');
+  }
+
+  function onAiPromptInput() {
+    const btn = document.getElementById('aiGenerateBtn');
+    const input = document.getElementById('aiPrompt');
+    if (btn && input) btn.disabled = input.value.trim().length === 0;
+  }
+
+  function buildAiNoteBody(prompt) {
+    const topic = escapeHtml(prompt.trim());
+    return `
+      <h3>${topic}</h3>
+      <p>Here's a draft to get you started — read it over, adjust the wording, and add an example specific to your course before publishing.</p>
+      <p>Explain the core idea first in plain language, then walk through one concrete example students have already seen earlier in this course. Close with a short question they can answer in their own words to check the idea landed.</p>`;
+  }
+
+  function confirmAiGenerate() {
+    const promptEl = document.getElementById('aiPrompt');
+    const prompt = promptEl ? promptEl.value : '';
+    if (!prompt.trim()) return;
+    closeDialog();
+    insertBlock(activeCanvasId, buildNoteBlock(buildAiNoteBody(prompt)));
+    simulateSave();
   }
 
   function insertBlock(canvasId, html) {
