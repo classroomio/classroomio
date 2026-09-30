@@ -1525,7 +1525,39 @@
           },
           "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
         },
-        "learner": "Học viên"
+        "learner": "Học viên",
+        "views": {
+          "all": "Tất cả mọi người",
+          "not_started": "Chưa bắt đầu",
+          "in_progress": "Đang tiến hành",
+          "completed": "Đã hoàn thành",
+          "never_logged_in": "Chưa bao giờ đăng nhập",
+          "awaiting_certificate": "Đang chờ chứng chỉ",
+          "custom": "Bộ lọc tùy chỉnh"
+        },
+        "window": {
+          "7d": "7 ngày",
+          "30d": "30 ngày",
+          "90d": "90 ngày",
+          "180d": "180 ngày",
+          "never": "không bao giờ"
+        },
+        "filter": {
+          "title": "Lọc người",
+          "role": "Vai trò",
+          "all_roles": "Tất cả vai trò",
+          "progress": "Tiến độ",
+          "in_progress": "Đang tiến hành",
+          "completed": "Đã hoàn thành",
+          "membership": "Tư cách thành viên",
+          "joined": "Đã tham gia",
+          "invited": "Đã được mời, chưa có tài khoản",
+          "certificate": "Giấy chứng nhận",
+          "earned": "kiếm được",
+          "not_earned": "Không kiếm được",
+          "no_login_since": "Không đăng nhập kể từ đó",
+          "joined_within": "Đã tham gia bên trong"
+        }
       },
       "marks": {
         "title": "Điểm",
@@ -5388,7 +5420,17 @@
       "add_another": "Thêm cái khác",
       "invite_submit": "Gửi lời mời",
       "empty_title": "Chưa có thành viên nào",
-      "empty_description": "Mời mọi người tham gia nhóm học tập này."
+      "empty_description": "Mời mọi người tham gia nhóm học tập này.",
+      "name": "Tên",
+      "joined": "Đã tham gia",
+      "filter_title": "Lọc người",
+      "views": {
+        "all": "Tất cả mọi người",
+        "tutors": "Gia sư",
+        "students": "Sinh viên",
+        "pending_invites": "Lời mời đang chờ xử lý",
+        "never_logged_in": "Chưa bao giờ đăng nhập"
+      }
     },
     "courses": {
       "add": "Thêm khóa học",

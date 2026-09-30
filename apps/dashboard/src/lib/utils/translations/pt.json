@@ -1525,7 +1525,39 @@
           },
           "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
         },
-        "learner": "Aluno"
+        "learner": "Aluno",
+        "views": {
+          "all": "Todas as pessoas",
+          "not_started": "Não iniciado",
+          "in_progress": "Em andamento",
+          "completed": "Concluído",
+          "never_logged_in": "Nunca logado",
+          "awaiting_certificate": "Aguardando certificado",
+          "custom": "Filtros personalizados"
+        },
+        "window": {
+          "7d": "7 dias",
+          "30d": "30 dias",
+          "90d": "90 dias",
+          "180d": "180 dias",
+          "never": "Nunca"
+        },
+        "filter": {
+          "title": "Filtrar pessoas",
+          "role": "Função",
+          "all_roles": "Todas as funções",
+          "progress": "Progresso",
+          "in_progress": "Em andamento",
+          "completed": "Concluído",
+          "membership": "Associação",
+          "joined": "Ingressou",
+          "invited": "Convidado, sem conta ainda",
+          "certificate": "Certificado",
+          "earned": "Ganhou",
+          "not_earned": "Não ganho",
+          "no_login_since": "Sem login desde",
+          "joined_within": "Juntou-se dentro"
+        }
       },
       "marks": {
         "title": "Marcas",
@@ -5388,7 +5420,17 @@
       "add_another": "Adicionar outro",
       "invite_submit": "Enviar convites",
       "empty_title": "Ainda não há membros",
-      "empty_description": "Convide pessoas para participar desta coorte."
+      "empty_description": "Convide pessoas para participar desta coorte.",
+      "name": "Nome",
+      "joined": "Ingressou",
+      "filter_title": "Filtrar pessoas",
+      "views": {
+        "all": "Todas as pessoas",
+        "tutors": "Tutores",
+        "students": "Alunos",
+        "pending_invites": "Convites pendentes",
+        "never_logged_in": "Nunca logado"
+      }
     },
     "courses": {
       "add": "Adicionar curso",

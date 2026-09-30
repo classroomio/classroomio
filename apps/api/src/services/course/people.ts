@@ -12,9 +12,13 @@ import {
 } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
-import type { TAddCourseMembers, TCourseMembersQuery } from '@cio/utils/validation/course/people';
+import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import type { CourseMemberWithProfile } from '@cio/db/queries/course/people';
+import type {
+  CourseMemberWithProfile,
+  PaginatedCourseMember,
+  PaginatedCourseMembersOptions
+} from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
@@ -60,6 +64,37 @@ async function addProgressSummaries(courseId: string, members: CourseMemberWithP
 }
 
 /**
+ * Attaches only `stage` to a page of members.
+ *
+ * Progress, last login and enrollment date already come from the query, but
+ * `stage` names a content item in canonical course order, which is derived in
+ * application code rather than SQL.
+ */
+async function addMemberStages(courseId: string, members: PaginatedCourseMember[]) {
+  const progressSummaries = await getCourseMemberProgressSummaries(
+    courseId,
+    members.map((member) => ({
+      profileId: member.profileId ?? '',
+      roleId: member.roleId,
+      createdAt: member.createdAt ?? null
+    }))
+  );
+
+  return members.map((member) => {
+    if (!member.profileId || member.roleId !== ROLE.STUDENT) {
+      return member;
+    }
+
+    const progress = progressSummaries.get(member.profileId);
+    if (!progress) {
+      return member;
+    }
+
+    return { ...member, stage: progress.stage };
+  });
+}
+
+/**
  * Gets every course member (people) for a course.
  * @param courseId Course ID
  * @returns Array of course members with profile and progress data
@@ -81,15 +116,15 @@ export async function listCourseMembers(courseId: string) {
 }
 
 /**
- * Gets one filtered page of course members for a course.
+ * Gets one filtered, sorted page of course members for a course.
  * @param courseId Course ID
- * @param query Page, page size, search term and role filter
- * @returns One page of course members with profile and progress data, plus pagination totals
+ * @param query Page, page size, search term, filters and sort
+ * @returns One page of course members with profile, progress and stage data, plus pagination totals
  */
-export async function listPaginatedCourseMembers(courseId: string, query: TCourseMembersQuery) {
+export async function listPaginatedCourseMembers(courseId: string, query: PaginatedCourseMembersOptions) {
   try {
     const result = await getPaginatedCourseMembers(courseId, query);
-    const items = await addProgressSummaries(courseId, result.items);
+    const items = await addMemberStages(courseId, result.items);
 
     return {
       ...result,

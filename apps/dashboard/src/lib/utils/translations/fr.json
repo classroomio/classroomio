@@ -1525,7 +1525,39 @@
           },
           "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants."
         },
-        "learner": "Étudiant"
+        "learner": "Étudiant",
+        "views": {
+          "all": "Toutes les personnes",
+          "not_started": "Pas démarré",
+          "in_progress": "En cours",
+          "completed": "Terminé",
+          "never_logged_in": "Jamais connecté",
+          "awaiting_certificate": "En attente de certificat",
+          "custom": "Filtres personnalisés"
+        },
+        "window": {
+          "7d": "7 jours",
+          "30d": "30 jours",
+          "90d": "90 jours",
+          "180d": "180 jours",
+          "never": "Jamais"
+        },
+        "filter": {
+          "title": "Filtrer les personnes",
+          "role": "Rôle",
+          "all_roles": "Tous les rôles",
+          "progress": "Progrès",
+          "in_progress": "En cours",
+          "completed": "Terminé",
+          "membership": "Adhésion",
+          "joined": "Rejoint",
+          "invited": "Invité, pas encore de compte",
+          "certificate": "Certificat",
+          "earned": "Gagné",
+          "not_earned": "Non gagné",
+          "no_login_since": "Pas de connexion depuis",
+          "joined_within": "Rejoint au sein"
+        }
       },
       "marks": {
         "title": "Marques",
@@ -5388,7 +5420,17 @@
       "add_another": "Ajoutez-en un autre",
       "invite_submit": "Envoyer des invitations",
       "empty_title": "Pas encore de membres",
-      "empty_description": "Invitez des personnes à rejoindre cette cohorte."
+      "empty_description": "Invitez des personnes à rejoindre cette cohorte.",
+      "name": "Nom",
+      "joined": "Rejoint",
+      "filter_title": "Filtrer les personnes",
+      "views": {
+        "all": "Toutes les personnes",
+        "tutors": "Tuteurs",
+        "students": "Étudiants",
+        "pending_invites": "Invitations en attente",
+        "never_logged_in": "Jamais connecté"
+      }
     },
     "courses": {
       "add": "Ajouter un cours",

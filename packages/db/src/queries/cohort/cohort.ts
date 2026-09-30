@@ -1,8 +1,15 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, desc, eq, ilike, inArray, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, or, sql, type SQL, type SQLWrapper } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import {
+  COHORT_PEOPLE_WINDOW_DAYS,
+  type TCohortPeopleActivityWindow,
+  type TCohortPeopleMembership,
+  type TCohortPeopleSortBy,
+  type TCohortPeopleSortOrder
+} from '@cio/utils/validation/cohort';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -552,6 +559,146 @@ export async function getCohortMembers(
     console.error('getCohortMembers error:', error);
     throw new Error(
       `Failed to get cohort members for "${cohortId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export type PaginatedCohortPeopleOptions = {
+  page: number;
+  limit: number;
+  search?: string;
+  roleId?: number;
+  sortBy: TCohortPeopleSortBy;
+  sortOrder: TCohortPeopleSortOrder;
+  membership?: TCohortPeopleMembership;
+  lastLoginBefore?: TCohortPeopleActivityWindow;
+};
+
+export type PaginatedCohortPerson = TCohortMember & {
+  profile: {
+    id: string;
+    fullname: string | null;
+    username: string | null;
+    avatarUrl: string | null;
+    email: string | null;
+  } | null;
+  lastLoginAt: string | null;
+};
+
+export type PaginatedCohortPeopleResult = {
+  items: PaginatedCohortPerson[];
+  total: number;
+};
+
+const cohortPersonProfileSelection = {
+  id: schema.profile.id,
+  fullname: schema.profile.fullname,
+  username: schema.profile.username,
+  avatarUrl: schema.profile.avatarUrl,
+  email: schema.profile.email
+};
+
+/** Login events only; `session.updated_at` is pruned on expiry and so cannot answer "never". */
+const cohortLastLoginAtSql = sql<string | null>`(
+  SELECT MAX(le.logged_in_at)
+  FROM analytics_login_events le
+  WHERE le.user_id = ${schema.cohortMember.profileId}
+)`;
+
+function cohortStalenessCondition(window: TCohortPeopleActivityWindow): SQL | undefined {
+  if (window === 'never') return sql`${cohortLastLoginAtSql} IS NULL`;
+
+  return sql`(${cohortLastLoginAtSql} IS NULL OR ${cohortLastLoginAtSql} < now() - make_interval(days => ${COHORT_PEOPLE_WINDOW_DAYS[window]}))`;
+}
+
+function buildCohortPeopleOrderBy(sortBy: TCohortPeopleSortBy, sortOrder: TCohortPeopleSortOrder): SQL[] {
+  const ascending = sortOrder === 'asc';
+  const ordered = (column: SQLWrapper) => (ascending ? asc(column) : desc(column));
+  const tiebreaker = asc(schema.cohortMember.id);
+
+  if (sortBy === 'name') {
+    return [ordered(schema.profile.fullname), tiebreaker];
+  }
+
+  if (sortBy === 'lastLogin') {
+    return [sql`${cohortLastLoginAtSql} IS NOT NULL`, ordered(cohortLastLoginAtSql), tiebreaker];
+  }
+
+  if (sortBy === 'role') {
+    return [ordered(schema.cohortMember.roleId), tiebreaker];
+  }
+
+  return [ordered(schema.cohortMember.createdAt), tiebreaker];
+}
+
+export async function getPaginatedCohortPeople(
+  cohortId: string,
+  options: PaginatedCohortPeopleOptions,
+  client: DbOrTxClient = db
+): Promise<PaginatedCohortPeopleResult> {
+  try {
+    const conditions = [eq(schema.cohortMember.cohortId, cohortId)];
+
+    if (options.roleId !== undefined) {
+      conditions.push(eq(schema.cohortMember.roleId, options.roleId));
+    }
+
+    if (options.membership === 'joined') {
+      conditions.push(sql`${schema.cohortMember.profileId} IS NOT NULL`);
+    } else if (options.membership === 'invited') {
+      conditions.push(sql`${schema.cohortMember.profileId} IS NULL`);
+    }
+
+    if (options.lastLoginBefore) {
+      conditions.push(cohortStalenessCondition(options.lastLoginBefore)!);
+    }
+
+    if (options.search) {
+      const term = `%${options.search}%`;
+      conditions.push(
+        or(
+          ilike(schema.profile.fullname, term),
+          ilike(schema.profile.email, term),
+          ilike(schema.cohortMember.email, term)
+        )!
+      );
+    }
+
+    const whereClause = and(...conditions)!;
+
+    const listQuery = client
+      .select({
+        member: schema.cohortMember,
+        profile: cohortPersonProfileSelection,
+        lastLoginAt: cohortLastLoginAtSql
+      })
+      .from(schema.cohortMember)
+      .leftJoin(schema.profile, eq(schema.cohortMember.profileId, schema.profile.id))
+      .where(whereClause)
+      .orderBy(...buildCohortPeopleOrderBy(options.sortBy, options.sortOrder))
+      .limit(options.limit)
+      .offset(toOffset(options));
+
+    const countQuery = client
+      .select({ count: count(schema.cohortMember.id) })
+      .from(schema.cohortMember)
+      .leftJoin(schema.profile, eq(schema.cohortMember.profileId, schema.profile.id))
+      .where(whereClause);
+
+    const [rows, [countRow]] = await Promise.all([listQuery, countQuery]);
+
+    return {
+      items: rows.map((row) => ({
+        ...row.member,
+        profile: row.profile?.id ? row.profile : null,
+        lastLoginAt: row.lastLoginAt
+      })),
+      total: Number(countRow?.count ?? 0)
+    };
+  } catch (error) {
+    console.error('getPaginatedCohortPeople error:', error);
+    throw new Error(
+      `Failed to get paginated cohort people for "${cohortId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

@@ -78,7 +78,11 @@
   }
 
   function closeModal() {
-    goto(resolve(page.url.pathname, {}));
+    const searchParams = new URLSearchParams(page.url.searchParams);
+    searchParams.delete('add');
+    const nextSearch = searchParams.toString();
+
+    void goto(resolve(`${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}`, {}));
   }
 
   function setTutors(orgId: string | undefined) {

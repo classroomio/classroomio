@@ -1,10 +1,20 @@
 import * as schema from '@db/schema';
 
 import { TGroupmember, TNewGroupmember } from '@db/types';
-import { and, asc, count, eq, ilike, isNotNull, isNull, or } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, isNotNull, isNull, or, sql, type SQL } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import {
+  COURSE_PEOPLE_WINDOW_DAYS,
+  type TCoursePeopleActivityWindow,
+  type TCoursePeopleEnrolledWindow,
+  type TCoursePeopleMembership,
+  type TCoursePeopleProgress,
+  type TCoursePeopleSortBy,
+  type TCoursePeopleSortOrder
+} from '@cio/utils/validation/course';
 import { db } from '@db/drizzle';
+import { isExerciseCompletedSql } from '@db/queries/course/progression';
 
 export type CourseMemberWithProfile = TGroupmember & {
   profile: {
@@ -22,10 +32,23 @@ export interface PaginatedCourseMembersOptions {
   search?: string;
   roleId?: number;
   certificateEarned?: boolean;
+  sortBy?: TCoursePeopleSortBy;
+  sortOrder?: TCoursePeopleSortOrder;
+  progress?: TCoursePeopleProgress;
+  membership?: TCoursePeopleMembership;
+  enrolledWithin?: TCoursePeopleEnrolledWindow;
+  lastLoginBefore?: TCoursePeopleActivityWindow;
 }
 
+export type PaginatedCourseMember = CourseMemberWithProfile & {
+  progressPercent: number;
+  progressBucket: TCoursePeopleProgress | null;
+  lastLoginAt: string | null;
+  enrolledAt: string | null;
+};
+
 export interface PaginatedCourseMembersResult {
-  items: CourseMemberWithProfile[];
+  items: PaginatedCourseMember[];
   page: number;
   limit: number;
   total: number;
@@ -76,21 +99,164 @@ export async function getCourseMembers(courseId: string): Promise<CourseMemberWi
 }
 
 /**
- * Gets one filtered page of course members with profile data.
+ * Course work is its lessons and its exercises, matching `calcCourseProgress`.
+ * An exercise belongs to the course directly or through its lesson, and an
+ * exercise submission is keyed by groupmember rather than profile.
+ */
+function progressSummaryLateral(courseId: string): SQL {
+  const totalItems = sql<number>`(
+    (SELECT COUNT(*) FROM lesson l WHERE l.course_id = ${courseId}) +
+    (
+      SELECT COUNT(*)
+      FROM exercise ex
+      LEFT JOIN lesson el ON el.id = ex.lesson_id
+      WHERE ex.course_id = ${courseId} OR el.course_id = ${courseId}
+    )
+  )::int`;
+
+  const completedItems = sql<number>`(
+    (
+      SELECT COUNT(*)
+      FROM lesson l
+      JOIN lesson_completion lc
+        ON lc.lesson_id = l.id
+       AND lc.profile_id = ${schema.groupmember.profileId}
+       AND lc.is_complete = true
+      WHERE l.course_id = ${courseId}
+    ) +
+    (
+      SELECT COUNT(*)
+      FROM exercise ex
+      LEFT JOIN lesson el ON el.id = ex.lesson_id
+      WHERE (ex.course_id = ${courseId} OR el.course_id = ${courseId})
+        AND ${isExerciseCompletedSql('ex', { groupMemberId: sql`${schema.groupmember.id}` })}
+    )
+  )::int`;
+
+  return sql`(SELECT ${totalItems} AS total_items, ${completedItems} AS completed_items) progress`;
+}
+
+/** Only students with an account accumulate progress; everyone else is untracked. */
+const isTrackableStudentSql = sql<boolean>`(${schema.groupmember.roleId} = ${ROLE.STUDENT}
+  AND ${schema.groupmember.profileId} IS NOT NULL)`;
+
+function progressExpressions(): { bucket: SQL; percent: SQL; rank: SQL } {
+  const totalItems = sql<number>`COALESCE(progress.total_items, 0)`;
+  const completedItems = sql<number>`COALESCE(progress.completed_items, 0)`;
+  const percent = sql<number>`CASE
+    WHEN (${totalItems}) = 0 THEN 0
+    ELSE ROUND((${completedItems})::numeric / NULLIF(${totalItems}, 0) * 100)
+  END`;
+
+  const bucket = sql<string>`CASE
+    WHEN NOT ${isTrackableStudentSql} THEN NULL
+    WHEN ${schema.groupmember.certificateEarnedAt} IS NOT NULL OR (${percent}) >= 100 THEN 'completed'
+    WHEN (${percent}) = 0 THEN 'not_started'
+    ELSE 'in_progress'
+  END`;
+
+  return {
+    bucket,
+    percent,
+    rank: sql<number>`CASE ${bucket}
+      WHEN 'completed' THEN 2
+      WHEN 'in_progress' THEN 1
+      WHEN 'not_started' THEN 0
+      ELSE NULL
+    END`
+  };
+}
+
+/** Login events only; `session.updated_at` is pruned on expiry and so cannot answer "never". */
+const lastLoginAtSql = sql<string | null>`(
+  SELECT MAX(le.logged_in_at)
+  FROM analytics_login_events le
+  WHERE le.user_id = ${schema.groupmember.profileId}
+)`;
+
+function stalenessCondition(window: TCoursePeopleActivityWindow): SQL {
+  if (window === 'never') {
+    return sql`${lastLoginAtSql} IS NULL`;
+  }
+
+  const cutoff = sql`now() - make_interval(days => ${COURSE_PEOPLE_WINDOW_DAYS[window]})`;
+
+  return sql`(${lastLoginAtSql} IS NULL OR ${lastLoginAtSql} < ${cutoff})`;
+}
+
+function buildPeopleOrderBy(sortBy: TCoursePeopleSortBy, sortOrder: TCoursePeopleSortOrder): SQL[] {
+  const { rank } = progressExpressions();
+  const ascending = sortOrder === 'asc';
+
+  const sortColumn =
+    sortBy === 'name'
+      ? sql<string>`COALESCE(NULLIF(${schema.profile.fullname}, ''), ${schema.profile.email}, ${schema.groupmember.email})`
+      : sortBy === 'progress'
+        ? rank
+        : sortBy === 'lastLogin'
+          ? lastLoginAtSql
+          : sortBy === 'enrolledAt'
+            ? sql`${schema.groupmember.createdAt}`
+            : sortBy === 'certificate'
+              ? sql`${schema.groupmember.certificateEarnedAt}`
+              : sql`${schema.groupmember.roleId}`;
+
+  const ordered = ascending ? asc(sortColumn) : desc(sortColumn);
+  const tiebreaker = desc(schema.groupmember.id);
+  const sortsOnNullable = sortBy === 'lastLogin' || sortBy === 'certificate';
+
+  if (!sortsOnNullable) {
+    return [ordered, tiebreaker];
+  }
+
+  return [sql`${sortColumn} IS NOT NULL`, ordered, tiebreaker];
+}
+
+/**
+ * Gets one filtered, sorted page of course members with profile data.
  */
 export async function getPaginatedCourseMembers(
   courseId: string,
-  { page, limit, search, roleId, certificateEarned }: PaginatedCourseMembersOptions
+  options: PaginatedCourseMembersOptions
 ): Promise<PaginatedCourseMembersResult> {
+  const { page, limit, search, roleId, certificateEarned, sortBy, sortOrder } = options;
+  const progress = sortBy ?? 'role';
+  const { bucket, percent } = progressExpressions();
+
   try {
-    const conditions = [eq(schema.course.id, courseId)];
+    const conditions: SQL[] = [eq(schema.course.id, courseId)];
 
     if (roleId) {
       conditions.push(eq(schema.groupmember.roleId, roleId));
     }
 
-    if (certificateEarned) {
-      conditions.push(isNotNull(schema.groupmember.certificateEarnedAt));
+    if (certificateEarned !== undefined) {
+      conditions.push(
+        certificateEarned
+          ? isNotNull(schema.groupmember.certificateEarnedAt)
+          : isNull(schema.groupmember.certificateEarnedAt)
+      );
+    }
+
+    if (options.membership === 'invited') {
+      conditions.push(isNull(schema.groupmember.profileId));
+    }
+
+    if (options.membership === 'joined') {
+      conditions.push(isNotNull(schema.groupmember.profileId));
+    }
+
+    if (options.progress) {
+      conditions.push(sql`${bucket} = ${options.progress}`);
+    }
+
+    if (options.enrolledWithin) {
+      const cutoff = sql`now() - make_interval(days => ${COURSE_PEOPLE_WINDOW_DAYS[options.enrolledWithin]})`;
+      conditions.push(sql`${schema.groupmember.createdAt} >= ${cutoff}`);
+    }
+
+    if (options.lastLoginBefore) {
+      conditions.push(stalenessCondition(options.lastLoginBefore));
     }
 
     if (search) {
@@ -106,14 +272,24 @@ export async function getPaginatedCourseMembers(
       }
     }
 
-    const [countRow] = await db
+    const whereClause = and(...conditions)!;
+    const lateral = progressSummaryLateral(courseId);
+    const countNeedsProgress = Boolean(options.progress) || progress === 'progress';
+
+    const countQuery = db
       .select({ count: count(schema.groupmember.id) })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
-      .where(and(...conditions));
+      .$dynamic();
 
+    if (countNeedsProgress) {
+      countQuery.leftJoinLateral(lateral, sql`true`);
+    }
+
+    const [countRow] = await countQuery.where(whereClause);
     const total = Number(countRow?.count ?? 0);
+
     const rows = await db
       .select({
         member: schema.groupmember,
@@ -123,18 +299,30 @@ export async function getPaginatedCourseMembers(
           username: schema.profile.username,
           avatarUrl: schema.profile.avatarUrl,
           email: schema.profile.email
-        }
+        },
+        progressPercent: percent,
+        progressBucket: bucket,
+        lastLoginAt: lastLoginAtSql,
+        enrolledAt: schema.groupmember.createdAt
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
-      .where(and(...conditions))
-      .orderBy(asc(schema.groupmember.roleId), asc(schema.groupmember.createdAt), asc(schema.groupmember.id))
+      .leftJoinLateral(lateral, sql`true`)
+      .where(whereClause)
+      .orderBy(...buildPeopleOrderBy(progress, sortOrder ?? 'asc'))
       .limit(limit)
       .offset((page - 1) * limit);
 
     return {
-      items: mapCourseMemberRows(rows),
+      items: rows.map((row) => ({
+        ...row.member,
+        profile: row.profile || null,
+        progressPercent: Number(row.progressPercent ?? 0),
+        progressBucket: (row.progressBucket as TCoursePeopleProgress | null) ?? null,
+        lastLoginAt: row.lastLoginAt ?? null,
+        enrolledAt: row.enrolledAt ?? null
+      })),
       page,
       limit,
       total,

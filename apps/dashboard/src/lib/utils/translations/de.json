@@ -1525,7 +1525,39 @@
           },
           "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen."
         },
-        "learner": "Studierende/r"
+        "learner": "Studierende/r",
+        "views": {
+          "all": "Alle Menschen",
+          "not_started": "Nicht gestartet",
+          "in_progress": "In Bearbeitung",
+          "completed": "Abgeschlossen",
+          "never_logged_in": "Nie eingeloggt",
+          "awaiting_certificate": "Warten auf Zertifikat",
+          "custom": "Benutzerdefinierte Filter"
+        },
+        "window": {
+          "7d": "7 Tage",
+          "30d": "30 Tage",
+          "90d": "90 Tage",
+          "180d": "180 Tage",
+          "never": "Niemals"
+        },
+        "filter": {
+          "title": "Filtern Sie Personen",
+          "role": "Rolle",
+          "all_roles": "Alle Rollen",
+          "progress": "Fortschritt",
+          "in_progress": "In Bearbeitung",
+          "completed": "Abgeschlossen",
+          "membership": "Mitgliedschaft",
+          "joined": "Beigetreten",
+          "invited": "Eingeladen, noch kein Konto",
+          "certificate": "Zertifikat",
+          "earned": "Verdient",
+          "not_earned": "Nicht verdient",
+          "no_login_since": "Seitdem kein Login mehr",
+          "joined_within": "Innerlich verbunden"
+        }
       },
       "marks": {
         "title": "Markierungen",
@@ -5388,7 +5420,17 @@
       "add_another": "Fügen Sie einen weiteren hinzu",
       "invite_submit": "Senden Sie Einladungen",
       "empty_title": "Noch keine Mitglieder",
-      "empty_description": "Laden Sie Menschen ein, dieser Kohorte beizutreten."
+      "empty_description": "Laden Sie Menschen ein, dieser Kohorte beizutreten.",
+      "name": "Name",
+      "joined": "Beigetreten",
+      "filter_title": "Filtern Sie Personen",
+      "views": {
+        "all": "Alle Menschen",
+        "tutors": "Tutoren",
+        "students": "Studenten",
+        "pending_invites": "Ausstehende Einladungen",
+        "never_logged_in": "Nie eingeloggt"
+      }
     },
     "courses": {
       "add": "Kurs hinzufügen",
