@@ -1823,7 +1823,9 @@
               "try_again": "Réessayez",
               "back": "Retour",
               "begin_section": "Section de démarrage",
-              "complete_section": "Rubrique complète"
+              "complete_section": "Rubrique complète",
+              "instructions": "Instructions",
+              "close_instructions": "Fermer les instructions"
             },
             "edit_mode": {
               "delete_modal": "Supprimer l'exercice",
@@ -1872,7 +1874,8 @@
               "title": "Titre",
               "heading": "Descriptif",
               "describe": "Décrivez l'exercice à votre élève",
-              "no": "Pas de description"
+              "no": "Pas de description",
+              "expand": "Développer"
             },
             "shared_question": {
               "textarea": {
@@ -2079,7 +2082,16 @@
                   "video_invalid_link": "Veuillez saisir un lien YouTube valide.",
                   "upload_error_only_images": "Seuls les fichiers image sont pris en charge.",
                   "upload_error_skipped": "Certains fichiers ont été ignorés car ce ne sont pas des images.",
-                  "upload_error_failed": "Échec du téléchargement de l'image. Essayer à nouveau."
+                  "upload_error_failed": "Échec du téléchargement de l'image. Essayer à nouveau.",
+                  "expand": "Développer"
+                },
+                "media": {
+                  "enlarge_image": "Cliquez pour agrandir",
+                  "close": "Fermer",
+                  "zoom_in": "Zoomer",
+                  "zoom_out": "Zoom arrière",
+                  "previous_image": "Image précédente",
+                  "next_image": "Image suivante"
                 }
               },
               "navigation": {

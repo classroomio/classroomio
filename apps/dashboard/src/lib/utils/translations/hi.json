@@ -1823,7 +1823,9 @@
               "try_again": "पुनः प्रयास करें",
               "back": "वापस",
               "begin_section": "प्रारंभ अनुभाग",
-              "complete_section": "पूरा अनुभाग"
+              "complete_section": "पूरा अनुभाग",
+              "instructions": "अनुदेश",
+              "close_instructions": "निर्देश बंद करें"
             },
             "edit_mode": {
               "delete_modal": "व्यायाम हटाएँ",
@@ -1872,7 +1874,8 @@
               "title": "शीर्षक",
               "heading": "विवरण",
               "describe": "अपने विद्यार्थी को अभ्यास का वर्णन करें",
-              "no": "कोई विवरण नहीं"
+              "no": "कोई विवरण नहीं",
+              "expand": "विस्तार करें"
             },
             "shared_question": {
               "textarea": {
@@ -2079,7 +2082,16 @@
                   "video_invalid_link": "कृपया एक वैध यूट्यूब लिंक दर्ज करें।",
                   "upload_error_only_images": "केवल छवि फ़ाइलें समर्थित हैं.",
                   "upload_error_skipped": "कुछ फ़ाइलें छोड़ दी गईं क्योंकि वे छवियाँ नहीं हैं।",
-                  "upload_error_failed": "छवि अपलोड करने में विफल. पुनः प्रयास करें।"
+                  "upload_error_failed": "छवि अपलोड करने में विफल. पुनः प्रयास करें।",
+                  "expand": "विस्तार करें"
+                },
+                "media": {
+                  "enlarge_image": "बड़ा करने के लिए क्लिक करें",
+                  "close": "बंद करें",
+                  "zoom_in": "ज़ूम इन करें",
+                  "zoom_out": "ज़ूम आउट करें",
+                  "previous_image": "पिछली छवि",
+                  "next_image": "अगली छवि"
                 }
               },
               "navigation": {

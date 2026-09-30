@@ -138,6 +138,15 @@ Learner and author UIs for exercise questions (take, preview, review, submission
 
 **Types with heavier or distinct UIs** (textarea editor, file upload, matching/hotspot authoring, link lists) intentionally keep separate `take` / `preview` implementations until a second consumer (for example a dedicated `review` mode) justifies extracting more shared fragments.
 
+### Image lightbox (`src/custom/image-lightbox/`)
+
+Full-screen image viewer for screenshots and other detailed images. `ZoomableImage` renders an image uncropped (`object-contain`) as a button with a hover "enlarge" hint. `ImageLightbox` opens one image or a gallery: click or `+`/`-` to zoom (up to 300%), arrow keys or the side buttons to move between images, Esc or a click on the backdrop to close. Both `open` and `index` are bindable. Copy is passed via `labels: ImageLightboxLabels` (`close`, `zoomIn`, `zoomOut`, `previous`, `next`). Exercise question and option images use both in every non-edit mode. See `Molecules/ImageLightbox` in Storybook.
+
+```svelte
+<ZoomableImage {src} {alt} enlargeLabel="Click to enlarge" onclick={() => (open = true)} />
+<ImageLightbox images={[{ src, alt }]} {labels} bind:open />
+```
+
 ### Question type picker (`src/custom/question-type-picker/`)
 
 Marketing / demo widget: left-hand list of question types and a live **take**-mode preview using `ExerciseQuestion.QuestionRenderer`. Copy is English-only (no dashboard i18n). Also consumed by the **`@cio/embeds`** app as a CDN bundle (`apps/embeds`).

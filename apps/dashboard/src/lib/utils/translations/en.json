@@ -2856,7 +2856,8 @@
               "title": "Title",
               "heading": "Description",
               "describe": "Describe the exercise to your student",
-              "no": "No description"
+              "no": "No description",
+              "expand": "Expand"
             },
             "delete_confirmation": {
               "title": "Delete question",
@@ -2920,6 +2921,8 @@
               }
             },
             "view_mode": {
+              "instructions": "Instructions",
+              "close_instructions": "Close instructions",
               "attempt_counter": "Attempt {current} of {total}",
               "previous_try": "Previous attempt",
               "next_try": "Next attempt",
@@ -3009,6 +3012,7 @@
                   "description_placeholder": "Add additional context for this question",
                   "add_description": "Add description",
                   "remove_description": "Remove description",
+                  "expand": "Expand",
                   "media_menu_sr": "Question extras menu",
                   "add_image": "Add image",
                   "add_video": "Add video",
@@ -3025,6 +3029,14 @@
                   "upload_error_only_images": "Only image files are supported.",
                   "upload_error_skipped": "Some files were skipped because they are not images.",
                   "upload_error_failed": "Failed to upload image. Try again."
+                },
+                "media": {
+                  "enlarge_image": "Click to enlarge",
+                  "close": "Close",
+                  "zoom_in": "Zoom in",
+                  "zoom_out": "Zoom out",
+                  "previous_image": "Previous image",
+                  "next_image": "Next image"
                 }
               },
               "radio": {
