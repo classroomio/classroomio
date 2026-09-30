@@ -281,10 +281,10 @@
   .block-gap .gap-add:hover, .block-gap .gap-add:focus-visible { border-color: var(--ring); color: var(--foreground); box-shadow: var(--shadow-md); }
   /* Desktop canvas: content is inserted from the persistent bottom dock instead, so the
      per-gap button is hidden and the whole gap becomes the clickable insertion point. */
-  #canvas .gap-add { display: none; }
-  #canvas .block-gap { cursor: pointer; }
-  #canvas .block-gap .gap-line { background: transparent; }
-  #canvas .block-gap.gap-active .gap-line { background: var(--primary); height: 2px; }
+  .modern-canvas .gap-add { display: none; }
+  .modern-canvas .block-gap { cursor: pointer; }
+  .modern-canvas .block-gap .gap-line { background: transparent; }
+  .modern-canvas .block-gap.gap-active .gap-line { background: var(--primary); height: 2px; }
 
   .insert-dock {
     position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 30;
@@ -424,6 +424,24 @@
   .flash-nav .icon-btn svg { width: 15px; height: 15px; }
   .flash-counter { font-size: 12.5px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; min-width: 90px; text-align: center; }
   .flash-edit-row { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px; margin-bottom: 10px; }
+
+  .tabs-block { display: flex; flex-direction: column; gap: 14px; }
+  .tabs-pill-row { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 2px; }
+  .tabs-pill { display: inline-flex; align-items: center; gap: 2px; border-radius: var(--radius-md) var(--radius-md) 0 0; padding: 2px 2px 2px 4px; }
+  .tabs-pill-input { font-size: 13px; font-weight: 500; color: var(--muted-foreground); border: none; background: transparent; padding: 7px 6px; border-radius: var(--radius-sm); outline: none; min-width: 40px; }
+  .tabs-pill-input:hover { background: var(--accent); }
+  .tabs-pill-input:focus { background: var(--accent); color: var(--foreground); }
+  .tabs-pill.active .tabs-pill-input { color: var(--foreground); font-weight: 600; }
+  .tabs-pill.active { box-shadow: inset 0 -2px 0 var(--primary); }
+  .tabs-pill-remove { width: 20px; height: 20px; flex-shrink: 0; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .tabs-pill-remove:hover { background: var(--accent); color: var(--foreground); }
+  .tabs-pill-remove svg { width: 11px; height: 11px; stroke-width: 2.2; }
+  .tabs-icon-btn { width: 26px; height: 26px; flex-shrink: 0; border-radius: var(--radius-sm); border: none; background: transparent; color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .tabs-icon-btn:hover { background: var(--accent); color: var(--foreground); }
+  .tabs-icon-btn svg { width: 14px; height: 14px; stroke-width: 2.2; }
+  .tabs-reorder-group { display: inline-flex; gap: 1px; margin-left: auto; }
+  .tabs-pane .canvas { padding: 2px 0 0; }
+  .tabs-pane .empty-page { max-width: none; margin: 0; padding: 24px 20px; }
 
   .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
@@ -675,7 +693,7 @@
           <button class="icon-btn dismiss" aria-label="Dismiss tip" onclick="dismissReorderHint()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
         </div>
 
-        <div class="canvas" id="canvas">
+        <div class="canvas modern-canvas" id="canvas">
           <section class="content-section" data-type="video">
             <div class="block-head edit-only">
               <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
@@ -889,6 +907,7 @@
     <button type="button" class="dock-icon" aria-label="Add document" onclick="insertFromDock('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="lb">Document</span></button>
     <button type="button" class="dock-icon" aria-label="Add chart" onclick="insertFromDock('chart')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span class="lb">Chart</span></button>
     <button type="button" class="dock-icon" aria-label="Add flashcards" onclick="insertFromDock('flashcards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg><span class="lb">Flashcards</span></button>
+    <button type="button" class="dock-icon" aria-label="Add tabs" onclick="insertFromDock('tabs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18"/><path d="M3 5h18v14H3z"/><path d="M9 9v10"/></svg><span class="lb">Tabs</span></button>
   </div>
 </section>
 
@@ -1090,7 +1109,10 @@
     if (!btn) return;
     document.querySelectorAll('#modeToggle button').forEach((b) => b.classList.remove('on'));
     btn.classList.add('on');
-    document.getElementById('screen-desktop').classList.toggle('mode-preview', btn.dataset.mode === 'preview');
+    const isPreview = btn.dataset.mode === 'preview';
+    document.getElementById('screen-desktop').classList.toggle('mode-preview', isPreview);
+    // Tab pills stay clickable so a learner can switch tabs, but must not be renamable.
+    document.querySelectorAll('.tabs-pill-input').forEach((input) => (input.readOnly = isPreview));
   });
 
   // ---- Settings slider (desktop + mobile, each scoped to their own screen) ----
@@ -1358,6 +1380,8 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>';
   const ICON_FLASHCARDS =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg>';
+  const ICON_TABS =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18"/><path d="M3 5h18v14H3z"/><path d="M9 9v10"/></svg>';
   const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
   const ICON_EDIT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
@@ -2003,42 +2027,182 @@
     simulateSave();
   }
 
+  // ---- Tabs: each pane is its own nested canvas, so it holds any other content type ----
+  let tabsInstanceCounter = 0;
+
+  function buildTabPaneCanvasHtml(canvasId, seedHtml) {
+    const hasContent = !!seedHtml;
+    return `
+      <div class="canvas modern-canvas" id="${canvasId}">
+        ${seedHtml || ''}
+        ${hasContent ? blockGap() : ''}
+        <div class="empty-page edit-only" ${hasContent ? 'hidden' : ''}>
+          <p style="font-size:12.5px;color:var(--muted-foreground);margin:0">This tab is empty — use the dock below to add content.</p>
+        </div>
+      </div>`;
+  }
+
+  function buildTabPillHtml(tab, isActive) {
+    return `
+      <span class="tabs-pill${isActive ? ' active' : ''}" data-tab-id="${tab.id}">
+        <input class="tabs-pill-input" value="${escapeHtml(tab.label)}" onfocus="selectTabFromInput(this)" oninput="renameTab(this)" />
+        <button type="button" class="tabs-pill-remove edit-only" onclick="removeTab(this)" aria-label="Remove tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+      </span>`;
+  }
+
+  function buildTabsBlockHtml(tabs, seedByTabId) {
+    tabsInstanceCounter += 1;
+    const instanceId = 'tabs' + tabsInstanceCounter;
+    seedByTabId = seedByTabId || {};
+    const pills = tabs.map((t, i) => buildTabPillHtml(t, i === 0)).join('');
+    const panes = tabs
+      .map(
+        (t, i) => `
+      <div class="tabs-pane${i === 0 ? ' active' : ''}" data-tab-id="${t.id}" ${i === 0 ? '' : 'hidden'}>
+        ${buildTabPaneCanvasHtml(instanceId + '-' + t.id, seedByTabId[t.id])}
+      </div>`
+      )
+      .join('');
+    return `
+      <section class="content-section" data-type="tabs">
+        ${blockHead('Tabs', ICON_TABS)}
+        <div class="tabs-block">
+          <div class="tabs-pill-row">
+            ${pills}
+            <button type="button" class="tabs-icon-btn edit-only" onclick="addTab(this)" aria-label="Add tab">${ICON_PLUS}</button>
+            <span class="tabs-reorder-group edit-only">
+              <button type="button" class="tabs-icon-btn" onclick="moveActiveTab(this,-1)" aria-label="Move tab left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
+              <button type="button" class="tabs-icon-btn" onclick="moveActiveTab(this,1)" aria-label="Move tab right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+            </span>
+          </div>
+          <div class="tabs-panes">${panes}</div>
+        </div>
+      </section>`;
+  }
+
+  function buildTabsBlockSample() {
+    const tabs = [
+      { id: 'a', label: 'Overview' },
+      { id: 'b', label: 'Setup' },
+      { id: 'c', label: 'Advanced' }
+    ];
+    return buildTabsBlockHtml(tabs, { a: buildNoteBlock('<p>Give a quick overview of what this section covers.</p>') });
+  }
+
+  function selectTabFromInput(input) {
+    const pill = input.closest('.tabs-pill');
+    const block = pill.closest('.tabs-block');
+    const tabId = pill.dataset.tabId;
+    block.querySelectorAll('.tabs-pill').forEach((p) => p.classList.toggle('active', p === pill));
+    block.querySelectorAll('.tabs-pane').forEach((pane) => {
+      const isActive = pane.dataset.tabId === tabId;
+      pane.classList.toggle('active', isActive);
+      pane.hidden = !isActive;
+    });
+    const paneCanvas = block.querySelector(`.tabs-pane[data-tab-id="${CSS.escape(tabId)}"] .canvas`);
+    if (paneCanvas) activeCanvasId = paneCanvas.id;
+  }
+
+  function renameTab() {
+    simulateSave();
+  }
+
+  function addTab(btn) {
+    const section = btn.closest('.content-section');
+    const block = btn.closest('.tabs-block');
+    const instanceId = section.querySelector('.tabs-pane .canvas').id.split('-')[0];
+    const newId = 't' + Date.now().toString(36);
+    btn.insertAdjacentHTML('beforebegin', buildTabPillHtml({ id: newId, label: 'New tab' }, false));
+    block.querySelector('.tabs-panes').insertAdjacentHTML('beforeend', `<div class="tabs-pane" data-tab-id="${newId}" hidden>${buildTabPaneCanvasHtml(instanceId + '-' + newId)}</div>`);
+    const newInput = block.querySelector(`.tabs-pill[data-tab-id="${CSS.escape(newId)}"] .tabs-pill-input`);
+    newInput.focus();
+    newInput.select();
+    simulateSave();
+  }
+
+  function removeTab(btn) {
+    const pill = btn.closest('.tabs-pill');
+    const block = pill.closest('.tabs-block');
+    const allPills = block.querySelectorAll('.tabs-pill');
+    if (allPills.length <= 1) return;
+    const tabId = pill.dataset.tabId;
+    const wasActive = pill.classList.contains('active');
+    const pane = block.querySelector(`.tabs-pane[data-tab-id="${CSS.escape(tabId)}"]`);
+    const remaining = [...allPills].filter((p) => p !== pill);
+    pill.remove();
+    if (pane) pane.remove();
+    if (wasActive && remaining.length) remaining[0].querySelector('.tabs-pill-input').focus();
+    simulateSave();
+  }
+
+  function moveActiveTab(btn, dir) {
+    const block = btn.closest('.tabs-block');
+    const activePill = block.querySelector('.tabs-pill.active');
+    if (!activePill) return;
+    const tabId = activePill.dataset.tabId;
+    const sibling = dir === -1 ? activePill.previousElementSibling : activePill.nextElementSibling;
+    if (!sibling || !sibling.classList.contains('tabs-pill')) return;
+    if (dir === -1) activePill.parentElement.insertBefore(activePill, sibling);
+    else activePill.parentElement.insertBefore(sibling, activePill);
+    const pane = block.querySelector(`.tabs-pane[data-tab-id="${CSS.escape(tabId)}"]`);
+    const siblingPane = dir === -1 ? pane.previousElementSibling : pane.nextElementSibling;
+    if (pane && siblingPane) {
+      if (dir === -1) pane.parentElement.insertBefore(pane, siblingPane);
+      else pane.parentElement.insertBefore(siblingPane, pane);
+    }
+    simulateSave();
+  }
+
   let activeCanvasId = 'canvas';
   let activeGapEl = null;
   let dockGapEl = null;
 
   function setActiveGapEl(gapEl) {
     if (!gapEl) return;
-    document.querySelectorAll('#canvas > .block-gap.gap-active').forEach((g) => g.classList.remove('gap-active'));
+    document.querySelectorAll('.block-gap.gap-active').forEach((g) => g.classList.remove('gap-active'));
     gapEl.classList.add('gap-active');
     dockGapEl = gapEl;
   }
 
-  document.getElementById('canvas').addEventListener('click', (e) => {
+  // Generic over every `.canvas` on the page — the main lesson canvas and any tab pane's
+  // nested canvas alike — so the dock always inserts into whichever one the user last touched.
+  document.addEventListener('click', (e) => {
+    // A tab pill lives inside the Tabs block's own outer canvas, so it would otherwise read as
+    // the nearest `.canvas` ancestor and clobber the pane-specific target `selectTabFromInput`
+    // just set on focus. Tab switching owns activeCanvasId for this click; defer to it.
+    if (e.target.closest('.tabs-pill-row')) return;
+    const canvasEl = e.target.closest('.canvas');
+    if (!canvasEl || !canvasEl.id) return;
+    activeCanvasId = canvasEl.id;
     const gap = e.target.closest('.block-gap');
-    if (gap) {
+    if (gap && gap.closest('.canvas') === canvasEl) {
       setActiveGapEl(gap);
       return;
     }
     const section = e.target.closest('.content-section');
-    if (section && section.nextElementSibling && section.nextElementSibling.classList.contains('block-gap')) {
+    if (
+      section &&
+      section.closest('.canvas') === canvasEl &&
+      section.nextElementSibling &&
+      section.nextElementSibling.classList.contains('block-gap')
+    ) {
       setActiveGapEl(section.nextElementSibling);
     }
   });
 
   function resolveDockGapEl() {
-    const gaps = [...document.querySelectorAll('#canvas > .block-gap')];
-    return dockGapEl && dockGapEl.isConnected && dockGapEl.closest('#canvas') ? dockGapEl : gaps[gaps.length - 1] || null;
+    const canvasEl = document.getElementById(activeCanvasId);
+    if (!canvasEl) return null;
+    const gaps = [...canvasEl.querySelectorAll(':scope > .block-gap')];
+    return dockGapEl && dockGapEl.isConnected && dockGapEl.closest('.canvas') === canvasEl ? dockGapEl : gaps[gaps.length - 1] || null;
   }
 
   function insertFromDock(type) {
-    activeCanvasId = 'canvas';
     activeGapEl = resolveDockGapEl();
     chooseContentType(type);
   }
 
   function openAiAssistant() {
-    activeCanvasId = 'canvas';
     activeGapEl = resolveDockGapEl();
     document.getElementById('dialogBox').style.maxWidth = '480px';
     document.getElementById('dialogBox').innerHTML = `
@@ -2102,6 +2266,7 @@
         <button class="content-type-btn" onclick="chooseContentType('document')"><span class="ic">${ICON_DOCUMENT}</span><span class="nm">Document</span></button>
         <button class="content-type-btn" onclick="chooseContentType('chart')"><span class="ic">${ICON_CHART}</span><span class="nm">Chart</span></button>
         <button class="content-type-btn" onclick="chooseContentType('flashcards')"><span class="ic">${ICON_FLASHCARDS}</span><span class="nm">Flashcards</span></button>
+        <button class="content-type-btn" onclick="chooseContentType('tabs')"><span class="ic">${ICON_TABS}</span><span class="nm">Tabs</span></button>
       </div></div>`;
     document.body.classList.add('dialog-open');
   }
@@ -2112,7 +2277,8 @@
     document: buildDocumentBlockSample,
     image: buildImageBlockSample,
     chart: buildChartBlockSample,
-    flashcards: buildFlashcardsBlockSample
+    flashcards: buildFlashcardsBlockSample,
+    tabs: buildTabsBlockSample
   };
 
   function chooseContentType(type) {
