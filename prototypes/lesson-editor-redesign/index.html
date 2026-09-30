@@ -476,24 +476,22 @@
   .process-toolbar { display: flex; justify-content: flex-end; gap: 8px; }
   .process-icon-btn { width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--muted); color: var(--foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .process-icon-btn svg { width: 14px; height: 14px; stroke-width: 2; }
-  .process-stage { position: relative; display: flex; align-items: center; }
-  .process-step { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; padding: 20px 48px; }
+  .process-chip-row { display: flex; align-items: center; justify-content: center; }
+  .process-chip { width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; padding: 0; }
+  .process-chip svg { width: 12px; height: 12px; stroke-width: 3; }
+  .process-chip.done { background: var(--primary); color: var(--primary-foreground); }
+  .process-chip.on { background: var(--card); color: var(--primary); border: 2px solid var(--primary); }
+  .process-chip.todo { background: var(--muted); color: var(--muted-foreground); }
+  .process-chipline { width: 34px; height: 2px; background: var(--border); flex-shrink: 0; }
+  .process-chipline.done { background: var(--primary); }
+  .process-step { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; padding: 4px 24px; }
   .process-heading { font-size: 26px; font-weight: 700; letter-spacing: -.01em; outline: none; margin: 0; border-radius: var(--radius-sm); }
   .process-heading:focus { background: var(--accent); }
   .process-media:empty { display: none; }
   .process-media img { max-width: 100%; max-height: 280px; border-radius: var(--radius-lg); display: block; object-fit: cover; }
   .process-body { font-size: 14.5px; line-height: 1.6; color: var(--foreground); outline: none; max-width: 520px; margin: 0; border-radius: var(--radius-sm); }
   .process-body:focus { background: var(--accent); }
-  .process-advance { display: inline-flex; align-items: center; gap: 6px; }
-  .process-advance svg { width: 14px; height: 14px; stroke-width: 2.4; }
-  .process-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--primary); color: var(--primary-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-md); z-index: 2; }
-  .process-nav svg { width: 18px; height: 18px; stroke-width: 2.4; }
-  .process-nav:disabled { opacity: .3; cursor: default; }
-  .process-nav-prev { left: -16px; }
-  .process-nav-next { right: -16px; }
-  .process-dots { display: flex; justify-content: center; gap: 6px; }
-  .process-dots .dot { width: 6px; height: 6px; border-radius: 999px; background: var(--border); }
-  .process-dots .dot.active { background: var(--primary); }
+  .process-btnrow { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); }
 
   .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
@@ -2324,12 +2322,22 @@
   }
 
   // ---- Process: a step-by-step flow, each step with an optional image + heading + body ----
+  function buildProcessChipsHtml(total, current) {
+    let html = '';
+    for (let i = 0; i < total; i++) {
+      const state = i < current ? 'done' : i === current ? 'on' : 'todo';
+      const content = i < current ? ICON_CHECK_SMALL : String(i + 1);
+      html += `<button type="button" class="process-chip ${state}" onclick="jumpProcessStep(this,${i})" aria-label="Go to step ${i + 1}">${content}</button>`;
+      if (i < total - 1) html += `<span class="process-chipline${i < current ? ' done' : ''}"></span>`;
+    }
+    return html;
+  }
+
   function buildProcessBlockHtml(data) {
     const total = data.steps.length;
     const step = data.steps[0];
     const isLast = total === 1;
     const mediaHtml = step.image ? `<img src="${escapeHtml(step.image)}" alt="" />` : '';
-    const dotsHtml = data.steps.map((_, i) => `<span class="dot${i === 0 ? ' active' : ''}"></span>`).join('');
     return `
       <section class="content-section" data-type="process" data-process='${escapeHtml(JSON.stringify(data))}' data-current-step="0">
         ${blockHead('Process', ICON_PROCESS)}
@@ -2344,17 +2352,16 @@
             </div>
             <button type="button" class="process-icon-btn" onclick="removeProcessStep(this)" aria-label="Delete this step">${ICON_TRASH}</button>
           </div>
-          <div class="process-stage">
-            <button type="button" class="process-nav process-nav-prev" onclick="navProcessStep(this,-1)" aria-label="Previous step" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
-            <div class="process-step">
-              <h3 class="process-heading" contenteditable="true" oninput="onProcessFieldInput(this,'heading')">${escapeHtml(step.heading)}</h3>
-              <div class="process-media">${mediaHtml}</div>
-              <p class="process-body" contenteditable="true" oninput="onProcessFieldInput(this,'body')">${escapeHtml(step.body)}</p>
-              <button type="button" class="btn btn-primary process-advance" onclick="advanceProcessStep(this)">${isLast ? 'Finish' : 'Start'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
-            </div>
-            <button type="button" class="process-nav process-nav-next" onclick="navProcessStep(this,1)" aria-label="Next step" ${isLast ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+          <div class="process-chip-row">${buildProcessChipsHtml(total, 0)}</div>
+          <div class="process-step">
+            <h3 class="process-heading" contenteditable="true" oninput="onProcessFieldInput(this,'heading')">${escapeHtml(step.heading)}</h3>
+            <div class="process-media">${mediaHtml}</div>
+            <p class="process-body" contenteditable="true" oninput="onProcessFieldInput(this,'body')">${escapeHtml(step.body)}</p>
           </div>
-          <div class="process-dots edit-only">${dotsHtml}</div>
+          <div class="process-btnrow">
+            <button type="button" class="btn btn-outline btn-sm process-back" onclick="navProcessStep(this,-1)" aria-label="Previous step" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>Back</button>
+            <button type="button" class="btn btn-primary btn-sm process-advance" onclick="advanceProcessStep(this)">${isLast ? 'Finish' : 'Next'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+          </div>
           <div class="edit-only" style="text-align:center">
             <button type="button" class="quiz-add-option" onclick="addProcessStep(this)">${ICON_PLUS}Add step</button>
           </div>
@@ -2384,14 +2391,13 @@
     const step = data.steps[current];
     const isFirst = current === 0;
     const isLast = current === total - 1;
+    section.querySelector('.process-chip-row').innerHTML = buildProcessChipsHtml(total, current);
     section.querySelector('.process-heading').textContent = step.heading;
     section.querySelector('.process-media').innerHTML = step.image ? `<img src="${escapeHtml(step.image)}" alt="" />` : '';
     section.querySelector('.process-body').textContent = step.body;
+    section.querySelector('.process-back').disabled = isFirst;
     const advanceBtn = section.querySelector('.process-advance');
-    advanceBtn.innerHTML = `${isLast ? 'Finish' : isFirst ? 'Start' : 'Next'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg>`;
-    section.querySelector('.process-nav-prev').disabled = isFirst;
-    section.querySelector('.process-nav-next').disabled = isLast;
-    section.querySelector('.process-dots').innerHTML = data.steps.map((_, i) => `<span class="dot${i === current ? ' active' : ''}"></span>`).join('');
+    advanceBtn.innerHTML = `${isLast ? 'Finish' : 'Next'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg>`;
   }
 
   function navProcessStep(btn, dir) {
@@ -2401,6 +2407,12 @@
     const next = current + dir;
     if (next < 0 || next >= data.steps.length) return;
     section.dataset.currentStep = next;
+    renderProcess(section);
+  }
+
+  function jumpProcessStep(btn, index) {
+    const section = btn.closest('.content-section');
+    section.dataset.currentStep = index;
     renderProcess(section);
   }
 
