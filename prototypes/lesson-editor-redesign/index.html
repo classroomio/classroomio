@@ -11,9 +11,6 @@
         document.documentElement.setAttribute('data-theme', theme);
       })();
     </script>
-    <!-- Real .docx text extraction for "Add as Note" — mammoth converts the uploaded file's own
-         paragraphs/headings/lists to HTML client-side, no server round-trip. -->
-    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
 <style>
   :root {
     --background: oklch(1 0 0);
@@ -329,10 +326,6 @@
   .preview-slide-frame { width: 100%; aspect-ratio: 16/9; background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted-foreground); overflow: hidden; }
   .preview-slide-frame svg { width: 42px; height: 42px; stroke-width: 1.4; }
   .preview-slide-frame .real-media { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
-  .doc-preview-embed { width: 100%; aspect-ratio: 16/10; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--muted); }
-  .doc-preview-embed iframe, .doc-preview-embed img { width: 100%; height: 100%; border: 0; object-fit: contain; display: block; }
-  .doc-source-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted-foreground); background: var(--muted); border-radius: 999px; padding: 4px 10px; margin-bottom: 14px; }
-  .doc-source-chip svg { width: 12px; height: 12px; stroke-width: 2; flex-shrink: 0; }
   .preview-doc-link { display: flex; align-items: center; gap: 12px; }
   .preview-doc-link .info { display: flex; flex-direction: column; gap: 3px; }
   .preview-doc-link .name { font-size: 13.5px; font-weight: 600; }
@@ -361,8 +354,6 @@
   .file-size { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
   .file-actions { display: flex; gap: 6px; flex-shrink: 0; }
   .radio { width: 14px; height: 14px; border-radius: 999px; border: 1px solid var(--input); accent-color: var(--primary); flex-shrink: 0; }
-  .doc-mode-row { display: flex; align-items: center; gap: 18px; padding: 0 4px 14px; }
-  .doc-mode-row label { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--foreground); cursor: pointer; }
   .add-row-tile { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; margin-top: 4px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 11px; color: var(--muted-foreground); font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; font: inherit; }
   .add-row-tile:hover { border-color: var(--ring); color: var(--foreground); background: var(--accent); }
   .add-row-tile svg { width: 15px; height: 15px; stroke-width: 2; }
@@ -689,7 +680,7 @@
                 </div>
               </div>
             </div>
-            <div class="doc-entry" data-mode="note">
+            <div class="doc-entry">
               <div class="file-row edit-only">
                 <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
                 <div class="file-info"><div class="file-name">Product Setup Guide.pdf</div><div class="file-size">860 KB</div></div>
@@ -698,36 +689,7 @@
                   <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
                 </div>
               </div>
-              <div class="doc-mode-row edit-only">
-                <label><input type="radio" name="docMode-1" class="radio" value="note" checked onchange="setDocMode(this)" /> Add as Note</label>
-                <label><input type="radio" name="docMode-1" class="radio" value="link" onchange="setDocMode(this)" /> Add as Downloadable Link</label>
-              </div>
-              <div class="doc-preview-note">
-                <div class="doc-source-chip edit-only"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>Extracted from Product Setup Guide.pdf</div>
-                <div class="note-toolbar edit-only">
-                  <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z"/></svg></button>
-                  <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg></button>
-                  <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg></button>
-                  <div class="tb-sep"></div>
-                  <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/></svg></button>
-                </div>
-                <div class="note-content" contenteditable="true">
-                  <h3>Product Setup Guide</h3>
-                  <p>This guide walks through everything your team needs to get a new workspace ready before inviting learners. Read through each section in order — later steps assume the ones before them are already done.</p>
-                  <h3>Getting started</h3>
-                  <p>To set up your account, first verify your email address, then complete your organization profile. Once verified, invite your team members from the People tab so they can start collaborating right away.</p>
-                  <ul>
-                    <li>Verify your email address from the confirmation link</li>
-                    <li>Complete your organization profile, including logo and branding</li>
-                    <li>Invite your team from the People tab before adding content</li>
-                  </ul>
-                  <h3>Assigning roles</h3>
-                  <p>Each workspace member has a role that controls what they can see and do. Admins manage billing and settings, tutors manage course content and grading, and students access enrolled courses only. Set roles correctly from the start — changing them later can affect access to in-progress courses.</p>
-                  <h3>Next steps</h3>
-                  <p>Once your team is in place, move on to creating your first course. The next lesson picks up exactly where this guide leaves off, so keep it open for reference if anything here needs a second look.</p>
-                </div>
-              </div>
-              <div class="preview-doc-link preview-only doc-preview-link" hidden>
+              <div class="preview-doc-link preview-only">
                 <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
                 <div class="info">
                   <span class="name">Product Setup Guide.pdf</span>
@@ -1029,10 +991,6 @@
             <p class="t">Drag and drop, or click to upload</p>
             <p class="h">PDF, DOCX, PPTX up to 50MB</p>
           </button>
-        </div>
-        <div class="doc-mode-row" id="newDocModeRow" style="padding:14px 4px 0" hidden>
-          <label><input type="radio" name="newDocMode" value="note" class="radio" /> Add as Note</label>
-          <label><input type="radio" name="newDocMode" value="link" class="radio" checked /> Add as Downloadable Link</label>
         </div>
       </div>
       <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="docAddBtn" disabled onclick="confirmAdd('document')">Add document</button></div>`,
@@ -1350,101 +1308,14 @@
     return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
   }
 
-  function readFileAsText(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = () => reject(reader.error);
-      reader.readAsText(file);
-    });
-  }
-
-  function buildSourceChip(fileName) {
-    return `<div class="doc-source-chip edit-only">${ICON_DOCUMENT}Extracted from ${escapeHtml(fileName)}</div>`;
-  }
-
-  function buildNoteToolbarHtml() {
-    return `<div class="note-toolbar edit-only">
-      <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z"/></svg></button>
-      <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg></button>
-      <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg></button>
-      <div class="tb-sep"></div>
-      <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
-      <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg></button>
-      <div class="tb-sep"></div>
-      <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 6.1H3M21 12.1H3M15.1 18H3"/></svg></button>
-      <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
-    </div>`;
-  }
-
-  async function buildDocumentNotePreview(file, objectUrl, displayName) {
-    const type = file.type || '';
-    const name = file.name.toLowerCase();
-    const chip = buildSourceChip(file.name);
-    if (type === 'application/pdf' || name.endsWith('.pdf')) {
-      return `${chip}<h3>${displayName}</h3><div class="doc-preview-embed"><iframe src="${objectUrl}" title="${displayName}"></iframe></div>`;
-    }
-    if (type.startsWith('image/')) {
-      return `${chip}<h3>${displayName}</h3><div class="doc-preview-embed"><img src="${objectUrl}" alt="${displayName}" /></div>`;
-    }
-    if (type.startsWith('text/') || name.endsWith('.txt') || name.endsWith('.md')) {
-      try {
-        const text = await readFileAsText(file);
-        const paragraphs = text
-          .split(/\n{2,}/)
-          .map((p) => `<p>${escapeHtml(p).replace(/\n/g, '<br>')}</p>`)
-          .join('');
-        return `${chip}${buildNoteToolbarHtml()}<div class="note-content" contenteditable="true"><h3>${displayName}</h3>${paragraphs}</div>`;
-      } catch (err) {
-        return `${chip}<div class="note-content" contenteditable="true"><h3>${displayName}</h3><p style="color:var(--muted-foreground)">Couldn't read this file's text.</p></div>`;
-      }
-    }
-    if (name.endsWith('.docx') && window.mammoth) {
-      try {
-        const arrayBuffer = await file.arrayBuffer();
-        const result = await window.mammoth.convertToHtml({ arrayBuffer });
-        return `${chip}${buildNoteToolbarHtml()}<div class="note-content" contenteditable="true"><h3>${displayName}</h3>${result.value}</div>`;
-      } catch (err) {
-        console.error('buildDocumentNotePreview .docx extraction error:', err);
-      }
-    }
-    // Legacy .doc, PowerPoint files, or a failed .docx conversion have no reliable client-side
-    // parser here. Simulate the full end state — a whole document's worth of content, not a
-    // one-paragraph blurb — instead of a "can't preview this" placeholder.
-    return `${chip}${buildNoteToolbarHtml()}<div class="note-content" contenteditable="true">${buildMockDocumentBody(displayName)}</div>`;
-  }
-
-  function buildMockDocumentBody(displayName) {
-    return `
-      <h3>${displayName}</h3>
-      <p>This document walks through everything you need before moving on to the next lesson. Read through each section in order — later lessons build directly on the concepts introduced here, so it's worth taking your time.</p>
-      <h3>Getting started</h3>
-      <p>Before you begin, make sure you have access to everything referenced in this guide. If a link or a file doesn't open, check with your instructor before continuing rather than guessing at the missing piece.</p>
-      <ul>
-        <li>Confirm you can access every tool or account mentioned below</li>
-        <li>Set aside enough time to finish a full section in one sitting</li>
-        <li>Keep a notebook or a blank note handy for anything you want to revisit</li>
-      </ul>
-      <h3>Key concepts</h3>
-      <p>The core ideas in this document connect directly to what you've already covered. Where something feels new, it's usually a small extension of a concept from an earlier lesson rather than something entirely unfamiliar.</p>
-      <p>Pay particular attention to any numbered steps — they're written in the order they need to happen in, and skipping ahead is the most common reason this material feels harder than it actually is.</p>
-      <h3>Wrapping up</h3>
-      <p>Once you've worked through every section above, you should be able to explain the material in your own words without looking back at this document. If you can't yet, that's a normal part of learning — revisit the section that felt least clear before moving on.</p>
-      <p>The next lesson picks up right where this document leaves off, so keep it open for reference if you need to double-check anything while you continue.</p>`;
-  }
-
-  async function buildDocumentBlock(mode, file) {
-    docEntryCount += 1;
-    const groupName = 'docMode-' + docEntryCount;
+  async function buildDocumentBlock(file) {
     const fileName = escapeHtml(file.name);
     const fileSize = escapeHtml(formatFileSize(file.size));
-    const displayName = escapeHtml(file.name.replace(/\.[^./]+$/, ''));
     const objectUrl = URL.createObjectURL(file);
-    const notePreview = await buildDocumentNotePreview(file, objectUrl, displayName);
     return `
       <section class="content-section" data-type="document">
         ${blockHead('Document', ICON_DOCUMENT, 'document')}
-        <div class="doc-entry" data-mode="${mode}">
+        <div class="doc-entry">
           <div class="file-row edit-only">
             <div class="file-icon">${ICON_DOCUMENT}</div>
             <div class="file-info"><div class="file-name">${fileName}</div><div class="file-size">${fileSize}</div></div>
@@ -1453,14 +1324,7 @@
               <a class="icon-btn" style="width:30px;height:30px" aria-label="Download file" href="${objectUrl}" download="${fileName}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></a>
             </div>
           </div>
-          <div class="doc-mode-row edit-only">
-            <label><input type="radio" name="${groupName}" class="radio" value="note" ${mode === 'note' ? 'checked' : ''} onchange="setDocMode(this)" /> Add as Note</label>
-            <label><input type="radio" name="${groupName}" class="radio" value="link" ${mode === 'link' ? 'checked' : ''} onchange="setDocMode(this)" /> Add as Downloadable Link</label>
-          </div>
-          <div class="doc-preview-note" ${mode !== 'note' ? 'hidden' : ''}>
-            ${notePreview}
-          </div>
-          <div class="preview-doc-link preview-only doc-preview-link" ${mode !== 'link' ? 'hidden' : ''}>
+          <div class="preview-doc-link preview-only">
             <div class="file-icon">${ICON_DOCUMENT}</div>
             <div class="info">
               <span class="name">${fileName}</span>
@@ -1688,7 +1552,6 @@
           <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Replace file" onclick="document.getElementById('docFileInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
         </div>
       </div>`;
-    document.getElementById('newDocModeRow').hidden = false;
     document.getElementById('docAddBtn').disabled = false;
   }
 
@@ -1836,27 +1699,16 @@
   });
   document.querySelectorAll('.canvas').forEach((canvas) => updateEmptyState(canvas.id));
 
-  let docEntryCount = 1;
-
-  function setDocMode(radioEl) {
-    const entry = radioEl.closest('.doc-entry');
-    const mode = radioEl.value;
-    entry.dataset.mode = mode;
-    entry.querySelector('.doc-preview-note').hidden = mode !== 'note';
-    entry.querySelector('.doc-preview-link').hidden = mode !== 'link';
-  }
-
   async function confirmAdd(kind) {
     let html = null;
     const confirmBtn = document.querySelector('.dialog-foot .btn-primary');
     if (kind === 'document') {
       if (!selectedDocFile) return;
-      const mode = document.querySelector('input[name="newDocMode"]:checked').value;
       if (confirmBtn) {
         confirmBtn.disabled = true;
         confirmBtn.textContent = 'Adding…';
       }
-      html = await buildDocumentBlock(mode, selectedDocFile);
+      html = await buildDocumentBlock(selectedDocFile);
       selectedDocFile = null;
     }
     if (kind === 'video-more') {
