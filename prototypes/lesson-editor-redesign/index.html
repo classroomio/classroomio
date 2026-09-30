@@ -279,6 +279,24 @@
   }
   .block-gap .gap-add svg { width: 14px; height: 14px; stroke-width: 2; }
   .block-gap .gap-add:hover, .block-gap .gap-add:focus-visible { border-color: var(--ring); color: var(--foreground); box-shadow: var(--shadow-md); }
+  /* Desktop canvas: content is inserted from the persistent bottom dock instead, so the
+     per-gap button is hidden and the whole gap becomes the clickable insertion point. */
+  #canvas .gap-add { display: none; }
+  #canvas .block-gap { cursor: pointer; }
+  #canvas .block-gap.gap-active .gap-line { background: var(--primary); height: 2px; }
+
+  .insert-dock {
+    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 30;
+    display: flex; align-items: center; gap: 2px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 999px; padding: 6px; box-shadow: 0 10px 25px -5px rgb(0 0 0 / .15), 0 8px 10px -6px rgb(0 0 0 / .1);
+  }
+  .dock-icon {
+    width: 38px; height: 38px; flex-shrink: 0; border-radius: 999px; border: none; background: transparent;
+    color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer;
+    padding: 0; transition: background .12s, color .12s;
+  }
+  .dock-icon svg { width: 17px; height: 17px; stroke-width: 2; }
+  .dock-icon:hover, .dock-icon:focus-visible { background: var(--accent); color: var(--foreground); }
   .content-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .content-type-btn {
     display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 12px; border: 1px solid var(--border);
@@ -757,6 +775,13 @@
       </div>
     </div>
   </aside>
+
+  <div class="insert-dock edit-only" role="toolbar" aria-label="Add content">
+    <button type="button" class="dock-icon" data-tip="Video" aria-label="Add video" onclick="insertFromDock('video')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg></button>
+    <button type="button" class="dock-icon" data-tip="Slides" aria-label="Add slides" onclick="insertFromDock('slide')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg></button>
+    <button type="button" class="dock-icon" data-tip="Note" aria-label="Add note" onclick="insertFromDock('note')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></button>
+    <button type="button" class="dock-icon" data-tip="Document" aria-label="Add document" onclick="insertFromDock('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></button>
+  </div>
 </section>
 
 <!-- ============ SCREEN: EMPTY LESSON ============ -->
@@ -1337,6 +1362,33 @@
 
   let activeCanvasId = 'canvas';
   let activeGapEl = null;
+  let dockGapEl = null;
+
+  function setActiveGapEl(gapEl) {
+    if (!gapEl) return;
+    document.querySelectorAll('#canvas > .block-gap.gap-active').forEach((g) => g.classList.remove('gap-active'));
+    gapEl.classList.add('gap-active');
+    dockGapEl = gapEl;
+  }
+
+  document.getElementById('canvas').addEventListener('click', (e) => {
+    const gap = e.target.closest('.block-gap');
+    if (gap) {
+      setActiveGapEl(gap);
+      return;
+    }
+    const section = e.target.closest('.content-section');
+    if (section && section.nextElementSibling && section.nextElementSibling.classList.contains('block-gap')) {
+      setActiveGapEl(section.nextElementSibling);
+    }
+  });
+
+  function insertFromDock(type) {
+    activeCanvasId = 'canvas';
+    const gaps = [...document.querySelectorAll('#canvas > .block-gap')];
+    activeGapEl = dockGapEl && dockGapEl.isConnected && dockGapEl.closest('#canvas') ? dockGapEl : gaps[gaps.length - 1] || null;
+    chooseContentType(type);
+  }
 
   function insertBlock(canvasId, html) {
     const canvas = document.getElementById(canvasId);
