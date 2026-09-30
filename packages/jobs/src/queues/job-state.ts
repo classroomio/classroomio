@@ -54,3 +54,16 @@ export async function getQueueJobEnvelope(
     nextPollMs: suggestNextPollMs(status, pollCount)
   };
 }
+
+/** A queued job's name and payload, so callers can check who owns it before exposing its status. */
+export async function getQueueJobMeta(
+  queueName: QueueName,
+  jobId: string
+): Promise<{ name: string; data: Record<string, unknown> } | null> {
+  const job = await getQueue(queueName).getJob(jobId);
+  if (!job) {
+    return null;
+  }
+
+  return { name: job.name, data: (job.data ?? {}) as Record<string, unknown> };
+}

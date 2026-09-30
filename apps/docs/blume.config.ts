@@ -17,6 +17,10 @@ const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
       'Public API Courses',
       'Public API Course Members',
       'Public API Course Invites',
+      'Public API Course Exercises',
+      'Public API Exercise Templates',
+      'Public API Course Submissions',
+      'Public API Course Marks',
       'Public API Course Certificates'
     ]
   },

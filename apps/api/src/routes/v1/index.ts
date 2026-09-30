@@ -13,6 +13,7 @@ import { publicApiFailedAuthKeyGenerator, publicApiKeyGenerator } from '@api/uti
 import { v1AudienceRouter } from './audience';
 import { v1CohortsRouter } from './cohorts';
 import { v1CoursesRouter } from './courses';
+import { v1ExerciseTemplatesRouter } from './exercise-templates';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -37,4 +38,5 @@ export const v1Router = new Hono()
   .use('*', v1McpUsageMiddleware)
   .route('/audience', v1AudienceRouter)
   .route('/courses', v1CoursesRouter)
-  .route('/cohorts', v1CohortsRouter);
+  .route('/cohorts', v1CohortsRouter)
+  .route('/exercise-templates', v1ExerciseTemplatesRouter);

@@ -48,11 +48,6 @@ Current tools:
 - `create_course_draft`
 - `create_course_draft_from_course`
 - `get_course_draft`
-- `list_course_exercises`
-- `get_course_exercise`
-- `create_course_exercise`
-- `create_course_exercise_from_template`
-- `update_course_exercise`
 - `update_course_draft`
 - `tag_course_draft`
 - `tag_courses`
@@ -132,6 +127,48 @@ What the tools cover compared with the dashboard:
 - Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
 - Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
 
+Course exercise tools:
+
+- `list_course_exercises`
+- `get_course_exercise`
+- `create_course_exercise`
+- `update_course_exercise`
+- `delete_course_exercise`
+- `notify_course_exercise`
+- `get_course_exercise_notify_status`
+- `list_exercise_templates`
+- `get_exercise_template`
+
+Submission and marks tools:
+
+- `list_course_submissions`
+- `get_course_submission`
+- `grade_course_submission`
+- `update_course_submission`
+- `delete_course_submission`
+- `get_course_marks`
+
+Exercise and template tools call the public API (`/public-api/v1/courses/:id/exercises` and `/public-api/v1/exercise-templates`) with the `course:exercise:read` / `course:exercise:write` scopes. Submission and marks tools call `/public-api/v1/courses/:id/submissions` and `/public-api/v1/courses/:id/marks` with the `course:submission:read` / `course:submission:write` scopes. MCP keys get all four by default. Existing MCP keys that still have the default scope set were given the submission scopes too; a key created with a narrower scope list is left unchanged, so create a new key to use the submission tools.
+
+These tools act as the person who created the key:
+
+- Every exercise, template, and submission tool needs them to be a course tutor/admin or an org admin (templates: an org admin or tutor). Exercise reads include the correct answers, which is why reading needs the team role too.
+- `get_course_marks` needs them to be a member of the course or an org admin. A student only gets their own row, as in the dashboard.
+
+`create_course_exercise` takes either `title` and `questions`, or a `templateId` from `list_exercise_templates`; with a template, only `sectionId` and `order` may be sent alongside it. `create_course_exercise_from_template` was merged into it. `update_course_exercise` is a diff: send a question with its `id` to edit it, with `id` and `delete: true` to remove it, and without an `id` to add it; options work the same way. Question, option, and section ids must belong to the exercise. File upload, ordering, link, star rating, and video recording questions need a paid plan (403 `UPGRADE_REQUIRED` on Basic).
+
+`delete_course_exercise` and `delete_course_submission` are hard deletes. Deleting an exercise also deletes every submission for it.
+
+`grade_course_submission` sets the points per answer, the total, and feedback, and marks the submission completed. `update_course_submission` only changes the grading state or feedback. The learner is emailed when the state changes, as in the dashboard. `notify_course_exercise` emails every course member and returns a `jobId` for `get_course_exercise_notify_status`; each call sends the emails again.
+
+List tools (`list_course_exercises`, `list_exercise_templates`, `list_course_submissions`, `get_course_marks`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
+
+What the tools cover compared with the dashboard:
+
+- Covered: creating, editing, deleting, and notifying about exercises (including exercise sections and templates), reviewing and grading submissions, and the gradebook.
+- Not covered, on purpose: learner actions (submitting an exercise, recording video answers). A key acts as its creator, an admin or tutor, and must not submit on a learner's behalf.
+- Covered by other tools: moving or reordering exercises (`reorder_course_content`) and unlocking one (`isUnlocked` on `update_course_exercise`).
+
 ## Auth Model
 
 The package expects an org-scoped ClassroomIO automation key generated from `Automation -> MCP` in the ClassroomIO dashboard.
@@ -147,11 +184,11 @@ ClassroomIO API:
 
 The MCP package never decides permissions.
 
-Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course draft/exercise tools above call internal-only endpoints and use their own scopes (`course_import:draft:*`, `course:read`/`write`, etc.). Both kinds count toward the same MCP rate limits.
+Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course draft tools above call internal-only endpoints and use their own scopes (`course_import:draft:*`, `course:read`/`write`, etc.). Both kinds count toward the same MCP rate limits.
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, and course certificate routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course exercise and exercise template, and course submission and marks routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -463,8 +500,9 @@ Add a 5-question multiple-choice exercise to lesson 3.
 Expected tool sequence:
 
 1. Agent calls `list_course_exercises` if it needs current context.
-2. Agent calls `create_course_exercise` for a brand new exercise.
-3. Agent calls `update_course_exercise` for later revisions.
+2. Agent calls `create_course_exercise` for a brand new exercise, or with a `templateId` from `list_exercise_templates`.
+3. Agent calls `get_course_exercise`, then `update_course_exercise` for later revisions.
+4. Agent calls `notify_course_exercise` if the user wants learners emailed.
 
 Use this direct path when the course is already live and the change is exercise-specific.
 
@@ -514,8 +552,8 @@ Exercise tools use the live course directly:
 - `list_course_exercises`
 - `get_course_exercise`
 - `create_course_exercise`
-- `create_course_exercise_from_template`
 - `update_course_exercise`
+- `delete_course_exercise`
 
 Supported `questionTypeId` values for exercise payloads:
 

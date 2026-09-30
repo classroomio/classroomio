@@ -40,6 +40,21 @@ export const courseForbiddenResponses = {
   )
 };
 
+export const exerciseForbiddenResponses = {
+  read: forbidden('course:exercise:read', TEAM_FORBIDDEN),
+  write: forbidden('course:exercise:write', TEAM_FORBIDDEN),
+  writeWithPlan: forbidden(
+    'course:exercise:write',
+    `${TEAM_FORBIDDEN}, or a premium question type is used on the Basic plan (UPGRADE_REQUIRED)`
+  )
+};
+
+export const submissionForbiddenResponses = {
+  read: forbidden('course:submission:read', TEAM_FORBIDDEN),
+  write: forbidden('course:submission:write', TEAM_FORBIDDEN),
+  marks: forbidden('course:submission:read', MEMBER_FORBIDDEN)
+};
+
 export const mcpRateLimitResponse = {
   description: 'MCP keys only: the per-key or per-organization MCP rate limit was hit'
 };

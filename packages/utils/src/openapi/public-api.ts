@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, and every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, course certificate, course exercise and exercise template, and course submission and marks endpoints, through their \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:exercise:*\`, and \`course:submission:*\` scopes, and every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -161,6 +161,21 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
   'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
   'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate',
+  'GET /public-api/v1/courses/{courseId}/exercises': 'List course exercises',
+  'POST /public-api/v1/courses/{courseId}/exercises': 'Create a course exercise',
+  'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Get a course exercise',
+  'PUT /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Update a course exercise',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Delete a course exercise',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify': 'Notify course members about an exercise',
+  'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify/{jobId}': 'Get an exercise notification status',
+  'GET /public-api/v1/exercise-templates': 'List exercise templates',
+  'GET /public-api/v1/exercise-templates/{templateId}': 'Get an exercise template',
+  'GET /public-api/v1/courses/{courseId}/submissions': 'List course submissions',
+  'GET /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Get a submission',
+  'PUT /public-api/v1/courses/{courseId}/submissions/{submissionId}/grades': 'Grade a submission',
+  'PATCH /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Update a submission',
+  'DELETE /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Delete a submission',
+  'GET /public-api/v1/courses/{courseId}/marks': 'Get course marks',
   'GET /public-api/v1/courses/{courseId}/members': 'List course members',
   'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
   'GET /public-api/v1/courses/{courseId}/members/{memberId}': 'Get a course member',
@@ -236,6 +251,23 @@ const OPERATION_TAGS = [
     name: 'Public API Course Invites',
     description:
       'Invite people to a course by email or CSV, list invites, and revoke pending ones. Invites can onboard people who are not yet organization members.'
+  },
+  {
+    name: 'Public API Course Exercises',
+    description:
+      "Create, read, edit, and delete a course's exercises, their questions and exercise sections, and email course members about an exercise."
+  },
+  {
+    name: 'Public API Exercise Templates',
+    description: 'Browse the built-in exercise templates you can create an exercise from.'
+  },
+  {
+    name: 'Public API Course Submissions',
+    description: "Review, grade, and manage learners' exercise submissions."
+  },
+  {
+    name: 'Public API Course Marks',
+    description: "Read a course's gradebook: every student's points on every exercise."
   },
   {
     name: 'Public API Cohorts',

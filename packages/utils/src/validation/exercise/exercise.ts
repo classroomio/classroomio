@@ -173,7 +173,10 @@ const ZExerciseUpdateQuestionBase = z.object({
     .optional()
 });
 
-function validateQuestionOptions(question: z.infer<typeof ZExerciseUpdateQuestionBase>, ctx: z.core.$RefinementCtx) {
+export function validateQuestionOptions(
+  question: QuestionRuleInput & { deletedAt?: string; questionTypeId?: number },
+  ctx: z.core.$RefinementCtx
+) {
   // Skip validation for deleted questions
   if (question.deletedAt) return;
 
