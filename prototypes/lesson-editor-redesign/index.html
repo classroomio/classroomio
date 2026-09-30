@@ -409,6 +409,22 @@
   .chart-type-tabs button.active { background: var(--card); color: var(--foreground); box-shadow: var(--shadow-md); }
   .chart-data-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
 
+  .flash-block { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .flash-card { perspective: 1200px; width: 100%; max-width: 420px; aspect-ratio: 16/9; cursor: pointer; }
+  .flash-card-inner { position: relative; width: 100%; height: 100%; transition: transform .5s; transform-style: preserve-3d; }
+  .flash-card.flipped .flash-card-inner { transform: rotateY(180deg); }
+  .flash-card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius-xl); border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px; text-align: center; box-sizing: border-box; }
+  .flash-front { background: var(--card); }
+  .flash-back { background: color-mix(in oklab, var(--primary), transparent 92%); border-color: color-mix(in oklab, var(--primary), transparent 60%); transform: rotateY(180deg); }
+  .flash-eyebrow { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted-foreground); }
+  .flash-text { font-size: 16.5px; font-weight: 600; margin: 0; max-width: 320px; line-height: 1.4; }
+  .flash-hint { font-size: 11px; color: var(--muted-foreground); }
+  .flash-nav { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 4px; }
+  .flash-nav .icon-btn { width: 30px; height: 30px; }
+  .flash-nav .icon-btn svg { width: 15px; height: 15px; }
+  .flash-counter { font-size: 12.5px; color: var(--muted-foreground); font-variant-numeric: tabular-nums; min-width: 90px; text-align: center; }
+  .flash-edit-row { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px; margin-bottom: 10px; }
+
   .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
   .note-toolbar .tb-btn:hover { background: var(--accent); color: var(--foreground); }
@@ -872,6 +888,7 @@
     <button type="button" class="dock-icon" aria-label="Add note" onclick="insertFromDock('note')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="lb">Note</span></button>
     <button type="button" class="dock-icon" aria-label="Add document" onclick="insertFromDock('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="lb">Document</span></button>
     <button type="button" class="dock-icon" aria-label="Add chart" onclick="insertFromDock('chart')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span class="lb">Chart</span></button>
+    <button type="button" class="dock-icon" aria-label="Add flashcards" onclick="insertFromDock('flashcards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg><span class="lb">Flashcards</span></button>
   </div>
 </section>
 
@@ -1339,6 +1356,8 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
   const ICON_CHART =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>';
+  const ICON_FLASHCARDS =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg>';
   const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
   const ICON_EDIT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
@@ -1851,6 +1870,139 @@
     simulateSave();
   }
 
+  // ---- Flashcards: flip-card preview + a simple manage-cards dialog ----
+  function buildFlashcardsBlockHtml(data) {
+    const current = 0;
+    const card = data.cards[current] || { q: 'No cards yet', a: 'Add one below' };
+    const counterText = data.cards.length ? `Card ${current + 1} of ${data.cards.length}` : 'No cards yet';
+    return `
+      <section class="content-section" data-type="flashcards" data-flashcards='${escapeHtml(JSON.stringify(data))}' data-current="0">
+        ${blockHead('Flashcards', ICON_FLASHCARDS)}
+        <div class="flash-block">
+          <div class="flash-card" onclick="flipFlashcard(this)">
+            <div class="flash-card-inner">
+              <div class="flash-card-face flash-front">
+                <span class="flash-eyebrow">Question</span>
+                <p class="flash-text">${escapeHtml(card.q)}</p>
+                <span class="flash-hint">Click to flip</span>
+              </div>
+              <div class="flash-card-face flash-back">
+                <span class="flash-eyebrow">Answer</span>
+                <p class="flash-text">${escapeHtml(card.a)}</p>
+                <span class="flash-hint">Click to flip back</span>
+              </div>
+            </div>
+          </div>
+          <div class="flash-nav">
+            <button type="button" class="icon-btn" onclick="event.stopPropagation(); navFlashcard(this,-1)" aria-label="Previous card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg></button>
+            <span class="flash-counter">${counterText}</span>
+            <button type="button" class="icon-btn" onclick="event.stopPropagation(); navFlashcard(this,1)" aria-label="Next card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
+          </div>
+          <div class="edit-only" style="text-align:center;margin-top:6px">
+            <button type="button" class="btn btn-outline btn-sm" onclick="event.stopPropagation(); openFlashcardEditor(this)">Manage cards</button>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function buildFlashcardsBlockSample() {
+    return buildFlashcardsBlockHtml({
+      cards: [
+        { q: 'What is customer retention?', a: 'The ability of a business to keep customers over time.' },
+        { q: 'Why does retention matter more than acquisition?', a: "It's typically 5-7x cheaper to keep an existing customer than to win a new one." }
+      ]
+    });
+  }
+
+  function renderFlashcard(section) {
+    const data = JSON.parse(section.dataset.flashcards);
+    let current = parseInt(section.dataset.current || '0', 10);
+    current = data.cards.length ? ((current % data.cards.length) + data.cards.length) % data.cards.length : 0;
+    section.dataset.current = current;
+    const card = data.cards[current] || { q: 'No cards yet', a: 'Add one below' };
+    const cardEl = section.querySelector('.flash-card');
+    cardEl.classList.remove('flipped');
+    cardEl.querySelector('.flash-front .flash-text').textContent = card.q;
+    cardEl.querySelector('.flash-back .flash-text').textContent = card.a;
+    section.querySelector('.flash-counter').textContent = data.cards.length ? `Card ${current + 1} of ${data.cards.length}` : 'No cards yet';
+  }
+
+  function navFlashcard(btn, dir) {
+    const section = btn.closest('.content-section');
+    const data = JSON.parse(section.dataset.flashcards);
+    if (!data.cards.length) return;
+    let current = parseInt(section.dataset.current || '0', 10);
+    current = (current + dir + data.cards.length) % data.cards.length;
+    section.dataset.current = current;
+    renderFlashcard(section);
+  }
+
+  function flipFlashcard(cardEl) {
+    cardEl.classList.toggle('flipped');
+  }
+
+  let activeFlashcardsEditEl = null;
+
+  function buildFlashcardRows(cards) {
+    return cards
+      .map(
+        (c, i) => `
+      <div class="flash-edit-row">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="font-size:11.5px;font-weight:600;color:var(--muted-foreground)">Card ${i + 1}</span>
+          <div style="display:flex;gap:4px">
+            <button type="button" class="icon-btn" style="width:26px;height:26px" onclick="moveFlashcardRow(this,-1)" aria-label="Move card up">${ICON_CHEVRON_UP}</button>
+            <button type="button" class="icon-btn" style="width:26px;height:26px" onclick="moveFlashcardRow(this,1)" aria-label="Move card down">${ICON_CHEVRON_DOWN}</button>
+            <button type="button" class="icon-btn" style="width:26px;height:26px" onclick="this.closest('.flash-edit-row').remove()" aria-label="Remove card">${ICON_TRASH}</button>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:8px"><label class="label">Question</label><textarea class="textarea flash-row-q" style="min-height:50px">${escapeHtml(c.q)}</textarea></div>
+        <div class="field"><label class="label">Answer</label><textarea class="textarea flash-row-a" style="min-height:50px">${escapeHtml(c.a)}</textarea></div>
+      </div>`
+      )
+      .join('');
+  }
+
+  function moveFlashcardRow(btn, dir) {
+    const row = btn.closest('.flash-edit-row');
+    const sibling = dir === -1 ? row.previousElementSibling : row.nextElementSibling;
+    if (!sibling) return;
+    if (dir === -1) row.parentElement.insertBefore(row, sibling);
+    else row.parentElement.insertBefore(sibling, row);
+  }
+
+  function openFlashcardEditor(btn) {
+    activeFlashcardsEditEl = btn.closest('.content-section');
+    const data = JSON.parse(activeFlashcardsEditEl.dataset.flashcards);
+    document.getElementById('dialogBox').style.maxWidth = '520px';
+    document.getElementById('dialogBox').innerHTML = `
+      <div class="dialog-head"><h2 class="dialog-title">Manage flashcards</h2></div>
+      <div class="dialog-body" style="max-height:60vh;overflow-y:auto">
+        <div id="flashcardRows">${buildFlashcardRows(data.cards)}</div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="addFlashcardRow()">${ICON_PLUS}Add card</button>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmFlashcardsEdit()">Save changes</button></div>`;
+    document.body.classList.add('dialog-open');
+  }
+
+  function addFlashcardRow() {
+    document.getElementById('flashcardRows').insertAdjacentHTML('beforeend', buildFlashcardRows([{ q: '', a: '' }]));
+  }
+
+  function confirmFlashcardsEdit() {
+    if (!activeFlashcardsEditEl) return;
+    const rows = [...document.querySelectorAll('#flashcardRows .flash-edit-row')];
+    const cards = rows
+      .map((r) => ({ q: r.querySelector('.flash-row-q').value.trim(), a: r.querySelector('.flash-row-a').value.trim() }))
+      .filter((c) => c.q || c.a);
+    activeFlashcardsEditEl.dataset.flashcards = JSON.stringify({ cards });
+    activeFlashcardsEditEl.dataset.current = 0;
+    renderFlashcard(activeFlashcardsEditEl);
+    closeDialog();
+    activeFlashcardsEditEl = null;
+    simulateSave();
+  }
+
   let activeCanvasId = 'canvas';
   let activeGapEl = null;
   let dockGapEl = null;
@@ -1949,6 +2101,7 @@
         <button class="content-type-btn" onclick="chooseContentType('note')"><span class="ic">${ICON_NOTE}</span><span class="nm">Note</span></button>
         <button class="content-type-btn" onclick="chooseContentType('document')"><span class="ic">${ICON_DOCUMENT}</span><span class="nm">Document</span></button>
         <button class="content-type-btn" onclick="chooseContentType('chart')"><span class="ic">${ICON_CHART}</span><span class="nm">Chart</span></button>
+        <button class="content-type-btn" onclick="chooseContentType('flashcards')"><span class="ic">${ICON_FLASHCARDS}</span><span class="nm">Flashcards</span></button>
       </div></div>`;
     document.body.classList.add('dialog-open');
   }
@@ -1958,7 +2111,8 @@
     slide: buildSlideBlockSample,
     document: buildDocumentBlockSample,
     image: buildImageBlockSample,
-    chart: buildChartBlockSample
+    chart: buildChartBlockSample,
+    flashcards: buildFlashcardsBlockSample
   };
 
   function chooseContentType(type) {
