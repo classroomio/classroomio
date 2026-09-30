@@ -1,4 +1,5 @@
 import { ApiError, BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { ErrorCodes } from '@cio/utils/constants';
 import type {
   CreateLearningPathData,
   CreateLearningPathInput,
@@ -8,6 +9,7 @@ import type {
   LearningPathAccessOptions,
   LearningPathDetail,
   LearningPathSummary,
+  LearningPathsPagination,
   ListLearningPathsRequest,
   UpdateLearningPathData,
   UpdateLearningPathRequest
@@ -25,6 +27,7 @@ import { snackbar } from '$features/ui/snackbar/store';
 
 export class LearningPathApi extends BaseApiWithErrors {
   paths = $state<LearningPathSummary[]>([]);
+  pathsPagination = $state<LearningPathsPagination | null>(null);
   currentPath = $state<LearningPathDetail | null>(null);
 
   private loadedPathId = $state<string | null>(null);
@@ -113,19 +116,28 @@ export class LearningPathApi extends BaseApiWithErrors {
     return this.ensurePath(pathId);
   }
 
-  async listPaths(organizationId?: string): Promise<void> {
+  async listPaths(
+    organizationId?: string,
+    options: { page?: number; limit?: number; search?: string } = {}
+  ): Promise<void> {
     const orgId = organizationId || get(currentOrg).id;
     if (!orgId) return;
 
+    // The listing page filters client-side, so fetch up to a full page of 100.
+    const { page = 1, limit = 100, search } = options;
     this.listedOrgId = orgId;
     const seq = ++this.listPathsRequestSeq;
 
     await this.execute<ListLearningPathsRequest>({
-      requestFn: () => classroomio['learning-path'].$get({ query: { organizationId: orgId } }),
+      requestFn: () =>
+        classroomio['learning-path'].$get({
+          query: { organizationId: orgId, page: String(page), limit: String(limit), search }
+        }),
       logContext: 'listing learning paths',
       onSuccess: (result) => {
         if (this.listedOrgId === orgId && seq === this.listPathsRequestSeq) {
-          this.paths = result.data;
+          this.paths = Array.isArray(result.data) ? result.data : [];
+          this.pathsPagination = result.pagination ?? null;
         }
       }
     });
@@ -136,20 +148,7 @@ export class LearningPathApi extends BaseApiWithErrors {
     let fetchedDetail: LearningPathDetail | null = null;
 
     await this.execute<GetLearningPathDetailRequest>({
-      requestFn: async () => {
-        const response = await classroomio['learning-path'][':pathId'].$get({ param: { pathId } });
-        if (!response.ok) {
-          const clone = response.clone();
-          const body = (await clone.json().catch(() => null)) as {
-            message?: string;
-            error?: string;
-            code?: string;
-          } | null;
-          const message = body?.error || body?.message || `HTTP ${response.status}: ${response.statusText}`;
-          requestError = new ApiError(message, response.status, response.statusText, response);
-        }
-        return response;
-      },
+      requestFn: () => classroomio['learning-path'][':pathId'].$get({ param: { pathId } }),
       logContext: 'getting learning path detail',
       onSuccess: (result) => {
         fetchedDetail = result.data;
@@ -158,15 +157,17 @@ export class LearningPathApi extends BaseApiWithErrors {
         );
       },
       onError: (err) => {
-        if (!requestError) {
-          const message =
-            typeof err === 'string'
-              ? err
-              : err && typeof err === 'object' && 'error' in err && typeof err.error === 'string'
-                ? err.error
-                : 'Failed to load learning path';
-          requestError = new Error(message);
-        }
+        const message =
+          typeof err === 'string'
+            ? err
+            : err && typeof err === 'object' && 'error' in err
+              ? String((err as { error: unknown }).error)
+              : 'Failed to load learning path';
+        const code = err && typeof err === 'object' && 'code' in err ? String((err as { code: unknown }).code) : null;
+        // Preserve the not-found signal: execute swallows HTTP status, so map
+        // the shared error code back to 404 here. ensurePath relies on it to
+        // render the not-found state instead of a generic load error.
+        requestError = code === ErrorCodes.LEARNING_PATH_NOT_FOUND ? new ApiError(message, 404) : new Error(message);
       }
     });
 

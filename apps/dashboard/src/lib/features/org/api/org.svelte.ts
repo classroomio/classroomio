@@ -11,11 +11,13 @@ import type {
   GetAudienceRequest,
   GetLinkInviteRequest,
   GetOrgPublicCoursesRequest,
+  GetOrgPublicLearningPathsRequest,
   ImportAudienceRequest,
   InviteTeamRequest,
   JoinAcademyRequest,
   OrgLinkInvite,
   OrgPublicCourses,
+  OrgPublicLearningPaths,
   OrganizationAudience,
   OrganizationAudiencePagination,
   OrganizationAudienceQuery,
@@ -90,10 +92,16 @@ class OrgApi extends BaseApiWithErrors {
   publicCourses: OrgPublicCourses = $state([]);
   hasMorePublicCourses = $state(false);
   publicCoursesLoadedSiteName: string | null = $state(null);
+  publicLearningPaths: OrgPublicLearningPaths = $state([]);
+  hasMorePublicLearningPaths = $state(false);
+  publicLearningPathsLoadedSiteName: string | null = $state(null);
 
   isFetchingOrgPublicCourses = $state(false);
+  isFetchingOrgPublicLearningPaths = $state(false);
   private activePublicCoursesFetch: Promise<void> | null = null;
   private activePublicCoursesFetchSiteName: string | null = null;
+  private activePublicLearningPathsFetch: Promise<void> | null = null;
+  private activePublicLearningPathsFetchSiteName: string | null = null;
   private activeAudienceRequestController: AbortController | null = null;
 
   async joinAcademy(orgId: string, redirectTo = '/lms') {
@@ -200,6 +208,52 @@ class OrgApi extends BaseApiWithErrors {
     this.publicCoursesLoadedSiteName = null;
   }
 
+  invalidatePublicLearningPaths() {
+    this.publicLearningPathsLoadedSiteName = null;
+  }
+
+  /**
+   * Shared dedupe + loading-flag wrapper for the public catalog fetches.
+   */
+  private runDedupedPublicCatalogFetch(
+    siteName: string,
+    control: {
+      getActiveFetch: () => Promise<void> | null;
+      getActiveSiteName: () => string | null;
+      setActive: (promise: Promise<void> | null, fetchSiteName: string | null) => void;
+      setFetching: (value: boolean) => void;
+      getLoadedSiteName: () => string | null;
+      setLoadedSiteName: (loadedSiteName: string | null) => void;
+      clearOnFailure: () => void;
+    },
+    run: () => Promise<void>
+  ): Promise<void> {
+    if (control.getActiveFetch() && control.getActiveSiteName() === siteName) {
+      return control.getActiveFetch()!;
+    }
+
+    control.setFetching(true);
+
+    const fetchPromise = run()
+      .then(() => undefined)
+      .finally(() => {
+        control.setFetching(false);
+
+        if (control.getLoadedSiteName() !== siteName) {
+          control.clearOnFailure();
+          control.setLoadedSiteName(siteName);
+        }
+
+        if (control.getActiveSiteName() === siteName) {
+          control.setActive(null, null);
+        }
+      });
+
+    control.setActive(fetchPromise, siteName);
+
+    return fetchPromise;
+  }
+
   /**
    * Refetches public courses for a site, clearing any cached settings preview data.
    */
@@ -210,6 +264,18 @@ class OrgApi extends BaseApiWithErrors {
 
     this.invalidatePublicCourses();
     await this.fetchPublicCoursesBySiteName(siteName);
+  }
+
+  /**
+   * Refetches public learning paths for a site, clearing cached preview data.
+   */
+  async refreshPublicLearningPaths(siteName: string) {
+    if (!siteName) {
+      return;
+    }
+
+    this.invalidatePublicLearningPaths();
+    await this.fetchPublicLearningPathsBySiteName(siteName);
   }
 
   /**
@@ -225,6 +291,18 @@ class OrgApi extends BaseApiWithErrors {
   }
 
   /**
+   * Loads public learning paths for a site when they have not been fetched yet.
+   * Skips the request when paths are already in memory for the same site.
+   */
+  async loadPublicLearningPathsIfNeeded(siteName: string) {
+    if (!siteName || this.publicLearningPathsLoadedSiteName === siteName) {
+      return;
+    }
+
+    await this.fetchPublicLearningPathsBySiteName(siteName);
+  }
+
+  /**
    * Gets public courses by organization siteName (for landing pages)
    * @param siteName Organization site name
    * @returns Published courses array
@@ -234,45 +312,89 @@ class OrgApi extends BaseApiWithErrors {
     await this.fetchPublicCoursesBySiteName(siteName);
   }
 
+  /**
+   * Gets public learning paths by organization siteName (for landing pages)
+   * @param siteName Organization site name
+   */
+  async getPublicLearningPathsBySiteName(siteName: string) {
+    this.invalidatePublicLearningPaths();
+    await this.fetchPublicLearningPathsBySiteName(siteName);
+  }
+
   private fetchPublicCoursesBySiteName(siteName: string): Promise<void> {
-    if (this.activePublicCoursesFetch && this.activePublicCoursesFetchSiteName === siteName) {
-      return this.activePublicCoursesFetch;
-    }
-
-    this.isFetchingOrgPublicCourses = true;
-
-    const fetchPromise = this.execute<GetOrgPublicCoursesRequest>({
-      requestFn: () =>
-        classroomio.organization.courses.public.$get({
-          query: { siteName }
-        }),
-      logContext: 'fetching public courses',
-      onSuccess: (response) => {
-        this.publicCourses = response.data.courses;
-        this.hasMorePublicCourses = response.data.hasMoreCourses;
-        this.publicCoursesLoadedSiteName = siteName;
-      }
-    })
-      .then(() => undefined)
-      .finally(() => {
-        this.isFetchingOrgPublicCourses = false;
-
-        if (this.publicCoursesLoadedSiteName !== siteName) {
+    return this.runDedupedPublicCatalogFetch(
+      siteName,
+      {
+        getActiveFetch: () => this.activePublicCoursesFetch,
+        getActiveSiteName: () => this.activePublicCoursesFetchSiteName,
+        setActive: (promise, fetchSiteName) => {
+          this.activePublicCoursesFetch = promise;
+          this.activePublicCoursesFetchSiteName = fetchSiteName;
+        },
+        setFetching: (value) => {
+          this.isFetchingOrgPublicCourses = value;
+        },
+        getLoadedSiteName: () => this.publicCoursesLoadedSiteName,
+        setLoadedSiteName: (loadedSiteName) => {
+          this.publicCoursesLoadedSiteName = loadedSiteName;
+        },
+        clearOnFailure: () => {
           this.publicCourses = [];
           this.hasMorePublicCourses = false;
-          this.publicCoursesLoadedSiteName = siteName;
         }
+      },
+      () =>
+        this.execute<GetOrgPublicCoursesRequest>({
+          requestFn: () =>
+            classroomio.organization.courses.public.$get({
+              query: { siteName }
+            }),
+          logContext: 'fetching public courses',
+          onSuccess: (response) => {
+            this.publicCourses = response.data.courses;
+            this.hasMorePublicCourses = response.data.hasMoreCourses;
+            this.publicCoursesLoadedSiteName = siteName;
+          }
+        }).then(() => undefined)
+    );
+  }
 
-        if (this.activePublicCoursesFetchSiteName === siteName) {
-          this.activePublicCoursesFetch = null;
-          this.activePublicCoursesFetchSiteName = null;
+  private fetchPublicLearningPathsBySiteName(siteName: string): Promise<void> {
+    return this.runDedupedPublicCatalogFetch(
+      siteName,
+      {
+        getActiveFetch: () => this.activePublicLearningPathsFetch,
+        getActiveSiteName: () => this.activePublicLearningPathsFetchSiteName,
+        setActive: (promise, fetchSiteName) => {
+          this.activePublicLearningPathsFetch = promise;
+          this.activePublicLearningPathsFetchSiteName = fetchSiteName;
+        },
+        setFetching: (value) => {
+          this.isFetchingOrgPublicLearningPaths = value;
+        },
+        getLoadedSiteName: () => this.publicLearningPathsLoadedSiteName,
+        setLoadedSiteName: (loadedSiteName) => {
+          this.publicLearningPathsLoadedSiteName = loadedSiteName;
+        },
+        clearOnFailure: () => {
+          this.publicLearningPaths = [];
+          this.hasMorePublicLearningPaths = false;
         }
-      });
-
-    this.activePublicCoursesFetch = fetchPromise;
-    this.activePublicCoursesFetchSiteName = siteName;
-
-    return fetchPromise;
+      },
+      () =>
+        this.execute<GetOrgPublicLearningPathsRequest>({
+          requestFn: () =>
+            classroomio.organization['learning-paths'].public.$get({
+              query: { siteName }
+            }),
+          logContext: 'fetching public learning paths',
+          onSuccess: (response) => {
+            this.publicLearningPaths = response.data.learningPaths;
+            this.hasMorePublicLearningPaths = response.data.hasMoreLearningPaths;
+            this.publicLearningPathsLoadedSiteName = siteName;
+          }
+        }).then(() => undefined)
+    );
   }
 
   /**
@@ -680,13 +802,25 @@ class OrgApi extends BaseApiWithErrors {
       logContext: 'assigning audience to courses',
       onSuccess: (response) => {
         const d = response.data;
-        snackbar.success(
-          t.get('audience.assign.snackbar_success', {
-            assigned: d.assigned,
-            alreadyEnrolled: d.alreadyEnrolled,
-            emailsSent: d.emailsSent
-          })
-        );
+        const skippedNames = d.skippedPathGatedCourseNames ?? [];
+        if (skippedNames.length > 0) {
+          snackbar.info(
+            t.get('audience.assign.snackbar_partial', {
+              assigned: d.assigned,
+              alreadyEnrolled: d.alreadyEnrolled,
+              emailsSent: d.emailsSent,
+              names: skippedNames.join(', ')
+            })
+          );
+        } else {
+          snackbar.success(
+            t.get('audience.assign.snackbar_success', {
+              assigned: d.assigned,
+              alreadyEnrolled: d.alreadyEnrolled,
+              emailsSent: d.emailsSent
+            })
+          );
+        }
         this.success = true;
       },
       onError: (result) => {

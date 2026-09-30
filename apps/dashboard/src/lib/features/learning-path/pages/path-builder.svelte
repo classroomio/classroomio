@@ -166,6 +166,7 @@
       }}
       onconsider={handleDndConsider}
       onfinalize={handleDndFinalize}
+      data-testid="path-builder-course-list"
       class="space-y-2.5 px-1 py-1 {reorder ? 'cursor-grab active:cursor-grabbing' : ''}"
     >
       {#each courseItems as course, index (course.id)}

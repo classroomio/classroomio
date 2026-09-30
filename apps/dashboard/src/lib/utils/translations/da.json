@@ -734,7 +734,9 @@
       "cancel": "Annuller",
       "snackbar_success": "Tildelt {assigned} brugere til kurser ({alreadyEnrolled} allerede tilmeldt, {emailsSent} e-mails sendt)",
       "snackbar_no_courses": "Vælg venligst mindst ét kursus",
-      "snackbar_failed": "Kunne ikke tildele kurser"
+      "snackbar_failed": "Kunne ikke tildele kurser",
+      "snackbar_partial": "Tildelte {assigned} brugere ({alreadyEnrolled} havde allerede adgang, {emailsSent} e-mails sendt). Kurser, der kun er oversprunget af sti: {names} — tildel den indeholdende læringssti, eller deaktiver 'Kræver læringssti' i kursusindstillinger.",
+      "path_only_badge": "Kun sti"
     },
     "import": {
       "title": "Importer brugere",
@@ -785,7 +787,9 @@
       },
       "submit_count": "Importer {count} studerende",
       "result_heading": "{count} studerende importeret",
-      "start_over": "Vælg en anden fil"
+      "start_over": "Vælg en anden fil",
+      "skipped_path_gated_title": "Sprang over {count} sti-kun kurser",
+      "skipped_path_gated_description": "{names}. Disse kurser kræver tilmelding gennem en læringsvej. Tildel enten den indeholdende læringssti (dette giver også dens andre kurser), eller deaktiver 'Kræver læringssti' i kursusindstillingerne."
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
@@ -921,7 +925,8 @@
       "custom": "Brugerdefinerede filtre",
       "all": "Alle studerende"
     },
-    "learner_count": "{count} elever"
+    "learner_count": "{count} elever",
+    "path_only_badge": "Kun sti"
   },
   "community": {
     "title": "Fællesskab",
@@ -1079,7 +1084,9 @@
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
         "copy_link": "Kopiér link",
-        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer."
+        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
+        "requires_learning_path": "Kræv læringsvej",
+        "requires_learning_path_desc": "Når den er aktiveret, kan eleverne kun få adgang til dette kursus gennem en læringssti. Eksisterende tilmeldinger bevares."
       },
       "analytics": {
         "title": "Analyse"
@@ -1448,7 +1455,8 @@
             "title": "Giv studerende adgang",
             "description": "Giv {email} adgang til dette kursus. Vi sender en invitationsmail, så vedkommende kan tilslutte sig din organisation og tilmelde sig kurset.",
             "cancel": "Annuller",
-            "send_invite": "Send invitationen"
+            "send_invite": "Send invitationen",
+            "path_gated_notice": "Dette kursus kræver tilmelding gennem en læringssti, så direkte adgang kan ikke gives. Tildel i stedet den indeholdende læringssti - eller sluk 'Kræver læringssti' i kursusindstillingerne."
           },
           "invite_new_students_title": "Inviter nye studerende",
           "invite_new_students_description": "Inviter nye personer til din organisation og forudtildel dem til dette kursus. De opretter en konto, accepterer invitationen og får adgang.",
@@ -1493,9 +1501,17 @@
             "multi_use_30d": "Multi-brug (30 dage)",
             "custom": "Brugerdefineret"
           },
-          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever."
+          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever.",
+          "path_gated_notice_title": "Eleverne følger med gennem en læringsvej",
+          "path_gated_notice_description": "Dette kursus kræver tilmelding gennem en læringsvej, så studerende kan ikke inviteres hertil. Du kan stadig invitere undervisere nedenfor. For at give eleverne adgang skal du tildele den indeholdende læringssti — eller deaktivere 'Kræver læringssti' i kursusindstillingerne.",
+          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}"
         },
-        "learner": "Studerende"
+        "learner": "Studerende",
+        "source": "Kilde",
+        "source_learning_path": "Læringsvej",
+        "source_cohort": "Kohorte",
+        "source_filter_all": "Alle kilder",
+        "source_filter_direct": "Direkte"
       },
       "marks": {
         "title": "Mærker",
@@ -4177,9 +4193,6 @@
       "command_palette": {
         "title": "Kommandopalet",
         "description": "Søg og naviger på tværs af din organisation",
-        "placeholder": "Søg i kurser, kohorter, widgets, studerende, tags, indstillinger...",
-        "org_placeholder": "Søg i kurser, kohorter, widgets, studerende, tags, indstillinger...",
-        "lms_placeholder": "Søg på dine kurser, kohorter og læringssider...",
         "lms_description": "Søg og naviger dit læringsarbejdsområde",
         "empty": "Ingen resultater fundet",
         "loading": "Søger...",
@@ -4195,8 +4208,12 @@
           "tags": "Tags",
           "students": "studerende",
           "settings": "Indstillinger",
-          "cohorts": "Kohorter"
-        }
+          "cohorts": "Kohorter",
+          "learning_paths": "Læringsveje"
+        },
+        "placeholder": "Søg i kurser, kohorter, læringsstier, widgets, studerende, tags, indstillinger...",
+        "org_placeholder": "Søg i kurser, kohorter, læringsstier, widgets, studerende, tags, indstillinger...",
+        "lms_placeholder": "Søg i dine kurser, kohorter, læringsstier og læringssider..."
       }
     },
     "cancel": "Annuller",
@@ -5659,16 +5676,15 @@
       "course_added": "Kursus tilføjet",
       "courses_added": "Kurser tilføjet",
       "course_removed": "Kursus fjernet",
-      "members_added": "Elever føjet til stien",
       "member_removed": "Elev fjernet fra stien",
-      "tutors_added": "Undervisere tilføjet til stien",
-      "tutor_added": "Underviser tilføjet til forløbet",
       "tutor_removed": "Underviser fjernet fra forløbet",
       "certificate_saved": "Certifikatindstillinger gemt",
       "landing_saved": "Destinationsside opdateret",
       "landing_save_failed": "Kunne ikke gemme landingssiden",
       "link_generated": "Invitationslink genereret og kopieret til udklipsholder",
-      "settings_saved": "Læringsstiens indstillinger er opdateret"
+      "settings_saved": "Læringsstiens indstillinger er opdateret",
+      "member_role_updated": "Medlemsrolle opdateret",
+      "delete_failed": "Kunne ikke slette læringsstien"
     },
     "analytics": {
       "title": "Analyse",
@@ -5784,8 +5800,15 @@
         "student_limit_reached": "Du har nået din elevgrænse. Opgrader for at tilføje flere elever.",
         "invite": "Inviter undervisere",
         "invite_students": "Inviter studerende",
-        "finish": "Afslut"
-      }
+        "finish": "Afslut",
+        "bulk_enroll_queued": "Tilmelder {count} medlemmer i baggrunden...",
+        "bulk_enroll_success": "Tilmeldte {enrolled} medlemmer ({invited} inviteret)",
+        "bulk_enroll_partial": "Tilmeldte {enrolled} medlemmer ({invited} inviteret, {failed} mislykkedes)",
+        "bulk_enroll_failed": "Baggrundstilmelding mislykkedes",
+        "bulk_enroll_lost": "Mistet overblikket over baggrundstilmeldingen"
+      },
+      "change_role_to_tutor": "Gør vejleder",
+      "change_role_to_student": "Gør studerende"
     },
     "certificate": {
       "title": "Certifikater",

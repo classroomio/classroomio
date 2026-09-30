@@ -734,7 +734,9 @@
       "cancel": "Cancelar",
       "snackbar_success": "{assigned} usuários atribuídos aos cursos ({alreadyEnrolled} já inscrito, {emailsSent} e-mails enviados)",
       "snackbar_no_courses": "Selecione pelo menos um curso",
-      "snackbar_failed": "Falha ao atribuir cursos"
+      "snackbar_failed": "Falha ao atribuir cursos",
+      "snackbar_partial": "Atribuídos {assigned} usuários ({alreadyEnrolled} já teve acesso, {emailsSent} emails enviados). Cursos somente de caminho ignorado: {names} — atribua o caminho de aprendizagem que o contém ou desative 'Requer caminho de aprendizagem' nas configurações do curso.",
+      "path_only_badge": "Somente caminho"
     },
     "import": {
       "title": "Importar usuários",
@@ -785,7 +787,9 @@
       },
       "submit_count": "Importar {count} alunos",
       "result_heading": "{count} alunos importados",
-      "start_over": "Escolha um arquivo diferente"
+      "start_over": "Escolha um arquivo diferente",
+      "skipped_path_gated_title": "{count} cursos apenas do caminho ignorados",
+      "skipped_path_gated_description": "{names}. Esses cursos exigem inscrição por meio de um caminho de aprendizagem. Atribua o caminho de aprendizagem que o contém (isso também concede seus outros cursos) ou desative 'Requer caminho de aprendizagem' nas configurações do curso."
     },
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {
@@ -921,7 +925,8 @@
       "custom": "Filtros personalizados",
       "all": "Todos os alunos"
     },
-    "learner_count": "{count} alunos"
+    "learner_count": "{count} alunos",
+    "path_only_badge": "Somente caminho"
   },
   "community": {
     "title": "Comunidade",
@@ -1079,7 +1084,9 @@
         "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova aba",
         "copy_link": "Copiar link",
-        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar."
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
+        "requires_learning_path": "Exigir caminho de aprendizagem",
+        "requires_learning_path_desc": "Quando ativado, os alunos só podem acessar este curso por meio de um caminho de aprendizagem. As inscrições existentes são preservadas."
       },
       "analytics": {
         "title": "Análises"
@@ -1448,7 +1455,8 @@
             "title": "Conceder acesso ao aluno",
             "description": "Conceda acesso a {email} a este curso. Enviaremos um e-mail de convite para que a pessoa entre na sua organização e se inscreva neste curso.",
             "cancel": "Cancelar",
-            "send_invite": "Enviar convite"
+            "send_invite": "Enviar convite",
+            "path_gated_notice": "Este curso exige inscrição por meio de um caminho de aprendizagem, portanto, o acesso direto não pode ser concedido. Em vez disso, atribua o caminho de aprendizagem contido ou desative 'Requer caminho de aprendizagem' nas configurações do curso."
           },
           "invite_new_students_title": "Convidar novos alunos",
           "invite_new_students_description": "Convide novas pessoas para sua organização e pré-atribua-as a este curso. Elas criarão uma conta, aceitarão o convite e terão acesso.",
@@ -1493,9 +1501,17 @@
             "multi_use_30d": "Multiuso (30 dias)",
             "custom": "Personalizado"
           },
-          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
+          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos.",
+          "path_gated_notice_title": "Os alunos ingressam por meio de um caminho de aprendizagem",
+          "path_gated_notice_description": "Este curso requer inscrição por meio de um caminho de aprendizagem, portanto, os alunos não podem ser convidados aqui. Você ainda pode convidar tutores abaixo. Para conceder acesso aos alunos, atribua o caminho de aprendizagem que o contém ou desative 'Requer caminho de aprendizagem' nas configurações do curso.",
+          "members_added": "{count, plural, one {# membro adicionado com sucesso} other {# membros adicionados com sucesso}}"
         },
-        "learner": "Aluno"
+        "learner": "Aluno",
+        "source": "Fonte",
+        "source_learning_path": "Caminho de aprendizagem",
+        "source_cohort": "Coorte",
+        "source_filter_all": "Todas as fontes",
+        "source_filter_direct": "Direto"
       },
       "marks": {
         "title": "Marcas",
@@ -4177,9 +4193,6 @@
       "command_palette": {
         "title": "Paleta de comandos",
         "description": "Pesquise e navegue pela sua organização",
-        "placeholder": "Pesquise cursos, coortes, widgets, alunos, tags, configurações...",
-        "org_placeholder": "Pesquise cursos, coortes, widgets, alunos, tags, configurações...",
-        "lms_placeholder": "Pesquise seus cursos, coortes e páginas de aprendizagem...",
         "lms_description": "Pesquise e navegue no seu espaço de trabalho de aprendizagem",
         "empty": "Nenhum resultado encontrado",
         "loading": "Procurando...",
@@ -4195,8 +4208,12 @@
           "tags": "Etiquetas",
           "students": "Alunos",
           "settings": "Configurações",
-          "cohorts": "Coortes"
-        }
+          "cohorts": "Coortes",
+          "learning_paths": "Caminhos de aprendizagem"
+        },
+        "placeholder": "Pesquise cursos, grupos, caminhos de aprendizagem, widgets, alunos, tags, configurações...",
+        "org_placeholder": "Pesquise cursos, grupos, caminhos de aprendizagem, widgets, alunos, tags, configurações...",
+        "lms_placeholder": "Pesquise seus cursos, coortes, caminhos de aprendizagem e páginas de aprendizagem..."
       }
     },
     "cancel": "Cancelar",
@@ -5659,16 +5676,15 @@
       "course_added": "Curso adicionado",
       "courses_added": "Cursos adicionados",
       "course_removed": "Curso removido",
-      "members_added": "Alunos adicionados ao caminho",
       "member_removed": "Aluno removido do caminho",
-      "tutors_added": "Tutores adicionados ao caminho",
-      "tutor_added": "Tutor adicionado à trilha",
       "tutor_removed": "Tutor removido da trilha",
       "certificate_saved": "Configurações do certificado salvas",
       "landing_saved": "Página de destino atualizada",
       "landing_save_failed": "Falha ao salvar a landing page",
       "link_generated": "Link de convite gerado e copiado para a área de transferência",
-      "settings_saved": "Configurações do caminho de aprendizagem atualizadas"
+      "settings_saved": "Configurações do caminho de aprendizagem atualizadas",
+      "member_role_updated": "Função do membro atualizada",
+      "delete_failed": "Falha ao excluir o caminho de aprendizagem"
     },
     "analytics": {
       "title": "Análise",
@@ -5784,8 +5800,15 @@
         "student_limit_reached": "Você atingiu seu limite de alunos. Faça upgrade para adicionar mais alunos.",
         "invite": "Convidar tutores",
         "invite_students": "Convidar alunos",
-        "finish": "Concluir"
-      }
+        "finish": "Concluir",
+        "bulk_enroll_queued": "Inscrevendo {count} membros em segundo plano…",
+        "bulk_enroll_success": "Membros {enrolled} inscritos ({invited} convidados)",
+        "bulk_enroll_partial": "Membros {enrolled} inscritos ({invited} convidado, {failed} falhou)",
+        "bulk_enroll_failed": "Falha na inscrição em segundo plano",
+        "bulk_enroll_lost": "Perdeu o controle da inscrição em segundo plano"
+      },
+      "change_role_to_tutor": "Faça tutor",
+      "change_role_to_student": "Faça aluno"
     },
     "certificate": {
       "title": "Certificados",
