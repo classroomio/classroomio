@@ -490,7 +490,8 @@
       "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
       "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
       "already_submitted": "Bạn đã báo cáo nội dung này rồi."
-    }
+    },
+    "spam_blocked": "Điều này đã bị chặn vì nó trông giống như thư rác."
   },
   "explore": {
     "heading": "Khám phá các khóa học của chúng tôi",

@@ -4694,6 +4694,7 @@
       "failed": "Couldn't open the student view. Please try again."
     },
     "something": "Something went wrong - Please try later",
+    "spam_blocked": "This was blocked because it looks like spam.",
     "update": "Update",
     "update_failed": "Update failed",
     "media_manager": {

@@ -11,6 +11,7 @@ import {
 
 import { betterAuth } from 'better-auth/minimal';
 import { createProfileHook } from './auth/hooks/create-profile';
+import { assertSignInAllowed, assertSignupAllowed } from './auth/hooks/spam-guard';
 import { customSession } from 'better-auth/plugins/custom-session';
 import { db } from '@db/drizzle';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
@@ -103,6 +104,11 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
   databaseHooks: {
     user: {
       create: {
+        before: async (user, context) => {
+          const request = (context as { request?: Request } | null)?.request;
+          await assertSignupAllowed(user, request);
+          return { data: user };
+        },
         after: async (user) => {
           console.log('[auth] databaseHooks.user.create.after: running', { userId: user.id });
           await createProfileHook(user);
@@ -117,6 +123,11 @@ export const auth: ReturnType<typeof betterAuth> = betterAuth({
     },
     session: {
       create: {
+        before: async (session, context) => {
+          const request = (context as { request?: Request } | null)?.request;
+          await assertSignInAllowed(session.userId, request);
+          return { data: session };
+        },
         after: async (session) => {
           await trackLoginHook(session);
           await syncProfileEmailVerificationFromAuthUser(session.userId);

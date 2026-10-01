@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants/domains';
 import type { TCourseNewsfeed, TNewCourseNewsfeed, TNewCourseNewsfeedComment } from '@cio/db/types';
@@ -105,6 +106,11 @@ export async function createNewsfeedService(
   data: TNewsfeedCreate
 ): Promise<TCourseNewsfeed> {
   try {
+    await assertSpamAllowed({
+      action: 'content',
+      fields: { content: data.content }
+    });
+
     const sanitizedContent = sanitizeHtml(data.content);
 
     const newsfeedData: TNewCourseNewsfeed = {
@@ -123,6 +129,8 @@ export async function createNewsfeedService(
 
     return feed;
   } catch (error) {
+    if (error instanceof AppError) throw error;
+
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to create newsfeed',
       ErrorCodes.INTERNAL_ERROR,
@@ -300,6 +308,11 @@ export async function createNewsfeedCommentService(
   parentId?: number
 ) {
   try {
+    await assertSpamAllowed({
+      action: 'content',
+      fields: { content }
+    });
+
     // Validate parentId when provided
     if (parentId !== undefined) {
       const parentComment = await getNewsfeedCommentById(parentId);

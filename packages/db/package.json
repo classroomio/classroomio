@@ -95,7 +95,9 @@
     "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts",
     "db:migrate-course-logo-to-banner-image": "tsx src/scripts/migrate-course-logo-to-banner-image.ts",
     "db:remove-landing-contact": "tsx src/scripts/remove-landing-page-contact-nav.ts",
-    "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
+    "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts",
+    "db:analyze-spam-accounts": "tsx src/scripts/analyze-spam-accounts.ts",
+    "db:purge-spam-accounts": "tsx src/scripts/purge-spam-accounts.ts"
   },
   "dependencies": {
     "@better-auth/sso": "^1.4.18",

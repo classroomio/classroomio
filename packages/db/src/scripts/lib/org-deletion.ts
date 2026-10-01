@@ -458,3 +458,30 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
     await tx`DELETE FROM organization WHERE id = ${orgId}`;
   });
 }
+
+export async function deleteUserAccount(sql: postgres.Sql, userId: string): Promise<boolean> {
+  try {
+    await sql.begin(async (tx) => {
+      await tx`DELETE FROM session WHERE user_id = ${userId}`;
+      await tx`DELETE FROM account WHERE user_id = ${userId}`;
+      await tx`DELETE FROM sso_provider WHERE user_id = ${userId}`;
+      await tx`DELETE FROM analytics_login_events WHERE user_id = ${userId}`;
+
+      const userWidgets = await tx`SELECT id FROM widget WHERE created_by_user_id = ${userId}`;
+      const widgetIds = userWidgets.map((widget) => widget.id);
+
+      if (widgetIds.length > 0) {
+        await tx`DELETE FROM widget_course WHERE widget_id IN ${tx(widgetIds)}`;
+        await tx`DELETE FROM widget_version WHERE widget_id IN ${tx(widgetIds)}`;
+        await tx`DELETE FROM widget WHERE id IN ${tx(widgetIds)}`;
+      }
+
+      await tx`DELETE FROM profile WHERE id = ${userId}`;
+      await tx`DELETE FROM "user" WHERE id = ${userId}`;
+    });
+
+    return true;
+  } catch {
+    return false;
+  }
+}
