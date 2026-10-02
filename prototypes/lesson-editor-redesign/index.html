@@ -50,6 +50,7 @@
     --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 14px 30px -10px rgb(0 0 0 / 0.16);
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme='light']) {
@@ -241,14 +242,16 @@
   .canvas-wrap { padding: 22px 28px 60px; max-width: 820px; margin: 0 auto; width: 100%; }
   .canvas { display: flex; flex-direction: column; }
   .content-section { padding: 18px 0 22px; }
-  /* Desktop screen only: every top-level block reads as its own card on a soft canvas backdrop.
-     Nested content inside a Tabs pane stays bare (no card-in-a-card) — only #canvas's own
-     direct children get this treatment. */
-  #screen-desktop .canvas-wrap { background: var(--muted); }
+  /* Desktop screen only: every top-level block reads as its own large, framed, heavily-shadowed
+     panel on a soft canvas backdrop — generously spaced so a long lesson reads as a sequence of
+     slides, not a form. Nested content inside a Tabs pane stays bare (no card-in-a-card) — only
+     #canvas's own direct children get this treatment. */
+  #screen-desktop .canvas-wrap { background: var(--muted); padding-right: 64px; }
   #canvas > .content-section {
     background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-sm); padding: 18px;
+    box-shadow: var(--shadow-lg); padding: 26px;
   }
+  #canvas > .block-gap { margin: 26px 0; }
 
   /* unified canvas: one block per content item, reorderable as a sequence */
   .content-section { transition: opacity .15s; }
@@ -276,7 +279,7 @@
   .block-type svg { width: 13px; height: 13px; stroke-width: 2.2; }
   .block-head .sp { flex: 1; }
   /* hover insertion line: sits between every pair of blocks, and after the last one, in place of a persistent add-content button */
-  .block-gap { display: flex; align-items: center; gap: 8px; height: 20px; margin: 10px 0; }
+  .block-gap { display: flex; align-items: center; gap: 8px; height: 20px; margin: 10px 0; position: relative; }
   .block-gap .gap-line { flex: 1; height: 1px; background: var(--border); }
   .block-gap .gap-add {
     width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; border: 1px solid var(--border); background: var(--background);
@@ -285,28 +288,45 @@
   }
   .block-gap .gap-add svg { width: 14px; height: 14px; stroke-width: 2; }
   .block-gap .gap-add:hover, .block-gap .gap-add:focus-visible { border-color: var(--ring); color: var(--foreground); box-shadow: var(--shadow-md); }
-  /* Desktop canvas: content is inserted from the persistent bottom dock instead, so the
-     per-gap button is hidden and the whole gap becomes the clickable insertion point. */
-  .modern-canvas .gap-add { display: none; }
-  .modern-canvas .block-gap { cursor: pointer; }
-  .modern-canvas .block-gap .gap-line { background: transparent; }
-  .modern-canvas .block-gap.gap-active .gap-line { background: var(--primary); height: 2px; }
+  /* Desktop canvas: the line and "+" stay invisible until the gap is hovered (or its flyout is
+     open), so a long lesson reads as a sequence of clean, framed blocks rather than a row of
+     ever-present controls. Clicking the "+" opens gap-flyout, anchored right there. */
+  .modern-canvas .block-gap .gap-line { background: transparent; transition: background .12s, height .12s; }
+  .modern-canvas .block-gap .gap-add {
+    opacity: 0; pointer-events: none; background: var(--primary); border-color: var(--primary); color: var(--primary-foreground);
+    box-shadow: var(--shadow-md); transition: opacity .12s, box-shadow .12s;
+  }
+  .modern-canvas .block-gap:hover .gap-add,
+  .modern-canvas .block-gap:focus-within .gap-add,
+  .modern-canvas .block-gap.gap-flyout-open .gap-add { opacity: 1; pointer-events: auto; }
+  .modern-canvas .block-gap:hover .gap-line,
+  .modern-canvas .block-gap.gap-flyout-open .gap-line { background: var(--primary); height: 2px; }
 
-  .insert-dock {
-    position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 30;
-    display: flex; align-items: stretch; gap: 1px; background: var(--card); border: 1px solid var(--border);
-    border-radius: var(--radius-lg); padding: 6px 8px; box-shadow: 0 10px 25px -5px rgb(0 0 0 / .15), 0 8px 10px -6px rgb(0 0 0 / .1);
+  .gap-flyout {
+    position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 25;
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+    padding: 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; width: 232px;
   }
-  .dock-icon {
-    display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; border-radius: var(--radius-md);
-    border: none; background: transparent; color: var(--muted-foreground); cursor: pointer;
-    padding: 8px 12px; transition: background .12s, color .12s;
+  .gap-flyout-item {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border: none; background: transparent;
+    border-radius: var(--radius-md); color: var(--foreground); cursor: pointer; font: inherit;
   }
-  .dock-icon svg { width: 17px; height: 17px; stroke-width: 2; }
-  .dock-icon .lb { font-size: 9.5px; font-weight: 600; }
-  .dock-icon:hover, .dock-icon:focus-visible { background: var(--accent); color: var(--foreground); }
-  .dock-icon.dock-icon-ai { color: var(--primary); }
-  .dock-divider { width: 1px; align-self: stretch; background: var(--border); margin: 4px 3px; }
+  .gap-flyout-item:hover, .gap-flyout-item:focus-visible { background: var(--accent); }
+  .gap-flyout-item svg { width: 16px; height: 16px; stroke-width: 2; }
+  .gap-flyout-item span { font-size: 9.5px; font-weight: 600; text-align: center; line-height: 1.15; }
+  .gap-flyout-item.gap-flyout-ai { color: var(--primary); }
+  .gap-flyout-div { grid-column: 1 / -1; height: 1px; background: var(--border); margin: 2px 0; }
+
+  /* side scroll-progress rail: shows how far through a long lesson the canvas has scrolled,
+     with one dot per top-level block so position stays legible without reading any text. */
+  .scroll-rail { position: fixed; right: 22px; top: 150px; bottom: 36px; width: 36px; z-index: 15; pointer-events: none; }
+  .scroll-rail-track { position: absolute; right: 16px; top: 0; bottom: 0; width: 4px; background: var(--border); border-radius: 999px; }
+  .scroll-rail-thumb { position: absolute; right: 16px; width: 4px; min-height: 28px; background: var(--primary); border-radius: 999px; transition: top .08s linear, height .08s linear; }
+  .scroll-rail-dots { position: absolute; inset: 0; }
+  .scroll-rail-dot { position: absolute; right: 0; width: 6px; height: 6px; border-radius: 999px; background: var(--border); transform: translateY(-3px); transition: background .15s, width .15s, height .15s; }
+  .scroll-rail-dot.on { width: 8px; height: 8px; background: var(--primary); transform: translateY(-4px); }
+  @media (max-width: 780px) { .scroll-rail { display: none; } }
+
   .content-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   .content-type-btn {
     display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 12px; border: 1px solid var(--border);
@@ -955,19 +975,10 @@
     </div>
   </aside>
 
-  <div class="insert-dock edit-only" role="toolbar" aria-label="Add content">
-    <button type="button" class="dock-icon dock-icon-ai" aria-label="Ask AI assistant" onclick="openAiAssistant()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg><span class="lb">AI Assistant</span></button>
-    <span class="dock-divider"></span>
-    <button type="button" class="dock-icon" aria-label="Add video" onclick="insertFromDock('video')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="lb">Video</span></button>
-    <button type="button" class="dock-icon" aria-label="Add image" onclick="insertFromDock('image')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg><span class="lb">Image</span></button>
-    <button type="button" class="dock-icon" aria-label="Add slides" onclick="insertFromDock('slide')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg><span class="lb">Slides</span></button>
-    <button type="button" class="dock-icon" aria-label="Add note" onclick="insertFromDock('note')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg><span class="lb">Note</span></button>
-    <button type="button" class="dock-icon" aria-label="Add document" onclick="insertFromDock('document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg><span class="lb">Document</span></button>
-    <button type="button" class="dock-icon" aria-label="Add chart" onclick="insertFromDock('chart')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span class="lb">Chart</span></button>
-    <button type="button" class="dock-icon" aria-label="Add flashcards" onclick="insertFromDock('flashcards')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg><span class="lb">Flashcards</span></button>
-    <button type="button" class="dock-icon" aria-label="Add tabs" onclick="insertFromDock('tabs')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18"/><path d="M3 5h18v14H3z"/><path d="M9 9v10"/></svg><span class="lb">Tabs</span></button>
-    <button type="button" class="dock-icon" aria-label="Add multiple choice" onclick="insertFromDock('quiz')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span class="lb">Quiz</span></button>
-    <button type="button" class="dock-icon" aria-label="Add process" onclick="insertFromDock('process')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg><span class="lb">Process</span></button>
+  <div class="scroll-rail" id="scrollRail" aria-hidden="true">
+    <div class="scroll-rail-track"></div>
+    <div class="scroll-rail-thumb" id="scrollRailThumb"></div>
+    <div class="scroll-rail-dots" id="scrollRailDots"></div>
   </div>
 </section>
 
@@ -1161,6 +1172,7 @@
     if (!btn) return;
     document.querySelectorAll('.screen-switch button').forEach((b) => b.classList.toggle('on', b === btn));
     document.querySelectorAll('.screen').forEach((s) => (s.hidden = s.id !== 'screen-' + btn.dataset.screen));
+    updateScrollRail();
   });
 
   // ---- Edit / Preview toggle (scoped to the desktop screen) ----
@@ -1403,6 +1415,7 @@
     if (gap && gap.classList.contains('block-gap')) gap.remove();
     section.remove();
     updateEmptyState(canvas.id);
+    updateScrollRail();
     simulateSave();
   }
 
@@ -1425,6 +1438,7 @@
       canvas.insertBefore(nextSection, section);
       if (nextGap) canvas.insertBefore(nextGap, section);
     }
+    updateScrollRail();
     simulateSave();
   }
 
@@ -1473,6 +1487,8 @@
   const ICON_CHEVRON_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
   const ICON_STYLE =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>';
+  const ICON_AI =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg>';
 
   const NOTE_STYLES = {
     info: {
@@ -2486,55 +2502,78 @@
 
   let activeCanvasId = 'canvas';
   let activeGapEl = null;
-  let dockGapEl = null;
+  let activeFlyoutGapEl = null;
 
   function setActiveGapEl(gapEl) {
     if (!gapEl) return;
     document.querySelectorAll('.block-gap.gap-active').forEach((g) => g.classList.remove('gap-active'));
     gapEl.classList.add('gap-active');
-    dockGapEl = gapEl;
   }
 
-  // Generic over every `.canvas` on the page — the main lesson canvas and any tab pane's
-  // nested canvas alike — so the dock always inserts into whichever one the user last touched.
-  document.addEventListener('click', (e) => {
-    // A tab pill lives inside the Tabs block's own outer canvas, so it would otherwise read as
-    // the nearest `.canvas` ancestor and clobber the pane-specific target `selectTabFromInput`
-    // just set on focus. Tab switching owns activeCanvasId for this click; defer to it.
-    if (e.target.closest('.tabs-pill-row')) return;
-    const canvasEl = e.target.closest('.canvas');
-    if (!canvasEl || !canvasEl.id) return;
-    activeCanvasId = canvasEl.id;
-    const gap = e.target.closest('.block-gap');
-    if (gap && gap.closest('.canvas') === canvasEl) {
-      setActiveGapEl(gap);
+  function closeGapFlyout() {
+    if (!activeFlyoutGapEl) return;
+    activeFlyoutGapEl.classList.remove('gap-flyout-open');
+    const flyout = activeFlyoutGapEl.querySelector('.gap-flyout');
+    if (flyout) flyout.remove();
+    activeFlyoutGapEl = null;
+  }
+
+  const GAP_FLYOUT_ITEMS = [
+    { type: 'ai', label: 'AI Assistant', icon: ICON_AI, ai: true },
+    { divider: true },
+    { type: 'video', label: 'Video', icon: ICON_VIDEO },
+    { type: 'image', label: 'Image', icon: ICON_IMAGE },
+    { type: 'slide', label: 'Slides', icon: ICON_SLIDE },
+    { type: 'note', label: 'Note', icon: ICON_NOTE },
+    { type: 'document', label: 'Document', icon: ICON_DOCUMENT },
+    { type: 'chart', label: 'Chart', icon: ICON_CHART },
+    { type: 'flashcards', label: 'Flashcards', icon: ICON_FLASHCARDS },
+    { type: 'tabs', label: 'Tabs', icon: ICON_TABS },
+    { type: 'quiz', label: 'Quiz', icon: ICON_QUIZ },
+    { type: 'process', label: 'Process', icon: ICON_PROCESS }
+  ];
+
+  // Anchored to one gap at a time: opening another, or clicking outside, closes it first.
+  function openGapFlyout(gapEl) {
+    if (activeFlyoutGapEl === gapEl) {
+      closeGapFlyout();
       return;
     }
-    const section = e.target.closest('.content-section');
-    if (
-      section &&
-      section.closest('.canvas') === canvasEl &&
-      section.nextElementSibling &&
-      section.nextElementSibling.classList.contains('block-gap')
-    ) {
-      setActiveGapEl(section.nextElementSibling);
+    closeGapFlyout();
+    const canvasEl = gapEl.closest('.canvas');
+    activeFlyoutGapEl = gapEl;
+    gapEl.classList.add('gap-flyout-open');
+    const flyout = document.createElement('div');
+    flyout.className = 'gap-flyout';
+    flyout.setAttribute('role', 'menu');
+    for (const item of GAP_FLYOUT_ITEMS) {
+      if (item.divider) {
+        const divider = document.createElement('span');
+        divider.className = 'gap-flyout-div';
+        flyout.appendChild(divider);
+        continue;
+      }
+      const itemBtn = document.createElement('button');
+      itemBtn.type = 'button';
+      itemBtn.className = item.ai ? 'gap-flyout-item gap-flyout-ai' : 'gap-flyout-item';
+      itemBtn.innerHTML = `${item.icon}<span>${item.label}</span>`;
+      itemBtn.addEventListener('click', () => {
+        closeGapFlyout();
+        activeCanvasId = canvasEl.id;
+        activeGapEl = gapEl;
+        if (item.ai) openAiAssistant();
+        else chooseContentType(item.type);
+      });
+      flyout.appendChild(itemBtn);
     }
+    gapEl.appendChild(flyout);
+  }
+
+  document.addEventListener('click', (e) => {
+    if (activeFlyoutGapEl && !e.target.closest('.block-gap')) closeGapFlyout();
   });
 
-  function resolveDockGapEl() {
-    const canvasEl = document.getElementById(activeCanvasId);
-    if (!canvasEl) return null;
-    const gaps = [...canvasEl.querySelectorAll(':scope > .block-gap')];
-    return dockGapEl && dockGapEl.isConnected && dockGapEl.closest('.canvas') === canvasEl ? dockGapEl : gaps[gaps.length - 1] || null;
-  }
-
-  function insertFromDock(type) {
-    activeGapEl = resolveDockGapEl();
-    chooseContentType(type);
-  }
-
   function openAiAssistant() {
-    activeGapEl = resolveDockGapEl();
     document.getElementById('dialogBox').style.maxWidth = '480px';
     document.getElementById('dialogBox').innerHTML = `
       <div class="dialog-head"><h2 class="dialog-title">Ask AI assistant</h2><p class="dialog-desc">Describe what this part of the lesson should cover — a draft note is added for you to edit.</p></div>
@@ -2585,9 +2624,14 @@
     // re-clicking) lands below it instead of repeatedly at the same old spot.
     setActiveGapEl(newGap);
     updateEmptyState(canvasId);
+    updateScrollRail();
   }
 
   function openAddContentMenu(canvasId, gapEl) {
+    if (gapEl && gapEl.closest('.modern-canvas')) {
+      openGapFlyout(gapEl);
+      return;
+    }
     activeCanvasId = canvasId;
     activeGapEl = gapEl || null;
     document.getElementById('dialogBox').style.maxWidth = '480px';
@@ -3073,6 +3117,7 @@
     if (!section) return;
     section.classList.remove('dragging');
     section.draggable = false;
+    updateScrollRail();
     simulateSave();
   });
   document.addEventListener('dragover', (e) => {
@@ -3089,8 +3134,57 @@
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (document.body.classList.contains('dialog-open')) closeDialog();
+    else if (activeFlyoutGapEl) closeGapFlyout();
     else document.querySelectorAll('.settings-open').forEach((el) => el.classList.remove('settings-open'));
   });
+
+  // ---- Desktop canvas: side scroll-progress rail ----
+  // Dots sit at even intervals (not pixel-mapped to each block's real height) so a lesson with
+  // a mix of tall and short blocks still reads as a clean, evenly-spaced sequence; the thumb
+  // alone tracks real scroll position.
+  function updateScrollRail() {
+    const screenEl = document.getElementById('screen-desktop');
+    const rail = document.getElementById('scrollRail');
+    const canvas = document.getElementById('canvas');
+    if (!screenEl || screenEl.hidden || !rail || !canvas) return;
+    const sections = [...canvas.querySelectorAll(':scope > .content-section')];
+    if (sections.length === 0) {
+      rail.style.display = 'none';
+      return;
+    }
+    rail.style.display = '';
+
+    const thumb = document.getElementById('scrollRailThumb');
+    const dotsWrap = document.getElementById('scrollRailDots');
+    const railHeight = rail.getBoundingClientRect().height;
+    const viewportH = window.innerHeight;
+    const scrollableH = Math.max(1, document.documentElement.scrollHeight - viewportH);
+    const progress = Math.min(1, Math.max(0, window.scrollY / scrollableH));
+    const thumbHeight = Math.max(28, railHeight * (viewportH / document.documentElement.scrollHeight));
+    thumb.style.height = `${thumbHeight}px`;
+    thumb.style.top = `${progress * (railHeight - thumbHeight)}px`;
+
+    let activeIndex = 0;
+    let bestDistance = Infinity;
+    sections.forEach((section, i) => {
+      const distance = Math.abs(section.getBoundingClientRect().top - 120);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        activeIndex = i;
+      }
+    });
+
+    if (dotsWrap.children.length !== sections.length) {
+      dotsWrap.innerHTML = sections.map(() => '<span class="scroll-rail-dot"></span>').join('');
+    }
+    [...dotsWrap.children].forEach((dot, i) => {
+      dot.classList.toggle('on', i === activeIndex);
+      dot.style.top = `${sections.length > 1 ? (i / (sections.length - 1)) * 100 : 50}%`;
+    });
+  }
+  window.addEventListener('scroll', updateScrollRail, { passive: true });
+  window.addEventListener('resize', updateScrollRail);
+  updateScrollRail();
 </script>
   </body>
 </html>
