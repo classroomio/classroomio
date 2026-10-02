@@ -4407,6 +4407,7 @@
     "articles": "लेख",
     "ai": "एआई",
     "ai_select": "एक एआई सहायक चुनें",
+    "ai_required": "कृपया एक एआई सहायक चुनें",
     "ai_providers": {
       "chatgpt": "ChatGPT",
       "claude": "Claude",

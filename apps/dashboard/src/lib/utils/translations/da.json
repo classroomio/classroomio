@@ -4407,6 +4407,7 @@
     "articles": "Artikler",
     "ai": "AI",
     "ai_select": "Vælg en AI-assistent",
+    "ai_required": "Vælg en AI-assistent",
     "ai_providers": {
       "chatgpt": "ChatGPT",
       "claude": "Claude",

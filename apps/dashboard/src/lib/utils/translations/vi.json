@@ -4407,6 +4407,7 @@
     "articles": "Bài viết",
     "ai": "AI",
     "ai_select": "Chọn một trợ lý AI",
+    "ai_required": "Vui lòng chọn một trợ lý AI",
     "ai_providers": {
       "chatgpt": "ChatGPT",
       "claude": "Claude",

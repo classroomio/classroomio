@@ -22,6 +22,8 @@ export type TOnboardingCreateOrg = z.infer<typeof ZOnboardingCreateOrg>;
 export const ZOnboardingUpdateMetadata = z.object({
   fullname: fullnameValidation,
   goal: z.string().min(5),
-  source: z.string().min(1)
+  source: z.string().refine((value) => value.length > 0, {
+    message: 'onboarding.ai_required'
+  })
 });
 export type TOnboardingUpdateMetadata = z.infer<typeof ZOnboardingUpdateMetadata>;

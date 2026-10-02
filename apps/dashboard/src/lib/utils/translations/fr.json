@@ -4407,6 +4407,7 @@
     "articles": "Articles",
     "ai": "IA",
     "ai_select": "Sélectionnez un assistant IA",
+    "ai_required": "Veuillez sélectionner un assistant IA",
     "ai_providers": {
       "chatgpt": "ChatGPT",
       "claude": "Claude",

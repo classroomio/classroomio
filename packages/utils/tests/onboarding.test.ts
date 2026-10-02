@@ -21,5 +21,8 @@ describe('ZOnboardingUpdateMetadata', () => {
     });
 
     expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toBe('onboarding.ai_required');
+    }
   });
 });
