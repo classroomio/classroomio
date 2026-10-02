@@ -43,11 +43,13 @@ The upgrade does this for you, in order:
    `docker-compose.images.yaml.bak`; re-apply any local edits to the new file.
 3. Starts the new `storage` service and creates the buckets.
 4. Copies the `videos`, `documents` and `media` buckets from the old data and checks every object.
-   It never deletes or overwrites anything already in the new store, so running it again later is
-   safe: files the app has changed since stay as they are.
+   It never deletes or overwrites anything already in the new store, and stops if any object is
+   missing or unreadable.
 5. Sets `OBJECT_STORAGE_ENDPOINT=http://storage:9000` in `.env` and restarts the stack.
 
-To run only the copy, without pulling new images, use `./classroomio.sh migrate-storage`.
+To run only the copy, without pulling new images, use `./classroomio.sh migrate-storage`. Once the
+endpoint has switched, the copy does not run again: the old data is stale by then, and copying it
+would bring back files deleted since. Force it with `MINIO_MIGRATION_FORCE=1` only if you need to.
 
 :::note[How the old volume is read]
 MinIO stores objects in its own on-disk format, so the copy needs a MinIO-compatible server. The
@@ -59,8 +61,8 @@ script uses a MinIO image already cached on your machine if there is one, otherw
 The script finds the old data from the `cio-minio` container's own mount, so custom volume names and
 bind mounts work. If that container is already gone and the data isn't in `classroomio_minio-data`,
 set `MINIO_LEGACY_DATA=<volume name or path>` in `.env`. The script stops instead of switching to an
-empty store when it can see an old install but not its data, including when that volume or path no
-longer exists.
+empty store when an install has run before but its old data can't be found, including when that
+volume or path no longer exists. If there really is nothing to copy, set `MINIO_LEGACY_DATA=none`.
 :::
 
 ## Migrate by hand
@@ -93,13 +95,32 @@ for b in videos documents media; do
 done
 ```
 
-**4. Clean up and switch over:**
+**4. Verify before switching.** Run the same command as step 3, replacing the last line with:
+
+```zsh title="Terminal"
+    rclone/rclone check --one-way --combined - src:$b dst:$b
+```
+
+Each line starts with a symbol:
+
+| Symbol | Meaning | What to do |
+|---|---|---|
+| `=` | Identical in both stores | Nothing |
+| `+` | Missing from the new store | Re-run step 3 |
+| `!` | Could not be read | Fix the cause (credentials, disk, network), then re-run step 3 |
+| `*` | Different in the new store | Expected only for files the app changed after an earlier copy: keep those. Otherwise delete that object from the new store and re-run step 3 |
+
+Only switch over when no `+` or `!` lines remain.
+
+**5. Clean up and switch over:**
 
 ```zsh title="Terminal"
 docker rm -f minio-legacy
 ```
 
 Set `OBJECT_STORAGE_ENDPOINT=http://storage:9000`, remove the `MINIO_*` variables, and redeploy.
+Don't run the copy again after this: the old data is stale, and copying it would bring back files
+deleted since.
 
 ## What changed
 
@@ -131,6 +152,9 @@ docker volume rm classroomio_minio-data
 
 - **The copy failed part-way.** Fix the cause and run `./classroomio.sh migrate-storage` again. It
   only copies what is missing, and `.env` is switched over only after a successful copy.
+- **"its uploads could not be located".** The install has run before, but the old data isn't where
+  the script looks. Set `MINIO_LEGACY_DATA` to the old volume name or path, or to `none` if there
+  are no old uploads.
 - **"could not read the old MinIO data".** `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` in `.env` don't
   match the old volume, or the image can't read it. Correct them, or set `MINIO_LEGACY_IMAGE`.
 - **You need to go back.** The old volume is untouched and step 1 took a backup. See

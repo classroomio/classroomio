@@ -471,7 +471,11 @@ pick_legacy_minio_image() {
 
 # Prints where the old MinIO data lives (volume name or host path), or nothing if there is none.
 find_legacy_minio_data() {
-  local data="${MINIO_LEGACY_DATA:-$(get_env_value MINIO_LEGACY_DATA)}"
+  local data
+  data="$(legacy_minio_data_setting)"
+  if [[ "${data}" == "none" ]]; then
+    return 0
+  fi
   if [[ -z "${data}" ]]; then
     # The old container's own mount covers custom volume names and bind mounts.
     data="$(MSYS_NO_PATHCONV=1 docker inspect cio-minio --format \
@@ -489,8 +493,23 @@ find_legacy_minio_data() {
   printf '%s' "${data}"
 }
 
-legacy_minio_data_is_configured() {
-  [[ -n "${MINIO_LEGACY_DATA:-$(get_env_value MINIO_LEGACY_DATA)}" ]]
+# A volume name, a host path, or "none" to confirm there is nothing to copy.
+legacy_minio_data_setting() {
+  printf '%s' "${MINIO_LEGACY_DATA:-$(get_env_value MINIO_LEGACY_DATA)}"
+}
+
+install_has_run_before() {
+  docker volume inspect "${PROJECT_NAME}_postgres-data" >/dev/null 2>&1 ||
+    docker inspect cio-postgres >/dev/null 2>&1 || docker inspect cio-minio >/dev/null 2>&1
+}
+
+# rclone --combined: "+" missing in the new store, "!" unreadable, "*" differs (kept, not an error).
+copy_report_ok() {
+  local check_ok="$1" report="$2"
+  if grep -q '^[+!] ' <<<"${report}"; then
+    return 1
+  fi
+  [[ "${check_ok}" == "true" ]] || grep -q '^\* ' <<<"${report}"
 }
 
 app_is_seaweedfs_ready() {
@@ -571,13 +590,12 @@ migrate_legacy_minio_data() {
     # --ignore-existing: a repeat run never overwrites or deletes what is already in the new store.
     local report="" check_ok=true changed
     if run_rclone copy --ignore-existing --stats 30s --stats-one-line --stats-log-level NOTICE "src:${bucket}" "dst:${bucket}"; then
-      # Combined report: "-" missing in the new store, "!" unreadable, "*" differs (changed since migrating).
       report="$(run_rclone check --one-way --combined - "src:${bucket}" "dst:${bucket}" 2>/dev/null)" || check_ok=false
     else
       check_ok=false
     fi
     changed="$(grep -c '^\* ' <<<"${report}" || true)"
-    if grep -q '^[-!] ' <<<"${report}" || { [[ "${check_ok}" != "true" ]] && ((changed == 0)); }; then
+    if ! copy_report_ok "${check_ok}" "${report}"; then
       echo "Error: copying bucket '${bucket}' failed. Nothing was deleted or overwritten — fix the"
       echo "  problem and re-run: ./classroomio.sh migrate-storage"
       docker rm -f cio-minio-legacy >/dev/null 2>&1 || true
@@ -604,9 +622,10 @@ migrate_legacy_storage_if_needed() {
   if [[ -n "${legacy_data}" ]]; then
     require_seaweedfs_ready_app
     migrate_legacy_minio_data "${legacy_data}"
-  elif legacy_minio_data_is_configured || docker inspect cio-minio >/dev/null 2>&1; then
+  elif [[ "$(legacy_minio_data_setting)" != "none" ]] && install_has_run_before; then
     echo "Error: this install used the old bundled MinIO, but its uploads could not be located."
     echo "  Set MINIO_LEGACY_DATA in .env to the old MinIO volume name or data path, then re-run."
+    echo "  If there are no old uploads to copy, set MINIO_LEGACY_DATA=none instead."
     echo "  Nothing has been changed."
     exit 1
   fi
@@ -823,11 +842,18 @@ cmd_migrate_storage() {
     echo "Error: migrate-storage copies into the bundled store, so it can't be combined with --no-storage."
     exit 1
   fi
+  # After cutover the old copy is stale: copying again would bring back files deleted since.
+  if ! is_legacy_minio_endpoint && [[ "${MINIO_MIGRATION_FORCE:-}" != "1" ]]; then
+    echo "Storage has already been migrated (OBJECT_STORAGE_ENDPOINT no longer points at MinIO)."
+    echo "  Copying again can restore files that were deleted since. To do it anyway, run:"
+    echo "  MINIO_MIGRATION_FORCE=1 ./classroomio.sh migrate-storage"
+    return 0
+  fi
   local legacy_data
   legacy_data="$(find_legacy_minio_data)"
   if [[ -z "${legacy_data}" ]]; then
-    echo "No old MinIO data found — nothing to copy."
-    echo "  If it lives elsewhere, set MINIO_LEGACY_DATA in .env to its volume name or path."
+    echo "No old MinIO data found — nothing was copied and .env was not changed."
+    echo "  Set MINIO_LEGACY_DATA in .env to its volume name or path, or to 'none' if there is none."
     return 0
   fi
   require_seaweedfs_ready_app
