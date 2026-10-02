@@ -479,11 +479,18 @@ find_legacy_minio_data() {
       2>/dev/null || true)"
   fi
   data="${data:-${LEGACY_MINIO_VOLUME}}"
-  # A bare name is a volume and must exist: mounting a missing one would silently create it empty.
-  if [[ "${data}" != */* && "${data}" != *\\* ]] && ! docker volume inspect "${data}" >/dev/null 2>&1; then
+  data="${data//\\//}"
+  # It must already exist: mounting a missing volume or path would silently create it empty.
+  if [[ "${data}" == */* ]]; then
+    [[ -e "${data}" ]] || return 0
+  elif ! docker volume inspect "${data}" >/dev/null 2>&1; then
     return 0
   fi
-  printf '%s' "${data//\\//}"
+  printf '%s' "${data}"
+}
+
+legacy_minio_data_is_configured() {
+  [[ -n "${MINIO_LEGACY_DATA:-$(get_env_value MINIO_LEGACY_DATA)}" ]]
 }
 
 app_is_seaweedfs_ready() {
@@ -506,7 +513,7 @@ require_seaweedfs_ready_app() {
   exit 1
 }
 
-# Copies every bucket out of the old MinIO data over the S3 API; nothing is ever deleted on either side.
+# Copies every bucket out of the old MinIO data over the S3 API; nothing is deleted or overwritten.
 migrate_legacy_minio_data() {
   local legacy_data="$1" legacy_image bucket buckets=()
   legacy_image="$(pick_legacy_minio_image)"
@@ -561,13 +568,24 @@ migrate_legacy_minio_data() {
       continue
     fi
     echo "  ${bucket}: copying..."
-    # copy + --one-way: files that exist only in the new store are left alone.
-    if ! run_rclone copy --stats 30s --stats-one-line --stats-log-level NOTICE "src:${bucket}" "dst:${bucket}" ||
-      ! run_rclone check --one-way "src:${bucket}" "dst:${bucket}"; then
-      echo "Error: copying bucket '${bucket}' failed. Nothing was deleted — fix the problem"
-      echo "  and re-run: ./classroomio.sh migrate-storage"
+    # --ignore-existing: a repeat run never overwrites or deletes what is already in the new store.
+    local report="" check_ok=true changed
+    if run_rclone copy --ignore-existing --stats 30s --stats-one-line --stats-log-level NOTICE "src:${bucket}" "dst:${bucket}"; then
+      # Combined report: "-" missing in the new store, "!" unreadable, "*" differs (changed since migrating).
+      report="$(run_rclone check --one-way --combined - "src:${bucket}" "dst:${bucket}" 2>/dev/null)" || check_ok=false
+    else
+      check_ok=false
+    fi
+    changed="$(grep -c '^\* ' <<<"${report}" || true)"
+    if grep -q '^[-!] ' <<<"${report}" || { [[ "${check_ok}" != "true" ]] && ((changed == 0)); }; then
+      echo "Error: copying bucket '${bucket}' failed. Nothing was deleted or overwritten — fix the"
+      echo "  problem and re-run: ./classroomio.sh migrate-storage"
       docker rm -f cio-minio-legacy >/dev/null 2>&1 || true
       return 1
+    fi
+    echo "  ${bucket}: $(grep -c '^= ' <<<"${report}" || true) object(s) verified against the old copy."
+    if ((changed > 0)); then
+      echo "  ${bucket}: ${changed} object(s) already changed in the new store were kept as they are."
     fi
   done
 
@@ -586,8 +604,8 @@ migrate_legacy_storage_if_needed() {
   if [[ -n "${legacy_data}" ]]; then
     require_seaweedfs_ready_app
     migrate_legacy_minio_data "${legacy_data}"
-  elif docker inspect cio-minio >/dev/null 2>&1; then
-    echo "Error: the old cio-minio container exists but its uploads could not be located."
+  elif legacy_minio_data_is_configured || docker inspect cio-minio >/dev/null 2>&1; then
+    echo "Error: this install used the old bundled MinIO, but its uploads could not be located."
     echo "  Set MINIO_LEGACY_DATA in .env to the old MinIO volume name or data path, then re-run."
     echo "  Nothing has been changed."
     exit 1

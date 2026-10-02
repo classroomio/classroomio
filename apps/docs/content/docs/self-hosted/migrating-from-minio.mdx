@@ -43,7 +43,8 @@ The upgrade does this for you, in order:
    `docker-compose.images.yaml.bak`; re-apply any local edits to the new file.
 3. Starts the new `storage` service and creates the buckets.
 4. Copies the `videos`, `documents` and `media` buckets from the old data and checks every object.
-   It never deletes anything in the new store, so running it again later is safe.
+   It never deletes or overwrites anything already in the new store, so running it again later is
+   safe: files the app has changed since stay as they are.
 5. Sets `OBJECT_STORAGE_ENDPOINT=http://storage:9000` in `.env` and restarts the stack.
 
 To run only the copy, without pulling new images, use `./classroomio.sh migrate-storage`.
@@ -58,7 +59,8 @@ script uses a MinIO image already cached on your machine if there is one, otherw
 The script finds the old data from the `cio-minio` container's own mount, so custom volume names and
 bind mounts work. If that container is already gone and the data isn't in `classroomio_minio-data`,
 set `MINIO_LEGACY_DATA=<volume name or path>` in `.env`. The script stops instead of switching to an
-empty store when it can see an old install but not its data.
+empty store when it can see an old install but not its data, including when that volume or path no
+longer exists.
 :::
 
 ## Migrate by hand
@@ -87,7 +89,7 @@ for b in videos documents media; do
     -e RCLONE_CONFIG_DST_TYPE=s3 -e RCLONE_CONFIG_DST_PROVIDER=SeaweedFS \
     -e RCLONE_CONFIG_DST_ENDPOINT=http://storage:9000 \
     -e RCLONE_CONFIG_DST_ACCESS_KEY_ID=<new key> -e RCLONE_CONFIG_DST_SECRET_ACCESS_KEY=<new secret> \
-    rclone/rclone copy src:$b dst:$b
+    rclone/rclone copy --ignore-existing src:$b dst:$b
 done
 ```
 
