@@ -25,9 +25,10 @@
 
   interface Props {
     cohortId: string;
+    onMembersChanged?: () => void;
   }
 
-  let { cohortId }: Props = $props();
+  let { cohortId, onMembersChanged }: Props = $props();
 
   let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
@@ -157,6 +158,7 @@
     });
 
     if (cohortApi.success) {
+      onMembersChanged?.();
       closeModal();
     }
   }

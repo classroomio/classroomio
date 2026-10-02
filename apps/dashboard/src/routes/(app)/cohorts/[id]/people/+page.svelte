@@ -80,7 +80,11 @@
     const nextSearch = searchParams.toString();
     if (nextSearch === page.url.searchParams.toString()) return;
 
-    await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    try {
+      await goto(`${page.url.pathname}?${nextSearch}`, { keepFocus: true, noScroll: true });
+    } catch (error) {
+      console.error('navigation failed:', error);
+    }
   }
 
   async function loadPeople(cohortId: string, activeQuery: ListCohortPeopleQuery) {
@@ -220,8 +224,12 @@
       isDeleteModalOpen = false;
       memberToDelete = null;
 
-      const nextPage = peopleRows.length === 0 && query.page > 1 ? query.page - 1 : query.page;
-      await navigatePeople({ ...query, page: nextPage });
+      const nextPage = peopleRows.length <= 1 && query.page > 1 ? query.page - 1 : query.page;
+      if (nextPage === query.page) {
+        await loadPeople(data.cohortId, query);
+      } else {
+        await navigatePeople({ ...query, page: nextPage });
+      }
     }
   }
 
@@ -446,7 +454,7 @@
   </Page.Body>
 </Page.Root>
 
-<InviteMembersModal cohortId={data.cohortId} />
+<InviteMembersModal cohortId={data.cohortId} onMembersChanged={() => loadPeople(data.cohortId, query)} />
 
 <Dialog.Root bind:open={isDeleteModalOpen}>
   <Dialog.Content class="w-96 pt-3">

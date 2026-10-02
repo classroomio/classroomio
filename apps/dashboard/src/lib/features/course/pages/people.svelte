@@ -285,7 +285,16 @@
         <Table.Header>
           <Table.Row>
             {#each tableColumns as column (column.label)}
-              <Table.Head class={column.wide ? 'max-w-[220px]' : undefined}>
+              <Table.Head
+                class={column.wide ? 'max-w-[220px]' : undefined}
+                aria-sort={column.sortKey
+                  ? query.sortBy === column.sortKey
+                    ? query.sortOrder === 'asc'
+                      ? 'ascending'
+                      : 'descending'
+                    : 'none'
+                  : undefined}
+              >
                 {#if column.sortKey}
                   <button
                     type="button"

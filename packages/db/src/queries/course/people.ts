@@ -192,7 +192,7 @@ function buildPeopleOrderBy(sortBy: TCoursePeopleSortBy, sortOrder: TCoursePeopl
     sortBy === 'name'
       ? sql<string>`COALESCE(NULLIF(${schema.profile.fullname}, ''), ${schema.profile.email}, ${schema.groupmember.email})`
       : sortBy === 'progress'
-        ? rank
+        ? percent
         : sortBy === 'lastLogin'
           ? lastLoginAtSql
           : sortBy === 'enrolledAt'
