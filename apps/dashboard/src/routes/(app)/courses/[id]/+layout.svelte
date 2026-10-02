@@ -8,9 +8,8 @@
   import { CourseHeader } from '$features/course/components';
   import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
   import type { Course } from '$features/course/types';
-  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
-  import { Confetti } from '$features/ui';
+  import { Confetti, NotPermittedModal } from '$features/ui';
   import { courseApi } from '$features/course/api';
   import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
   import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
@@ -27,7 +26,7 @@
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { CourseMobileBottomNav } from '$features/course/components/mobile';
@@ -91,14 +90,28 @@
   );
   const canCheck = $derived(!!$profile.id && isCourseReady);
 
-  const isPermitted = $derived.by(() => {
-    if (!isCourseReady) return false;
-    if (!canCheck) return true;
+  const isForbidden = $derived.by(() => {
+    if (courseApi.isForbidden) return true;
+    if (!isCourseReady || !canCheck) return false;
 
-    if ($isOrgAdmin === null) return true;
+    if ($isOrgAdmin === null) return false;
 
-    return $isOrgAdmin || user;
+    return !$isOrgAdmin && !user;
   });
+
+  // Fall back to the `/org/*` placeholder only while the org is still loading; the org layout
+  // swaps `*` for the current siteName once it resolves.
+  const forbiddenHref = $derived.by(() => {
+    if ($isCourseLearnerView) return '/lms/mylearning';
+
+    const siteName = $currentOrg.siteName;
+
+    return siteName ? `/org/${siteName}` : '/org/*';
+  });
+
+  function handleForbiddenGo() {
+    goto(forbiddenHref);
+  }
 
   const isExercisePage = $derived(!!data.exerciseId);
 
@@ -191,30 +204,12 @@
   <title>{courseApi.course?.title || 'ClassroomIO Course'}</title>
 </svelte:head>
 
-{#if isCourseReady}
-  <Dialog.Root open={!isPermitted}>
-    <Dialog.Content class="w-96">
-      <Dialog.Header>
-        <Dialog.Title>{$t('course.not_permitted.header')}</Dialog.Title>
-      </Dialog.Header>
-      <div>
-        <p class="text-md text-center dark:text-white">
-          {$t('course.not_permitted.body')}
-        </p>
-
-        <div class="mt-5 flex justify-center">
-          <Button
-            onclick={() => {
-              goto('/org/*');
-            }}
-          >
-            {$t('course.not_permitted.button')}
-          </Button>
-        </div>
-      </div>
-    </Dialog.Content>
-  </Dialog.Root>
-{/if}
+<NotPermittedModal
+  open={isForbidden}
+  entityType="course"
+  buttonText={$isCourseLearnerView ? $t('common.back_to_my_learning') : $t('course.not_permitted.button')}
+  onAction={handleForbiddenGo}
+/>
 
 <Sidebar.Provider
   bind:ref={sidebarProviderElement}
@@ -236,7 +231,27 @@
     <CourseCompletionModal />
     <CopyCourseModal />
 
-    {#if !isCourseReady}
+    {#if isForbidden}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        <Empty title={$t('course.not_permitted.header')} description={$t('course.not_permitted.body')} variant="page">
+          <div class="mt-4 flex justify-center">
+            <Button onclick={handleForbiddenGo} variant="outline">
+              {$isCourseLearnerView ? $t('common.back_to_my_learning') : $t('course.not_permitted.button')}
+            </Button>
+          </div>
+        </Empty>
+      </div>
+    {:else if courseApi.isNotFound}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        <Empty title={$t('course.not_found.header')} description={$t('course.not_found.body')} variant="page">
+          <div class="mt-4 flex justify-center">
+            <Button onclick={handleForbiddenGo} variant="outline">
+              {$isCourseLearnerView ? $t('common.back_to_my_learning') : $t('course.not_permitted.button')}
+            </Button>
+          </div>
+        </Empty>
+      </div>
+    {:else if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
         <Empty
           title="Loading course…"

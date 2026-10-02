@@ -35,7 +35,8 @@
       "reward_help": "Zaoferuj uczniom zachętę za ukończenie",
       "reward_description": "Opis nagrody",
       "placeholder_reward": "np. sesja mentoringowa 1 na 1, gadżety lub ekskluzywny dostęp do społeczności"
-    }
+    },
+    "back_to_my_learning": "Powrót do Mojej nauki"
   },
   "validations": {
     "generic": {
@@ -2891,6 +2892,11 @@
       "description": "Zaraz zobaczysz, co zobaczy student, który zapisze się na ten kurs",
       "copy_link": "Skopiuj link",
       "go_to_lms": "Przejdź do LMS-a"
+    },
+    "not_found": {
+      "header": "Nie znaleziono kursu",
+      "body": "Kurs, którego szukasz nie istnieje lub mógł zostać usunięty.",
+      "button": "Idź do domu"
     }
   },
   "courses": {
@@ -5839,10 +5845,10 @@
         "name_label": "Nazwa ścieżki",
         "name_placeholder": "np. Tworzenie stron internetowych Fullstack",
         "desc_label": "Opis",
-        "desc_placeholder": "Krótkie podsumowanie osiągnięć uczestników...",
         "cancel": "Anuluj",
         "submit": "Utwórz ścieżkę edukacyjną",
-        "failed": "Nie udało się utworzyć ścieżki szkoleniowej"
+        "failed": "Nie udało się utworzyć ścieżki szkoleniowej",
+        "desc_placeholder": "Krótkie podsumowanie osiągnięć uczniów..."
       }
     },
     "workspace": {
@@ -5877,7 +5883,6 @@
     },
     "setup": {
       "title": "Skonfiguruj swoją ścieżkę",
-      "subtitle": "Zakończ te kroki, aby udostępnić {name} swoim uczestnikom.",
       "summary": "Ścieżka zostanie uruchomiona po ustaleniu kolejności kursów, wycenie i ustawieniu jej jako Aktywnej.",
       "progress": "Ukończono {completed} z {total}",
       "done": "Gotowe",
@@ -5902,7 +5907,8 @@
       "step_publish_title": "Opublikuj ścieżkę",
       "step_publish_desc": "Opublikuj ścieżkę, aby pojawiła się na Twojej stronie docelowej i LMS-ie.",
       "step_publish_action": "Publikuj",
-      "reorder_action": "Zmień kolejność"
+      "reorder_action": "Zmień kolejność",
+      "subtitle": "Wykonaj te kroki, aby udostępnić {name} swoim uczniom."
     },
     "builder": {
       "title": "Kursy",
@@ -5933,7 +5939,7 @@
       },
       "card": {
         "courses_count": "{count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}",
-        "learners_count": "{count} {count, plural, one {uczestnik} few {uczestnicy} many {uczestników} other {uczestników}}"
+        "learners_count": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}}"
       },
       "filters": {
         "title": "Filtry",
@@ -5943,7 +5949,6 @@
         "group_completion": "Wskaźnik ukończenia",
         "all": "Wszystkie",
         "published": "Opublikowano",
-        "no_learners": "Brak uczestników",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
         "low": "Niski (poniżej 25%)",
@@ -5953,14 +5958,16 @@
         "sort_last_updated_at": "Ostatnia aktualizacja o godz",
         "sort_published": "Opublikowano",
         "sort_courses": "Kursy",
-        "unpublished": "Niepublikowane"
+        "unpublished": "Niepublikowane",
+        "no_learners": "Nie ma jeszcze uczniów"
       },
       "toolbar": {
         "search_placeholder": "Wyszukaj ścieżki edukacyjne…",
         "grid_view": "Widok siatki",
         "list_view": "Widok listy"
       },
-      "load_error_title": "Nie udało się wczytać ścieżek edukacyjnych"
+      "load_error_title": "Nie udało się wczytać ścieżek edukacyjnych",
+      "load_more": "Załaduj więcej"
     },
     "view_path_site": {
       "unpublished_title": "Opublikuj swoją ścieżkę edukacyjną",
@@ -5983,7 +5990,6 @@
       "course_added": "Kurs dodany",
       "courses_added": "Dodano kursy",
       "course_removed": "Kurs usunięty",
-      "member_removed": "Uczestnik został usunięty ze ścieżki",
       "tutor_removed": "Usunięto tutora ze ścieżki",
       "certificate_saved": "Ustawienia certyfikatu zostały zapisane",
       "landing_saved": "Strona docelowa została zaktualizowana",
@@ -5991,7 +5997,8 @@
       "link_generated": "Link z zaproszeniem wygenerowany i skopiowany do schowka",
       "settings_saved": "Ustawienia ścieżki nauki zaktualizowane",
       "member_role_updated": "Rola członka została zaktualizowana",
-      "delete_failed": "Nie udało się usunąć ścieżki szkoleniowej"
+      "delete_failed": "Nie udało się usunąć ścieżki szkoleniowej",
+      "member_removed": "Uczeń usunięty ze ścieżki"
     },
     "analytics": {
       "title": "Analityka",
@@ -6112,7 +6119,8 @@
         "bulk_enroll_success": "Zarejestrowani członkowie: {enrolled} ({invited} zaproszeni)",
         "bulk_enroll_partial": "Zarejestrowani członkowie: {enrolled} ({invited} zaproszeni, {failed} nie powiodło się)",
         "bulk_enroll_failed": "Rejestracja w tle nie powiodła się",
-        "bulk_enroll_lost": "Utracono śledzenie rejestracji w tle"
+        "bulk_enroll_lost": "Utracono śledzenie rejestracji w tle",
+        "bulk_enroll_backgrounded": "Rejestracja nadal działa w tle. Odśwież Osoby, aby zobaczyć wyniki."
       },
       "change_role_to_tutor": "Zrób korepetytora",
       "change_role_to_student": "Zrób studenta"
@@ -6329,6 +6337,16 @@
       "description": "Zobaczysz to, co zobaczy uczeń po zapisaniu się na tę ścieżkę nauki",
       "copy_link": "Kopiuj link",
       "go_to_lms": "Przejdź do LMS"
+    },
+    "hub": {
+      "placeholder_title": "Podgląd ścieżki edukacyjnej",
+      "placeholder_description": "Pełne doświadczenie edukacyjne znajduje się w LMS. Otwórz My Learning, aby kontynuować tę ścieżkę.",
+      "back_to_my_learning": "Powrót do Mojej nauki"
+    },
+    "not_permitted": {
+      "header": "Brak pozwolenia",
+      "body": "Niestety nie masz dostępu do tej ścieżki szkoleniowej.",
+      "button": "Idź do domu"
     }
   },
   "certificate": {

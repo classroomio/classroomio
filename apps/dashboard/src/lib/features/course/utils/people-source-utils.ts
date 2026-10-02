@@ -54,6 +54,10 @@ export function toPeopleSourceFilter(value: string | null | undefined): PeopleSo
   return CoursePeopleSource.safeParse(value).data;
 }
 
+/**
+ * Reads the source filter from the URL (`?source=`), returning undefined for
+ * `all`, empty or hand-edited invalid values.
+ */
 export function readPeopleSourceParam(searchParams: URLSearchParams): PeopleSourceFilter | undefined {
   return toPeopleSourceFilter(searchParams.get(PEOPLE_SOURCE_PARAM));
 }

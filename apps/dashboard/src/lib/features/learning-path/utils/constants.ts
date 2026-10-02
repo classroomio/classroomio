@@ -1,9 +1,10 @@
 import type { StatusFilter, EnrollmentFilter, CompletionFilter, ViewMode } from './types';
+import { PATH_LIST_SORT_BY, PATH_LIST_SORT_ORDERS } from '@cio/utils/validation/learning-path';
 
 export const LEARNING_PATHS_VIEW_MODE_KEY = 'pathView';
 export const DEFAULT_VIEW_MODE: ViewMode = 'grid';
 
-/** Named sort keys for learning path lists (URL `sort`, localStorage, filter UI). */
+/** Named sort keys for learning path lists (URL `sort`, localStorage, filter UI). Values match the backend `PATH_LIST_SORT_BY`. */
 export const PathSortBy = {
   DateCreated: 'date_created',
   LastUpdatedAt: 'last_updated_at',
@@ -11,17 +12,17 @@ export const PathSortBy = {
   Courses: 'courses'
 } as const;
 
-export type PathSortBy = (typeof PathSortBy)[keyof typeof PathSortBy];
+export type PathSortBy = (typeof PATH_LIST_SORT_BY)[number];
 
 export const DEFAULT_PATH_SORT: PathSortBy = PathSortBy.DateCreated;
 
-/** URL `order` param and filter toggle (ascending vs descending). */
+/** URL `order` param and filter toggle (ascending vs descending). Values match the backend `PATH_LIST_SORT_ORDERS`. */
 export const PathSortOrder = {
   Asc: 'asc',
   Desc: 'desc'
 } as const;
 
-export type PathSortOrder = (typeof PathSortOrder)[keyof typeof PathSortOrder];
+export type PathSortOrder = (typeof PATH_LIST_SORT_ORDERS)[number];
 
 export const DEFAULT_SORT_ORDER: PathSortOrder = PathSortOrder.Desc;
 

@@ -35,7 +35,8 @@
       "reward_help": "Ofrece un incentivo a los estudiantes al completar",
       "reward_description": "Descripción de la recompensa",
       "placeholder_reward": "p. ej. sesión de mentoría individual, merchandising o acceso exclusivo a la comunidad"
-    }
+    },
+    "back_to_my_learning": "Volver a mi aprendizaje"
   },
   "validations": {
     "generic": {
@@ -2891,6 +2892,11 @@
       "description": "Estás a punto de ver lo que verá un estudiante cuando se inscriba en este curso.",
       "copy_link": "Copiar enlace",
       "go_to_lms": "Ir a LMS"
+    },
+    "not_found": {
+      "header": "Curso no encontrado",
+      "body": "El curso que buscas no existe o puede haber sido eliminado.",
+      "button": "Vete a casa"
     }
   },
   "courses": {
@@ -5960,7 +5966,8 @@
         "grid_view": "Vista de cuadrícula",
         "list_view": "Vista de lista"
       },
-      "load_error_title": "No se pudieron cargar las rutas de aprendizaje"
+      "load_error_title": "No se pudieron cargar las rutas de aprendizaje",
+      "load_more": "Cargar más"
     },
     "view_path_site": {
       "unpublished_title": "Publica tu ruta de aprendizaje",
@@ -6084,11 +6091,11 @@
         "not_started": "No iniciado"
       },
       "table": {
-        "learner": "aprendiz",
         "progress": "Progreso del camino",
         "current_course": "Curso actual",
         "enrolled": "Inscrito",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "learner": "Alumno"
       },
       "filter": {
         "all": "Todo el progreso",
@@ -6112,7 +6119,8 @@
         "bulk_enroll_success": "Miembros inscritos {enrolled} ({invited} invitados)",
         "bulk_enroll_partial": "Miembros inscritos {enrolled} ({invited} invitados, {failed} fallidos)",
         "bulk_enroll_failed": "Falló la inscripción en segundo plano",
-        "bulk_enroll_lost": "Se perdió la pista de la inscripción en segundo plano."
+        "bulk_enroll_lost": "Se perdió la pista de la inscripción en segundo plano.",
+        "bulk_enroll_backgrounded": "La inscripción todavía se está ejecutando en segundo plano. Actualiza Personas para ver los resultados."
       },
       "change_role_to_tutor": "hacer tutor",
       "change_role_to_student": "hacer estudiante"
@@ -6329,6 +6337,16 @@
       "description": "Estás a punto de ver lo que verá un estudiante cuando se inscriba en esta ruta de aprendizaje",
       "copy_link": "Copiar enlace",
       "go_to_lms": "Ir al LMS"
+    },
+    "hub": {
+      "placeholder_title": "Vista previa de la ruta de aprendizaje",
+      "placeholder_description": "La experiencia de aprendizaje completa vive en el LMS. Abre Mi Aprendizaje para continuar este camino.",
+      "back_to_my_learning": "Volver a mi aprendizaje"
+    },
+    "not_permitted": {
+      "header": "Sin permiso",
+      "body": "Lamentablemente no tienes acceso a esta ruta de aprendizaje.",
+      "button": "Vete a casa"
     }
   },
   "certificate": {

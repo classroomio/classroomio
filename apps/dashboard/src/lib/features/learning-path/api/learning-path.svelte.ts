@@ -6,13 +6,13 @@ import type {
   CreateLearningPathRequest,
   DeleteLearningPathRequest,
   GetLearningPathDetailRequest,
-  LearningPathAccessOptions,
-  LearningPathCourseProgress,
+
   LearningPathDetail,
   LearningPathWithEnrollment,
   LearningPathSummary,
   LearningPathsPagination,
   ListLearningPathsRequest,
+  PathListFilters,
   UpdateLearningPathData,
   UpdateLearningPathRequest
 } from '../utils/types';
@@ -34,7 +34,9 @@ import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import { snackbar } from '$features/ui/snackbar/store';
+import { toPathListApiQuery } from '../utils/path-list-filters';
 
+/** Staff workspace API: every request hits team-only endpoints (org admin or assigned tutor). Learner data lives in pathJourneyApi. */
 export class LearningPathApi extends BaseApiWithErrors {
   paths = $state<LearningPathSummary[]>([]);
   pathsPagination = $state<LearningPathsPagination | null>(null);
@@ -47,8 +49,25 @@ export class LearningPathApi extends BaseApiWithErrors {
   private listedOrgId: string | null = null;
   private listPathsRequestSeq = 0;
   isNotFound = $state(false);
+  isForbidden = $state(false);
   loadError = $state<string | null>(null);
+  isLoadingMorePaths = $state(false);
 
+  /**
+   * True while another server page exists (`page < totalPages`).
+   */
+  get hasMorePaths(): boolean {
+    const pagination = this.pathsPagination;
+    if (!pagination) return false;
+
+    return pagination.page < pagination.totalPages;
+  }
+
+  /**
+   * Ensures the staff detail for a path is loaded. Resolves to three outcomes
+   * the route renders directly: `isNotFound` for a 404, `isForbidden` for a
+   * 403 (not-permitted dialog), and `loadError` for any other failure.
+   */
   async ensurePath(pathId: string): Promise<LearningPathDetail | null> {
     if (!pathId) return null;
 
@@ -62,6 +81,7 @@ export class LearningPathApi extends BaseApiWithErrors {
 
     const navSeq = ++this.pathRequestSeq;
     this.isNotFound = false;
+    this.isForbidden = false;
     this.loadError = null;
 
     let fetchPromise = !this.isPathDirty ? this.inFlightPathRequests.get(pathId) : undefined;
@@ -84,10 +104,12 @@ export class LearningPathApi extends BaseApiWithErrors {
         this.loadedPathId = pathId;
         this.isPathDirty = false;
         this.isNotFound = false;
+        this.isForbidden = false;
         this.loadError = null;
       } else {
         this.currentPath = null;
         this.isNotFound = true;
+        this.isForbidden = false;
         this.loadError = null;
       }
 
@@ -100,7 +122,13 @@ export class LearningPathApi extends BaseApiWithErrors {
       this.currentPath = null;
       const status = error instanceof ApiError ? error.status : undefined;
       this.isNotFound = status === 404;
-      this.loadError = this.isNotFound ? null : error instanceof Error ? error.message : 'Failed to load learning path';
+      this.isForbidden = status === 403;
+      this.loadError =
+        this.isNotFound || this.isForbidden
+          ? null
+          : error instanceof Error
+            ? error.message
+            : 'Failed to load learning path';
 
       return null;
     } finally {
@@ -126,34 +154,67 @@ export class LearningPathApi extends BaseApiWithErrors {
     return this.ensurePath(pathId);
   }
 
-  async listPaths(
-    organizationId?: string,
-    options: { page?: number; limit?: number; search?: string } = {}
-  ): Promise<void> {
-    const orgId = organizationId || get(currentOrg).id;
-    if (!orgId) return;
+  /**
+   * Seeds the listing store from server `load` data. Replaces the list, so each
+   * navigation or invalidation starts from the server's page 1.
+   */
+  setPathList(paths: LearningPathSummary[], pagination: LearningPathsPagination | null) {
+    this.listPathsRequestSeq += 1;
+    this.paths = Array.isArray(paths) ? [...paths] : [];
+    this.pathsPagination = pagination;
+  }
 
-    // The listing page filters client-side, so fetch up to a full page of 100.
-    const { page = 1, limit = 100, search } = options;
+  /**
+   * Lists one server page of learning paths for the URL-driven listing.
+   * Page 1 replaces the list; later pages append, skipping ids already present.
+   */
+  async listPaths(organizationId?: string, filters?: PathListFilters, page = 1): Promise<void> {
+    const orgId = organizationId || get(currentOrg).id;
+    if (!orgId || !filters) return;
+
     this.listedOrgId = orgId;
     const seq = ++this.listPathsRequestSeq;
+    const query = toPathListApiQuery(orgId, filters, page);
 
     await this.execute<ListLearningPathsRequest>({
       requestFn: () =>
         classroomio['learning-path'].$get({
-          query: { organizationId: orgId, page: String(page), limit: String(limit), search }
+          query
         }),
       logContext: 'listing learning paths',
       onSuccess: (result) => {
-        if (this.listedOrgId === orgId && seq === this.listPathsRequestSeq) {
-          this.paths = Array.isArray(result.data) ? result.data : [];
-          this.pathsPagination = result.pagination ?? null;
+        if (this.listedOrgId !== orgId || seq !== this.listPathsRequestSeq) return;
+
+        const incoming = Array.isArray(result.data) ? result.data : [];
+        if (page <= 1) {
+          this.paths = incoming;
+        } else {
+          const seen = new Set(this.paths.map((p) => p.id));
+          this.paths = [...this.paths, ...incoming.filter((p) => !seen.has(p.id))];
         }
+        this.pathsPagination = result.pagination ?? null;
       }
     });
   }
 
-  async get(pathId: string, _access?: LearningPathAccessOptions): Promise<LearningPathDetail | null> {
+  /**
+   * Appends the next server page to the listing, for the "Load more" button.
+   */
+  async loadMorePaths(organizationId?: string, filters?: PathListFilters): Promise<void> {
+    const orgId = organizationId || get(currentOrg).id;
+    if (!orgId || !filters || this.isLoadingMorePaths) return;
+
+    const nextPage = (this.pathsPagination?.page ?? 0) + 1;
+    this.isLoadingMorePaths = true;
+
+    try {
+      await this.listPaths(orgId, filters, nextPage);
+    } finally {
+      this.isLoadingMorePaths = false;
+    }
+  }
+
+  async get(pathId: string): Promise<LearningPathDetail | null> {
     let requestError: Error | null = null;
     let fetchedDetail: LearningPathDetail | null = null;
 
@@ -174,10 +235,16 @@ export class LearningPathApi extends BaseApiWithErrors {
               ? String((err as { error: unknown }).error)
               : 'Failed to load learning path';
         const code = err && typeof err === 'object' && 'code' in err ? String((err as { code: unknown }).code) : null;
-        // Preserve the not-found signal: execute swallows HTTP status, so map
-        // the shared error code back to 404 here. ensurePath relies on it to
-        // render the not-found state instead of a generic load error.
-        requestError = code === ErrorCodes.LEARNING_PATH_NOT_FOUND ? new ApiError(message, 404) : new Error(message);
+        // Preserve the access signals: execute swallows HTTP status, so map
+        // the shared error codes back here. ensurePath relies on them to
+        // render not-found vs not-permitted instead of a generic load error.
+        if (code === ErrorCodes.LEARNING_PATH_NOT_FOUND) {
+          requestError = new ApiError(message, 404);
+        } else if (code === ErrorCodes.UNAUTHORIZED || code === ErrorCodes.FORBIDDEN) {
+          requestError = new ApiError(message, 403);
+        } else {
+          requestError = new Error(message);
+        }
       }
     });
 
@@ -226,6 +293,13 @@ export class LearningPathApi extends BaseApiWithErrors {
 
   removePathFromLists(pathId: string) {
     this.paths = this.paths.filter((p) => p.id !== pathId && p.publicId !== pathId);
+
+    if (this.pathsPagination) {
+      this.pathsPagination = {
+        ...this.pathsPagination,
+        total: Math.max(0, this.pathsPagination.total - 1)
+      };
+    }
   }
 
   async update(

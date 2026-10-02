@@ -577,3 +577,8 @@ export type VideoRecordingUploadCompleteRequest =
   (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['question'][':questionId']['video-recording']['upload']['complete']['$post'];
 export type VideoRecordingPlaybackRequest =
   (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['submission'][':submissionId']['question'][':questionId']['video-recording']['playback']['$get'];
+
+/** Learner redirect decision for a course (course vs path vs hub). No UI calls this yet. */
+export type GetCourseRedirectRequest = (typeof classroomio.course)[':courseId']['redirect']['$get'];
+export type GetCourseRedirectSuccess = Extract<InferResponseType<GetCourseRedirectRequest>, { success: true }>;
+export type CourseRedirectTarget = GetCourseRedirectSuccess['data'];

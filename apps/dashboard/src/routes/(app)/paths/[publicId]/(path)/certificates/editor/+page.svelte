@@ -1,8 +1,13 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { Spinner } from '@cio/ui/base/spinner';
   import { t } from '$lib/utils/functions/translations';
   import { learningPathApi } from '$features/learning-path/api';
+  import { resolvePathViewMode } from '$features/learning-path/utils/path-view-mode';
+  import { getPathHubRoute } from '$features/learning-path/utils/routes';
+  import { isOrgStudent, isPathLearnerView, isStudentExperience } from '$lib/utils/store/app';
+  import { currentOrgPath } from '$lib/utils/store/org';
   import { isFreePlan } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import {
@@ -16,11 +21,25 @@
   import { resolveCertificateDesign, type CertificateDesign } from '@cio/certificates';
 
   const publicId = $derived(page.params.publicId ?? '');
+  const mode = $derived(resolvePathViewMode($isPathLearnerView, $isOrgStudent, $isStudentExperience));
 
   $effect(() => {
-    if (!publicId || !$profile.id) return;
+    if (!publicId || !$profile.id || mode !== 'staff') return;
 
-    learningPathApi.ensurePath(publicId);
+    void learningPathApi.ensurePath(publicId);
+  });
+
+  // The editor bypasses both path layouts, so it enforces staff-only access
+  // itself with the same role rule: learners go to the hub, and staff without
+  // access (a 403 from the team-only detail endpoint) go back to org paths.
+  $effect(() => {
+    if (!publicId) return;
+
+    if (mode === 'learner') {
+      void goto(getPathHubRoute(publicId), { replaceState: true });
+    } else if (mode === 'staff' && (learningPathApi.isForbidden || learningPathApi.isNotFound)) {
+      void goto(`${$currentOrgPath}/paths`, { replaceState: true });
+    }
   });
 
   const path = $derived(learningPathApi.currentPath);
