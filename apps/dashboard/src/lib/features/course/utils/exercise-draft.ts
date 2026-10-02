@@ -3,8 +3,7 @@ import { questionnaire } from '$features/course/components/exercise/store';
 
 const EXERCISE_DRAFT_STORAGE_PREFIX = 'classroomio:exercise-draft';
 
-/** A draft only bridges a redirect out of the app and back, so it goes stale quickly. */
-const EXERCISE_DRAFT_MAX_AGE_MS = 60 * 60 * 1000;
+const EXERCISE_DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 interface StoredExerciseDraft {
   savedAt: number;
@@ -23,10 +22,6 @@ export function clearExerciseDraft(courseId: string, exerciseId: string) {
   }
 }
 
-/**
- * Stashes the editor state before the browser leaves the app (e.g. for plan checkout), so the
- * teacher's in-progress questions survive the round trip.
- */
 export function saveExerciseDraft(courseId: string, exerciseId: string, state: QuestionnaireState) {
   if (!courseId || !exerciseId) return;
 
@@ -63,16 +58,11 @@ function loadExerciseDraft(courseId: string, exerciseId: string): QuestionnaireS
   }
 }
 
-/**
- * Replaces freshly hydrated server data with a stashed draft, if one is waiting. Must run after
- * `hydrateExercisePageData`. Returns whether a draft was restored.
- */
 export function restoreExerciseDraft(courseId: string, exerciseId: string) {
   const draft = loadExerciseDraft(courseId, exerciseId);
 
   if (!draft) return false;
 
-  clearExerciseDraft(courseId, exerciseId);
   questionnaire.set(draft);
 
   return true;

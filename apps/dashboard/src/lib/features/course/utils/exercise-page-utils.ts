@@ -3,7 +3,8 @@ import { QUESTION_TYPE_KEY, normalizeThumbsQuestion } from '@cio/question-types'
 import {
   clearQuestionnaireValidation,
   questionnaire,
-  questionnaireMetaData
+  questionnaireMetaData,
+  type QuestionnaireState
 } from '$features/course/components/exercise/store';
 import {
   getQuestionTypeId,
@@ -17,8 +18,25 @@ import type { Question } from '$features/course/types';
 import { UNTITLED_EXERCISE_SECTION_TITLE } from './exercise-section-utils';
 import { exerciseApi } from '$features/course/api';
 import { normalizeQuestionOrder } from '$features/course/components/exercise/order-utils';
+import { get, writable } from 'svelte/store';
+import { hasQuestionnaireChanges, mergeExerciseStates } from './exercise-state-merge';
 
-export function hydrateExercisePageData(exercise: Exercise, exerciseId: string) {
+export interface ExerciseRemoteUpdateNotice {
+  conflictCount: number;
+  exerciseId: string;
+  mergedAssistantState: QuestionnaireState;
+  type: 'conflict' | 'merged';
+}
+
+const serverExerciseStates = new Map<string, QuestionnaireState>();
+
+export const exerciseRemoteUpdateNotice = writable<ExerciseRemoteUpdateNotice | null>(null);
+
+function snapshotQuestionnaireState(state: QuestionnaireState) {
+  return structuredClone(state);
+}
+
+function toQuestionnaireState(exercise: Exercise): QuestionnaireState {
   let questions: Question[] = [];
 
   const sections: ExerciseSectionState[] = Array.isArray(exercise.sections)
@@ -91,9 +109,7 @@ export function hydrateExercisePageData(exercise: Exercise, exerciseId: string) 
     questions = normalizeQuestionOrder(mappedQuestions);
   }
 
-  clearQuestionnaireValidation();
-
-  questionnaire.set({
+  return {
     title: exercise.title,
     description: exercise.description,
     dueBy: exercise.dueBy,
@@ -108,9 +124,78 @@ export function hydrateExercisePageData(exercise: Exercise, exerciseId: string) 
     completionPolicy: (exercise.completionPolicy as 'submitted' | 'passed' | undefined) ?? 'submitted',
     passThreshold: exercise.passThreshold ?? 100,
     slug: exercise.slug ?? ''
-  });
+  };
+}
+
+export function hydrateExercisePageData(exercise: Exercise, exerciseId: string) {
+  const nextState = toQuestionnaireState(exercise);
+
+  clearQuestionnaireValidation();
+  questionnaire.set(nextState);
+  serverExerciseStates.set(exerciseId, snapshotQuestionnaireState(nextState));
+  exerciseRemoteUpdateNotice.set(null);
 
   questionnaireMetaData.update((metadata) => ({ ...metadata, exerciseId }));
+}
+
+export function reconcileExercisePageData(exercise: Exercise, exerciseId: string) {
+  const remoteState = toQuestionnaireState(exercise);
+  const baseState = serverExerciseStates.get(exerciseId);
+  const localState = get(questionnaire);
+
+  if (!baseState) {
+    hydrateExercisePageData(exercise, exerciseId);
+    return;
+  }
+
+  const localMerge = mergeExerciseStates(baseState, localState, remoteState, 'local');
+  serverExerciseStates.set(exerciseId, snapshotQuestionnaireState(remoteState));
+
+  if (!localMerge.hadRemoteChanges) return;
+
+  if (!localMerge.hadLocalChanges) {
+    clearQuestionnaireValidation();
+    questionnaire.set(remoteState);
+    exerciseRemoteUpdateNotice.set(null);
+    return;
+  }
+
+  questionnaire.set(localMerge.state);
+
+  const assistantMerge = mergeExerciseStates(baseState, localState, remoteState, 'remote');
+  exerciseRemoteUpdateNotice.set({
+    conflictCount: localMerge.conflictCount,
+    exerciseId,
+    mergedAssistantState: assistantMerge.state,
+    type: localMerge.conflictCount > 0 ? 'conflict' : 'merged'
+  });
+}
+
+export function dismissExerciseRemoteUpdateNotice() {
+  exerciseRemoteUpdateNotice.set(null);
+}
+
+export function applyAssistantExerciseConflicts(exerciseId: string) {
+  const notice = get(exerciseRemoteUpdateNotice);
+  if (!notice || notice.exerciseId !== exerciseId) return;
+
+  questionnaire.set(notice.mergedAssistantState);
+  exerciseRemoteUpdateNotice.set(null);
+}
+
+export function clearExercisePageState(exerciseId: string) {
+  serverExerciseStates.delete(exerciseId);
+  const notice = get(exerciseRemoteUpdateNotice);
+  if (notice?.exerciseId === exerciseId) {
+    exerciseRemoteUpdateNotice.set(null);
+  }
+}
+
+export function hasUnsavedExerciseState(exerciseId: string, state: QuestionnaireState = get(questionnaire)) {
+  const baseState = serverExerciseStates.get(exerciseId);
+  if (!baseState) return false;
+
+  return hasQuestionnaireChanges(baseState, state);
 }
 
 export async function refreshExercisePageData(courseId: string, exerciseId: string) {
@@ -118,7 +203,7 @@ export async function refreshExercisePageData(courseId: string, exerciseId: stri
 
   if (!exerciseApi.exercise) return null;
 
-  hydrateExercisePageData(exerciseApi.exercise, exerciseId);
+  reconcileExercisePageData(exerciseApi.exercise, exerciseId);
 
   return exerciseApi.exercise;
 }

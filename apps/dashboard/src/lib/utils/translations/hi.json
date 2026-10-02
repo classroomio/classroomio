@@ -1693,6 +1693,15 @@
           "chill": "बड़े लड़कों के साथ आराम करो",
           "add_exercise": "आकर्षक अभ्यास बनाकर अपना ज्ञान दुनिया के साथ साझा करें। अब एक व्यायाम जोड़ें.",
           "all_exercises": {
+            "remote_update": {
+              "merged_title": "Assistant के बदलाव मर्ज किए गए",
+              "merged_description": "Assistant के बदलाव जोड़ते समय आपके सेव न किए गए संपादन सुरक्षित रखे गए।",
+              "conflict_title": "Assistant के बदलावों की समीक्षा करें",
+              "conflict_description": "Assistant ने {count} ऐसे आइटम बदले जिन्हें आपने भी संपादित किया था। फ़िलहाल आपका संस्करण सुरक्षित रखा गया है।",
+              "keep_mine": "मेरे संपादन रखें",
+              "use_assistant": "Assistant के बदलाव इस्तेमाल करें",
+              "dismiss": "बंद करें"
+            },
             "heading": "सभी व्यायाम",
             "questions": "प्रश्न",
             "submissions": "प्रस्तुतियाँ",

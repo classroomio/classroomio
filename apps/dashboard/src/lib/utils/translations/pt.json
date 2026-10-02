@@ -1693,6 +1693,15 @@
           "chill": "relaxe com os garotos grandes",
           "add_exercise": "Compartilhe seu conhecimento com o mundo criando exercícios envolventes. Adicione um exercício agora.",
           "all_exercises": {
+            "remote_update": {
+              "merged_title": "Alterações do Assistente combinadas",
+              "merged_description": "As suas edições não guardadas foram preservadas enquanto as alterações do Assistente eram adicionadas.",
+              "conflict_title": "Rever alterações do Assistente",
+              "conflict_description": "O Assistente alterou {count} item(ns) que também editou. A sua versão está preservada por enquanto.",
+              "keep_mine": "Manter as minhas edições",
+              "use_assistant": "Usar alterações do Assistente",
+              "dismiss": "Fechar"
+            },
             "heading": "Todos os exercícios",
             "questions": "Perguntas",
             "submissions": "Envios",
