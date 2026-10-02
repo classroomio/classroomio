@@ -32,10 +32,11 @@
       "show_discount": "Rabatt anzeigen",
       "discount_percentage": "Rabattprozentsatz",
       "reward": "Belohnung / Geschenk",
-      "reward_help": "Bieten Sie Lernenden bei Abschluss einen Anreiz",
       "reward_description": "Belohnungsbeschreibung",
-      "placeholder_reward": "z. B. 1-zu-1-Mentoring-Sitzung, Swag oder exklusiver Community-Zugang"
-    }
+      "placeholder_reward": "z. B. 1-zu-1-Mentoring-Sitzung, Swag oder exklusiver Community-Zugang",
+      "reward_help": "Bieten Sie den Studierenden nach Abschluss einen Anreiz"
+    },
+    "back_to_my_learning": "Zurück zu meinem Lernen"
   },
   "validations": {
     "generic": {
@@ -1119,7 +1120,7 @@
         "copy_link": "Link kopieren",
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
         "requires_learning_path": "Lernpfad erforderlich",
-        "requires_learning_path_desc": "Wenn diese Option aktiviert ist, können Lernende nur über einen Lernpfad auf diesen Kurs zugreifen. Bestehende Anmeldungen bleiben erhalten."
+        "requires_learning_path_desc": "Wenn diese Option aktiviert ist, können Studierende nur über einen Lernpfad auf diesen Kurs zugreifen. Bestehende Anmeldungen bleiben erhalten."
       },
       "analytics": {
         "title": "Analysen"
@@ -2891,6 +2892,11 @@
       "description": "Sie werden gleich sehen, was ein Student sehen wird, wenn er sich für diesen Kurs anmeldet",
       "copy_link": "Link kopieren",
       "go_to_lms": "Gehen Sie zu LMS"
+    },
+    "not_found": {
+      "header": "Kurs nicht gefunden",
+      "body": "Der von Ihnen gesuchte Kurs existiert nicht oder wurde möglicherweise gelöscht.",
+      "button": "Geh nach Hause"
     }
   },
   "courses": {
@@ -5877,7 +5883,6 @@
     },
     "setup": {
       "title": "Lernpfad einrichten",
-      "subtitle": "Schließen Sie diese Schritte ab, um {name} für Ihre Lernenden freizuschalten.",
       "summary": "Ein Lernpfad wird live geschaltet, sobald seine Kurse geordnet, bepreist und veröffentlicht sind.",
       "progress": "{completed} von {total} abgeschlossen",
       "done": "Fertig",
@@ -5891,10 +5896,8 @@
       "step_courses_desc": "Wählen Sie die Kurse aus, die diesen Lernpfad bilden.",
       "step_courses_action": "Kurse hinzufügen",
       "step_order_title": "Kursreihenfolge festlegen",
-      "step_order_desc": "Ordnen Sie die Kurse in der Reihenfolge an, in der die Lernenden sie absolvieren sollen.",
       "step_order_action": "Reihenfolge festlegen",
       "step_price_title": "Legen Sie Ihren Preis fest",
-      "step_price_desc": "Bieten Sie den Lernpfad als Paket an – so sehen die Lernenden die Einsparungen im Vergleich zu Einzelkursen.",
       "step_price_action": "Preis festlegen",
       "step_landing_title": "Passen Sie Ihre Landingpage an",
       "step_landing_desc": "Ergebnisse, Fähigkeiten, Ausbilder, Erfahrungsberichte und FAQs auf der öffentlichen Pfadseite.",
@@ -5902,7 +5905,10 @@
       "step_publish_title": "Veröffentlichen Sie den Pfad",
       "step_publish_desc": "Veröffentlichen Sie den Pfad, damit er auf Ihrer Landingpage und Ihrem LMS erscheint.",
       "step_publish_action": "Veröffentlichen",
-      "reorder_action": "Neu anordnen"
+      "reorder_action": "Neu anordnen",
+      "subtitle": "Führen Sie diese Schritte aus, um Ihren Schülern {name} vorzustellen.",
+      "step_order_desc": "Ziehen Sie Kurse in die Reihenfolge, in der sie von den Studierenden abgeschlossen werden sollen.",
+      "step_price_desc": "Bewerten Sie den Kurs als Paket – Studenten sehen die Ersparnisse im Vergleich zu einzelnen Kursen."
     },
     "builder": {
       "title": "Kurse",
@@ -5916,13 +5922,12 @@
       "remove_course": "Aus Pfad entfernen",
       "add_course_button": "Kurse hinzufügen",
       "empty_title": "Noch keine Kurse in diesem Lernpfad",
-      "empty_description": "Fügen Sie Kurse hinzu, um die Lernenden durch eine strukturierte Abfolge zu führen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“.",
       "start_reorder": "Neu anordnen",
-      "end_reorder": "Neu anordnen beenden"
+      "end_reorder": "Neu anordnen beenden",
+      "empty_description": "Fügen Sie Kurse hinzu, um die Schüler durch eine strukturierte Abfolge zu führen. Klicken Sie zunächst auf die Schaltfläche „Hinzufügen“."
     },
     "listing": {
       "title": "Lernpfade",
-      "subtitle": "Strukturierte Lernerfahrungen entwickeln und verwalten, die Lernende durch mehrere Kurse führen.",
       "create_path": "Lernpfad erstellen",
       "empty": {
         "title": "Erstellen Sie Ihren ersten Lernpfad",
@@ -5933,7 +5938,7 @@
       },
       "card": {
         "courses_count": "{count} {count, plural, =1 {Kurs} other {Kurse}}",
-        "learners_count": "{count} {count, plural, =1 {Lernender} other {Lernende}}"
+        "learners_count": "{count} {count, plural, =1 {Schüler} other {Studenten}}"
       },
       "filters": {
         "title": "Filter",
@@ -5943,7 +5948,6 @@
         "group_completion": "Abschlussquote",
         "all": "Alle",
         "published": "Veröffentlicht",
-        "no_learners": "Noch keine Teilnehmer",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
         "low": "Niedrig (unter 25 %)",
@@ -5953,14 +5957,17 @@
         "sort_last_updated_at": "Zuletzt aktualisiert um",
         "sort_published": "Veröffentlicht",
         "sort_courses": "Kurse",
-        "unpublished": "Unveröffentlicht"
+        "unpublished": "Unveröffentlicht",
+        "no_learners": "Noch keine Studenten"
       },
       "toolbar": {
         "search_placeholder": "Lernpfade suchen…",
         "grid_view": "Rasteransicht",
         "list_view": "Listenansicht"
       },
-      "load_error_title": "Die Lernpfade konnten nicht geladen werden"
+      "load_error_title": "Die Lernpfade konnten nicht geladen werden",
+      "load_more": "Mehr laden",
+      "subtitle": "Erstellen und verwalten Sie strukturierte Lernerlebnisse, die Studierende durch mehrere Kurse führen."
     },
     "view_path_site": {
       "unpublished_title": "Veröffentlichen Sie Ihren Lernpfad",
@@ -5983,7 +5990,6 @@
       "course_added": "Kurs hinzugefügt",
       "courses_added": "Kurse hinzugefügt",
       "course_removed": "Kurs entfernt",
-      "member_removed": "Lernender wurde aus dem Pfad entfernt",
       "tutor_removed": "Tutor aus dem Pfad entfernt",
       "certificate_saved": "Zertifikatseinstellungen gespeichert",
       "landing_saved": "Landingpage aktualisiert",
@@ -5991,41 +5997,37 @@
       "link_generated": "Einladungslink generiert und in die Zwischenablage kopiert",
       "settings_saved": "Lernpfadeinstellungen aktualisiert",
       "member_role_updated": "Mitgliedsrolle aktualisiert",
-      "delete_failed": "Der Lernpfad konnte nicht gelöscht werden"
+      "delete_failed": "Der Lernpfad konnte nicht gelöscht werden",
+      "member_removed": "Student aus Pfad entfernt"
     },
     "analytics": {
       "title": "Analytik",
-      "subtitle": "Wie sich Lernende auf dem Weg bewegen.",
-      "empty": "Noch keine Daten. Melden Sie Lernende an und sie werden hier angezeigt.",
-      "empty_desc": "Melden Sie Lernende für diesen Pfad an, damit deren Fortschritt hier angezeigt wird.",
       "stuck": {
-        "title": "Wo Lernende stecken bleiben",
-        "subtitle": "Lektionen und Übungen blockieren derzeit die meisten Lernenden.",
         "badge": "{count} steckt fest",
-        "lesson_desc": "{count} {count, plural, =1 {Lernender} other {Lernende}} hat bei dieser Lektion angehalten.",
-        "exercise_desc": "{count} {count, plural, =1 {Lernender} other {Lernende}} haben diese Übung seit über 2 Wochen im Gange.",
-        "empty": "Derzeit stecken keine Lernenden fest. Toller Fortschritt!",
-        "empty_desc": "Wenn Lernende nicht weiterkommen, werden sie hier angezeigt.",
         "lesson_prefix": "Lektion:",
         "exercise_prefix": "Übung:",
         "showing": "{start} bis {end} von {total} Einträgen werden angezeigt",
         "table": {
           "item": "Element",
           "course": "Kurs"
-        }
+        },
+        "title": "Wo Studenten stecken bleiben",
+        "subtitle": "Lektionen und Übungen blockieren derzeit die meisten Schüler.",
+        "lesson_desc": "{count} {count, plural, =1 {Schüler} other {Studenten}} hat bei dieser Lektion angehalten.",
+        "exercise_desc": "{count} {count, plural, =1 {Schüler} other {Studenten}} haben diese Übung seit über 2 Wochen in Bearbeitung.",
+        "empty": "Derzeit stecken keine Schüler fest. Toller Fortschritt!",
+        "empty_desc": "Wenn Schüler nicht weiterkommen, werden sie hier angezeigt."
       },
       "funnel": {
         "title": "Kurstrichter",
-        "subtitle": "Wie viele Lernende haben jeden Kurs in der Reihenfolge erreicht und abgeschlossen?",
         "completed": "abgeschlossen",
         "in_progress": "in Bearbeitung",
-        "drop": "{count} {count, plural, =1 {Lernender} other {Lernende}} nach Kurs {n} abgesprungen",
         "biggest_drop": "größter Rückgang",
-        "certificates": "{count} {count, plural, =1 {Zertifikat} other {Zertifikate}} verliehen"
+        "certificates": "{count} {count, plural, =1 {Zertifikat} other {Zertifikate}} verliehen",
+        "subtitle": "Wie viele Studierende haben jeden Kurs in der Reihenfolge erreicht und abgeschlossen?",
+        "drop": "{count} {count, plural, =1 {Schüler} other {Studenten}} nach Kurs {n} abgebrochen"
       },
       "stat": {
-        "learners": "Lernende",
-        "active": "Aktive Lernende",
         "active_desc": "in den letzten 14 Tagen gearbeitet",
         "completion_rate": "Abschlussrate",
         "completion_desc": "{completed} von {total} abgeschlossen",
@@ -6035,12 +6037,14 @@
         "pending_line": "{count} {count, plural, =1 {ausstehende Einladung} other {ausstehende Einladungen}}",
         "team_desc": "{count, plural, one {# Tutor im Pfad-Team} other {# Tutoren im Pfad-Team}}",
         "avg_time_weeks": "{value} Wo.",
-        "avg_time_days": "{value} Tage"
+        "avg_time_days": "{value} Tage",
+        "learners": "Studenten",
+        "active": "Aktive Studierende"
       },
       "students": {
-        "subtitle": "Pfadfortschritt pro Teilnehmer, aktueller Kurs und Anmeldedatum.",
         "title": "Lernfortschritt im Überblick",
-        "courses_completed": "Abgeschlossene Kurse"
+        "courses_completed": "Abgeschlossene Kurse",
+        "subtitle": "Pfadfortschritt pro Student, aktueller Kurs und Anmeldedatum."
       },
       "member": {
         "courses_title": "Kurse",
@@ -6056,39 +6060,38 @@
       },
       "export": {
         "status": "Status"
-      }
+      },
+      "subtitle": "Wie sich Schüler auf dem Weg bewegen.",
+      "empty": "Noch keine Daten. Melden Sie Studierende an und sie werden hier angezeigt.",
+      "empty_desc": "Melden Sie Studierende für diesen Pfad an und ihre Fortschritte werden hier angezeigt."
     },
     "people": {
       "title": "Personen",
-      "subtitle": "{count} {count, plural, =1 {Lernender} other {Lernende}} haben sich für diesen Pfad angemeldet",
-      "info_banner": "Durch das Hinzufügen eines Lernenden zu diesem Pfad wird er automatisch für alle {count} {count, plural, =1 {Kurs} other {Kurse}} angemeldet. Durch das Entfernen bleiben der Kurszugriff und der Kursfortschritt erhalten.",
       "search_placeholder": "Nach Name oder E-Mail suchen…",
-      "empty": "Es sind noch keine Lernenden angemeldet. Fügen Sie Lernende hinzu, um loszulegen.",
-      "no_results": "Zu Ihrer Suche passen keine Lernenden.",
       "invite": {
-        "title": "Lernende zum Pfad hinzufügen",
         "bulk_title": "Per E-Mail einladen",
         "bulk_description": "Geben Sie E-Mail-Adressen durch Kommas oder Zeilenumbrüche getrennt ein.",
-        "bulk_submit": "Lernende hinzufügen"
+        "title": "Fügen Sie Schüler zum Pfad hinzu",
+        "bulk_submit": "Studenten hinzufügen"
       },
       "remove": {
-        "title": "Lernenden entfernen",
         "title_non_student": "Mitglied entfernen",
         "confirm": "Sind Sie sicher, dass Sie {name} aus diesem Lernpfad entfernen möchten? Sie behalten ihren Kurszugang und ihre Fortschritte.",
         "confirm_non_student": "Möchten Sie {name} wirklich aus diesem Pfad entfernen? Die Person verliert den Zugriff auf die Verwaltung dieses Pfads.",
         "cancel": "Abbrechen",
-        "yes": "Entfernen"
+        "yes": "Entfernen",
+        "title": "Schüler entfernen"
       },
       "badge": {
         "certificate_earned": "Zertifikat erworben",
         "not_started": "Nicht gestartet"
       },
       "table": {
-        "learner": "Lernender",
         "progress": "Pfadfortschritt",
         "current_course": "Aktueller Kurs",
         "enrolled": "Eingeschrieben",
-        "actions": "Aktionen"
+        "actions": "Aktionen",
+        "learner": "Schüler"
       },
       "filter": {
         "all": "Alle Fortschritte",
@@ -6112,10 +6115,15 @@
         "bulk_enroll_success": "Eingeschriebene {enrolled} Mitglieder ({invited} eingeladen)",
         "bulk_enroll_partial": "Eingeschriebene {enrolled} Mitglieder ({invited} eingeladen, {failed} fehlgeschlagen)",
         "bulk_enroll_failed": "Die Hintergrundregistrierung ist fehlgeschlagen",
-        "bulk_enroll_lost": "Den Überblick über die Hintergrundregistrierung verloren"
+        "bulk_enroll_lost": "Den Überblick über die Hintergrundregistrierung verloren",
+        "bulk_enroll_backgrounded": "Die Anmeldung läuft noch im Hintergrund. Aktualisieren Sie Personen, um die Ergebnisse zu sehen."
       },
       "change_role_to_tutor": "Machen Sie einen Nachhilfelehrer",
-      "change_role_to_student": "Schüler machen"
+      "change_role_to_student": "Schüler machen",
+      "subtitle": "{count} {count, plural, =1 {Schüler} other {Studenten}} in diesem Pfad eingeschrieben",
+      "info_banner": "Durch das Hinzufügen eines Studenten zu diesem Pfad wird er automatisch für alle {count} {count, plural, =1 {Kurs} other {Kurse}} angemeldet. Durch das Entfernen bleiben der Kurszugriff und der Kursfortschritt erhalten.",
+      "empty": "Es sind noch keine Studierenden eingeschrieben. Fügen Sie Schüler hinzu, um loszulegen.",
+      "no_results": "Zu Ihrer Suche passen keine Studenten."
     },
     "certificate": {
       "title": "Zertifikate",
@@ -6190,10 +6198,10 @@
       },
       "header": {
         "title_placeholder": "z. B. Fullstack-Webentwicklung",
-        "description_placeholder": "Ein umfassender Überblick über das, was die Lernenden erreichen werden …",
         "title": "Kopfbereich",
         "title_label": "Titel",
-        "description_label": "Beschreibung"
+        "description_label": "Beschreibung",
+        "description_placeholder": "Ein umfassender Überblick darüber, was die Schüler erreichen werden ..."
       },
       "reviews": {
         "title": "Bewertungen",
@@ -6265,13 +6273,13 @@
       },
       "enrollment": {
         "legend": "Einschreibung & Ablauf",
-        "desc": "Legen Sie fest, wie sich Lernende einschreiben und Kurse absolvieren.",
+        "desc": "Legen Sie fest, wie sich Studenten einschreiben und Kurse absolvieren.",
         "self_enrollment_label": "Selbsteinschreibung erlauben",
-        "self_enrollment_desc": "Lernende können sich selbst für diesen Pfad einschreiben.",
+        "self_enrollment_desc": "Studenten können sich selbst für diesen Pfad einschreiben.",
         "sequential_unlock_label": "Sequenzielle Kursfreischaltung",
-        "sequential_unlock_desc": "Lernende müssen Kurse in festgelegter Reihenfolge absolvieren.",
+        "sequential_unlock_desc": "Studenten müssen Kurse in festgelegter Reihenfolge absolvieren.",
         "auto_enroll_label": "Automatisch in Pfadkurse einschreiben",
-        "auto_enroll_desc": "Lernende automatisch in alle Kurse einschreiben, sobald sie dem Pfad beitreten."
+        "auto_enroll_desc": "Studenten automatisch in alle Kurse einschreiben, sobald sie dem Pfad beitreten."
       },
       "publishing": {
         "legend": "Pfad veröffentlichen",
@@ -6297,27 +6305,27 @@
       },
       "welcome_email": {
         "legend": "Willkommens-E-Mail",
-        "desc": "Passen Sie die E-Mail an, die Lernende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
-        "placeholder": "Schreiben Sie die Willkommensnachricht, die Lernende bei der Anmeldung erhalten …"
+        "desc": "Passen Sie die E-Mail an, die Studierende nach der Anmeldung erhalten. Fügen Sie eine persönliche Notiz, Anweisungen oder einen Link zur Live-Sitzung hinzu.",
+        "placeholder": "Schreiben Sie die Willkommensnachricht, die Studierende bei der Einschreibung erhalten …"
       },
       "progression": {
         "legend": "Lernfortschritt",
-        "desc": "Steuern Sie, ob Lernende auf alle Kurse zugreifen können oder sie der Reihe nach absolvieren müssen.",
         "free": "Frei — alle Kurse sind verfügbar",
-        "sequential": "Sequenziell — vorherige Kurse abschließen, um den nächsten freizuschalten"
+        "sequential": "Sequenziell — vorherige Kurse abschließen, um den nächsten freizuschalten",
+        "desc": "Kontrollieren Sie, ob Studierende auf alle Kurse zugreifen können oder diese der Reihe nach absolvieren müssen."
       },
       "self_enrollment": {
-        "legend": "Lernende können sich selbst einschreiben",
-        "access": "Wenn deaktiviert, können Lernende nur über einen Einladungslink beitreten oder indem sie unter {people} hinzugefügt werden.",
         "access_people": "Personen",
         "enabled": "Aktiviert",
-        "disabled": "Deaktiviert"
+        "disabled": "Deaktiviert",
+        "legend": "Studierende können sich selbst einschreiben",
+        "access": "Wenn diese Option deaktiviert ist, können Schüler nur über einen Einladungslink beitreten oder indem sie von {people} hinzugefügt werden."
       },
       "auto_enroll": {
         "legend": "Automatische Einschreibung in Pfadkurse",
-        "desc": "Mit dem Beitritt zum Pfad wird der Lernende in jeden enthaltenen Kurs eingeschrieben.",
         "enabled": "Aktiviert",
-        "disabled": "Deaktiviert"
+        "disabled": "Deaktiviert",
+        "desc": "Durch den Beitritt zum Pfad wird der Student für jeden darin enthaltenen Kurs angemeldet."
       }
     },
     "courses": {
@@ -6326,9 +6334,19 @@
     },
     "view_as_student": {
       "title": "Dadurch werden Sie zum Student LMS weitergeleitet.",
-      "description": "Sie werden gleich sehen, was ein Lernender sieht, wenn er sich für diesen Lernpfad anmeldet",
+      "description": "Sie werden gleich sehen, was ein Schüler sieht, wenn er sich für diesen Lernpfad anmeldet",
       "copy_link": "Link kopieren",
       "go_to_lms": "Gehen Sie zu LMS"
+    },
+    "hub": {
+      "placeholder_title": "Vorschau des Lernpfads",
+      "placeholder_description": "Die gesamte Lernerfahrung findet im LMS statt. Öffnen Sie „Mein Lernen“, um diesen Weg fortzusetzen.",
+      "back_to_my_learning": "Zurück zu meinem Lernen"
+    },
+    "not_permitted": {
+      "header": "Keine Erlaubnis",
+      "body": "Leider haben Sie keinen Zugriff auf diesen Lernpfad.",
+      "button": "Geh nach Hause"
     }
   },
   "certificate": {

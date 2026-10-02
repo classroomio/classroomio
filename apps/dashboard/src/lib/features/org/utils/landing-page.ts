@@ -678,16 +678,22 @@ export function normalizeLandingPageSettings(value: unknown): OrgLandingPageJson
   };
 }
 
+/** Reads a string field from an untyped record, returning undefined for other types. */
 function readRecordString(record: Record<string, unknown>, key: string): string | undefined {
   const value = record[key];
   return typeof value === 'string' ? value : undefined;
 }
 
+/** Reads a numeric field from an untyped record, returning undefined for other types. */
 function readRecordNumber(record: Record<string, unknown>, key: string): number | undefined {
   const value = record[key];
   return typeof value === 'number' ? value : undefined;
 }
 
+/**
+ * Maps legacy course metadata discount fields to the landing-page shape.
+ * Returns undefined when there is no metadata to read.
+ */
 function mapLandingPageDiscount(
   metadataRecord: Record<string, unknown> | undefined
 ): { discount?: number; showDiscount?: boolean } | undefined {
@@ -701,6 +707,10 @@ function mapLandingPageDiscount(
   };
 }
 
+/**
+ * Resolves whether a landing-page item is paid: explicit `paymentEnabled` wins,
+ * otherwise any positive cost counts as paid.
+ */
 function resolveLandingPagePaid(
   cost: number | undefined,
   metadataRecord: Record<string, unknown> | undefined
@@ -759,6 +769,10 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
   });
 }
 
+/**
+ * Maps public learning paths to the landing-page card shape, tolerating
+ * untyped API fields and deriving paid state from cost/metadata.
+ */
 export function mapPublicLearningPathsToLandingPagePaths(
   paths: OrgPublicLearningPaths
 ): NonNullable<OrgLandingPageProps['learningPaths']> {

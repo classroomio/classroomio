@@ -25,6 +25,8 @@
     onStatusChange?: (status: StatusFilter) => void;
     onEnrollmentChange?: (enrollment: EnrollmentFilter) => void;
     onCompletionChange?: (completion: CompletionFilter) => void;
+    onSortChange?: (sort: PathSortBy, order: PathSortOrder) => void;
+    onOrderChange?: (order: PathSortOrder) => void;
     onClearFilters?: () => void | Promise<void>;
   }
 
@@ -39,6 +41,8 @@
     onStatusChange = () => {},
     onEnrollmentChange = () => {},
     onCompletionChange = () => {},
+    onSortChange,
+    onOrderChange,
     onClearFilters = () => {}
   }: Props = $props();
 
@@ -81,6 +85,8 @@
   {isFiltering}
   {hasActiveFilters}
   {onClearFilters}
+  onSortKeyChange={(value) => onSortChange?.(value as PathSortBy, selectedOrder)}
+  onOrderChange={(value) => onOrderChange?.(value as PathSortOrder)}
 >
   {#snippet additionalContent()}
     <div class="space-y-4">

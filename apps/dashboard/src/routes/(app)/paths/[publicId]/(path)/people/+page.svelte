@@ -22,7 +22,6 @@
   import {
     ALL_ROLES_FILTER,
     DEFAULT_PATH_PEOPLE_PAGE_SIZE,
-    isPathStudentMember,
     shouldIgnoreRowNavigation
   } from '$features/learning-path/utils/path-people-utils';
 
@@ -48,15 +47,9 @@
   const pageSize = $derived(pathMembersApi.membersPagination?.limit ?? DEFAULT_PATH_PEOPLE_PAGE_SIZE);
   const courseCount = $derived(activePath?.courses.length ?? 0);
 
-  const currentUserRole = $derived.by(() => {
-    if (pathMembersApi.viewerRole !== undefined) return pathMembersApi.viewerRole;
-
-    const currentMember = pathMembersApi.members.find((member) => member.profileId === $profile.id);
-    return currentMember ? Number(currentMember.roleId) : null;
-  });
-  const canManageMembers = $derived.by(
-    () => Boolean($isOrgAdmin) || currentUserRole === ROLE.ADMIN || currentUserRole === ROLE.TUTOR
-  );
+  // Staff pages only render after GET /:pathId succeeds, which requires an org
+  // admin or an assigned tutor (learningPathTeamMiddleware).
+  const canManageMembers = $derived(!!learningPathApi.currentPath);
 
   const roleOptions = $derived(ROLES.map((role) => ({ label: $t(role.label), value: `${role.value}` })));
   const progressOptions = $derived([
@@ -153,10 +146,19 @@
     deletePathMemberModal.set({ open: true });
   }
 
+  /**
+   * Toggles a path member between STUDENT and TUTOR.
+   * Only STUDENT and TUTOR rows are actionable; other roles return early.
+   * The row already hides this action from non-admins, and the API returns
+   * 403 for tutors attempting to assign the tutor role.
+   */
   async function handleChangeRole(member: LearningPathMemberItem) {
     if (!pathId) return;
 
-    const nextRole = isPathStudentMember(member) ? ROLE.TUTOR : ROLE.STUDENT;
+    const roleId = Number(member.roleId);
+    if (roleId !== ROLE.STUDENT && roleId !== ROLE.TUTOR) return;
+
+    const nextRole = roleId === ROLE.STUDENT ? ROLE.TUTOR : ROLE.STUDENT;
     const updated = await pathMembersApi.updateMemberRole(pathId, member.id, nextRole);
 
     if (updated) {
@@ -194,7 +196,7 @@
   }
 
   // Only the path id retriggers a load; reads inside loadMembers would otherwise
-  // refetch on every keystroke. The workspace layout owns the viewer role fetch.
+  // refetch on every keystroke.
   $effect(() => {
     const id = pathId;
     if (!id || id === loadedPathId) return;

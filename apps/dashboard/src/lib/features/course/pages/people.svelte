@@ -177,6 +177,10 @@
   }
 
   // TODO(#1226): delete with <PeopleSourceSelect>; the popover patches `source` into the URL query instead.
+  /**
+   * Handles the legacy source-select change: stores the filter and reloads page 1.
+   * Kept until the URL-backed roster merges.
+   */
   function handleSourceChange(value: string) {
     sourceFilter = value;
     reloadFirstPage();

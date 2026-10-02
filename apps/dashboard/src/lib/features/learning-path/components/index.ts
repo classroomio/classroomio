@@ -27,7 +27,7 @@ export { default as PathContextMenuContent } from './path-context-menu-content.s
 export { default as PathRow } from './path-row.svelte';
 
 export { default as PathFilterPopover } from './path-filter-popover.svelte';
-
+export { default as PathHubPlaceholder } from './path-hub-placeholder.svelte';
 export { default as CreatePathButton } from './create-path-button.svelte';
 
 export { default as CreatePathModal } from './create-path-modal.svelte';

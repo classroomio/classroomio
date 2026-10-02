@@ -1,20 +1,18 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import * as Sidebar from '@cio/ui/base/sidebar';
-  import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
+  import { NotPermittedModal } from '$features/ui';
   import { Spinner } from '@cio/ui/base/spinner';
-  import { PathSidebar, PathHeader } from '$features/learning-path';
-  import { learningPathApi, pathMembersApi } from '$features/learning-path/api';
-  import { DeleteModal } from '$features/ui';
-  import { snackbar } from '$features/ui/snackbar/store';
+  import { learningPathApi } from '$features/learning-path/api';
+  import { pathJourneyApi } from '$features/lms/api';
+  import { resolvePathAccessState, resolvePathViewMode } from '$features/learning-path/utils/path-view-mode';
+  import { setPathViewContext } from '$features/learning-path/utils/path-view-context';
   import { t } from '$lib/utils/functions/translations';
-  import { currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrgPath } from '$lib/utils/store/org';
+  import { isOrgStudent, isPathLearnerView, isStudentExperience } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
-  import { ROLE } from '@cio/utils/constants';
 
   interface Props {
     children?: Snippet;
@@ -25,202 +23,151 @@
 
   let { data, children }: Props = $props();
 
-  let sidebarWidth = $state(256);
-  let hasLoadedSidebarWidth = $state(false);
-  let sidebarProviderElement = $state<HTMLDivElement | null>(null);
+  const mode = $derived(resolvePathViewMode($isPathLearnerView, $isOrgStudent, $isStudentExperience));
 
-  let deleteModalOpen = $state(false);
-  let isDeleting = $state(false);
-  let viewerFetchKey: string | null = $state(null);
+  setPathViewContext(() => mode);
+
+  let fetchKey: string | null = $state(null);
 
   $effect(() => {
-    if (!data.publicId || !$profile.id) return;
+    if (!data.publicId || !$profile.id || mode === 'loading') return;
 
-    learningPathApi.ensurePath(data.publicId);
+    const key = `${mode}:${data.publicId}`;
+    if (fetchKey === key) return;
+
+    fetchKey = key;
+
+    if (mode === 'staff') {
+      void learningPathApi.ensurePath(data.publicId);
+      return;
+    }
+
+    void pathJourneyApi.fetchJourney(data.publicId);
   });
 
-  const activePath = $derived(learningPathApi.currentPath);
-  const isPathLoaded = $derived(activePath?.publicId === data.publicId || activePath?.id === data.publicId);
+  const staffIsLoaded = $derived(
+    learningPathApi.currentPath?.publicId === data.publicId || learningPathApi.currentPath?.id === data.publicId
+  );
+  const learnerIsLoaded = $derived(pathJourneyApi.journey?.path.publicId === data.publicId);
 
-  $effect(() => {
-    const pathId = activePath?.id;
-    const profileId = $profile.id;
-    if (!isPathLoaded || !pathId || !profileId) return;
+  const accessState = $derived(
+    mode === 'staff'
+      ? resolvePathAccessState({
+          isLoaded: staffIsLoaded,
+          isNotFound: learningPathApi.isNotFound,
+          isForbidden: learningPathApi.isForbidden,
+          loadError: learningPathApi.loadError
+        })
+      : mode === 'learner'
+        ? resolvePathAccessState({
+            isLoaded: learnerIsLoaded,
+            isNotFound: pathJourneyApi.isNotFound,
+            isForbidden: pathJourneyApi.isForbidden,
+            loadError: pathJourneyApi.loadError
+          })
+        : ('loading' as const)
+  );
 
-    const key = `${pathId}:${profileId}`;
-    if (viewerFetchKey === key) return;
+  const pageTitle = $derived(
+    mode === 'staff'
+      ? (learningPathApi.currentPath?.name ?? null)
+      : mode === 'learner'
+        ? (pathJourneyApi.journey?.path.name ?? null)
+        : null
+  );
 
-    viewerFetchKey = key;
-    void pathMembersApi.fetchViewerRole(pathId, profileId);
-  });
+  const forbiddenHref = $derived(mode === 'learner' ? '/lms/mylearning' : `${$currentOrgPath}/paths`);
 
-  const isPathReady = $derived.by(() => {
-    if (!isPathLoaded || !activePath) return false;
-
-    const isViewerRoleForPath = viewerFetchKey === `${activePath.id}:${$profile.id}`;
-    return isViewerRoleForPath && pathMembersApi.viewerRole !== undefined;
-  });
-
-  const currentUserRole = $derived.by(() => {
-    if (pathMembersApi.viewerRole !== undefined) return pathMembersApi.viewerRole;
-
-    const member = pathMembersApi.members.find((item) => item.profileId === $profile.id);
-    return member ? Number(member.roleId) : null;
-  });
-
-  const canCheck = $derived(!!$profile.id && isPathReady);
-
-  const isPermitted = $derived.by(() => {
-    if (!isPathReady) return false;
-    if (!canCheck) return true;
-
-    if ($isOrgAdmin === null) return true;
-
-    if ($isOrgAdmin) return true;
-
-    if (pathMembersApi.viewerRole === undefined) return true;
-
-    return currentUserRole === ROLE.ADMIN || currentUserRole === ROLE.TUTOR;
-  });
-
-  function handleSidebarWidthPreview(width: number) {
-    sidebarProviderElement?.style.setProperty('--sidebar-width', `${width}px`);
+  function handleForbiddenGo() {
+    void goto(forbiddenHref);
   }
 
-  function handleSidebarWidthChange(width: number) {
-    sidebarWidth = width;
-  }
+  function handleRetry() {
+    if (mode === 'staff') {
+      void learningPathApi.refreshPath(data.publicId);
+      return;
+    }
 
-  async function handleDeletePath() {
-    if (!activePath) return;
-
-    isDeleting = true;
-    try {
-      await learningPathApi.delete(activePath.id);
-      if (learningPathApi.success) {
-        goto(`${$currentOrgPath}/paths`);
-      }
-    } catch (err) {
-      console.error('Failed to delete learning path:', err);
-      snackbar.error('learningPath.snackbar.delete_failed');
-    } finally {
-      deleteModalOpen = false;
-      isDeleting = false;
+    if (mode === 'learner') {
+      void pathJourneyApi.fetchJourney(data.publicId);
     }
   }
-
-  onMount(() => {
-    try {
-      const storedWidth = Number(localStorage.getItem('cio_lp_sidebar_width'));
-      if (Number.isFinite(storedWidth) && storedWidth > 0) {
-        sidebarWidth = storedWidth;
-      }
-    } catch {
-      // localStorage unavailable
-    }
-    hasLoadedSidebarWidth = true;
-  });
-
-  $effect(() => {
-    if (!hasLoadedSidebarWidth) return;
-    try {
-      localStorage.setItem('cio_lp_sidebar_width', String(Math.round(sidebarWidth)));
-    } catch {
-      // localStorage unavailable
-    }
-  });
 </script>
 
 <svelte:head>
-  <title>{activePath?.name || $t('org_navigation.learning_paths')} - ClassroomIO</title>
+  <title>{pageTitle || $t('org_navigation.learning_paths')} - ClassroomIO</title>
 </svelte:head>
 
-{#if isPathReady}
-  <Dialog.Root open={!isPermitted}>
-    <Dialog.Content class="w-96">
-      <Dialog.Header>
-        <Dialog.Title>{$t('course.not_permitted.header')}</Dialog.Title>
-      </Dialog.Header>
-      <div>
-        <p class="text-md text-center dark:text-white">
-          {$t('course.not_permitted.body')}
-        </p>
-
-        <div class="mt-5 flex justify-center">
-          <Button
-            onclick={() => {
-              goto(`${$currentOrgPath}/paths`);
-            }}
-          >
-            {$t('course.not_permitted.button')}
-          </Button>
-        </div>
+{#if mode === 'loading' || accessState === 'loading'}
+  <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+    <Empty
+      title={$t('learningPath.workspace.loading_title')}
+      description={$t('learningPath.workspace.loading_description')}
+      icon={Spinner}
+      iconClass="h-8 w-8"
+      variant="page"
+    />
+  </div>
+{:else if accessState === 'not_found'}
+  <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+    <Empty
+      title={$t('learningPath.workspace.not_found_title')}
+      description={$t('learningPath.workspace.not_found_description')}
+      variant="page"
+    >
+      <div class="mt-4 flex justify-center">
+        <Button href={forbiddenHref} variant="outline">
+          {#if mode === 'learner'}
+            {$t('common.back_to_my_learning')}
+          {:else}
+            {$t('learningPath.workspace.back_to_paths')}
+          {/if}
+        </Button>
       </div>
-    </Dialog.Content>
-  </Dialog.Root>
-{/if}
+    </Empty>
+  </div>
+{:else if accessState === 'forbidden'}
+  <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+    <Empty
+      title={$t('learningPath.not_permitted.header')}
+      description={$t('learningPath.not_permitted.body')}
+      variant="page"
+    >
+      <div class="mt-4 flex justify-center">
+        <Button onclick={handleForbiddenGo} variant="outline">
+          {mode === 'learner' ? $t('common.back_to_my_learning') : $t('learningPath.not_permitted.button')}
+        </Button>
+      </div>
+    </Empty>
+  </div>
 
-<DeleteModal bind:open={deleteModalOpen} onDelete={handleDeletePath} isLoading={isDeleting} />
-
-<Sidebar.Provider
-  bind:ref={sidebarProviderElement}
-  data-sveltekit-preload-data="off"
-  style={`--sidebar-width: ${sidebarWidth}px;`}
->
-  <PathSidebar
-    path={activePath}
-    {isPathReady}
-    {sidebarWidth}
-    onSidebarWidthPreview={handleSidebarWidthPreview}
-    onSidebarWidthChange={handleSidebarWidthChange}
+  <NotPermittedModal
+    open={true}
+    entityType="learning_path"
+    buttonText={mode === 'learner' ? $t('common.back_to_my_learning') : $t('learningPath.not_permitted.button')}
+    onAction={handleForbiddenGo}
   />
-
-  <Sidebar.Inset class="min-w-0 flex-1">
-    <PathHeader path={activePath} onDelete={() => (deleteModalOpen = true)} />
-
-    {#if learningPathApi.isNotFound}
-      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
-        <Empty
-          title={$t('learningPath.workspace.not_found_title')}
-          description={$t('learningPath.workspace.not_found_description')}
-          variant="page"
-        >
-          <div class="mt-4 flex justify-center">
-            <Button href={`${$currentOrgPath}/paths`} variant="outline">
-              {$t('learningPath.workspace.back_to_paths')}
-            </Button>
-          </div>
-        </Empty>
+{:else if accessState === 'error'}
+  <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+    <Empty
+      title={$t('learningPath.workspace.load_failed_title')}
+      description={$t('learningPath.workspace.load_failed_description')}
+      variant="page"
+    >
+      <div class="mt-4 flex justify-center gap-2">
+        <Button variant="outline" onclick={handleRetry}>
+          {$t('common.refresh')}
+        </Button>
+        <Button href={forbiddenHref} variant="outline">
+          {#if mode === 'learner'}
+            {$t('common.back_to_my_learning')}
+          {:else}
+            {$t('learningPath.workspace.back_to_paths')}
+          {/if}
+        </Button>
       </div>
-    {:else if learningPathApi.loadError}
-      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
-        <Empty
-          title={$t('learningPath.workspace.load_failed_title')}
-          description={$t('learningPath.workspace.load_failed_description')}
-          variant="page"
-        >
-          <div class="mt-4 flex justify-center gap-2">
-            <Button variant="outline" onclick={() => learningPathApi.refreshPath(data.publicId)}>
-              {$t('common.refresh')}
-            </Button>
-            <Button href={`${$currentOrgPath}/paths`} variant="outline">
-              {$t('learningPath.workspace.back_to_paths')}
-            </Button>
-          </div>
-        </Empty>
-      </div>
-    {:else if !isPathReady}
-      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
-        <Empty
-          title={$t('learningPath.workspace.loading_title')}
-          description={$t('learningPath.workspace.loading_description')}
-          icon={Spinner}
-          iconClass="h-8 w-8"
-          variant="page"
-        />
-      </div>
-    {:else}
-      {@render children?.()}
-    {/if}
-  </Sidebar.Inset>
-</Sidebar.Provider>
+    </Empty>
+  </div>
+{:else}
+  {@render children?.()}
+{/if}

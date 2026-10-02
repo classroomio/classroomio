@@ -312,6 +312,7 @@
     "close": "Close",
     "edit": "Edit",
     "coming_soon": "Coming soon",
+    "back_to_my_learning": "Back to My Learning",
     "pricing": {
       "enable_paid": "Enable Paid",
       "yes": "Yes",
@@ -325,7 +326,7 @@
       "show_discount": "Show discount",
       "discount_percentage": "Discount percentage",
       "reward": "Reward / Gift",
-      "reward_help": "Offer learners an incentive upon completion",
+      "reward_help": "Offer students an incentive upon completion",
       "reward_description": "Reward description",
       "placeholder_reward": "e.g. 1-on-1 mentorship session, swag, or exclusive community access"
     }
@@ -3945,7 +3946,7 @@
         "access": "When off, students can only join through an invite link or by being added from {people}.",
         "access_people": "People",
         "requires_learning_path": "Require learning path",
-        "requires_learning_path_desc": "When on, learners can only access this course through a learning path. Existing enrollments are preserved.",
+        "requires_learning_path_desc": "When on, students can only access this course through a learning path. Existing enrollments are preserved.",
         "publish": "Publish Course",
         "determines": "This determines if your course displays on your landing page",
         "published": "Published",
@@ -4015,6 +4016,11 @@
     "not_permitted": {
       "header": "No Permission",
       "body": "Unfortunately you don't have access to this course.",
+      "button": "Go home"
+    },
+    "not_found": {
+      "header": "Course not found",
+      "body": "The course you are looking for does not exist or may have been deleted.",
       "button": "Go home"
     }
   },
@@ -5879,9 +5885,10 @@
     },
     "listing": {
       "title": "Learning Paths",
-      "subtitle": "Create and manage structured learning experiences that guide learners through multiple courses.",
+      "subtitle": "Create and manage structured learning experiences that guide students through multiple courses.",
       "create_path": "Create Learning Path",
       "load_error_title": "Failed to load learning paths",
+      "load_more": "Load more",
       "toolbar": {
         "search_placeholder": "Search learning paths…",
         "grid_view": "Grid view",
@@ -5896,7 +5903,7 @@
         "all": "All",
         "published": "Published",
         "unpublished": "Unpublished",
-        "no_learners": "No learners yet",
+        "no_learners": "No students yet",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
         "low": "Low (under 25%)",
@@ -5909,7 +5916,7 @@
       },
       "card": {
         "courses_count": "{count} {count, plural, =1 {course} other {courses}}",
-        "learners_count": "{count} {count, plural, =1 {learner} other {learners}}"
+        "learners_count": "{count} {count, plural, =1 {student} other {students}}"
       },
       "empty": {
         "title": "Create your first Learning Path",
@@ -5919,11 +5926,20 @@
         "no_matches_description": "Try clearing your filters or changing your search query."
       }
     },
+    "hub": {
+      "placeholder_title": "Learning path preview",
+      "placeholder_description": "The full learning experience lives in the LMS. Open My Learning to continue this path."
+    },
+    "not_permitted": {
+      "header": "No Permission",
+      "body": "Unfortunately you don't have access to this learning path.",
+      "button": "Go home"
+    },
     "builder": {
       "title": "Courses",
       "subtitle": "Add courses and drag to set the order students move through them.",
       "empty_title": "No courses in this learning path yet",
-      "empty_description": "Add courses to guide learners through a structured sequence. Start by clicking on the Add button.",
+      "empty_description": "Add courses to guide students through a structured sequence. Start by clicking on the Add button.",
       "unlock_rule_title": "Unlock courses in order",
       "unlock_rule_desc": "Each course stays locked until a student completes the previous one's lessons and exercises. Turn off to allow any order.",
       "drag_hint": "Drag to reorder",
@@ -5937,7 +5953,7 @@
     },
     "setup": {
       "title": "Set up your path",
-      "subtitle": "Finish these steps to launch {name} to your learners.",
+      "subtitle": "Finish these steps to launch {name} to your students.",
       "summary": "A path goes live once its courses are ordered, priced, and published.",
       "progress": "{completed} of {total} completed",
       "done": "Done",
@@ -5951,11 +5967,11 @@
       "step_courses_desc": "Pick the courses that make up this learning path.",
       "step_courses_action": "Add courses",
       "step_order_title": "Set the course order",
-      "step_order_desc": "Drag courses into the order learners should complete them.",
+      "step_order_desc": "Drag courses into the order students should complete them.",
       "step_order_action": "Set order",
       "reorder_action": "Reorder",
       "step_price_title": "Set your price",
-      "step_price_desc": "Price the path as a bundle — learners see the savings vs individual courses.",
+      "step_price_desc": "Price the path as a bundle — students see the savings vs individual courses.",
       "step_price_action": "Set price",
       "step_landing_title": "Customize your landing page",
       "step_landing_desc": "Outcomes, skills, instructors, testimonials, and FAQs on the public path page.",
@@ -6013,7 +6029,7 @@
         "name_label": "Path name",
         "name_placeholder": "e.g. Fullstack Web Development",
         "desc_label": "Description",
-        "desc_placeholder": "A brief summary of what learners will achieve...",
+        "desc_placeholder": "A brief summary of what students will achieve...",
         "cancel": "Cancel",
         "submit": "Create Learning Path",
         "failed": "Failed to create learning path"
@@ -6038,7 +6054,7 @@
       "course_added": "Course added",
       "courses_added": "Courses added",
       "course_removed": "Course removed",
-      "member_removed": "Learner removed from path",
+      "member_removed": "Student removed from path",
       "member_role_updated": "Member role updated",
       "tutor_removed": "Tutor removed from path",
       "certificate_saved": "Certificate settings saved",
@@ -6050,9 +6066,9 @@
     },
     "people": {
       "title": "People",
-      "subtitle": "{count} {count, plural, =1 {learner} other {learners}} enrolled in this path",
+      "subtitle": "{count} {count, plural, =1 {student} other {students}} enrolled in this path",
       "info_title": "About path enrollment",
-      "info_banner": "Adding a learner to this path automatically enrolls them in all {count} {count, plural, =1 {course} other {courses}}. Removing them preserves their course access and progress.",
+      "info_banner": "Adding a student to this path automatically enrolls them in all {count} {count, plural, =1 {course} other {courses}}. Removing them preserves their course access and progress.",
       "search_placeholder": "Search by name or email…",
       "filter": {
         "all": "All progress",
@@ -6061,7 +6077,7 @@
         "completed": "Completed"
       },
       "table": {
-        "learner": "Learner",
+        "learner": "Student",
         "progress": "Path progress",
         "current_course": "Current course",
         "enrolled": "Enrolled",
@@ -6072,7 +6088,7 @@
         "not_started": "Not started"
       },
       "remove": {
-        "title": "Remove learner",
+        "title": "Remove student",
         "title_non_student": "Remove member",
         "confirm": "Are you sure you want to remove {name} from this learning path? They will keep their course access and progress.",
         "confirm_non_student": "Are you sure you want to remove {name} from this learning path? They will lose access to manage this path.",
@@ -6081,13 +6097,13 @@
       },
       "change_role_to_tutor": "Make tutor",
       "change_role_to_student": "Make student",
-      "empty": "No learners enrolled yet. Add learners to get started.",
-      "no_results": "No learners match your search.",
+      "empty": "No students enrolled yet. Add students to get started.",
+      "no_results": "No students match your search.",
       "invite": {
-        "title": "Add learners to path",
+        "title": "Add students to path",
         "bulk_title": "Invite by email",
         "bulk_description": "Enter email addresses separated by commas or new lines.",
-        "bulk_submit": "Add learners"
+        "bulk_submit": "Add students"
       },
       "add": "Add",
       "last_login_at": "Last login at",
@@ -6104,15 +6120,16 @@
         "bulk_enroll_success": "Enrolled {enrolled} members ({invited} invited)",
         "bulk_enroll_partial": "Enrolled {enrolled} members ({invited} invited, {failed} failed)",
         "bulk_enroll_failed": "Background enrollment failed",
-        "bulk_enroll_lost": "Lost track of the background enrollment"
+        "bulk_enroll_lost": "Lost track of the background enrollment",
+        "bulk_enroll_backgrounded": "Enrollment is still running in the background. Refresh People to see the results."
       }
     },
     "analytics": {
       "title": "Analytics",
-      "subtitle": "How learners are moving through the path.",
+      "subtitle": "How students are moving through the path.",
       "stat": {
-        "learners": "Learners",
-        "active": "Active learners",
+        "learners": "Students",
+        "active": "Active students",
         "active_desc": "worked in the last 14 days",
         "completion_rate": "Completion rate",
         "completion_desc": "{completed} of {total} finished",
@@ -6126,21 +6143,21 @@
       },
       "funnel": {
         "title": "Course funnel",
-        "subtitle": "How many learners have reached and completed each course, in order.",
+        "subtitle": "How many students have reached and completed each course, in order.",
         "completed": "completed",
         "in_progress": "in progress",
-        "drop": "{count} {count, plural, =1 {learner} other {learners}} dropped after Course {n}",
+        "drop": "{count} {count, plural, =1 {student} other {students}} dropped after Course {n}",
         "biggest_drop": "biggest drop-off",
         "certificates": "{count} {count, plural, =1 {certificate} other {certificates}} awarded"
       },
       "stuck": {
-        "title": "Where learners are stuck",
-        "subtitle": "Lessons and exercises blocking the most learners right now.",
+        "title": "Where students are stuck",
+        "subtitle": "Lessons and exercises blocking the most students right now.",
         "badge": "{count} stuck",
-        "lesson_desc": "{count} {count, plural, =1 {learner} other {learners}} stopped at this lesson.",
-        "exercise_desc": "{count} {count, plural, =1 {learner} other {learners}} have had this exercise in progress for over 2 weeks.",
-        "empty": "No learners are currently stuck. Great progress!",
-        "empty_desc": "When learners get stuck, they'll show up here.",
+        "lesson_desc": "{count} {count, plural, =1 {student} other {students}} stopped at this lesson.",
+        "exercise_desc": "{count} {count, plural, =1 {student} other {students}} have had this exercise in progress for over 2 weeks.",
+        "empty": "No students are currently stuck. Great progress!",
+        "empty_desc": "When students get stuck, they'll show up here.",
         "lesson_prefix": "Lesson:",
         "exercise_prefix": "Exercise:",
         "showing": "Showing {start} to {end} of {total} items",
@@ -6150,9 +6167,9 @@
         }
       },
       "students": {
-        "subtitle": "Per-learner path progress, current course, and enrollment date.",
+        "subtitle": "Per-student path progress, current course, and enrollment date.",
         "courses_completed": "Courses Completed",
-        "title": "Learner Progress Overview"
+        "title": "Student Progress Overview"
       },
       "member": {
         "courses_title": "Courses",
@@ -6166,8 +6183,8 @@
         "export": "Export CSV",
         "progress_label": "Path progress"
       },
-      "empty": "No data yet. Enroll learners and they'll start showing up here.",
-      "empty_desc": "Enroll learners in this path and their progress will show up here.",
+      "empty": "No data yet. Enroll students and they'll start showing up here.",
+      "empty_desc": "Enroll students in this path and their progress will show up here.",
       "export": {
         "status": "Status"
       }
@@ -6187,7 +6204,7 @@
       "display_section": "Display section",
       "header": {
         "title_placeholder": "e.g. Fullstack Web Development",
-        "description_placeholder": "A comprehensive overview of what learners will accomplish...",
+        "description_placeholder": "A comprehensive overview of what students will accomplish...",
         "title": "Header",
         "title_label": "Title",
         "description_label": "Description"
@@ -6323,25 +6340,25 @@
       },
       "welcome_email": {
         "legend": "Welcome email",
-        "desc": "Customize the email learners receive after they enroll. Add a personal note, instructions, or a live session link.",
-        "placeholder": "Write the welcome message learners get when they enroll…"
+        "desc": "Customize the email students receive after they enroll. Add a personal note, instructions, or a live session link.",
+        "placeholder": "Write the welcome message students get when they enroll…"
       },
       "progression": {
-        "legend": "Learner progression",
-        "desc": "Control whether learners can access all courses or must complete them in order.",
+        "legend": "Student progression",
+        "desc": "Control whether students can access all courses or must complete them in order.",
         "free": "Free — all courses are available",
         "sequential": "Sequential — complete prior courses to unlock next"
       },
       "self_enrollment": {
-        "legend": "Learners can enroll themselves",
-        "access": "When off, learners can only join through an invite link or by being added from {people}.",
+        "legend": "Students can enroll themselves",
+        "access": "When off, students can only join through an invite link or by being added from {people}.",
         "access_people": "People",
         "enabled": "Enabled",
         "disabled": "Disabled"
       },
       "auto_enroll": {
         "legend": "Auto-enroll in path courses",
-        "desc": "Joining the path enrolls the learner in every course it contains.",
+        "desc": "Joining the path enrolls the student in every course it contains.",
         "enabled": "Enabled",
         "disabled": "Disabled"
       },
@@ -6353,7 +6370,7 @@
       },
       "danger": {
         "legend": "Delete Path",
-        "desc": "Delete this path, this action cannot be undone. Courses, enrollments, and learner progress are not deleted.",
+        "desc": "Delete this path, this action cannot be undone. Courses, enrollments, and student progress are not deleted.",
         "delete_button": "Delete Path",
         "delete_title": "Delete Learning Path",
         "delete_description": "Are you sure you want to delete \"{name}\"? This action cannot be undone."

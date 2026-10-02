@@ -10,7 +10,11 @@
   import { learningPathApi, pathCoursesApi } from '$features/learning-path/api';
   import { t } from '$lib/utils/functions/translations';
 
-  let { data } = $props();
+  interface Props {
+    publicId: string;
+  }
+
+  let { publicId }: Props = $props();
 
   let reorder = $state(page.url.searchParams.get('reorder') === 'true');
   let showAddDialog = $state(false);
@@ -26,8 +30,8 @@
   const activePath = $derived(learningPathApi.currentPath);
 
   function handleRefresh() {
-    if (data.publicId) {
-      learningPathApi.refreshPath(data.publicId);
+    if (publicId) {
+      learningPathApi.refreshPath(publicId);
     }
   }
 

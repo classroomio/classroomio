@@ -15,6 +15,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { ComingSoon } from '$features/ui';
   import { TruncatedWithTooltip } from '$features/ui';
+  import { ROLE } from '@cio/utils/constants';
   import type { LearningPathMemberItem } from '../../utils/types';
   import {
     formatPathShortDate,
@@ -60,6 +61,7 @@
   const displayName = $derived(member.fullName ?? getPathMemberDisplayEmail(member));
   const displayEmail = $derived(getPathMemberDisplayEmail(member));
   const isStudent = $derived(isPathStudentMember(member));
+  const isTutor = $derived(Number(member.roleId) === ROLE.TUTOR);
   const progressPercent = $derived(getPathMemberProgressPercent(member) ?? 0);
   const isCompleted = $derived(member.status === 'COMPLETED');
   const isNotStarted = $derived(member.status === 'NOT_STARTED');
@@ -245,7 +247,7 @@
                 {$t('learningPath.people.delete_profile')}
               </DropdownMenu.Item>
             {/if}
-            {#if onChangeRole && (isStudent ? canAssignTutor : true)}
+            {#if onChangeRole && canAssignTutor && (isStudent || isTutor)}
               <DropdownMenu.Item
                 onclick={(event) => {
                   event.stopPropagation();

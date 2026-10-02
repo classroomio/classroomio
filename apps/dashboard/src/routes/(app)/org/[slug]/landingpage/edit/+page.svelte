@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import type { Component } from 'svelte';
+  import { untrack } from 'svelte';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
@@ -112,8 +113,10 @@
   $effect(() => {
     if (!previewSiteName) return;
 
-    void orgApi.loadPublicCoursesIfNeeded(previewSiteName);
-    void orgApi.loadPublicLearningPathsIfNeeded(previewSiteName);
+    untrack(() => {
+      void orgApi.loadPublicCoursesIfNeeded(previewSiteName);
+      void orgApi.loadPublicLearningPathsIfNeeded(previewSiteName);
+    });
   });
 
   $effect(() => {

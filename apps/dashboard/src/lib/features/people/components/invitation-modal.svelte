@@ -90,6 +90,7 @@
   let isLoadingStudents = $state(false);
   let activeTab = $state<'tutors' | 'students' | 'link'>('students');
   let queuedJobId = $state<string | null>(null);
+  let activeQueuedToastId: string | null = null;
 
   const QUEUED_POLL_FALLBACK_MS = 3_000;
   const availableStudents = $derived.by(() => getInviteCandidateStudents(orgApi.audience, roster));
@@ -179,7 +180,28 @@
     }
   }
 
+  /**
+   * Replaces a still-open queued-enrollment toast with a "continues in the
+   * background" notice. Called when the modal unmounts mid-run or when a new
+   * run supersedes the previous one, so the spinner never hangs.
+   */
+  function resolveAbandonedQueuedToast() {
+    if (!activeQueuedToastId) return;
+
+    snackbar.info(t.get('learningPath.people.invite_modal.bulk_enroll_backgrounded'), activeQueuedToastId);
+    activeQueuedToastId = null;
+  }
+
+  /**
+   * Starts polling a queued path bulk-enroll in a single loading toast.
+   * The modal closes immediately; the toast spins until the run resolves.
+   * @param jobId Queued bulk-enroll job id.
+   * @param requested Number of members requested, for the queued copy.
+   */
   async function handleQueuedEnroll(jobId: string, requested: number) {
+    if (queuedJobId) {
+      resolveAbandonedQueuedToast();
+    }
     closeModal();
     queuedJobId = jobId;
     // One toast for the whole run: it spins while polling, then becomes the
@@ -187,20 +209,24 @@
     const toastId = snackbar.loading(
       t.get('learningPath.people.invite_modal.bulk_enroll_queued', { count: requested })
     );
+    activeQueuedToastId = toastId;
     await pollQueuedEnroll(jobId, toastId);
   }
 
   /**
    * Polls a queued path add to its terminal state, resolving the spinner
    * toast into the outcome summary. The loop exits as soon as `queuedJobId`
-   * no longer names this job, so unmounting or starting another run stops it.
+   * no longer names this job. Unmounting stops polling and hands the toast a
+   * "continues in the background" message via `resolveAbandonedQueuedToast`.
    */
   async function pollQueuedEnroll(jobId: string, toastId: string) {
     for (let pollCount = 0; queuedJobId === jobId; pollCount += 1) {
       const envelope = await pathMembersApi.getBulkEnrollStatus(resourceName, jobId, pollCount);
+      if (queuedJobId !== jobId) return;
 
       if (!envelope) {
         queuedJobId = null;
+        activeQueuedToastId = null;
         snackbar.error(t.get('learningPath.people.invite_modal.bulk_enroll_lost'), toastId);
         return;
       }
@@ -210,6 +236,7 @@
       if (job.status === 'completed') {
         const outcome = job.result as BulkEnrollOutcome | null;
         queuedJobId = null;
+        activeQueuedToastId = null;
 
         if (outcome && outcome.failed.length > 0) {
           snackbar.success(
@@ -236,6 +263,7 @@
 
       if (job.status === 'failed' || job.status === 'canceled') {
         queuedJobId = null;
+        activeQueuedToastId = null;
         snackbar.error(t.get('learningPath.people.invite_modal.bulk_enroll_failed'), toastId);
         onMembersChanged?.();
         return;
@@ -246,6 +274,7 @@
   }
 
   onDestroy(() => {
+    resolveAbandonedQueuedToast();
     queuedJobId = null;
   });
 

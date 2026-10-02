@@ -102,6 +102,8 @@ class OrgApi extends BaseApiWithErrors {
   private activePublicCoursesFetchSiteName: string | null = null;
   private activePublicLearningPathsFetch: Promise<void> | null = null;
   private activePublicLearningPathsFetchSiteName: string | null = null;
+  private publicCoursesRequestSeq = 0;
+  private publicLearningPathsRequestSeq = 0;
   private activeAudienceRequestController: AbortController | null = null;
 
   async joinAcademy(orgId: string, redirectTo = '/lms') {
@@ -204,16 +206,26 @@ class OrgApi extends BaseApiWithErrors {
     return response;
   }
 
+  /**
+   * Clears the cached public-courses site so the next `load*IfNeeded` refetches.
+   */
   invalidatePublicCourses() {
     this.publicCoursesLoadedSiteName = null;
   }
 
+  /**
+   * Clears the cached public-paths site so the next `load*IfNeeded` refetches.
+   * Failures also clear via `clearOnFailure` but stay retryable (loaded stays null).
+   */
   invalidatePublicLearningPaths() {
     this.publicLearningPathsLoadedSiteName = null;
   }
 
   /**
    * Shared dedupe + loading-flag wrapper for the public catalog fetches.
+   * Only the newest request for a resource writes state; stale responses are
+   * discarded. A failure clears the list but does not count as loaded, so the
+   * next `load*IfNeeded` call retries.
    */
   private runDedupedPublicCatalogFetch(
     siteName: string,
@@ -223,31 +235,30 @@ class OrgApi extends BaseApiWithErrors {
       setActive: (promise: Promise<void> | null, fetchSiteName: string | null) => void;
       setFetching: (value: boolean) => void;
       getLoadedSiteName: () => string | null;
-      setLoadedSiteName: (loadedSiteName: string | null) => void;
       clearOnFailure: () => void;
+      nextRequestSeq: () => number;
+      getRequestSeq: () => number;
     },
-    run: () => Promise<void>
+    run: (isCurrent: () => boolean) => Promise<void>
   ): Promise<void> {
     if (control.getActiveFetch() && control.getActiveSiteName() === siteName) {
       return control.getActiveFetch()!;
     }
 
+    const requestSeq = control.nextRequestSeq();
+    const isCurrent = () => control.getRequestSeq() === requestSeq;
     control.setFetching(true);
 
-    const fetchPromise = run()
-      .then(() => undefined)
-      .finally(() => {
-        control.setFetching(false);
+    const fetchPromise = run(isCurrent).finally(() => {
+      if (!isCurrent()) return; // a newer request owns the state
 
-        if (control.getLoadedSiteName() !== siteName) {
-          control.clearOnFailure();
-          control.setLoadedSiteName(siteName);
-        }
+      control.setFetching(false);
+      control.setActive(null, null);
 
-        if (control.getActiveSiteName() === siteName) {
-          control.setActive(null, null);
-        }
-      });
+      if (control.getLoadedSiteName() !== siteName) {
+        control.clearOnFailure(); // failed: clear, but stay retryable
+      }
+    });
 
     control.setActive(fetchPromise, siteName);
 
@@ -305,7 +316,6 @@ class OrgApi extends BaseApiWithErrors {
   /**
    * Gets public courses by organization siteName (for landing pages)
    * @param siteName Organization site name
-   * @returns Published courses array
    */
   async getPublicCoursesBySiteName(siteName: string) {
     this.invalidatePublicCourses();
@@ -321,6 +331,11 @@ class OrgApi extends BaseApiWithErrors {
     await this.fetchPublicLearningPathsBySiteName(siteName);
   }
 
+  /**
+   * Gets public courses by organization siteName (for landing pages).
+   * Only the newest request writes state; stale responses are discarded.
+   * @param siteName Organization site name
+   */
   private fetchPublicCoursesBySiteName(siteName: string): Promise<void> {
     return this.runDedupedPublicCatalogFetch(
       siteName,
@@ -335,15 +350,14 @@ class OrgApi extends BaseApiWithErrors {
           this.isFetchingOrgPublicCourses = value;
         },
         getLoadedSiteName: () => this.publicCoursesLoadedSiteName,
-        setLoadedSiteName: (loadedSiteName) => {
-          this.publicCoursesLoadedSiteName = loadedSiteName;
-        },
         clearOnFailure: () => {
           this.publicCourses = [];
           this.hasMorePublicCourses = false;
-        }
+        },
+        nextRequestSeq: () => ++this.publicCoursesRequestSeq,
+        getRequestSeq: () => this.publicCoursesRequestSeq
       },
-      () =>
+      (isCurrent) =>
         this.execute<GetOrgPublicCoursesRequest>({
           requestFn: () =>
             classroomio.organization.courses.public.$get({
@@ -351,6 +365,7 @@ class OrgApi extends BaseApiWithErrors {
             }),
           logContext: 'fetching public courses',
           onSuccess: (response) => {
+            if (!isCurrent()) return;
             this.publicCourses = response.data.courses;
             this.hasMorePublicCourses = response.data.hasMoreCourses;
             this.publicCoursesLoadedSiteName = siteName;
@@ -359,6 +374,10 @@ class OrgApi extends BaseApiWithErrors {
     );
   }
 
+  /**
+   * Gets public learning paths by organization siteName (for landing pages).
+   * Only the newest request writes state; stale responses are discarded.
+   */
   private fetchPublicLearningPathsBySiteName(siteName: string): Promise<void> {
     return this.runDedupedPublicCatalogFetch(
       siteName,
@@ -373,15 +392,14 @@ class OrgApi extends BaseApiWithErrors {
           this.isFetchingOrgPublicLearningPaths = value;
         },
         getLoadedSiteName: () => this.publicLearningPathsLoadedSiteName,
-        setLoadedSiteName: (loadedSiteName) => {
-          this.publicLearningPathsLoadedSiteName = loadedSiteName;
-        },
         clearOnFailure: () => {
           this.publicLearningPaths = [];
           this.hasMorePublicLearningPaths = false;
-        }
+        },
+        nextRequestSeq: () => ++this.publicLearningPathsRequestSeq,
+        getRequestSeq: () => this.publicLearningPathsRequestSeq
       },
-      () =>
+      (isCurrent) =>
         this.execute<GetOrgPublicLearningPathsRequest>({
           requestFn: () =>
             classroomio.organization['learning-paths'].public.$get({
@@ -389,6 +407,7 @@ class OrgApi extends BaseApiWithErrors {
             }),
           logContext: 'fetching public learning paths',
           onSuccess: (response) => {
+            if (!isCurrent()) return;
             this.publicLearningPaths = response.data.learningPaths;
             this.hasMorePublicLearningPaths = response.data.hasMoreLearningPaths;
             this.publicLearningPathsLoadedSiteName = siteName;

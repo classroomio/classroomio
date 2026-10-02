@@ -8,6 +8,7 @@ import type {
   SearchScope
 } from '../utils/types';
 import { BaseApi, classroomio } from '$lib/utils/services/api';
+import { getPathHubRoute } from '$features/learning-path/utils/routes';
 
 const SEARCH_DEBOUNCE_MS = 200;
 
@@ -125,6 +126,11 @@ class SearchApi extends BaseApi {
   }
 }
 
+/**
+ * Maps path search rows to command-palette items.
+ * The URL stays the hub for both roles: staff get the builder and learners get
+ * the hub content through the dual-role `/paths/[publicId]` route.
+ */
 function mapPathSearchItems(
   paths: Array<{ id: string; name: string; description?: string | null; publicId: string }> | undefined
 ): SearchResultItem[] {
@@ -134,7 +140,7 @@ function mapPathSearchItems(
       id: path.id,
       title: path.name,
       subtitle: summarize(path.description),
-      url: `/paths/${path.publicId}`
+      url: getPathHubRoute(path.publicId)
     })
   );
 }

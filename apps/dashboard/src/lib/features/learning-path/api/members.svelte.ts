@@ -36,14 +36,6 @@ class PathMembersApi extends BaseApiWithErrors {
   loadErrorMemberDetail = $state(false);
   private memberDetailRequestSeq = 0;
 
-  /**
-   * The viewer's own path role, resolved independently of the paginated,
-   * filtered member table (which may not contain the viewer's row).
-   * `undefined` = not yet resolved, `null` = no active membership.
-   */
-  viewerRole = $state<number | null | undefined>(undefined);
-  private viewerRoleRequestSeq = 0;
-
   async listMembers(pathId: string, options: PathMembersListOptions) {
     const seq = ++this.membersRequestSeq;
     this.isLoadingMembers = true;
@@ -94,6 +86,10 @@ class PathMembersApi extends BaseApiWithErrors {
     return res;
   }
 
+  /**
+   * Reads one status envelope for a queued bulk add. The invitation-modal
+   * drives the poll loop so a closed dialog stops polling.
+   */
   async getBulkEnrollStatus(pathId: string, jobId: string, pollCount = 0) {
     let envelope: GetBulkEnrollStatusSuccess['data'] | null = null;
 
@@ -172,33 +168,6 @@ class PathMembersApi extends BaseApiWithErrors {
     if (seq === this.memberDetailRequestSeq) {
       this.isLoadingMemberDetail = false;
     }
-  }
-
-  /**
-   * Resolves the viewer's own active path role without depending on the
-   * currently displayed member page (pagination/search/role filters can
-   * exclude the viewer's row). Uses the member-detail endpoint, which is
-   * already authorized by `assertCanManageLearningPath`.
-   */
-  async fetchViewerRole(pathId: string, profileId: string) {
-    const seq = ++this.viewerRoleRequestSeq;
-    this.viewerRole = undefined;
-
-    await this.execute<GetPathMemberDetailRequest>({
-      requestFn: () =>
-        classroomio['learning-path'][':pathId']['members'][':personId'].$get({
-          param: { pathId, personId: profileId }
-        }),
-      logContext: 'getting path viewer role',
-      onSuccess: (result) => {
-        if (seq !== this.viewerRoleRequestSeq) return;
-        this.viewerRole = Number(result.data.member.roleId);
-      },
-      onError: () => {
-        if (seq !== this.viewerRoleRequestSeq) return;
-        this.viewerRole = null;
-      }
-    });
   }
 }
 
