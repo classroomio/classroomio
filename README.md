@@ -187,21 +187,20 @@ The repository also contains shared packages under `packages/` (for example `pac
    - Connect with `REDIS_URL=redis://localhost:6379`
    - `db:setup:seed` creates the schema and seeds demo data once Postgres is up. The db scripts run with their own working directory, so they read `DATABASE_URL` from `packages/db/.env` (not `apps/api/.env`).
 
-7. (Optional) Start MinIO locally for object storage (media/documents):
+7. (Optional) Start the bundled S3-compatible storage (SeaweedFS) locally for media/documents:
 
    ```bash
-   docker compose -f docker-compose.yaml --profile minio up -d minio minio-init
+   docker compose -f docker-compose.yaml --profile storage up -d storage storage-init
    ```
 
-   - Console Web UI: http://localhost:9001 (user/pass default `minioadmin` / `minioadmin`). Open in browser and select **Object Browser** to view buckets and uploaded files.
-   - S3 endpoint: http://localhost:9000
-   - Buckets created by `minio-init`: `videos`, `documents`, `media`
-   - Browser presigned uploads work out of the box: Compose passes `MINIO_API_CORS_ALLOW_ORIGIN` (default `*`) from the **root `.env`** to the MinIO container — set it there if you need to restrict origins.
-   - Add to `apps/api/.env` when using MinIO locally:
+   - S3 endpoint: http://localhost:9000 (there is no web console; browse buckets with any S3 client such as `rclone` or the AWS CLI)
+   - Buckets created by `storage-init`: `videos`, `documents`, `media` (`media` is public-read)
+   - Browser presigned uploads work out of the box: the store allows all CORS origins.
+   - Add to `apps/api/.env` when using it locally:
      - `OBJECT_STORAGE_ENDPOINT=http://localhost:9000`
      - `OBJECT_STORAGE_PUBLIC_ENDPOINT=http://localhost:9000`
-     - `OBJECT_STORAGE_ACCESS_KEY_ID=minioadmin`
-     - `OBJECT_STORAGE_SECRET_ACCESS_KEY=minioadmin`
+     - `OBJECT_STORAGE_ACCESS_KEY_ID=classroomio`
+     - `OBJECT_STORAGE_SECRET_ACCESS_KEY=classroomio-local-dev-secret`
      - `OBJECT_STORAGE_FORCE_PATH_STYLE=true`
      - `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=http://localhost:9000/media`
 

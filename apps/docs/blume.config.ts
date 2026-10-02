@@ -152,7 +152,7 @@ export default defineConfig({
             label: 'Manage',
             display: 'group',
             collapsed: true,
-            items: ['/self-hosted/configuration/versions', '/self-hosted/backups']
+            items: ['/self-hosted/configuration/versions', '/self-hosted/backups', '/self-hosted/migrating-from-minio']
           },
           {
             label: 'Troubleshoot',

@@ -1,0 +1,130 @@
+---
+title: Migrating from MinIO
+description: Move a self-hosted ClassroomIO from the old bundled MinIO to the bundled SeaweedFS object storage without losing uploads.
+---
+
+ClassroomIO used to bundle **MinIO** for object storage. MinIO has removed its images from Docker
+Hub, so installs that still reference them can no longer pull or upgrade. The bundled store is now
+**[SeaweedFS](https://github.com/seaweedfs/seaweedfs)**, and your existing uploads need to be copied
+into it once.
+
+## Do I need this?
+
+You need to migrate if **either** is true:
+
+- Your `.env` has `OBJECT_STORAGE_ENDPOINT=http://minio:9000`.
+- `./classroomio.sh upgrade` or `docker compose pull` fails on `minio/minio` or `minio/mc`.
+
+You can skip this page if you use external storage (AWS S3, Cloudflare R2) or are installing fresh.
+
+## Before you start
+
+- **Disk space:** every object is copied, so you need free space about equal to your current uploads.
+- **Downtime:** the app is stopped while the copy runs.
+- **App version:** browser uploads to the new store need app images built after the switch. If you
+  pin an older `CIO_VERSION`, uploads fail with a `BadDigest` error, so move to a current release as
+  part of this upgrade.
+
+Nothing is deleted at any point. Your old MinIO volume stays in place until you remove it yourself.
+
+## Migrate with `classroomio.sh`
+
+Re-download the script (your local copy predates the switch), then upgrade:
+
+```zsh title="Terminal"
+curl -fsSLO https://classroomio.com/classroomio.sh && chmod +x classroomio.sh
+./classroomio.sh upgrade
+```
+
+The upgrade does this for you, in order:
+
+1. Backs up Postgres and the old MinIO volume into `./backups/`.
+2. Replaces a `docker-compose.images.yaml` that still references MinIO. Your copy is kept as
+   `docker-compose.images.yaml.bak`; re-apply any local edits to the new file.
+3. Starts the new `storage` service and creates the buckets.
+4. Copies the `videos`, `documents` and `media` buckets from the old volume and checks every object.
+5. Sets `OBJECT_STORAGE_ENDPOINT=http://storage:9000` in `.env` and restarts the stack.
+
+To run only the copy, without pulling new images, use `./classroomio.sh migrate-storage`.
+
+:::note[How the old volume is read]
+MinIO stores objects in its own on-disk format, so the copy needs a MinIO-compatible server. The
+script uses a MinIO image already cached on your machine if there is one, otherwise it pulls
+`pgsty/silo`, a maintained MinIO fork. Set `MINIO_LEGACY_IMAGE=<image>` to choose a different one.
+:::
+
+## Migrate by hand
+
+Use this on Coolify, Dokploy, or plain Docker Compose, where the script isn't running the stack.
+
+**1. Deploy the new compose file** so the `storage` service is running, with `COMPOSE_PROFILES=storage`
+and a new `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` pair.
+
+**2. Start a temporary server on the old volume:**
+
+```zsh title="Terminal"
+docker run -d --name minio-legacy --network <compose-network> \
+  -e MINIO_ROOT_USER=<old user> -e MINIO_ROOT_PASSWORD=<old password> \
+  -v <old minio volume>:/data pgsty/silo:RELEASE.2026-09-16T00-00-00Z server /data
+```
+
+**3. Copy each bucket:**
+
+```zsh title="Terminal"
+for b in videos documents media; do
+  docker run --rm --network <compose-network> \
+    -e RCLONE_CONFIG_SRC_TYPE=s3 -e RCLONE_CONFIG_SRC_PROVIDER=Minio \
+    -e RCLONE_CONFIG_SRC_ENDPOINT=http://minio-legacy:9000 \
+    -e RCLONE_CONFIG_SRC_ACCESS_KEY_ID=<old user> -e RCLONE_CONFIG_SRC_SECRET_ACCESS_KEY=<old password> \
+    -e RCLONE_CONFIG_DST_TYPE=s3 -e RCLONE_CONFIG_DST_PROVIDER=SeaweedFS \
+    -e RCLONE_CONFIG_DST_ENDPOINT=http://storage:9000 \
+    -e RCLONE_CONFIG_DST_ACCESS_KEY_ID=<new key> -e RCLONE_CONFIG_DST_SECRET_ACCESS_KEY=<new secret> \
+    rclone/rclone sync src:$b dst:$b
+done
+```
+
+**4. Clean up and switch over:**
+
+```zsh title="Terminal"
+docker rm -f minio-legacy
+```
+
+Set `OBJECT_STORAGE_ENDPOINT=http://storage:9000`, remove the `MINIO_*` variables, and redeploy.
+
+## What changed
+
+| | Before | Now |
+|---|--------|-----|
+| Service | `minio`, `minio-init` | `storage`, `storage-init` |
+| Container | `cio-minio` | `cio-storage` |
+| Compose profile | `minio` | `storage` |
+| Volume | `minio-data` | `storage-data` |
+| Script flag | `--no-minio` | `--no-storage` (`--no-minio` still works) |
+| Internal endpoint | `http://minio:9000` | `http://storage:9000` |
+| Credentials | `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` | `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` only |
+| CORS | `MINIO_API_CORS_ALLOW_ORIGIN` | all origins allowed, no variable |
+| Web console | port 9001 | none; use any S3 client |
+
+Public URLs do not change: the S3 API stays on port 9000 and `media` is still public-read, so
+existing links and reverse-proxy rules keep working.
+
+## After migrating
+
+Open the dashboard and confirm that avatars, course thumbnails, lesson documents and videos load.
+Then free the old copy:
+
+```zsh title="Terminal"
+docker volume rm classroomio_minio-data
+```
+
+## If something goes wrong
+
+- **The copy failed part-way.** Fix the cause and run `./classroomio.sh migrate-storage` again. It
+  only copies what is missing, and `.env` is switched over only after a successful copy.
+- **"could not read the old MinIO volume".** `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` in `.env` don't
+  match the old volume, or the image can't read it. Correct them, or set `MINIO_LEGACY_IMAGE`.
+- **You need to go back.** The old volume is untouched and step 1 took a backup. See
+  [Backups](/self-hosted/backups) to restore.
+
+For how the new store is configured, see
+[Object storage & uploads](/self-hosted/configuration/storage).

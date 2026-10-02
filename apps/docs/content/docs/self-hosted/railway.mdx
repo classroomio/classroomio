@@ -32,6 +32,14 @@ See [Configuration → Environment & secrets](/self-hosted/configuration/secrets
 
 ## Step-by-step walkthrough
 
+:::warning[The `cio-minio` service can no longer be deployed]
+MinIO removed its images from Docker Hub, so a new or redeployed `cio-minio` service fails to pull.
+The Docker and Coolify stacks have moved to a bundled SeaweedFS store
+([Migrating from MinIO](/self-hosted/migrating-from-minio)); the Railway template is being updated to match. Until then, use external storage on Railway: point the `OBJECT_STORAGE_*`
+variables on `cio-api` and `cio-jobs` at Cloudflare R2 or AWS S3 as described in
+[Object storage & uploads](/self-hosted/configuration/storage#option-2-external-s3--cloudflare-r2).
+:::
+
 The one-click template provisions **all of the services** for you: Postgres, Redis, `cio-api`, `cio-dashboard`, `cio-jobs`, and `cio-minio` (object storage). The flow is: **configure a few values → deploy → connect the dashboard domain → sign up**.
 
 

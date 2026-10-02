@@ -7,11 +7,11 @@
 #   ./classroomio.sh                 # interactive menu
 #   ./classroomio.sh install         # first-time setup: fetch files, create .env, start
 #   ./classroomio.sh start           # non-interactive start (env auto-setup + up -d)
-#   ./classroomio.sh stop|restart|upgrade|logs|backup
+#   ./classroomio.sh stop|restart|upgrade|logs|backup|migrate-storage
 #
 # The script is standalone: run it in an empty directory and `install` downloads
 # docker-compose.images.yaml + .env.example from GitHub. Inside a repo checkout it
-# uses the local files. It never overwrites an existing .env or compose file.
+# uses the local files. It never overwrites an existing .env or (unless it still uses MinIO) compose file.
 #
 # The compose file tracks `main` (the stack topology); CIO_VERSION in .env pins the
 # app images. Pin an exact release (e.g. 1.4.2) in production.
@@ -30,8 +30,14 @@ RAW_BASE_URL="https://raw.githubusercontent.com/classroomio/classroomio/main"
 USE_IMAGES=true
 COMPOSE_FILE="${IMAGES_COMPOSE_FILE}"
 # --profile flags live in ONE variable so every command (start, stop, logs, backup)
-# sees the same profile state. --no-minio empties it.
-PROFILE_ARGS="--profile minio"
+# sees the same profile state. --no-storage empties it.
+PROFILE_ARGS="--profile storage"
+
+# Pre-SeaweedFS installs keep their uploads in this volume.
+LEGACY_MINIO_VOLUME="${PROJECT_NAME}_minio-data"
+# Reads the old volume when no MinIO image is cached; override with MINIO_LEGACY_IMAGE.
+LEGACY_MINIO_FALLBACK_IMAGE="pgsty/silo:RELEASE.2026-09-16T00-00-00Z"
+RCLONE_IMAGE="rclone/rclone:1.75.1"
 
 print_usage() {
   cat <<'USAGE'
@@ -45,16 +51,20 @@ Commands:
   restart     Restart all containers.
   upgrade     Back up first, then pull newer images and restart.
   logs [svc]  Follow logs (all services, or one: api, dashboard, jobs, postgres, ...).
-  backup      Dump Postgres and archive the MinIO volume into ./backups/.
+  backup      Dump Postgres and archive the object-storage volume into ./backups/.
+  migrate-storage
+              Copy uploads from the old bundled MinIO volume into the bundled
+              SeaweedFS store. start/restart/upgrade run this automatically when needed.
 
 Run without a command to get an interactive menu.
 
 Options:
-  --build     Use docker-compose.yaml and build images from source instead of pulling.
-              Requires a local repo checkout (git clone) — not available in a
-              standalone directory set up via 'install'.
-  --no-minio  Exclude the bundled MinIO (requires external S3-compatible storage).
-  -h, --help  Show this help message.
+  --build       Use docker-compose.yaml and build images from source instead of pulling.
+                Requires a local repo checkout (git clone) — not available in a
+                standalone directory set up via 'install'.
+  --no-storage  Exclude the bundled object storage (requires external S3-compatible
+                storage). --no-minio is accepted as a deprecated alias.
+  -h, --help    Show this help message.
 USAGE
 }
 
@@ -221,9 +231,9 @@ is_local_origin() {
 }
 
 # Point browser-facing storage URLs at the public domain when DASHBOARD_ORIGIN is not
-# localhost. MinIO media is served on :9000 — operators must reverse-proxy /media to it.
-# `mode` is "bundled" (ensure_minio_env) or "external" (ensure_storage_env's --no-minio
-# path). For bundled MinIO, OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL is script-owned, so we
+# localhost. Bundled media is served on :9000 — operators must reverse-proxy /media to it.
+# `mode` is "bundled" (ensure_bundled_storage_env) or "external" (ensure_storage_env's
+# --no-storage path). For bundled storage, OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL is script-owned, so we
 # keep it in sync with DASHBOARD_ORIGIN on every run — otherwise changing DASHBOARD_ORIGIN
 # after install would leave media links pointed at the old domain forever. For external
 # storage it's operator-owned (their CDN/bucket URL), so we only fill in a default and
@@ -246,9 +256,9 @@ derive_public_storage_urls() {
       if [[ "${media_base}" != "${derived}" ]]; then
         upsert_env_value OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL "${derived}"
         echo "Derived OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL from DASHBOARD_ORIGIN (${derived})."
-        echo "  -> Ensure your reverse proxy routes ${origin}/media to MinIO (port 9000)."
+        echo "  -> Ensure your reverse proxy routes ${origin}/media to the storage service (port 9000)."
         echo "  -> For presigned access to the videos/documents buckets behind a domain, expose"
-        echo "     MinIO's S3 API on its own route and set OBJECT_STORAGE_PUBLIC_ENDPOINT explicitly."
+        echo "     the storage S3 API on its own route and set OBJECT_STORAGE_PUBLIC_ENDPOINT explicitly."
       fi
     else
       if is_local_origin "${media_base}"; then
@@ -267,32 +277,29 @@ derive_public_storage_urls() {
   fi
 }
 
-ensure_minio_env() {
+is_legacy_minio_endpoint() {
+  [[ "$(get_env_value OBJECT_STORAGE_ENDPOINT)" == *"minio:9000"* ]]
+}
+
+ensure_bundled_storage_env() {
   if [[ ! -f "${ENV_FILE}" ]]; then
     touch "${ENV_FILE}"
   fi
 
-  local minio_password
-  minio_password="$(get_env_value MINIO_ROOT_PASSWORD)"
+  local secret
+  secret="$(get_env_value OBJECT_STORAGE_SECRET_ACCESS_KEY)"
 
-  # First provision: randomize credentials whenever the MinIO password is still empty or the
-  # well-known `minioadmin` placeholder shipped in .env.example. (Previously this gated on
-  # OBJECT_STORAGE_ENDPOINT being empty, but .env.example ships it non-empty — so on a normal
-  # copy-the-example first run the randomization was always skipped and minioadmin/minioadmin
-  # survived.) MinIO uses its root credentials as the S3 access key / secret.
-  if [[ -z "${minio_password}" || "${minio_password}" =~ ^[[:space:]]*$ || "${minio_password}" == "minioadmin" ]]; then
-    local minio_user
-    minio_user="cio-$(generate_secure_token | cut -c1-16)"
-    minio_password="$(generate_secure_token)"
-
-    upsert_env_value MINIO_ROOT_USER "${minio_user}"
-    upsert_env_value MINIO_ROOT_PASSWORD "${minio_password}"
-    upsert_env_value MINIO_API_CORS_ALLOW_ORIGIN "*"
-    upsert_env_value OBJECT_STORAGE_ENDPOINT "http://minio:9000"
-    upsert_env_value OBJECT_STORAGE_ACCESS_KEY_ID "${minio_user}"
-    upsert_env_value OBJECT_STORAGE_SECRET_ACCESS_KEY "${minio_password}"
+  # Randomize the key pair while the secret is still empty or a known placeholder.
+  if [[ "${secret}" == "minioadmin" ]] || is_insecure_token_value "${secret}"; then
+    upsert_env_value OBJECT_STORAGE_ACCESS_KEY_ID "cio-$(generate_secure_token | cut -c1-16)"
+    upsert_env_value OBJECT_STORAGE_SECRET_ACCESS_KEY "$(generate_secure_token)"
     upsert_env_value OBJECT_STORAGE_FORCE_PATH_STYLE "true"
-    echo "Provisioned MinIO with randomized credentials in .env"
+    echo "Provisioned bundled object storage with randomized credentials in .env"
+  fi
+
+  # A legacy minio:9000 endpoint is left alone: it marks an install that still needs migrating.
+  if [[ -z "$(get_env_value OBJECT_STORAGE_ENDPOINT)" ]]; then
+    upsert_env_value OBJECT_STORAGE_ENDPOINT "http://storage:9000"
   fi
 
   derive_public_storage_urls "bundled"
@@ -302,20 +309,20 @@ ensure_minio_env() {
 # Shared checks
 # ──────────────────────────────────────────────
 
-# When MinIO is excluded the user must supply external object storage, or uploads/media
-# silently break. Fail fast instead. The endpoint must be set AND not still point at the
-# bundled MinIO host (which won't be running with --no-minio).
+# When bundled storage is excluded the user must supply external object storage, or
+# uploads/media silently break. Fail fast instead. The endpoint must be set AND not still
+# point at a bundled host (which won't be running with --no-storage).
 ensure_storage_env() {
-  if [[ "${PROFILE_ARGS}" == *"minio"* ]]; then
-    ensure_minio_env
+  if [[ "${PROFILE_ARGS}" == *"storage"* ]]; then
+    ensure_bundled_storage_env
   else
     local external_endpoint
     external_endpoint="$(get_env_value OBJECT_STORAGE_ENDPOINT)"
-    if [[ -z "${external_endpoint}" || "${external_endpoint}" == *"minio:9000"* ]]; then
-      echo "Error: --no-minio was passed but no external object storage is configured."
-      echo "OBJECT_STORAGE_ENDPOINT is unset or still points at the bundled MinIO (minio:9000)."
+    if [[ -z "${external_endpoint}" || "${external_endpoint}" == *"storage:9000"* || "${external_endpoint}" == *"minio:9000"* ]]; then
+      echo "Error: --no-storage was passed but no external object storage is configured."
+      echo "OBJECT_STORAGE_ENDPOINT is unset or still points at the bundled store (storage:9000)."
       echo "Configure an external S3-compatible store via OBJECT_STORAGE_* in .env,"
-      echo "or drop --no-minio to use the bundled MinIO."
+      echo "or drop --no-storage to use the bundled store."
       exit 1
     fi
     derive_public_storage_urls "external"
@@ -389,10 +396,153 @@ fetch_if_missing() {
   mv "${tmp}" "${file}"
 }
 
+# A downloaded compose file that still references the removed MinIO images can't be pulled; replace it.
+refresh_stale_compose_file() {
+  if [[ "${USE_IMAGES}" != "true" || ! -f "${IMAGES_COMPOSE_FILE}" ]]; then
+    return 0
+  fi
+  if ! grep -q 'image: minio/' "${IMAGES_COMPOSE_FILE}"; then
+    return 0
+  fi
+  local backup="${IMAGES_COMPOSE_FILE}.bak"
+  mv "${IMAGES_COMPOSE_FILE}" "${backup}"
+  echo "$(basename "${IMAGES_COMPOSE_FILE}") still references the removed MinIO images."
+  echo "  Kept your copy as $(basename "${backup}") — re-apply any local edits to the new file."
+  # Subshell so a failed download can't exit before the old file is restored.
+  if ! (fetch_if_missing "${IMAGES_COMPOSE_FILE}" "${RAW_BASE_URL}/docker-compose.images.yaml"); then
+    mv "${backup}" "${IMAGES_COMPOSE_FILE}"
+    exit 1
+  fi
+}
+
 prepare_env_and_secrets() {
+  refresh_stale_compose_file
   ensure_secure_auth_tokens
   ensure_secure_betterauth_secret
   ensure_storage_env
+}
+
+# ──────────────────────────────────────────────
+# Legacy MinIO → SeaweedFS migration
+# ──────────────────────────────────────────────
+
+# rclone on the compose network: src = old MinIO, dst = new store.
+run_rclone() {
+  (
+    export RCLONE_CONFIG_SRC_TYPE=s3
+    export RCLONE_CONFIG_SRC_PROVIDER=Minio
+    export RCLONE_CONFIG_SRC_ENDPOINT="http://cio-minio-legacy:9000"
+    export RCLONE_CONFIG_SRC_ACCESS_KEY_ID="${LEGACY_ACCESS_KEY}"
+    export RCLONE_CONFIG_SRC_SECRET_ACCESS_KEY="${LEGACY_SECRET_KEY}"
+    export RCLONE_CONFIG_DST_TYPE=s3
+    export RCLONE_CONFIG_DST_PROVIDER=SeaweedFS
+    export RCLONE_CONFIG_DST_ENDPOINT="http://storage:9000"
+    RCLONE_CONFIG_DST_ACCESS_KEY_ID="$(get_env_value OBJECT_STORAGE_ACCESS_KEY_ID)"
+    RCLONE_CONFIG_DST_SECRET_ACCESS_KEY="$(get_env_value OBJECT_STORAGE_SECRET_ACCESS_KEY)"
+    export RCLONE_CONFIG_DST_ACCESS_KEY_ID RCLONE_CONFIG_DST_SECRET_ACCESS_KEY
+    # "notfound" silences rclone's missing-config notice.
+    export RCLONE_CONFIG=notfound
+    docker run --rm --network "${PROJECT_NAME}_default" -e RCLONE_CONFIG \
+      -e RCLONE_CONFIG_SRC_TYPE -e RCLONE_CONFIG_SRC_PROVIDER -e RCLONE_CONFIG_SRC_ENDPOINT \
+      -e RCLONE_CONFIG_SRC_ACCESS_KEY_ID -e RCLONE_CONFIG_SRC_SECRET_ACCESS_KEY \
+      -e RCLONE_CONFIG_DST_TYPE -e RCLONE_CONFIG_DST_PROVIDER -e RCLONE_CONFIG_DST_ENDPOINT \
+      -e RCLONE_CONFIG_DST_ACCESS_KEY_ID -e RCLONE_CONFIG_DST_SECRET_ACCESS_KEY \
+      "${RCLONE_IMAGE}" "$@"
+  )
+}
+
+pick_legacy_minio_image() {
+  if [[ -n "${MINIO_LEGACY_IMAGE:-}" ]]; then
+    printf '%s' "${MINIO_LEGACY_IMAGE}"
+    return
+  fi
+  local candidate
+  for candidate in minio/minio:latest quay.io/minio/minio:latest; do
+    if docker image inspect "${candidate}" >/dev/null 2>&1; then
+      printf '%s' "${candidate}"
+      return
+    fi
+  done
+  printf '%s' "${LEGACY_MINIO_FALLBACK_IMAGE}"
+}
+
+# Copies every bucket out of the old MinIO volume over the S3 API; the old volume is never deleted.
+migrate_legacy_minio_volume() {
+  local legacy_image bucket buckets=()
+  legacy_image="$(pick_legacy_minio_image)"
+  LEGACY_ACCESS_KEY="$(get_env_value MINIO_ROOT_USER)"
+  LEGACY_ACCESS_KEY="${LEGACY_ACCESS_KEY:-minioadmin}"
+  LEGACY_SECRET_KEY="$(get_env_value MINIO_ROOT_PASSWORD)"
+  LEGACY_SECRET_KEY="${LEGACY_SECRET_KEY:-minioadmin}"
+
+  for bucket in OBJECT_STORAGE_BUCKET_VIDEOS:videos OBJECT_STORAGE_BUCKET_DOCUMENTS:documents OBJECT_STORAGE_BUCKET_MEDIA:media; do
+    local name
+    name="$(get_env_value "${bucket%%:*}")"
+    buckets+=("${name:-${bucket##*:}}")
+  done
+
+  echo "Migrating uploads from the old bundled MinIO to the new bundled store (SeaweedFS)..."
+  echo "  Every object is copied, so this needs free disk space about equal to your current"
+  echo "  uploads. The app is stopped while it runs; the old volume is left untouched."
+
+  compose stop api dashboard jobs >/dev/null 2>&1 || true
+  # The old containers still hold port 9000.
+  docker rm -f cio-minio cio-minio-init cio-minio-legacy >/dev/null 2>&1 || true
+
+  compose up -d storage storage-init
+  docker wait cio-storage-init >/dev/null
+
+  echo "Reading the old volume with ${legacy_image}..."
+  MSYS_NO_PATHCONV=1 docker run -d --name cio-minio-legacy \
+    --network "${PROJECT_NAME}_default" \
+    -e MINIO_ROOT_USER="${LEGACY_ACCESS_KEY}" \
+    -e MINIO_ROOT_PASSWORD="${LEGACY_SECRET_KEY}" \
+    -v "${LEGACY_MINIO_VOLUME}:/data" \
+    "${legacy_image}" server /data >/dev/null
+
+  local attempt=0 listing=""
+  until listing="$(run_rclone lsd src: 2>/dev/null)"; do
+    attempt=$((attempt + 1))
+    if ((attempt >= 30)); then
+      echo "Error: could not read the old MinIO volume (see: docker logs cio-minio-legacy)."
+      echo "  Check MINIO_ROOT_USER / MINIO_ROOT_PASSWORD in .env, or set MINIO_LEGACY_IMAGE to a"
+      echo "  MinIO-compatible image, then re-run: ./classroomio.sh migrate-storage"
+      docker rm -f cio-minio-legacy >/dev/null 2>&1 || true
+      return 1
+    fi
+    sleep 2
+  done
+
+  for bucket in "${buckets[@]}"; do
+    if ! grep -qE "[[:space:]]${bucket}\$" <<<"${listing}"; then
+      echo "  ${bucket}: not in the old store — skipping."
+      continue
+    fi
+    echo "  ${bucket}: copying..."
+    if ! run_rclone sync --stats 30s --stats-one-line --stats-log-level NOTICE "src:${bucket}" "dst:${bucket}" ||
+      ! run_rclone check "src:${bucket}" "dst:${bucket}"; then
+      echo "Error: copying bucket '${bucket}' failed. Nothing was deleted — fix the problem"
+      echo "  and re-run: ./classroomio.sh migrate-storage"
+      docker rm -f cio-minio-legacy >/dev/null 2>&1 || true
+      return 1
+    fi
+  done
+
+  docker rm -f cio-minio-legacy >/dev/null
+  echo "Migration complete. Once you've confirmed your uploads load, free the old copy with:"
+  echo "  docker volume rm ${LEGACY_MINIO_VOLUME}"
+}
+
+# The endpoint is rewritten last, so an interrupted migration is retried on the next run.
+migrate_legacy_storage_if_needed() {
+  if [[ "${PROFILE_ARGS}" != *"storage"* ]] || ! is_legacy_minio_endpoint; then
+    return 0
+  fi
+  if docker volume inspect "${LEGACY_MINIO_VOLUME}" >/dev/null 2>&1; then
+    migrate_legacy_minio_volume
+  fi
+  upsert_env_value OBJECT_STORAGE_ENDPOINT "http://storage:9000"
+  echo "Set OBJECT_STORAGE_ENDPOINT=http://storage:9000 in .env"
 }
 
 # ──────────────────────────────────────────────
@@ -438,11 +588,12 @@ cmd_install() {
 
 cmd_start() {
   prepare_env_and_secrets
+  migrate_legacy_storage_if_needed
   warn_if_unpinned_version
 
   echo "Starting ClassroomIO..."
-  if [[ "${PROFILE_ARGS}" == *"minio"* ]]; then
-    echo "Including MinIO (object storage, default)..."
+  if [[ "${PROFILE_ARGS}" == *"storage"* ]]; then
+    echo "Including bundled object storage (SeaweedFS, default)..."
   fi
   if [[ "${USE_IMAGES}" == "true" ]]; then
     echo "Using pre-built images from Docker Hub (CIO_VERSION=$(get_env_value CIO_VERSION))..."
@@ -470,6 +621,7 @@ cmd_stop() {
 
 cmd_restart() {
   prepare_env_and_secrets
+  migrate_legacy_storage_if_needed
   echo "Restarting ClassroomIO..."
   # `compose restart` only bounces the container *process* — it never re-reads .env, so
   # edits to DASHBOARD_ORIGIN/SMTP_*/LICENSE_KEY/etc. were silently ignored. Recreate
@@ -506,28 +658,34 @@ cmd_backup() {
   fi
   echo "  -> ${db_file}"
 
-  # MinIO volume name is derived from the compose project name — same variable the
-  # -p flag uses, so a project rename can't silently desync the backup target.
-  local minio_volume="${PROJECT_NAME}_minio-data"
-  if docker volume inspect "${minio_volume}" >/dev/null 2>&1; then
-    echo "Backing up MinIO volume '${minio_volume}'..."
-    local minio_file="classroomio-minio-${ts}.tar.gz"
-    # Git Bash (MSYS) rewrites container paths like /data into Windows paths; disable
-    # conversion for this one command and pre-convert the host dir with cygpath.
-    # On Linux/macOS cygpath doesn't exist and the fallback keeps the path as-is.
-    local backup_dir_host
-    backup_dir_host="$(cygpath -w "${backup_dir}" 2>/dev/null || printf '%s' "${backup_dir}")"
+  # Volume names are derived from the compose project name — same variable the -p flag
+  # uses, so a project rename can't silently desync the backup target.
+  local label volume storage_file found_volume=false
+  # Git Bash (MSYS) rewrites container paths like /data into Windows paths; disable
+  # conversion for the docker run below and pre-convert the host dir with cygpath.
+  # On Linux/macOS cygpath doesn't exist and the fallback keeps the path as-is.
+  local backup_dir_host
+  backup_dir_host="$(cygpath -w "${backup_dir}" 2>/dev/null || printf '%s' "${backup_dir}")"
+  for label in storage minio; do
+    volume="${PROJECT_NAME}_${label}-data"
+    if ! docker volume inspect "${volume}" >/dev/null 2>&1; then
+      continue
+    fi
+    found_volume=true
+    echo "Backing up object-storage volume '${volume}'..."
+    storage_file="classroomio-${label}-${ts}.tar.gz"
     if ! MSYS_NO_PATHCONV=1 docker run --rm \
-      -v "${minio_volume}:/data:ro" \
+      -v "${volume}:/data:ro" \
       -v "${backup_dir_host}:/backup" \
-      alpine tar czf "/backup/${minio_file}" -C /data .; then
-      echo "Error: MinIO volume backup failed."
+      alpine tar czf "/backup/${storage_file}" -C /data .; then
+      echo "Error: object-storage volume backup failed."
       return 1
     fi
-    echo "  -> ${backup_dir}/${minio_file}"
-  else
-    # Not an error: --no-minio installs use external storage and have no local volume.
-    echo "MinIO volume '${minio_volume}' not found — skipping object-storage backup."
+    echo "  -> ${backup_dir}/${storage_file}"
+  done
+  if [[ "${found_volume}" != "true" ]]; then
+    # Not an error: --no-storage installs use external storage and have no local volume.
+    echo "No bundled object-storage volume found — skipping object-storage backup."
     echo "  (Using external S3/R2? Back that up with your provider's tools.)"
   fi
 
@@ -541,6 +699,7 @@ cmd_upgrade() {
   echo
   echo "Step 1/3: backing up before touching images..."
   cmd_backup
+  migrate_legacy_storage_if_needed
 
   echo
   if [[ "${USE_IMAGES}" == "true" ]]; then
@@ -578,6 +737,25 @@ cmd_upgrade() {
   fi
 }
 
+cmd_migrate_storage() {
+  prepare_env_and_secrets
+  if [[ "${PROFILE_ARGS}" != *"storage"* ]]; then
+    echo "Error: migrate-storage copies into the bundled store, so it can't be combined with --no-storage."
+    exit 1
+  fi
+  if docker volume inspect "${LEGACY_MINIO_VOLUME}" >/dev/null 2>&1; then
+    migrate_legacy_minio_volume
+  else
+    echo "No old MinIO volume ('${LEGACY_MINIO_VOLUME}') found — nothing to copy."
+  fi
+  if is_legacy_minio_endpoint; then
+    upsert_env_value OBJECT_STORAGE_ENDPOINT "http://storage:9000"
+    echo "Set OBJECT_STORAGE_ENDPOINT=http://storage:9000 in .env"
+  fi
+  compose up -d
+  compose ps
+}
+
 show_menu() {
   echo "ClassroomIO self-host manager"
   echo
@@ -587,7 +765,8 @@ show_menu() {
   echo "  4) Restart"
   echo "  5) Upgrade    (backs up first, then pulls new images)"
   echo "  6) View logs"
-  echo "  7) Backup     (Postgres dump + MinIO volume archive)"
+  echo "  7) Backup     (Postgres dump + object-storage volume archive)"
+  echo "  8) Migrate storage (copy uploads from the old bundled MinIO)"
   echo "  q) Quit"
   echo
   read -r -p "Pick an option: " choice
@@ -599,6 +778,7 @@ show_menu() {
     5) cmd_upgrade ;;
     6) cmd_logs ;;
     7) cmd_backup ;;
+    8) cmd_migrate_storage ;;
     q|Q) exit 0 ;;
     *)
       echo "Unknown option: ${choice}"
@@ -623,7 +803,12 @@ while [[ $# -gt 0 ]]; do
       COMPOSE_FILE="${BUILD_COMPOSE_FILE}"
       shift
       ;;
+    --no-storage)
+      PROFILE_ARGS=""
+      shift
+      ;;
     --no-minio)
+      echo "Note: --no-minio is deprecated; use --no-storage."
       PROFILE_ARGS=""
       shift
       ;;
@@ -631,7 +816,7 @@ while [[ $# -gt 0 ]]; do
       print_usage
       exit 0
       ;;
-    install|start|stop|restart|upgrade|logs|backup)
+    install|start|stop|restart|upgrade|logs|backup|migrate-storage)
       if [[ -n "${COMMAND}" ]]; then
         echo "Unexpected extra command: $1 (already running '${COMMAND}')"
         print_usage
@@ -664,4 +849,5 @@ case "${COMMAND}" in
   upgrade) cmd_upgrade ;;
   logs) cmd_logs "${COMMAND_ARGS[@]+"${COMMAND_ARGS[@]}"}" ;;
   backup) cmd_backup ;;
+  migrate-storage) cmd_migrate_storage ;;
 esac

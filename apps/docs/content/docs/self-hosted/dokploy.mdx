@@ -78,7 +78,7 @@ deployments.
 Open the service's **Environment** tab and add your configuration. At minimum:
 
 ```zsh title="Environment"
-COMPOSE_PROFILES=minio                      # runs the bundled MinIO object storage
+COMPOSE_PROFILES=storage                    # runs the bundled object storage (SeaweedFS)
 DASHBOARD_ORIGIN=https://dash.yourdomain.com
 PUBLIC_SERVER_URL=https://dash.yourdomain.com
 BETTER_AUTH_SECRET=<openssl rand -hex 32>
@@ -105,7 +105,7 @@ as storage). DNS can take a few minutes to propagate.
 
 ### 6. Deploy
 
-Click **Deploy**. Dokploy pulls `classroomio/{api,dashboard,jobs}` plus Postgres, Redis, and MinIO,
+Click **Deploy**. Dokploy pulls `classroomio/{api,dashboard,jobs}` plus Postgres, Redis, and the bundled object storage,
 then starts the stack. The API runs database setup on first boot. Watch the **logs** until every
 service is up. This is your first deploy.
 
@@ -145,7 +145,7 @@ shared [Configuration](/self-hosted/configuration) section:
     Signup verification, password resets, invites.
   </Card>
   <Card title="Object storage & uploads" href="/self-hosted/configuration/storage" icon="hard-drive">
-    MinIO or external S3/R2, plus upload size limits.
+    Bundled storage or external S3/R2, plus upload size limits.
   </Card>
   <Card title="CSP / allowed domains" href="/self-hosted/configuration/csp" icon="shield">
     Allowed external CDN, font, and media domains.
@@ -158,8 +158,8 @@ shared [Configuration](/self-hosted/configuration) section:
   </Card>
 </CardGroup>
 
-:::warning[MinIO is your durability boundary]
-If you use the bundled MinIO, give its volume **persistent storage** in Dokploy and set
+:::warning[The storage volume is your durability boundary]
+If you use the bundled store, give its volume **persistent storage** in Dokploy and set
 `OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` to a domain that resolves to
 your server, so browsers can load uploaded media. Prefer managed storage? Point the `OBJECT_STORAGE_*`
 vars at Cloudflare R2 / AWS S3 instead. See [Object storage & uploads](/self-hosted/configuration/storage).
