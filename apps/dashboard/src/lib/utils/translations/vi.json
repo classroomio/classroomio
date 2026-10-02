@@ -1747,6 +1747,15 @@
           "chill": "thư giãn với các chàng trai lớn",
           "add_exercise": "Chia sẻ kiến thức của bạn với thế giới bằng cách tạo ra các bài tập hấp dẫn. Thêm một bài tập bây giờ.",
           "all_exercises": {
+            "remote_update": {
+              "merged_title": "Đã hợp nhất thay đổi của Trợ lý",
+              "merged_description": "Các chỉnh sửa chưa lưu của bạn được giữ lại khi thêm thay đổi của Trợ lý.",
+              "conflict_title": "Xem lại thay đổi của Trợ lý",
+              "conflict_description": "Trợ lý đã thay đổi {count} mục mà bạn cũng đã chỉnh sửa. Phiên bản của bạn hiện được giữ lại.",
+              "keep_mine": "Giữ chỉnh sửa của tôi",
+              "use_assistant": "Dùng thay đổi của Trợ lý",
+              "dismiss": "Đóng"
+            },
             "heading": "Tất cả bài tập",
             "questions": "Câu hỏi",
             "submissions": "bài nộp",

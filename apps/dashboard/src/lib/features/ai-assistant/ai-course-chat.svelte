@@ -323,25 +323,52 @@
     }
   });
 
-  function refreshCourseStateAfterChat() {
+  function getInlineMutationScope() {
+    const lastMessage = chat.messages[chat.messages.length - 1] as AiAssistantMessage | undefined;
+    const messages = lastMessage?.role === 'assistant' ? [lastMessage] : [];
+    const changedItems = extractChangedItemsFromMessages(messages, resolveExerciseTitle);
+    const hasMutations = (lastMessage?.parts ?? []).some((part) => {
+      if (!isAgentToolPart(part)) return false;
+
+      const toolName = getAgentToolName(part);
+      return !!toolName && MUTATION_TOOLS.includes(toolName) && getAgentToolStatus(part) === 'completed';
+    });
+
+    return { changedItems, hasMutations };
+  }
+
+  function getRunMutationScope(runDetail: AgentRunDetail) {
+    const changedItems = extractChangedItems(runDetail, resolveExerciseTitle);
+    const hasMutations = runDetail.steps.some((step) => {
+      if (step.status !== 'completed' || !step.stepType.startsWith('tool:')) return false;
+
+      return MUTATION_TOOLS.includes(step.stepType.slice('tool:'.length));
+    });
+
+    return { changedItems, hasMutations };
+  }
+
+  function refreshCourseStateAfterChat(changedItems: RunChangedItem[], hasMutations: boolean) {
     const profileId = $profile.id;
 
-    // Force refetch course data so new sections/lessons/exercises show in the UI
-    if (courseId && profileId) {
+    if (hasMutations && courseId && profileId) {
       void courseApi.refreshCourse(courseId, profileId);
     }
 
-    // Refresh current lesson content if viewing a lesson
-    if (courseId && currentLessonId) {
+    const currentLessonChanged = changedItems.some(
+      (item) => item.targetType === 'lesson' && item.targetId === currentLessonId
+    );
+    if (courseId && currentLessonId && currentLessonChanged) {
       void lessonApi.get(courseId, currentLessonId);
     }
 
-    // Refresh current exercise if viewing an exercise
-    if (courseId && currentExerciseId) {
+    const currentExerciseChanged = changedItems.some(
+      (item) => item.targetType === 'exercise' && item.targetId === currentExerciseId
+    );
+    if (courseId && currentExerciseId && currentExerciseChanged) {
       void refreshExercisePageData(courseId, currentExerciseId);
     }
 
-    // Refresh usage meter
     if (courseId) {
       void aiAssistantApi.fetchStatus(courseId);
     }
@@ -404,10 +431,10 @@
       fetch: (input, init) => apiClient.request(input, init)
     }),
     onFinish: () => {
-      // Clear document attachment after message is processed
       uploadedDocument = null;
 
-      refreshCourseStateAfterChat();
+      const mutationScope = getInlineMutationScope();
+      refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
       void persistFinishedChat(chat.messages as AiAssistantMessage[], activeConversationId);
     }
   });
@@ -666,7 +693,11 @@
     if (!runId) return;
 
     await aiAssistantApi.cancelRun(runId);
-    refreshCourseStateAfterChat();
+    const runDetail = aiAssistantApi.currentRun;
+    if (runDetail) {
+      const mutationScope = getRunMutationScope(runDetail);
+      refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
+    }
   }
 
   async function handleRetryRun() {
@@ -1114,7 +1145,11 @@
     lastRunStatusSig = nextSig;
 
     if (previousSig.startsWith(`${run.id}:`) && RUN_TERMINAL_STATUSES.has(run.status)) {
-      refreshCourseStateAfterChat();
+      const runDetail = aiAssistantApi.currentRun;
+      if (!runDetail) return;
+
+      const mutationScope = getRunMutationScope(runDetail);
+      refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
     }
   });
 
@@ -1170,7 +1205,8 @@
       if (completedStepCount >= threshold && !agentMutationProgressThresholdsTriggered.has(threshold)) {
         agentMutationProgressThresholdsTriggered.add(threshold);
 
-        refreshCourseStateAfterChat();
+        const mutationScope = getInlineMutationScope();
+        refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
       }
     }
   });
@@ -1213,7 +1249,8 @@
       if (completedStepCount >= threshold && !agentMutationProgressThresholdsTriggered.has(threshold)) {
         agentMutationProgressThresholdsTriggered.add(threshold);
 
-        refreshCourseStateAfterChat();
+        const mutationScope = getRunMutationScope(runDetail);
+        refreshCourseStateAfterChat(mutationScope.changedItems, mutationScope.hasMutations);
       }
     }
   });

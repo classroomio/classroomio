@@ -55,9 +55,14 @@
   } from '$features/ui';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
-  import { saveExerciseDraft } from '$features/course/utils/exercise-draft';
+  import { clearExerciseDraft, saveExerciseDraft } from '$features/course/utils/exercise-draft';
   import { onUpgradeCheckoutHandoff } from '$lib/utils/store/upgrade-modal';
   import {
+    applyAssistantExerciseConflicts,
+    clearExercisePageState,
+    dismissExerciseRemoteUpdateNotice,
+    exerciseRemoteUpdateNotice,
+    hasUnsavedExerciseState,
     hydrateExercisePageData
     // , refreshExercisePageData
   } from '$features/course/utils/exercise-page-utils';
@@ -147,27 +152,10 @@
   let passedPolicyAttemptChoice = $state<PassedPolicyAttemptChoice>('retry');
   const passedPolicyReviewStoragePrefix = 'classroomio:passed-policy-review';
   let lastHandledHighlight = $state<string | null>(null);
-
-  function isTemporaryId(id: string | number | undefined) {
-    return typeof id === 'string' && id.includes('-form');
-  }
+  let draftSaveTimer: ReturnType<typeof setTimeout> | null = null;
 
   function hasDirtyQuestionnaire() {
-    const hasDirtyQuestion = ($questionnaire.questions ?? []).some((question) => {
-      const hasDirtyOption = (question.options ?? []).some((option) => option.isDirty || isTemporaryId(option.id));
-      return question.isDirty || Boolean(question.deletedAt) || isTemporaryId(question.id) || hasDirtyOption;
-    });
-    const hasDirtySection = ($questionnaire.sections ?? []).some(
-      (section) => section.isDirty || Boolean(section.deletedAt)
-    );
-
-    return Boolean(
-      $questionnaire.isTitleDirty ||
-        $questionnaire.isDescriptionDirty ||
-        $questionnaire.isDueByDirty ||
-        hasDirtyQuestion ||
-        hasDirtySection
-    );
+    return hasUnsavedExerciseState(exerciseId, $questionnaire);
   }
 
   async function handleDeleteExercise() {
@@ -473,6 +461,7 @@
         if (exerciseApi.exercise) {
           hydrateExercisePageData(exerciseApi.exercise, exerciseId);
         }
+        clearExerciseDraft(courseApi.course.id, exerciseId);
         hasUnsavedChanges = false;
         patchExerciseListItemLocally();
         if (!silent) {
@@ -498,6 +487,16 @@
   }
 
   onDestroy(() => {
+    if (draftSaveTimer) {
+      clearTimeout(draftSaveTimer);
+    }
+
+    const courseId = courseApi.course?.id;
+    if (!$isOrgStudent && courseId && hasDirtyQuestionnaire()) {
+      saveExerciseDraft(courseId, exerciseId, $questionnaire);
+    }
+
+    clearExercisePageState(exerciseId);
     reset();
     questionnaire.update((q) => ({ ...q, questions: [] }));
   });
@@ -533,6 +532,24 @@
 
   $effect(() => {
     hasUnsavedChanges = !$isOrgStudent && hasDirtyQuestionnaire();
+  });
+
+  $effect(() => {
+    const courseId = courseApi.course?.id;
+    const state = $questionnaire;
+    const shouldSaveDraft = !$isOrgStudent && !!courseId && hasUnsavedExerciseState(exerciseId, state);
+
+    if (draftSaveTimer) {
+      clearTimeout(draftSaveTimer);
+      draftSaveTimer = null;
+    }
+
+    if (!shouldSaveDraft || !courseId) return;
+
+    draftSaveTimer = setTimeout(() => {
+      saveExerciseDraft(courseId, exerciseId, state);
+      draftSaveTimer = null;
+    }, 750);
   });
 
   $effect(() => {
@@ -825,6 +842,40 @@
     }}
     onSave={handleSave}
   />
+{/if}
+
+{#if $exerciseRemoteUpdateNotice?.exerciseId === exerciseId}
+  <Alert.Root variant="information" class="mx-3 mb-4 sm:mx-4">
+    <InfoIcon />
+    <Alert.Title>
+      {$exerciseRemoteUpdateNotice.type === 'conflict'
+        ? $t('course.navItem.lessons.exercises.all_exercises.remote_update.conflict_title')
+        : $t('course.navItem.lessons.exercises.all_exercises.remote_update.merged_title')}
+    </Alert.Title>
+    <Alert.Description class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <span>
+        {$exerciseRemoteUpdateNotice.type === 'conflict'
+          ? $t('course.navItem.lessons.exercises.all_exercises.remote_update.conflict_description', {
+              count: $exerciseRemoteUpdateNotice.conflictCount
+            })
+          : $t('course.navItem.lessons.exercises.all_exercises.remote_update.merged_description')}
+      </span>
+      <div class="flex shrink-0 gap-2">
+        {#if $exerciseRemoteUpdateNotice.type === 'conflict'}
+          <Button size="sm" variant="outline" onclick={dismissExerciseRemoteUpdateNotice}>
+            {$t('course.navItem.lessons.exercises.all_exercises.remote_update.keep_mine')}
+          </Button>
+          <Button size="sm" onclick={() => applyAssistantExerciseConflicts(exerciseId)}>
+            {$t('course.navItem.lessons.exercises.all_exercises.remote_update.use_assistant')}
+          </Button>
+        {:else}
+          <Button size="sm" variant="outline" onclick={dismissExerciseRemoteUpdateNotice}>
+            {$t('course.navItem.lessons.exercises.all_exercises.remote_update.dismiss')}
+          </Button>
+        {/if}
+      </div>
+    </Alert.Description>
+  </Alert.Root>
 {/if}
 
 <Page.Body>
