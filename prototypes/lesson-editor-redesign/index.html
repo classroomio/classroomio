@@ -451,8 +451,6 @@
 
   .quiz-block { display: flex; flex-direction: column; gap: 18px; }
   .quiz-toolbar { display: flex; justify-content: flex-end; }
-  .quiz-media-btn { display: inline-flex; align-items: center; gap: 6px; background: var(--muted); border: none; border-radius: 999px; padding: 7px 14px; font-size: 12.5px; font-weight: 500; color: var(--foreground); cursor: pointer; }
-  .quiz-media-btn svg { width: 14px; height: 14px; stroke-width: 2; }
   .quiz-media { margin-bottom: 2px; }
   .quiz-media img { width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--radius-lg); display: block; }
   .quiz-question { font-size: 19px; font-weight: 600; letter-spacing: -.01em; outline: none; border-radius: var(--radius-sm); }
@@ -467,15 +465,25 @@
   .quiz-option-remove { width: 22px; height: 22px; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
   .quiz-option-remove:hover { background: var(--accent); color: var(--foreground); }
   .quiz-option-remove svg { width: 12px; height: 12px; stroke-width: 2.2; }
-  .quiz-add-option { align-self: flex-start; font-size: 13px; font-weight: 500; color: var(--primary); background: none; border: none; cursor: pointer; padding: 4px 8px; }
+  .ghost-add-tile {
+    margin-top: 6px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; box-sizing: border-box;
+    font-size: 12.5px; font-weight: 600; color: var(--muted-foreground); cursor: pointer; background: none;
+    transition: border-color .12s, color .12s, background .12s;
+  }
+  .ghost-add-tile:hover { border-color: var(--primary); color: var(--primary); background: color-mix(in oklab, var(--primary), transparent 95%); }
+  .ghost-add-tile svg { width: 13px; height: 13px; stroke-width: 2.4; }
+  .toolbar-group { display: flex; align-items: center; background: var(--muted); border-radius: 999px; padding: 3px; }
+  .toolbar-group .icobtn { width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; border: none; background: transparent; color: var(--foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .toolbar-group .icobtn:hover { background: var(--card); }
+  .toolbar-group .icobtn svg { width: 13px; height: 13px; stroke-width: 2; }
+  .toolbar-group .tgdiv { width: 1px; height: 14px; background: var(--border); margin: 0 2px; }
   .quiz-submit { align-self: center; min-width: 140px; }
   .quiz-option.submitted-correct { background: color-mix(in oklab, oklch(0.6 0.15 150), transparent 90%); }
   .quiz-option.submitted-wrong { background: color-mix(in oklab, oklch(0.55 0.2 25), transparent 90%); }
 
   .process-block { display: flex; flex-direction: column; gap: 14px; }
   .process-toolbar { display: flex; justify-content: flex-end; gap: 8px; }
-  .process-icon-btn { width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--muted); color: var(--foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-  .process-icon-btn svg { width: 14px; height: 14px; stroke-width: 2; }
   .process-chip-row { display: flex; align-items: center; justify-content: center; }
   .process-chip { width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; padding: 0; }
   .process-chip svg { width: 12px; height: 12px; stroke-width: 3; }
@@ -2231,17 +2239,19 @@
         <div class="quiz-block">
           <div class="quiz-toolbar edit-only">
             <input type="file" accept="image/*" hidden class="quiz-image-input" onchange="onQuizImageChosen(this)" />
-            <div class="dd-menu">
-              <button type="button" class="quiz-media-btn" onclick="toggleBlockMenu(this)">${ICON_IMAGE}Add media${ICON_CHEVRON_DOWN_SMALL}</button>
-              <div class="dd-menu-panel">
-                <button type="button" class="dd-menu-item" onclick="triggerQuizImageUpload(this)">${ICON_IMAGE}Image</button>
+            <div class="toolbar-group">
+              <div class="dd-menu">
+                <button type="button" class="icobtn" data-tip="Add media" aria-label="Add media" onclick="toggleBlockMenu(this)">${ICON_IMAGE}</button>
+                <div class="dd-menu-panel">
+                  <button type="button" class="dd-menu-item" onclick="triggerQuizImageUpload(this)">${ICON_IMAGE}Image</button>
+                </div>
               </div>
             </div>
           </div>
           <div class="quiz-question" contenteditable="true" oninput="simulateSave()">${escapeHtml(data.question)}</div>
           <div class="quiz-options">
             ${optionsHtml}
-            <button type="button" class="quiz-add-option edit-only" onclick="addQuizOption(this)">${ICON_PLUS}Add option</button>
+            <button type="button" class="ghost-add-tile edit-only" onclick="addQuizOption(this)">${ICON_PLUS}Add option</button>
           </div>
           <button type="button" class="btn btn-primary quiz-submit" disabled onclick="submitQuiz(this)">Submit</button>
         </div>
@@ -2344,13 +2354,16 @@
         <div class="process-block">
           <div class="process-toolbar edit-only">
             <input type="file" accept="image/*" hidden class="process-image-input" onchange="onProcessImageChosen(this)" />
-            <div class="dd-menu">
-              <button type="button" class="quiz-media-btn" onclick="toggleBlockMenu(this)">${ICON_IMAGE}Add media${ICON_CHEVRON_DOWN_SMALL}</button>
-              <div class="dd-menu-panel">
-                <button type="button" class="dd-menu-item" onclick="triggerProcessImageUpload(this)">${ICON_IMAGE}Image</button>
+            <div class="toolbar-group">
+              <div class="dd-menu">
+                <button type="button" class="icobtn" data-tip="Add media" aria-label="Add media" onclick="toggleBlockMenu(this)">${ICON_IMAGE}</button>
+                <div class="dd-menu-panel">
+                  <button type="button" class="dd-menu-item" onclick="triggerProcessImageUpload(this)">${ICON_IMAGE}Image</button>
+                </div>
               </div>
+              <span class="tgdiv"></span>
+              <button type="button" class="icobtn" data-tip="Delete this step" onclick="removeProcessStep(this)" aria-label="Delete this step">${ICON_TRASH}</button>
             </div>
-            <button type="button" class="process-icon-btn" onclick="removeProcessStep(this)" aria-label="Delete this step">${ICON_TRASH}</button>
           </div>
           <div class="process-chip-row">${buildProcessChipsHtml(total, 0)}</div>
           <div class="process-step">
@@ -2362,9 +2375,7 @@
             <button type="button" class="btn btn-outline btn-sm process-back" onclick="navProcessStep(this,-1)" aria-label="Previous step" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>Back</button>
             <button type="button" class="btn btn-primary btn-sm process-advance" onclick="advanceProcessStep(this)">${isLast ? 'Finish' : 'Next'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
           </div>
-          <div class="edit-only" style="text-align:center">
-            <button type="button" class="quiz-add-option" onclick="addProcessStep(this)">${ICON_PLUS}Add step</button>
-          </div>
+          <button type="button" class="ghost-add-tile edit-only" onclick="addProcessStep(this)">${ICON_PLUS}Add step</button>
         </div>
       </section>`;
   }
