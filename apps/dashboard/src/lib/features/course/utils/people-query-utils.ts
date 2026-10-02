@@ -6,6 +6,7 @@ import {
   type TCoursePeopleSortBy,
   type TCoursePeopleSortOrder
 } from '@cio/utils/validation/course/people';
+import { ROLE } from '@cio/utils/constants';
 import type { CoursePeopleView, ListPeopleQuery } from '$features/course/utils/types';
 
 const SORT_BY_VALUES: ListPeopleQuery['sortBy'][] = [
@@ -55,7 +56,8 @@ export function getPeopleQueryFromSearchParams(searchParams: URLSearchParams): L
 
   return {
     page: Number.isFinite(page) && page > 0 ? Math.floor(page) : DEFAULT_PEOPLE_QUERY.page,
-    limit: Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : DEFAULT_PEOPLE_QUERY.limit,
+    limit:
+      Number.isFinite(limit) && limit > 0 ? Math.min(Math.max(Math.floor(limit), 1), 100) : DEFAULT_PEOPLE_QUERY.limit,
     search: searchParams.get('search')?.trim() || undefined,
     roleId: Number.isInteger(roleId) && roleId > 0 ? roleId : undefined,
     sortBy: readEnum(searchParams.get('sortBy'), SORT_BY_VALUES) ?? DEFAULT_PEOPLE_QUERY.sortBy,
@@ -102,7 +104,7 @@ const VIEW_FILTERS: Record<CoursePeopleView, Partial<ListPeopleQuery>> = {
   in_progress: { progress: 'in_progress' },
   completed: { progress: 'completed' },
   never_logged_in: { lastLoginBefore: 'never' },
-  awaiting_certificate: { certificateEarned: false }
+  awaiting_certificate: { certificateEarned: false, roleId: 3 }
 };
 
 export const COURSE_PEOPLE_VIEWS = Object.keys(VIEW_FILTERS) as CoursePeopleView[];

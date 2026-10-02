@@ -39,7 +39,10 @@ export function getCohortPeopleQueryFromSearchParams(searchParams: URLSearchPara
 
   return {
     page: Number.isFinite(page) && page > 0 ? Math.floor(page) : DEFAULT_COHORT_PEOPLE_QUERY.page,
-    limit: Number.isFinite(limit) && limit > 0 ? Math.floor(limit) : DEFAULT_COHORT_PEOPLE_QUERY.limit,
+    limit:
+      Number.isFinite(limit) && limit > 0
+        ? Math.min(Math.max(Math.floor(limit), 1), 100)
+        : DEFAULT_COHORT_PEOPLE_QUERY.limit,
     search: searchParams.get('search')?.trim() || undefined,
     roleId: Number.isInteger(roleId) && roleId > 0 ? roleId : undefined,
     sortBy: readEnum(searchParams.get('sortBy'), SORT_BY_VALUES) ?? DEFAULT_COHORT_PEOPLE_QUERY.sortBy,

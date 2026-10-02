@@ -209,7 +209,7 @@ function buildPeopleOrderBy(sortBy: TCoursePeopleSortBy, sortOrder: TCoursePeopl
     return [ordered, tiebreaker];
   }
 
-  return [sql`${sortColumn} IS NOT NULL`, ordered, tiebreaker];
+  return [desc(sql`${sortColumn} IS NOT NULL`), ordered, tiebreaker];
 }
 
 /**

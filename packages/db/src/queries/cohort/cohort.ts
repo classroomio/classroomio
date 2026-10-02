@@ -617,7 +617,12 @@ function buildCohortPeopleOrderBy(sortBy: TCohortPeopleSortBy, sortOrder: TCohor
   const tiebreaker = asc(schema.cohortMember.id);
 
   if (sortBy === 'name') {
-    return [ordered(schema.profile.fullname), tiebreaker];
+    return [
+      ordered(
+        sql`COALESCE(NULLIF(${schema.profile.fullname}, ''), ${schema.profile.email}, ${schema.cohortMember.email})`
+      ),
+      tiebreaker
+    ];
   }
 
   if (sortBy === 'lastLogin') {
