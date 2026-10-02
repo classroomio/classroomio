@@ -4343,6 +4343,7 @@
     "articles": "Artikel",
     "ai": "KI",
     "ai_select": "Wählen Sie einen KI-Assistenten",
+    "ai_required": "Bitte wählen Sie einen KI-Assistenten",
     "ai_providers": {
       "chatgpt": "ChatGPT",
       "claude": "Claude",

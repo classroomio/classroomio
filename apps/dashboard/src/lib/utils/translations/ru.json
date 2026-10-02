@@ -4343,6 +4343,7 @@
     "articles": "Статьи",
     "ai": "ИИ",
     "ai_select": "Выберите ИИ-помощника",
+    "ai_required": "Выберите ИИ-помощника",
     "ai_providers": {
       "chatgpt": "ChatGPT",
       "claude": "Claude",

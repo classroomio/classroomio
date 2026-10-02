@@ -283,6 +283,7 @@
     "articles": "Articles",
     "ai": "AI",
     "ai_select": "Select an AI assistant",
+    "ai_required": "Please select an AI assistant",
     "ai_providers": {
       "chatgpt": "ChatGPT",
       "claude": "Claude",
