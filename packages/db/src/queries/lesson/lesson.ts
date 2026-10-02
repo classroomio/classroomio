@@ -10,7 +10,7 @@ import type {
   TNewLessonCompletion,
   TNewLessonLanguage
 } from '@db/types';
-import { and, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
+import { and, asc, count, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
 import { contentWriteBumpsTimestamp } from '@db/queries/course/content-timestamp';
@@ -23,6 +23,37 @@ export async function getLessonsByCourseId(courseId: string, dbClient: DbOrTxCli
     console.error('getLessonsByCourseId error:', error);
     throw new Error(
       `Failed to get lessons by course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getPaginatedLessonsByCourseId(
+  courseId: string,
+  options: { sectionId?: string; page: number; limit: number }
+): Promise<{ items: TLesson[]; total: number }> {
+  try {
+    const { sectionId, page, limit } = options;
+    const where = and(
+      eq(schema.lesson.courseId, courseId),
+      sectionId ? eq(schema.lesson.sectionId, sectionId) : undefined
+    );
+
+    const [countRows, items] = await Promise.all([
+      db.select({ total: count() }).from(schema.lesson).where(where),
+      db
+        .select()
+        .from(schema.lesson)
+        .where(where)
+        .orderBy(asc(schema.lesson.order), asc(schema.lesson.id))
+        .limit(limit)
+        .offset((page - 1) * limit)
+    ]);
+
+    return { items, total: Number(countRows[0]?.total ?? 0) };
+  } catch (error) {
+    console.error('getPaginatedLessonsByCourseId error:', error);
+    throw new Error(
+      `Failed to get paginated lessons for course "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -242,6 +273,19 @@ export async function getLessonCommentsByLessonId(lessonId: string) {
   }
 }
 
+// Cursor is `<createdAt>|<id>`; a bare id is the format dashboards loaded before this change still hold.
+function parseLessonCommentCursor(cursor?: string): { createdAt?: string; id: number } | undefined {
+  if (!cursor) return undefined;
+  if (/^\d+$/.test(cursor)) return { id: Number(cursor) };
+
+  const separatorIndex = cursor.lastIndexOf('|');
+  const createdAt = cursor.slice(0, separatorIndex);
+  const id = cursor.slice(separatorIndex + 1);
+  if (separatorIndex <= 0 || !/^\d+$/.test(id) || Number.isNaN(Date.parse(createdAt))) return undefined;
+
+  return { createdAt, id: Number(id) };
+}
+
 /**
  * Gets paginated comments for a lesson with author profile
  * @param lessonId Lesson ID
@@ -263,13 +307,17 @@ export async function getLessonCommentsByLessonIdPaginated(
   nextCursor: string | null;
 }> {
   try {
-    const { cursor, limit } = options;
+    const { limit } = options;
+    const cursor = parseLessonCommentCursor(options.cursor);
 
     // Build where conditions
     const whereConditions = [eq(schema.lessonComment.lessonId, lessonId)];
     if (cursor) {
-      // Cursor is the last comment ID, fetch comments created before it
-      whereConditions.push(lt(schema.lessonComment.id, Number(cursor)));
+      whereConditions.push(
+        cursor.createdAt
+          ? sql`(${schema.lessonComment.createdAt}, ${schema.lessonComment.id}) < (${cursor.createdAt}::timestamptz, ${cursor.id}::bigint)`
+          : lt(schema.lessonComment.id, cursor.id)
+      );
     }
 
     // Get total count
@@ -290,15 +338,16 @@ export async function getLessonCommentsByLessonIdPaginated(
       .leftJoin(schema.groupmember, eq(schema.lessonComment.groupmemberId, schema.groupmember.id))
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
       .where(and(...whereConditions))
-      .orderBy(desc(schema.lessonComment.createdAt))
+      .orderBy(desc(schema.lessonComment.createdAt), desc(schema.lessonComment.id))
       .limit(limit + 1);
 
     // Check if there are more comments
     const hasMore = comments.length > limit;
     const items = comments.slice(0, limit);
 
-    // Get next cursor (ID of the oldest comment in this batch - for loading older comments)
-    const nextCursor = hasMore && items.length > 0 ? String(items[items.length - 1].comment.id) : null;
+    // Get next cursor (oldest comment in this batch - for loading older comments)
+    const lastComment = items[items.length - 1]?.comment;
+    const nextCursor = hasMore && lastComment ? `${lastComment.createdAt}|${lastComment.id}` : null;
 
     return {
       items: items.map((row) => ({
@@ -337,6 +386,22 @@ export async function createLessonComment(data: TNewLessonComment): Promise<TLes
   } catch (error) {
     console.error('createLessonComment error:', error);
     throw new Error(`Failed to create lesson comment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getLessonCommentById(commentId: number): Promise<TLessonComment | null> {
+  try {
+    const [comment] = await db
+      .select()
+      .from(schema.lessonComment)
+      .where(eq(schema.lessonComment.id, commentId))
+      .limit(1);
+    return comment || null;
+  } catch (error) {
+    console.error('getLessonCommentById error:', error);
+    throw new Error(
+      `Failed to get lesson comment "${commentId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

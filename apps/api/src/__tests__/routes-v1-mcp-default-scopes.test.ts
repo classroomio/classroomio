@@ -41,6 +41,10 @@ vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn().mockResolvedValue({ items: [], page: 1, limit: 20, total: 0, totalPages: 0 })
 }));
 
+vi.mock('@api/services/v1/courses/sections', () => ({
+  listPublicApiCourseSectionsService: vi.fn().mockResolvedValue({ items: [], pagination: {} })
+}));
+
 import { v1Router } from '@api/routes/v1';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
@@ -84,7 +88,8 @@ describe('default MCP key across the cohort, course member, and certificate APIs
   it.each([
     ['/cohorts', 'list_org_cohorts'],
     [`/courses/${COURSE_ID}/members`, 'list_course_members'],
-    [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate']
+    [`/courses/${COURSE_ID}/certificate`, 'get_course_certificate'],
+    [`/courses/${COURSE_ID}/sections`, 'list_course_sections']
   ])('reaches %s and meters it as %s', async (path, toolName) => {
     const response = await request(path);
 

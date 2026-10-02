@@ -1,0 +1,500 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API course content request contract > ZPublicApiCourseLessonCommentParam keeps its published shape > ZPublicApiCourseLessonCommentParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "commentId": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer",
+    },
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "lessonId",
+    "commentId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonCommentsQuery keeps its published shape > ZPublicApiCourseLessonCommentsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "cursor": {
+      "maxLength": 100,
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?(Z|[+-]\\d{2}(:?\\d{2})?)\\|\\d+$",
+      "type": "string",
+    },
+    "limit": {
+      "default": 10,
+      "maximum": 50,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonHistoryQuery keeps its published shape > ZPublicApiCourseLessonHistoryQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "cursor": {
+      "maxLength": 100,
+      "minLength": 1,
+      "type": "string",
+    },
+    "limit": {
+      "default": 10,
+      "maximum": 50,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "locale": {
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+      ],
+      "type": "string",
+    },
+  },
+  "required": [
+    "locale",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonParam keeps its published shape > ZPublicApiCourseLessonParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "lessonId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonTranslationParam keeps its published shape > ZPublicApiCourseLessonTranslationParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "locale": {
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+      ],
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "lessonId",
+    "locale",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonTranslationsQuery keeps its published shape > ZPublicApiCourseLessonTranslationsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "locale": {
+      "enum": [
+        "en",
+        "hi",
+        "fr",
+        "pt",
+        "de",
+        "vi",
+        "ru",
+        "es",
+        "pl",
+        "da",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseLessonsQuery keeps its published shape > ZPublicApiCourseLessonsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "sectionId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseSectionParam keeps its published shape > ZPublicApiCourseSectionParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "sectionId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "sectionId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCourseSectionsQuery keeps its published shape > ZPublicApiCourseSectionsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCreateCourseLessonComment keeps its published shape > ZPublicApiCreateCourseLessonComment 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "comment": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "comment",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiCreateCourseSection keeps its published shape > ZPublicApiCreateCourseSection 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "moveUngrouped": {
+      "type": "boolean",
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "title",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiDeleteCourseContent keeps its published shape > ZPublicApiDeleteCourseContent 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "items": {
+      "items": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+  },
+  "required": [
+    "items",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiReorderCourseContent keeps its published shape > ZPublicApiReorderCourseContent 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "items": {
+      "items": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "order": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer",
+          },
+          "sectionId": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+    "sections": {
+      "items": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "order": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer",
+          },
+        },
+        "required": [
+          "id",
+          "order",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiSetCourseLessonTranslation keeps its published shape > ZPublicApiSetCourseLessonTranslation 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "content": {
+      "type": "string",
+    },
+    "versionIntent": {
+      "enum": [
+        "auto",
+        "manual",
+      ],
+      "type": "string",
+    },
+    "versionLabel": {
+      "maxLength": 120,
+      "type": "string",
+    },
+  },
+  "required": [
+    "content",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiUpdateCourseContentLock keeps its published shape > ZPublicApiUpdateCourseContentLock 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "items": {
+      "items": {
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "isUnlocked": {
+            "type": "boolean",
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+          "isUnlocked",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+  },
+  "required": [
+    "items",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiUpdateCourseLessonComment keeps its published shape > ZPublicApiUpdateCourseLessonComment 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "comment": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "comment",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content request contract > ZPublicApiUpdateCourseSection keeps its published shape > ZPublicApiUpdateCourseSection 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
