@@ -454,7 +454,13 @@
   </Page.Body>
 </Page.Root>
 
-<InviteMembersModal cohortId={data.cohortId} onMembersChanged={() => loadPeople(data.cohortId, query)} />
+<InviteMembersModal
+  cohortId={data.cohortId}
+  onMembersChanged={() => {
+    loadedQueryKey = null;
+    loadPeople(data.cohortId, query);
+  }}
+/>
 
 <Dialog.Root bind:open={isDeleteModalOpen}>
   <Dialog.Content class="w-96 pt-3">
