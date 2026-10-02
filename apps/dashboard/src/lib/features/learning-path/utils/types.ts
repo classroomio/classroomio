@@ -1,5 +1,13 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
-import type { TCreateLearningPath, TUpdateLearningPath } from '@cio/utils/validation/learning-path';
+import type {
+  TCreateLearningPath,
+  TPathListCompletionFilter,
+  TPathListEnrollmentFilter,
+  TPathListSortBy,
+  TPathListSortOrder,
+  TPathListStatusFilter,
+  TUpdateLearningPath
+} from '@cio/utils/validation/learning-path';
 
 // RPC Request Types
 export type ListLearningPathsRequest = (typeof classroomio)['learning-path']['$get'];
@@ -86,10 +94,38 @@ export type CreateLearningPathInput = Omit<TCreateLearningPath, 'organizationId'
 export type UpdateLearningPathInput = TUpdateLearningPath;
 
 // UI & Filter Types
-export type StatusFilter = 'all' | 'published' | 'unpublished';
-export type EnrollmentFilter = 'all' | 'none' | '1-49' | '50+';
-export type CompletionFilter = 'all' | 'low' | 'medium' | 'high';
+/** View mode for `/paths/[publicId]`: staff builder vs learner hub (`loading` while the org role resolves). */
+export type PathViewMode = 'loading' | 'staff' | 'learner';
+/** Render state derived from the active mode's fetch result. */
+export type PathAccessState = 'loading' | 'ready' | 'not_found' | 'forbidden' | 'error';
+/** Inputs for `resolvePathAccessState`: flags from the endpoint the active mode called. */
+export interface PathAccessInput {
+  isLoaded: boolean;
+  isNotFound: boolean;
+  isForbidden: boolean;
+  loadError: string | null;
+}
+/** Status filter, derived from the backend `PATH_LIST_STATUS_FILTERS`; `all` sends no status. */
+export type StatusFilter = 'all' | TPathListStatusFilter;
+/** Enrollment bucket filter, derived from `PATH_LIST_ENROLLMENT_FILTERS`; `all` sends none. */
+export type EnrollmentFilter = 'all' | TPathListEnrollmentFilter;
+/** Completion-rate filter, derived from `PATH_LIST_COMPLETION_FILTERS`; `all` sends none. */
+export type CompletionFilter = 'all' | TPathListCompletionFilter;
+/** Sort key, derived from the backend `PATH_LIST_SORT_BY`. */
+export type PathSortBy = TPathListSortBy;
+/** Sort direction, derived from the backend `PATH_LIST_SORT_ORDERS`. */
+export type PathSortOrder = TPathListSortOrder;
 export type ViewMode = 'grid' | 'list';
+
+/** URL-driven filters for the org paths listing (page lives in the API query, not here). */
+export interface PathListFilters {
+  search: string;
+  status: StatusFilter;
+  enrollment: EnrollmentFilter;
+  completion: CompletionFilter;
+  sort: PathSortBy;
+  order: PathSortOrder;
+}
 
 /** Learner status filter for the path people table; `all` sends no status to the API. */
 export type PathMemberStatusFilter = 'all' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -111,9 +147,4 @@ export interface SetupStep {
   href: string;
   isCompleted: boolean;
   isCurrent: boolean;
-}
-
-export interface LearningPathAccessOptions {
-  isAdmin?: boolean | null;
-  userProfileId?: string | null;
 }

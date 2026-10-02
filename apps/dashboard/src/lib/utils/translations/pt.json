@@ -35,7 +35,8 @@
       "reward_help": "Ofereça um incentivo aos alunos após a conclusão",
       "reward_description": "Descrição da recompensa",
       "placeholder_reward": "ex. Sessão de mentoria individual, brindes ou acesso exclusivo à comunidade"
-    }
+    },
+    "back_to_my_learning": "De volta ao meu aprendizado"
   },
   "validations": {
     "generic": {
@@ -2858,6 +2859,11 @@
       "description": "Você está prestes a ver o que um aluno verá ao se inscrever neste curso",
       "copy_link": "Copiar link",
       "go_to_lms": "Acesse o LMS"
+    },
+    "not_found": {
+      "header": "Curso não encontrado",
+      "body": "O curso que você procura não existe ou pode ter sido excluído.",
+      "button": "Vá para casa"
     }
   },
   "courses": {
@@ -5646,7 +5652,8 @@
         "grid_view": "Visualização em grade",
         "list_view": "Visualização em lista"
       },
-      "load_error_title": "Falha ao carregar caminhos de aprendizagem"
+      "load_error_title": "Falha ao carregar caminhos de aprendizagem",
+      "load_more": "Carregar mais"
     },
     "view_path_site": {
       "unpublished_title": "Publique seu caminho de aprendizagem",
@@ -5805,7 +5812,8 @@
         "bulk_enroll_success": "Membros {enrolled} inscritos ({invited} convidados)",
         "bulk_enroll_partial": "Membros {enrolled} inscritos ({invited} convidado, {failed} falhou)",
         "bulk_enroll_failed": "Falha na inscrição em segundo plano",
-        "bulk_enroll_lost": "Perdeu o controle da inscrição em segundo plano"
+        "bulk_enroll_lost": "Perdeu o controle da inscrição em segundo plano",
+        "bulk_enroll_backgrounded": "A inscrição ainda está em execução em segundo plano. Atualize Pessoas para ver os resultados."
       },
       "change_role_to_tutor": "Faça tutor",
       "change_role_to_student": "Faça aluno"
@@ -6022,6 +6030,16 @@
       "description": "Você está prestes a ver o que um aluno verá ao se inscrever neste caminho de aprendizagem",
       "copy_link": "Copiar link",
       "go_to_lms": "Ir para o LMS"
+    },
+    "hub": {
+      "placeholder_title": "Visualização do caminho de aprendizagem",
+      "placeholder_description": "A experiência completa de aprendizagem reside no LMS. Abra My Learning para continuar este caminho.",
+      "back_to_my_learning": "De volta ao meu aprendizado"
+    },
+    "not_permitted": {
+      "header": "Sem permissão",
+      "body": "Infelizmente você não tem acesso a este caminho de aprendizagem.",
+      "button": "Vá para casa"
     }
   },
   "certificate": {

@@ -32,10 +32,11 @@
       "show_discount": "Afficher la remise",
       "discount_percentage": "Pourcentage de remise",
       "reward": "Récompense / Cadeau",
-      "reward_help": "Offrez aux apprenants une récompense une fois la formation terminée",
       "reward_description": "Description de la récompense",
-      "placeholder_reward": "p. ex. séance de mentorat individuel, goodies ou accès exclusif à la communauté"
-    }
+      "placeholder_reward": "p. ex. séance de mentorat individuel, goodies ou accès exclusif à la communauté",
+      "reward_help": "Offrir aux étudiants une incitation à la fin"
+    },
+    "back_to_my_learning": "Retour à mon apprentissage"
   },
   "validations": {
     "generic": {
@@ -1086,7 +1087,7 @@
         "copy_link": "Copier le lien",
         "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication.",
         "requires_learning_path": "Exiger un parcours d'apprentissage",
-        "requires_learning_path_desc": "Lorsque cette option est activée, les apprenants ne peuvent accéder à ce cours que via un parcours d'apprentissage. Les inscriptions existantes sont conservées."
+        "requires_learning_path_desc": "Lorsque cette option est activée, les étudiants ne peuvent accéder à ce cours que via un parcours d'apprentissage. Les inscriptions existantes sont conservées."
       },
       "analytics": {
         "title": "Analytique"
@@ -2858,6 +2859,11 @@
       "description": "Vous êtes sur le point de voir ce qu'un étudiant verra lorsqu'il s'inscrira à ce cours",
       "copy_link": "Copier le lien",
       "go_to_lms": "Aller au LMS"
+    },
+    "not_found": {
+      "header": "Cours introuvable",
+      "body": "Le cours que vous recherchez n'existe pas ou a peut-être été supprimé.",
+      "button": "Rentre chez toi"
     }
   },
   "courses": {
@@ -5522,10 +5528,10 @@
         "name_label": "Nom du parcours",
         "name_placeholder": "Exemple : Développement web Fullstack",
         "desc_label": "Description",
-        "desc_placeholder": "Un bref résumé des acquis des apprenants…",
         "cancel": "Annuler",
         "submit": "Créer un parcours d'apprentissage",
-        "failed": "Échec de la création du parcours d'apprentissage"
+        "failed": "Échec de la création du parcours d'apprentissage",
+        "desc_placeholder": "Un bref résumé de ce que les étudiants réaliseront..."
       }
     },
     "workspace": {
@@ -5563,7 +5569,6 @@
     },
     "setup": {
       "title": "Configurer votre parcours",
-      "subtitle": "Suivez ces étapes pour proposer {name} à vos apprenants.",
       "summary": "Un parcours est mis en ligne une fois que ses cours sont commandés, tarifés et activés.",
       "progress": "{completed} sur {total} terminés",
       "done": "Terminé",
@@ -5577,10 +5582,8 @@
       "step_courses_desc": "Sélectionnez les cours qui composent ce parcours d'apprentissage.",
       "step_courses_action": "Ajouter des cours",
       "step_order_title": "Définir l'ordre des cours",
-      "step_order_desc": "Glisser les cours dans l'ordre de progression des apprenants.",
       "step_order_action": "Définir l'ordre",
       "step_price_title": "Définir le prix",
-      "step_price_desc": "Proposer le prix du parcours sous forme de forfait : les apprenants bénéficient ainsi d'une réduction par rapport à l'achat de cours individuels.",
       "step_price_action": "Définir le prix",
       "step_landing_title": "Personnaliser la page d'accueil",
       "step_landing_desc": "Résultats, compétences, formateurs, témoignages et FAQ sur la page publique du parcours.",
@@ -5588,13 +5591,16 @@
       "step_publish_title": "Publier le chemin",
       "step_publish_desc": "Publiez le chemin pour qu'il apparaisse sur votre page de destination et votre LMS.",
       "step_publish_action": "Publier",
-      "reorder_action": "Réorganiser"
+      "reorder_action": "Réorganiser",
+      "subtitle": "Terminez ces étapes pour lancer {name} auprès de vos élèves.",
+      "step_order_desc": "Faites glisser les cours dans l’ordre dans lequel les étudiants doivent les terminer.",
+      "step_price_desc": "Évaluez le parcours sous forme de forfait : les étudiants voient les économies réalisées par rapport aux cours individuels."
     },
     "builder": {
       "title": "Cours",
-      "subtitle": "Ajouter des cours et les glisser pour définir l'ordre de progression des apprenants.",
+      "subtitle": "Ajouter des cours et les glisser pour définir l'ordre de progression des étudiants.",
       "unlock_rule_title": "Déverrouiller les cours dans l'ordre",
-      "unlock_rule_desc": "Chaque cours reste verrouillé jusqu'à ce qu'un apprenant ait terminé les leçons et exercices du cours précédent. Désactiver cette option pour autoriser l'accès dans n'importe quel ordre.",
+      "unlock_rule_desc": "Chaque cours reste verrouillé jusqu'à ce qu'un étudiant ait terminé les leçons et exercices du cours précédent. Désactiver cette option pour autoriser l'accès dans n'importe quel ordre.",
       "drag_hint": "Glisser pour réorganiser",
       "lessons_count": "{count} {count, plural, =1 {leçon} other {leçons}}",
       "exercises_count": "{count} {count, plural, =1 {exercice} other {exercices}}",
@@ -5602,13 +5608,12 @@
       "remove_course": "Retirer du parcours",
       "add_course_button": "Ajouter le cours au parcours",
       "empty_title": "Aucun cours dans ce parcours d'apprentissage pour l'instant",
-      "empty_description": "Ajoutez des cours pour guider les apprenants à travers une séquence structurée. Commencez par cliquer sur le bouton Ajouter.",
       "start_reorder": "Réorganiser",
-      "end_reorder": "Terminer la réorganisation"
+      "end_reorder": "Terminer la réorganisation",
+      "empty_description": "Ajoutez des cours pour guider les étudiants à travers une séquence structurée. Commencez par cliquer sur le bouton Ajouter."
     },
     "listing": {
       "title": "Parcours d'apprentissage",
-      "subtitle": "Créer et gérer des expériences d'apprentissage structurées qui guident les apprenants à travers plusieurs cours.",
       "create_path": "Créer un parcours d'apprentissage",
       "empty": {
         "title": "Créer votre premier parcours d'apprentissage",
@@ -5619,7 +5624,7 @@
       },
       "card": {
         "courses_count": "{count} {count, plural, =1 {cours} other {cours}}",
-        "learners_count": "{count} {count, plural, =1 {apprenant} other {apprenants}}"
+        "learners_count": "{count} {count, plural, =1 {étudiant} other {étudiants}}"
       },
       "filters": {
         "title": "Filtres",
@@ -5629,7 +5634,6 @@
         "group_completion": "Taux d'achèvement",
         "all": "Tous",
         "published": "Publié",
-        "no_learners": "Aucun apprenant pour l'instant",
         "enrollment_1_49": "1–49",
         "enrollment_50_plus": "50+",
         "low": "Faible (moins de 25 %)",
@@ -5639,14 +5643,17 @@
         "sort_last_updated_at": "Dernière mise à jour à",
         "sort_published": "Publié",
         "sort_courses": "Cours",
-        "unpublished": "Inédit"
+        "unpublished": "Inédit",
+        "no_learners": "Aucun étudiant pour l'instant"
       },
       "toolbar": {
         "search_placeholder": "Rechercher des parcours d'apprentissage…",
         "grid_view": "Vue grille",
         "list_view": "Vue liste"
       },
-      "load_error_title": "Échec du chargement des parcours d'apprentissage"
+      "load_error_title": "Échec du chargement des parcours d'apprentissage",
+      "load_more": "Charger plus",
+      "subtitle": "Créez et gérez des expériences d'apprentissage structurées qui guident les étudiants à travers plusieurs cours."
     },
     "view_path_site": {
       "unpublished_title": "Publiez votre parcours d'apprentissage",
@@ -5676,7 +5683,6 @@
       "course_added": "Cours ajouté",
       "courses_added": "Cours ajoutés",
       "course_removed": "Cours supprimé",
-      "member_removed": "Apprenant retiré du chemin",
       "tutor_removed": "Tuteur retiré du parcours",
       "certificate_saved": "Paramètres du certificat enregistrés",
       "landing_saved": "Page d'accueil mise à jour",
@@ -5684,41 +5690,37 @@
       "link_generated": "Lien d'invitation généré et copié dans le presse-papiers",
       "settings_saved": "Paramètres du parcours mis à jour",
       "member_role_updated": "Rôle de membre mis à jour",
-      "delete_failed": "Échec de la suppression du parcours d'apprentissage"
+      "delete_failed": "Échec de la suppression du parcours d'apprentissage",
+      "member_removed": "Étudiant retiré du chemin"
     },
     "analytics": {
       "title": "Analyse",
-      "subtitle": "Comment les apprenants progressent tout au long du parcours.",
-      "empty": "Aucune donnée pour l'instant. Inscrivez des apprenants et ils commenceront à apparaître ici.",
-      "empty_desc": "Inscrivez des apprenants à ce parcours et leur progression s'affichera ici.",
       "stuck": {
-        "title": "Où les apprenants sont bloqués",
-        "subtitle": "Les cours et exercices bloquent actuellement le plus grand nombre d’apprenants.",
         "badge": "{count} bloqué",
-        "lesson_desc": "{count} {count, plural, =1 {apprenant} other {apprenants}} se sont arrêtés à cette leçon.",
-        "exercise_desc": "{count} {count, plural, =1 {apprenant} other {apprenants}} suivent cet exercice depuis plus de deux semaines.",
-        "empty": "Aucun apprenant n'est actuellement bloqué. Belle avancée !",
-        "empty_desc": "Quand des apprenants sont bloqués, ils apparaîtront ici.",
         "lesson_prefix": "Leçon :",
         "exercise_prefix": "Exercice :",
         "showing": "Affichage de {start} à {end} sur {total} éléments",
         "table": {
           "item": "Élément",
           "course": "Cours"
-        }
+        },
+        "title": "Là où les étudiants sont coincés",
+        "subtitle": "Les cours et exercices bloquent actuellement le plus grand nombre d'élèves.",
+        "lesson_desc": "{count} {count, plural, =1 {étudiant} other {étudiants}} se sont arrêtés à cette leçon.",
+        "exercise_desc": "{count} {count, plural, =1 {étudiant} other {étudiants}} suivent cet exercice depuis plus de 2 semaines.",
+        "empty": "Aucun élève n'est actuellement bloqué. Belle avancée !",
+        "empty_desc": "Lorsque les étudiants sont bloqués, ils se présentent ici."
       },
       "funnel": {
         "title": "Entonnoir de cours",
-        "subtitle": "Combien d’apprenants ont atteint et terminé chaque cours, dans l’ordre.",
         "completed": "terminé",
         "in_progress": "en cours",
-        "drop": "{count} {count, plural, =1 {apprenant} other {apprenants}} abandonnés après le cours {n}",
         "biggest_drop": "la plus grosse baisse",
-        "certificates": "{count} {count, plural, =1 {certificat} other {certificats}} décernés"
+        "certificates": "{count} {count, plural, =1 {certificat} other {certificats}} décernés",
+        "subtitle": "Combien d'étudiants ont atteint et terminé chaque cours, dans l'ordre.",
+        "drop": "{count} {count, plural, =1 {étudiant} other {étudiants}} abandonnés après le cours {n}"
       },
       "stat": {
-        "learners": "Apprenants",
-        "active": "Apprenants actifs",
         "active_desc": "travaillé au cours des 14 derniers jours",
         "completion_rate": "Taux d'achèvement",
         "completion_desc": "{completed} sur {total} terminé",
@@ -5728,12 +5730,14 @@
         "pending_line": "{count} {count, plural, =1 {invitation en attente} other {invitations en attente}}",
         "team_desc": "{count, plural, one {# tuteur dans l'équipe du parcours} other {# tuteurs dans l'équipe du parcours}}",
         "avg_time_weeks": "{value} sem.",
-        "avg_time_days": "{value} jours"
+        "avg_time_days": "{value} jours",
+        "learners": "Étudiants",
+        "active": "Étudiants actifs"
       },
       "students": {
-        "subtitle": "Progression du parcours par apprenant, cours en cours et date d'inscription.",
-        "title": "Aperçu de la progression des apprenants",
-        "courses_completed": "Cours terminés"
+        "courses_completed": "Cours terminés",
+        "subtitle": "Progression du parcours par étudiant, cours en cours et date d'inscription.",
+        "title": "Aperçu des progrès des élèves"
       },
       "member": {
         "courses_title": "Cours dans ce parcours",
@@ -5749,39 +5753,38 @@
       },
       "export": {
         "status": "Statut"
-      }
+      },
+      "subtitle": "Comment les étudiants progressent sur le chemin.",
+      "empty": "Aucune donnée pour l'instant. Inscrivez les étudiants et ils commenceront à apparaître ici.",
+      "empty_desc": "Inscrivez les étudiants dans ce parcours et leurs progrès apparaîtront ici."
     },
     "people": {
       "title": "Les gens",
-      "subtitle": "{count} {count, plural, =1 {apprenant} other {apprenants}} inscrits dans ce parcours",
-      "info_banner": "L'ajout d'un apprenant à ce parcours l'inscrit automatiquement à tous les {count} {count, plural, =1 {cours} other {cours}}. Les supprimer préserve leur accès aux cours et leur progression.",
       "search_placeholder": "Rechercher par nom ou par email…",
-      "empty": "Aucun apprenant inscrit pour l'instant. Ajoutez des apprenants pour commencer.",
-      "no_results": "Aucun apprenant ne correspond à votre recherche.",
       "invite": {
-        "title": "Ajouter des apprenants au parcours",
         "bulk_title": "Inviter par email",
         "bulk_description": "Saisissez les adresses e-mail séparées par des virgules ou des nouvelles lignes.",
-        "bulk_submit": "Ajouter des apprenants"
+        "title": "Ajouter des étudiants au parcours",
+        "bulk_submit": "Ajouter des étudiants"
       },
       "remove": {
-        "title": "Supprimer l'apprenant",
         "title_non_student": "Retirer le membre",
         "confirm": "Êtes-vous sûr de vouloir supprimer {name} de ce parcours de formation ? Ils conserveront leur accès aux cours et leur progression.",
         "confirm_non_student": "Voulez-vous vraiment retirer {name} de ce parcours ? Cette personne perdra l'accès à la gestion de ce parcours.",
         "cancel": "Annuler",
-        "yes": "Supprimer"
+        "yes": "Supprimer",
+        "title": "Supprimer un élève"
       },
       "badge": {
         "certificate_earned": "Certificat obtenu",
         "not_started": "Pas commencé"
       },
       "table": {
-        "learner": "Apprenant",
         "progress": "Progression du chemin",
         "current_course": "Cours actuel",
         "enrolled": "Inscrit",
-        "actions": "Actions"
+        "actions": "Actions",
+        "learner": "Étudiant"
       },
       "filter": {
         "all": "Tous les progrès",
@@ -5805,10 +5808,15 @@
         "bulk_enroll_success": "Membres {enrolled} inscrits ({invited} invités)",
         "bulk_enroll_partial": "Membres {enrolled} inscrits ({invited} invité, {failed} échec)",
         "bulk_enroll_failed": "Échec de l’inscription en arrière-plan",
-        "bulk_enroll_lost": "Perte de trace de l'inscription en arrière-plan"
+        "bulk_enroll_lost": "Perte de trace de l'inscription en arrière-plan",
+        "bulk_enroll_backgrounded": "L'inscription se déroule toujours en arrière-plan. Actualisez les personnes pour voir les résultats."
       },
       "change_role_to_tutor": "Faire un tuteur",
-      "change_role_to_student": "Faire étudiant"
+      "change_role_to_student": "Faire étudiant",
+      "subtitle": "{count} {count, plural, =1 {étudiant} other {étudiants}} inscrits dans ce parcours",
+      "info_banner": "L'ajout d'un étudiant à ce parcours l'inscrit automatiquement à tous les {count} {count, plural, =1 {cours} other {cours}}. Les supprimer préserve leur accès aux cours et leur progression.",
+      "empty": "Aucun étudiant inscrit pour l'instant. Ajoutez des étudiants pour commencer.",
+      "no_results": "Aucun étudiant ne correspond à votre recherche."
     },
     "certificate": {
       "title": "Certificats",
@@ -5883,10 +5891,10 @@
       },
       "header": {
         "title_placeholder": "p. ex. Développement Web Fullstack",
-        "description_placeholder": "Un aperçu complet de ce que les apprenants accompliront...",
         "title": "En-tête",
         "title_label": "Titre",
-        "description_label": "Description"
+        "description_label": "Description",
+        "description_placeholder": "Un aperçu complet de ce que les étudiants accompliront..."
       },
       "reviews": {
         "title": "Avis",
@@ -5944,7 +5952,7 @@
         "name_placeholder": "ex. Développement Web Fullstack",
         "name_required": "Le nom du parcours est requis",
         "description_label": "Description",
-        "description_placeholder": "Un court résumé de ce que les apprenants vont accomplir...",
+        "description_placeholder": "Un court résumé de ce que les étudiants vont accomplir...",
         "description_required": "La description est requise",
         "cover_image_legend": "Image de couverture",
         "cover_image_desc": "Téléversez une image de couverture pour ce parcours. Taille recommandée : 1200x630px.",
@@ -5958,17 +5966,17 @@
       },
       "enrollment": {
         "legend": "Inscription et progression",
-        "desc": "Configurez la manière dont les apprenants s'inscrivent et progressent.",
+        "desc": "Configurez la manière dont les étudiants s'inscrivent et progressent.",
         "self_enrollment_label": "Autoriser l'auto-inscription",
-        "self_enrollment_desc": "Les apprenants peuvent s'inscrire eux-mêmes à ce parcours.",
+        "self_enrollment_desc": "Les étudiants peuvent s'inscrire eux-mêmes à ce parcours.",
         "sequential_unlock_label": "Déverrouillage séquentiel des cours",
-        "sequential_unlock_desc": "Les apprenants doivent compléter les cours dans l'ordre.",
+        "sequential_unlock_desc": "Les étudiants doivent compléter les cours dans l'ordre.",
         "auto_enroll_label": "Inscription automatique aux cours du parcours",
-        "auto_enroll_desc": "Inscrire automatiquement les apprenants à tous les cours lors de leur inscription au parcours."
+        "auto_enroll_desc": "Inscrire automatiquement les étudiants à tous les cours lors de leur inscription au parcours."
       },
       "publishing": {
         "legend": "Publication",
-        "desc": "Rendre ce parcours d'apprentissage visible pour les apprenants.",
+        "desc": "Rendre ce parcours d'apprentissage visible pour les étudiants.",
         "publish_label": "Publier le parcours",
         "publish_desc": "Rendre ce parcours visible et ouvert aux inscriptions.",
         "published": "Publié",
@@ -5990,27 +5998,27 @@
       },
       "welcome_email": {
         "legend": "E-mail de bienvenue",
-        "desc": "Personnalisez l’e-mail que les apprenants reçoivent après leur inscription. Ajoutez une note personnelle, des instructions ou un lien de session en direct.",
-        "placeholder": "Rédigez le message de bienvenue que les apprenants reçoivent lors de leur inscription…"
+        "desc": "Personnalisez l'e-mail que les étudiants reçoivent après leur inscription. Ajoutez une note personnelle, des instructions ou un lien de session en direct.",
+        "placeholder": "Rédigez le message de bienvenue que les étudiants reçoivent lors de leur inscription…"
       },
       "progression": {
-        "legend": "Progression de l’apprenant",
-        "desc": "Définissez si les apprenants peuvent accéder à tous les cours ou doivent les terminer dans l’ordre.",
         "free": "Libre — tous les cours sont disponibles",
-        "sequential": "Séquentiel — terminez les cours précédents pour débloquer le suivant"
+        "sequential": "Séquentiel — terminez les cours précédents pour débloquer le suivant",
+        "legend": "Progression des étudiants",
+        "desc": "Contrôlez si les étudiants peuvent accéder à tous les cours ou doivent les terminer dans l'ordre."
       },
       "self_enrollment": {
-        "legend": "Les apprenants peuvent s’inscrire eux-mêmes",
-        "access": "Si désactivé, les apprenants ne peuvent rejoindre que via un lien d’invitation ou en étant ajoutés depuis {people}.",
         "access_people": "Personnes",
         "enabled": "Activé",
-        "disabled": "Désactivé"
+        "disabled": "Désactivé",
+        "legend": "Les étudiants peuvent s'inscrire eux-mêmes",
+        "access": "Lorsqu'elle est désactivée, les étudiants ne peuvent rejoindre que via un lien d'invitation ou en étant ajoutés par {people}."
       },
       "auto_enroll": {
         "legend": "Inscription automatique aux cours du parcours",
-        "desc": "Rejoindre le parcours inscrit l’apprenant à tous les cours qu’il contient.",
         "enabled": "Activé",
-        "disabled": "Désactivé"
+        "disabled": "Désactivé",
+        "desc": "Rejoindre le parcours inscrit l'étudiant dans tous les cours qu'il contient."
       }
     },
     "courses": {
@@ -6022,6 +6030,16 @@
       "description": "Vous êtes sur le point de voir ce qu'un étudiant verra lorsqu'il s'inscrira à ce parcours",
       "copy_link": "Copier le lien",
       "go_to_lms": "Aller au LMS"
+    },
+    "hub": {
+      "placeholder_title": "Aperçu du parcours d'apprentissage",
+      "placeholder_description": "L’expérience d’apprentissage complète réside dans le LMS. Ouvrez My Learning pour continuer ce chemin.",
+      "back_to_my_learning": "Retour à mon apprentissage"
+    },
+    "not_permitted": {
+      "header": "Aucune autorisation",
+      "body": "Malheureusement, vous n'avez pas accès à ce parcours d'apprentissage.",
+      "button": "Rentre chez toi"
     }
   },
   "certificate": {

@@ -7,14 +7,7 @@
 
   let { data } = $props();
 
-  $effect(() => {
-    if (data.paths) {
-      learningPathApi.paths = data.paths;
-    }
-    if (data.pathsPagination !== undefined) {
-      learningPathApi.pathsPagination = data.pathsPagination;
-    }
-  });
+  $effect(() => learningPathApi.setPathList(data.paths ?? [], data.pagination));
 </script>
 
 <svelte:head>

@@ -35,7 +35,8 @@
       "reward_help": "Tilbyd eleverne et incitament ved færdigførelse",
       "reward_description": "Belønningsbeskrivelse",
       "placeholder_reward": "f.eks. 1-til-1 mentorsession, merchandise eller eksklusiv adgang til fællesskabet"
-    }
+    },
+    "back_to_my_learning": "Tilbage til Min Læring"
   },
   "validations": {
     "generic": {
@@ -1504,7 +1505,7 @@
           "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever.",
           "path_gated_notice_title": "Eleverne følger med gennem en læringsvej",
           "path_gated_notice_description": "Dette kursus kræver tilmelding gennem en læringsvej, så studerende kan ikke inviteres hertil. Du kan stadig invitere undervisere nedenfor. For at give eleverne adgang skal du tildele den indeholdende læringssti — eller deaktivere 'Kræver læringssti' i kursusindstillingerne.",
-          "members_added": "{count, plural, one {# member added successfully} other {# members added successfully}}"
+          "members_added": "{count, plural, one {# medlem tilføjet} other {# medlemmer tilføjet}}"
         },
         "learner": "Studerende",
         "source": "Kilde",
@@ -2858,6 +2859,11 @@
       "description": "Du er ved at se, hvad en studerende vil se, når de tilmelder sig dette kursus",
       "copy_link": "Kopiér link",
       "go_to_lms": "Gå til LMS"
+    },
+    "not_found": {
+      "header": "Kurset ikke fundet",
+      "body": "Kurset du leder efter findes ikke eller kan være blevet slettet.",
+      "button": "Gå hjem"
     }
   },
   "courses": {
@@ -5646,7 +5652,8 @@
         "grid_view": "Gittervisning",
         "list_view": "Listevisning"
       },
-      "load_error_title": "Kunne ikke indlæse læringsstier"
+      "load_error_title": "Kunne ikke indlæse læringsstier",
+      "load_more": "Indlæs mere"
     },
     "view_path_site": {
       "unpublished_title": "Offentliggør din læringsvej",
@@ -5805,7 +5812,8 @@
         "bulk_enroll_success": "Tilmeldte {enrolled} medlemmer ({invited} inviteret)",
         "bulk_enroll_partial": "Tilmeldte {enrolled} medlemmer ({invited} inviteret, {failed} mislykkedes)",
         "bulk_enroll_failed": "Baggrundstilmelding mislykkedes",
-        "bulk_enroll_lost": "Mistet overblikket over baggrundstilmeldingen"
+        "bulk_enroll_lost": "Mistet overblikket over baggrundstilmeldingen",
+        "bulk_enroll_backgrounded": "Tilmeldingen kører stadig i baggrunden. Opdater People for at se resultaterne."
       },
       "change_role_to_tutor": "Gør vejleder",
       "change_role_to_student": "Gør studerende"
@@ -6022,6 +6030,16 @@
       "description": "Du er ved at se, hvad en elev vil se, når vedkommende tilmelder sig denne læringssti",
       "copy_link": "Kopiér link",
       "go_to_lms": "Gå til LMS"
+    },
+    "hub": {
+      "placeholder_title": "Forhåndsvisning af læringssti",
+      "placeholder_description": "Den fulde læringsoplevelse bor i LMS. Åbn My Learning for at fortsætte denne vej.",
+      "back_to_my_learning": "Tilbage til Min Læring"
+    },
+    "not_permitted": {
+      "header": "Ingen tilladelse",
+      "body": "Desværre har du ikke adgang til denne læringsvej.",
+      "button": "Gå hjem"
     }
   },
   "certificate": {
