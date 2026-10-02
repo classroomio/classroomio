@@ -31,7 +31,7 @@ services:
       timeout: 3s
       retries: 10
 
-  # Bundled S3-compatible object storage (SeaweedFS); only the media bucket is public-read.
+  # Bundled SeaweedFS; credentials are Coolify-generated (SERVICE_USER_STORAGE / SERVICE_PASSWORD_STORAGE).
   storage:
     image: chrislusf/seaweedfs:4.48
     entrypoint:
@@ -67,6 +67,11 @@ services:
         echo "s3.bucket.create -name videos" | weed shell -master=storage:9333
         echo "s3.bucket.create -name documents" | weed shell -master=storage:9333
         echo "s3.bucket.create -name media" | weed shell -master=storage:9333
+        # weed shell exits 0 even when a create fails, so confirm each bucket exists.
+        echo s3.bucket.list | weed shell -master=storage:9333 > /tmp/buckets 2>&1
+        grep -q "^[[:space:]]*videos[[:space:]]" /tmp/buckets &&
+          grep -q "^[[:space:]]*documents[[:space:]]" /tmp/buckets &&
+          grep -q "^[[:space:]]*media[[:space:]]" /tmp/buckets
 
   api:
     image: classroomio/api:${CIO_VERSION:-latest}

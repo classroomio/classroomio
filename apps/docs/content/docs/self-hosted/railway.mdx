@@ -17,7 +17,8 @@ Prefer to follow along? This video walks through the whole deployment end to end
 
 - A **Railway account** (a paid plan is recommended, since the stack runs several always-on services).
 - An **SMTP provider** (or Zoho/ZeptoMail) for signup verification, password reset, and invite emails. See [SMTP Setup](#smtp-setup).
-- *Optional:* a **custom domain** for the dashboard and storage, an **OpenAI API key** (transcription + AI course generation), and Google OAuth / Unsplash keys.
+- **External S3-compatible storage** (Cloudflare R2 or AWS S3) with three buckets: `videos`, `documents`, and a public `media`. See [Object storage & uploads](/self-hosted/configuration/storage#option-2-external-s3--cloudflare-r2).
+- *Optional:* a **custom domain** for the dashboard, an **OpenAI API key** (transcription + AI course generation), and Google OAuth / Unsplash keys.
 
 :::note[Two secrets to generate first]
 You'll reuse `BETTER_AUTH_SECRET` and `PRIVATE_SERVER_KEY` across services. Generate them once and keep them handy:
@@ -32,15 +33,15 @@ See [Configuration → Environment & secrets](/self-hosted/configuration/secrets
 
 ## Step-by-step walkthrough
 
-:::warning[The `cio-minio` service can no longer be deployed]
-MinIO removed its images from Docker Hub, so a new or redeployed `cio-minio` service fails to pull.
-The Docker and Coolify stacks have moved to a bundled SeaweedFS store
-([Migrating from MinIO](/self-hosted/migrating-from-minio)); the Railway template is being updated to match. Until then, use external storage on Railway: point the `OBJECT_STORAGE_*`
-variables on `cio-api` and `cio-jobs` at Cloudflare R2 or AWS S3 as described in
-[Object storage & uploads](/self-hosted/configuration/storage#option-2-external-s3--cloudflare-r2).
+:::warning[The template's `cio-minio` service no longer deploys]
+MinIO removed its images from Docker Hub, so the `cio-minio` service in the template fails to pull.
+Until the template is updated, use **external storage** on Railway: step 4 points `cio-api` and
+`cio-jobs` at your own bucket, and step 7 deletes the failed `cio-minio` service. The Docker and
+Coolify stacks have moved to a bundled SeaweedFS store instead
+([Migrating from MinIO](/self-hosted/migrating-from-minio)).
 :::
 
-The one-click template provisions **all of the services** for you: Postgres, Redis, `cio-api`, `cio-dashboard`, `cio-jobs`, and `cio-minio` (object storage). The flow is: **configure a few values → deploy → connect the dashboard domain → sign up**.
+The one-click template provisions the services for you: Postgres, Redis, `cio-api`, `cio-dashboard`, `cio-jobs`, and `cio-minio` (which you will delete). The flow is: **configure a few values → deploy → delete `cio-minio` → connect the dashboard domain → sign up**.
 
 
 ### 1. Click "Deploy on Railway"
@@ -56,7 +57,7 @@ The template comes with every service preconfigured: most need nothing from you:
 - **Redis** and **Postgres**: no configuration required.
 - **cio-dashboard**: no required configuration (optionally set branding such as the public OG image; not required).
 
-The next three steps cover the services that **do** need input: `cio-jobs`, `cio-minio`, and `cio-api`.
+The next three steps cover what **does** need input: `cio-jobs`, object storage, and `cio-api`.
 
 ![The Railway template listing all preconfigured ClassroomIO services](/docs/railway-02-services-overview.webp)
 
@@ -72,15 +73,23 @@ The next three steps cover the services that **do** need input: `cio-jobs`, `cio
 
 ![Entering the SMTP variables on the cio-jobs service in the template](/docs/railway-03-jobs-smtp.webp)
 
-### 4. Configure cio-minio (object storage)
+### 4. Point cio-api and cio-jobs at external storage
 
-Set the storage credentials on `cio-minio`:
+The template presets the `OBJECT_STORAGE_*` variables on `cio-api` and `cio-jobs` to reference
+`cio-minio`. Replace them on **both** services with your own bucket's values:
 
-- `MINIO_SERVER_URL`: optional but recommended (fixes MinIO console redirects behind the proxy); the template presets it to the generated `cio-minio` domain, so you normally just confirm it
-- `MINIO_ROOT_USER`
-- `MINIO_ROOT_PASSWORD`
+```zsh title="env"
+OBJECT_STORAGE_ENDPOINT=https://<account>.r2.cloudflarestorage.com   # or your S3 endpoint
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+OBJECT_STORAGE_ACCESS_KEY_ID=<access key>
+OBJECT_STORAGE_SECRET_ACCESS_KEY=<secret key>
+OBJECT_STORAGE_REGION=auto                                           # `auto` for R2
+OBJECT_STORAGE_FORCE_PATH_STYLE=false
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://<public media domain>
+```
 
-![Configuring MINIO_SERVER_URL and credentials on the cio-minio service](/docs/railway-04-minio-credentials.webp)
+The `cio-minio` service still appears on the template page. If it asks for `MINIO_ROOT_USER` /
+`MINIO_ROOT_PASSWORD`, enter any placeholder; you delete the service in step 7.
 
 ### 5. Configure cio-api
 
@@ -95,7 +104,11 @@ Click **Deploy**. Railway begins building and bringing the services online: Redi
 
 ![Railway deploying the ClassroomIO services after clicking Deploy](/docs/railway-07-deploying.webp)
 
-### 7. First boot may crash: this is expected
+### 7. Delete cio-minio; first boot may crash
+
+`cio-minio` fails to deploy because its image no longer exists. Delete it: open the **project
+Settings**, scroll to the **Danger** section, and delete the `cio-minio` service. The other services
+don't depend on it once step 4 is done.
 
 :::warning[Only if you use the Railway-generated subdomain]
 On the first deploy, `cio-api` can crash. This is expected **only when you rely on the Railway-generated subdomain**: the API needs the dashboard's public domain (Better Auth's base URL), which doesn't exist yet. If you're using your **own custom subdomain**, this crash doesn't happen. Skip ahead to signing up.
@@ -151,15 +164,14 @@ SMTP_USER=
 SMTP_PASSWORD=
 SMTP_SENDER=
 
-# Object storage → the self-hosted cio-minio service (see below)
-OBJECT_STORAGE_ENDPOINT=http://${{cio-minio.RAILWAY_PRIVATE_DOMAIN}}:9000
-# Browser-facing presign endpoint — must resolve to cio-minio port 9000
-# (custom domain, or the generated API domain — see "Domain & Network Configuration" below)
-OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
-OBJECT_STORAGE_ACCESS_KEY_ID=${{cio-minio.MINIO_ROOT_USER}}
-OBJECT_STORAGE_SECRET_ACCESS_KEY=${{cio-minio.MINIO_ROOT_PASSWORD}}
-OBJECT_STORAGE_FORCE_PATH_STYLE=true
-OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media
+# Object storage → your external bucket (see step 4)
+OBJECT_STORAGE_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+OBJECT_STORAGE_ACCESS_KEY_ID=<access key>
+OBJECT_STORAGE_SECRET_ACCESS_KEY=<secret key>
+OBJECT_STORAGE_REGION=auto
+OBJECT_STORAGE_FORCE_PATH_STYLE=false
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://<public media domain>
 ```
 
 Optional: add `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for OAuth, `UNSPLASH_API_KEY` for image search, or `LICENSE_KEY` for enterprise features.
@@ -189,15 +201,14 @@ The jobs worker has **no public domain**: it drains the Redis queue (video proce
 DATABASE_URL="${{db.DATABASE_URL}}"
 REDIS_URL="${{Redis.REDIS_URL}}"
 
-# Object storage — same cio-minio service as the API
-OBJECT_STORAGE_ENDPOINT=http://${{cio-minio.RAILWAY_PRIVATE_DOMAIN}}:9000
-# Browser-facing presign endpoint — must resolve to cio-minio port 9000
-# (custom domain, or the generated API domain — see "Domain & Network Configuration" below)
-OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
-OBJECT_STORAGE_ACCESS_KEY_ID=${{cio-minio.MINIO_ROOT_USER}}
-OBJECT_STORAGE_SECRET_ACCESS_KEY=${{cio-minio.MINIO_ROOT_PASSWORD}}
-OBJECT_STORAGE_FORCE_PATH_STYLE=true
-OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media
+# Object storage — same external bucket and values as cio-api
+OBJECT_STORAGE_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://<account>.r2.cloudflarestorage.com
+OBJECT_STORAGE_ACCESS_KEY_ID=<access key>
+OBJECT_STORAGE_SECRET_ACCESS_KEY=<secret key>
+OBJECT_STORAGE_REGION=auto
+OBJECT_STORAGE_FORCE_PATH_STYLE=false
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://<public media domain>
 
 # Email (worker sends invites, notifications, etc.)
 SMTP_HOST=  SMTP_PORT=  SMTP_USER=  SMTP_PASSWORD=  SMTP_SENDER=
@@ -210,60 +221,18 @@ OPENAI_API_KEY=
 `PRIVATE_SERVER_KEY` must be the same value in both API and dashboard. It authenticates server-side dashboard requests to the API. Referencing `${{cio-api.PRIVATE_SERVER_KEY}}` in the dashboard keeps them in sync.
 :::
 
-### cio-minio (object storage)
+### Object storage
 
-`cio-minio` ships **in the template**: its `/data` volume is attached so `videos`, `documents`, and `media` buckets persist across redeploys.
+Railway deployments use **external storage** for now (step 4). Two things to check:
 
-#### Domain & Network Configuration
-Railway allows only **one Railway-provided domain per service**, so `cio-minio` gets a single
-generated domain with **Target Port 9000** (S3 API):
-1. **S3 API Endpoint (Target Port 9000):** e.g. `https://cio-minio.up.railway.app`. Server-side transfers in `cio-api`/`cio-jobs` go over the private network (`OBJECT_STORAGE_ENDPOINT`); this generated domain is what **browser presigned uploads/downloads** use via `OBJECT_STORAGE_PUBLIC_ENDPOINT`, unless you add a custom S3 domain.
-2. **MinIO Web Console (Target Port 9001, optional):** the console has no generated domain. To browse buckets in your browser, add a **custom domain** targeting port 9001 on `cio-minio`, then set `MINIO_BROWSER_REDIRECT_URL=https://<console-domain>` on the service.
+- **CORS on the bucket:** allow your dashboard origin for `PUT` and `GET`, or browser uploads are blocked. For R2, follow the [Cloudflare Setup](/contributing/cloudflare-setup) guide.
+- **CSP on `cio-dashboard`:** add your storage and media domains to `ALLOWED_EXTERNAL_DOMAINS` so the browser may load and upload media:
 
-#### Browser presigned uploads & downloads
-Presigned URLs handed to the browser are minted verbatim from `OBJECT_STORAGE_PUBLIC_ENDPOINT`,
-so that host must actually resolve to cio-minio's port 9000:
-
-- **With a custom S3 domain:** add a custom domain targeting port 9000 on `cio-minio`
-  (e.g. `storage.yourdomain.com`) and keep the preset
-  `OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com` and
-  `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media` in the
-  `cio-api` and `cio-jobs` blocks above.
-- **Without one:** point both at the generated API domain instead —
-  `OBJECT_STORAGE_PUBLIC_ENDPOINT=https://cio-minio.up.railway.app` and
-  `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://cio-minio.up.railway.app/media`.
-
-Leaving the `storage.yourdomain.com` placeholder without creating that domain won't fail the
-deploy — server-side transfers keep working over the internal `OBJECT_STORAGE_ENDPOINT` — but
-every browser upload/download gets presigned URLs for a host that doesn't exist.
-
-On `cio-minio`, set the following environment variables in Railway:
 ```zsh title="env"
-MINIO_ROOT_USER=<strong user>
-MINIO_ROOT_PASSWORD=<strong password (at least 8 characters)>
-# Set MINIO_SERVER_URL to internal localhost so the Console UI talks to S3 internally
-MINIO_SERVER_URL=http://127.0.0.1:9000
-# Allow browser presigned PUT uploads from your frontend domain or localhost
-MINIO_API_CORS_ALLOW_ORIGIN=*
+ALLOWED_EXTERNAL_DOMAINS=https://<account>.r2.cloudflarestorage.com,https://<public media domain>
 ```
 
-On `cio-dashboard`, set `ALLOWED_EXTERNAL_DOMAINS` to include your MinIO S3 API domain so Content Security Policy (CSP) permits browser fetches and uploads:
-```zsh title="env"
-ALLOWED_EXTERNAL_DOMAINS=https://cio-minio.up.railway.app
-```
-
-#### Viewing Buckets & Files in the MinIO Console
-Locally, open `http://localhost:9001`. On Railway, expose the console first by adding a custom domain targeting port 9001 (see above), then:
-1. Open the console domain in your web browser.
-2. Log in using your `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
-3. Click **Object Browser** in the left menu to view and inspect all buckets:
-   - **`videos`**: Stores raw and encoded HLS lesson videos.
-   - **`documents`**: Stores course assignment documents and attachments.
-   - **`media`**: Stores public avatars, course thumbnails, and landing page images.
-
-:::warning[MinIO is your durability boundary]
-Single-node MinIO has no built-in cloud replication: ensure a Railway Volume is mounted to `/data` under `cio-minio` -> **Volumes** so your uploaded files and buckets survive container redeploys. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage) for external Cloudflare R2 / AWS S3 alternatives.
-:::
+A bundled SeaweedFS service for the Railway template is planned; see [Object storage & uploads](/self-hosted/configuration/storage) for how the bundled store works elsewhere.
 
 ### SMTP Setup
 

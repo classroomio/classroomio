@@ -33,8 +33,11 @@ COMPOSE_FILE="${IMAGES_COMPOSE_FILE}"
 # sees the same profile state. --no-storage empties it.
 PROFILE_ARGS="--profile storage"
 
-# Pre-SeaweedFS installs keep their uploads in this volume.
+# Pre-SeaweedFS installs keep their uploads in this volume unless MINIO_LEGACY_DATA says otherwise.
 LEGACY_MINIO_VOLUME="${PROJECT_NAME}_minio-data"
+API_IMAGE_REPO="classroomio/api"
+# Set on app images whose upload URLs the bundled SeaweedFS accepts.
+SEAWEEDFS_READY_LABEL="com.classroomio.storage.seaweedfs-ready"
 # Reads the old volume when no MinIO image is cached; override with MINIO_LEGACY_IMAGE.
 LEGACY_MINIO_FALLBACK_IMAGE="pgsty/silo:RELEASE.2026-09-16T00-00-00Z"
 RCLONE_IMAGE="rclone/rclone:1.75.1"
@@ -466,10 +469,49 @@ pick_legacy_minio_image() {
   printf '%s' "${LEGACY_MINIO_FALLBACK_IMAGE}"
 }
 
-# Copies every bucket out of the old MinIO volume over the S3 API; the old volume is never deleted.
-migrate_legacy_minio_volume() {
-  local legacy_image bucket buckets=()
+# Prints where the old MinIO data lives (volume name or host path), or nothing if there is none.
+find_legacy_minio_data() {
+  local data="${MINIO_LEGACY_DATA:-$(get_env_value MINIO_LEGACY_DATA)}"
+  if [[ -z "${data}" ]]; then
+    # The old container's own mount covers custom volume names and bind mounts.
+    data="$(MSYS_NO_PATHCONV=1 docker inspect cio-minio --format \
+      '{{range .Mounts}}{{if eq .Destination "/data"}}{{if eq .Type "volume"}}{{.Name}}{{else}}{{.Source}}{{end}}{{end}}{{end}}' \
+      2>/dev/null || true)"
+  fi
+  data="${data:-${LEGACY_MINIO_VOLUME}}"
+  # A bare name is a volume and must exist: mounting a missing one would silently create it empty.
+  if [[ "${data}" != */* && "${data}" != *\\* ]] && ! docker volume inspect "${data}" >/dev/null 2>&1; then
+    return 0
+  fi
+  printf '%s' "${data//\\//}"
+}
+
+app_is_seaweedfs_ready() {
+  local version image
+  version="$(get_env_value CIO_VERSION)"
+  image="${API_IMAGE_REPO}:${version:-latest}"
+  docker pull -q "${image}" >/dev/null 2>&1 || true
+  [[ "$(docker image inspect "${image}" --format "{{index .Config.Labels \"${SEAWEEDFS_READY_LABEL}\"}}" 2>/dev/null)" == "true" ]]
+}
+
+# Older app images sign upload URLs that SeaweedFS rejects, so never switch stores under one.
+require_seaweedfs_ready_app() {
+  if [[ "${USE_IMAGES}" != "true" ]] || app_is_seaweedfs_ready; then
+    return 0
+  fi
+  echo "Error: CIO_VERSION=$(get_env_value CIO_VERSION) predates the switch to SeaweedFS storage."
+  echo "  Browser uploads from that app version fail against the new store (BadDigest)."
+  echo "  Set CIO_VERSION in .env to a release that includes the switch, then re-run."
+  echo "  Your storage has not been switched."
+  exit 1
+}
+
+# Copies every bucket out of the old MinIO data over the S3 API; nothing is ever deleted on either side.
+migrate_legacy_minio_data() {
+  local legacy_data="$1" legacy_image bucket buckets=()
   legacy_image="$(pick_legacy_minio_image)"
+  # Saved so a re-run still finds the data after the old container is removed below.
+  upsert_env_value MINIO_LEGACY_DATA "${legacy_data}"
   LEGACY_ACCESS_KEY="$(get_env_value MINIO_ROOT_USER)"
   LEGACY_ACCESS_KEY="${LEGACY_ACCESS_KEY:-minioadmin}"
   LEGACY_SECRET_KEY="$(get_env_value MINIO_ROOT_PASSWORD)"
@@ -483,7 +525,7 @@ migrate_legacy_minio_volume() {
 
   echo "Migrating uploads from the old bundled MinIO to the new bundled store (SeaweedFS)..."
   echo "  Every object is copied, so this needs free disk space about equal to your current"
-  echo "  uploads. The app is stopped while it runs; the old volume is left untouched."
+  echo "  uploads. The app is stopped while it runs; the old data (${legacy_data}) is left untouched."
 
   compose stop api dashboard jobs >/dev/null 2>&1 || true
   # The old containers still hold port 9000.
@@ -492,19 +534,19 @@ migrate_legacy_minio_volume() {
   compose up -d storage storage-init
   docker wait cio-storage-init >/dev/null
 
-  echo "Reading the old volume with ${legacy_image}..."
+  echo "Reading the old data with ${legacy_image}..."
   MSYS_NO_PATHCONV=1 docker run -d --name cio-minio-legacy \
     --network "${PROJECT_NAME}_default" \
     -e MINIO_ROOT_USER="${LEGACY_ACCESS_KEY}" \
     -e MINIO_ROOT_PASSWORD="${LEGACY_SECRET_KEY}" \
-    -v "${LEGACY_MINIO_VOLUME}:/data" \
+    -v "${legacy_data}:/data" \
     "${legacy_image}" server /data >/dev/null
 
   local attempt=0 listing=""
   until listing="$(run_rclone lsd src: 2>/dev/null)"; do
     attempt=$((attempt + 1))
     if ((attempt >= 30)); then
-      echo "Error: could not read the old MinIO volume (see: docker logs cio-minio-legacy)."
+      echo "Error: could not read the old MinIO data at ${legacy_data} (see: docker logs cio-minio-legacy)."
       echo "  Check MINIO_ROOT_USER / MINIO_ROOT_PASSWORD in .env, or set MINIO_LEGACY_IMAGE to a"
       echo "  MinIO-compatible image, then re-run: ./classroomio.sh migrate-storage"
       docker rm -f cio-minio-legacy >/dev/null 2>&1 || true
@@ -519,8 +561,9 @@ migrate_legacy_minio_volume() {
       continue
     fi
     echo "  ${bucket}: copying..."
-    if ! run_rclone sync --stats 30s --stats-one-line --stats-log-level NOTICE "src:${bucket}" "dst:${bucket}" ||
-      ! run_rclone check "src:${bucket}" "dst:${bucket}"; then
+    # copy + --one-way: files that exist only in the new store are left alone.
+    if ! run_rclone copy --stats 30s --stats-one-line --stats-log-level NOTICE "src:${bucket}" "dst:${bucket}" ||
+      ! run_rclone check --one-way "src:${bucket}" "dst:${bucket}"; then
       echo "Error: copying bucket '${bucket}' failed. Nothing was deleted — fix the problem"
       echo "  and re-run: ./classroomio.sh migrate-storage"
       docker rm -f cio-minio-legacy >/dev/null 2>&1 || true
@@ -529,8 +572,8 @@ migrate_legacy_minio_volume() {
   done
 
   docker rm -f cio-minio-legacy >/dev/null
-  echo "Migration complete. Once you've confirmed your uploads load, free the old copy with:"
-  echo "  docker volume rm ${LEGACY_MINIO_VOLUME}"
+  echo "Migration complete. Once you've confirmed your uploads load, you can delete the old copy:"
+  echo "  ${legacy_data}"
 }
 
 # The endpoint is rewritten last, so an interrupted migration is retried on the next run.
@@ -538,8 +581,16 @@ migrate_legacy_storage_if_needed() {
   if [[ "${PROFILE_ARGS}" != *"storage"* ]] || ! is_legacy_minio_endpoint; then
     return 0
   fi
-  if docker volume inspect "${LEGACY_MINIO_VOLUME}" >/dev/null 2>&1; then
-    migrate_legacy_minio_volume
+  local legacy_data
+  legacy_data="$(find_legacy_minio_data)"
+  if [[ -n "${legacy_data}" ]]; then
+    require_seaweedfs_ready_app
+    migrate_legacy_minio_data "${legacy_data}"
+  elif docker inspect cio-minio >/dev/null 2>&1; then
+    echo "Error: the old cio-minio container exists but its uploads could not be located."
+    echo "  Set MINIO_LEGACY_DATA in .env to the old MinIO volume name or data path, then re-run."
+    echo "  Nothing has been changed."
+    exit 1
   fi
   upsert_env_value OBJECT_STORAGE_ENDPOINT "http://storage:9000"
   echo "Set OBJECT_STORAGE_ENDPOINT=http://storage:9000 in .env"
@@ -598,6 +649,10 @@ cmd_start() {
   if [[ "${USE_IMAGES}" == "true" ]]; then
     echo "Using pre-built images from Docker Hub (CIO_VERSION=$(get_env_value CIO_VERSION))..."
     compose pull
+    if [[ "${PROFILE_ARGS}" == *"storage"* ]] && ! app_is_seaweedfs_ready; then
+      echo "WARNING: this CIO_VERSION predates the SeaweedFS storage switch; browser uploads will fail"
+      echo "  (BadDigest) until you move CIO_VERSION to a newer release."
+    fi
     compose up -d
   else
     compose up --build -d
@@ -668,7 +723,12 @@ cmd_backup() {
   backup_dir_host="$(cygpath -w "${backup_dir}" 2>/dev/null || printf '%s' "${backup_dir}")"
   for label in storage minio; do
     volume="${PROJECT_NAME}_${label}-data"
-    if ! docker volume inspect "${volume}" >/dev/null 2>&1; then
+    if [[ "${label}" == "minio" ]]; then
+      volume="$(find_legacy_minio_data)"
+    elif ! docker volume inspect "${volume}" >/dev/null 2>&1; then
+      volume=""
+    fi
+    if [[ -z "${volume}" ]]; then
       continue
     fi
     found_volume=true
@@ -699,7 +759,6 @@ cmd_upgrade() {
   echo
   echo "Step 1/3: backing up before touching images..."
   cmd_backup
-  migrate_legacy_storage_if_needed
 
   echo
   if [[ "${USE_IMAGES}" == "true" ]]; then
@@ -719,6 +778,9 @@ cmd_upgrade() {
   else
     echo "Step 2/3: building from source — CIO_VERSION doesn't apply."
   fi
+
+  # After the version prompt, so the app-image check sees the version actually chosen.
+  migrate_legacy_storage_if_needed
 
   if [[ "${USE_IMAGES}" == "true" ]]; then
     echo "Step 3/3: pulling images and restarting..."
@@ -743,11 +805,15 @@ cmd_migrate_storage() {
     echo "Error: migrate-storage copies into the bundled store, so it can't be combined with --no-storage."
     exit 1
   fi
-  if docker volume inspect "${LEGACY_MINIO_VOLUME}" >/dev/null 2>&1; then
-    migrate_legacy_minio_volume
-  else
-    echo "No old MinIO volume ('${LEGACY_MINIO_VOLUME}') found — nothing to copy."
+  local legacy_data
+  legacy_data="$(find_legacy_minio_data)"
+  if [[ -z "${legacy_data}" ]]; then
+    echo "No old MinIO data found — nothing to copy."
+    echo "  If it lives elsewhere, set MINIO_LEGACY_DATA in .env to its volume name or path."
+    return 0
   fi
+  require_seaweedfs_ready_app
+  migrate_legacy_minio_data "${legacy_data}"
   if is_legacy_minio_endpoint; then
     upsert_env_value OBJECT_STORAGE_ENDPOINT "http://storage:9000"
     echo "Set OBJECT_STORAGE_ENDPOINT=http://storage:9000 in .env"

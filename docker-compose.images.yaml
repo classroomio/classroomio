@@ -57,9 +57,10 @@ services:
       - /bin/sh
       - -c
       - |
+        esc() { printf '%s' "$$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
         mkdir -p /etc/seaweedfs
         cat > /etc/seaweedfs/s3.json <<EOF
-        {"identities":[{"name":"admin","credentials":[{"accessKey":"$${OBJECT_STORAGE_ACCESS_KEY_ID}","secretKey":"$${OBJECT_STORAGE_SECRET_ACCESS_KEY}"}],"actions":["Admin","Read","Write","List","Tagging"]},{"name":"anonymous","actions":["Read:$${OBJECT_STORAGE_BUCKET_MEDIA}"]}]}
+        {"identities":[{"name":"admin","credentials":[{"accessKey":"$$(esc "$$OBJECT_STORAGE_ACCESS_KEY_ID")","secretKey":"$$(esc "$$OBJECT_STORAGE_SECRET_ACCESS_KEY")"}],"actions":["Admin","Read","Write","List","Tagging"]},{"name":"anonymous","actions":["Read:$${OBJECT_STORAGE_BUCKET_MEDIA}"]}]}
         EOF
         exec /entrypoint.sh server -s3 -s3.port=9000 -s3.config=/etc/seaweedfs/s3.json -s3.allowedOrigins=*
     ports:
@@ -90,8 +91,14 @@ services:
       - /bin/sh
       - -c
       - |
-        for bucket in "$${OBJECT_STORAGE_BUCKET_VIDEOS}" "$${OBJECT_STORAGE_BUCKET_DOCUMENTS}" "$${OBJECT_STORAGE_BUCKET_MEDIA}"; do
+        set -- "$$OBJECT_STORAGE_BUCKET_VIDEOS" "$$OBJECT_STORAGE_BUCKET_DOCUMENTS" "$$OBJECT_STORAGE_BUCKET_MEDIA"
+        for bucket in "$$@"; do
           echo "s3.bucket.create -name $$bucket" | weed shell -master=storage:9333
+        done
+        # weed shell exits 0 even when a create fails, so confirm each bucket exists.
+        echo s3.bucket.list | weed shell -master=storage:9333 > /tmp/buckets 2>&1
+        for bucket in "$$@"; do
+          grep -q "^[[:space:]]*$$bucket[[:space:]]" /tmp/buckets || { echo "storage-init: bucket $$bucket is missing"; exit 1; }
         done
     environment:
       OBJECT_STORAGE_BUCKET_VIDEOS: ${OBJECT_STORAGE_BUCKET_VIDEOS:-videos}

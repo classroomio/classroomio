@@ -183,7 +183,7 @@ docker compose -f docker-compose.yaml --profile storage up -d
 
 ### Migrating from the old bundled MinIO
 
-Earlier versions bundled MinIO, whose images have been removed from Docker Hub. Re-download `classroomio.sh` and run `./classroomio.sh upgrade`: it backs up, copies your uploads from the old `minio-data` volume into the new store, and never deletes the old volume. Full steps, the manual path for Coolify/Dokploy, and troubleshooting: [Migrating from MinIO](https://classroomio.com/docs/self-hosted/migrating-from-minio).
+Earlier versions bundled MinIO, whose images have been removed from Docker Hub. Re-download `classroomio.sh` and run `./classroomio.sh upgrade`: it backs up, copies your uploads from the old `minio-data` volume into the new store, and never deletes the old volume. It refuses to migrate under a pinned `CIO_VERSION` that predates the switch, and reads old data from a non-default location via `MINIO_LEGACY_DATA`. Full steps, the manual path for Coolify/Dokploy, and troubleshooting: [Migrating from MinIO](https://classroomio.com/docs/self-hosted/migrating-from-minio).
 
 ## Background Jobs Worker
 

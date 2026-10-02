@@ -194,7 +194,7 @@ SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
 | `PRIVATE_APP_HOST` / `PRIVATE_APP_SUBDOMAINS` | Dashboard host and subdomain routing. |
 | `OBJECT_STORAGE_ENDPOINT` | Internal endpoint the app uploads to (`http://storage:9000`). |
 | `OBJECT_STORAGE_PUBLIC_ENDPOINT` | Public storage endpoint browsers download from. |
-| `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` | Storage credentials. You choose them; the bundled store and the app both read this pair. |
+| `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` | Storage credentials. You choose them; in `docker-compose.images.yaml` the `storage`, `api` and `jobs` services all read this pair, so changing it and redeploying rotates the keys. |
 | `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` — required for the bundled store. |
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | Public base URL for media (`…/media`). |
 | `OBJECT_STORAGE_BUCKET_VIDEOS/DOCUMENTS/MEDIA` | Bucket names (`videos`, `documents`, `media`). |
@@ -233,6 +233,13 @@ Enable the **bundled store** (SeaweedFS) with `COMPOSE_PROFILES=storage` and Coo
 :::warning[The storage volume is your durability boundary]
 The single-node bundled store has no redundancy: its volume is the only thing protecting your uploads, so give it
 persistent storage in Coolify and back it up.
+:::
+
+:::note[Using the Coolify service template instead?]
+This guide pastes `docker-compose.images.yaml`, where you set the storage keys yourself. The separate
+template at `docker/coolify/docker-compose.yaml` ignores `OBJECT_STORAGE_ACCESS_KEY_ID` /
+`OBJECT_STORAGE_SECRET_ACCESS_KEY`: there, Coolify generates the pair as `SERVICE_USER_STORAGE` /
+`SERVICE_PASSWORD_STORAGE`, and you rotate it by regenerating those two values.
 :::
 
 Prefer managed storage? Point the `OBJECT_STORAGE_*` variables at external S3 / Cloudflare R2 and leave

@@ -21,9 +21,9 @@ You can skip this page if you use external storage (AWS S3, Cloudflare R2) or ar
 
 - **Disk space:** every object is copied, so you need free space about equal to your current uploads.
 - **Downtime:** the app is stopped while the copy runs.
-- **App version:** browser uploads to the new store need app images built after the switch. If you
-  pin an older `CIO_VERSION`, uploads fail with a `BadDigest` error, so move to a current release as
-  part of this upgrade.
+- **App version:** browser uploads to the new store need app images built after the switch (older
+  ones fail with `BadDigest`). The script checks this and refuses to migrate under an older pinned
+  `CIO_VERSION`, so move to a current release as part of this upgrade.
 
 Nothing is deleted at any point. Your old MinIO volume stays in place until you remove it yourself.
 
@@ -38,11 +38,12 @@ curl -fsSLO https://classroomio.com/classroomio.sh && chmod +x classroomio.sh
 
 The upgrade does this for you, in order:
 
-1. Backs up Postgres and the old MinIO volume into `./backups/`.
+1. Backs up Postgres and the old MinIO data into `./backups/`, then lets you pin a new `CIO_VERSION`.
 2. Replaces a `docker-compose.images.yaml` that still references MinIO. Your copy is kept as
    `docker-compose.images.yaml.bak`; re-apply any local edits to the new file.
 3. Starts the new `storage` service and creates the buckets.
-4. Copies the `videos`, `documents` and `media` buckets from the old volume and checks every object.
+4. Copies the `videos`, `documents` and `media` buckets from the old data and checks every object.
+   It never deletes anything in the new store, so running it again later is safe.
 5. Sets `OBJECT_STORAGE_ENDPOINT=http://storage:9000` in `.env` and restarts the stack.
 
 To run only the copy, without pulling new images, use `./classroomio.sh migrate-storage`.
@@ -51,6 +52,13 @@ To run only the copy, without pulling new images, use `./classroomio.sh migrate-
 MinIO stores objects in its own on-disk format, so the copy needs a MinIO-compatible server. The
 script uses a MinIO image already cached on your machine if there is one, otherwise it pulls
 `pgsty/silo`, a maintained MinIO fork. Set `MINIO_LEGACY_IMAGE=<image>` to choose a different one.
+:::
+
+:::note[Old uploads somewhere unusual?]
+The script finds the old data from the `cio-minio` container's own mount, so custom volume names and
+bind mounts work. If that container is already gone and the data isn't in `classroomio_minio-data`,
+set `MINIO_LEGACY_DATA=<volume name or path>` in `.env`. The script stops instead of switching to an
+empty store when it can see an old install but not its data.
 :::
 
 ## Migrate by hand
@@ -79,7 +87,7 @@ for b in videos documents media; do
     -e RCLONE_CONFIG_DST_TYPE=s3 -e RCLONE_CONFIG_DST_PROVIDER=SeaweedFS \
     -e RCLONE_CONFIG_DST_ENDPOINT=http://storage:9000 \
     -e RCLONE_CONFIG_DST_ACCESS_KEY_ID=<new key> -e RCLONE_CONFIG_DST_SECRET_ACCESS_KEY=<new secret> \
-    rclone/rclone sync src:$b dst:$b
+    rclone/rclone copy src:$b dst:$b
 done
 ```
 
@@ -121,7 +129,7 @@ docker volume rm classroomio_minio-data
 
 - **The copy failed part-way.** Fix the cause and run `./classroomio.sh migrate-storage` again. It
   only copies what is missing, and `.env` is switched over only after a successful copy.
-- **"could not read the old MinIO volume".** `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` in `.env` don't
+- **"could not read the old MinIO data".** `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` in `.env` don't
   match the old volume, or the image can't read it. Correct them, or set `MINIO_LEGACY_IMAGE`.
 - **You need to go back.** The old volume is untouched and step 1 took a backup. See
   [Backups](/self-hosted/backups) to restore.
