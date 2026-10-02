@@ -8,7 +8,7 @@ vi.mock('@cio/core/services/course/course', () => ({}));
 vi.mock('@api/services/lesson', () => ({
   deleteLessonService: vi.fn(),
   getLesson: vi.fn(),
-  listLessons: vi.fn()
+  listLessonsPaginated: vi.fn()
 }));
 vi.mock('@api/services/course/notify-session', () => ({ notifyCourseSessionUpdateService: vi.fn() }));
 
@@ -16,7 +16,7 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseSectionById } from '@cio/db/queries/course';
 import { getLessonById } from '@cio/db/queries/lesson';
-import { deleteLessonService, getLesson, listLessons } from '@api/services/lesson';
+import { deleteLessonService, getLesson, listLessonsPaginated } from '@api/services/lesson';
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import {
   deletePublicApiCourseLessonService,
@@ -104,20 +104,22 @@ describe('services/v1/courses/lessons', () => {
         { page: 1, limit: 20, sectionId: 's' }
       )
     ).rejects.toMatchObject({ statusCode: 404 });
-    expect(listLessons).not.toHaveBeenCalled();
+    expect(listLessonsPaginated).not.toHaveBeenCalled();
   });
 
-  it('lists lessons sorted by order', async () => {
-    vi.mocked(listLessons).mockResolvedValue([lesson({ id: 'b', order: 2 }), lesson({ id: 'a', order: 1 })]);
+  it('asks the database for one page of lessons', async () => {
+    vi.mocked(getCourseSectionById).mockResolvedValue({ id: 's', courseId: COURSE_ID } as never);
+    vi.mocked(listLessonsPaginated).mockResolvedValue({
+      items: [lesson({ id: 'c', order: 3 }), lesson({ id: 'd', order: 4 })],
+      total: 5
+    });
 
-    const result = await listPublicApiCourseLessonsService(
-      ORG_ID,
-      ACTOR_ID,
-      { courseId: COURSE_ID },
-      { page: 1, limit: 20 }
-    );
+    const query = { page: 2, limit: 2, sectionId: 's' };
+    const result = await listPublicApiCourseLessonsService(ORG_ID, ACTOR_ID, { courseId: COURSE_ID }, query);
 
-    expect(result.items.map((item) => item.id)).toEqual(['a', 'b']);
+    expect(listLessonsPaginated).toHaveBeenCalledWith(COURSE_ID, query);
+    expect(result.items.map((item) => item.id)).toEqual(['c', 'd']);
+    expect(result.pagination).toEqual({ page: 2, limit: 2, total: 5, totalPages: 3 });
   });
 
   it('hides storage keys in the lesson detail', async () => {

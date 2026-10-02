@@ -43,13 +43,15 @@ describe('v1 lesson comment routes', () => {
   it('lists comments with a cursor', async () => {
     vi.mocked(listPublicApiCourseLessonCommentsService).mockResolvedValue({ items: [], total: 0, nextCursor: null });
 
-    const response = await app.request(`${base}?cursor=42&limit=5`);
+    const cursor = '2026-09-30 10:00:00.123456+00|42';
+    const response = await app.request(`${base}?cursor=${encodeURIComponent(cursor)}&limit=5`);
 
     expect(response.status).toBe(200);
     expect(listPublicApiCourseLessonCommentsService).toHaveBeenCalledWith('org-1', 'actor-1', lessonParams, {
-      cursor: '42',
+      cursor,
       limit: 5
     });
+    expect((await app.request(`${base}?cursor=42`)).status).toBe(400);
   });
 
   it('creates a comment with 201', async () => {

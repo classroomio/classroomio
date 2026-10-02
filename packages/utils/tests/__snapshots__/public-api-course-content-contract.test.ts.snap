@@ -35,7 +35,7 @@ exports[`public API course content request contract > ZPublicApiCourseLessonComm
   "properties": {
     "cursor": {
       "maxLength": 100,
-      "pattern": "^\\d+$",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?(Z|[+-]\\d{2}(:?\\d{2})?)\\|\\d+$",
       "type": "string",
     },
     "limit": {

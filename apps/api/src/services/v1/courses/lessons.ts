@@ -1,4 +1,4 @@
-import { deleteLessonService, getLesson, listLessons } from '@api/services/lesson';
+import { deleteLessonService, getLesson, listLessonsPaginated } from '@api/services/lesson';
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import type { LessonById } from '@cio/db/queries/lesson';
 import type { TLesson, TLessonLanguage } from '@cio/db/types';
@@ -8,7 +8,7 @@ import type {
   TPublicApiCourseParam
 } from '@cio/utils/validation/public-api';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertCourseTeamAccess, assertLessonInCourse, assertSectionInCourse, paginateInMemory } from '../shared';
+import { assertCourseTeamAccess, assertLessonInCourse, assertSectionInCourse, toPublicApiPagination } from '../shared';
 
 export function toPublicLesson(lesson: TLesson) {
   return {
@@ -66,11 +66,11 @@ export async function listPublicApiCourseLessonsService(
     await assertSectionInCourse(params.courseId, query.sectionId);
   }
 
-  const lessons = await listLessons(params.courseId, query.sectionId);
-  lessons.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
-
-  const page = paginateInMemory(lessons, query);
-  return { items: page.items.map(toPublicLesson), pagination: page.pagination };
+  const page = await listLessonsPaginated(params.courseId, query);
+  return {
+    items: page.items.map(toPublicLesson),
+    pagination: toPublicApiPagination(query.page, query.limit, page.total)
+  };
 }
 
 export async function getPublicApiCourseLessonService(

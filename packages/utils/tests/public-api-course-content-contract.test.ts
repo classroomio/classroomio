@@ -94,8 +94,13 @@ describe('public API course content request contract', () => {
     ).toBe(false);
   });
 
-  it('only accepts numeric comment ids and cursors', () => {
-    expect(ZPublicApiCourseLessonCommentsQuery.safeParse({ cursor: 'abc' }).success).toBe(false);
+  it('only accepts numeric comment ids and timestamp|id cursors', () => {
+    expect(ZPublicApiCourseLessonCommentsQuery.safeParse({ cursor: '2026-09-30 10:00:00.123456+00|7' }).success).toBe(
+      true
+    );
+    for (const cursor of ['7', 'abc', 'garbage|7', '9999-99-99 00:00:00+00|7', '2026-09-30 10:00:00+00|x']) {
+      expect(ZPublicApiCourseLessonCommentsQuery.safeParse({ cursor }).success).toBe(false);
+    }
     expect(
       ZPublicApiCourseLessonCommentParam.safeParse({ courseId: SECTION_A, lessonId: LESSON, commentId: 'x' }).success
     ).toBe(false);
