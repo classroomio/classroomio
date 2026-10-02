@@ -185,7 +185,7 @@ function stalenessCondition(window: TCoursePeopleActivityWindow): SQL {
 }
 
 function buildPeopleOrderBy(sortBy: TCoursePeopleSortBy, sortOrder: TCoursePeopleSortOrder): SQL[] {
-  const { rank } = progressExpressions();
+  const { rank, percent } = progressExpressions();
   const ascending = sortOrder === 'asc';
 
   const sortColumn =

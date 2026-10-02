@@ -165,10 +165,16 @@
 
   async function assignExistingStudents(profileIds: string[], sendEmail: boolean) {
     await cohortApi.assignExistingStudentsToCohort(cohortId, { profileIds, sendEmail });
+    if (cohortApi.success) {
+      onMembersChanged?.();
+    }
   }
 
   async function inviteNewStudents(recipientCsv: string, sendEmail: boolean) {
     await cohortApi.inviteStudentsToCohort(cohortId, { recipientCsv, sendEmail });
+    if (cohortApi.success) {
+      onMembersChanged?.();
+    }
   }
 
   async function generateInviteLink() {

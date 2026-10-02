@@ -119,6 +119,9 @@
     if (queryKey === loadedQueryKey) return;
 
     loadedQueryKey = queryKey;
+    isLoadingMembers = true;
+    memberRows = [];
+    pagination = null;
     untrack(() => void loadMembers(courseId, activeQuery));
   });
 
