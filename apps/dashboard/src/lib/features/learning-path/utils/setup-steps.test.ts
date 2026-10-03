@@ -105,4 +105,45 @@ describe('getSetupSteps', () => {
 
     expect(priceStep?.isCompleted).toBe(true);
   });
+
+  it('marks order step incomplete when path has no courses', () => {
+    const path = createMockPath({ courses: [] });
+    const steps = getSetupSteps(path, '/paths/P1234567');
+    const orderStep = steps.find((s) => s.id === 'order');
+
+    expect(orderStep?.isCompleted).toBe(false);
+  });
+
+  it('marks order step completed when path has exactly 1 course (trivial order)', () => {
+    const path = createMockPath({
+      courses: [{ id: 'lpc-1', courseId: 'c-1', order: 1 } as any],
+      courseOrderSetAt: null
+    });
+    const steps = getSetupSteps(path, '/paths/P1234567');
+    const orderStep = steps.find((s) => s.id === 'order');
+
+    expect(orderStep?.isCompleted).toBe(true);
+  });
+
+  it('marks order step incomplete when path has 2+ courses and courseOrderSetAt is null', () => {
+    const path = createMockPath({
+      courses: [{ id: 'lpc-1', courseId: 'c-1', order: 1 } as any, { id: 'lpc-2', courseId: 'c-2', order: 2 } as any],
+      courseOrderSetAt: null
+    });
+    const steps = getSetupSteps(path, '/paths/P1234567');
+    const orderStep = steps.find((s) => s.id === 'order');
+
+    expect(orderStep?.isCompleted).toBe(false);
+  });
+
+  it('marks order step completed when path has 2+ courses and courseOrderSetAt is set', () => {
+    const path = createMockPath({
+      courses: [{ id: 'lpc-1', courseId: 'c-1', order: 1 } as any, { id: 'lpc-2', courseId: 'c-2', order: 2 } as any],
+      courseOrderSetAt: new Date().toISOString()
+    });
+    const steps = getSetupSteps(path, '/paths/P1234567');
+    const orderStep = steps.find((s) => s.id === 'order');
+
+    expect(orderStep?.isCompleted).toBe(true);
+  });
 });

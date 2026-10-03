@@ -55,7 +55,11 @@
     </Page.HeaderContent>
     <Page.Action>
       <div class="flex w-full justify-end gap-2">
-        <Button variant="outline" onclick={handleToggleReorder}>
+        <Button
+          variant="outline"
+          onclick={handleToggleReorder}
+          disabled={!activePath || !activePath.courses || activePath.courses.length < 2}
+        >
           {$t(`learningPath.builder.${reorder ? 'end_reorder' : 'start_reorder'}`)}
         </Button>
         <Button onclick={() => (showAddDialog = true)} testId="path-builder-add-course">
