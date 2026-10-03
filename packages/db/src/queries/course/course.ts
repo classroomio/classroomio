@@ -75,7 +75,7 @@ export const getPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
-      eq(schema.course.requiresLearningPath, false)
+      eq(schema.course.enrollOnlyInLearningPath, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -163,7 +163,7 @@ export const countPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
-      eq(schema.course.requiresLearningPath, false)
+      eq(schema.course.enrollOnlyInLearningPath, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -373,11 +373,11 @@ export async function getCourseById(courseId: string, dbClient: DbOrTxClient = d
 }
 
 /**
- * Returns the id and title of every given course that requires enrollment
- * through a learning path. Bulk enrollment flows use this to skip direct
+ * Returns the id and title of every given course that is enroll-only in a
+ * learning path. Bulk enrollment flows use this to skip direct
  * course assignment (reporting the skip) instead of failing the whole batch.
  */
-export async function getRequiresLearningPathCourses(
+export async function getEnrollOnlyInLearningPathCourses(
   courseIds: string[],
   dbClient: DbOrTxClient = db
 ): Promise<Array<{ id: string; title: string }>> {
@@ -389,10 +389,10 @@ export async function getRequiresLearningPathCourses(
     return await dbClient
       .select({ id: schema.course.id, title: schema.course.title })
       .from(schema.course)
-      .where(and(inArray(schema.course.id, courseIds), eq(schema.course.requiresLearningPath, true)));
+      .where(and(inArray(schema.course.id, courseIds), eq(schema.course.enrollOnlyInLearningPath, true)));
   } catch (error) {
-    console.error('getRequiresLearningPathCourses error:', error);
-    throw new Error(`Failed to get path-gated courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('getEnrollOnlyInLearningPathCourses error:', error);
+    throw new Error(`Failed to get path-only courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -795,6 +795,8 @@ interface GetOrgCoursesOptions {
   profileId?: string;
   /** Optional course IDs filter */
   courseIds?: string[];
+  /** When true, excludes courses that are enrollOnlyInLearningPath (path-only) */
+  excludePathOnly?: boolean;
   /** Optional search query against the course title */
   search?: string;
   /** Page number (1-indexed) */
@@ -811,18 +813,26 @@ export interface GetOrgCoursesResult {
   totalPages: number;
 }
 
-export async function countOrgCourses({
-  orgId,
-  profileId,
-  courseIds,
-  search
-}: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search'>): Promise<number> {
+export async function countOrgCourses(
+  {
+    orgId,
+    profileId,
+    courseIds,
+    excludePathOnly,
+    search
+  }: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search' | 'excludePathOnly'>,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
     }
 
     const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
+
+    if (excludePathOnly) {
+      conditions.push(eq(schema.course.enrollOnlyInLearningPath, false));
+    }
 
     if (courseIds && courseIds.length > 0) {
       conditions.push(inArray(schema.course.id, courseIds));
@@ -833,7 +843,7 @@ export async function countOrgCourses({
     }
 
     const totalQuery = profileId
-      ? db
+      ? dbClient
           .select({ count: count(schema.course.id) })
           .from(schema.course)
           .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -842,7 +852,7 @@ export async function countOrgCourses({
             and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId))
           )
           .where(and(...conditions))
-      : db
+      : dbClient
           .select({ count: count(schema.course.id) })
           .from(schema.course)
           .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -863,14 +873,10 @@ export async function countOrgCourses({
  * @param options.profileId Optional profile ID to filter by membership
  * @returns Array of courses with admin-level data
  */
-export const getOrgCourses = async ({
-  orgId,
-  profileId,
-  courseIds,
-  search,
-  page = 1,
-  limit = 20
-}: GetOrgCoursesOptions): Promise<GetOrgCoursesResult> => {
+export const getOrgCourses = async (
+  { orgId, profileId, courseIds, excludePathOnly, search, page = 1, limit = 20 }: GetOrgCoursesOptions,
+  dbClient: DbOrTxClient = db
+): Promise<GetOrgCoursesResult> => {
   try {
     if (courseIds && courseIds.length === 0) {
       return {
@@ -884,6 +890,10 @@ export const getOrgCourses = async ({
 
     const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
 
+    if (excludePathOnly) {
+      conditions.push(eq(schema.course.enrollOnlyInLearningPath, false));
+    }
+
     if (courseIds && courseIds.length > 0) {
       conditions.push(inArray(schema.course.id, courseIds));
     }
@@ -892,9 +902,9 @@ export const getOrgCourses = async ({
       conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
     }
 
-    const total = await countOrgCourses({ orgId, profileId, courseIds, search });
+    const total = await countOrgCourses({ orgId, profileId, courseIds, excludePathOnly, search }, dbClient);
 
-    const baseQuery = db
+    const baseQuery = dbClient
       .select({
         course: schema.course,
         lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('lesson_count'),
@@ -1047,7 +1057,7 @@ interface GetEnrolledCoursesOptions {
   profileId: string;
   /**
    * When true, only courses the learner takes on their own: a live non-path
-   * grant, and never a course that `requiresLearningPath` (My Learning course
+   * grant, and never a course that `enrollOnlyInLearningPath` (My Learning course
    * cards per the learning-paths PRD). Defaults to false to preserve the legacy
    * groupmember/program listing. Requires the grant backfill to have run.
    */
@@ -1159,7 +1169,7 @@ export const getEnrolledCourses = async ({
           or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id)),
           ...(nonPathOnly
             ? [
-                eq(schema.course.requiresLearningPath, false),
+                eq(schema.course.enrollOnlyInLearningPath, false),
                 sql`EXISTS (
                   SELECT 1 FROM ${schema.courseEnrollmentGrant} g
                   WHERE g.course_id = ${schema.course.id}
@@ -1228,7 +1238,7 @@ export const getExploreCourses = async ({
       eq(schema.group.organizationId, orgId),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
-      eq(schema.course.requiresLearningPath, false),
+      eq(schema.course.enrollOnlyInLearningPath, false),
       isNull(schema.groupmember.id),
       // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
       // legacy allowNewStudent, then open. `->>` yields NULL for a JSON null,
@@ -1306,6 +1316,32 @@ export async function getOrgIdByCourseId(courseId: string, dbClient: DbOrTxClien
     console.error('getOrgIdByCourseId error:', error);
     throw new Error(
       `Failed to get organization ID for course: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Resolves a course's organization (via its group) together with the course
+ * status, regardless of status. Callers decide what a non-ACTIVE course means;
+ * `getOrgIdByCourseId` stays status-agnostic for stats invalidation.
+ */
+export async function getCourseOrgAndStatus(
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<{ organizationId: string | null; status: string } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ organizationId: schema.group.organizationId, status: schema.course.status })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getCourseOrgAndStatus error:', error);
+    throw new Error(
+      `Failed to get course organization and status: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -1557,11 +1593,11 @@ export async function lockCourseStatusForAccept(
  * @param courseIds Array of course IDs to filter
  * @returns Array of { courseId, courseTitle, groupId }
  */
-export async function getOrgCourseGroups(orgId: string, courseIds: string[]) {
+export async function getOrgCourseGroups(orgId: string, courseIds: string[], dbClient: DbOrTxClient = db) {
   try {
     if (courseIds.length === 0) return [];
 
-    const rows = await db
+    const rows = await dbClient
       .select({
         courseId: schema.course.id,
         courseTitle: schema.course.title,

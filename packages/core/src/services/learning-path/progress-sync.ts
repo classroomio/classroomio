@@ -185,7 +185,7 @@ export async function evaluatePathCompletion(
     currentCourseId = courseIds[courseIds.length - 1];
   }
 
-  const progressPercent = Math.round((completedCount / courseIds.length) * 100);
+  const progressPercent = Math.round((completedCount * 100) / courseIds.length);
   const isComplete = completedCount === courseIds.length;
 
   if (isComplete) {
@@ -309,7 +309,7 @@ export async function syncCourseProgressInLearningPaths(
   const stats = await getCourseCompletionStatsForProfile(courseId, profileId, dbClient);
   const totalItems = stats.totalLessons + stats.totalExercises;
   const completedItems = stats.completedLessons + stats.completedExercises;
-  const progressPercent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 100;
+  const progressPercent = totalItems > 0 ? Math.round((completedItems * 100) / totalItems) : 100;
   const nowIso = new Date().toISOString();
 
   for (const path of enrolledPaths) {
@@ -443,7 +443,7 @@ export async function syncPathProgressForMember(
     const stats = statsResults[i];
     const totalItems = stats.totalLessons + stats.totalExercises;
     const completedItems = stats.completedLessons + stats.completedExercises;
-    const progressPercent = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 100;
+    const progressPercent = totalItems > 0 ? Math.round((completedItems * 100) / totalItems) : 100;
     const isUnlocked = unlockedCourseIds.includes(pathCourse.courseId);
 
     const existingProgress = await getSingleMemberCourseProgress(member.id, pathCourse.id, dbClient);
@@ -481,6 +481,7 @@ export async function syncPathProgressForMember(
 /** Members synced in parallel by a path-wide or reconcile run. */
 const PROGRESS_SYNC_CONCURRENCY = 5;
 
+/** Syncs each member's cached progress, counting (not throwing) failures. */
 async function syncMembers(
   members: Array<{ pathId: string; profileId: string }>
 ): Promise<{ synced: number; failed: number }> {

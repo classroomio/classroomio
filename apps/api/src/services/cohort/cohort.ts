@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { isUniqueConstraintViolation } from '@cio/utils/errors';
 import {
   type TCreateCohort,
   type TUpdateCohort,
@@ -51,6 +52,7 @@ import {
   insertOrganizationMembersOnConflictDoNothing
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
+import { assertCourseAllowsDirectStudentAdd, filterOutPathOnlyCourseIds } from '@api/services/course/path-gate';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
@@ -61,24 +63,36 @@ type CohortMemberEnrollment = {
   roleId: number;
 };
 
+/**
+ * Enrolls cohort STUDENT members into the groups of the given (non-path-only)
+ * courses with COHORT grants. Inside a caller's transaction it returns the
+ * student-limit milestone for the caller to send after commit.
+ */
 async function enrollCohortStudentsInGroups(
   organizationId: string,
   groupIds: string[],
   members: CohortMemberEnrollment[],
   courseIds: string[],
-  cohortId: string
+  cohortId: string,
+  dbClient?: DbOrTxClient
 ) {
+  const { allowedCourseIds } = await filterOutPathOnlyCourseIds(courseIds, dbClient ?? db);
+
+  if (allowedCourseIds.length === 0) {
+    return { enrolled: 0, milestone: null };
+  }
+
   const studentMembers = members.filter((member) => member.profileId && member.roleId === ROLE.STUDENT);
   const uniqueGroupIds = [...new Set(groupIds)];
 
   if (studentMembers.length === 0 || uniqueGroupIds.length === 0) {
-    return 0;
+    return { enrolled: 0, milestone: null };
   }
 
   const studentProfileIds = studentMembers
     .map((member) => member.profileId)
     .filter((profileId): profileId is string => Boolean(profileId));
-  const existingMembers = await getOrgMembersByProfileIds(organizationId, studentProfileIds);
+  const existingMembers = await getOrgMembersByProfileIds(organizationId, studentProfileIds, dbClient ?? db);
   const existingMemberProfileIds = new Set(existingMembers.map((member) => member.profileId));
   const newStudentProfileIds = new Set(
     studentProfileIds.filter((profileId) => !existingMemberProfileIds.has(profileId))
@@ -103,21 +117,36 @@ async function enrollCohortStudentsInGroups(
 
   let studentMilestoneNotification: StudentMilestoneNotification | null = null;
 
-  await db.transaction(async (tx) => {
+  const run = async (tx: DbOrTxClient) => {
     studentMilestoneNotification = await assertStudentCapacityOrThrow(organizationId, newStudentProfileIds.size, tx, {
       deferNotification: true
     });
     await insertOrganizationMembersOnConflictDoNothing(organizationMemberRows, tx);
     await insertGroupMembersOnConflictDoNothing(groupMemberRows, tx);
-  });
+    await recordDirectCourseGrantsBulk(
+      {
+        groupIds: uniqueGroupIds,
+        profileIds: studentProfileIds,
+        courseIds: allowedCourseIds,
+        source: 'COHORT',
+        cohortId
+      },
+      tx
+    );
+  };
 
-  await recordDirectCourseGrantsBulk({
-    groupIds: uniqueGroupIds,
-    profileIds: studentProfileIds,
-    courseIds,
-    source: 'COHORT',
-    cohortId
-  });
+  // Inside a caller's transaction the milestone email is returned for the
+  // caller to send after commit; standalone, it is sent here after commit.
+  if (dbClient && dbClient !== db) {
+    await run(dbClient);
+
+    return {
+      enrolled: groupMemberRows.length,
+      milestone: studentMilestoneNotification as StudentMilestoneNotification | null
+    };
+  }
+
+  await db.transaction(run);
 
   if (studentMilestoneNotification) {
     notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
@@ -125,7 +154,7 @@ async function enrollCohortStudentsInGroups(
     });
   }
 
-  return groupMemberRows.length;
+  return { enrolled: groupMemberRows.length, milestone: null };
 }
 
 // ─── Cohort CRUD ─────────────────────────────────────────────────────────────
@@ -234,7 +263,7 @@ export async function listCohortMembers(cohortId: string) {
 }
 
 /**
- * Records COHORT provenance grants for a profile across a cohort's courses.
+ * Records COHORT provenance grants for a STUDENT profile across a cohort's courses. Tutors and admins are skipped: staff access is role-based.
  * The caller enrolls the groupmember rows; this records why, both so People
  * views can show the cohort source and permission checks can tell cohort
  * access apart from standalone access. Idempotent via the grant upsert.
@@ -250,7 +279,19 @@ export async function ensureCohortCourseGrants(
     return;
   }
 
-  const courseGroups = await getCourseGroupIds(courseIds, dbClient);
+  const cohortMember = await getCohortMemberByProfileId(cohortId, profileId, dbClient);
+
+  if (!cohortMember || cohortMember.roleId !== ROLE.STUDENT) {
+    return;
+  }
+
+  const { allowedCourseIds } = await filterOutPathOnlyCourseIds(courseIds, dbClient);
+
+  if (allowedCourseIds.length === 0) {
+    return;
+  }
+
+  const courseGroups = await getCourseGroupIds(allowedCourseIds, dbClient);
 
   for (const entry of courseGroups) {
     if (!entry.groupId) {
@@ -283,9 +324,9 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
     }
 
     const cohortCourses = await getCoursesByCohort(cohortId);
-    const courseGroupIds = (await getCourseGroupIds(cohortCourses.map((course) => course.course.id))).map(
-      (courseGroup) => courseGroup.groupId
-    );
+    const allCourseIds = cohortCourses.map((course) => course.course.id);
+    const { allowedCourseIds, skippedPathOnlyCourseIds } = await filterOutPathOnlyCourseIds(allCourseIds);
+    const courseGroupIds = (await getCourseGroupIds(allowedCourseIds)).map((courseGroup) => courseGroup.groupId);
 
     const results = await Promise.allSettled(
       data.members.map(async ({ profileId: providedProfileId, email, roleId }) => {
@@ -357,13 +398,7 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
               tx
             );
 
-            await ensureCohortCourseGrants(
-              cohortId,
-              member.profileId,
-              actorProfileId,
-              tx,
-              cohortCourses.map((course) => course.course.id)
-            );
+            await ensureCohortCourseGrants(cohortId, member.profileId, actorProfileId, tx, allowedCourseIds);
           }
 
           return { member, studentMilestoneNotification };
@@ -386,7 +421,7 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
       .filter((r) => r.status === 'rejected')
       .map((r) => (r as PromiseRejectedResult).reason?.message || 'Unknown error');
 
-    return { added, errors };
+    return { added, errors, skippedPathOnlyCourseIds };
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -397,16 +432,25 @@ export async function addCohortMembers(cohortId: string, data: TAddCohortMembers
   }
 }
 
-export async function removeCohortMemberService(_cohortId: string, memberId: string) {
+/**
+ * Removes a member from a cohort and revokes their COHORT grants in one
+ * transaction, scoped to the cohort so another cohort's member 404s.
+ */
+export async function removeCohortMemberService(cohortId: string, memberId: string) {
   try {
-    const deleted = await removeCohortMember(memberId);
-    if (!deleted) {
-      throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
-    }
+    const deleted = await db.transaction(async (tx) => {
+      const removed = await removeCohortMember(cohortId, memberId, tx);
 
-    if (deleted.profileId) {
-      await revokeCohortGrants(deleted.cohortId, deleted.profileId);
-    }
+      if (!removed) {
+        throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
+      }
+
+      if (removed.profileId) {
+        await revokeCohortGrants(removed.cohortId, removed.profileId, tx);
+      }
+
+      return removed;
+    });
 
     return deleted;
   } catch (error) {
@@ -474,31 +518,60 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
       throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
     }
 
-    const alreadyAdded = await isCohortCourse(cohortId, data.courseId);
-    if (alreadyAdded) {
+    await assertCourseAllowsDirectStudentAdd(data.courseId);
+
+    const { added, milestone } = await db.transaction(async (tx) => {
+      const alreadyAdded = await isCohortCourse(cohortId, data.courseId, tx);
+
+      if (alreadyAdded) {
+        throw new AppError('Course is already in this cohort', ErrorCodes.COURSE_ALREADY_IN_COHORT, 409);
+      }
+
+      const added = await addCourseToCohort(cohortId, data.courseId, tx);
+      const memberRows = await getCohortMembers(cohortId, tx);
+      const studentRows = memberRows
+        .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
+        .map((member) => ({
+          profileId: member.profileId!,
+          email: member.email ?? null,
+          roleId: member.roleId
+        }));
+      const groups = (await getCourseGroupIds([data.courseId], tx))
+        .map((courseGroup) => courseGroup.groupId)
+        .filter((groupId): groupId is string => Boolean(groupId));
+
+      if (studentRows.length > 0 && groups.length > 0) {
+        const enrollment = await enrollCohortStudentsInGroups(
+          cohort.organizationId,
+          groups,
+          studentRows,
+          [data.courseId],
+          cohortId,
+          tx
+        );
+
+        return { added, milestone: enrollment.milestone };
+      }
+
+      return { added, milestone: null };
+    });
+
+    // Sent only after commit, so a rolled-back add never emails admins.
+    if (milestone) {
+      notifyStudentMilestone(milestone).catch((notifyError) => {
+        console.error('notifyStudentMilestone error:', notifyError);
+      });
+    }
+
+    return added;
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+
+    // Two concurrent adds of the same course: the loser hits the unique link.
+    if (isUniqueConstraintViolation(error)) {
       throw new AppError('Course is already in this cohort', ErrorCodes.COURSE_ALREADY_IN_COHORT, 409);
     }
 
-    const result = await addCourseToCohort(cohortId, data.courseId);
-    const students = (await getCohortMembers(cohortId))
-      .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
-      .map((member) => ({
-        profileId: member.profileId!,
-        email: member.email ?? null,
-        roleId: member.roleId
-      }));
-
-    const courseGroupIds = (await getCourseGroupIds([data.courseId]))
-      .map((courseGroup) => courseGroup.groupId)
-      .filter((groupId): groupId is string => Boolean(groupId));
-
-    if (students.length > 0 && courseGroupIds.length > 0) {
-      await enrollCohortStudentsInGroups(cohort.organizationId, courseGroupIds, students, [data.courseId], cohortId);
-    }
-
-    return result;
-  } catch (error) {
-    if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to add course to cohort',
       ErrorCodes.INTERNAL_ERROR,
@@ -507,6 +580,11 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
   }
 }
 
+/**
+ * Removes a course from a cohort. Existing grants and progress are kept on
+ * purpose; revocation happens when a member is removed, not when a course
+ * leaves the cohort.
+ */
 export async function removeCourseFromCohortService(cohortId: string, courseId: string) {
   try {
     const deleted = await removeCourseFromCohort(cohortId, courseId);

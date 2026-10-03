@@ -278,7 +278,7 @@ export const ZCourseCreateBase = z.object({
   type: ZCourseType,
   organizationId: z.string().min(1),
   compliance: ZComplianceSettings.optional(),
-  requiresLearningPath: z.boolean().optional()
+  enrollOnlyInLearningPath: z.boolean().optional()
 });
 
 export const ZCourseCreate = ZCourseCreateBase.refine(
@@ -506,7 +506,7 @@ export const ZCourseUpdateBase = z.object({
   tagIds: z.array(z.uuid()).max(100).optional(),
   compliance: ZComplianceSettings.optional(),
   callout: ZCourseCalloutInput.optional(),
-  requiresLearningPath: z.boolean().optional()
+  enrollOnlyInLearningPath: z.boolean().optional()
 });
 
 export const ZCourseUpdate = ZCourseUpdateBase.refine(

@@ -3,6 +3,7 @@ import * as schema from '@db/schema';
 import { sql } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { ROLE } from '@cio/utils/constants';
 import { learnerCourseProgressCtes } from '../course/learner-progress';
 
 export type TPathJourneyCourseStatus = 'LOCKED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -71,12 +72,14 @@ type TPathJourneyRow = {
   issued_at: string | null;
 };
 
+/** Whole-percent course progress; a course with no items counts 100, like the cache. */
 function toCourseProgress(completed: number, total: number): number {
   if (total <= 0) return 100;
 
   return Math.round((completed / total) * 100);
 }
 
+/** Journey status from completion first, then progress, then lock state. */
 function toCourseStatus(isComplete: boolean, progress: number, isUnlocked: boolean): TPathJourneyCourseStatus {
   if (isComplete) return 'COMPLETED';
   if (progress > 0) return 'IN_PROGRESS';
@@ -194,6 +197,113 @@ export async function getPathJourney(
     console.error('getPathJourney error:', error);
     throw new Error(
       `Failed to get journey for learning path "${pathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export interface TLearnerPathSummaryCourse {
+  courseId: string;
+  title: string;
+  order: number;
+  isComplete: boolean;
+}
+
+export interface TLearnerPathSummary {
+  pathId: string;
+  publicId: string | null;
+  name: string;
+  memberStatus: string;
+  courses: TLearnerPathSummaryCourse[];
+}
+
+type TLearnerPathSummaryRow = {
+  path_id: string;
+  public_id: string | null;
+  path_name: string;
+  member_status: string;
+  course_id: string | null;
+  course_title: string | null;
+  course_order: number | null;
+  is_complete: boolean | null;
+};
+
+/**
+ * One learner's path summaries in a single statement: every STUDENT,
+ * non-removed membership in an ACTIVE org path with its ACTIVE courses in
+ * path order and each course's live completion (the same member_paths and
+ * progress CTEs as the enrolled feed). Tutors, removed memberships, and
+ * inactive courses are excluded.
+ */
+export async function getLearnerPathSummaries(
+  input: { orgId: string; profileId: string; limit: number },
+  dbClient: DbOrTxClient = db
+): Promise<TLearnerPathSummary[]> {
+  try {
+    const rows = await dbClient.execute<TLearnerPathSummaryRow>(sql`
+      WITH member_paths AS (
+        SELECT lpm.learning_path_id, lpm.status AS member_status, lpm.enrolled_at,
+          lp.public_id, lp.name AS path_name
+        FROM ${schema.learningPathMember} lpm
+        JOIN ${schema.learningPath} lp ON lp.id = lpm.learning_path_id
+        WHERE lpm.profile_id = ${input.profileId}
+          AND lpm.removed_at IS NULL
+          AND lpm.role_id = ${ROLE.STUDENT}
+          AND lp.organization_id = ${input.orgId}
+          AND lp.status = 'ACTIVE'
+        ORDER BY lpm.enrolled_at DESC, lp.id ASC
+        LIMIT ${input.limit}
+      ),
+      tracked_courses AS (
+        SELECT DISTINCT lpc.course_id
+        FROM member_paths mp
+        JOIN ${schema.learningPathCourse} lpc
+          ON lpc.learning_path_id = mp.learning_path_id AND lpc.removed_at IS NULL
+        JOIN ${schema.course} c ON c.id = lpc.course_id AND c.status = 'ACTIVE'
+      ),
+      ${learnerCourseProgressCtes(input.profileId)}
+      SELECT mp.learning_path_id AS path_id, mp.public_id, mp.path_name, mp.member_status,
+        c.id AS course_id, c.title AS course_title, lpc."order" AS course_order,
+        ((cp.lessons_total = 0 OR cp.lessons_completed >= cp.lessons_total)
+          AND (cp.exercises_total = 0 OR cp.exercises_completed >= cp.exercises_total)) AS is_complete
+      FROM member_paths mp
+      LEFT JOIN ${schema.learningPathCourse} lpc
+        ON lpc.learning_path_id = mp.learning_path_id AND lpc.removed_at IS NULL
+      LEFT JOIN ${schema.course} c ON c.id = lpc.course_id AND c.status = 'ACTIVE'
+      LEFT JOIN course_progress cp ON cp.course_id = lpc.course_id
+      ORDER BY mp.enrolled_at DESC, mp.learning_path_id ASC, lpc."order", lpc.added_at, lpc.course_id
+    `);
+
+    const byPath = new Map<string, TLearnerPathSummary>();
+
+    for (const row of rows) {
+      let summary = byPath.get(row.path_id);
+
+      if (!summary) {
+        summary = {
+          pathId: row.path_id,
+          publicId: row.public_id,
+          name: row.path_name,
+          memberStatus: row.member_status,
+          courses: []
+        };
+        byPath.set(row.path_id, summary);
+      }
+
+      if (row.course_id) {
+        summary.courses.push({
+          courseId: row.course_id,
+          title: row.course_title ?? '',
+          order: row.course_order ?? 0,
+          isComplete: Boolean(row.is_complete)
+        });
+      }
+    }
+
+    return [...byPath.values()];
+  } catch (error) {
+    console.error('getLearnerPathSummaries error:', error);
+    throw new Error(
+      `Failed to get learner path summaries for profile "${input.profileId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

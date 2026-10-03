@@ -7,6 +7,7 @@ import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TStudentCourse } from '../course/course';
 import { learnerCourseProgressCtes } from '../course/learner-progress';
 import { isUpcomingSessionLessonSql } from '../course/session';
+import { toContainsPattern } from '@db/utils/like-pattern';
 
 export type TEnrolledKind = 'course' | 'learning_path';
 
@@ -64,7 +65,7 @@ interface GetEnrolledOptions {
 /**
  * Rows of the student's learning feed: one per path membership, and one per
  * course they take on their own (a live grant, outside every path they are
- * in, and not `requiresLearningPath`). Progress is read at query time from
+ * in, and not `enrollOnlyInLearningPath`). Progress is read at query time from
  * `lesson_completion` and `submission`, so joining or leaving a path moves the
  * same completed work between the path row and the course row.
  */
@@ -91,7 +92,7 @@ function enrolledFeedSql(orgId: string, profileId: string): SQL {
       SELECT ceg.course_id, MIN(ceg.granted_at) AS enrolled_at
       FROM ${schema.courseEnrollmentGrant} ceg
       JOIN ${schema.course} c
-        ON c.id = ceg.course_id AND c.status = 'ACTIVE' AND c.requires_learning_path = false
+        ON c.id = ceg.course_id AND c.status = 'ACTIVE' AND c.enroll_only_in_learning_path = false
       JOIN ${schema.group} g ON g.id = c.group_id AND g.organization_id = ${orgId}
       WHERE ceg.profile_id = ${profileId}
         AND ceg.revoked_at IS NULL
@@ -214,12 +215,6 @@ function feedOrderBy(columns: TFeedOrderColumns): SQL[] {
     asc(columns.kind),
     asc(columns.itemId)
   ];
-}
-
-function toContainsPattern(search: string): string {
-  const escaped = search.replace(/[\\%_]/g, (character) => `\\${character}`);
-
-  return `%${escaped}%`;
 }
 
 /**

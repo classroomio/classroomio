@@ -22,6 +22,10 @@ import { seedReactCoursePeopleProgress } from '@db/utils/seed/reactCoursePeopleP
 import { seedRoles } from '@db/utils/seed/role';
 import { seedSubmissions } from '@db/utils/seed/submission';
 import { seedUsers } from '@db/utils/seed/users';
+import {
+  backfillCohortCourseEnrollmentGrants,
+  backfillMissingCourseEnrollmentGrants
+} from '@db/queries/learning-path/enrollment-grant';
 import usersData from '../../users.json';
 
 // Constants for IDs used across multiple seed functions
@@ -443,6 +447,16 @@ async function seed() {
       }
 
       await seedFunctions[seedName]();
+    }
+
+    // The seeds write groupmember rows without grants; backfill so
+    // student@test.com keeps access on a fresh database.
+    try {
+      const cohortInserted = await backfillCohortCourseEnrollmentGrants();
+      const importInserted = await backfillMissingCourseEnrollmentGrants();
+      console.log(`🔑 Backfilled ${cohortInserted} COHORT and ${importInserted} IMPORT course enrollment grants.`);
+    } catch (error) {
+      console.error('⚠️  Grant backfill after seed failed:', error);
     }
 
     console.log('✅ Seed completed successfully!');

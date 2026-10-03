@@ -1,10 +1,10 @@
 import { Context, Next } from 'hono';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
-import { ROLE } from '@cio/utils/constants';
 import { ErrorCodes, handleError } from '@api/utils/errors';
+import { getOrganizationMemberRoleId } from '@cio/db/queries/organization';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
-import { resolveLearningPath } from '@api/services/learning-path/learning-path';
+import { assertCanManageLearningPath, resolveLearningPath } from '@api/services/learning-path/learning-path';
 import { learningPathTeamMiddleware } from './learning-path-team';
 
 /**
@@ -13,9 +13,10 @@ import { learningPathTeamMiddleware } from './learning-path-team';
  * automation keys holding the required scopes.
  *
  * Key callers are confined to their own organization's paths and act with
- * admin-equivalent team rights, so route handlers stay unchanged: `actorId`
+ * their creator's real org role, so route handlers stay unchanged: `actorId`
  * is always set (key creator profile or session user) and `orgRoles` carries
- * ADMIN for the resolved organization.
+ * that role for the resolved organization. A demoted creator loses admin
+ * rights immediately.
  *
  * Requires authOrAutomationKeyMiddleware first. Pass `{ team: false }` for
  * collection routes (list/create) that carry no `:pathId` and enforce their
@@ -61,7 +62,20 @@ export const learningPathTeamOrAutomationKeyMiddleware = (
       c.set('actorId', actorId);
 
       if (!team) {
-        c.set('orgRoles', { [automationKey.organizationId]: ROLE.ADMIN });
+        const creatorRoleId = await getOrganizationMemberRoleId(automationKey.organizationId, actorId);
+
+        if (creatorRoleId === null) {
+          return c.json(
+            {
+              success: false,
+              error: 'Not a member of this organization',
+              code: ErrorCodes.UNAUTHORIZED
+            },
+            403
+          );
+        }
+
+        c.set('orgRoles', { [automationKey.organizationId]: creatorRoleId });
 
         await next();
         return;
@@ -80,7 +94,22 @@ export const learningPathTeamOrAutomationKeyMiddleware = (
         );
       }
 
-      c.set('orgRoles', { [path.organizationId]: ROLE.ADMIN });
+      const creatorRoleId = await getOrganizationMemberRoleId(path.organizationId, actorId);
+
+      if (creatorRoleId === null) {
+        return c.json(
+          {
+            success: false,
+            error: 'Not a member of this organization',
+            code: ErrorCodes.UNAUTHORIZED
+          },
+          403
+        );
+      }
+
+      await assertCanManageLearningPath(path, actorId, { [path.organizationId]: creatorRoleId });
+
+      c.set('orgRoles', { [path.organizationId]: creatorRoleId });
       c.set('learningPath', path);
 
       await next();

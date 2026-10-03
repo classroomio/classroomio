@@ -14,7 +14,7 @@ import { scheduleLearningPathProgressSync } from './progress-sync-jobs';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 
 /**
- * Enrolls a student into a learning path and auto-enrolls them into all courses in the path.
+ * Enrolls a student into a learning path and grants them course access for its courses.
  * Wraps member creation, course group membership, and enrollment grant records in a single transaction.
  * Idempotent on repeated calls.
  */

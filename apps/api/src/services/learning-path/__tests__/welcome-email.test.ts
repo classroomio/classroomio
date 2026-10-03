@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   enrollMember: vi.fn(),
   listLearningPathCourses: vi.fn(),
   initializeMemberCourseProgress: vi.fn(),
+  ensureLearningPathCourseGrants: vi.fn(),
   getCourseGroupIds: vi.fn(),
   getGroupMemberIdByGroupAndProfile: vi.fn(),
   insertGroupMembersOnConflictDoNothing: vi.fn(),
@@ -52,6 +53,7 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   enrollMember: mocks.enrollMember,
   listLearningPathCourses: mocks.listLearningPathCourses,
   initializeMemberCourseProgress: mocks.initializeMemberCourseProgress,
+  ensureLearningPathCourseGrants: mocks.ensureLearningPathCourseGrants,
   grantCourseAccess: mocks.grantCourseAccess,
   getCourseIdsInPath: vi.fn().mockResolvedValue([]),
   lockLearningPathStatusForAccept: vi.fn().mockResolvedValue({ id: 'lp-1', status: 'ACTIVE' }),
@@ -160,7 +162,6 @@ describe('welcome-email services', () => {
       isPublished: true,
       selfEnrollment: true,
       sequentialUnlock: false,
-      autoEnroll: false,
       welcomeEmailMessage: 'Welcome to frontend!'
     };
 
@@ -230,7 +231,6 @@ describe('welcome-email services', () => {
       name: 'Backend Path',
       isPublished: true,
       sequentialUnlock: false,
-      autoEnroll: false,
       welcomeEmailMessage: null
     };
 
@@ -285,7 +285,8 @@ describe('welcome-email services', () => {
         { 'org-1': ROLE.ADMIN }
       );
 
-      expect(enrolled).toHaveLength(1);
+      expect(enrolled).toMatchObject({ mode: 'completed', requested: 1 });
+      expect(enrolled.mode === 'completed' ? enrolled.members : []).toHaveLength(1);
       expect(mocks.enqueueTransactionalEmail).not.toHaveBeenCalled();
     });
 
@@ -411,7 +412,6 @@ describe('welcome-email services', () => {
       isPublished: true,
       selfEnrollment: true,
       sequentialUnlock: false,
-      autoEnroll: false,
       cost: 0
     };
 

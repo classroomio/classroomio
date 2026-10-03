@@ -43,3 +43,11 @@ export const searchCourseSchema = {
     limit: z.number().int().min(1).max(20).default(8).describe('Maximum number of results to return.')
   })
 };
+
+export const getStudentLearningPathsSchema = {
+  description:
+    'List the learner\u2019s active learning path enrollments in this organization, with each path\u2019s ordered courses, completion percentage, and the current unlocked course. Use this when the learner asks about their broader curriculum journey beyond the current course.',
+  parameters: z.object({
+    limit: z.number().int().min(1).max(20).default(5).describe('Maximum number of paths to return.')
+  })
+};

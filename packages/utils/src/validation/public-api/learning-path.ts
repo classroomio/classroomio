@@ -1,5 +1,8 @@
 import * as z from 'zod';
 
+import { isAllowedHref } from '../shared';
+import { ZLandingPage } from '../learning-path/landing-page';
+
 export const ZPublicApiLearningPathsQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
@@ -19,15 +22,41 @@ export const ZPublicApiCreateLearningPath = z.object({
 });
 export type TPublicApiCreateLearningPath = z.infer<typeof ZPublicApiCreateLearningPath>;
 
-export const ZPublicApiUpdateLearningPath = z.object({
-  name: z.string().trim().min(1).max(255).optional(),
-  description: z.string().trim().min(1).max(5000).optional(),
-  cost: z.number().int().min(0).optional(),
-  sequentialUnlock: z.boolean().optional(),
-  selfEnrollment: z.boolean().optional(),
-  autoEnroll: z.boolean().optional()
-});
+export const ZPublicApiUpdateLearningPath = z
+  .object({
+    name: z.string().trim().min(1).max(255).optional(),
+    description: z.string().trim().min(1).max(5000).optional(),
+    cost: z.number().int().min(0).optional(),
+    sequentialUnlock: z.boolean().optional(),
+    selfEnrollment: z.boolean().optional(),
+    isPublished: z.boolean().optional(),
+    coverImage: z
+      .string()
+      .max(2048)
+      .refine((value) => !value || isAllowedHref(value), {
+        message: 'URL scheme not allowed'
+      })
+      .nullable()
+      .optional(),
+    landingPage: ZLandingPage.optional()
+  })
+  .refine((data) => Object.values(data).some((value) => value !== undefined), {
+    message: 'No fields to update'
+  });
 export type TPublicApiUpdateLearningPath = z.infer<typeof ZPublicApiUpdateLearningPath>;
+
+export const ZPublicApiAddLearningPathCourses = z.object({
+  courseIds: z.array(z.string().uuid()).min(1)
+});
+export type TPublicApiAddLearningPathCourses = z.infer<typeof ZPublicApiAddLearningPathCourses>;
+
+export const ZPublicApiPathMembersQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().optional(),
+  roleId: z.coerce.number().int().optional()
+});
+export type TPublicApiPathMembersQuery = z.infer<typeof ZPublicApiPathMembersQuery>;
 
 export const ZPublicApiReorderPathCourses = z.object({
   courseIds: z.array(z.string().uuid()).min(1)

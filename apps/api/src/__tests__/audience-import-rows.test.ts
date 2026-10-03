@@ -1,5 +1,31 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn(async (callback: (tx: unknown) => unknown) => callback({})) }
+}));
+
+vi.mock('@cio/core/services/organization/supersede-invites', () => ({
+  supersedeStudentOrgInvites: vi.fn(
+    async (
+      _tx: unknown,
+      input: { emails: string[]; add: { courseIds: string[]; cohortIds: string[]; pathIds: string[] } }
+    ) => ({
+      invites: input.emails.map((email: string, index: number) => ({
+        email,
+        inviteId: `invite-${index}`,
+        token: `token-${index}`,
+        expiresAt: '2026-03-01T00:00:00.000Z',
+        courseIds: input.add.courseIds,
+        cohortIds: input.add.cohortIds,
+        pathIds: input.add.pathIds,
+        accessNamesLabel: undefined,
+        merged: false
+      })),
+      skipped: []
+    })
+  )
+}));
+
 vi.mock('@cio/db/queries/organization', () => ({
   createOrganizationInvite: vi.fn(),
   createOrganizationInviteAudits: vi.fn().mockResolvedValue(undefined),
@@ -10,6 +36,7 @@ vi.mock('@cio/db/queries/organization', () => ({
       rows.map((row, index) => ({ id: `invite-${index}`, email: row.email }))
     ),
   createOrganizationMembers: vi.fn().mockResolvedValue([]),
+  getActiveOrganizationInvitesByEmails: vi.fn().mockResolvedValue([]),
   getOrganizationAudienceMember: vi.fn(),
   getLatestOrganizationInviteRowByOrgAndEmail: vi.fn(),
   getOrgMembersByProfileIds: vi.fn().mockResolvedValue([]),
@@ -18,6 +45,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getStudentOrganizationMemberByOrgAndEmail: vi.fn(),
   hasActiveOrganizationInviteForEmail: vi.fn().mockResolvedValue(false),
   revokeActiveOrganizationInvitesByEmails: vi.fn().mockResolvedValue([]),
+  revokeOrganizationInvitesByIds: vi.fn().mockResolvedValue([]),
   updateOrganizationAudienceMember: vi.fn()
 }));
 
@@ -25,11 +53,12 @@ vi.mock('@cio/db/queries/course', () => ({
   getCourseGroupIds: vi.fn().mockResolvedValue([]),
   getOrgCourseGroups: vi.fn().mockResolvedValue([]),
   getOrgCourses: vi.fn().mockResolvedValue([]),
-  getRequiresLearningPathCourses: vi.fn().mockResolvedValue([])
+  getEnrollOnlyInLearningPathCourses: vi.fn().mockResolvedValue([])
 }));
 
 vi.mock('@cio/db/queries/cohort', () => ({
   addCohortMember: vi.fn(),
+  getCohortMemberByProfileId: vi.fn().mockResolvedValue({ id: 'cm-1', roleId: 3 }),
   getCohortsByOrg: vi.fn().mockResolvedValue([]),
   getCourseIdsByCohortIds: vi.fn().mockResolvedValue([]),
   getExistingCohortMembers: vi.fn().mockResolvedValue([])
@@ -76,17 +105,37 @@ vi.mock('@api/services/jobs', () => ({
   enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined)
 }));
 
+vi.mock('@api/services/course/path-gate', () => ({
+  assertCourseAllowsDirectStudentAdd: vi.fn().mockResolvedValue(undefined),
+  filterOutPathOnlyCourseIds: vi.fn(async (courseIds: string[]) => ({
+    allowedCourseIds: courseIds,
+    skippedPathOnlyCourseIds: []
+  }))
+}));
+
 vi.mock('@api/services/organization/student-limit', () => ({
   assertStudentCapacityOrThrow: vi.fn().mockResolvedValue(null),
   getRemainingStudentSeats: vi.fn().mockResolvedValue(Number.POSITIVE_INFINITY),
   notifyStudentMilestone: vi.fn()
 }));
 
+import { db } from '@cio/db/drizzle';
+import { getProfilesByEmails } from '@cio/db/queries/auth';
+import { addCohortMember } from '@cio/db/queries/cohort';
+import { supersedeStudentOrgInvites } from '@cio/core/services/organization/supersede-invites';
 import {
+  createOrganizationInviteAudits,
   createOrganizationInvites,
+  createOrganizationMembers,
+  getActiveOrganizationInvitesByEmails,
+  getLatestOrganizationInviteRowByOrgAndEmail,
+  getOrganizationAudienceMember,
+  revokeOrganizationInvitesByIds,
+  updateOrganizationAudienceMember,
   getOrganizationById,
   getOrganizationMembersByNormalizedEmails,
-  getOrgMembersByProfileIds
+  getOrgMembersByProfileIds,
+  getStudentOrganizationMemberByOrgAndEmail
 } from '@cio/db/queries/organization';
 import {
   getExistingPathMembers,
@@ -97,14 +146,18 @@ import {
 import { getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
-import { getOrgCourses, getOrgCourseGroups, getRequiresLearningPathCourses } from '@cio/db/queries/course';
+import { getOrgCourses, getOrgCourseGroups, getEnrollOnlyInLearningPathCourses } from '@cio/db/queries/course';
 import { getCohortsByOrg } from '@cio/db/queries/cohort';
 import { recordDirectCourseGrantsBulk } from '@api/services/course/enrollment-grants';
 import { addGroupMembers, getExistingGroupMembers } from '@cio/db/queries/group';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
 import { getRemainingStudentSeats } from '@api/services/organization/student-limit';
-import { importAudienceMembers } from '@api/services/organization/audience';
+import {
+  importAudienceMembers,
+  resendAudienceInvite,
+  updatePendingAudienceMemberEmail
+} from '@api/services/organization/audience';
 import { ROLE } from '@cio/utils/constants';
 import { membershipKey } from '@cio/utils/functions';
 
@@ -242,7 +295,7 @@ describe('importAudienceMembers — learning paths', () => {
 
   beforeEach(() => {
     vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
-      { id: 'path-1', name: 'Path One', autoEnroll: false, sequentialUnlock: false }
+      { id: 'path-1', name: 'Path One', sequentialUnlock: false }
     ] as never);
     vi.mocked(getExistingPathMembers).mockResolvedValue(new Set());
   });
@@ -325,8 +378,8 @@ describe('importAudienceMembers — learning paths', () => {
 
   it('enrolls an existing student into multiple learning paths at once', async () => {
     vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
-      { id: 'path-1', name: 'Path One', autoEnroll: false, sequentialUnlock: false },
-      { id: 'path-2', name: 'Path Two', autoEnroll: false, sequentialUnlock: false }
+      { id: 'path-1', name: 'Path One', sequentialUnlock: false },
+      { id: 'path-2', name: 'Path Two', sequentialUnlock: false }
     ] as never);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
       { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
@@ -351,8 +404,8 @@ describe('importAudienceMembers — learning paths', () => {
 
   it('enrolls every student-path pair in a multi-student multi-path batch', async () => {
     vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
-      { id: 'path-1', name: 'Path One', autoEnroll: false, sequentialUnlock: false },
-      { id: 'path-2', name: 'Path Two', autoEnroll: false, sequentialUnlock: false }
+      { id: 'path-1', name: 'Path One', sequentialUnlock: false },
+      { id: 'path-2', name: 'Path Two', sequentialUnlock: false }
     ] as never);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
       { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT },
@@ -388,9 +441,16 @@ describe('importAudienceMembers — learning paths', () => {
 
     expect(result.imported).toBe(1);
     expect(vi.mocked(enrollProfileInLearningPath)).not.toHaveBeenCalled();
-    expect(vi.mocked(createOrganizationInvites)).toHaveBeenCalledWith([
-      expect.objectContaining({ metadata: expect.objectContaining({ pathIds: ['path-1'] }) })
-    ]);
+    const { supersedeStudentOrgInvites } = await import('@cio/core/services/organization/supersede-invites');
+    expect(vi.mocked(supersedeStudentOrgInvites)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        orgId: ORG,
+        emails: ['new@test.dev'],
+        source: 'AUDIENCE_IMPORT',
+        add: expect.objectContaining({ pathIds: ['path-1'] })
+      })
+    );
   });
 
   it('drops pathIds that do not belong to the organization', async () => {
@@ -420,8 +480,8 @@ describe('importAudienceMembers — learning paths', () => {
       pagination: { page: 1, limit: 2, total: 2, totalPages: 1 }
     } as never);
     vi.mocked(getOrgLearningPathsByIds).mockResolvedValue([
-      { id: 'path-1', name: 'Path 1', autoEnroll: false, sequentialUnlock: false },
-      { id: 'path-2', name: 'Path 2', autoEnroll: false, sequentialUnlock: false }
+      { id: 'path-1', name: 'Path 1', sequentialUnlock: false },
+      { id: 'path-2', name: 'Path 2', sequentialUnlock: false }
     ] as never);
     vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
       { normalizedEmail: 'ada@test.dev', profileId: 'p-1', roleId: ROLE.STUDENT }
@@ -446,10 +506,10 @@ describe('importAudienceMembers — learning paths', () => {
   });
 });
 
-describe('importAudienceMembers — path-gated courses', () => {
-  const gatedImport = {
+describe('importAudienceMembers — path-only courses', () => {
+  const pathOnlyImport = {
     recipientCsv: ['email', 'ada@test.dev'].join('\n'),
-    courseIds: ['c-direct', 'c-gated'],
+    courseIds: ['c-direct', 'c-path-only'],
     sendEmail: false
   } as never;
 
@@ -463,27 +523,28 @@ describe('importAudienceMembers — path-gated courses', () => {
     vi.mocked(getOrgCourses).mockResolvedValue({
       items: [
         { id: 'c-direct', title: 'Direct Course' },
-        { id: 'c-gated', title: 'Gated Course' }
+        { id: 'c-path-only', title: 'Path-only Course' }
       ],
       total: 2,
       page: 1,
       limit: 20,
       totalPages: 1
     } as never);
-    vi.mocked(getRequiresLearningPathCourses).mockResolvedValue([{ id: 'c-gated', title: 'Gated Course' }]);
+    vi.mocked(getEnrollOnlyInLearningPathCourses).mockResolvedValue([{ id: 'c-path-only', title: 'Path-only Course' }]);
     vi.mocked(getExistingGroupMembers).mockResolvedValue(new Set() as never);
     vi.mocked(getOrgCourseGroups).mockResolvedValue([
       { groupId: 'g-direct', courseId: 'c-direct', courseTitle: 'Direct Course', welcomeEmailMessage: null }
     ] as never);
   });
 
-  it('skips direct assignment into gated courses but still assigns the rest', async () => {
-    const result = await importAudienceMembers(ORG, gatedImport, ACTOR);
+  it('skips direct assignment into path-only courses but still assigns the rest', async () => {
+    const result = await importAudienceMembers(ORG, pathOnlyImport, ACTOR);
 
     expect(vi.mocked(addGroupMembers)).toHaveBeenCalledTimes(1);
-    expect(vi.mocked(addGroupMembers)).toHaveBeenCalledWith([
-      expect.objectContaining({ groupId: 'g-direct', profileId: 'p-1', roleId: ROLE.STUDENT })
-    ]);
+    expect(vi.mocked(addGroupMembers)).toHaveBeenCalledWith(
+      [expect.objectContaining({ groupId: 'g-direct', profileId: 'p-1', roleId: ROLE.STUDENT })],
+      expect.anything()
+    );
     expect(vi.mocked(ensureComplianceEnrollmentRecordsForProfiles)).toHaveBeenCalledWith(['c-direct'], ['p-1']);
     expect(vi.mocked(recordDirectCourseGrantsBulk)).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -491,20 +552,21 @@ describe('importAudienceMembers — path-gated courses', () => {
         profileIds: ['p-1'],
         courseIds: ['c-direct'],
         source: 'ORG_AUDIENCE'
-      })
+      }),
+      expect.anything()
     );
     expect(result.assigned).toBe(1);
-    expect(result.skippedPathGatedCourses).toEqual(['c-gated']);
-    expect(result.skippedPathGatedCourseNames).toEqual(['Gated Course']);
+    expect(result.skippedPathOnlyCourses).toEqual(['c-path-only']);
+    expect(result.skippedPathOnlyCourseNames).toEqual(['Path-only Course']);
   });
 
   it('reports no skips when every course accepts direct enrollment', async () => {
-    vi.mocked(getRequiresLearningPathCourses).mockResolvedValue([]);
+    vi.mocked(getEnrollOnlyInLearningPathCourses).mockResolvedValue([]);
 
-    const result = await importAudienceMembers(ORG, gatedImport, ACTOR);
+    const result = await importAudienceMembers(ORG, pathOnlyImport, ACTOR);
 
-    expect(result.skippedPathGatedCourses).toEqual([]);
-    expect(result.skippedPathGatedCourseNames).toEqual([]);
+    expect(result.skippedPathOnlyCourses).toEqual([]);
+    expect(result.skippedPathOnlyCourseNames).toEqual([]);
   });
 });
 
@@ -541,5 +603,186 @@ describe('importAudienceMembers — cohort provenance', () => {
       expect.anything()
     );
     expect(result.assigned).toBe(1);
+  });
+});
+
+describe('importAudienceMembers — new emails that already have a profile', () => {
+  beforeEach(() => {
+    vi.mocked(getProfilesByEmails).mockResolvedValue([{ id: 'p-new', email: 'new@test.dev' }] as never);
+    vi.mocked(getOrgMembersByProfileIds).mockResolvedValue([
+      { profileId: 'p-new', roleId: ROLE.STUDENT, email: 'new@test.dev' }
+    ] as never);
+    vi.mocked(getCohortsByOrg).mockResolvedValue([{ id: 'cohort-1', name: 'Cohort One' }] as never);
+    vi.mocked(getExistingCohortMembers).mockResolvedValue(new Set() as never);
+    vi.mocked(getCourseIdsByCohortIds).mockResolvedValue([]);
+  });
+
+  it('links the existing profile on the new org row inside the import transaction', async () => {
+    await importAudienceMembers(ORG, csv('email', 'new@test.dev'), ACTOR);
+
+    expect(vi.mocked(createOrganizationMembers)).toHaveBeenCalledWith(
+      [expect.objectContaining({ email: 'new@test.dev', profileId: 'p-new', roleId: ROLE.STUDENT })],
+      expect.anything()
+    );
+  });
+
+  it('enrolls the linked profile into the requested cohort', async () => {
+    const result = await importAudienceMembers(
+      ORG,
+      { recipientCsv: ['email', 'new@test.dev'].join('\n'), cohortIds: ['cohort-1'], sendEmail: false } as never,
+      ACTOR
+    );
+
+    expect(vi.mocked(addCohortMember)).toHaveBeenCalledWith(
+      expect.objectContaining({ cohortId: 'cohort-1', profileId: 'p-new', roleId: ROLE.STUDENT }),
+      expect.anything()
+    );
+    expect(result.imported).toBe(1);
+  });
+
+  it('a failure while creating invites rolls the member rows back with it', async () => {
+    const insideTransaction = vi.fn();
+    vi.mocked(db.transaction).mockImplementationOnce((async (callback: (tx: unknown) => unknown) => {
+      insideTransaction();
+      return callback({});
+    }) as never);
+    vi.mocked(supersedeStudentOrgInvites).mockRejectedValueOnce(new Error('invite insert failed'));
+
+    await expect(importAudienceMembers(ORG, csv('email', 'new@test.dev'), ACTOR)).rejects.toThrow(
+      'invite insert failed'
+    );
+
+    // Member rows and invites share one transaction, so the rejection is a rollback;
+    // nothing after it (cohorts, paths, emails) runs.
+    expect(insideTransaction).toHaveBeenCalledOnce();
+    expect(vi.mocked(createOrganizationMembers)).toHaveBeenCalledOnce();
+    expect(vi.mocked(addCohortMember)).not.toHaveBeenCalled();
+  });
+});
+
+describe('updatePendingAudienceMemberEmail', () => {
+  const studentInvite = (id: string, metadata: unknown) => ({
+    id,
+    roleId: ROLE.STUDENT,
+    email: 'old@test.dev',
+    metadata
+  });
+
+  beforeEach(() => {
+    vi.mocked(getOrganizationAudienceMember).mockResolvedValue({
+      id: 9,
+      email: 'old@test.dev',
+      profileId: null
+    } as never);
+    vi.mocked(updateOrganizationAudienceMember).mockResolvedValue({ id: 9, email: 'new@test.dev' } as never);
+    vi.mocked(getLatestOrganizationInviteRowByOrgAndEmail).mockResolvedValue(null);
+    vi.mocked(getActiveOrganizationInvitesByEmails).mockImplementation(async (_orgId: string, emails: string[]) =>
+      emails[0] === 'old@test.dev'
+        ? ([
+            studentInvite('inv-course', { courseIds: ['c-1'] }),
+            studentInvite('inv-path', { pathIds: ['p-1'] }),
+            { id: 'inv-staff', roleId: ROLE.TUTOR, email: 'old@test.dev', metadata: {} }
+          ] as never)
+        : []
+    );
+  });
+
+  it("carries every live invite's resources to the new address and revokes only the student invites", async () => {
+    await updatePendingAudienceMemberEmail(ORG, 9, { email: 'New@Test.dev', sendEmail: false }, ACTOR);
+
+    expect(vi.mocked(supersedeStudentOrgInvites)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        emails: ['new@test.dev'],
+        add: { courseIds: ['c-1'], cohortIds: [], pathIds: ['p-1'] }
+      })
+    );
+    expect(vi.mocked(revokeOrganizationInvitesByIds)).toHaveBeenCalledWith(
+      ['inv-course', 'inv-path'],
+      ACTOR,
+      expect.anything()
+    );
+    expect(vi.mocked(createOrganizationInviteAudits)).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({ inviteId: 'inv-course', eventType: 'REVOKED' }),
+        expect.objectContaining({ inviteId: 'inv-path', eventType: 'REVOKED' })
+      ]),
+      expect.anything()
+    );
+  });
+
+  it("also carries an expired latest invite's resources", async () => {
+    vi.mocked(getLatestOrganizationInviteRowByOrgAndEmail).mockResolvedValue({
+      metadata: { cohortIds: ['co-1'] }
+    } as never);
+
+    await updatePendingAudienceMemberEmail(ORG, 9, { email: 'new@test.dev', sendEmail: false }, ACTOR);
+
+    expect(vi.mocked(supersedeStudentOrgInvites)).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ add: { courseIds: ['c-1'], cohortIds: ['co-1'], pathIds: ['p-1'] } })
+    );
+  });
+
+  it('rejects an address that already has a staff invite, changing nothing', async () => {
+    vi.mocked(getActiveOrganizationInvitesByEmails).mockResolvedValue([
+      { id: 'inv-staff', roleId: ROLE.TUTOR, email: 'new@test.dev', metadata: {} }
+    ] as never);
+
+    await expect(
+      updatePendingAudienceMemberEmail(ORG, 9, { email: 'new@test.dev', sendEmail: false }, ACTOR)
+    ).rejects.toMatchObject({ statusCode: 409 });
+
+    expect(vi.mocked(updateOrganizationAudienceMember)).not.toHaveBeenCalled();
+    expect(vi.mocked(revokeOrganizationInvitesByIds)).not.toHaveBeenCalled();
+  });
+
+  it('a failure while creating the new invite rolls the email change back with it', async () => {
+    vi.mocked(supersedeStudentOrgInvites).mockRejectedValueOnce(new Error('invite insert failed'));
+
+    await expect(
+      updatePendingAudienceMemberEmail(ORG, 9, { email: 'new@test.dev', sendEmail: false }, ACTOR)
+    ).rejects.toThrow('invite insert failed');
+
+    // The member update ran inside the same transaction that rejected.
+    expect(vi.mocked(updateOrganizationAudienceMember)).toHaveBeenCalledWith(
+      ORG,
+      9,
+      { email: 'new@test.dev', verified: false },
+      expect.anything()
+    );
+    expect(vi.mocked(revokeOrganizationInvitesByIds)).not.toHaveBeenCalled();
+  });
+});
+
+describe('resendAudienceInvite', () => {
+  it('loads every course on the invite, not just the first page of 20', async () => {
+    const courseIds = Array.from({ length: 25 }, (_, index) => `c-${index}`);
+    vi.mocked(getStudentOrganizationMemberByOrgAndEmail).mockResolvedValue({
+      email: 'p@test.dev',
+      profileId: null
+    } as never);
+    vi.mocked(getLatestOrganizationInviteRowByOrgAndEmail).mockResolvedValue({ metadata: { courseIds } } as never);
+    vi.mocked(getOrgCourses).mockResolvedValue({ items: [], total: 0, page: 1, limit: 25, totalPages: 0 } as never);
+
+    await resendAudienceInvite(ORG, { email: 'p@test.dev' } as never, ACTOR);
+
+    expect(vi.mocked(getOrgCourses)).toHaveBeenCalledWith({ orgId: ORG, courseIds, limit: 25 });
+  });
+
+  it('returns 409 when an active staff invite covers the address', async () => {
+    vi.mocked(getStudentOrganizationMemberByOrgAndEmail).mockResolvedValue({
+      email: 'p@test.dev',
+      profileId: null
+    } as never);
+    vi.mocked(getLatestOrganizationInviteRowByOrgAndEmail).mockResolvedValue(null);
+    vi.mocked(supersedeStudentOrgInvites).mockResolvedValueOnce({
+      invites: [],
+      skipped: [{ email: 'p@test.dev', reason: 'STAFF_INVITE' }]
+    } as never);
+
+    await expect(resendAudienceInvite(ORG, { email: 'p@test.dev' } as never, ACTOR)).rejects.toMatchObject({
+      statusCode: 409
+    });
   });
 });

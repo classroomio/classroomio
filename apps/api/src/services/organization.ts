@@ -59,6 +59,7 @@ import { isFreeLandingPageTheme, ROLE } from '@cio/utils/constants';
 import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
@@ -267,6 +268,8 @@ export async function removeAudienceMember(orgId: string, memberId: number, remo
     if (!deleted) {
       throw new AppError('Audience member not found', ErrorCodes.ORG_AUDIENCE_REMOVE_FAILED, 404);
     }
+
+    void invalidateOrgStats(orgId).catch(() => {});
 
     if (deleted.email && removedByProfileId) {
       await revokeActiveOrganizationInvitesByEmails(orgId, [deleted.email.toLowerCase()], removedByProfileId);
@@ -480,6 +483,7 @@ export async function getOrganizationCourses(
         const courses = await getOrgCourses({
           orgId,
           courseIds: filteredCourseIds,
+          excludePathOnly: query.excludePathOnly,
           page,
           limit,
           search
@@ -513,6 +517,7 @@ export async function getOrganizationCourses(
           orgId,
           profileId: userId,
           courseIds: filteredCourseIds,
+          excludePathOnly: query.excludePathOnly,
           page,
           limit,
           search
@@ -581,12 +586,12 @@ export async function getOrganizationNavCounts(orgId: string, userId: string, us
  *
  * @param orgId - The organization ID
  * @param userId - User ID for filtering
- * @param options.nonPathOnly - Only courses with a live non-path grant that do not require a learning path
+ * @param options.nonPathOnly - Only courses with a live non-path grant that are not enroll-only in a learning path
  * @returns Array of enrolled courses
  */
 export async function getUserEnrolledCourses(orgId: string, userId: string, options?: { nonPathOnly?: boolean }) {
   try {
-    return getEnrolledCourses({ orgId, profileId: userId, nonPathOnly: options?.nonPathOnly });
+    return await getEnrolledCourses({ orgId, profileId: userId, nonPathOnly: options?.nonPathOnly });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -630,7 +635,7 @@ export async function getUserEnrolled(orgId: string, userId: string, query: TGet
  */
 export async function getRecommendedCourses(orgId: string, userId: string, limit?: number, page?: number) {
   try {
-    return getExploreCourses({ orgId, profileId: userId, limit, page });
+    return await getExploreCourses({ orgId, profileId: userId, limit, page });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
@@ -648,7 +653,7 @@ export async function getRecommendedCourses(orgId: string, userId: string, limit
  */
 export async function getCoursesByOrgId(orgId: string) {
   try {
-    return getCoursesById(orgId);
+    return await getCoursesById(orgId);
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch courses',
