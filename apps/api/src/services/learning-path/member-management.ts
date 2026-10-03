@@ -323,6 +323,24 @@ export async function addPathMembersService(
       sendEmail: payload.sendEmail ?? true
     };
 
+    // Check room for the whole batch before queueing or running inline, so an
+    // over-limit add fails up front. The worker's capacity check never sends
+    // milestone emails, so the milestone is sent from here once the add is
+    // queued or has run.
+    const newStudentCount = await countNewStudentsInBatch(path.organizationId, payload.members);
+    const milestone = await assertStudentCapacityOrThrow(path.organizationId, newStudentCount, db, {
+      deferNotification: true
+    });
+    const sendMilestone = () => {
+      if (!milestone) {
+        return;
+      }
+
+      notifyStudentMilestone(milestone).catch((error) => {
+        console.error('notifyStudentMilestone error:', error);
+      });
+    };
+
     const redisConfigured = isRedisConfigured();
     let redisReady = false;
 
@@ -357,6 +375,8 @@ export async function addPathMembersService(
         }
 
         if (jobId) {
+          sendMilestone();
+
           return { mode: 'queued', jobId, requested: payload.members.length };
         }
 
@@ -383,13 +403,9 @@ export async function addPathMembersService(
       }
     }
 
-    // Inline runs commit chunk by chunk, so check room for the whole batch
-    // first: an over-limit add fails before any chunk is written.
-    const newStudentCount = await countNewStudentsInBatch(path.organizationId, payload.members);
-    await assertStudentCapacityOrThrow(path.organizationId, newStudentCount);
-
     try {
       const outcome = await runQueuedPathBulkEnroll(bulkPayload);
+      sendMilestone();
 
       return {
         mode: 'completed',

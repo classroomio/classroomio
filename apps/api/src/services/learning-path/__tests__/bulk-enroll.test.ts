@@ -44,7 +44,8 @@ const mocks = vi.hoisted(() => ({
   ensureComplianceEnrollmentRecordsForProfiles: vi.fn(),
   syncLearningPathMembersProgress: vi.fn(),
   scheduleLearningPathProgressSync: vi.fn(),
-  supersedeStudentOrgInvites: vi.fn()
+  supersedeStudentOrgInvites: vi.fn(),
+  notifyStudentMilestone: vi.fn().mockResolvedValue(undefined)
 }));
 
 const transactionClient = { id: 'test-transaction-client' };
@@ -136,6 +137,11 @@ vi.mock('../progress-sync-jobs', () => ({
 
 vi.mock('@cio/core/services/organization/supersede-invites', () => ({
   supersedeStudentOrgInvites: mocks.supersedeStudentOrgInvites
+}));
+
+vi.mock('@api/services/organization/student-limit', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@api/services/organization/student-limit')>()),
+  notifyStudentMilestone: mocks.notifyStudentMilestone
 }));
 
 vi.mock('../learning-path', () => ({
@@ -508,6 +514,7 @@ describe('addPathMembersService bulk routing', () => {
   }
 
   it('queues adds above the bulk threshold instead of enrolling inline', async () => {
+    existingOrgMembers(51);
     mocks.enqueuePathBulkEnroll.mockResolvedValue('job-1');
 
     const result = await addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', {
@@ -519,6 +526,42 @@ describe('addPathMembersService bulk routing', () => {
       expect.objectContaining({ organizationId: 'org-1', actorProfileId: 'admin-1', pathId: PATH.id })
     );
     expect(mocks.enrollMember).not.toHaveBeenCalled();
+  });
+
+  it('a large add over the student limit gets 403 before it is queued or any chunk is written', async () => {
+    mocks.getOrgMembersByProfileIds.mockResolvedValue([]);
+    mocks.getActiveOrganizationPlan.mockResolvedValue(null);
+    mocks.countActiveStudents.mockResolvedValue(0);
+
+    await expect(
+      addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', { 'org-1': ROLE.ADMIN })
+    ).rejects.toMatchObject({ statusCode: 403, code: 'UPGRADE_REQUIRED' });
+
+    // The seat check runs before Redis is consulted, so neither branch starts.
+    expect(mocks.isRedisConfigured).not.toHaveBeenCalled();
+    expect(mocks.enqueuePathBulkEnroll).not.toHaveBeenCalled();
+    expect(mocks.enrollBulkMember).not.toHaveBeenCalled();
+    expect(mocks.enrollMember).not.toHaveBeenCalled();
+    expect(mocks.notifyStudentMilestone).not.toHaveBeenCalled();
+  });
+
+  it('sends the student-limit milestone once a large add is queued', async () => {
+    // 41 of the 51 are already org members, so the add takes 10 new seats:
+    // 5 + 10 crosses the halfway mark of the Free plan's 20-student limit.
+    existingOrgMembers(41);
+    mocks.getActiveOrganizationPlan.mockResolvedValue(null);
+    mocks.countActiveStudents.mockResolvedValue(5);
+    mocks.enqueuePathBulkEnroll.mockResolvedValue('job-1');
+
+    const result = await addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', {
+      'org-1': ROLE.ADMIN
+    });
+
+    expect(result).toEqual({ mode: 'queued', jobId: 'job-1', requested: 51 });
+    expect(mocks.notifyStudentMilestone).toHaveBeenCalledTimes(1);
+    expect(mocks.notifyStudentMilestone).toHaveBeenCalledWith(
+      expect.objectContaining({ orgId: 'org-1', milestone: 'half', studentCount: 15, studentLimit: 20 })
+    );
   });
 
   it('runs inline without Redis', async () => {
@@ -601,21 +644,8 @@ describe('addPathMembersService bulk routing', () => {
     expect(mocks.enqueuePathBulkEnroll).not.toHaveBeenCalled();
   });
 
-  it('an inline add over the student limit gets 403 before any chunk is written', async () => {
-    mocks.isRedisConfigured.mockReturnValueOnce(false);
-    mocks.getOrgMembersByProfileIds.mockResolvedValue([]);
-    mocks.getActiveOrganizationPlan.mockResolvedValue(null);
-    mocks.countActiveStudents.mockResolvedValue(0);
-
-    await expect(
-      addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', { 'org-1': ROLE.ADMIN })
-    ).rejects.toMatchObject({ statusCode: 403, code: 'UPGRADE_REQUIRED' });
-
-    expect(mocks.enrollBulkMember).not.toHaveBeenCalled();
-    expect(mocks.enrollMember).not.toHaveBeenCalled();
-  });
-
   it('returns 503 and never runs inline when the enqueue hangs past the timeout', async () => {
+    existingOrgMembers(51);
     vi.useFakeTimers();
     mocks.enqueuePathBulkEnroll.mockReturnValueOnce(new Promise(() => {}));
 
