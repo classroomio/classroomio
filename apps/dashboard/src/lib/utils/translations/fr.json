@@ -823,7 +823,7 @@
       "result_heading": "{count} étudiants importés",
       "start_over": "Choisissez un autre fichier",
       "skipped_path_only_title": "{count} cours à parcours uniquement ignorés",
-      "skipped_path_only_description": "{noms}. Ces cours sont réservés aux inscriptions dans un parcours d'apprentissage. Soit vous attribuez le parcours d'apprentissage contenant (cela accorde également ses autres cours), soit vous désactivez « S'inscrire uniquement au parcours d'apprentissage » dans les paramètres du cours."
+      "skipped_path_only_description": "{names}. Ces cours sont réservés aux inscriptions dans un parcours d'apprentissage. Soit vous attribuez le parcours d'apprentissage contenant (cela accorde également ses autres cours), soit vous désactivez « S'inscrire uniquement au parcours d'apprentissage » dans les paramètres du cours."
     },
     "page_subtitle": "Découvrez qui appartient à votre organisation, qui apprend, qui est invité et comment les contacter.",
     "user_analytics": {
