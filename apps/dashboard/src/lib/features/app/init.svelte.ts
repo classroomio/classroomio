@@ -226,7 +226,11 @@ class AppInitApi extends BaseApi {
     }));
 
     profile.set(this.data.profile);
-    handleLocaleChange(this.data.profile.locale ?? 'en');
+    const orgSite = params?.isOrgSite
+      ? this.data.organizations.find((org) => org.id === params.orgId || org.siteName === params.orgSiteName)
+      : undefined;
+    const enforcedLocale = orgSite?.settings?.language?.enforced ? orgSite.settings.language.locale : undefined;
+    handleLocaleChange(enforcedLocale ?? this.data.profile.locale ?? 'en');
 
     this.setOrgStore(params);
   }

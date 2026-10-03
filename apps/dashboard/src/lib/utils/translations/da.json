@@ -3164,6 +3164,12 @@
     "settings": {
       "customize_lms": {
         "title": "Tilpas LMS",
+        "language": {
+          "title": "Sprog",
+          "description": "Vælg det sprog, der bruges i den elevvendte LMS-grænseflade.",
+          "default_language": "Standardsprog",
+          "enforce": "Påtving dette sprog for elever"
+        },
         "disabled": "Deaktiveret",
         "enabled": "Aktiveret",
         "save": "Gem ændringer",

@@ -60,6 +60,7 @@ import {
 } from '../utils/audience-query-utils';
 import { resolveOrgJoinRedirect } from '../utils/org-join-redirect';
 import type { ZodError } from 'zod';
+import type { TLocale } from '@cio/db/types';
 
 const PUBLISHED_COURSES_ORDERING_LIMIT = 100;
 
@@ -77,7 +78,11 @@ export interface TOrgUpdateForm {
   disableSignupMessage?: string;
   disableEmailPassword?: boolean;
   disableGoogleAuth?: boolean;
-  settings?: { signup?: { inviteOnly?: boolean }; emailNotifications?: Record<string, boolean> };
+  settings?: {
+    signup?: { inviteOnly?: boolean };
+    language?: { locale?: TLocale; enforced?: boolean };
+    emailNotifications?: Record<string, boolean>;
+  };
 }
 
 /**

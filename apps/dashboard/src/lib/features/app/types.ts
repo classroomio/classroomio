@@ -1,4 +1,5 @@
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import type { TLocale } from '@cio/db/types';
 
 export type AccountResponse = InferResponseType<typeof classroomio.account.$get> | null;
 
@@ -26,6 +27,10 @@ export type PublicOrg = Pick<
   settings: {
     signup?: {
       inviteOnly?: boolean;
+    };
+    language?: {
+      locale?: TLocale;
+      enforced?: boolean;
     };
   };
   customization: {

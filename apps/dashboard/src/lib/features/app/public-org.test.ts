@@ -23,6 +23,7 @@ describe('toPublicOrg', () => {
       disableGoogleAuth: false,
       settings: {
         signup: { inviteOnly: true },
+        language: { locale: 'tr', enforced: true },
         emailNotifications: { newStudent: true }
       },
       customization: {
@@ -59,7 +60,10 @@ describe('toPublicOrg', () => {
       disableSignupMessage: null,
       disableEmailPassword: false,
       disableGoogleAuth: false,
-      settings: { signup: { inviteOnly: true } },
+      settings: {
+        signup: { inviteOnly: true },
+        language: { locale: 'tr', enforced: true }
+      },
       customization: { auth: { backgroundImage: 'https://example.com/auth.png' } },
       plans: [{ planName: 'ENTERPRISE', isActive: true }]
     });

@@ -14,6 +14,7 @@ type OrganizationCustomization = AccountOrg['customization'] & {
 export function toPublicOrg(org: AccountOrg): PublicOrg {
   const customization = org.customization as OrganizationCustomization;
   const signupSettings = org.settings?.signup;
+  const languageSettings = org.settings?.language;
   const authBackgroundImage = customization.auth?.backgroundImage;
 
   return {
@@ -31,13 +32,10 @@ export function toPublicOrg(org: AccountOrg): PublicOrg {
     disableSignupMessage: org.disableSignupMessage,
     disableEmailPassword: org.disableEmailPassword,
     disableGoogleAuth: org.disableGoogleAuth,
-    settings: signupSettings
-      ? {
-          signup: {
-            inviteOnly: signupSettings.inviteOnly
-          }
-        }
-      : {},
+    settings: {
+      ...(signupSettings ? { signup: { inviteOnly: signupSettings.inviteOnly } } : {}),
+      ...(languageSettings ? { language: languageSettings } : {})
+    },
     customization: authBackgroundImage
       ? {
           auth: {

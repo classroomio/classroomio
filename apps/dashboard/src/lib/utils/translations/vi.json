@@ -3164,6 +3164,12 @@
     "settings": {
       "customize_lms": {
         "title": "Tùy chỉnh LMS",
+        "language": {
+          "title": "Ngôn ngữ",
+          "description": "Chọn ngôn ngữ được sử dụng trong giao diện LMS dành cho học viên.",
+          "default_language": "Ngôn ngữ mặc định",
+          "enforce": "Bắt buộc học viên sử dụng ngôn ngữ này"
+        },
         "disabled": "Đã tắt",
         "enabled": "Đã bật",
         "save": "Lưu thay đổi",

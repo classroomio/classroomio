@@ -3164,6 +3164,12 @@
     "settings": {
       "customize_lms": {
         "title": "Personnaliser le LMS",
+        "language": {
+          "title": "Langue",
+          "description": "Choisissez la langue de l’interface LMS destinée aux étudiants.",
+          "default_language": "Langue par défaut",
+          "enforce": "Imposer cette langue aux étudiants"
+        },
         "disabled": "Désactivé",
         "enabled": "Activé",
         "save": "Enregistrer les modifications",
