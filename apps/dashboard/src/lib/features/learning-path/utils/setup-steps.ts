@@ -56,9 +56,7 @@ export function getSetupSteps(path: LearningPathDetail | null | undefined, baseP
 
   const isNameAndDescDone = Boolean(path.name.trim() && path.description.trim());
   const isAddCoursesDone = Boolean(path.courses && path.courses.length > 0);
-  const isOrderDone = Boolean(
-    path.courses && path.courses.length > 0 && (path.courses.length === 1 || path.courseOrderSetAt)
-  );
+  const isOrderDone = Boolean(path.courses && path.courses.length > 0 && path.courseOrderSetAt);
   const isPriceDone = isPriceConfigured(path);
   const isLandingDone = hasLandingContent(path);
   const isPublishDone = Boolean(path.isPublished);
