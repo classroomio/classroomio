@@ -18,6 +18,7 @@ import { ROLE } from '@cio/utils/constants';
 import { t } from '$lib/utils/functions/translations';
 import { snackbar } from '$features/ui/snackbar/store';
 import { toPathMembersRequestQuery } from '../utils/path-people-utils';
+import { summarizeAddMembersCounts } from '../utils/path-add-members-utils';
 
 /** True when the add-members call was queued for background processing. */
 export function isQueuedAddMembersResult(data: AddPathMembersSuccess['data']): data is QueuedAddMembersResult {
@@ -78,8 +79,23 @@ class PathMembersApi extends BaseApiWithErrors {
         if (isQueuedAddMembersResult(result.data)) {
           return;
         }
-        const count = Array.isArray(result.data) ? result.data.length : 0;
-        snackbar.success(t.get('course.navItem.people.invite_modal.members_added', { count }));
+        // A partial add (failures, or emails skipped for an existing staff
+        // invite) is never reported as success.
+        const summary = summarizeAddMembersCounts(result.data);
+
+        if (summary.kind === 'partial') {
+          snackbar.error(
+            t.get('learningPath.snackbar.members_add_partial', {
+              added: summary.added,
+              invited: summary.invited,
+              notAdded: summary.notAdded
+            })
+          );
+
+          return;
+        }
+
+        snackbar.success(t.get('course.navItem.people.invite_modal.members_added', { count: summary.added }));
       }
     });
 

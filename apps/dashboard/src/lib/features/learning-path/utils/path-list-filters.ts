@@ -1,9 +1,9 @@
 import {
-  PATH_LIST_COMPLETION_FILTERS,
-  PATH_LIST_ENROLLMENT_FILTERS,
-  PATH_LIST_SORT_BY,
-  PATH_LIST_SORT_ORDERS,
-  PATH_LIST_STATUS_FILTERS
+  LEARNING_PATH_LIST_COMPLETION_FILTERS,
+  LEARNING_PATH_LIST_ENROLLMENT_FILTERS,
+  LEARNING_PATH_LIST_SORT_BY,
+  LEARNING_PATH_LIST_SORT_ORDERS,
+  LEARNING_PATH_LIST_STATUS_FILTERS
 } from '@cio/utils/validation/learning-path';
 import { DEFAULT_PATH_SORT, DEFAULT_SORT_ORDER } from './constants';
 import type { CompletionFilter, EnrollmentFilter, PathListFilters, StatusFilter } from './types';
@@ -15,7 +15,7 @@ export const PATH_LIST_PAGE_SIZE = 20;
 export const PATH_LIST_FILTER_PARAM_KEYS = ['search', 'status', 'enrollment', 'completion', 'sort', 'order'] as const;
 
 function parseStatusFilter(value: string | null): StatusFilter {
-  if (value && (PATH_LIST_STATUS_FILTERS as readonly string[]).includes(value)) {
+  if (value && (LEARNING_PATH_LIST_STATUS_FILTERS as readonly string[]).includes(value)) {
     return value as StatusFilter;
   }
 
@@ -23,7 +23,7 @@ function parseStatusFilter(value: string | null): StatusFilter {
 }
 
 function parseEnrollmentFilter(value: string | null): EnrollmentFilter {
-  if (value && (PATH_LIST_ENROLLMENT_FILTERS as readonly string[]).includes(value)) {
+  if (value && (LEARNING_PATH_LIST_ENROLLMENT_FILTERS as readonly string[]).includes(value)) {
     return value as EnrollmentFilter;
   }
 
@@ -31,7 +31,7 @@ function parseEnrollmentFilter(value: string | null): EnrollmentFilter {
 }
 
 function parseCompletionFilter(value: string | null): CompletionFilter {
-  if (value && (PATH_LIST_COMPLETION_FILTERS as readonly string[]).includes(value)) {
+  if (value && (LEARNING_PATH_LIST_COMPLETION_FILTERS as readonly string[]).includes(value)) {
     return value as CompletionFilter;
   }
 
@@ -51,13 +51,13 @@ export function parsePathListFilters(params: URLSearchParams): PathListFilters {
 
   const rawSort = params.get('sort');
   const sort =
-    rawSort && (PATH_LIST_SORT_BY as readonly string[]).includes(rawSort)
+    rawSort && (LEARNING_PATH_LIST_SORT_BY as readonly string[]).includes(rawSort)
       ? (rawSort as PathListFilters['sort'])
       : DEFAULT_PATH_SORT;
 
   const rawOrder = params.get('order');
   const order =
-    rawOrder && (PATH_LIST_SORT_ORDERS as readonly string[]).includes(rawOrder)
+    rawOrder && (LEARNING_PATH_LIST_SORT_ORDERS as readonly string[]).includes(rawOrder)
       ? (rawOrder as PathListFilters['order'])
       : DEFAULT_SORT_ORDER;
 

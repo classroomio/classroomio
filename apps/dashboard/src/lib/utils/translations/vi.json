@@ -5996,6 +5996,7 @@
       "landing_save_failed": "Không thể lưu trang đích",
       "link_generated": "Đã tạo liên kết mời và sao chép vào bảng nhớ tạm",
       "settings_saved": "Đã cập nhật cài đặt lộ trình học tập",
+      "members_add_partial": "{added} đã thêm, {invited} đã mời, không thể thêm {notAdded}",
       "member_role_updated": "Đã cập nhật vai trò thành viên",
       "delete_failed": "Không xóa được lộ trình học tập",
       "member_removed": "Học sinh bị xóa khỏi đường dẫn"
@@ -6277,9 +6278,7 @@
         "self_enrollment_label": "Cho phép tự đăng ký",
         "self_enrollment_desc": "Học viên có thể tự ghi danh vào lộ trình này.",
         "sequential_unlock_label": "Mở khóa khóa học tuần tự",
-        "sequential_unlock_desc": "Học viên phải hoàn thành các khóa học theo đúng thứ tự.",
-        "auto_enroll_label": "Tự động đăng ký vào các khóa học",
-        "auto_enroll_desc": "Tự động đăng ký học viên vào tất cả các khóa học khi họ tham gia lộ trình này."
+        "sequential_unlock_desc": "Học viên phải hoàn thành các khóa học theo đúng thứ tự."
       },
       "publishing": {
         "legend": "Xuất bản",
@@ -6318,12 +6317,6 @@
         "legend": "Học viên có thể tự đăng ký",
         "access": "Manage access in {people}",
         "access_people": "Mọi người",
-        "enabled": "Đã bật",
-        "disabled": "Đã tắt"
-      },
-      "auto_enroll": {
-        "legend": "Tự động đăng ký vào các khóa học trong lộ trình",
-        "desc": "Tham gia lộ trình sẽ đăng ký học viên vào mọi khóa học trong lộ trình.",
         "enabled": "Đã bật",
         "disabled": "Đã tắt"
       }

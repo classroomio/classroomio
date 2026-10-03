@@ -76,7 +76,7 @@
   // Student invites and share links mint STUDENT joins, so both tabs are
   // disabled here while tutors stay invitable. The backend still enforces
   // the gate; this only saves the admin a wasted round-trip.
-  const isPathGated = $derived(!isLearningPath && Boolean(courseApi.course?.requiresLearningPath));
+  const isPathGated = $derived(!isLearningPath && Boolean(courseApi.course?.enrollOnlyInLearningPath));
 
   let selectedIds = $state<string[]>([]);
   let courseId = $derived(courseApi.course?.id ?? '');

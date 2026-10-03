@@ -256,7 +256,7 @@
         type: $settings.type,
         logo: logoUrl,
         isPublished: $settings.isPublished,
-        requiresLearningPath: $settings.requiresLearningPath,
+        enrollOnlyInLearningPath: $settings.enrollOnlyInLearningPath,
         metadata: metadataPayload,
         slug: courseApi.course.slug ?? undefined,
         compliance:
@@ -335,7 +335,7 @@
         lessonDownload: !!course.metadata?.lessonDownload,
         isPublished: !!course.isPublished,
         allowSelfEnrollment: isSelfEnrollmentAllowed(course.metadata),
-        requiresLearningPath: !!course.requiresLearningPath,
+        enrollOnlyInLearningPath: !!course.enrollOnlyInLearningPath,
         isContentGroupingEnabled: course.metadata?.isContentGroupingEnabled ?? true,
         progressionMode: course.metadata?.progressionMode ?? 'free',
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
@@ -1137,14 +1137,14 @@
       <Switch
         id="requires-learning-path"
         data-testid="course-settings-requires-learning-path"
-        checked={$settings.requiresLearningPath}
+        checked={$settings.enrollOnlyInLearningPath}
         onCheckedChange={(checked) => {
-          $settings.requiresLearningPath = checked;
+          $settings.enrollOnlyInLearningPath = checked;
           hasUnsavedChanges = true;
         }}
       />
       <Label for="requires-learning-path">
-        {$settings.requiresLearningPath
+        {$settings.enrollOnlyInLearningPath
           ? $t('course.navItem.settings.enabled')
           : $t('course.navItem.settings.disabled')}
       </Label>
