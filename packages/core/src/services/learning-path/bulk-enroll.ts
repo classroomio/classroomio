@@ -28,6 +28,7 @@ import { buildOrgInviteLink } from '../../config/dashboard-url';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { enrollProfileCore } from './enroll-profile-core';
 import { getStaffInvitedEmails, supersedeStudentOrgInvites } from '../organization/supersede-invites';
+import { getCrossedStudentMilestone, notifyStudentMilestone } from '../organization/student-milestone';
 import { EMAIL_FANOUT_CONCURRENCY, mapWithConcurrency } from './fanout';
 import { buildLearningPathLoginUrl, getInviteExpiryLabel, normalizeInviteEmails } from './path-invite-utils';
 import { resolveBulkMembers } from './member-resolve';
@@ -45,9 +46,10 @@ import { enqueueWorkerTemplateEmail } from './template-email';
  * (org membership + quota, member upsert, progress cache, course grants,
  * compliance records, email-only invites, welcome emails) with two deliberate
  * differences:
- * per-chunk transactions with per-chunk failure tolerance, and no milestone
- * notification emails (the API asserts capacity at enqueue time, which fires
- * those). Keep the two in sync when the enrollment mechanics change.
+ * per-chunk transactions with per-chunk failure tolerance, and student-limit
+ * milestone emails sent once after the run from the seats it actually took
+ * (the API only asserts capacity at enqueue time). Keep the two in sync when
+ * the enrollment mechanics change.
  */
 
 /** Carries a code so the API can map run failures to HTTP without string matching. */
@@ -72,7 +74,7 @@ type TResolvedChunkMember = { profileId: string; email: string | null; roleId: n
 
 /**
  * Quota check for worker enrollments. Mirrors `assertStudentCapacityOrThrow`
- * minus milestone notifications, which the API already fires at enqueue time.
+ * minus milestone notifications, which the run sends once after every chunk.
  */
 async function assertBulkStudentCapacity(
   organizationId: string,
@@ -150,6 +152,56 @@ async function assertBulkInviteCapacity(organizationId: string, newStudentCount:
       currentCount,
       limit
     });
+  }
+}
+
+/**
+ * The org's active student count and plan limit, or null when no limit
+ * applies (self-hosted or an unlimited plan).
+ */
+async function getStudentSeatUsage(organizationId: string): Promise<{ count: number; limit: number } | null> {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    return null;
+  }
+
+  const activePlan = await getActiveOrganizationPlan(organizationId);
+  const limit = getStudentLimit(activePlan?.planName);
+
+  if (!Number.isFinite(limit)) {
+    return null;
+  }
+
+  const count = await countActiveStudents(organizationId);
+
+  return { count, limit };
+}
+
+/**
+ * Emails admins when the run's committed seats crossed a student-limit
+ * milestone. Best-effort: a failure only logs, never the committed run.
+ */
+async function notifyRunStudentMilestone(
+  organizationId: string,
+  seatsBefore: { count: number; limit: number } | null
+): Promise<void> {
+  if (!seatsBefore) {
+    return;
+  }
+
+  try {
+    const studentCountAfter = await countActiveStudents(organizationId);
+    const milestone = getCrossedStudentMilestone(
+      organizationId,
+      seatsBefore.count,
+      studentCountAfter,
+      seatsBefore.limit
+    );
+
+    if (milestone) {
+      await notifyStudentMilestone(milestone);
+    }
+  } catch (error) {
+    console.error('runQueuedPathBulkEnroll milestone notification error', { organizationId, error });
   }
 }
 
@@ -326,6 +378,7 @@ export async function runQueuedPathBulkEnroll(payload: {
   const branding = buildEmailBranding(organization);
   const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
   const loginUrl = buildLearningPathLoginUrl(organization, path);
+  const seatsBefore = await getStudentSeatUsage(organizationId);
 
   let enrolled = 0;
   let invited = 0;
@@ -550,6 +603,10 @@ export async function runQueuedPathBulkEnroll(payload: {
 
   if (enrolled > 0) {
     void invalidateOrgStats(organizationId).catch(() => {});
+  }
+
+  if (enrolled > 0 || invited > 0) {
+    await notifyRunStudentMilestone(organizationId, seatsBefore);
   }
 
   // Compliance courses track enrollment records for due dates and renewals.

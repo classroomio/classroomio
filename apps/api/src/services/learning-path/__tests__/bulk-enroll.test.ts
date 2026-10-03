@@ -141,6 +141,11 @@ vi.mock('@cio/core/services/organization/supersede-invites', () => ({
   supersedeStudentOrgInvites: mocks.supersedeStudentOrgInvites
 }));
 
+vi.mock('@cio/core/services/organization/student-milestone', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@cio/core/services/organization/student-milestone')>()),
+  notifyStudentMilestone: mocks.notifyStudentMilestone
+}));
+
 vi.mock('@api/services/organization/student-limit', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@api/services/organization/student-limit')>()),
   notifyStudentMilestone: mocks.notifyStudentMilestone
@@ -433,6 +438,7 @@ describe('runQueuedPathBulkEnroll', () => {
 
   it('reports a partial outcome when the student quota is exceeded mid-run', async () => {
     mocks.countActiveStudents
+      .mockResolvedValueOnce(0) // Seat usage before the run
       .mockResolvedValueOnce(0) // First chunk check passes
       .mockResolvedValueOnce(25); // Second chunk check fails (quota exceeded)
 
@@ -464,6 +470,45 @@ describe('runQueuedPathBulkEnroll', () => {
     // chunk; only p-1 committed, so only p-1 is synced.
     expect(mocks.enrollMember).toHaveBeenCalledTimes(2);
     expect(mocks.syncLearningPathMembersProgress).toHaveBeenCalledWith({ pathId: PATH.id, profileIds: ['p-1'] });
+  });
+
+  it('sends the student-limit milestone after the run from the seats it took', async () => {
+    // 9 of the Free plan's 20 seats before the run; the committed student
+    // makes 10, crossing the halfway mark.
+    mocks.countActiveStudents
+      .mockResolvedValueOnce(9) // Seat usage before the run
+      .mockResolvedValueOnce(9) // Chunk capacity check
+      .mockResolvedValueOnce(10); // Seat usage after the run
+
+    await runQueuedPathBulkEnroll({
+      organizationId: 'org-1',
+      actorProfileId: 'admin-1',
+      pathId: PATH.id,
+      members: [{ profileId: 'p-1', roleId: ROLE.STUDENT }],
+      chunkSize: 50
+    });
+
+    expect(mocks.notifyStudentMilestone).toHaveBeenCalledTimes(1);
+    expect(mocks.notifyStudentMilestone).toHaveBeenCalledWith({
+      orgId: 'org-1',
+      milestone: 'half',
+      studentCount: 10,
+      studentLimit: 20
+    });
+  });
+
+  it('does not send the student-limit milestone when the run takes no seats', async () => {
+    mocks.countActiveStudents.mockResolvedValue(25);
+
+    await runQueuedPathBulkEnroll({
+      organizationId: 'org-1',
+      actorProfileId: 'admin-1',
+      pathId: PATH.id,
+      members: [{ profileId: 'p-1', roleId: ROLE.STUDENT }],
+      chunkSize: 50
+    });
+
+    expect(mocks.notifyStudentMilestone).not.toHaveBeenCalled();
   });
 
   it('reports every member as QUOTA_EXCEEDED when the first chunk is over the limit', async () => {
@@ -546,9 +591,10 @@ describe('addPathMembersService bulk routing', () => {
     expect(mocks.notifyStudentMilestone).not.toHaveBeenCalled();
   });
 
-  it('sends the student-limit milestone once a large add is queued', async () => {
+  it('does not send the student-limit milestone when a large add is only queued', async () => {
     // 41 of the 51 are already org members, so the add takes 10 new seats:
-    // 5 + 10 crosses the halfway mark of the Free plan's 20-student limit.
+    // 5 + 10 would cross the halfway mark of the Free plan's 20-student limit,
+    // but nobody has joined yet, so the worker sends it after the run.
     existingOrgMembers(41);
     mocks.getActiveOrganizationPlan.mockResolvedValue(null);
     mocks.countActiveStudents.mockResolvedValue(5);
@@ -559,10 +605,7 @@ describe('addPathMembersService bulk routing', () => {
     });
 
     expect(result).toEqual({ mode: 'queued', jobId: 'job-1', requested: 51 });
-    expect(mocks.notifyStudentMilestone).toHaveBeenCalledTimes(1);
-    expect(mocks.notifyStudentMilestone).toHaveBeenCalledWith(
-      expect.objectContaining({ orgId: 'org-1', milestone: 'half', studentCount: 15, studentLimit: 20 })
-    );
+    expect(mocks.notifyStudentMilestone).not.toHaveBeenCalled();
   });
 
   it('runs inline without Redis', async () => {
