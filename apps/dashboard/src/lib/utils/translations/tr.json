@@ -3690,6 +3690,35 @@
             "disabled_notice": "Bu bağlantı devre dışı bırakıldı. Yeni üyelerin bağlantı yoluyla katılmasına izin vermek için etkinleştirin.",
             "select_role": "Bir rol seçin"
           }
+        },
+        "filter": {
+          "title": "Kişileri filtrele",
+          "role": "Rol",
+          "all_roles": "Tüm roller",
+          "progress": "İlerleme",
+          "in_progress": "Devam ediyor",
+          "completed": "Tamamlandı",
+          "certificate": "Sertifika",
+          "earned": "Kazanıldı",
+          "not_earned": "Kazanılmadı",
+          "no_login_since": "Giriş yapmadığı süre",
+          "joined_within": "Katıldığı süre"
+        },
+        "window": {
+          "7d": "7 gün",
+          "30d": "30 gün",
+          "90d": "90 gün",
+          "180d": "180 gün",
+          "never": "Asla"
+        },
+        "views": {
+          "all": "Tüm kişiler",
+          "not_started": "Başlanmadı",
+          "in_progress": "Devam ediyor",
+          "completed": "Tamamlandı",
+          "never_logged_in": "Hiç giriş yapmadı",
+          "awaiting_certificate": "Sertifika bekliyor",
+          "custom": "Özel filtreler"
         }
       },
       "certificates": {
@@ -5511,7 +5540,17 @@
       "add_another": "Başka bir tane ekleyin",
       "invite_submit": "Davet Gönder",
       "empty_title": "Henüz üye yok",
-      "empty_description": "Kişileri bu gruba katılmaya davet edin."
+      "empty_description": "Kişileri bu gruba katılmaya davet edin.",
+      "name": "Ad",
+      "joined": "Katıldı",
+      "filter_title": "Kişileri filtrele",
+      "views": {
+        "all": "Tüm kişiler",
+        "tutors": "Eğitmenler",
+        "students": "Öğrenciler",
+        "pending_invites": "Bekleyen davetler",
+        "never_logged_in": "Hiç giriş yapmadı"
+      }
     },
     "lms": {
       "empty_title": "Henüz grup yok",
