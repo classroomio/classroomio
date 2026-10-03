@@ -52,13 +52,20 @@ async function seedScenario(tx: DbOrTxClient) {
   const bob = await insertProfile(tx, 'bob');
   const orgId = await insertOrganization(tx, 'Org');
 
+  const excelCourse = await insertCourse(tx, orgId, 'Excel', { lessons: 3 });
+  const pythonCourse = await insertCourse(tx, orgId, 'Python', { lessons: 4 });
+  const deletedCourse = await insertCourse(tx, orgId, 'Deleted', { lessons: 1, status: 'DELETED' });
+  const sqlCourse = await insertCourse(tx, orgId, 'SQL', { lessons: 2 });
+  const blankCourse = await insertCourse(tx, orgId, 'Blank', { lessons: 0 });
+  const removedCourse = await insertCourse(tx, orgId, 'Removed', { lessons: 1 });
+
   const courses = {
-    excel: await insertCourse(tx, orgId, 'Excel', { lessons: 3 }),
-    python: await insertCourse(tx, orgId, 'Python', { lessons: 4 }),
-    deleted: await insertCourse(tx, orgId, 'Deleted', { lessons: 1, status: 'DELETED' }),
-    sql: await insertCourse(tx, orgId, 'SQL', { lessons: 2 }),
-    blank: await insertCourse(tx, orgId, 'Blank', { lessons: 0 }),
-    removed: await insertCourse(tx, orgId, 'Removed', { lessons: 1 })
+    excel: excelCourse,
+    python: pythonCourse,
+    deleted: deletedCourse,
+    sql: sqlCourse,
+    blank: blankCourse,
+    removed: removedCourse
   };
 
   const excelMember = await insertMember(tx, courses.excel.groupId, ada);

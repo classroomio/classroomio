@@ -320,9 +320,21 @@ export async function runQueuedPathBulkEnroll(payload: {
   const failed: PathBulkEnrollFailure[] = [];
   const complianceProfileIds: string[] = [];
 
+  let quotaExceeded = false;
+  const chunkKey = (member: TPathBulkMember) => member.profileId ?? member.email ?? '';
+
   for (let index = 0; index < members.length; index += chunkSize) {
+    // The limit was hit in an earlier chunk: every member not yet attempted
+    // fails, and the loop stops so the post-run work covers committed chunks.
+    if (quotaExceeded) {
+      for (const member of members.slice(index)) {
+        failed.push({ key: chunkKey(member), reason: 'QUOTA_EXCEEDED' });
+      }
+
+      break;
+    }
+
     const chunk = members.slice(index, index + chunkSize);
-    const chunkKey = (member: TPathBulkMember) => member.profileId ?? member.email ?? '';
 
     let direct: TResolvedChunkMember[] = [];
     let pendingInvites: string[] = [];
@@ -393,7 +405,17 @@ export async function runQueuedPathBulkEnroll(payload: {
       welcomeCandidates = result.candidates;
     } catch (error) {
       if (error instanceof PathBulkEnrollError && error.code === 'QUOTA_EXCEEDED') {
-        throw error;
+        // Record this chunk's direct members as QUOTA_EXCEEDED
+        for (const entry of direct) {
+          failed.push({ key: entry.profileId, reason: 'QUOTA_EXCEEDED' });
+        }
+        // Record this chunk's pending invites as QUOTA_EXCEEDED
+        for (const email of pendingInvites) {
+          failed.push({ key: email, reason: 'QUOTA_EXCEEDED' });
+        }
+        // Remaining members will be marked QUOTA_EXCEEDED at loop top
+        quotaExceeded = true;
+        continue;
       }
 
       console.error('runQueuedPathBulkEnroll chunk failed:', error);
@@ -420,10 +442,17 @@ export async function runQueuedPathBulkEnroll(payload: {
         failed.push({ key: email, reason: 'STAFF_INVITE' });
       }
     } catch (error) {
-      console.error('runQueuedPathBulkEnroll invites failed:', error);
+      if (error instanceof PathBulkEnrollError && error.code === 'QUOTA_EXCEEDED') {
+        for (const email of pendingInvites) {
+          failed.push({ key: email, reason: 'QUOTA_EXCEEDED' });
+        }
+        quotaExceeded = true;
+      } else {
+        console.error('runQueuedPathBulkEnroll invites failed:', error);
 
-      for (const email of pendingInvites) {
-        failed.push({ key: email, reason: 'INVITE_FAILED' });
+        for (const email of pendingInvites) {
+          failed.push({ key: email, reason: 'INVITE_FAILED' });
+        }
       }
     }
 
