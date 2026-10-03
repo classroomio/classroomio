@@ -5329,7 +5329,9 @@
       "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể nằm trong nhóm này cho nhóm của bạn mặc dù vẫn chưa được xuất bản nhưng chúng vẫn bị ẩn với học sinh cho đến khi bạn xuất bản chúng.",
       "empty_student_description": "Chưa có khóa học nào được xuất bản trong nhóm này.",
       "add_count": "Thêm {count} {count, plural, =1 {Khóa học} other {Khóa học}}",
-      "adding": "Đang thêm khóa học…"
+      "adding": "Đang thêm khóa học…",
+      "load_failed": "Không thể tải các khóa học.",
+      "retry": "Thử lại"
     },
     "newsfeed": {
       "post": "Bài đăng mới",
@@ -5838,7 +5840,9 @@
         "submit": "Thêm {count} {count, plural, =1 {Khóa học} other {Khóa học}}",
         "submitting": "Đang thêm khóa học…",
         "select_courses": "Chọn khóa học",
-        "pagination_status": "Trang {page} trong tổng số {totalPages}"
+        "pagination_status": "Trang {page} trong tổng số {totalPages}",
+        "load_failed": "Không thể tải các khóa học.",
+        "retry": "Thử lại"
       },
       "create": {
         "title": "Tạo Lộ trình Học tập",

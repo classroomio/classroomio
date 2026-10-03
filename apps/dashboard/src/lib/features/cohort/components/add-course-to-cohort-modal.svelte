@@ -60,6 +60,8 @@
           searchPlaceholder={$t('cohorts.courses.search_placeholder')}
           emptyMessage={$t('cohorts.courses.no_available_courses')}
           noMatchesMessage={$t('cohorts.courses.no_matching_courses')}
+          errorMessage={$t('cohorts.courses.load_failed')}
+          retryLabel={$t('cohorts.courses.retry')}
           paginationStatus={(page, totalPages) => $t('cohorts.courses.pagination_status', { page, totalPages })}
         />
       {/if}

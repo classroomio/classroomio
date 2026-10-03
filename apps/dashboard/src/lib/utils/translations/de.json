@@ -5329,7 +5329,9 @@
       "published_access_callout_description": "Studierende haben nur Zugriff auf veröffentlichte Kurse. Kurse können für Ihr Team in dieser Kohorte enthalten sein, solange sie noch unveröffentlicht sind. Sie bleiben den Studierenden jedoch verborgen, bis Sie sie veröffentlichen.",
       "empty_student_description": "In dieser Kohorte gibt es noch keine veröffentlichten Kurse.",
       "add_count": "{count} {count, plural, =1 {Kurs} other {Kurse}} hinzufügen",
-      "adding": "Kurse werden hinzugefügt…"
+      "adding": "Kurse werden hinzugefügt…",
+      "load_failed": "Kurse konnten nicht geladen werden.",
+      "retry": "Versuchen Sie es noch einmal"
     },
     "newsfeed": {
       "post": "Neuer Beitrag",
@@ -5838,7 +5840,9 @@
         "submit": "{count} {count, plural, =1 {Kurs} other {Kurse}} hinzufügen",
         "submitting": "Kurse werden hinzugefügt…",
         "select_courses": "Kurse auswählen",
-        "pagination_status": "Seite {page} von {totalPages}"
+        "pagination_status": "Seite {page} von {totalPages}",
+        "load_failed": "Kurse konnten nicht geladen werden.",
+        "retry": "Versuchen Sie es noch einmal"
       },
       "create": {
         "title": "Lernpfad erstellen",
