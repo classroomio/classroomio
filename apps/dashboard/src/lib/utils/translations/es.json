@@ -5280,7 +5280,9 @@
       "published_access_callout_description": "Los estudiantes solo tienen acceso a los cursos publicados. Los cursos pueden estar en esta cohorte para su equipo mientras aún no están publicados, pero permanecen ocultos para los estudiantes hasta que los publique.",
       "empty_student_description": "Aún no hay cursos publicados en esta cohorte.",
       "add_count": "Agregue {count} {count, plural, =1 {Curso} other {Cursos}}",
-      "adding": "Agregando cursos…"
+      "adding": "Agregando cursos…",
+      "load_failed": "No se pudieron cargar los cursos.",
+      "retry": "Reintentar"
     },
     "newsfeed": {
       "post": "Nueva publicación",
@@ -5521,7 +5523,9 @@
         "submit": "Añadir {count} {count, plural, =1 {Curso} other {Cursos}}",
         "submitting": "Añadiendo cursos…",
         "select_courses": "Seleccionar cursos",
-        "pagination_status": "Página {page} de {totalPages}"
+        "pagination_status": "Página {page} de {totalPages}",
+        "load_failed": "No se pudieron cargar los cursos.",
+        "retry": "Reintentar"
       },
       "create": {
         "title": "Crear ruta de aprendizaje",

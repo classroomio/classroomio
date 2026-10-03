@@ -64,6 +64,8 @@
           searchPlaceholder={$t('learningPath.modals.add_courses.search_placeholder')}
           emptyMessage={$t('learningPath.modals.add_courses.no_courses')}
           noMatchesMessage={$t('learningPath.modals.add_courses.no_matches')}
+          errorMessage={$t('learningPath.modals.add_courses.load_failed')}
+          retryLabel={$t('learningPath.modals.add_courses.retry')}
           paginationStatus={(page, totalPages) =>
             $t('learningPath.modals.add_courses.pagination_status', { page, totalPages })}
         />

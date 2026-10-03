@@ -5390,6 +5390,8 @@
       "no_matching_courses": "No courses match your search.",
       "no_matching_cohort_courses": "No cohort courses match your search.",
       "pagination_status": "Page {page} of {totalPages}",
+      "load_failed": "Failed to load courses.",
+      "retry": "Retry",
       "empty_title": "No courses yet",
       "empty_description": "Add courses to this cohort.",
       "empty_student_description": "There are no published courses in this cohort yet.",
@@ -5735,6 +5737,8 @@
         "pagination_status": "Page {page} of {totalPages}",
         "no_courses": "No available courses to add.",
         "no_matches": "No courses match your search.",
+        "load_failed": "Failed to load courses.",
+        "retry": "Retry",
         "cancel": "Cancel",
         "submit": "Add {count} {count, plural, =1 {Course} other {Courses}}",
         "submitting": "Adding courses…"

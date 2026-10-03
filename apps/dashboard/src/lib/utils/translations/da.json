@@ -5280,7 +5280,9 @@
       "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i denne kohorte for dit team, mens de stadig ikke er udgivet, men de forbliver skjulte for eleverne, indtil du udgiver dem.",
       "empty_student_description": "Der er endnu ingen offentliggjorte kurser i denne kohorte.",
       "add_count": "Tilføj {count} {count, plural, =1 {kursus} other {kurser}}",
-      "adding": "Tilføjer kurser..."
+      "adding": "Tilføjer kurser...",
+      "load_failed": "Kunne ikke indlæse kurser.",
+      "retry": "Prøv igen"
     },
     "newsfeed": {
       "post": "Nyt indlæg",
@@ -5521,7 +5523,9 @@
         "submit": "Tilføj {count} {count, plural, =1 {Kursus} other {Kurser}}",
         "submitting": "Tilføjer kurser…",
         "select_courses": "Vælg kurser",
-        "pagination_status": "Side {page} af {totalPages}"
+        "pagination_status": "Side {page} af {totalPages}",
+        "load_failed": "Kunne ikke indlæse kurser.",
+        "retry": "Prøv igen"
       },
       "create": {
         "title": "Opret læringssti",
