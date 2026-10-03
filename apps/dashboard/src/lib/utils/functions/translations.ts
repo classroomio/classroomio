@@ -55,6 +55,11 @@ export const config = {
       locale: 'da',
       key: '',
       loader: async () => (await import('../translations/da.json')).default
+    },
+    {
+      locale: 'tr',
+      key: '',
+      loader: async () => (await import('../translations/tr.json')).default
     }
   ]
 };
@@ -118,6 +123,13 @@ export function handleLocaleChange(newLocale: TLocale) {
   selectedLocale.set(newLocale);
 
   persistLocale(newLocale);
+}
+
+export function activateLocale(newLocale: TLocale) {
+  if (!newLocale) return;
+
+  locale.set(newLocale);
+  selectedLocale.set(newLocale);
 }
 
 export function getPersistedLocale(): string | null {

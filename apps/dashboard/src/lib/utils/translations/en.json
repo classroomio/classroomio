@@ -1848,6 +1848,12 @@
       "customize_lms": {
         "page_subtitle": "Choose which tabs, banners, course tools, and extras students see.",
         "title": "Customize LMS",
+        "language": {
+          "title": "Language",
+          "description": "Choose the language used for the student-facing LMS interface.",
+          "default_language": "Default language",
+          "enforce": "Enforce this language for students"
+        },
         "disabled": "Disabled",
         "enabled": "Enabled",
         "save": "Save Changes",

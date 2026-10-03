@@ -3164,6 +3164,12 @@
     "settings": {
       "customize_lms": {
         "title": "LMS anpassen",
+        "language": {
+          "title": "Sprache",
+          "description": "Wählen Sie die Sprache für die LMS-Oberfläche der Lernenden.",
+          "default_language": "Standardsprache",
+          "enforce": "Diese Sprache für Lernende erzwingen"
+        },
         "disabled": "Deaktiviert",
         "enabled": "Aktiviert",
         "save": "Änderungen speichern",

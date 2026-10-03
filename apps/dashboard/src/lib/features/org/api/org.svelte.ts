@@ -25,7 +25,8 @@ import type {
   RevokeAudienceInviteRequest,
   ToggleLinkInviteRequest,
   UndoBulkAudienceActionRequest,
-  UpdateOrganizationRequest
+  UpdateOrganizationRequest,
+  TOrgUpdateForm
 } from '../utils/types';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
@@ -62,23 +63,6 @@ import { resolveOrgJoinRedirect } from '../utils/org-join-redirect';
 import type { ZodError } from 'zod';
 
 const PUBLISHED_COURSES_ORDERING_LIMIT = 100;
-
-export interface TOrgUpdateForm {
-  name?: string;
-  avatar?: string | File | undefined;
-  favicon?: string | File | null | undefined;
-  theme?: string;
-  landingpage?: AccountOrg['landingpage'];
-  siteName?: string;
-  customDomain?: string | null;
-  isCustomDomainVerified?: boolean;
-  customization?: AccountOrg['customization'];
-  disableSignup?: boolean;
-  disableSignupMessage?: string;
-  disableEmailPassword?: boolean;
-  disableGoogleAuth?: boolean;
-  settings?: { signup?: { inviteOnly?: boolean }; emailNotifications?: Record<string, boolean> };
-}
 
 /**
  * API class for organization operations

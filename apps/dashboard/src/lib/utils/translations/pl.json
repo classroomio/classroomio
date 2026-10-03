@@ -3164,6 +3164,12 @@
     "settings": {
       "customize_lms": {
         "title": "Dostosuj LMS-a",
+        "language": {
+          "title": "Język",
+          "description": "Wybierz język interfejsu LMS widocznego dla uczniów.",
+          "default_language": "Domyślny język",
+          "enforce": "Wymuś ten język dla uczniów"
+        },
         "disabled": "Niepełnosprawny",
         "enabled": "Włączone",
         "save": "Zapisz zmiany",

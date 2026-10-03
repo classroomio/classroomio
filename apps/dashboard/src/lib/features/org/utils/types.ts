@@ -1,4 +1,6 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
+import type { TLocale } from '@cio/db/types';
+import type { AccountOrg } from '$features/app/types';
 
 export type GetOrganizationRequest = typeof classroomio.organization.$get;
 export type GetOrganizationResponse = InferResponseType<GetOrganizationRequest> | null;
@@ -141,6 +143,26 @@ export type DeleteAudienceMemberSuccess = Extract<InferResponseType<DeleteAudien
 export type UpdateOrganizationRequest = (typeof classroomio.organization)['$put'];
 export type UpdateOrganizationResponse = InferResponseType<UpdateOrganizationRequest>;
 export type UpdateOrganizationSuccess = Extract<UpdateOrganizationResponse, { success: true }>;
+export interface TOrgUpdateForm {
+  name?: string;
+  avatar?: string | File | undefined;
+  favicon?: string | File | null | undefined;
+  theme?: string;
+  landingpage?: AccountOrg['landingpage'];
+  siteName?: string;
+  customDomain?: string | null;
+  isCustomDomainVerified?: boolean;
+  customization?: AccountOrg['customization'];
+  disableSignup?: boolean;
+  disableSignupMessage?: string;
+  disableEmailPassword?: boolean;
+  disableGoogleAuth?: boolean;
+  settings?: {
+    signup?: { inviteOnly?: boolean };
+    language?: { locale?: TLocale; enforced?: boolean };
+    emailNotifications?: Record<string, boolean>;
+  };
+}
 
 // domain request types
 export type DomainRequestRequest = typeof classroomio.domain.$post;
