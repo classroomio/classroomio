@@ -206,7 +206,7 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 
 Independent taking (live non-path grant, `enrollOnlyInLearningPath` false) stays at `/courses/[courseId]/*` with no ribbon. When `enrollOnlyInLearningPath` is **true**, the course is not in the public course catalog and learners cannot enrol on it directly. Hitting `/courses/[courseId]/*` without a non-path grant redirects to the same child under `/paths/[publicId]/courses/[courseId]/` if the learner has exactly one live `LEARNING_PATH` grant for it, otherwise to the path hub / My Learning.
 
-**Unlock enforcement**: locked courses have no live `LEARNING_PATH` grant for that path; the player 403s (or shows locked). Independent access to the same course (non-path grant) still uses `/courses/[courseId]/lessons` and is not blocked by another path’s sequential unlock.
+**Unlock enforcement**: locked path courses have a `LEARNING_PATH` grant but the API enforces the lock (returns 403 / locked state). Independent access to the same course (non-path grant) still uses `/courses/[courseId]/lessons` and is not blocked by another path's sequential unlock.
 
 ### 3. Teacher — admin dashboard
 
