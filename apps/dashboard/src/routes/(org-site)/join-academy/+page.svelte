@@ -13,12 +13,14 @@
   import { Spinner } from '@cio/ui/base/spinner';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
 
+  let { data } = $props();
+
   let hasFailed = $state(false);
 
   const isLimitReached = $derived(orgApi.joinErrorCode === 'UPGRADE_REQUIRED');
 
   async function joinAcademy() {
-    const orgId = $currentOrg.id;
+    const orgId = $currentOrg.id || data.org?.id;
     if (!orgId) {
       hasFailed = true;
       return;
