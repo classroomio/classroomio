@@ -424,18 +424,60 @@ describe('runQueuedPathBulkEnroll', () => {
     });
   });
 
-  it('aborts the run when the student quota is exceeded', async () => {
+  it('reports a partial outcome when the student quota is exceeded mid-run', async () => {
+    mocks.countActiveStudents
+      .mockResolvedValueOnce(0) // First chunk check passes
+      .mockResolvedValueOnce(25); // Second chunk check fails (quota exceeded)
+
+    const outcome = await runQueuedPathBulkEnroll({
+      organizationId: 'org-1',
+      actorProfileId: 'admin-1',
+      pathId: PATH.id,
+      members: [
+        { profileId: 'p-1', roleId: ROLE.STUDENT },
+        { profileId: 'p-2', roleId: ROLE.STUDENT },
+        { profileId: 'p-3', roleId: ROLE.STUDENT },
+        { profileId: 'p-4', roleId: ROLE.STUDENT }
+      ],
+      chunkSize: 1
+    });
+
+    // p-3 and p-4 sit in later chunks that never run, but are still reported.
+    expect(outcome).toEqual({
+      requested: 4,
+      enrolled: 1,
+      invited: 0,
+      failed: [
+        { key: 'p-2', reason: 'QUOTA_EXCEEDED' },
+        { key: 'p-3', reason: 'QUOTA_EXCEEDED' },
+        { key: 'p-4', reason: 'QUOTA_EXCEEDED' }
+      ]
+    });
+    // p-2's member write runs before the capacity check and rolls back with its
+    // chunk; only p-1 committed, so only p-1 is synced.
+    expect(mocks.enrollMember).toHaveBeenCalledTimes(2);
+    expect(mocks.syncLearningPathMembersProgress).toHaveBeenCalledWith({ pathId: PATH.id, profileIds: ['p-1'] });
+  });
+
+  it('reports every member as QUOTA_EXCEEDED when the first chunk is over the limit', async () => {
     mocks.countActiveStudents.mockResolvedValue(25);
 
-    await expect(
-      runQueuedPathBulkEnroll({
-        organizationId: 'org-1',
-        actorProfileId: 'admin-1',
-        pathId: PATH.id,
-        members: [{ profileId: 'p-1', roleId: ROLE.STUDENT }],
-        chunkSize: 50
-      })
-    ).rejects.toMatchObject({ name: 'PathBulkEnrollError', code: 'QUOTA_EXCEEDED' });
+    const outcome = await runQueuedPathBulkEnroll({
+      organizationId: 'org-1',
+      actorProfileId: 'admin-1',
+      pathId: PATH.id,
+      members: [{ profileId: 'p-1', roleId: ROLE.STUDENT }],
+      chunkSize: 50
+    });
+
+    expect(outcome).toEqual({
+      requested: 1,
+      enrolled: 0,
+      invited: 0,
+      failed: [{ key: 'p-1', reason: 'QUOTA_EXCEEDED' }]
+    });
+    // The rolled-back chunk leaves nothing committed to sync.
+    expect(mocks.syncLearningPathMembersProgress).not.toHaveBeenCalled();
   });
 });
 
