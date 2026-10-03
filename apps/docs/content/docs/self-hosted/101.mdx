@@ -16,9 +16,9 @@ The full product: the same code that powers the cloud version. Self-hosted, you 
 - A background **jobs worker** for the heavy lifting: video processing, transcription, AI course
   generation, and email sending.
 - The infrastructure they need: **Postgres** (database), **Redis** (queues and caching), and
-  **MinIO** (S3-compatible object storage for uploads, swappable for AWS S3 or Cloudflare R2).
+  **SeaweedFS** (S3-compatible object storage for uploads, swappable for AWS S3 or Cloudflare R2).
 
-That's the ~7 containers the Docker stack starts (MinIO ships with a small one-shot init container
+That's the ~7 containers the Docker stack starts (the object storage ships with a small one-shot init container
 that creates its buckets). They're deliberately separate services: the parts that spike CPU and RAM
 (video transcodes) are isolated from the parts that serve your users. How they talk to each other
 is on the [Architecture](/self-hosted/architecture) page; what hardware they need is in the

@@ -41,44 +41,63 @@ services:
       retries: 10
       start_period: 5s
 
-  minio:
-    image: minio/minio:latest
-    container_name: cio-minio
-    command: server /data --console-address ":9001"
+  # Bundled S3-compatible storage (SeaweedFS). Only 9000 is published: its other ports have no auth.
+  storage:
+    image: chrislusf/seaweedfs:4.48
+    container_name: cio-storage
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        esc() { printf '%s' "$$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g'; }
+        mkdir -p /etc/seaweedfs
+        cat > /etc/seaweedfs/s3.json <<EOF
+        {"identities":[{"name":"admin","credentials":[{"accessKey":"$$(esc "$$OBJECT_STORAGE_ACCESS_KEY_ID")","secretKey":"$$(esc "$$OBJECT_STORAGE_SECRET_ACCESS_KEY")"}],"actions":["Admin","Read","Write","List","Tagging"]},{"name":"anonymous","actions":["Read:$${OBJECT_STORAGE_BUCKET_MEDIA}"]}]}
+        EOF
+        exec /entrypoint.sh server -s3 -s3.port=9000 -s3.config=/etc/seaweedfs/s3.json -s3.allowedOrigins=*
     ports:
       - '9000:9000'
-      - '9001:9001'
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
-      MINIO_API_CORS_ALLOW_ORIGIN: ${MINIO_API_CORS_ALLOW_ORIGIN:-*}
+      OBJECT_STORAGE_ACCESS_KEY_ID: ${OBJECT_STORAGE_ACCESS_KEY_ID:-classroomio}
+      OBJECT_STORAGE_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_ACCESS_KEY:-classroomio-local-dev-secret}
+      OBJECT_STORAGE_BUCKET_MEDIA: ${OBJECT_STORAGE_BUCKET_MEDIA:-media}
     volumes:
-      - minio-data:/data
+      - storage-data:/data
+    healthcheck:
+      # 127.0.0.1: localhost resolves to IPv6 in the image, SeaweedFS binds IPv4.
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:9000/healthz']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
     profiles:
-      - minio
+      - storage
 
-  minio-init:
-    image: minio/mc:latest
-    container_name: cio-minio-init
+  storage-init:
+    image: chrislusf/seaweedfs:4.48
+    container_name: cio-storage-init
     depends_on:
-      - minio
-    entrypoint: >
-      /bin/sh -c "
-      echo 'Waiting for MinIO to be ready...';
-      sleep 5;
-      mc alias set local http://minio:9000 $${MINIO_ROOT_USER:-minioadmin} $${MINIO_ROOT_PASSWORD:-minioadmin};
-      mc mb local/videos --ignore-existing;
-      mc mb local/documents --ignore-existing;
-      mc mb local/media --ignore-existing;
-      mc anonymous set download local/media;
-      echo 'MinIO buckets created';
-      exit 0;
-      "
+      storage:
+        condition: service_healthy
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -- "$$OBJECT_STORAGE_BUCKET_VIDEOS" "$$OBJECT_STORAGE_BUCKET_DOCUMENTS" "$$OBJECT_STORAGE_BUCKET_MEDIA"
+        for bucket in "$$@"; do
+          echo "s3.bucket.create -name $$bucket" | weed shell -master=storage:9333
+        done
+        # weed shell exits 0 even when a create fails, so confirm each bucket exists.
+        echo s3.bucket.list | weed shell -master=storage:9333 > /tmp/buckets 2>&1
+        for bucket in "$$@"; do
+          grep -q "^[[:space:]]*$$bucket[[:space:]]" /tmp/buckets || { echo "storage-init: bucket $$bucket is missing"; exit 1; }
+        done
     environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      OBJECT_STORAGE_BUCKET_VIDEOS: ${OBJECT_STORAGE_BUCKET_VIDEOS:-videos}
+      OBJECT_STORAGE_BUCKET_DOCUMENTS: ${OBJECT_STORAGE_BUCKET_DOCUMENTS:-documents}
+      OBJECT_STORAGE_BUCKET_MEDIA: ${OBJECT_STORAGE_BUCKET_MEDIA:-media}
     profiles:
-      - minio
+      - storage
 
   api:
     build:
@@ -119,7 +138,7 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_PORT: ${SMTP_PORT:-}
       SMTP_SENDER: ${SMTP_SENDER:-}
-      # Object storage (S3-compatible). Works with the bundled MinIO, AWS S3, or Cloudflare R2
+      # Object storage (S3-compatible). Works with the bundled storage service, AWS S3, or Cloudflare R2
       # — for R2, point OBJECT_STORAGE_ENDPOINT at your R2 endpoint.
       OBJECT_STORAGE_ENDPOINT: ${OBJECT_STORAGE_ENDPOINT:-}
       OBJECT_STORAGE_PUBLIC_ENDPOINT: ${OBJECT_STORAGE_PUBLIC_ENDPOINT:-}
@@ -205,7 +224,7 @@ services:
       OBJECT_STORAGE_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_ACCESS_KEY:-}
       OBJECT_STORAGE_FORCE_PATH_STYLE: ${OBJECT_STORAGE_FORCE_PATH_STYLE:-true}
       OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL: ${OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL:-}
-      # Bucket names match those created by minio-init above.
+      # Bucket names match those created by storage-init above.
       OBJECT_STORAGE_BUCKET_VIDEOS: ${OBJECT_STORAGE_BUCKET_VIDEOS:-videos}
       OBJECT_STORAGE_BUCKET_DOCUMENTS: ${OBJECT_STORAGE_BUCKET_DOCUMENTS:-documents}
       OBJECT_STORAGE_BUCKET_MEDIA: ${OBJECT_STORAGE_BUCKET_MEDIA:-media}
@@ -222,4 +241,4 @@ services:
 volumes:
   postgres-data:
   redis-data:
-  minio-data:
+  storage-data:
