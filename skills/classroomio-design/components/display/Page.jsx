@@ -1,5 +1,5 @@
 import React from 'react';
-import { FONT } from '../forms/_ui.js';
+import { FONT } from '../forms/uiShared.jsx';
 import { Button } from '../forms/Button.jsx';
 
 function Root({ children, style, ...rest }) {

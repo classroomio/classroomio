@@ -23,7 +23,7 @@ App tokens are namespaced `--ui-*` so they don't collide with marketing tokens (
 - `guidelines/` — foundation specimen cards (Colors, Type, Spacing, Brand)
 - `tokens/app.css` — codebase semantic tokens (`--ui-*`), radii, shadows, z-layers
 - **App components (from codebase)**
-  - `components/forms/` — Button, ButtonGroup, Input, Textarea, Label, Field, InputGroup, PasswordInput, Select, Checkbox, RadioGroup, Switch, Toggle + ToggleGroup, CopyButton, ModeSwitcher, IconButton, BackButton, ComboButton, CheckboxOptionCard, RadioOptionCard, MultiSelectList, FileDropZone, PricingToggle (`_ui.js` = shared Lucide glyphs/hooks)
+  - `components/forms/` — Button, ButtonGroup, Input, Textarea, Label, Field, InputGroup, PasswordInput, Select, Checkbox, RadioGroup, Switch, Toggle + ToggleGroup, CopyButton, ModeSwitcher, IconButton, BackButton, ComboButton, CheckboxOptionCard, RadioOptionCard, MultiSelectList, FileDropZone, PricingToggle (`uiShared.jsx` = shared Lucide glyphs/hooks)
   - `components/overlays/` — Dialog, Sheet (covers Drawer), Popover, Tooltip, DropdownMenu, Command (+ CommandDialog), Menubar, NavigationMenu, HoverCard, Toast (Sonner)
   - `components/display/` — Badge, NumberBadge, Alert, Card, Avatar, Accordion, Tabs, Table, Progress, Skeleton, Spinner, Kbd, Separator, Item, Empty, Breadcrumb, Pagination, Collapsible, UnderlineTabs, Sidebar, Page, Chip, UserAvatar, CircularProgress, PercentRingProgress, ResourceListRow
   - `guidelines/components/` — extra preview cards (inputs, selection, data)

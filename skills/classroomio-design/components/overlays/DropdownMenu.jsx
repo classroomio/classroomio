@@ -1,5 +1,5 @@
 import React from 'react';
-import { useOutside } from '../forms/_ui.js';
+import { useOutside } from '../forms/uiShared.jsx';
 export function DropdownMenu({ trigger, items = [], align = 'start', minWidth = 128, defaultOpen = false, onSelect }) {
   const [open, setOpen] = React.useState(defaultOpen);
   const [hi, setHi] = React.useState(-1);

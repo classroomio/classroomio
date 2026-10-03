@@ -2,4 +2,4 @@ Square icon-only Button (default variant secondary, size icon) with optional too
 ```jsx
 <IconButton tooltip="Add content" shortcut={['Ctrl', 'Shift', 'N']}>{Ic('plus')}</IconButton>
 ```
-Use Ic from ../forms/_ui.js for the glyph; icons only render if present in PATHS.
+Use Ic from ../forms/uiShared.jsx for the glyph; icons only render if present in PATHS.

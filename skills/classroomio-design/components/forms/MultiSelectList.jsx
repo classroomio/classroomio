@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, FONT, useInteract, focusStyle } from './_ui.js';
+import { Ic, FONT, useInteract, focusStyle } from './uiShared.jsx';
 import { Checkbox } from './Checkbox.jsx';
 function SearchBox({ placeholder, value, onChange }) {
   const { focus, bind } = useInteract();

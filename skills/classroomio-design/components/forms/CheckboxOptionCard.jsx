@@ -1,5 +1,5 @@
 import React from 'react';
-import { FONT } from './_ui.js';
+import { FONT } from './uiShared.jsx';
 import { Checkbox } from './Checkbox.jsx';
 export function optionCardStyle(on, hover) {
   return { display: 'flex', flexDirection: 'column', gap: 8, width: '100%', boxSizing: 'border-box', borderRadius: 'var(--ui-radius-md)', border: '1px solid ' + (on ? 'var(--ui-primary)' : 'var(--ui-border)'), background: on || hover ? 'color-mix(in oklab, var(--ui-primary) 5%, transparent)' : 'transparent', fontFamily: FONT, color: 'var(--ui-foreground)', lineHeight: 1.375, cursor: 'pointer', transition: 'background-color 200ms' };

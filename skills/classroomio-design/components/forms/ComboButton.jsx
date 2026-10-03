@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic } from './_ui.js';
+import { Ic } from './uiShared.jsx';
 import { Button } from './Button.jsx';
 import { DropdownMenu } from '../overlays/DropdownMenu.jsx';
 export function ComboButton({ label, menuLabel, items = [], icon, variant = 'outline', size = 'sm', disabled = false, loading = false, align = 'end', onSelect, style }) {

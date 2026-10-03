@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic } from '../forms/_ui.js';
+import { Ic } from '../forms/uiShared.jsx';
 export function Sheet({ open = false, onOpenChange, side = 'right', title, description, children, footer, inline = false, style }) {
   if (!open) return null;
   const close = () => onOpenChange && onOpenChange(false);

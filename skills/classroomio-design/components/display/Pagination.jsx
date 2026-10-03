@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '../forms/Button.jsx';
-import { Ic } from '../forms/_ui.js';
+import { Ic } from '../forms/uiShared.jsx';
 export function Pagination({ page = 1, count = 1, onChange, siblings = 1, style }) {
   const set = (p) => { if (p >= 1 && p <= count && onChange) onChange(p); };
   const pages = [];

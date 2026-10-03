@@ -1,5 +1,5 @@
 import React from 'react';
-import { useInteract, FONT, focusStyle } from './_ui.js';
+import { useInteract, FONT, focusStyle } from './uiShared.jsx';
 export function Textarea({ value, defaultValue, onChange, placeholder, disabled, invalid, rows = 3, style, ...rest }) {
   const { focus, bind } = useInteract();
   return <textarea value={value} defaultValue={defaultValue} onChange={onChange} placeholder={placeholder} disabled={disabled} rows={rows} aria-invalid={invalid || undefined} {...bind} {...rest}

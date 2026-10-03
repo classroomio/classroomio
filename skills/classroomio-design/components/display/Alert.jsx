@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic } from '../forms/_ui.js';
+import { Ic } from '../forms/uiShared.jsx';
 const V = {
   default: { background: 'var(--ui-card)', color: 'var(--ui-card-foreground)', borderColor: 'var(--ui-border)' },
   destructive: { background: 'var(--ui-card)', color: 'var(--ui-destructive)', borderColor: 'var(--ui-border)' },

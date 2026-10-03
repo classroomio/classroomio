@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic } from '../forms/_ui.js';
+import { Ic } from '../forms/uiShared.jsx';
 export function Breadcrumb({ items = [], style }) {
   return <nav aria-label="breadcrumb" style={{ fontFamily: 'var(--font-sans)', ...style }}>
     <ol style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 6, margin: 0, padding: 0, listStyle: 'none', fontSize: 14, color: 'var(--ui-muted-foreground)', wordBreak: 'break-word' }}>

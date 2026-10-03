@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, FONT } from '../forms/_ui.js';
+import { Ic, FONT } from '../forms/uiShared.jsx';
 import { Button } from '../forms/Button.jsx';
 
 const GRADIENT = 'linear-gradient(to right, #ec4899, #f97316)';

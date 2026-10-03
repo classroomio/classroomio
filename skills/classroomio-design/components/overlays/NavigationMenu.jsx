@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, useInteract, FONT } from '../forms/_ui.js';
+import { Ic, useInteract, FONT } from '../forms/uiShared.jsx';
 
 const OPEN_DELAY = 200;
 const CLOSE_DELAY = 300;

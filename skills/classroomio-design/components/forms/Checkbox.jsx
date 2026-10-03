@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, useInteract } from './_ui.js';
+import { Ic, useInteract } from './uiShared.jsx';
 export function Checkbox({ checked, defaultChecked = false, indeterminate = false, onChange, disabled, invalid, id, label, style }) {
   const [inner, setInner] = React.useState(defaultChecked);
   const on = checked !== undefined ? checked : inner;

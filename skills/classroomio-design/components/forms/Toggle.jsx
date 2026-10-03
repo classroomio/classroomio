@@ -1,5 +1,5 @@
 import React from 'react';
-import { useInteract, FONT } from './_ui.js';
+import { useInteract, FONT } from './uiShared.jsx';
 const SZ = { default: [36, 8], sm: [32, 6], lg: [40, 10] };
 export function Toggle({ pressed, defaultPressed = false, onChange, variant = 'default', size = 'default', disabled, children, style, ...rest }) {
   const [inner, setInner] = React.useState(defaultPressed);

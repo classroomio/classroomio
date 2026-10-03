@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic } from './_ui.js';
+import { Ic } from './uiShared.jsx';
 import { Button } from './Button.jsx';
 function Pop({ duration, children }) {
   const ref = React.useRef(null);

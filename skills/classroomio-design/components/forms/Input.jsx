@@ -1,5 +1,5 @@
 import React from 'react';
-import { useInteract, FONT, focusStyle } from './_ui.js';
+import { useInteract, FONT, focusStyle } from './uiShared.jsx';
 export function Input({ type = 'text', value, defaultValue, onChange, placeholder, disabled, invalid, style, ...rest }) {
   const { focus, bind } = useInteract();
   return <input type={type} value={value} defaultValue={defaultValue} onChange={onChange} placeholder={placeholder} disabled={disabled} aria-invalid={invalid || undefined} {...bind} {...rest}

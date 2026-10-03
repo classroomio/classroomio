@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, useOutside, FONT } from '../forms/_ui.js';
+import { Ic, useOutside, FONT } from '../forms/uiShared.jsx';
 
 const itemBase = { position: 'relative', display: 'flex', alignItems: 'center', gap: 8, borderRadius: 'var(--ui-radius-sm)', padding: '6px 8px', fontSize: 14, cursor: 'default', userSelect: 'none', whiteSpace: 'nowrap' };
 const panelBase = { position: 'absolute', zIndex: 250, boxSizing: 'border-box', background: 'var(--ui-popover)', color: 'var(--ui-popover-foreground)', border: '1px solid var(--ui-border)', borderRadius: 'var(--ui-radius-md)', padding: 4, fontFamily: FONT, animation: 'ui-pop-in 120ms ease-out' };

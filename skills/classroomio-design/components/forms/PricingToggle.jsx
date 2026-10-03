@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, FONT } from './_ui.js';
+import { Ic, FONT } from './uiShared.jsx';
 
 function Period({ active, onClick, children }) {
   const [hover, setHover] = React.useState(false);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, useInteract, FONT } from './_ui.js';
+import { Ic, useInteract, FONT } from './uiShared.jsx';
 import { BlockGlyph } from '../loading/BlockLoader.jsx';
 const SIZES = {
   default: { height: 36, padding: '8px 16px', iconPad: '8px 12px' },

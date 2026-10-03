@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, useInteract, FONT } from '../forms/_ui.js';
+import { Ic, useInteract, FONT } from '../forms/uiShared.jsx';
 
 const SidebarCtx = React.createContext(null);
 const useSidebar = () => React.useContext(SidebarCtx) || { state: 'expanded', open: true, setOpen() {}, toggle() {}, collapsible: 'offcanvas' };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, useInteract, FONT, useOutside } from './_ui.js';
+import { Ic, useInteract, FONT, useOutside } from './uiShared.jsx';
 export function Select({ options = [], value, defaultValue, onChange, placeholder = 'Select…', size = 'default', disabled, invalid, width, style }) {
   const [open, setOpen] = React.useState(false);
   const [inner, setInner] = React.useState(defaultValue);

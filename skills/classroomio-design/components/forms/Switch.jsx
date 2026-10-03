@@ -1,5 +1,5 @@
 import React from 'react';
-import { useInteract } from './_ui.js';
+import { useInteract } from './uiShared.jsx';
 export function Switch({ checked, defaultChecked = false, onChange, disabled, id, label, style }) {
   const [inner, setInner] = React.useState(defaultChecked);
   const on = checked !== undefined ? checked : inner;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FONT } from './_ui.js';
+import { FONT } from './uiShared.jsx';
 import { optionCardStyle, OptionCardText } from './CheckboxOptionCard.jsx';
 import { Input } from './Input.jsx';
 const RadioCtx = React.createContext(null);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, FONT } from '../forms/_ui.js';
+import { Ic, FONT } from '../forms/uiShared.jsx';
 const ICONS = { success: 'circleCheck', error: 'octagonX', warning: 'triangleAlert', info: 'info', loading: 'loader' };
 let items = [];
 let seq = 0;

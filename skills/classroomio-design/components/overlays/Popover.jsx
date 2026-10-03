@@ -1,5 +1,5 @@
 import React from 'react';
-import { useOutside } from '../forms/_ui.js';
+import { useOutside } from '../forms/uiShared.jsx';
 export function Popover({ trigger, children, align = 'center', width = 288, defaultOpen = false, style }) {
   const [open, setOpen] = React.useState(defaultOpen);
   const ref = React.useRef(null);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic } from '../forms/_ui.js';
+import { Ic } from '../forms/uiShared.jsx';
 export function Accordion({ items = [], type = 'single', defaultOpen = [], style }) {
   const [open, setOpen] = React.useState(defaultOpen);
   const [hov, setHov] = React.useState(-1);

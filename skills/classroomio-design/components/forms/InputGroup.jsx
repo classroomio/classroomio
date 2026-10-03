@@ -1,5 +1,5 @@
 import React from 'react';
-import { useInteract, FONT } from './_ui.js';
+import { useInteract, FONT } from './uiShared.jsx';
 export function InputGroup({ start, end, placeholder, value, defaultValue, onChange, type = 'text', invalid, style, inputProps }) {
   const { focus, bind } = useInteract();
   const ring = invalid ? { borderColor: 'var(--ui-destructive)' } : focus ? { borderColor: 'var(--ui-ring)', boxShadow: 'var(--ui-focus-ring)' } : null;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, FONT } from '../forms/_ui.js';
+import { Ic, FONT } from '../forms/uiShared.jsx';
 import { Dialog } from './Dialog.jsx';
 
 const CmdCtx = React.createContext({ search: '', setSearch() {}, filter: null, selected: '', setSelected() {}, large: false });

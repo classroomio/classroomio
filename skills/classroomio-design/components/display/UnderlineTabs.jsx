@@ -1,5 +1,5 @@
 import React from 'react';
-import { FONT } from '../forms/_ui.js';
+import { FONT } from '../forms/uiShared.jsx';
 export function UnderlineTabs({ tabs = [], value, defaultValue, onChange, style }) {
   const [inner, setInner] = React.useState(defaultValue ?? (tabs[0] && tabs[0].value));
   const [hovered, setHovered] = React.useState(null);

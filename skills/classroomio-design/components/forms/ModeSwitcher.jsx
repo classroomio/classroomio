@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic } from './_ui.js';
+import { Ic } from './uiShared.jsx';
 import { Button } from './Button.jsx';
 import { DropdownMenu } from '../overlays/DropdownMenu.jsx';
 const resolve = (m) => m === 'system' ? (typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : m;

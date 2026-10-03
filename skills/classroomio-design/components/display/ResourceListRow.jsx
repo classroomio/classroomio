@@ -1,5 +1,5 @@
 import React from 'react';
-import { FONT } from '../forms/_ui.js';
+import { FONT } from '../forms/uiShared.jsx';
 
 const V = { default: { background: 'transparent' }, outline: { background: 'transparent' }, muted: { background: 'color-mix(in oklab, var(--ui-muted) 50%, transparent)' }, 'muted-border': { background: 'color-mix(in oklab, var(--ui-muted) 50%, transparent)' } };
 

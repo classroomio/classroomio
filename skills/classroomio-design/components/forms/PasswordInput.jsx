@@ -1,6 +1,6 @@
 import React from 'react';
 import { InputGroup } from './InputGroup.jsx';
-import { Ic } from './_ui.js';
+import { Ic } from './uiShared.jsx';
 function strength(v) { let s = 0; if (v.length >= 8) s++; if (/[A-Z]/.test(v)) s++; if (/[0-9]/.test(v)) s++; if (/[^A-Za-z0-9]/.test(v)) s++; return s; }
 export function PasswordInput({ value, defaultValue = '', onChange, placeholder = 'Password', showStrength = false, style }) {
   const [show, setShow] = React.useState(false);

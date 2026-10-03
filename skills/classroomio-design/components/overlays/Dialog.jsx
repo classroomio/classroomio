@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic } from '../forms/_ui.js';
+import { Ic } from '../forms/uiShared.jsx';
 export function Dialog({ open = false, onOpenChange, title, description, children, footer, showCloseButton = true, inline = false, width, style }) {
   if (!open) return null;
   const close = () => onOpenChange && onOpenChange(false);

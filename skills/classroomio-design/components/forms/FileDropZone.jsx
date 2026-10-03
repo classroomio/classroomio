@@ -1,5 +1,5 @@
 import React from 'react';
-import { Ic, useInteract, FONT } from './_ui.js';
+import { Ic, useInteract, FONT } from './uiShared.jsx';
 
 export const BYTE = 1;
 export const KILOBYTE = 1000;
