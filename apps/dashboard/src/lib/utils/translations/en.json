@@ -345,7 +345,12 @@
     "save_changes": "Save changes",
     "refresh": "Refresh",
     "scroll_to_top": "Scroll to top",
-    "delete": "Delete"
+    "delete": "Delete",
+    "restricted_page": {
+      "title": "Restricted page",
+      "description": "This organization is restricted. In the meantime, you can check out our features.",
+      "home": "Go home"
+    }
   },
   "compliance": {
     "title": "Compliance",
@@ -414,6 +419,7 @@
     "login_with_google": "Login with Google",
     "create_to_join": "Create a free account to join",
     "create_account": "Create Account",
+    "sign_in_to_continue": "Sign in to continue",
     "login_to_join": "Log in to join",
     "fields": {
       "email": "Your Email",

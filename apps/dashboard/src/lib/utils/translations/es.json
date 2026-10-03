@@ -13,7 +13,12 @@
     "discard": "Descartar",
     "save_changes": "Guardar cambios",
     "scroll_to_top": "Volver al inicio",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "restricted_page": {
+      "title": "Página restringida",
+      "description": "Esta organización está restringida. Mientras tanto, puedes consultar nuestras funciones.",
+      "home": "Ir al inicio"
+    }
   },
   "validations": {
     "generic": {
@@ -4292,6 +4297,7 @@
     "login_with_google": "Iniciar sesión con Google",
     "create_to_join": "Crea una cuenta gratuita para unirte",
     "create_account": "Crear cuenta",
+    "sign_in_to_continue": "Inicia sesión para continuar",
     "login_to_join": "Inicia sesión para unirte",
     "validation": {
       "unable_to_create_profile": "No se puede crear el perfil",

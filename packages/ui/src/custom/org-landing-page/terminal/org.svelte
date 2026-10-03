@@ -80,7 +80,7 @@
 
 <LandingThemeScope theme="terminal" class="ui:w-full ui:font-sans">
   <main>
-    <TerminalHero {orgName} {hero} {courses}>
+    <TerminalHero {orgName} {hero} {courses} {labels}>
       {#snippet navigation()}
         <TerminalNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}

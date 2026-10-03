@@ -13,7 +13,12 @@
     "discard": "त्यागें",
     "save_changes": "परिवर्तन सहेजें",
     "scroll_to_top": "शीर्ष पर स्क्रॉल करें",
-    "delete": "हटाएँ"
+    "delete": "हटाएँ",
+    "restricted_page": {
+      "title": "प्रतिबंधित पृष्ठ",
+      "description": "यह संगठन प्रतिबंधित है। इस बीच, आप हमारी सुविधाएँ देख सकते हैं।",
+      "home": "होम पर जाएँ"
+    }
   },
   "validations": {
     "generic": {
@@ -4292,6 +4297,7 @@
     "login_with_google": "गूगल से लॉगिन करें",
     "create_to_join": "शामिल होने के लिए एक निःशुल्क खाता बनाएँ",
     "create_account": "खाता बनाएँ",
+    "sign_in_to_continue": "जारी रखने के लिए लॉग इन करें",
     "login_to_join": "शामिल होने के लिए लॉग इन करें",
     "validation": {
       "unable_to_create_profile": "प्रोफ़ाइल बनाने में असमर्थ",
