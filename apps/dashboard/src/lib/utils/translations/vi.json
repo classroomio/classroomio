@@ -4545,6 +4545,12 @@
         "join_failed": "Không thể tham gia tổ chức",
         "try_again": "Thử lại"
       },
+      "limit_reached": {
+        "title": "Học viện này hiện đã đầy rồi",
+        "description": "{orgName} đã đạt đến giới hạn số sinh viên trong gói hiện tại nên chúng tôi không thể thêm bạn. Tài khoản của bạn vẫn ổn và bạn không làm gì gây ra điều này.",
+        "technical_details": "Chi tiết kỹ thuật",
+        "error_code": "Lỗi"
+      },
       "not_found": "Lời mời này không còn hiệu lực.",
       "loading": "Đang tải lời mời..."
     },

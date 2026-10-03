@@ -74,6 +74,7 @@ class OrgApi extends BaseApiWithErrors {
   publicCourses: OrgPublicCourses = $state([]);
   hasMorePublicCourses = $state(false);
   publicCoursesLoadedSiteName: string | null = $state(null);
+  joinErrorCode = $state<string | null>(null);
 
   isFetchingOrgPublicCourses = $state(false);
   private activePublicCoursesFetch: Promise<void> | null = null;
@@ -81,6 +82,8 @@ class OrgApi extends BaseApiWithErrors {
   private activeAudienceRequestController: AbortController | null = null;
 
   async joinAcademy(orgId: string, redirectTo = '/lms') {
+    this.joinErrorCode = null;
+
     return this.execute<JoinAcademyRequest>({
       requestFn: () => classroomio.organization.join.$post({}, { headers: { 'cio-org-id': orgId } }),
       logContext: 'joining academy',
@@ -93,7 +96,11 @@ class OrgApi extends BaseApiWithErrors {
         await authClient.getSession({ query: { disableCookieCache: true } });
         window.location.href = resolveOrgJoinRedirect(redirectTo, window.location.origin);
       },
-      onError: () => {
+      onError: (result) => {
+        if (typeof result === 'object' && 'code' in result && typeof result.code === 'string') {
+          this.joinErrorCode = result.code;
+        }
+
         snackbar.error('invite.organization.messages.join_failed');
       }
     });

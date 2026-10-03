@@ -5012,6 +5012,12 @@
         "join_failed": "Failed to join organization",
         "try_again": "Try again"
       },
+      "limit_reached": {
+        "title": "This academy is full right now",
+        "description": "{orgName} has reached its student limit on its current plan, so we couldn't add you. Your account is fine and nothing you did caused this.",
+        "technical_details": "Technical details",
+        "error_code": "Error"
+      },
       "not_found": "This invite is no longer available.",
       "loading": "Loading invite..."
     },

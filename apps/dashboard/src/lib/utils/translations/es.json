@@ -4545,6 +4545,12 @@
         "join_failed": "No se pudo unir a la organización",
         "try_again": "Intentar de nuevo"
       },
+      "limit_reached": {
+        "title": "Esta academia está llena ahora mismo.",
+        "description": "{orgName} alcanzó su límite de estudiantes en su plan actual, por lo que no pudimos agregarlo. Tu cuenta está bien y nada de lo que hiciste causó esto.",
+        "technical_details": "Detalles técnicos",
+        "error_code": "error"
+      },
       "not_found": "Esta invitación ya no está disponible.",
       "loading": "Cargando invitación..."
     },

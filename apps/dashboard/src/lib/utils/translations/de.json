@@ -4545,6 +4545,12 @@
         "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
         "try_again": "Erneut versuchen"
       },
+      "limit_reached": {
+        "title": "Diese Akademie ist derzeit voll",
+        "description": "{orgName} hat sein Studentenlimit für seinen aktuellen Plan erreicht, daher konnten wir Sie nicht hinzufügen. Ihr Konto ist in Ordnung und nichts, was Sie getan haben, hat dies verursacht.",
+        "technical_details": "Technische Details",
+        "error_code": "Fehler"
+      },
       "not_found": "Diese Einladung ist nicht mehr verfügbar.",
       "loading": "Einladung wird geladen…"
     },
