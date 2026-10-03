@@ -468,15 +468,48 @@ export async function removeCohortMember(
   }
 }
 
-export async function updateCohortMember(
+/** Reads one member, scoped to the cohort so another cohort's member is null. */
+export async function getCohortMemberById(
+  cohortId: string,
   memberId: string,
-  data: Partial<TNewCohortMember>
+  dbClient: DbOrTxClient = db
 ): Promise<TCohortMember | null> {
   try {
-    const [updated] = await db
+    const [member] = await dbClient
+      .select()
+      .from(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
+      .limit(1);
+    return member || null;
+  } catch (error) {
+    console.error('getCohortMemberById error:', error);
+    throw new Error(`Failed to get cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Updates one member, scoped to the cohort. With `expectedRoleId` it only
+ * applies while the member still holds that role, so a concurrent change
+ * returns null instead of being overwritten.
+ */
+export async function updateCohortMember(
+  cohortId: string,
+  memberId: string,
+  data: Partial<TNewCohortMember>,
+  dbClient: DbOrTxClient = db,
+  expectedRoleId?: number
+): Promise<TCohortMember | null> {
+  try {
+    const conditions = [eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)];
+
+    if (expectedRoleId !== undefined) {
+      conditions.push(eq(schema.cohortMember.roleId, expectedRoleId));
+    }
+
+    const [updated] = await dbClient
       .update(schema.cohortMember)
       .set(data)
-      .where(eq(schema.cohortMember.id, memberId))
+      .where(and(...conditions))
       .returning();
     return updated || null;
   } catch (error) {

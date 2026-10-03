@@ -22,6 +22,8 @@ import {
   deleteCohortNewsfeedComment as deleteCohortNewsfeedCommentQuery,
   getEnrolledCohortsByProfile,
   getCohortById,
+  getCohortCoursePairsByCohortIds,
+  getCohortMemberById,
   getCohortMemberByProfileId,
   getCohortMembers,
   getCohortNewsfeed,
@@ -463,13 +465,85 @@ export async function removeCohortMemberService(cohortId: string, memberId: stri
   }
 }
 
-export async function updateCohortMemberService(_cohortId: string, memberId: string, data: TUpdateCohortMember) {
+/**
+ * Changes a member's role between student and tutor, scoped to the cohort so
+ * another cohort's member 404s. Course access moves with the role in the same
+ * transaction: a demoted student loses their COHORT grants, and a tutor made a
+ * student is enrolled in the cohort's courses like a newly added student.
+ */
+export async function updateCohortMemberService(cohortId: string, memberId: string, data: TUpdateCohortMember) {
   try {
-    const updated = await updateCohortMemberQuery(memberId, { roleId: data.roleId });
-    if (!updated) {
-      throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
+    const cohort = await getCohortById(cohortId);
+
+    if (!cohort) {
+      throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
     }
-    return updated;
+
+    const result = await db.transaction(async (tx) => {
+      const member = await getCohortMemberById(cohortId, memberId, tx);
+
+      if (!member) {
+        throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
+      }
+
+      if (member.roleId === data.roleId) {
+        return { updated: member, milestone: null };
+      }
+
+      // Only applies while the role is still the one read above, so grants
+      // are never written from a stale role.
+      const updated = await updateCohortMemberQuery(cohortId, memberId, { roleId: data.roleId }, tx, member.roleId);
+
+      if (!updated) {
+        throw new AppError(
+          "This member's role changed while you were editing. Refresh and try again.",
+          ErrorCodes.CONFLICT,
+          409
+        );
+      }
+
+      if (!updated.profileId) {
+        return { updated, milestone: null };
+      }
+
+      if (member.roleId === ROLE.STUDENT) {
+        await revokeCohortGrants(cohortId, updated.profileId, tx);
+
+        return { updated, milestone: null };
+      }
+
+      if (data.roleId !== ROLE.STUDENT) {
+        return { updated, milestone: null };
+      }
+
+      const coursePairs = await getCohortCoursePairsByCohortIds([cohortId], tx);
+      const courseIds = coursePairs.map((pair) => pair.courseId);
+      const { allowedCourseIds } = await filterOutPathOnlyCourseIds(courseIds, tx);
+      const courseGroups = await getCourseGroupIds(allowedCourseIds, tx);
+      const groupIds = courseGroups
+        .map((courseGroup) => courseGroup.groupId)
+        .filter((groupId): groupId is string => Boolean(groupId));
+      const student = { profileId: updated.profileId, email: updated.email ?? null, roleId: ROLE.STUDENT };
+
+      const enrollment = await enrollCohortStudentsInGroups(
+        cohort.organizationId,
+        groupIds,
+        [student],
+        allowedCourseIds,
+        cohortId,
+        tx
+      );
+
+      return { updated, milestone: enrollment.milestone };
+    });
+
+    if (result.milestone) {
+      notifyStudentMilestone(result.milestone).catch((error) => {
+        console.error('notifyStudentMilestone error:', error);
+      });
+    }
+
+    return result.updated;
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(
