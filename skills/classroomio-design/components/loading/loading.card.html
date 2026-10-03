@@ -1,0 +1,16 @@
+<!-- @dsCard group="Components" viewport="700x360" name="Loading states" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:#FFFFFF;font-family:var(--font-sans)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].BlockLoader; } catch (e) { return false; } })] || {};
+const { BlockLoader, CompactLoader, ImportProgress, BlockSkeleton, BlockGlyph } = NS;
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 18 }}>
+<BlockLoader height={260} title={null} />
+<div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+<div style={{ display: 'flex', gap: 14, alignItems: 'center' }}><CompactLoader/><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, height: 36, padding: '0 16px', borderRadius: 8, background: 'var(--blue-700)', color: '#fff', fontSize: 14, fontWeight: 500 }}><BlockGlyph size={14}/>Publishing…</span></div>
+<ImportProgress/><BlockSkeleton/></div></div>);
+</script></body></html>

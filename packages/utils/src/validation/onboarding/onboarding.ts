@@ -40,7 +40,7 @@ export const ONBOARDING_SOURCES = [
 
 export const ONBOARDING_AI_PROVIDERS = ['chatgpt', 'claude', 'gemini', 'grok', 'perplexity', OTHER_VALUE] as const;
 
-export const ONBOARDING_LOCALES = ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da'] as const;
+export const ONBOARDING_LOCALES = ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr'] as const;
 
 function optionalEnum<const T extends readonly [string, ...string[]]>(values: T) {
   return z.preprocess((value) => (value === '' ? undefined : value), z.enum(values).optional());

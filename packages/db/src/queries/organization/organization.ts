@@ -126,6 +126,19 @@ export const getOrganizationByProfileId = async (
   }));
 };
 
+export async function lockOrganizationForUpdate(orgId: string, dbClient: DbOrTxClient = db) {
+  try {
+    await dbClient
+      .select({ id: schema.organization.id })
+      .from(schema.organization)
+      .where(eq(schema.organization.id, orgId))
+      .for('update');
+  } catch (error) {
+    console.error('lockOrganizationForUpdate error:', error);
+    throw new Error(`Failed to lock organization: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export const createOrganization = async (data: TNewOrganization, dbClient: DbOrTxClient = db) => {
   const [organization] = await dbClient.insert(schema.organization).values(data).returning();
 

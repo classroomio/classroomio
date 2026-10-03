@@ -38,6 +38,11 @@ export interface EditorProps {
   onEditorReady?: (editor: Editor) => void;
   onEditorDestroy?: () => void;
   onImageUpload?: (file: File) => Promise<string>;
+  showDragHandle?: boolean;
+  expandable?: boolean;
+  expanded?: boolean;
+  expandedTitle?: string;
+  expandedDescription?: string;
 }
 
 export interface EdraToolbarProps {

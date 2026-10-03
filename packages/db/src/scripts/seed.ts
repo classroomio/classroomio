@@ -22,6 +22,7 @@ import { seedReactCoursePeopleProgress } from '@db/utils/seed/reactCoursePeopleP
 import { seedRoles } from '@db/utils/seed/role';
 import { seedSubmissions } from '@db/utils/seed/submission';
 import { seedUsers } from '@db/utils/seed/users';
+import { resetLaunchTemplates, seedLaunchTemplates } from '@db/utils/seed/platform-templates/insert';
 import usersData from '../../users.json';
 
 // Constants for IDs used across multiple seed functions
@@ -64,7 +65,8 @@ const orderedSeeds = [
   'compliance',
   'react-people-progress',
   'learner-lifecycle',
-  'newsfeed-threads'
+  'newsfeed-threads',
+  'launch-templates'
 ] as const;
 
 type SeedName = (typeof orderedSeeds)[number];
@@ -115,7 +117,8 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
       'organization-plan',
       'coursera-dummy-courses',
       'compliance',
-      'newsfeed-threads'
+      'newsfeed-threads',
+      'launch-templates'
     ]
   },
   'skillshare-test': {
@@ -209,6 +212,8 @@ Flags:
   --coursera-dummy-courses   Seed 40 dummy courses on coursera-test
   --compliance               Seed compliance demo data (coursera-test org)
   --newsfeed-threads         Seed nested newsfeed comment threads (coursera-test org)
+  --launch-templates         Seed ClassroomIO launch templates into coursera-test
+  --reset                    With --launch-templates, retire the previously seeded templates first
   --react-people-progress    Seed React course students with varied progress (udemy-test)
   --help, -h                  Show this help message
 
@@ -382,6 +387,15 @@ const seedFunctions = {
   'newsfeed-threads': async () => {
     console.log('📝 Seeding nested newsfeed threads (coursera-test)...');
     await seedNewsfeedThreads({ enterpriseOrgId: ENTERPRISE_ORG_ID });
+  },
+  'launch-templates': async () => {
+    if (cliOptions.flags.has('reset')) {
+      const retiredCount = await resetLaunchTemplates(ENTERPRISE_ORG_ID);
+      console.log(`🧹 Retired ${retiredCount} previously seeded launch templates (coursera-test)`);
+    }
+
+    console.log('📝 Seeding ClassroomIO launch templates (coursera-test)...');
+    await seedLaunchTemplates(ENTERPRISE_ORG_ID);
   },
   'react-people-progress': async () => {
     console.log('📝 Seeding React course people progress demo (udemy-test)...');

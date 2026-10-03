@@ -4,6 +4,7 @@ import type { TLessonLanguage, TLocale, TNewLessonLanguage } from '@db/types';
 import { and, eq } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { stampContentUpdatedAt } from '@db/queries/course/content-timestamp';
 
 export async function getLessonLanguagesByLessonId(lessonId: string): Promise<TLessonLanguage[]> {
   const languages = await db.select().from(schema.lessonLanguage).where(eq(schema.lessonLanguage.lessonId, lessonId));
@@ -65,9 +66,11 @@ export async function updateLessonLanguage(
       throw new Error('Lesson language not found');
     }
 
+    const fields = { ...data };
+    delete fields.updatedAt;
     const [language] = await client
       .update(schema.lessonLanguage)
-      .set(data)
+      .set(stampContentUpdatedAt(fields))
       .where(eq(schema.lessonLanguage.id, existing.id))
       .returning();
 

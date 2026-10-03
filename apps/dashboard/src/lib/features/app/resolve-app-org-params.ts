@@ -1,14 +1,18 @@
+import type { TLocale } from '@cio/db/types';
+
 export type AppOrgParams = {
   isOrgSite: boolean;
   orgSiteName: string;
   /** Tenant identity used for pending invite checks and explicit academy joining. */
   orgId?: string | null;
+  orgLocale?: TLocale;
+  orgLocaleEnforced?: boolean;
 };
 
 type LayoutOrgData = {
   isOrgSite: boolean;
   orgSiteName: string;
-  org: { id?: string } | null;
+  org: { id?: string; settings?: { language?: { locale?: TLocale; enforced?: boolean } } } | null;
 };
 
 /**
@@ -22,7 +26,9 @@ export function resolveAppOrgParams(layoutData: LayoutOrgData, pathname: string,
     return {
       isOrgSite: true,
       orgSiteName: layoutData.orgSiteName,
-      orgId: layoutData.org?.id ?? null
+      orgId: layoutData.org?.id ?? null,
+      orgLocale: layoutData.org?.settings?.language?.locale,
+      orgLocaleEnforced: layoutData.org?.settings?.language?.enforced
     };
   }
 

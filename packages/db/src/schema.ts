@@ -12,13 +12,15 @@ import {
   pgEnum,
   pgTable,
   pgView,
+  primaryKey,
   serial,
   text,
   timestamp,
   unique,
   uniqueIndex,
   uuid,
-  varchar
+  varchar,
+  type AnyPgColumn
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
@@ -27,7 +29,7 @@ import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version'
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
-export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
+export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr']);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
@@ -306,18 +308,28 @@ export const analyticsCountryDaily = pgTable(
   ]
 );
 
-export const courseSection = pgTable('course_section', {
-  id: uuid().defaultRandom().primaryKey().notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-  title: varchar(),
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-  order: bigint({ mode: 'number' }).notNull(),
-  courseId: uuid('course_id').references(() => course.id, {
-    onDelete: 'cascade',
-    onUpdate: 'cascade'
-  })
-});
+export const courseSection = pgTable(
+  'course_section',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    title: varchar(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    order: bigint({ mode: 'number' }).notNull(),
+    courseId: uuid('course_id').references(() => course.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
+    }),
+    sourceId: uuid('source_id').references((): AnyPgColumn => courseSection.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    index('course_section_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
+  ]
+);
 
 export const group = pgTable(
   'group',
@@ -681,7 +693,10 @@ export const course = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     groupId: uuid('group_id'),
-    isTemplate: boolean('is_template').default(true),
+    isTemplate: boolean('is_template').default(false).notNull(),
+    templateId: uuid('template_id').references((): AnyPgColumn => course.id, { onDelete: 'set null' }),
+    publicForAll: boolean('public_for_all').default(false).notNull(),
+    seedKey: varchar('seed_key'),
     logo: text().default('').notNull(),
     slug: varchar(),
     metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{
@@ -816,8 +831,40 @@ export const course = pgTable(
       name: 'course_group_id_fkey'
     }),
     unique('course_slug_key').on(table.slug),
-    index('idx_course_group_id').on(table.groupId)
+    index('idx_course_group_id').on(table.groupId),
+    index('course_template_id_idx')
+      .on(table.templateId)
+      .where(sql`${table.templateId} is not null`),
+    uniqueIndex('course_seed_key_unique')
+      .on(table.seedKey)
+      .where(sql`${table.seedKey} is not null`)
   ]
+);
+
+export const templateHighlight = pgTable(
+  'template_highlight',
+  {
+    id: uuid().defaultRandom().primaryKey(),
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    position: integer().notNull(),
+    title: varchar({ length: 80 }).notNull(),
+    description: varchar({ length: 200 })
+  },
+  (table) => [index('template_highlight_course_id_idx').on(table.courseId)]
+);
+
+export const courseTemplateSettingSync = pgTable(
+  'course_template_setting_sync',
+  {
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    settingKey: varchar('setting_key').notNull(),
+    syncedAt: timestamp('synced_at', { withTimezone: true, mode: 'string' }).notNull()
+  },
+  (table) => [primaryKey({ columns: [table.courseId, table.settingKey] })]
 );
 
 export const courseCompletionRecord = pgTable(
@@ -1086,7 +1133,9 @@ export const lesson = pgTable(
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-    slug: varchar()
+    slug: varchar(),
+    sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1099,7 +1148,10 @@ export const lesson = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_teacher_id_fkey'
     }),
-    index('idx_lesson_course_slug').on(table.courseId, table.slug)
+    index('idx_lesson_course_slug').on(table.courseId, table.slug),
+    index('lesson_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
   ]
 );
 
@@ -1272,7 +1324,9 @@ export const exercise = pgTable(
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
     completionPolicy: varchar('completion_policy').default('submitted').notNull(),
     passThreshold: integer('pass_threshold'),
-    slug: varchar()
+    slug: varchar(),
+    sourceId: uuid('source_id').references((): AnyPgColumn => exercise.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1290,7 +1344,10 @@ export const exercise = pgTable(
       foreignColumns: [courseSection.id],
       name: 'exercise_section_id_fkey'
     }),
-    index('idx_exercise_course_slug').on(table.courseId, table.slug)
+    index('idx_exercise_course_slug').on(table.courseId, table.slug),
+    index('exercise_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
   ]
 );
 
@@ -1893,7 +1950,8 @@ export const lessonLanguage = pgTable(
     }),
     content: text(),
     lessonId: uuid('lesson_id').defaultRandom(),
-    locale: locale().default('en')
+    locale: locale().default('en'),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [
     foreignKey({
@@ -2214,6 +2272,10 @@ export const organization = pgTable(
         inviteOnly?: boolean;
       };
       internalEnrollmentOnly?: boolean;
+      language?: {
+        locale?: (typeof locale.enumValues)[number];
+        enforced?: boolean;
+      };
       studentLimitNotified?: {
         half?: boolean;
         reached?: boolean;

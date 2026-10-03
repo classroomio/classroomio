@@ -171,10 +171,24 @@
       "breakpoints": true
     },
     {
+      "idx": 24,
+      "version": "7",
+      "when": 1790552013227,
+      "tag": "0024_course_templates",
+      "breakpoints": true
+    },
+    {
       "idx": 25,
       "version": "7",
+      "when": 1790553000000,
+      "tag": "0025_add_turkish_locale",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
       "when": 1790934354515,
-      "tag": "0025_onboarding_questionnaire",
+      "tag": "0026_onboarding_questionnaire",
       "breakpoints": true
     }
   ]

@@ -2,7 +2,9 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { Empty } from '@cio/ui/custom/empty';
+  import { Spinner } from '@cio/ui/base/spinner';
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
+  import TemplateUpdateAlert from '$features/course/components/template-update-alert.svelte';
   import ContentList from '$features/course/components/lesson/content-list.svelte';
   import ContentSectionList from '$features/course/components/lesson/content-section-list.svelte';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
@@ -19,8 +21,6 @@
   }
 
   let { courseId, reorder = $bindable(false) }: Props = $props();
-
-  const query = new URLSearchParams(page.url.search);
 
   const contentData = $derived(getCourseContent(courseApi.course));
   const contentLength = $derived(contentData.grouped ? contentData.sections.length : contentData.items.length);
@@ -42,9 +42,12 @@
 
   const isCourseLoadedForThisPage = $derived(courseApi.course?.id === courseId);
   const canResolveNext = $derived(isCourseLoadedForThisPage && navigableContentItems.length > 0 && !hasHandledNext);
+  const isNextRequested = $derived(page.url.searchParams.get('next') === 'true');
+  const hasNoNavigableContent = $derived(isCourseLoadedForThisPage && navigableContentItems.length === 0);
+  const isResolvingNext = $derived(isNextRequested && !hasNoNavigableContent);
 
   $effect(() => {
-    if (!canResolveNext || isFetching || query.get('next') !== 'true') return;
+    if (!canResolveNext || isFetching || !isNextRequested) return;
 
     hasHandledNext = true;
     const incompleteContent = getFirstIncompleteNavigableContent(courseApi.course);
@@ -55,22 +58,17 @@
         goto(`/courses/${courseId}/exercises/${incompleteContent.id}`);
       }
     } else {
-      goto(`/courses/${courseId}/lessons`);
+      goto(`/courses/${courseId}/lessons`, { replaceState: true });
     }
   });
-
-  const shouldShowNextPlaceholder = $derived(query.get('next') === 'true');
 </script>
 
-{#if shouldShowNextPlaceholder}
-  <Empty
-    title={$t('course.navItem.lessons.no_lesson')}
-    description={$isOrgStudent
-      ? $t('course.navItem.lessons.student_share_your_knowledge')
-      : $t('course.navItem.lessons.share_your_knowledge')}
-    icon={BookOpenIcon}
-    variant="page"
-  />
+<TemplateUpdateAlert />
+
+{#if isResolvingNext}
+  <div class="flex justify-center py-16">
+    <Spinner />
+  </div>
 {:else if contentLength > 0}
   <div
     class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3"

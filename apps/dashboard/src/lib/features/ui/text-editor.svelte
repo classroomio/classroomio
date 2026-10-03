@@ -35,6 +35,10 @@
     onChange?: (content: HTMLContent) => void;
     onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
+    expandable?: boolean;
+    expanded?: boolean;
+    expandedTitle?: string;
+    expandedDescription?: string;
   }
 
   let {
@@ -49,7 +53,11 @@
     placeholder = 'Welcome to ClassroomIO',
     onChange,
     onReady,
-    onEditorDestroy
+    onEditorDestroy,
+    expandable = false,
+    expanded = $bindable(false),
+    expandedTitle = '',
+    expandedDescription = ''
   }: Props = $props();
 </script>
 
@@ -80,5 +88,9 @@
     {onEditorDestroy}
     onImageUpload={uploadImage}
     onSearchUnsplash={queryUnsplash}
+    {expandable}
+    bind:expanded
+    {expandedTitle}
+    {expandedDescription}
   />
 {/await}

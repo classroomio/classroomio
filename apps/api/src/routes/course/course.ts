@@ -35,6 +35,11 @@ import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
 import { authMiddleware } from '@api/middlewares/auth';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { cloneCourse } from '@api/services/course/clone';
+import {
+  courseTemplateActionsRouter,
+  courseTemplateRouter,
+  courseTemplateUpdatesRouter
+} from '@api/routes/course/course-template';
 import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { complianceRouter } from '@api/routes/course/compliance';
 import { contentRouter } from '@api/routes/course/content';
@@ -49,6 +54,8 @@ import { generateCertificatePdf, generateCertificatePng, slugifyForFilename } fr
 import { assembleCertificateRender, assembleOwnerPreviewRender } from '@api/services/course/certificate';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { generateCoursePdf } from '@api/utils/course';
+import { getCourseById, getCourseOrganizationId } from '@db/queries';
+import { ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { invitesRouter } from '@api/routes/course/invite';
 import { katexRouter } from '@api/routes/course/katex';
@@ -99,6 +106,9 @@ const enrollRateLimit = createRateLimiter({
 });
 
 export const courseRouter = new Hono()
+  .route('/template', courseTemplateRouter)
+  .route('/:courseId/template', courseTemplateActionsRouter)
+  .route('/:courseId/template-updates', courseTemplateUpdatesRouter)
   /**
    * GET /course/slug/:slug
    * Gets a course by slug (public route, no authentication required)
@@ -397,6 +407,16 @@ export const courseRouter = new Hono()
     async (c) => {
       try {
         const { courseId } = c.req.valid('param');
+        const [existingCourse] = await getCourseById(courseId);
+        if (existingCourse?.isTemplate) {
+          const orgId = c.req.header('cio-org-id');
+          const orgRoles = c.get('orgRoles') as Record<string, number> | undefined;
+          const templateOrgId = await getCourseOrganizationId(courseId);
+          if (!orgId || orgRoles?.[orgId] !== ROLE.ADMIN || templateOrgId !== orgId) {
+            throw new AppError('Only admins can delete templates', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+          }
+        }
+
         const result = await deleteCourse(courseId);
 
         return c.json(
@@ -597,11 +617,25 @@ export const courseRouter = new Hono()
         const { courseId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
         const { title, description, slug, organizationId } = validatedData;
-
+        const orgId = c.get('orgId') as string;
         const user = c.get('user')!;
+        const [sourceCourse] = await getCourseById(courseId);
+        const sourceOrgId = await getCourseOrganizationId(courseId);
+        if (!sourceCourse || !sourceOrgId || sourceOrgId !== orgId || (organizationId && organizationId !== orgId)) {
+          throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+        }
 
-        // Clone the course
-        const newCourse = await cloneCourse(courseId, title, user.id, description, slug, organizationId);
+        if (sourceCourse.isTemplate) {
+          throw new AppError('Templates are copied with Use template', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+        }
+
+        const newCourse = await cloneCourse(courseId, {
+          title,
+          userId: user.id,
+          description,
+          slug,
+          organizationId
+        });
 
         return c.json(
           {

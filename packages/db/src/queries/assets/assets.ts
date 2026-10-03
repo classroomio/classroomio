@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, desc, eq, inArray, ne, sql, type SQL, type InferSelectModel } from '@db/drizzle';
+import { and, asc, count, desc, eq, inArray, like, ne, or, sql, type SQL, type InferSelectModel } from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TAsset, TAssetUsage, TNewAsset, TNewAssetUsage } from '@db/types';
 
@@ -145,7 +145,39 @@ export async function getAssetById(assetId: string, orgId?: string): Promise<TAs
   }
 }
 
-export async function getAssetsByIds(assetIds: string[], orgId?: string): Promise<TAsset[]> {
+export async function getActiveAssetBySourceUrl(
+  orgId: string,
+  provider: string,
+  sourceUrl: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [item] = await dbClient
+      .select()
+      .from(schema.asset)
+      .where(
+        and(
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.provider, provider),
+          eq(schema.asset.sourceUrl, sourceUrl),
+          eq(schema.asset.status, 'active')
+        )
+      )
+      .orderBy(asc(schema.asset.createdAt))
+      .limit(1);
+
+    return item || null;
+  } catch (error) {
+    console.error('getActiveAssetBySourceUrl error:', error);
+    throw new Error(`Failed to get asset by source url: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export async function getAssetsByIds(
+  assetIds: string[],
+  orgId?: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset[]> {
   try {
     if (assetIds.length === 0) {
       return [];
@@ -156,13 +188,91 @@ export async function getAssetsByIds(assetIds: string[], orgId?: string): Promis
       conditions.push(eq(schema.asset.organizationId, orgId));
     }
 
-    return await db
+    return await dbClient
       .select()
       .from(schema.asset)
       .where(and(...conditions));
   } catch (error) {
     console.error('getAssetsByIds error:', error);
     throw new Error(`Failed to get assets by ids: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Storage keys and prefixes that another asset row still points at. */
+export async function assetLocationsReferencedElsewhere(
+  assetId: string,
+  keys: string[],
+  prefixes: string[],
+  dbClient: DbOrTxClient = db
+) {
+  const sharedKeys = new Set<string>();
+  const sharedPrefixes = new Set<string>();
+  if (keys.length === 0 && prefixes.length === 0) {
+    return { keys: sharedKeys, prefixes: sharedPrefixes };
+  }
+
+  try {
+    const conditions: SQL[] = [];
+    if (keys.length > 0) {
+      conditions.push(
+        inArray(schema.asset.storageKey, keys),
+        inArray(schema.asset.hlsManifestKey, keys),
+        inArray(schema.asset.hlsAudioKey, keys)
+      );
+    }
+
+    for (const prefix of prefixes) {
+      const pattern = `${prefix}%`;
+      const contained = `%${prefix.replace(/[\\%_]/g, (character) => `\\${character}`)}%`;
+      conditions.push(
+        like(schema.asset.storageKey, pattern),
+        like(schema.asset.hlsManifestKey, pattern),
+        like(schema.asset.hlsAudioKey, pattern),
+        sql`${schema.asset.thumbnailUrl} like ${contained}`,
+        sql`${schema.asset.thumbnailCandidates}::text like ${contained}`,
+        sql`${schema.asset.sourceUrl} like ${contained}`,
+        sql`${schema.asset.metadata}::text like ${contained}`
+      );
+    }
+
+    const rows = await dbClient
+      .select({
+        storageKey: schema.asset.storageKey,
+        hlsManifestKey: schema.asset.hlsManifestKey,
+        hlsAudioKey: schema.asset.hlsAudioKey,
+        thumbnailUrl: schema.asset.thumbnailUrl,
+        thumbnailCandidates: schema.asset.thumbnailCandidates,
+        sourceUrl: schema.asset.sourceUrl,
+        metadata: schema.asset.metadata
+      })
+      .from(schema.asset)
+      .where(and(ne(schema.asset.id, assetId), or(...conditions)));
+
+    for (const row of rows) {
+      const metadataText = row.metadata == null ? null : JSON.stringify(row.metadata);
+      const locations = [
+        row.storageKey,
+        row.hlsManifestKey,
+        row.hlsAudioKey,
+        row.thumbnailUrl,
+        row.sourceUrl,
+        metadataText,
+        ...row.thumbnailCandidates
+      ].filter((location): location is string => Boolean(location));
+      for (const location of locations) {
+        if (keys.includes(location)) sharedKeys.add(location);
+        for (const prefix of prefixes) {
+          if (location.startsWith(prefix) || location.includes(prefix)) sharedPrefixes.add(prefix);
+        }
+      }
+    }
+
+    return { keys: sharedKeys, prefixes: sharedPrefixes };
+  } catch (error) {
+    console.error('assetLocationsReferencedElsewhere error:', error);
+    throw new Error(
+      `Failed to check shared asset locations: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
@@ -608,6 +718,39 @@ export async function deleteAssetUsagesByTarget(
     console.error('deleteAssetUsagesByTarget error:', error);
     throw new Error(
       `Failed to delete asset usages by target: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Removes the usages a target holds in the given slots, leaving its other slots
+ * untouched. Returns the number of rows removed.
+ */
+export async function deleteAssetUsagesByTargetSlots(
+  targetType: string,
+  targetId: string,
+  slotTypes: string[],
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    if (slotTypes.length === 0) return 0;
+
+    const deleted = await dbClient
+      .delete(schema.assetUsage)
+      .where(
+        and(
+          eq(schema.assetUsage.targetType, targetType),
+          eq(schema.assetUsage.targetId, targetId),
+          inArray(schema.assetUsage.slotType, slotTypes)
+        )
+      )
+      .returning({ id: schema.assetUsage.id });
+
+    return deleted.length;
+  } catch (error) {
+    console.error('deleteAssetUsagesByTargetSlots error:', error);
+    throw new Error(
+      `Failed to delete asset usages by target slots: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

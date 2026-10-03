@@ -415,6 +415,7 @@
                   {slug}
                   includeOpen={true}
                   hideOrgActions={false}
+                  studentCount={totalStudents}
                 />
               {/if}
             </DropdownMenu.Content>

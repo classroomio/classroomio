@@ -138,6 +138,15 @@ Learner and author UIs for exercise questions (take, preview, review, submission
 
 **Types with heavier or distinct UIs** (textarea editor, file upload, matching/hotspot authoring, link lists) intentionally keep separate `take` / `preview` implementations until a second consumer (for example a dedicated `review` mode) justifies extracting more shared fragments.
 
+### Image lightbox (`src/custom/image-lightbox/`)
+
+Full-screen image viewer for screenshots and other detailed images. `ZoomableImage` renders an image uncropped (`object-contain`) as a button with a hover "enlarge" hint. `ImageLightbox` opens one image or a gallery: click or `+`/`-` to zoom (up to 300%), arrow keys or the side buttons to move between images, Esc or a click on the backdrop to close. Both `open` and `index` are bindable. Copy is passed via `labels: ImageLightboxLabels` (`close`, `zoomIn`, `zoomOut`, `previous`, `next`). Exercise question and option images use both in every non-edit mode. See `Molecules/ImageLightbox` in Storybook.
+
+```svelte
+<ZoomableImage {src} {alt} enlargeLabel="Click to enlarge" onclick={() => (open = true)} />
+<ImageLightbox images={[{ src, alt }]} {labels} bind:open />
+```
+
 ### Question type picker (`src/custom/question-type-picker/`)
 
 Marketing / demo widget: left-hand list of question types and a live **take**-mode preview using `ExerciseQuestion.QuestionRenderer`. Copy is English-only (no dashboard i18n). Also consumed by the **`@cio/embeds`** app as a CDN bundle (`apps/embeds`).
@@ -308,11 +317,11 @@ Utility functions and helpers are located in `src/tools/`. The main utility is t
 
 When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
 
-| Position | Role | Variant |
-| -------- | ---- | ------- |
-| Left | External / repeat action (e.g. "Create another …") | `secondary` |
-| Right group (first) | Cancel / dismiss (e.g. "Later", "Cancel") | `outline` |
-| Right group (last) | Main CTA (e.g. "Open now", "Save", "Create") | default primary |
+| Position            | Role                                               | Variant         |
+| ------------------- | -------------------------------------------------- | --------------- |
+| Left                | External / repeat action (e.g. "Create another …") | `secondary`     |
+| Right group (first) | Cancel / dismiss (e.g. "Later", "Cancel")          | `outline`       |
+| Right group (last)  | Main CTA (e.g. "Open now", "Save", "Create")       | default primary |
 
 Place the main CTA on the right; group cancel and primary together when both appear on the right.
 
@@ -437,6 +446,26 @@ Supported today: `InputField`, `TextareaField`, `CheckboxField`, `Button`. Fixed
 ```
 
 Registry and naming rules: `e2e/README.md` and AGENTS.md § E2E test hooks.
+
+## Chevrons up down
+
+`ChevronsUpDownIcon` is the moving chevron pair. Hovering it splits the chevrons apart for 200ms, then they settle. Pass `animate` to play that motion from a parent, and `ariaHidden` when it sits next to a visible label.
+
+```svelte
+<script lang="ts">
+  import { ChevronsUpDownIcon } from '@cio/ui/custom/moving-icons';
+</script>
+
+<ChevronsUpDownIcon size={16} ariaHidden />
+```
+
+## Template card
+
+`TemplateCard` is the small course-template tile used on the courses page and in the template gallery. Pass `blank` for the empty plus tile, which uses a dashed border. Pass `loading` for the skeleton, `typeBadge` for the course-type chip, and `overlay` for a menu that sits outside the button.
+
+```svelte
+<TemplateCard title="Customer Onboarding" subtitle="by ClassroomIO" imageUrl={cover} />
+```
 
 ## Component Exports
 

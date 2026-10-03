@@ -13,7 +13,18 @@
     "discard": "Descartar",
     "save_changes": "Guardar cambios",
     "scroll_to_top": "Volver al inicio",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "restricted_page": {
+      "title": "Página restringida",
+      "description": "Esta organización está restringida. Mientras tanto, puedes consultar nuestras funciones.",
+      "home": "Ir al inicio",
+      "learning_paths_heading": "Rutas de aprendizaje",
+      "learning_path_label": "Ruta de aprendizaje",
+      "tracks_label": "{count, plural, one {# ruta} other {# rutas}}",
+      "included": "Incluido",
+      "untitled_lesson": "Lección sin título",
+      "format": "Formato"
+    }
   },
   "validations": {
     "generic": {
@@ -1525,7 +1536,39 @@
           },
           "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes."
         },
-        "learner": "Estudiante"
+        "learner": "Estudiante",
+        "views": {
+          "all": "todas las personas",
+          "not_started": "No iniciado",
+          "in_progress": "En progreso",
+          "completed": "Completado",
+          "never_logged_in": "Nunca inicie sesión",
+          "awaiting_certificate": "En espera de certificado",
+          "custom": "Filtros personalizados"
+        },
+        "window": {
+          "7d": "7 dias",
+          "30d": "30 dias",
+          "90d": "90 dias",
+          "180d": "180 días",
+          "never": "nunca"
+        },
+        "filter": {
+          "title": "Filtrar personas",
+          "role": "Rol",
+          "all_roles": "Todos los roles",
+          "progress": "Progreso",
+          "in_progress": "En progreso",
+          "completed": "Completado",
+          "membership": "Membresía",
+          "joined": "Se unió",
+          "invited": "Invitado, aún no hay cuenta",
+          "certificate": "Certificado",
+          "earned": "Ganado",
+          "not_earned": "No ganado",
+          "no_login_since": "No he iniciado sesión desde",
+          "joined_within": "Unidos dentro"
+        }
       },
       "marks": {
         "title": "marcas",
@@ -1791,7 +1834,9 @@
               "try_again": "Inténtalo de nuevo",
               "back": "Atrás",
               "begin_section": "Sección de inicio",
-              "complete_section": "Sección completa"
+              "complete_section": "Sección completa",
+              "instructions": "Instrucciones",
+              "close_instructions": "Cerrar instrucciones"
             },
             "edit_mode": {
               "delete_modal": "Eliminar ejercicio",
@@ -1840,7 +1885,8 @@
               "title": "Título",
               "heading": "Descripción",
               "describe": "Describe el ejercicio a tu estudiante.",
-              "no": "Sin descripción"
+              "no": "Sin descripción",
+              "expand": "Expandir"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2093,16 @@
                   "video_invalid_link": "Introduzca un enlace de YouTube válido.",
                   "upload_error_only_images": "Sólo se admiten archivos de imagen.",
                   "upload_error_skipped": "Se omitieron algunos archivos porque no son imágenes.",
-                  "upload_error_failed": "No se pudo cargar la imagen. Intentar otra vez."
+                  "upload_error_failed": "No se pudo cargar la imagen. Intentar otra vez.",
+                  "expand": "Expandir"
+                },
+                "media": {
+                  "enlarge_image": "Haga clic para ampliar",
+                  "close": "Cerrar",
+                  "zoom_in": "Acercar",
+                  "zoom_out": "alejar",
+                  "previous_image": "Imagen anterior",
+                  "next_image": "Siguiente imagen"
                 }
               },
               "navigation": {
@@ -2925,7 +2980,7 @@
       "untitled_course": "Curso sin título",
       "untitled_course_description": "El asistente completará los detalles del curso después de la configuración.",
       "template": {
-        "heading": "O empezar desde una plantilla",
+        "heading": "O empieza con un prompt",
         "submit": "Continuar",
         "skip": "Responde en el chat en su lugar",
         "submitted_summary": "Respuestas enviadas",
@@ -3080,8 +3135,8 @@
     "afternoon_heading": "Buenas tardes",
     "evening_heading": "Buenas noches",
     "create_course": "Crear curso",
-    "view_site": "Academia Abierta",
-    "visit_site": "Academia Abierta",
+    "view_site": "Tu academia",
+    "visit_site": "Tu academia",
     "current_lesson": "Actualmente aprendiendo",
     "your_progress": "Tu progreso",
     "continue": "Continuar",
@@ -3136,7 +3191,7 @@
     "login_activity_description": "Días más activos de la semana (últimos 90 días)",
     "login_activity_no_data": "Aún no hay actividad de inicio de sesión",
     "login_activity_logins": "inicios de sesión",
-    "open_academy": "Academia Abierta",
+    "open_academy": "Tu academia",
     "explore_more_courses": "Explora más cursos",
     "view_more": "Ver más",
     "upcoming_sessions_heading": "Sesiones en vivo"
@@ -3152,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "Personalizar LMS",
+        "language": {
+          "title": "Idioma",
+          "description": "Elige el idioma de la interfaz del LMS para estudiantes.",
+          "default_language": "Idioma predeterminado",
+          "enforce": "Imponer este idioma a los estudiantes"
+        },
         "disabled": "Discapacitado",
         "enabled": "Habilitado",
         "save": "Guardar cambios",
@@ -3373,6 +3434,8 @@
     "analytics": "Analíticas",
     "compliance": "Cumplimiento",
     "cohorts": "Cohortes",
+    "exit_course": "Salir de este curso",
+    "exit_cohort": "Salir de esta cohorte",
     "upgrade_now": "Actualiza ahora",
     "upgrade_label": "Actualizar",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -3995,7 +4058,7 @@
       "notifications_tab": "Notificaciones"
     },
     "subheadings": {
-      "view_site": "Academia Abierta"
+      "view_site": "Tu academia"
     },
     "auth": {
       "title": "Autenticación",
@@ -4272,6 +4335,7 @@
     "login_with_google": "Iniciar sesión con Google",
     "create_to_join": "Crea una cuenta gratuita para unirte",
     "create_account": "Crear cuenta",
+    "sign_in_to_continue": "Inicia sesión para continuar",
     "login_to_join": "Inicia sesión para unirte",
     "validation": {
       "unable_to_create_profile": "No se puede crear el perfil",
@@ -4619,6 +4683,12 @@
         "joined": "Organización unida",
         "join_failed": "No se pudo unir a la organización",
         "try_again": "Intentar de nuevo"
+      },
+      "limit_reached": {
+        "title": "Esta academia está llena ahora mismo.",
+        "description": "{orgName} alcanzó su límite de estudiantes en su plan actual, por lo que no pudimos agregarlo. Tu cuenta está bien y nada de lo que hiciste causó esto.",
+        "technical_details": "Detalles técnicos",
+        "error_code": "error"
       },
       "not_found": "Esta invitación ya no está disponible.",
       "loading": "Cargando invitación..."
@@ -5483,7 +5553,17 @@
       "add_another": "agregar otro",
       "invite_submit": "Enviar invitaciones",
       "empty_title": "Aún no hay miembros",
-      "empty_description": "Invita a personas a unirse a esta cohorte."
+      "empty_description": "Invita a personas a unirse a esta cohorte.",
+      "name": "Nombre",
+      "joined": "Se unió",
+      "filter_title": "Filtrar personas",
+      "views": {
+        "all": "todas las personas",
+        "tutors": "Tutores",
+        "students": "estudiantes",
+        "pending_invites": "Invitaciones pendientes",
+        "never_logged_in": "Nunca inicie sesión"
+      }
     },
     "courses": {
       "add": "Agregar curso",
@@ -5763,6 +5843,181 @@
       "theme_light": "Luz",
       "theme_dark": "Oscuridad",
       "theme_system": "Sistema"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Crear un nuevo curso",
+      "gallery": "Galería de plantillas",
+      "yours": "Tus cursos",
+      "blank": "curso en blanco",
+      "blank_subtitle": "Empezar desde cero"
+    },
+    "card": {
+      "yours": "Tu plantilla",
+      "used": "Tu plantilla · Usada {date}",
+      "curated": "Plantilla curada"
+    },
+    "gallery": {
+      "title": "Galería de plantillas",
+      "subtitle": "Inicie un curso a partir de una de sus plantillas o una creada por ClassroomIO.",
+      "search": "Buscar plantilla",
+      "scope_all": "Todas las plantillas",
+      "scope_org": "Mis plantillas",
+      "scope_global": "AulaIO",
+      "empty_org": "Aún no has creado ninguna plantilla. Guarda cualquier curso como plantilla desde su menú ⋯.",
+      "no_match": "Ninguna plantilla coincide con \"{query}\".",
+      "empty_global": "Aún no hay plantillas de ClassroomIO.",
+      "back": "Todos los cursos"
+    },
+    "preview": {
+      "course_name": "Nombre del curso",
+      "use": "Usar plantilla",
+      "open": "Abrir plantilla",
+      "cancel": "Cancelar",
+      "copying": "Copiando {sections, plural, one {# sección} other {# secciones}}, {lessons, plural, one {# lección} other {# lecciones}}…",
+      "created": "Curso creado a partir de {title}",
+      "shows_off": "Se luce",
+      "counts": "{sections} secciones · {lessons} lecciones · {exercises} ejercicios",
+      "questions": "{count, plural, one {# pregunta} other {# preguntas}}",
+      "loading": "Cargando plantilla…",
+      "settings": "Configuración",
+      "certificate": "Certificado habilitado",
+      "deadline": "Fecha límite {date}",
+      "threshold": "Completa el {percent}% del curso",
+      "final_exercise": "Pase “{title}” al {percent}%",
+      "sequential": "Las lecciones se desbloquean en orden",
+      "grading": "Un tutor califica los envíos",
+      "comments_off": "Los comentarios de la lección están desactivados.",
+      "lesson_download": "Los estudiantes pueden descargar lecciones",
+      "self_enrollment": "Los estudiantes pueden unirse ellos mismos.",
+      "ai_tutor": "El tutor de IA está activado",
+      "compliance_retake": "Repetir cada {months, plural, one {# mes} other {# meses}}",
+      "compliance_mandatory": "Obligatorio"
+    },
+    "menu": {
+      "open": "Abierto",
+      "duplicate": "Duplicar",
+      "delete": "Eliminar",
+      "save": "Guardar como plantilla…",
+      "create_course": "Crear curso a partir de plantilla",
+      "duplicated": "Plantilla duplicada",
+      "deleted": "Plantilla eliminada"
+    },
+    "save": {
+      "title": "Guardar como plantilla",
+      "copy": "Guardar una copia como plantilla",
+      "copy_description": "El curso se queda como está.",
+      "convert": "Convertir este curso",
+      "convert_description": "El curso se convierte en un modelo. No puede publicarse ni tener alumnos.",
+      "has_students": "Tiene {count, plural, one {# estudiante} other {# estudiantes}}; en su lugar, guarde una copia.",
+      "unpublish": "Converting despublica este curso.",
+      "name": "Nombre de la plantilla",
+      "save_button": "Guardar plantilla",
+      "convert_button": "Convertir a plantilla",
+      "saved": "Plantilla guardada",
+      "converted": "Curso convertido a plantilla",
+      "limit_title": "Tu plan incluye {count, plural, one {# plantilla} other {# plantillas}}",
+      "limit_body": "Ya tienes {used, plural, one {{title}} other {# plantillas}}. Actualice para obtener más plantillas o elimine una que tenga.",
+      "upgrade": "Actualizar",
+      "manage": "Administrar plantillas",
+      "view_templates": "Ver plantillas"
+    },
+    "empty": {
+      "title": "Aún no hay cursos",
+      "description": "Elija una plantilla para ver cómo es un excelente curso de ClassroomIO o comience desde un curso en blanco.",
+      "browse": "Explorar plantillas"
+    },
+    "editor": {
+      "badge": "Plantilla"
+    },
+    "sync": {
+      "alert_title": "La plantilla tiene {count, plural, one {# actualización} other {# actualizaciones}}",
+      "alert_body": "{title} cambió desde la última vez que lo usaste el {date}.",
+      "review_in_settings": "Revisar en configuración",
+      "section_title": "Plantilla",
+      "last_pulled": "Último retiro {date}",
+      "review": "Revisar actualizaciones",
+      "up_to_date": "Al día con la plantilla.",
+      "deleted": "{title} fue eliminado. Este curso mantiene todo su contenido; no queda nada que tirar.",
+      "deleted_unknown": "Esta plantilla fue eliminada. Este curso mantiene todo su contenido; no queda nada que tirar.",
+      "available_detail": "{count, plural, one {# actualización disponible} other {# actualizaciones disponibles}} — {list}.",
+      "join": "{rest} y {last}",
+      "sections_count": "{count, plural, one {# sección} other {# secciones}}",
+      "settings_count": "{count, plural, one {# configuración} other {# configuraciones}}",
+      "content": "Contenido",
+      "settings": "Configuración",
+      "select_all": "Seleccionar todo",
+      "new": "Nuevo",
+      "updated": "Actualizado",
+      "locked": "{count, plural, one {# envío — no se puede actualizar} other {# envíos — no se pueden actualizar}}",
+      "edited_locally": "Editaste esto el {date}; al extraerlo se reemplazan los cambios.",
+      "removed_locally": "Eliminaste esto de tu curso.",
+      "also_adds": "También agrega {kind}: {title}",
+      "template_value": "Plantilla: {value}",
+      "yours_value": "Tuyo: {value}",
+      "yes": "si",
+      "no": "No",
+      "empty_value": "Ninguno",
+      "custom_value": "personalizado",
+      "selected": "{count, plural, one {# seleccionado} other {# seleccionado}}",
+      "pull": "Traer {count, plural, one {# cambio} other {# cambios}}",
+      "pulled": "Se aplicaron {count, plural, one {# cambio} other {# cambios}} de {title}",
+      "kind": {
+        "section": "Sección",
+        "lesson": "Lección",
+        "exercise": "ejercicio"
+      },
+      "detail": {
+        "title": "Título",
+        "content": "Contenido",
+        "locales": "{locales} agregados"
+      },
+      "setting": {
+        "description": "Descripción",
+        "bannerImage": "Imagen de portada",
+        "welcomeEmail": "Correo electrónico de bienvenida",
+        "completionDeadline": "Fecha límite de finalización",
+        "completionThreshold": "Umbral de finalización",
+        "finalExercise": "Ejercicio final",
+        "lessonTabsOrder": "Pestañas de lecciones",
+        "contentGrouping": "Agrupación de contenidos",
+        "progression": "Progresión",
+        "comments": "Comentarios de la lección",
+        "selfEnrollment": "Autoinscripción",
+        "markdownExport": "Exportación de rebajas",
+        "lessonDownload": "descargar lección",
+        "landingRequirements": "Requisitos de aterrizaje",
+        "landingDescription": "Descripción del aterrizaje",
+        "landingGoals": "Metas de aterrizaje",
+        "landingSkills": "Habilidades",
+        "landingTools": "Herramientas",
+        "landingInstructor": "Instructor",
+        "pricing": "Precios",
+        "certificateDesign": "Diseño de certificado",
+        "certificateRules": "Reglas del certificado",
+        "aiTutor": "tutor de IA"
+      },
+      "section_description": "Este curso se creó a partir de una plantilla. Trae sus cambios cuando quieras — nada cambia por sí solo.",
+      "updates_title": "{count, plural, one {# actualización disponible} other {# actualizaciones disponibles}}",
+      "deleted_title": "Plantilla eliminada",
+      "sheet_title": "Actualizaciones de la plantilla",
+      "sheet_description": "De {title}, desde {date}. Elige qué traer — no se quita nada de tu curso.",
+      "nothing_selected": "Nada seleccionado",
+      "loading": "Cargando actualizaciones…",
+      "value": {
+        "free": "Libre",
+        "sequential": "Secuencial",
+        "no_price": "Gratis",
+        "pass_mark": "Calificación de aprobado {score}"
+      },
+      "template_label": "Plantilla",
+      "yours_label": "Tuyo"
+    },
+    "home": {
+      "heading": "O empezar desde una plantilla",
+      "description": "Un curso completo con lecciones, ejercicios y configuración. Cópialo y hazlo tuyo.",
+      "browse": "Explorar todas las plantillas"
     }
   }
 }

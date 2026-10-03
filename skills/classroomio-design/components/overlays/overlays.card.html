@@ -1,0 +1,30 @@
+<!-- @dsCard group="Components" viewport="700x400" name="Overlays" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--ui-background);font-family:var(--font-sans);color:var(--ui-foreground)}.lbl{font-family:var(--font-mono);font-size:10px;color:var(--ink-500);letter-spacing:.08em;width:78px;flex-shrink:0}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].NotchCard && window[k].Select; } catch (e) { return false; } })] || {};
+const Row = ({ l, children, top }) => <div style={{ display: 'flex', alignItems: top ? 'flex-start' : 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}><span className="lbl">{l}</span>{children}</div>;
+const { Dialog, Sheet, Popover, Tooltip, DropdownMenu, Button, Input, Field } = NS;
+function App() {
+  const [open, setOpen] = React.useState(false);
+  const [sheet, setSheet] = React.useState(false);
+  return <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 20 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <Dialog inline open title="Delete course?" description="Learners lose access immediately. This can’t be undone." showCloseButton footer={<><Button variant="outline">Cancel</Button><Button variant="destructive">Delete course</Button></>}/>
+      <div style={{ display: 'flex', gap: 10 }}><Button variant="outline" onClick={() => setOpen(true)}>Open dialog</Button><Button variant="outline" onClick={() => setSheet(true)}>Open sheet</Button></div>
+    </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+      <DropdownMenu defaultOpen trigger={<Button variant="outline">Actions</Button>} items={[{heading:'Course'},{label:'Edit',shortcut:'⌘E'},{label:'Duplicate',shortcut:'⌘D'},{separator:true},{label:'Delete',variant:'destructive'}]}/>
+      <div style={{ height: 150 }}/>
+      <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginTop: 20 }}><Tooltip defaultOpen content="Duplicate lesson"><Button variant="secondary" size="sm">Hover me</Button></Tooltip><Popover trigger={<Button size="sm" variant="ghost">Popover</Button>}>Share this course with your team.</Popover></div>
+    </div>
+    <Dialog open={open} onOpenChange={setOpen} title="Invite tutor" description="They’ll get an email to join your academy." footer={<><Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button><Button onClick={() => setOpen(false)}>Send invite</Button></>}><Field label="Email"><Input placeholder="tutor@company.com"/></Field></Dialog>
+    <Sheet open={sheet} onOpenChange={setSheet} title="Edit learner" description="Update profile and access." footer={<Button onClick={() => setSheet(false)}>Save</Button>}><Field label="Name"><Input defaultValue="Ada Okafor"/></Field></Sheet>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>

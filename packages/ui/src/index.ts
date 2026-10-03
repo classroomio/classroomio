@@ -86,6 +86,7 @@ export { YoutubeLinkForm } from './custom/youtube-link-form';
 export { VimeoLinkForm } from './custom/vimeo-link-form';
 export { BackButton } from './custom/back-button';
 export { CourseCard, DEFAULT_COURSE_BANNER_IMAGE } from './custom/course-card';
+export { TemplateCard } from './custom/template-card';
 export { NewsfeedReactions } from './custom/newsfeed-reactions';
 export * as PublicCourse from './custom/public-course';
 export * as CommentTree from './custom/comment-tree';

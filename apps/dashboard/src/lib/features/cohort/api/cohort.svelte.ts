@@ -8,6 +8,8 @@ import type {
   CohortNewsfeed,
   CreateCohortInviteLinkRequest,
   GetCohortInviteLinkRequest,
+  ListCohortPeopleQuery,
+  ListCohortPeopleRequest,
   ToggleCohortInviteLinkRequest
 } from '../utils/types';
 import type {
@@ -179,6 +181,27 @@ class CohortApi extends BaseApiWithErrors {
         this.loadedMembersCohortId = cohortId;
       },
       logContext: 'listCohortMembers'
+    });
+  }
+
+  /** Paginated, filtered roster for the people table; `members` stays unpaginated for role lookups. */
+  async listPeople(cohortId: string, query: ListCohortPeopleQuery) {
+    return this.execute<ListCohortPeopleRequest>({
+      requestFn: () =>
+        classroomio.cohort[':cohortId'].people.$get({
+          param: { cohortId },
+          query: {
+            page: String(query.page),
+            limit: String(query.limit),
+            search: query.search,
+            roleId: query.roleId === undefined ? undefined : String(query.roleId),
+            sortBy: query.sortBy,
+            sortOrder: query.sortOrder,
+            membership: query.membership,
+            lastLoginBefore: query.lastLoginBefore
+          } as ListCohortPeopleRequest['query']
+        }),
+      logContext: 'listCohortPeople'
     });
   }
 

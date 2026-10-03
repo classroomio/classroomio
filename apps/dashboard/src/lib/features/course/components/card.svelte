@@ -249,7 +249,7 @@
       {@render actions()}
     {:else if !isOnLandingPage}
       {#if !isLMS}
-        <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} />
+        <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} studentCount={totalStudents} />
       {:else if showLmsPublicCourseMenu}
         <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} lmsPublicQuickOnly={true} />
       {/if}

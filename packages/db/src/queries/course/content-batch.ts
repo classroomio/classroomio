@@ -5,6 +5,7 @@ import * as schema from '@db/schema';
 import { inArray, sql } from 'drizzle-orm';
 import type { DbOrTxClient } from '@db/drizzle';
 
+import { contentWriteBumpsTimestamp } from './content-timestamp';
 import { OperationalQueryError } from '../query-errors';
 
 const { courseSection, lesson, exercise } = schema;
@@ -63,9 +64,18 @@ export async function applyCourseContentBulkUpdates(
       .filter(({ payload }) => payload.isUnlocked !== undefined)
       .map(({ item, payload }) => ({ id: item.id, value: payload.isUnlocked }));
 
-    const lessonSet: Record<string, unknown> = {
-      updatedAt
-    };
+    const lessonContentIds = lessonUpdates
+      .filter(({ payload }) => contentWriteBumpsTimestamp(Object.keys(payload)))
+      .map(({ item }) => item.id);
+
+    const lessonSet: Record<string, unknown> = {};
+
+    if (lessonContentIds.length > 0) {
+      lessonSet.updatedAt = sql`case when ${lesson.id} in (${sql.join(
+        lessonContentIds.map((id) => sql`${id}`),
+        sql`, `
+      )}) then ${updatedAt} else ${lesson.updatedAt} end`;
+    }
 
     if (lessonOrderUpdates.length > 0) {
       lessonSet.order = sql`case ${lesson.id} ${sql.join(
@@ -111,9 +121,18 @@ export async function applyCourseContentBulkUpdates(
       .filter(({ payload }) => payload.isUnlocked !== undefined)
       .map(({ item, payload }) => ({ id: item.id, value: payload.isUnlocked }));
 
-    const exerciseSet: Record<string, unknown> = {
-      updatedAt
-    };
+    const exerciseContentIds = exerciseUpdates
+      .filter(({ payload }) => contentWriteBumpsTimestamp(Object.keys(payload)))
+      .map(({ item }) => item.id);
+
+    const exerciseSet: Record<string, unknown> = {};
+
+    if (exerciseContentIds.length > 0) {
+      exerciseSet.updatedAt = sql`case when ${exercise.id} in (${sql.join(
+        exerciseContentIds.map((id) => sql`${id}`),
+        sql`, `
+      )}) then ${updatedAt} else ${exercise.updatedAt} end`;
+    }
 
     if (exerciseOrderUpdates.length > 0) {
       exerciseSet.order = sql`case ${exercise.id} ${sql.join(
@@ -163,9 +182,7 @@ export async function applyCourseSectionOrderUpdates(
   }
 
   const sectionIds = sections.map((section) => section.id);
-  const updatedAt = new Date().toISOString();
   const sectionSet: Record<string, unknown> = {
-    updatedAt,
     order: sql`case ${courseSection.id} ${sql.join(
       sections.map((section) => sql`when ${section.id} then ${section.order}`),
       sql` `

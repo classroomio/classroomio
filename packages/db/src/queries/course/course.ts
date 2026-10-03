@@ -16,6 +16,7 @@ import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, s
 import { ROLE } from '@cio/utils/constants';
 import type { TCourseType } from '@cio/utils/constants/course-type';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { contentWriteBumpsTimestamp } from './content-timestamp';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
 import { isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
@@ -86,7 +87,8 @@ export const getPublishedCoursesBySiteName = async (
     const conditions = [
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
-      eq(schema.course.isPublished, true)
+      eq(schema.course.isPublished, true),
+      eq(schema.course.isTemplate, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -173,7 +175,8 @@ export const countPublishedCoursesBySiteName = async (
     const conditions = [
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
-      eq(schema.course.isPublished, true)
+      eq(schema.course.isPublished, true),
+      eq(schema.course.isTemplate, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -283,7 +286,12 @@ export const getCoursesById = async (orgId: string): Promise<TCourse[]> => {
       .innerJoin(schema.organization, eq(schema.group.organizationId, schema.organization.id))
       .leftJoin(schema.lesson, eq(schema.course.id, schema.lesson.courseId))
       .where(
-        and(eq(schema.organization.id, orgId), eq(schema.course.status, 'ACTIVE'), eq(schema.course.isPublished, true))
+        and(
+          eq(schema.organization.id, orgId),
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          eq(schema.course.isTemplate, false)
+        )
       )
       .groupBy(
         schema.course.id,
@@ -828,7 +836,11 @@ function orgCourseListConditions({
   type,
   publishedStatus
 }: Pick<GetOrgCoursesOptions, 'orgId' | 'courseIds' | 'search' | 'type' | 'publishedStatus'>) {
-  const conditions = [eq(schema.group.organizationId, orgId), eq(schema.course.status, 'ACTIVE')];
+  const conditions = [
+    eq(schema.group.organizationId, orgId),
+    eq(schema.course.status, 'ACTIVE'),
+    eq(schema.course.isTemplate, false)
+  ];
 
   if (courseIds && courseIds.length > 0) {
     conditions.push(inArray(schema.course.id, courseIds));
@@ -1025,6 +1037,7 @@ export async function searchOrgCourses(orgId: string, search: string, limit: num
         and(
           eq(schema.group.organizationId, orgId),
           eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isTemplate, false),
           or(ilike(schema.course.title, searchValue), ilike(schema.course.description, searchValue))
         )
       )
@@ -1200,6 +1213,7 @@ export const getEnrolledCourses = async ({
         and(
           eq(schema.group.organizationId, orgId),
           eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isTemplate, false),
           or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id))
         )
       )
@@ -1260,6 +1274,7 @@ export const getExploreCourses = async ({
       eq(schema.group.organizationId, orgId),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
+      eq(schema.course.isTemplate, false),
       isNull(schema.groupmember.id),
       // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
       // legacy allowNewStudent, then open. `->>` yields NULL for a JSON null,
@@ -1476,9 +1491,9 @@ export async function updateUngroupedLessonsSectionId(
   }
 }
 
-export async function getCourseSectionsByCourseId(courseId: string) {
+export async function getCourseSectionsByCourseId(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return db.select().from(schema.courseSection).where(eq(schema.courseSection.courseId, courseId));
+    return dbClient.select().from(schema.courseSection).where(eq(schema.courseSection.courseId, courseId));
   } catch (error) {
     console.error('getCourseSectionsByCourseId error:', error);
     throw new Error(
@@ -1512,11 +1527,19 @@ export async function createCourseSections(values: TNewCourseSection[], dbClient
   }
 }
 
-export async function updateCourseSection(sectionId: string, data: Partial<TCourseSection>) {
+export async function updateCourseSection(
+  sectionId: string,
+  data: Partial<TCourseSection>,
+  dbClient: DbOrTxClient = db
+) {
   try {
-    const [updated] = await db
+    const fields = { ...data };
+    delete fields.updatedAt;
+    const fieldNames = Object.keys(fields);
+    const patch = contentWriteBumpsTimestamp(fieldNames) ? { ...fields, updatedAt: new Date().toISOString() } : fields;
+    const [updated] = await dbClient
       .update(schema.courseSection)
-      .set({ ...data, updatedAt: new Date().toISOString() })
+      .set(patch)
       .where(eq(schema.courseSection.id, sectionId))
       .returning();
     return updated || null;
@@ -1613,10 +1636,23 @@ export async function getOrgCourseGroups(orgId: string, courseIds: string[]) {
   }
 }
 
-/** True when any course row exists with this slug. */
-export async function isCourseSlugTaken(slug: string): Promise<boolean> {
+export async function lockCourseForUpdate(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    const rows = await db
+    await dbClient
+      .select({ id: schema.course.id })
+      .from(schema.course)
+      .where(eq(schema.course.id, courseId))
+      .for('update');
+  } catch (error) {
+    console.error('lockCourseForUpdate error:', error);
+    throw new Error(`Failed to lock course: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** True when any course row exists with this slug. */
+export async function isCourseSlugTaken(slug: string, dbClient: DbOrTxClient = db): Promise<boolean> {
+  try {
+    const rows = await dbClient
       .select({ id: schema.course.id })
       .from(schema.course)
       .where(eq(schema.course.slug, slug))
@@ -1626,6 +1662,41 @@ export async function isCourseSlugTaken(slug: string): Promise<boolean> {
   } catch (error) {
     console.error('isCourseSlugTaken error:', error);
     throw new Error(`Failed to check course slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Course stamped with this launch-template fixture key, if one exists. */
+export async function getCourseBySeedKey(seedKey: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.course.id, slug: schema.course.slug, title: schema.course.title })
+      .from(schema.course)
+      .where(eq(schema.course.seedKey, seedKey))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getCourseBySeedKey error:', error);
+    throw new Error(
+      `Failed to look up course by seed key: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/** Course in this org with this slug, if one exists. */
+export async function getCourseByOrgSlug(orgId: string, slug: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.course.id })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(and(eq(schema.group.organizationId, orgId), eq(schema.course.slug, slug)))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getCourseByOrgSlug error:', error);
+    throw new Error(`Failed to get course by org slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

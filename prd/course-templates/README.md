@@ -62,14 +62,14 @@ Let an org turn any course into a reusable template, start new courses from it, 
 11. **Course settings are pullable** (off by default, like everything else). Identity and audience settings are never synced: title, course link/slug, published state, course type, tags, students, cohorts/sessions, and landing-page reviews.
 12. **No undo and no detach.** The review sheet is the safeguard; lesson version history still records every pulled lesson. Ignoring the alert is the same as detaching.
 13. **Plan limit:** free plan (`BASIC`) orgs can have **1 template**; more requires an upgrade. Marketplace imports (see `prd/marketplace`) count toward it.
-14. **Admins only** can save/convert, create from template, and pull updates.
+14. **Admins only** can save/convert, create from template, pull updates, and duplicate or delete templates. **Tutors and admins** can list templates and open previews (the gallery and the row are visible to them; Use template is shown to admins only).
 15. **Compliance courses** get no special handling.
 16. **Deleting a template** leaves linked courses intact; their Template section says the template was deleted.
 17. **Template gallery** lives at `/org/[slug]/courses/templates` and follows the standard page structure: page title and subtitle, a body header with search on the right, then one grid. No tabs, no sections, no categories.
 18. **Click → preview.** Clicking a template (row or gallery) opens a preview dialog; **Use template** asks only for a course name, then creates and opens the course.
 19. **Templates are not in the course grid.** They live in the row and the gallery only; no Template filter chip and no template card style in the grid.
 20. **ClassroomIO global templates.** A template course flagged `public_for_all` in the platform org (id in env `PLATFORM_TEMPLATES_ORG_ID`) is offered to every org. The flag is set in the database only — no UI or API writes it. Content is authored in that org through the normal dashboard, so edits show up for everyone immediately.
-21. **Seeding.** When `PLATFORM_TEMPLATES_ORG_ID` is set, the jobs app seeds that org once (idempotent) with the launch templates, on cloud and self-hosted. It never overwrites existing content.
+21. **Seeding.** `PLATFORM_TEMPLATES_ORG_ID` defaults to the seed-data org. At boot the jobs app seeds the launch templates into that org once (idempotent), on cloud and self-hosted. If the org doesn't exist, the seed does nothing; it never creates an org and never overwrites existing content.
 22. **Global templates sync like org templates.** Courses created from a global template are linked and can pull later edits through the same Settings → Template flow, across orgs.
 23. **Global templates don't count** toward an org's template limit, and other orgs can't edit or delete them.
 24. **Four launch templates**, each built to show off different ClassroomIO features: Customer onboarding, Product training, Free lead-gen mini course, Annual compliance training (see Launch templates).
@@ -121,7 +121,7 @@ Let an org turn any course into a reusable template, start new courses from it, 
 
 ### 1. Courses page (`courses.html`)
 
-- **The app nav bar (`AppHeader`: sidebar trigger, breadcrumbs, setup progress, Open Academy, Search, notifications) stays unchanged.** Only the page's `Page.Header` (title "Courses" and subtitle) is removed. Under the nav bar, the page opens with a full-width muted band:
+- **The app nav bar (`AppHeader`: sidebar trigger, breadcrumbs, setup progress, Your Academy, Search, notifications) stays unchanged.** Only the page's `Page.Header` (title "Courses" and subtitle) is removed. Under the nav bar, the page opens with a full-width muted band:
   - Left: **Create a new course**. Right: **Template gallery** (text button with an up/down chevron icon) → `/org/[slug]/courses/templates`.
   - A row of 6 small cards (horizontal scroll on narrow screens): **Blank course** first (a plus on an empty thumbnail; opens the existing new-course modal), then up to 5 templates in the order from Confirmed Decision 26. With 5 or more own templates, no ClassroomIO template shows in the row; they stay one click away in the gallery.
   - **Template card** (smaller than a course card, deliberately light): 16:10 thumbnail (the template's cover image), title (one line, truncated), one muted line — "by ClassroomIO" for global templates, "Your template · Used Sep 20" for the org's own. The course-type badge sits bottom-left on the image, exactly as on course cards (Self paced, Live class, Compliance, Public). No counts, tags, publish badge or footer. Clicking opens the preview (section 2).
@@ -187,6 +187,19 @@ Let an org turn any course into a reusable template, start new courses from it, 
 ## Launch templates
 
 Four global templates ship with the feature. Each is a real, usable course (no lorem ipsum) and a guided tour of what ClassroomIO can do. Every one starts with a locked lesson, **How this template is built** (`is_unlocked = false`, so learners never see it). It lists each feature the template uses and where to find it ("Student progression → Settings › Content"), and tells the admin to delete it before publishing.
+
+### Video courses (shown first)
+
+Four self-paced courses built from official YouTube playlists come first in the gallery, ordered by `course.display_order` (the seed sets it from fixture order; `NULL` sorts last). Each lesson is one embedded video plus a written summary, and each section ends with a quiz. The locked builder-notes lesson credits the video publisher.
+
+| Template | Playlist | Videos | Sections |
+| --- | --- | --- | --- |
+| Getting Started with ChatGPT Work | OpenAI, "Getting Started with ChatGPT Work" | 8 | Start working · Reuse what works · Share and go mobile |
+| AI Fluency: Framework & Foundations | Anthropic, "AI Fluency Course" | 11 (trailer skipped) | Why AI fluency · How generative AI works · Delegation and description · Discernment and diligence |
+| HubSpot Sales Hub Essentials | HubSpot Academy, "HubSpot - Sales Hub" | 12 | Get started · Prospect and reach out · Run a consistent process · Measure and improve |
+| Salesforce CPQ Admin Essentials | Salesforce, "Salesforce CPQ Micro Admin Demo" | 8 | Build the catalog · Price and renew · Approve and send |
+
+Covers use each playlist's first-video thumbnail. The four original templates below use Unsplash covers.
 
 ### 1. Customer Onboarding Academy — Self paced
 
@@ -339,10 +352,10 @@ Setting `updatedAt = now` together with `sourceSyncedAt = now` keeps pulled rows
 
 ### Global templates
 
-- **Config:** `PLATFORM_TEMPLATES_ORG_ID` in `@cio/core/config/env` (read by `apps/api` for listing and access) and `apps/jobs/src/config/env.ts` (read for seeding). Unset → no global templates anywhere.
+- **Config:** `PLATFORM_TEMPLATES_ORG_ID` in `@cio/core/config/env` (read by `apps/api` for listing and access) and `apps/jobs/src/config/env.ts` (read for seeding). It defaults to the seed-data org's id (`DEFAULT_PLATFORM_TEMPLATES_ORG_ID`); set it to the real platform org in production. If no org with that id exists, there are no global templates.
 - **What counts as global:** `is_template = true AND public_for_all = true AND status = 'ACTIVE'` **and** the course belongs to `PLATFORM_TEMPLATES_ORG_ID`. Both conditions are required, so a stray flag in a customer org does nothing.
 - **Access rule** (`canUseTemplate(template, orgId)`): the template is in `orgId`, or it is global. Preview, create-from, update detection and pull all go through it. Only the platform org's own admins can open a global template in the editor.
-- **Seeding** (`apps/jobs/src/services/platform-templates/seed.ts`, run once at worker boot behind a Redis lock): if the env var is set, upsert the organization row with that id ("ClassroomIO", siteName `classroomio-templates`). Then, for each launch template fixture in `packages/db/src/utils/seed/platform-templates/*.ts`, insert it with `is_template = true` and `public_for_all = true` **only if** no course in that org already has the fixture's `slug`. Existing courses are never updated, so dashboard edits survive every deploy.
+- **Seeding** (`apps/jobs/src/services/platform-templates/seed.ts`, run once at worker boot behind a Redis lock): look up the organization with that id. **If it doesn't exist, do nothing**: the seed never creates an org, so installs without that org simply have no global templates. Otherwise, for each launch template fixture in `packages/db/src/utils/seed/platform-templates/*.ts`, insert it with `is_template = true` and `public_for_all = true` **only if** no course in that org already has the fixture's `slug`. Existing courses are never updated, so dashboard edits survive every deploy.
 - **Media:** fixture images upload to the platform org's media on first seed. The platform org's assets must not be deleted while a global template uses them; `deleteAssetService` refuses assets with usages in global templates.
 
 ### Create from template / save / convert
@@ -364,7 +377,7 @@ Setting `updatedAt = now` together with `sourceSyncedAt = now` keeps pulled rows
 | GET | `/course/:courseId/template-updates` | Detected changes for a linked course |
 | POST | `/course/:courseId/template-updates/pull` | Pull `{ unitIds, settingKeys }` |
 
-All admin-only (`orgAdminMiddleware` on the requesting org), each returns a single type. The "shows off" list is stored as template data: a `template_highlight` table (`course_id`, `position`, `title`, `description`) authored in the platform org, not a jsonb blob.
+List and preview (`GET /course/template`, `GET /course/template/:templateId/preview`) are open to admins and tutors of the requesting org; every other route is admin-only (`orgAdminMiddleware`). Each returns a single type. The "shows off" list is stored as template data: a `template_highlight` table (`course_id`, `position`, `title`, `description`) authored in the platform org, not a jsonb blob.
 
 ### Frontend plan
 
@@ -407,13 +420,13 @@ pnpm format:check
 12. Deleting a lesson in the template never deletes it in a linked course.
 13. A locally edited item shows the "you edited this" warning; pulling it replaces the local edits and records a lesson version.
 14. Title, course link, published state, course type, tags, students, sessions and reviews are never changed by a pull.
-15. Non-admins get 403 on every template route.
+15. Non-admins get 403 on every mutating template route; tutors can list and preview; students get 403 on all template routes.
 16. Zero regression on Clone, course creation, and the course list filters.
 17. All new copy uses translation keys; every locale file is updated.
 18. The courses page has no page header; the Create a new course row shows Blank course plus up to 5 templates (org's recent first, then ClassroomIO), and templates never appear in the course grid.
 19. Clicking any template opens the preview; nothing is created until Use template, which creates the course and opens its Content page.
 20. The gallery at `/org/[slug]/courses/templates` uses the standard page header, a right-aligned search, and one grid (Blank course, own templates, then ClassroomIO) with no tabs, sections or categories; `?preview=<id>` opens the preview directly.
-21. With `PLATFORM_TEMPLATES_ORG_ID` set, every org sees that org's `public_for_all` templates; with it unset, none. A `public_for_all` course in any other org is never shown.
+21. Every org sees the `public_for_all` templates of the org named by `PLATFORM_TEMPLATES_ORG_ID`; if that org doesn't exist, none are shown and the seed creates nothing. A `public_for_all` course in any other org is never shown.
 22. No API route or validation schema accepts `public_for_all`.
 23. The jobs seed is idempotent: running it twice creates each launch template once, and it never changes a template edited in the dashboard.
 24. Editing a global template's title or cover in the platform org shows up in every org's gallery on next load; content edits appear as pullable updates in linked courses in other orgs.

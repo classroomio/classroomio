@@ -13,7 +13,18 @@
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern",
     "scroll_to_top": "Zum Seitenanfang scrollen",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "restricted_page": {
+      "title": "Eingeschränkte Seite",
+      "description": "Diese Organisation ist eingeschränkt. In der Zwischenzeit kannst du dir unsere Funktionen ansehen.",
+      "home": "Zur Startseite",
+      "learning_paths_heading": "Lernpfade",
+      "learning_path_label": "Lernpfad",
+      "tracks_label": "{count, plural, one {# Track} other {# Tracks}}",
+      "included": "Enthalten",
+      "untitled_lesson": "Lektion ohne Titel",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -1525,7 +1536,39 @@
           },
           "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen."
         },
-        "learner": "Studierende/r"
+        "learner": "Studierende/r",
+        "views": {
+          "all": "Alle Menschen",
+          "not_started": "Nicht gestartet",
+          "in_progress": "In Bearbeitung",
+          "completed": "Abgeschlossen",
+          "never_logged_in": "Nie eingeloggt",
+          "awaiting_certificate": "Warten auf Zertifikat",
+          "custom": "Benutzerdefinierte Filter"
+        },
+        "window": {
+          "7d": "7 Tage",
+          "30d": "30 Tage",
+          "90d": "90 Tage",
+          "180d": "180 Tage",
+          "never": "Niemals"
+        },
+        "filter": {
+          "title": "Filtern Sie Personen",
+          "role": "Rolle",
+          "all_roles": "Alle Rollen",
+          "progress": "Fortschritt",
+          "in_progress": "In Bearbeitung",
+          "completed": "Abgeschlossen",
+          "membership": "Mitgliedschaft",
+          "joined": "Beigetreten",
+          "invited": "Eingeladen, noch kein Konto",
+          "certificate": "Zertifikat",
+          "earned": "Verdient",
+          "not_earned": "Nicht verdient",
+          "no_login_since": "Seitdem kein Login mehr",
+          "joined_within": "Innerlich verbunden"
+        }
       },
       "marks": {
         "title": "Markierungen",
@@ -1791,7 +1834,9 @@
               "try_again": "Versuchen Sie es erneut",
               "back": "Zurück",
               "begin_section": "Startabschnitt",
-              "complete_section": "Vollständiger Abschnitt"
+              "complete_section": "Vollständiger Abschnitt",
+              "instructions": "Anweisungen",
+              "close_instructions": "Anweisungen schließen"
             },
             "edit_mode": {
               "delete_modal": "Übung löschen",
@@ -1840,7 +1885,8 @@
               "title": "Titel",
               "heading": "Beschreibung",
               "describe": "Beschreiben Sie Ihrem Schüler die Übung",
-              "no": "Keine Beschreibung"
+              "no": "Keine Beschreibung",
+              "expand": "Erweitern"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2093,16 @@
                   "video_invalid_link": "Bitte geben Sie einen gültigen YouTube-Link ein.",
                   "upload_error_only_images": "Es werden nur Bilddateien unterstützt.",
                   "upload_error_skipped": "Einige Dateien wurden übersprungen, da es sich nicht um Bilder handelt.",
-                  "upload_error_failed": "Bild konnte nicht hochgeladen werden. Versuchen Sie es erneut."
+                  "upload_error_failed": "Bild konnte nicht hochgeladen werden. Versuchen Sie es erneut.",
+                  "expand": "Erweitern"
+                },
+                "media": {
+                  "enlarge_image": "Zum Vergrößern anklicken",
+                  "close": "Schließen",
+                  "zoom_in": "Vergrößern",
+                  "zoom_out": "Herauszoomen",
+                  "previous_image": "Vorheriges Bild",
+                  "next_image": "Nächstes Bild"
                 }
               },
               "navigation": {
@@ -2925,7 +2980,7 @@
       "untitled_course": "Kurs ohne Titel",
       "untitled_course_description": "Die Kursdetails werden nach der Einrichtung vom Assistenten ausgefüllt.",
       "template": {
-        "heading": "Oder beginnen Sie mit einer Vorlage",
+        "heading": "Oder beginnen Sie mit einem Prompt",
         "submit": "Weiter",
         "skip": "Antworten Sie stattdessen im Chat",
         "submitted_summary": "Antworten eingereicht",
@@ -3080,8 +3135,8 @@
     "afternoon_heading": "Guten Tag",
     "evening_heading": "Guten Abend",
     "create_course": "Kurs erstellen",
-    "view_site": "Offene Akademie",
-    "visit_site": "Offene Akademie",
+    "view_site": "Deine Akademie",
+    "visit_site": "Deine Akademie",
     "current_lesson": "Derzeit lernen",
     "your_progress": "Ihr Fortschritt",
     "continue": "Weiter",
@@ -3136,7 +3191,7 @@
     "login_activity_description": "Aktivste Tage der Woche (letzte 90 Tage)",
     "login_activity_no_data": "Noch keine Login-Aktivität",
     "login_activity_logins": "Anmeldungen",
-    "open_academy": "Offene Akademie",
+    "open_academy": "Deine Akademie",
     "explore_more_courses": "Entdecken Sie weitere Kurse",
     "view_more": "Mehr anzeigen",
     "upcoming_sessions_heading": "Live-Sitzungen"
@@ -3152,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "LMS anpassen",
+        "language": {
+          "title": "Sprache",
+          "description": "Wählen Sie die Sprache für die LMS-Oberfläche der Lernenden.",
+          "default_language": "Standardsprache",
+          "enforce": "Diese Sprache für Lernende erzwingen"
+        },
         "disabled": "Deaktiviert",
         "enabled": "Aktiviert",
         "save": "Änderungen speichern",
@@ -3373,6 +3434,8 @@
     "analytics": "Analysen",
     "compliance": "Compliance",
     "cohorts": "Kohorten",
+    "exit_course": "Diesen Kurs verlassen",
+    "exit_cohort": "Diese Kohorte verlassen",
     "upgrade_now": "Jetzt upgraden",
     "upgrade_label": "Upgrade",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -3995,7 +4058,7 @@
       "notifications_tab": "Benachrichtigungen"
     },
     "subheadings": {
-      "view_site": "Offene Akademie"
+      "view_site": "Deine Akademie"
     },
     "auth": {
       "title": "Authentifizierung",
@@ -4272,6 +4335,7 @@
     "login_with_google": "Melden Sie sich mit Google an",
     "create_to_join": "Erstellen Sie ein kostenloses Konto, um Mitglied zu werden",
     "create_account": "Konto erstellen",
+    "sign_in_to_continue": "Melde dich an, um fortzufahren",
     "login_to_join": "Melden Sie sich an, um beizutreten",
     "validation": {
       "unable_to_create_profile": "Profil kann nicht erstellt werden",
@@ -4619,6 +4683,12 @@
         "joined": "Der Organisation beigetreten",
         "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
         "try_again": "Erneut versuchen"
+      },
+      "limit_reached": {
+        "title": "Diese Akademie ist derzeit voll",
+        "description": "{orgName} hat sein Studentenlimit für seinen aktuellen Plan erreicht, daher konnten wir Sie nicht hinzufügen. Ihr Konto ist in Ordnung und nichts, was Sie getan haben, hat dies verursacht.",
+        "technical_details": "Technische Details",
+        "error_code": "Fehler"
       },
       "not_found": "Diese Einladung ist nicht mehr verfügbar.",
       "loading": "Einladung wird geladen…"
@@ -5483,7 +5553,17 @@
       "add_another": "Fügen Sie einen weiteren hinzu",
       "invite_submit": "Senden Sie Einladungen",
       "empty_title": "Noch keine Mitglieder",
-      "empty_description": "Laden Sie Menschen ein, dieser Kohorte beizutreten."
+      "empty_description": "Laden Sie Menschen ein, dieser Kohorte beizutreten.",
+      "name": "Name",
+      "joined": "Beigetreten",
+      "filter_title": "Filtern Sie Personen",
+      "views": {
+        "all": "Alle Menschen",
+        "tutors": "Tutoren",
+        "students": "Studenten",
+        "pending_invites": "Ausstehende Einladungen",
+        "never_logged_in": "Nie eingeloggt"
+      }
     },
     "courses": {
       "add": "Kurs hinzufügen",
@@ -5763,6 +5843,181 @@
       "theme_light": "Hell",
       "theme_dark": "Dunkel",
       "theme_system": "System"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Erstellen Sie einen neuen Kurs",
+      "gallery": "Vorlagengalerie",
+      "yours": "Ihre Kurse",
+      "blank": "Leerer Kurs",
+      "blank_subtitle": "Fangen Sie bei Null an"
+    },
+    "card": {
+      "yours": "Ihre Vorlage",
+      "used": "Ihre Vorlage · Verwendet am {date}",
+      "curated": "Kuratierte Vorlage"
+    },
+    "gallery": {
+      "title": "Vorlagengalerie",
+      "subtitle": "Starten Sie einen Kurs mit einer Ihrer Vorlagen oder einer von ClassroomIO erstellten Vorlage.",
+      "search": "Vorlage finden",
+      "scope_all": "Alle Vorlagen",
+      "scope_org": "Meine Vorlagen",
+      "scope_global": "KlassenzimmerIO",
+      "empty_org": "Sie haben noch keine Vorlagen erstellt. Speichern Sie jeden Kurs als Vorlage aus dem ⋯-Menü.",
+      "no_match": "Keine Vorlage entspricht „{query}“.",
+      "empty_global": "Noch keine ClassroomIO-Vorlagen.",
+      "back": "Alle Kurse"
+    },
+    "preview": {
+      "course_name": "Kursname",
+      "use": "Vorlage verwenden",
+      "open": "Vorlage öffnen",
+      "cancel": "Abbrechen",
+      "copying": "Kopiert {sections, plural, one {# Abschnitt} other {# Abschnitte}}, {lessons, plural, one {# Lektion} other {# Lektionen}}…",
+      "created": "Kurs erstellt aus {title}",
+      "shows_off": "Zeigt sich",
+      "counts": "{sections} Abschnitte · {lessons} Lektionen · {exercises} Übungen",
+      "questions": "{count, plural, one {# Frage} other {# Fragen}}",
+      "loading": "Vorlage wird geladen…",
+      "settings": "Einstellungen",
+      "certificate": "Zertifikat aktiviert",
+      "deadline": "Frist {date}",
+      "threshold": "Schließen Sie {percent}% des Kurses ab",
+      "final_exercise": "Bestehen Sie „{title}“ mit {percent} %",
+      "sequential": "Die Lektionen werden der Reihe nach freigeschaltet",
+      "grading": "Ein Tutor bewertet die eingereichten Arbeiten",
+      "comments_off": "Lektionskommentare sind deaktiviert",
+      "lesson_download": "Lernende können Lektionen herunterladen",
+      "self_enrollment": "Lernende können selbst mitmachen",
+      "ai_tutor": "Der KI-Tutor ist eingeschaltet",
+      "compliance_retake": "Wiederholung alle {months, plural, one {# Monat} other {# Monate}}",
+      "compliance_mandatory": "Obligatorisch"
+    },
+    "menu": {
+      "open": "Offen",
+      "duplicate": "Duplizieren",
+      "delete": "Löschen",
+      "save": "Als Vorlage speichern…",
+      "create_course": "Kurs aus Vorlage erstellen",
+      "duplicated": "Vorlage dupliziert",
+      "deleted": "Vorlage gelöscht"
+    },
+    "save": {
+      "title": "Als Vorlage speichern",
+      "copy": "Speichern Sie eine Kopie als Vorlage",
+      "copy_description": "Der Kurs bleibt wie er ist.",
+      "convert": "Konvertieren Sie diesen Kurs",
+      "convert_description": "Der Kurs wird zur Vorlage. Es kann nicht veröffentlicht werden oder Studenten haben.",
+      "has_students": "Hat {count, plural, one {# Teilnehmer} other {# Teilnehmer}} – speichern Sie stattdessen eine Kopie.",
+      "unpublish": "Durch die Konvertierung wird die Veröffentlichung dieses Kurses rückgängig gemacht.",
+      "name": "Vorlagenname",
+      "save_button": "Vorlage speichern",
+      "convert_button": "In Vorlage konvertieren",
+      "saved": "Vorlage gespeichert",
+      "converted": "Kurs in eine Vorlage konvertiert",
+      "limit_title": "Ihr Plan umfasst {count, plural, one {# Vorlage} other {# Vorlagen}}",
+      "limit_body": "Sie haben bereits {used, plural, one {{title}} other {# Vorlagen}}. Führen Sie ein Upgrade durch, um weitere Vorlagen zu erhalten, oder löschen Sie eine vorhandene Vorlage.",
+      "upgrade": "Upgrade",
+      "manage": "Vorlagen verwalten",
+      "view_templates": "Vorlagen ansehen"
+    },
+    "empty": {
+      "title": "Noch keine Kurse",
+      "description": "Wählen Sie eine Vorlage aus, um zu sehen, wie ein großartiger ClassroomIO-Kurs aussieht, oder beginnen Sie mit einem leeren Kurs.",
+      "browse": "Durchsuchen Sie Vorlagen"
+    },
+    "editor": {
+      "badge": "Vorlage"
+    },
+    "sync": {
+      "alert_title": "Die Vorlage hat {count, plural, one {# Aktualisierung} other {# Aktualisierungen}}",
+      "alert_body": "{title} hat sich seit Ihrem letzten Zugriff am {date} geändert.",
+      "review_in_settings": "Überprüfen Sie die Einstellungen",
+      "section_title": "Vorlage",
+      "last_pulled": "Zuletzt abgerufen am {date}",
+      "review": "Überprüfen Sie Aktualisierungen",
+      "up_to_date": "Mit der Vorlage auf dem neuesten Stand.",
+      "deleted": "{title} wurde gelöscht. Dieser Kurs behält seinen gesamten Inhalt; Es gibt nichts mehr zu ziehen.",
+      "deleted_unknown": "Diese Vorlage wurde gelöscht. Dieser Kurs behält seinen gesamten Inhalt; Es gibt nichts mehr zu ziehen.",
+      "available_detail": "{count, plural, one {# Update verfügbar} other {# Updates verfügbar}} – {list}.",
+      "join": "{rest} und {last}",
+      "sections_count": "{count, plural, one {# Abschnitt} other {# Abschnitte}}",
+      "settings_count": "{count, plural, one {# Einstellung} other {# Einstellungen}}",
+      "content": "Inhalt",
+      "settings": "Einstellungen",
+      "select_all": "Alles auswählen",
+      "new": "Neu",
+      "updated": "Aktualisiert",
+      "locked": "{count, plural, one {# Einreichung — kann nicht aktualisiert werden} other {# Einreichungen — können nicht aktualisiert werden}}",
+      "edited_locally": "Sie haben dies am {date} bearbeitet. Durch Ziehen werden Ihre Änderungen ersetzt.",
+      "removed_locally": "Sie haben dies aus Ihrem Kurs gelöscht.",
+      "also_adds": "Fügt außerdem {kind} hinzu: {title}",
+      "template_value": "Vorlage: {value}",
+      "yours_value": "Ihr: {value}",
+      "yes": "Ja",
+      "no": "Nein",
+      "empty_value": "Keine",
+      "custom_value": "Benutzerdefiniert",
+      "selected": "{count, plural, one {# ausgewählt} other {# ausgewählt}}",
+      "pull": "{count, plural, one {# Änderung} other {# Änderungen}} übernehmen",
+      "pulled": "{count, plural, one {# Änderung} other {# Änderungen}} von {title} abgerufen",
+      "kind": {
+        "section": "Abschnitt",
+        "lesson": "Lektion",
+        "exercise": "Übung"
+      },
+      "detail": {
+        "title": "Titel",
+        "content": "Inhalt",
+        "locales": "{locales} hinzugefügt"
+      },
+      "setting": {
+        "description": "Beschreibung",
+        "bannerImage": "Titelbild",
+        "welcomeEmail": "Willkommens-E-Mail",
+        "completionDeadline": "Fertigstellungstermin",
+        "completionThreshold": "Abschlussschwelle",
+        "finalExercise": "Abschlussübung",
+        "lessonTabsOrder": "Registerkarten für Lektionen",
+        "contentGrouping": "Inhaltsgruppierung",
+        "progression": "Fortschritt",
+        "comments": "Kommentare zur Lektion",
+        "selfEnrollment": "Selbsteinschreibung",
+        "markdownExport": "Markdown-Export",
+        "lessonDownload": "Lektion herunterladen",
+        "landingRequirements": "Landeanforderungen",
+        "landingDescription": "Beschreibung der Landung",
+        "landingGoals": "Landeziele",
+        "landingSkills": "Fähigkeiten",
+        "landingTools": "Werkzeuge",
+        "landingInstructor": "Lehrer",
+        "pricing": "Preise",
+        "certificateDesign": "Zertifikatsdesign",
+        "certificateRules": "Zertifikatsregeln",
+        "aiTutor": "KI-Tutor"
+      },
+      "section_description": "Dieser Kurs wurde aus einer Vorlage erstellt. Übernimm Änderungen, wenn du sie willst — von allein ändert sich nichts.",
+      "updates_title": "{count, plural, one {# Aktualisierung verfügbar} other {# Aktualisierungen verfügbar}}",
+      "deleted_title": "Vorlage gelöscht",
+      "sheet_title": "Vorlagenaktualisierungen",
+      "sheet_description": "Von {title}, seit {date}. Wähle, was übernommen wird — aus deinem Kurs wird nichts entfernt.",
+      "nothing_selected": "Nichts ausgewählt",
+      "loading": "Aktualisierungen werden geladen…",
+      "value": {
+        "free": "Frei",
+        "sequential": "Sequenziell",
+        "no_price": "Kostenlos",
+        "pass_mark": "Mindestpunktzahl {score} bestehen"
+      },
+      "template_label": "Vorlage",
+      "yours_label": "Deins"
+    },
+    "home": {
+      "heading": "Oder beginnen Sie mit einer Vorlage",
+      "description": "Ein kompletter Kurs mit Lektionen, Übungen und Einstellungen. Kopieren Sie es und machen Sie es dann zu Ihrem.",
+      "browse": "Durchsuchen Sie alle Vorlagen"
     }
   }
 }

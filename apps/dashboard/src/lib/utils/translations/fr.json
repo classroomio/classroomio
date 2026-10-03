@@ -13,7 +13,18 @@
     "discard": "Abandonner les modifications",
     "save_changes": "Enregistrer les modifications",
     "scroll_to_top": "Remonter en haut",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "restricted_page": {
+      "title": "Page restreinte",
+      "description": "Cette organisation est restreinte. En attendant, vous pouvez découvrir nos fonctionnalités.",
+      "home": "Accueil",
+      "learning_paths_heading": "Parcours d’apprentissage",
+      "learning_path_label": "Parcours d’apprentissage",
+      "tracks_label": "{count, plural, one {# parcours} other {# parcours}}",
+      "included": "Inclus",
+      "untitled_lesson": "Leçon sans titre",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -1525,7 +1536,39 @@
           },
           "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants."
         },
-        "learner": "Étudiant"
+        "learner": "Étudiant",
+        "views": {
+          "all": "Toutes les personnes",
+          "not_started": "Pas démarré",
+          "in_progress": "En cours",
+          "completed": "Terminé",
+          "never_logged_in": "Jamais connecté",
+          "awaiting_certificate": "En attente de certificat",
+          "custom": "Filtres personnalisés"
+        },
+        "window": {
+          "7d": "7 jours",
+          "30d": "30 jours",
+          "90d": "90 jours",
+          "180d": "180 jours",
+          "never": "Jamais"
+        },
+        "filter": {
+          "title": "Filtrer les personnes",
+          "role": "Rôle",
+          "all_roles": "Tous les rôles",
+          "progress": "Progrès",
+          "in_progress": "En cours",
+          "completed": "Terminé",
+          "membership": "Adhésion",
+          "joined": "Rejoint",
+          "invited": "Invité, pas encore de compte",
+          "certificate": "Certificat",
+          "earned": "Gagné",
+          "not_earned": "Non gagné",
+          "no_login_since": "Pas de connexion depuis",
+          "joined_within": "Rejoint au sein"
+        }
       },
       "marks": {
         "title": "Marques",
@@ -1791,7 +1834,9 @@
               "try_again": "Réessayez",
               "back": "Retour",
               "begin_section": "Section de démarrage",
-              "complete_section": "Rubrique complète"
+              "complete_section": "Rubrique complète",
+              "instructions": "Instructions",
+              "close_instructions": "Fermer les instructions"
             },
             "edit_mode": {
               "delete_modal": "Supprimer l'exercice",
@@ -1840,7 +1885,8 @@
               "title": "Titre",
               "heading": "Descriptif",
               "describe": "Décrivez l'exercice à votre élève",
-              "no": "Pas de description"
+              "no": "Pas de description",
+              "expand": "Développer"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2093,16 @@
                   "video_invalid_link": "Veuillez saisir un lien YouTube valide.",
                   "upload_error_only_images": "Seuls les fichiers image sont pris en charge.",
                   "upload_error_skipped": "Certains fichiers ont été ignorés car ce ne sont pas des images.",
-                  "upload_error_failed": "Échec du téléchargement de l'image. Essayer à nouveau."
+                  "upload_error_failed": "Échec du téléchargement de l'image. Essayer à nouveau.",
+                  "expand": "Développer"
+                },
+                "media": {
+                  "enlarge_image": "Cliquez pour agrandir",
+                  "close": "Fermer",
+                  "zoom_in": "Zoomer",
+                  "zoom_out": "Zoom arrière",
+                  "previous_image": "Image précédente",
+                  "next_image": "Image suivante"
                 }
               },
               "navigation": {
@@ -2925,7 +2980,7 @@
       "untitled_course": "Cours sans titre",
       "untitled_course_description": "Les détails du cours seront renseignés par l'assistant après la configuration.",
       "template": {
-        "heading": "Ou partir d'un modèle",
+        "heading": "Ou commencez par un prompt",
         "submit": "Continuer",
         "skip": "Répondez plutôt dans le chat",
         "submitted_summary": "Réponses soumises",
@@ -3080,8 +3135,8 @@
     "afternoon_heading": "Bon après-midi",
     "evening_heading": "Bonsoir",
     "create_course": "Créer un cours",
-    "view_site": "Académie ouverte",
-    "visit_site": "Académie ouverte",
+    "view_site": "Votre académie",
+    "visit_site": "Votre académie",
     "current_lesson": "En cours d'apprentissage",
     "your_progress": "Votre progression",
     "continue": "Continuer",
@@ -3136,7 +3191,7 @@
     "login_activity_description": "Jours les plus actifs de la semaine (90 derniers jours)",
     "login_activity_no_data": "Aucune activité de connexion pour le moment",
     "login_activity_logins": "connexions",
-    "open_academy": "Académie ouverte",
+    "open_academy": "Votre académie",
     "explore_more_courses": "Explorez plus de cours",
     "view_more": "Voir plus",
     "upcoming_sessions_heading": "Séances en direct"
@@ -3152,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "Personnaliser le LMS",
+        "language": {
+          "title": "Langue",
+          "description": "Choisissez la langue de l’interface LMS destinée aux étudiants.",
+          "default_language": "Langue par défaut",
+          "enforce": "Imposer cette langue aux étudiants"
+        },
         "disabled": "Désactivé",
         "enabled": "Activé",
         "save": "Enregistrer les modifications",
@@ -3373,6 +3434,8 @@
     "analytics": "Analytique",
     "compliance": "Conformité",
     "cohorts": "Cohortes",
+    "exit_course": "Quitter ce cours",
+    "exit_cohort": "Quitter cette cohorte",
     "upgrade_now": "Mettre à niveau maintenant",
     "upgrade_label": "Mettre à niveau",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -3995,7 +4058,7 @@
       "notifications_tab": "Notifications"
     },
     "subheadings": {
-      "view_site": "Académie ouverte"
+      "view_site": "Votre académie"
     },
     "auth": {
       "title": "Authentification",
@@ -4272,6 +4335,7 @@
     "login_with_google": "Connectez-vous avec Google",
     "create_to_join": "Créez un compte gratuit pour vous inscrire",
     "create_account": "Créer un compte",
+    "sign_in_to_continue": "Connectez-vous pour continuer",
     "login_to_join": "Connectez-vous pour rejoindre",
     "validation": {
       "unable_to_create_profile": "Impossible de créer un profil",
@@ -4619,6 +4683,12 @@
         "joined": "Organisation rejointe",
         "join_failed": "Impossible de rejoindre l'organisation",
         "try_again": "Réessayer"
+      },
+      "limit_reached": {
+        "title": "Cette académie est pleine en ce moment",
+        "description": "{orgName} a atteint le nombre maximum d'étudiants pour son forfait actuel. Nous n'avons donc pas pu vous ajouter. Votre compte fonctionne bien et rien de ce que vous avez fait n'est à l'origine de ce problème.",
+        "technical_details": "Détails techniques",
+        "error_code": "Erreur"
       },
       "not_found": "Cette invitation n'est plus disponible.",
       "loading": "Chargement de l'invitation…"
@@ -5483,7 +5553,17 @@
       "add_another": "Ajoutez-en un autre",
       "invite_submit": "Envoyer des invitations",
       "empty_title": "Pas encore de membres",
-      "empty_description": "Invitez des personnes à rejoindre cette cohorte."
+      "empty_description": "Invitez des personnes à rejoindre cette cohorte.",
+      "name": "Nom",
+      "joined": "Rejoint",
+      "filter_title": "Filtrer les personnes",
+      "views": {
+        "all": "Toutes les personnes",
+        "tutors": "Tuteurs",
+        "students": "Étudiants",
+        "pending_invites": "Invitations en attente",
+        "never_logged_in": "Jamais connecté"
+      }
     },
     "courses": {
       "add": "Ajouter un cours",
@@ -5763,6 +5843,181 @@
       "theme_light": "Lumière",
       "theme_dark": "Sombre",
       "theme_system": "Système"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Créer un nouveau cours",
+      "gallery": "Galerie de modèles",
+      "yours": "Vos cours",
+      "blank": "Cours vierge",
+      "blank_subtitle": "Repartir de zéro"
+    },
+    "card": {
+      "yours": "Votre modèle",
+      "used": "Votre modèle · Utilisé le {date}",
+      "curated": "Modèle organisé"
+    },
+    "gallery": {
+      "title": "Galerie de modèles",
+      "subtitle": "Démarrez un cours à partir de l'un de vos modèles ou d'un modèle créé par ClassroomIO.",
+      "search": "Rechercher un modèle",
+      "scope_all": "Tous les modèles",
+      "scope_org": "Mes modèles",
+      "scope_global": "Salle de classeIO",
+      "empty_org": "Vous n'avez pas encore créé de modèles. Enregistrez n'importe quel cours comme modèle à partir de son menu ⋯.",
+      "no_match": "Aucun modèle ne correspond à « {query} ».",
+      "empty_global": "Aucun modèle ClassroomIO pour le moment.",
+      "back": "Tous les cours"
+    },
+    "preview": {
+      "course_name": "Nom du cours",
+      "use": "Utiliser un modèle",
+      "open": "Ouvrir le modèle",
+      "cancel": "Annuler",
+      "copying": "Copie de {sections, plural, one {# section} other {# sections}}, {lessons, plural, one {# leçon} other {# leçons}}…",
+      "created": "Cours créé à partir de {title}",
+      "shows_off": "Montre",
+      "counts": "{sections} sections · {lessons} leçons · {exercises} exercices",
+      "questions": "{count, plural, one {# question} other {# questions}}",
+      "loading": "Chargement du modèle…",
+      "settings": "Paramètres",
+      "certificate": "Certificat activé",
+      "deadline": "Date limite {date}",
+      "threshold": "Terminez {percent} % du cours",
+      "final_exercise": "Passez « {title} » à {percent} %",
+      "sequential": "Les leçons se débloquent dans l'ordre",
+      "grading": "Un tuteur note les soumissions",
+      "comments_off": "Les commentaires des cours sont désactivés",
+      "lesson_download": "Les apprenants peuvent télécharger des leçons",
+      "self_enrollment": "Les apprenants peuvent se joindre",
+      "ai_tutor": "Le tuteur IA est activé",
+      "compliance_retake": "À refaire tous les {months, plural, one {# mois} other {# mois}}",
+      "compliance_mandatory": "Obligatoire"
+    },
+    "menu": {
+      "open": "Ouvert",
+      "duplicate": "Dupliquer",
+      "delete": "Supprimer",
+      "save": "Enregistrer comme modèle…",
+      "create_course": "Créer un cours à partir d'un modèle",
+      "duplicated": "Modèle dupliqué",
+      "deleted": "Modèle supprimé"
+    },
+    "save": {
+      "title": "Enregistrer comme modèle",
+      "copy": "Enregistrer une copie comme modèle",
+      "copy_description": "Le cours reste tel quel.",
+      "convert": "Convertir ce cours",
+      "convert_description": "Le cours devient un modèle. Il ne peut pas être publié ni avoir d'étudiants.",
+      "has_students": "A {count, plural, one {# étudiant} other {# étudiants}} — enregistrez plutôt une copie.",
+      "unpublish": "La conversion dépublie ce cours.",
+      "name": "Nom du modèle",
+      "save_button": "Enregistrer le modèle",
+      "convert_button": "Convertir en modèle",
+      "saved": "Modèle enregistré",
+      "converted": "Cours converti en modèle",
+      "limit_title": "Votre forfait comprend {count, plural, one {# modèle} other {# modèles}}",
+      "limit_body": "Vous avez déjà {used, plural, one {{title}} other {# modèles}}. Mettez à niveau pour plus de modèles ou supprimez-en un dont vous disposez.",
+      "upgrade": "Mise à niveau",
+      "manage": "Gérer les modèles",
+      "view_templates": "Voir les modèles"
+    },
+    "empty": {
+      "title": "Pas encore de cours",
+      "description": "Choisissez un modèle pour voir à quoi ressemble un excellent cours ClassroomIO, ou partez d'un cours vierge.",
+      "browse": "Parcourir les modèles"
+    },
+    "editor": {
+      "badge": "Modèle"
+    },
+    "sync": {
+      "alert_title": "Le modèle a {count, plural, one {# mise à jour} other {# mises à jour}}",
+      "alert_body": "{title} a changé depuis votre dernière utilisation le {date}.",
+      "review_in_settings": "Vérifier dans les paramètres",
+      "section_title": "Modèle",
+      "last_pulled": "Dernière extraction {date}",
+      "review": "Examiner les mises à jour",
+      "up_to_date": "À jour avec le modèle.",
+      "deleted": "{title} a été supprimé. Ce cours conserve tout son contenu ; il n'y a plus rien à tirer.",
+      "deleted_unknown": "Ce modèle a été supprimé. Ce cours conserve tout son contenu ; il n'y a plus rien à tirer.",
+      "available_detail": "{count, plural, one {# mise à jour disponible} other {# mises à jour disponibles}} — {list}.",
+      "join": "{rest} et {last}",
+      "sections_count": "{count, plural, one {# section} other {# sections}}",
+      "settings_count": "{count, plural, one {# paramètre} other {# paramètres}}",
+      "content": "Contenu",
+      "settings": "Paramètres",
+      "select_all": "Tout sélectionner",
+      "new": "Nouveau",
+      "updated": "Mis à jour",
+      "locked": "{count, plural, one {# soumission — ne peut pas être mise à jour} other {# soumissions — ne peuvent pas être mises à jour}}",
+      "edited_locally": "Vous avez modifié ceci le {date} : l'extraction remplace vos modifications.",
+      "removed_locally": "Vous l'avez supprimé de votre cours.",
+      "also_adds": "Ajoute également {kind} : {title}",
+      "template_value": "Modèle : {value}",
+      "yours_value": "Le vôtre : {value}",
+      "yes": "Oui",
+      "no": "Non",
+      "empty_value": "Aucun",
+      "custom_value": "Personnalisé",
+      "selected": "{count, plural, one {# sélectionné} other {# sélectionné}}",
+      "pull": "Récupérer {count, plural, one {# modification} other {# modifications}}",
+      "pulled": "Importé {count, plural, one {# modification} other {# modifications}} depuis {title}",
+      "kind": {
+        "section": "Section",
+        "lesson": "Leçon",
+        "exercise": "Exercice"
+      },
+      "detail": {
+        "title": "Titre",
+        "content": "Contenu",
+        "locales": "{locales} ajoutées"
+      },
+      "setting": {
+        "description": "Descriptif",
+        "bannerImage": "Image de couverture",
+        "welcomeEmail": "E-mail de bienvenue",
+        "completionDeadline": "Date limite de réalisation",
+        "completionThreshold": "Seuil d'achèvement",
+        "finalExercise": "Exercice final",
+        "lessonTabsOrder": "Onglets de cours",
+        "contentGrouping": "Regroupement de contenu",
+        "progression": "Progression",
+        "comments": "Commentaires de la leçon",
+        "selfEnrollment": "Auto-inscription",
+        "markdownExport": "Exportation de démarques",
+        "lessonDownload": "Téléchargement de la leçon",
+        "landingRequirements": "Exigences d'atterrissage",
+        "landingDescription": "Description de l'atterrissage",
+        "landingGoals": "Objectifs d'atterrissage",
+        "landingSkills": "Compétences",
+        "landingTools": "Outils",
+        "landingInstructor": "Instructeur",
+        "pricing": "Tarifs",
+        "certificateDesign": "Conception de certificat",
+        "certificateRules": "Règles de certificat",
+        "aiTutor": "Tuteur IA"
+      },
+      "section_description": "Ce cours a été créé à partir d'un modèle. Récupérez ses modifications quand vous le voulez — rien ne change tout seul.",
+      "updates_title": "{count, plural, one {# mise à jour disponible} other {# mises à jour disponibles}}",
+      "deleted_title": "Modèle supprimé",
+      "sheet_title": "Mises à jour du modèle",
+      "sheet_description": "Depuis {title}, depuis le {date}. Choisissez quoi récupérer — rien n'est retiré de votre cours.",
+      "nothing_selected": "Aucune sélection",
+      "loading": "Chargement des mises à jour…",
+      "value": {
+        "free": "Libre",
+        "sequential": "Séquentiel",
+        "no_price": "Gratuit",
+        "pass_mark": "Note de passage {score}"
+      },
+      "template_label": "Modèle",
+      "yours_label": "Le vôtre"
+    },
+    "home": {
+      "heading": "Ou partir d'un modèle",
+      "description": "Un cours complet avec leçons, exercices et paramètres. Copiez-le, puis personnalisez-le.",
+      "browse": "Parcourez tous les modèles"
     }
   }
 }

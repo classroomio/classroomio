@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ClassroomIO — Component preview</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<style>
+body{margin:0;background:var(--page);font-family:var(--font-sans);color:var(--ink-900)}
+a{color:var(--ink-900)}a:hover{color:var(--blue-700)}
+</style></head><body><div id="root" style="padding:40px;font-family:var(--font-mono);font-size:13px;color:var(--ink-500)">Loading components…</div>
+<script>
+// Loads the real component source files, strips ES module syntax, and evaluates them in order.
+const FILES = [
+  'components/forms/uiShared.jsx',
+  'components/loading/BlockLoader.jsx',
+  'components/forms/Button.jsx','components/forms/ButtonGroup.jsx','components/forms/Input.jsx','components/forms/Textarea.jsx','components/forms/Label.jsx','components/forms/Field.jsx','components/forms/InputGroup.jsx','components/forms/PasswordInput.jsx','components/forms/Select.jsx','components/forms/Checkbox.jsx','components/forms/RadioGroup.jsx','components/forms/Switch.jsx','components/forms/Toggle.jsx',
+  'components/overlays/Dialog.jsx','components/overlays/Sheet.jsx','components/overlays/Popover.jsx','components/overlays/Tooltip.jsx','components/overlays/DropdownMenu.jsx',
+  'components/display/Badge.jsx','components/display/NumberBadge.jsx','components/display/Alert.jsx','components/display/Card.jsx','components/display/Avatar.jsx','components/display/Accordion.jsx','components/display/Tabs.jsx','components/display/Table.jsx','components/display/Progress.jsx','components/display/Skeleton.jsx','components/display/Spinner.jsx','components/display/Kbd.jsx','components/display/Separator.jsx','components/display/Item.jsx','components/display/Empty.jsx','components/display/Breadcrumb.jsx','components/display/Pagination.jsx',
+  'components/display/Collapsible.jsx','components/display/UnderlineTabs.jsx','components/display/Page.jsx','components/display/Sidebar.jsx','components/overlays/HoverCard.jsx','components/overlays/Toast.jsx','components/overlays/Command.jsx','components/overlays/Menubar.jsx','components/overlays/NavigationMenu.jsx','components/forms/CopyButton.jsx','components/forms/ModeSwitcher.jsx','components/display/Chip.jsx','components/display/UserAvatar.jsx','components/display/CircularProgress.jsx','components/display/PercentRingProgress.jsx','components/display/ResourceListRow.jsx','components/forms/IconButton.jsx','components/forms/BackButton.jsx','components/forms/ComboButton.jsx','components/forms/CheckboxOptionCard.jsx','components/forms/RadioOptionCard.jsx','components/forms/MultiSelectList.jsx','components/forms/FileDropZone.jsx','components/forms/PricingToggle.jsx','components/surfaces/PricingCard.jsx',
+  'components/core/Icon.jsx','components/core/Logo.jsx','components/core/Eyebrow.jsx','components/core/Tag.jsx','components/core/Pill.jsx',
+  'components/surfaces/NotchCard.jsx','components/surfaces/CourseCard.jsx','components/surfaces/BrowserFrame.jsx','components/surfaces/BookSpine.jsx',
+  'components/marketing/CTAButton.jsx','components/marketing/SectionHeader.jsx','components/marketing/ProductMenu.jsx','components/marketing/Nav.jsx','components/marketing/FAQItem.jsx','components/marketing/TestimonialCard.jsx','components/marketing/VideoTestimonial.jsx','components/marketing/CTABand.jsx','components/marketing/Footer.jsx',
+];
+window.CIO = {};
+(async () => {
+  try {
+    const srcs = await Promise.all(FILES.map(f => fetch(f).then(r => r.text())));
+    for (let i = 0; i < FILES.length; i++) {
+      let src = srcs[i];
+      const names = [];
+      src = src.replace(/^import React.*$/m, '');
+      src = src.replace(/^import\s*\{([^}]*)\}\s*from\s*['"][^'"]+['"];?\s*$/gm, (_, n) => `const {${n}} = window.CIO;`);
+      src = src.replace(/export\s+(function|const)\s+([A-Za-z_$][\w$]*)/g, (_, kw, n) => { names.push(n); return `${kw} ${n}`; });
+      const code = `(function(){${src}\nObject.assign(window.CIO,{${names.join(',')}});})();`;
+      const out = Babel.transform(code, { presets: ['react'], sourceType: 'script' }).code;
+      new Function(out)();
+    }
+    const rootEl = document.getElementById('root'); rootEl.removeAttribute('style');
+    const app = await (await fetch('preview-app.jsx')).text();
+    new Function(Babel.transform(app, { presets: ['react'], sourceType: 'script' }).code)();
+  } catch (e) { document.getElementById('root').textContent = 'Failed to load components: ' + e.message; console.error(e); }
+})();
+</script>
+</body></html>

@@ -164,6 +164,14 @@ export default defineConfig({
                 root: '/build-courses/create-a-course-from-a-template'
               },
               {
+                label: 'Save a course as a template',
+                root: '/build-courses/save-a-course-as-a-template'
+              },
+              {
+                label: 'Update a course from its template',
+                root: '/build-courses/update-a-course-from-its-template'
+              },
+              {
                 label: 'Duplicate or import a course',
                 root: '/build-courses/duplicate-or-import-a-course'
               }
@@ -1162,6 +1170,10 @@ export default defineConfig({
               {
                 label: 'Course',
                 root: '/reference/course'
+              },
+              {
+                label: 'Course templates',
+                root: '/reference/course-templates'
               },
               {
                 label: 'Section, lesson, and exercise',
