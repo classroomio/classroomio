@@ -17,7 +17,7 @@ import type { TUser } from '@cio/db/types';
 import { authClient } from '$lib/utils/services/auth/client';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
-import { handleLocaleChange } from '$lib/utils/functions/translations';
+import { activateLocale, handleLocaleChange } from '$lib/utils/functions/translations';
 import { identifyPosthogUser } from '$lib/utils/services/posthog';
 import { identifyUserJotUser } from '$lib/utils/services/userjot';
 import { isOrgStudent, globalStore } from '$lib/utils/store/app';
@@ -226,7 +226,19 @@ class AppInitApi extends BaseApi {
     }));
 
     profile.set(this.data.profile);
-    handleLocaleChange(this.data.profile.locale ?? 'en');
+    const orgSite = params?.isOrgSite
+      ? this.data.organizations.find((org) => org.id === params.orgId || org.siteName === params.orgSiteName)
+      : undefined;
+    const enforcedLocale = orgSite?.settings?.language?.enforced
+      ? orgSite.settings.language.locale
+      : params?.orgLocaleEnforced
+        ? params.orgLocale
+        : undefined;
+    if (enforcedLocale) {
+      activateLocale(enforcedLocale);
+    } else {
+      handleLocaleChange(this.data.profile.locale ?? params?.orgLocale ?? 'en');
+    }
 
     this.setOrgStore(params);
   }

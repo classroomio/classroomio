@@ -30,10 +30,11 @@ export type OrgLandingPageTheme =
 export type CourseItem = {
   id: string;
   slug?: string;
-  logo?: string | null;
+  bannerImage?: string | null;
   title: string;
   description: string;
   type?: string;
+  typeLabel?: string;
   isPublished?: boolean;
   cost?: number;
   currency?: string;
@@ -224,6 +225,12 @@ export interface OrgLandingPageLabels {
   learningPathHoursLabel?: (hours: number) => string;
   /** Certificate label for a learning path card. Default: "Certificate". */
   learningPathCertificateLabel?: string;
+  courseOutlineHeading?: string;
+  courseOutlineDescription?: string;
+  courseCountLabel?: (count: number) => string;
+  learnersLabel?: (count: number) => string;
+  tracksLabel?: (count: number) => string;
+  terminalEnrollLabel?: string;
 }
 
 export type CourseCurriculumLesson = {
@@ -366,17 +373,42 @@ export interface CourseLandingPageLabels {
   factIncludedLabel?: string;
 }
 
+export interface LandingLearnerAccount {
+  fullname: string;
+  email: string;
+  avatarUrl?: string;
+  /** Learner-scoped destinations; empty when the viewer is not a member of this academy. */
+  items: { key: 'myCourses' | 'myCertificates' | 'accountSettings'; label: string; href: string }[];
+  /** Optional enrollment note shown above the CTA when not a member (from prototype). */
+  note?: string;
+  logoutLabel: string;
+  logoutHref: string;
+  themeLabel: string;
+  /** Localized labels for the light/dark/system theme options. */
+  themeModeLabels?: { light: string; dark: string; system: string };
+  triggerLabel: string;
+  /** True while the account payload is still loading — render a skeleton trigger. */
+  loading?: boolean;
+  /** True in the settings preview — render the trigger but do not open the popover. */
+  inert?: boolean;
+  /** Callback fired when user selects a theme mode in the segmented control. */
+  onThemeChange?: (mode: 'light' | 'dark' | 'system') => void;
+}
+
+export type LandingNavAuthAction = {
+  label: string;
+  href: string;
+  loading?: boolean;
+  disabled?: boolean;
+};
+
 export interface CourseLandingPageProps {
   theme: OrgLandingPageTheme;
   orgName: string;
   logoUrl?: string;
   navItems: NavItem[];
-  authAction?: {
-    label: string;
-    href: string;
-    loading?: boolean;
-    disabled?: boolean;
-  };
+  authAction?: LandingNavAuthAction;
+  learnerAccount?: LandingLearnerAccount;
   hero: LandingPageHero;
   socialProof: CourseSocialProof;
   info: CourseInfoBlocks;
@@ -396,12 +428,8 @@ export interface OrgLandingPageProps {
   orgName: string;
   logoUrl?: string;
   navItems: NavItem[];
-  authAction?: {
-    label: string;
-    href: string;
-    loading?: boolean;
-    disabled?: boolean;
-  };
+  authAction?: LandingNavAuthAction;
+  learnerAccount?: LandingLearnerAccount;
   hero: LandingPageHero;
   courses: CourseItem[];
   hasMoreCourses?: boolean;

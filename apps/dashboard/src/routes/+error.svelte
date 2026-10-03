@@ -1,4 +1,5 @@
 <script>
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
@@ -6,12 +7,22 @@
   import HeartCrack from '@lucide/svelte/icons/heart-crack';
 
   const isNotFound = $derived(page.status === 404);
+  const isOrgSite = $derived(Boolean(page.data.isOrgSite));
 
   console.error('Error message:', page.error?.message);
   console.error('Error page:', page.url);
 
   function goHome() {
+    if (isOrgSite) {
+      goto('/');
+      return;
+    }
+
     window.location.href = 'https://classroomio.com';
+  }
+
+  function continueLearning() {
+    goto('/lms');
   }
 </script>
 
@@ -28,7 +39,10 @@
     layout="full-page"
     showLogo={true}
   >
-    <div class="flex gap-2">
+    <div class="flex items-center gap-2">
+      {#if isOrgSite}
+        <Button variant="link" onclick={continueLearning}>Continue Learning</Button>
+      {/if}
       <HoverableItem>
         {#snippet children(isHovered)}
           <Button onclick={goHome}>

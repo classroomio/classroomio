@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { blockedSubdomain } from '@cio/utils/constants';
+import { ZCourseType } from '../course/course-type';
 import { containsDisallowedHrefs } from '../shared';
 
 export const ZGetOrganizations = z.object({
@@ -33,7 +34,11 @@ export const ZGetOrganizationCoursesQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().trim().optional(),
-  tags: z.string().optional()
+  tags: z.string().optional(),
+  type: ZCourseType.optional(),
+  status: z.enum(['published', 'unpublished']).optional(),
+  sort: z.enum(['date_created', 'last_updated_at', 'published', 'lessons']).optional(),
+  order: z.enum(['asc', 'desc']).optional()
 });
 
 export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
@@ -155,6 +160,12 @@ export const ZUpdateOrganization = z.object({
         })
         .optional(),
       internalEnrollmentOnly: z.boolean().optional(),
+      language: z
+        .object({
+          locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr']).optional(),
+          enforced: z.boolean().optional()
+        })
+        .optional(),
       emailNotifications: z
         .object({
           newStudent: z.boolean().optional(),

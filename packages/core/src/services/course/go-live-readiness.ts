@@ -13,6 +13,7 @@ import { updateCourse } from './course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
 import { sealLessonVersionsOnPublish } from '../lesson-version';
 import { db } from '@cio/db/drizzle';
+import { resolveCourseBannerImage } from '@cio/utils/functions';
 
 export type CourseGoLiveIssue = {
   code: string;
@@ -39,8 +40,8 @@ type CourseReadinessInput = {
     | 'description'
     | 'overview'
     | 'slug'
-    | 'logo'
     | 'bannerImage'
+    | 'logo'
     | 'metadata'
     | 'type'
     | 'cost'
@@ -148,8 +149,10 @@ export function evaluateCourseGoLiveReadiness(input: CourseReadinessInput): Cour
     metadataFixes.requirements = '';
   }
 
-  if (!course.logo && !course.bannerImage) {
-    blockers.push(buildIssue('LANDING_IMAGE_MISSING', 'Add a landing-page banner or course image.', 'course.logo'));
+  if (!resolveCourseBannerImage(course)) {
+    blockers.push(
+      buildIssue('LANDING_IMAGE_MISSING', 'Add a landing-page banner or course image.', 'course.bannerImage')
+    );
     landingPageFixes.generateImage = true;
   }
 
@@ -281,10 +284,14 @@ export async function publishCourseWhenReady(courseId: string) {
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
+  if (course.isTemplate) {
+    throw new AppError('Templates cannot be published', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
   const slug = await ensureCourseSlug(courseId, course.title);
 
   // Publishing seals the snapshot students were served, so both writes share one transaction.
-  const publishedCourse = await db.transaction(async (tx) => {
+  const { course: publishedCourse } = await db.transaction(async (tx) => {
     const updated = await updateCourse(courseId, { slug, isPublished: true }, tx);
     await sealLessonVersionsOnPublish(courseId, tx);
 

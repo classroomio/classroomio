@@ -57,7 +57,7 @@
 </script>
 
 <InputGroup.Root
-  class="{compact ? 'flex! h-8! w-full max-w-none ui:h-8!' : 'hidden! max-w-56 md:flex!'} {className}"
+  class="{compact ? 'ui:h-8! flex! h-8! w-full max-w-none' : 'hidden! max-w-56 md:flex!'} {className}"
   onpointerdown={handlePointerdown}
   {...restProps}
 >

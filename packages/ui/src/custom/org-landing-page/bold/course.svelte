@@ -19,6 +19,7 @@
     logoUrl,
     navItems,
     authAction,
+    learnerAccount,
     hero,
     socialProof,
     info,
@@ -38,7 +39,7 @@
 </script>
 
 <LandingThemeScope theme="bold" class="ui:font-sans">
-  <BoldNav {orgName} {logoUrl} {navItems} {authAction} />
+  <BoldNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
 
   <main>
     <BoldHero hero={heroProps} />
@@ -50,7 +51,7 @@
     {#if chips}
       <CourseChips variant="bold" {chips} {labels} />
     {/if}
-    <CourseInstructor variant="bold" {instructor} {labels} />
+    <CourseInstructor variant="bold" {instructor} {logoUrl} {labels} />
     <CourseReviews variant="bold" {reviews} {labels} />
     <CoursePricing variant="bold" {pricing} {labels} />
   </main>

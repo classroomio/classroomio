@@ -19,6 +19,8 @@
   // Type-only imports are erased at build time — no static TipTap dependency.
   import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
   import { cn } from '@cio/ui/tools';
+  import { uploadImage } from '$lib/utils/services/upload';
+  import { queryUnsplash } from './upload-widget/utils';
 
   interface Props {
     placeholder?: string | ((node: any) => string);
@@ -33,6 +35,10 @@
     onChange?: (content: HTMLContent) => void;
     onReady?: (editor: TiptapEditor) => void;
     onEditorDestroy?: () => void;
+    expandable?: boolean;
+    expanded?: boolean;
+    expandedTitle?: string;
+    expandedDescription?: string;
   }
 
   let {
@@ -47,7 +53,11 @@
     placeholder = 'Welcome to ClassroomIO',
     onChange,
     onReady,
-    onEditorDestroy
+    onEditorDestroy,
+    expandable = false,
+    expanded = $bindable(false),
+    expandedTitle = '',
+    expandedDescription = ''
   }: Props = $props();
 </script>
 
@@ -60,7 +70,7 @@
     {#if showToolBar}
       <div class="ui:bg-muted/50 h-9 shrink-0 border-b border-dashed" />
     {/if}
-    <div class={cn('ui:bg-muted/50 relative h-128 w-full animate-pulse overflow-auto p-4', editorClass)} />
+    <div class={cn('ui:bg-muted/50 relative h-full w-full animate-pulse overflow-auto p-4', editorClass)} />
   </div>
 {:then { Editor }}
   <Editor
@@ -76,5 +86,11 @@
     onContentChange={onChange}
     onEditorReady={onReady}
     {onEditorDestroy}
+    onImageUpload={uploadImage}
+    onSearchUnsplash={queryUnsplash}
+    {expandable}
+    bind:expanded
+    {expandedTitle}
+    {expandedDescription}
   />
 {/await}

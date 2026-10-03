@@ -16,6 +16,7 @@
 
   let { data, children } = $props();
   const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
+  const isCoursesList = $derived(/\/courses\/?$/.test(page.url.pathname));
 
   function redirect(siteName: string | null) {
     if (!siteName) return;
@@ -35,7 +36,6 @@
       goto(resolve('/lms', {}));
     }
   });
-
 </script>
 
 {#if PUBLIC_IS_SELFHOSTED !== 'true'}
@@ -58,7 +58,9 @@
       <AppHeader />
     {/if}
 
-    <div class="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4">
+    <div
+      class={isCoursesList ? 'flex w-full flex-1 flex-col' : 'mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4'}
+    >
       {#if data.orgName === '*'}
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
           <Skeleton class="aspect-video rounded-xl" />

@@ -126,6 +126,19 @@ export const getOrganizationByProfileId = async (
   }));
 };
 
+export async function lockOrganizationForUpdate(orgId: string, dbClient: DbOrTxClient = db) {
+  try {
+    await dbClient
+      .select({ id: schema.organization.id })
+      .from(schema.organization)
+      .where(eq(schema.organization.id, orgId))
+      .for('update');
+  } catch (error) {
+    console.error('lockOrganizationForUpdate error:', error);
+    throw new Error(`Failed to lock organization: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export const createOrganization = async (data: TNewOrganization, dbClient: DbOrTxClient = db) => {
   const [organization] = await dbClient.insert(schema.organization).values(data).returning();
 
@@ -187,6 +200,26 @@ export async function getOrganizationMemberIdByOrgAndProfile(
     throw new Error(
       `Failed to resolve organization membership: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+  }
+}
+
+export async function getOrganizationMemberRoleId(organizationId: string, profileId: string): Promise<number | null> {
+  try {
+    const [row] = await db
+      .select({ roleId: schema.organizationmember.roleId })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId)
+        )
+      )
+      .limit(1);
+
+    return row?.roleId ?? null;
+  } catch (error) {
+    console.error('getOrganizationMemberRoleId error:', error);
+    throw new Error(`Failed to resolve organization role: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

@@ -338,8 +338,8 @@
               >
                 <div class="flex min-w-0 flex-1 items-start gap-4">
                   <div class="ui:bg-primary/10 flex size-12 shrink-0 items-center justify-center rounded">
-                    {#if course.logo}
-                      <img src={course.logo} alt="" class="size-full rounded object-cover" />
+                    {#if course.bannerImage}
+                      <img src={course.bannerImage} alt="" class="size-full rounded object-cover" />
                     {:else}
                       <UserRoundIcon class="ui:text-primary size-5" />
                     {/if}
@@ -486,7 +486,7 @@
               id={course.id}
               slug={course.slug ?? ''}
               title={course.title}
-              logo={course.logo}
+              bannerImage={course.bannerImage}
               type={course.type}
               description={course.description ?? ''}
               isPublished={course.isPublished ?? false}

@@ -59,7 +59,9 @@
           {#each group.items as item (item.path)}
             {@const href = `${currentPath}${item.path}`}
             <Sidebar.MenuItem>
-              <Sidebar.MenuButton isActive={isActive(page.url.pathname, href, undefined, item.path !== '/settings/auth')}>
+              <Sidebar.MenuButton
+                isActive={isActive(page.url.pathname, href, undefined, item.path !== '/settings/auth')}
+              >
                 {#snippet child({ props })}
                   <a {href} {...props}>{t.get(item.key)}</a>
                 {/snippet}

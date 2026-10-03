@@ -29,7 +29,7 @@
 
 <Field.Label for={id} class={className}>
   <Field.Field orientation="horizontal">
-    <Field.Content>
+    <Field.Content class="ui:min-w-0">
       <Field.Title class="ui:flex ui:items-center ui:gap-2">
         {title}
         {#if titleSuffix}

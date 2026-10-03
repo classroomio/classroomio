@@ -1,1 +1,1 @@
-export const FIELDS = ['disabled', 'class', 'type', 'tooltip', 'tooltipSide'] as string[];
+export const FIELDS = ['disabled', 'class', 'type', 'tooltip', 'tooltipSide', 'shortcut'] as string[];

@@ -1,4 +1,6 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
+import { assetReferencedByGlobalTemplate } from '@cio/db/queries/course';
+import { env } from '../../config/env';
 import { startMediaJob, startTranscriptionOnlyMediaJob, startYoutubeCaptionsJob } from '../jobs/media-jobs';
 import type {
   TAssetAttach,
@@ -30,6 +32,7 @@ import {
   deleteAssetUsage,
   finalizeHlsAsset as finalizeHlsAssetQuery,
   finalizeHls1080Rendition,
+  assetLocationsReferencedElsewhere,
   getAssetById,
   getAssetStorageSummaryByOrg,
   listAssetsByOrg,
@@ -665,7 +668,7 @@ export async function selectAssetThumbnailService(orgId: string, assetId: string
  * media live under predictable per-asset prefixes; the raw upload is the only
  * standalone key (and HLS uploads leave `storageKey` null).
  */
-function buildAssetStorageCleanupPayload(asset: TAsset): TAssetStorageCleanupPayload {
+async function buildAssetStorageCleanupPayload(asset: TAsset): Promise<TAssetStorageCleanupPayload> {
   const config = getStorageConfig();
 
   const prefixes: TAssetStorageCleanupPayload['prefixes'] = [
@@ -681,7 +684,15 @@ function buildAssetStorageCleanupPayload(asset: TAsset): TAssetStorageCleanupPay
     keys.push({ bucket, key: asset.storageKey });
   }
 
-  return { assetId: asset.id, organizationId: asset.organizationId, prefixes, keys };
+  const shared = await assetLocationsReferencedElsewhere(
+    asset.id,
+    keys.map((entry) => entry.key),
+    prefixes.map((entry) => entry.prefix)
+  );
+  const keptKeys = keys.filter((entry) => !shared.keys.has(entry.key));
+  const keptPrefixes = prefixes.filter((entry) => !shared.prefixes.has(entry.prefix));
+
+  return { assetId: asset.id, organizationId: asset.organizationId, prefixes: keptPrefixes, keys: keptKeys };
 }
 
 /**
@@ -731,13 +742,21 @@ async function resolveLiveAssetUsages(orgId: string, assetId: string) {
 export async function deleteAssetService(orgId: string, assetId: string) {
   try {
     const asset = await getAssetService(orgId, assetId);
+    const platformOrgId = env.PLATFORM_TEMPLATES_ORG_ID;
+
+    if (platformOrgId) {
+      const usedByGlobalTemplate = await assetReferencedByGlobalTemplate(assetId, platformOrgId);
+      if (usedByGlobalTemplate) {
+        throw new AppError('Asset is still in use', ErrorCodes.ASSET_IN_USE, 409);
+      }
+    }
 
     const liveUsages = await resolveLiveAssetUsages(orgId, assetId);
     if (liveUsages.length > 0) {
       throw new AppError('Asset is still in use', ErrorCodes.ASSET_IN_USE, 409);
     }
 
-    const cleanupPayload = buildAssetStorageCleanupPayload(asset);
+    const cleanupPayload = await buildAssetStorageCleanupPayload(asset);
 
     const deleted = await deleteAsset(assetId, orgId);
     assertAssetExists(deleted);

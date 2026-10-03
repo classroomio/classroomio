@@ -7,6 +7,7 @@
   import EditIcon from '@lucide/svelte/icons/edit';
   import SaveIcon from '@lucide/svelte/icons/save';
   import SearchIcon from '@lucide/svelte/icons/search';
+  import PlusIcon from '@lucide/svelte/icons/plus';
   import { FIELDS } from './fields';
 
   const { Story } = defineMeta({
@@ -34,6 +35,14 @@
   {#snippet template()}
     <IconButton tooltip="Settings">
       <SettingsIcon />
+    </IconButton>
+  {/snippet}
+</Story>
+
+<Story name="With Tooltip And Shortcut">
+  {#snippet template()}
+    <IconButton tooltip="Add content" shortcut={['Ctrl', '⇧', 'N']}>
+      <PlusIcon />
     </IconButton>
   {/snippet}
 </Story>

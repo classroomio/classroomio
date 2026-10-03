@@ -240,7 +240,7 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
       lessonId: sanitizedData.lessonId || null,
       courseId: sanitizedData.courseId,
       sectionId: sanitizedData.sectionId || null,
-      order: sanitizedData.order ?? null,
+      order: sanitizedData.order,
       dueBy: sanitizedData.dueBy || null,
       slug
     };
@@ -796,7 +796,7 @@ export async function createExerciseFromTemplate(
   courseId: string,
   lessonId: string | undefined,
   sectionId: string | undefined,
-  order: number | undefined,
+  order: number,
   template: TExerciseTemplate
 ): Promise<TExercise> {
   try {

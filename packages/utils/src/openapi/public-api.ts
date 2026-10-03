@@ -4,7 +4,7 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members and courses with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts with organization-scoped API keys.
 
 # Authentication
 
@@ -16,6 +16,8 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 2. In the org sidebar, open the **Automation** section, then **API** ([/org/*/api](https://app.classroomio.com/org/*/api) — \`*\` picks your current organization automatically).
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
+
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, and every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -154,7 +156,58 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
-  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure'
+  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/courses/{courseId}/certificate': 'Get course certificate settings',
+  'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
+  'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
+  'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate',
+  'GET /public-api/v1/courses/{courseId}/members': 'List course members',
+  'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
+  'GET /public-api/v1/courses/{courseId}/members/{memberId}': 'Get a course member',
+  'PUT /public-api/v1/courses/{courseId}/members/{memberId}': 'Update a course member',
+  'DELETE /public-api/v1/courses/{courseId}/members/{memberId}': 'Remove a course member',
+  'POST /public-api/v1/courses/{courseId}/members/{memberId}/reset-progress': 'Reset member progress',
+  'GET /public-api/v1/courses/{courseId}/members/{memberId}/analytics': 'Get member analytics',
+  'GET /public-api/v1/courses/{courseId}/invites': 'List invites',
+  'POST /public-api/v1/courses/{courseId}/invites': 'Create an invite',
+  'POST /public-api/v1/courses/{courseId}/invites/{inviteId}/revoke': 'Revoke an invite',
+  'GET /public-api/v1/cohorts': 'List cohorts',
+  'POST /public-api/v1/cohorts': 'Create a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}': 'Get a cohort',
+  'PUT /public-api/v1/cohorts/{cohortId}': 'Update a cohort',
+  'DELETE /public-api/v1/cohorts/{cohortId}': 'Delete a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/members': 'List cohort members',
+  'POST /public-api/v1/cohorts/{cohortId}/members': 'Add cohort members',
+  'PUT /public-api/v1/cohorts/{cohortId}/members/{memberId}': 'Update a cohort member',
+  'DELETE /public-api/v1/cohorts/{cohortId}/members/{memberId}': 'Remove a cohort member',
+  'GET /public-api/v1/cohorts/{cohortId}/courses': 'List cohort courses',
+  'POST /public-api/v1/cohorts/{cohortId}/courses': 'Add a course to a cohort',
+  'DELETE /public-api/v1/cohorts/{cohortId}/courses/{courseId}': 'Remove a course from a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/newsfeed': 'List cohort newsfeed',
+  'POST /public-api/v1/cohorts/{cohortId}/newsfeed': 'Create a cohort newsfeed post',
+  'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}': 'Update a cohort newsfeed post',
+  'PUT /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/react': 'Set your reaction on a cohort newsfeed post',
+  'DELETE /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}': 'Delete a cohort newsfeed post',
+  'GET /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comments': 'List comments on a cohort newsfeed post',
+  'POST /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comment': 'Add a comment to a cohort newsfeed post',
+  'DELETE /public-api/v1/cohorts/{cohortId}/newsfeed/{feedId}/comment/{commentId}':
+    'Delete a comment from a cohort newsfeed post',
+  'GET /public-api/v1/cohorts/{cohortId}/goals': 'List cohort goals',
+  'POST /public-api/v1/cohorts/{cohortId}/goals': 'Create a cohort goal',
+  'GET /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Get a cohort goal',
+  'PUT /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Update a cohort goal',
+  'DELETE /public-api/v1/cohorts/{cohortId}/goals/{goalId}': 'Delete a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/archive': 'Archive a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/{goalId}/evaluate': 'Re-evaluate a cohort goal',
+  'POST /public-api/v1/cohorts/{cohortId}/goals/evaluate-all': 'Re-evaluate all cohort goals',
+  'GET /public-api/v1/cohorts/goals/overview': 'Get the organization goals overview',
+  'GET /public-api/v1/cohorts/my/goals': 'List your cohort goal assignments',
+  'GET /public-api/v1/cohorts/enrolled': 'List cohorts you are enrolled in',
+  'POST /public-api/v1/cohorts/{cohortId}/invite': 'Invite students to a cohort by email',
+  'POST /public-api/v1/cohorts/{cohortId}/invite/assign': 'Assign existing students to a cohort',
+  'GET /public-api/v1/cohorts/{cohortId}/invite-link': 'Get the cohort join link',
+  'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
+  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link'
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -168,6 +221,40 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Courses',
     description: 'Create and manage courses, read their structure, and list enrolled students.'
+  },
+  {
+    name: 'Public API Course Certificates',
+    description:
+      "Read and update a course's certificate design and settings, list the students who earned it, and download their certificates."
+  },
+  {
+    name: 'Public API Course Members',
+    description:
+      "Manage a course's membership and invites — list, add, update roles, remove, reset progress, view analytics, and invite people into the course. A course member row is distinct from Public API Audience (organization-wide people); adding a member here requires the person already be an organization member — use the invites endpoints to onboard someone new."
+  },
+  {
+    name: 'Public API Cohorts',
+    description: 'Create and manage cohorts.'
+  },
+  {
+    name: 'Public API Cohort Members',
+    description: "Manage a cohort's members."
+  },
+  {
+    name: 'Public API Cohort Courses',
+    description: 'Link and unlink courses on a cohort.'
+  },
+  {
+    name: 'Public API Cohort Newsfeed',
+    description: "Post, comment, and react on a cohort's newsfeed."
+  },
+  {
+    name: 'Public API Cohort Goals',
+    description: 'Create and manage cohort progress goals.'
+  },
+  {
+    name: 'Public API Cohort Invites',
+    description: 'Invite students to a cohort and manage its join link.'
   }
 ];
 

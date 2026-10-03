@@ -2,10 +2,13 @@
   import { page } from '$app/state';
   import { PublicCourse } from '@cio/ui';
   import { toPublicExerciseView, toPublicLessonView } from '$features/course/utils/public-course-mappers';
+  import { snackbar } from '$features/ui/snackbar/store';
   import {
+    buildStudyChatUrl,
     publicExerciseAttemptsStorageKey,
     type PublicLessonViewData,
-    type PublicExerciseViewData
+    type PublicExerciseViewData,
+    type OutlineRailActionLabels
   } from '@cio/ui/custom/public-course';
   import { getExerciseQuestionLabels } from '$features/course/components/exercise/question-labels';
   import { t } from '$lib/utils/functions/translations';
@@ -48,6 +51,37 @@
     data.item.kind === 'exercise' ? toPublicExerciseView(data.item) : null
   );
 
+  const showCopyPage = $derived(
+    data.tree.course.allowMarkdownExport === true && data.item.kind === 'lesson' && data.item.isUnlocked
+  );
+  const markdownUrl = $derived(`/course/${data.tree.course.slug}/lesson/${itemSlug}.md`);
+  const publicItemUrl = $derived(`${page.url.origin}${page.url.pathname}`);
+  const publicLessonMarkdownUrl = $derived(`${page.url.origin}${markdownUrl}`);
+  const publicCourseUrl = $derived(`${page.url.origin}/course/${data.tree.course.slug}`);
+  const courseShareTitle = $derived(data.tree.course.title);
+  const pageTitle = $derived('title' in data.item ? data.item.title : data.tree.course.title);
+  const studyChatInput = $derived({
+    lessonTitle: pageTitle,
+    courseTitle: data.tree.course.title,
+    publicLessonUrl: publicItemUrl,
+    publicLessonMarkdownUrl
+  });
+  const chatgptUrl = $derived(buildStudyChatUrl('chatgpt', studyChatInput));
+  const claudeUrl = $derived(buildStudyChatUrl('claude', studyChatInput));
+
+  const railLabels = $derived<OutlineRailActionLabels>({
+    copyAsMarkdown: t.get('public_course.rail.copy_as_markdown'),
+    copied: t.get('public_course.copy_page.copied'),
+    share: t.get('public_course.share.label'),
+    facebook: t.get('public_course.share.facebook'),
+    linkedin: t.get('public_course.share.linkedin'),
+    x: t.get('public_course.share.x'),
+    instagram: t.get('public_course.share.instagram'),
+    openInChat: t.get('public_course.rail.open_in_chat'),
+    openInChatGPT: t.get('public_course.copy_page.open_in_chatgpt'),
+    openInClaude: t.get('public_course.copy_page.open_in_claude')
+  });
+
   const breadcrumbJsonLd = $derived.by(() => {
     const courseUrl = new URL(`/course/${data?.tree.course.slug}`, page.url.origin).href;
     const itemTitle = 'title' in data.item ? data.item.title : data?.tree.course.title;
@@ -76,6 +110,9 @@
 </script>
 
 <svelte:head>
+  {#if showCopyPage}
+    <link rel="alternate" type="text/markdown" href={publicLessonMarkdownUrl} />
+  {/if}
   {#if breadcrumbJsonLd}
     {@html `<script type="application/ld+json">${breadcrumbJsonLd}</script>`}
   {/if}
@@ -91,7 +128,55 @@
       playbackErrorLabel={$t('course.navItem.lessons.materials.tabs.video.playback_error')}
       playbackReloadLabel={$t('course.navItem.lessons.materials.tabs.video.playback_reload')}
       {callout}
-    />
+      outlineLabel={$t('public_course.outline.label')}
+    >
+      {#snippet titleActions()}
+        <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
+          {#if showCopyPage}
+            <PublicCourse.CopyPageButton
+              {markdownUrl}
+              {chatgptUrl}
+              {claudeUrl}
+              labels={{
+                copy: $t('public_course.copy_page.copy'),
+                copied: $t('public_course.copy_page.copied'),
+                viewAsMarkdown: $t('public_course.copy_page.view_as_markdown'),
+                openInChatGPT: $t('public_course.copy_page.open_in_chatgpt'),
+                openInClaude: $t('public_course.copy_page.open_in_claude'),
+                moreActions: $t('public_course.copy_page.more_actions')
+              }}
+              onCopied={() => snackbar.success('public_course.copy_page.copied')}
+              onCopyError={() => snackbar.error('public_course.copy_page.copy_failed')}
+            />
+          {/if}
+          <PublicCourse.ShareButton
+            pageUrl={publicCourseUrl}
+            pageTitle={courseShareTitle}
+            labels={{
+              share: $t('public_course.share.label'),
+              facebook: $t('public_course.share.facebook'),
+              linkedin: $t('public_course.share.linkedin'),
+              x: $t('public_course.share.x'),
+              instagram: $t('public_course.share.instagram')
+            }}
+            onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
+          />
+        </div>
+      {/snippet}
+      {#snippet outlineActions()}
+        <PublicCourse.OutlineRailActions
+          pageUrl={publicCourseUrl}
+          pageTitle={courseShareTitle}
+          markdownUrl={showCopyPage ? markdownUrl : null}
+          chatgptUrl={showCopyPage ? chatgptUrl : null}
+          claudeUrl={showCopyPage ? claudeUrl : null}
+          labels={railLabels}
+          onCopied={() => snackbar.success('public_course.copy_page.copied')}
+          onCopyError={() => snackbar.error('public_course.copy_page.copy_failed')}
+          onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
+        />
+      {/snippet}
+    </PublicCourse.PublicLessonView>
   {:else if exerciseView}
     <PublicCourse.PublicExerciseView
       exercise={exerciseView}
@@ -106,6 +191,31 @@
       tryAgainLabel={$t('public_course.exercise.try_again')}
       privacyHint={$t('public_course.exercise.privacy_hint')}
       summaryTemplate={$t('public_course.exercise.summary_template')}
-    />
+    >
+      {#snippet titleActions()}
+        <div class="ui:flex ui:shrink-0 ui:items-center ui:gap-2">
+          <PublicCourse.ShareButton
+            pageUrl={publicCourseUrl}
+            pageTitle={courseShareTitle}
+            labels={{
+              share: $t('public_course.share.label'),
+              facebook: $t('public_course.share.facebook'),
+              linkedin: $t('public_course.share.linkedin'),
+              x: $t('public_course.share.x'),
+              instagram: $t('public_course.share.instagram')
+            }}
+            onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
+          />
+        </div>
+      {/snippet}
+      {#snippet outlineActions()}
+        <PublicCourse.OutlineRailActions
+          pageUrl={publicCourseUrl}
+          pageTitle={courseShareTitle}
+          labels={railLabels}
+          onInstagramCopied={() => snackbar.success('public_course.share.instagram_copied')}
+        />
+      {/snippet}
+    </PublicCourse.PublicExerciseView>
   {/if}
 {/key}

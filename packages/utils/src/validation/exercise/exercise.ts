@@ -216,7 +216,7 @@ export const ZExerciseCreate = z.object({
   description: z.string().optional(),
   lessonId: z.string().optional(),
   sectionId: z.string().optional(),
-  order: z.number().int().optional(),
+  order: z.number().int().min(1),
   courseId: z.string().min(1),
   dueBy: z.string().optional(),
   slug: ZSlug.optional(),
@@ -229,7 +229,7 @@ export const ZExerciseUpdate = z.object({
   description: z.string().optional(),
   lessonId: z.string().optional(),
   sectionId: z.string().optional(),
-  order: z.number().int().optional(),
+  order: z.number().int().min(1).optional(),
   isUnlocked: z.boolean().optional(),
   dueBy: z.string().optional(), // Changed from iso.datetime() to string to match frontend format
   allowMultipleAttempts: z.boolean().optional(),
@@ -272,7 +272,7 @@ export type TExerciseSubmissionCreate = z.infer<typeof ZExerciseSubmissionCreate
 export const ZExerciseFromTemplate = z.object({
   lessonId: z.string().optional(),
   sectionId: z.string().optional(),
-  order: z.number().int().optional(),
+  order: z.number().int().min(1),
   templateId: z.number().int().min(1)
 });
 

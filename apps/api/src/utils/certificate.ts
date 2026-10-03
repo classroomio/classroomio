@@ -27,3 +27,14 @@ export async function generateCertificatePng(input: CertificateRenderInput) {
 
   return getCloudflarePngBuffer(html, styles, { ...CERTIFICATE_VIEWPORT, deviceScaleFactor: 2 });
 }
+
+export function slugifyForFilename(value: string): string {
+  return (
+    value
+      .normalize('NFKD')
+      .replace(/[^a-zA-Z0-9 ]/g, '')
+      .trim()
+      .replace(/\s+/g, '-')
+      .slice(0, 60) || 'certificate'
+  );
+}

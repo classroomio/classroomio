@@ -163,7 +163,7 @@ export interface StudentProfileCourse {
   id: string;
   title: string;
   description: string;
-  logo: string | null;
+  bannerImage: string | null;
   type: 'SELF_PACED' | 'LIVE_CLASS';
   lessons_count: number;
   lessons_completed: number;
@@ -217,7 +217,7 @@ export const courses: StudentProfileCourse[] = [
     title: 'Building Fullstack Applications with Supabase & Svelte',
     description:
       'Dive into real-time web application development with our Supabase Mastery Bootcamp, tailored for Svelte developers. Hands-on projects, weekly reviews and a capstone.',
-    logo: SUPABASE_LOGO,
+    bannerImage: SUPABASE_LOGO,
     type: 'SELF_PACED',
     lessons_count: 24,
     lessons_completed: 9,
@@ -232,7 +232,7 @@ export const courses: StudentProfileCourse[] = [
     title: 'Modern Web Development with React',
     description:
       'Component patterns, data fetching, routing and testing — everything needed to ship a production React application.',
-    logo: REACT_LOGO,
+    bannerImage: REACT_LOGO,
     type: 'LIVE_CLASS',
     lessons_count: 18,
     lessons_completed: 18,
@@ -247,7 +247,7 @@ export const courses: StudentProfileCourse[] = [
     title: 'Data Science with Python and Pandas',
     description:
       'Clean, reshape and visualise real datasets. Covers dataframes, aggregation, joins and a final analysis notebook.',
-    logo: PYTHON_LOGO,
+    bannerImage: PYTHON_LOGO,
     type: 'SELF_PACED',
     lessons_count: 30,
     lessons_completed: 4,
@@ -262,7 +262,7 @@ export const courses: StudentProfileCourse[] = [
     title: 'Design Systems Fundamentals',
     description:
       'Tokens, primitives and documentation practices for building a component library a whole team can rely on.',
-    logo: DESIGN_LOGO,
+    bannerImage: DESIGN_LOGO,
     type: 'SELF_PACED',
     lessons_count: 12,
     lessons_completed: 0,

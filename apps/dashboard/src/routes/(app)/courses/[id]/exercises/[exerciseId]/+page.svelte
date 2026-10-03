@@ -38,20 +38,22 @@
   });
 
   $effect(() => {
-    if (!data.exercise || isLockedForStudent) return;
+    const currentExerciseId = data.exerciseId;
+    if (!currentExerciseId || !data.exercise || isLockedForStudent) return;
 
     const meta = get(questionnaireMetaData);
-    if (meta.isFinished && meta.exerciseId === data.exerciseId) {
+    if (meta.exerciseId === currentExerciseId) {
       return;
     }
-    if (meta.exerciseId != null && meta.exerciseId !== data.exerciseId) {
+
+    if (meta.exerciseId != null && meta.exerciseId !== currentExerciseId) {
       reset();
     }
 
-    hydrateExercisePageData(data.exercise, data.exerciseId);
+    hydrateExercisePageData(data.exercise, currentExerciseId);
 
     // Puts back work stashed before an upgrade checkout redirect.
-    if (restoreExerciseDraft(data.courseId, data.exerciseId)) {
+    if (restoreExerciseDraft(data.courseId, currentExerciseId)) {
       snackbar.success('snackbar.exercise.draft_restored');
     }
   });

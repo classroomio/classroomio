@@ -127,6 +127,62 @@
       "when": 1789190269035,
       "tag": "0017_learner_lifecycle",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1789476095020,
+      "tag": "0018_enforce_content_order",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1789951951825,
+      "tag": "0019_content_report",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1789960316363,
+      "tag": "0020_lesson_slides",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1790419736572,
+      "tag": "0021_mcp_key_cohort_scopes",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1790423336572,
+      "tag": "0022_mcp_key_course_member_scopes",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1790426936572,
+      "tag": "0023_mcp_certificate_scopes",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1790552013227,
+      "tag": "0024_course_templates",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1790553000000,
+      "tag": "0025_add_turkish_locale",
+      "breakpoints": true
     }
   ]
 }

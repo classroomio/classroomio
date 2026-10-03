@@ -24,6 +24,14 @@
     { value: 'intermediate', label: 'Intermediate' },
     { value: 'advanced', label: 'Advanced' }
   ];
+  const longPrompt = [
+    'I want to build a comprehensive course about modern web development.',
+    'It should cover semantic HTML, accessibility, responsive CSS layout, and component-driven UI.',
+    'Include a module on JavaScript fundamentals, the event loop, async/await, and fetch.',
+    'Add a module on TypeScript generics, narrowing, and module resolution.',
+    'Finish with testing, performance budgets, and deployment to a CDN.',
+    'The audience is intermediate developers who know the basics of HTML and CSS.'
+  ].join('\n\n');
 </script>
 
 <Story name="Default">
@@ -38,6 +46,20 @@
   {#snippet template()}
     <div class="w-[800px] p-8">
       <CourseCreator {heading} {placeholder} {levelOptions} loading={true} onsubmit={(p) => console.log('submit', p)} />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Long Prompt">
+  {#snippet template()}
+    <div class="w-[800px] p-8">
+      <CourseCreator
+        {heading}
+        {placeholder}
+        {levelOptions}
+        prompt={longPrompt}
+        onsubmit={(p) => console.log('submit', p)}
+      />
     </div>
   {/snippet}
 </Story>

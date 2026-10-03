@@ -3,7 +3,7 @@ import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
 
 type CourseSettings = {
-  logo: string;
+  bannerImage: string;
   courseTitle: string;
   courseDescription: string;
   grading: boolean;
@@ -11,6 +11,7 @@ type CourseSettings = {
   allowSelfEnrollment: boolean;
   tabs: { id: number; name: string }[];
   lessonDownload: boolean;
+  allowMarkdownExport: boolean;
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
   progressionMode: 'free' | 'sequential';
@@ -26,7 +27,7 @@ type CourseSettings = {
 };
 
 export const settings = writable<CourseSettings>({
-  logo: '',
+  bannerImage: '',
   courseTitle: '',
   courseDescription: '',
   grading: false,
@@ -39,6 +40,7 @@ export const settings = writable<CourseSettings>({
     { id: 4, name: 'course.navItem.lessons.materials.tabs.document.title' }
   ],
   lessonDownload: false,
+  allowMarkdownExport: false,
   isPublished: false,
   isContentGroupingEnabled: true,
   progressionMode: 'free',

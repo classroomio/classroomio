@@ -1,0 +1,131 @@
+import type {
+  TPublicApiCourseParam,
+  TPublicApiCoursesQuery,
+  TPublicApiCreateCourse,
+  TPublicApiPaginationQuery,
+  TPublicApiUpdateCourse,
+  TPublicApiUpdateCourseStructure
+} from '@cio/utils/validation/public-api';
+
+import { ROLE } from '@cio/utils/constants';
+import {
+  createCourse as createCourseService,
+  deleteCourse as deleteCourseService,
+  getCourse,
+  updateCourse as updateCourseService
+} from '@cio/core/services/course/course';
+import {
+  createCourseImportDraftService,
+  getCourseImportStructureService,
+  publishCourseImportDraftToExistingCourseService
+} from '@api/services/course-import/course-import';
+import { getOrganizationCourses } from '@api/services/organization';
+import { listPaginatedCourseMembers } from '@api/services/course/people';
+import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertCourseBelongsToOrganization } from '@api/services/v1/shared';
+import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
+
+export async function listCoursesService(orgId: string, query: TPublicApiCoursesQuery) {
+  return getOrganizationCourses(orgId, '', ROLE.ADMIN, query);
+}
+
+export async function getCourseService(orgId: string, params: TPublicApiCourseParam) {
+  await assertCourseBelongsToOrganization(orgId, params.courseId);
+
+  return getCourse(params.courseId);
+}
+
+export async function listCourseStudentsService(
+  orgId: string,
+  params: TPublicApiCourseParam,
+  query: TPublicApiPaginationQuery
+) {
+  await assertCourseBelongsToOrganization(orgId, params.courseId);
+
+  return listPaginatedCourseMembers(params.courseId, {
+    page: query.page,
+    limit: query.limit,
+    roleId: ROLE.STUDENT
+  });
+}
+
+export async function exportCourseService(orgId: string, params: TPublicApiCourseParam) {
+  await assertCourseBelongsToOrganization(orgId, params.courseId);
+
+  return getCourseImportStructureService(orgId, params.courseId);
+}
+
+export async function createPublicApiCourseService(
+  orgId: string,
+  actorId: string | null,
+  payload: TPublicApiCreateCourse
+) {
+  if (!actorId) {
+    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
+  }
+
+  return createCourseService(actorId, {
+    ...payload,
+    organizationId: orgId
+  });
+}
+
+export async function updatePublicApiCourseService(
+  orgId: string,
+  params: TPublicApiCourseParam,
+  payload: TPublicApiUpdateCourse
+) {
+  await assertCourseBelongsToOrganization(orgId, params.courseId);
+  await assertCertificateChangeAllowed(params.courseId, payload.certificate);
+
+  return updateCourseService(params.courseId, payload);
+}
+
+export async function deletePublicApiCourseService(orgId: string, params: TPublicApiCourseParam) {
+  await assertCourseBelongsToOrganization(orgId, params.courseId);
+
+  return deleteCourseService(params.courseId);
+}
+
+export async function updatePublicApiCourseStructureService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseParam,
+  payload: TPublicApiUpdateCourseStructure
+) {
+  if (!actorId) {
+    throw new AppError('Automation actor is required', ErrorCodes.UNAUTHORIZED, 401);
+  }
+
+  await assertCourseBelongsToOrganization(orgId, params.courseId);
+
+  const draft = await createCourseImportDraftService(orgId, actorId, {
+    sourceType: 'course',
+    idempotencyKey: payload.idempotencyKey,
+    summary: {
+      sourceCourseId: params.courseId,
+      syncMode: payload.mode,
+      ...(payload.summary ?? {})
+    },
+    sourceArtifacts: [
+      {
+        type: 'course',
+        courseId: params.courseId,
+        label: payload.draft.course.title
+      },
+      ...(payload.sourceArtifacts ?? [])
+    ],
+    draft: payload.draft
+  });
+
+  const result = await publishCourseImportDraftToExistingCourseService(orgId, draft.id, {
+    courseId: params.courseId,
+    syncMode: payload.mode
+  });
+
+  return {
+    draftId: draft.id,
+    syncMode: payload.mode,
+    ...result
+  };
+}

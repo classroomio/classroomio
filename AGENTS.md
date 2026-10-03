@@ -470,7 +470,45 @@ fields.email = '';
 - **Effect mirrors props into local state** — use `$bindable`, `bind:`, or derive a value; only copy props when you need a draft the user can cancel.
 - **Effect fetches or navigates on every dependency tick** — gate with a guard, run on submit/route enter, or track “already loaded” so work runs once per intent.
 
-When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup.
+When cleanup or reset must follow a specific lifecycle moment, use the matching hook: `onOpenChange` for dialogs, submit/success handlers for forms, `onMount` / load functions for one-time setup that does not depend on the current org. Org-scoped page data is covered below.
+
+### Loading org-scoped page data
+
+The app shell renders the page before `currentOrg` is set. A fetch in `onMount` that returns when the org id is missing does nothing on a full reload, then succeeds on the next client navigation, because the org is already in the store.
+
+Load that data in an `$effect` that reads `$currentOrg.id` and returns until the id is set. Remember which org you already loaded only after the id is present, so the effect runs again when the id arrives. If the fetch bails on a missing org id, do not mark that load as done first — the next run has to be allowed to try again.
+
+`onMount` stays right for one-time setup that does not need the org, such as reading `localStorage` or attaching a listener.
+
+```svelte
+let listedOrgId = '';
+
+$effect(() => {
+  const organizationId = $currentOrg.id;
+  if (!organizationId || organizationId === listedOrgId) return;
+
+  listedOrgId = organizationId;
+  void courseTemplateApi.list();
+});
+```
+
+### Skeleton cards
+
+A card row or gallery shows skeleton cards until the first payload arrives. The gap before the request starts is still loading: `cards === null` while the loading flag is still false is an empty row, not a finished one.
+
+Show skeletons while there are no cards yet. Keep the cards you already have during a later refetch. Use the card's `loading` prop, or `Skeleton` blocks with the same footprint, so the row does not jump when the data arrives. A small fixed count is enough — the template row uses three, the gallery four.
+
+```svelte
+{#if !courseTemplateApi.cards}
+  {#each [0, 1, 2] as index (index)}
+    <TemplateCard loading />
+  {/each}
+{:else}
+  {#each templates as template (template.id)}
+    <TemplateCard title={template.title} />
+  {/each}
+{/if}
+```
 
 ### Server-Side API Calls
 
@@ -523,7 +561,23 @@ Use `.server.ts` files for server-side code to isolate API keys.
 - Use base primitives (`@cio/ui/base/input`, `@cio/ui/base/textarea`, `@cio/ui/base/checkbox`, `@cio/ui/base/label`) only when creating/updating reusable UI components or when no custom field wrapper exists.
 - In app-level form UIs, do not introduce native form controls (`<input>`, `<textarea>`, `<label>`) when equivalent `packages/ui` components exist.
 - **Icon-only buttons** (a `Button` whose content is just an icon, e.g. `size="icon"`) must use `variant="secondary"`.
-- **Theme color classes:** Classes that use colors from `packages/ui/src/index.css` (e.g. `text-muted-foreground`, `text-primary`) must be prefixed with `ui:` in dashboard code so they resolve against the UI theme (e.g. `ui:text-muted-foreground`, `ui:text-primary`). Only color-related utilities need the prefix; layout/sizing classes like `rounded`, `border`, `p-4` stay unprefixed (Tailwind defaults).
+- **`ui:` prefix rules in consumer code (`apps/dashboard/**` & `packages/storybook/**`):**
+  - **Theme tokens and semantic colors:** Prefix with `ui:` for classes binding to `@cio/ui` theme variables (e.g. `ui:bg-background`, `ui:text-muted-foreground`, `ui:border-input`, `ui:ring-ring`, `ui:text-primary`, `ui:bg-muted`, `ui:border-border`).
+  - **Named z-index scale:** Prefix with `ui:` for custom stacking layers defined in `@cio/ui` (`ui:z-app-bar`, `ui:z-app-bar-elevated`, `ui:z-modal`, `ui:z-menu-elevated`).
+  - **Custom animations and font tokens:** Prefix with `ui:` for custom animations and font utilities in `@cio/ui` (e.g. `ui:font-cio`, `ui:animate-meteor`, `ui:animate-shine`).
+  - **Standard Tailwind utilities:** Do not prefix layout, sizing, typography, spacing, borders, standard animations, or fonts (e.g. `flex`, `grid`, `w-full`, `min-h-*`, `p-*`, `m-*`, `gap-*`, `rounded-*`, `border`, `text-sm`, `font-semibold`, `animate-spin`, `focus-visible:outline-none`, `focus-visible:ring-2`).
+  - **Inside `packages/ui/src/**` only:** ALL Tailwind utility classes must use the `ui:` prefix (enforced by `pnpm --filter @cio/ui prefix:check`).
+- **Tailwind `ui:` variant prefix ordering:** When applying variants (`hover:`, `focus:`, `dark:`, `placeholder:`, `md:`) to `ui:` prefixed classes, `ui:` must come before the variant modifier (e.g. `ui:hover:text-primary`, `ui:focus-visible:ring-ring`, `ui:placeholder:text-muted-foreground`, `ui:dark:text-white`).
+
+### Dialog button hierarchy
+
+When a dialog has multiple actions in `Dialog.Footer`, use `size="sm"` on every button and follow this variant hierarchy (left to right):
+
+- **Left / external action** (e.g. "Create another …") — `variant="secondary"`
+- **Cancel / dismiss** (e.g. "Later", "Cancel") — `variant="outline"`
+- **Main CTA** (e.g. "Open now", "Save", "Create") — default primary (`variant="default"`)
+
+Place the main CTA on the right; group cancel and primary together when both appear on the right.
 
 ### Page layout and settings save bar
 
@@ -590,6 +644,8 @@ All user-controlled URLs in org landing pages (nav links, hero CTAs, footer link
 - **API boundary:** Zod refinement on `ZUpdateOrganization.landingpage` imports `containsDisallowedHrefs` to reject bad schemes at write time.
 
 **When adding new landing-page components or themes:** always route hrefs through `safeHref()`. Never pass a user-controlled string directly to `href`.
+
+Theme previews in the dashboard are visual-only. Render preview content inside an `inert` container so links, buttons, and other controls cannot navigate or trigger actions while previewing a theme.
 
 ## Emails: system vs org-branded
 
@@ -718,6 +774,8 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 - Use `SvelteSet`/`SvelteMap` from `svelte/reactivity` for reactive collections (not `new Set`/`new Map`)
 - Reset modal/form state in close/submit handlers or `onOpenChange`, not in `$effect` tied to a steady “closed” condition
 - Mutate bound `$state` object fields in place when clearing forms (don't reassign the whole object)
+- Load org-scoped page data in an `$effect` that waits for `$currentOrg.id` (see **Loading org-scoped page data**)
+- Show skeleton cards until the first card payload arrives (see **Skeleton cards**)
 - Use `ScrollToTop` (`@cio/ui/custom/scroll-to-top`) on any page whose main column can overflow the viewport (see **Scroll to top**)
 - Add `testId` on `@cio/ui` wrappers or shell surfaces when Playwright needs a stable hook (see **E2E test hooks**)
 - In certificate templates, compute font sizes for dynamic text using `FIELDS` and `prepareCertificateRenderContext` (`packages/certificates`)
@@ -737,6 +795,8 @@ Certificate templates in `packages/certificates/src/templates/` render fixed-dim
 - Use `new Set()`/`new Map()` for mutable reactive state — use `SvelteSet`/`SvelteMap` instead
 - Wrap `SvelteSet`/`SvelteMap` in `$state()` — they are already reactive
 - **Use `$effect` to reset form/modal state whenever a boolean is false** — use `onOpenChange` or explicit handlers on close instead
+- **Fetch org-scoped page data in `onMount`** — the org id is often still empty, so a full reload no-ops and the next client navigation is what finally loads (see **Loading org-scoped page data**)
+- **Leave a card row blank on first load** — show skeleton cards until cards exist, including the gap before the request starts (see **Skeleton cards**)
 - **Reassign whole bound state objects to clear forms** (e.g. `fields = {}`) — mutate properties in place
 - **Use inline type imports** (e.g. `import('Package').Type` in type positions) — use top-level `import type` instead
 - Build a one-off back-to-top button — use `ScrollToTop` (see **Scroll to top** and `prd/scroll-to-top/README.md`)
@@ -761,6 +821,8 @@ Playwright specs and PR demos should use stable, locale-independent selectors. F
 Do not annotate every control — add hooks only for high-impact flows (auth, nav, save bars, primary actions).
 
 ## Checklist for New Routes
+
+For public API design, security, contracts, MCP/API-key behavior, and dashboard parity, read [`skills/public-api-review/SKILL.md`](skills/public-api-review/SKILL.md) before implementation and review.
 
 - [ ] **Validation**: Schema in `packages/utils/src/validation/{entity}/`
 - [ ] **Query**: Pure functions in `packages/db/src/queries/{domain}/`

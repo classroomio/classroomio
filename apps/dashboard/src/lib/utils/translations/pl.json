@@ -12,7 +12,19 @@
     },
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany",
-    "scroll_to_top": "Przewiń do góry"
+    "scroll_to_top": "Przewiń do góry",
+    "delete": "Usuń",
+    "restricted_page": {
+      "title": "Strona z ograniczeniami",
+      "description": "Ta organizacja jest ograniczona. W międzyczasie możesz zapoznać się z naszymi funkcjami.",
+      "home": "Przejdź do strony głównej",
+      "learning_paths_heading": "Ścieżki nauki",
+      "learning_path_label": "Ścieżka nauki",
+      "tracks_label": "{count, plural, one {# ścieżka} few {# ścieżki} many {# ścieżek} other {# ścieżek}}",
+      "included": "Wliczone",
+      "untitled_lesson": "Lekcja bez tytułu",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -185,7 +197,11 @@
       "error": {
         "try_again": "Błąd — spróbuj ponownie później",
         "deleting_comments": "Błąd podczas usuwania komentarzy",
-        "deleting_question": "Błąd podczas usuwania pytania"
+        "deleting_question": "Błąd podczas usuwania pytania",
+        "comment_failed": "Nie udało się przesłać komentarza",
+        "delete_failed": "Nie udało się usunąć",
+        "missing_context": "Brak kontekstu — przeładuj stronę",
+        "update_failed": "Nie udało się zaktualizować pytania"
       }
     },
     "invite": {
@@ -211,8 +227,6 @@
       "section_update_failed": "Nie udało się zaktualizować sekcji kursu",
       "sections_reordered": "Pomyślnie zmieniono kolejność sekcji kursu",
       "sections_reorder_failed": "Nie udało się zmienić kolejności sekcji kursu",
-      "lessons_reordered": "Pomyślnie zmieniono kolejność lekcji",
-      "lessons_reorder_failed": "Nie udało się zmienić kolejności zajęć",
       "comment_fetch_failed": "Nie udało się pobrać komentarzy do lekcji",
       "load_more_comments_failed": "Nie udało się załadować więcej komentarzy",
       "comment_add_failed": "Nie udało się dodać komentarza",
@@ -257,6 +271,16 @@
       "people": {
         "progress_reset": "Postęp został zresetowany",
         "progress_reset_failed": "Nie udało się zresetować postępu"
+      },
+      "compliance": {
+        "overview_failed": "Nie udało się wczytać przeglądu zgodności",
+        "history_failed": "Nie udało się wczytać historii zgodności",
+        "reset_success": "Reset cyklu zgodności",
+        "reset_failed": "Nie udało się zresetować cyklu zgodności",
+        "extend_success": "Termin spełnienia wymagań przedłużony",
+        "extend_failed": "Nie udało się przedłużyć terminu spełnienia wymagań",
+        "waive_success": "Odstąpiono od wymogu zgodności",
+        "waive_failed": "Nie udało się odstąpić od wymogu zgodności"
       }
     },
     "landing_page_settings": {
@@ -306,7 +330,11 @@
         "all_content_already_unlocked": "Cała treść jest już odblokowana",
         "content_grouping_enabled": "Grupowanie treści włączone",
         "content_grouping_disabled": "Grupowanie treści wyłączone",
-        "link_generated": "Link do kursu został pomyślnie zaktualizowany"
+        "link_generated": "Link do kursu został pomyślnie zaktualizowany",
+        "converted_to_public": "Kurs pomyślnie przekonwertowany na publiczny"
+      },
+      "info": {
+        "conversion_blocked": "Popraw poniższe pytania, aby zakończyć konwersję do wersji publicznej."
       }
     },
     "people": {
@@ -468,6 +496,11 @@
         "post_created": "Post został utworzony pomyślnie",
         "post_updated": "Post został pomyślnie zaktualizowany"
       }
+    },
+    "report": {
+      "success": "Dziękujemy. Przejrzymy to zgłoszenie.",
+      "error": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
+      "already_submitted": "Już zgłosiłeś tę treść."
     }
   },
   "explore": {
@@ -1005,7 +1038,6 @@
         },
         "compliance": "Zgodność",
         "public": "Publiczne",
-        "convert_to_public_blocked": "Ten kurs zawiera pytania, których nie można oceniać automatycznie, dlatego nie można go jeszcze udostępnić publicznie.",
         "fix_blocking_questions": "Napraw blokujące pytania",
         "slug": {
           "label": "Błąd adresu URL",
@@ -1055,8 +1087,45 @@
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
         "copy_link": "Skopiuj link",
+        "question_in_exercise": "W „{exercise}”",
+        "fix_question": "Edytuj",
+        "convert_to_public_blocked": "W kursach publicznych wymagane są wyłącznie pytania, które podlegają automatycznej ocenie.",
+        "convert_to_public_blocked_desc": "Ćwiczenia na kursie publicznym są oceniane automatycznie w przeglądarce, dlatego obsługujemy tylko pytania z automatyczną oceną. Usuń lub zastąp następujące pytania przed konwersją tego kursu na publiczny:",
+        "fix_in_exercise": "Popraw w ćwiczeniu",
+        "cancel_conversion": "Anuluj konwersję",
+        "public_conversion": {
+          "banner_title": "Konwersja kursu na publiczny",
+          "exercise_fixed": "To ćwiczenie jest gotowe",
+          "back_to_settings": "Powrót do Ustawień",
+          "complete_conversion": "Dokończ konwersję do wersji publicznej",
+          "jump_to": "Skocz do",
+          "blocks_public_conversion": "Brak automatycznego oceniania",
+          "blocks_public_conversion_desc": "Kursy publiczne obsługują wyłącznie pytania, które podlegają automatycznej ocenie. Zmień typ tego pytania lub usuń je, aby kontynuować konwersję.",
+          "blocks_public_conversion_title": "Ocenianie ręczne nie jest obsługiwane w kursach publicznych",
+          "aria_label": "Postęp konwersji kursu publicznego",
+          "all_exercises_fixed": "{total, plural, one {Poprawiono # ćwiczenie} few {Wszystkie # ćwiczenia poprawione} many {Wszystkie # ćwiczeń poprawione} other {Wszystkie # ćwiczeń poprawione}}",
+          "ready_to_convert": "Gotowy do konwersji!",
+          "questions_left_other_singular": "· pozostało {count} pytanie w innych ćwiczeniach",
+          "questions_left_other_plural": "{count, plural, one {· pozostało # pytanie w innych ćwiczeniach} few {· pozostały # pytania w innych ćwiczeniach} many {· pozostało # pytań w innych ćwiczeniach} other {· pozostało # pytań w innych ćwiczeniach}}",
+          "progress_summary_singular": "{resolved}/{total} naprawiono · pozostało {remaining} pytanie",
+          "progress_summary_plural": "{resolved}/{total} naprawiono · {remaining, plural, one {pozostało # pytanie} few {pozostały # pytania} many {pozostało # pytań} other {pozostało # pytań}}",
+          "next_exercise": "Następne: {exercise}",
+          "next": "Następny",
+          "question_fallback": "Pytanie {number}",
+          "question_count_singular": "{count} pytanie",
+          "question_count_plural": "{count, plural, one {# pytanie} few {# pytania} many {# pytań} other {# pytań}}",
+          "exercise_count_singular": "{count} ćwiczenie",
+          "exercise_count_plural": "{count, plural, one {# ćwiczenie} few {# ćwiczenia} many {# ćwiczeń} other {# ćwiczeń}}",
+          "exercises_fixed": "{resolved}/{total} naprawione",
+          "questions_left_singular": "naprawiono · pozostało {count} pytanie",
+          "questions_left_plural": "{count, plural, one {naprawiono · pozostało # pytanie} few {naprawiono · pozostały # pytania} many {naprawiono · pozostało # pytań} other {naprawiono · pozostało # pytań}}"
+        },
+        "fix": "Popraw",
+        "save_changes_to_fix_questions": "Zapisz niezapisane zmiany przed przejściem do poprawiania pytań.",
         "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
-        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów."
+        "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów.",
+        "allow_markdown_export": "Pozwól uczniom kopiować strony lekcji jako Markdown",
+        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej odblokowanej lekcji."
       },
       "analytics": {
         "title": "Analityka"
@@ -1467,7 +1536,39 @@
           },
           "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów."
         },
-        "learner": "Student"
+        "learner": "Student",
+        "views": {
+          "all": "Wszyscy ludzie",
+          "not_started": "Nie rozpoczęte",
+          "in_progress": "W toku",
+          "completed": "Ukończono",
+          "never_logged_in": "Nigdy się nie logowałem",
+          "awaiting_certificate": "Oczekiwanie na certyfikat",
+          "custom": "Filtry niestandardowe"
+        },
+        "window": {
+          "7d": "7 dni",
+          "30d": "30 dni",
+          "90d": "90 dni",
+          "180d": "180 dni",
+          "never": "Nigdy"
+        },
+        "filter": {
+          "title": "Filtruj ludzi",
+          "role": "Rola",
+          "all_roles": "Wszystkie role",
+          "progress": "Postęp",
+          "in_progress": "W toku",
+          "completed": "Ukończono",
+          "membership": "Członkostwo",
+          "joined": "Dołączył",
+          "invited": "Zaproszono, nie masz jeszcze konta",
+          "certificate": "Certyfikat",
+          "earned": "Zdobyte",
+          "not_earned": "Nie zarobione",
+          "no_login_since": "Od tego czasu brak logowania",
+          "joined_within": "Dołączył wewnątrz"
+        }
       },
       "marks": {
         "title": "Znaki",
@@ -1623,7 +1724,9 @@
           "comment_btn": "Komentarz",
           "cancel_btn": "Anuluj",
           "load_more_btn": "Załaduj więcej",
-          "comment_error": "Nie udało się opublikować komentarza. Spróbuj ponownie."
+          "comment_error": "Nie udało się opublikować komentarza. Spróbuj ponownie.",
+          "edit": "Edytuj",
+          "delete": "Usuń"
         },
         "exercises": {
           "heading": "Wszystkie ćwiczenia",
@@ -1731,7 +1834,9 @@
               "try_again": "Spróbuj ponownie",
               "back": "Powrót",
               "begin_section": "Sekcja startowa",
-              "complete_section": "Kompletna sekcja"
+              "complete_section": "Kompletna sekcja",
+              "instructions": "Instrukcje",
+              "close_instructions": "Zamknij instrukcje"
             },
             "edit_mode": {
               "delete_modal": "Usuń ćwiczenie",
@@ -1780,7 +1885,8 @@
               "title": "Tytuł",
               "heading": "Opis",
               "describe": "Opisz ćwiczenie swojemu uczniowi",
-              "no": "Brak opisu"
+              "no": "Brak opisu",
+              "expand": "Rozwiń"
             },
             "shared_question": {
               "textarea": {
@@ -1987,7 +2093,16 @@
                   "video_invalid_link": "Wprowadź prawidłowy link do YouTube.",
                   "upload_error_only_images": "Obsługiwane są tylko pliki obrazów.",
                   "upload_error_skipped": "Niektóre pliki zostały pominięte, ponieważ nie są obrazami.",
-                  "upload_error_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie."
+                  "upload_error_failed": "Nie udało się przesłać obrazu. Spróbuj ponownie.",
+                  "expand": "Rozwiń"
+                },
+                "media": {
+                  "enlarge_image": "Kliknij, aby powiększyć",
+                  "close": "Zamknij",
+                  "zoom_in": "Powiększ",
+                  "zoom_out": "Pomniejsz",
+                  "previous_image": "Poprzedni obraz",
+                  "next_image": "Następny obraz"
                 }
               },
               "navigation": {
@@ -2369,7 +2484,87 @@
             "slide": {
               "title": "Slajd",
               "slide_link": "Link do slajdu",
-              "helper_message": "Możesz osadzić Prezentacje Google lub Prezentację Canva"
+              "helper_message": "Możesz osadzić Prezentacje Google lub Prezentację Canva",
+              "button": "Dodaj slajd",
+              "remove_slide": "Usuń slajd",
+              "menu_aria": "Akcje slajdu",
+              "empty_title": "Brak slajdów",
+              "empty_description": "Osadź Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare lub Beautiful.ai",
+              "add_slide": {
+                "title": "Dodaj slajd",
+                "search": "Szukaj platform",
+                "empty_prompt": "Wybierz platformę, aby zobaczyć instrukcje krok po kroku i wkleić kod osadzenia.",
+                "embed_code": "Wklej kod osadzenia",
+                "embed_placeholder": "Wklej tutaj pełny kod iframe",
+                "how_to_embed": "Jak osadzić",
+                "preview": "Podgląd",
+                "embed_ready": "Osadzenie gotowe",
+                "invalid_embed": "Wklej pełny kod iframe z tej platformy.",
+                "unsupported": "To osadzenie pochodzi z platformy, której jeszcze nie obsługujemy."
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} z {total})"
             },
             "note": {
               "title": "Uwaga",
@@ -2509,7 +2704,16 @@
           "link_copied": "Link skopiowany"
         },
         "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
-        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później."
+        "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
+        "add_content_created_section": "Sekcja została utworzona pomyślnie!",
+        "add_content_created_lesson": "Lekcja została utworzona pomyślnie!",
+        "add_content_created_exercise": "Ćwiczenie zostało utworzone pomyślnie!",
+        "add_content_create_another_section": "Utwórz kolejną sekcję",
+        "add_content_create_another_lesson": "Utwórz kolejną lekcję",
+        "add_content_create_another_exercise": "Utwórz kolejne ćwiczenie",
+        "add_content_open_now": "Otwórz teraz",
+        "add_content_later": "Później",
+        "add_content_add_to_section": "Dodaj treść"
       },
       "news_feed": {
         "heading": "Kanał wiadomości",
@@ -2776,7 +2980,7 @@
       "untitled_course": "Kurs bez tytułu",
       "untitled_course_description": "Szczegóły kursu zostaną wypełnione przez asystenta po konfiguracji.",
       "template": {
-        "heading": "Lub zacznij od szablonu",
+        "heading": "Lub zacznij od promptu",
         "submit": "Kontynuuj",
         "skip": "Zamiast tego odpowiedz na czacie",
         "submitted_summary": "Odpowiedzi przesłane",
@@ -2831,6 +3035,9 @@
       "create_button": "Utwórz",
       "error": {
         "failed_to_clone": "Nie udało się sklonować kursu"
+      },
+      "success": {
+        "course_cloned": "Kurs został pomyślnie sklonowany"
       }
     },
     "new_course_modal": {
@@ -2911,7 +3118,8 @@
       "tags": "Tagi",
       "empty_tags": "Brak dostępnych tagów"
     },
-    "page_subtitle": "Gdzie lekcje stają się kursami, a kursy — zapisami."
+    "page_subtitle": "Gdzie lekcje stają się kursami, a kursy — zapisami.",
+    "load_more": "Załaduj więcej"
   },
   "ai": {
     "help_me": "Pomóż mi pisać",
@@ -2927,8 +3135,8 @@
     "afternoon_heading": "Dzień dobry",
     "evening_heading": "Dobry wieczór",
     "create_course": "Utwórz kurs",
-    "view_site": "Otwarta Akademia",
-    "visit_site": "Otwarta Akademia",
+    "view_site": "Twoja akademia",
+    "visit_site": "Twoja akademia",
     "current_lesson": "Aktualnie się uczę",
     "your_progress": "Twój postęp",
     "continue": "Kontynuuj",
@@ -2983,7 +3191,7 @@
     "login_activity_description": "Najbardziej aktywne dni tygodnia (ostatnie 90 dni)",
     "login_activity_no_data": "Brak aktywności związanej z logowaniem",
     "login_activity_logins": "logowania",
-    "open_academy": "Otwarta Akademia",
+    "open_academy": "Twoja akademia",
     "explore_more_courses": "Przeglądaj więcej kursów",
     "view_more": "Zobacz więcej",
     "upcoming_sessions_heading": "Sesje na żywo"
@@ -2999,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "Dostosuj LMS-a",
+        "language": {
+          "title": "Język",
+          "description": "Wybierz język interfejsu LMS widocznego dla uczniów.",
+          "default_language": "Domyślny język",
+          "enforce": "Wymuś ten język dla uczniów"
+        },
         "disabled": "Niepełnosprawny",
         "enabled": "Włączone",
         "save": "Zapisz zmiany",
@@ -3220,6 +3434,8 @@
     "analytics": "Analityka",
     "compliance": "Zgodność",
     "cohorts": "Kohorty",
+    "exit_course": "Wyjdź z tego kursu",
+    "exit_cohort": "Wyjdź z tej kohorty",
     "upgrade_now": "Uaktualnij teraz",
     "upgrade_label": "Ulepsz",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -3842,7 +4058,7 @@
       "notifications_tab": "Powiadomienia"
     },
     "subheadings": {
-      "view_site": "Otwarta Akademia"
+      "view_site": "Twoja akademia"
     },
     "auth": {
       "title": "Uwierzytelnianie",
@@ -4084,6 +4300,10 @@
         }
       },
       "personal_page_subtitle": "Wybierz, które powiadomienia e-mail otrzymujesz od ClassroomIO."
+    },
+    "account": {
+      "language": "Język",
+      "select_language": "Wybierz język"
     }
   },
   "profileMenu": {
@@ -4115,6 +4335,7 @@
     "login_with_google": "Zaloguj się za pomocą Google",
     "create_to_join": "Utwórz darmowe konto, aby dołączyć",
     "create_account": "Utwórz konto",
+    "sign_in_to_continue": "Zaloguj się, aby kontynuować",
     "login_to_join": "Zaloguj się, aby dołączyć",
     "validation": {
       "unable_to_create_profile": "Nie można utworzyć profilu",
@@ -4168,7 +4389,9 @@
       }
     },
     "cancel": "Anuluj",
-    "save": "Zapisz"
+    "save": "Zapisz",
+    "next": "Następny",
+    "previous": "Poprzedni"
   },
   "welcome_modal": {
     "we_at": "My o",
@@ -4365,6 +4588,12 @@
         "joined": "Dołączył do organizacji",
         "join_failed": "Nie udało się dołączyć do organizacji",
         "try_again": "Spróbuj ponownie"
+      },
+      "limit_reached": {
+        "title": "Ta akademia jest teraz pełna",
+        "description": "Organizacja {orgName} osiągnęła limit liczby studentów w swoim bieżącym planie, więc nie mogliśmy Cię dodać. Twoje konto jest w porządku i nic, co zrobiłeś, nie było tego przyczyną.",
+        "technical_details": "Szczegóły techniczne",
+        "error_code": "Błąd"
       },
       "not_found": "To zaproszenie nie jest już dostępne.",
       "loading": "Ładowanie zaproszenia..."
@@ -5002,6 +5231,30 @@
     "header": {
       "explore_courses": "Przeglądaj kursy",
       "sign_in": "Zaloguj się"
+    },
+    "copy_page": {
+      "copy": "Kopiuj stronę",
+      "copied": "Skopiowano",
+      "view_as_markdown": "Wyświetl jako Markdown",
+      "open_in_chatgpt": "Otwórz w ChatGPT",
+      "open_in_claude": "Otwórz w Claude",
+      "more_actions": "Więcej działań kopiowania strony",
+      "copy_failed": "Nie udało się skopiować tej lekcji jako Markdown"
+    },
+    "outline": {
+      "label": "Na tej stronie"
+    },
+    "rail": {
+      "copy_as_markdown": "Kopiuj jako Markdown",
+      "open_in_chat": "Otwórz na czacie"
+    },
+    "share": {
+      "label": "Udostępnij ten kurs",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "Skopiowano link. Wklej go w Instagramie."
     }
   },
   "account": {
@@ -5126,7 +5379,8 @@
       "inheritance_description": "Dziedzicz ustawienia domyślne obszaru roboczego lub ustawiaj zastąpienia dla poszczególnych kursów."
     },
     "snackbar": {
-      "saved": "Ustawienia nauczyciela AI zostały zapisane"
+      "saved": "Ustawienia nauczyciela AI zostały zapisane",
+      "fetchError": "Nie udało się załadować ustawień nauczyciela AI"
     },
     "state": {
       "loading": "Ładowanie ustawień nauczyciela AI…"
@@ -5204,7 +5458,17 @@
       "add_another": "Dodaj kolejny",
       "invite_submit": "Wyślij zaproszenia",
       "empty_title": "Nie ma jeszcze członków",
-      "empty_description": "Zaproś osoby do dołączenia do tej kohorty."
+      "empty_description": "Zaproś osoby do dołączenia do tej kohorty.",
+      "name": "Imię",
+      "joined": "Dołączył",
+      "filter_title": "Filtruj ludzi",
+      "views": {
+        "all": "Wszyscy ludzie",
+        "tutors": "Korepetytorzy",
+        "students": "Studenci",
+        "pending_invites": "Oczekujące zaproszenia",
+        "never_logged_in": "Nigdy się nie logowałem"
+      }
     },
     "courses": {
       "add": "Dodaj kurs",
@@ -5448,5 +5712,217 @@
     "format_json": "JSON",
     "copied": "Skopiowano do schowka",
     "copy_failed": "Nie można skopiować do schowka"
+  },
+  "report": {
+    "menu": "Zgłoś",
+    "title": "Zgłoś treść",
+    "description": "Powiedz nam, co jest nie tak. Nasz zespół przejrzy to zgłoszenie.",
+    "reason_label": "Powód",
+    "reason_placeholder": "Wybierz powód",
+    "reason_required": "Wybierz powód",
+    "details_label": "Dodatkowe szczegóły",
+    "details_placeholder": "Dodaj kontekst, który pomoże nam to sprawdzić (opcjonalnie)",
+    "submit": "Wyślij zgłoszenie",
+    "cancel": "Anuluj",
+    "reasons": {
+      "spam": "Spam",
+      "harassment": "Nękanie lub zastraszanie",
+      "hate_speech": "Mowa nienawiści",
+      "sexual_content": "Treści seksualne",
+      "violence": "Przemoc lub groźby",
+      "misinformation": "Dezinformacja",
+      "privacy": "Naruszenie prywatności",
+      "other": "Inne"
+    }
+  },
+  "landing": {
+    "learner_menu": {
+      "trigger_label": "Menu konta, zalogowano jako {email}",
+      "trigger_label_anonymous": "Menu konta",
+      "my_courses": "Moje kursy",
+      "my_certificates": "Moje certyfikaty",
+      "account_settings": "Ustawienia konta",
+      "theme": "Motyw",
+      "continue_learning": "Kontynuuj naukę",
+      "not_enrolled_note": "Nie zapisano jeszcze do tej akademii — miejsca docelowe dla uczestników pojawiają się po dołączeniu.",
+      "theme_light": "Jasny",
+      "theme_dark": "Ciemny",
+      "theme_system": "System"
+    }
+  },
+  "course_templates": {
+    "row": {
+      "heading": "Utwórz nowy kurs",
+      "gallery": "Galeria szablonów",
+      "yours": "Twoje kursy",
+      "blank": "Pusty kurs",
+      "blank_subtitle": "Zacznij od zera"
+    },
+    "card": {
+      "yours": "Twój szablon",
+      "used": "Twój szablon · Używany {date}",
+      "curated": "Wyselekcjonowany szablon"
+    },
+    "gallery": {
+      "title": "Galeria szablonów",
+      "subtitle": "Rozpocznij kurs, korzystając z jednego ze swoich szablonów lub szablonu utworzonego przez ClassroomIO.",
+      "search": "Znajdź szablon",
+      "scope_all": "Wszystkie szablony",
+      "scope_org": "Moje szablony",
+      "scope_global": "KlasaIO",
+      "empty_org": "Nie masz jeszcze żadnych szablonów. Zapisz dowolny kurs jako szablon z menu ⋯.",
+      "no_match": "Żaden szablon nie pasuje do „{query}”.",
+      "empty_global": "Nie ma jeszcze szablonów ClassroomIO.",
+      "back": "Wszystkie kursy"
+    },
+    "preview": {
+      "course_name": "Nazwa kursu",
+      "use": "Użyj szablonu",
+      "open": "Otwórz szablon",
+      "cancel": "Anuluj",
+      "copying": "Kopiowanie {sections, plural, one {# sekcji} few {# sekcji} many {# sekcji} other {# sekcji}}, {lessons, plural, one {# lekcji} few {# lekcji} many {# lekcji} other {# lekcji}}…",
+      "created": "Kurs utworzony z {title}",
+      "shows_off": "Popisuje się",
+      "counts": "{sections} sekcje · {lessons} lekcje · {exercises} ćwiczenia",
+      "questions": "{count, plural, one {# pytanie} few {# pytania} many {# pytań} other {# pytania}}",
+      "loading": "Ładowanie szablonu…",
+      "settings": "Ustawienia",
+      "certificate": "Certyfikat włączony",
+      "deadline": "Termin {date}",
+      "threshold": "Ukończ {percent}% kursu",
+      "final_exercise": "Przekaż „{title}” za {percent}%",
+      "sequential": "Lekcje odblokowują się w kolejności",
+      "grading": "Nauczyciel ocenia przesłane prace",
+      "comments_off": "Komentarze do lekcji są wyłączone",
+      "lesson_download": "Uczniowie mogą pobierać lekcje",
+      "self_enrollment": "Uczniowie mogą sami dołączyć",
+      "ai_tutor": "Nauczyciel AI jest włączony",
+      "compliance_retake": "Powtarzaj co {months, plural, one {# miesiąc} other {# miesiące}}",
+      "compliance_mandatory": "Obowiązkowe"
+    },
+    "menu": {
+      "open": "Otwórz",
+      "duplicate": "Duplikat",
+      "delete": "Usuń",
+      "save": "Zapisz jako szablon…",
+      "create_course": "Utwórz kurs z szablonu",
+      "duplicated": "Szablon zduplikowany",
+      "deleted": "Szablon usunięty"
+    },
+    "save": {
+      "title": "Zapisz jako szablon",
+      "copy": "Zapisz kopię jako szablon",
+      "copy_description": "Kurs pozostaje taki jaki jest.",
+      "convert": "Konwertuj ten kurs",
+      "convert_description": "Kurs staje się szablonem. Nie można go opublikować ani mieć uczniów.",
+      "has_students": "Ma {count, plural, one {# ucznia} few {# uczniów} many {# uczniów} other {# ucznia}} — zamiast tego zapisz kopię.",
+      "unpublish": "Konwersja powoduje cofnięcie publikacji tego kursu.",
+      "name": "Nazwa szablonu",
+      "save_button": "Zapisz szablon",
+      "convert_button": "Konwertuj na szablon",
+      "saved": "Szablon został zapisany",
+      "converted": "Kurs przekonwertowany na szablon",
+      "limit_title": "Twój plan obejmuje {count, plural, one {# szablon} few {# szablony} many {# szablonów} other {# szablonu}}",
+      "limit_body": "Masz już {used, plural, one {{title}} few {# szablony} many {# szablonów} other {# szablonu}}. Uaktualnij, aby uzyskać więcej szablonów lub usuń jeden, który posiadasz.",
+      "upgrade": "Uaktualnij",
+      "manage": "Zarządzaj szablonami",
+      "view_templates": "Zobacz szablony"
+    },
+    "empty": {
+      "title": "Nie ma jeszcze żadnych kursów",
+      "description": "Wybierz szablon, aby zobaczyć, jak wygląda świetny kurs ClassroomIO, lub zacznij od pustego kursu.",
+      "browse": "Przeglądaj szablony"
+    },
+    "editor": {
+      "badge": "Szablon"
+    },
+    "sync": {
+      "alert_title": "Szablon ma {count, plural, one {# aktualizację} few {# aktualizacje} many {# aktualizacji} other {# aktualizacji}}",
+      "alert_body": "{title} zmieniło się od czasu ostatniego przejazdu w dniu {date}.",
+      "review_in_settings": "Sprawdź w ustawieniach",
+      "section_title": "Szablon",
+      "last_pulled": "Ostatnio wyciągnięte {date}",
+      "review": "Przejrzyj aktualizacje",
+      "up_to_date": "Na bieżąco z szablonem.",
+      "deleted": "{title} został usunięty. W tym kursie zachowana jest cała jego zawartość; nie ma już co ciągnąć.",
+      "deleted_unknown": "Ten szablon został usunięty. W tym kursie zachowana jest cała jego zawartość; nie ma już co ciągnąć.",
+      "available_detail": "{count, plural, one {# dostępna aktualizacja} few {# dostępne aktualizacje} many {# dostępnych aktualizacji} other {# dostępnej aktualizacji}} — {list}.",
+      "join": "{rest} i {last}",
+      "sections_count": "{count, plural, one {# sekcja} few {# sekcje} many {# sekcji} other {# sekcji}}",
+      "settings_count": "{count, plural, one {# ustawienie} few {# ustawienia} many {# ustawień} other {# ustawienia}}",
+      "content": "Treść",
+      "settings": "Ustawienia",
+      "select_all": "Zaznacz wszystko",
+      "new": "Nowy",
+      "updated": "Zaktualizowano",
+      "locked": "{count, plural, one {# zgłoszenie — nie można zaktualizować} few {# zgłoszenia — nie można zaktualizować} many {# zgłoszeń — nie można zaktualizować} other {# zgłoszenia}}",
+      "edited_locally": "Edytowałeś to {date} — przeciągnięcie zastępuje Twoje zmiany.",
+      "removed_locally": "Usunąłeś to ze swojego kursu.",
+      "also_adds": "Dodaje także {kind}: {title}",
+      "template_value": "Szablon: {value}",
+      "yours_value": "Twoje: {value}",
+      "yes": "Tak",
+      "no": "Nie",
+      "empty_value": "Żadne",
+      "custom_value": "Niestandardowe",
+      "selected": "{count, plural, one {# wybrane} few {# wybrane} many {# wybranych} other {# wybranego}}",
+      "pull": "Pobierz {count, plural, one {# zmianę} few {# zmiany} many {# zmian} other {# zmiany}}",
+      "pulled": "Pobrano {count, plural, one {# zmianę} few {# zmiany} many {# zmian} other {# zmiany}} z {title}",
+      "kind": {
+        "section": "Sekcja",
+        "lesson": "Lekcja",
+        "exercise": "Ćwicz"
+      },
+      "detail": {
+        "title": "Tytuł",
+        "content": "Treść",
+        "locales": "Dodano {locales}"
+      },
+      "setting": {
+        "description": "Opis",
+        "bannerImage": "Obraz na okładce",
+        "welcomeEmail": "Witamy e-mail",
+        "completionDeadline": "Termin realizacji",
+        "completionThreshold": "Próg ukończenia",
+        "finalExercise": "Ćwiczenie końcowe",
+        "lessonTabsOrder": "Zakładki z lekcjami",
+        "contentGrouping": "Grupowanie treści",
+        "progression": "Postęp",
+        "comments": "Komentarze do lekcji",
+        "selfEnrollment": "Samodzielna rejestracja",
+        "markdownExport": "Eksport przecen",
+        "lessonDownload": "Pobieranie lekcji",
+        "landingRequirements": "Wymagania dotyczące lądowania",
+        "landingDescription": "Opis lądowania",
+        "landingGoals": "Cele lądowania",
+        "landingSkills": "Umiejętności",
+        "landingTools": "Narzędzia",
+        "landingInstructor": "Instruktor",
+        "pricing": "Ceny",
+        "certificateDesign": "Projekt certyfikatu",
+        "certificateRules": "Zasady certyfikatu",
+        "aiTutor": "Nauczyciel sztucznej inteligencji"
+      },
+      "section_description": "Ten kurs powstał z szablonu. Pobierz zmiany, kiedy chcesz — nic nie zmienia się samo.",
+      "updates_title": "{count, plural, one {# aktualizacja dostępna} few {# aktualizacje dostępne} many {# aktualizacji dostępnych} other {# aktualizacji}}",
+      "deleted_title": "Szablon usunięty",
+      "sheet_title": "Aktualizacje szablonu",
+      "sheet_description": "Z {title}, od {date}. Wybierz, co pobrać — z twojego kursu nic nie zostanie usunięte.",
+      "nothing_selected": "Nic nie wybrano",
+      "loading": "Ładowanie aktualizacji…",
+      "value": {
+        "free": "Dowolnie",
+        "sequential": "Sekwencyjnie",
+        "no_price": "Bezpłatny",
+        "pass_mark": "Wynik pozytywny {score}"
+      },
+      "template_label": "Szablon",
+      "yours_label": "Twój"
+    },
+    "home": {
+      "heading": "Lub zacznij od szablonu",
+      "description": "Kompletny kurs z lekcjami, ćwiczeniami i ustawieniami. Skopiuj go, a następnie uczyń go swoim.",
+      "browse": "Przeglądaj wszystkie szablony"
+    }
   }
 }

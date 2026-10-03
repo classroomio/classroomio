@@ -108,6 +108,10 @@ body {
   text-align: center;
 }
 
+.prose img {
+  border-radius: var(--radius-md, 0.375rem);
+}
+
 .hero-bg {
   background-image: url('https://assets.cdn.clsrio.com/www/hero-bg.svg');
 }

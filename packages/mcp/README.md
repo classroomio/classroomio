@@ -58,6 +58,79 @@ Current tools:
 - `tag_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
+- `list_course_members`
+- `add_course_member`
+- `get_course_member`
+- `update_course_member`
+- `delete_course_member`
+- `reset_course_member_progress`
+- `get_course_member_analytics`
+- `list_course_invites`
+- `create_course_invite`
+- `revoke_course_invite`
+- `list_org_cohorts`
+- `create_cohort`
+- `get_cohort`
+- `update_cohort`
+- `delete_cohort`
+- `list_cohort_members`
+- `add_cohort_members`
+- `update_cohort_member`
+- `delete_cohort_member`
+- `list_cohort_courses`
+- `add_cohort_course`
+- `remove_cohort_course`
+- `list_cohort_newsfeed`
+- `create_cohort_newsfeed_post`
+- `update_cohort_newsfeed_post`
+- `update_cohort_newsfeed_reaction`
+- `delete_cohort_newsfeed_post`
+- `list_cohort_newsfeed_comments`
+- `create_cohort_newsfeed_comment`
+- `delete_cohort_newsfeed_comment`
+- `list_cohort_goals`
+- `create_cohort_goal`
+- `get_cohort_goal`
+- `update_cohort_goal`
+- `archive_cohort_goal`
+- `delete_cohort_goal`
+- `evaluate_cohort_goal`
+- `evaluate_all_cohort_goals`
+- `get_org_goals_overview`
+- `list_my_cohort_goals`
+- `list_my_enrolled_cohorts`
+- `invite_students_to_cohort`
+- `assign_students_to_cohort`
+- `get_cohort_invite_link`
+- `create_cohort_invite_link`
+- `set_cohort_invite_link_revoked`
+
+Course certificate tools:
+
+- `get_course_certificate`
+- `update_course_certificate`
+- `list_course_certificates`
+- `download_course_certificate`
+
+Certificate tools call the public API certificate endpoints. MCP keys get the `course:certificate:read` and `course:certificate:write` scopes by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. These scopes open only the certificate endpoints.
+
+The tools act as the person who created the key, with the same permissions that person has in the dashboard. That role is checked on every call, so if the creator loses access, the key loses it too:
+
+- Reading the certificate settings and design needs them to be a member of the course (including access through a program) or an org admin.
+- Changing the settings or design, listing who earned the certificate, and downloading a certificate need them to be a course tutor/admin or an org admin.
+
+`get_course_certificate` and `update_course_certificate` return effective settings: stored values with the dashboard's defaults filled in where nothing is stored (`isDownloadable` false, `threshold` 100, the default design, and so on).
+
+`update_course_certificate` is a partial update: fields you leave out keep their values, and `null` clears `deadline`, `requiredExerciseId`, `exerciseMinScorePercent`, or `emailMessage`. `design` is replaced as a whole object, so read it first and send the full design. `deadline` must be an ISO 8601 datetime with a timezone, for example `2026-12-31T23:59:59Z`. Like the dashboard, it needs a paid plan: on the Basic (free) plan it fails with 403 `UPGRADE_REQUIRED`.
+
+`list_course_certificates` lists the students who earned the course certificate, with when they earned it and when the certificate email was sent. It takes `page` and `limit` (default 20, max 100) and an optional `search` on name or email. `download_course_certificate` takes a `memberId` from that list and a `format` of `pdf` (default) or `png`.
+
+What the tools cover compared with the dashboard:
+
+- Covered: certificate settings and design, the list of students who earned the certificate, and downloading an issued certificate.
+- Not covered, on purpose: previewing a design, which is a UI concern.
+- Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
+- Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
 
 ## Auth Model
 
@@ -73,6 +146,25 @@ ClassroomIO API:
 4. executes the requested action
 
 The MCP package never decides permissions.
+
+Course member and invite tools call the public API (`/public-api/v1/courses/:id/members` and `/public-api/v1/courses/:id/invites`) and need the key's `course:member:read` / `course:member:write` scopes. The course draft/exercise tools above call internal-only endpoints and use their own scopes (`course_import:draft:*`, `course:read`/`write`, etc.). Both kinds count toward the same MCP rate limits.
+
+Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
+
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, and course certificate routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+
+Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
+
+- Reads need the key creator to be a cohort member or an org admin.
+- Other writes, including invites, invite links, and goal evaluation, need the key creator to be a cohort tutor/admin or an org admin.
+- Posts, comments, and reactions are made as the key creator, so they also need the key creator to be a member of the cohort. A reaction only ever changes the key creator's own reaction.
+- A comment can also be deleted by its author.
+- `get_org_goals_overview` needs the key creator to be an org admin or tutor.
+- `list_my_enrolled_cohorts` and `list_my_cohort_goals` return the key creator's own data in the key's organization.
+
+`add_cohort_members` creates memberships directly and sends no email; `invite_students_to_cohort` is the dashboard invite flow (organization invites plus emails).
+
+List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `list_cohort_goals`, `list_cohort_newsfeed_comments`, `list_my_enrolled_cohorts`, `list_my_cohort_goals`, `get_org_goals_overview`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`. `list_cohort_newsfeed` is cursor-based: pass the returned `nextCursor` back as `cursor`.
 
 ## Required Environment Variables
 

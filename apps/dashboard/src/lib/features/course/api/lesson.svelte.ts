@@ -19,16 +19,15 @@ import type {
   LessonComments,
   PromoteUngroupedSectionRequest,
   ReorderCourseSectionsRequest,
-  ReorderLessonsRequest,
   UpdateCourseSectionRequest,
   UpdateLessonCommentRequest,
   UpdateLessonCompletionRequest,
   UpdateLessonRequest,
   UpdateLessonWatchProgressRequest,
   GetLessonWatchProgressRequest,
-  type LessonWatchProgress,
-  type LessonWatchProgressUpdate
+  CreateCourseSectionData
 } from '../utils/types';
+import type { LessonWatchProgress, LessonWatchProgressUpdate } from '../utils/types';
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
 import type {
   TCourseSectionCreate,
@@ -36,7 +35,7 @@ import type {
   TCourseSectionReorder,
   TCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
-import type { TLessonCreate, TLessonReorder, TLessonUpdate } from '@cio/utils/validation/lesson';
+import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
 import type { TLessonVersionIntentRequest } from '@cio/utils/validation/lesson';
 import {
   ZCourseSectionCreate,
@@ -44,13 +43,7 @@ import {
   ZCourseSectionReorder,
   ZCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
-import {
-  ZLessonCommentCreate,
-  ZLessonCommentUpdate,
-  ZLessonCreate,
-  ZLessonReorder,
-  ZLessonUpdate
-} from '@cio/utils/validation/lesson';
+import { ZLessonCommentCreate, ZLessonCommentUpdate, ZLessonCreate, ZLessonUpdate } from '@cio/utils/validation/lesson';
 
 import type { TLocale } from '@cio/db/types';
 import { get } from 'svelte/store';
@@ -110,13 +103,21 @@ export class LessonApi extends BaseApiWithErrors {
 
   /**
    * Creates a new lesson
+   * @returns The created lesson, or undefined when validation or the request fails.
    */
-  async create(courseId: string, fields: TLessonCreate) {
+  async create(
+    courseId: string,
+    fields: TLessonCreate,
+    options: { silent?: boolean } = {}
+  ): Promise<Lesson | undefined> {
     const result = ZLessonCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
+
+    const silent = options.silent ?? false;
+    let createdLesson: Lesson | undefined;
 
     await this.execute<CreateLessonRequest>({
       requestFn: () =>
@@ -127,12 +128,15 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating lesson',
       onSuccess: (response) => {
         if (response.data) {
-          const createdLesson = response.data as Lesson;
+          const createdLessonData = response.data as Lesson;
           this.lesson = {
-            ...createdLesson,
-            lessonLanguages: createdLesson.lessonLanguages ?? []
+            ...createdLessonData,
+            lessonLanguages: createdLessonData.lessonLanguages ?? []
           };
-          snackbar.success('snackbar.lessons.lesson_created');
+          createdLesson = this.lesson;
+          if (!silent) {
+            snackbar.success('snackbar.lessons.lesson_created');
+          }
           this.success = true;
           this.errors = {};
         }
@@ -151,6 +155,8 @@ export class LessonApi extends BaseApiWithErrors {
         }
       }
     });
+
+    return createdLesson;
   }
 
   /**
@@ -230,13 +236,21 @@ export class LessonApi extends BaseApiWithErrors {
 
   /**
    * Creates a course section
+   * @returns The created section, or undefined when validation or the request fails.
    */
-  async createSection(courseId: string, fields: TCourseSectionCreate) {
+  async createSection(
+    courseId: string,
+    fields: TCourseSectionCreate,
+    options: { silent?: boolean } = {}
+  ): Promise<CreateCourseSectionData | undefined> {
     const result = ZCourseSectionCreate.safeParse({ ...fields, courseId });
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
       return;
     }
+
+    const silent = options.silent ?? false;
+    let createdSection: CreateCourseSectionData | undefined;
 
     await this.execute<CreateCourseSectionRequest>({
       requestFn: () =>
@@ -247,7 +261,10 @@ export class LessonApi extends BaseApiWithErrors {
       logContext: 'creating course section',
       onSuccess: (response) => {
         if (response.data) {
-          snackbar.success('snackbar.lessons.section_created');
+          createdSection = response.data;
+          if (!silent) {
+            snackbar.success('snackbar.lessons.section_created');
+          }
           this.success = true;
           this.errors = {};
         }
@@ -263,6 +280,8 @@ export class LessonApi extends BaseApiWithErrors {
         }
       }
     });
+
+    return createdSection;
   }
 
   /**
@@ -377,38 +396,6 @@ export class LessonApi extends BaseApiWithErrors {
       onError: (result) => {
         if (typeof result === 'string') {
           snackbar.error('snackbar.lessons.sections_reorder_failed');
-        }
-      }
-    });
-  }
-
-  /**
-   * Reorders lessons
-   */
-  async reorderLessons(courseId: string, lessons: TLessonReorder['lessons']) {
-    const result = ZLessonReorder.safeParse({ lessons });
-    if (!result.success) {
-      this.errors = mapZodErrorsToTranslations(result.error, 'lesson');
-      return;
-    }
-
-    await this.execute<ReorderLessonsRequest>({
-      requestFn: () =>
-        classroomio.course[':courseId'].lesson.reorder.$post({
-          param: { courseId },
-          json: result.data
-        }),
-      logContext: 'reordering lessons',
-      onSuccess: (response) => {
-        if (response.data) {
-          snackbar.success('snackbar.lessons.lessons_reordered');
-          this.success = true;
-          this.errors = {};
-        }
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.lessons.lessons_reorder_failed');
         }
       }
     });
@@ -961,7 +948,8 @@ export class LessonApi extends BaseApiWithErrors {
 
     await Promise.all([
       this.update(courseId, lessonId, {
-        slideUrl: this.lesson.slideUrl || undefined,
+        slideUrl: this.lesson.slideUrl || '',
+        slides: this.lesson.slides || [],
         videos: this.lesson.videos || [],
         documents: this.lesson.documents || []
       }),

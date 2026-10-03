@@ -28,7 +28,8 @@
     reviews,
     pricing,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: CourseLandingPageProps = $props();
 
   const heroProps = $derived(alignHeroCtaWithPricing(hero, pricing));
@@ -41,7 +42,7 @@
   <main>
     <SaasHero hero={heroProps}>
       {#snippet navigation()}
-        <SaasNav {orgName} {logoUrl} {navItems} {authAction} />
+        <SaasNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </SaasHero>
 
@@ -52,7 +53,7 @@
     {#if chips}
       <CourseChips variant="saas" {chips} {labels} />
     {/if}
-    <CourseInstructor variant="saas" {instructor} {labels} />
+    <CourseInstructor variant="saas" {instructor} {logoUrl} {labels} />
     <CourseReviews variant="saas" {reviews} {labels} />
     <CoursePricing variant="saas" {pricing} {labels} />
   </main>

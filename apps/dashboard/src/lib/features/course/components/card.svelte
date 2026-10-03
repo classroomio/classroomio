@@ -66,7 +66,7 @@
   } = $derived({
     id: course.id,
     slug: course.slug,
-    bannerImage: course.logo || DEFAULT_COURSE_BANNER_IMAGE,
+    bannerImage: course.bannerImage || DEFAULT_COURSE_BANNER_IMAGE,
     title: course.title,
     type: course.type,
     description: course.description,
@@ -249,7 +249,7 @@
       {@render actions()}
     {:else if !isOnLandingPage}
       {#if !isLMS}
-        <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} />
+        <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} studentCount={totalStudents} />
       {:else if showLmsPublicCourseMenu}
         <CardDropdown {id} {title} {description} {isPublished} courseType={type} {slug} lmsPublicQuickOnly={true} />
       {/if}

@@ -13,11 +13,12 @@ import type {
 import { and, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
+import { contentWriteBumpsTimestamp } from '@db/queries/course/content-timestamp';
 
 // Lesson Queries
-export async function getLessonsByCourseId(courseId: string) {
+export async function getLessonsByCourseId(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    return db.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseId));
+    return dbClient.select().from(schema.lesson).where(eq(schema.lesson.courseId, courseId));
   } catch (error) {
     console.error('getLessonsByCourseId error:', error);
     throw new Error(
@@ -167,9 +168,9 @@ export async function getLessonNavInfoByIds(lessonIds: string[]): Promise<Lesson
   }
 }
 
-export async function createLessons(values: TNewLesson[]) {
+export async function createLessons(values: TNewLesson[], dbClient: DbOrTxClient = db) {
   try {
-    return db.insert(schema.lesson).values(values).returning();
+    return await dbClient.insert(schema.lesson).values(values).returning();
   } catch (error) {
     console.error('createLessons error:', error);
     throw new Error(`Failed to create lessons: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -178,11 +179,11 @@ export async function createLessons(values: TNewLesson[]) {
 
 export async function updateLesson(lessonId: string, data: Partial<TLesson>, dbClient: DbOrTxClient = db) {
   try {
-    const [updated] = await dbClient
-      .update(schema.lesson)
-      .set({ ...data, updatedAt: new Date().toISOString() })
-      .where(eq(schema.lesson.id, lessonId))
-      .returning();
+    const fields = { ...data };
+    delete fields.updatedAt;
+    const fieldNames = Object.keys(fields);
+    const patch = contentWriteBumpsTimestamp(fieldNames) ? { ...fields, updatedAt: new Date().toISOString() } : fields;
+    const [updated] = await dbClient.update(schema.lesson).set(patch).where(eq(schema.lesson.id, lessonId)).returning();
     return updated || null;
   } catch (error) {
     console.error('updateLesson error:', error);
@@ -406,10 +407,10 @@ export async function upsertLessonCompletion(data: TNewLessonCompletion): Promis
 }
 
 // Lesson Language Queries
-export async function getLessonLanguagesByLessonIds(lessonIds: string[]) {
+export async function getLessonLanguagesByLessonIds(lessonIds: string[], dbClient: DbOrTxClient = db) {
   if (lessonIds.length === 0) return [];
   try {
-    return db.select().from(schema.lessonLanguage).where(inArray(schema.lessonLanguage.lessonId, lessonIds));
+    return dbClient.select().from(schema.lessonLanguage).where(inArray(schema.lessonLanguage.lessonId, lessonIds));
   } catch (error) {
     console.error('getLessonLanguagesByLessonIds error:', error);
     throw new Error(
@@ -418,10 +419,10 @@ export async function getLessonLanguagesByLessonIds(lessonIds: string[]) {
   }
 }
 
-export async function createLessonLanguages(values: TNewLessonLanguage[]) {
+export async function createLessonLanguages(values: TNewLessonLanguage[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
   try {
-    return db.insert(schema.lessonLanguage).values(values).returning();
+    return await dbClient.insert(schema.lessonLanguage).values(values).returning();
   } catch (error) {
     console.error('createLessonLanguages error:', error);
     throw new Error(`Failed to create lesson languages: ${error instanceof Error ? error.message : 'Unknown error'}`);

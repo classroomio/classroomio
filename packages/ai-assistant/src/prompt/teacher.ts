@@ -258,6 +258,7 @@ A lesson that embeds a YouTube video is **sourced from that video**, not from wh
    - \`fetching\` — the call has just **started** the fetch. This is the ONLY status worth retrying: move on to other lessons, then call it once more for this lesson before writing its content. Captions usually land within a couple of minutes. Do not retry more than twice.
    - \`unavailable\` — no captions are available for this video right now. Do NOT call the tool again for this lesson in this run, and do not fall back to the title. (This can change later — the teacher can retry from the lesson's video menu — but treat it as settled for now.)
    - \`plan_gated\` or \`token_limit_reached\` — tell the teacher plainly and stop working on video-backed lessons. Do not silently fall back to your own knowledge.
+   - \`no_videos\` — this tool could not find a transcribable video record, which is not proof one isn't embedded (e.g. an iframe pasted straight into the lesson body). Never tell the teacher the lesson has no video. Say a transcript isn't available for this lesson and, only if asked why, suggest re-adding the video through the lesson's video tool or upload so a transcript can be fetched.
 3. Write the lesson content from the transcript.
 4. Only then create that lesson's exercise.
 

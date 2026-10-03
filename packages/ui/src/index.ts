@@ -76,7 +76,7 @@ export {
 export * as ResourceListRow from './custom/resource-list-row';
 export { DocumentCard } from './custom/document-card';
 export * as ExerciseQuestion from './custom/exercise-question';
-export { QuestionTypePicker } from './custom/question-type-picker';
+export { QuestionTypePicker, QuestionTypeIcon } from './custom/question-type-picker';
 export { MediaPlayer } from './custom/media-player';
 export { MultiSelectList, type MultiSelectListItem } from './custom/multi-select-list';
 export { MentionPopover, type MentionItem } from './custom/mention-popover';
@@ -86,6 +86,7 @@ export { YoutubeLinkForm } from './custom/youtube-link-form';
 export { VimeoLinkForm } from './custom/vimeo-link-form';
 export { BackButton } from './custom/back-button';
 export { CourseCard, DEFAULT_COURSE_BANNER_IMAGE } from './custom/course-card';
+export { TemplateCard } from './custom/template-card';
 export { NewsfeedReactions } from './custom/newsfeed-reactions';
 export * as PublicCourse from './custom/public-course';
 export * as CommentTree from './custom/comment-tree';
@@ -94,3 +95,22 @@ export * as EmailPreview from './custom/email-preview';
 export * from './custom/animation';
 export { AttachmentList } from './custom/attachment-list';
 export type { AttachmentListFile, AttachmentListLabels, AttachmentListMode } from './custom/attachment-list';
+export {
+  SlideEmbedCard,
+  SlideEmbedFrame,
+  SlideEmbedPicker,
+  SlidePlatformIcon,
+  DEFAULT_SLIDE_EMBED_PICKER_LABELS
+} from './custom/slide-embed';
+export type { SlideEmbed, SlideEmbedCardLabels, SlideEmbedPickerLabels, SlidePlatformId } from './custom/slide-embed';
+export { AttentionHighlight, type AttentionHighlightProps } from './custom/attention-highlight';
+export { CircularProgress } from './custom/circular-progress';
+export {
+  PageOutline,
+  injectHeadingIds,
+  outlineFromSections,
+  slugifyHeading,
+  stripHtml,
+  withPageTitle
+} from './custom/page-outline';
+export type { PageOutlineHideBelow, PageOutlineItem, PageOutlineLevel } from './custom/page-outline';

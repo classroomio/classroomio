@@ -86,7 +86,7 @@ Read [references/media-and-linking.md](references/media-and-linking.md) whenever
 
 When capturing a new product screenshot, also read [references/screenshot-capture.md](references/screenshot-capture.md). It defines the required `1231 × 870` responsive viewport, TinySnap presentation, approved sky background, and visual references.
 
-Media is selected after the written procedure is known. Do not add a screenshot quota or use a video to compensate for missing written instructions.
+Every article includes one lead screenshot after the opening paragraph and before the first `##`. Choose any further screenshots after the written procedure is known. Do not add extra screenshots to fill space, and do not use a video to compensate for missing written instructions.
 
 If an article needs media that is not available, ask the user for it before treating the article as complete. Do not request screenshots as a list of unexplained UI labels. For every requested asset, state:
 

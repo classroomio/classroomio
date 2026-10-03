@@ -121,7 +121,6 @@ describe('formatCourseForWidget price', () => {
     title: 'My Course',
     description: 'A course',
     bannerImage: null,
-    logo: null,
     isPublished: true,
     currency: 'USD',
     lessonCount: 10,

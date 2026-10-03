@@ -25,7 +25,7 @@ Add video when motion or continuity is the main source of difficulty:
 
 Use a diagram for relationships, lifecycle, inheritance, or branching that requires several paragraphs to explain. Do not use a diagram for a linear three-step task.
 
-There is no image or video quota. A short answer may need no media; a visual builder may need a screenshot for most major states.
+Every help article has one lead screenshot. Further screenshots are added only where a step needs them. A short answer does not get extra images to fill space, and a video does not replace the lead screenshot or the written steps.
 
 ## Request missing media with context
 
@@ -48,7 +48,23 @@ If one requested image would contain several small or distant targets, ask for s
 
 ## Screenshot placement
 
-Place a screenshot after the sentence or step that tells the reader what to do, and before the next step. The reader should know what they are looking for before seeing it.
+### Lead screenshot
+
+After the opening paragraph, and before the first `##`, place one screenshot that summarizes the article title. The frontmatter description and the opening paragraph stay above it. Show the screen where the feature is the subject, already open or selected. Leave this image unmarked: no arrow, outline, number, or other annotation. Save it as `overview.webp` in that article's image folder.
+
+```mdx
+To start a course from a template, open **Courses**, pick a template, and click **Use template**.
+
+![Courses page with the Create a new course row](./images/create-a-course-from-a-template/overview.webp)
+
+## Before you start
+```
+
+Capture and frame it with `skills/add-docs-image/SKILL.md`.
+
+### Step screenshots
+
+Place a step screenshot after the sentence or step that tells the reader what to do, and before the next step. The reader should know what they are looking for before seeing it.
 
 Good sequence:
 
@@ -62,10 +78,11 @@ Under **Lesson completion**, select **Manual**, **Video watch**, or **None**.
 
 Do not:
 
-- open an article with a screenshot before explaining its purpose;
+- put the lead screenshot above the opening paragraph, or put any other image before the first `##`;
+- mark the lead screenshot with an arrow, outline, or number;
 - place several screenshots together with no text between them;
 - put required instructions only in a caption or annotation;
-- use a full-page screenshot when the relevant control is a small unreadable detail;
+- capture more than one 1350×830 screen, or crop the app down to a control, when the reader needs to see where that control sits;
 - repeat the same screenshot in multiple articles when a canonical guide can be linked.
 
 For before/after states, label each state in the surrounding text and keep the images adjacent to their explanations. Avoid side-by-side layouts when either image becomes illegible on mobile.
@@ -77,7 +94,7 @@ Capture a real, current ClassroomIO state using demo data.
 For a new product capture, follow [screenshot-capture.md](screenshot-capture.md). Use its standard `1231 × 870` source viewport and approved TinySnap background so screenshots remain visually consistent across the Help Center.
 
 - Show enough product chrome to orient the reader: page title, relevant sidebar item, tab, or modal title.
-- Crop unrelated browser chrome and empty space.
+- Capture one screen at 1350×830, not a full-page screenshot of the scrolled document. Leave out the real browser's tabs and address bar, since the browser-board frame draws its own, but never crop the app's UI down to a control or panel. Take that screen with the steps in `skills/add-docs-image/SKILL.md`.
 - Use the normal desktop layout unless the article is specifically about mobile.
 - Use a consistent theme within one article.
 - Close unrelated menus, notifications, debug panels, and extensions.
@@ -89,7 +106,7 @@ For a new product capture, follow [screenshot-capture.md](screenshot-capture.md)
 Annotations:
 
 - Prefer the product's own focus, selected, open, or error state.
-- Add one restrained arrow or outline only when the target is still ambiguous.
+- Add one restrained arrow or outline when the target is still ambiguous. Point to the control on the 1350×830 screen; do not crop to it.
 - Use numbered markers only when the prose refers to several targets in a defined order.
 - Do not cover labels, values, or error text.
 - Keep annotation color and style consistent across the help center.
@@ -119,9 +136,10 @@ Image requirements:
 
 - WebP for ordinary product screenshots.
 - Kebab-case filename describing the state or action, not `screenshot-1`.
-- Capture the product at the standard `1231 × 870` viewport. TinySnap can add padding around that viewport, so its exported canvas may be larger.
-- After TinySnap export, cap the article asset at 1280 pixels wide unless small text genuinely requires more; never upscale.
-- Use about 80 quality, strip metadata, and inspect the result for text artifacts.
+- Capture the product at the standard `1231 × 870` viewport described in [screenshot-capture.md](screenshot-capture.md). TinySnap can add padding around that viewport, so its exported canvas may be larger.
+- Frame product screenshots with the TinySnap presentation in [screenshot-capture.md](screenshot-capture.md). For an unframed image, use about 80 quality.
+- After export, cap the article asset at 1280 pixels wide unless small text genuinely requires more; never upscale.
+- Strip metadata and inspect the result for text artifacts.
 - Keep the source aspect ratio.
 - Avoid animated GIFs. Use video for meaningful motion or a static frame for one state.
 

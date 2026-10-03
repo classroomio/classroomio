@@ -78,7 +78,7 @@ export function getCourseSections(course: Course): LandingPageSection[] {
   return [
     {
       id: 'ungrouped',
-      title: course.title ?? 'Lessons',
+      title: course.title ?? t.get('course.navItem.landing_page.lessons'),
       lessons: getLessonsFromItems(course.content.items),
       exerciseCount: getExerciseCountFromItems(course.content.items)
     }
@@ -89,6 +89,10 @@ export function getTotalLessons(sections: LandingPageSection[]) {
   return sections.reduce((total, section) => {
     return total + section.lessons.length;
   }, 0);
+}
+
+export function resolveCourseNavHref(href: string) {
+  return href.startsWith('#') ? `/${href}` : href;
 }
 
 export function filterNavItems(course: Course, reviews: Review[]) {
@@ -116,8 +120,9 @@ export function buildCourseLandingPageProps(
   org: AccountOrg | PublicOrg,
   options: {
     enrollHref: string;
-    enrollDisabled: boolean;
+    enrollDisabled?: boolean;
     authAction?: { label: string; href: string };
+    learnerAccount?: CourseLandingPageProps['learnerAccount'];
     onPaidEnrollClick?: (event: MouseEvent) => void;
   }
 ): CourseLandingPageProps {
@@ -140,8 +145,9 @@ export function buildCourseLandingPageProps(
 
   const hasCertificate = Boolean(metadata?.certificate?.templateUrl || course.certificate?.design?.templateId);
 
-  const courseTypeLabel =
-    course.type === 'LIVE_CLASS' ? 'Live class' : course.type === 'COMPLIANCE' ? 'Compliance' : 'Self-paced';
+  const courseTypeLabel = course.type
+    ? t.get(`analytics.popularTypes.types.${course.type}`)
+    : t.get('course.navItem.settings.self_paced');
 
   const includeRequirement = isVisible(NAV_ITEM_KEY.REQUIREMENT) && Boolean(metadata?.requirements);
   const includeDescription = isVisible(NAV_ITEM_KEY.DESCRIPTION) && Boolean(metadata?.description);
@@ -159,9 +165,16 @@ export function buildCourseLandingPageProps(
   };
 
   const stats = [
-    { label: 'Lessons', value: totalLessons.toString() },
-    averageRating !== undefined ? { label: 'Rating', value: averageRating.toFixed(1) } : null,
-    hasCertificate ? { label: 'Certificate', value: 'Included' } : null
+    { label: t.get('course.navItem.landing_page.lessons'), value: totalLessons.toString() },
+    averageRating !== undefined
+      ? { label: t.get('course.navItem.landing_page.editor.reviews_form.rating'), value: averageRating.toFixed(1) }
+      : null,
+    hasCertificate
+      ? {
+          label: t.get('course.navItem.landing_page.certificate'),
+          value: t.get('common.restricted_page.included')
+        }
+      : null
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   const calculatedCost = calcCourseCost(course);
@@ -175,8 +188,9 @@ export function buildCourseLandingPageProps(
     theme: landing.theme as OrgLandingPageTheme,
     orgName: org.name ?? '',
     logoUrl: org.avatarUrl ?? undefined,
-    navItems: landing.navItems,
+    navItems: landing.navItems.map((item) => ({ ...item, href: resolveCourseNavHref(item.href) })),
     authAction: options.authAction,
+    learnerAccount: options.learnerAccount,
     hero: {
       heading: course.title ?? landing.hero.heading,
       subheading: course.description ?? landing.hero.subheading,
@@ -186,8 +200,8 @@ export function buildCourseLandingPageProps(
         onclick: paidEnrollClick,
         disabled: options.enrollDisabled
       },
-      secondaryAction: { label: 'View curriculum', href: '#curriculum' },
-      image: course.logo || undefined,
+      secondaryAction: { label: t.get('course.navItem.landing_page.course_content'), href: '#curriculum' },
+      image: course.bannerImage || undefined,
       stats,
       eyebrow: landing.hero.eyebrow
     },
@@ -207,10 +221,10 @@ export function buildCourseLandingPageProps(
       grouped: course.content?.grouped ?? false,
       sections: sections.map((section) => ({
         id: section.id,
-        title: section.title ?? 'Lessons',
+        title: section.title ?? t.get('course.navItem.landing_page.lessons'),
         lessons: section.lessons.map((lesson) => ({
           id: lesson.id,
-          title: lesson.title ?? 'Untitled lesson'
+          title: lesson.title ?? t.get('common.restricted_page.untitled_lesson')
         })),
         exerciseCount: section.exerciseCount
       }))
@@ -252,6 +266,34 @@ export function buildCourseLandingPageProps(
       ctaDisabled: options.enrollDisabled,
       reward: metadata?.reward?.show ? { show: true, description: metadata.reward.description ?? '' } : undefined
     },
-    footer: landing.footer
+    footer: landing.footer,
+    labels: {
+      socialProofRatingLabel: t.get('course.navItem.landing_page.editor.reviews_form.rating'),
+      socialProofLessonsLabel: t.get('course.navItem.landing_page.lessons'),
+      socialProofTypeLabel: t.get('common.restricted_page.format'),
+      socialProofCertificateLabel: t.get('course.navItem.landing_page.certificate'),
+      curriculumEyebrow: t.get('course.navItem.landing_page.editor.title.curriculum'),
+      curriculumHeading: t.get('course.navItem.landing_page.course_content'),
+      lessonsLabel: (count) => t.get('courses.course_card.lessons_count', { count }),
+      exercisesLabel: (count) => t.get('courses.course_card.exercises_count', { count }),
+      infoRequirementsHeading: t.get('course.navItem.landing_page.requirement'),
+      infoDescriptionHeading: t.get('course.navItem.landing_page.description'),
+      infoGoalsHeading: t.get('course.navItem.landing_page.learn'),
+      infoCertificateHeading: t.get('course.navItem.landing_page.certificate'),
+      instructorEyebrow: t.get('course.navItem.landing_page.instructor'),
+      instructorHeading: t.get('course.navItem.landing_page.instructor'),
+      reviewsEyebrow: t.get('course.navItem.landing_page.reviews'),
+      reviewsHeading: t.get('course.navItem.landing_page.reviews'),
+      pricingEyebrow: t.get('course.navItem.landing_page.pricing_section.enroll'),
+      freeLabel: t.get('course.navItem.landing_page.pricing_section.free'),
+      navAboutLabel: t.get('course.navItem.landing_page.editor.title.description'),
+      navCurriculumLabel: t.get('course.navItem.landing_page.editor.title.curriculum'),
+      navSkillsLabel: t.get('course.navItem.landing_page.editor.title.skills'),
+      navInstructorLabel: t.get('course.navItem.landing_page.editor.title.instructor'),
+      navReviewsLabel: t.get('course.navItem.landing_page.editor.title.reviews'),
+      navPricingLabel: t.get('course.navItem.landing_page.editor.title.pricing'),
+      factExercisesLabel: t.get('course.navItem.landing_page.exercises'),
+      factIncludedLabel: t.get('common.restricted_page.included')
+    }
   };
 }

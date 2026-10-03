@@ -41,9 +41,9 @@
     colorTo="color-mix(in oklab, var(--landing-accent) 65%, white)"
   />
   <div class="ui:flex ui:h-full ui:flex-col ui:@lg:flex-row ui:gap-6">
-    {#if course.logo}
+    {#if course.bannerImage}
       <img
-        src={course.logo}
+        src={course.bannerImage}
         alt={course.title}
         class="ui:w-full ui:@lg:w-48 ui:@lg:shrink-0 ui:h-48 ui:object-cover ui:rounded-2xl ui:group-hover:scale-[1.02] ui:transition-transform ui:duration-500"
       />

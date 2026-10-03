@@ -1,0 +1,2 @@
+export interface PopoverProps { trigger: React.ReactNode; children?: React.ReactNode; align?: 'start'|'center'|'end'; width?: number; defaultOpen?: boolean; style?: React.CSSProperties; }
+export declare function Popover(props: PopoverProps): JSX.Element;

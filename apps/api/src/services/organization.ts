@@ -390,7 +390,17 @@ export async function getOrganizationCourses(
       throw new AppError('Invalid permissions', ErrorCodes.UNAUTHORIZED, 403);
     }
 
-    const { page, limit, search } = query;
+    const { page, limit, search, type, status, sort, order } = query;
+    const listQuery = {
+      page,
+      limit,
+      search,
+      tags: query.tags,
+      type,
+      status,
+      sort,
+      order
+    };
     const tagSlugs = query.tags
       ?.split(',')
       .map((value) => value.trim())
@@ -408,12 +418,7 @@ export async function getOrganizationCourses(
             total: 0,
             totalPages: 0
           },
-          query: {
-            page,
-            limit,
-            search,
-            tags: query.tags
-          }
+          query: listQuery
         };
       }
     }
@@ -425,7 +430,11 @@ export async function getOrganizationCourses(
           courseIds: filteredCourseIds,
           page,
           limit,
-          search
+          search,
+          type,
+          publishedStatus: status,
+          sortKey: sort,
+          order
         });
         const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
           orgId,
@@ -443,12 +452,7 @@ export async function getOrganizationCourses(
             total: courses.total,
             totalPages: courses.totalPages
           },
-          query: {
-            page,
-            limit,
-            search,
-            tags: query.tags
-          }
+          query: listQuery
         };
       }
       case ROLE.TUTOR: {
@@ -458,7 +462,11 @@ export async function getOrganizationCourses(
           courseIds: filteredCourseIds,
           page,
           limit,
-          search
+          search,
+          type,
+          publishedStatus: status,
+          sortKey: sort,
+          order
         });
         const tagsByCourseId = await getCourseTagsByCourseIdsForOrganization(
           orgId,
@@ -476,12 +484,7 @@ export async function getOrganizationCourses(
             total: courses.total,
             totalPages: courses.totalPages
           },
-          query: {
-            page,
-            limit,
-            search,
-            tags: query.tags
-          }
+          query: listQuery
         };
       }
       default:

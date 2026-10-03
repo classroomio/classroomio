@@ -192,7 +192,7 @@ export async function updateCourseLandingPageService(
 
   const imageUrl = await resolveLandingPageImage(nextTitle, payload);
 
-  const updatedCourse = await updateCourse(courseId, {
+  const { course: updatedCourse } = await updateCourse(courseId, {
     title: payload.title,
     description: payload.description,
     overview: payload.overview,
@@ -204,7 +204,7 @@ export async function updateCourseLandingPageService(
           reviews: normalizeReviews(metadata.reviews)
         }
       : undefined,
-    ...(imageUrl ? { logo: imageUrl, bannerImage: imageUrl } : {})
+    ...(imageUrl ? { bannerImage: imageUrl } : {})
   });
 
   const organizationId = await getCourseOrganizationId(courseId);
@@ -217,6 +217,6 @@ export async function updateCourseLandingPageService(
   return {
     course: updatedCourse,
     courseUrl,
-    bannerImageUrl: updatedCourse.logo || imageUrl || null
+    bannerImageUrl: updatedCourse.bannerImage || imageUrl || null
   };
 }

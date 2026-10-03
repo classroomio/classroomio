@@ -2,6 +2,10 @@ import { baseTokenVars, type LandingThemeVars } from '../theme-vars-base';
 
 export const vars: LandingThemeVars = {
   ...baseTokenVars,
+  '--landing-button-secondary-bg': 'transparent',
+  '--landing-button-secondary-fg': 'var(--landing-accent-fg)',
+  '--landing-button-secondary-border': 'var(--landing-accent-fg)',
+  '--landing-button-secondary-bg-hover': 'color-mix(in oklab, var(--landing-accent-fg) 10%, transparent)',
   '--landing-heading-weight': '800',
   '--landing-heading-tracking': '-0.01em',
   '--landing-eyebrow-tracking': '0.18em',

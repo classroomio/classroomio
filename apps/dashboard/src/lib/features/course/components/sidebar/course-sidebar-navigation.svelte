@@ -26,6 +26,7 @@
   } from '@cio/ui/custom/moving-icons';
   import { ContentType } from '@cio/utils/constants/content';
   import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
+  import { openAddContentModal } from '$features/course/components/content/open-content-create';
   import { getCourseContent } from '$features/course/utils/content';
   import CourseContentTree from './course-content-tree.svelte';
   import ContentCountBadges from '../content-count-badges.svelte';
@@ -115,6 +116,7 @@
         url: getNavItemRoute(id, 'analytics'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'analytics'),
         show() {
+          if (courseApi.course?.isTemplate) return false;
           return !isStudent;
         },
         icon: getNavIcon(NAV_IDS.ANALYTICS)
@@ -136,6 +138,7 @@
         url: getNavItemRoute(id, 'submissions'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'submissions'),
         show() {
+          if (courseApi.course?.isTemplate) return false;
           if (isStudent) return false;
           return true;
         },
@@ -147,6 +150,7 @@
         url: getNavItemRoute(id, 'marks'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'marks'),
         show() {
+          if (courseApi.course?.isTemplate) return false;
           return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
         },
         icon: getNavIcon(NAV_IDS.MARKS)
@@ -177,6 +181,7 @@
         url: getNavItemRoute(id, 'people'),
         isActive: (path || page.url.pathname) === getNavItemRoute(id, 'people'),
         show() {
+          if (courseApi.course?.isTemplate) return false;
           return !isStudent;
         },
         icon: getNavIcon(NAV_IDS.PEOPLE)
@@ -211,22 +216,6 @@
 
     void complianceApi.ensureLearnerHistory(courseApi.course.id, $profile.id);
   });
-
-  function openContentModal(courseId: string, sectionId = '') {
-    goto(resolve(`/courses/${courseId}/lessons`, {}));
-    contentEditingStore.set(undefined);
-    contentCreateStoreUtils.close();
-
-    const contentGroupingEnabled = courseApi.course?.metadata?.isContentGroupingEnabled ?? true;
-
-    if (sectionId) {
-      contentCreateStoreUtils.openContentUnit(sectionId);
-    } else if (contentGroupingEnabled) {
-      contentCreateStoreUtils.openSection();
-    } else {
-      contentCreateStoreUtils.openDefault();
-    }
-  }
 
   function openSectionEditor(courseId: string, sectionId: string) {
     goto(resolve(`/courses/${courseId}/lessons`, {}));
@@ -305,7 +294,7 @@
 </script>
 
 <Sidebar.Group class="pt-0!">
-  <BackButton href={resolve(coursesListPath, {})} label={$t('org_navigation.courses')} class="px-2! py-2!" />
+  <BackButton href={resolve(coursesListPath, {})} label={$t('org_navigation.exit_course')} class="px-2! py-2!" />
 
   {#if showComplianceBanner}
     <div
@@ -360,10 +349,14 @@
                           variant="ghost-outline"
                           size="icon-xs"
                           class="transition-opacity duration-150 {isHovered ? 'opacity-100' : 'opacity-0'}"
+                          aria-label={$t('course.navItem.lessons.add_content')}
+                          aria-keyshortcuts="Control+Shift+N"
+                          tooltip={$t('course.navItem.lessons.add_content')}
+                          shortcut={['Ctrl', '⇧', 'N']}
                           onclick={(event) => {
                             event.preventDefault();
                             event.stopPropagation();
-                            openContentModal(id);
+                            openAddContentModal(id);
                           }}
                         >
                           <Plus size={8} />
@@ -391,7 +384,7 @@
               {id}
               {isStudent}
               className="mt-1 ml-2"
-              onOpenContentModal={isStudent ? undefined : (sectionId) => openContentModal(id, sectionId)}
+              onOpenContentModal={isStudent ? undefined : (sectionId) => openAddContentModal(id, sectionId)}
               onEditSection={isStudent ? undefined : (sectionId) => openSectionEditor(id, sectionId)}
             />
           {/if}

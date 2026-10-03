@@ -88,7 +88,7 @@ The first paragraph must work as a search-result answer and support-agent excerp
 - Answer the title in the first sentence.
 - Identify the result and the most important boundary.
 - Keep it to one or two short sentences.
-- Do not place an image, video, manual table of contents, or generic overview before the answer.
+- Do not place an image, video, manual table of contents, or generic overview before this paragraph. The article's one lead screenshot comes immediately after it and before the first `##`.
 
 For troubleshooting, list the most likely causes immediately. For a task, state what completing the task changes. For a reference page, state the decision the concept controls.
 

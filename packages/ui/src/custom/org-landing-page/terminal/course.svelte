@@ -28,7 +28,8 @@
     reviews,
     pricing,
     footer,
-    labels
+    labels,
+    learnerAccount
   }: CourseLandingPageProps = $props();
 
   const heroProps = $derived(alignHeroCtaWithPricing(hero, pricing));
@@ -41,7 +42,7 @@
   <main>
     <TerminalHero {orgName} hero={heroProps} courses={[]}>
       {#snippet navigation()}
-        <TerminalNav {orgName} {logoUrl} {navItems} {authAction} />
+        <TerminalNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}
     </TerminalHero>
 
@@ -52,7 +53,7 @@
     {#if chips}
       <CourseChips variant="terminal" {chips} {labels} />
     {/if}
-    <CourseInstructor variant="terminal" {instructor} {labels} />
+    <CourseInstructor variant="terminal" {instructor} {logoUrl} {labels} />
     <CourseReviews variant="terminal" {reviews} {labels} />
     <CoursePricing variant="terminal" {pricing} {labels} />
   </main>

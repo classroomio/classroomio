@@ -50,7 +50,7 @@
     "dist"
   ],
   "scripts": {
-    "prebuild": "pnpm --filter @cio/question-types run build && pnpm --filter @cio/utils run build && pnpm --filter @cio/email run build",
+    "prebuild": "pnpm --filter @cio/question-types run build && pnpm --filter @cio/utils run build && pnpm --filter @cio/jobs run build && pnpm --filter @cio/email run build",
     "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",
     "dev": "tsc --watch",
     "db": "drizzle-kit",
@@ -58,7 +58,7 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:baseline": "tsx src/scripts/baseline.ts",
-    "db:reset": "tsx src/scripts/db-reset.ts --skip-seed",
+    "db:reset": "tsx src/scripts/db-reset.ts",
     "db:setup": "tsx src/scripts/db-setup.ts",
     "db:setup:seed": "tsx src/scripts/db-setup.ts --seed",
     "db:exercise-backfill": "tsx src/scripts/backfill-exercise-course.ts",
@@ -68,6 +68,7 @@
     "db:rewrite-media-host": "tsx src/scripts/rewrite-media-host.ts",
     "db:login-link": "tsx src/scripts/generate-login-link.ts",
     "db:seed:coursera-students": "tsx src/scripts/seed-coursera-audience-students.ts",
+    "db:seed:platform-templates": "tsx src/scripts/seed-platform-templates.ts",
     "db:create-org": "tsx src/scripts/create-org-with-admin.ts",
     "db:sync-orphaned-profiles": "tsx src/scripts/sync-orphaned-profiles.ts",
     "db:backfill-profile-email-verification": "tsx src/scripts/backfill-profile-email-verification.ts",
@@ -92,6 +93,8 @@
     "db:restore-organizationmember-from-dump": "tsx src/scripts/restore-organizationmember-from-dump.ts",
     "db:disable-v1-content-grouping-from-dump": "tsx src/scripts/disable-v1-content-grouping-from-dump.ts",
     "db:fix-landing-courses": "tsx src/scripts/fix-landing-page-courses-links.ts",
+    "db:migrate-course-logo-to-banner-image": "tsx src/scripts/migrate-course-logo-to-banner-image.ts",
+    "db:remove-landing-contact": "tsx src/scripts/remove-landing-page-contact-nav.ts",
     "db:migrate-landing-primary-action": "tsx src/scripts/migrate-landing-page-primary-action.ts"
   },
   "dependencies": {

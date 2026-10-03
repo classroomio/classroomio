@@ -12,13 +12,15 @@ import {
   pgEnum,
   pgTable,
   pgView,
+  primaryKey,
   serial,
   text,
   timestamp,
   unique,
   uniqueIndex,
   uuid,
-  varchar
+  varchar,
+  type AnyPgColumn
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
@@ -27,7 +29,7 @@ import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version'
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
-export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
+export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr']);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
@@ -306,18 +308,28 @@ export const analyticsCountryDaily = pgTable(
   ]
 );
 
-export const courseSection = pgTable('course_section', {
-  id: uuid().defaultRandom().primaryKey().notNull(),
-  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-  updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
-  title: varchar(),
-  // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-  order: bigint({ mode: 'number' }).default(sql`'0'`),
-  courseId: uuid('course_id').references(() => course.id, {
-    onDelete: 'cascade',
-    onUpdate: 'cascade'
-  })
-});
+export const courseSection = pgTable(
+  'course_section',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
+    title: varchar(),
+    // You can use { mode: "bigint" } if numbers are exceeding js number limitations
+    order: bigint({ mode: 'number' }).notNull(),
+    courseId: uuid('course_id').references(() => course.id, {
+      onDelete: 'cascade',
+      onUpdate: 'cascade'
+    }),
+    sourceId: uuid('source_id').references((): AnyPgColumn => courseSection.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    index('course_section_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
+  ]
+);
 
 export const group = pgTable(
   'group',
@@ -672,7 +684,10 @@ export const course = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     groupId: uuid('group_id'),
-    isTemplate: boolean('is_template').default(true),
+    isTemplate: boolean('is_template').default(false).notNull(),
+    templateId: uuid('template_id').references((): AnyPgColumn => course.id, { onDelete: 'set null' }),
+    publicForAll: boolean('public_for_all').default(false).notNull(),
+    seedKey: varchar('seed_key'),
     logo: text().default('').notNull(),
     slug: varchar(),
     metadata: jsonb().default({ goals: '', description: '', requirements: '' }).notNull().$type<{
@@ -718,6 +733,8 @@ export const course = pgTable(
       allowSelfEnrollment?: boolean;
       /** @deprecated Read-only legacy key; use `allowSelfEnrollment`. Kept because there is no backfill. */
       allowNewStudent?: boolean;
+      /** When true, public lesson pages expose a Copy Page / Markdown export surface. Off by default. */
+      allowMarkdownExport?: boolean;
       /** Teacher-authored HTML sent in the welcome email after a student enrolls. */
       welcomeEmailMessage?: string | null;
       /** IANA timezone for this course's live sessions (display + scheduling). */
@@ -805,8 +822,40 @@ export const course = pgTable(
       name: 'course_group_id_fkey'
     }),
     unique('course_slug_key').on(table.slug),
-    index('idx_course_group_id').on(table.groupId)
+    index('idx_course_group_id').on(table.groupId),
+    index('course_template_id_idx')
+      .on(table.templateId)
+      .where(sql`${table.templateId} is not null`),
+    uniqueIndex('course_seed_key_unique')
+      .on(table.seedKey)
+      .where(sql`${table.seedKey} is not null`)
   ]
+);
+
+export const templateHighlight = pgTable(
+  'template_highlight',
+  {
+    id: uuid().defaultRandom().primaryKey(),
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    position: integer().notNull(),
+    title: varchar({ length: 80 }).notNull(),
+    description: varchar({ length: 200 })
+  },
+  (table) => [index('template_highlight_course_id_idx').on(table.courseId)]
+);
+
+export const courseTemplateSettingSync = pgTable(
+  'course_template_setting_sync',
+  {
+    courseId: uuid('course_id')
+      .notNull()
+      .references(() => course.id, { onDelete: 'cascade' }),
+    settingKey: varchar('setting_key').notNull(),
+    syncedAt: timestamp('synced_at', { withTimezone: true, mode: 'string' }).notNull()
+  },
+  (table) => [primaryKey({ columns: [table.courseId, table.settingKey] })]
 );
 
 export const courseCompletionRecord = pgTable(
@@ -1003,6 +1052,23 @@ export const lesson = pgTable(
     note: varchar(),
     videoUrl: varchar('video_url'),
     slideUrl: varchar('slide_url'),
+    slides: jsonb().default([]).$type<
+      {
+        id: string;
+        src: string;
+        platform:
+          | 'google-slides'
+          | 'canva'
+          | 'powerpoint'
+          | 'keynote'
+          | 'figma'
+          | 'prezi'
+          | 'pitch'
+          | 'gamma'
+          | 'slideshare'
+          | 'beautiful';
+      }[]
+    >(),
     courseId: uuid('course_id').notNull(),
     id: uuid()
       .default(sql`gen_random_uuid()`)
@@ -1017,7 +1083,7 @@ export const lesson = pgTable(
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }),
+    order: bigint({ mode: 'number' }).notNull(),
     isUnlocked: boolean('is_unlocked').default(true),
     completionPolicy: varchar('completion_policy').default('manual').notNull(),
     videoWatchThreshold: integer('video_watch_threshold').default(95),
@@ -1058,7 +1124,9 @@ export const lesson = pgTable(
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-    slug: varchar()
+    slug: varchar(),
+    sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1071,7 +1139,10 @@ export const lesson = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_teacher_id_fkey'
     }),
-    index('idx_lesson_course_slug').on(table.courseId, table.slug)
+    index('idx_lesson_course_slug').on(table.courseId, table.slug),
+    index('lesson_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
   ]
 );
 
@@ -1226,11 +1297,12 @@ export const exercise = pgTable(
   {
     title: varchar().notNull(),
     description: varchar(),
+    // @deprecated - we no longer support exercises belonging to a lesson
     lessonId: uuid('lesson_id'),
     courseId: uuid('course_id'),
     sectionId: uuid('section_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
-    order: bigint({ mode: 'number' }),
+    order: bigint({ mode: 'number' }).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow(),
     id: uuid()
@@ -1243,7 +1315,9 @@ export const exercise = pgTable(
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
     completionPolicy: varchar('completion_policy').default('submitted').notNull(),
     passThreshold: integer('pass_threshold'),
-    slug: varchar()
+    slug: varchar(),
+    sourceId: uuid('source_id').references((): AnyPgColumn => exercise.id, { onDelete: 'set null' }),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -1261,7 +1335,10 @@ export const exercise = pgTable(
       foreignColumns: [courseSection.id],
       name: 'exercise_section_id_fkey'
     }),
-    index('idx_exercise_course_slug').on(table.courseId, table.slug)
+    index('idx_exercise_course_slug').on(table.courseId, table.slug),
+    index('exercise_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
   ]
 );
 
@@ -1864,7 +1941,8 @@ export const lessonLanguage = pgTable(
     }),
     content: text(),
     lessonId: uuid('lesson_id').defaultRandom(),
-    locale: locale().default('en')
+    locale: locale().default('en'),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
   (table) => [
     foreignKey({
@@ -2185,6 +2263,10 @@ export const organization = pgTable(
         inviteOnly?: boolean;
       };
       internalEnrollmentOnly?: boolean;
+      language?: {
+        locale?: (typeof locale.enumValues)[number];
+        enforced?: boolean;
+      };
       studentLimitNotified?: {
         half?: boolean;
         reached?: boolean;
@@ -4081,5 +4163,112 @@ export const deadLetterJob = pgTable(
   (table) => [
     index('idx_dead_letter_job_domain_created').on(table.domain, table.createdAt),
     index('idx_dead_letter_job_org_created').on(table.organizationId, table.createdAt)
+  ]
+);
+
+export const contentReportTargetType = pgEnum('CONTENT_REPORT_TARGET_TYPE', [
+  'course_newsfeed_post',
+  'course_newsfeed_comment',
+  'cohort_newsfeed_post',
+  'cohort_newsfeed_comment',
+  'community_question',
+  'community_answer',
+  'lesson_comment',
+  'profile'
+]);
+
+export const contentReportReason = pgEnum('CONTENT_REPORT_REASON', [
+  'spam',
+  'harassment',
+  'hate_speech',
+  'sexual_content',
+  'violence',
+  'misinformation',
+  'privacy',
+  'other'
+]);
+
+export const contentReportStatus = pgEnum('CONTENT_REPORT_STATUS', ['open', 'in_review', 'actioned', 'dismissed']);
+
+export const contentReportResolutionCode = pgEnum('CONTENT_REPORT_RESOLUTION_CODE', [
+  'removed',
+  'warned',
+  'restricted',
+  'no_action',
+  'duplicate'
+]);
+
+/**
+ * `content_report` — user-submitted flags of UGC for platform review.
+ * Email alerts notify ops; this row is the source of truth, including a
+ * snapshot of the reported content so evidence survives hard-deletes.
+ */
+export const contentReport = pgTable(
+  'content_report',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id').notNull(),
+    reporterId: uuid('reporter_id'),
+    targetType: contentReportTargetType('target_type').notNull(),
+    targetId: text('target_id').notNull(),
+    targetAuthorId: uuid('target_author_id'),
+    reason: contentReportReason().notNull(),
+    details: text(),
+    status: contentReportStatus().default('open').notNull(),
+    priority: integer().default(2).notNull(),
+    contentSnapshot: jsonb('content_snapshot')
+      .$type<{
+        text: string;
+        title?: string | null;
+        authorId: string | null;
+        authorName: string | null;
+        surface: string;
+        url?: string | null;
+        capturedAt: string;
+      }>()
+      .notNull(),
+    assignedTo: uuid('assigned_to'),
+    resolutionCode: contentReportResolutionCode('resolution_code'),
+    resolutionNote: text('resolution_note'),
+    reviewedBy: uuid('reviewed_by'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    resolvedAt: timestamp('resolved_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'content_report_organization_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.reporterId],
+      foreignColumns: [profile.id],
+      name: 'content_report_reporter_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.targetAuthorId],
+      foreignColumns: [profile.id],
+      name: 'content_report_target_author_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.assignedTo],
+      foreignColumns: [profile.id],
+      name: 'content_report_assigned_to_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.reviewedBy],
+      foreignColumns: [profile.id],
+      name: 'content_report_reviewed_by_fkey'
+    }).onDelete('set null'),
+    index('idx_content_report_status_priority_created').on(table.status, table.priority, table.createdAt),
+    index('idx_content_report_org_created').on(table.organizationId, table.createdAt),
+    index('idx_content_report_target').on(table.targetType, table.targetId),
+    uniqueIndex('content_report_reporter_target_open_unique')
+      .on(table.organizationId, table.reporterId, table.targetType, table.targetId)
+      .where(sql`${table.reporterId} IS NOT NULL AND ${table.status} IN ('open', 'in_review')`)
   ]
 );

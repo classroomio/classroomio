@@ -48,7 +48,7 @@
     filteredCourses.map((item) => ({
       id: item.course.id,
       slug: item.course.slug ?? '',
-      logo: item.course.coverImage,
+      bannerImage: item.course.coverImage,
       title: item.course.title ?? '',
       description: item.course.description ?? '',
       lessonCount: 0,

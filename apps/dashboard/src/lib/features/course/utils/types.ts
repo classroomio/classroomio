@@ -1,6 +1,15 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 import type { TCourseInvitePreset } from '@cio/utils/validation/course/invite';
 import type { TLocale } from '@cio/db/types';
+import type { NonAutoGradableQuestionOffender } from '@cio/utils/validation/course';
+import type {
+  TCoursePeopleActivityWindow,
+  TCoursePeopleEnrolledWindow,
+  TCoursePeopleMembership,
+  TCoursePeopleProgress,
+  TCoursePeopleSortBy,
+  TCoursePeopleSortOrder
+} from '@cio/utils/validation/course/people';
 
 // List lessons types
 export type ListLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['$get'];
@@ -62,12 +71,6 @@ export type PromoteUngroupedSectionRequest =
 export type PromoteUngroupedSectionResponse = InferResponseType<PromoteUngroupedSectionRequest>;
 export type PromoteUngroupedSectionSuccess = Extract<PromoteUngroupedSectionResponse, { success: true }>;
 export type PromoteUngroupedSectionData = PromoteUngroupedSectionSuccess['data'];
-
-// Reorder lessons types
-export type ReorderLessonsRequest = (typeof classroomio.course)[':courseId']['lesson']['reorder']['$post'];
-export type ReorderLessonsResponse = InferResponseType<ReorderLessonsRequest>;
-export type ReorderLessonsSuccess = Extract<ReorderLessonsResponse, { success: true }>;
-export type ReorderLessonsData = ReorderLessonsSuccess['data'];
 
 // Course Section type (derived from Course API response which includes course_section array)
 // Since sections are returned as part of Course, we can use CreateCourseSectionData or UpdateCourseSectionData
@@ -207,6 +210,13 @@ export type Exercise = Omit<ApiExercise, 'courseId' | 'sectionId' | 'order'>;
 export type CreateExerciseRequest = (typeof classroomio.course)[':courseId']['exercise']['$post'];
 export type CreateExerciseFromTemplateRequest =
   (typeof classroomio.course)[':courseId']['exercise']['from-template']['$post'];
+
+export type CreateExerciseFromTemplateOptions = {
+  lessonId?: string;
+  sectionId?: string;
+  order: number;
+  silent?: boolean;
+};
 export type CreateExerciseFromTemplateResponse = InferResponseType<CreateExerciseFromTemplateRequest>;
 export type CreateExerciseFromTemplateSuccess = Extract<CreateExerciseFromTemplateResponse, { success: true }>;
 export type CreateExerciseFromTemplateData = CreateExerciseFromTemplateSuccess['data'];
@@ -380,7 +390,7 @@ export type CourseContent = NonNullable<ApiCourse['content']>;
 export type CourseContentSection = CourseContent['sections'][number];
 export type CourseContentItem = CourseContent['items'][number];
 
-export type Course = Omit<ApiCourse, 'metadata' | 'lessons' | 'sections' | 'exercises'> & {
+export type Course = Omit<ApiCourse, 'metadata' | 'lessons' | 'sections' | 'exercises' | 'logo'> & {
   metadata?: CourseMetadata | null;
   certificate?: CourseCertificate | null;
   content: CourseContent;
@@ -417,7 +427,22 @@ export type ListPeopleQuery = {
   limit: number;
   search?: string;
   roleId?: number;
+  sortBy: TCoursePeopleSortBy;
+  sortOrder: TCoursePeopleSortOrder;
+  progress?: TCoursePeopleProgress;
+  membership?: TCoursePeopleMembership;
+  enrolledWithin?: TCoursePeopleEnrolledWindow;
+  lastLoginBefore?: TCoursePeopleActivityWindow;
+  certificateEarned?: boolean;
 };
+
+export type CoursePeopleView =
+  | 'all'
+  | 'not_started'
+  | 'in_progress'
+  | 'completed'
+  | 'never_logged_in'
+  | 'awaiting_certificate';
 
 export type AddPeopleRequest = (typeof classroomio.course)[':courseId']['members']['$post'];
 export type AddPeopleResponse = InferResponseType<AddPeopleRequest>;
@@ -569,3 +594,75 @@ export type VideoRecordingUploadCompleteRequest =
   (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['question'][':questionId']['video-recording']['upload']['complete']['$post'];
 export type VideoRecordingPlaybackRequest =
   (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['submission'][':submissionId']['question'][':questionId']['video-recording']['playback']['$get'];
+
+// Public course conversion flow types
+export interface ExerciseConversionGroup {
+  exerciseId: string;
+  exerciseTitle: string;
+  questions: Array<{
+    questionId: string | number;
+    questionTitle: string;
+    typeId: number;
+  }>;
+}
+
+export interface PublicConversionCountdown {
+  totalExercises: number;
+  resolvedExercises: number;
+  remainingExercises: number;
+  totalQuestions: number;
+  resolvedQuestions: number;
+  remainingQuestions: number;
+  percentComplete: number;
+  isFullyResolved: boolean;
+}
+
+export interface PublicConversionPersistedState {
+  isActive: boolean;
+  courseId: string | null;
+  initialOffenders: NonAutoGradableQuestionOffender[];
+  offenders: NonAutoGradableQuestionOffender[];
+  resolvedExerciseIds: string[];
+}
+
+export type ListCourseTemplatesRequest = (typeof classroomio.course)['template']['$get'];
+export type ListCourseTemplatesSuccess = Extract<InferResponseType<ListCourseTemplatesRequest>, { success: true }>;
+export type CourseTemplateCards = ListCourseTemplatesSuccess['data'];
+export type CourseTemplateCard = CourseTemplateCards['org'][number];
+
+export type PreviewCourseTemplateRequest = (typeof classroomio.course)['template'][':templateId']['preview']['$get'];
+export type PreviewCourseTemplateSuccess = Extract<InferResponseType<PreviewCourseTemplateRequest>, { success: true }>;
+export type CourseTemplatePreviewSettings = {
+  certificate: boolean;
+  deadline: string | null;
+  threshold: number | null;
+  finalExercise: { title: string; score: number } | null;
+  sequential: boolean;
+  grading: boolean;
+  commentsOff: boolean;
+  lessonDownload: boolean;
+  selfEnrollment: boolean;
+  aiTutor: boolean;
+  compliance: { months: number; mandatory: boolean } | null;
+};
+export type CourseTemplatePreview = Omit<PreviewCourseTemplateSuccess['data'], 'settings'> & {
+  settings: CourseTemplatePreviewSettings;
+  curated: boolean;
+};
+
+export type CreateCourseFromTemplateRequest = (typeof classroomio.course)['template'][':templateId']['course']['$post'];
+export type DuplicateCourseTemplateRequest =
+  (typeof classroomio.course)['template'][':templateId']['duplicate']['$post'];
+export type SaveCourseTemplateRequest = (typeof classroomio.course)[':courseId']['template']['$post'];
+export type ConvertCourseTemplateRequest = (typeof classroomio.course)[':courseId']['template']['convert']['$post'];
+export type DeleteCourseTemplateRequest = (typeof classroomio.course)[':courseId']['$delete'];
+
+export type GetCourseTemplateUpdatesRequest = (typeof classroomio.course)[':courseId']['template-updates']['$get'];
+export type GetCourseTemplateUpdatesSuccess = Extract<
+  InferResponseType<GetCourseTemplateUpdatesRequest>,
+  { success: true }
+>;
+export type CourseTemplateUpdates = GetCourseTemplateUpdatesSuccess['data'];
+
+export type PullCourseTemplateUpdatesRequest =
+  (typeof classroomio.course)[':courseId']['template-updates']['pull']['$post'];

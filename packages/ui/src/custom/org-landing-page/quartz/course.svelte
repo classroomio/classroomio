@@ -18,6 +18,7 @@
     logoUrl,
     navItems,
     authAction,
+    learnerAccount,
     hero,
     socialProof,
     info,
@@ -36,12 +37,12 @@
 </script>
 
 <LandingThemeScope theme="quartz" class="ui:font-sans">
-  <QuartzNav {orgName} {logoUrl} {navItems} {authAction} />
+  <QuartzNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
 
   <main class="ui:@container ui:max-w-[1200px] ui:mx-auto ui:border-x ui:border-[var(--landing-border)]">
     <QuartzHero hero={heroForCourse} imageFit="natural" compact />
 
-    <QuartzCourseByline {instructor} {socialProof} {curriculum} {labels} />
+    <QuartzCourseByline {instructor} {logoUrl} {socialProof} {curriculum} {labels} />
 
     <div class="ui:bg-[var(--landing-card)]">
       <div class="ui:grid ui:grid-cols-1 ui:@4xl:grid-cols-[minmax(0,1fr)_330px]">
@@ -51,7 +52,7 @@
           {#if chips}
             <QuartzCourseChips {chips} {labels} />
           {/if}
-          <QuartzCourseInstructor {instructor} {labels} />
+          <QuartzCourseInstructor {instructor} {logoUrl} {labels} />
           <QuartzCourseReviews {reviews} {labels} />
         </div>
 
