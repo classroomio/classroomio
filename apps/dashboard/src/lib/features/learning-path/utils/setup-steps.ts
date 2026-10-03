@@ -85,7 +85,7 @@ export function getSetupSteps(path: LearningPathDetail | null | undefined, baseP
       titleKey: 'learningPath.setup.step_order_title',
       descKey: 'learningPath.setup.step_order_desc',
       actionTextKey: 'learningPath.setup.step_order_action',
-      href: `${basePath}?reorder=true`,
+      href: path.courses && path.courses.length >= 2 ? `${basePath}?reorder=true` : basePath,
       isCompleted: isOrderDone
     },
     {

@@ -146,4 +146,24 @@ describe('getSetupSteps', () => {
 
     expect(orderStep?.isCompleted).toBe(true);
   });
+
+  it('links order step to basePath when path has fewer than 2 courses', () => {
+    const path = createMockPath({
+      courses: [{ id: 'lpc-1', courseId: 'c-1', order: 1 } as any]
+    });
+    const steps = getSetupSteps(path, '/paths/P1234567');
+    const orderStep = steps.find((s) => s.id === 'order');
+
+    expect(orderStep?.href).toBe('/paths/P1234567');
+  });
+
+  it('links order step to basePath?reorder=true when path has 2+ courses', () => {
+    const path = createMockPath({
+      courses: [{ id: 'lpc-1', courseId: 'c-1', order: 1 } as any, { id: 'lpc-2', courseId: 'c-2', order: 2 } as any]
+    });
+    const steps = getSetupSteps(path, '/paths/P1234567');
+    const orderStep = steps.find((s) => s.id === 'order');
+
+    expect(orderStep?.href).toBe('/paths/P1234567?reorder=true');
+  });
 });
