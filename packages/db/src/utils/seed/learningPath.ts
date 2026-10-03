@@ -1090,6 +1090,7 @@ interface PathSeed {
   courseOrderSetDaysAgo: number | null;
   certificateTitle: string | null;
   certificateIssuer: string | null;
+  cost?: number;
   landingPage: PathLandingPage;
 }
 
@@ -1099,6 +1100,8 @@ const BOOTCAMP_LANDING_PAGE: PathLandingPage = {
   title: 'Become a Full-Stack Web Developer',
   description: 'Go from MVC fundamentals to React apps and data-driven Python in one guided path.',
   visitorAccess: 'syllabus',
+  paymentEnabled: true,
+  paymentLink: 'https://buy.stripe.com/test_bootcamp',
   goals:
     '<p>Architect maintainable apps with the MVC pattern</p><p>Build interactive UIs with modern React</p><p>Analyze and visualize data with Python and Pandas</p>',
   skills: ['MVC', 'React', 'State Management', 'Python', 'Pandas', 'Data Visualization'],
@@ -1153,6 +1156,7 @@ const DATA_SKILLS_LANDING_PAGE: PathLandingPage = {
   title: 'Frontend & Data Science Skills',
   description: 'Pair modern React development with practical Python data analysis.',
   visitorAccess: 'preview',
+  paymentEnabled: false,
   goals: '<p>Ship React interfaces users love</p><p>Wrangle datasets with Pandas</p>',
   skills: ['React', 'Python', 'Pandas'],
   instructors: [
@@ -1181,6 +1185,7 @@ const PRO_LANDING_PAGE: PathLandingPage = {
   title: 'Full-Stack Professional',
   description: 'Six courses from MVC to tested TypeScript — watch the funnel drop, stall, and certify.',
   visitorAccess: 'preview',
+  paymentEnabled: false,
   goals:
     '<p>Structure apps with MVC</p><p>Build React UIs</p><p>Analyze data with Pandas</p><p>Master JavaScript and TypeScript</p><p>Ship tested code</p>',
   skills: ['MVC', 'React', 'Python', 'JavaScript', 'TypeScript', 'Testing'],
@@ -1202,6 +1207,7 @@ const SHOWCASE_LANDING_PAGE: PathLandingPage = {
   title: 'React to Pandas in Two Courses',
   description: 'A short, fully completable path pairing React interfaces with Pandas analysis.',
   visitorAccess: 'preview',
+  paymentEnabled: false,
   goals: '<p>Ship React interfaces users love</p><p>Wrangle datasets with Pandas</p>',
   skills: ['React', 'Python', 'Pandas'],
   instructors: [
@@ -1231,6 +1237,7 @@ const PATH_SEEDS: PathSeed[] = [
     isPublished: true,
     sequentialUnlock: true,
     courseOrderSetDaysAgo: 130,
+    cost: 149,
     certificateTitle: 'Full-Stack Developer Bootcamp Certificate',
     certificateIssuer: 'Udemy Test Academy',
     landingPage: BOOTCAMP_LANDING_PAGE
@@ -1389,7 +1396,7 @@ function buildPathInsertValues(pathSeed: PathSeed, testOrgId: string, now: Date)
     description: pathSeed.description,
     coverImage: pathSeed.coverImage,
     isPublished: pathSeed.isPublished,
-    cost: 0,
+    cost: pathSeed.cost ?? 0,
     currency: 'USD',
     sequentialUnlock: pathSeed.sequentialUnlock,
     selfEnrollment: true,
@@ -2671,7 +2678,8 @@ async function seedMinimalPath(plan: MinimalPathPlan, now: Date) {
       landingPage: {
         title: plan.name,
         description: plan.description,
-        visitorAccess: 'preview' as const
+        visitorAccess: 'preview' as const,
+        paymentEnabled: false
       },
       courseOrderSetAt: isoDaysAgo(now, 10),
       createdByProfileId: null,
