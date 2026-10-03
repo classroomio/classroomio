@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   getGroupMemberByGroupAndProfile: vi.fn(),
   insertGroupMembersOnConflictDoNothing: vi.fn(),
   grantCourseAccess: vi.fn(),
+  updateLearningPath: vi.fn(),
   scheduleLearningPathProgressSync: vi.fn()
 }));
 
@@ -40,7 +41,7 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   getCourseIdsInPath: vi.fn(),
   removeCourseFromPath: vi.fn(),
   reorderLearningPathCourses: vi.fn(),
-  updateLearningPath: vi.fn()
+  updateLearningPath: mocks.updateLearningPath
 }));
 
 vi.mock('@cio/db/queries/group', () => ({
@@ -91,6 +92,11 @@ describe('addCoursesToPathService always grants', () => {
         learningPathId: 'path-1',
         grantedByProfileId: 'admin-1'
       }),
+      transactionClient
+    );
+    expect(mocks.updateLearningPath).toHaveBeenCalledWith(
+      'path-1',
+      expect.objectContaining({ courseOrderSetAt: expect.any(String) }),
       transactionClient
     );
   });
