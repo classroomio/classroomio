@@ -17,7 +17,13 @@
     "restricted_page": {
       "title": "Página restringida",
       "description": "Esta organización está restringida. Mientras tanto, puedes consultar nuestras funciones.",
-      "home": "Ir al inicio"
+      "home": "Ir al inicio",
+      "learning_paths_heading": "Rutas de aprendizaje",
+      "learning_path_label": "Ruta de aprendizaje",
+      "tracks_label": "{count, plural, one {# ruta} other {# rutas}}",
+      "included": "Incluido",
+      "untitled_lesson": "Lección sin título",
+      "format": "Formato"
     }
   },
   "validations": {

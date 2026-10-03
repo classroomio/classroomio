@@ -140,10 +140,7 @@
         "
         >
           <span style="color: var(--landing-accent);">&gt;</span>
-          <span
-            ><span class="ui:font-medium ui:text-[var(--landing-fg)]">{coursesCount}</span>
-            {labels?.courseCountLabel?.(coursesCount) ?? `${coursesCount === 1 ? 'course' : 'courses'} running`}</span
-          >
+          <span>{labels?.courseCountLabel?.(coursesCount) ?? `${coursesCount} courses running`}</span>
           {#if learnersCount > 0}
             <span class="ui:inline-block ui:w-px ui:h-3 ui:bg-[var(--landing-border)]"></span>
             <span>

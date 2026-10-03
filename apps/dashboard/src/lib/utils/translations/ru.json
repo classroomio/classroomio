@@ -17,7 +17,13 @@
     "restricted_page": {
       "title": "Страница ограничена",
       "description": "Доступ к этой организации ограничен. А пока ознакомьтесь с нашими возможностями.",
-      "home": "На главную"
+      "home": "На главную",
+      "learning_paths_heading": "Учебные треки",
+      "learning_path_label": "Учебный трек",
+      "tracks_label": "{count, plural, one {# трек} few {# трека} many {# треков} other {# треков}}",
+      "included": "Включено",
+      "untitled_lesson": "Урок без названия",
+      "format": "Формат"
     }
   },
   "validations": {

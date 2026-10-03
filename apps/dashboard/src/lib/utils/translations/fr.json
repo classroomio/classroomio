@@ -17,7 +17,13 @@
     "restricted_page": {
       "title": "Page restreinte",
       "description": "Cette organisation est restreinte. En attendant, vous pouvez découvrir nos fonctionnalités.",
-      "home": "Accueil"
+      "home": "Accueil",
+      "learning_paths_heading": "Parcours d’apprentissage",
+      "learning_path_label": "Parcours d’apprentissage",
+      "tracks_label": "{count, plural, one {# parcours} other {# parcours}}",
+      "included": "Inclus",
+      "untitled_lesson": "Leçon sans titre",
+      "format": "Format"
     }
   },
   "validations": {

@@ -169,7 +169,12 @@ export function buildCourseLandingPageProps(
     averageRating !== undefined
       ? { label: t.get('course.navItem.landing_page.editor.reviews_form.rating'), value: averageRating.toFixed(1) }
       : null,
-    hasCertificate ? { label: t.get('course.navItem.landing_page.certificate'), value: t.get('course.navItem.landing_page.certificate') } : null
+    hasCertificate
+      ? {
+          label: t.get('course.navItem.landing_page.certificate'),
+          value: t.get('common.restricted_page.included')
+        }
+      : null
   ].filter(Boolean) as Array<{ label: string; value: string }>;
 
   const calculatedCost = calcCourseCost(course);
@@ -219,7 +224,7 @@ export function buildCourseLandingPageProps(
         title: section.title ?? t.get('course.navItem.landing_page.lessons'),
         lessons: section.lessons.map((lesson) => ({
           id: lesson.id,
-          title: lesson.title ?? t.get('course.navItem.landing_page.lessons')
+          title: lesson.title ?? t.get('common.restricted_page.untitled_lesson')
         })),
         exerciseCount: section.exerciseCount
       }))
@@ -265,7 +270,7 @@ export function buildCourseLandingPageProps(
     labels: {
       socialProofRatingLabel: t.get('course.navItem.landing_page.editor.reviews_form.rating'),
       socialProofLessonsLabel: t.get('course.navItem.landing_page.lessons'),
-      socialProofTypeLabel: t.get('course.navItem.landing_page.editor.title.curriculum'),
+      socialProofTypeLabel: t.get('common.restricted_page.format'),
       socialProofCertificateLabel: t.get('course.navItem.landing_page.certificate'),
       curriculumEyebrow: t.get('course.navItem.landing_page.editor.title.curriculum'),
       curriculumHeading: t.get('course.navItem.landing_page.course_content'),
@@ -288,7 +293,7 @@ export function buildCourseLandingPageProps(
       navReviewsLabel: t.get('course.navItem.landing_page.editor.title.reviews'),
       navPricingLabel: t.get('course.navItem.landing_page.editor.title.pricing'),
       factExercisesLabel: t.get('course.navItem.landing_page.exercises'),
-      factIncludedLabel: t.get('course.navItem.landing_page.certificate')
+      factIncludedLabel: t.get('common.restricted_page.included')
     }
   };
 }

@@ -762,9 +762,9 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
     learnMoreLabel: t.get('courses.course_card.learn_more'),
     catalogEmptyTitle: t.get('public_courses.catalog_empty.title'),
     catalogEmptyDescription: t.get('public_courses.catalog_empty.description'),
-    learningPathsHeading: t.get('public_courses.heading'),
+    learningPathsHeading: t.get('common.restricted_page.learning_paths_heading'),
     browseLearningPathsLabel: t.get('dashboard.view_more'),
-    learningPathLabel: t.get('public_courses.heading'),
+    learningPathLabel: t.get('common.restricted_page.learning_path_label'),
     learningPathCourseCountLabel: (count) => t.get('analytics.popularTypes.course_count', { count }),
     learningPathsEmptyTitle: t.get('public_courses.catalog_empty.title'),
     learningPathsEmptyDescription: t.get('public_courses.catalog_empty.description'),
@@ -774,7 +774,7 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
     courseOutlineDescription: t.get('public_courses.subtitle'),
     courseCountLabel: (count) => t.get('analytics.popularTypes.course_count', { count }),
     learnersLabel: (count) => t.get('audience.learner_count', { count }),
-    tracksLabel: (count) => `${count} ${t.get('public_courses.heading')}`,
+    tracksLabel: (count) => t.get('common.restricted_page.tracks_label', { count }),
     terminalEnrollLabel: t.get('course.navItem.landing_page.pricing_section.enroll')
   };
 }

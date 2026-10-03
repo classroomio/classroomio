@@ -349,7 +349,13 @@
     "restricted_page": {
       "title": "Kısıtlı sayfa",
       "description": "Bu kuruluş kısıtlanmıştır. Bu sırada özelliklerimize göz atabilirsiniz.",
-      "home": "Ana sayfaya git"
+      "home": "Ana sayfaya git",
+      "learning_paths_heading": "Öğrenme yolları",
+      "learning_path_label": "Öğrenme yolu",
+      "tracks_label": "{count, plural, one {# yol} other {# yol}}",
+      "included": "Dahil",
+      "untitled_lesson": "Başlıksız ders",
+      "format": "Biçim"
     }
   },
   "compliance": {

@@ -17,7 +17,13 @@
     "restricted_page": {
       "title": "Strona z ograniczeniami",
       "description": "Ta organizacja jest ograniczona. W międzyczasie możesz zapoznać się z naszymi funkcjami.",
-      "home": "Przejdź do strony głównej"
+      "home": "Przejdź do strony głównej",
+      "learning_paths_heading": "Ścieżki nauki",
+      "learning_path_label": "Ścieżka nauki",
+      "tracks_label": "{count, plural, one {# ścieżka} few {# ścieżki} many {# ścieżek} other {# ścieżek}}",
+      "included": "Wliczone",
+      "untitled_lesson": "Lekcja bez tytułu",
+      "format": "Format"
     }
   },
   "validations": {

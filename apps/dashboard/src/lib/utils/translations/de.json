@@ -17,7 +17,13 @@
     "restricted_page": {
       "title": "Eingeschränkte Seite",
       "description": "Diese Organisation ist eingeschränkt. In der Zwischenzeit kannst du dir unsere Funktionen ansehen.",
-      "home": "Zur Startseite"
+      "home": "Zur Startseite",
+      "learning_paths_heading": "Lernpfade",
+      "learning_path_label": "Lernpfad",
+      "tracks_label": "{count, plural, one {# Track} other {# Tracks}}",
+      "included": "Enthalten",
+      "untitled_lesson": "Lektion ohne Titel",
+      "format": "Format"
     }
   },
   "validations": {

@@ -47,17 +47,22 @@
   });
 
   $effect(() => {
+    let isCurrent = true;
     const isOrgSiteRoute = data.isOrgSite && page.url.pathname.length > 0;
 
     if (!data.isOrgSite || !data.org) {
       $globalStore.isOrgSite = false;
       $globalStore.orgSiteName = '';
-      return;
+      return () => {
+        isCurrent = false;
+      };
     }
 
     const enforcedLocale = data.org.settings?.language?.enforced ? data.org.settings.language.locale : undefined;
     if (isOrgSiteRoute && enforcedLocale) {
-      void ensureTranslations(enforcedLocale).then(() => activateLocale(enforcedLocale));
+      void ensureTranslations(enforcedLocale, () => isCurrent).then(() => {
+        if (isCurrent) activateLocale(enforcedLocale);
+      });
     }
 
     $globalStore.orgSiteName = data.orgSiteName || '';
@@ -72,6 +77,10 @@
     }
 
     setTheme(data.org.theme || 'blue');
+
+    return () => {
+      isCurrent = false;
+    };
   });
 
   const session = authClient.useSession();

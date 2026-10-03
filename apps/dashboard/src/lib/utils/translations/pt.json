@@ -17,7 +17,13 @@
     "restricted_page": {
       "title": "Página restrita",
       "description": "Esta organização está restrita. Enquanto isso, confira nossos recursos.",
-      "home": "Ir para o início"
+      "home": "Ir para o início",
+      "learning_paths_heading": "Trilhas de aprendizagem",
+      "learning_path_label": "Trilha de aprendizagem",
+      "tracks_label": "{count, plural, one {# trilha} other {# trilhas}}",
+      "included": "Incluído",
+      "untitled_lesson": "Lição sem título",
+      "format": "Formato"
     }
   },
   "validations": {

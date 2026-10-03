@@ -349,7 +349,13 @@
     "restricted_page": {
       "title": "Restricted page",
       "description": "This organization is restricted. In the meantime, you can check out our features.",
-      "home": "Go home"
+      "home": "Go home",
+      "learning_paths_heading": "Learning paths",
+      "learning_path_label": "Learning path",
+      "tracks_label": "{count, plural, one {# track} other {# tracks}}",
+      "included": "Included",
+      "untitled_lesson": "Untitled lesson",
+      "format": "Format"
     }
   },
   "compliance": {
