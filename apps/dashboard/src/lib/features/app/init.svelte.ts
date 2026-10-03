@@ -22,6 +22,7 @@ import { identifyPosthogUser } from '$lib/utils/services/posthog';
 import { identifyUserJotUser } from '$lib/utils/services/userjot';
 import { isOrgStudent, globalStore } from '$lib/utils/store/app';
 import { isPublicRoute } from '$lib/utils/functions/routes/isPublicRoute';
+import { isOnboardingIncomplete } from '$features/onboarding/utils/completeness';
 import { licenseApi } from '$features/license/api/license.svelte';
 import { logout } from '$lib/utils/functions/logout';
 import { page } from '$app/state';
@@ -368,6 +369,9 @@ class AppInitApi extends BaseApi {
 
     const isStudent = get(isOrgStudent);
     const userHasOrganizations = this.data.organizations.length > 0;
+    const userIsManager = this.data.organizations.some((org) => isOrgManagerRole(org.roleId));
+    const needsOnboarding =
+      userIsManager && !this.data.profile.isEmailVerified && isOnboardingIncomplete(this.data.profile);
 
     // CLOUD: when user has no orgs and isOrgSite is false, route to /onboarding
     // isOrgSite - means the user is on a multi tenant organization site, we don't want to redirect to /onboarding in this case
@@ -385,10 +389,14 @@ class AppInitApi extends BaseApi {
       }
     }
 
+    if (needsOnboarding && !isOrgSite && !path.includes('/onboarding')) {
+      console.log('redirecting to onboarding to finish setup');
+      return goto(resolve(`/onboarding`, {}));
+    }
+
     if (!shouldRedirectOnAuth(page.url.pathname)) return;
 
-    // Students with existing org memberships who open /onboarding may intend to create their own academy.
-    if (path.includes('/onboarding') && isStudent && userHasOrganizations) {
+    if (path.includes('/onboarding') && ((isStudent && userHasOrganizations) || needsOnboarding)) {
       return;
     }
 

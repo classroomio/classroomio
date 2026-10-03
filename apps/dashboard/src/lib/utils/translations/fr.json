@@ -4424,7 +4424,92 @@
     "what_brings": "Qu'est-ce qui t'amène à",
     "how": "Comment avez-vous entendu parler de nous ?",
     "back": "Retour",
-    "continue": "Continuer"
+    "continue": "Continuer",
+    "other": "Autre (dites-nous)",
+    "other_placeholder": "Dites-nous en plus",
+    "other_required": "S'il vous plaît dites-nous en plus",
+    "sources": {
+      "label": "Comment avez-vous entendu parler de nous ?",
+      "blog": "Blog ou article",
+      "ai": "IA",
+      "search_engine": "Moteur de recherche",
+      "github": "GitHub ou open source",
+      "youtube": "YouTube ou podcast",
+      "social_media": "Médias sociaux",
+      "product_hunt": "Product Hunt ou un site d'évaluation",
+      "friends_family": "Amis, famille ou collègue",
+      "subtitle": "Facultatif, mais cela aide une petite équipe à savoir ce qui fonctionne."
+    },
+    "job_roles": {
+      "label": "Quel est votre rôle ?",
+      "founder": "Fondateur ou PDG",
+      "product_ops": "Produit ou opérations",
+      "cs_education": "Succès, formation ou habilitation du client",
+      "developer": "Développeur ou ingénieur",
+      "subtitle": "Cela nous aide à adapter votre configuration."
+    },
+    "learning_methods": {
+      "label": "Comment vos clients découvrent-ils votre produit aujourd’hui ?",
+      "self_serve": "Ils le découvrent tout seuls",
+      "live_onboarding": "Sessions ou appels d'intégration en direct",
+      "help_docs": "Documents d'aide et assistance",
+      "no_training": "Nous n'avons pas encore de formation",
+      "subtitle": "Choisissez celui qui se rapproche le plus de son fonctionnement actuel."
+    },
+    "use_cases": {
+      "label": "Pourquoi souhaitez-vous utiliser ClassroomIO ?",
+      "customer_training": "Former mes clients sur mon produit",
+      "customer_certification": "Certifier les clients ou partenaires",
+      "partner_training": "Former des partenaires ou des revendeurs",
+      "team_training": "Former ma propre équipe",
+      "sell_courses": "Vendre des cours au public",
+      "subtitle": "Choisissez tout ce qui s'applique. Nous façonnerons votre espace de travail autour de celui-ci."
+    },
+    "step_of": "Étape {current} sur {total}",
+    "skip": "Sauter",
+    "finish_setup": "Terminer la configuration",
+    "company_sizes": {
+      "label": "Quelle est la taille de votre entreprise ?",
+      "subtitle": "Comptez tout le monde dans l’entreprise, pas seulement votre équipe.",
+      "enterprise": {
+        "label": "200+",
+        "description": "les gens"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "les gens"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "les gens"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "les gens"
+      },
+      "solo": {
+        "label": "Juste moi",
+        "description": "Solo"
+      }
+    },
+    "ai_assistant": {
+      "label": "Assistant IA",
+      "subtitle": "Lequel nous a recommandé ?"
+    },
+    "step_labels": {
+      "use_cases": "Cas d'utilisation",
+      "learning_methods": "Entraînement aujourd'hui",
+      "company_size": "Taille de l'entreprise",
+      "job_role": "Rôle",
+      "source": "Découverte"
+    },
+    "org_setup": {
+      "title": "Configurez votre espace de travail",
+      "subtitle": "Parlez-nous de vous et de votre organisation pour commencer."
+    },
+    "header": {
+      "tagline": "Plateforme de formation client qui se connecte à vos systèmes"
+    }
   },
   "new_course_modal": {
     "live_class_label": "Cours en direct",
