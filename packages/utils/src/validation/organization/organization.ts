@@ -49,7 +49,7 @@ export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCourse
 
 export const ZEnrolledCoursesQuery = z.object({
   /**
-   * When true, only courses taken on their own: a live non-path grant and not `requiresLearningPath`.
+   * When true, only courses taken on their own: a live non-path grant and not `enrollOnlyInLearningPath`.
    *
    * Parsed explicitly because `z.coerce.boolean()` turns the string `"false"`
    * into `true`, which would make `?nonPathOnly=false` silently behave as `true`.

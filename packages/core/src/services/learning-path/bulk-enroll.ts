@@ -1,16 +1,12 @@
-import crypto from 'node:crypto';
-
 import { type DbOrTxClient, db } from '@cio/db/drizzle';
 import {
   createOrganizationInviteAudits,
-  createOrganizationInvites,
   createOrganizationMembers,
   countActiveStudents,
   getActiveOrganizationPlan,
   getOrganizationById,
   getOrganizationMembersByNormalizedEmails,
-  lockOrganizationForStudentCapacity,
-  revokeActiveOrganizationInvitesByEmails
+  lockOrganizationForStudentCapacity
 } from '@cio/db/queries/organization';
 import { getProfileById } from '@cio/db/queries/auth';
 import { getCourseIdsInPath, getLearningPathById, getMemberByPathAndProfile } from '@cio/db/queries/learning-path';
@@ -31,13 +27,10 @@ import { env } from '../../config/env';
 import { buildOrgInviteLink } from '../../config/dashboard-url';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { enrollProfileCore } from './enroll-profile-core';
+import { getStaffInvitedEmails, supersedeStudentOrgInvites } from '../organization/supersede-invites';
+import { getCrossedStudentMilestone, notifyStudentMilestone } from '../organization/student-milestone';
 import { EMAIL_FANOUT_CONCURRENCY, mapWithConcurrency } from './fanout';
-import {
-  buildLearningPathLoginUrl,
-  hashInviteToken,
-  normalizeInviteEmails,
-  ORG_INVITE_EXPIRY_MS
-} from './path-invite-utils';
+import { buildLearningPathLoginUrl, getInviteExpiryLabel, normalizeInviteEmails } from './path-invite-utils';
 import { resolveBulkMembers } from './member-resolve';
 import { syncLearningPathMembersProgress } from './progress-sync';
 import { enqueueWorkerTemplateEmail } from './template-email';
@@ -53,9 +46,10 @@ import { enqueueWorkerTemplateEmail } from './template-email';
  * (org membership + quota, member upsert, progress cache, course grants,
  * compliance records, email-only invites, welcome emails) with two deliberate
  * differences:
- * per-chunk transactions with per-chunk failure tolerance, and no milestone
- * notification emails (the API asserts capacity at enqueue time, which fires
- * those). Keep the two in sync when the enrollment mechanics change.
+ * per-chunk transactions with per-chunk failure tolerance, and student-limit
+ * milestone emails sent once after the run from the seats it actually took
+ * (the API only asserts capacity at enqueue time). Keep the two in sync when
+ * the enrollment mechanics change.
  */
 
 /** Carries a code so the API can map run failures to HTTP without string matching. */
@@ -74,13 +68,13 @@ export type { PathBulkEnrollFailure, PathBulkEnrollOutcome };
 
 type TPathBulkMember = TPathBulkEnrollPayload['members'][number];
 
-type TEnrollCorePath = Pick<TLearningPath, 'id' | 'autoEnroll' | 'sequentialUnlock' | 'organizationId'>;
+type TEnrollCorePath = Pick<TLearningPath, 'id' | 'sequentialUnlock' | 'organizationId'>;
 
 type TResolvedChunkMember = { profileId: string; email: string | null; roleId: number };
 
 /**
  * Quota check for worker enrollments. Mirrors `assertStudentCapacityOrThrow`
- * minus milestone notifications, which the API already fires at enqueue time.
+ * minus milestone notifications, which the run sends once after every chunk.
  */
 async function assertBulkStudentCapacity(
   organizationId: string,
@@ -111,14 +105,19 @@ async function assertBulkStudentCapacity(
 /**
  * Enrolls one profile: org membership (students only, skipping org team
  * members per the self-hosted invariant), member upsert, progress cache, and
- * course grants when auto-enroll is on. Delegates to the shared core so the
+ * course grants for STUDENT members. Delegates to the shared core so the
  * worker and API can never drift.
  */
 async function enrollMemberCore(
   path: TEnrollCorePath,
   input: { profileId: string; email?: string | null; roleId: number; grantedByProfileId?: string },
-  tx: DbOrTxClient
-): Promise<TLearningPathMember> {
+  tx: DbOrTxClient,
+  enqueuedAt?: string
+): Promise<TLearningPathMember | null> {
+  if (enqueuedAt) {
+    return enrollProfileCore(path, input, tx, assertBulkStudentCapacity, { enqueuedAt });
+  }
+
   return enrollProfileCore(path, input, tx, assertBulkStudentCapacity);
 }
 
@@ -132,100 +131,145 @@ async function resolveBulkChunkMembers(
   return resolveBulkMembers(members);
 }
 
+/** Throws QUOTA_EXCEEDED when `newStudentCount` more students would pass the plan limit. */
+async function assertBulkInviteCapacity(organizationId: string, newStudentCount: number) {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    return;
+  }
+
+  const activePlan = await getActiveOrganizationPlan(organizationId);
+  const limit = getStudentLimit(activePlan?.planName);
+
+  if (!Number.isFinite(limit)) {
+    return;
+  }
+
+  const currentCount = await countActiveStudents(organizationId);
+
+  if (currentCount + newStudentCount > limit) {
+    throw new PathBulkEnrollError('QUOTA_EXCEEDED', `This organization has reached its ${limit}-student limit`, {
+      organizationId,
+      currentCount,
+      limit
+    });
+  }
+}
+
+/**
+ * The org's active student count and plan limit, or null when no limit
+ * applies (self-hosted or an unlimited plan).
+ */
+async function getStudentSeatUsage(organizationId: string): Promise<{ count: number; limit: number } | null> {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    return null;
+  }
+
+  const activePlan = await getActiveOrganizationPlan(organizationId);
+  const limit = getStudentLimit(activePlan?.planName);
+
+  if (!Number.isFinite(limit)) {
+    return null;
+  }
+
+  const count = await countActiveStudents(organizationId);
+
+  return { count, limit };
+}
+
+/**
+ * Emails admins when the run's committed seats crossed a student-limit
+ * milestone. Best-effort: a failure only logs, never the committed run.
+ */
+async function notifyRunStudentMilestone(
+  organizationId: string,
+  seatsBefore: { count: number; limit: number } | null
+): Promise<void> {
+  if (!seatsBefore) {
+    return;
+  }
+
+  try {
+    const studentCountAfter = await countActiveStudents(organizationId);
+    const milestone = getCrossedStudentMilestone(
+      organizationId,
+      seatsBefore.count,
+      studentCountAfter,
+      seatsBefore.limit
+    );
+
+    if (milestone) {
+      await notifyStudentMilestone(milestone);
+    }
+  } catch (error) {
+    console.error('runQueuedPathBulkEnroll milestone notification error', { organizationId, error });
+  }
+}
+
+type TBulkPathInvite = { email: string; inviteId: string; token: string; expiresAt: string };
+
 /**
  * Creates the org member rows, path-targeted invites, and CREATED audits for
- * emails without accounts. Runs outside any enrollment transaction, mirroring
- * the synchronous path. Returns invite links for the email step.
+ * emails without accounts, in one transaction so a failure cannot leave member
+ * rows without an invite. Earlier pending invites are folded into the new one
+ * instead of wiped. Returns invite links (with each invite's stored expiry)
+ * for the email step, and the emails skipped because an active staff invite
+ * already covers them.
  */
 async function createBulkPathInvites(
   path: TLearningPath,
   emails: string[],
   actorProfileId: string
-): Promise<Array<{ email: string; inviteId: string; token: string }>> {
+): Promise<{ invites: TBulkPathInvite[]; skippedStaffInviteEmails: string[] }> {
   const normalized = normalizeInviteEmails(emails);
 
   if (normalized.length === 0) {
-    return [];
+    return { invites: [], skippedStaffInviteEmails: [] };
   }
 
   const existingMembers = await getOrganizationMembersByNormalizedEmails(path.organizationId, normalized);
   const existingEmails = new Set(existingMembers.map((member) => member.normalizedEmail));
-  const newEmails = normalized.filter((email) => !existingEmails.has(email));
 
-  if (newEmails.length > 0) {
-    // Unlocked pre-check: the sync path checks invite capacity outside a
-    // transaction too. The strict locked check still runs per enrollment
-    // inside the chunk transaction.
-    if (env.PUBLIC_IS_SELFHOSTED !== 'true') {
-      const activePlan = await getActiveOrganizationPlan(path.organizationId);
-      const limit = getStudentLimit(activePlan?.planName);
+  const { invites, skipped } = await db.transaction(async (tx) => {
+    // The supersede below skips staff-invited emails, so leave them out of the
+    // member rows and the seat count: a STUDENT row written for them would
+    // commit without an invite and take a seat.
+    const staffInvitedEmails = await getStaffInvitedEmails(tx, { orgId: path.organizationId, emails: normalized });
+    const newEmails = normalized.filter((email) => !existingEmails.has(email) && !staffInvitedEmails.has(email));
 
-      if (Number.isFinite(limit)) {
-        const currentCount = await countActiveStudents(path.organizationId);
+    if (newEmails.length > 0) {
+      // Unlocked pre-check before writing invites. The strict locked check
+      // still runs per enrollment inside the chunk transaction.
+      await assertBulkInviteCapacity(path.organizationId, newEmails.length);
 
-        if (currentCount + newEmails.length > limit) {
-          throw new PathBulkEnrollError('QUOTA_EXCEEDED', `This organization has reached its ${limit}-student limit`, {
-            organizationId: path.organizationId,
-            currentCount,
-            limit
-          });
-        }
-      }
+      await createOrganizationMembers(
+        newEmails.map((email) => ({
+          organizationId: path.organizationId,
+          email,
+          roleId: ROLE.STUDENT,
+          verified: false
+        })),
+        tx
+      );
     }
 
-    await createOrganizationMembers(
-      newEmails.map((email) => ({
-        organizationId: path.organizationId,
-        email,
-        roleId: ROLE.STUDENT,
-        verified: false
-      }))
-    );
-  }
-
-  await revokeActiveOrganizationInvitesByEmails(path.organizationId, normalized, actorProfileId);
-
-  const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
-  const tokenPairs = normalized.map((email) => ({ email, token: crypto.randomBytes(32).toString('base64url') }));
-  const createdInvites = await createOrganizationInvites(
-    tokenPairs.map(({ email, token }) => ({
-      organizationId: path.organizationId,
-      roleId: ROLE.STUDENT,
-      email,
-      tokenHash: hashInviteToken(token),
-      createdByProfileId: actorProfileId,
-      expiresAt,
-      isRevoked: false,
-      metadata: { source: 'LEARNING_PATH_BULK_ADD', pathIds: [path.id] }
-    }))
-  );
-
-  await createOrganizationInviteAudits(
-    createdInvites.map((invite) => ({
-      inviteId: invite.id,
-      organizationId: path.organizationId,
-      eventType: 'CREATED' as const,
+    return supersedeStudentOrgInvites(tx, {
+      orgId: path.organizationId,
+      emails: normalized,
       actorProfileId,
-      targetEmail: invite.email,
-      ipAddress: null,
-      userAgent: null,
-      metadata: { roleId: ROLE.STUDENT, roleName: 'Student', expiresAt, pathIds: [path.id] }
-    }))
-  );
+      source: 'LEARNING_PATH_BULK_ADD',
+      add: { courseIds: [], cohortIds: [], pathIds: [path.id] }
+    });
+  });
 
-  const tokenByEmail = new Map(tokenPairs.map((pair) => [pair.email, pair.token] as const));
-  const inviteEmails: Array<{ email: string; inviteId: string; token: string }> = [];
-
-  for (const invite of createdInvites) {
-    const email = (invite.email ?? '').toLowerCase();
-    const token = tokenByEmail.get(email);
-
-    if (email && token) {
-      inviteEmails.push({ email, inviteId: invite.id, token });
-    }
-  }
-
-  return inviteEmails;
+  return {
+    invites: invites.map((invite) => ({
+      email: invite.email,
+      inviteId: invite.inviteId,
+      token: invite.token,
+      expiresAt: invite.expiresAt
+    })),
+    skippedStaffInviteEmails: skipped.map((entry) => entry.email)
+  };
 }
 
 /**
@@ -310,8 +354,9 @@ export async function runQueuedPathBulkEnroll(payload: {
   members: TPathBulkMember[];
   chunkSize: number;
   sendEmail?: boolean;
+  enqueuedAt?: string;
 }): Promise<PathBulkEnrollOutcome> {
-  const { organizationId, actorProfileId, pathId, members, chunkSize } = payload;
+  const { organizationId, actorProfileId, pathId, members, chunkSize, enqueuedAt } = payload;
   const sendEmail = payload.sendEmail ?? true;
 
   const path = await getLearningPathById(pathId);
@@ -333,15 +378,28 @@ export async function runQueuedPathBulkEnroll(payload: {
   const branding = buildEmailBranding(organization);
   const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
   const loginUrl = buildLearningPathLoginUrl(organization, path);
+  const seatsBefore = await getStudentSeatUsage(organizationId);
 
   let enrolled = 0;
   let invited = 0;
   const failed: PathBulkEnrollFailure[] = [];
   const complianceProfileIds: string[] = [];
 
+  let quotaExceeded = false;
+  const chunkKey = (member: TPathBulkMember) => member.profileId ?? member.email ?? '';
+
   for (let index = 0; index < members.length; index += chunkSize) {
+    // The limit was hit in an earlier chunk: every member not yet attempted
+    // fails, and the loop stops so the post-run work covers committed chunks.
+    if (quotaExceeded) {
+      for (const member of members.slice(index)) {
+        failed.push({ key: chunkKey(member), reason: 'QUOTA_EXCEEDED' });
+      }
+
+      break;
+    }
+
     const chunk = members.slice(index, index + chunkSize);
-    const chunkKey = (member: TPathBulkMember) => member.profileId ?? member.email ?? '';
 
     let direct: TResolvedChunkMember[] = [];
     let pendingInvites: string[] = [];
@@ -367,6 +425,8 @@ export async function runQueuedPathBulkEnroll(payload: {
       const result = await db.transaction(async (tx) => {
         const enrolledMembers: TLearningPathMember[] = [];
         const candidates: Array<{ profileId: string; email: string | null }> = [];
+        const chunkFailed: Array<{ key: string; reason: string }> = [];
+        const chunkComplianceProfileIds: string[] = [];
 
         for (const entry of direct) {
           const existingMember = await getMemberByPathAndProfile(path.id, entry.profileId, tx);
@@ -380,30 +440,47 @@ export async function runQueuedPathBulkEnroll(payload: {
               roleId: entry.roleId,
               grantedByProfileId: actorProfileId
             },
-            tx
+            tx,
+            enqueuedAt
           );
+
+          // Removed after enqueue: the removal stands; report, don't resurrect.
+          if (!member) {
+            chunkFailed.push({ key: entry.profileId, reason: 'REMOVED_SINCE_ENQUEUE' });
+            continue;
+          }
 
           enrolledMembers.push(member);
 
-          if (isFreshJoin && entry.roleId === ROLE.STUDENT) {
+          if (isFreshJoin && member.roleId === ROLE.STUDENT) {
             candidates.push({ profileId: entry.profileId, email: entry.email });
+          }
+
+          if (member.roleId === ROLE.STUDENT) {
+            chunkComplianceProfileIds.push(entry.profileId);
           }
         }
 
-        return { enrolledMembers, candidates };
+        return { enrolledMembers, candidates, chunkFailed, chunkComplianceProfileIds };
       });
 
       enrolled += result.enrolledMembers.length;
+      failed.push(...result.chunkFailed);
+      complianceProfileIds.push(...result.chunkComplianceProfileIds);
       welcomeCandidates = result.candidates;
-
-      for (const entry of direct) {
-        if (entry.roleId === ROLE.STUDENT) {
-          complianceProfileIds.push(entry.profileId);
-        }
-      }
     } catch (error) {
       if (error instanceof PathBulkEnrollError && error.code === 'QUOTA_EXCEEDED') {
-        throw error;
+        // Record this chunk's direct members as QUOTA_EXCEEDED
+        for (const entry of direct) {
+          failed.push({ key: entry.profileId, reason: 'QUOTA_EXCEEDED' });
+        }
+        // Record this chunk's pending invites as QUOTA_EXCEEDED
+        for (const email of pendingInvites) {
+          failed.push({ key: email, reason: 'QUOTA_EXCEEDED' });
+        }
+        // Remaining members will be marked QUOTA_EXCEEDED at loop top
+        quotaExceeded = true;
+        continue;
       }
 
       console.error('runQueuedPathBulkEnroll chunk failed:', error);
@@ -419,16 +496,28 @@ export async function runQueuedPathBulkEnroll(payload: {
       continue;
     }
 
-    let inviteEmails: Array<{ email: string; inviteId: string; token: string }> = [];
+    let inviteEmails: TBulkPathInvite[] = [];
 
     try {
-      inviteEmails = await createBulkPathInvites(path, pendingInvites, actorProfileId);
+      const inviteBatch = await createBulkPathInvites(path, pendingInvites, actorProfileId);
+      inviteEmails = inviteBatch.invites;
       invited += inviteEmails.length;
-    } catch (error) {
-      console.error('runQueuedPathBulkEnroll invites failed:', error);
 
-      for (const email of pendingInvites) {
-        failed.push({ key: email, reason: 'INVITE_FAILED' });
+      for (const email of inviteBatch.skippedStaffInviteEmails) {
+        failed.push({ key: email, reason: 'STAFF_INVITE' });
+      }
+    } catch (error) {
+      if (error instanceof PathBulkEnrollError && error.code === 'QUOTA_EXCEEDED') {
+        for (const email of pendingInvites) {
+          failed.push({ key: email, reason: 'QUOTA_EXCEEDED' });
+        }
+        quotaExceeded = true;
+      } else {
+        console.error('runQueuedPathBulkEnroll invites failed:', error);
+
+        for (const email of pendingInvites) {
+          failed.push({ key: email, reason: 'INVITE_FAILED' });
+        }
       }
     }
 
@@ -488,7 +577,7 @@ export async function runQueuedPathBulkEnroll(payload: {
           orgName: organization.name,
           learningPathName: path.name || 'Learning path',
           inviteLink,
-          expiresAt: new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString(),
+          expiresAt: getInviteExpiryLabel(invite.expiresAt),
           branding
         },
         from,
@@ -514,6 +603,10 @@ export async function runQueuedPathBulkEnroll(payload: {
 
   if (enrolled > 0) {
     void invalidateOrgStats(organizationId).catch(() => {});
+  }
+
+  if (enrolled > 0 || invited > 0) {
+    await notifyRunStudentMilestone(organizationId, seatsBefore);
   }
 
   // Compliance courses track enrollment records for due dates and renewals.

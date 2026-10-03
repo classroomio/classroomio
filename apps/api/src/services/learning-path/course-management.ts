@@ -1,8 +1,9 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import type { TAddLearningPathCourse } from '@cio/utils/validation/learning-path';
+import type { TAddableCoursesQuery } from '@cio/utils/validation/course';
 import { db } from '@cio/db/drizzle';
-import { getCourseOrgInfo } from '@cio/db/queries/course/course';
+import { getAddableOrgCourses, getCourseOrgInfo } from '@cio/db/queries/course/course';
 import {
   addCourseToPath,
   backfillMemberCourseProgressForAddedCourse,
@@ -13,14 +14,43 @@ import {
   reorderLearningPathCourses,
   updateLearningPath
 } from '@cio/db/queries/learning-path';
-import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
+import { getGroupMemberByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
 import type { TLearningPathCourse } from '@cio/db/types';
 
 import { resolveLearningPath, assertCanManageLearningPath } from './learning-path';
 import { scheduleLearningPathProgressSync } from './progress-sync-jobs';
 
 /**
- * Adds one or more courses to a learning path and auto-enrolls existing path members.
+ * Pages the courses this path can still add, for the add-courses picker:
+ * ACTIVE courses in the path's org without an active link to the path.
+ * Path-only courses stay in, since a path is the only way to take them. Org
+ * admins see every course; path tutors see the courses they belong to.
+ */
+export async function listAddablePathCoursesService(
+  pathId: string,
+  actorId: string,
+  orgRoles: Record<string, number> | undefined,
+  query: TAddableCoursesQuery
+) {
+  const path = await resolveLearningPath(pathId);
+  await assertCanManageLearningPath(path, actorId, orgRoles);
+
+  const isOrgAdmin = orgRoles?.[path.organizationId] === ROLE.ADMIN;
+  const { items, total } = await getAddableOrgCourses({
+    orgId: path.organizationId,
+    memberProfileId: isOrgAdmin ? undefined : actorId,
+    excludeLearningPathId: path.id,
+    search: query.search,
+    page: query.page,
+    limit: query.limit
+  });
+  const totalPages = Math.ceil(total / query.limit);
+
+  return { items, pagination: { page: query.page, limit: query.limit, total, totalPages } };
+}
+
+/**
+ * Adds one or more courses to a learning path and grants them to existing STUDENT members.
  * Executes inside an atomic transaction.
  */
 export async function addCoursesToPathService(
@@ -42,6 +72,7 @@ export async function addCoursesToPathService(
       const addedCourses: TLearningPathCourse[] = [];
       const members = await listActivePathMemberIds(path.id, tx);
       const activeMemberIds = members.map((member) => member.id);
+      const studentMembers = members.filter((member) => Boolean(member.profileId) && member.roleId === ROLE.STUDENT);
 
       for (const courseId of courseIds) {
         // Validate course existence and org ownership
@@ -56,12 +87,8 @@ export async function addCoursesToPathService(
 
         await backfillMemberCourseProgressForAddedCourse(activeMemberIds, added.id, path.sequentialUnlock, tx);
 
-        // Auto-enroll existing students if enabled
-        if (path.autoEnroll && courseRow.groupId) {
-          const studentMembers = members.filter(
-            (member) => Boolean(member.profileId) && member.roleId === ROLE.STUDENT
-          );
-
+        // Grant the new course to existing STUDENT members
+        if (courseRow.groupId) {
           if (studentMembers.length > 0) {
             const groupMemberValues = studentMembers.map((member) => ({
               groupId: courseRow.groupId!,
@@ -72,16 +99,20 @@ export async function addCoursesToPathService(
             await insertGroupMembersOnConflictDoNothing(groupMemberValues, tx);
 
             for (const member of studentMembers) {
-              const groupMemberId = await getGroupMemberIdByGroupAndProfile(courseRow.groupId!, member.profileId!, tx);
+              const groupMember = await getGroupMemberByGroupAndProfile(courseRow.groupId!, member.profileId!, tx);
 
-              if (groupMemberId) {
+              // The insert above skips a profile already in the course group,
+              // so this can be a TUTOR/ADMIN row. Staff access comes from the
+              // role: a LEARNING_PATH grant goes on STUDENT rows only.
+              if (groupMember?.roleId === ROLE.STUDENT) {
                 await grantCourseAccess(
                   {
-                    groupmemberId: groupMemberId,
+                    groupmemberId: groupMember.id,
                     courseId,
                     profileId: member.profileId!,
                     source: 'LEARNING_PATH',
-                    learningPathId: path.id
+                    learningPathId: path.id,
+                    grantedByProfileId: userId
                   },
                   tx
                 );
@@ -89,6 +120,11 @@ export async function addCoursesToPathService(
             }
           }
         }
+      }
+
+      if (addedCourses.length > 0) {
+        const nowIso = new Date().toISOString();
+        await updateLearningPath(path.id, { courseOrderSetAt: nowIso }, tx);
       }
 
       return addedCourses;

@@ -21,6 +21,7 @@ export type TIssuedLearningPathCertificate = {
   issuedAt: string;
 };
 
+/** Loads the path, org and certificate design a download needs, in one place. */
 async function resolvePathCertificateContext(pathId: string, userId: string) {
   const path = await resolveLearningPath(pathId);
 

@@ -145,7 +145,7 @@ export type TInviteLinkWithContext = {
     status: string;
     isPublished: boolean;
     /** Path-only courses take no link joins; learners join through the path. */
-    requiresLearningPath: boolean;
+    enrollOnlyInLearningPath: boolean;
     welcomeEmailMessage: string | null;
   } | null;
   cohort: { id: string; name: string; description: string | null; coverImage: string | null; status: string } | null;
@@ -186,7 +186,7 @@ export async function getInviteLinkByTokenHash(
         courseSlug: schema.course.slug,
         courseStatus: schema.course.status,
         courseIsPublished: schema.course.isPublished,
-        courseRequiresLearningPath: schema.course.requiresLearningPath,
+        courseEnrollOnlyInLearningPath: schema.course.enrollOnlyInLearningPath,
         courseMetadata: schema.course.metadata,
         cohortId: schema.cohort.id,
         cohortName: schema.cohort.name,
@@ -224,7 +224,7 @@ export async function getInviteLinkByTokenHash(
             slug: row.courseSlug ?? null,
             status: row.courseStatus ?? '',
             isPublished: !!row.courseIsPublished,
-            requiresLearningPath: !!row.courseRequiresLearningPath,
+            enrollOnlyInLearningPath: !!row.courseEnrollOnlyInLearningPath,
             welcomeEmailMessage:
               (row.courseMetadata as { welcomeEmailMessage?: string | null } | null)?.welcomeEmailMessage ?? null
           }

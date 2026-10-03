@@ -1,12 +1,21 @@
-import { and, count, desc, eq, ilike, inArray, isNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, getTableName, ilike, inArray, isNull, or, sql } from 'drizzle-orm';
+import type { AnyPgColumn } from 'drizzle-orm/pg-core';
 import { randomBytes } from 'node:crypto';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { getPostgresError } from '@cio/utils/errors';
 import { ROLE } from '@cio/utils/constants';
+import type {
+  TLearningPathListCompletionFilter,
+  TLearningPathListEnrollmentFilter,
+  TLearningPathListSortBy,
+  TLearningPathListSortOrder,
+  TLearningPathListStatusFilter
+} from '@cio/utils/validation/learning-path';
 
 import * as schema from '../../schema';
 import type { TLearningPath, TNewLearningPath } from '../../types';
+import { toContainsPattern } from '@db/utils/like-pattern';
 
 export interface TLearningPathWithCounts extends TLearningPath {
   courseCount: number;
@@ -35,41 +44,41 @@ export function generatePublicId(length = 8): string {
 }
 
 /**
+ * Renders a column as `"table"."column"`. Drizzle drops the table prefix in
+ * single-table selects, so a bare `${schema.learningPath.id}` inside a
+ * correlated subquery binds to the inner table and the correlation silently
+ * becomes a self-comparison (every count reads 0).
+ */
+function qualified(column: AnyPgColumn) {
+  return sql`${sql.identifier(getTableName(column.table))}.${sql.identifier(column.name)}`;
+}
+
+/**
  * Builds the SQL condition matching learning paths where a given tutor is assigned as an active tutor.
  */
 export function buildTutorLearningPathCondition(tutorProfileId: string) {
   return sql`EXISTS (
     SELECT 1 FROM ${schema.learningPathMember}
-    WHERE ${schema.learningPathMember.learningPathId} = ${schema.learningPath.id}
-      AND ${schema.learningPathMember.profileId} = ${tutorProfileId}
-      AND ${schema.learningPathMember.roleId} = ${ROLE.TUTOR}
-      AND ${schema.learningPathMember.removedAt} IS NULL
+    WHERE ${qualified(schema.learningPathMember.learningPathId)} = ${qualified(schema.learningPath.id)}
+      AND ${qualified(schema.learningPathMember.profileId)} = ${tutorProfileId}
+      AND ${qualified(schema.learningPathMember.roleId)} = ${ROLE.TUTOR}
+      AND ${qualified(schema.learningPathMember.removedAt)} IS NULL
   )`;
 }
 
 /**
  * Counts total learning paths in an organization.
  * Optionally filters to paths assigned to a tutor and/or matching a search term.
+ * Status, enrollment and completion narrow the same rows the list query returns
+ * so pagination totals stay in sync.
  */
 export async function countLearningPathsByOrg(
   orgId: string,
-  options?: { tutorProfileId?: string; search?: string },
+  options?: TLearningPathListFilterOptions,
   dbClient: DbOrTxClient = db
 ): Promise<number> {
   try {
-    const whereConditions = [eq(schema.learningPath.organizationId, orgId), eq(schema.learningPath.status, 'ACTIVE')];
-
-    if (options?.tutorProfileId) {
-      whereConditions.push(buildTutorLearningPathCondition(options.tutorProfileId));
-    }
-
-    const search = options?.search?.trim();
-    if (search) {
-      const pattern = `%${search}%`;
-      whereConditions.push(
-        or(ilike(schema.learningPath.name, pattern), ilike(schema.learningPath.description, pattern))!
-      );
-    }
+    const whereConditions = buildLearningPathListConditions(orgId, options ?? {});
 
     const [countRow] = await dbClient
       .select({ count: count(schema.learningPath.id) })
@@ -85,11 +94,11 @@ export async function countLearningPathsByOrg(
   }
 }
 
-export interface TListLearningPathsOptions {
-  tutorProfileId?: string;
+export interface TListLearningPathsOptions extends TLearningPathListFilterOptions {
   page?: number;
   limit?: number;
-  search?: string;
+  sort?: TLearningPathListSortBy;
+  order?: TLearningPathListSortOrder;
 }
 
 export interface TPaginatedLearningPaths {
@@ -103,9 +112,172 @@ export interface TPaginatedLearningPaths {
 }
 
 /**
+ * Course count for the outer `learning_path` row.
+ */
+export function pathCourseCountSql() {
+  return sql<number>`(
+    SELECT COUNT(*)::int
+    FROM ${schema.learningPathCourse}
+    WHERE ${qualified(schema.learningPathCourse.learningPathId)} = ${qualified(schema.learningPath.id)}
+      AND ${qualified(schema.learningPathCourse.removedAt)} IS NULL
+  )`;
+}
+
+/**
+ * STUDENT-only active-member count. The path creator joins as TUTOR, so
+ * counting every role would give every path at least one member and break the
+ * "none" bucket, the empty-path label, and draft detection.
+ */
+export function pathStudentCountSql() {
+  return sql<number>`(
+    SELECT COUNT(*)::int
+    FROM ${schema.learningPathMember}
+    WHERE ${qualified(schema.learningPathMember.learningPathId)} = ${qualified(schema.learningPath.id)}
+      AND ${qualified(schema.learningPathMember.removedAt)} IS NULL
+      AND ${qualified(schema.learningPathMember.roleId)} = ${ROLE.STUDENT}
+  )`;
+}
+
+/**
+ * STUDENT-only completed-member count.
+ */
+export function pathCompletedStudentCountSql() {
+  return sql<number>`(
+    SELECT COUNT(*)::int
+    FROM ${schema.learningPathMember}
+    WHERE ${qualified(schema.learningPathMember.learningPathId)} = ${qualified(schema.learningPath.id)}
+      AND ${qualified(schema.learningPathMember.status)} = 'COMPLETED'
+      AND ${qualified(schema.learningPathMember.removedAt)} IS NULL
+      AND ${qualified(schema.learningPathMember.roleId)} = ${ROLE.STUDENT}
+  )`;
+}
+
+/**
+ * Integer STUDENT completion rate (0 when there are no students), computed
+ * exactly in numeric. It is both what the list displays and what the
+ * completion filter buckets, so the two can never disagree.
+ */
+function pathCompletionRateSql() {
+  const members = pathStudentCountSql();
+  const completed = pathCompletedStudentCountSql();
+
+  return sql<number>`(CASE WHEN (${members}) = 0 THEN 0 ELSE ROUND((${completed}) * 100.0 / (${members})) END)::int`;
+}
+
+/**
+ * Builds the enrollment-bucket condition for path listing.
+ * `none` = no STUDENT members (tutor-only counts as none), `1-49`, `50+`.
+ */
+export function buildPathListEnrollmentCondition(enrollment: TLearningPathListEnrollmentFilter) {
+  const memberCount = pathStudentCountSql();
+
+  if (enrollment === 'none') {
+    return sql`(${memberCount}) = 0`;
+  }
+
+  if (enrollment === '1-49') {
+    return sql`(${memberCount}) >= 1 AND (${memberCount}) <= 49`;
+  }
+
+  return sql`(${memberCount}) >= 50`;
+}
+
+/**
+ * Builds the completion-rate condition with integer thresholds matching the
+ * dashboard: low < 25, medium 25-75, high > 75. Empty paths rate 0 (low).
+ */
+export function buildPathListCompletionCondition(completion: TLearningPathListCompletionFilter) {
+  const rate = pathCompletionRateSql();
+
+  if (completion === 'low') {
+    return sql`(${rate}) < 25`;
+  }
+
+  if (completion === 'medium') {
+    return sql`(${rate}) >= 25 AND (${rate}) <= 75`;
+  }
+
+  return sql`(${rate}) > 75`;
+}
+
+export interface TLearningPathListFilterOptions {
+  tutorProfileId?: string;
+  search?: string;
+  status?: TLearningPathListStatusFilter;
+  enrollment?: TLearningPathListEnrollmentFilter;
+  completion?: TLearningPathListCompletionFilter;
+}
+
+/**
+ * One condition builder for list + count so pagination totals stay in sync.
+ */
+export function buildLearningPathListConditions(orgId: string, opts: TLearningPathListFilterOptions = {}) {
+  const whereConditions = [eq(schema.learningPath.organizationId, orgId), eq(schema.learningPath.status, 'ACTIVE')];
+
+  if (opts.tutorProfileId) {
+    whereConditions.push(buildTutorLearningPathCondition(opts.tutorProfileId));
+  }
+
+  const search = opts.search?.trim();
+  if (search) {
+    const pattern = toContainsPattern(search);
+    whereConditions.push(
+      or(ilike(schema.learningPath.name, pattern), ilike(schema.learningPath.description, pattern))!
+    );
+  }
+
+  if (opts.status) {
+    whereConditions.push(eq(schema.learningPath.isPublished, opts.status === 'published'));
+  }
+
+  if (opts.enrollment) {
+    whereConditions.push(buildPathListEnrollmentCondition(opts.enrollment));
+  }
+
+  if (opts.completion) {
+    whereConditions.push(buildPathListCompletionCondition(opts.completion));
+  }
+
+  return whereConditions;
+}
+
+/**
+ * Stable ORDER BY: [primary, desc(createdAt), desc(id)] so pages never shift.
+ */
+export function buildPathListOrderBy(sort?: TLearningPathListSortBy, order?: TLearningPathListSortOrder) {
+  const courseCountOrderExpr = pathCourseCountSql();
+  const tiebreakers = [desc(schema.learningPath.createdAt), desc(schema.learningPath.id)];
+
+  if (sort === 'last_updated_at') {
+    const lastUpdated = sql`COALESCE(${schema.learningPath.updatedAt}, ${schema.learningPath.createdAt})`;
+    const primary = order === 'asc' ? asc(lastUpdated) : desc(lastUpdated);
+
+    return [primary, ...tiebreakers];
+  }
+
+  if (sort === 'published') {
+    const primary = order === 'asc' ? asc(schema.learningPath.isPublished) : desc(schema.learningPath.isPublished);
+
+    return [primary, ...tiebreakers];
+  }
+
+  if (sort === 'courses') {
+    const primary = order === 'asc' ? asc(courseCountOrderExpr) : desc(courseCountOrderExpr);
+
+    return [primary, ...tiebreakers];
+  }
+
+  const primary = order === 'asc' ? asc(schema.learningPath.createdAt) : desc(schema.learningPath.createdAt);
+
+  return [primary, desc(schema.learningPath.id)];
+}
+
+/**
  * Lists learning paths for an organization with course, member, and completion counts.
  * Optionally filters to paths assigned to a tutor and/or matching a search term.
- * Paginates with limit/offset when a limit is provided; otherwise returns all rows.
+ * Status, enrollment and completion narrow server-side so pages stay stable;
+ * sorting follows the `sort`/`order` params. Paginates with limit/offset when
+ * a limit is provided; otherwise returns all rows.
  */
 export async function listLearningPaths(
   organizationId: string,
@@ -113,76 +285,46 @@ export async function listLearningPaths(
   dbClient: DbOrTxClient = db
 ): Promise<TPaginatedLearningPaths> {
   try {
-    const courseCountSql = sql<number>`
-      COALESCE(
-        (SELECT COUNT(*)::int
-         FROM ${schema.learningPathCourse}
-         WHERE ${and(
-           eq(schema.learningPathCourse.learningPathId, schema.learningPath.id),
-           sql`${schema.learningPathCourse.removedAt} IS NULL`
-         )}),
-        0
-      )
-    `.as('courseCount');
+    const courseCountSql = pathCourseCountSql().as('courseCount');
+    const memberCountSql = pathStudentCountSql().as('memberCount');
+    const completionsCountSql = pathCompletedStudentCountSql().as('completionsCount');
+    const completionRateSql = pathCompletionRateSql().as('completionRate');
 
-    const memberCountSql = sql<number>`
-      COALESCE(
-        (SELECT COUNT(*)::int
-         FROM ${schema.learningPathMember}
-         WHERE ${and(
-           eq(schema.learningPathMember.learningPathId, schema.learningPath.id),
-           sql`${schema.learningPathMember.removedAt} IS NULL`
-         )}),
-        0
-      )
-    `.as('memberCount');
-
-    const completionsCountSql = sql<number>`
-      COALESCE(
-        (SELECT COUNT(*)::int
-         FROM ${schema.learningPathMember}
-         WHERE ${and(
-           eq(schema.learningPathMember.learningPathId, schema.learningPath.id),
-           eq(schema.learningPathMember.status, 'COMPLETED'),
-           sql`${schema.learningPathMember.removedAt} IS NULL`
-         )}),
-        0
-      )
-    `.as('completionsCount');
-
-    const whereConditions = [
-      eq(schema.learningPath.organizationId, organizationId),
-      eq(schema.learningPath.status, 'ACTIVE')
-    ];
-
-    if (options?.tutorProfileId) {
-      whereConditions.push(buildTutorLearningPathCondition(options.tutorProfileId));
-    }
-
-    const search = options?.search?.trim();
-    if (search) {
-      const pattern = `%${search}%`;
-      whereConditions.push(
-        or(ilike(schema.learningPath.name, pattern), ilike(schema.learningPath.description, pattern))!
-      );
-    }
+    const whereConditions = buildLearningPathListConditions(organizationId, {
+      tutorProfileId: options?.tutorProfileId,
+      search: options?.search,
+      status: options?.status,
+      enrollment: options?.enrollment,
+      completion: options?.completion
+    });
 
     const page = options?.page && options.page > 0 ? Math.floor(options.page) : 1;
     const limit = options?.limit && options.limit > 0 ? Math.floor(options.limit) : undefined;
 
     const [total, rows] = await Promise.all([
-      countLearningPathsByOrg(organizationId, { tutorProfileId: options?.tutorProfileId, search }, dbClient),
+      countLearningPathsByOrg(
+        organizationId,
+        {
+          tutorProfileId: options?.tutorProfileId,
+          search: options?.search,
+          status: options?.status,
+          enrollment: options?.enrollment,
+          completion: options?.completion
+        },
+        dbClient
+      ),
       (async () => {
         const baseQuery = dbClient
           .select({
             learningPath: schema.learningPath,
             courseCount: courseCountSql,
             memberCount: memberCountSql,
-            completionsCount: completionsCountSql
+            completionsCount: completionsCountSql,
+            completionRate: completionRateSql
           })
           .from(schema.learningPath)
           .where(and(...whereConditions))
-          .orderBy(desc(schema.learningPath.createdAt));
+          .orderBy(...buildPathListOrderBy(options?.sort, options?.order));
 
         if (limit !== undefined) {
           return baseQuery.limit(limit).offset((page - 1) * limit);
@@ -195,7 +337,9 @@ export async function listLearningPaths(
     const data = rows.map((row) => {
       const memberCount = Number(row.memberCount || 0);
       const completionsCount = Number(row.completionsCount || 0);
-      const completionRate = memberCount > 0 ? Math.round((completionsCount / memberCount) * 100) : 0;
+      // From SQL, not recomputed here: float rounding can differ by 1 and
+      // would disagree with the completion filter.
+      const completionRate = Number(row.completionRate || 0);
 
       return {
         ...row.learningPath,
@@ -261,17 +405,7 @@ export async function listPublicLearningPaths(
   dbClient: DbOrTxClient = db
 ): Promise<{ data: TPublicLearningPathListItem[]; pagination: TPaginatedLearningPaths['pagination'] }> {
   try {
-    const courseCountSql = sql<number>`
-      COALESCE(
-        (SELECT COUNT(*)::int
-         FROM ${schema.learningPathCourse}
-         WHERE ${and(
-           eq(schema.learningPathCourse.learningPathId, schema.learningPath.id),
-           sql`${schema.learningPathCourse.removedAt} IS NULL`
-         )}),
-        0
-      )
-    `.as('courseCount');
+    const courseCountSql = pathCourseCountSql().as('courseCount');
 
     const whereConditions = [
       eq(schema.learningPath.organizationId, organizationId),
@@ -281,7 +415,7 @@ export async function listPublicLearningPaths(
 
     const search = options?.search?.trim();
     if (search) {
-      const pattern = `%${search}%`;
+      const pattern = toContainsPattern(search);
       whereConditions.push(
         or(ilike(schema.learningPath.name, pattern), ilike(schema.learningPath.description, pattern))!
       );
@@ -311,7 +445,7 @@ export async function listPublicLearningPaths(
           })
           .from(schema.learningPath)
           .where(and(...whereConditions))
-          .orderBy(desc(schema.learningPath.createdAt));
+          .orderBy(desc(schema.learningPath.createdAt), asc(schema.learningPath.id));
 
         if (limit !== undefined) {
           return baseQuery.limit(limit).offset((page - 1) * limit);
@@ -517,12 +651,7 @@ export async function getOrgLearningPathsByIds(
   pathIds: string[],
   dbClient: DbOrTxClient = db
 ): Promise<
-  Array<
-    Pick<
-      TLearningPath,
-      'id' | 'name' | 'autoEnroll' | 'sequentialUnlock' | 'welcomeEmailMessage' | 'organizationId' | 'publicId'
-    >
-  >
+  Array<Pick<TLearningPath, 'id' | 'name' | 'sequentialUnlock' | 'welcomeEmailMessage' | 'organizationId' | 'publicId'>>
 > {
   if (pathIds.length === 0) {
     return [];
@@ -533,7 +662,6 @@ export async function getOrgLearningPathsByIds(
       .select({
         id: schema.learningPath.id,
         name: schema.learningPath.name,
-        autoEnroll: schema.learningPath.autoEnroll,
         sequentialUnlock: schema.learningPath.sequentialUnlock,
         welcomeEmailMessage: schema.learningPath.welcomeEmailMessage,
         organizationId: schema.learningPath.organizationId,
@@ -574,12 +702,13 @@ export interface TSearchLearningPath {
 export async function searchOrgLearningPaths(
   orgId: string,
   search: string,
-  limit: number
+  limit: number,
+  dbClient: DbOrTxClient = db
 ): Promise<TSearchLearningPath[]> {
   try {
-    const searchValue = `%${search.trim()}%`;
+    const searchValue = toContainsPattern(search.trim());
 
-    return await db
+    return await dbClient
       .select({
         id: schema.learningPath.id,
         publicId: schema.learningPath.publicId,
@@ -592,6 +721,7 @@ export async function searchOrgLearningPaths(
       .where(
         and(
           eq(schema.learningPath.organizationId, orgId),
+          eq(schema.learningPath.status, 'ACTIVE'),
           or(ilike(schema.learningPath.name, searchValue), ilike(schema.learningPath.description, searchValue))
         )
       )
@@ -611,12 +741,13 @@ export async function searchLmsLearningPaths(
   orgId: string,
   profileId: string,
   search: string,
-  limit: number
+  limit: number,
+  dbClient: DbOrTxClient = db
 ): Promise<TSearchLearningPath[]> {
   try {
-    const searchValue = `%${search.trim()}%`;
+    const searchValue = toContainsPattern(search.trim());
 
-    return await db
+    return await dbClient
       .select({
         id: schema.learningPath.id,
         publicId: schema.learningPath.publicId,
@@ -631,7 +762,9 @@ export async function searchLmsLearningPaths(
         and(
           eq(schema.learningPathMember.profileId, profileId),
           isNull(schema.learningPathMember.removedAt),
+          eq(schema.learningPathMember.roleId, ROLE.STUDENT),
           eq(schema.learningPath.organizationId, orgId),
+          eq(schema.learningPath.status, 'ACTIVE'),
           or(ilike(schema.learningPath.name, searchValue), ilike(schema.learningPath.description, searchValue))
         )
       )

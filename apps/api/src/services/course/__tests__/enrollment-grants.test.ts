@@ -73,7 +73,7 @@ describe('direct course grant helpers', () => {
   });
 
   it('bulk path inserts missing grants and reports the count', async () => {
-    const execute = vi.fn().mockResolvedValue({ rows: [{ id: 'grant-1' }, { id: 'grant-2' }] });
+    const execute = vi.fn().mockResolvedValue([{ id: 'grant-1' }, { id: 'grant-2' }]);
 
     const inserted = await recordDirectCourseGrantsBulk(
       { groupIds: ['g-1'], profileIds: ['p-1', 'p-2'], courseIds: ['c-1'], source: 'ORG_AUDIENCE' },
@@ -85,7 +85,7 @@ describe('direct course grant helpers', () => {
   });
 
   it('bulk path binds id lists as single array params for ANY()', async () => {
-    const execute = vi.fn().mockResolvedValue({ rows: [] });
+    const execute = vi.fn().mockResolvedValue([]);
 
     await recordDirectCourseGrantsBulk(
       { groupIds: ['g-1', 'g-2'], profileIds: ['p-1'], courseIds: ['c-1', 'c-2'], source: 'ORG_AUDIENCE' },
@@ -101,5 +101,40 @@ describe('direct course grant helpers', () => {
     expect(values).toContainEqual(['g-1', 'g-2']);
     expect(values).toContainEqual(['p-1']);
     expect(values).toContainEqual(['c-1', 'c-2']);
+  });
+});
+
+describe('backfill row-count helpers (postgres-js array shape)', () => {
+  it('bulk insert counts rows from a bare array (postgres-js)', async () => {
+    const execute = vi.fn().mockResolvedValue([{ id: 'a' }]);
+    const inserted = await recordDirectCourseGrantsBulk(
+      { groupIds: ['g-1'], profileIds: ['p-1'], courseIds: ['c-1'], source: 'ORG_AUDIENCE' },
+      { execute } as never
+    );
+    expect(inserted).toBe(1);
+  });
+
+  it('bulk insert still counts legacy { rows } shape', async () => {
+    const execute = vi.fn().mockResolvedValue({ rows: [{ id: 'a' }, { id: 'b' }] });
+    const inserted = await recordDirectCourseGrantsBulk(
+      { groupIds: ['g-1'], profileIds: ['p-1'], courseIds: ['c-1'], source: 'ORG_AUDIENCE' },
+      { execute } as never
+    );
+    expect(inserted).toBe(2);
+  });
+
+  it('count helpers read total from array and legacy shapes', async () => {
+    const { countMissingCourseEnrollmentGrants, countMissingCohortCourseEnrollmentGrants } = await import(
+      '@cio/db/queries/learning-path/enrollment-grant'
+    );
+
+    const arrayClient = { execute: vi.fn().mockResolvedValue([{ total: 5 }]) } as never;
+    await expect(countMissingCourseEnrollmentGrants(undefined, arrayClient)).resolves.toBe(5);
+
+    const legacyClient = { execute: vi.fn().mockResolvedValue({ rows: [{ total: 3 }] }) } as never;
+    await expect(countMissingCohortCourseEnrollmentGrants(undefined, legacyClient)).resolves.toBe(3);
+
+    const stringTotal = { execute: vi.fn().mockResolvedValue([{ total: '7' }]) } as never;
+    await expect(countMissingCourseEnrollmentGrants(undefined, stringTotal)).resolves.toBe(7);
   });
 });

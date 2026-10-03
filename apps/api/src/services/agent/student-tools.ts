@@ -10,11 +10,8 @@ import { getLesson } from '@cio/core/services/lesson/lesson';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { listCourseSections } from '@cio/core/services/course/section';
-import {
-  getCourseCompletionStatsForProfile,
-  getEnrolledPaths,
-  listLearningPathCourses
-} from '@cio/db/queries/learning-path';
+import { getLearnerPathSummaries } from '@cio/db/queries/learning-path/journey';
+import { summarizeJourney } from '@api/services/learning-path/journey';
 import { AppError } from '@api/utils/errors';
 import { AgentEvent, trackAgentEvent } from '@cio/core/utils/tinybird';
 import { verifyExerciseBelongsToCourse, verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
@@ -133,7 +130,7 @@ const searchCourseParam = z.object({
   limit: z.number().int().min(1).max(20).default(8)
 });
 const listStudentLearningPathsParam = z.object({
-  limit: z.number().int().min(1).max(10).optional().default(5)
+  limit: z.number().int().min(1).max(20).optional().default(5)
 });
 
 export function buildStudentAgentTools(orgId: string, userId: string, courseId: string, _settings: AiTutorSettings) {
@@ -315,40 +312,30 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
       execute: async (args) => {
         return executeStudentTool('get_student_learning_paths', { orgId, userId, courseId, args }, async () => {
           const limit = args.limit ?? 5;
-          const enrolledRows = await getEnrolledPaths(userId, orgId);
+          const summaries = await getLearnerPathSummaries({ orgId, profileId: userId, limit });
 
-          const paths = await Promise.all(
-            enrolledRows.slice(0, limit).map(async ({ member, learningPath }) => {
-              const courses = await listLearningPathCourses(learningPath.id);
-              const ordered = [...courses].sort((a, b) => a.order - b.order);
-              const stats = await Promise.all(
-                ordered.map((course) => getCourseCompletionStatsForProfile(course.courseId, userId))
-              );
+          const paths = summaries.map((summary) => {
+            const courseProgress = summary.courses.map((course) => ({
+              courseId: course.courseId,
+              title: course.title,
+              order: course.order,
+              isComplete: course.isComplete
+            }));
+            const journey = summarizeJourney(courseProgress);
 
-              const courseProgress = ordered.map((course, index) => ({
-                courseId: course.courseId,
-                title: course.title,
-                order: course.order,
-                isComplete: stats[index].isComplete
-              }));
-              const completedCount = courseProgress.filter((course) => course.isComplete).length;
-              const currentCourse = courseProgress.find((course) => !course.isComplete) ?? null;
-
-              return {
-                pathId: learningPath.id,
-                publicId: learningPath.publicId,
-                name: learningPath.name,
-                status: member.status,
-                progressPercent:
-                  courseProgress.length > 0 ? Math.round((completedCount / courseProgress.length) * 100) : 0,
-                completedCourseCount: completedCount,
-                totalCourses: courseProgress.length,
-                courses: courseProgress,
-                currentCourseId: currentCourse?.courseId ?? null,
-                currentCourseTitle: currentCourse?.title ?? null
-              };
-            })
-          );
+            return {
+              pathId: summary.pathId,
+              publicId: summary.publicId,
+              name: summary.name,
+              status: summary.memberStatus,
+              progressPercent: journey.progressPercent,
+              completedCourseCount: journey.completedCourses,
+              totalCourses: journey.totalCourses,
+              courses: courseProgress,
+              currentCourseId: journey.currentCourseId,
+              currentCourseTitle: journey.currentCourseTitle
+            };
+          });
 
           return { paths };
         });

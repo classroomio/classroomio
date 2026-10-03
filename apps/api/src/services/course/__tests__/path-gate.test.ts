@@ -6,19 +6,19 @@ vi.mock('@cio/db/queries/course', () => ({
 }));
 
 import { getCourseById } from '@cio/db/queries/course';
-import { assertCourseAllowsDirectStudentAdd, assertCourseNotPathGated } from '../path-gate';
+import { assertCourseAllowsDirectStudentAdd, assertCourseNotPathOnly } from '../path-gate';
 
-describe('assertCourseNotPathGated', () => {
-  it('rejects path-gated courses', () => {
-    expect(() => assertCourseNotPathGated({ requiresLearningPath: true })).toThrowError(
+describe('assertCourseNotPathOnly', () => {
+  it('rejects path-only courses', () => {
+    expect(() => assertCourseNotPathOnly({ enrollOnlyInLearningPath: true })).toThrowError(
       expect.objectContaining({ code: ErrorCodes.VALIDATION_ERROR, statusCode: 400 })
     );
   });
 
   it('allows regular courses and missing rows', () => {
-    expect(() => assertCourseNotPathGated({ requiresLearningPath: false })).not.toThrow();
-    expect(() => assertCourseNotPathGated(null)).not.toThrow();
-    expect(() => assertCourseNotPathGated(undefined)).not.toThrow();
+    expect(() => assertCourseNotPathOnly({ enrollOnlyInLearningPath: false })).not.toThrow();
+    expect(() => assertCourseNotPathOnly(null)).not.toThrow();
+    expect(() => assertCourseNotPathOnly(undefined)).not.toThrow();
   });
 });
 
@@ -27,8 +27,8 @@ describe('assertCourseAllowsDirectStudentAdd', () => {
     vi.clearAllMocks();
   });
 
-  it('rejects path-gated courses', async () => {
-    vi.mocked(getCourseById).mockResolvedValue([{ id: 'c-1', requiresLearningPath: true }] as never);
+  it('rejects path-only courses', async () => {
+    vi.mocked(getCourseById).mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: true }] as never);
 
     await expect(assertCourseAllowsDirectStudentAdd('c-1')).rejects.toMatchObject({
       code: ErrorCodes.VALIDATION_ERROR,
@@ -38,7 +38,7 @@ describe('assertCourseAllowsDirectStudentAdd', () => {
 
   it('allows regular courses and forwards the transaction client', async () => {
     const tx = { id: 'tx' };
-    vi.mocked(getCourseById).mockResolvedValue([{ id: 'c-1', requiresLearningPath: false }] as never);
+    vi.mocked(getCourseById).mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: false }] as never);
 
     await expect(assertCourseAllowsDirectStudentAdd('c-1', tx as never)).resolves.toBeUndefined();
     expect(vi.mocked(getCourseById)).toHaveBeenCalledWith('c-1', tx);

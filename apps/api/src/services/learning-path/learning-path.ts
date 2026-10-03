@@ -4,6 +4,11 @@ import { containsDisallowedHrefs } from '@cio/utils/validation/shared';
 import { db } from '@cio/db/drizzle';
 import type {
   TCreateLearningPathInput,
+  TLearningPathListCompletionFilter,
+  TLearningPathListEnrollmentFilter,
+  TLearningPathListSortBy,
+  TLearningPathListSortOrder,
+  TLearningPathListStatusFilter,
   TPublicLearningPathsQuery,
   TUpdateLearningPath
 } from '@cio/utils/validation/learning-path';
@@ -27,9 +32,10 @@ import {
 } from '@cio/db/queries/learning-path';
 import type { TLearningPath } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
-import { QUEUE_NAMES, getQueue, getQueueJobEnvelope, type JobEnvelope } from '@cio/jobs';
+import { JOB_NAMES, QUEUE_NAMES, getQueue, getQueueJobEnvelope, type JobEnvelope } from '@cio/jobs';
 
 import { scheduleLearningPathProgressSync } from './progress-sync-jobs';
+import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
 
 export interface TLearningPathDetail extends TLearningPath {
   courses: TLearningPathCourseDetail[];
@@ -92,12 +98,23 @@ export async function assertCanManageLearningPath(
 /**
  * Lists learning paths in an organization for team members.
  * Admins see all paths; Tutors see assigned paths or paths they created.
+ * Status, enrollment, completion, sort and order narrow server-side so the
+ * URL-driven listing stays stable across pages.
  */
 export async function listOrgLearningPaths(
   organizationId: string,
   userId: string,
   orgRoles?: Record<string, number>,
-  query?: { page?: number; limit?: number; search?: string }
+  query?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: TLearningPathListStatusFilter;
+    enrollment?: TLearningPathListEnrollmentFilter;
+    completion?: TLearningPathListCompletionFilter;
+    sort?: TLearningPathListSortBy;
+    order?: TLearningPathListSortOrder;
+  }
 ): Promise<TPaginatedLearningPaths> {
   try {
     const roleId = orgRoles?.[organizationId];
@@ -109,7 +126,12 @@ export async function listOrgLearningPaths(
       return await listLearningPaths(organizationId, {
         page: query?.page,
         limit: query?.limit,
-        search: query?.search
+        search: query?.search,
+        status: query?.status,
+        enrollment: query?.enrollment,
+        completion: query?.completion,
+        sort: query?.sort,
+        order: query?.order
       });
     }
 
@@ -117,7 +139,12 @@ export async function listOrgLearningPaths(
       tutorProfileId: userId,
       page: query?.page,
       limit: query?.limit,
-      search: query?.search
+      search: query?.search,
+      status: query?.status,
+      enrollment: query?.enrollment,
+      completion: query?.completion,
+      sort: query?.sort,
+      order: query?.order
     });
   } catch (error) {
     throwAsInternal(error, 'Failed to list learning paths');
@@ -130,7 +157,7 @@ export async function listOrgLearningPaths(
 export async function createLearningPathService(
   organizationId: string,
   userId: string,
-  data: TCreateLearningPathInput,
+  data: TCreateLearningPathInput & { cost?: number },
   orgRoles?: Record<string, number>
 ): Promise<TLearningPath> {
   try {
@@ -149,7 +176,8 @@ export async function createLearningPathService(
           createdByProfileId: userId,
           name: trimmedName,
           description: trimmedDescription,
-          isPublished: false
+          isPublished: false,
+          ...(data.cost !== undefined ? { cost: data.cost } : {})
         },
         tx
       );
@@ -235,13 +263,18 @@ export async function getBulkPathEnrollmentStatus(
   await assertCanManageLearningPath(path, userId, orgRoles);
 
   const job = await getQueue(QUEUE_NAMES.audience).getJob(jobId);
-  const payloadOrgId = (job?.data as { organizationId?: string } | undefined)?.organizationId;
+  const payload = job?.data as { organizationId?: string; pathId?: string } | undefined;
 
-  if (!job || payloadOrgId !== path.organizationId) {
+  if (
+    !job ||
+    job.name !== JOB_NAMES.audience.pathBulkEnroll ||
+    payload?.organizationId !== path.organizationId ||
+    payload?.pathId !== path.id
+  ) {
     throw new AppError('Bulk enrollment not found', ErrorCodes.NOT_FOUND, 404);
   }
 
-  const envelope = await getQueueJobEnvelope(QUEUE_NAMES.audience, jobId, 'path-bulk-enroll', pollCount);
+  const envelope = await getQueueJobEnvelope(QUEUE_NAMES.audience, jobId, JOB_NAMES.audience.pathBulkEnroll, pollCount);
 
   if (!envelope) {
     throw new AppError('Bulk enrollment not found', ErrorCodes.NOT_FOUND, 404);
@@ -263,6 +296,10 @@ export async function updateLearningPathService(
     const { updated, sequentialUnlockChanged } = await db.transaction(async (tx) => {
       const path = await resolveLearningPath(pathId, tx);
       await assertCanManageLearningPath(path, userId, orgRoles, tx);
+
+      if (data.certificate !== undefined && !(await orgHasCertificatesEnabled(path.organizationId))) {
+        throw new AppError('Certificates require a plan with certificates enabled', ErrorCodes.UPGRADE_REQUIRED, 403);
+      }
 
       if (data.landingPage && containsDisallowedHrefs(data.landingPage)) {
         throw new AppError('Landing page contains disallowed links', ErrorCodes.VALIDATION_ERROR, 400);

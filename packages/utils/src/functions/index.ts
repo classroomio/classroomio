@@ -16,3 +16,4 @@ export * from './vimeo';
 export * from './youtube';
 export * from './video';
 export * from './date';
+export * from './invite-metadata';

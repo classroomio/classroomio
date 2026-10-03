@@ -371,7 +371,7 @@ export const groupAttendance = pgTable(
       columns: [table.studentId],
       foreignColumns: [groupmember.id],
       name: 'group_attendance_student_id_fkey'
-    })
+    }).onDelete('cascade')
   ]
 );
 
@@ -563,7 +563,7 @@ export const lessonComment = pgTable(
       columns: [table.groupmemberId],
       foreignColumns: [groupmember.id],
       name: 'lesson_comment_groupmember_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.lessonId],
       foreignColumns: [lesson.id],
@@ -638,7 +638,7 @@ export const submission = pgTable(
       columns: [table.submittedBy],
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
-    }),
+    }).onDelete('set null'),
     index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
   ]
 );
@@ -757,7 +757,7 @@ export const course = pgTable(
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
     /** Independent enroll blocked. Do not revoke grants that already exist. */
-    requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
+    enrollOnlyInLearningPath: boolean('enroll_only_in_learning_path').default(false).notNull(),
     /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
     displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{
@@ -951,7 +951,7 @@ export const appsPoll = pgTable(
       columns: [table.authorId],
       foreignColumns: [groupmember.id],
       name: 'apps_poll_authorId_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.courseId],
       foreignColumns: [course.id],
@@ -1220,7 +1220,7 @@ export const appsPollSubmission = pgTable(
       columns: [table.selectedById],
       foreignColumns: [groupmember.id],
       name: 'apps_poll_submission_selected_by_id_fkey'
-    })
+    }).onDelete('set null')
   ]
 );
 
@@ -1761,7 +1761,7 @@ export const courseNewsfeed = pgTable(
       columns: [table.authorId],
       foreignColumns: [groupmember.id],
       name: 'course_newsfeed_author_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.courseId],
       foreignColumns: [course.id],
@@ -1793,7 +1793,7 @@ export const courseNewsfeedComment = pgTable(
       columns: [table.authorId],
       foreignColumns: [groupmember.id],
       name: 'course_newsfeed_comment_author_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.courseNewsfeedId],
       foreignColumns: [courseNewsfeed.id],
@@ -2094,7 +2094,7 @@ export const questionAnswer = pgTable(
     openAnswer: text('open_answer'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
-    groupMemberId: uuid('group_member_id').notNull(),
+    groupMemberId: uuid('group_member_id'),
     submissionId: uuid('submission_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     point: bigint({ mode: 'number' }).default(sql`'0'`)
@@ -2104,7 +2104,7 @@ export const questionAnswer = pgTable(
       columns: [table.groupMemberId],
       foreignColumns: [groupmember.id],
       name: 'question_answer_group_member_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.questionId],
       foreignColumns: [question.id],
@@ -3545,7 +3545,6 @@ export const learningPath = pgTable(
     currency: varchar().default('USD').notNull(),
     sequentialUnlock: boolean('sequential_unlock').default(true).notNull(),
     selfEnrollment: boolean('self_enrollment').default(true).notNull(),
-    autoEnroll: boolean('auto_enroll').default(true).notNull(),
     certificate: jsonb().default({}).$type<{
       isDownloadable?: boolean;
       theme?: string;

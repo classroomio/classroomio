@@ -30,6 +30,8 @@ export const ZPathBulkEnrollPayload = z
       .min(1),
     /** Members per transaction. */
     chunkSize: z.number().int().positive().max(500).default(50),
+    /** ISO timestamp captured when the bulk add was enqueued; guards against resurrecting members removed while queued. */
+    enqueuedAt: z.string().datetime().optional(),
     /** False skips welcome/invite sends; invites are still created. */
     sendEmail: z.boolean().default(true)
   })
