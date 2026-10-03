@@ -125,6 +125,13 @@ export function handleLocaleChange(newLocale: TLocale) {
   persistLocale(newLocale);
 }
 
+export function activateLocale(newLocale: TLocale) {
+  if (!newLocale) return;
+
+  locale.set(newLocale);
+  selectedLocale.set(newLocale);
+}
+
 export function getPersistedLocale(): string | null {
   if (typeof window === 'undefined') {
     return null;

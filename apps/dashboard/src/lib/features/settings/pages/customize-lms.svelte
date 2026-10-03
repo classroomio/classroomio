@@ -22,6 +22,7 @@
 
   let widgetKey = $state('');
   let savedCustomizationSnapshot = $state('');
+  let capturedOrgId = $state('');
   let languageLocale = $state<TLocale>('en');
   let languageEnforced = $state(false);
 
@@ -51,13 +52,14 @@
   }
 
   $effect(() => {
-    if (!$currentOrg?.id) return;
+    const organizationId = $currentOrg?.id;
+    if (!organizationId || organizationId === capturedOrgId) return;
 
-    if (!savedCustomizationSnapshot) {
-      languageLocale = $currentOrg.settings?.language?.locale ?? 'en';
-      languageEnforced = $currentOrg.settings?.language?.enforced ?? false;
-      captureCustomizationSnapshot();
-    }
+    capturedOrgId = organizationId;
+    languageLocale = $currentOrg.settings?.language?.locale ?? 'en';
+    languageEnforced = $currentOrg.settings?.language?.enforced ?? false;
+    savedCustomizationSnapshot = '';
+    captureCustomizationSnapshot();
   });
 
   $effect(() => {
