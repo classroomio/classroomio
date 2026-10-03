@@ -5689,6 +5689,7 @@
       "landing_save_failed": "Landingpage konnte nicht gespeichert werden",
       "link_generated": "Einladungslink generiert und in die Zwischenablage kopiert",
       "settings_saved": "Lernpfadeinstellungen aktualisiert",
+      "members_add_partial": "{added} hinzugefügt, {invited} eingeladen, {notAdded} konnte nicht hinzugefügt werden",
       "member_role_updated": "Mitgliedsrolle aktualisiert",
       "delete_failed": "Der Lernpfad konnte nicht gelöscht werden",
       "member_removed": "Student aus Pfad entfernt"
@@ -5970,9 +5971,7 @@
         "self_enrollment_label": "Selbsteinschreibung erlauben",
         "self_enrollment_desc": "Studenten können sich selbst für diesen Pfad einschreiben.",
         "sequential_unlock_label": "Sequenzielle Kursfreischaltung",
-        "sequential_unlock_desc": "Studenten müssen Kurse in festgelegter Reihenfolge absolvieren.",
-        "auto_enroll_label": "Automatisch in Pfadkurse einschreiben",
-        "auto_enroll_desc": "Studenten automatisch in alle Kurse einschreiben, sobald sie dem Pfad beitreten."
+        "sequential_unlock_desc": "Studenten müssen Kurse in festgelegter Reihenfolge absolvieren."
       },
       "publishing": {
         "legend": "Pfad veröffentlichen",
@@ -6013,12 +6012,6 @@
         "disabled": "Deaktiviert",
         "legend": "Studierende können sich selbst einschreiben",
         "access": "Wenn diese Option deaktiviert ist, können Schüler nur über einen Einladungslink beitreten oder indem sie von {people} hinzugefügt werden."
-      },
-      "auto_enroll": {
-        "legend": "Automatische Einschreibung in Pfadkurse",
-        "enabled": "Aktiviert",
-        "disabled": "Deaktiviert",
-        "desc": "Durch den Beitritt zum Pfad wird der Student für jeden darin enthaltenen Kurs angemeldet."
       }
     },
     "courses": {

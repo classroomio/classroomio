@@ -22,7 +22,7 @@
   const GRANT_ACCESS_PARAM = 'grantAccess';
 
   let courseId = $derived(courseApi.course?.id ?? '');
-  const isPathGated = $derived(Boolean(courseApi.course?.requiresLearningPath));
+  const isPathGated = $derived(Boolean(courseApi.course?.enrollOnlyInLearningPath));
   const studentEmail = $derived(new URLSearchParams(page.url.search).get(GRANT_ACCESS_PARAM)?.trim() ?? '');
   const isOpen = $derived(Boolean(studentEmail));
 

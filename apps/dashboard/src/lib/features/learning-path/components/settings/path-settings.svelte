@@ -12,10 +12,11 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { DeleteModal, UploadWidget, TextEditor } from '$features/ui';
+  import { DeleteModal, AttentionHighlight, UploadWidget, TextEditor } from '$features/ui';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
   import { generateSlug } from '@cio/utils/functions';
+  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgDomain, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
@@ -36,7 +37,6 @@
   let currentSlug = $state(path.slug ?? '');
   let selfEnrollment = $state(path.selfEnrollment ?? true);
   let sequentialUnlock = $state(path.sequentialUnlock ?? true);
-  let autoEnroll = $state(path.autoEnroll ?? true);
   let isPublished = $state(path.isPublished ?? false);
 
   let currentPathId = $state(path.id);
@@ -57,7 +57,6 @@
     slug: path.slug ?? '',
     selfEnrollment: path.selfEnrollment ?? true,
     sequentialUnlock: path.sequentialUnlock ?? true,
-    autoEnroll: path.autoEnroll ?? true,
     isPublished: path.isPublished ?? false
   });
 
@@ -71,7 +70,6 @@
       currentSlug = path.slug ?? '';
       selfEnrollment = path.selfEnrollment ?? true;
       sequentialUnlock = path.sequentialUnlock ?? true;
-      autoEnroll = path.autoEnroll ?? true;
       isPublished = path.isPublished ?? false;
 
       snapshot = {
@@ -82,7 +80,6 @@
         slug: path.slug ?? '',
         selfEnrollment: path.selfEnrollment ?? true,
         sequentialUnlock: path.sequentialUnlock ?? true,
-        autoEnroll: path.autoEnroll ?? true,
         isPublished: path.isPublished ?? false
       };
       errors = {};
@@ -100,7 +97,6 @@
       currentSlug !== snapshot.slug ||
       selfEnrollment !== snapshot.selfEnrollment ||
       sequentialUnlock !== snapshot.sequentialUnlock ||
-      autoEnroll !== snapshot.autoEnroll ||
       isPublished !== snapshot.isPublished;
 
     hasUnsavedChanges = isDirty;
@@ -179,7 +175,6 @@
       slug: targetSlug ? targetSlug.trim() : undefined,
       selfEnrollment,
       sequentialUnlock,
-      autoEnroll,
       isPublished
     };
 
@@ -198,7 +193,6 @@
       slug: updated.slug ?? targetSlug,
       selfEnrollment: updated.selfEnrollment,
       sequentialUnlock: updated.sequentialUnlock,
-      autoEnroll: updated.autoEnroll,
       isPublished: updated.isPublished
     };
 
@@ -213,7 +207,6 @@
     currentSlug = snapshot.slug;
     selfEnrollment = snapshot.selfEnrollment;
     sequentialUnlock = snapshot.sequentialUnlock;
-    autoEnroll = snapshot.autoEnroll;
     isPublished = snapshot.isPublished;
     errors = {};
     hasUnsavedChanges = false;
@@ -433,47 +426,27 @@
 
   <Field.Separator />
 
-  <Field.Set>
-    <Field.Legend>{$t('learningPath.settings.auto_enroll.legend')}</Field.Legend>
-    <Field.Description>{$t('learningPath.settings.auto_enroll.desc')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Switch
-        id="auto-enroll-switch"
-        checked={autoEnroll}
-        onCheckedChange={(checked) => {
-          autoEnroll = checked;
-          hasUnsavedChanges = true;
-        }}
-      />
-      <Label for="auto-enroll-switch">
-        {autoEnroll
-          ? $t('learningPath.settings.auto_enroll.enabled')
-          : $t('learningPath.settings.auto_enroll.disabled')}
-      </Label>
-    </Field.Field>
-  </Field.Set>
-
-  <Field.Separator />
-
   <Field.Set id="publish">
     <Field.Legend>{$t('learningPath.settings.publishing.legend')}</Field.Legend>
     <Field.Description>{$t('learningPath.settings.publishing.desc')}</Field.Description>
-    <Field.Field orientation="horizontal">
-      <Switch
-        id="publish-path-switch"
-        data-testid="path-settings-publish"
-        checked={isPublished}
-        onCheckedChange={(checked) => {
-          isPublished = checked;
-          hasUnsavedChanges = true;
-        }}
-      />
-      <Label for="publish-path-switch">
-        {isPublished
-          ? $t('learningPath.settings.publishing.published')
-          : $t('learningPath.settings.publishing.unpublished')}
-      </Label>
-    </Field.Field>
+    <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.LEARNING_PATH_SETTINGS].PUBLISH}>
+      <Field.Field orientation="horizontal">
+        <Switch
+          id="publish-path-switch"
+          data-testid="path-settings-publish"
+          checked={isPublished}
+          onCheckedChange={(checked) => {
+            isPublished = checked;
+            hasUnsavedChanges = true;
+          }}
+        />
+        <Label for="publish-path-switch">
+          {isPublished
+            ? $t('learningPath.settings.publishing.published')
+            : $t('learningPath.settings.publishing.unpublished')}
+        </Label>
+      </Field.Field>
+    </AttentionHighlight>
   </Field.Set>
 
   {#if $isOrgAdmin}

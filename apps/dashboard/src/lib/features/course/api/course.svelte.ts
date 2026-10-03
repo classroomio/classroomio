@@ -72,6 +72,7 @@ export class CourseApi extends BaseApiWithErrors {
   private isCourseDirty = $state(false);
   private inFlightCourseRequest: Promise<Course | null> | null = null;
   private inFlightCourseId = $state<string | null>(null);
+  private getCourseRequestSeq = 0;
 
   /**
    * Updates a single lesson/exercise item in the local course content store.
@@ -212,6 +213,8 @@ export class CourseApi extends BaseApiWithErrors {
    * @returns The course data or null on error
    */
   async get(courseId: string) {
+    const seq = ++this.getCourseRequestSeq;
+    let fetchedCourse: Course | null = null;
     this.isNotFound = false;
     this.isForbidden = false;
     this.loadError = null;
@@ -224,9 +227,11 @@ export class CourseApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching course',
       onSuccess: (response) => {
+        if (this.getCourseRequestSeq !== seq) return;
         console.log('response', response.data);
         if (response.data) {
           this.course = response.data;
+          fetchedCourse = response.data;
           this.success = true;
           this.errors = {};
           this.isNotFound = false;
@@ -235,6 +240,7 @@ export class CourseApi extends BaseApiWithErrors {
         }
       },
       onError: (result) => {
+        if (this.getCourseRequestSeq !== seq) return;
         this.course = null;
         const code =
           result && typeof result === 'object' && 'code' in result ? String((result as { code: unknown }).code) : null;
@@ -265,6 +271,9 @@ export class CourseApi extends BaseApiWithErrors {
         }
       }
     });
+    // A stale request must not return (or overwrite via its caller) the
+    // newer request's data. Return only what this request fetched.
+    if (this.getCourseRequestSeq !== seq) return fetchedCourse;
     return this.course;
   }
 

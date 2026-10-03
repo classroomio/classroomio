@@ -38,7 +38,7 @@
   interface Course {
     id: string;
     title: string;
-    requiresLearningPath?: boolean;
+    enrollOnlyInLearningPath?: boolean;
   }
 
   interface Cohort {
@@ -76,7 +76,7 @@
   let unknownColumns = $state<string[]>([]);
   let resultRows = $state<AudienceImportResultRows>([]);
   let importedCount = $state(0);
-  let skippedPathGatedCourseNames = $state<string[]>([]);
+  let skippedPathOnlyCourseNames = $state<string[]>([]);
 
   let courseAccessMode = $state('none');
   let cohortAccessMode = $state('none');
@@ -166,7 +166,7 @@
 
       resultRows = result.data.rows ?? [];
       importedCount = result.data.imported ?? 0;
-      skippedPathGatedCourseNames = result.data.skippedPathGatedCourseNames ?? [];
+      skippedPathOnlyCourseNames = result.data.skippedPathOnlyCourseNames ?? [];
       step = 'result';
     } finally {
       isSubmitting = false;
@@ -182,7 +182,7 @@
     unknownColumns = [];
     resultRows = [];
     importedCount = 0;
-    skippedPathGatedCourseNames = [];
+    skippedPathOnlyCourseNames = [];
   }
 
   // Writes only; nothing here reads `controls`, so this cannot loop.
@@ -324,7 +324,7 @@
           items={courses.map((c) => ({
             id: c.id,
             label: c.title || c.id,
-            description: c.requiresLearningPath ? $t('audience.path_only_badge') : undefined
+            description: c.enrollOnlyInLearningPath ? $t('audience.path_only_badge') : undefined
           }))}
           isSelected={(id) => selectedCourseIds.has(id)}
           onToggle={toggleCourse}
@@ -399,12 +399,12 @@
   <div class="space-y-6 pb-10">
     <p class="text-sm font-medium">{$t('audience.import.result_heading', { count: importedCount })}</p>
 
-    {#if skippedPathGatedCourseNames.length > 0}
+    {#if skippedPathOnlyCourseNames.length > 0}
       <Alert.Callout
         variant="warning"
-        title={$t('audience.import.skipped_path_gated_title', { count: skippedPathGatedCourseNames.length })}
+        title={$t('audience.import.skipped_path_gated_title', { count: skippedPathOnlyCourseNames.length })}
         description={$t('audience.import.skipped_path_gated_description', {
-          names: skippedPathGatedCourseNames.join(', ')
+          names: skippedPathOnlyCourseNames.join(', ')
         })}
       />
     {/if}

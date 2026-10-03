@@ -821,7 +821,7 @@ class OrgApi extends BaseApiWithErrors {
       logContext: 'assigning audience to courses',
       onSuccess: (response) => {
         const d = response.data;
-        const skippedNames = d.skippedPathGatedCourseNames ?? [];
+        const skippedNames = d.skippedPathOnlyCourseNames ?? [];
         if (skippedNames.length > 0) {
           snackbar.info(
             t.get('audience.assign.snackbar_partial', {

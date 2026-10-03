@@ -5690,6 +5690,7 @@
       "landing_save_failed": "Kunne ikke gemme landingssiden",
       "link_generated": "Invitationslink genereret og kopieret til udklipsholder",
       "settings_saved": "Læringsstiens indstillinger er opdateret",
+      "members_add_partial": "{added} tilføjet, {invited} inviteret, {notAdded} kunne ikke tilføjes",
       "member_role_updated": "Medlemsrolle opdateret",
       "delete_failed": "Kunne ikke slette læringsstien"
     },
@@ -5970,9 +5971,7 @@
         "self_enrollment_label": "Tillad selvtilmelding",
         "self_enrollment_desc": "Elever kan selv tilmelde sig denne sti.",
         "sequential_unlock_label": "Sekventiel oplåsning af kurser",
-        "sequential_unlock_desc": "Elever skal gennemføre kurser i rækkefølge.",
-        "auto_enroll_label": "Automatisk tilmelding til stiens kurser",
-        "auto_enroll_desc": "Tilmeld automatisk elever til alle kurser, når de tilmelder sig denne sti."
+        "sequential_unlock_desc": "Elever skal gennemføre kurser i rækkefølge."
       },
       "publishing": {
         "legend": "Udgiv sti",
@@ -6011,12 +6010,6 @@
         "legend": "Elever kan tilmelde sig selv",
         "access": "Når det er slået fra, kan elever kun deltage via et invitationslink eller ved at blive tilføjet under {people}.",
         "access_people": "Personer",
-        "enabled": "Aktiveret",
-        "disabled": "Deaktiveret"
-      },
-      "auto_enroll": {
-        "legend": "Automatisk tilmelding til stiens kurser",
-        "desc": "Når en elev tilmelder sig stien, tilmeldes vedkommende alle de kurser, den indeholder.",
         "enabled": "Aktiveret",
         "disabled": "Deaktiveret"
       }

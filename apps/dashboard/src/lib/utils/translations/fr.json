@@ -5689,6 +5689,7 @@
       "landing_save_failed": "Échec de l’enregistrement de la page d’accueil",
       "link_generated": "Lien d'invitation généré et copié dans le presse-papiers",
       "settings_saved": "Paramètres du parcours mis à jour",
+      "members_add_partial": "{added} ajouté, {invited} invité, {notAdded} n'a pas pu être ajouté",
       "member_role_updated": "Rôle de membre mis à jour",
       "delete_failed": "Échec de la suppression du parcours d'apprentissage",
       "member_removed": "Étudiant retiré du chemin"
@@ -5970,9 +5971,7 @@
         "self_enrollment_label": "Autoriser l'auto-inscription",
         "self_enrollment_desc": "Les étudiants peuvent s'inscrire eux-mêmes à ce parcours.",
         "sequential_unlock_label": "Déverrouillage séquentiel des cours",
-        "sequential_unlock_desc": "Les étudiants doivent compléter les cours dans l'ordre.",
-        "auto_enroll_label": "Inscription automatique aux cours du parcours",
-        "auto_enroll_desc": "Inscrire automatiquement les étudiants à tous les cours lors de leur inscription au parcours."
+        "sequential_unlock_desc": "Les étudiants doivent compléter les cours dans l'ordre."
       },
       "publishing": {
         "legend": "Publication",
@@ -6013,12 +6012,6 @@
         "disabled": "Désactivé",
         "legend": "Les étudiants peuvent s'inscrire eux-mêmes",
         "access": "Lorsqu'elle est désactivée, les étudiants ne peuvent rejoindre que via un lien d'invitation ou en étant ajoutés par {people}."
-      },
-      "auto_enroll": {
-        "legend": "Inscription automatique aux cours du parcours",
-        "enabled": "Activé",
-        "disabled": "Désactivé",
-        "desc": "Rejoindre le parcours inscrit l'étudiant dans tous les cours qu'il contient."
       }
     },
     "courses": {

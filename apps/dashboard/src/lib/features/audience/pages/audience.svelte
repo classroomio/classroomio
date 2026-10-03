@@ -45,7 +45,7 @@
   interface Course {
     id: string;
     title: string;
-    requiresLearningPath?: boolean;
+    enrollOnlyInLearningPath?: boolean;
   }
 
   interface Props {

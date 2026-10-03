@@ -1,11 +1,11 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 import type {
   TCreateLearningPath,
-  TPathListCompletionFilter,
-  TPathListEnrollmentFilter,
-  TPathListSortBy,
-  TPathListSortOrder,
-  TPathListStatusFilter,
+  TLearningPathListCompletionFilter,
+  TLearningPathListEnrollmentFilter,
+  TLearningPathListSortBy,
+  TLearningPathListSortOrder,
+  TLearningPathListStatusFilter,
   TUpdateLearningPath
 } from '@cio/utils/validation/learning-path';
 
@@ -46,7 +46,7 @@ export type ReorderPathCoursesSuccess = Extract<InferResponseType<ReorderPathCou
 export type RemovePathCourseSuccess = Extract<InferResponseType<RemovePathCourseRequest>, { success: true }>;
 export type ListPathMembersSuccess = Extract<InferResponseType<ListPathMembersRequest>, { success: true }>;
 export type AddPathMembersSuccess = Extract<InferResponseType<AddPathMembersRequest>, { success: true }>;
-/** Queued bulk-add branch of the add-members response; the inline branch is an array. */
+/** Queued bulk-add branch of the add-members response; the inline branch is `{ mode: 'completed' }` with counts. */
 export type QueuedAddMembersResult = Extract<AddPathMembersSuccess['data'], { mode: 'queued' }>;
 export type GetBulkEnrollStatusRequest =
   (typeof classroomio)['learning-path'][':pathId']['bulk-enrollment'][':jobId']['$get'];
@@ -61,6 +61,11 @@ export type BulkEnrollOutcome = {
   invited: number;
   failed: Array<{ key: string; reason: string }>;
 };
+/** What an add-members request reported, reduced to what the toast needs. */
+export type AddMembersSummary =
+  | { kind: 'queued'; jobId: string; requested: number }
+  | { kind: 'added'; added: number; invited: number }
+  | { kind: 'partial'; added: number; invited: number; notAdded: number };
 export type RemovePathMemberSuccess = Extract<InferResponseType<RemovePathMemberRequest>, { success: true }>;
 export type GetPathAnalyticsSuccess = Extract<InferResponseType<GetPathAnalyticsRequest>, { success: true }>;
 export type GetPathMemberDetailSuccess = Extract<InferResponseType<GetPathMemberDetailRequest>, { success: true }>;
@@ -105,16 +110,16 @@ export interface PathAccessInput {
   isForbidden: boolean;
   loadError: string | null;
 }
-/** Status filter, derived from the backend `PATH_LIST_STATUS_FILTERS`; `all` sends no status. */
-export type StatusFilter = 'all' | TPathListStatusFilter;
-/** Enrollment bucket filter, derived from `PATH_LIST_ENROLLMENT_FILTERS`; `all` sends none. */
-export type EnrollmentFilter = 'all' | TPathListEnrollmentFilter;
-/** Completion-rate filter, derived from `PATH_LIST_COMPLETION_FILTERS`; `all` sends none. */
-export type CompletionFilter = 'all' | TPathListCompletionFilter;
-/** Sort key, derived from the backend `PATH_LIST_SORT_BY`. */
-export type PathSortBy = TPathListSortBy;
-/** Sort direction, derived from the backend `PATH_LIST_SORT_ORDERS`. */
-export type PathSortOrder = TPathListSortOrder;
+/** Status filter, derived from the backend `LEARNING_PATH_LIST_STATUS_FILTERS`; `all` sends no status. */
+export type StatusFilter = 'all' | TLearningPathListStatusFilter;
+/** Enrollment bucket filter, derived from `LEARNING_PATH_LIST_ENROLLMENT_FILTERS`; `all` sends none. */
+export type EnrollmentFilter = 'all' | TLearningPathListEnrollmentFilter;
+/** Completion-rate filter, derived from `LEARNING_PATH_LIST_COMPLETION_FILTERS`; `all` sends none. */
+export type CompletionFilter = 'all' | TLearningPathListCompletionFilter;
+/** Sort key, derived from the backend `LEARNING_PATH_LIST_SORT_BY`. */
+export type PathSortBy = TLearningPathListSortBy;
+/** Sort direction, derived from the backend `LEARNING_PATH_LIST_SORT_ORDERS`. */
+export type PathSortOrder = TLearningPathListSortOrder;
 export type ViewMode = 'grid' | 'list';
 
 /** URL-driven filters for the org paths listing (page lives in the API query, not here). */

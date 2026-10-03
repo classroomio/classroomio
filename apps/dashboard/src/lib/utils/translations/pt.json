@@ -5690,6 +5690,7 @@
       "landing_save_failed": "Falha ao salvar a landing page",
       "link_generated": "Link de convite gerado e copiado para a área de transferência",
       "settings_saved": "Configurações do caminho de aprendizagem atualizadas",
+      "members_add_partial": "{added} adicionado, {invited} convidado, {notAdded} não pôde ser adicionado",
       "member_role_updated": "Função do membro atualizada",
       "delete_failed": "Falha ao excluir o caminho de aprendizagem"
     },
@@ -5970,9 +5971,7 @@
         "self_enrollment_label": "Permitir auto-matrícula",
         "self_enrollment_desc": "Os alunos podem se matricular sozinhos nesta trilha.",
         "sequential_unlock_label": "Desbloqueio sequencial de cursos",
-        "sequential_unlock_desc": "Os alunos devem concluir os cursos na ordem estabelecida.",
-        "auto_enroll_label": "Matrícula automática nos cursos da trilha",
-        "auto_enroll_desc": "Matricular automaticamente os alunos em todos os cursos ao entrarem nesta trilha."
+        "sequential_unlock_desc": "Os alunos devem concluir os cursos na ordem estabelecida."
       },
       "publishing": {
         "legend": "Publicação",
@@ -6011,12 +6010,6 @@
         "legend": "Os alunos podem se inscrever sozinhos",
         "access": "Quando desativado, os alunos só podem participar por link de convite ou ao serem adicionados em {people}.",
         "access_people": "Pessoas",
-        "enabled": "Ativado",
-        "disabled": "Desativado"
-      },
-      "auto_enroll": {
-        "legend": "Inscrição automática nos cursos da trilha",
-        "desc": "Entrar na trilha inscreve o aluno em todos os cursos que ela contém.",
         "enabled": "Ativado",
         "disabled": "Desativado"
       }
