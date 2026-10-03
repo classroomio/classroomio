@@ -16,7 +16,8 @@
 
   let { publicId }: Props = $props();
 
-  let reorder = $state(page.url.searchParams.get('reorder') === 'true');
+  let reorderRequested = page.url.searchParams.get('reorder') === 'true';
+  let reorder = $state(false);
   let showAddDialog = $state(false);
 
   onMount(() => {
@@ -29,6 +30,15 @@
 
   const activePath = $derived(learningPathApi.currentPath);
 
+  $effect(() => {
+    if (reorderRequested && activePath?.courses) {
+      if (activePath.courses.length >= 2) {
+        reorder = true;
+      }
+      reorderRequested = false;
+    }
+  });
+
   function handleRefresh() {
     if (publicId) {
       learningPathApi.refreshPath(publicId);
@@ -36,12 +46,17 @@
   }
 
   async function handleToggleReorder() {
-    if (reorder && activePath && activePath.courses && activePath.courses.length > 0) {
+    if (reorder && activePath && activePath.courses && activePath.courses.length >= 2) {
       await pathCoursesApi.reorderCourses(
         activePath.id,
         activePath.courses.map((c) => c.courseId)
       );
+
+      if (!pathCoursesApi.success) {
+        return;
+      }
     }
+
     reorder = !reorder;
   }
 </script>
@@ -58,7 +73,9 @@
         <Button
           variant="outline"
           onclick={handleToggleReorder}
-          disabled={!activePath || !activePath.courses || activePath.courses.length < 2}
+          loading={pathCoursesApi.isLoading}
+          disabled={pathCoursesApi.isLoading ||
+            (!reorder && (!activePath || !activePath.courses || activePath.courses.length < 2))}
         >
           {$t(`learningPath.builder.${reorder ? 'end_reorder' : 'start_reorder'}`)}
         </Button>
