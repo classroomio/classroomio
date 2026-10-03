@@ -1,4 +1,5 @@
 import { t } from '$lib/utils/functions/translations';
+import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
 import type { LearningPathDetail, SetupStep } from './types';
 
 /**
@@ -78,7 +79,7 @@ export function getSetupSteps(path: LearningPathDetail | null | undefined, baseP
       titleKey: 'learningPath.setup.step_publish_title',
       descKey: 'learningPath.setup.step_publish_desc',
       actionTextKey: 'learningPath.setup.step_publish_action',
-      href: `${basePath}/settings`,
+      href: `${basePath}/settings?highlight=${ROUTE_SECTIONS[ROUTE_NAME.LEARNING_PATH_SETTINGS].PUBLISH}`,
       isCompleted: isPublishDone
     }
   ];

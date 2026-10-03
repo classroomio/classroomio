@@ -5,14 +5,12 @@
     DEFAULT_SORT_ORDER,
     STATUS_FILTER_OPTIONS,
     ENROLLMENT_FILTER_OPTIONS,
-    COMPLETION_FILTER_OPTIONS,
-    type PathSortBy,
-    type PathSortOrder
+    COMPLETION_FILTER_OPTIONS
   } from '../utils/constants';
   import { Button } from '@cio/ui/base/button';
   import { SortPopover } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import type { StatusFilter, EnrollmentFilter, CompletionFilter } from '../utils/types';
+  import type { StatusFilter, EnrollmentFilter, CompletionFilter, PathSortBy, PathSortOrder } from '../utils/types';
 
   interface Props {
     sortKey?: PathSortBy;

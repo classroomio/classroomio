@@ -10,7 +10,7 @@
   interface Course {
     id: string;
     title: string;
-    requiresLearningPath?: boolean;
+    enrollOnlyInLearningPath?: boolean;
   }
 
   interface Props {
@@ -84,7 +84,7 @@
       items={courses.map((c) => ({
         id: c.id,
         label: c.title || c.id,
-        description: c.requiresLearningPath ? $t('audience.path_only_badge') : undefined
+        description: c.enrollOnlyInLearningPath ? $t('audience.path_only_badge') : undefined
       }))}
       isSelected={(id) => fields.selectedCourseIds.has(id)}
       onToggle={toggleCourse}

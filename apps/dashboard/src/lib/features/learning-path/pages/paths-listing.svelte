@@ -31,7 +31,7 @@
     parsePathListFilters
   } from '../utils/path-list-filters';
   import type { CompletionFilter, EnrollmentFilter, PathListFilters, StatusFilter, ViewMode } from '../utils/types';
-  import type { PathSortBy, PathSortOrder } from '../utils/constants';
+  import type { PathSortBy, PathSortOrder } from '../utils/types';
 
   let { loadError = null }: { loadError?: string | null } = $props();
 

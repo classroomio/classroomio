@@ -4085,7 +4085,7 @@
     "delete": {
       "action": "Delete",
       "title": "Delete member",
-      "description": "This removes the member from your organization and revokes their access to all assigned courses and cohorts.",
+      "description": "This removes the member from your organization and revokes their access to all assigned courses, cohorts, and learning paths.",
       "confirmation": "Are you sure you want to delete {name} ({email})? This action cannot be undone.",
       "cancel": "Cancel",
       "confirm": "Delete",
@@ -6054,6 +6054,7 @@
       "course_added": "Course added",
       "courses_added": "Courses added",
       "course_removed": "Course removed",
+      "members_add_partial": "{added} added, {invited} invited, {notAdded} could not be added",
       "member_removed": "Student removed from path",
       "member_role_updated": "Member role updated",
       "tutor_removed": "Tutor removed from path",
@@ -6353,12 +6354,6 @@
         "legend": "Students can enroll themselves",
         "access": "When off, students can only join through an invite link or by being added from {people}.",
         "access_people": "People",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
-      },
-      "auto_enroll": {
-        "legend": "Auto-enroll in path courses",
-        "desc": "Joining the path enrolls the student in every course it contains.",
         "enabled": "Enabled",
         "disabled": "Disabled"
       },

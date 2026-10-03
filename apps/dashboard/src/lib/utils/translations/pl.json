@@ -5996,6 +5996,7 @@
       "landing_save_failed": "Nie udało się zapisać strony docelowej",
       "link_generated": "Link z zaproszeniem wygenerowany i skopiowany do schowka",
       "settings_saved": "Ustawienia ścieżki nauki zaktualizowane",
+      "members_add_partial": "Dodano {added}, zaproszono {invited}, nie można dodać {notAdded}",
       "member_role_updated": "Rola członka została zaktualizowana",
       "delete_failed": "Nie udało się usunąć ścieżki szkoleniowej",
       "member_removed": "Uczeń usunięty ze ścieżki"
@@ -6277,9 +6278,7 @@
         "self_enrollment_label": "Zezwalaj na samodzielny zapis",
         "self_enrollment_desc": "Uczniowie mogą sami zapisać się na tę ścieżkę.",
         "sequential_unlock_label": "Sekwencyjne odblokowywanie kursów",
-        "sequential_unlock_desc": "Uczniowie muszą ukończyć kursy w określonej kolejności.",
-        "auto_enroll_label": "Automatyczny zapis na kursy ścieżki",
-        "auto_enroll_desc": "Automatycznie zapisuj uczniów na wszystkie kursy po dołączeniu do ścieżki."
+        "sequential_unlock_desc": "Uczniowie muszą ukończyć kursy w określonej kolejności."
       },
       "publishing": {
         "legend": "Publikacja",
@@ -6318,12 +6317,6 @@
         "legend": "Uczniowie mogą zapisywać się samodzielnie",
         "access": "Gdy wyłączone, uczniowie mogą dołączyć tylko przez link z zaproszeniem lub po dodaniu z {people}.",
         "access_people": "Osoby",
-        "enabled": "Włączone",
-        "disabled": "Wyłączone"
-      },
-      "auto_enroll": {
-        "legend": "Automatyczny zapis na kursy w ścieżce",
-        "desc": "Dołączenie do ścieżki zapisuje ucznia na każdy zawarty w niej kurs.",
         "enabled": "Włączone",
         "disabled": "Wyłączone"
       }
