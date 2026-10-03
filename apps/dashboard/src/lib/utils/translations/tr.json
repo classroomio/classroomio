@@ -5012,6 +5012,12 @@
         "join_failed": "Kuruluşa katılamadı",
         "try_again": "Tekrar dene"
       },
+      "limit_reached": {
+        "title": "Bu akademi şu anda dolu",
+        "description": "{orgName}, mevcut planındaki öğrenci sınırına ulaştı, bu nedenle sizi ekleyemedik. Hesabınızda bir sorun yok ve bunun nedeni sizin yaptığınız bir şey değil.",
+        "technical_details": "Teknik ayrıntılar",
+        "error_code": "Hata"
+      },
       "not_found": "Bu davet artık geçerli değil mevcut.",
       "loading": "LDavet yükleniyor..."
     },
