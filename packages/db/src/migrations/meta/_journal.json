@@ -169,6 +169,13 @@
       "when": 1790426936572,
       "tag": "0023_mcp_certificate_scopes",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1790934354515,
+      "tag": "0025_onboarding_questionnaire",
+      "breakpoints": true
     }
   ]
 }

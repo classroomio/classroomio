@@ -1,17 +1,19 @@
 import type { OnboardingField, OnboardingStep } from '../utils/types';
 import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
+import { getNextStep, getPreviousStep, ONBOARDING_STEPS } from '../utils/constants';
+import { validateMetadata, validateOrgSetup, validateQuestionStep } from '../utils/validations';
 
-import { ONBOARDING_STEPS } from '../utils/constants';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
-import { onboardingValidation } from '../utils/validations';
 import { profile } from '$lib/utils/store/user';
+import { get } from 'svelte/store';
 import { resolve } from '$app/paths';
 import { snackbar } from '$features/ui/snackbar/store';
 import { authClient } from '$lib/utils/services/auth/client';
 
 export class OnboardingApi extends BaseApiWithErrors {
   step: OnboardingStep = $state(ONBOARDING_STEPS.ORG_SETUP);
+  isRedirecting = $state(false);
 
   async markWelcomeEmailPending(): Promise<boolean> {
     const result = await this.execute<(typeof classroomio.onboarding)['welcome-email-pending']['$post']>({
@@ -22,20 +24,46 @@ export class OnboardingApi extends BaseApiWithErrors {
     return result !== undefined;
   }
 
-  async submit(data: OnboardingField) {
+  async next(data: OnboardingField) {
     if (this.step === ONBOARDING_STEPS.ORG_SETUP) {
       return this.submitOrgSetup(data);
     }
 
-    if (this.step === ONBOARDING_STEPS.USER_METADATA) {
-      return this.submitUserMetada(data);
+    const errors = validateQuestionStep(data, this.step);
+    if (errors) {
+      this.errors = errors;
+      return false;
     }
 
-    return false;
+    this.errors = {};
+
+    if (this.step === ONBOARDING_STEPS.SOURCE) {
+      return this.submitUserMetadata(data);
+    }
+
+    this.step = getNextStep(this.step);
+    return true;
+  }
+
+  back() {
+    if (this.step === ONBOARDING_STEPS.ORG_SETUP) return;
+
+    this.errors = {};
+    this.step = getPreviousStep(this.step);
+  }
+
+  async skip(data: OnboardingField) {
+    return this.submitUserMetadata({
+      ...data,
+      source: '',
+      sourceOther: '',
+      aiProvider: '',
+      aiProviderOther: ''
+    });
   }
 
   async submitOrgSetup(data: OnboardingField) {
-    const errors = onboardingValidation(data, ONBOARDING_STEPS.ORG_SETUP);
+    const errors = validateOrgSetup(data);
     if (errors) {
       this.errors = errors;
       return false;
@@ -51,7 +79,7 @@ export class OnboardingApi extends BaseApiWithErrors {
         currentOrg.set(mergeAccountOrgFromServer(organizations[0]));
 
         this.errors = {};
-        this.step = ONBOARDING_STEPS.USER_METADATA;
+        this.step = ONBOARDING_STEPS.USE_CASES;
       },
       onError: (result) => {
         if (typeof result === 'string') {
@@ -83,8 +111,8 @@ export class OnboardingApi extends BaseApiWithErrors {
     });
   }
 
-  async submitUserMetada(data: OnboardingField) {
-    const errors = onboardingValidation(data, ONBOARDING_STEPS.USER_METADATA);
+  async submitUserMetadata(data: OnboardingField) {
+    const errors = validateMetadata(data);
     if (errors) {
       this.errors = errors;
       return false;
@@ -92,15 +120,17 @@ export class OnboardingApi extends BaseApiWithErrors {
 
     await this.execute<(typeof classroomio.onboarding)['update-metadata']['$post']>({
       requestFn: () => classroomio.onboarding['update-metadata'].$post({ json: data }),
-      logContext: 'submitting organization setup',
+      logContext: 'submitting onboarding metadata',
       onSuccess: async (result) => {
         profile.set(result.data);
         handleLocaleChange(result.data.locale ?? 'en');
 
         const welcomePopup = `${result.data.isEmailVerified}`;
-        const orgPath = resolve(`/org/${data.siteName}?welcomePopup=${welcomePopup}`, {});
+        const siteName = get(currentOrg)?.siteName ?? data.siteName;
+        const orgPath = resolve(`/org/${siteName}?welcomePopup=${welcomePopup}`, {});
 
         await authClient.getSession({ query: { disableCookieCache: true } });
+        this.isRedirecting = true;
         window.location.href = orgPath;
       },
       onError: (result) => {

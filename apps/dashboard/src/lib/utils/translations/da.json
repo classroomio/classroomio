@@ -4360,7 +4360,92 @@
     "what_brings": "Hvad bringer dig til",
     "how": "Hvordan hørte du om os?",
     "back": "Tilbage",
-    "continue": "Fortsæt"
+    "continue": "Fortsæt",
+    "other": "Andet (fortæl os)",
+    "other_placeholder": "Fortæl os mere",
+    "other_required": "Fortæl os venligst mere",
+    "sources": {
+      "label": "Hvordan hørte du om os?",
+      "blog": "Blog eller artikel",
+      "ai": "AI",
+      "search_engine": "Søgemaskine",
+      "github": "GitHub eller open source",
+      "youtube": "YouTube eller podcast",
+      "social_media": "Sociale medier",
+      "product_hunt": "Produktjagt eller en anmeldelsesside",
+      "friends_family": "Venner, familie eller en kollega",
+      "subtitle": "Valgfrit, men det hjælper et lille team med at vide, hvad der virker."
+    },
+    "job_roles": {
+      "label": "Hvad er din rolle?",
+      "founder": "Stifter eller CEO",
+      "product_ops": "Produkt eller operationer",
+      "cs_education": "Kundesucces, uddannelse eller aktivering",
+      "developer": "Udvikler eller ingeniør",
+      "subtitle": "Dette hjælper os med at skræddersy dit setup."
+    },
+    "learning_methods": {
+      "label": "Hvordan lærer dine kunder dit produkt i dag?",
+      "self_serve": "De finder ud af det på egen hånd",
+      "live_onboarding": "Live onboarding-sessioner eller opkald",
+      "help_docs": "Hjælpedokumenter og support",
+      "no_training": "Vi har ikke træning endnu",
+      "subtitle": "Vælg den, der er tættest på, hvordan den fungerer lige nu."
+    },
+    "use_cases": {
+      "label": "Hvad vil du bruge ClassroomIO til?",
+      "customer_training": "Træn mine kunder i mit produkt",
+      "customer_certification": "Certificere kunder eller partnere",
+      "partner_training": "Træn partnere eller forhandlere",
+      "team_training": "Træn mit eget hold",
+      "sell_courses": "Sælg kurser til offentligheden",
+      "subtitle": "Vælg alt, hvad der er relevant. Vi former dit arbejdsområde omkring det."
+    },
+    "step_of": "Trin {current} af {total}",
+    "skip": "Spring over",
+    "finish_setup": "Afslut opsætningen",
+    "company_sizes": {
+      "label": "Hvor stor er din virksomhed?",
+      "subtitle": "Tæl alle i virksomheden, ikke kun dit team.",
+      "enterprise": {
+        "label": "200+",
+        "description": "mennesker"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "mennesker"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "mennesker"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "mennesker"
+      },
+      "solo": {
+        "label": "Bare mig",
+        "description": "Solo"
+      }
+    },
+    "ai_assistant": {
+      "label": "AI assistent",
+      "subtitle": "Hvilken anbefalede os?"
+    },
+    "step_labels": {
+      "use_cases": "Use case",
+      "learning_methods": "Træning i dag",
+      "company_size": "Virksomhedens størrelse",
+      "job_role": "Rolle",
+      "source": "Opdagelse"
+    },
+    "org_setup": {
+      "title": "Indstil dit arbejdsområde",
+      "subtitle": "Fortæl os om dig og din organisation for at komme i gang."
+    },
+    "header": {
+      "tagline": "Kundeuddannelsesplatform, der forbinder med dine systemer"
+    }
   },
   "new_course_modal": {
     "live_class_label": "Live klasse",
