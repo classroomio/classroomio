@@ -402,8 +402,8 @@
     {#if skippedPathOnlyCourseNames.length > 0}
       <Alert.Callout
         variant="warning"
-        title={$t('audience.import.skipped_path_gated_title', { count: skippedPathOnlyCourseNames.length })}
-        description={$t('audience.import.skipped_path_gated_description', {
+        title={$t('audience.import.skipped_path_only_title', { count: skippedPathOnlyCourseNames.length })}
+        description={$t('audience.import.skipped_path_only_description', {
           names: skippedPathOnlyCourseNames.join(', ')
         })}
       />

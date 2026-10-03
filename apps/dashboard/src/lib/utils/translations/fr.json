@@ -736,7 +736,7 @@
       "snackbar_success": "{assigned} utilisateurs affectés aux cours ({alreadyEnrolled} déjà inscrits, {emailsSent} e-mails envoyés)",
       "snackbar_no_courses": "Veuillez sélectionner au moins un cours",
       "snackbar_failed": "Échec de l'attribution des cours",
-      "snackbar_partial": "Utilisateurs {assigned} attribués ({alreadyEnrolled} y avait déjà accès, {emailsSent} e-mails envoyés). Cours ignorés uniquement : {names} : attribuez le parcours d'apprentissage contenant ou désactivez « Nécessite un parcours d'apprentissage » dans les paramètres du cours.",
+      "snackbar_partial": "Utilisateurs {assigned} attribués ({alreadyEnrolled} y avait déjà accès, {emailsSent} e-mails envoyés). Cours ignorés uniquement : {names} — attribuez le parcours d'apprentissage contenant ou désactivez 'S'inscrire uniquement au parcours d'apprentissage' dans les paramètres du cours.",
       "path_only_badge": "Chemin uniquement"
     },
     "import": {
@@ -789,8 +789,8 @@
       "submit_count": "Importer {count} étudiants",
       "result_heading": "{count} étudiants importés",
       "start_over": "Choisissez un autre fichier",
-      "skipped_path_gated_title": "{count} cours à parcours uniquement ignorés",
-      "skipped_path_gated_description": "{names}. Ces cours nécessitent une inscription via un parcours d’apprentissage. Soit vous attribuez le parcours d'apprentissage contenant (cela accorde également ses autres cours), soit vous désactivez « Nécessite un parcours d'apprentissage » dans les paramètres du cours."
+      "skipped_path_only_title": "{count} cours à parcours uniquement ignorés",
+      "skipped_path_only_description": "{noms}. Ces cours sont réservés aux inscriptions dans un parcours d'apprentissage. Soit vous attribuez le parcours d'apprentissage contenant (cela accorde également ses autres cours), soit vous désactivez « S'inscrire uniquement au parcours d'apprentissage » dans les paramètres du cours."
     },
     "page_subtitle": "Découvrez qui appartient à votre organisation, qui apprend, qui est invité et comment les contacter.",
     "user_analytics": {
@@ -1086,8 +1086,8 @@
         "open_link": "Ouvrir le lien dans un nouvel onglet",
         "copy_link": "Copier le lien",
         "certificate_deadline_required_description": "Les cours de mise en conformité exigent une date limite d'obtention de certificat avant l'inscription des étudiants. Veuillez définir une date limite dans les paramètres du cours avant publication.",
-        "requires_learning_path": "Exiger un parcours d'apprentissage",
-        "requires_learning_path_desc": "Lorsque cette option est activée, les étudiants ne peuvent accéder à ce cours que via un parcours d'apprentissage. Les inscriptions existantes sont conservées."
+        "enroll_only_in_learning_path": "S'inscrire uniquement au parcours d'apprentissage",
+        "enroll_only_in_learning_path_desc": "Lorsque cette option est activée, les étudiants ne peuvent s'inscrire à ce cours que via un parcours d'apprentissage. Les inscriptions existantes sont conservées."
       },
       "analytics": {
         "title": "Analytique"
@@ -1457,7 +1457,7 @@
             "description": "Accordez à {email} l'accès à ce cours. Nous lui enverrons un e-mail d'invitation pour rejoindre votre organisation et s'inscrire à ce cours.",
             "cancel": "Annuler",
             "send_invite": "Envoyer l'invitation",
-            "path_gated_notice": "Ce cours nécessite une inscription via un parcours d'apprentissage, l'accès direct ne peut donc pas être accordé. Attribuez plutôt le parcours d'apprentissage contenant le cours ou désactivez « Nécessite un parcours d'apprentissage » dans les paramètres du cours."
+            "path_only_notice": "Ce cours est réservé aux inscriptions dans un parcours d'apprentissage, l'accès direct ne peut donc pas être accordé. Attribuez plutôt le parcours d'apprentissage contenant le cours ou désactivez « S'inscrire uniquement au parcours d'apprentissage » dans les paramètres du cours."
           },
           "invite_new_students_title": "Inviter de nouveaux étudiants",
           "invite_new_students_description": "Invitez de nouvelles personnes dans votre organisation et pré-assignez-les à ce cours. Elles créeront un compte, accepteront l'invitation et obtiendront l'accès.",
@@ -1503,9 +1503,9 @@
             "custom": "Personnalisé"
           },
           "student_limit_reached": "Vous avez atteint la limite d'étudiants de votre plan. Mettez à niveau pour inviter plus d'étudiants.",
-          "path_gated_notice_title": "Les étudiants rejoignent via un parcours d’apprentissage",
-          "path_gated_notice_description": "Ce cours nécessite une inscription via un parcours d'apprentissage, les étudiants ne peuvent donc pas être invités ici. Vous pouvez toujours inviter des tuteurs ci-dessous. Pour accorder l'accès aux étudiants, attribuez le parcours d'apprentissage correspondant ou désactivez « Nécessite un parcours d'apprentissage » dans les paramètres du cours.",
-          "members_added": "{count, plural, one {# membre ajouté avec succès} other {# membres ajoutés avec succès}}"
+          "members_added": "{count, plural, one {# membre ajouté avec succès} other {# membres ajoutés avec succès}}",
+          "path_only_notice_title": "Les étudiants rejoignent via un parcours d’apprentissage",
+          "path_only_notice_description": "Ce cours est réservé aux inscriptions dans un parcours d'apprentissage, les étudiants ne peuvent donc pas être invités ici. Vous pouvez toujours inviter des tuteurs ci-dessous. Pour accorder l'accès aux étudiants, attribuez le parcours d'apprentissage correspondant ou désactivez « S'inscrire uniquement au parcours d'apprentissage » dans les paramètres du cours."
         },
         "learner": "Étudiant",
         "source": "Source",
@@ -6026,7 +6026,7 @@
     },
     "hub": {
       "placeholder_title": "Aperçu du parcours d'apprentissage",
-      "placeholder_description": "L’expérience d’apprentissage complète réside dans le LMS. Ouvrez My Learning pour continuer ce chemin.",
+      "placeholder_description": "L’expérience d’apprentissage complète réside dans le LMS. Ouvrez Mon apprentissage pour continuer ce chemin.",
       "back_to_my_learning": "Retour à mon apprentissage"
     },
     "not_permitted": {

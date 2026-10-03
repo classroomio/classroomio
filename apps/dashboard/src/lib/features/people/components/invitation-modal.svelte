@@ -72,7 +72,7 @@
   // `/courses/[id]` which carries no org slug either.
   const resourceOrgId = $derived($currentOrg.id);
 
-  // Path-gated courses enroll students through their containing path only.
+  // Path-only courses enroll students through their containing path only.
   // Student invites and share links mint STUDENT joins, so both tabs are
   // disabled here while tutors stay invitable. The backend still enforces
   // the gate; this only saves the admin a wasted round-trip.
@@ -443,7 +443,7 @@
   });
 
   // Drop selections that are no longer offered so a stale id can never be resubmitted.
-  // A course that becomes path-gated while open parks the viewer on tutors.
+  // A course that becomes path-only while open parks the viewer on tutors.
   $effect(() => {
     if (isPathGated && activeTab !== 'tutors') {
       activeTab = 'tutors';
@@ -487,8 +487,8 @@
           {#if isPathGated}
             <Alert.Callout
               variant="warning"
-              title={$t(`${INVITE_MODAL}.path_gated_notice_title`)}
-              description={$t(`${INVITE_MODAL}.path_gated_notice_description`)}
+              title={$t(`${INVITE_MODAL}.path_only_notice_title`)}
+              description={$t(`${INVITE_MODAL}.path_only_notice_description`)}
             />
           {/if}
           <TutorSelectSection

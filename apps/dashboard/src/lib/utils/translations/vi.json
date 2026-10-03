@@ -736,7 +736,7 @@
       "snackbar_success": "Đã chỉ định người dùng {assigned} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
       "snackbar_no_courses": "Vui lòng chọn ít nhất một khóa học",
       "snackbar_failed": "Không thể chỉ định khóa học",
-      "snackbar_partial": "Người dùng {assigned} được chỉ định ({alreadyEnrolled} đã có quyền truy cập, email {emailsSent} đã được gửi). Các khóa học chỉ có lộ trình bị bỏ qua: {names} — chỉ định lộ trình học tập chứa hoặc tắt 'Yêu cầu lộ trình học tập' trong cài đặt khóa học.",
+      "snackbar_partial": "Người dùng {assigned} được chỉ định ({alreadyEnrolled} đã có quyền truy cập, email {emailsSent} đã được gửi). Các khóa học chỉ có lộ trình bị bỏ qua: {names} — chỉ định lộ trình học tập chứa hoặc tắt \"Chỉ đăng ký vào Lộ trình học tập\" trong cài đặt khóa học.",
       "path_only_badge": "Chỉ đường dẫn"
     },
     "import": {
@@ -789,8 +789,8 @@
       "submit_count": "Nhập {count} học viên",
       "result_heading": "{count} học viên đã được nhập",
       "start_over": "Chọn một tập tin khác",
-      "skipped_path_gated_title": "Đã bỏ qua {count} khóa học chỉ có đường dẫn",
-      "skipped_path_gated_description": "{names}. Các khóa học này yêu cầu đăng ký thông qua một lộ trình học tập. Chỉ định lộ trình học tập chứa (điều này cũng cấp cho các khóa học khác) hoặc tắt 'Yêu cầu lộ trình học tập' trong cài đặt khóa học."
+      "skipped_path_only_title": "Đã bỏ qua {count} khóa học chỉ có đường dẫn",
+      "skipped_path_only_description": "{tên}. Các khóa học này chỉ dành cho người đăng ký trong lộ trình học tập. Chỉ định lộ trình học tập chứa (điều này cũng cấp các khóa học khác) hoặc tắt 'Chỉ đăng ký vào Lộ trình học tập' trong cài đặt khóa học."
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
@@ -1086,8 +1086,8 @@
         "open_link": "Mở liên kết trong tab mới",
         "copy_link": "Sao chép liên kết",
         "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
-        "requires_learning_path": "Yêu cầu lộ trình học tập",
-        "requires_learning_path_desc": "Khi bật, sinh viên chỉ có thể truy cập khóa học này thông qua lộ trình học tập. Tuyển sinh hiện tại được bảo tồn."
+        "enroll_only_in_learning_path": "Chỉ đăng ký vào Lộ trình Học tập",
+        "enroll_only_in_learning_path_desc": "Khi bật, sinh viên chỉ có thể đăng ký khóa học này thông qua lộ trình học tập. Tuyển sinh hiện tại được bảo tồn."
       },
       "analytics": {
         "title": "Phân tích"
@@ -1457,7 +1457,7 @@
             "description": "Cấp cho {email} quyền truy cập khóa học này. Chúng tôi sẽ gửi email mời để tham gia tổ chức của bạn và đăng ký khóa học.",
             "cancel": "Hủy",
             "send_invite": "Gửi lời mời",
-            "path_gated_notice": "Khóa học này yêu cầu đăng ký thông qua lộ trình học tập nên không thể cấp quyền truy cập trực tiếp. Thay vào đó, hãy chỉ định lộ trình học tập có chứa — hoặc tắt 'Yêu cầu lộ trình học tập' trong cài đặt khóa học."
+            "path_only_notice": "Khóa học này chỉ dành cho người đăng ký trong lộ trình học tập nên không thể cấp quyền truy cập trực tiếp. Thay vào đó, hãy chỉ định lộ trình học tập chứa đựng — hoặc tắt 'Chỉ đăng ký vào Lộ trình học tập' trong cài đặt khóa học."
           },
           "invite_new_students_title": "Mời học viên mới",
           "invite_new_students_description": "Mời người mới vào tổ chức của bạn và gán trước cho khóa học này. Họ sẽ tạo tài khoản, chấp nhận lời mời và nhận quyền truy cập.",
@@ -1503,9 +1503,9 @@
             "custom": "tùy chỉnh"
           },
           "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên.",
-          "path_gated_notice_title": "Học sinh tham gia thông qua lộ trình học tập",
-          "path_gated_notice_description": "Khóa học này yêu cầu đăng ký thông qua lộ trình học tập nên sinh viên không thể được mời vào đây. Bạn vẫn có thể mời gia sư dưới đây. Để cấp cho học viên quyền truy cập, hãy chỉ định lộ trình học tập có sẵn — hoặc tắt 'Yêu cầu lộ trình học tập' trong cài đặt khóa học.",
-          "members_added": "{count, plural, one {# thành viên được thêm thành công} other {# thành viên được thêm thành công}}"
+          "members_added": "{count, plural, one {# thành viên được thêm thành công} other {# thành viên được thêm thành công}}",
+          "path_only_notice_title": "Học sinh tham gia thông qua lộ trình học tập",
+          "path_only_notice_description": "Khóa học này chỉ dành cho người đăng ký trong lộ trình học tập nên không thể mời học viên vào đây. Bạn vẫn có thể mời gia sư dưới đây. Để cấp cho học viên quyền truy cập, hãy chỉ định lộ trình học tập chứa đựng — hoặc tắt 'Chỉ đăng ký vào Lộ trình học tập' trong cài đặt khóa học."
         },
         "learner": "Học viên",
         "source": "Nguồn",

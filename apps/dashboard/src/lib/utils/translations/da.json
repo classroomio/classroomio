@@ -736,7 +736,7 @@
       "snackbar_success": "Tildelt {assigned} brugere til kurser ({alreadyEnrolled} allerede tilmeldt, {emailsSent} e-mails sendt)",
       "snackbar_no_courses": "Vælg venligst mindst ét kursus",
       "snackbar_failed": "Kunne ikke tildele kurser",
-      "snackbar_partial": "Tildelte {assigned} brugere ({alreadyEnrolled} havde allerede adgang, {emailsSent} e-mails sendt). Kurser, der kun er oversprunget af sti: {names} — tildel den indeholdende læringssti, eller deaktiver 'Kræver læringssti' i kursusindstillinger.",
+      "snackbar_partial": "Tildelte {assigned} brugere ({alreadyEnrolled} havde allerede adgang, {emailsSent} e-mails sendt). Kurser, der kun er oversprunget af sti: {names} — tildel den indeholdende læringssti, eller deaktiver 'Tilmeld dig kun i læringssti' i kursusindstillinger.",
       "path_only_badge": "Kun sti"
     },
     "import": {
@@ -789,8 +789,8 @@
       "submit_count": "Importer {count} studerende",
       "result_heading": "{count} studerende importeret",
       "start_over": "Vælg en anden fil",
-      "skipped_path_gated_title": "Sprang over {count} sti-kun kurser",
-      "skipped_path_gated_description": "{names}. Disse kurser kræver tilmelding gennem en læringsvej. Tildel enten den indeholdende læringssti (dette giver også dens andre kurser), eller deaktiver 'Kræver læringssti' i kursusindstillingerne."
+      "skipped_path_only_title": "Sprang over {count} sti-kun kurser",
+      "skipped_path_only_description": "{navne}. Disse kurser er kun tilmelding til en læringssti. Tildel enten den indeholdende læringssti (dette giver også dens andre kurser), eller deaktiver 'Tilmeld dig kun i læringssti' i kursusindstillingerne."
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
@@ -1086,8 +1086,8 @@
         "open_link": "Åbn link i ny fane",
         "copy_link": "Kopiér link",
         "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
-        "requires_learning_path": "Kræv læringsvej",
-        "requires_learning_path_desc": "Når den er aktiveret, kan eleverne kun få adgang til dette kursus gennem en læringssti. Eksisterende tilmeldinger bevares."
+        "enroll_only_in_learning_path": "Tilmeld dig kun i læringssti",
+        "enroll_only_in_learning_path_desc": "Når den er aktiveret, kan eleverne kun tilmelde sig dette kursus gennem en læringsvej. Eksisterende tilmeldinger bevares."
       },
       "analytics": {
         "title": "Analyse"
@@ -1457,7 +1457,7 @@
             "description": "Giv {email} adgang til dette kursus. Vi sender en invitationsmail, så vedkommende kan tilslutte sig din organisation og tilmelde sig kurset.",
             "cancel": "Annuller",
             "send_invite": "Send invitationen",
-            "path_gated_notice": "Dette kursus kræver tilmelding gennem en læringssti, så direkte adgang kan ikke gives. Tildel i stedet den indeholdende læringssti - eller sluk 'Kræver læringssti' i kursusindstillingerne."
+            "path_only_notice": "Dette kursus er kun tilmelding til et læringsforløb, så direkte adgang kan ikke gives. Tildel i stedet den indeholdende læringssti - eller sluk 'Tilmeld dig kun i læringssti' i kursusindstillingerne."
           },
           "invite_new_students_title": "Inviter nye studerende",
           "invite_new_students_description": "Inviter nye personer til din organisation og forudtildel dem til dette kursus. De opretter en konto, accepterer invitationen og får adgang.",
@@ -1503,9 +1503,9 @@
             "custom": "Brugerdefineret"
           },
           "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever.",
-          "path_gated_notice_title": "Eleverne følger med gennem en læringsvej",
-          "path_gated_notice_description": "Dette kursus kræver tilmelding gennem en læringsvej, så studerende kan ikke inviteres hertil. Du kan stadig invitere undervisere nedenfor. For at give eleverne adgang skal du tildele den indeholdende læringssti — eller deaktivere 'Kræver læringssti' i kursusindstillingerne.",
-          "members_added": "{count, plural, one {# medlem tilføjet} other {# medlemmer tilføjet}}"
+          "members_added": "{count, plural, one {# medlem tilføjet} other {# medlemmer tilføjet}}",
+          "path_only_notice_title": "Eleverne følger med gennem en læringsvej",
+          "path_only_notice_description": "Dette kursus er kun tilmelding til en læringssti, så studerende kan ikke inviteres hertil. Du kan stadig invitere undervisere nedenfor. For at give eleverne adgang skal du tildele den indeholdende læringssti - eller deaktivere 'Tilmeld dig kun i læringssti' i kursusindstillingerne."
         },
         "learner": "Studerende",
         "source": "Kilde",
@@ -5814,7 +5814,7 @@
         "bulk_enroll_partial": "Tilmeldte {enrolled} medlemmer ({invited} inviteret, {failed} mislykkedes)",
         "bulk_enroll_failed": "Baggrundstilmelding mislykkedes",
         "bulk_enroll_lost": "Mistet overblikket over baggrundstilmeldingen",
-        "bulk_enroll_backgrounded": "Tilmeldingen kører stadig i baggrunden. Opdater People for at se resultaterne."
+        "bulk_enroll_backgrounded": "Tilmeldingen kører stadig i baggrunden. Opdater Personer for at se resultaterne."
       },
       "change_role_to_tutor": "Gør vejleder",
       "change_role_to_student": "Gør studerende"
@@ -6026,7 +6026,7 @@
     },
     "hub": {
       "placeholder_title": "Forhåndsvisning af læringssti",
-      "placeholder_description": "Den fulde læringsoplevelse bor i LMS. Åbn My Learning for at fortsætte denne vej.",
+      "placeholder_description": "Den fulde læringsoplevelse bor i LMS. Åbn Min Læring for at fortsætte denne vej.",
       "back_to_my_learning": "Tilbage til Min Læring"
     },
     "not_permitted": {
