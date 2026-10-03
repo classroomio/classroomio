@@ -122,6 +122,11 @@ export async function addCoursesToPathService(
         }
       }
 
+      if (addedCourses.length > 0) {
+        const nowIso = new Date().toISOString();
+        await updateLearningPath(path.id, { courseOrderSetAt: nowIso }, tx);
+      }
+
       return addedCourses;
     });
 
