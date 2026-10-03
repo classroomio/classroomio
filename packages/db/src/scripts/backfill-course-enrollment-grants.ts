@@ -4,7 +4,13 @@
  *
  * Order matters: cohort-driven enrollments are derived first so they keep
  * their true `COHORT` source; everything still missing afterwards is
- * recorded as `IMPORT`.
+ * recorded as `IMPORT`. Only STUDENT groupmember rows are backfilled; staff
+ * access is role-based and intentionally grant-less.
+ *
+ * Deploy steps (no safety-net writer: bugs must fail loudly):
+ *   1. Migration at merge, which includes the backfill.
+ *   2. Run this fixed script once after cutover (dry run, then --execute)
+ *      to catch rows written in between.
  *
  * Usage:
  *   pnpm db:backfill-course-enrollment-grants                      # dry run (default)

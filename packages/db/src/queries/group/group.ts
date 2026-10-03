@@ -433,23 +433,39 @@ export const getGroupMemberIdByCourseAndProfile = async (
   return result.length > 0 ? result[0].id : null;
 };
 
+/**
+ * Returns the membership row id and role for a profile in a group.
+ * Used by re-join paths to restore a grant only for STUDENT members.
+ */
+export async function getGroupMemberByGroupAndProfile(
+  groupId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<{ id: string; roleId: number } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.groupmember.id, roleId: schema.groupmember.roleId })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, profileId)))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getGroupMemberByGroupAndProfile error:', error);
+    throw new Error(`Failed to resolve group membership: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Returns the groupmember id for a profile in a group, or null when absent. */
 export async function getGroupMemberIdByGroupAndProfile(
   groupId: string,
   profileId: string,
   dbClient: DbOrTxClient = db
 ): Promise<string | null> {
-  try {
-    const [row] = await dbClient
-      .select({ id: schema.groupmember.id })
-      .from(schema.groupmember)
-      .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, profileId)))
-      .limit(1);
+  // getGroupMemberByGroupAndProfile already logs and wraps its errors.
+  const member = await getGroupMemberByGroupAndProfile(groupId, profileId, dbClient);
 
-    return row?.id ?? null;
-  } catch (error) {
-    console.error('getGroupMemberIdByGroupAndProfile error:', error);
-    throw new Error(`Failed to resolve group membership: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+  return member?.id ?? null;
 }
 
 export async function insertGroupMembersOnConflictDoNothing(

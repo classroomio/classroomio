@@ -11,6 +11,7 @@ export type GetOrgCoursesRequestQuery = NonNullable<InferRequestType<GetOrgCours
 export type OrgCourses = OrgCoursesSuccess['data'];
 export type OrgCoursesPagination = OrgCoursesSuccess['pagination'];
 export type OrgCoursesQuery = {
+  excludePathOnly?: boolean;
   page: number;
   limit: number;
   search?: string;

@@ -169,9 +169,13 @@ export async function getPaginatedCourseMembers(
  * @param memberId Member ID
  * @returns Course member with profile data or null if not found
  */
-export async function getCourseMember(courseId: string, memberId: string): Promise<CourseMemberWithProfile | null> {
+export async function getCourseMember(
+  courseId: string,
+  memberId: string,
+  dbClient: DbOrTxClient = db
+): Promise<CourseMemberWithProfile | null> {
   try {
-    const result = await db
+    const result = await dbClient
       .select({
         member: schema.groupmember,
         profile: {
@@ -325,24 +329,35 @@ export async function addCourseMember(
  * @param courseId Course ID
  * @param memberId Member ID
  * @param data Partial member data to update
- * @returns Updated member
+ * @param dbClient Optional transaction client
+ * @param expectedRoleId When set, only updates while the stored role still matches
+ * @returns Updated member, or null when missing or the role no longer matches
  */
 export async function updateCourseMember(
   courseId: string,
   memberId: string,
-  data: Partial<TGroupmember>
+  data: Partial<TGroupmember>,
+  dbClient: DbOrTxClient = db,
+  expectedRoleId?: number
 ): Promise<TGroupmember | null> {
   try {
     // Verify member belongs to course
-    const member = await getCourseMember(courseId, memberId);
+    const member = await getCourseMember(courseId, memberId, dbClient);
     if (!member) {
       return null;
     }
 
-    const [updated] = await db
+    // Compare-and-set on the role when the caller decided grants from it.
+    const conditions = [eq(schema.groupmember.id, memberId)];
+
+    if (expectedRoleId !== undefined) {
+      conditions.push(eq(schema.groupmember.roleId, expectedRoleId));
+    }
+
+    const [updated] = await dbClient
       .update(schema.groupmember)
       .set(data)
-      .where(eq(schema.groupmember.id, memberId))
+      .where(and(...conditions))
       .returning();
 
     return updated || null;
@@ -365,7 +380,7 @@ export async function deleteCourseMember(
 ): Promise<TGroupmember | null> {
   try {
     // Verify member belongs to course
-    const member = await getCourseMember(courseId, memberId);
+    const member = await getCourseMember(courseId, memberId, dbClient);
     if (!member) {
       return null;
     }

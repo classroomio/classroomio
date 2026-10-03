@@ -42,14 +42,24 @@ export const ZGetOrganizationCoursesQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   search: z.string().trim().optional(),
-  tags: z.string().optional()
+  tags: z.string().optional(),
+  /**
+   * When true, excludes courses that are `enrollOnlyInLearningPath` (path-only courses).
+   *
+   * Parsed explicitly because `z.coerce.boolean()` turns the string `"false"`
+   * into `true`, which would make `?excludePathOnly=false` silently behave as `true`.
+   */
+  excludePathOnly: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .default(false)
+    .transform((value) => value === true || value === 'true')
 });
 
 export type TGetOrganizationCoursesQuery = z.infer<typeof ZGetOrganizationCoursesQuery>;
 
 export const ZEnrolledCoursesQuery = z.object({
   /**
-   * When true, only courses taken on their own: a live non-path grant and not `requiresLearningPath`.
+   * When true, only courses taken on their own: a live non-path grant and not `enrollOnlyInLearningPath`.
    *
    * Parsed explicitly because `z.coerce.boolean()` turns the string `"false"`
    * into `true`, which would make `?nonPathOnly=false` silently behave as `true`.

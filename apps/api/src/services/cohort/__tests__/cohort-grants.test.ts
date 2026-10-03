@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ROLE } from '@cio/utils/constants';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 
 const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
@@ -18,7 +19,18 @@ const mocks = vi.hoisted(() => ({
   assertStudentCapacityOrThrow: vi.fn(),
   notifyStudentMilestone: vi.fn(),
   removeCohortMember: vi.fn(),
-  revokeCohortGrants: vi.fn()
+  revokeCohortGrants: vi.fn(),
+  removeCourseFromCohort: vi.fn(),
+  isCohortCourse: vi.fn(),
+  addCourseToCohort: vi.fn(),
+  getCohortMembers: vi.fn(),
+  recordDirectCourseGrantsBulk: vi.fn(),
+  assertCourseAllowsDirectStudentAdd: vi.fn(),
+  // Default: nothing is path-only. Tests that need path-only courses override it.
+  filterOutPathOnlyCourseIds: vi.fn(async (courseIds: string[]) => ({
+    allowedCourseIds: courseIds,
+    skippedPathOnlyCourseIds: [] as string[]
+  }))
 }));
 
 const transactionClient = { id: 'test-transaction-client' };
@@ -28,12 +40,15 @@ vi.mock('@cio/db/drizzle', () => ({
 }));
 
 vi.mock('@cio/db/queries/cohort', () => ({
+  removeCourseFromCohort: mocks.removeCourseFromCohort,
   addCohortMember: mocks.addCohortMember,
   getCohortById: mocks.getCohortById,
   getCohortMemberByProfileId: mocks.getCohortMemberByProfileId,
   getCoursesByCohort: mocks.getCoursesByCohort,
-  getCohortMembers: vi.fn(),
+  getCohortMembers: mocks.getCohortMembers,
   getCohortsByOrg: vi.fn(),
+  isCohortCourse: mocks.isCohortCourse,
+  addCourseToCohort: mocks.addCourseToCohort,
   removeCohortMember: mocks.removeCohortMember
 }));
 
@@ -61,12 +76,27 @@ vi.mock('@cio/db/queries/organization', () => ({
   insertOrganizationMembersOnConflictDoNothing: mocks.insertOrganizationMembersOnConflictDoNothing
 }));
 
+vi.mock('@api/services/course/path-gate', () => ({
+  assertCourseAllowsDirectStudentAdd: mocks.assertCourseAllowsDirectStudentAdd,
+  filterOutPathOnlyCourseIds: mocks.filterOutPathOnlyCourseIds
+}));
+
+vi.mock('@api/services/course/enrollment-grants', () => ({
+  recordDirectCourseGrantsBulk: mocks.recordDirectCourseGrantsBulk
+}));
+
 vi.mock('@api/services/organization/student-limit', () => ({
   assertStudentCapacityOrThrow: mocks.assertStudentCapacityOrThrow,
   notifyStudentMilestone: mocks.notifyStudentMilestone
 }));
 
-import { addCohortMembers, ensureCohortCourseGrants, removeCohortMemberService } from '../cohort';
+import {
+  addCourseToCohortService,
+  addCohortMembers,
+  ensureCohortCourseGrants,
+  removeCohortMemberService,
+  removeCourseFromCohortService
+} from '../cohort';
 
 const COHORT = { id: 'cohort-1', organizationId: 'org-1', name: 'Cohort' };
 
@@ -86,6 +116,12 @@ describe('ensureCohortCourseGrants', () => {
   });
 
   it('records a COHORT grant for each enrolled course group membership', async () => {
+    mocks.getCohortMemberByProfileId.mockResolvedValue({
+      id: 'cm-1',
+      cohortId: 'cohort-1',
+      profileId: 'p-1',
+      roleId: 3
+    });
     mocks.getCourseGroupIds.mockResolvedValue([
       { courseId: 'c-1', groupId: 'g-1' },
       { courseId: 'c-2', groupId: null }
@@ -109,11 +145,31 @@ describe('ensureCohortCourseGrants', () => {
   });
 
   it('skips courses where the profile has no group membership', async () => {
+    mocks.getCohortMemberByProfileId.mockResolvedValue({
+      id: 'cm-1',
+      cohortId: 'cohort-1',
+      profileId: 'p-1',
+      roleId: 3
+    });
     mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
     mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue(null);
 
     await ensureCohortCourseGrants('cohort-1', 'p-1', undefined, transactionClient as never, ['c-1']);
 
+    expect(mocks.grantCourseAccess).not.toHaveBeenCalled();
+  });
+
+  it('skips tutors and admins: staff access is role-based', async () => {
+    mocks.getCohortMemberByProfileId.mockResolvedValue({
+      id: 'cm-2',
+      cohortId: 'cohort-1',
+      profileId: 'p-2',
+      roleId: 2
+    });
+
+    await ensureCohortCourseGrants('cohort-1', 'p-2', undefined, transactionClient as never, ['c-1']);
+
+    expect(mocks.getCourseGroupIds).not.toHaveBeenCalled();
     expect(mocks.grantCourseAccess).not.toHaveBeenCalled();
   });
 });
@@ -125,6 +181,15 @@ describe('addCohortMembers course grants', () => {
       callback(transactionClient)
     );
     mocks.getCohortById.mockResolvedValue(COHORT);
+    mocks.getCohortMemberByProfileId.mockImplementation(
+      async (cohortId: string, profileId: string, dbClient?: unknown) => {
+        // Existing-member check runs without a tx; grant check runs inside the tx.
+        if (!dbClient || (dbClient as { id?: string }).id !== 'test-transaction-client') {
+          return null;
+        }
+        return { id: 'cm-1', cohortId: 'cohort-1', profileId: 'p-1', roleId: 3 };
+      }
+    );
     mocks.getCoursesByCohort.mockResolvedValue([{ course: { id: 'c-1' } }]);
     mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
     mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-1');
@@ -144,11 +209,39 @@ describe('addCohortMembers course grants', () => {
       transactionClient
     );
   });
+  it('grants only the open courses and reports the path-only ones it skipped', async () => {
+    mocks.getCoursesByCohort.mockResolvedValue([{ course: { id: 'c-open' } }, { course: { id: 'c-path-only' } }]);
+    mocks.filterOutPathOnlyCourseIds.mockResolvedValueOnce({
+      allowedCourseIds: ['c-open'],
+      skippedPathOnlyCourseIds: ['c-path-only']
+    });
+    mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-open', groupId: 'g-open' }]);
+
+    const result = await addCohortMembers(
+      'cohort-1',
+      { members: [{ profileId: 'p-1', roleId: ROLE.STUDENT }] },
+      'actor-1'
+    );
+
+    expect(result.skippedPathOnlyCourseIds).toEqual(['c-path-only']);
+    expect(mocks.getCourseGroupIds).toHaveBeenCalledWith(['c-open'], expect.anything());
+    expect(mocks.grantCourseAccess).toHaveBeenCalledWith(
+      expect.objectContaining({ courseId: 'c-open', source: 'COHORT' }),
+      transactionClient
+    );
+    expect(mocks.grantCourseAccess).not.toHaveBeenCalledWith(
+      expect.objectContaining({ courseId: 'c-path-only' }),
+      expect.anything()
+    );
+  });
 });
 
 describe('removeCohortMemberService grant revocation', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) =>
+      callback(transactionClient)
+    );
   });
 
   it('revokes the cohort grants of the removed profile', async () => {
@@ -157,7 +250,8 @@ describe('removeCohortMemberService grant revocation', () => {
     const removed = await removeCohortMemberService('cohort-1', 'cm-1');
 
     expect(removed).toEqual({ id: 'cm-1', cohortId: 'cohort-1', profileId: 'p-1' });
-    expect(mocks.revokeCohortGrants).toHaveBeenCalledWith('cohort-1', 'p-1');
+    expect(mocks.removeCohortMember).toHaveBeenCalledWith('cohort-1', 'cm-1', transactionClient);
+    expect(mocks.revokeCohortGrants).toHaveBeenCalledWith('cohort-1', 'p-1', transactionClient);
   });
 
   it('skips revocation for profile-less rows', async () => {
@@ -166,5 +260,104 @@ describe('removeCohortMemberService grant revocation', () => {
     await removeCohortMemberService('cohort-1', 'cm-2');
 
     expect(mocks.revokeCohortGrants).not.toHaveBeenCalled();
+  });
+
+  it('rolls back removal when revocation fails', async () => {
+    mocks.removeCohortMember.mockResolvedValue({ id: 'cm-3', cohortId: 'cohort-1', profileId: 'p-3' });
+    mocks.revokeCohortGrants.mockRejectedValue(new Error('revoke failed'));
+    mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) =>
+      callback(transactionClient)
+    );
+
+    await expect(removeCohortMemberService('cohort-1', 'cm-3')).rejects.toThrow();
+    expect(mocks.removeCohortMember).toHaveBeenCalled();
+  });
+
+  it('returns 404 when removing a member of cohort B through cohort A', async () => {
+    mocks.removeCohortMember.mockResolvedValue(null);
+
+    await expect(removeCohortMemberService('cohort-A', 'member-of-B')).rejects.toMatchObject({
+      code: 'COHORT_MEMBER_NOT_FOUND'
+    });
+    expect(mocks.revokeCohortGrants).not.toHaveBeenCalled();
+  });
+});
+
+describe('removeCourseFromCohortService keeps grants', () => {
+  it('does not revoke grants when a course leaves a cohort', async () => {
+    const { removeCourseFromCohort } = await import('@cio/db/queries/cohort');
+    vi.mocked(removeCourseFromCohort as never as (...a: never[]) => Promise<unknown>);
+    mocks.removeCourseFromCohort.mockResolvedValue({ cohortId: 'cohort-1', courseId: 'c-1' });
+    mocks.revokeCohortGrants.mockClear();
+
+    const removed = await removeCourseFromCohortService('cohort-1', 'c-1');
+
+    expect(removed).toEqual({ cohortId: 'cohort-1', courseId: 'c-1' });
+    expect(mocks.revokeCohortGrants).not.toHaveBeenCalled();
+  });
+});
+
+describe('addCourseToCohortService', () => {
+  const studentRow = { roleId: ROLE.STUDENT, profileId: 'p-1', email: 'p1@test.dev' };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.transaction.mockImplementation(async (cb: (tx: unknown) => Promise<unknown>) => cb(transactionClient));
+    mocks.getCohortById.mockResolvedValue(COHORT);
+    mocks.isCohortCourse.mockResolvedValue(false);
+    mocks.addCourseToCohort.mockResolvedValue({ id: 'cc-1', cohortId: COHORT.id, courseId: 'c-1' });
+    mocks.getCohortMembers.mockResolvedValue([studentRow]);
+    mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
+    mocks.getOrgMembersByProfileIds.mockResolvedValue([]);
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue(null);
+    mocks.notifyStudentMilestone.mockResolvedValue(undefined);
+  });
+
+  it('rejects a path-only course with 400 before writing anything', async () => {
+    mocks.assertCourseAllowsDirectStudentAdd.mockRejectedValueOnce(
+      new AppError('This course can only be accessed through a learning path', ErrorCodes.VALIDATION_ERROR, 400)
+    );
+
+    await expect(addCourseToCohortService(COHORT.id, { courseId: 'c-1' })).rejects.toMatchObject({ statusCode: 400 });
+
+    expect(mocks.addCourseToCohort).not.toHaveBeenCalled();
+  });
+
+  it('checks for a duplicate inside the transaction and returns 409', async () => {
+    mocks.isCohortCourse.mockResolvedValue(true);
+
+    await expect(addCourseToCohortService(COHORT.id, { courseId: 'c-1' })).rejects.toMatchObject({ statusCode: 409 });
+
+    expect(mocks.isCohortCourse).toHaveBeenCalledWith(COHORT.id, 'c-1', transactionClient);
+    expect(mocks.addCourseToCohort).not.toHaveBeenCalled();
+  });
+
+  it('maps a concurrent duplicate (unique violation) to 409', async () => {
+    mocks.addCourseToCohort.mockRejectedValue(Object.assign(new Error('duplicate key'), { code: '23505' }));
+
+    await expect(addCourseToCohortService(COHORT.id, { courseId: 'c-1' })).rejects.toMatchObject({ statusCode: 409 });
+  });
+
+  it('sends the student-limit milestone email only after the transaction commits', async () => {
+    const milestone = { orgId: 'org-1', milestone: 'half', studentCount: 10, studentLimit: 20 };
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue(milestone);
+
+    await addCourseToCohortService(COHORT.id, { courseId: 'c-1' });
+
+    expect(mocks.notifyStudentMilestone).toHaveBeenCalledWith(milestone);
+  });
+
+  it('never sends the milestone email when the transaction rolls back', async () => {
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue({
+      orgId: 'org-1',
+      milestone: 'half',
+      studentCount: 10,
+      studentLimit: 20
+    });
+    mocks.recordDirectCourseGrantsBulk.mockRejectedValue(new Error('grant insert failed'));
+
+    await expect(addCourseToCohortService(COHORT.id, { courseId: 'c-1' })).rejects.toThrow();
+
+    expect(mocks.notifyStudentMilestone).not.toHaveBeenCalled();
   });
 });

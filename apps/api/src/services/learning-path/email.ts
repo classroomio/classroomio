@@ -39,6 +39,7 @@ export function buildLearningPathUrl(
   return buildLearningPathLoginUrl(organization, learningPath);
 }
 
+/** Shared login URL, branding and from-name for path emails. */
 function buildPathEmailContext(
   organization: TLearningPathWelcomeEmailOrg,
   learningPath: TLearningPathWelcomeEmailPath

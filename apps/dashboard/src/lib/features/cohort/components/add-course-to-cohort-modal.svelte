@@ -60,7 +60,7 @@
       return;
     }
 
-    await coursesApi.getOrgCourses();
+    await coursesApi.getOrgCourses({ excludePathOnly: true });
   }
 
   function toggleCourse(courseId: string) {

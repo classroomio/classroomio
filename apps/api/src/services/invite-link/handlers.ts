@@ -1,5 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { addGroupMember, enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { addGroupMember, enrollUsersInCourseGroups, getGroupMemberByGroupAndProfile } from '@cio/db/queries/group';
 import {
   getCourseById,
   getCourseGroupIds,
@@ -28,7 +28,11 @@ import {
 } from '@cio/db/queries/learning-path';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { recordDirectCourseGrant } from '@api/services/course/enrollment-grants';
-import { assertCourseAllowsDirectStudentAdd, assertCourseNotPathGated } from '@api/services/course/path-gate';
+import {
+  assertCourseAllowsDirectStudentAdd,
+  assertCourseNotPathOnly,
+  filterOutPathOnlyCourseIds
+} from '@api/services/course/path-gate';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { buildEmailBranding, buildEmailFromName } from '@cio/email';
@@ -190,7 +194,7 @@ const courseHandler: InviteLinkHandler = {
       coverImage: null,
       // Unpublished courses still accept link joins, like invites bypass self-enrollment.
       // A link made before the course became path-only reads as closed.
-      isResourceOpen: course.status === 'ACTIVE' && !course.requiresLearningPath
+      isResourceOpen: course.status === 'ACTIVE' && !course.enrollOnlyInLearningPath
     };
   },
 
@@ -208,10 +212,10 @@ const courseHandler: InviteLinkHandler = {
 
     const [courseRow] = await getCourseById(course.id, tx);
 
-    assertCourseNotPathGated(courseRow);
+    assertCourseNotPathOnly(courseRow);
 
-    const existingMemberId = await getGroupMemberIdByGroupAndProfile(locked.groupId, profileId, tx);
-    const isFreshJoin = !existingMemberId;
+    const existingMember = await getGroupMemberByGroupAndProfile(locked.groupId, profileId, tx);
+    const isFreshJoin = !existingMember;
 
     if (isFreshJoin) {
       const [createdMember] = await addGroupMember(
@@ -235,6 +239,14 @@ const courseHandler: InviteLinkHandler = {
           );
         }
       }
+    } else if (existingMember.roleId === ROLE.STUDENT && context.invite.roleId === ROLE.STUDENT) {
+      // Re-joining through a student link repairs a revoked grant (e.g. after
+      // leaving a cohort or path); the membership row itself already exists.
+      await recordDirectCourseGrant(
+        { groupmemberId: existingMember.id, courseId: course.id, profileId },
+        { source: 'INVITE' },
+        tx
+      );
     }
 
     return { isFreshJoin };
@@ -300,7 +312,9 @@ const cohortHandler: InviteLinkHandler = {
     const isFreshJoin = createdMember !== null;
 
     // Runs for existing members too, so re-opening the link repairs a partial join.
-    const cohortCourseIds = await getCourseIdsByCohortIds([cohort.id], tx);
+    // Path-only courses are skipped: they need a LEARNING_PATH grant.
+    const allCohortCourseIds = await getCourseIdsByCohortIds([cohort.id], tx);
+    const { allowedCourseIds: cohortCourseIds } = await filterOutPathOnlyCourseIds(allCohortCourseIds, tx);
 
     if (cohortCourseIds.length > 0) {
       const courseGroups = await getCourseGroupIds(cohortCourseIds, tx);

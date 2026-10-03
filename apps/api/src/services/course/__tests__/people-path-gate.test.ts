@@ -88,7 +88,7 @@ vi.mock('../session-invite', () => ({
 import { addMember, addMembers } from '../people';
 import { recordDirectCourseGrant } from '../enrollment-grants';
 
-describe('requiresLearningPath enforcement in course people', () => {
+describe('enrollOnlyInLearningPath enforcement in course people', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.getOrgIdByCourseId.mockResolvedValue('org-1');
@@ -108,7 +108,7 @@ describe('requiresLearningPath enforcement in course people', () => {
   });
 
   it('rejects adding a student to a path-only course via addMember', async () => {
-    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', requiresLearningPath: true }]);
+    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: true }]);
 
     await expect(
       addMember('c-1', { profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' })
@@ -118,7 +118,7 @@ describe('requiresLearningPath enforcement in course people', () => {
   });
 
   it('allows adding a tutor to a path-only course via addMember', async () => {
-    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', requiresLearningPath: true }]);
+    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: true }]);
 
     await addMember('c-1', { profileId: 'p-1', roleId: ROLE.TUTOR, email: 't@test.dev' });
 
@@ -126,7 +126,7 @@ describe('requiresLearningPath enforcement in course people', () => {
   });
 
   it('allows adding a student to a regular course via addMember', async () => {
-    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', requiresLearningPath: false }]);
+    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: false }]);
 
     await addMember('c-1', { profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' });
 
@@ -139,7 +139,7 @@ describe('requiresLearningPath enforcement in course people', () => {
   });
 
   it('re-adding an existing tutor skips the insert and records no grant', async () => {
-    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', requiresLearningPath: false }]);
+    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: false }]);
     mocks.getCourseGroupId.mockResolvedValue('g-1');
     mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-existing');
     mocks.getCourseMember.mockResolvedValue({
@@ -158,7 +158,7 @@ describe('requiresLearningPath enforcement in course people', () => {
   });
 
   it('re-adding an existing student skips the insert but repairs the grant', async () => {
-    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', requiresLearningPath: false }]);
+    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: false }]);
     mocks.getCourseGroupId.mockResolvedValue('g-1');
     mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-existing');
     mocks.getCourseMember.mockResolvedValue({
@@ -181,7 +181,7 @@ describe('requiresLearningPath enforcement in course people', () => {
   });
 
   it('rejects bulk student adds to a path-only course via addMembers', async () => {
-    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', requiresLearningPath: true }]);
+    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', enrollOnlyInLearningPath: true }]);
 
     await expect(
       addMembers('c-1', [{ profileId: 'p-1', roleId: ROLE.STUDENT, email: 's@test.dev' }])

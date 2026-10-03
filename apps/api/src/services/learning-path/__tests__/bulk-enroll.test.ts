@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ROLE } from '@cio/utils/constants';
-import { ErrorCodes } from '@api/utils/errors';
 
 const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
@@ -11,6 +10,8 @@ const mocks = vi.hoisted(() => ({
   getCourseIdsInPath: vi.fn(),
   initializeMemberCourseProgress: vi.fn(),
   grantCourseAccess: vi.fn(),
+  ensureLearningPathCourseGrants: vi.fn(),
+  enrollBulkMember: vi.fn(),
   getCourseGroupIds: vi.fn(),
   getCourseById: vi.fn(),
   getStudentCourseMembersForCompliance: vi.fn(),
@@ -34,12 +35,16 @@ const mocks = vi.hoisted(() => ({
   getProfilesByEmails: vi.fn(),
   enqueueEmailSend: vi.fn(),
   enqueuePathBulkEnroll: vi.fn(),
+  getOrgMembersByProfileIds: vi.fn().mockResolvedValue([]),
+  isRedisConfigured: vi.fn().mockReturnValue(true),
+  waitForRedisReady: vi.fn().mockResolvedValue(true),
   emailRegistryGet: vi.fn(),
   resolveLearningPath: vi.fn(),
   assertCanManageLearningPath: vi.fn(),
   ensureComplianceEnrollmentRecordsForProfiles: vi.fn(),
   syncLearningPathMembersProgress: vi.fn(),
-  scheduleLearningPathProgressSync: vi.fn()
+  scheduleLearningPathProgressSync: vi.fn(),
+  supersedeStudentOrgInvites: vi.fn()
 }));
 
 const transactionClient = { id: 'test-transaction-client' };
@@ -54,6 +59,8 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   getMemberByPathAndProfile: mocks.getMemberByPathAndProfile,
   grantCourseAccess: mocks.grantCourseAccess,
   initializeMemberCourseProgress: mocks.initializeMemberCourseProgress,
+  enrollBulkMember: mocks.enrollBulkMember,
+  ensureLearningPathCourseGrants: mocks.ensureLearningPathCourseGrants,
   listLearningPathCourses: mocks.listLearningPathCourses,
   getCourseIdsInPath: mocks.getCourseIdsInPath
 }));
@@ -88,6 +95,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationById: mocks.getOrganizationById,
   getOrganizationMemberIdByOrgAndProfile: mocks.getOrganizationMemberIdByOrgAndProfile,
   getOrganizationMembersByNormalizedEmails: mocks.getOrganizationMembersByNormalizedEmails,
+  getOrgMembersByProfileIds: mocks.getOrgMembersByProfileIds,
   getUserOrgRolesMap: mocks.getUserOrgRolesMap,
   lockOrganizationForStudentCapacity: mocks.lockOrganizationForStudentCapacity,
   revokeActiveOrganizationInvitesByEmails: mocks.revokeActiveOrganizationInvitesByEmails
@@ -113,7 +121,8 @@ vi.mock('@cio/email', () => ({
 vi.mock('@cio/jobs', () => ({
   enqueueEmailSend: mocks.enqueueEmailSend,
   enqueuePathBulkEnroll: mocks.enqueuePathBulkEnroll,
-  isRedisConfigured: vi.fn().mockReturnValue(true)
+  isRedisConfigured: mocks.isRedisConfigured,
+  waitForRedisReady: mocks.waitForRedisReady
 }));
 
 vi.mock('@cio/core/services/learning-path/progress-sync', async (importOriginal) => ({
@@ -125,6 +134,10 @@ vi.mock('../progress-sync-jobs', () => ({
   scheduleLearningPathProgressSync: mocks.scheduleLearningPathProgressSync
 }));
 
+vi.mock('@cio/core/services/organization/supersede-invites', () => ({
+  supersedeStudentOrgInvites: mocks.supersedeStudentOrgInvites
+}));
+
 vi.mock('../learning-path', () => ({
   resolveLearningPath: mocks.resolveLearningPath,
   assertCanManageLearningPath: mocks.assertCanManageLearningPath,
@@ -132,6 +145,7 @@ vi.mock('../learning-path', () => ({
 }));
 
 import { runQueuedPathBulkEnroll } from '@cio/core/services/learning-path/bulk-enroll';
+import { getInviteExpiryLabel } from '@cio/core/services/learning-path/path-invite-utils';
 import { addPathMembersService } from '../member-management';
 
 const PATH = {
@@ -139,7 +153,6 @@ const PATH = {
   organizationId: 'org-1',
   name: 'Bulk Path',
   publicId: 'AbC123Xy',
-  autoEnroll: false,
   sequentialUnlock: false,
   welcomeEmailMessage: null
 };
@@ -159,7 +172,11 @@ describe('runQueuedPathBulkEnroll', () => {
     mocks.getUserOrgRolesMap.mockResolvedValue({});
     mocks.getActiveOrganizationPlan.mockResolvedValue(null);
     mocks.countActiveStudents.mockResolvedValue(0);
-    mocks.enrollMember.mockImplementation(async (data: { profileId: string }) => ({ id: `m-${data.profileId}` }));
+    mocks.enrollMember.mockImplementation(async (data: { profileId: string; roleId?: number }) => ({
+      id: `m-${data.profileId}`,
+      roleId: data.roleId ?? ROLE.STUDENT,
+      profileId: data.profileId
+    }));
     mocks.listLearningPathCourses.mockResolvedValue([]);
     mocks.getCourseIdsInPath.mockResolvedValue([]);
     mocks.getProfilesByEmails.mockResolvedValue([]);
@@ -172,6 +189,20 @@ describe('runQueuedPathBulkEnroll', () => {
     );
     mocks.emailRegistryGet.mockReturnValue({ schema: { parse: (fields: unknown) => fields } });
     mocks.enqueueEmailSend.mockResolvedValue('email-job-1');
+    mocks.supersedeStudentOrgInvites.mockImplementation(async (_tx: unknown, input: { emails: string[] }) => ({
+      invites: input.emails.map((email: string) => ({
+        email,
+        inviteId: `inv-${email}`,
+        token: `token-${email}`,
+        expiresAt: '2026-03-01T00:00:00.000Z',
+        courseIds: [],
+        cohortIds: [],
+        pathIds: [],
+        accessNamesLabel: undefined,
+        merged: false
+      })),
+      skipped: []
+    }));
   });
 
   it('enrolls direct members, sends welcomes, and reports the outcome', async () => {
@@ -266,9 +297,49 @@ describe('runQueuedPathBulkEnroll', () => {
 
     expect(outcome).toEqual({ requested: 1, enrolled: 0, invited: 1, failed: [] });
     expect(mocks.enrollMember).not.toHaveBeenCalled();
-    expect(mocks.createOrganizationInvites).toHaveBeenCalledWith([
-      expect.objectContaining({ email: 'new@test.dev', metadata: expect.objectContaining({ pathIds: [PATH.id] }) })
-    ]);
+    // The invite email carries the stored expiry, not a recomputed one.
+    expect(mocks.enqueueEmailSend).toHaveBeenCalledWith(
+      expect.objectContaining({
+        fields: expect.objectContaining({ expiresAt: getInviteExpiryLabel('2026-03-01T00:00:00.000Z') })
+      }),
+      expect.anything()
+    );
+    expect(mocks.supersedeStudentOrgInvites).toHaveBeenCalledWith(
+      transactionClient,
+      expect.objectContaining({
+        orgId: 'org-1',
+        emails: ['new@test.dev'],
+        actorProfileId: 'admin-1',
+        source: 'LEARNING_PATH_BULK_ADD',
+        add: { courseIds: [], cohortIds: [], pathIds: [PATH.id] }
+      })
+    );
+  });
+
+  it('reports emails skipped for an existing staff invite as failures and writes member rows in the invite transaction', async () => {
+    mocks.supersedeStudentOrgInvites.mockResolvedValueOnce({
+      invites: [],
+      skipped: [{ email: 'staff@test.dev', reason: 'STAFF_INVITE' }]
+    });
+
+    const outcome = await runQueuedPathBulkEnroll({
+      organizationId: 'org-1',
+      actorProfileId: 'admin-1',
+      pathId: PATH.id,
+      members: [{ email: 'staff@test.dev', roleId: ROLE.STUDENT }],
+      chunkSize: 50
+    });
+
+    expect(outcome).toEqual({
+      requested: 1,
+      enrolled: 0,
+      invited: 0,
+      failed: [{ key: 'staff@test.dev', reason: 'STAFF_INVITE' }]
+    });
+    expect(mocks.createOrganizationMembers).toHaveBeenCalledWith(
+      [expect.objectContaining({ email: 'staff@test.dev' })],
+      transactionClient
+    );
   });
 
   it('resolves email-only entries to existing profiles', async () => {
@@ -387,6 +458,13 @@ describe('addPathMembersService bulk routing', () => {
     }));
   }
 
+  /** Routing tests add existing org members, so the batch takes no new seats. */
+  function existingOrgMembers(count: number) {
+    mocks.getOrgMembersByProfileIds.mockResolvedValue(
+      bulkMembers(count).map((member) => ({ profileId: member.profileId, roleId: ROLE.STUDENT }))
+    );
+  }
+
   it('queues adds above the bulk threshold instead of enrolling inline', async () => {
     mocks.enqueuePathBulkEnroll.mockResolvedValue('job-1');
 
@@ -401,17 +479,124 @@ describe('addPathMembersService bulk routing', () => {
     expect(mocks.enrollMember).not.toHaveBeenCalled();
   });
 
-  it('throws when the queue is unavailable', async () => {
-    mocks.enqueuePathBulkEnroll.mockResolvedValue(undefined);
+  it('runs inline without Redis', async () => {
+    existingOrgMembers(51);
+    mocks.isRedisConfigured.mockReturnValueOnce(false);
+    mocks.getLearningPathById.mockResolvedValue(PATH);
+    mocks.getOrganizationById.mockResolvedValue(ORG);
+    mocks.getMemberByPathAndProfile.mockResolvedValue(null);
+    mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+    mocks.getUserOrgRolesMap.mockResolvedValue({});
+    mocks.getActiveOrganizationPlan.mockResolvedValue(null);
+    mocks.countActiveStudents.mockResolvedValue(0);
+    mocks.enrollBulkMember.mockImplementation(async (data: { profileId: string; roleId?: number }) => ({
+      id: `m-${data.profileId}`,
+      roleId: data.roleId ?? ROLE.STUDENT,
+      profileId: data.profileId
+    }));
+    mocks.listLearningPathCourses.mockResolvedValue([]);
+    mocks.getProfilesByEmails.mockResolvedValue([]);
+    mocks.getProfileById.mockResolvedValue(null);
+    mocks.getOrganizationMembersByNormalizedEmails.mockResolvedValue([]);
+    mocks.emailRegistryGet.mockReturnValue({ schema: { parse: (fields: unknown) => fields } });
+    mocks.enqueueEmailSend.mockResolvedValue('email-job-1');
+
+    const result = await addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', {
+      'org-1': ROLE.ADMIN
+    });
+
+    expect(result).toMatchObject({ mode: 'completed', requested: 51, enrolled: 51, invited: 0, failed: [] });
+    expect(mocks.enqueuePathBulkEnroll).not.toHaveBeenCalled();
+  });
+
+  it('falls back when enqueue throws', async () => {
+    existingOrgMembers(51);
+    mocks.enqueuePathBulkEnroll.mockRejectedValueOnce(new Error('redis down'));
+    mocks.getLearningPathById.mockResolvedValue(PATH);
+    mocks.getOrganizationById.mockResolvedValue(ORG);
+    mocks.getMemberByPathAndProfile.mockResolvedValue(null);
+    mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+    mocks.getUserOrgRolesMap.mockResolvedValue({});
+    mocks.getActiveOrganizationPlan.mockResolvedValue(null);
+    mocks.countActiveStudents.mockResolvedValue(0);
+    mocks.enrollBulkMember.mockImplementation(async (data: { profileId: string; roleId?: number }) => ({
+      id: `m-${data.profileId}`,
+      roleId: data.roleId ?? ROLE.STUDENT,
+      profileId: data.profileId
+    }));
+    mocks.listLearningPathCourses.mockResolvedValue([]);
+    mocks.getProfilesByEmails.mockResolvedValue([]);
+    mocks.getProfileById.mockResolvedValue(null);
+    mocks.getOrganizationMembersByNormalizedEmails.mockResolvedValue([]);
+    mocks.emailRegistryGet.mockReturnValue({ schema: { parse: (fields: unknown) => fields } });
+    mocks.enqueueEmailSend.mockResolvedValue('email-job-1');
+
+    const result = await addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', {
+      'org-1': ROLE.ADMIN
+    });
+
+    expect(result).toMatchObject({ mode: 'completed', requested: 51, enrolled: 51, failed: [] });
+  });
+
+  it('runs inline when Redis is configured but not ready', async () => {
+    existingOrgMembers(51);
+    mocks.waitForRedisReady.mockResolvedValueOnce(false);
+    mocks.getLearningPathById.mockResolvedValue(PATH);
+    mocks.getOrganizationById.mockResolvedValue(ORG);
+    mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(7);
+    mocks.enrollBulkMember.mockImplementation(async (data: { profileId: string; roleId?: number }) => ({
+      id: `m-${data.profileId}`,
+      roleId: data.roleId ?? ROLE.STUDENT,
+      profileId: data.profileId
+    }));
+    mocks.listLearningPathCourses.mockResolvedValue([]);
+
+    const result = await addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', {
+      'org-1': ROLE.ADMIN
+    });
+
+    expect(result).toMatchObject({ mode: 'completed', requested: 51 });
+    expect(mocks.enqueuePathBulkEnroll).not.toHaveBeenCalled();
+  });
+
+  it('an inline add over the student limit gets 403 before any chunk is written', async () => {
+    mocks.isRedisConfigured.mockReturnValueOnce(false);
+    mocks.getOrgMembersByProfileIds.mockResolvedValue([]);
+    mocks.getActiveOrganizationPlan.mockResolvedValue(null);
+    mocks.countActiveStudents.mockResolvedValue(0);
 
     await expect(
       addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', { 'org-1': ROLE.ADMIN })
-    ).rejects.toMatchObject({ code: ErrorCodes.INTERNAL_ERROR, statusCode: 500 });
+    ).rejects.toMatchObject({ statusCode: 403, code: 'UPGRADE_REQUIRED' });
+
+    expect(mocks.enrollBulkMember).not.toHaveBeenCalled();
+    expect(mocks.enrollMember).not.toHaveBeenCalled();
+  });
+
+  it('returns 503 and never runs inline when the enqueue hangs past the timeout', async () => {
+    vi.useFakeTimers();
+    mocks.enqueuePathBulkEnroll.mockReturnValueOnce(new Promise(() => {}));
+
+    const pending = addPathMembersService(PATH.id, { members: bulkMembers(51) }, 'admin-1', {
+      'org-1': ROLE.ADMIN
+    });
+    const assertion = expect(pending).rejects.toMatchObject({ statusCode: 503 });
+
+    await vi.advanceTimersByTimeAsync(5000);
+    await assertion;
+    vi.useRealTimers();
+
+    expect(mocks.enrollBulkMember).not.toHaveBeenCalled();
+    expect(mocks.enrollMember).not.toHaveBeenCalled();
   });
 
   it('still enrolls inline at or below the threshold', async () => {
     mocks.getMemberByPathAndProfile.mockResolvedValue(null);
-    mocks.enrollMember.mockImplementation(async (data: { profileId: string }) => ({ id: `m-${data.profileId}` }));
+    mocks.enrollMember.mockImplementation(async (data: { profileId: string; roleId?: number }) => ({
+      id: `m-${data.profileId}`,
+      roleId: data.roleId ?? ROLE.STUDENT,
+      profileId: data.profileId
+    }));
     mocks.listLearningPathCourses.mockResolvedValue([]);
     mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(7);
     mocks.getOrganizationById.mockResolvedValue(ORG);
@@ -420,7 +605,7 @@ describe('addPathMembersService bulk routing', () => {
       'org-1': ROLE.ADMIN
     });
 
-    expect(Array.isArray(result)).toBe(true);
+    expect(result).toMatchObject({ mode: 'completed', requested: 50 });
     expect(mocks.enqueuePathBulkEnroll).not.toHaveBeenCalled();
     expect(mocks.enrollMember).toHaveBeenCalledTimes(50);
     expect(mocks.ensureComplianceEnrollmentRecordsForProfiles).toHaveBeenCalledOnce();
@@ -431,5 +616,100 @@ describe('addPathMembersService bulk routing', () => {
       pathId: PATH.id,
       profileIds: inlineProfileIds
     });
+  });
+});
+
+describe('runQueuedPathBulkEnroll removal guard', () => {
+  const ENQUEUED_AT = '2026-02-01T00:00:00.000Z';
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) =>
+      callback(transactionClient)
+    );
+    mocks.getLearningPathById.mockResolvedValue(PATH);
+    mocks.getOrganizationById.mockResolvedValue(ORG);
+    mocks.getMemberByPathAndProfile.mockResolvedValue(null);
+    mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+    mocks.getUserOrgRolesMap.mockResolvedValue({});
+    mocks.getActiveOrganizationPlan.mockResolvedValue(null);
+    mocks.countActiveStudents.mockResolvedValue(0);
+    mocks.listLearningPathCourses.mockResolvedValue([]);
+    mocks.getCourseIdsInPath.mockResolvedValue([]);
+    mocks.getProfilesByEmails.mockResolvedValue([]);
+    mocks.getProfileById.mockResolvedValue(null);
+    mocks.getOrganizationMembersByNormalizedEmails.mockResolvedValue([]);
+    mocks.emailRegistryGet.mockReturnValue({ schema: { parse: (fields: unknown) => fields } });
+    mocks.enqueueEmailSend.mockResolvedValue('email-job-1');
+    mocks.supersedeStudentOrgInvites.mockImplementation(async (_tx: unknown, input: { emails: string[] }) => ({
+      invites: input.emails.map((email: string) => ({
+        email,
+        inviteId: `inv-${email}`,
+        token: `token-${email}`,
+        expiresAt: '2026-03-01T00:00:00.000Z',
+        courseIds: [],
+        cohortIds: [],
+        pathIds: [],
+        accessNamesLabel: undefined,
+        merged: false
+      })),
+      skipped: []
+    }));
+  });
+
+  function bulkPayload() {
+    return {
+      organizationId: 'org-1',
+      actorProfileId: 'admin-1',
+      pathId: PATH.id,
+      members: [{ profileId: 'p-1', roleId: ROLE.STUDENT }],
+      chunkSize: 50,
+      enqueuedAt: ENQUEUED_AT
+    };
+  }
+
+  it('removed after enqueue is skipped and reported', async () => {
+    mocks.enrollBulkMember.mockResolvedValue(null);
+
+    const outcome = await runQueuedPathBulkEnroll(bulkPayload());
+
+    expect(outcome.enrolled).toBe(0);
+    expect(outcome.failed).toEqual([{ key: 'p-1', reason: 'REMOVED_SINCE_ENQUEUE' }]);
+    expect(mocks.enrollBulkMember).toHaveBeenCalledWith(
+      expect.objectContaining({ profileId: 'p-1' }),
+      ENQUEUED_AT,
+      transactionClient
+    );
+    expect(mocks.enrollMember).not.toHaveBeenCalled();
+  });
+
+  it('removed before enqueue is re-enrolled', async () => {
+    mocks.enrollBulkMember.mockResolvedValue({ id: 'm-p-1', roleId: ROLE.STUDENT });
+
+    const outcome = await runQueuedPathBulkEnroll(bulkPayload());
+
+    expect(outcome.enrolled).toBe(1);
+    expect(outcome.failed).toEqual([]);
+  });
+
+  it('an active tutor keeps their role', async () => {
+    mocks.enrollBulkMember.mockImplementation(async (data: { roleId: number }) => ({
+      id: 'm-p-1',
+      roleId: data.roleId
+    }));
+
+    const outcome = await runQueuedPathBulkEnroll({
+      ...bulkPayload(),
+      members: [{ profileId: 'p-1', roleId: ROLE.TUTOR }]
+    });
+
+    expect(outcome.enrolled).toBe(1);
+    // The bulk upsert carries the requested role; the query keeps the stored
+    // role for already-active rows (covered database-backed below).
+    expect(mocks.enrollBulkMember).toHaveBeenCalledWith(
+      expect.objectContaining({ profileId: 'p-1', roleId: ROLE.TUTOR }),
+      ENQUEUED_AT,
+      transactionClient
+    );
   });
 });

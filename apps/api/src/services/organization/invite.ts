@@ -20,35 +20,28 @@ import {
   setLinkInviteRevoked,
   updateOrganizationMemberById
 } from '@cio/db/queries/organization';
-import { getCourseGroupIds, getRequiresLearningPathCourses } from '@cio/db/queries/course';
-import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { addCohortMember, getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 
 import { ROLE } from '@cio/utils/constants';
-import { membershipKey } from '@cio/utils/functions';
 import type { TNewOrganizationInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from './student-limit';
 import type { StudentMilestoneNotification } from './student-limit';
-import { buildTeamInviteLink } from '@cio/core/config/dashboard-url';
+import { buildTeamInviteLink, buildOrgInviteLink } from '@cio/core/config/dashboard-url';
 import {
   parseCourseIdsFromInviteMetadata,
   parseCohortIdsFromInviteMetadata,
   parsePathIdsFromInviteMetadata
 } from '@api/utils/org';
-import { getOrgLearningPathsByIds } from '@cio/db/queries/learning-path';
-import { enrollProfileInLearningPath } from '@api/services/learning-path/member-management';
+import { enrollOrganizationInviteUserCore } from '@cio/core/services/organization/invite-enrollment';
+import { ensureComplianceEnrollmentRecordsForProfiles } from '@api/services/course/compliance';
 import { scheduleLearningPathProgressSync } from '@api/services/learning-path/progress-sync-jobs';
-import { ensureCohortCourseGrants } from '@api/services/cohort/cohort';
-import { recordDirectCourseGrantsBulk } from '@api/services/course/enrollment-grants';
 import { getProfileById, markUserAndProfileEmailVerified } from '@cio/db/queries/auth/profile';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { buildEmailBranding, buildEmailFromName, sanitizeEmailSubject } from '@cio/email';
-import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 
 type OrganizationInviteStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED' | 'ACCEPTED';
 
@@ -191,122 +184,6 @@ async function recordOrganizationInviteAudit(
     userAgent: context.userAgent ?? null,
     metadata: context.metadata ?? {}
   });
-}
-
-async function enrollOrganizationInviteUser(
-  tx: DbOrTxClient,
-  params: {
-    courseIds: string[];
-    cohortIds: string[];
-    pathIds: string[];
-    organizationId: string;
-    profileId: string;
-    email: string;
-    roleId: number;
-  }
-): Promise<{ enrolledCount: number; skippedPathGatedCourseIds: string[]; enrolledPathIds: string[] }> {
-  let enrolledCount = 0;
-  let skippedPathGatedCourseIds: string[] = [];
-  const enrolledPathIds: string[] = [];
-
-  if (params.courseIds.length > 0) {
-    // Path-gated courses are skipped, not failed: the invite still grants org
-    // membership plus every other resource, and the skip is audit-trailed.
-    const gatedCourses = await getRequiresLearningPathCourses(params.courseIds, tx);
-    skippedPathGatedCourseIds = gatedCourses.map((course) => course.id);
-    const gatedIds = new Set(skippedPathGatedCourseIds);
-    const directCourseIds = params.courseIds.filter((courseId) => !gatedIds.has(courseId));
-
-    if (directCourseIds.length > 0) {
-      const courseGroupMappings = await getCourseGroupIds(directCourseIds, tx);
-      const courseGroupIds = courseGroupMappings.map((mapping) => mapping.groupId).filter(Boolean) as string[];
-
-      enrolledCount += await enrollUsersInCourseGroups(
-        courseGroupIds,
-        [{ profileId: params.profileId, email: params.email }],
-        params.roleId,
-        tx
-      );
-      await ensureComplianceEnrollmentRecordsForProfiles(directCourseIds, [params.profileId], tx);
-      // Team invites are role-based and intentionally grant-less (the ledger
-      // models learner access only); only students record provenance.
-      if (params.roleId === ROLE.STUDENT) {
-        await recordDirectCourseGrantsBulk(
-          {
-            groupIds: courseGroupIds,
-            profileIds: [params.profileId],
-            courseIds: directCourseIds,
-            source: 'ORG_AUDIENCE'
-          },
-          tx
-        );
-      }
-    }
-  }
-
-  if (params.cohortIds.length > 0) {
-    const existingCohortMemberships = await getExistingCohortMembers(
-      params.cohortIds.map((cohortId) => ({ cohortId, profileId: params.profileId })),
-      tx
-    );
-    const cohortIdsToInsert = params.cohortIds.filter(
-      (cohortId) => !existingCohortMemberships.has(membershipKey(cohortId, params.profileId))
-    );
-
-    for (const cohortId of cohortIdsToInsert) {
-      await addCohortMember(
-        {
-          cohortId,
-          roleId: params.roleId,
-          profileId: params.profileId,
-          email: params.email
-        },
-        tx
-      );
-    }
-
-    const cohortCourseIds = await getCourseIdsByCohortIds(params.cohortIds, tx);
-    const courseIdsToEnroll = cohortCourseIds.filter((courseId) => !params.courseIds.includes(courseId));
-
-    if (courseIdsToEnroll.length > 0) {
-      const cohortCourseGroups = await getCourseGroupIds(courseIdsToEnroll, tx);
-      const cohortGroupIds = cohortCourseGroups.map((mapping) => mapping.groupId).filter(Boolean) as string[];
-
-      enrolledCount += await enrollUsersInCourseGroups(
-        cohortGroupIds,
-        [{ profileId: params.profileId, email: params.email }],
-        params.roleId,
-        tx
-      );
-      await ensureComplianceEnrollmentRecordsForProfiles(courseIdsToEnroll, [params.profileId], tx);
-    }
-
-    for (const cohortId of params.cohortIds) {
-      const courseIdsInCohort = await getCourseIdsByCohortIds([cohortId], tx);
-      await ensureCohortCourseGrants(cohortId, params.profileId, params.profileId, tx, courseIdsInCohort);
-    }
-  }
-
-  if (params.pathIds.length > 0) {
-    const paths = await getOrgLearningPathsByIds(params.organizationId, params.pathIds, tx);
-
-    for (const path of paths) {
-      await enrollProfileInLearningPath(
-        path,
-        {
-          profileId: params.profileId,
-          email: params.email,
-          roleId: ROLE.STUDENT,
-          grantedByProfileId: params.profileId
-        },
-        tx
-      );
-      enrolledCount += 1;
-      enrolledPathIds.push(path.id);
-    }
-  }
-
-  return { enrolledCount, skippedPathGatedCourseIds, enrolledPathIds };
 }
 
 /**
@@ -510,15 +387,22 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const { enrolledCount, skippedPathGatedCourseIds, enrolledPathIds } = await enrollOrganizationInviteUser(tx, {
-      courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
-      cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
-      pathIds: parsePathIdsFromInviteMetadata(row.invite.metadata),
-      organizationId: row.invite.organizationId,
-      profileId: user.id,
-      email: normalizedEmail,
-      roleId: row.invite.roleId
-    });
+    // Replays are idempotent: an already-accepted invite enrolls nothing new.
+    // (Path share links stay reusable by design; org invites do not re-enroll.)
+    const { enrolledCount, skippedPathOnlyCourseIds, enrolledPathIds } = alreadyAccepted
+      ? { enrolledCount: 0, skippedPathOnlyCourseIds: [], enrolledPathIds: [] }
+      : await enrollOrganizationInviteUserCore(tx, {
+          courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
+          cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
+          pathIds: parsePathIdsFromInviteMetadata(row.invite.metadata),
+          organizationId: row.invite.organizationId,
+          profileId: user.id,
+          email: normalizedEmail,
+          roleId: row.invite.roleId,
+          grantedByProfileId: row.invite.createdByProfileId,
+          assertCapacity: assertStudentCapacityOrThrow,
+          ensureCompliance: ensureComplianceEnrollmentRecordsForProfiles
+        });
 
     return {
       organization: row.organization,
@@ -527,7 +411,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       alreadyAccepted,
       studentMilestoneNotification,
       enrolledCount,
-      skippedPathGatedCourseIds,
+      skippedPathOnlyCourseIds,
       enrolledPathIds
     };
   });
@@ -547,7 +431,7 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
       userAgent: context.userAgent,
       metadata: {
         alreadyAccepted: false,
-        skippedPathGatedCourseIds: result.skippedPathGatedCourseIds
+        skippedPathOnlyCourseIds: result.skippedPathOnlyCourseIds
       }
     });
   }
@@ -814,15 +698,22 @@ export async function acceptOrganizationInviteById(
 
     await markUserAndProfileEmailVerified(user.id, tx);
 
-    const { enrolledCount, skippedPathGatedCourseIds, enrolledPathIds } = await enrollOrganizationInviteUser(tx, {
-      courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
-      cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
-      pathIds: parsePathIdsFromInviteMetadata(row.invite.metadata),
-      organizationId: row.invite.organizationId,
-      profileId: user.id,
-      email: normalizedEmail,
-      roleId: row.invite.roleId
-    });
+    // Replays are idempotent: an already-accepted invite enrolls nothing new.
+    // (Path share links stay reusable by design; org invites do not re-enroll.)
+    const { enrolledCount, skippedPathOnlyCourseIds, enrolledPathIds } = alreadyAccepted
+      ? { enrolledCount: 0, skippedPathOnlyCourseIds: [], enrolledPathIds: [] }
+      : await enrollOrganizationInviteUserCore(tx, {
+          courseIds: parseCourseIdsFromInviteMetadata(row.invite.metadata),
+          cohortIds: parseCohortIdsFromInviteMetadata(row.invite.metadata),
+          pathIds: parsePathIdsFromInviteMetadata(row.invite.metadata),
+          organizationId: row.invite.organizationId,
+          profileId: user.id,
+          email: normalizedEmail,
+          roleId: row.invite.roleId,
+          grantedByProfileId: row.invite.createdByProfileId,
+          assertCapacity: assertStudentCapacityOrThrow,
+          ensureCompliance: ensureComplianceEnrollmentRecordsForProfiles
+        });
 
     return {
       organization: row.organization,
@@ -831,7 +722,7 @@ export async function acceptOrganizationInviteById(
       alreadyAccepted,
       studentMilestoneNotification,
       enrolledCount,
-      skippedPathGatedCourseIds,
+      skippedPathOnlyCourseIds,
       enrolledPathIds
     };
   });
@@ -847,7 +738,7 @@ export async function acceptOrganizationInviteById(
       userAgent: context.userAgent,
       metadata: {
         alreadyAccepted: false,
-        skippedPathGatedCourseIds: result.skippedPathGatedCourseIds
+        skippedPathOnlyCourseIds: result.skippedPathOnlyCourseIds
       }
     });
   }

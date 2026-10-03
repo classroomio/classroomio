@@ -19,6 +19,7 @@ import {
   ilike,
   inArray,
   isNotNull,
+  isNull,
   ne,
   not,
   notInArray,
@@ -195,11 +196,45 @@ export async function getOrganizationMemberIdByOrgAndProfile(
 }
 
 /**
+ * Like `getOrganizationMemberIdByOrgAndProfile`, but only matches an ACTIVE
+ * membership. For access checks (e.g. the course redirect) where deactivated
+ * or archived learners must be treated as outsiders. Enrollment flows keep
+ * using the status-agnostic lookup so they never insert a duplicate org row.
+ */
+export async function getActiveOrganizationMemberIdByOrgAndProfile(
+  organizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number | null> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.organizationmember.id })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.status, 'ACTIVE')
+        )
+      )
+      .limit(1);
+
+    return row?.id ?? null;
+  } catch (error) {
+    console.error('getActiveOrganizationMemberIdByOrgAndProfile error:', error);
+    throw new Error(
+      `Failed to resolve organization membership: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Creates multiple organization members in a single query
  * @param data Array of organization member creation data
+ * @param dbClient Optional transaction client so callers can compose the insert atomically
  * @returns Array of created members
  */
-export const createOrganizationMembers = async (data: TNewOrganizationmember[]) => {
+export const createOrganizationMembers = async (data: TNewOrganizationmember[], dbClient: DbOrTxClient = db) => {
   if (data.length === 0) return [];
   for (const member of data) {
     if (!member.profileId && !member.email) {
@@ -207,7 +242,7 @@ export const createOrganizationMembers = async (data: TNewOrganizationmember[]) 
     }
   }
 
-  const members = await db.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
+  const members = await dbClient.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
 
   return members;
 };
@@ -468,7 +503,11 @@ export const deleteOrganizationMember = async (orgId: string, memberId: number) 
 /**
  * Deletes a student membership and their enrolments in this org, in one
  * transaction. `groupmember` rows outlive the membership, so leaving them
- * would silently resurrect old enrolments if the person were re-added.
+ * would silently resurrect old enrolments if the person were re-added. The
+ * same goes for cohort, program and path memberships: the grant cascade
+ * removes course access, but the rows would keep them listed, counted and
+ * enrolled. Grants need no extra revoke step — they go with the groupmember
+ * rows in the same transaction.
  */
 export const deleteOrganizationAudienceMember = async (orgId: string, memberId: number) => {
   try {
@@ -490,6 +529,9 @@ export const deleteOrganizationAudienceMember = async (orgId: string, memberId: 
 
       if (deleted.profileId) {
         await deleteGroupMembershipsForOrgProfiles(orgId, [deleted.profileId], tx);
+        await deleteCohortMembershipsForOrgProfiles(orgId, [deleted.profileId], tx);
+        await deleteProgramMembershipsForOrgProfiles(orgId, [deleted.profileId], tx);
+        await softRemoveLearningPathMembershipsForOrgProfiles(orgId, [deleted.profileId], tx);
       }
 
       return deleted;
@@ -528,12 +570,122 @@ export const deleteGroupMembershipsForOrgProfiles = async (
   }
 };
 
+/**
+ * Hard-deletes cohort memberships for profiles in the org's cohorts.
+ * Scoped through `cohort.organization_id`, so other orgs are left alone.
+ */
+export const deleteCohortMembershipsForOrgProfiles = async (
+  orgId: string,
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<number> => {
+  if (profileIds.length === 0) {
+    return 0;
+  }
+
+  try {
+    const orgCohortIds = dbClient
+      .select({ id: schema.cohort.id })
+      .from(schema.cohort)
+      .where(eq(schema.cohort.organizationId, orgId));
+
+    const removed = await dbClient
+      .delete(schema.cohortMember)
+      .where(
+        and(inArray(schema.cohortMember.profileId, profileIds), inArray(schema.cohortMember.cohortId, orgCohortIds))
+      )
+      .returning({ id: schema.cohortMember.id });
+
+    return removed.length;
+  } catch (error) {
+    console.error('deleteCohortMembershipsForOrgProfiles error:', error);
+    throw new Error('Failed to delete cohort memberships for organization profiles');
+  }
+};
+
+/**
+ * Hard-deletes program memberships for profiles in the org's programs.
+ * Scoped through `program.organization_id`, so other orgs are left alone.
+ */
+export const deleteProgramMembershipsForOrgProfiles = async (
+  orgId: string,
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<number> => {
+  if (profileIds.length === 0) {
+    return 0;
+  }
+
+  try {
+    const orgProgramIds = dbClient
+      .select({ id: schema.program.id })
+      .from(schema.program)
+      .where(eq(schema.program.organizationId, orgId));
+
+    const removed = await dbClient
+      .delete(schema.programMember)
+      .where(
+        and(inArray(schema.programMember.profileId, profileIds), inArray(schema.programMember.programId, orgProgramIds))
+      )
+      .returning({ id: schema.programMember.id });
+
+    return removed.length;
+  } catch (error) {
+    console.error('deleteProgramMembershipsForOrgProfiles error:', error);
+    throw new Error('Failed to delete program memberships for organization profiles');
+  }
+};
+
+/**
+ * Soft-removes path memberships for profiles in the org's paths (sets
+ * `removedAt`), keeping their progress and certificates. Scoped through
+ * `learning_path.organization_id`, so other orgs are left alone.
+ */
+export const softRemoveLearningPathMembershipsForOrgProfiles = async (
+  orgId: string,
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<number> => {
+  if (profileIds.length === 0) {
+    return 0;
+  }
+
+  try {
+    const orgPathIds = dbClient
+      .select({ id: schema.learningPath.id })
+      .from(schema.learningPath)
+      .where(eq(schema.learningPath.organizationId, orgId));
+
+    const removed = await dbClient
+      .update(schema.learningPathMember)
+      .set({ removedAt: new Date().toISOString() })
+      .where(
+        and(
+          inArray(schema.learningPathMember.profileId, profileIds),
+          inArray(schema.learningPathMember.learningPathId, orgPathIds),
+          isNull(schema.learningPathMember.removedAt)
+        )
+      )
+      .returning({ id: schema.learningPathMember.id });
+
+    return removed.length;
+  } catch (error) {
+    console.error('softRemoveLearningPathMembershipsForOrgProfiles error:', error);
+    throw new Error('Failed to remove learning path memberships for organization profiles');
+  }
+};
+
+/**
+ * Updates a STUDENT audience member's email/verified flag, scoped to the org.
+ * Accepts a transaction client so callers can pair it with invite changes.
+ */
 export const updateOrganizationAudienceMember = async (
   orgId: string,
   memberId: number,
-  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>
+  data: Partial<Pick<TNewOrganizationmember, 'email' | 'verified'>>,
+  dbClient: DbOrTxClient = db
 ) => {
-  const [updated] = await db
+  const [updated] = await dbClient
     .update(schema.organizationmember)
     .set(data)
     .where(
@@ -605,9 +757,43 @@ export const getUserOrgRole = async (orgId: string, profileId: string): Promise<
  * Cached on the session, so a status change lands on the next cache refresh —
  * immediate revocation must also invalidate the session.
  */
-export const getUserOrgRolesMap = async (profileId: string): Promise<Record<string, number>> => {
+/**
+ * One org's role for a profile, for API-key actor resolution. Null when the
+ * profile holds no membership there, so key callers act with their creator's
+ * real role (a demoted creator loses admin rights immediately).
+ */
+export const getOrganizationMemberRoleId = async (
+  organizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number | null> => {
   try {
-    const rows = await db
+    const [row] = await dbClient
+      .select({ roleId: schema.organizationmember.roleId })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.status, 'ACTIVE')
+        )
+      )
+      .limit(1);
+
+    return row ? Number(row.roleId) : null;
+  } catch (error) {
+    console.error('getOrganizationMemberRoleId error:', error);
+    throw new Error('Failed to fetch organization member role');
+  }
+};
+
+/** Maps organizationId to roleId for a profile's ACTIVE memberships. Accepts a transaction client. */
+export const getUserOrgRolesMap = async (
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<Record<string, number>> => {
+  try {
+    const rows = await dbClient
       .select({
         organizationId: schema.organizationmember.organizationId,
         roleId: schema.organizationmember.roleId
@@ -1256,11 +1442,11 @@ export const getActiveOrganizationPlan = async (orgId: string, dbClient: DbOrTxC
  * @param profileIds Array of profile IDs to look up
  * @returns Array of { profileId, email } for matching members
  */
-export async function getOrgMembersByProfileIds(orgId: string, profileIds: string[]) {
+export async function getOrgMembersByProfileIds(orgId: string, profileIds: string[], dbClient: DbOrTxClient = db) {
   try {
     if (profileIds.length === 0) return [];
 
-    return db
+    return dbClient
       .select({
         profileId: schema.organizationmember.profileId,
         email: schema.organizationmember.email,

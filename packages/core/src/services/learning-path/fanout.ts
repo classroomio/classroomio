@@ -8,15 +8,20 @@
  */
 export const EMAIL_FANOUT_CONCURRENCY = 5;
 
-export async function mapWithConcurrency<T>(
+/**
+ * Runs `fn` over items with at most `limit` in flight and resolves with the
+ * results in input order once all settle.
+ */
+export async function mapWithConcurrency<T, R = void>(
   items: T[],
   limit: number,
-  fn: (item: T, index: number) => Promise<void>
-): Promise<void> {
+  fn: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
   if (items.length === 0) {
-    return;
+    return [];
   }
 
+  const results: R[] = new Array(items.length);
   const workerCount = Math.max(1, Math.min(limit, items.length));
   let nextIndex = 0;
 
@@ -29,9 +34,11 @@ export async function mapWithConcurrency<T>(
         return;
       }
 
-      await fn(items[currentIndex], currentIndex);
+      results[currentIndex] = await fn(items[currentIndex], currentIndex);
     }
   });
 
   await Promise.all(workers);
+
+  return results;
 }
