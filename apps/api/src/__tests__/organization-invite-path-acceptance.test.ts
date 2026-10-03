@@ -53,7 +53,7 @@ vi.mock('@cio/analytics', () => ({
 }));
 vi.mock('@cio/db/queries/group', () => ({
   enrollUsersInCourseGroups: vi.fn().mockResolvedValue(0),
-  getGroupMemberIdByGroupAndProfile: vi.fn()
+  getGroupMemberByGroupAndProfile: vi.fn()
 }));
 vi.mock('@cio/db/queries/cohort', () => ({
   addCohortMember: vi.fn(),
@@ -131,7 +131,7 @@ import {
   parsePathIdsFromInviteMetadata
 } from '@api/utils/org';
 import { getCourseGroupIds, getOrgCourseGroups, getEnrollOnlyInLearningPathCourses } from '@cio/db/queries/course';
-import { enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { enrollUsersInCourseGroups, getGroupMemberByGroupAndProfile } from '@cio/db/queries/group';
 import { getCohortCoursePairsByCohortIds, getCourseIdsByCohortIds } from '@cio/db/queries/cohort';
 import {
   bulkInsertDirectCourseGrants,
@@ -333,7 +333,7 @@ describe('acceptOrganizationInvite — cohort provenance', () => {
     vi.mocked(getCourseIdsByCohortIds).mockResolvedValue(['c-1']);
     vi.mocked(getCohortCoursePairsByCohortIds).mockResolvedValue([{ cohortId: 'cohort-1', courseId: 'c-1' }]);
     vi.mocked(getOrgCourseGroups).mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }] as never);
-    vi.mocked(getGroupMemberIdByGroupAndProfile).mockResolvedValue('gm-1');
+    vi.mocked(getGroupMemberByGroupAndProfile).mockResolvedValue({ id: 'gm-1', roleId: 3 });
     vi.mocked(enrollUsersInCourseGroups).mockResolvedValue(1);
 
     await acceptOrganizationInvite('token-1', USER as never);
@@ -383,7 +383,10 @@ describe('acceptOrganizationInvite — per-cohort grants', () => {
       { courseId: 'c-a', groupId: 'g-a' },
       { courseId: 'c-b', groupId: 'g-b' }
     ] as never);
-    vi.mocked(getGroupMemberIdByGroupAndProfile).mockImplementation(async (groupId: string) => `gm-${groupId}`);
+    vi.mocked(getGroupMemberByGroupAndProfile).mockImplementation(async (groupId: string) => ({
+      id: `gm-${groupId}`,
+      roleId: 3
+    }));
     vi.mocked(enrollUsersInCourseGroups).mockResolvedValue(2);
 
     await acceptOrganizationInvite('token-1', USER as never);

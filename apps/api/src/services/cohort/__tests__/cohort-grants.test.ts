@@ -9,7 +9,7 @@ const mocks = vi.hoisted(() => ({
   getCohortMemberByProfileId: vi.fn(),
   addCohortMember: vi.fn(),
   getCourseGroupIds: vi.fn(),
-  getGroupMemberIdByGroupAndProfile: vi.fn(),
+  getGroupMemberByGroupAndProfile: vi.fn(),
   insertGroupMembersOnConflictDoNothing: vi.fn(),
   grantCourseAccess: vi.fn(),
   getProfileByEmail: vi.fn(),
@@ -29,6 +29,9 @@ const mocks = vi.hoisted(() => ({
   getCohortMembers: vi.fn(),
   recordDirectCourseGrantsBulk: vi.fn(),
   assertCourseAllowsDirectStudentAdd: vi.fn(),
+  isOrgAdminByCohortId: vi.fn(),
+  getAddableOrgCourses: vi.fn(),
+  getCourseOrgInfo: vi.fn(),
   // Default: nothing is path-only. Tests that need path-only courses override it.
   filterOutPathOnlyCourseIds: vi.fn(async (courseIds: string[]) => ({
     allowedCourseIds: courseIds,
@@ -55,15 +58,18 @@ vi.mock('@cio/db/queries/cohort', () => ({
   removeCohortMember: mocks.removeCohortMember,
   getCohortMemberById: mocks.getCohortMemberById,
   updateCohortMember: mocks.updateCohortMember,
-  getCohortCoursePairsByCohortIds: mocks.getCohortCoursePairsByCohortIds
+  getCohortCoursePairsByCohortIds: mocks.getCohortCoursePairsByCohortIds,
+  isOrgAdminByCohortId: mocks.isOrgAdminByCohortId
 }));
 
 vi.mock('@cio/db/queries/course', () => ({
-  getCourseGroupIds: mocks.getCourseGroupIds
+  getAddableOrgCourses: mocks.getAddableOrgCourses,
+  getCourseGroupIds: mocks.getCourseGroupIds,
+  getCourseOrgInfo: mocks.getCourseOrgInfo
 }));
 
 vi.mock('@cio/db/queries/group', () => ({
-  getGroupMemberIdByGroupAndProfile: mocks.getGroupMemberIdByGroupAndProfile,
+  getGroupMemberByGroupAndProfile: mocks.getGroupMemberByGroupAndProfile,
   insertGroupMembersOnConflictDoNothing: mocks.insertGroupMembersOnConflictDoNothing
 }));
 
@@ -100,6 +106,7 @@ import {
   addCourseToCohortService,
   addCohortMembers,
   ensureCohortCourseGrants,
+  listAddableCohortCoursesService,
   removeCohortMemberService,
   removeCourseFromCohortService,
   updateCohortMemberService
@@ -133,7 +140,7 @@ describe('ensureCohortCourseGrants', () => {
       { courseId: 'c-1', groupId: 'g-1' },
       { courseId: 'c-2', groupId: null }
     ]);
-    mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-1');
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue({ id: 'gm-1', roleId: ROLE.STUDENT });
 
     await ensureCohortCourseGrants('cohort-1', 'p-1', 'actor-1', transactionClient as never, ['c-1', 'c-2']);
 
@@ -159,7 +166,22 @@ describe('ensureCohortCourseGrants', () => {
       roleId: 3
     });
     mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
-    mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue(null);
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue(null);
+
+    await ensureCohortCourseGrants('cohort-1', 'p-1', undefined, transactionClient as never, ['c-1']);
+
+    expect(mocks.grantCourseAccess).not.toHaveBeenCalled();
+  });
+
+  it('skips courses where the profile holds a staff row in the course group', async () => {
+    mocks.getCohortMemberByProfileId.mockResolvedValue({
+      id: 'cm-1',
+      cohortId: 'cohort-1',
+      profileId: 'p-1',
+      roleId: 3
+    });
+    mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue({ id: 'gm-tutor', roleId: ROLE.TUTOR });
 
     await ensureCohortCourseGrants('cohort-1', 'p-1', undefined, transactionClient as never, ['c-1']);
 
@@ -199,7 +221,7 @@ describe('addCohortMembers course grants', () => {
     );
     mocks.getCoursesByCohort.mockResolvedValue([{ course: { id: 'c-1' } }]);
     mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
-    mocks.getGroupMemberIdByGroupAndProfile.mockResolvedValue('gm-1');
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue({ id: 'gm-1', roleId: ROLE.STUDENT });
     mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(7);
     mocks.addCohortMember.mockImplementation(async (data: { profileId: string }) => ({
       id: 'cm-1',
@@ -435,6 +457,19 @@ describe('addCourseToCohortService', () => {
     mocks.getOrgMembersByProfileIds.mockResolvedValue([]);
     mocks.assertStudentCapacityOrThrow.mockResolvedValue(null);
     mocks.notifyStudentMilestone.mockResolvedValue(undefined);
+    mocks.getCourseOrgInfo.mockResolvedValue({ id: 'c-1', groupId: 'g-1', organizationId: COHORT.organizationId });
+  });
+
+  it.each([
+    ['belongs to another organization', { id: 'c-1', groupId: 'g-9', organizationId: 'org-2' }],
+    ['does not exist', null]
+  ])('rejects a course that %s with 404 before writing anything', async (_label, courseOrg) => {
+    mocks.getCourseOrgInfo.mockResolvedValue(courseOrg);
+
+    await expect(addCourseToCohortService(COHORT.id, { courseId: 'c-1' })).rejects.toMatchObject({ statusCode: 404 });
+    expect(mocks.assertCourseAllowsDirectStudentAdd).not.toHaveBeenCalled();
+    expect(mocks.addCourseToCohort).not.toHaveBeenCalled();
+    expect(mocks.grantCourseAccess).not.toHaveBeenCalled();
   });
 
   it('rejects a path-only course with 400 before writing anything', async () => {
@@ -483,5 +518,53 @@ describe('addCourseToCohortService', () => {
     await expect(addCourseToCohortService(COHORT.id, { courseId: 'c-1' })).rejects.toThrow();
 
     expect(mocks.notifyStudentMilestone).not.toHaveBeenCalled();
+  });
+});
+
+describe('listAddableCohortCoursesService', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.getCohortById.mockResolvedValue(COHORT);
+    mocks.getAddableOrgCourses.mockResolvedValue({
+      items: [{ id: 'c-1', title: 'Course One', description: '' }],
+      total: 41
+    });
+  });
+
+  it('pages every addable org course for an org admin, excluding path-only and already-added courses', async () => {
+    mocks.isOrgAdminByCohortId.mockResolvedValue(true);
+
+    const result = await listAddableCohortCoursesService('cohort-1', 'admin-1', { page: 2, limit: 20, search: 'one' });
+
+    expect(mocks.getAddableOrgCourses).toHaveBeenCalledWith({
+      orgId: 'org-1',
+      memberProfileId: undefined,
+      excludePathOnly: true,
+      excludeCohortId: 'cohort-1',
+      search: 'one',
+      page: 2,
+      limit: 20
+    });
+    expect(result).toEqual({
+      items: [{ id: 'c-1', title: 'Course One', description: '' }],
+      pagination: { page: 2, limit: 20, total: 41, totalPages: 3 }
+    });
+  });
+
+  it('limits a non-admin cohort tutor to the courses they belong to', async () => {
+    mocks.isOrgAdminByCohortId.mockResolvedValue(false);
+
+    await listAddableCohortCoursesService('cohort-1', 'tutor-1', { page: 1, limit: 20 });
+
+    expect(mocks.getAddableOrgCourses).toHaveBeenCalledWith(expect.objectContaining({ memberProfileId: 'tutor-1' }));
+  });
+
+  it('404s for an unknown cohort', async () => {
+    mocks.getCohortById.mockResolvedValue(null);
+
+    await expect(listAddableCohortCoursesService('missing', 'admin-1', { page: 1, limit: 20 })).rejects.toMatchObject({
+      statusCode: 404
+    });
+    expect(mocks.getAddableOrgCourses).not.toHaveBeenCalled();
   });
 });

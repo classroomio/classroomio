@@ -22,6 +22,7 @@ import {
   deleteCohortNewsfeedComment as deleteCohortNewsfeedCommentQuery,
   getEnrolledCohortsByProfile,
   getCohortById,
+  isOrgAdminByCohortId,
   getCohortCoursePairsByCohortIds,
   getCohortMemberById,
   getCohortMemberByProfileId,
@@ -43,8 +44,8 @@ import {
   updateCohortNewsfeed as updateCohortNewsfeedQuery,
   updateCohortNewsfeedReaction
 } from '@cio/db/queries/cohort';
-import { getCourseGroupIds } from '@cio/db/queries/course';
-import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
+import { getAddableOrgCourses, getCourseGroupIds, getCourseOrgInfo } from '@cio/db/queries/course';
+import { getGroupMemberByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
 import { grantCourseAccess, revokeCohortGrants } from '@cio/db/queries/learning-path';
 import { recordDirectCourseGrantsBulk } from '@api/services/course/enrollment-grants';
 import { getProfileByEmail } from '@cio/db/queries/auth';
@@ -54,6 +55,7 @@ import {
   insertOrganizationMembersOnConflictDoNothing
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
+import type { TAddableCoursesQuery } from '@cio/utils/validation/course';
 import { assertCourseAllowsDirectStudentAdd, filterOutPathOnlyCourseIds } from '@api/services/course/path-gate';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
@@ -300,12 +302,14 @@ export async function ensureCohortCourseGrants(
       continue;
     }
 
-    const groupMemberId = await getGroupMemberIdByGroupAndProfile(entry.groupId, profileId, dbClient);
+    const groupMember = await getGroupMemberByGroupAndProfile(entry.groupId, profileId, dbClient);
 
-    if (groupMemberId) {
+    // Grants are a STUDENT ledger: a TUTOR/ADMIN row in the course group
+    // already has access through its role and must not carry a COHORT grant.
+    if (groupMember?.roleId === ROLE.STUDENT) {
       await grantCourseAccess(
         {
-          groupmemberId: groupMemberId,
+          groupmemberId: groupMember.id,
           courseId: entry.courseId,
           profileId,
           source: 'COHORT',
@@ -585,11 +589,47 @@ export async function listCohortCourses(cohortId: string, profileId: string) {
   }
 }
 
+/**
+ * Pages the courses this cohort can still add, for the add-courses picker:
+ * ACTIVE courses in the cohort's org that are not already in the cohort and
+ * not path-only (the add rejects those). Org admins see every course; other
+ * cohort team members see the courses they belong to.
+ */
+export async function listAddableCohortCoursesService(cohortId: string, actorId: string, query: TAddableCoursesQuery) {
+  const cohort = await getCohortById(cohortId);
+
+  if (!cohort) {
+    throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
+  }
+
+  const isOrgAdmin = await isOrgAdminByCohortId(cohortId, actorId);
+  const { items, total } = await getAddableOrgCourses({
+    orgId: cohort.organizationId,
+    memberProfileId: isOrgAdmin ? undefined : actorId,
+    excludePathOnly: true,
+    excludeCohortId: cohortId,
+    search: query.search,
+    page: query.page,
+    limit: query.limit
+  });
+  const totalPages = Math.ceil(total / query.limit);
+
+  return { items, pagination: { page: query.page, limit: query.limit, total, totalPages } };
+}
+
 export async function addCourseToCohortService(cohortId: string, data: TAddCourseToCohort) {
   try {
     const cohort = await getCohortById(cohortId);
     if (!cohort) {
       throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
+    }
+
+    // Checked before the path-only gate so another org's course reads as
+    // missing instead of revealing how it is configured.
+    const courseOrg = await getCourseOrgInfo(data.courseId);
+
+    if (!courseOrg || courseOrg.organizationId !== cohort.organizationId) {
+      throw new AppError('Course not found in this organization', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
 
     await assertCourseAllowsDirectStudentAdd(data.courseId);

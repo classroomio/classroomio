@@ -483,7 +483,6 @@ export async function getOrganizationCourses(
         const courses = await getOrgCourses({
           orgId,
           courseIds: filteredCourseIds,
-          excludePathOnly: query.excludePathOnly,
           page,
           limit,
           search
@@ -517,7 +516,6 @@ export async function getOrganizationCourses(
           orgId,
           profileId: userId,
           courseIds: filteredCourseIds,
-          excludePathOnly: query.excludePathOnly,
           page,
           limit,
           search

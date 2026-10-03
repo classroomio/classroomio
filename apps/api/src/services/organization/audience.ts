@@ -32,6 +32,7 @@ import {
   getOrganizationMembersByNormalizedEmails,
   getStudentOrganizationMemberByOrgAndEmail,
   hasActiveOrganizationInviteForEmail,
+  lockOrganizationInviteEmails,
   revokeActiveOrganizationInvitesByEmails,
   revokeOrganizationInvitesByIds
 } from '@cio/db/queries/organization';
@@ -1295,6 +1296,12 @@ export async function updatePendingAudienceMemberEmail(
   // Staff check, member update, the merged invite and the old address's
   // revocation commit together. Staff invites on either address are never touched.
   const committed = await db.transaction(async (tx) => {
+    // Advisory locks before the FOR UPDATE reads below: the same order as
+    // supersedeStudentOrgInvites, so a concurrent supersede of either address
+    // waits instead of deadlocking. The lock is re-entrant, so the supersede
+    // call further down does not block on it.
+    await lockOrganizationInviteEmails(orgId, [currentEmail, normalizedEmail], tx);
+
     if (emailChanged) {
       const activeInvitesForNewEmail = await getActiveOrganizationInvitesByEmails(orgId, [normalizedEmail], tx);
 

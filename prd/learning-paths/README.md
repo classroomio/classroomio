@@ -15,7 +15,7 @@ The prototypes in [`prototypes/learning-paths/`](../../prototypes/learning-paths
 
 **Do not reinvent the wheel.** Except for something that only exists on a learning path, structure, share, and implement the same way courses do today.
 
-Path-specific only (do not look to courses for these): ordered course list and sequential unlock, bundle price and savings, path hub / journey spine, in-course path ribbon, learner course URL `/paths/[publicId]/courses/[courseId]/*` (same children as `/courses/[courseId]/*`), `course.enrollOnlyInLearningPath`, path certificate as a second credential, `course_enrollment_grant` origin, public path landing sections that courses do not have.
+Path-specific only (do not look to courses for these): ordered course list and sequential unlock, bundle price and savings, path hub / journey spine, in-course path ribbon, learner course URL `/paths/[publicId]/courses/[courseId]/*` (same children as `/courses/[courseId]/*`), `course.requiresLearningPath`, path certificate as a second credential, `course_enrollment_grant` origin, public path landing sections that courses do not have.
 
 **Shared course UI.** Lesson player, exercise player, course header, content list, Ask AI, and the rest of taking a course are the existing course components — independent `/courses/[courseId]/lessons` and path taking mount the same pages. Path route files are thin. Path-only chrome is the ribbon, lock state, and hub back-link. Do not fork `lessons/+page.svelte` (or any course player page) into a paths folder.
 
@@ -55,7 +55,7 @@ Do not implement these as specified in the prototype. Use the course pattern ins
 | Explore rebuilt (Content Type sections, Difficulty/Duration pills, no Sort) | Explore is courses + search + `SortSelect` | Add paths to the existing Explore page; keep its toolbar |
 | “No three-dot menu on any path card” | Course cards/rows have a context menu | Keep the same menu pattern; path-specific actions go there |
 | People: progress-only filter, “batch email like course invites” as a one-off | People uses role filter + `invitation-modal` with tutors/students/invite link | Same modal and filters. Extra path columns (current course, path %) are path-specific |
-| Settings as a custom prototype form (status radios, no save bar) | Settings use Field primitives + sticky `Page.SettingsActions` | Same. Path-specific fields: bundle price, savings, sequential unlock, `isPublished` switch |
+| Settings as a custom prototype form (status radios, no save bar) | Settings use Field primitives + sticky `Page.SettingsActions` | Same. Path-specific fields: bundle price, savings, sequential unlock, auto-enroll, `isPublished` switch |
 | Builder: always-on drag rows | Content reorder is an explicit Start/End reorder mode | Same toggle + `svelte-dnd-action` |
 | Path workspace described as “tabs” | Course workspace is a **sidebar**, no horizontal tabs | `PathSidebar` mirroring `CourseSidebar` |
 | Public `/paths` filter **sidebar** (`landing-theme.css` checkbox rail) | Public courses catalog uses the existing org-site courses page + sheets | Mirror `(org-site)/courses` |
@@ -94,7 +94,7 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 
 1. **New entity, separate from Programs.** `learning_path` is its own table set. Programs remain unchanged (cohort hub + newsfeed). No migration.
 2. **Terminology**: "Learning Path" everywhere (admin, LMS, public site).
-3. **Self-enrollment with bundle pricing.** A path is public on the org landing site with one price. Enrolling (buy or free) writes path membership and grants STUDENT members access to every path course; under sequential unlock, later courses stay locked until the previous one is finished (checked when a course is opened).
+3. **Self-enrollment with bundle pricing.** A path is public on the org landing site with one price. Enrolling (buy or free) writes path membership and grants course access for courses unlocked now (the first course under sequential unlock, all of them otherwise).
 4. **Show savings.** The public page shows the bundle price against the summed individual course prices ("$199 ~~$280~~ · Save $81 (29%)"). Toggleable per path.
 5. **Unlock rule = lessons + exercises.** Course N+1 unlocks when course N has every lesson complete AND every exercise submitted/passed. Sequential unlocking is a per-path toggle (off = take in any order).
 6. **Path certificate is a teacher toggle** with its own workspace nav item (same place as course certificates); issued automatically on full completion; appears in the learner's LMS Certificates page.
@@ -102,12 +102,11 @@ Let orgs package multiple courses into an **ordered, sequentially unlocked, bund
 8. **Visitor access is teacher-configurable**: teaser only / full syllabus / syllabus + preview lessons.
 9. **Public path page follows the Coursera professional-certificate shape**: hero with stats + enroll CTA, what-you'll-learn, skills tags, sequential course cards with per-course outcomes and lesson outlines, certificate block, instructors, testimonials, FAQ accordion, pricing card.
 10. **Org landing page: Learning Paths section sits ABOVE the Courses section.** Plus a `/paths` catalog page and `/path/[slug]` detail page mirroring how `/courses` and `/course/[slug]` work today.
-11. **Course independence is a course-level switch.** A course can sit in multiple paths. `course.enrollOnlyInLearningPath` default **false** (still independently enrollable). When **true**, learners cannot take it on its own: public `/course/[slug]/enroll`, Explore, course invite links, and course People → Add are rejected. Access is a live `LEARNING_PATH` grant. Turning the flag on does not revoke existing independent grants. Removing a course from a path or a learner from a path never deletes `groupmember` rows or progress.
+11. **Course independence is a course-level switch.** A course can sit in multiple paths. `course.requiresLearningPath` default **false** (still independently enrollable). When **true**, learners cannot take it on its own: public `/course/[slug]/enroll`, Explore, course invite links, and course People → Add are rejected. Access is a live `LEARNING_PATH` grant. Turning the flag on does not revoke existing independent grants. Removing a course from a path or a learner from a path never deletes `groupmember` rows or progress.
 12. **Publish flag, not a status enum.** Same paradigm as `course.isPublished`: a boolean. Unpublished paths are hidden from the public catalog and reject self-enrollment. Already-enrolled learners keep access; teachers can still add members from the People page while building. No Draft / Archived / Published enum.
 13. **Dashboard/LMS path URLs use `publicId`, not UUID.** `learning_path.id` stays UUID PK; FKs stay on `id`. `publicId` is 8 mixed-case `[0-9A-Za-z]` (e.g. `1GlQpMod`), globally unique, immutable, generated at insert. Public org-site stays `/path/[slug]`. Course ids in nested taking stay UUID.
 14. **A path visit mounts the whole course tree under the path:** `/paths/[publicId]/courses/[courseId]/*` is the same children as `/courses/[courseId]/*` (`/`, `lessons`, `exercises`, `certificates`, `marks`, …). Shared course pages; ribbon binds to `publicId`. Independent taking stays `/courses/[courseId]/*`. Same `/paths/[publicId]` is the teacher Courses page and the learner hub (role split). Teachers edit a course at `/courses/[courseId]/*`, not under the path.
 15. **Setup is a workspace subpage.** `/paths/[publicId]/setup` copies org `/org/[slug]/setup` (`Page.*`, `Item.*`, progress). Create is still `?create=true` modal, then this page. Incomplete chip in the path workspace links here. Courses do not have this yet; `/courses/[id]/setup` can follow the same pattern later.
-16. **Path membership always grants courses to students.** Any path membership grants the path’s courses to STUDENT members via live `LEARNING_PATH` grants. Adding a course to a path grants it to existing STUDENT members. Tutors get the path membership but no course grants. Sequential unlock is still enforced when a course is opened (assertCourseNotLockedForStudent).
 
 ### Prototype LMS / admin exploration (Decisions 13–33) — do not implement
 
@@ -129,7 +128,7 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 | Capability | Current state | Notes |
 | --- | --- | --- |
 | Grouping above course | `program` tables (unordered, admin-enrolled, newsfeed) | Keep as-is; do not extend |
-| Enrollment | `groupmember` per course group; `enrollInCourse()` in `apps/api/src/services/course/invite.ts` | Reuse for path course grants |
+| Enrollment | `groupmember` per course group; `enrollInCourse()` in `apps/api/src/services/course/invite.ts` | Reuse for auto-enrollment |
 | Course completion | lesson completion + exercise submissions tracked per course | Source data for the unlock rule |
 | Public org site | `(org-site)` routes + `packages/ui/src/custom/org-landing-page/` (10 themes, default `minimal`) | Mirror for paths section/list/detail |
 | Course landing page | theme `course.svelte` composer: hero → anchor nav → social proof → info blocks → curriculum → chips → instructor → reviews → pricing | Path page reuses these shared components where possible |
@@ -140,9 +139,9 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 ## Product Goals
 
 1. A visitor can discover a path on the org landing page, read a full Coursera-style path page, and self-enroll (paid or free).
-2. Enrolling in a path creates path membership and grants STUDENT members every path course; sequential unlock is enforced when a course is opened, not by withholding grants.
+2. Enrolling in a path creates path membership and grants course access for courses unlocked now (not necessarily every course at once).
 3. A learner has **one** My Learning page: path cards (membership) and course cards (non-path grants only), different card components. Path hub at `/paths/[publicId]`.
-4. Opening a course from a path uses `/paths/[publicId]/courses/[courseId]/*` (same course pages as `/courses/[courseId]/*`, plus that path’s ribbon). Independent taking (when `enrollOnlyInLearningPath` is false) stays `/courses/[courseId]/*` with no ribbon.
+4. Opening a course from a path uses `/paths/[publicId]/courses/[courseId]/*` (same course pages as `/courses/[courseId]/*`, plus that path’s ribbon). Independent taking (when `requiresLearningPath` is false) stays `/courses/[courseId]/*` with no ribbon.
 5. Teachers create a path the same way they create a course (`?create=true` modal, title + description), then land on `/paths/[publicId]/setup`. Workspace default after that is the Courses page at `/paths/[publicId]`: order courses (Start/End reorder like lessons), People (`invitation-modal`), Settings (`Page.SettingsActions`), landing editor, certificate, analytics. They do not open a course through the path.
 6. Completing all courses issues the path certificate (when enabled).
 7. Programs, standalone courses, and existing enrollments are untouched (zero regression).
@@ -196,7 +195,7 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 - **Path card** — one per path membership (course count, path progress). Opens `/paths/[publicId]`. Does not explode into five course cards.
 - **Course card** — only courses with a live **non-path** grant (`SELF_ENROLL`, `INVITE`, `ADMIN_ADD`, `COHORT`, …). Opens `/courses/[courseId]/lessons`. Path-granted-only courses do not appear here, even after they unlock.
 
-**Explore** (`/lms/explore`): add published paths to the existing Explore page. Keep its toolbar. A `enrollOnlyInLearningPath` course is not independently enrollable here and is not listed as a takeable course in the public catalog; CTA is the path(s) it belongs to.
+**Explore** (`/lms/explore`): add published paths to the existing Explore page. Keep its toolbar. A `requiresLearningPath` course is not independently enrollable here and is not listed as a takeable course in the public catalog; CTA is the path(s) it belongs to.
 
 **Certificates**: a path certificate appears on the existing LMS Certificates page the same way a course certificate does.
 
@@ -204,7 +203,7 @@ The prototype HTML remains useful for **path-specific** surfaces (path hub, in-c
 
 **Course in a path** (`course-in-path.html` — path-specific chrome only): `/paths/[publicId]/courses/[courseId]/*` — **every child `/courses/[courseId]` already has** (`/`, `lessons`, `lessons/[lessonId]`, `exercises/[exerciseId]`, `certificates`, `marks`, …). Same course pages and sidebar; path layout adds the ribbon (“Course 3 of 5”, next unlock, back to hub). `publicId` in the URL is which path this visit is. Course id stays the course UUID. In-course links (`getLessonsRoute` / `getNavItemRoute` / mentions) must keep the `/paths/[publicId]/courses/[courseId]` prefix or the ribbon dies on the next click. Teachers edit the course at `/courses/[courseId]/*`, not under the path.
 
-Independent taking (live non-path grant, `enrollOnlyInLearningPath` false) stays at `/courses/[courseId]/*` with no ribbon. When `enrollOnlyInLearningPath` is **true**, the course is not in the public course catalog and learners cannot enrol on it directly. Hitting `/courses/[courseId]/*` without a non-path grant redirects to the same child under `/paths/[publicId]/courses/[courseId]/` if the learner has exactly one live `LEARNING_PATH` grant for it, otherwise to the path hub / My Learning.
+Independent taking (live non-path grant, `requiresLearningPath` false) stays at `/courses/[courseId]/*` with no ribbon. When `requiresLearningPath` is **true**, the course is not in the public course catalog and learners cannot enrol on it directly. Hitting `/courses/[courseId]/*` without a non-path grant redirects to the same child under `/paths/[publicId]/courses/[courseId]/` if the learner has exactly one live `LEARNING_PATH` grant for it, otherwise to the path hub / My Learning.
 
 **Unlock enforcement**: locked courses have no live `LEARNING_PATH` grant for that path; the player 403s (or shows locked). Independent access to the same course (non-path grant) still uses `/courses/[courseId]/lessons` and is not blocked by another path’s sequential unlock.
 
@@ -226,7 +225,7 @@ Independent taking (live non-path grant, `enrollOnlyInLearningPath` false) stays
 | Analytics | Course analytics | `/paths/[publicId]/analytics` | Path-specific funnel across the path’s courses (enrolled, drop-off, stuck lessons/exercises). Per-course gradebook/analytics stay on the course. This is where listing metric cards belong, not the org listing. |
 | Landing page | `courses/[id]/landingpage` | `/paths/[publicId]/landingpage` | **Same editor chrome**, not a form in the path workspace. Full-screen overlay, left section list, right live path-page preview (`editMode` + `setLandingPageEditContext`). Map existing course sections: header (hero), goals (what you'll learn), chips (skills), instructor (auto from course tutors + show toggle), reviews (testimonials), certificate, pricing (add show-savings). Path-only sections: visitor access (teaser / syllabus / syllabus+preview), FAQ, sequential course series with per-course outcomes. Curriculum on a course is auto from lessons — here the series is the ordered path courses. Do not copy the prototype’s stacked cards, radio-cards, or external “View live page” link. |
 | Certificate | `courses/[id]/certificates` | `/paths/[publicId]/certificates` | Award toggle, title/issuer, preview, `Page.SettingsActions`. Path-specific: issued on full path completion. |
-| Settings | `courses/[id]/settings` | `/paths/[publicId]/settings` | `Field.Group` / `Field.Set` / `Field.Separator`, `isPublished` `Switch`, `UnsavedChanges`, sticky `Page.SettingsActions`. Path-specific fields: bundle price, show-savings, sequential unlock, self-enrollment. Danger zone deletes the path, not courses or progress. Course settings (on the course) gain `enrollOnlyInLearningPath` next to `allowSelfEnrollment`. |
+| Settings | `courses/[id]/settings` | `/paths/[publicId]/settings` | `Field.Group` / `Field.Set` / `Field.Separator`, `isPublished` `Switch`, `UnsavedChanges`, sticky `Page.SettingsActions`. Path-specific fields: bundle price, show-savings, sequential unlock, auto-enroll, self-enrollment. Danger zone deletes the path, not courses or progress. Course settings (on the course) gain `requiresLearningPath` next to `allowSelfEnrollment`. |
 
 ### 4. Access control
 
@@ -238,15 +237,15 @@ Independent taking (live non-path grant, `enrollOnlyInLearningPath` false) stays
 
 - **One shared progression.** One enrolment and one progress record per learner per course. A course they already finished counts in the path. Work in the path counts on the course.
 - **Progression lives in existing course tables.** Truth: `lesson_completion` and `submission`. Caches: `learning_path_member_course` and `learning_path_member`. Course completion: `groupmember.certificateEarnedAt`. Path completion: `learning_path_member.completedAt`.
-- **Access is `groupmember` plus a grant.** Joining a path writes `learning_path_member`, then a `groupmember` row if missing, then a `LEARNING_PATH` grant for every path course (STUDENT members only). Sequential unlock is enforced when a course is opened (`assertCourseNotLockedForStudent`), not by delaying the grant. Origin is `course_enrollment_grant`, not `groupmember`.
+- **Access is `groupmember` plus a grant.** Joining a path writes `learning_path_member`, then a `groupmember` row if missing, then a `LEARNING_PATH` grant. Sequential unlock delays that grant until the course unlocks. Origin is `course_enrollment_grant`, not `groupmember`.
 - **Path vs personal.** `source = LEARNING_PATH` + `learningPathId` vs `SELF_ENROLL` / `INVITE` / `ADMIN_ADD`. Both at once is allowed. The People page shows one person, with both origins listed.
-- **`enrollOnlyInLearningPath` (course column, default false).** When true: reject independent student enroll (public enroll, Explore, course invite, course People → Add); the course is not listed as takeable in the public course catalog. Path People / path self-enroll still write a `LEARNING_PATH` grant. Existing independent grants stay. Explore/public CTA for that course is the path(s), not course enroll. Hitting `/courses/[courseId]/*` redirects into `/paths/[publicId]/courses/[courseId]/*` (same child) when the learner has exactly one live path grant, otherwise to the hub / My Learning. When false: the course stays in the public catalog and learners can enrol on it independently.
+- **`requiresLearningPath` (course column, default false).** When true: reject independent student enroll (public enroll, Explore, course invite, course People → Add); the course is not listed as takeable in the public course catalog. Path People / path self-enroll still write a `LEARNING_PATH` grant. Existing independent grants stay. Explore/public CTA for that course is the path(s), not course enroll. Hitting `/courses/[courseId]/*` redirects into `/paths/[publicId]/courses/[courseId]/*` (same child) when the learner has exactly one live path grant, otherwise to the hub / My Learning. When false: the course stays in the public catalog and learners can enrol on it independently.
 - **My Learning is one page.** Path membership → path card. Course card only if a live **non-path** grant exists. Unlocking a path course does not add a course card.
 - **Course People, gradebook, and analytics include everyone with a live grant**, path students included. Source is a column, plus an optional page-local filter. Path funnel numbers live on `/paths/[publicId]/people` and `/paths/[publicId]/analytics`. Course **admin** routes stay `/courses/[courseId]/…` with no path in the URL.
 - **A path visit is `/paths/[publicId]/courses/[courseId]/*`.** Same children as `/courses/[courseId]/*`. Shared course pages + ribbon. Teachers edit at `/courses/[courseId]/*`. Independent taking stays `/courses/[courseId]/*`. In-course href helpers must preserve the path prefix on a path visit.
 - **`publicId` is URL-only.** UUID PK and FKs unchanged. 8 mixed-case `[0-9A-Za-z]`, globally unique, immutable. Layout loaders resolve `publicId` → `id` once.
 - **Removed from a path.** Revoke the path grant, set `learning_path_member.removedAt`. Do not delete `groupmember` or progress. They lose the course only if that grant was their last one.
-- **Access check is “has a live grant”.** `isUserCourseMemberOrOrgAdmin` / `isCourseTeamMemberOrOrgAdmin` gain one `EXISTS` on an un-revoked grant. Before that ships, backfill a grant for every existing STUDENT `groupmember` (`COHORT` where the join explains it, `IMPORT` otherwise) and have remaining enrolment routes write theirs, including `ensureProgramCourseAccess`.
+- **Access check is “has a live grant”.** `isUserCourseMemberOrOrgAdmin` / `isCourseTeamMemberOrOrgAdmin` gain one `EXISTS` on an un-revoked grant. Before that ships, backfill a grant for every existing `groupmember` (`COHORT` where the join explains it, `IMPORT` otherwise) and have remaining enrolment routes write theirs, including `ensureProgramCourseAccess`.
 - **Publish, not a status enum.** `isPublished` like courses. Unpublished: off the public catalog, self-enrolment rejected. Existing members keep access. Teachers can still add members while building.
 - **Cohort segmentation is out of scope.** See `prd/course-cohorts`.
 
@@ -259,10 +258,10 @@ Independent taking (live non-path grant, `enrollOnlyInLearningPath` false) stays
 | `learning_path_member` | Insert (`NOT_STARTED`), or clear `removedAt` if they were previously removed |
 | `learning_path_member_course` | One row per path course: first `NOT_STARTED`, the rest `LOCKED` under sequential unlock, else all `NOT_STARTED` |
 | `organizationmember` | Insert if absent, after the student-limit check |
-| `groupmember` | Insert for every path course (STUDENT members), only if the row is missing |
-| `course_enrollment_grant` | Upsert one `LEARNING_PATH` grant per path course (STUDENT members) |
+| `groupmember` | Insert only for courses granted now, and only if the row is missing |
+| `course_enrollment_grant` | Upsert one `LEARNING_PATH` grant per granted course |
 
-**Unlocking a later course:** flip `LOCKED` → `NOT_STARTED` in the progress cache. The `groupmember` row and grant already exist from enrollment; the upserts stay idempotent.
+**Unlocking a later course:** flip `LOCKED` → `NOT_STARTED`, insert `groupmember` if missing, upsert its grant.
 
 **Unenrolling**, one transaction:
 
@@ -282,8 +281,8 @@ Public org-site (same host as `/courses` / `/course/[slug]`):
 | `/paths` | Path catalog |
 | `/path/[slug]` | Public path page |
 | `/path/[slug]/enroll` | Path enroll |
-| `/course/[slug]` | Public course page. If `enrollOnlyInLearningPath`, enroll CTA is the path(s), not course enroll; course is not independently listed as takeable |
-| `/course/[slug]/enroll` | Independent course enroll — **rejected** when `enrollOnlyInLearningPath` |
+| `/course/[slug]` | Public course page. If `requiresLearningPath`, enroll CTA is the path(s), not course enroll; course is not independently listed as takeable |
+| `/course/[slug]/enroll` | Independent course enroll — **rejected** when `requiresLearningPath` |
 
 LMS (path segment is `publicId`, not UUID):
 
@@ -294,7 +293,7 @@ LMS (path segment is `publicId`, not UUID):
 | `/lms/certificates` | Course + path certificates |
 | `/paths/[publicId]` | Learner hub (list of courses in the path). Not `/lms/paths/[publicId]` |
 | `/paths/[publicId]/courses/[courseId]/*` | Path visit of that course. **Same children as `/courses/[courseId]/*`** (`/`, `lessons`, `exercises`, `certificates`, `marks`, …). `courseId` is the course UUID |
-| `/courses/[courseId]/*` | Independent course. When `enrollOnlyInLearningPath`, redirect to the same child under `/paths/[publicId]/courses/[courseId]/` if exactly one live path grant, else hub / My Learning |
+| `/courses/[courseId]/*` | Independent course. When `requiresLearningPath`, redirect to the same child under `/paths/[publicId]/courses/[courseId]/` if exactly one live path grant, else hub / My Learning |
 
 Dashboard (`publicId` in the URL so workspace paths stay short):
 
@@ -325,7 +324,7 @@ Route files: `paths/[publicId]/+layout` resolves `publicId` → uuid. Workspace 
 - Teachers edit the course at `/courses/[courseId]/*`. Path Courses page is `/paths/[publicId]`. Path analytics is `/paths/[publicId]/analytics`. Create lands on `/paths/[publicId]/setup` (org setup chrome).
 - `publicId` is URL-only (UUID PK unchanged). Course id in the nested segment stays UUID.
 - My Learning stays `/lms/mylearning`.
-- `enrollOnlyInLearningPath` true: not independently in the public catalog; `/courses/[courseId]/*` redirects as above. False: catalog + independent enroll stay.
+- `requiresLearningPath` true: not independently in the public catalog; `/courses/[courseId]/*` redirects as above. False: catalog + independent enroll stay.
 
 ---
 
@@ -342,7 +341,7 @@ learning_path
   difficulty LEARNING_PATH_DIFFICULTY nullable      -- Difficulty filter + public stats row
   estimatedDurationMinutes integer nullable          -- "~38 hours"; Duration filter buckets
   cost bigint default 0 · currency varchar default 'USD' · showSavings boolean default true
-  sequentialUnlock boolean default true · selfEnrollment boolean default true
+  sequentialUnlock boolean default true · selfEnrollment boolean default true · autoEnroll boolean default true
   certificateEnabled boolean default true · certificateTitle text · certificateIssuer text
   certificateDesign jsonb   -- mirrors course.certificate.design so @cio/certificates can render it
   landingPage jsonb  -- { headline, subheadline, visitorAccess: 'teaser'|'syllabus'|'preview',
@@ -363,7 +362,7 @@ learning_path_course
   -- non-deferrable unique index rejects the intermediate states of a swap.
 
 course (existing table, new column)
-  enrollOnlyInLearningPath boolean default false  -- independent enroll blocked; path grant only
+  requiresLearningPath boolean default false  -- independent enroll blocked; path grant only
 
 learning_path_member
   id uuid PK · learningPathId FK(learning_path, cascade) · profileId FK(profile) nullable · email text
@@ -393,7 +392,7 @@ course_enrollment_grant           -- cross-cutting: why any learner has access t
   index(learningPathId, courseId) · index(profileId)
 
 learning_path_certificate_issue
-  id uuid PK · learningPathId FK(cascade) · learningPathMemberId FK(cascade) · profileId FK (no cascade, like other membership profile references)
+  id uuid PK · learningPathId FK(cascade) · learningPathMemberId FK(cascade) · profileId FK(cascade)
   certificateId varchar UNIQUE     -- LP-8F42-19AC, shown on the learner's Certificates page
   title text · issuer text         -- frozen at issue time
   issuedAt · status default 'valid' · revokedAt · fileUrl
@@ -408,7 +407,7 @@ enum COURSE_ENROLLMENT_SOURCE: SELF_ENROLL | INVITE | ADMIN_ADD | ORG_AUDIENCE |
 Notes:
 - **Where progression is stored.** Source of truth is the existing course tables: `lesson_completion` and `submission`. There is no path-scoped copy of progress. `learning_path_member_course` and `learning_path_member` hold a cache (status/percent/counts) recomputed from that truth. Course completion is still `groupmember.certificateEarnedAt`. Path completion is `learning_path_member.completedAt`.
 - **`learning_path.publicId`** is URL-only (dashboard/LMS `/paths/[publicId]/…`). UUID PK and FKs unchanged. 8 mixed-case `[0-9A-Za-z]`, globally unique, generated at insert with retry. Public site still uses `slug`.
-- **`course.enrollOnlyInLearningPath`** is a first-class column (not metadata). Independent enroll reads it next to `allowSelfEnrollment`.
+- **`course.requiresLearningPath`** is a first-class column (not metadata). Independent enroll reads it next to `allowSelfEnrollment`.
 - Savings figure is computed at read time from the sum of `course.cost` over path courses — never stored.
 - `estimatedDurationMinutes` and `difficulty` are stored because nothing derivable backs them: courses carry no duration or difficulty column of their own.
 - Schema work stops at a passing `@cio/db` build; migrations are handled outside this workflow.
@@ -439,17 +438,17 @@ Follow the standard layering (validation in `packages/utils/src/validation/learn
 | GET | `/learning-path/:pathId` | member/admin | Detail incl. ordered courses + caller progress |
 | PUT | `/learning-path/:pathId` | admin/tutor | Update settings/pricing/landingPage/isPublished |
 | DELETE | `/learning-path/:pathId` | org admin | Delete (courses/progress preserved) |
-| POST | `/learning-path/:pathId/courses` | admin/tutor | Add course (+ always grants existing students) |
+| POST | `/learning-path/:pathId/courses` | admin/tutor | Add course (+ auto-enroll existing students) |
 | PUT | `/learning-path/:pathId/courses/order` | admin/tutor | Reorder (array of courseIds) |
 | DELETE | `/learning-path/:pathId/courses/:courseId` | admin/tutor | Remove (no unenrollment) |
 | GET | `/learning-path/:pathId/members` | admin/tutor | Members + per-course progress |
-| POST | `/learning-path/:pathId/members` | admin/tutor | Batch add (email+role) + always grants |
+| POST | `/learning-path/:pathId/members` | admin/tutor | Batch add (email+role) + auto-enroll |
 | DELETE | `/learning-path/:pathId/members/:memberId` | admin/tutor | Soft-remove (`removedAt`); revoke `LEARNING_PATH` grants. Course access remains only if another live grant exists |
 | GET | `/learning-path/:pathId/analytics` | admin/tutor | Funnel + stuck items |
 | POST | `/learning-path/:pathId/enroll` | auth user | Self-enroll (free) / post-payment callback (paid) |
 | GET | `/organization/learning-paths/enrolled` | auth user | LMS: caller's paths with progress + unlock states |
 
-Public (org-site loaders, no auth): list published paths for landing/catalog; get path by slug with landingPage content filtered by `visitorAccess`. Self-enroll requires `isPublished` (same gate as `enrollInCourse`). `enrollInCourse` also rejects `enrollOnlyInLearningPath` courses (path enroll is the only student path in).
+Public (org-site loaders, no auth): list published paths for landing/catalog; get path by slug with landingPage content filtered by `visitorAccess`. Self-enroll requires `isPublished` (same gate as `enrollInCourse`). `enrollInCourse` also rejects `requiresLearningPath` courses (path enroll is the only student path in).
 
 ### Frontend plan (dashboard)
 
@@ -457,7 +456,7 @@ Follow CLAUDE.md conventions: types in `features/learning-path/utils/types.ts` i
 
 - **Admin**: nav item in `org-navigation.ts` after Courses using `PathIcon` from `@cio/ui/custom/moving-icons`; routes `org/[slug]/paths/+page.svelte` (same listing as courses) and `/paths/[publicId]` (Courses default) plus `/paths/[publicId]/{setup,people,analytics,landingpage,certificates,settings}` with a `PathSidebar` copied from `CourseSidebar`. Setup copies `org/[slug]/setup`. Reuse `Page.*`, `Search`, `CourseFilterPopover`, `Field.*`, `invitation-modal`, `Page.SettingsActions`, and the lesson **Start reorder / End reorder** + `svelte-dnd-action` pattern. Teachers open a member course at `/courses/[courseId]/…`, not under the path.
 - **LMS**: one `/lms/mylearning` grid (URL unchanged; path cards + independent course cards); Explore; hub `/paths/[publicId]`; `/paths/[publicId]/courses/[courseId]/*` remounts the existing course pages + ribbon. Do not add an LMS Paths nav item. Do not fork course pages.
-- **Public**: paths section added to org landing themes (start `minimal`) via the **existing** org landing editor; `(org-site)/paths` and `(org-site)/path/[slug]` mirroring the **existing** courses catalog and course landing. Path public-page **editor** copies `courses/[id]/landingpage` (overlay + live preview), not `teacher-path-landing-editor.html`. Reuse `CourseSectionNav`, `CourseSocialProof`, `CourseCurriculum`-style rows, `CoursePricing` card, `LandingButton`, footer. `enrollOnlyInLearningPath` courses do not self-enroll from `/course/[slug]/enroll` and are not independently takeable in the public catalog.
+- **Public**: paths section added to org landing themes (start `minimal`) via the **existing** org landing editor; `(org-site)/paths` and `(org-site)/path/[slug]` mirroring the **existing** courses catalog and course landing. Path public-page **editor** copies `courses/[id]/landingpage` (overlay + live preview), not `teacher-path-landing-editor.html`. Reuse `CourseSectionNav`, `CourseSocialProof`, `CourseCurriculum`-style rows, `CoursePricing` card, `LandingButton`, footer. `requiresLearningPath` courses do not self-enroll from `/course/[slug]/enroll` and are not independently takeable in the public catalog.
 
 ### Build verification
 
@@ -472,7 +471,7 @@ pnpm format:check
 ## Implementation Order
 
 1. **Schema + validation + queries** (`learning_path*` tables, Zod schemas, query layer).
-2. **API**: CRUD + course ordering + members + enroll service (always-grants transaction, `ON CONFLICT DO NOTHING` idempotency) + unlock/completion service + enrolled-paths endpoint.
+2. **API**: CRUD + course ordering + members + enroll service (auto-enroll transaction, `ON CONFLICT DO NOTHING` idempotency) + unlock/completion service + enrolled-paths endpoint.
 3. **Admin UI**: listing (course listing pattern) → create modal → `/paths/[publicId]/setup` → `PathSidebar` + Courses default at `/paths/[publicId]` (Start/End reorder) → Settings (`Page.SettingsActions`) → People (`invitation-modal`) → Landing editor → Certificate → Analytics.
 4. **LMS**: mixed cards on `/lms/mylearning` (URL unchanged); Explore; hub `/paths/[publicId]`; `/paths/[publicId]/courses/[courseId]/*` (shared course pages + ribbon). Do not rebuild LMS home, sidebar, Exercises, Community, or Settings.
 5. **Public**: landing section (minimal theme) → catalog (mirror `(org-site)/courses`) → detail page → enroll flow (free first, then paid via existing payment flow).
@@ -484,17 +483,17 @@ pnpm format:check
 2. Published paths appear on the org landing page above courses, in `/paths` (same catalog chrome as `/courses`), and at `/path/[slug]` with all enabled sections; unpublished paths do not.
 3. Savings displays as bundle price vs summed course prices and updates when course prices change.
 4. Visitor access level correctly gates lesson outlines/previews for non-enrolled visitors.
-5. Enrolling (free or paid) creates the member row and grants STUDENT members every path course, idempotently; locked courses stay unopenable until unlocked. Unpublished paths reject self-enrollment.
+5. Enrolling (free or paid) creates the member row and grants course access for courses unlocked now, idempotently. Unpublished paths reject self-enrollment.
 6. With sequential unlock on, course N+1 is locked until course N's lessons AND exercises are complete — enforced in UI and API; toggle off restores free order.
-7. My Learning stays `/lms/mylearning`: path cards for membership, course cards only for live non-path grants. A path visit is `/paths/[publicId]/courses/[courseId]/*` (same children as `/courses/[courseId]/*`, shared pages + ribbon). Locked path courses have no live grant and 403. When `enrollOnlyInLearningPath`, independent `/courses/[courseId]/*` redirects into the same child under the path if exactly one live path grant, else hub / My Learning; the course is not independently in the public catalog.
+7. My Learning stays `/lms/mylearning`: path cards for membership, course cards only for live non-path grants. A path visit is `/paths/[publicId]/courses/[courseId]/*` (same children as `/courses/[courseId]/*`, shared pages + ribbon). Locked path courses have no live grant and 403. When `requiresLearningPath`, independent `/courses/[courseId]/*` redirects into the same child under the path if exactly one live path grant, else hub / My Learning; the course is not independently in the public catalog.
 8. Completing all courses sets `completedAt` and (when enabled) issues the path certificate, visible in LMS Certificates.
 9. Removing a course from a path or a member from a path never deletes `groupmember` rows or progress. Path unenrollment revokes the path's grants; the learner keeps the course only if another live grant remains.
-10. Adding a course to a path with existing students always grants them that course (subject to sequential unlock).
+10. Adding a course to a path with existing students auto-enrolls them in that course (subject to sequential unlock).
 11. Analytics funnel counts match member course-completion data.
 12. Programs and standalone courses behave exactly as before.
 13. All user-facing strings use translation keys; all builds and `pnpm format:check` pass.
 14. Shared UI matches the live course implementation: org listing, create modal, `PathSidebar`, People (`invitation-modal` + role filter), Settings (`Field.*` + `Page.SettingsActions`), filters/search, LMS My Learning (tabs + grid only, mixed path/course cards), Explore toolbar, drag-reorder mode, **landing editor** overlay. Prototype Decisions 13–33 that redesigned those surfaces are **not** acceptance criteria.
-15. `course.enrollOnlyInLearningPath` blocks independent student enroll (public, Explore, course invite, course People → Add), hides the course as independently takeable in the public catalog, and does not revoke grants that already exist.
+15. `course.requiresLearningPath` blocks independent student enroll (public, Explore, course invite, course People → Add), hides the course as independently takeable in the public catalog, and does not revoke grants that already exist.
 16. Dashboard/LMS path URLs use `learning_path.publicId` (8 mixed-case `[0-9A-Za-z]`). Teachers land on `/paths/[publicId]/setup` after create; Courses default is `/paths/[publicId]`. A path visit of a course is `/paths/[publicId]/courses/[courseId]/*` — the **same** course pages as `/courses/[courseId]/*`; path chrome is ribbon only. `/lms/mylearning` does not change.
 17. `/paths/[publicId]/setup` exists as a workspace subpage using org setup chrome (`Page.*`, `Item.*`). It is not the create modal. `/courses/[id]/setup` is out of scope here and can copy this later.
 
@@ -503,7 +502,7 @@ pnpm format:check
 ## Risks and Mitigations
 
 - **Unlock-rule evaluation cost** (checked on every lesson/exercise completion): scope the check to paths containing that course with the learner as member; index `learning_path_course.courseId`.
-- **Always-grants transaction size** for large paths/cohorts: batch inserts with `ON CONFLICT DO NOTHING`; >500 members → background job (same mitigation as Programs).
+- **Auto-enroll transaction size** for large paths/cohorts: batch inserts with `ON CONFLICT DO NOTHING`; >500 members → background job (same mitigation as Programs).
 - **Price drift**: savings computed at read time, so course price changes are always reflected; if a course in an active path becomes free/pricier, surface a notice in the Settings pricing section.
 - **Learner already enrolled in a member course independently**: idempotent enrollment; their existing progress counts toward the unlock rule immediately (decide: acceptable and desirable).
 - **Locked-course deep links** shared between learners: API must enforce the lock (not just UI), returning a typed error the frontend renders as the locked state.

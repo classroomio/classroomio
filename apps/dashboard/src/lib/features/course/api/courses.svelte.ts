@@ -42,15 +42,14 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches org courses for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getOrgCourses(options: { tagSlugs?: string[]; excludePathOnly?: boolean } = {}) {
-    const { tagSlugs = [], excludePathOnly } = options;
+  async getOrgCourses(tagSlugs: string[] = []) {
     const allCourses: OrgCourses = [];
     let page = 1;
     let totalPages = 1;
     let lastResponse: Awaited<ReturnType<CoursesApi['getOrgCoursesPage']>> | undefined;
 
     while (page <= totalPages) {
-      const response = await this.getOrgCoursesPage({ page, limit: 100, excludePathOnly }, tagSlugs);
+      const response = await this.getOrgCoursesPage({ page, limit: 100 }, tagSlugs);
       if (!response) {
         return response;
       }
@@ -77,8 +76,7 @@ export class CoursesApi extends BaseApiWithErrors {
       page: String(query.page ?? 1),
       limit: String(query.limit ?? 20),
       search: query.search,
-      tags: normalizedTagSlugs.length > 0 ? normalizedTagSlugs.join(',') : undefined,
-      excludePathOnly: query.excludePathOnly ? 'true' : undefined
+      tags: normalizedTagSlugs.length > 0 ? normalizedTagSlugs.join(',') : undefined
     };
 
     let requestSignal = options.signal;

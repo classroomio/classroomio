@@ -6,7 +6,7 @@ import {
   getCourseIdsByCohortIds,
   getExistingCohortMembers
 } from '@cio/db/queries/cohort';
-import { enrollUsersInCourseGroups, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { enrollUsersInCourseGroups, getGroupMemberByGroupAndProfile } from '@cio/db/queries/group';
 import {
   bulkInsertDirectCourseGrants,
   getOrgLearningPathsByIds,
@@ -148,10 +148,11 @@ export async function enrollOrganizationInviteUserCore(
           continue;
         }
 
-        const groupMemberId = await getGroupMemberIdByGroupAndProfile(entry.groupId, params.profileId, tx);
+        const groupMember = await getGroupMemberByGroupAndProfile(entry.groupId, params.profileId, tx);
 
-        if (groupMemberId) {
-          groupMemberIdByCourseId.set(entry.courseId, groupMemberId);
+        // STUDENT rows only: a staff row in the course group must not carry a COHORT grant.
+        if (groupMember?.roleId === ROLE.STUDENT) {
+          groupMemberIdByCourseId.set(entry.courseId, groupMember.id);
         }
       }
 

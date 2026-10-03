@@ -52,6 +52,7 @@ const mocks = vi.hoisted(() => ({
   enqueueTransactionalEmail: vi.fn(),
   sendLearningPathWelcomeEmail: vi.fn(),
   supersedeStudentOrgInvites: vi.fn(),
+  getStaffInvitedEmails: vi.fn(),
   orgHasCertificatesEnabled: vi.fn()
 }));
 
@@ -148,6 +149,7 @@ vi.mock('../progress-sync-jobs', () => ({
 }));
 
 vi.mock('@cio/core/services/organization/supersede-invites', () => ({
+  getStaffInvitedEmails: mocks.getStaffInvitedEmails,
   supersedeStudentOrgInvites: mocks.supersedeStudentOrgInvites
 }));
 
@@ -188,6 +190,7 @@ describe('learning-path services', () => {
     mocks.revokeActiveOrganizationInvitesByEmails.mockResolvedValue([]);
     mocks.orgHasCertificatesEnabled.mockResolvedValue(true);
     mocks.enqueueTransactionalEmail.mockResolvedValue(undefined);
+    mocks.getStaffInvitedEmails.mockResolvedValue(new Set<string>());
     mocks.supersedeStudentOrgInvites.mockImplementation(
       async (_tx: unknown, input: { emails: string[]; add: { pathIds: string[] } }) => ({
         invites: input.emails.map((email: string) => ({
@@ -994,6 +997,28 @@ describe('learning-path services', () => {
       );
       expect(result).toMatchObject({ mode: 'completed', requested: 1 });
       expect(result.mode === 'completed' ? result.members : []).toHaveLength(0);
+    });
+
+    it('writes no student member row for an email with a pending staff invite', async () => {
+      mocks.getLearningPathById.mockResolvedValue(validPath);
+      mocks.getProfilesByEmails.mockResolvedValue([]);
+      mocks.getOrganizationMembersByNormalizedEmails.mockResolvedValue([]);
+      // Both the up-front seat count and the invite transaction see the staff invite.
+      mocks.getStaffInvitedEmails.mockResolvedValue(new Set(['staff@test.dev']));
+      mocks.supersedeStudentOrgInvites.mockResolvedValueOnce({
+        invites: [],
+        skipped: [{ email: 'staff@test.dev', reason: 'STAFF_INVITE' }]
+      });
+
+      await addPathMembersService(
+        validPath.id,
+        { members: [{ email: 'staff@test.dev', roleId: ROLE.STUDENT }] },
+        'admin-1',
+        { 'org-1': ROLE.ADMIN }
+      );
+
+      expect(mocks.createOrganizationMembers).not.toHaveBeenCalled();
+      expect(mocks.enqueueTransactionalEmail).not.toHaveBeenCalled();
     });
 
     it('resolves email-only members to an existing profile and enrolls directly', async () => {

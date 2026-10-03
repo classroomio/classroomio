@@ -34,7 +34,7 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   getOrgLearningPathsByIds: mocks.getOrgLearningPathsByIds
 }));
 
-import { supersedeStudentOrgInvites } from '@cio/core/services/organization/supersede-invites';
+import { getStaffInvitedEmails, supersedeStudentOrgInvites } from '@cio/core/services/organization/supersede-invites';
 
 function activeInvite(id: string, email: string, metadata: unknown, roleId: number = ROLE.STUDENT) {
   return {
@@ -131,5 +131,55 @@ describe('supersedeStudentOrgInvites', () => {
     expect(invites).toHaveLength(1);
     expect(invites[0]).toMatchObject({ courseIds: ['c-new'], merged: false });
     expect(mocks.revokeOrganizationInvitesByIds).not.toHaveBeenCalled();
+  });
+
+  it('names a shared resource set once per call', async () => {
+    mocks.getOrgCourses.mockResolvedValue({ items: [{ id: 'c-1', title: 'Course One' }] });
+
+    const { invites } = await supersedeStudentOrgInvites(tx as never, {
+      orgId: 'org-1',
+      emails: ['a@test.dev', 'b@test.dev', 'c@test.dev'],
+      actorProfileId: 'admin-1',
+      source: 'AUDIENCE_IMPORT',
+      add: { courseIds: ['c-1'], cohortIds: [], pathIds: [] }
+    });
+
+    expect(invites.map((invite) => invite.accessNamesLabel)).toEqual(['Course One', 'Course One', 'Course One']);
+    expect(mocks.getOrgCourses).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('getStaffInvitedEmails', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns only addresses with an active staff invite, after taking the email locks', async () => {
+    mocks.getActiveOrganizationInvitesByEmails.mockResolvedValue([
+      activeInvite('tutor-inv', 'Tutor@Test.dev', {}, ROLE.TUTOR),
+      activeInvite('student-inv', 'student@test.dev', {})
+    ]);
+
+    const staffInvitedEmails = await getStaffInvitedEmails(tx as never, {
+      orgId: 'org-1',
+      emails: [' Tutor@test.dev ', 'student@test.dev', 'new@test.dev']
+    });
+
+    expect([...staffInvitedEmails]).toEqual(['tutor@test.dev']);
+    expect(mocks.lockOrganizationInviteEmails).toHaveBeenCalledWith(
+      'org-1',
+      ['tutor@test.dev', 'student@test.dev', 'new@test.dev'],
+      tx
+    );
+    expect(mocks.lockOrganizationInviteEmails.mock.invocationCallOrder[0]).toBeLessThan(
+      mocks.getActiveOrganizationInvitesByEmails.mock.invocationCallOrder[0]
+    );
+  });
+
+  it('skips the lookup for an empty list', async () => {
+    const staffInvitedEmails = await getStaffInvitedEmails(tx as never, { orgId: 'org-1', emails: ['  '] });
+
+    expect(staffInvitedEmails.size).toBe(0);
+    expect(mocks.lockOrganizationInviteEmails).not.toHaveBeenCalled();
   });
 });

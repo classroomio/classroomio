@@ -224,12 +224,11 @@ DB-level cascades cover only `account` / `session` / `sso_provider` (from `user`
 6. `course_completion_record` (cascades notification events + `course_certificate_issue`)
 7. Delete `groupmember`
 
-**Phase 4 — cohort / program / learning-path memberships**
+**Phase 4 — cohort / program memberships**
 
 1. `cohort_newsfeed_comment` / `program_newsfeed_comment` on the user's posts (any author), then the user's own comments, then the user's authored `cohort_newsfeed` / `program_newsfeed` posts
 2. Delete `cohort_member` / `program_member` (goal assignments cascade)
-3. Learning paths, per `learning_path_member` row: delete `learning_path_certificate_issue` rows by `profile_id` first (`profile_id` has no cascade, matching the code), then delete the `learning_path_member` rows (`learning_path_member_course` progress rows cascade from the member). Progress caches go with the member; issued certificates are deleted explicitly so no row references the profile afterwards
-4. Null `cohort.created_by_profile_id`, `program.created_by_profile_id`, `learning_path.created_by_profile_id`
+3. Null `cohort.created_by_profile_id`, `program.created_by_profile_id`
 
 **Phase 5 — org memberships**
 
