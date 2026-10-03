@@ -2,6 +2,7 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
+  ZPublicApiPaginationQuery,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseStructure
 } from '@cio/utils/validation/public-api';
@@ -19,6 +20,8 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
+import { jsonResponse, PaginatedListResponse } from '@api/utils/openapi/responses';
+import { PAGINATION_NOTE } from './docs';
 
 const PaginationSchema = {
   type: 'object' as const,
@@ -51,15 +54,6 @@ const CoursesListResponse = {
     query: CoursesQuerySchema
   },
   required: ['success', 'data', 'pagination', 'query']
-};
-
-const CourseStudentsResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } }
-  },
-  required: ['success', 'data']
 };
 
 const NonAutoGradableQuestionOffenderSchema = {
@@ -169,33 +163,34 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/students',
     describeRoute({
-      description: 'List enrolled students for a course',
+      description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
       tags: ['Public API Courses'],
       responses: {
-        200: {
-          description: 'Course students returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseStudentsResponse
-            }
-          }
-        },
+        200: jsonResponse('Course students returned successfully', PaginatedListResponse),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
       }
     }),
     validator('param', ZPublicApiCourseParam),
+    validator('query', ZPublicApiPaginationQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
         const params = c.req.valid('param');
-        const students = await listCourseStudentsService(orgId, params);
+        const query = c.req.valid('query');
+        const studentsPage = await listCourseStudentsService(orgId, params, query);
 
         return c.json(
           {
             success: true,
-            data: students
+            data: studentsPage.items,
+            pagination: {
+              page: studentsPage.page,
+              limit: studentsPage.limit,
+              total: studentsPage.total,
+              totalPages: studentsPage.totalPages
+            }
           },
           200
         );
