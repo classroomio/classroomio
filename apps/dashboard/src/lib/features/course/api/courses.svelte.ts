@@ -41,7 +41,8 @@ export class CoursesApi extends BaseApiWithErrors {
    * Fetches org courses for the current organization
    * Org ID is automatically added from currentOrg store
    */
-  async getOrgCourses(tagSlugs: string[] = []) {
+  async getOrgCourses(options: { tagSlugs?: string[] } = {}) {
+    const { tagSlugs = [] } = options;
     const allCourses: OrgCourses = [];
     let page = 1;
     let totalPages = 1;
