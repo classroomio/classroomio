@@ -1,0 +1,3 @@
+export interface DropdownMenuItem { label?: React.ReactNode; icon?: React.ReactNode; shortcut?: string; variant?: 'default'|'destructive'; disabled?: boolean; inset?: boolean; onSelect?: () => void; /** render a separator line */ separator?: boolean; /** render a bold group label */ heading?: string; }
+export interface DropdownMenuProps { trigger: React.ReactNode; items: DropdownMenuItem[]; align?: 'start'|'end'; minWidth?: number; defaultOpen?: boolean; onSelect?: (item: DropdownMenuItem) => void; }
+export declare function DropdownMenu(props: DropdownMenuProps): JSX.Element;

@@ -1,0 +1,2 @@
+export interface StampProps { top?: string; bottom?: string; caption?: string; size?: number; color?: string; tilt?: number; style?: React.CSSProperties; }
+export declare function Stamp(props: StampProps): JSX.Element;
