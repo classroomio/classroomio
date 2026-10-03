@@ -13,7 +13,18 @@
     "discard": "Abandonner les modifications",
     "save_changes": "Enregistrer les modifications",
     "scroll_to_top": "Remonter en haut",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "restricted_page": {
+      "title": "Page restreinte",
+      "description": "Cette organisation est restreinte. En attendant, vous pouvez découvrir nos fonctionnalités.",
+      "home": "Accueil",
+      "learning_paths_heading": "Parcours d’apprentissage",
+      "learning_path_label": "Parcours d’apprentissage",
+      "tracks_label": "{count, plural, one {# parcours} other {# parcours}}",
+      "included": "Inclus",
+      "untitled_lesson": "Leçon sans titre",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -3196,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "Personnaliser le LMS",
+        "language": {
+          "title": "Langue",
+          "description": "Choisissez la langue de l’interface LMS destinée aux étudiants.",
+          "default_language": "Langue par défaut",
+          "enforce": "Imposer cette langue aux étudiants"
+        },
         "disabled": "Désactivé",
         "enabled": "Activé",
         "save": "Enregistrer les modifications",
@@ -3417,6 +3434,8 @@
     "analytics": "Analytique",
     "compliance": "Conformité",
     "cohorts": "Cohortes",
+    "exit_course": "Quitter ce cours",
+    "exit_cohort": "Quitter cette cohorte",
     "upgrade_now": "Mettre à niveau maintenant",
     "upgrade_label": "Mettre à niveau",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -4316,6 +4335,7 @@
     "login_with_google": "Connectez-vous avec Google",
     "create_to_join": "Créez un compte gratuit pour vous inscrire",
     "create_account": "Créer un compte",
+    "sign_in_to_continue": "Connectez-vous pour continuer",
     "login_to_join": "Connectez-vous pour rejoindre",
     "validation": {
       "unable_to_create_profile": "Impossible de créer un profil",
@@ -4568,6 +4588,12 @@
         "joined": "Organisation rejointe",
         "join_failed": "Impossible de rejoindre l'organisation",
         "try_again": "Réessayer"
+      },
+      "limit_reached": {
+        "title": "Cette académie est pleine en ce moment",
+        "description": "{orgName} a atteint le nombre maximum d'étudiants pour son forfait actuel. Nous n'avons donc pas pu vous ajouter. Votre compte fonctionne bien et rien de ce que vous avez fait n'est à l'origine de ce problème.",
+        "technical_details": "Détails techniques",
+        "error_code": "Erreur"
       },
       "not_found": "Cette invitation n'est plus disponible.",
       "loading": "Chargement de l'invitation…"

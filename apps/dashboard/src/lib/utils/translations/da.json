@@ -13,7 +13,18 @@
     "discard": "Kassér",
     "save_changes": "Gem ændringer",
     "scroll_to_top": "Rul til toppen",
-    "delete": "Slet"
+    "delete": "Slet",
+    "restricted_page": {
+      "title": "Begrænset side",
+      "description": "Denne organisation er begrænset. I mellemtiden kan du se vores funktioner.",
+      "home": "Gå hjem",
+      "learning_paths_heading": "Læringsforløb",
+      "learning_path_label": "Læringsforløb",
+      "tracks_label": "{count, plural, one {# spor} other {# spor}}",
+      "included": "Inkluderet",
+      "untitled_lesson": "Lektion uden titel",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -3196,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "Tilpas LMS",
+        "language": {
+          "title": "Sprog",
+          "description": "Vælg det sprog, der bruges i den elevvendte LMS-grænseflade.",
+          "default_language": "Standardsprog",
+          "enforce": "Påtving dette sprog for elever"
+        },
         "disabled": "Deaktiveret",
         "enabled": "Aktiveret",
         "save": "Gem ændringer",
@@ -3417,6 +3434,8 @@
     "analytics": "Analyse",
     "compliance": "Overholdelse",
     "cohorts": "Kohorter",
+    "exit_course": "Forlad dette kursus",
+    "exit_cohort": "Forlad denne kohorte",
     "upgrade_now": "Opgrader nu",
     "upgrade_label": "Opgrader",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -4316,6 +4335,7 @@
     "login_with_google": "Log ind med Google",
     "create_to_join": "Opret en gratis konto for at deltage",
     "create_account": "Opret konto",
+    "sign_in_to_continue": "Log ind for at fortsætte",
     "login_to_join": "Log ind for at deltage",
     "validation": {
       "unable_to_create_profile": "Kan ikke oprette profil",
@@ -4568,6 +4588,12 @@
         "joined": "Tilsluttet organisation",
         "join_failed": "Kunne ikke deltage i organisationen",
         "try_again": "Prøv igen"
+      },
+      "limit_reached": {
+        "title": "Dette akademi er fyldt lige nu",
+        "description": "{orgName} har nået sin elevgrænse på sit nuværende abonnement, så vi kunne ikke tilføje dig. Din konto er i orden, og intet du gjorde forårsagede dette.",
+        "technical_details": "Tekniske detaljer",
+        "error_code": "Fejl"
       },
       "not_found": "Denne invitation er ikke længere tilgængelig.",
       "loading": "Indlæser invitation..."

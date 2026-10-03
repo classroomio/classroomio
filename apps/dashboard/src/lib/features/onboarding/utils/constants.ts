@@ -12,6 +12,7 @@ export const DROPDOWN_ITEMS = [
   { id: 'pl', text: 'Polish' },
   { id: 'pt', text: 'Portuguese' },
   { id: 'ru', text: 'Russian' },
+  { id: 'tr', text: 'Turkish' },
   { id: 'vi', text: 'Vietnamese' },
   { id: 'da', text: 'Danish' }
 ];

@@ -1,0 +1,17 @@
+# VISUAL FOUNDATIONS
+- **Palette:** warm paper neutrals (#FAFAFA page, #FDFBF7 paper, sand #F6F2E9/#F1EEE7/#E3DACA) + warm ink (#17140F, body #2A251D, muted #6B6152) + a single saturated **brand blue #0233BD** with sky highlight **#ADC3FF**. Blue is reserved for CTAs, icons, mono accents and one closing band per page. No other hues.
+- **Type:** Geist only for UI/display, Geist Mono for labels, URLs, code, indices. Display is heavy (800) with very tight tracking (-0.05em); H2 700 / -0.035em. Body 16–21px, generous 1.5 leading.
+- **Signature motif — the notch:** sand cards (10px radius) have a small trapezoid bite cut from the top-left edge (46×10px, painted in page colour). Stacked cards (FAQ, loading blocks) add a matching downward **tab** so they interlock like building blocks. Use on stat cards, feature cards, testimonials, CTA band.
+- **Illustration:** product UI first — real screenshots in light browser frames, live-looking mini UIs inside bento cards (filters, diffs, charts, webhook lists). The ink-outlined book-shelf/paper-plane art from the standalone hero board is a secondary motif only.
+- **Backgrounds:** page is flat #FAFAFA. The hero sits on a **gradient wash** panel (#E8EEFF → #F1F0FA → #FAFAFA, 28px top radius) with an optional masked **dot field** (blue 16%, 18px grid) behind a white product frame with a blue-tinted drop shadow. Bands alternate to **sand #F6F2E9** with white notch cards. The blue CTA uses a radial glow + faint isometric grid. Dot grid (22px) inside product mocks. **No ruled/notebook lines** (retired).
+- **Gradients:** only (a) the CTA radial glow #2F5BE0 → #0233BD and (b) dark bottom protection gradients over photos. No decorative gradients.
+- **Highlight:** a sky-blue marker "swipe" under one key word (`.cio-swipe`, animates in).
+- **Borders over shadows:** 1px sand hairlines on paper surfaces; 1px ink-10% dividers inside sand cards. Shadows essentially absent (only 0 1px 2px rgba(23,20,15,.05) on board cards).
+- **Radii:** 3 spine · 6 tag · 8 inner input · **10 buttons/notch cards** · 12 menu items · 14 content cards/frames · 18 menus/panels · pill 999.
+- **Cards:** two families — *sand notch cards* (no border, #F1EEE7) for marketing content, and *paper cards* (#FDFBF7, 1px sand border, 14px) for product-UI mocks.
+- **Layout:** 1440 artboard, 120px side gutters, 1200px content, 150px between sections, 84px nav. Centred section headers (mono eyebrow → H2 → lede), then a wide grid. FAQ uses 4/8 split with sticky left column.
+- **Imagery:** warm, natural-light portraits and candid team photos; cropped high (object-position ~20%) with dark ink protection gradient + white text. Product screenshots shown inside browser frames, often dimmed with a centred "See the product" play pill. Illustrated avatar portraits (flat shapes) appear in testimonial cards.
+- **Motion:** slow, looping, ambient (6–10s) — blocks drop in with a small bounce (`cubic-bezier(.55,0,.9,.45)` then ease-out), dashed paths flow, sparkles pulse/rotate, typed prompt with blinking caret. All respect `prefers-reduced-motion`. UI transitions are quick (~160ms).
+- **Hover:** links ink → blue #0233BD; menu items get a sand-100 fill; buttons darken slightly; arrow icons nudge right. **Press:** no shrink specified.
+- **Transparency/blur:** no backdrop blur. Transparency only for scrims (rgba(23,20,15,.78) video modal) and chips over photos.
+- **Loading states:** lesson/course blocks stack upward like Tetris pieces, using notch cards in sand / blue-tint.

@@ -5,7 +5,6 @@ import {
   addCourseMember,
   deleteCourseMember,
   getCourseMember,
-  getCourseMembers,
   getPaginatedCourseMembers,
   getCourseTeachers,
   updateCourseMember
@@ -14,11 +13,7 @@ import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progres
 
 import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import type {
-  CourseMemberWithProfile,
-  PaginatedCourseMember,
-  PaginatedCourseMembersOptions
-} from '@cio/db/queries/course/people';
+import type { PaginatedCourseMember, PaginatedCourseMembersOptions } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
@@ -28,40 +23,6 @@ import { enqueueTransactionalEmail } from '@api/services/jobs';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
-
-/**
- * Attaches progress, stage, last login and enrollment date to student members.
- * @param courseId Course ID
- * @param members Course members to decorate
- * @returns The same members, with progress fields set on students
- */
-async function addProgressSummaries(courseId: string, members: CourseMemberWithProfile[]) {
-  const progressSummaries = await getCourseMemberProgressSummaries(
-    courseId,
-    members.map((member) => ({
-      profileId: member.profileId ?? '',
-      roleId: member.roleId,
-      createdAt: member.createdAt ?? null
-    }))
-  );
-
-  return members.map((member) => {
-    const progress =
-      member.profileId && member.roleId === ROLE.STUDENT ? progressSummaries.get(member.profileId) : undefined;
-
-    if (!progress) {
-      return member;
-    }
-
-    return {
-      ...member,
-      progressPercent: progress.progressPercent,
-      stage: progress.stage,
-      lastLoginAt: progress.lastLoginAt,
-      enrolledAt: progress.enrolledAt
-    };
-  });
-}
 
 /**
  * Attaches only `stage` to a page of members.
@@ -92,27 +53,6 @@ async function addMemberStages(courseId: string, members: PaginatedCourseMember[
 
     return { ...member, stage: progress.stage };
   });
-}
-
-/**
- * Gets every course member (people) for a course.
- * @param courseId Course ID
- * @returns Array of course members with profile and progress data
- */
-export async function listCourseMembers(courseId: string) {
-  try {
-    const members = await getCourseMembers(courseId);
-    return await addProgressSummaries(courseId, members);
-  } catch (error) {
-    if (error instanceof AppError) {
-      throw error;
-    }
-    throw new AppError(
-      error instanceof Error ? error.message : 'Failed to list course members',
-      ErrorCodes.INTERNAL_ERROR,
-      500
-    );
-  }
 }
 
 /**

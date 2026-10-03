@@ -13,7 +13,18 @@
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern",
     "scroll_to_top": "Zum Seitenanfang scrollen",
-    "delete": "Löschen"
+    "delete": "Löschen",
+    "restricted_page": {
+      "title": "Eingeschränkte Seite",
+      "description": "Diese Organisation ist eingeschränkt. In der Zwischenzeit kannst du dir unsere Funktionen ansehen.",
+      "home": "Zur Startseite",
+      "learning_paths_heading": "Lernpfade",
+      "learning_path_label": "Lernpfad",
+      "tracks_label": "{count, plural, one {# Track} other {# Tracks}}",
+      "included": "Enthalten",
+      "untitled_lesson": "Lektion ohne Titel",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -3196,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "LMS anpassen",
+        "language": {
+          "title": "Sprache",
+          "description": "Wählen Sie die Sprache für die LMS-Oberfläche der Lernenden.",
+          "default_language": "Standardsprache",
+          "enforce": "Diese Sprache für Lernende erzwingen"
+        },
         "disabled": "Deaktiviert",
         "enabled": "Aktiviert",
         "save": "Änderungen speichern",
@@ -3417,6 +3434,8 @@
     "analytics": "Analysen",
     "compliance": "Compliance",
     "cohorts": "Kohorten",
+    "exit_course": "Diesen Kurs verlassen",
+    "exit_cohort": "Diese Kohorte verlassen",
     "upgrade_now": "Jetzt upgraden",
     "upgrade_label": "Upgrade",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -4316,6 +4335,7 @@
     "login_with_google": "Melden Sie sich mit Google an",
     "create_to_join": "Erstellen Sie ein kostenloses Konto, um Mitglied zu werden",
     "create_account": "Konto erstellen",
+    "sign_in_to_continue": "Melde dich an, um fortzufahren",
     "login_to_join": "Melden Sie sich an, um beizutreten",
     "validation": {
       "unable_to_create_profile": "Profil kann nicht erstellt werden",
@@ -4568,6 +4588,12 @@
         "joined": "Der Organisation beigetreten",
         "join_failed": "Der Beitritt zur Organisation ist fehlgeschlagen",
         "try_again": "Erneut versuchen"
+      },
+      "limit_reached": {
+        "title": "Diese Akademie ist derzeit voll",
+        "description": "{orgName} hat sein Studentenlimit für seinen aktuellen Plan erreicht, daher konnten wir Sie nicht hinzufügen. Ihr Konto ist in Ordnung und nichts, was Sie getan haben, hat dies verursacht.",
+        "technical_details": "Technische Details",
+        "error_code": "Fehler"
       },
       "not_found": "Diese Einladung ist nicht mehr verfügbar.",
       "loading": "Einladung wird geladen…"

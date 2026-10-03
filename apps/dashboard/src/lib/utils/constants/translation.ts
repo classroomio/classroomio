@@ -10,6 +10,7 @@ export const LANGUAGE: Record<TLocale, string> = {
   pl: 'Polish',
   pt: 'Portuguese',
   ru: 'Russian',
+  tr: 'Turkish',
   vi: 'Vietnamese'
 };
 

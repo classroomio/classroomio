@@ -13,7 +13,18 @@
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany",
     "scroll_to_top": "Przewiń do góry",
-    "delete": "Usuń"
+    "delete": "Usuń",
+    "restricted_page": {
+      "title": "Strona z ograniczeniami",
+      "description": "Ta organizacja jest ograniczona. W międzyczasie możesz zapoznać się z naszymi funkcjami.",
+      "home": "Przejdź do strony głównej",
+      "learning_paths_heading": "Ścieżki nauki",
+      "learning_path_label": "Ścieżka nauki",
+      "tracks_label": "{count, plural, one {# ścieżka} few {# ścieżki} many {# ścieżek} other {# ścieżek}}",
+      "included": "Wliczone",
+      "untitled_lesson": "Lekcja bez tytułu",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -3196,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "Dostosuj LMS-a",
+        "language": {
+          "title": "Język",
+          "description": "Wybierz język interfejsu LMS widocznego dla uczniów.",
+          "default_language": "Domyślny język",
+          "enforce": "Wymuś ten język dla uczniów"
+        },
         "disabled": "Niepełnosprawny",
         "enabled": "Włączone",
         "save": "Zapisz zmiany",
@@ -3417,6 +3434,8 @@
     "analytics": "Analityka",
     "compliance": "Zgodność",
     "cohorts": "Kohorty",
+    "exit_course": "Wyjdź z tego kursu",
+    "exit_cohort": "Wyjdź z tej kohorty",
     "upgrade_now": "Uaktualnij teraz",
     "upgrade_label": "Ulepsz",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -4316,6 +4335,7 @@
     "login_with_google": "Zaloguj się za pomocą Google",
     "create_to_join": "Utwórz darmowe konto, aby dołączyć",
     "create_account": "Utwórz konto",
+    "sign_in_to_continue": "Zaloguj się, aby kontynuować",
     "login_to_join": "Zaloguj się, aby dołączyć",
     "validation": {
       "unable_to_create_profile": "Nie można utworzyć profilu",
@@ -4568,6 +4588,12 @@
         "joined": "Dołączył do organizacji",
         "join_failed": "Nie udało się dołączyć do organizacji",
         "try_again": "Spróbuj ponownie"
+      },
+      "limit_reached": {
+        "title": "Ta akademia jest teraz pełna",
+        "description": "Organizacja {orgName} osiągnęła limit liczby studentów w swoim bieżącym planie, więc nie mogliśmy Cię dodać. Twoje konto jest w porządku i nic, co zrobiłeś, nie było tego przyczyną.",
+        "technical_details": "Szczegóły techniczne",
+        "error_code": "Błąd"
       },
       "not_found": "To zaproszenie nie jest już dostępne.",
       "loading": "Ładowanie zaproszenia..."

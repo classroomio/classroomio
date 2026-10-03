@@ -294,7 +294,7 @@
 </script>
 
 <Sidebar.Group class="pt-0!">
-  <BackButton href={resolve(coursesListPath, {})} label={$t('org_navigation.courses')} class="px-2! py-2!" />
+  <BackButton href={resolve(coursesListPath, {})} label={$t('org_navigation.exit_course')} class="px-2! py-2!" />
 
   {#if showComplianceBanner}
     <div

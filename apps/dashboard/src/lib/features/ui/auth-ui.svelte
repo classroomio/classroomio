@@ -110,7 +110,7 @@
             </Card.Title>
           </a>
           {#if isLogin}
-            <Card.Description class="text-center">Sign in to continue</Card.Description>
+            <Card.Description class="text-center">{$t('login.sign_in_to_continue')}</Card.Description>
           {/if}
         {/if}
       </Card.Header>

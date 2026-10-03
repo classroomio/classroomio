@@ -13,7 +13,18 @@
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi",
     "scroll_to_top": "Cuộn lên đầu trang",
-    "delete": "Xóa"
+    "delete": "Xóa",
+    "restricted_page": {
+      "title": "Trang bị hạn chế",
+      "description": "Tổ chức này đang bị hạn chế. Trong lúc này, bạn có thể xem các tính năng của chúng tôi.",
+      "home": "Về trang chủ",
+      "learning_paths_heading": "Lộ trình học tập",
+      "learning_path_label": "Lộ trình học tập",
+      "tracks_label": "{count, plural, one {# lộ trình} other {# lộ trình}}",
+      "included": "Đã bao gồm",
+      "untitled_lesson": "Bài học chưa có tiêu đề",
+      "format": "Định dạng"
+    }
   },
   "validations": {
     "generic": {
@@ -3196,6 +3207,12 @@
     "settings": {
       "customize_lms": {
         "title": "Tùy chỉnh LMS",
+        "language": {
+          "title": "Ngôn ngữ",
+          "description": "Chọn ngôn ngữ được sử dụng trong giao diện LMS dành cho học viên.",
+          "default_language": "Ngôn ngữ mặc định",
+          "enforce": "Bắt buộc học viên sử dụng ngôn ngữ này"
+        },
         "disabled": "Đã tắt",
         "enabled": "Đã bật",
         "save": "Lưu thay đổi",
@@ -3417,6 +3434,8 @@
     "analytics": "Phân tích",
     "compliance": "Tuân thủ",
     "cohorts": "Nhóm học tập",
+    "exit_course": "Thoát khóa học này",
+    "exit_cohort": "Thoát nhóm học tập này",
     "upgrade_now": "Nâng cấp ngay bây giờ",
     "upgrade_label": "Nâng cấp",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -4316,6 +4335,7 @@
     "login_with_google": "Đăng nhập bằng Google",
     "create_to_join": "Tạo một tài khoản miễn phí để tham gia",
     "create_account": "Tạo tài khoản",
+    "sign_in_to_continue": "Đăng nhập để tiếp tục",
     "login_to_join": "Đăng nhập để tham gia",
     "validation": {
       "unable_to_create_profile": "Không thể tạo hồ sơ",
@@ -4568,6 +4588,12 @@
         "joined": "Đã tham gia tổ chức",
         "join_failed": "Không thể tham gia tổ chức",
         "try_again": "Thử lại"
+      },
+      "limit_reached": {
+        "title": "Học viện này hiện đã đầy rồi",
+        "description": "{orgName} đã đạt đến giới hạn số sinh viên trong gói hiện tại nên chúng tôi không thể thêm bạn. Tài khoản của bạn vẫn ổn và bạn không làm gì gây ra điều này.",
+        "technical_details": "Chi tiết kỹ thuật",
+        "error_code": "Lỗi"
       },
       "not_found": "Lời mời này không còn hiệu lực.",
       "loading": "Đang tải lời mời..."

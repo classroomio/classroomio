@@ -1,0 +1,20 @@
+/* Signature backgrounds (no ruled lines — retired) + notch shapes used across the site. */
+body { margin: 0; background: var(--bg-page); color: var(--text-strong); font-family: var(--font-sans); }
+a { color: var(--link); text-decoration: none; }
+a:hover { color: var(--link-hover); }
+
+.cio-wash { background: linear-gradient(180deg, #E8EEFF 0%, #F1F0FA 46%, #FAFAFA 100%); }
+.cio-dotfield { background-image: radial-gradient(rgba(2,51,189,0.16) 1.2px, transparent 1.2px); background-size: 18px 18px; -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 75%); mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, #000 0%, transparent 75%); }
+.cio-dotgrid { background-image: radial-gradient(var(--sand-300) 1px, transparent 1px); background-size: 22px 22px; }
+
+/* Notch card: a trapezoid "bite" out of the top edge, painted in the page colour */
+.cio-nb { position: relative; border-radius: var(--radius-md); }
+.cio-nb-notch { position: absolute; top: -1px; width: 46px; height: 10px; clip-path: polygon(0 0,100% 0,calc(100% - 8px) 100%,8px 100%); pointer-events: none; z-index: 4; }
+.cio-nb-tab { position: absolute; bottom: -16px; width: 42px; height: 16px; clip-path: polygon(0 0,100% 0,calc(100% - 7px) 100%,7px 100%); pointer-events: none; z-index: 3; }
+
+@keyframes cio-swipe { 0%,6% { background-size: 0% 100%; } 22%,92% { background-size: 100% 100%; } 100% { background-size: 0% 100%; } }
+@keyframes cio-dash { to { stroke-dashoffset: -26; } }
+@keyframes cio-pulse { 50% { transform: scale(1.35) rotate(25deg); } }
+@keyframes cio-shim { 50% { opacity: .35; } }
+.cio-swipe { background-image: linear-gradient(transparent 58%, var(--blue-300) 58%, var(--blue-300) 92%, transparent 92%); background-repeat: no-repeat; padding: 0 4px; animation: cio-swipe 8s ease infinite; }
+@media (prefers-reduced-motion: reduce) { .cio-swipe { animation: none; background-size: 100% 100%; } }
