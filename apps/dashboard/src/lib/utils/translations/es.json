@@ -790,7 +790,7 @@
       "result_heading": "{count} estudiantes importados",
       "start_over": "Elija un archivo diferente",
       "skipped_path_only_title": "Se omitieron {count} cursos de solo ruta",
-      "skipped_path_only_description": "{nombres}. Estos cursos son solo para inscripción en una ruta de aprendizaje. Asigne la ruta de aprendizaje que contiene (esto también otorga sus otros cursos) o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso."
+      "skipped_path_only_description": "{names}. Estos cursos son solo para inscripción en una ruta de aprendizaje. Asigne la ruta de aprendizaje que contiene (esto también otorga sus otros cursos) o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso."
     },
     "page_subtitle": "Consulta quién pertenece a tu organización, quién está aprendiendo, quién está invitado y cómo contactarlos.",
     "user_analytics": {

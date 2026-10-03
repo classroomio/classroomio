@@ -790,7 +790,7 @@
       "result_heading": "{count} học viên đã được nhập",
       "start_over": "Chọn một tập tin khác",
       "skipped_path_only_title": "Đã bỏ qua {count} khóa học chỉ có đường dẫn",
-      "skipped_path_only_description": "{tên}. Các khóa học này chỉ dành cho người đăng ký trong lộ trình học tập. Chỉ định lộ trình học tập chứa (điều này cũng cấp các khóa học khác) hoặc tắt 'Chỉ đăng ký vào Lộ trình học tập' trong cài đặt khóa học."
+      "skipped_path_only_description": "{names}. Các khóa học này chỉ dành cho người đăng ký trong lộ trình học tập. Chỉ định lộ trình học tập chứa (điều này cũng cấp các khóa học khác) hoặc tắt 'Chỉ đăng ký vào Lộ trình học tập' trong cài đặt khóa học."
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
