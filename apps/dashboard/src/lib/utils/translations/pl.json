@@ -4557,6 +4557,12 @@
         "join_failed": "Nie udało się dołączyć do organizacji",
         "try_again": "Spróbuj ponownie"
       },
+      "limit_reached": {
+        "title": "Ta akademia jest teraz pełna",
+        "description": "Organizacja {orgName} osiągnęła limit liczby studentów w swoim bieżącym planie, więc nie mogliśmy Cię dodać. Twoje konto jest w porządku i nic, co zrobiłeś, nie było tego przyczyną.",
+        "technical_details": "Szczegóły techniczne",
+        "error_code": "Błąd"
+      },
       "not_found": "To zaproszenie nie jest już dostępne.",
       "loading": "Ładowanie zaproszenia..."
     },

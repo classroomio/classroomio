@@ -4557,6 +4557,12 @@
         "join_failed": "Impossible de rejoindre l'organisation",
         "try_again": "Réessayer"
       },
+      "limit_reached": {
+        "title": "Cette académie est pleine en ce moment",
+        "description": "{orgName} a atteint le nombre maximum d'étudiants pour son forfait actuel. Nous n'avons donc pas pu vous ajouter. Votre compte fonctionne bien et rien de ce que vous avez fait n'est à l'origine de ce problème.",
+        "technical_details": "Détails techniques",
+        "error_code": "Erreur"
+      },
       "not_found": "Cette invitation n'est plus disponible.",
       "loading": "Chargement de l'invitation…"
     },

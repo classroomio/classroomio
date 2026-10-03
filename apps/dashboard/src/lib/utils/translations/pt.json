@@ -4557,6 +4557,12 @@
         "join_failed": "Falha ao ingressar na organização",
         "try_again": "Tentar novamente"
       },
+      "limit_reached": {
+        "title": "Esta academia está cheia agora",
+        "description": "{orgName} atingiu o limite de alunos no plano atual, por isso não foi possível adicionar você. Sua conta está bem e nada do que você fez causou isso.",
+        "technical_details": "Detalhes técnicos",
+        "error_code": "Erro"
+      },
       "not_found": "Este convite não está mais disponível.",
       "loading": "Carregando convite..."
     },

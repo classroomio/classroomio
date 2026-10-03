@@ -4557,6 +4557,12 @@
         "join_failed": "Kunne ikke deltage i organisationen",
         "try_again": "Prøv igen"
       },
+      "limit_reached": {
+        "title": "Dette akademi er fyldt lige nu",
+        "description": "{orgName} har nået sin elevgrænse på sit nuværende abonnement, så vi kunne ikke tilføje dig. Din konto er i orden, og intet du gjorde forårsagede dette.",
+        "technical_details": "Tekniske detaljer",
+        "error_code": "Fejl"
+      },
       "not_found": "Denne invitation er ikke længere tilgængelig.",
       "loading": "Indlæser invitation..."
     },
