@@ -1,0 +1,27 @@
+:root {
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  /* Display */
+  --type-display-size: 96px;  --type-display-weight: 800; --type-display-tracking: -0.05em;  --type-display-leading: 1.02;
+  --type-cta-size: 64px;      --type-cta-weight: 700;     --type-cta-tracking: -0.045em;     --type-cta-leading: 1.04;
+  --type-h2-size: 58px;       --type-h2-weight: 700;      --type-h2-tracking: -0.035em;      --type-h2-leading: 1.05;
+  --type-h3-size: 44px;       --type-h3-weight: 700;      --type-h3-tracking: -0.03em;
+  --type-h4-size: 20px;       --type-h4-tracking: -0.02em;
+
+  /* Text */
+  --type-lead-size: 21px;     --type-lead-leading: 1.5;
+  --type-quote-size: 18px;    --type-quote-leading: 1.55;
+  --type-body-size: 16px;
+  --type-card-title-size: 19px;
+  --type-small-size: 14px;    --type-small-leading: 1.4;
+  --type-caption-size: 13px;
+
+  /* Mono labels — always uppercase, tracked */
+  --type-eyebrow-size: 15px;  --type-eyebrow-tracking: 0.14em;
+  --type-label-size: 12px;    --type-label-tracking: 0.12em;
+  --type-tag-size: 11px;      --type-tag-tracking: 0.08em;
+
+  /* Wordmark */
+  --type-wordmark-weight: 800; --type-wordmark-tracking: -0.03em;
+}
