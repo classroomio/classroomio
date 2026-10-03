@@ -13,7 +13,18 @@
     "discard": "Abandonner les modifications",
     "save_changes": "Enregistrer les modifications",
     "scroll_to_top": "Remonter en haut",
-    "delete": "Supprimer"
+    "delete": "Supprimer",
+    "restricted_page": {
+      "title": "Page restreinte",
+      "description": "Cette organisation est restreinte. En attendant, vous pouvez découvrir nos fonctionnalités.",
+      "home": "Accueil",
+      "learning_paths_heading": "Parcours d’apprentissage",
+      "learning_path_label": "Parcours d’apprentissage",
+      "tracks_label": "{count, plural, one {# parcours} other {# parcours}}",
+      "included": "Inclus",
+      "untitled_lesson": "Leçon sans titre",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -4292,6 +4303,7 @@
     "login_with_google": "Connectez-vous avec Google",
     "create_to_join": "Créez un compte gratuit pour vous inscrire",
     "create_account": "Créer un compte",
+    "sign_in_to_continue": "Connectez-vous pour continuer",
     "login_to_join": "Connectez-vous pour rejoindre",
     "validation": {
       "unable_to_create_profile": "Impossible de créer un profil",

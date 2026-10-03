@@ -13,7 +13,18 @@
     "discard": "Descartar",
     "save_changes": "Salvar alterações",
     "scroll_to_top": "Voltar ao topo",
-    "delete": "Excluir"
+    "delete": "Excluir",
+    "restricted_page": {
+      "title": "Página restrita",
+      "description": "Esta organização está restrita. Enquanto isso, confira nossos recursos.",
+      "home": "Ir para o início",
+      "learning_paths_heading": "Trilhas de aprendizagem",
+      "learning_path_label": "Trilha de aprendizagem",
+      "tracks_label": "{count, plural, one {# trilha} other {# trilhas}}",
+      "included": "Incluído",
+      "untitled_lesson": "Lição sem título",
+      "format": "Formato"
+    }
   },
   "validations": {
     "generic": {
@@ -4292,6 +4303,7 @@
     "login_with_google": "Faça login com o Google",
     "create_to_join": "Crie uma conta gratuita para participar",
     "create_account": "Criar conta",
+    "sign_in_to_continue": "Faça login para continuar",
     "login_to_join": "Faça login para participar",
     "validation": {
       "unable_to_create_profile": "Não foi possível criar o perfil",

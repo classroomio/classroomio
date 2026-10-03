@@ -13,7 +13,18 @@
     "discard": "Kassér",
     "save_changes": "Gem ændringer",
     "scroll_to_top": "Rul til toppen",
-    "delete": "Slet"
+    "delete": "Slet",
+    "restricted_page": {
+      "title": "Begrænset side",
+      "description": "Denne organisation er begrænset. I mellemtiden kan du se vores funktioner.",
+      "home": "Gå hjem",
+      "learning_paths_heading": "Læringsforløb",
+      "learning_path_label": "Læringsforløb",
+      "tracks_label": "{count, plural, one {# spor} other {# spor}}",
+      "included": "Inkluderet",
+      "untitled_lesson": "Lektion uden titel",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -4292,6 +4303,7 @@
     "login_with_google": "Log ind med Google",
     "create_to_join": "Opret en gratis konto for at deltage",
     "create_account": "Opret konto",
+    "sign_in_to_continue": "Log ind for at fortsætte",
     "login_to_join": "Log ind for at deltage",
     "validation": {
       "unable_to_create_profile": "Kan ikke oprette profil",

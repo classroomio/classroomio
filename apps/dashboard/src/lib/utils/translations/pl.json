@@ -13,7 +13,18 @@
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany",
     "scroll_to_top": "Przewiń do góry",
-    "delete": "Usuń"
+    "delete": "Usuń",
+    "restricted_page": {
+      "title": "Strona z ograniczeniami",
+      "description": "Ta organizacja jest ograniczona. W międzyczasie możesz zapoznać się z naszymi funkcjami.",
+      "home": "Przejdź do strony głównej",
+      "learning_paths_heading": "Ścieżki nauki",
+      "learning_path_label": "Ścieżka nauki",
+      "tracks_label": "{count, plural, one {# ścieżka} few {# ścieżki} many {# ścieżek} other {# ścieżek}}",
+      "included": "Wliczone",
+      "untitled_lesson": "Lekcja bez tytułu",
+      "format": "Format"
+    }
   },
   "validations": {
     "generic": {
@@ -4292,6 +4303,7 @@
     "login_with_google": "Zaloguj się za pomocą Google",
     "create_to_join": "Utwórz darmowe konto, aby dołączyć",
     "create_account": "Utwórz konto",
+    "sign_in_to_continue": "Zaloguj się, aby kontynuować",
     "login_to_join": "Zaloguj się, aby dołączyć",
     "validation": {
       "unable_to_create_profile": "Nie można utworzyć profilu",

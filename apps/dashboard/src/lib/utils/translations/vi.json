@@ -13,7 +13,18 @@
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi",
     "scroll_to_top": "Cuộn lên đầu trang",
-    "delete": "Xóa"
+    "delete": "Xóa",
+    "restricted_page": {
+      "title": "Trang bị hạn chế",
+      "description": "Tổ chức này đang bị hạn chế. Trong lúc này, bạn có thể xem các tính năng của chúng tôi.",
+      "home": "Về trang chủ",
+      "learning_paths_heading": "Lộ trình học tập",
+      "learning_path_label": "Lộ trình học tập",
+      "tracks_label": "{count, plural, one {# lộ trình} other {# lộ trình}}",
+      "included": "Đã bao gồm",
+      "untitled_lesson": "Bài học chưa có tiêu đề",
+      "format": "Định dạng"
+    }
   },
   "validations": {
     "generic": {
@@ -4292,6 +4303,7 @@
     "login_with_google": "Đăng nhập bằng Google",
     "create_to_join": "Tạo một tài khoản miễn phí để tham gia",
     "create_account": "Tạo tài khoản",
+    "sign_in_to_continue": "Đăng nhập để tiếp tục",
     "login_to_join": "Đăng nhập để tham gia",
     "validation": {
       "unable_to_create_profile": "Không thể tạo hồ sơ",

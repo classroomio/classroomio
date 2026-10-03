@@ -345,7 +345,18 @@
     "save_changes": "Değişiklikleri kaydet",
     "refresh": "Yenile",
     "scroll_to_top": "Şuraya kaydır: top",
-    "delete": "Delete"
+    "delete": "Delete",
+    "restricted_page": {
+      "title": "Kısıtlı sayfa",
+      "description": "Bu kuruluş kısıtlanmıştır. Bu sırada özelliklerimize göz atabilirsiniz.",
+      "home": "Ana sayfaya git",
+      "learning_paths_heading": "Öğrenme yolları",
+      "learning_path_label": "Öğrenme yolu",
+      "tracks_label": "{count, plural, one {# yol} other {# yol}}",
+      "included": "Dahil",
+      "untitled_lesson": "Başlıksız ders",
+      "format": "Biçim"
+    }
   },
   "compliance": {
     "title": "Compliance",
@@ -414,6 +425,7 @@
     "login_with_google": "LGoogle ile giriş yapın",
     "create_to_join": "Katılmak için ücretsiz bir hesap oluşturun",
     "create_account": "Hesap Oluşturun",
+    "sign_in_to_continue": "Devam etmek için giriş yapın",
     "login_to_join": "Lkatılmak için oturum açın",
     "fields": {
       "email": "E-postanız",
