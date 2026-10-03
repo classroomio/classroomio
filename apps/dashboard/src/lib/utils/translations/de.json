@@ -769,7 +769,7 @@
       "snackbar_success": "{assigned} Benutzer den Kursen zugewiesen ({alreadyEnrolled} bereits angemeldet, {emailsSent} E-Mails gesendet)",
       "snackbar_no_courses": "Bitte wählen Sie mindestens einen Kurs aus",
       "snackbar_failed": "Kurse konnten nicht zugewiesen werden",
-      "snackbar_partial": "Zugewiesene {assigned} Benutzer ({alreadyEnrolled} hatte bereits Zugriff, {emailsSent} E-Mails gesendet). Übersprungene Nur-Pfad-Kurse: {names} – Weisen Sie den enthaltenen Lernpfad zu oder deaktivieren Sie „Lernpfad erforderlich“ in den Kurseinstellungen.",
+      "snackbar_partial": "Zugewiesene {assigned} Benutzer ({alreadyEnrolled} hatte bereits Zugriff, {emailsSent} E-Mails gesendet). Übersprungene Nur-Pfad-Kurse: {names} – Weisen Sie den enthaltenen Lernpfad zu oder deaktivieren Sie „Nur für den Lernpfad anmelden“ in den Kurseinstellungen.",
       "path_only_badge": "Nur Pfad"
     },
     "import": {
@@ -822,8 +822,8 @@
       "submit_count": "{count} Studierende importieren",
       "result_heading": "{count} Studierende importiert",
       "start_over": "Wählen Sie eine andere Datei",
-      "skipped_path_gated_title": "{count} Nur-Pfad-Kurse wurden übersprungen",
-      "skipped_path_gated_description": "{names}. Für diese Kurse ist die Anmeldung über einen Lernpfad erforderlich. Weisen Sie entweder den enthaltenden Lernpfad zu (dadurch werden auch die anderen Kurse gewährt) oder deaktivieren Sie „Lernpfad erforderlich“ in den Kurseinstellungen."
+      "skipped_path_only_title": "{count} Nur-Pfad-Kurse wurden übersprungen",
+      "skipped_path_only_description": "{Namen}. Für diese Kurse ist die Anmeldung nur in einem Lernpfad möglich. Weisen Sie entweder den enthaltenen Lernpfad zu (dadurch werden auch die anderen Kurse gewährt) oder deaktivieren Sie in den Kurseinstellungen die Option „Nur für den Lernpfad anmelden“."
     },
     "page_subtitle": "Sehen Sie, wer zu Ihrer Organisation gehört, wer lernt, wer eingeladen ist und wie Sie sie erreichen.",
     "user_analytics": {
@@ -1119,8 +1119,8 @@
         "open_link": "Link in neuem Tab öffnen",
         "copy_link": "Link kopieren",
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
-        "requires_learning_path": "Lernpfad erforderlich",
-        "requires_learning_path_desc": "Wenn diese Option aktiviert ist, können Studierende nur über einen Lernpfad auf diesen Kurs zugreifen. Bestehende Anmeldungen bleiben erhalten."
+        "enroll_only_in_learning_path": "Melden Sie sich nur für den Lernpfad an",
+        "enroll_only_in_learning_path_desc": "Wenn diese Option aktiviert ist, können sich Studierende nur über einen Lernpfad für diesen Kurs anmelden. Bestehende Anmeldungen bleiben erhalten."
       },
       "analytics": {
         "title": "Analysen"
@@ -1490,7 +1490,7 @@
             "description": "Gewähren Sie {email} Zugang zu diesem Kurs. Wir senden eine Einladungs-E-Mail, damit die Person Ihrer Organisation beitreten und in diesem Kurs eingeschrieben werden kann.",
             "cancel": "Abbrechen",
             "send_invite": "Einladung senden",
-            "path_gated_notice": "Für diesen Kurs ist eine Anmeldung über einen Lernpfad erforderlich, daher kann kein direkter Zugriff gewährt werden. Weisen Sie stattdessen den enthaltenden Lernpfad zu – oder deaktivieren Sie „Lernpfad erforderlich“ in den Kurseinstellungen."
+            "path_only_notice": "Dieser Kurs ist nur für die Anmeldung in einem Lernpfad vorgesehen, daher kann kein direkter Zugriff gewährt werden. Weisen Sie stattdessen den enthaltenen Lernpfad zu – oder deaktivieren Sie in den Kurseinstellungen die Option „Nur für den Lernpfad anmelden“."
           },
           "invite_new_students_title": "Neue Schüler einladen",
           "invite_new_students_description": "Laden Sie neue Personen in Ihre Organisation ein und weisen Sie sie diesem Kurs vorab zu. Sie erstellen ein Konto, nehmen die Einladung an und erhalten Zugang.",
@@ -1536,9 +1536,9 @@
             "custom": "Benutzerdefiniert"
           },
           "student_limit_reached": "Sie haben das Studentenlimit Ihres Plans erreicht. Führen Sie ein Upgrade durch, um weitere Schüler einzuladen.",
-          "path_gated_notice_title": "Die Studierenden schließen sich über einen Lernpfad zusammen",
-          "path_gated_notice_description": "Für diesen Kurs ist eine Anmeldung über einen Lernpfad erforderlich, daher können Studierende nicht hierher eingeladen werden. Sie können unten weiterhin Tutoren einladen. Um Schülern Zugriff zu gewähren, weisen Sie den enthaltenen Lernpfad zu – oder deaktivieren Sie „Lernpfad erforderlich“ in den Kurseinstellungen.",
-          "members_added": "{count, plural, one {# Mitglied erfolgreich hinzugefügt} other {# Mitglieder erfolgreich hinzugefügt}}"
+          "members_added": "{count, plural, one {# Mitglied erfolgreich hinzugefügt} other {# Mitglieder erfolgreich hinzugefügt}}",
+          "path_only_notice_title": "Die Studierenden schließen sich über einen Lernpfad zusammen",
+          "path_only_notice_description": "Dieser Kurs ist nur für die Anmeldung in einem Lernpfad vorgesehen, daher können keine Teilnehmer hierher eingeladen werden. Sie können unten weiterhin Tutoren einladen. Um Schülern Zugriff zu gewähren, weisen Sie den enthaltenen Lernpfad zu – oder deaktivieren Sie „Nur für den Lernpfad anmelden“ in den Kurseinstellungen."
         },
         "learner": "Studierende/r",
         "source": "Quelle",

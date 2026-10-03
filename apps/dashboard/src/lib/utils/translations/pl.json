@@ -769,7 +769,7 @@
       "snackbar_success": "Przypisano {assigned} użytkowników do kursów ({alreadyEnrolled} jest już zapisanych, wysłano e-maile: {emailsSent})",
       "snackbar_no_courses": "Proszę wybrać przynajmniej jeden kurs",
       "snackbar_failed": "Nie udało się przypisać kursów",
-      "snackbar_partial": "Przypisano {assigned} użytkowników ({alreadyEnrolled} miało już dostęp, wysłano e-maile: {emailsSent}). Pominięte kursy zawierające tylko ścieżkę: {names} — przypisz zawierającą ścieżkę nauczania lub wyłącz opcję „Wymaga ścieżki szkoleniowej” w ustawieniach kursu.",
+      "snackbar_partial": "Przypisano {assigned} użytkowników ({alreadyEnrolled} miało już dostęp, wysłano e-maile: {emailsSent}). Pominięte kursy zawierające tylko ścieżkę: {names} — przypisz zawierającą ścieżkę nauczania lub wyłącz opcję „Zapisz się tylko na ścieżce szkoleniowej” w ustawieniach kursu.",
       "path_only_badge": "Tylko ścieżka"
     },
     "import": {
@@ -822,8 +822,8 @@
       "submit_count": "Importuj {count} studentów",
       "result_heading": "Zaimportowano {count} studentów",
       "start_over": "Wybierz inny plik",
-      "skipped_path_gated_title": "Pominięto {count} kursów obejmujących wyłącznie ścieżkę",
-      "skipped_path_gated_description": "{names}. Na te kursy wymagane jest zapisanie się na ścieżkę edukacyjną. Przypisz zawierającą ścieżkę szkoleniową (to zapewnia również inne kursy) lub wyłącz opcję „Wymaga ścieżki szkoleniowej” w ustawieniach kursu."
+      "skipped_path_only_title": "Pominięto {count} kursów obejmujących tylko ścieżkę",
+      "skipped_path_only_description": "{imiona}. Na te kursy można zapisać się wyłącznie w ramach ścieżki edukacyjnej. Przypisz zawierającą ścieżkę szkoleniową (to zapewnia również inne kursy) lub wyłącz opcję „Zapisz się tylko na ścieżce szkoleniowej” w ustawieniach kursu."
     },
     "page_subtitle": "Zobacz, kto należy do Twojej organizacji, kto się uczy, kto jest zaproszony i jak się z nimi skontaktować.",
     "user_analytics": {
@@ -1119,8 +1119,8 @@
         "open_link": "Otwórz link w nowej karcie",
         "copy_link": "Skopiuj link",
         "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
-        "requires_learning_path": "Wymagaj ścieżki szkoleniowej",
-        "requires_learning_path_desc": "Gdy ta opcja jest włączona, uczniowie mogą uzyskać dostęp do tego kursu wyłącznie poprzez ścieżkę edukacyjną. Istniejące zapisy zostaną zachowane."
+        "enroll_only_in_learning_path": "Zapisz się tylko na ścieżkę szkoleniową",
+        "enroll_only_in_learning_path_desc": "Gdy ta opcja jest włączona, uczniowie mogą zapisać się na ten kurs wyłącznie poprzez ścieżkę edukacyjną. Istniejące zapisy zostaną zachowane."
       },
       "analytics": {
         "title": "Analityka"
@@ -1490,7 +1490,7 @@
             "description": "Przyznaj {email} dostęp do tego kursu. Wyślemy zaproszenie e-mailem, aby dołączył do Twojej organizacji i zapisał się na ten kurs.",
             "cancel": "Anuluj",
             "send_invite": "Wyślij zaproszenie",
-            "path_gated_notice": "Ten kurs wymaga zapisania się na ścieżkę edukacyjną, dlatego nie można przyznać bezpośredniego dostępu. Zamiast tego przypisz zawierającą ścieżkę szkoleniową lub wyłącz opcję „Wymaga ścieżki szkoleniowej” w ustawieniach kursu."
+            "path_only_notice": "Na ten kurs można zapisać się wyłącznie w ścieżce szkoleniowej, dlatego nie można przyznać bezpośredniego dostępu. Zamiast tego przypisz zawierającą ścieżkę szkoleniową — lub wyłącz opcję „Zapisz się tylko na ścieżce szkoleniowej” w ustawieniach kursu."
           },
           "invite_new_students_title": "Zaproś nowych uczniów",
           "invite_new_students_description": "Zaproś nowe osoby do organizacji i wstępnie przypisz je do tego kursu. Utworzą konto, zaakceptują zaproszenie i uzyskają dostęp.",
@@ -1536,9 +1536,9 @@
             "custom": "Niestandardowe"
           },
           "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów.",
-          "path_gated_notice_title": "Studenci przyłączają się poprzez ścieżkę edukacyjną",
-          "path_gated_notice_description": "Ten kurs wymaga zapisania się na ścieżkę edukacyjną, dlatego nie można zapraszać na niego studentów. Nadal możesz zapraszać korepetytorów poniżej. Aby zapewnić uczniom dostęp, przypisz zawierającą ścieżkę uczenia się lub wyłącz opcję „Wymaga ścieżki nauki” w ustawieniach kursu.",
-          "members_added": "{count, plural, one {# członek został pomyślnie dodany} other {# członek został pomyślnie dodany}}"
+          "members_added": "{count, plural, one {# członek został pomyślnie dodany} other {# członek został pomyślnie dodany}}",
+          "path_only_notice_title": "Studenci przyłączają się poprzez ścieżkę edukacyjną",
+          "path_only_notice_description": "Na ten kurs można zapisać się wyłącznie na ścieżce edukacyjnej, dlatego nie można zapraszać na niego uczniów. Nadal możesz zapraszać korepetytorów poniżej. Aby zapewnić uczniom dostęp, przypisz zawierającą ścieżkę nauczania lub wyłącz opcję „Zapisz się tylko w ścieżce edukacyjnej” w ustawieniach kursu."
         },
         "learner": "Student",
         "source": "Źródło",
@@ -6333,7 +6333,7 @@
     },
     "hub": {
       "placeholder_title": "Podgląd ścieżki edukacyjnej",
-      "placeholder_description": "Pełne doświadczenie edukacyjne znajduje się w LMS. Otwórz My Learning, aby kontynuować tę ścieżkę.",
+      "placeholder_description": "Pełne doświadczenie edukacyjne znajduje się w LMS. Otwórz Moją naukę, aby kontynuować tę ścieżkę.",
       "back_to_my_learning": "Powrót do Mojej nauki"
     },
     "not_permitted": {

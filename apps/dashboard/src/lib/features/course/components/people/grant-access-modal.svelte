@@ -86,8 +86,8 @@
     {#if isPathGated}
       <Alert.Callout
         variant="warning"
-        title={$t('course.navItem.people.invite_modal.path_gated_notice_title')}
-        description={$t('course.navItem.people.invite_modal.grant_access_modal.path_gated_notice')}
+        title={$t('course.navItem.people.invite_modal.path_only_notice_title')}
+        description={$t('course.navItem.people.invite_modal.grant_access_modal.path_only_notice')}
       />
     {/if}
 
