@@ -334,22 +334,10 @@ export async function addPathMembersService(
     };
 
     // Check room for the whole batch before queueing or running inline, so an
-    // over-limit add fails up front. The worker's capacity check never sends
-    // milestone emails, so the milestone is sent from here once the add is
-    // queued or has run.
+    // over-limit add fails up front. The milestone email is left to the run,
+    // which sends it once students have actually joined.
     const newStudentCount = await countNewStudentsInBatch(path.organizationId, payload.members);
-    const milestone = await assertStudentCapacityOrThrow(path.organizationId, newStudentCount, db, {
-      deferNotification: true
-    });
-    const sendMilestone = () => {
-      if (!milestone) {
-        return;
-      }
-
-      notifyStudentMilestone(milestone).catch((error) => {
-        console.error('notifyStudentMilestone error:', error);
-      });
-    };
+    await assertStudentCapacityOrThrow(path.organizationId, newStudentCount, db, { deferNotification: true });
 
     const redisConfigured = isRedisConfigured();
     let redisReady = false;
@@ -385,8 +373,6 @@ export async function addPathMembersService(
         }
 
         if (jobId) {
-          sendMilestone();
-
           return { mode: 'queued', jobId, requested: payload.members.length };
         }
 
@@ -415,7 +401,6 @@ export async function addPathMembersService(
 
     try {
       const outcome = await runQueuedPathBulkEnroll(bulkPayload);
-      sendMilestone();
 
       return {
         mode: 'completed',
