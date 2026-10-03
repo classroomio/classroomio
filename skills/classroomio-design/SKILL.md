@@ -8,6 +8,9 @@ user-invocable: true
 
 One blue (#0233BD) on warm paper and sand, Geist type, and the notch card as the signature shape. Read the docs below before inventing any colour, size or copy.
 
+## Marketing assets: read this first
+For any launch image, social post, YouTube thumbnail, ad, OG image or deck slide, **start from a frame in `templates/launch-gallery/LaunchGallery.dc.html`** (9 canonical frames). Read `docs/brand-assets.md` first: it maps each frame to a story type, gives resize rules per format, and lists banned patterns. Don't design marketing layouts from scratch with app components.
+
 ## Read first
 
 | Need | File |
@@ -16,7 +19,7 @@ One blue (#0233BD) on warm paper and sand, Geist type, and the notch card as the
 | Voice, casing, copy rules | `docs/content.md` |
 | Palette, type, radii, layout, backgrounds, motion | `docs/visual.md` |
 | Icon style and the Icon set | `docs/iconography.md` |
-| Launch images, social posts, decks | `docs/brand-assets.md` |
+| **Launch images, social posts, thumbnails, decks (mandatory)** | `docs/brand-assets.md` + `templates/launch-gallery/` |
 
 ## Where things live
 
@@ -25,7 +28,8 @@ One blue (#0233BD) on warm paper and sand, Geist type, and the notch card as the
 - `components/{core,surfaces,marketing,brand,loading}`: marketing and brand components.
 - Each component has `.jsx`, `.d.ts` and `.prompt.md`. Read the `.prompt.md` before using one.
 - `guidelines/`: specimen cards. `Component Preview.html`: everything on one page.
-- `Launch Gallery v2.dc.html`, `Brand Assets.dc.html`: reference layouts for assets.
+- `templates/launch-gallery/LaunchGallery.dc.html`: **canonical marketing frames**. Copy from here.
+- `Brand Assets.dc.html`: colour schemes and the branded page kit (secondary reference).
 - `github.md`: map from each component to its `packages/ui` source, plus last sync date.
 
 ## Choosing
