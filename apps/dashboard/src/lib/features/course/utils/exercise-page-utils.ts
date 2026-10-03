@@ -22,9 +22,10 @@ import { get, writable } from 'svelte/store';
 import { hasQuestionnaireChanges, mergeExerciseStates } from './exercise-state-merge';
 
 export interface ExerciseRemoteUpdateNotice {
+  baseState: QuestionnaireState;
   conflictCount: number;
   exerciseId: string;
-  mergedAssistantState: QuestionnaireState;
+  remoteState: QuestionnaireState;
   type: 'conflict' | 'merged';
 }
 
@@ -34,6 +35,13 @@ export const exerciseRemoteUpdateNotice = writable<ExerciseRemoteUpdateNotice | 
 
 function snapshotQuestionnaireState(state: QuestionnaireState) {
   return structuredClone(state);
+}
+
+function getUntitledSectionId(exerciseId: string) {
+  const leadingNibble = Number.parseInt(exerciseId[0] ?? '', 16);
+  if (Number.isNaN(leadingNibble)) return exerciseId;
+
+  return `${((leadingNibble + 8) % 16).toString(16)}${exerciseId.slice(1)}`;
 }
 
 function toQuestionnaireState(exercise: Exercise): QuestionnaireState {
@@ -86,7 +94,7 @@ function toQuestionnaireState(exercise: Exercise): QuestionnaireState {
       );
 
       if (unsectionedQuestions.length > 0) {
-        const untitledSectionId = crypto.randomUUID();
+        const untitledSectionId = getUntitledSectionId(exercise.id);
         const nextSectionOrder =
           sections.reduce((highestOrder, section) => Math.max(highestOrder, section.order), -1) + 1;
         sections.push({
@@ -162,11 +170,11 @@ export function reconcileExercisePageData(exercise: Exercise, exerciseId: string
 
   questionnaire.set(localMerge.state);
 
-  const assistantMerge = mergeExerciseStates(baseState, localState, remoteState, 'remote');
   exerciseRemoteUpdateNotice.set({
+    baseState: snapshotQuestionnaireState(baseState),
     conflictCount: localMerge.conflictCount,
     exerciseId,
-    mergedAssistantState: assistantMerge.state,
+    remoteState: snapshotQuestionnaireState(remoteState),
     type: localMerge.conflictCount > 0 ? 'conflict' : 'merged'
   });
 }
@@ -179,7 +187,9 @@ export function applyAssistantExerciseConflicts(exerciseId: string) {
   const notice = get(exerciseRemoteUpdateNotice);
   if (!notice || notice.exerciseId !== exerciseId) return;
 
-  questionnaire.set(notice.mergedAssistantState);
+  const currentState = get(questionnaire);
+  const assistantMerge = mergeExerciseStates(notice.baseState, currentState, notice.remoteState, 'remote');
+  questionnaire.set(assistantMerge.state);
   exerciseRemoteUpdateNotice.set(null);
 }
 
@@ -198,10 +208,17 @@ export function hasUnsavedExerciseState(exerciseId: string, state: Questionnaire
   return hasQuestionnaireChanges(baseState, state);
 }
 
+export function getExerciseServerState(exerciseId: string) {
+  const state = serverExerciseStates.get(exerciseId);
+
+  return state ? snapshotQuestionnaireState(state) : null;
+}
+
 export async function refreshExercisePageData(courseId: string, exerciseId: string) {
   await exerciseApi.get(courseId, exerciseId);
 
-  if (!exerciseApi.exercise) return null;
+  const activeExerciseId = get(questionnaireMetaData).exerciseId;
+  if (activeExerciseId !== exerciseId || exerciseApi.exercise?.id !== exerciseId) return null;
 
   reconcileExercisePageData(exerciseApi.exercise, exerciseId);
 

@@ -38,6 +38,41 @@ function equalEditorValues(left: unknown, right: unknown) {
   return isEqual(withoutDirtyMarkers(left), withoutDirtyMarkers(right));
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function hasEntityId(value: unknown): value is { id: string | number } {
+  return isRecord(value) && (typeof value.id === 'string' || typeof value.id === 'number');
+}
+
+function canMergeEntityArrays(baseValue: unknown[], localValue: unknown[], remoteValue: unknown[]) {
+  const values = [...baseValue, ...localValue, ...remoteValue];
+
+  return values.length > 0 && values.every(hasEntityId);
+}
+
+function mergeRecords<T extends Record<string, unknown>>(
+  baseValue: T,
+  localValue: T,
+  remoteValue: T,
+  resolution: ExerciseMergeResolution
+): MergeValueResult<T> {
+  const keys = new Set([...Object.keys(baseValue), ...Object.keys(localValue), ...Object.keys(remoteValue)]);
+  const value: Record<string, unknown> = {};
+  let conflictCount = 0;
+  let usedLocal = false;
+
+  for (const key of keys) {
+    const mergedValue = mergeValue(baseValue[key], localValue[key], remoteValue[key], resolution);
+    conflictCount += mergedValue.conflictCount;
+    usedLocal ||= mergedValue.usedLocal;
+    value[key] = mergedValue.value;
+  }
+
+  return { conflictCount, usedLocal, value: value as T };
+}
+
 function mergeValue<T>(
   baseValue: T,
   localValue: T,
@@ -49,6 +84,25 @@ function mergeValue<T>(
   const hasConflict = localChanged && remoteChanged && !equalEditorValues(localValue, remoteValue);
 
   if (hasConflict) {
+    if (isRecord(baseValue) && isRecord(localValue) && isRecord(remoteValue)) {
+      return mergeRecords(baseValue, localValue, remoteValue, resolution) as MergeValueResult<T>;
+    }
+
+    if (
+      Array.isArray(baseValue) &&
+      Array.isArray(localValue) &&
+      Array.isArray(remoteValue) &&
+      canMergeEntityArrays(baseValue, localValue, remoteValue)
+    ) {
+      const mergedEntities = mergeEntities(baseValue, localValue, remoteValue, resolution);
+
+      return {
+        conflictCount: mergedEntities.conflictCount,
+        usedLocal: true,
+        value: mergedEntities.entities as T
+      };
+    }
+
     return {
       conflictCount: 1,
       usedLocal: resolution === 'local',
@@ -96,7 +150,13 @@ function mergeEntities<T extends { id: string | number }>(
     }
 
     if (!localEntity) {
-      if (remoteEntity) entities.push(remoteEntity);
+      if (!remoteEntity) continue;
+
+      const remoteChanged = !equalEditorValues(remoteEntity, baseEntity);
+      if (remoteChanged) {
+        conflictCount += 1;
+        if (resolution === 'remote') entities.push(remoteEntity);
+      }
 
       continue;
     }
