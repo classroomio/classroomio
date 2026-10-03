@@ -1736,6 +1736,15 @@
           "chill": "hygge med de store drenge",
           "add_exercise": "Del din viden med verden ved at lave engagerende øvelser. Tilføj en øvelse nu.",
           "all_exercises": {
+            "remote_update": {
+              "merged_title": "Assistentens ændringer er flettet",
+              "merged_description": "Dine ikke-gemte ændringer blev bevaret, mens Assistentens ændringer blev tilføjet.",
+              "conflict_title": "Gennemgå Assistentens ændringer",
+              "conflict_description": "Assistenten ændrede {count} element(er), som du også redigerede. Din version er bevaret indtil videre.",
+              "keep_mine": "Behold mine ændringer",
+              "use_assistant": "Brug Assistentens ændringer",
+              "dismiss": "Luk"
+            },
             "heading": "Alt motion",
             "questions": "Spørgsmål",
             "submissions": "Indsendelser",

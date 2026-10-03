@@ -1736,6 +1736,15 @@
           "chill": "Entspannen Sie sich mit den großen Jungs",
           "add_exercise": "Teilen Sie Ihr Wissen mit der Welt, indem Sie spannende Übungen erstellen. Jetzt eine Übung hinzufügen.",
           "all_exercises": {
+            "remote_update": {
+              "merged_title": "Assistant-Änderungen zusammengeführt",
+              "merged_description": "Deine ungespeicherten Bearbeitungen wurden beibehalten, während die Änderungen des Assistenten hinzugefügt wurden.",
+              "conflict_title": "Assistant-Änderungen prüfen",
+              "conflict_description": "Der Assistant hat {count} Element(e) geändert, das/die du ebenfalls bearbeitet hast. Deine Version wird derzeit beibehalten.",
+              "keep_mine": "Meine Bearbeitungen behalten",
+              "use_assistant": "Assistant-Änderungen verwenden",
+              "dismiss": "Schließen"
+            },
             "heading": "Alle Übungen",
             "questions": "Fragen",
             "submissions": "Einsendungen",

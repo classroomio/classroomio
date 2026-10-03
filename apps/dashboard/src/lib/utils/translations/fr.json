@@ -1736,6 +1736,15 @@
           "chill": "chill avec les grands",
           "add_exercise": "Partagez vos connaissances avec le monde en créant des exercices engageants. Ajoutez un exercice maintenant.",
           "all_exercises": {
+            "remote_update": {
+              "merged_title": "Modifications de l’Assistant fusionnées",
+              "merged_description": "Vos modifications non enregistrées ont été conservées pendant l’ajout des modifications de l’Assistant.",
+              "conflict_title": "Vérifier les modifications de l’Assistant",
+              "conflict_description": "L’Assistant a modifié {count} élément(s) que vous aviez également modifié(s). Votre version est conservée pour le moment.",
+              "keep_mine": "Conserver mes modifications",
+              "use_assistant": "Utiliser les modifications de l’Assistant",
+              "dismiss": "Fermer"
+            },
             "heading": "Tous les exercices",
             "questions": "Questions",
             "submissions": "Soumissions",

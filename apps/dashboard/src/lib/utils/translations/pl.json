@@ -1736,6 +1736,15 @@
           "chill": "relaksuj się z dużymi chłopcami",
           "add_exercise": "Podziel się swoją wiedzą ze światem tworząc angażujące ćwiczenia. Dodaj teraz ćwiczenie.",
           "all_exercises": {
+            "remote_update": {
+              "merged_title": "Zmiany Asystenta zostały scalone",
+              "merged_description": "Twoje niezapisane zmiany zostały zachowane podczas dodawania zmian Asystenta.",
+              "conflict_title": "Sprawdź zmiany Asystenta",
+              "conflict_description": "Asystent zmienił {count} element(y), które również edytowano. Twoja wersja jest obecnie zachowana.",
+              "keep_mine": "Zachowaj moje zmiany",
+              "use_assistant": "Użyj zmian Asystenta",
+              "dismiss": "Zamknij"
+            },
             "heading": "Wszystkie ćwiczenia",
             "questions": "Pytania",
             "submissions": "Zgłoszenia",
