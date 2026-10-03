@@ -3,6 +3,7 @@ import * as z from 'zod';
 import { defineEmail } from '../send';
 import { getDefaultTemplate } from '../templates';
 import { ZEmailBranding } from '../core/branding';
+import { escapeHtml } from '../utils/functions/email-helpers';
 
 export const studentLearningPathInviteEmail = defineEmail({
   id: 'studentLearningPathInvite',
@@ -16,13 +17,17 @@ export const studentLearningPathInviteEmail = defineEmail({
     branding: ZEmailBranding
   }),
   render: (fields) => {
+    const learningPathName = escapeHtml(fields.learningPathName);
+    const orgName = escapeHtml(fields.orgName);
+    const expiresAt = escapeHtml(fields.expiresAt);
+    const inviteLink = escapeHtml(fields.inviteLink);
     const content = `
       <p>Hi there,</p>
-      <p>You have been invited to join the <strong>${fields.learningPathName}</strong> learning path in <strong>${fields.orgName}</strong> as a student.</p>
+      <p>You have been invited to join the <strong>${learningPathName}</strong> learning path in <strong>${orgName}</strong> as a student.</p>
       <p>Accept the invitation to create your account — you will be enrolled in the learning path and its courses automatically.</p>
-      <p>This invite expires on ${fields.expiresAt} (UTC).</p>
+      <p>This invite expires on ${expiresAt} (UTC).</p>
       <div>
-        <a class="button" href="${fields.inviteLink}">Accept Invitation</a>
+        <a class="button" href="${inviteLink}">Accept Invitation</a>
       </div>
     `;
 

@@ -30,13 +30,13 @@ export const MCP_TOOL_CREDIT_COST = {
   update_course_exercise: 1,
   publish_course_draft: 5,
   publish_course_draft_to_existing_course: 5,
-  list_learning_paths: 0,
-  get_learning_path_detail: 0,
+  list_org_learning_paths: 0,
+  get_learning_path: 0,
   create_learning_path: 1,
   update_learning_path_landing_page: 1,
-  add_courses_to_learning_path: 1,
-  reorder_path_courses: 1,
-  remove_course_from_learning_path: 1
+  add_learning_path_courses: 1,
+  reorder_learning_path_courses: 1,
+  remove_learning_path_course: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -113,8 +113,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_org_courses' ||
     toolName === 'list_course_exercises' ||
     toolName === 'get_course_exercise' ||
-    toolName === 'list_learning_paths' ||
-    toolName === 'get_learning_path_detail'
+    toolName === 'list_org_learning_paths' ||
+    toolName === 'get_learning_path'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

@@ -103,7 +103,8 @@ export const membersRouter = new Hono()
         const { courseId, memberId } = c.req.valid('param');
         const validatedData = c.req.valid('json');
 
-        const member = await updateMember(courseId, memberId, validatedData);
+        const user = c.get('user');
+        const member = await updateMember(courseId, memberId, validatedData, user?.id);
 
         return c.json(
           {

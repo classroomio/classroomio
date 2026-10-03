@@ -10,7 +10,8 @@ const mocks = vi.hoisted(() => ({
   hasScopes: vi.fn(),
   getLearningPathById: vi.fn(),
   getLearningPathByPublicId: vi.fn(),
-  getMemberByPathAndProfile: vi.fn()
+  getMemberByPathAndProfile: vi.fn(),
+  getOrganizationMemberRoleId: vi.fn()
 }));
 
 vi.mock('@api/services/organization/automation-key', () => ({
@@ -21,6 +22,10 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   getLearningPathById: mocks.getLearningPathById,
   getLearningPathByPublicId: mocks.getLearningPathByPublicId,
   getMemberByPathAndProfile: mocks.getMemberByPathAndProfile
+}));
+
+vi.mock('@cio/db/queries/organization', () => ({
+  getOrganizationMemberRoleId: mocks.getOrganizationMemberRoleId
 }));
 
 const PATH_UUID = '11111111-1111-1111-1111-111111111111';
@@ -77,6 +82,7 @@ describe('learningPathTeamOrAutomationKeyMiddleware', () => {
     mocks.hasScopes.mockReturnValue(true);
     mocks.getLearningPathById.mockResolvedValue(mockPath);
     mocks.getLearningPathByPublicId.mockResolvedValue(mockPath);
+    mocks.getOrganizationMemberRoleId.mockResolvedValue(ROLE.ADMIN);
   });
 
   it('lets session admins through with unchanged team semantics', async () => {
@@ -121,6 +127,43 @@ describe('learningPathTeamOrAutomationKeyMiddleware', () => {
       actorId: ACTOR_ID,
       orgRoles: { [ORG_ID]: ROLE.ADMIN }
     });
+    expect(mocks.getOrganizationMemberRoleId).toHaveBeenCalledWith(ORG_ID, ACTOR_ID);
+  });
+
+  it('uses the key creator real role instead of admin', async () => {
+    mocks.getOrganizationMemberRoleId.mockResolvedValue(ROLE.TUTOR);
+    mocks.getMemberByPathAndProfile.mockResolvedValue({ id: 'm-1', roleId: ROLE.TUTOR });
+    const app = buildApp(learningPathTeamOrAutomationKeyMiddleware(['learning_path:write']), {
+      automationKey: mockKey
+    });
+
+    const response = await app.request(`/${PATH_UUID}`, { method: 'POST' });
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body).toMatchObject({ orgRoles: { [ORG_ID]: ROLE.TUTOR } });
+  });
+
+  it('rejects keys whose creator cannot manage the path', async () => {
+    mocks.getOrganizationMemberRoleId.mockResolvedValue(ROLE.STUDENT);
+    const app = buildApp(learningPathTeamOrAutomationKeyMiddleware(['learning_path:write']), {
+      automationKey: mockKey
+    });
+
+    const response = await app.request(`/${PATH_UUID}`, { method: 'POST' });
+
+    expect(response.status).toBe(403);
+  });
+
+  it('rejects keys whose creator left the org', async () => {
+    mocks.getOrganizationMemberRoleId.mockResolvedValue(null);
+    const app = buildApp(learningPathTeamOrAutomationKeyMiddleware(['learning_path:write']), {
+      automationKey: mockKey
+    });
+
+    const response = await app.request(`/${PATH_UUID}`, { method: 'POST' });
+
+    expect(response.status).toBe(403);
   });
 
   it('rejects automation keys missing the required scopes', async () => {

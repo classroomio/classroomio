@@ -5,7 +5,9 @@ import {
   ZEnrollInLearningPath,
   ZGetLearningPathsQuery,
   ZLearningPathCertificateDownloadRequest,
+  ZLandingPage,
   ZLearningPathCourseParam,
+  ZLearningPathIdentifier,
   ZLearningPathIdParam,
   ZLearningPathMemberParam,
   ZPathMembersQuery,
@@ -17,6 +19,7 @@ import {
   ZVerifyLearningPathCertificateParam
 } from '@cio/utils/validation/learning-path';
 import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
+import { ZAddableCoursesQuery } from '@cio/utils/validation/course';
 
 import type { TLearningPathCertificateDownloadRequest } from '@cio/utils/validation/learning-path';
 import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
@@ -38,6 +41,7 @@ import {
   getPathMemberDetailService,
   getPublicLearningPathBySlug,
   listPublicLearningPathsService,
+  listAddablePathCoursesService,
   listOrgLearningPaths,
   listPathMembersService,
   removeCourseFromPathService,
@@ -63,17 +67,26 @@ import { learningPathMemberMiddleware } from '@api/middlewares/learning-path-mem
 import { learningPathTeamMiddleware } from '@api/middlewares/learning-path-team';
 import { extractClientIp } from '@api/utils/redis/key-generators';
 import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
-import { handleError } from '@api/utils/errors';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 
-const ZPathParam = ZLearningPathIdParam;
+const ZPathParam = z.object({ pathId: ZLearningPathIdentifier });
+
+/**
+ * Automation keys may only touch the landing page through PUT
+ * /learning-path/:pathId, even though dashboard sessions may update cost,
+ * certificate settings and publish state with the same endpoint.
+ */
+const ZAutomationKeyLearningPathUpdate = z.object({
+  landingPage: ZLandingPage
+});
 const ZCourseParam = ZLearningPathCourseParam;
 const ZMemberParam = ZLearningPathMemberParam;
-const ZPersonParam = z.object({ pathId: z.string().min(1), personId: z.string().uuid() });
+const ZPersonParam = z.object({ pathId: ZLearningPathIdentifier, personId: z.string().uuid() });
 
 const ZSlugParam = z.object({ slug: z.string().min(1) });
-const ZBulkStatusParam = z.object({ pathId: z.string().min(1), jobId: z.string().min(1) });
+const ZBulkStatusParam = z.object({ pathId: ZLearningPathIdentifier, jobId: z.string().min(1) });
 const ZBulkStatusQuery = z.object({ pollCount: z.coerce.number().int().min(0).default(0) });
 
 function getOrgRoles(c: { get: (key: string) => unknown }): Record<string, number> | undefined {
@@ -167,7 +180,8 @@ export const learningPathRouter = new Hono()
         const actorId = c.get('actorId')!;
         const automationKey = c.get('automationKey');
         const orgRoles = getOrgRoles(c);
-        const { organizationId, page, limit, search } = c.req.valid('query');
+        const { organizationId, page, limit, search, status, enrollment, completion, sort, order } =
+          c.req.valid('query');
         // Org-scoped automation keys resolve the organization server-side.
         const effectiveOrgId = automationKey ? c.get('orgId')! : organizationId;
 
@@ -176,13 +190,22 @@ export const learningPathRouter = new Hono()
         }
 
         if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'list_learning_paths');
+          await assertMcpAutomationUsageAllowed(automationKey, 'list_org_learning_paths');
         }
 
-        const result = await listOrgLearningPaths(effectiveOrgId, actorId, orgRoles, { page, limit, search });
+        const result = await listOrgLearningPaths(effectiveOrgId, actorId, orgRoles, {
+          page,
+          limit,
+          search,
+          status,
+          enrollment,
+          completion,
+          sort,
+          order
+        });
 
         if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'list_learning_paths', { organizationId: effectiveOrgId });
+          await recordMcpAutomationUsage(automationKey, 'list_org_learning_paths', { organizationId: effectiveOrgId });
         }
 
         return c.json({ success: true, data: result.data, pagination: result.pagination }, 200);
@@ -248,13 +271,13 @@ export const learningPathRouter = new Hono()
         const { pathId } = c.req.valid('param');
 
         if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'get_learning_path_detail');
+          await assertMcpAutomationUsageAllowed(automationKey, 'get_learning_path');
         }
 
         const path = await getLearningPathDetail(pathId, actorId, orgRoles);
 
         if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'get_learning_path_detail', { pathId });
+          await recordMcpAutomationUsage(automationKey, 'get_learning_path', { pathId });
         }
 
         return c.json({ success: true, data: path }, 200);
@@ -286,18 +309,40 @@ export const learningPathRouter = new Hono()
           await assertMcpAutomationUsageAllowed(automationKey, 'update_learning_path_landing_page');
         }
 
-        let data = rawData;
-        if (rawData.welcomeEmailMessage) {
-          data = { ...data, welcomeEmailMessage: sanitizeHtml(rawData.welcomeEmailMessage) };
-        }
-        if (rawData.certificate?.emailMessage) {
-          data = {
-            ...data,
-            certificate: {
-              ...data.certificate,
-              emailMessage: sanitizeHtml(rawData.certificate.emailMessage)
-            }
-          };
+        // Automation keys are billed as landing-page updates and may not
+        // change cost, certificate settings or publish state.
+        let data: typeof rawData;
+        if (automationKey) {
+          const keyedResult = ZAutomationKeyLearningPathUpdate.strict().safeParse(rawData);
+
+          if (!keyedResult.success) {
+            const firstIssue = keyedResult.error.issues[0];
+            const rejectedField =
+              firstIssue?.code === 'unrecognized_keys' ? firstIssue.keys[0] : firstIssue?.path[0]?.toString();
+
+            throw new AppError(
+              'Automation keys can only update landingPage',
+              ErrorCodes.VALIDATION_ERROR,
+              400,
+              rejectedField
+            );
+          }
+
+          data = keyedResult.data as typeof rawData;
+        } else {
+          data = rawData;
+          if (rawData.welcomeEmailMessage) {
+            data = { ...data, welcomeEmailMessage: sanitizeHtml(rawData.welcomeEmailMessage) };
+          }
+          if (rawData.certificate?.emailMessage) {
+            data = {
+              ...data,
+              certificate: {
+                ...data.certificate,
+                emailMessage: sanitizeHtml(rawData.certificate.emailMessage)
+              }
+            };
+          }
         }
 
         const path = await updateLearningPathService(pathId, actorId, data, orgRoles);
@@ -355,8 +400,33 @@ export const learningPathRouter = new Hono()
   )
 
   /**
+   * GET /learning-path/:pathId/available-courses
+   * Pages the courses the path can still add (add-courses picker)
+   */
+  .get(
+    '/:pathId/available-courses',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZPathParam),
+    zValidator('query', ZAddableCoursesQuery),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const { pathId } = c.req.valid('param');
+        const query = c.req.valid('query');
+        const result = await listAddablePathCoursesService(pathId, user.id, orgRoles, query);
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list available courses');
+      }
+    }
+  )
+
+  /**
    * POST /learning-path/:pathId/courses
-   * Adds courses to a learning path (and auto-enrolls members atomically)
+   * Adds courses to a learning path (and grants course access atomically)
    */
   .post(
     '/:pathId/courses',
@@ -373,13 +443,13 @@ export const learningPathRouter = new Hono()
         const data = c.req.valid('json');
 
         if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'add_courses_to_learning_path');
+          await assertMcpAutomationUsageAllowed(automationKey, 'add_learning_path_courses');
         }
 
         const courses = await addCoursesToPathService(pathId, data, actorId, orgRoles);
 
         if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'add_courses_to_learning_path', { pathId });
+          await recordMcpAutomationUsage(automationKey, 'add_learning_path_courses', { pathId });
         }
 
         return c.json({ success: true, data: courses }, 200);
@@ -408,13 +478,13 @@ export const learningPathRouter = new Hono()
         const { courseIds } = c.req.valid('json');
 
         if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'reorder_path_courses');
+          await assertMcpAutomationUsageAllowed(automationKey, 'reorder_learning_path_courses');
         }
 
         const result = await reorderPathCoursesService(pathId, courseIds, actorId, orgRoles);
 
         if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'reorder_path_courses', { pathId });
+          await recordMcpAutomationUsage(automationKey, 'reorder_learning_path_courses', { pathId });
         }
 
         return c.json({ success: true, data: result }, 200);
@@ -441,13 +511,13 @@ export const learningPathRouter = new Hono()
         const { pathId, courseId } = c.req.valid('param');
 
         if (automationKey?.type === 'mcp') {
-          await assertMcpAutomationUsageAllowed(automationKey, 'remove_course_from_learning_path');
+          await assertMcpAutomationUsageAllowed(automationKey, 'remove_learning_path_course');
         }
 
         const removed = await removeCourseFromPathService(pathId, courseId, actorId, orgRoles);
 
         if (automationKey?.type === 'mcp') {
-          await recordMcpAutomationUsage(automationKey, 'remove_course_from_learning_path', { pathId, courseId });
+          await recordMcpAutomationUsage(automationKey, 'remove_learning_path_course', { pathId, courseId });
         }
 
         return c.json({ success: true, data: removed }, 200);
@@ -484,7 +554,7 @@ export const learningPathRouter = new Hono()
 
   /**
    * POST /learning-path/:pathId/members
-   * Batch adds members to a learning path and auto-enrolls into courses.
+   * Batch adds members to a learning path and grants course access.
    * Adds above the bulk threshold are queued and return 202 for polling.
    */
   .post(
@@ -501,7 +571,7 @@ export const learningPathRouter = new Hono()
         const data = c.req.valid('json');
         const result = await addPathMembersService(pathId, data, user.id, orgRoles);
 
-        if (!Array.isArray(result)) {
+        if (result.mode === 'queued') {
           return c.json({ success: true, data: result }, 202);
         }
 
@@ -585,7 +655,8 @@ export const learningPathRouter = new Hono()
 
   /**
    * PATCH /learning-path/:pathId/members/:memberId
-   * Changes a member's role between student and tutor
+   * Only STUDENT<->TUTOR changes; any change that touches the tutor role
+   * requires an org admin; removed members are 404.
    */
   .patch(
     '/:pathId/members/:memberId',

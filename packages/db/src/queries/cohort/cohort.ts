@@ -69,7 +69,8 @@ export async function getCohortById(cohortId: string): Promise<TCohort | null> {
 
 export async function getCohortsByOrg(
   organizationId: string,
-  cohortIds?: string[]
+  cohortIds?: string[],
+  dbClient: DbOrTxClient = db
 ): Promise<Array<TCohort & { courseCount: number; studentCount: number }>> {
   try {
     const whereCondition =
@@ -77,7 +78,7 @@ export async function getCohortsByOrg(
         ? and(eq(schema.cohort.organizationId, organizationId), inArray(schema.cohort.id, cohortIds))
         : eq(schema.cohort.organizationId, organizationId);
 
-    const result = await db
+    const result = await dbClient
       .select({
         cohort: schema.cohort,
         courseCount: sql<number>`
@@ -325,9 +326,14 @@ export async function deleteCohort(cohortId: string): Promise<TCohort | null> {
 
 // ─── Program Membership ──────────────────────────────────────────────────────
 
-export async function getCohortMemberByProfileId(cohortId: string, profileId: string): Promise<TCohortMember | null> {
+/** Returns a profile's membership row in a cohort, or null. */
+export async function getCohortMemberByProfileId(
+  cohortId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember | null> {
   try {
-    const [member] = await db
+    const [member] = await dbClient
       .select()
       .from(schema.cohortMember)
       .where(and(eq(schema.cohortMember.cohortId, cohortId), eq(schema.cohortMember.profileId, profileId)))
@@ -442,9 +448,17 @@ export async function lockCohortStatusForAccept(
   }
 }
 
-export async function removeCohortMember(memberId: string): Promise<TCohortMember | null> {
+/** Deletes a cohort member row, scoped to the cohort. Returns the deleted row or null. */
+export async function removeCohortMember(
+  cohortId: string,
+  memberId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember | null> {
   try {
-    const [deleted] = await db.delete(schema.cohortMember).where(eq(schema.cohortMember.id, memberId)).returning();
+    const [deleted] = await dbClient
+      .delete(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
+      .returning();
     return deleted || null;
   } catch (error) {
     console.error('removeCohortMember error:', error);
@@ -454,15 +468,48 @@ export async function removeCohortMember(memberId: string): Promise<TCohortMembe
   }
 }
 
-export async function updateCohortMember(
+/** Reads one member, scoped to the cohort so another cohort's member is null. */
+export async function getCohortMemberById(
+  cohortId: string,
   memberId: string,
-  data: Partial<TNewCohortMember>
+  dbClient: DbOrTxClient = db
 ): Promise<TCohortMember | null> {
   try {
-    const [updated] = await db
+    const [member] = await dbClient
+      .select()
+      .from(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
+      .limit(1);
+    return member || null;
+  } catch (error) {
+    console.error('getCohortMemberById error:', error);
+    throw new Error(`Failed to get cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Updates one member, scoped to the cohort. With `expectedRoleId` it only
+ * applies while the member still holds that role, so a concurrent change
+ * returns null instead of being overwritten.
+ */
+export async function updateCohortMember(
+  cohortId: string,
+  memberId: string,
+  data: Partial<TNewCohortMember>,
+  dbClient: DbOrTxClient = db,
+  expectedRoleId?: number
+): Promise<TCohortMember | null> {
+  try {
+    const conditions = [eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)];
+
+    if (expectedRoleId !== undefined) {
+      conditions.push(eq(schema.cohortMember.roleId, expectedRoleId));
+    }
+
+    const [updated] = await dbClient
       .update(schema.cohortMember)
       .set(data)
-      .where(eq(schema.cohortMember.id, memberId))
+      .where(and(...conditions))
       .returning();
     return updated || null;
   } catch (error) {
@@ -473,7 +520,11 @@ export async function updateCohortMember(
   }
 }
 
-export async function getCohortMembers(cohortId: string): Promise<
+/** Lists a cohort's members with their profile summary. */
+export async function getCohortMembers(
+  cohortId: string,
+  dbClient: DbOrTxClient = db
+): Promise<
   Array<
     TCohortMember & {
       profile: {
@@ -487,7 +538,7 @@ export async function getCohortMembers(cohortId: string): Promise<
   >
 > {
   try {
-    const result = await db
+    const result = await dbClient
       .select({
         member: schema.cohortMember,
         profile: {
@@ -568,9 +619,14 @@ export async function getEnrolledCohortsByProfile(
 
 // ─── Program Courses ─────────────────────────────────────────────────────────
 
-export async function addCourseToCohort(cohortId: string, courseId: string): Promise<TCohortCourse> {
+/** Links a course to a cohort. A duplicate link raises a unique violation. */
+export async function addCourseToCohort(
+  cohortId: string,
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortCourse> {
   try {
-    const [row] = await db.insert(schema.cohortCourse).values({ cohortId, courseId }).returning();
+    const [row] = await dbClient.insert(schema.cohortCourse).values({ cohortId, courseId }).returning();
     if (!row) throw new Error('Failed to add course to cohort');
     return row;
   } catch (error) {
@@ -579,6 +635,10 @@ export async function addCourseToCohort(cohortId: string, courseId: string): Pro
   }
 }
 
+/**
+ * Removes a course from a cohort. Existing grants and progress are kept on
+ * purpose; revocation happens when a member is removed.
+ */
 export async function removeCourseFromCohort(cohortId: string, courseId: string): Promise<TCohortCourse | null> {
   try {
     const [deleted] = await db
@@ -658,9 +718,37 @@ export async function getCourseIdsByCohortIds(cohortIds: string[], dbClient: DbO
   }
 }
 
-export async function isCohortCourse(cohortId: string, courseId: string): Promise<boolean> {
+/**
+ * Returns every (cohortId, courseId) link for the given cohorts in one query,
+ * so callers that grant per-cohort provenance avoid a query per cohort.
+ */
+export async function getCohortCoursePairsByCohortIds(
+  cohortIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Array<{ cohortId: string; courseId: string }>> {
   try {
-    const [row] = await db
+    if (cohortIds.length === 0) return [];
+
+    const rows = await dbClient
+      .selectDistinct({ cohortId: schema.cohortCourse.cohortId, courseId: schema.cohortCourse.courseId })
+      .from(schema.cohortCourse)
+      .where(inArray(schema.cohortCourse.cohortId, cohortIds));
+
+    return rows.filter((row): row is { cohortId: string; courseId: string } => !!row.cohortId && !!row.courseId);
+  } catch (error) {
+    console.error('getCohortCoursePairsByCohortIds error:', error);
+    throw new Error(`Failed to get cohort course pairs: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** True when the course is already linked to the cohort. */
+export async function isCohortCourse(
+  cohortId: string,
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [row] = await dbClient
       .select({ id: schema.cohortCourse.id })
       .from(schema.cohortCourse)
       .where(and(eq(schema.cohortCourse.cohortId, cohortId), eq(schema.cohortCourse.courseId, courseId)))

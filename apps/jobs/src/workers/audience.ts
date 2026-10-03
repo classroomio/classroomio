@@ -11,6 +11,7 @@ import {
 } from '@cio/jobs';
 import { runQueuedAudienceBulkAction } from '@cio/core/services/organization/audience-bulk';
 import { runQueuedPathBulkEnroll } from '@cio/core/services/learning-path/bulk-enroll';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 
 import { errorMessage } from '../utils/cancel';
 import { log } from '../utils/logger';
@@ -60,6 +61,10 @@ const worker = new Worker(
     });
 
     const result = await runQueuedAudienceBulkAction(data);
+
+    if (data.action === 'delete' && result.succeeded > 0) {
+      void invalidateOrgStats(data.organizationId).catch(() => {});
+    }
 
     log.info('audience-bulk-action-done', {
       bullmqJobId: job.id,

@@ -278,7 +278,7 @@ export const ZCourseCreateBase = z.object({
   type: ZCourseType,
   organizationId: z.string().min(1),
   compliance: ZComplianceSettings.optional(),
-  requiresLearningPath: z.boolean().optional()
+  enrollOnlyInLearningPath: z.boolean().optional()
 });
 
 export const ZCourseCreate = ZCourseCreateBase.refine(
@@ -506,7 +506,7 @@ export const ZCourseUpdateBase = z.object({
   tagIds: z.array(z.uuid()).max(100).optional(),
   compliance: ZComplianceSettings.optional(),
   callout: ZCourseCalloutInput.optional(),
-  requiresLearningPath: z.boolean().optional()
+  enrollOnlyInLearningPath: z.boolean().optional()
 });
 
 export const ZCourseUpdate = ZCourseUpdateBase.refine(
@@ -567,3 +567,15 @@ export const ZCourseUserAnalyticsQuery = z.object({
     .transform((value) => value === 'true')
 });
 export type TCourseUserAnalyticsQuery = z.infer<typeof ZCourseUserAnalyticsQuery>;
+
+/**
+ * Query for the "add courses" pickers (cohort and learning path). The server
+ * pages, searches and excludes ineligible courses, so a page holds only
+ * courses the matching add call will accept.
+ */
+export const ZAddableCoursesQuery = z.object({
+  search: z.string().trim().max(200).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20)
+});
+export type TAddableCoursesQuery = z.infer<typeof ZAddableCoursesQuery>;

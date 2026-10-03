@@ -11,10 +11,26 @@ import {
   TNewCourseSection,
   TProfile
 } from '@db/types';
-import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  exists,
+  gt,
+  ilike,
+  inArray,
+  isNotNull,
+  isNull,
+  notExists,
+  or,
+  sql
+} from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { toContainsPattern } from '@db/utils/like-pattern';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
 import { isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
@@ -75,7 +91,7 @@ export const getPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
-      eq(schema.course.requiresLearningPath, false)
+      eq(schema.course.enrollOnlyInLearningPath, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -163,7 +179,7 @@ export const countPublishedCoursesBySiteName = async (
       eq(schema.organization.siteName, siteName),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
-      eq(schema.course.requiresLearningPath, false)
+      eq(schema.course.enrollOnlyInLearningPath, false)
     ];
 
     if (courseIds && courseIds.length > 0) {
@@ -373,11 +389,11 @@ export async function getCourseById(courseId: string, dbClient: DbOrTxClient = d
 }
 
 /**
- * Returns the id and title of every given course that requires enrollment
- * through a learning path. Bulk enrollment flows use this to skip direct
+ * Returns the id and title of every given course that is enroll-only in a
+ * learning path. Bulk enrollment flows use this to skip direct
  * course assignment (reporting the skip) instead of failing the whole batch.
  */
-export async function getRequiresLearningPathCourses(
+export async function getEnrollOnlyInLearningPathCourses(
   courseIds: string[],
   dbClient: DbOrTxClient = db
 ): Promise<Array<{ id: string; title: string }>> {
@@ -389,10 +405,10 @@ export async function getRequiresLearningPathCourses(
     return await dbClient
       .select({ id: schema.course.id, title: schema.course.title })
       .from(schema.course)
-      .where(and(inArray(schema.course.id, courseIds), eq(schema.course.requiresLearningPath, true)));
+      .where(and(inArray(schema.course.id, courseIds), eq(schema.course.enrollOnlyInLearningPath, true)));
   } catch (error) {
-    console.error('getRequiresLearningPathCourses error:', error);
-    throw new Error(`Failed to get path-gated courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('getEnrollOnlyInLearningPathCourses error:', error);
+    throw new Error(`Failed to get path-only courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
@@ -811,12 +827,10 @@ export interface GetOrgCoursesResult {
   totalPages: number;
 }
 
-export async function countOrgCourses({
-  orgId,
-  profileId,
-  courseIds,
-  search
-}: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search'>): Promise<number> {
+export async function countOrgCourses(
+  { orgId, profileId, courseIds, search }: Pick<GetOrgCoursesOptions, 'orgId' | 'profileId' | 'courseIds' | 'search'>,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
   try {
     if (courseIds && courseIds.length === 0) {
       return 0;
@@ -833,7 +847,7 @@ export async function countOrgCourses({
     }
 
     const totalQuery = profileId
-      ? db
+      ? dbClient
           .select({ count: count(schema.course.id) })
           .from(schema.course)
           .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -842,7 +856,7 @@ export async function countOrgCourses({
             and(eq(schema.groupmember.groupId, schema.group.id), eq(schema.groupmember.profileId, profileId))
           )
           .where(and(...conditions))
-      : db
+      : dbClient
           .select({ count: count(schema.course.id) })
           .from(schema.course)
           .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -863,14 +877,10 @@ export async function countOrgCourses({
  * @param options.profileId Optional profile ID to filter by membership
  * @returns Array of courses with admin-level data
  */
-export const getOrgCourses = async ({
-  orgId,
-  profileId,
-  courseIds,
-  search,
-  page = 1,
-  limit = 20
-}: GetOrgCoursesOptions): Promise<GetOrgCoursesResult> => {
+export const getOrgCourses = async (
+  { orgId, profileId, courseIds, search, page = 1, limit = 20 }: GetOrgCoursesOptions,
+  dbClient: DbOrTxClient = db
+): Promise<GetOrgCoursesResult> => {
   try {
     if (courseIds && courseIds.length === 0) {
       return {
@@ -892,9 +902,9 @@ export const getOrgCourses = async ({
       conditions.push(ilike(schema.course.title, `%${search.trim()}%`));
     }
 
-    const total = await countOrgCourses({ orgId, profileId, courseIds, search });
+    const total = await countOrgCourses({ orgId, profileId, courseIds, search }, dbClient);
 
-    const baseQuery = db
+    const baseQuery = dbClient
       .select({
         course: schema.course,
         lessonCount: sql<number>`COUNT(DISTINCT ${schema.lesson.id})`.as('lesson_count'),
@@ -1047,7 +1057,7 @@ interface GetEnrolledCoursesOptions {
   profileId: string;
   /**
    * When true, only courses the learner takes on their own: a live non-path
-   * grant, and never a course that `requiresLearningPath` (My Learning course
+   * grant, and never a course that `enrollOnlyInLearningPath` (My Learning course
    * cards per the learning-paths PRD). Defaults to false to preserve the legacy
    * groupmember/program listing. Requires the grant backfill to have run.
    */
@@ -1159,7 +1169,7 @@ export const getEnrolledCourses = async ({
           or(isNotNull(schema.groupmember.id), isNotNull(schema.programMember.id)),
           ...(nonPathOnly
             ? [
-                eq(schema.course.requiresLearningPath, false),
+                eq(schema.course.enrollOnlyInLearningPath, false),
                 sql`EXISTS (
                   SELECT 1 FROM ${schema.courseEnrollmentGrant} g
                   WHERE g.course_id = ${schema.course.id}
@@ -1228,7 +1238,7 @@ export const getExploreCourses = async ({
       eq(schema.group.organizationId, orgId),
       eq(schema.course.status, 'ACTIVE'),
       eq(schema.course.isPublished, true),
-      eq(schema.course.requiresLearningPath, false),
+      eq(schema.course.enrollOnlyInLearningPath, false),
       isNull(schema.groupmember.id),
       // Mirrors isSelfEnrollmentAllowed in @cio/utils: current key, then the
       // legacy allowNewStudent, then open. `->>` yields NULL for a JSON null,
@@ -1306,6 +1316,32 @@ export async function getOrgIdByCourseId(courseId: string, dbClient: DbOrTxClien
     console.error('getOrgIdByCourseId error:', error);
     throw new Error(
       `Failed to get organization ID for course: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Resolves a course's organization (via its group) together with the course
+ * status, regardless of status. Callers decide what a non-ACTIVE course means;
+ * `getOrgIdByCourseId` stays status-agnostic for stats invalidation.
+ */
+export async function getCourseOrgAndStatus(
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<{ organizationId: string | null; status: string } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ organizationId: schema.group.organizationId, status: schema.course.status })
+      .from(schema.course)
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(eq(schema.course.id, courseId))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getCourseOrgAndStatus error:', error);
+    throw new Error(
+      `Failed to get course organization and status: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -1557,11 +1593,11 @@ export async function lockCourseStatusForAccept(
  * @param courseIds Array of course IDs to filter
  * @returns Array of { courseId, courseTitle, groupId }
  */
-export async function getOrgCourseGroups(orgId: string, courseIds: string[]) {
+export async function getOrgCourseGroups(orgId: string, courseIds: string[], dbClient: DbOrTxClient = db) {
   try {
     if (courseIds.length === 0) return [];
 
-    const rows = await db
+    const rows = await dbClient
       .select({
         courseId: schema.course.id,
         courseTitle: schema.course.title,
@@ -1653,5 +1689,113 @@ export async function getCourseOrgInfo(
   } catch (error) {
     console.error('getCourseOrgInfo error:', error);
     throw new Error(`Failed to get course org info: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export interface GetAddableOrgCoursesOptions {
+  orgId: string;
+  /** When set, only courses this profile has a group membership in (non-admin team members). */
+  memberProfileId?: string;
+  /** Leaves out path-only courses (`enrollOnlyInLearningPath`). */
+  excludePathOnly?: boolean;
+  /** Leaves out courses already linked to this cohort. */
+  excludeCohortId?: string;
+  /** Leaves out courses with an active (not removed) link to this learning path. */
+  excludeLearningPathId?: string;
+  /** Matches title or description, with LIKE wildcards escaped. */
+  search?: string;
+  page: number;
+  limit: number;
+}
+
+export type TAddableOrgCourse = { id: string; title: string; description: string };
+
+/**
+ * Pages the ACTIVE org courses a cohort or learning path can still add.
+ * Exclusions run in SQL so every page is full and `total` counts only
+ * addable courses. Returns the picker fields only, ordered by title then id
+ * so pages never shift.
+ */
+export async function getAddableOrgCourses(
+  options: GetAddableOrgCoursesOptions,
+  dbClient: DbOrTxClient = db
+): Promise<{ items: TAddableOrgCourse[]; total: number }> {
+  try {
+    const conditions = [eq(schema.group.organizationId, options.orgId), eq(schema.course.status, 'ACTIVE')];
+
+    if (options.memberProfileId) {
+      const membership = dbClient
+        .select({ id: schema.groupmember.id })
+        .from(schema.groupmember)
+        .where(
+          and(
+            eq(schema.groupmember.groupId, schema.course.groupId),
+            eq(schema.groupmember.profileId, options.memberProfileId)
+          )
+        );
+      conditions.push(exists(membership));
+    }
+
+    if (options.excludePathOnly) {
+      conditions.push(eq(schema.course.enrollOnlyInLearningPath, false));
+    }
+
+    if (options.excludeCohortId) {
+      const cohortLink = dbClient
+        .select({ id: schema.cohortCourse.id })
+        .from(schema.cohortCourse)
+        .where(
+          and(
+            eq(schema.cohortCourse.cohortId, options.excludeCohortId),
+            eq(schema.cohortCourse.courseId, schema.course.id)
+          )
+        );
+      conditions.push(notExists(cohortLink));
+    }
+
+    if (options.excludeLearningPathId) {
+      const pathLink = dbClient
+        .select({ id: schema.learningPathCourse.id })
+        .from(schema.learningPathCourse)
+        .where(
+          and(
+            eq(schema.learningPathCourse.learningPathId, options.excludeLearningPathId),
+            eq(schema.learningPathCourse.courseId, schema.course.id),
+            isNull(schema.learningPathCourse.removedAt)
+          )
+        );
+      conditions.push(notExists(pathLink));
+    }
+
+    const search = options.search?.trim();
+
+    if (search) {
+      const pattern = toContainsPattern(search);
+      conditions.push(or(ilike(schema.course.title, pattern), ilike(schema.course.description, pattern))!);
+    }
+
+    const whereClause = and(...conditions);
+    const offset = (options.page - 1) * options.limit;
+
+    const [items, [countRow]] = await Promise.all([
+      dbClient
+        .select({ id: schema.course.id, title: schema.course.title, description: schema.course.description })
+        .from(schema.course)
+        .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+        .where(whereClause)
+        .orderBy(asc(schema.course.title), asc(schema.course.id))
+        .limit(options.limit)
+        .offset(offset),
+      dbClient
+        .select({ count: count(schema.course.id) })
+        .from(schema.course)
+        .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+        .where(whereClause)
+    ]);
+
+    return { items, total: Number(countRow?.count ?? 0) };
+  } catch (error) {
+    console.error('getAddableOrgCourses error:', error);
+    throw new Error(`Failed to get addable org courses: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

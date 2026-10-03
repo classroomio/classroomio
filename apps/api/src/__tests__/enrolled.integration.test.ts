@@ -47,20 +47,34 @@ async function seedScenario(tx: DbOrTxClient) {
   const orgId = await insertOrganization(tx, 'Org');
   const otherOrgId = await insertOrganization(tx, 'Other');
 
+  const excelCourse = await insertCourse(tx, orgId, 'Excel', { lessons: 6 });
+  const pythonCourse = await insertCourse(tx, orgId, 'Python', { lessons: 10 });
+  const figmaCourse = await insertCourse(tx, orgId, 'Figma', { lessons: 4 });
+  const liveCourse = await insertCourse(tx, orgId, 'Live', { type: 'LIVE_CLASS', lessons: 2 });
+  const doneCourse = await insertCourse(tx, orgId, 'Done', { lessons: 2 });
+  const safetyCourse = await insertCourse(tx, orgId, 'Safety', { type: 'COMPLIANCE', lessons: 1 });
+  const introCourse = await insertCourse(tx, orgId, 'Intro', { lessons: 1 });
+  const blankCourse = await insertCourse(tx, orgId, 'Blank', { lessons: 0 });
+  const removedCourse = await insertCourse(tx, orgId, 'Removed', { lessons: 1 });
+  const revokedCourse = await insertCourse(tx, orgId, 'Revoked', { lessons: 1 });
+  const deletedCourse = await insertCourse(tx, orgId, 'Deleted', { status: 'DELETED', lessons: 1 });
+  const pathOnlyCourse = await insertCourse(tx, orgId, 'Path-only', { enrollOnlyInLearningPath: true, lessons: 1 });
+  const foreignCourse = await insertCourse(tx, otherOrgId, 'Foreign', { lessons: 1 });
+
   const courses = {
-    excel: await insertCourse(tx, orgId, 'Excel', { lessons: 6 }),
-    python: await insertCourse(tx, orgId, 'Python', { lessons: 10 }),
-    figma: await insertCourse(tx, orgId, 'Figma', { lessons: 4 }),
-    live: await insertCourse(tx, orgId, 'Live', { type: 'LIVE_CLASS', lessons: 2 }),
-    done: await insertCourse(tx, orgId, 'Done', { lessons: 2 }),
-    safety: await insertCourse(tx, orgId, 'Safety', { type: 'COMPLIANCE', lessons: 1 }),
-    intro: await insertCourse(tx, orgId, 'Intro', { lessons: 1 }),
-    blank: await insertCourse(tx, orgId, 'Blank', { lessons: 0 }),
-    removed: await insertCourse(tx, orgId, 'Removed', { lessons: 1 }),
-    revoked: await insertCourse(tx, orgId, 'Revoked', { lessons: 1 }),
-    deleted: await insertCourse(tx, orgId, 'Deleted', { status: 'DELETED', lessons: 1 }),
-    gated: await insertCourse(tx, orgId, 'Gated', { requiresLearningPath: true, lessons: 1 }),
-    foreign: await insertCourse(tx, otherOrgId, 'Foreign', { lessons: 1 })
+    excel: excelCourse,
+    python: pythonCourse,
+    figma: figmaCourse,
+    live: liveCourse,
+    done: doneCourse,
+    safety: safetyCourse,
+    intro: introCourse,
+    blank: blankCourse,
+    removed: removedCourse,
+    revoked: revokedCourse,
+    deleted: deletedCourse,
+    pathOnly: pathOnlyCourse,
+    foreign: foreignCourse
   };
   const members = {} as Record<keyof typeof courses, string>;
   for (const [key, course] of Object.entries(courses) as [keyof typeof courses, (typeof courses)['excel']][]) {
@@ -81,7 +95,7 @@ async function seedScenario(tx: DbOrTxClient) {
   await insertGrant(tx, grant('safety', 'ADMIN_ADD', '2026-09-26T00:00:00Z'));
   await insertGrant(tx, grant('revoked', 'SELF_ENROLL', '2026-02-05T00:00:00Z'), { revokedAt: '2026-03-01T00:00:00Z' });
   await insertGrant(tx, grant('deleted', 'SELF_ENROLL', '2026-02-06T00:00:00Z'));
-  await insertGrant(tx, grant('gated', 'SELF_ENROLL', '2026-02-07T00:00:00Z'));
+  await insertGrant(tx, grant('pathOnly', 'SELF_ENROLL', '2026-02-07T00:00:00Z'));
   await insertGrant(tx, grant('foreign', 'SELF_ENROLL', '2026-02-08T00:00:00Z'));
 
   // Excel: 6/6 lessons and 2/4 exercises. Its latest attempt was created on 18 Sep at 15:00;

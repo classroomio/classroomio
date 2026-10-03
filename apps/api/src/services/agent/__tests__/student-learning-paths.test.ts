@@ -1,16 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  getEnrolledPaths: vi.fn(),
-  listLearningPathCourses: vi.fn(),
-  getCourseCompletionStatsForProfile: vi.fn(),
+  getLearnerPathSummaries: vi.fn(),
   trackAgentEvent: vi.fn()
 }));
 
-vi.mock('@cio/db/queries/learning-path', () => ({
-  getEnrolledPaths: mocks.getEnrolledPaths,
-  listLearningPathCourses: mocks.listLearningPathCourses,
-  getCourseCompletionStatsForProfile: mocks.getCourseCompletionStatsForProfile
+vi.mock('@cio/db/queries/learning-path/journey', () => ({
+  getLearnerPathSummaries: mocks.getLearnerPathSummaries
 }));
 
 vi.mock('@cio/core/utils/tinybird', () => ({
@@ -26,19 +22,18 @@ describe('get_student_learning_paths', () => {
   });
 
   it('returns enrolled paths with progress and the current course', async () => {
-    mocks.getEnrolledPaths.mockResolvedValue([
+    mocks.getLearnerPathSummaries.mockResolvedValue([
       {
-        member: { id: 'm-1', status: 'IN_PROGRESS' },
-        learningPath: { id: 'path-1', publicId: 'AbC123Xy', organizationId: 'org-1', name: 'Path One' }
+        pathId: 'path-1',
+        publicId: 'AbC123Xy',
+        name: 'Path One',
+        memberStatus: 'IN_PROGRESS',
+        courses: [
+          { courseId: 'c-1', title: 'First', order: 0, isComplete: true },
+          { courseId: 'c-2', title: 'Second', order: 1, isComplete: false }
+        ]
       }
     ]);
-    mocks.listLearningPathCourses.mockResolvedValue([
-      { id: 'pc-1', courseId: 'c-1', title: 'First', order: 0 },
-      { id: 'pc-2', courseId: 'c-2', title: 'Second', order: 1 }
-    ]);
-    mocks.getCourseCompletionStatsForProfile
-      .mockResolvedValueOnce({ isComplete: true })
-      .mockResolvedValueOnce({ isComplete: false });
 
     const tools = buildStudentAgentTools('org-1', 'student-1', 'course-9', {} as never);
     const execute = tools.get_student_learning_paths.execute as (args: { limit?: number }) => Promise<unknown>;
@@ -51,7 +46,7 @@ describe('get_student_learning_paths', () => {
       }>;
     };
 
-    expect(mocks.getEnrolledPaths).toHaveBeenCalledWith('student-1', 'org-1');
+    expect(mocks.getLearnerPathSummaries).toHaveBeenCalledWith({ orgId: 'org-1', profileId: 'student-1', limit: 5 });
     expect(result.paths).toHaveLength(1);
     expect(result.paths[0]).toMatchObject({
       pathId: 'path-1',
@@ -62,13 +57,63 @@ describe('get_student_learning_paths', () => {
   });
 
   it('returns no paths when the student is not enrolled anywhere', async () => {
-    mocks.getEnrolledPaths.mockResolvedValue([]);
+    mocks.getLearnerPathSummaries.mockResolvedValue([]);
 
     const tools = buildStudentAgentTools('org-1', 'student-1', 'course-9', {} as never);
     const execute = tools.get_student_learning_paths.execute as (args: { limit?: number }) => Promise<unknown>;
     const result = (await execute({})) as { paths: unknown[] };
 
     expect(result).toEqual({ paths: [] });
-    expect(mocks.listLearningPathCourses).not.toHaveBeenCalled();
+  });
+
+  it('currentCourseId falls back to the last course when all are complete', async () => {
+    mocks.getLearnerPathSummaries.mockResolvedValue([
+      {
+        pathId: 'path-1',
+        publicId: 'AbC123Xy',
+        name: 'Path One',
+        memberStatus: 'COMPLETED',
+        courses: [
+          { courseId: 'c-1', title: 'First', order: 0, isComplete: true },
+          { courseId: 'c-2', title: 'Second', order: 1, isComplete: true }
+        ]
+      }
+    ]);
+
+    const tools = buildStudentAgentTools('org-1', 'student-1', 'course-9', {} as never);
+    const execute = tools.get_student_learning_paths.execute as (args: { limit?: number }) => Promise<unknown>;
+    const result = (await execute({})) as {
+      paths: Array<{ currentCourseId: string | null; progressPercent: number }>;
+    };
+
+    expect(result.paths[0]).toMatchObject({ currentCourseId: 'c-2', progressPercent: 100 });
+  });
+
+  it('reports progress and the current course from the path courses', async () => {
+    const courses = [
+      { courseId: 'c-1', title: 'First', order: 0, isComplete: true },
+      { courseId: 'c-2', title: 'Second', order: 1, isComplete: false },
+      { courseId: 'c-3', title: 'Third', order: 2, isComplete: false }
+    ];
+    mocks.getLearnerPathSummaries.mockResolvedValue([
+      {
+        pathId: 'path-1',
+        publicId: 'AbC123Xy',
+        name: 'Path One',
+        memberStatus: 'IN_PROGRESS',
+        courses
+      }
+    ]);
+
+    const tools = buildStudentAgentTools('org-1', 'student-1', 'course-9', {} as never);
+    const execute = tools.get_student_learning_paths.execute as (args: { limit?: number }) => Promise<unknown>;
+    const result = (await execute({})) as {
+      paths: Array<{ progressPercent: number; currentCourseId: string | null }>;
+    };
+
+    // Fixed values: the DB-backed parity with the journey service lives in
+    // learner-path-summaries.integration.test.ts.
+    expect(result.paths[0].progressPercent).toBe(33);
+    expect(result.paths[0].currentCourseId).toBe('c-2');
   });
 });

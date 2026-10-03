@@ -13,6 +13,7 @@ import type {
   TNewLearningPathMemberCourse
 } from '../../types';
 import { TPathMembersQuery } from '@cio/utils';
+import { toContainsPattern } from '@db/utils/like-pattern';
 
 export interface TLearningPathMemberWithProfile extends TLearningPathMember {
   fullName?: string | null;
@@ -61,6 +62,28 @@ export interface TPathMemberDetail {
 }
 
 /**
+ * ON CONFLICT updates for re-activating a soft-removed member: the cached
+ * progress (status, percent, counts, current course, dates) restarts from
+ * scratch and is recomputed by the progress sync that enrollment schedules.
+ * Issued certificates are kept. Rows that were never removed keep their
+ * cache. Postgres evaluates every SET against the old row, so `removed_at`
+ * here is the value before this upsert clears it.
+ */
+function resetCacheWhenReactivatedSet() {
+  const wasRemoved = sql`${schema.learningPathMember.removedAt} IS NOT NULL`;
+
+  return {
+    status: sql`CASE WHEN ${wasRemoved} THEN 'NOT_STARTED'::"LEARNING_PATH_MEMBER_STATUS" ELSE ${schema.learningPathMember.status} END`,
+    progressPercent: sql`CASE WHEN ${wasRemoved} THEN 0 ELSE ${schema.learningPathMember.progressPercent} END`,
+    completedCourseCount: sql`CASE WHEN ${wasRemoved} THEN 0 ELSE ${schema.learningPathMember.completedCourseCount} END`,
+    currentCourseId: sql`CASE WHEN ${wasRemoved} THEN NULL ELSE ${schema.learningPathMember.currentCourseId} END`,
+    startedAt: sql`CASE WHEN ${wasRemoved} THEN NULL ELSE ${schema.learningPathMember.startedAt} END`,
+    completedAt: sql`CASE WHEN ${wasRemoved} THEN NULL ELSE ${schema.learningPathMember.completedAt} END`,
+    enrolledAt: sql`CASE WHEN ${wasRemoved} THEN NOW() ELSE ${schema.learningPathMember.enrolledAt} END`
+  };
+}
+
+/**
  * Enrolls a member into a learning path. Requires a profile
  * If the member was previously soft-removed, re-enrolling clears removedAt.
  */
@@ -75,6 +98,7 @@ export async function enrollMember(
       .onConflictDoUpdate({
         target: [schema.learningPathMember.learningPathId, schema.learningPathMember.profileId],
         set: {
+          ...resetCacheWhenReactivatedSet(),
           removedAt: null,
           roleId: data.roleId ?? sql`${schema.learningPathMember.roleId}`
         }
@@ -90,6 +114,45 @@ export async function enrollMember(
     console.error('enrollMember error:', error);
     throw new Error(
       `Failed to enroll member in learning path: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Bulk-only member upsert for queued adds. A removal that lands after the
+ * enqueue time wins: the row is left removed and nothing is returned, so the
+ * caller can report REMOVED_SINCE_ENQUEUE instead of resurrecting the member.
+ * Removals from before the enqueue are re-enrolled. An already-active member
+ * keeps their current role.
+ *
+ * @param enqueuedAt ISO timestamp captured when the bulk add was enqueued
+ * @returns The member row, or null when a newer removal stands
+ */
+export async function enrollBulkMember(
+  data: TNewLearningPathMember,
+  enqueuedAt: string,
+  dbClient: DbOrTxClient = db
+): Promise<TLearningPathMember | null> {
+  try {
+    const [member] = await dbClient
+      .insert(schema.learningPathMember)
+      .values(data)
+      .onConflictDoUpdate({
+        target: [schema.learningPathMember.learningPathId, schema.learningPathMember.profileId],
+        set: {
+          ...resetCacheWhenReactivatedSet(),
+          removedAt: null,
+          roleId: sql`CASE WHEN ${schema.learningPathMember.removedAt} IS NULL THEN ${schema.learningPathMember.roleId} ELSE EXCLUDED.role_id END`
+        },
+        setWhere: sql`${schema.learningPathMember.removedAt} IS NULL OR ${schema.learningPathMember.removedAt} < ${enqueuedAt}`
+      })
+      .returning();
+
+    return member ?? null;
+  } catch (error) {
+    console.error('enrollBulkMember error:', error);
+    throw new Error(
+      `Failed to bulk-enroll member in learning path: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }
@@ -193,7 +256,7 @@ export async function getMemberById(
 /**
  * Returns every active (non-removed) member of a path with the fields the
  * course-add backfill needs: row id for progress backfill, profileId/roleId
- * to auto-enroll student profiles into the new course group.
+ * to grant the new course to student profiles.
  * Unpaginated by design — the paginated member list would silently drop
  * members on larger paths. Order is unspecified; callers only need the set.
  */
@@ -282,6 +345,7 @@ export async function listLearningPathMembers(
   try {
     const page = options?.page ?? 1;
     const limit = options?.limit ?? 20;
+    const searchPattern = options?.search ? toContainsPattern(options.search) : '';
 
     const whereConditions = [
       eq(schema.learningPathMember.learningPathId, learningPathId),
@@ -290,9 +354,9 @@ export async function listLearningPathMembers(
       options?.roleId !== undefined ? eq(schema.learningPathMember.roleId, options.roleId) : undefined,
       options?.search
         ? or(
-            ilike(schema.profile.fullname, `%${options.search}%`),
-            ilike(schema.profile.email, `%${options.search}%`),
-            ilike(schema.learningPathMember.email, `%${options.search}%`)
+            ilike(schema.profile.fullname, searchPattern),
+            ilike(schema.profile.email, searchPattern),
+            ilike(schema.learningPathMember.email, searchPattern)
           )
         : undefined
     ];
@@ -498,56 +562,34 @@ export async function removeMember(memberId: string, dbClient: DbOrTxClient = db
 }
 
 /**
- * Returns learning paths that the given profile is actively enrolled in, optionally filtered by organization.
- */
-export async function getEnrolledPaths(
-  profileId: string,
-  organizationId?: string,
-  dbClient: DbOrTxClient = db
-): Promise<TEnrolledLearningPath[]> {
-  try {
-    const whereConditions = [
-      eq(schema.learningPathMember.profileId, profileId),
-      isNull(schema.learningPathMember.removedAt),
-      eq(schema.learningPath.status, 'ACTIVE')
-    ];
-
-    if (organizationId) {
-      whereConditions.push(eq(schema.learningPath.organizationId, organizationId));
-    }
-
-    const rows = await dbClient
-      .select({
-        member: schema.learningPathMember,
-        learningPath: schema.learningPath
-      })
-      .from(schema.learningPathMember)
-      .innerJoin(schema.learningPath, eq(schema.learningPathMember.learningPathId, schema.learningPath.id))
-      .where(and(...whereConditions))
-      .orderBy(desc(schema.learningPathMember.enrolledAt));
-
-    return rows;
-  } catch (error) {
-    console.error('getEnrolledPaths error:', error);
-    throw new Error(
-      `Failed to get enrolled paths for profile "${profileId}": ${error instanceof Error ? error.message : 'Unknown error'}`
-    );
-  }
-}
-
-/**
- * Updates a member's role in a learning path.
+ * Updates an active member's role in a learning path. Scoped to the path when
+ * `learningPathId` is given; with `expectedRoleId` it only updates while the
+ * stored role still matches (returns null otherwise).
  */
 export async function updateMemberRole(
   memberId: string,
   roleId: number,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  learningPathId?: string,
+  expectedRoleId?: number
 ): Promise<TLearningPathMember | null> {
   try {
+    const conditions = [eq(schema.learningPathMember.id, memberId), isNull(schema.learningPathMember.removedAt)];
+
+    if (learningPathId) {
+      conditions.push(eq(schema.learningPathMember.learningPathId, learningPathId));
+    }
+
+    // Compare-and-set: a concurrent role change makes this a no-op instead of
+    // letting the caller apply grants decided from a stale role.
+    if (expectedRoleId !== undefined) {
+      conditions.push(eq(schema.learningPathMember.roleId, expectedRoleId));
+    }
+
     const [updated] = await dbClient
       .update(schema.learningPathMember)
       .set({ roleId })
-      .where(eq(schema.learningPathMember.id, memberId))
+      .where(and(...conditions))
       .returning();
 
     return updated || null;
@@ -573,6 +615,7 @@ type TMemberProgressUpdate = Pick<
   | 'lastActivityAt'
 >;
 
+/** Patches a member's progress cache (status, percents, current course, activity). */
 export async function updateMemberProgress(
   memberId: string,
   data: Partial<TMemberProgressUpdate>,
