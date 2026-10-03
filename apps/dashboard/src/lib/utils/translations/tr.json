@@ -479,7 +479,7 @@
       "auth_tab": "Kimlik Doğrulama",
       "sso_tab": "SSO",
       "token_auth_tab": "Token Kimlik Doğrulaması",
-      "customize_lms_tab": "LMS",
+      "customize_lms_tab": "Customize LMS",
       "domains_tab": "Domains",
       "teams_tab": "Teams"
     },
@@ -1316,7 +1316,7 @@
       "slot_type": {
         "lesson_video": "Lders videosu",
         "lesson_document": "Lders belgesi",
-        "unknown": "Ek"
+        "unknown": "Attachment"
       },
       "table": {
         "target_type": "Hedef Türü",
@@ -1451,7 +1451,7 @@
     },
     "modal": {
       "heading": "Yükseltme Planı",
-      "thanks": "destek",
+      "thanks": "Thank you for your support",
       "plan": "Planınız, gelecekte yayınlayacağımız tüm özelliklere erişim de dahil olmak üzere harika avantajlar ve avantajlarla birlikte gelir.",
       "save": "2 ay tasarruf edin",
       "close": "Kapat",
@@ -2102,7 +2102,7 @@
           "form_title": "Bize ilk katılım hedeflerinizi anlatın"
         },
         "expert_on_x": {
-          "title": "X",
+          "title": "Become an Expert on X",
           "description": "Öğrencileri belirli bir konu veya alanda uzmanlara dönüştüren derinlemesine bir kurs.",
           "form_title": "Bize konuyu anlatın"
         },
@@ -2621,7 +2621,7 @@
                 "add_video_failed": "Video eklenemedi. Lütfen tekrar deneyin.",
                 "some_videos_failed": "Bazı videolar eklenemedi. Lütfen tekrar deneyin.",
                 "vimeo_privacy_hint_prefix": "Alan adı ile kısıtlı videolar için, Vimeo gizlilik ayarlarına",
-                "vimeo_privacy_hint_suffix": "ekleyin.",
+                "vimeo_privacy_hint_suffix": "to Vimeo privacy settings.",
                 "vimeo_privacy_error_title": "Yerleştirme Vimeo gizlilik ayarları tarafından kısıtlanmıştır",
                 "vimeo_privacy_error_description": "Playback, Vimeo gizlilik ayarları tarafından engellendi. Kontrol edilmesi gereken olası nedenler şunlardır:",
                 "vimeo_privacy_error_unlisted_hint": "Listelenmemiş video bağlantısının gizlilik anahtarı (karma) eksik olabilir",
@@ -2937,7 +2937,7 @@
               "try_again": "Tekrar dene",
               "no_question": "Bu alıştırma için soru eklenmedi",
               "empty_description": "Eklemek için Düzenle düğmesini tıklayın.",
-              "empty_edit_hint_prefix": "",
+              "empty_edit_hint_prefix": "Click the ",
               "empty_edit_hint_suffix": "eklemek için düğme.",
               "answers_required": "Lütfen göndermeden önce en az bir yanıt verin.",
               "answer_required": "Lütfen devam etmeden önce bu soruyu yanıtlayın.",
@@ -3416,7 +3416,7 @@
           "allocated": "Bu puanı tahsis etti çünkü",
           "total_try": "toplam denemelerden:",
           "options_correct": "doğru seçenekler seçildi",
-          "out_of": "",
+          "out_of": "out of",
           "options_wrong": "ve yanlış seçimlerin sayısı",
           "questions_tried": "Bunu tahsis etti toplam deneme nedeniyle puan:",
           "delete_prompt": "Delete",
@@ -4029,7 +4029,7 @@
           "next": "Sonraki",
           "back_to_settings": "Ayarlara Geri Dön",
           "complete_conversion": "Tam Genel Dönüşüm",
-          "jump_to": "",
+          "jump_to": "Jump to",
           "question_fallback": "Soruya Git {number}",
           "question_count_singular": "{count} soru",
           "question_count_plural": "{count} sorular",
@@ -4769,7 +4769,7 @@
         "add": "Yeni feed başarıyla eklendi"
       },
       "error": {
-        "error": "",
+        "error": "An error occurred while",
         "editing": "feed düzenlenirken bir hata oluştu",
         "creating": "feed oluşturulurken"
       }
@@ -5337,11 +5337,11 @@
         "fetch_documentation_url": "Read {url}",
         "list_youtube_playlist_videos": "{count} videolarını şu adreste buldu: oynatma listesi",
         "list_youtube_playlist_videos_unavailable": "Çalma listesi videoları listelenemedi",
-        "get_lesson_transcript": "{title}",
+        "get_lesson_transcript": "Read the transcript for {title}",
         "get_lesson_transcript_fetching": "Fetching the transcript for {title}",
         "get_lesson_transcript_plan_gated": "Transkriptler ücretli bir plan gerektirir",
         "get_lesson_transcript_no_credits": "Transkriptleri getirmek için AI kredisi bitti",
-        "get_lesson_transcript_unavailable": "{title}",
+        "get_lesson_transcript_unavailable": "No transcript available for {title}",
         "add_youtube_video_to_lesson": "Gömülü video: {title}"
       }
     },
@@ -5712,7 +5712,7 @@
       "certificate": "Sertifika etkin",
       "deadline": "Son tarih {date}",
       "threshold": "Kursun %{percent}'ini tamamlayın",
-      "final_exercise": "{percent}%",
+      "final_exercise": "Pass “{title}” at {percent}%",
       "sequential": "Lessons unlock in order",
       "grading": "A öğretmen gönderimlere not verir",
       "comments_off": "Lders yorumları kapalı",
@@ -5791,7 +5791,7 @@
       "custom_value": "Custom",
       "selected": "{count, plural, bir {# selected} diğer {# selected}}",
       "pull": "Pull {count, plural, bir {# change} diğer {# changes}}",
-      "pulled": "{title}",
+      "pulled": "Pulled {count, plural, one {# change} other {# changes}} from {title}",
       "kind": {
         "section": "Section",
         "lesson": "Lesson",
