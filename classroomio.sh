@@ -503,13 +503,18 @@ install_has_run_before() {
     docker inspect cio-postgres >/dev/null 2>&1 || docker inspect cio-minio >/dev/null 2>&1
 }
 
-# rclone --combined: "+" missing in the new store, "!" unreadable, "*" differs (kept, not an error).
+# rclone --combined: "+" missing in the new store, "!" unreadable, "*" differs.
+# "*" is only legitimate on a forced re-run, where the app may have changed objects since.
 copy_report_ok() {
-  local check_ok="$1" report="$2"
+  local check_ok="$1" report="$2" allow_changed="$3"
   if grep -q '^[+!] ' <<<"${report}"; then
     return 1
   fi
-  [[ "${check_ok}" == "true" ]] || grep -q '^\* ' <<<"${report}"
+  if grep -q '^\* ' <<<"${report}"; then
+    [[ "${allow_changed}" == "true" ]]
+    return
+  fi
+  [[ "${check_ok}" == "true" ]]
 }
 
 app_is_seaweedfs_ready() {
@@ -590,14 +595,18 @@ migrate_legacy_minio_data() {
     # --ignore-existing: a repeat run never overwrites or deletes what is already in the new store.
     local report="" check_ok=true changed
     if run_rclone copy --ignore-existing --stats 30s --stats-one-line --stats-log-level NOTICE "src:${bucket}" "dst:${bucket}"; then
-      report="$(run_rclone check --one-way --combined - "src:${bucket}" "dst:${bucket}" 2>/dev/null)" || check_ok=false
+      echo "  ${bucket}: verifying every object byte for byte (reads the data once more)..."
+      # --download compares contents, so objects without a comparable hash aren't checked by size alone.
+      report="$(run_rclone check --one-way --download --combined - "src:${bucket}" "dst:${bucket}" 2>/dev/null)" || check_ok=false
     else
       check_ok=false
     fi
     changed="$(grep -c '^\* ' <<<"${report}" || true)"
-    if ! copy_report_ok "${check_ok}" "${report}"; then
-      echo "Error: copying bucket '${bucket}' failed. Nothing was deleted or overwritten — fix the"
-      echo "  problem and re-run: ./classroomio.sh migrate-storage"
+    if ! copy_report_ok "${check_ok}" "${report}" "$([[ "${MINIO_MIGRATION_FORCE:-}" == "1" ]] && echo true)"; then
+      echo "Error: bucket '${bucket}' did not verify against the old copy. Nothing was deleted or"
+      echo "  overwritten. Objects reported as different must be removed from the new store before"
+      echo "  re-running: ./classroomio.sh migrate-storage"
+      grep -E '^[+!*] ' <<<"${report}" | head -20 | sed 's/^/    /' || true
       docker rm -f cio-minio-legacy >/dev/null 2>&1 || true
       return 1
     fi

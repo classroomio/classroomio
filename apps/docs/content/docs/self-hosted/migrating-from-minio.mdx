@@ -42,9 +42,9 @@ The upgrade does this for you, in order:
 2. Replaces a `docker-compose.images.yaml` that still references MinIO. Your copy is kept as
    `docker-compose.images.yaml.bak`; re-apply any local edits to the new file.
 3. Starts the new `storage` service and creates the buckets.
-4. Copies the `videos`, `documents` and `media` buckets from the old data and checks every object.
-   It never deletes or overwrites anything already in the new store, and stops if any object is
-   missing or unreadable.
+4. Stops the app, copies the `videos`, `documents` and `media` buckets from the old data, and
+   compares every object byte for byte. It never deletes or overwrites anything already in the new
+   store, and stops if any object is missing, unreadable or different.
 5. Sets `OBJECT_STORAGE_ENDPOINT=http://storage:9000` in `.env` and restarts the stack.
 
 To run only the copy, without pulling new images, use `./classroomio.sh migrate-storage`. Once the
@@ -69,10 +69,16 @@ volume or path no longer exists. If there really is nothing to copy, set `MINIO_
 
 Use this on Coolify, Dokploy, or plain Docker Compose, where the script isn't running the stack.
 
-**1. Deploy the new compose file** so the `storage` service is running, with `COMPOSE_PROFILES=storage`
-and a new `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` pair.
+**1. Stop the app.** Stop the `api`, `dashboard` and `jobs` services (in Coolify or Dokploy, stop
+those services; with Compose, `docker compose stop api dashboard jobs`). Keep them stopped until
+step 6: an upload made after the copy would otherwise exist only in the old store and be lost at
+cutover.
 
-**2. Start a temporary server on the old volume:**
+**2. Deploy the new compose file** so the `storage` service is running, with `COMPOSE_PROFILES=storage`
+and a new `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` pair. Don't start the
+app services yet.
+
+**3. Start a temporary server on the old volume:**
 
 ```zsh title="Terminal"
 docker run -d --name minio-legacy --network <compose-network> \
@@ -80,7 +86,7 @@ docker run -d --name minio-legacy --network <compose-network> \
   -v <old minio volume>:/data pgsty/silo:RELEASE.2026-09-16T00-00-00Z server /data
 ```
 
-**3. Copy each bucket:**
+**4. Copy each bucket:**
 
 ```zsh title="Terminal"
 for b in videos documents media; do
@@ -95,32 +101,33 @@ for b in videos documents media; do
 done
 ```
 
-**4. Verify before switching.** Run the same command as step 3, replacing the last line with:
+**5. Verify before switching.** Run the same command as step 4, replacing the last line with:
 
 ```zsh title="Terminal"
-    rclone/rclone check --one-way --combined - src:$b dst:$b
+    rclone/rclone check --one-way --download --combined - src:$b dst:$b
 ```
 
-Each line starts with a symbol:
+`--download` compares every object byte for byte, so it reads all the data once more. Each line
+starts with a symbol:
 
 | Symbol | Meaning | What to do |
 |---|---|---|
 | `=` | Identical in both stores | Nothing |
-| `+` | Missing from the new store | Re-run step 3 |
-| `!` | Could not be read | Fix the cause (credentials, disk, network), then re-run step 3 |
-| `*` | Different in the new store | Expected only for files the app changed after an earlier copy: keep those. Otherwise delete that object from the new store and re-run step 3 |
+| `+` | Missing from the new store | Re-run step 4 |
+| `!` | Could not be read | Fix the cause (credentials, disk, network), then re-run step 4 |
+| `*` | Different in the new store | Unexpected while the app is stopped: delete that object from the new store, then re-run step 4 |
 
-Only switch over when no `+` or `!` lines remain.
+Only continue when every line starts with `=`.
 
-**5. Clean up and switch over:**
+**6. Switch over, then start the app:**
 
 ```zsh title="Terminal"
 docker rm -f minio-legacy
 ```
 
-Set `OBJECT_STORAGE_ENDPOINT=http://storage:9000`, remove the `MINIO_*` variables, and redeploy.
-Don't run the copy again after this: the old data is stale, and copying it would bring back files
-deleted since.
+Set `OBJECT_STORAGE_ENDPOINT=http://storage:9000`, remove the `MINIO_*` variables, and redeploy,
+which starts the app services again. Don't run the copy again after this: the old data is stale,
+and copying it would bring back files deleted since.
 
 ## What changed
 
