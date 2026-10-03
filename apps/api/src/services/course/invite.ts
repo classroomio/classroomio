@@ -12,7 +12,7 @@ import {
   selectCourseInviteAcceptBundleByTokenHash
 } from '@cio/db/queries/course/invite';
 import { createOrganizationMember, getOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
-import { addGroupMember, getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { addGroupMember, getGroupMemberByGroupAndProfile } from '@cio/db/queries/group';
 import {
   getCourseById,
   getCourseWithOrgData,
@@ -38,7 +38,7 @@ import { getProfileByEmail, markUserAndProfileEmailVerified } from '@cio/db/quer
 import { generateSlug } from '@cio/utils/functions';
 import { ensureComplianceEnrollmentRecordsForProfiles } from './compliance';
 import { recordDirectCourseGrant } from './enrollment-grants';
-import { assertCourseNotPathGated } from './path-gate';
+import { assertCourseNotPathOnly } from './path-gate';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
 import { getWelcomeSessionIcs } from './session-invite';
@@ -513,9 +513,9 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
     throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
   }
 
-  // Acceptance already rejects path-gated courses; refuse the invite up front
+  // Acceptance already rejects path-only courses; refuse the invite up front
   // so no learner receives a link that can never work.
-  assertCourseNotPathGated(course[0]);
+  assertCourseNotPathOnly(course[0]);
 
   const courseOrgData = await getCourseWithOrgData(courseId);
   if (!courseOrgData) {
@@ -667,7 +667,7 @@ export async function enrollInCourse(
     throw new AppError('This course is not available for enrollment', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  assertCourseNotPathGated(courseWithRelations);
+  assertCourseNotPathOnly(courseWithRelations);
 
   const courseMetadata =
     (courseWithRelations.metadata as {
@@ -693,9 +693,58 @@ export async function enrollInCourse(
 
   const normalizedEmail = user.email.toLowerCase().trim();
 
-  const existingMemberId = await getGroupMemberIdByGroupAndProfile(groupId, user.id);
+  const { alreadyJoined } = await db.transaction(async (tx) => {
+    const existingMember = await getGroupMemberByGroupAndProfile(groupId, user.id, tx);
 
-  if (existingMemberId) {
+    if (existingMember) {
+      if (existingMember.roleId === ROLE.STUDENT) {
+        await recordDirectCourseGrant(
+          { groupmemberId: existingMember.id, courseId, profileId: user.id },
+          { source: 'SELF_ENROLL' },
+          tx
+        );
+      }
+
+      return { alreadyJoined: true };
+    }
+
+    if (!orgMemberId) {
+      await assertStudentCapacityOrThrow(org.id, 1, tx);
+
+      await createOrganizationMember(
+        {
+          organizationId: org.id,
+          roleId: ROLE.STUDENT,
+          profileId: user.id,
+          email: normalizedEmail,
+          verified: true
+        },
+        tx
+      );
+    }
+
+    const [createdMember] = await addGroupMember(
+      {
+        groupId,
+        roleId: ROLE.STUDENT,
+        profileId: user.id,
+        email: normalizedEmail
+      },
+      tx
+    );
+
+    if (createdMember) {
+      await recordDirectCourseGrant(
+        { groupmemberId: createdMember.id, courseId, profileId: user.id },
+        { source: 'SELF_ENROLL' },
+        tx
+      );
+    }
+
+    return { alreadyJoined: false };
+  });
+
+  if (alreadyJoined) {
     await ensureComplianceEnrollmentRecordsForProfiles([courseId], [user.id]);
 
     return {
@@ -703,32 +752,6 @@ export async function enrollInCourse(
       alreadyJoined: true,
       redirectTo: `/courses/${courseId}/lessons?next=true`
     };
-  }
-
-  if (!orgMemberId) {
-    await assertStudentCapacityOrThrow(org.id, 1);
-
-    await createOrganizationMember({
-      organizationId: org.id,
-      roleId: ROLE.STUDENT,
-      profileId: user.id,
-      email: normalizedEmail,
-      verified: true
-    });
-  }
-
-  const [createdMember] = await addGroupMember({
-    groupId,
-    roleId: ROLE.STUDENT,
-    profileId: user.id,
-    email: normalizedEmail
-  });
-
-  if (createdMember) {
-    await recordDirectCourseGrant(
-      { groupmemberId: createdMember.id, courseId, profileId: user.id },
-      { source: 'SELF_ENROLL' }
-    );
   }
 
   await invalidateOrgStats(org.id);
@@ -973,7 +996,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
 
     const { invite, course, organization } = inviteRow;
 
-    assertCourseNotPathGated(course);
+    assertCourseNotPathOnly(course);
 
     const sinceIso = new Date(Date.now() - ANOMALY_WINDOW_MINUTES * 60 * 1000).toISOString();
     const ipDiversity = await countInviteDistinctPreviewIps(invite.id, sinceIso);
@@ -992,9 +1015,17 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
     }
 
     // Idempotent behavior: if user is already enrolled, don't consume invite again.
-    const existingMemberId = await getGroupMemberIdByGroupAndProfile(course.groupId, user.id, tx);
+    const existingMember = await getGroupMemberByGroupAndProfile(course.groupId, user.id, tx);
 
-    if (existingMemberId) {
+    if (existingMember) {
+      if (existingMember.roleId === ROLE.STUDENT) {
+        await recordDirectCourseGrant(
+          { groupmemberId: existingMember.id, courseId: course.id, profileId: user.id },
+          { source: 'INVITE', grantedByProfileId: invite.createdByProfileId ?? undefined },
+          tx
+        );
+      }
+
       await markUserAndProfileEmailVerified(user.id, tx);
 
       await recordInviteAudit(invite.id, invite.courseId, 'ACCEPTED', {

@@ -179,6 +179,43 @@ export function getSharedRedisConnection(): Redis {
 }
 
 /**
+ * Waits until the shared Redis connection is ready, up to `timeoutMs`.
+ * Returns true immediately when already ready, otherwise races the `ready`
+ * event against the timeout. Returns false when Redis is not configured or
+ * the timeout elapses first.
+ */
+export async function waitForRedisReady(timeoutMs = 2000): Promise<boolean> {
+  let connection: Redis;
+
+  try {
+    connection = getSharedRedisConnection();
+  } catch {
+    return false;
+  }
+
+  if (connection.status === 'ready') {
+    return true;
+  }
+
+  return await new Promise<boolean>((resolve) => {
+    const cleanup = () => {
+      clearTimeout(timer);
+      connection.off('ready', onReady);
+    };
+    const timer = setTimeout(() => {
+      cleanup();
+      resolve(false);
+    }, timeoutMs);
+    const onReady = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    connection.once('ready', onReady);
+  });
+}
+
+/**
  * Returns true when `REDIS_URL` is set. Useful for graceful enqueue fallbacks
  * during local development without Redis.
  */

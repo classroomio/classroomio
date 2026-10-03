@@ -1,0 +1,41 @@
+function parseInviteIds(metadata: unknown, keys: string[]): string[] {
+  let obj: Record<string, unknown> | null = null;
+  if (metadata == null) {
+    return [];
+  }
+  if (typeof metadata === 'string') {
+    try {
+      const parsed = JSON.parse(metadata) as unknown;
+      obj = typeof parsed === 'object' && parsed !== null ? (parsed as Record<string, unknown>) : null;
+    } catch {
+      return [];
+    }
+  } else if (typeof metadata === 'object') {
+    obj = metadata as Record<string, unknown>;
+  }
+  if (!obj) {
+    return [];
+  }
+
+  const raw = keys.map((key) => obj[key]).find((value) => value !== undefined);
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+
+  return raw.filter((id): id is string => typeof id === 'string' && id.length > 0);
+}
+
+/** Normalize JSONB organization-invite metadata for course ids (matches importAudienceMembers storage). */
+export function parseCourseIdsFromInviteMetadata(metadata: unknown): string[] {
+  return parseInviteIds(metadata, ['courseIds', 'course_ids']);
+}
+
+/** Normalize JSONB organization-invite metadata for cohort ids (legacy `programIds` supported). */
+export function parseCohortIdsFromInviteMetadata(metadata: unknown): string[] {
+  return parseInviteIds(metadata, ['cohortIds', 'cohort_ids', 'programIds', 'program_ids']);
+}
+
+/** Normalize JSONB organization-invite metadata for learning path ids. */
+export function parsePathIdsFromInviteMetadata(metadata: unknown): string[] {
+  return parseInviteIds(metadata, ['pathIds', 'path_ids', 'learningPathIds', 'learning_path_ids']);
+}

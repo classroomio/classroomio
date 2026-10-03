@@ -4,6 +4,7 @@ import { db, type DbOrTxClient } from '@db/drizzle';
 
 import * as schema from '../../schema';
 import type { TCourseEnrollmentGrant, TNewCourseEnrollmentGrant } from '../../types';
+import { ROLE } from '@cio/utils/constants';
 import { normalizeBackfillOrgId } from '../backfill';
 
 /**
@@ -75,8 +76,9 @@ async function revokeActiveGrants(where: SQL | undefined, dbClient: DbOrTxClient
 
 /**
  * Revokes every active grant for one groupmember row, regardless of source.
- * Called when the membership itself is deleted so the ledger cannot claim
- * access that no longer exists.
+ * Deleting a membership cascades to its grants via ON DELETE CASCADE, so this
+ * is defensive only for soft removals (role changes away from STUDENT) where
+ * the row survives. Call it BEFORE the delete when the row is being removed.
  */
 export async function revokeGrantsForGroupmember(groupmemberId: string, dbClient: DbOrTxClient = db): Promise<void> {
   try {
@@ -337,15 +339,26 @@ export async function getActivePathGrantsForCourseAndProfile(
   }
 }
 
-function extractInsertedRowCount(completed: unknown): number {
-  const rows = (completed as { rows?: unknown[] }).rows;
+/** Normalizes a driver result to rows: postgres-js returns an array, node-postgres `{ rows }`. */
+function toRowArray(completed: unknown): unknown[] {
+  if (Array.isArray(completed)) {
+    return completed;
+  }
 
-  return Array.isArray(rows) ? rows.length : 0;
+  const rows = (completed as { rows?: unknown }).rows;
+
+  return Array.isArray(rows) ? rows : [];
 }
 
+/** Row count of an `INSERT … RETURNING id` result, either driver shape. */
+function extractInsertedRowCount(completed: unknown): number {
+  return toRowArray(completed).length;
+}
+
+/** Reads the `total` of a `count(*)` result (number or numeric string), either driver shape. */
 function extractTotalCount(completed: unknown): number {
-  const rows = (completed as { rows?: Array<{ total?: unknown }> }).rows;
-  const total = rows?.[0]?.total;
+  const rows = toRowArray(completed) as Array<{ total?: unknown }>;
+  const total = rows[0]?.total;
 
   return typeof total === 'number' ? total : Number(total ?? 0);
 }
@@ -355,8 +368,9 @@ function extractTotalCount(completed: unknown): number {
  *
  * Existing course enrollments only have `groupmember` rows, so any check
  * requiring a grant would fail for them. Inserts one `IMPORT` grant per
- * groupmember row that has none. Idempotent by construction (the anti-join
- * skips rows that already have a grant), so re-running is always safe.
+ * STUDENT groupmember row that has none. Staff (tutor/admin) access is
+ * role-based and intentionally grant-less. Idempotent by construction (the
+ * anti-join skips rows that already have a grant), so re-running is always safe.
  *
  * Intended to run inside the merge-time migration (or via
  * `pnpm db:backfill-course-enrollment-grants`), not on any hot path.
@@ -379,6 +393,7 @@ export async function backfillMissingCourseEnrollmentGrants(
       ${groupJoin}
       LEFT JOIN course_enrollment_grant ceg ON ceg.groupmember_id = gm.id
       WHERE ceg.id IS NULL
+        AND gm.role_id = ${ROLE.STUDENT}
       ${orgFilter}
       RETURNING id
     `);
@@ -393,7 +408,7 @@ export async function backfillMissingCourseEnrollmentGrants(
 }
 
 /**
- * Counts groupmember rows that still lack any enrollment grant.
+ * Counts STUDENT groupmember rows that still lack any enrollment grant.
  * Used for dry runs before {@link backfillMissingCourseEnrollmentGrants}.
  */
 export async function countMissingCourseEnrollmentGrants(
@@ -412,6 +427,7 @@ export async function countMissingCourseEnrollmentGrants(
       ${groupJoin}
       LEFT JOIN course_enrollment_grant ceg ON ceg.groupmember_id = gm.id
       WHERE ceg.id IS NULL
+        AND gm.role_id = ${ROLE.STUDENT}
       ${orgFilter}
     `);
 
@@ -460,6 +476,7 @@ export async function bulkInsertDirectCourseGrants(
       WHERE gm.group_id = ANY(${sql.param(input.groupIds)}::uuid[])
         AND gm.profile_id = ANY(${sql.param(input.profileIds)}::uuid[])
         AND c.id = ANY(${sql.param(input.courseIds)}::uuid[])
+        AND gm.role_id = ${ROLE.STUDENT}
       ON CONFLICT (groupmember_id, course_id, source, cohort_id, learning_path_id) DO NOTHING
       RETURNING id
     `);
@@ -475,7 +492,8 @@ export async function bulkInsertDirectCourseGrants(
 
 /**
  * Derives `COHORT` grants for cohort-driven enrollments that predate the
- * grant ledger, from cohort membership crossed with cohort courses.
+ * grant ledger, from cohort membership crossed with cohort courses. Only
+ * STUDENT groupmember rows are backfilled; staff access is role-based.
  *
  * Run BEFORE the generic `IMPORT` backfill so cohort history keeps its true
  * source instead of being masked as an import. Idempotent by construction.
@@ -499,6 +517,7 @@ export async function backfillCohortCourseEnrollmentGrants(
       INNER JOIN groupmember gm ON gm.group_id = c.group_id AND gm.profile_id = cm.profile_id
       LEFT JOIN course_enrollment_grant ceg ON ceg.groupmember_id = gm.id
       WHERE cm.profile_id IS NOT NULL
+        AND gm.role_id = ${ROLE.STUDENT}
         AND ceg.id IS NULL
       ${orgFilter}
       RETURNING id
@@ -514,7 +533,7 @@ export async function backfillCohortCourseEnrollmentGrants(
 }
 
 /**
- * Counts cohort-driven enrollments still missing a grant.
+ * Counts cohort-driven STUDENT enrollments still missing a grant.
  * Used for dry runs before {@link backfillCohortCourseEnrollmentGrants}.
  */
 export async function countMissingCohortCourseEnrollmentGrants(
@@ -534,6 +553,7 @@ export async function countMissingCohortCourseEnrollmentGrants(
       INNER JOIN groupmember gm ON gm.group_id = c.group_id AND gm.profile_id = cm.profile_id
       LEFT JOIN course_enrollment_grant ceg ON ceg.groupmember_id = gm.id
       WHERE cm.profile_id IS NOT NULL
+        AND gm.role_id = ${ROLE.STUDENT}
         AND ceg.id IS NULL
       ${orgFilter}
     `);

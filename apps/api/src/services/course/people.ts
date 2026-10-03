@@ -482,22 +482,59 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
  * @param data Partial member data to update
  * @returns Updated member
  */
-export async function updateMember(courseId: string, memberId: string, data: Partial<TGroupmember>) {
+export async function updateMember(
+  courseId: string,
+  memberId: string,
+  data: Partial<TGroupmember>,
+  actorProfileId?: string
+) {
   try {
     const existingMember = await getCourseMember(courseId, memberId);
     if (!existingMember) {
       throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
     }
 
-    const updated = await updateCourseMember(courseId, memberId, data);
-    if (!updated) {
-      throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
-    }
-
     const previousRoleId = existingMember.roleId;
     const nextRoleId = data.roleId ?? previousRoleId;
-    const studentRoleChanged =
-      data.roleId !== undefined && (previousRoleId === ROLE.STUDENT || nextRoleId === ROLE.STUDENT);
+    const becameStudent = data.roleId !== undefined && previousRoleId !== ROLE.STUDENT && nextRoleId === ROLE.STUDENT;
+    const leftStudent = data.roleId !== undefined && previousRoleId === ROLE.STUDENT && nextRoleId !== ROLE.STUDENT;
+    const studentRoleChanged = becameStudent || leftStudent;
+
+    const updated = await db.transaction(async (tx) => {
+      // Only applies while the role is still the one the grant decision was
+      // based on; a concurrent change surfaces as 409 instead of a stale grant.
+      const expectedRoleId = data.roleId !== undefined ? previousRoleId : undefined;
+      const next = await updateCourseMember(courseId, memberId, data, tx, expectedRoleId);
+
+      if (!next) {
+        const current = await getCourseMember(courseId, memberId, tx);
+
+        if (!current) {
+          throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
+        }
+
+        throw new AppError(
+          "This member's role changed while you were editing. Refresh and try again.",
+          ErrorCodes.CONFLICT,
+          409
+        );
+      }
+
+      if (becameStudent) {
+        await assertCourseAllowsDirectStudentAdd(courseId, tx);
+        await recordDirectCourseGrant(
+          { groupmemberId: next.id, courseId, profileId: next.profileId },
+          { source: 'ADMIN_ADD', grantedByProfileId: actorProfileId },
+          tx
+        );
+      }
+
+      if (leftStudent) {
+        await revokeGrantsForGroupmember(next.id, tx);
+      }
+
+      return next;
+    });
 
     if (studentRoleChanged) {
       const statsOrgId = await getOrgIdByCourseId(courseId);
@@ -526,13 +563,17 @@ export async function updateMember(courseId: string, memberId: string, data: Par
 export async function deleteMember(courseId: string, memberId: string) {
   try {
     const deleted = await db.transaction(async (tx) => {
-      const removed = await deleteCourseMember(courseId, memberId, tx);
+      const existing = await getCourseMember(courseId, memberId, tx);
 
-      if (!removed) {
+      if (!existing) {
         return null;
       }
 
-      await revokeGrantsForGroupmember(removed.id, tx);
+      // Defensive only: deleting the membership cascades to its grants via
+      // ON DELETE CASCADE. Revoke first so a missing cascade still cannot
+      // leave a live grant behind.
+      await revokeGrantsForGroupmember(existing.id, tx);
+      const removed = await deleteCourseMember(courseId, memberId, tx);
 
       return removed;
     });

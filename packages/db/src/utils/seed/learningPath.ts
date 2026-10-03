@@ -1393,7 +1393,6 @@ function buildPathInsertValues(pathSeed: PathSeed, testOrgId: string, now: Date)
     currency: 'USD',
     sequentialUnlock: pathSeed.sequentialUnlock,
     selfEnrollment: true,
-    autoEnroll: true,
     certificate: {
       isDownloadable: pathSeed.certificateTitle !== null,
       theme: pathSeed.certificateTitle ? 'classique' : undefined,
@@ -2210,8 +2209,8 @@ export async function seedLearningPaths({
   // 2. Path-gate the entry course of the sequential path
   await db
     .update(course)
-    .set({ requiresLearningPath: true })
-    .where(and(eq(course.id, mvcCourseId), eq(course.requiresLearningPath, false)));
+    .set({ enrollOnlyInLearningPath: true })
+    .where(and(eq(course.id, mvcCourseId), eq(course.enrollOnlyInLearningPath, false)));
 
   // 3. Persona accounts and their progress truth data
   for (const persona of PERSONAS) {
@@ -2664,7 +2663,6 @@ async function seedMinimalPath(plan: MinimalPathPlan, now: Date) {
       currency: 'USD',
       sequentialUnlock: plan.sequentialUnlock,
       selfEnrollment: true,
-      autoEnroll: true,
       certificate: {
         isDownloadable: false,
         design: {}

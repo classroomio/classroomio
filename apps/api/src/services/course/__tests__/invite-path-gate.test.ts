@@ -14,13 +14,13 @@ vi.mock('@cio/db/queries/course', async (importOriginal) => ({
 
 import { createStudentInvite } from '../invite';
 
-describe('createStudentInvite and requiresLearningPath', () => {
+describe('createStudentInvite and enrollOnlyInLearningPath', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('refuses to create an invite for a course that requires a learning path', async () => {
-    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', title: 'Gated', requiresLearningPath: true }]);
+  it('refuses to create an invite for a course that is enroll-only in a learning path', async () => {
+    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', title: 'Path-only', enrollOnlyInLearningPath: true }]);
 
     await expect(createStudentInvite('c-1', 'admin-1', {} as never)).rejects.toMatchObject({
       code: ErrorCodes.VALIDATION_ERROR,
@@ -30,8 +30,8 @@ describe('createStudentInvite and requiresLearningPath', () => {
   });
 
   it('continues past the gate for a course taken on its own', async () => {
-    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', title: 'Open', requiresLearningPath: false }]);
-    // Stop right after the gate: a missing org row ends the call with a 404.
+    mocks.getCourseById.mockResolvedValue([{ id: 'c-1', title: 'Open', enrollOnlyInLearningPath: false }]);
+    // Stop right after the path-only guard: a missing org row ends the call with a 404.
     mocks.getCourseWithOrgData.mockResolvedValue(null);
 
     await expect(createStudentInvite('c-1', 'admin-1', {} as never)).rejects.toMatchObject({

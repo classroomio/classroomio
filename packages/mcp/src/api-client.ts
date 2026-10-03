@@ -34,6 +34,12 @@ import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organiz
 type ApiSuccess<T> = {
   success: true;
   data: T;
+  pagination?: unknown;
+};
+
+type RequestOptions = {
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  body?: unknown;
 };
 
 type ApiFailure = {
@@ -187,14 +193,20 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async listLearningPaths() {
-    return this.request('/learning-path', {
+  async listOrgLearningPaths(query: { page?: number; limit?: number; search?: string } = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page !== undefined) searchParams.set('page', String(query.page));
+    if (query.limit !== undefined) searchParams.set('limit', String(query.limit));
+    if (query.search) searchParams.set('search', query.search);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestWithPagination(`/learning-path${querySuffix}`, {
       method: 'GET'
     });
   }
 
-  async getLearningPathDetail(pathId: TLearningPathIdParam['pathId']) {
-    return this.request(`/learning-path/${pathId}`, {
+  async getLearningPath(pathId: TLearningPathIdParam['pathId']) {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}`, {
       method: 'GET'
     });
   }
@@ -206,43 +218,55 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async addCoursesToLearningPath(pathId: TLearningPathIdParam['pathId'], payload: TAddLearningPathCourse) {
-    return this.request(`/learning-path/${pathId}/courses`, {
+  async addLearningPathCourses(pathId: TLearningPathIdParam['pathId'], payload: TAddLearningPathCourse) {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}/courses`, {
       method: 'POST',
       body: payload
     });
   }
 
   async updateLearningPathLandingPage(pathId: TLearningPathIdParam['pathId'], payload: { landingPage: TLandingPage }) {
-    return this.request(`/learning-path/${pathId}`, {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}`, {
       method: 'PUT',
       body: payload
     });
   }
 
   async reorderLearningPathCourses(pathId: TLearningPathIdParam['pathId'], payload: TReorderLearningPathCourses) {
-    return this.request(`/learning-path/${pathId}/courses/order`, {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}/courses/order`, {
       method: 'PUT',
       body: payload
     });
   }
 
-  async removeCourseFromLearningPath(
+  async removeLearningPathCourse(
     pathId: TLearningPathCourseParam['pathId'],
     courseId: TLearningPathCourseParam['courseId']
   ) {
-    return this.request(`/learning-path/${pathId}/courses/${courseId}`, {
+    return this.request(`/learning-path/${encodeURIComponent(pathId)}/courses/${encodeURIComponent(courseId)}`, {
       method: 'DELETE'
     });
   }
 
-  private async request<TResponse>(
+  /** Sends a request and returns the response's `data`. */
+  private async request<TResponse>(path: string, options: RequestOptions): Promise<TResponse> {
+    const json = await this.send<TResponse>(path, options);
+
+    return json.data;
+  }
+
+  /** Sends a request to a paginated list endpoint and keeps `pagination` next to `data`. */
+  private async requestWithPagination<TResponse>(
     path: string,
-    options: {
-      method: 'GET' | 'POST' | 'PUT' | 'DELETE';
-      body?: unknown;
-    }
-  ): Promise<TResponse> {
+    options: RequestOptions
+  ): Promise<{ data: TResponse; pagination: unknown }> {
+    const json = await this.send<TResponse>(path, options);
+
+    return { data: json.data, pagination: json.pagination };
+  }
+
+  /** Sends a request and returns the validated success envelope, or throws `ClassroomIoApiError`. */
+  private async send<TResponse>(path: string, options: RequestOptions): Promise<ApiSuccess<TResponse>> {
     const response = await fetch(new URL(path, this.config.CLASSROOMIO_API_URL), {
       method: options.method,
       headers: {
@@ -269,6 +293,6 @@ export class ClassroomIoApiClient {
       throw new ClassroomIoApiError('ClassroomIO returned an invalid response payload', response.status);
     }
 
-    return json.data;
+    return json;
   }
 }

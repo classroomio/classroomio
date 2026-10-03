@@ -2,12 +2,13 @@ import { ROLE } from '@cio/utils/constants';
 
 import type { DbOrTxClient } from '@db/drizzle';
 import { getCourseGroupIds } from '@db/queries/course/course';
-import { getGroupMemberIdByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@db/queries/group';
+import { getGroupMemberByGroupAndProfile, insertGroupMembersOnConflictDoNothing } from '@db/queries/group';
 import { grantCourseAccess } from './enrollment-grant';
 
 /**
  * Ensures LEARNING_PATH course grants for a profile across the path's courses.
- * Enrolls the profile into each course's default student group.
+ * Enrolls the profile into each course's default student group. Courses where
+ * the profile is already on the team (TUTOR/ADMIN groupmember) get no grant.
  * Shared by the API sync path and the queued bulk-enroll worker so every
  * front creates exactly the same rows.
  */
@@ -43,12 +44,14 @@ export async function ensureLearningPathCourseGrants(
       continue;
     }
 
-    const groupMemberId = await getGroupMemberIdByGroupAndProfile(entry.groupId, profileId, dbClient);
+    const groupMember = await getGroupMemberByGroupAndProfile(entry.groupId, profileId, dbClient);
 
-    if (groupMemberId) {
+    // An existing course team row keeps its role (the insert above is
+    // DO NOTHING), and team access is role-based, so it gets no grant.
+    if (groupMember && groupMember.roleId === ROLE.STUDENT) {
       await grantCourseAccess(
         {
-          groupmemberId: groupMemberId,
+          groupmemberId: groupMember.id,
           courseId: entry.courseId,
           profileId,
           source: 'LEARNING_PATH',

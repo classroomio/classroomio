@@ -4,7 +4,9 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members and courses with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and learning paths with organization-scoped API keys.
+
+Learning paths package courses into ordered, sequentially unlocking journeys: create, update and delete paths, add, reorder and remove their courses, and list a path's members. The key creator's own enrolled courses and paths are readable too. Enrolling or removing path members is done from the dashboard.
 
 # Authentication
 
@@ -57,7 +59,7 @@ The public API uses standard HTTP verbs:
 
 # Pagination
 
-List endpoints (\`GET /courses\`, \`GET /audience\`) accept:
+List endpoints (\`GET /courses\`, \`GET /audience\`, \`GET /learning-paths\`, \`GET /learning-paths/{pathId}/members\`, \`GET /enrolled\`) accept:
 
 | Param | Type | Default | Notes |
 | --- | --- | --- | --- |
@@ -75,7 +77,7 @@ Responses wrap results in a shared shape:
 }
 \`\`\`
 
-\`pagination\` reports the actual result set; \`query\` echoes back the resolved request parameters (including any filters, e.g. \`search\` or \`tags\`).
+\`pagination\` reports the actual result set. \`GET /courses\` and \`GET /audience\` also return \`query\`, echoing the resolved request parameters (including any filters, e.g. \`search\` or \`tags\`); the learning-path, member and enrolled lists return \`data\` and \`pagination\` only, and \`GET /enrolled\` adds \`counts\`.
 
 # Rate limiting
 
@@ -154,7 +156,17 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/students': 'List course students',
   'GET /public-api/v1/courses/{courseId}/export': 'Export course structure',
   'GET /public-api/v1/courses/{courseId}/structure': 'Get course structure',
-  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure'
+  'PUT /public-api/v1/courses/{courseId}/structure': 'Sync course structure',
+  'GET /public-api/v1/learning-paths': 'List learning paths',
+  'POST /public-api/v1/learning-paths': 'Create a learning path',
+  'GET /public-api/v1/learning-paths/{pathId}': 'Get a learning path',
+  'PATCH /public-api/v1/learning-paths/{pathId}': 'Update a learning path',
+  'DELETE /public-api/v1/learning-paths/{pathId}': 'Delete a learning path',
+  'POST /public-api/v1/learning-paths/{pathId}/courses': 'Add courses to a learning path',
+  'PUT /public-api/v1/learning-paths/{pathId}/courses/order': 'Reorder learning path courses',
+  'DELETE /public-api/v1/learning-paths/{pathId}/courses/{courseId}': 'Remove a course from a learning path',
+  'GET /public-api/v1/learning-paths/{pathId}/members': 'List learning path members',
+  'GET /public-api/v1/enrolled': "List the key creator's enrolled items"
 };
 
 // Scalar groups its sidebar by tag when the spec declares top-level `tags`
@@ -168,6 +180,14 @@ const OPERATION_TAGS = [
   {
     name: 'Public API Courses',
     description: 'Create and manage courses, read their structure, and list enrolled students.'
+  },
+  {
+    name: 'Public API Learning Paths',
+    description: "Package courses into ordered learning paths, manage their courses, and list a path's members."
+  },
+  {
+    name: 'Public API Enrolled',
+    description: "Read the API key creator's own enrolled courses and learning paths."
   }
 ];
 

@@ -5,6 +5,52 @@ import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
 
 type TPathJourneyStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
+export interface TJourneyCourseLike {
+  courseId: string;
+  title?: string | null;
+  isComplete: boolean;
+}
+
+export interface TJourneySummary {
+  totalCourses: number;
+  completedCourses: number;
+  isComplete: boolean;
+  progressPercent: number;
+  status: TPathJourneyStatus;
+  currentCourseId: string | null;
+  currentCourseTitle: string | null;
+}
+
+/**
+ * Pure path-progress summary shared by the learner hub and the AI tutor's
+ * learning-path tool, so progressPercent, currentCourseId (first incomplete,
+ * falling back to the last course) and status always agree.
+ */
+export function summarizeJourney(courses: TJourneyCourseLike[]): TJourneySummary {
+  const totalCourses = courses.length;
+  const completedCourses = courses.filter((course) => course.isComplete).length;
+  const isComplete = totalCourses > 0 && completedCourses === totalCourses;
+  const progressPercent = totalCourses > 0 ? Math.round((completedCourses / totalCourses) * 100) : 0;
+  const currentCourse = courses.find((course) => !course.isComplete) ?? courses.at(-1) ?? null;
+
+  let status: TPathJourneyStatus = 'NOT_STARTED';
+  if (isComplete) {
+    status = 'COMPLETED';
+  } else if (completedCourses > 0) {
+    status = 'IN_PROGRESS';
+  }
+
+  return {
+    totalCourses,
+    completedCourses,
+    isComplete,
+    progressPercent,
+    status,
+    currentCourseId: currentCourse?.courseId ?? null,
+    currentCourseTitle: currentCourse?.title ?? null
+  };
+}
+
 /**
  * A learner's path hub and in-course stepper: the path, every course in order
  * with live progress and lock state, the course to continue, and the
@@ -36,18 +82,14 @@ export async function getPathJourneyService(
 
     // Same rules as evaluatePathCompletion: an empty path is never complete,
     // and the current course is the first incomplete one, else the last.
-    const totalCourses = journey.courses.length;
-    const completedCourses = journey.courses.filter((course) => course.isComplete).length;
-    const isComplete = totalCourses > 0 && completedCourses === totalCourses;
-    const progress = totalCourses > 0 ? Math.round((completedCourses / totalCourses) * 100) : 0;
-    const currentCourse = journey.courses.find((course) => !course.isComplete) ?? journey.courses.at(-1);
-
-    let status: TPathJourneyStatus = 'NOT_STARTED';
-    if (isComplete) {
-      status = 'COMPLETED';
-    } else if (completedCourses > 0) {
-      status = 'IN_PROGRESS';
-    }
+    const {
+      totalCourses,
+      completedCourses,
+      isComplete,
+      progressPercent: progress,
+      status,
+      currentCourseId
+    } = summarizeJourney(journey.courses);
 
     const certificate = await resolveDownloadableCertificate(path, activeMember, journey.certificate);
 
@@ -66,7 +108,7 @@ export async function getPathJourneyService(
       progress,
       completedCourses,
       totalCourses,
-      currentCourseId: currentCourse?.courseId ?? null,
+      currentCourseId,
       enrolledAt: activeMember.enrolledAt,
       completedAt: isComplete ? activeMember.completedAt : null,
       lastProgressAt: journey.lastProgressAt,

@@ -13,6 +13,26 @@ export type TLearningPathMemberStatusValue = (typeof LEARNING_PATH_MEMBER_STATUS
 export const LEARNING_PATH_COURSE_STATUS = ['LOCKED', 'NOT_STARTED', 'IN_PROGRESS', 'COMPLETED'] as const;
 export type TLearningPathCourseStatusValue = (typeof LEARNING_PATH_COURSE_STATUS)[number];
 
+/**
+ * Server-side path-listing filters backing the URL-driven paths table.
+ * The dashboard validates URL params against these constants and omits `all`
+ * (the "no filter" sentinel, which never reaches the API).
+ */
+export const LEARNING_PATH_LIST_STATUS_FILTERS = ['published', 'unpublished'] as const;
+export type TLearningPathListStatusFilter = (typeof LEARNING_PATH_LIST_STATUS_FILTERS)[number];
+
+export const LEARNING_PATH_LIST_ENROLLMENT_FILTERS = ['none', '1-49', '50+'] as const;
+export type TLearningPathListEnrollmentFilter = (typeof LEARNING_PATH_LIST_ENROLLMENT_FILTERS)[number];
+
+export const LEARNING_PATH_LIST_COMPLETION_FILTERS = ['low', 'medium', 'high'] as const;
+export type TLearningPathListCompletionFilter = (typeof LEARNING_PATH_LIST_COMPLETION_FILTERS)[number];
+
+export const LEARNING_PATH_LIST_SORT_BY = ['date_created', 'last_updated_at', 'published', 'courses'] as const;
+export type TLearningPathListSortBy = (typeof LEARNING_PATH_LIST_SORT_BY)[number];
+
+export const LEARNING_PATH_LIST_SORT_ORDERS = ['asc', 'desc'] as const;
+export type TLearningPathListSortOrder = (typeof LEARNING_PATH_LIST_SORT_ORDERS)[number];
+
 export const ZCreateLearningPath = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255),
   description: z.string().trim().min(1, 'Description is required').max(5000),
@@ -41,7 +61,6 @@ export const ZUpdateLearningPath = z.object({
   currency: z.enum(['NGN', 'USD']).optional(),
   sequentialUnlock: z.boolean().optional(),
   selfEnrollment: z.boolean().optional(),
-  autoEnroll: z.boolean().optional(),
   certificate: ZLearningPathCertificateConfig.optional(),
   landingPage: ZLandingPage.optional(),
   courseOrderSetAt: z.string().datetime().nullable().optional()
@@ -87,7 +106,12 @@ export const ZGetLearningPathsQuery = z.object({
   organizationId: z.string().uuid().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
-  search: z.string().optional()
+  search: z.string().optional(),
+  status: z.enum(LEARNING_PATH_LIST_STATUS_FILTERS).optional(),
+  enrollment: z.enum(LEARNING_PATH_LIST_ENROLLMENT_FILTERS).optional(),
+  completion: z.enum(LEARNING_PATH_LIST_COMPLETION_FILTERS).optional(),
+  sort: z.enum(LEARNING_PATH_LIST_SORT_BY).optional(),
+  order: z.enum(LEARNING_PATH_LIST_SORT_ORDERS).optional()
 });
 export type TGetLearningPathsQuery = z.infer<typeof ZGetLearningPathsQuery>;
 
@@ -130,20 +154,28 @@ export const ZVerifyLearningPathCertificateParam = z.object({
 });
 export type TVerifyLearningPathCertificateParam = z.infer<typeof ZVerifyLearningPathCertificateParam>;
 
+/**
+ * A learning path reference: UUID primary key or 8-character public ID.
+ * Rejects strings with URL-significant characters (`/`, `?`, `#`, …) so an
+ * ID can never escape its path segment.
+ */
+export const ZLearningPathIdentifier = z.union([z.string().uuid(), z.string().regex(/^[0-9A-Za-z]{8}$/)]);
+export type TLearningPathIdentifier = z.infer<typeof ZLearningPathIdentifier>;
+
 export const ZLearningPathIdParam = z.object({
-  pathId: z.string().min(1)
+  pathId: ZLearningPathIdentifier
 });
 export type TLearningPathIdParam = z.infer<typeof ZLearningPathIdParam>;
 
 export const ZLearningPathCourseParam = z.object({
-  pathId: z.string().min(1),
+  pathId: ZLearningPathIdentifier,
   courseId: z.string().uuid()
 });
 export type TLearningPathCourseParam = z.infer<typeof ZLearningPathCourseParam>;
 
 export const ZLearningPathMemberParam = z.object({
-  pathId: z.string().min(1),
-  memberId: z.string().min(1)
+  pathId: ZLearningPathIdentifier,
+  memberId: z.string().uuid()
 });
 export type TLearningPathMemberParam = z.infer<typeof ZLearningPathMemberParam>;
 

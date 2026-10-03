@@ -37,16 +37,16 @@ import {
 const COURSE_ID = 'course-1';
 const link = { id: 'link-1', token: 'token-1', isRevoked: false, joinCount: 0, lastUsedAt: null };
 
-function givenCourse(requiresLearningPath: boolean) {
+function givenCourse(enrollOnlyInLearningPath: boolean) {
   mocks.getCourseWithOrgData.mockResolvedValue({ orgId: 'org-1' });
-  mocks.getCourseById.mockResolvedValue([{ id: COURSE_ID, requiresLearningPath }]);
+  mocks.getCourseById.mockResolvedValue([{ id: COURSE_ID, enrollOnlyInLearningPath }]);
 }
 
-function givenExistingLink(requiresLearningPath: boolean) {
+function givenExistingLink(enrollOnlyInLearningPath: boolean) {
   mocks.getInviteLinkByTokenHash.mockResolvedValue({
     invite: { id: 'link-1', resourceType: 'COURSE', roleId: 3, isRevoked: false },
     organization: { id: 'org-1', name: 'Org', siteName: 'org', theme: null, avatarUrl: null },
-    course: { id: COURSE_ID, title: 'Excel', description: null, status: 'ACTIVE', requiresLearningPath },
+    course: { id: COURSE_ID, title: 'Excel', description: null, status: 'ACTIVE', enrollOnlyInLearningPath },
     cohort: null,
     learningPath: null
   });

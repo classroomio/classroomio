@@ -48,7 +48,7 @@ export async function insertCourse(
   tx: DbOrTxClient,
   orgId: string,
   title: string,
-  options: { lessons: number; type?: string; status?: string; requiresLearningPath?: boolean }
+  options: { lessons: number; type?: string; status?: string; enrollOnlyInLearningPath?: boolean }
 ) {
   const groupId = randomUUID();
   const courseId = randomUUID();
@@ -56,9 +56,9 @@ export async function insertCourse(
 
   await tx.execute(sql`INSERT INTO "group" (id, name, organization_id) VALUES (${groupId}, ${title}, ${orgId})`);
   await tx.execute(sql`
-    INSERT INTO course (id, title, description, group_id, type, status, requires_learning_path)
+    INSERT INTO course (id, title, description, group_id, type, status, enroll_only_in_learning_path)
     VALUES (${courseId}, ${title}, 'x', ${groupId}, ${options.type ?? 'SELF_PACED'}, ${options.status ?? 'ACTIVE'},
-      ${options.requiresLearningPath ?? false})`);
+      ${options.enrollOnlyInLearningPath ?? false})`);
   for (const [order, lessonId] of lessonIds.entries()) {
     await tx.execute(sql`
       INSERT INTO lesson (id, title, course_id, "order") VALUES (${lessonId}, 'Lesson', ${courseId}, ${order})`);
@@ -153,12 +153,12 @@ export async function joinPath(
   pathId: string,
   profileId: string,
   enrolledAt: string,
-  options: { status?: string; removedAt?: string } = {}
+  options: { status?: string; removedAt?: string; roleId?: number } = {}
 ) {
   const memberId = randomUUID();
   await tx.execute(sql`
     INSERT INTO learning_path_member (id, learning_path_id, profile_id, role_id, enrolled_at, status, removed_at)
-    VALUES (${memberId}, ${pathId}, ${profileId}, ${STUDENT}, ${enrolledAt}, ${options.status ?? 'NOT_STARTED'},
+    VALUES (${memberId}, ${pathId}, ${profileId}, ${options.roleId ?? STUDENT}, ${enrolledAt}, ${options.status ?? 'NOT_STARTED'},
       ${options.removedAt ?? null})`);
 
   return memberId;

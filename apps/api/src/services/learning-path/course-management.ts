@@ -20,7 +20,7 @@ import { resolveLearningPath, assertCanManageLearningPath } from './learning-pat
 import { scheduleLearningPathProgressSync } from './progress-sync-jobs';
 
 /**
- * Adds one or more courses to a learning path and auto-enrolls existing path members.
+ * Adds one or more courses to a learning path and grants them to existing STUDENT members.
  * Executes inside an atomic transaction.
  */
 export async function addCoursesToPathService(
@@ -42,6 +42,7 @@ export async function addCoursesToPathService(
       const addedCourses: TLearningPathCourse[] = [];
       const members = await listActivePathMemberIds(path.id, tx);
       const activeMemberIds = members.map((member) => member.id);
+      const studentMembers = members.filter((member) => Boolean(member.profileId) && member.roleId === ROLE.STUDENT);
 
       for (const courseId of courseIds) {
         // Validate course existence and org ownership
@@ -56,12 +57,8 @@ export async function addCoursesToPathService(
 
         await backfillMemberCourseProgressForAddedCourse(activeMemberIds, added.id, path.sequentialUnlock, tx);
 
-        // Auto-enroll existing students if enabled
-        if (path.autoEnroll && courseRow.groupId) {
-          const studentMembers = members.filter(
-            (member) => Boolean(member.profileId) && member.roleId === ROLE.STUDENT
-          );
-
+        // Grant the new course to existing STUDENT members
+        if (courseRow.groupId) {
           if (studentMembers.length > 0) {
             const groupMemberValues = studentMembers.map((member) => ({
               groupId: courseRow.groupId!,
@@ -81,7 +78,8 @@ export async function addCoursesToPathService(
                     courseId,
                     profileId: member.profileId!,
                     source: 'LEARNING_PATH',
-                    learningPathId: path.id
+                    learningPathId: path.id,
+                    grantedByProfileId: userId
                   },
                   tx
                 );
