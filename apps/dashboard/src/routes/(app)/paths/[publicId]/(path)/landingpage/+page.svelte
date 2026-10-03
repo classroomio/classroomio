@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
   import type { Component } from 'svelte';
-  import { goto } from '$app/navigation';
+  import { goto, replaceState } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import * as Sidebar from '@cio/ui/base/sidebar';
@@ -25,7 +26,16 @@
   const publicId = $derived(page.params.publicId ?? '');
 
   let sidebarOpen = $state(true);
-  let selectedSectionKey = $state<LandingSectionKey | null>(null);
+  const initialSection = (page.url.searchParams.get('section') as LandingSectionKey) || null;
+  let selectedSectionKey = $state<LandingSectionKey | null>(initialSection);
+
+  onMount(() => {
+    if (page.url.searchParams.has('section')) {
+      const url = new URL(page.url);
+      url.searchParams.delete('section');
+      replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
+    }
+  });
 
   const sectionIcons: Partial<Record<LandingSectionKey, Component>> = {
     header: HeaderIcon,
