@@ -5329,7 +5329,9 @@
       "published_access_callout_description": "Les étudiants n'ont accès qu'aux cours publiés. Les cours peuvent figurer dans cette cohorte pour votre équipe même s'ils ne sont pas encore publiés, mais ils restent cachés aux étudiants jusqu'à ce que vous les publiiez.",
       "empty_student_description": "Il n'y a pas encore de cours publiés dans cette cohorte.",
       "add_count": "Ajouter {count} {count, plural, =1 {Cours} other {Cours}}",
-      "adding": "Ajout de cours…"
+      "adding": "Ajout de cours…",
+      "load_failed": "Échec du chargement des cours.",
+      "retry": "Réessayer"
     },
     "newsfeed": {
       "post": "Nouveau message",
@@ -5838,7 +5840,9 @@
         "submit": "Ajouter {count} {count, plural, =1 {Cours} other {Cours}}",
         "submitting": "Ajout des cours…",
         "select_courses": "Sélectionner des cours",
-        "pagination_status": "Page {page} sur {totalPages}"
+        "pagination_status": "Page {page} sur {totalPages}",
+        "load_failed": "Échec du chargement des cours.",
+        "retry": "Réessayer"
       },
       "create": {
         "title": "Créer un parcours d'apprentissage",

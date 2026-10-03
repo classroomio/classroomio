@@ -5329,7 +5329,9 @@
       "published_access_callout_description": "Os alunos só têm acesso aos cursos publicados. Os cursos podem estar neste grupo para sua equipe enquanto ainda não foram publicados, mas permanecem ocultos aos alunos até que você os publique.",
       "empty_student_description": "Ainda não há cursos publicados nesta coorte.",
       "add_count": "Adicione {count} {count, plural, =1 {Curso} other {Cursos}}",
-      "adding": "Adicionando cursos…"
+      "adding": "Adicionando cursos…",
+      "load_failed": "Falha ao carregar cursos.",
+      "retry": "Tentar novamente"
     },
     "newsfeed": {
       "post": "Nova postagem",
@@ -5838,7 +5840,9 @@
         "submit": "Adicionar {count} {count, plural, =1 {Curso} other {Cursos}}",
         "submitting": "Adicionando cursos…",
         "select_courses": "Selecione os cursos",
-        "pagination_status": "Página {page} de {totalPages}"
+        "pagination_status": "Página {page} de {totalPages}",
+        "load_failed": "Falha ao carregar cursos.",
+        "retry": "Tentar novamente"
       },
       "create": {
         "title": "Criar Percurso de Aprendizagem",

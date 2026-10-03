@@ -17,6 +17,8 @@
     emptyMessage: string;
     noMatchesMessage: string;
     paginationStatus: (page: number, totalPages: number) => string;
+    errorMessage: string;
+    retryLabel: string;
   }
 
   const PAGE_SIZE = 20;
@@ -30,7 +32,9 @@
     searchPlaceholder,
     emptyMessage,
     noMatchesMessage,
-    paginationStatus
+    paginationStatus,
+    errorMessage,
+    retryLabel
   }: Props = $props();
 
   const pickerApi = new CoursePickerApi();
@@ -45,6 +49,7 @@
   // Tracked here, not via pickerApi.isLoading: an aborted request's cleanup
   // would clear that flag while the newer request is still in flight.
   let isLoadingPage = $state(false);
+  let hasError = $state(false);
 
   const selectedCount = $derived(selectedCourseIds.size);
   const canGoToPreviousPage = $derived(currentPage > 1);
@@ -62,6 +67,7 @@
     const request = new AbortController();
     activeRequest = request;
     isLoadingPage = true;
+    hasError = false;
 
     const result = await pickerApi.listAddableCourses(
       source,
@@ -78,6 +84,9 @@
     isLoadingPage = false;
 
     if (!result) {
+      courses = [];
+      totalPages = 1;
+      hasError = true;
       return;
     }
 
@@ -125,7 +134,7 @@
 <MultiSelectList
   class="border-0"
   listClass="max-h-60"
-  emptyMessage={appliedSearch ? noMatchesMessage : emptyMessage}
+  emptyMessage={hasError ? errorMessage : appliedSearch ? noMatchesMessage : emptyMessage}
   items={multiSelectItems}
   isLoading={isLoadingPage}
   isSelected={(id) => selectedCourseIds.has(id)}
@@ -147,7 +156,13 @@
   {/snippet}
 </MultiSelectList>
 
-{#if totalPages > 1}
+{#if hasError}
+  <div class="flex items-center justify-end px-1">
+    <Button variant="outline" size="sm" onclick={() => loadPage(currentPage)} disabled={isLoadingPage}>
+      {retryLabel}
+    </Button>
+  </div>
+{:else if totalPages > 1}
   <div class="flex items-center justify-between gap-2 text-sm">
     <span class="ui:text-muted-foreground">{paginationStatus(currentPage, totalPages)}</span>
 

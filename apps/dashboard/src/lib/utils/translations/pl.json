@@ -5329,7 +5329,9 @@
       "published_access_callout_description": "Studenci mają dostęp wyłącznie do opublikowanych kursów. Kursy mogą znajdować się w tej kohorcie Twojego zespołu, gdy nie są jeszcze opublikowane, ale pozostają ukryte przed uczniami, dopóki ich nie opublikujesz.",
       "empty_student_description": "Nie ma jeszcze opublikowanych kursów w tej kohorcie.",
       "add_count": "Dodaj {count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}",
-      "adding": "Dodawanie kursów…"
+      "adding": "Dodawanie kursów…",
+      "load_failed": "Nie udało się załadować kursów.",
+      "retry": "Spróbuj ponownie"
     },
     "newsfeed": {
       "post": "Nowy post",
@@ -5838,7 +5840,9 @@
         "submit": "Dodaj {count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}",
         "submitting": "Dodawanie kursów…",
         "select_courses": "Wybierz kursy",
-        "pagination_status": "Strona {page} z {totalPages}"
+        "pagination_status": "Strona {page} z {totalPages}",
+        "load_failed": "Nie udało się załadować kursów.",
+        "retry": "Spróbuj ponownie"
       },
       "create": {
         "title": "Utwórz ścieżkę edukacyjną",

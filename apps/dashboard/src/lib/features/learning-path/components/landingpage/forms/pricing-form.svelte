@@ -26,11 +26,11 @@
 
   onMount(() => {
     if (landingPage.paymentEnabled === undefined) {
-      onChange({ paymentEnabled: false });
+      onChange({ paymentEnabled: Number(path.cost) > 0 });
     }
   });
 
-  let isPaid = $derived(Boolean(landingPage.paymentEnabled));
+  let isPaid = $derived(landingPage.paymentEnabled ?? Number(path.cost) > 0);
   let paymentLink = $derived(landingPage.paymentLink ?? '');
   let showDiscount = $derived(Boolean(landingPage.showDiscount));
   let discount = $derived(landingPage.discount ?? 0);
