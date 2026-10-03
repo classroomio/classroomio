@@ -32,7 +32,7 @@ import type { TLearningPathMember } from '@cio/db/types';
 import { enqueuePathBulkEnroll, isRedisConfigured, waitForRedisReady } from '@cio/jobs';
 import { PathBulkEnrollError, runQueuedPathBulkEnroll } from '@cio/core/services/learning-path/bulk-enroll';
 import { enrollProfileCore } from '@cio/core/services/learning-path/enroll-profile-core';
-import { supersedeStudentOrgInvites } from '@cio/core/services/organization/supersede-invites';
+import { getStaffInvitedEmails, supersedeStudentOrgInvites } from '@cio/core/services/organization/supersede-invites';
 import { EMAIL_FANOUT_CONCURRENCY, mapWithConcurrency } from '@cio/core/services/learning-path/fanout';
 import {
   buildPathInviteLink,
@@ -147,7 +147,6 @@ async function inviteEmailsWithoutProfilesToPath(
 
   const existingMembers = await getOrganizationMembersByNormalizedEmails(organizationId, normalizedEmails);
   const existingEmails = new Set(existingMembers.map((member) => member.normalizedEmail));
-  const newEmails = normalizedEmails.filter((email) => !existingEmails.has(email));
 
   const emailsToInvite = normalizedEmails;
 
@@ -157,6 +156,12 @@ async function inviteEmailsWithoutProfilesToPath(
   // resource id plus this path.
   const committed = await db.transaction(async (tx) => {
     let milestone: Awaited<ReturnType<typeof assertStudentCapacityOrThrow>> = null;
+
+    // The supersede below skips staff-invited emails, so leave them out of the
+    // member rows and the seat count: a STUDENT row written for them would
+    // commit without an invite and take a seat.
+    const staffInvitedEmails = await getStaffInvitedEmails(tx, { orgId: organizationId, emails: emailsToInvite });
+    const newEmails = emailsToInvite.filter((email) => !existingEmails.has(email) && !staffInvitedEmails.has(email));
 
     if (newEmails.length > 0) {
       milestone = await assertStudentCapacityOrThrow(organizationId, newEmails.length, tx, {
@@ -246,7 +251,8 @@ async function inviteEmailsWithoutProfilesToPath(
 
 /**
  * Counts the STUDENT entries in a batch that would take a new seat: profiles
- * that are not yet org members, and emails with no org member row.
+ * that are not yet org members, and emails with no org member row and no
+ * active staff invite.
  */
 async function countNewStudentsInBatch(
   organizationId: string,
@@ -258,15 +264,19 @@ async function countNewStudentsInBatch(
     students.filter((member) => !member.profileId && member.email).map((member) => member.email!)
   );
 
-  const [profileMembers, emailMembers] = await Promise.all([
+  const [profileMembers, emailMembers, staffInvitedEmails] = await Promise.all([
     profileIds.length > 0 ? getOrgMembersByProfileIds(organizationId, profileIds) : Promise.resolve([]),
-    emails.length > 0 ? getOrganizationMembersByNormalizedEmails(organizationId, emails) : Promise.resolve([])
+    emails.length > 0 ? getOrganizationMembersByNormalizedEmails(organizationId, emails) : Promise.resolve([]),
+    emails.length > 0
+      ? db.transaction((tx) => getStaffInvitedEmails(tx, { orgId: organizationId, emails }))
+      : Promise.resolve(new Set<string>())
   ]);
   const existingProfileIds = new Set(profileMembers.map((member) => member.profileId));
   const existingEmails = new Set(emailMembers.map((member) => member.normalizedEmail));
 
   const newProfiles = profileIds.filter((profileId) => !existingProfileIds.has(profileId)).length;
-  const newEmails = emails.filter((email) => !existingEmails.has(email)).length;
+  // Staff-invited emails are skipped by the add, so they never take a seat.
+  const newEmails = emails.filter((email) => !existingEmails.has(email) && !staffInvitedEmails.has(email)).length;
 
   return newProfiles + newEmails;
 }

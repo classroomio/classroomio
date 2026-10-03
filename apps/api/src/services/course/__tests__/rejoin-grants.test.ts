@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   createOrganizationMember: vi.fn(),
   recordDirectCourseGrant: vi.fn(),
   assertStudentCapacityOrThrow: vi.fn(),
+  notifyStudentMilestone: vi.fn(),
   ensureComplianceEnrollmentRecordsForProfiles: vi.fn(),
   invalidateOrgStats: vi.fn(),
   sendStudentJoinEmails: vi.fn(),
@@ -62,7 +63,8 @@ vi.mock('../enrollment-grants', () => ({
 }));
 
 vi.mock('@api/services/organization/student-limit', () => ({
-  assertStudentCapacityOrThrow: mocks.assertStudentCapacityOrThrow
+  assertStudentCapacityOrThrow: mocks.assertStudentCapacityOrThrow,
+  notifyStudentMilestone: mocks.notifyStudentMilestone
 }));
 
 vi.mock('../compliance', () => ({
@@ -139,11 +141,49 @@ describe('enrollInCourse re-join restores grant', () => {
     expect(result).toMatchObject({ alreadyJoined: true });
     expect(mocks.recordDirectCourseGrant).not.toHaveBeenCalled();
   });
+
+  it('defers the student milestone email until the enrollment commits', async () => {
+    const milestone = { orgId: 'org-1', milestone: 'half' };
+    mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue(null);
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue(milestone);
+    mocks.addGroupMember.mockResolvedValue([{ id: 'gm-new' }]);
+    mocks.notifyStudentMilestone.mockResolvedValue(undefined);
+
+    await enrollInCourse('c-1', { id: 'p-3', email: 'n@test.dev' }, {});
+
+    expect(mocks.assertStudentCapacityOrThrow).toHaveBeenCalledWith('org-1', 1, transactionClient, {
+      deferNotification: true
+    });
+    expect(mocks.notifyStudentMilestone).toHaveBeenCalledWith(milestone);
+  });
+
+  it('sends no milestone email when the enrollment rolls back', async () => {
+    mocks.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue(null);
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue({ orgId: 'org-1', milestone: 'reached' });
+    mocks.addGroupMember.mockRejectedValue(new Error('insert failed'));
+
+    await expect(enrollInCourse('c-1', { id: 'p-4', email: 'r@test.dev' }, {})).rejects.toThrow('insert failed');
+
+    expect(mocks.notifyStudentMilestone).not.toHaveBeenCalled();
+  });
 });
 
 describe('acceptStudentInvite re-join restores grant', () => {
   const inviteBundle = {
-    invite: { id: 'inv-1', courseId: 'c-1', roleId: ROLE.STUDENT, createdByProfileId: 'admin-1' },
+    invite: {
+      id: 'inv-1',
+      courseId: 'c-1',
+      roleId: ROLE.STUDENT,
+      createdByProfileId: 'admin-1',
+      isRevoked: false,
+      expiresAt: '2999-01-01T00:00:00.000Z',
+      usedCount: 0,
+      maxUses: 10,
+      allowedEmails: [],
+      allowedDomains: []
+    },
     course: {
       id: 'c-1',
       groupId: 'g-1',
@@ -185,5 +225,46 @@ describe('acceptStudentInvite re-join restores grant', () => {
 
     expect(result).toMatchObject({ alreadyJoined: true });
     expect(mocks.recordDirectCourseGrant).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['revoked', { isRevoked: true }, 'This invite has been revoked'],
+    ['expired', { expiresAt: '2000-01-01T00:00:00.000Z' }, 'This invite link has expired'],
+    ['restricted to another email', { allowedEmails: ['someone@else.dev'] }, 'restricted to a different email']
+  ])('a %s token cannot restore an existing STUDENT grant', async (_label, inviteOverrides, message) => {
+    mocks.selectCourseInviteAcceptBundleByTokenHash.mockResolvedValue({
+      ...inviteBundle,
+      invite: { ...inviteBundle.invite, ...inviteOverrides }
+    });
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue({ id: 'gm-1', roleId: ROLE.STUDENT });
+
+    await expect(acceptStudentInvite('token', { id: 'p-1', email: 'a@test.dev' } as never)).rejects.toThrow(message);
+
+    expect(mocks.recordDirectCourseGrant).not.toHaveBeenCalled();
+  });
+
+  it('a used-up token answers alreadyJoined to an existing STUDENT without re-granting', async () => {
+    mocks.selectCourseInviteAcceptBundleByTokenHash.mockResolvedValue({
+      ...inviteBundle,
+      invite: { ...inviteBundle.invite, usedCount: 10 }
+    });
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue({ id: 'gm-1', roleId: ROLE.STUDENT });
+
+    const result = await acceptStudentInvite('token', { id: 'p-1', email: 'a@test.dev' } as never);
+
+    expect(result).toMatchObject({ alreadyJoined: true });
+    expect(mocks.recordDirectCourseGrant).not.toHaveBeenCalled();
+  });
+
+  it('a used-up token still rejects someone who is not yet a member', async () => {
+    mocks.selectCourseInviteAcceptBundleByTokenHash.mockResolvedValue({
+      ...inviteBundle,
+      invite: { ...inviteBundle.invite, usedCount: 10 }
+    });
+    mocks.getGroupMemberByGroupAndProfile.mockResolvedValue(null);
+
+    await expect(acceptStudentInvite('token', { id: 'p-5', email: 'x@test.dev' } as never)).rejects.toThrow(
+      'This invite has reached its usage limit'
+    );
   });
 });

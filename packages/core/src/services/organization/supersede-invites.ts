@@ -58,6 +58,38 @@ function mergeUnique(...lists: string[][]): string[] {
   return [...new Set(lists.flat())];
 }
 
+/** Lowercases, trims and dedupes emails, dropping blanks. */
+function normalizeEmails(emails: string[]): string[] {
+  return [...new Set(emails.map((email) => email.toLowerCase().trim()))].filter(Boolean);
+}
+
+/**
+ * Returns the emails (normalized) that hold an active ADMIN/TUTOR invite.
+ * `supersedeStudentOrgInvites` skips these, so callers that also write
+ * STUDENT member rows must drop them first, or the row commits without an
+ * invite and takes a seat. Takes the same advisory lock as the supersede, so
+ * the answer holds for the rest of the caller's transaction.
+ */
+export async function getStaffInvitedEmails(
+  tx: DbOrTxClient,
+  input: { orgId: string; emails: string[] }
+): Promise<Set<string>> {
+  const normalized = normalizeEmails(input.emails);
+
+  if (normalized.length === 0) {
+    return new Set();
+  }
+
+  await lockOrganizationInviteEmails(input.orgId, normalized, tx);
+
+  const active = await getActiveOrganizationInvitesByEmails(input.orgId, normalized, tx);
+  const staffInvitedEmails = active
+    .filter((invite) => invite.email && invite.roleId !== ROLE.STUDENT)
+    .map((invite) => invite.email!.toLowerCase());
+
+  return new Set(staffInvitedEmails);
+}
+
 /**
  * Supersedes pending student invites: per email, folds the live resource ids
  * from every active invite together with the new ones, revokes the old rows
@@ -77,7 +109,7 @@ export async function supersedeStudentOrgInvites(
     add: TSupersedeInviteAdd;
   }
 ): Promise<{ invites: TSupersededInvite[]; skipped: TSupersedeInviteSkipped[] }> {
-  const normalized = [...new Set(input.emails.map((email) => email.toLowerCase().trim()))].filter(Boolean);
+  const normalized = normalizeEmails(input.emails);
 
   if (normalized.length === 0) {
     return { invites: [], skipped: [] };
@@ -102,6 +134,8 @@ export async function supersedeStudentOrgInvites(
   const invites: TSupersededInvite[] = [];
   const skipped: TSupersedeInviteSkipped[] = [];
   const expiresAt = new Date(Date.now() + ORG_INVITE_EXPIRY_MS).toISOString();
+  // Imports give most emails the same resource set, so name each set once.
+  const accessLabelByResourceKey = new Map<string, Promise<string | undefined>>();
 
   for (const email of normalized) {
     const existing = activeByEmail.get(email) ?? [];
@@ -187,7 +221,15 @@ export async function supersedeStudentOrgInvites(
       tx
     );
 
-    const accessNamesLabel = await buildAccessNamesLabel(input.orgId, { courseIds, cohortIds, pathIds }, tx);
+    const resourceKey = JSON.stringify([courseIds, cohortIds, pathIds]);
+    let accessLabelPromise = accessLabelByResourceKey.get(resourceKey);
+
+    if (!accessLabelPromise) {
+      accessLabelPromise = buildAccessNamesLabel(input.orgId, { courseIds, cohortIds, pathIds }, tx);
+      accessLabelByResourceKey.set(resourceKey, accessLabelPromise);
+    }
+
+    const accessNamesLabel = await accessLabelPromise;
 
     invites.push({
       email,

@@ -44,6 +44,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getOrganizationMembersByNormalizedEmails: vi.fn(),
   getStudentOrganizationMemberByOrgAndEmail: vi.fn(),
   hasActiveOrganizationInviteForEmail: vi.fn().mockResolvedValue(false),
+  lockOrganizationInviteEmails: vi.fn().mockResolvedValue(undefined),
   revokeActiveOrganizationInvitesByEmails: vi.fn().mockResolvedValue([]),
   revokeOrganizationInvitesByIds: vi.fn().mockResolvedValue([]),
   updateOrganizationAudienceMember: vi.fn()
@@ -68,7 +69,7 @@ vi.mock('@cio/db/queries/group', () => ({
   addGroupMembers: vi.fn(),
   enrollUsersInCourseGroups: vi.fn().mockResolvedValue(undefined),
   getExistingGroupMembers: vi.fn().mockResolvedValue([]),
-  getGroupMemberIdByGroupAndProfile: vi.fn()
+  getGroupMemberByGroupAndProfile: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/learning-path', () => ({
@@ -145,7 +146,7 @@ import {
 } from '@cio/db/queries/learning-path';
 import { getCourseIdsByCohortIds, getExistingCohortMembers } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
-import { getGroupMemberIdByGroupAndProfile } from '@cio/db/queries/group';
+import { getGroupMemberByGroupAndProfile } from '@cio/db/queries/group';
 import { getOrgCourses, getOrgCourseGroups, getEnrollOnlyInLearningPathCourses } from '@cio/db/queries/course';
 import { getCohortsByOrg } from '@cio/db/queries/cohort';
 import { recordDirectCourseGrantsBulk } from '@api/services/course/enrollment-grants';
@@ -582,7 +583,7 @@ describe('importAudienceMembers — cohort provenance', () => {
     vi.mocked(getExistingCohortMembers).mockResolvedValue(new Set() as never);
     vi.mocked(getCourseIdsByCohortIds).mockResolvedValue(['c-1']);
     vi.mocked(getCourseGroupIds).mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
-    vi.mocked(getGroupMemberIdByGroupAndProfile).mockResolvedValue('gm-1');
+    vi.mocked(getGroupMemberByGroupAndProfile).mockResolvedValue({ id: 'gm-1', roleId: 3 });
   });
 
   it('records COHORT grants when assigning students through cohorts', async () => {
