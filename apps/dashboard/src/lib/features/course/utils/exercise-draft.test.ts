@@ -29,10 +29,10 @@ function createMemoryStorage(): Storage {
   };
 }
 
-function makeState(title: string): QuestionnaireState {
+function makeState(title: string, description = ''): QuestionnaireState {
   return {
     title,
-    description: '',
+    description,
     dueBy: null,
     questions: [],
     sections: [],
@@ -48,7 +48,8 @@ describe('exercise drafts', () => {
   });
 
   it('restores a draft and retains it until an explicit successful save clears it', () => {
-    saveExerciseDraft('course-1', 'exercise-1', makeState('Unsaved title'));
+    const baseState = makeState('Server title');
+    saveExerciseDraft('course-1', 'exercise-1', makeState('Unsaved title'), baseState);
 
     expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(true);
     expect(get(questionnaire).title).toBe('Unsaved title');
@@ -58,5 +59,25 @@ describe('exercise drafts', () => {
 
     clearExerciseDraft('course-1', 'exercise-1');
     expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(false);
+  });
+
+  it('keeps newer server changes when they conflict with a stored draft', () => {
+    const baseState = makeState('Original title');
+    saveExerciseDraft('course-1', 'exercise-1', makeState('Draft title'), baseState);
+    questionnaire.set(makeState('Assistant title'));
+
+    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(true);
+    expect(get(questionnaire).title).toBe('Assistant title');
+  });
+
+  it('restores non-conflicting draft edits alongside newer server changes', () => {
+    const baseState = makeState('Original title', 'Original description');
+    const draftState = makeState('Draft title', 'Original description');
+    saveExerciseDraft('course-1', 'exercise-1', draftState, baseState);
+    questionnaire.set(makeState('Original title', 'Assistant description'));
+
+    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(true);
+    expect(get(questionnaire).title).toBe('Draft title');
+    expect(get(questionnaire).description).toBe('Assistant description');
   });
 });

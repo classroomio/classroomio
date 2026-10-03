@@ -53,6 +53,7 @@
     AiAssistantMessage,
     AiAssistantMessageMetadata,
     AiAssistantTemplateMetadata,
+    AgentRunDetail,
     AgentRunStep,
     UploadedDocument
   } from '$features/ai-assistant/utils/types';

@@ -62,6 +62,7 @@
     clearExercisePageState,
     dismissExerciseRemoteUpdateNotice,
     exerciseRemoteUpdateNotice,
+    getExerciseServerState,
     hasUnsavedExerciseState,
     hydrateExercisePageData
     // , refreshExercisePageData
@@ -493,7 +494,10 @@
 
     const courseId = courseApi.course?.id;
     if (!$isOrgStudent && courseId && hasDirtyQuestionnaire()) {
-      saveExerciseDraft(courseId, exerciseId, $questionnaire);
+      const baseState = getExerciseServerState(exerciseId);
+      if (baseState) {
+        saveExerciseDraft(courseId, exerciseId, $questionnaire, baseState);
+      }
     }
 
     clearExercisePageState(exerciseId);
@@ -513,7 +517,10 @@
       const courseId = courseApi.course?.id;
       if ($isOrgStudent || !courseId || !hasDirtyQuestionnaire()) return;
 
-      saveExerciseDraft(courseId, exerciseId, $questionnaire);
+      const baseState = getExerciseServerState(exerciseId);
+      if (!baseState) return;
+
+      saveExerciseDraft(courseId, exerciseId, $questionnaire, baseState);
       hasUnsavedChanges = false;
     })
   );
@@ -547,7 +554,10 @@
     if (!shouldSaveDraft || !courseId) return;
 
     draftSaveTimer = setTimeout(() => {
-      saveExerciseDraft(courseId, exerciseId, state);
+      const baseState = getExerciseServerState(exerciseId);
+      if (baseState) {
+        saveExerciseDraft(courseId, exerciseId, state, baseState);
+      }
       draftSaveTimer = null;
     }, 750);
   });

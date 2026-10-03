@@ -71,6 +71,49 @@ describe('mergeExerciseStates', () => {
     expect(result.state.questions[0]?.title).toBe('My unsaved question');
   });
 
+  it('merges edits to separate fields of the same question', () => {
+    const base = makeState();
+    const localQuestion = makeQuestion({ title: 'My unsaved question', isDirty: true });
+    const remoteQuestion = makeQuestion({ points: 5 });
+
+    const result = mergeExerciseStates(
+      base,
+      makeState({ questions: [localQuestion] }),
+      makeState({ questions: [remoteQuestion] })
+    );
+
+    expect(result.conflictCount).toBe(0);
+    expect(result.state.questions[0]?.title).toBe('My unsaved question');
+    expect(result.state.questions[0]?.points).toBe(5);
+  });
+
+  it('merges edits to separate options of the same question', () => {
+    const options = [
+      { id: 'option-1', label: 'First', value: 'first' },
+      { id: 'option-2', label: 'Second', value: 'second' }
+    ];
+    const baseQuestion = makeQuestion({ options });
+    const base = makeState({ questions: [baseQuestion] });
+    const localQuestion = makeQuestion({
+      options: [{ ...options[0], label: 'Local first' }, options[1]]
+    });
+    const remoteQuestion = makeQuestion({
+      options: [options[0], { ...options[1], label: 'Assistant second' }]
+    });
+
+    const result = mergeExerciseStates(
+      base,
+      makeState({ questions: [localQuestion] }),
+      makeState({ questions: [remoteQuestion] })
+    );
+
+    expect(result.conflictCount).toBe(0);
+    expect(result.state.questions[0]?.options.map((option) => option.label)).toEqual([
+      'Local first',
+      'Assistant second'
+    ]);
+  });
+
   it('can apply the Assistant side of a conflict without removing local-only questions', () => {
     const base = makeState();
     const localQuestion = makeQuestion({ title: 'My unsaved question', isDirty: true });
@@ -89,6 +132,17 @@ describe('mergeExerciseStates', () => {
       'Assistant question',
       'Local image question'
     ]);
+  });
+
+  it('preserves edits made after a conflict notice when applying the Assistant conflict choice', () => {
+    const base = makeState();
+    const current = makeState({ title: 'My latest title', description: 'Edited after the notice' });
+    const remote = makeState({ title: 'Assistant title' });
+
+    const result = mergeExerciseStates(base, current, remote, 'remote');
+
+    expect(result.state.title).toBe('Assistant title');
+    expect(result.state.description).toBe('Edited after the notice');
   });
 
   it('keeps local settings while accepting a remote change to another field', () => {
