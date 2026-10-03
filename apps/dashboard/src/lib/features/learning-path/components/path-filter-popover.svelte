@@ -5,14 +5,12 @@
     DEFAULT_SORT_ORDER,
     STATUS_FILTER_OPTIONS,
     ENROLLMENT_FILTER_OPTIONS,
-    COMPLETION_FILTER_OPTIONS,
-    type PathSortBy,
-    type PathSortOrder
+    COMPLETION_FILTER_OPTIONS
   } from '../utils/constants';
   import { Button } from '@cio/ui/base/button';
   import { SortPopover } from '$features/ui';
   import { t } from '$lib/utils/functions/translations';
-  import type { StatusFilter, EnrollmentFilter, CompletionFilter } from '../utils/types';
+  import type { StatusFilter, EnrollmentFilter, CompletionFilter, PathSortBy, PathSortOrder } from '../utils/types';
 
   interface Props {
     sortKey?: PathSortBy;
@@ -25,6 +23,8 @@
     onStatusChange?: (status: StatusFilter) => void;
     onEnrollmentChange?: (enrollment: EnrollmentFilter) => void;
     onCompletionChange?: (completion: CompletionFilter) => void;
+    onSortChange?: (sort: PathSortBy, order: PathSortOrder) => void;
+    onOrderChange?: (order: PathSortOrder) => void;
     onClearFilters?: () => void | Promise<void>;
   }
 
@@ -39,6 +39,8 @@
     onStatusChange = () => {},
     onEnrollmentChange = () => {},
     onCompletionChange = () => {},
+    onSortChange,
+    onOrderChange,
     onClearFilters = () => {}
   }: Props = $props();
 
@@ -81,6 +83,8 @@
   {isFiltering}
   {hasActiveFilters}
   {onClearFilters}
+  onSortKeyChange={(value) => onSortChange?.(value as PathSortBy, selectedOrder)}
+  onOrderChange={(value) => onOrderChange?.(value as PathSortOrder)}
 >
   {#snippet additionalContent()}
     <div class="space-y-4">

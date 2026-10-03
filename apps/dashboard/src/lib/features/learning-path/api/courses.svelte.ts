@@ -64,7 +64,7 @@ class PathCoursesApi extends BaseApiWithErrors {
           json: { courseIds }
         }),
       logContext: 'reordering courses in learning path',
-      onSuccess: () => {
+      onSuccess: async () => {
         const currentPath = learningPathApi.currentPath;
         if (currentPath && (currentPath.id === pathId || currentPath.publicId === pathId)) {
           const courseMap = new Map(currentPath.courses.map((c) => [c.courseId, c]));
@@ -76,7 +76,9 @@ class PathCoursesApi extends BaseApiWithErrors {
             }
           });
           currentPath.courses = reordered;
+          currentPath.courseOrderSetAt = new Date().toISOString();
         }
+        await learningPathApi.refreshPath(pathId);
         snackbar.success('learningPath.snackbar.reordered');
       }
     });

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount, untrack } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Page from '@cio/ui/base/page';
   import * as Item from '@cio/ui/base/item';
@@ -16,27 +16,31 @@
   import { browser } from '$app/environment';
   import { page } from '$app/state';
   import { t } from '$lib/utils/functions/translations';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
   import { PathCard, PathRow, PathFilterPopover, CreatePathModal } from '../components';
   import { learningPathApi } from '../api';
   import {
     LEARNING_PATHS_VIEW_MODE_KEY,
     DEFAULT_VIEW_MODE,
     DEFAULT_PATH_SORT,
-    DEFAULT_SORT_ORDER,
-    type PathSortBy,
-    type PathSortOrder
+    DEFAULT_SORT_ORDER
   } from '../utils/constants';
-  import type { StatusFilter, EnrollmentFilter, CompletionFilter, ViewMode } from '../utils/types';
+  import {
+    hasActivePathListFilters,
+    mergePathListSearchParams,
+    parsePathListFilters
+  } from '../utils/path-list-filters';
+  import type { CompletionFilter, EnrollmentFilter, PathListFilters, StatusFilter, ViewMode } from '../utils/types';
+  import type { PathSortBy, PathSortOrder } from '../utils/types';
 
   let { loadError = null }: { loadError?: string | null } = $props();
 
-  let searchQuery = $state('');
-  let sortKey = $state<PathSortBy>(DEFAULT_PATH_SORT);
-  let selectedOrder = $state<PathSortOrder>(DEFAULT_SORT_ORDER);
-  let statusFilter = $state<StatusFilter>('all');
-  let enrollmentFilter = $state<EnrollmentFilter>('all');
-  let completionFilter = $state<CompletionFilter>('all');
+  /** URL is the source of truth; controls read from here. */
+  const filters = $derived(parsePathListFilters(page.url.searchParams));
+  const filtersActive = $derived(hasActivePathListFilters(filters));
+
+  let searchInput = $state(filters.search);
+  let searchDebounce: ReturnType<typeof setTimeout> | null = null;
   let viewMode = $state<ViewMode>(DEFAULT_VIEW_MODE);
   let showCreateDialog = $state(false);
 
@@ -44,6 +48,18 @@
   let deleteModalOpen = $state(false);
   let isDeleting = $state(false);
   let pathToDelete = $state<{ id: string; name: string } | null>(null);
+
+  // Keep the search box in sync when the URL changes elsewhere (back button, clear).
+  // Untracked read of searchInput so typing doesn't re-trigger and clobber itself.
+  $effect(() => {
+    const urlSearch = filters.search;
+    untrack(() => {
+      if (searchDebounce) return;
+      if (urlSearch !== searchInput) {
+        searchInput = urlSearch;
+      }
+    });
+  });
 
   // Query parameter support (?create=true)
   $effect(() => {
@@ -59,6 +75,56 @@
       viewMode = savedView;
     }
   });
+
+  onDestroy(() => {
+    if (searchDebounce) clearTimeout(searchDebounce);
+  });
+
+  /**
+   * Navigates to page 1 with new filters, preserving unrelated params.
+   * The server `load` re-runs for page 1.
+   */
+  function navigateWithFilters(next: PathListFilters) {
+    if (!browser) return;
+
+    const merged = mergePathListSearchParams(page.url.searchParams, next);
+    const query = merged.toString();
+    goto(`${page.url.pathname}${query ? `?${query}` : ''}`, {
+      replaceState: true,
+      keepFocus: true,
+      noScroll: true
+    });
+  }
+
+  function handleSearchInput(value: string) {
+    searchInput = value;
+
+    if (searchDebounce) clearTimeout(searchDebounce);
+    searchDebounce = setTimeout(() => {
+      searchDebounce = null;
+      navigateWithFilters({ ...filters, search: searchInput });
+    }, 300);
+  }
+
+  function handleSortChange(sort: PathSortBy, order: PathSortOrder) {
+    navigateWithFilters({ ...filters, sort, order });
+  }
+
+  function handleOrderChange(order: PathSortOrder) {
+    navigateWithFilters({ ...filters, order });
+  }
+
+  function handleStatusChange(status: StatusFilter) {
+    navigateWithFilters({ ...filters, status });
+  }
+
+  function handleEnrollmentChange(enrollment: EnrollmentFilter) {
+    navigateWithFilters({ ...filters, enrollment });
+  }
+
+  function handleCompletionChange(completion: CompletionFilter) {
+    navigateWithFilters({ ...filters, completion });
+  }
 
   function handleViewModeChange(newView: ViewMode) {
     viewMode = newView;
@@ -77,12 +143,16 @@
   }
 
   function handleClearAllFilters() {
-    sortKey = DEFAULT_PATH_SORT;
-    selectedOrder = DEFAULT_SORT_ORDER;
-    statusFilter = 'all';
-    enrollmentFilter = 'all';
-    completionFilter = 'all';
-    searchQuery = '';
+    if (searchDebounce) clearTimeout(searchDebounce);
+    searchInput = '';
+    navigateWithFilters({
+      search: '',
+      status: 'all',
+      enrollment: 'all',
+      completion: 'all',
+      sort: DEFAULT_PATH_SORT,
+      order: DEFAULT_SORT_ORDER
+    });
   }
 
   function handleRequestDelete(id: string, name: string) {
@@ -106,64 +176,9 @@
     }
   }
 
-  const filteredPaths = $derived.by(() => {
-    let list = [...learningPathApi.paths];
-
-    // Search filter
-    const query = searchQuery.trim().toLowerCase();
-    if (query) {
-      list = list.filter(
-        (p) => p.name.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query))
-      );
-    }
-
-    // Status filter
-    if (statusFilter === 'published') {
-      list = list.filter((p) => p.isPublished);
-    } else if (statusFilter === 'unpublished') {
-      list = list.filter((p) => !p.isPublished);
-    }
-
-    // Enrollment filter
-    if (enrollmentFilter === 'none') {
-      list = list.filter((p) => (p.memberCount || 0) === 0);
-    } else if (enrollmentFilter === '1-49') {
-      list = list.filter((p) => (p.memberCount || 0) >= 1 && (p.memberCount || 0) <= 49);
-    } else if (enrollmentFilter === '50+') {
-      list = list.filter((p) => (p.memberCount || 0) >= 50);
-    }
-
-    // Completion rate filter
-    if (completionFilter === 'low') {
-      list = list.filter((p) => (p.completionRate || 0) < 25);
-    } else if (completionFilter === 'medium') {
-      list = list.filter((p) => (p.completionRate || 0) >= 25 && (p.completionRate || 0) <= 75);
-    } else if (completionFilter === 'high') {
-      list = list.filter((p) => (p.completionRate || 0) > 75);
-    }
-
-    // Sorting
-    const sorted = [...list];
-    sorted.sort((a, b) => {
-      let comparison = 0;
-      if (sortKey === 'date_created') {
-        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      } else if (sortKey === 'last_updated_at') {
-        const aTime = new Date(a.updatedAt ?? a.createdAt).getTime();
-        const bTime = new Date(b.updatedAt ?? b.createdAt).getTime();
-        comparison = aTime - bTime;
-      } else if (sortKey === 'published') {
-        const aPub = a.isPublished ? 1 : 0;
-        const bPub = b.isPublished ? 1 : 0;
-        comparison = aPub - bPub;
-      } else if (sortKey === 'courses') {
-        comparison = (a.courseCount || 0) - (b.courseCount || 0);
-      }
-      return selectedOrder === 'asc' ? comparison : -comparison;
-    });
-
-    return sorted;
-  });
+  async function handleLoadMore() {
+    await learningPathApi.loadMorePaths($currentOrg.id, filters);
+  }
 
   function handleCreated(newId: string) {
     goto(`/paths/${newId}/setup`);
@@ -176,14 +191,23 @@
 
 <!-- Toolbar matching Courses Page.BodyHeader -->
 <Page.BodyHeader align="right" class="p-0!">
-  <Search placeholder={$t('learningPath.listing.toolbar.search_placeholder')} bind:value={searchQuery} />
+  <Search
+    placeholder={$t('learningPath.listing.toolbar.search_placeholder')}
+    bind:value={searchInput}
+    onValueChange={handleSearchInput}
+  />
 
   <PathFilterPopover
-    bind:sortKey
-    bind:selectedOrder
-    bind:statusFilter
-    bind:enrollmentFilter
-    bind:completionFilter
+    sortKey={filters.sort}
+    selectedOrder={filters.order}
+    statusFilter={filters.status}
+    enrollmentFilter={filters.enrollment}
+    completionFilter={filters.completion}
+    onStatusChange={handleStatusChange}
+    onEnrollmentChange={handleEnrollmentChange}
+    onCompletionChange={handleCompletionChange}
+    onSortChange={handleSortChange}
+    onOrderChange={handleOrderChange}
     onClearFilters={handleClearAllFilters}
   />
 
@@ -200,14 +224,14 @@
 
 <!-- Content Area -->
 <div class="mx-auto mt-4 w-full flex-1">
-  {#if !loadError && learningPathApi.paths.length === 0}
+  {#if !loadError && learningPathApi.paths.length === 0 && !filtersActive}
     <Empty
       title={$t('learningPath.listing.empty.title')}
       description={$t('learningPath.listing.empty.description')}
       icon={GitBranchIcon}
       variant="page"
     />
-  {:else if filteredPaths.length === 0}
+  {:else if learningPathApi.paths.length === 0}
     <Empty
       title={$t('learningPath.listing.empty.no_matches_title')}
       description={$t('learningPath.listing.empty.no_matches_description')}
@@ -220,15 +244,28 @@
     </Empty>
   {:else if viewMode === 'grid'}
     <Item.Group class="grid! w-full grid-cols-1 justify-items-center gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {#each filteredPaths as path (path.id)}
+      {#each learningPathApi.paths as path (path.id)}
         <PathCard {path} onDelete={handleRequestDelete} />
       {/each}
     </Item.Group>
   {:else}
     <ResourceListRow.Group class="@container">
-      {#each filteredPaths as path (path.id)}
+      {#each learningPathApi.paths as path (path.id)}
         <PathRow {path} onDelete={handleRequestDelete} />
       {/each}
     </ResourceListRow.Group>
+  {/if}
+
+  {#if learningPathApi.hasMorePaths && learningPathApi.paths.length > 0}
+    <div class="mt-6 flex justify-center">
+      <Button
+        variant="outline"
+        testId="paths-listing-load-more"
+        loading={learningPathApi.isLoadingMorePaths}
+        onclick={handleLoadMore}
+      >
+        {$t('learningPath.listing.load_more')}
+      </Button>
+    </div>
   {/if}
 </div>

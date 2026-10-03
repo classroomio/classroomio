@@ -26,5 +26,6 @@
   emailMessage={path?.certificate?.emailMessage ?? null}
   emailMessagePlaceholder={$t('learningPath.certificate.email_message_placeholder')}
   onUpdate={handleUpdate}
+  toggleTestId="path-cert-enable"
   {errors}
 />

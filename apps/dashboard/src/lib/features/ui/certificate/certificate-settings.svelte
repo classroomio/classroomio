@@ -12,6 +12,8 @@
     onUpdate: (patch: { isDownloadable?: boolean; emailMessage?: string | null }) => void;
     disabled?: boolean;
     errors?: Record<string, string>;
+    /** Stable hook for Playwright on the enable toggle. Only set by callers that need one. */
+    toggleTestId?: string;
   }
 
   let {
@@ -20,7 +22,8 @@
     emailMessagePlaceholder,
     onUpdate,
     disabled = false,
-    errors = {}
+    errors = {},
+    toggleTestId
   }: Props = $props();
 
   function onEmailMessageInput(e: Event) {
@@ -35,6 +38,7 @@
     <Field.Field orientation="horizontal">
       <Switch
         id="certificate-downloadable"
+        data-testid={toggleTestId}
         checked={isDownloadable}
         onCheckedChange={(checked) => {
           onUpdate({ isDownloadable: checked });

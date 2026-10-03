@@ -137,9 +137,10 @@ class ApiClient {
       headers.set('Accept', 'application/json');
     }
 
-    // Add organization ID header if available
+    // Add organization ID header if available. Never clobber an explicit
+    // per-request header — explicit headers always win.
     const org = get(currentOrg);
-    if (org?.id) {
+    if (org?.id && !headers.has('cio-org-id')) {
       headers.set('cio-org-id', org.id);
     }
 

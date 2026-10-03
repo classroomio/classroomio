@@ -46,6 +46,13 @@ export const isCourseLearnerView = derived(
 );
 
 /**
+ * Learner vs staff UI on `/paths/[publicId]`. Same rule as `isCourseLearnerView`:
+ * org-site visitors and org students get the learner hub; everyone else the staff
+ * workspace. Access itself is decided by the endpoint each mode calls.
+ */
+export const isPathLearnerView = isCourseLearnerView;
+
+/**
  * The root path for navigation: '/lms' for students, '/org/{siteName}' for admin/teacher
  */
 export const basePath = derived([isStudentExperience, currentOrgPath], ([$isStudent, $orgPath]) =>

@@ -1,10 +1,17 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
-import type { TCreateLearningPath, TUpdateLearningPath } from '@cio/utils/validation/learning-path';
+import type {
+  TCreateLearningPath,
+  TLearningPathListCompletionFilter,
+  TLearningPathListEnrollmentFilter,
+  TLearningPathListSortBy,
+  TLearningPathListSortOrder,
+  TLearningPathListStatusFilter,
+  TUpdateLearningPath
+} from '@cio/utils/validation/learning-path';
 
 // RPC Request Types
 export type ListLearningPathsRequest = (typeof classroomio)['learning-path']['$get'];
 export type CreateLearningPathRequest = (typeof classroomio)['learning-path']['$post'];
-export type GetEnrolledLearningPathsRequest = (typeof classroomio)['learning-path']['enrolled']['$get'];
 export type GetLearningPathDetailRequest = (typeof classroomio)['learning-path'][':pathId']['$get'];
 export type UpdateLearningPathRequest = (typeof classroomio)['learning-path'][':pathId']['$put'];
 export type DeleteLearningPathRequest = (typeof classroomio)['learning-path'][':pathId']['$delete'];
@@ -17,6 +24,8 @@ export type ListPathMembersRequest = (typeof classroomio)['learning-path'][':pat
 export type AddPathMembersRequest = (typeof classroomio)['learning-path'][':pathId']['members']['$post'];
 export type RemovePathMemberRequest =
   (typeof classroomio)['learning-path'][':pathId']['members'][':memberId']['$delete'];
+export type UpdatePathMemberRoleRequest =
+  (typeof classroomio)['learning-path'][':pathId']['members'][':memberId']['$patch'];
 export type GetPathAnalyticsRequest = (typeof classroomio)['learning-path'][':pathId']['analytics']['$get'];
 export type GetPathMemberDetailRequest =
   (typeof classroomio)['learning-path'][':pathId']['members'][':personId']['$get'];
@@ -28,10 +37,6 @@ export type TogglePathInviteLinkRequest = (typeof classroomio)['learning-path'][
 // RPC Success Response Types
 export type ListLearningPathsSuccess = Extract<InferResponseType<ListLearningPathsRequest>, { success: true }>;
 export type CreateLearningPathSuccess = Extract<InferResponseType<CreateLearningPathRequest>, { success: true }>;
-export type GetEnrolledLearningPathsSuccess = Extract<
-  InferResponseType<GetEnrolledLearningPathsRequest>,
-  { success: true }
->;
 export type GetLearningPathDetailSuccess = Extract<InferResponseType<GetLearningPathDetailRequest>, { success: true }>;
 export type UpdateLearningPathSuccess = Extract<InferResponseType<UpdateLearningPathRequest>, { success: true }>;
 export type DeleteLearningPathSuccess = Extract<InferResponseType<DeleteLearningPathRequest>, { success: true }>;
@@ -41,6 +46,26 @@ export type ReorderPathCoursesSuccess = Extract<InferResponseType<ReorderPathCou
 export type RemovePathCourseSuccess = Extract<InferResponseType<RemovePathCourseRequest>, { success: true }>;
 export type ListPathMembersSuccess = Extract<InferResponseType<ListPathMembersRequest>, { success: true }>;
 export type AddPathMembersSuccess = Extract<InferResponseType<AddPathMembersRequest>, { success: true }>;
+/** Queued bulk-add branch of the add-members response; the inline branch is `{ mode: 'completed' }` with counts. */
+export type QueuedAddMembersResult = Extract<AddPathMembersSuccess['data'], { mode: 'queued' }>;
+export type GetBulkEnrollStatusRequest =
+  (typeof classroomio)['learning-path'][':pathId']['bulk-enrollment'][':jobId']['$get'];
+export type GetBulkEnrollStatusSuccess = Extract<InferResponseType<GetBulkEnrollStatusRequest>, { success: true }>;
+/**
+ * Completion value the bulk-enrollment worker returns.
+ * Keep in sync with `PathBulkEnrollOutcome` in `@cio/jobs/payloads/learning-path`.
+ */
+export type BulkEnrollOutcome = {
+  requested: number;
+  enrolled: number;
+  invited: number;
+  failed: Array<{ key: string; reason: string }>;
+};
+/** What an add-members request reported, reduced to what the toast needs. */
+export type AddMembersSummary =
+  | { kind: 'queued'; jobId: string; requested: number }
+  | { kind: 'added'; added: number; invited: number }
+  | { kind: 'partial'; added: number; invited: number; notAdded: number };
 export type RemovePathMemberSuccess = Extract<InferResponseType<RemovePathMemberRequest>, { success: true }>;
 export type GetPathAnalyticsSuccess = Extract<InferResponseType<GetPathAnalyticsRequest>, { success: true }>;
 export type GetPathMemberDetailSuccess = Extract<InferResponseType<GetPathMemberDetailRequest>, { success: true }>;
@@ -52,12 +77,13 @@ export type TogglePathInviteLinkSuccess = Extract<InferResponseType<TogglePathIn
 export type CreateLearningPathData = CreateLearningPathSuccess['data'];
 export type UpdateLearningPathData = UpdateLearningPathSuccess['data'];
 export type LearningPathSummary = ListLearningPathsSuccess['data'][number];
+export type LearningPathsPagination = ListLearningPathsSuccess['pagination'];
 export type LearningPathDetail = GetLearningPathDetailSuccess['data'];
 export type LearningPathCourseItem = LearningPathDetail['courses'][number];
-export type EnrolledLearningPath = GetEnrolledLearningPathsSuccess['data'][number];
-// Members endpoint returns a paginated shape: { data, pagination }
-export type PathMembersPagination = ListPathMembersSuccess['data']['pagination'];
-export type PathMembersData = ListPathMembersSuccess['data']['data'];
+// Members endpoint returns a paginated shape: { data, pagination, enrolledTotal }
+export type PathMembersPagination = ListPathMembersSuccess['pagination'];
+export type PathMembersData = ListPathMembersSuccess['data'];
+export type PathMembersEnrolledTotal = ListPathMembersSuccess['enrolledTotal'];
 export type LearningPathMemberItem = PathMembersData[number];
 export type LearningPathAnalytics = GetPathAnalyticsSuccess['data'];
 export type PathAnalyticsSummary = LearningPathAnalytics['summary'];
@@ -73,10 +99,38 @@ export type CreateLearningPathInput = Omit<TCreateLearningPath, 'organizationId'
 export type UpdateLearningPathInput = TUpdateLearningPath;
 
 // UI & Filter Types
-export type StatusFilter = 'all' | 'published' | 'unpublished';
-export type EnrollmentFilter = 'all' | 'none' | '1-49' | '50+';
-export type CompletionFilter = 'all' | 'low' | 'medium' | 'high';
+/** View mode for `/paths/[publicId]`: staff builder vs learner hub (`loading` while the org role resolves). */
+export type PathViewMode = 'loading' | 'staff' | 'learner';
+/** Render state derived from the active mode's fetch result. */
+export type PathAccessState = 'loading' | 'ready' | 'not_found' | 'forbidden' | 'error';
+/** Inputs for `resolvePathAccessState`: flags from the endpoint the active mode called. */
+export interface PathAccessInput {
+  isLoaded: boolean;
+  isNotFound: boolean;
+  isForbidden: boolean;
+  loadError: string | null;
+}
+/** Status filter, derived from the backend `LEARNING_PATH_LIST_STATUS_FILTERS`; `all` sends no status. */
+export type StatusFilter = 'all' | TLearningPathListStatusFilter;
+/** Enrollment bucket filter, derived from `LEARNING_PATH_LIST_ENROLLMENT_FILTERS`; `all` sends none. */
+export type EnrollmentFilter = 'all' | TLearningPathListEnrollmentFilter;
+/** Completion-rate filter, derived from `LEARNING_PATH_LIST_COMPLETION_FILTERS`; `all` sends none. */
+export type CompletionFilter = 'all' | TLearningPathListCompletionFilter;
+/** Sort key, derived from the backend `LEARNING_PATH_LIST_SORT_BY`. */
+export type PathSortBy = TLearningPathListSortBy;
+/** Sort direction, derived from the backend `LEARNING_PATH_LIST_SORT_ORDERS`. */
+export type PathSortOrder = TLearningPathListSortOrder;
 export type ViewMode = 'grid' | 'list';
+
+/** URL-driven filters for the org paths listing (page lives in the API query, not here). */
+export interface PathListFilters {
+  search: string;
+  status: StatusFilter;
+  enrollment: EnrollmentFilter;
+  completion: CompletionFilter;
+  sort: PathSortBy;
+  order: PathSortOrder;
+}
 
 /** Learner status filter for the path people table; `all` sends no status to the API. */
 export type PathMemberStatusFilter = 'all' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -98,9 +152,4 @@ export interface SetupStep {
   href: string;
   isCompleted: boolean;
   isCurrent: boolean;
-}
-
-export interface LearningPathAccessOptions {
-  isAdmin?: boolean | null;
-  userProfileId?: string | null;
 }
