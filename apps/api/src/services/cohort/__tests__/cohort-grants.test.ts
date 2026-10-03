@@ -19,6 +19,9 @@ const mocks = vi.hoisted(() => ({
   assertStudentCapacityOrThrow: vi.fn(),
   notifyStudentMilestone: vi.fn(),
   removeCohortMember: vi.fn(),
+  getCohortMemberById: vi.fn(),
+  updateCohortMember: vi.fn(),
+  getCohortCoursePairsByCohortIds: vi.fn(),
   revokeCohortGrants: vi.fn(),
   removeCourseFromCohort: vi.fn(),
   isCohortCourse: vi.fn(),
@@ -49,7 +52,10 @@ vi.mock('@cio/db/queries/cohort', () => ({
   getCohortsByOrg: vi.fn(),
   isCohortCourse: mocks.isCohortCourse,
   addCourseToCohort: mocks.addCourseToCohort,
-  removeCohortMember: mocks.removeCohortMember
+  removeCohortMember: mocks.removeCohortMember,
+  getCohortMemberById: mocks.getCohortMemberById,
+  updateCohortMember: mocks.updateCohortMember,
+  getCohortCoursePairsByCohortIds: mocks.getCohortCoursePairsByCohortIds
 }));
 
 vi.mock('@cio/db/queries/course', () => ({
@@ -95,7 +101,8 @@ import {
   addCohortMembers,
   ensureCohortCourseGrants,
   removeCohortMemberService,
-  removeCourseFromCohortService
+  removeCourseFromCohortService,
+  updateCohortMemberService
 } from '../cohort';
 
 const COHORT = { id: 'cohort-1', organizationId: 'org-1', name: 'Cohort' };
@@ -280,6 +287,123 @@ describe('removeCohortMemberService grant revocation', () => {
       code: 'COHORT_MEMBER_NOT_FOUND'
     });
     expect(mocks.revokeCohortGrants).not.toHaveBeenCalled();
+  });
+});
+
+describe('updateCohortMemberService role changes', () => {
+  const STUDENT_MEMBER = {
+    id: 'cm-1',
+    cohortId: 'cohort-1',
+    profileId: 'p-1',
+    email: 'p1@test.com',
+    roleId: ROLE.STUDENT
+  };
+  const TUTOR_MEMBER = { ...STUDENT_MEMBER, roleId: ROLE.TUTOR };
+  const MILESTONE = { orgId: 'org-1', milestone: 'half', studentCount: 10, studentLimit: 20 };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mocks.transaction.mockImplementation(async (callback: (tx: unknown) => Promise<unknown>) =>
+      callback(transactionClient)
+    );
+    mocks.getCohortById.mockResolvedValue(COHORT);
+    mocks.getCohortCoursePairsByCohortIds.mockResolvedValue([{ cohortId: 'cohort-1', courseId: 'c-1' }]);
+    mocks.getCourseGroupIds.mockResolvedValue([{ courseId: 'c-1', groupId: 'g-1' }]);
+    mocks.getOrgMembersByProfileIds.mockResolvedValue([]);
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue(null);
+    mocks.insertGroupMembersOnConflictDoNothing.mockResolvedValue(undefined);
+    mocks.revokeCohortGrants.mockResolvedValue(undefined);
+    mocks.notifyStudentMilestone.mockResolvedValue(undefined);
+  });
+
+  it('returns 404 when changing a member of cohort B through cohort A', async () => {
+    mocks.getCohortMemberById.mockResolvedValue(null);
+
+    await expect(updateCohortMemberService('cohort-A', 'member-of-B', { roleId: ROLE.TUTOR })).rejects.toMatchObject({
+      statusCode: 404,
+      code: ErrorCodes.COHORT_MEMBER_NOT_FOUND
+    });
+
+    expect(mocks.getCohortMemberById).toHaveBeenCalledWith('cohort-A', 'member-of-B', transactionClient);
+    expect(mocks.updateCohortMember).not.toHaveBeenCalled();
+  });
+
+  it('leaves the member and their grants alone when the role does not change', async () => {
+    mocks.getCohortMemberById.mockResolvedValue(STUDENT_MEMBER);
+
+    const updated = await updateCohortMemberService('cohort-1', 'cm-1', { roleId: ROLE.STUDENT });
+
+    expect(updated).toEqual(STUDENT_MEMBER);
+    expect(mocks.updateCohortMember).not.toHaveBeenCalled();
+    expect(mocks.revokeCohortGrants).not.toHaveBeenCalled();
+    expect(mocks.recordDirectCourseGrantsBulk).not.toHaveBeenCalled();
+  });
+
+  it('revokes the COHORT grants when a student becomes a tutor', async () => {
+    mocks.getCohortMemberById.mockResolvedValue(STUDENT_MEMBER);
+    mocks.updateCohortMember.mockResolvedValue(TUTOR_MEMBER);
+
+    const updated = await updateCohortMemberService('cohort-1', 'cm-1', { roleId: ROLE.TUTOR });
+
+    expect(updated).toEqual(TUTOR_MEMBER);
+    expect(mocks.updateCohortMember).toHaveBeenCalledWith(
+      'cohort-1',
+      'cm-1',
+      { roleId: ROLE.TUTOR },
+      transactionClient,
+      ROLE.STUDENT
+    );
+    expect(mocks.revokeCohortGrants).toHaveBeenCalledWith('cohort-1', 'p-1', transactionClient);
+    expect(mocks.recordDirectCourseGrantsBulk).not.toHaveBeenCalled();
+  });
+
+  it('enrolls a tutor made a student in the cohort courses and sends the milestone after commit', async () => {
+    mocks.getCohortMemberById.mockResolvedValue(TUTOR_MEMBER);
+    mocks.updateCohortMember.mockResolvedValue(STUDENT_MEMBER);
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue(MILESTONE);
+
+    await updateCohortMemberService('cohort-1', 'cm-1', { roleId: ROLE.STUDENT });
+
+    expect(mocks.assertStudentCapacityOrThrow).toHaveBeenCalledWith('org-1', 1, transactionClient, {
+      deferNotification: true
+    });
+    expect(mocks.insertOrganizationMembersOnConflictDoNothing).toHaveBeenCalledWith(
+      [expect.objectContaining({ organizationId: 'org-1', profileId: 'p-1', roleId: ROLE.STUDENT })],
+      transactionClient
+    );
+    expect(mocks.insertGroupMembersOnConflictDoNothing).toHaveBeenCalledWith(
+      [expect.objectContaining({ groupId: 'g-1', profileId: 'p-1', roleId: ROLE.STUDENT })],
+      transactionClient
+    );
+    expect(mocks.recordDirectCourseGrantsBulk).toHaveBeenCalledWith(
+      { groupIds: ['g-1'], profileIds: ['p-1'], courseIds: ['c-1'], source: 'COHORT', cohortId: 'cohort-1' },
+      transactionClient
+    );
+    expect(mocks.revokeCohortGrants).not.toHaveBeenCalled();
+    expect(mocks.notifyStudentMilestone).toHaveBeenCalledWith(MILESTONE);
+  });
+
+  it('returns 409 and changes no grants when the role changed concurrently', async () => {
+    mocks.getCohortMemberById.mockResolvedValue(STUDENT_MEMBER);
+    mocks.updateCohortMember.mockResolvedValue(null);
+
+    await expect(updateCohortMemberService('cohort-1', 'cm-1', { roleId: ROLE.TUTOR })).rejects.toMatchObject({
+      statusCode: 409,
+      code: ErrorCodes.CONFLICT
+    });
+
+    expect(mocks.revokeCohortGrants).not.toHaveBeenCalled();
+  });
+
+  it('never sends the milestone email when the enrollment rolls back', async () => {
+    mocks.getCohortMemberById.mockResolvedValue(TUTOR_MEMBER);
+    mocks.updateCohortMember.mockResolvedValue(STUDENT_MEMBER);
+    mocks.assertStudentCapacityOrThrow.mockResolvedValue(MILESTONE);
+    mocks.insertGroupMembersOnConflictDoNothing.mockRejectedValueOnce(new Error('insert failed'));
+
+    await expect(updateCohortMemberService('cohort-1', 'cm-1', { roleId: ROLE.STUDENT })).rejects.toThrow();
+
+    expect(mocks.notifyStudentMilestone).not.toHaveBeenCalled();
   });
 });
 
