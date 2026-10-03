@@ -290,7 +290,101 @@
     "what_brings": "Sizi buraya getiren nedir",
     "how": "Bizi nasıl duydunuz?",
     "back": "Back",
-    "continue": "Continue"
+    "continue": "Continue",
+    "step_of": "{total} adımının {current}. adımı",
+    "skip": "Atla",
+    "finish_setup": "Kurulumu bitir",
+    "other": "Diğer (bize söyleyin)",
+    "other_placeholder": "Bize daha fazlasını anlatın",
+    "other_required": "Lütfen bize daha fazlasını anlatın",
+    "ai_select": "Bir yapay zeka asistanı seçin",
+    "ai_required": "Lütfen bir yapay zeka asistanı seçin",
+    "sources": {
+      "label": "Bizi nasıl duydunuz?",
+      "subtitle": "İsteğe bağlıdır ancak küçük bir ekibin neyin işe yaradığını bilmesine yardımcı olur.",
+      "blog": "Blog veya makale",
+      "ai": "Yapay zeka asistanı",
+      "search_engine": "Arama motoru",
+      "github": "GitHub veya açık kaynak",
+      "youtube": "YouTube veya podcast",
+      "social_media": "Sosyal medya",
+      "product_hunt": "Ürün Avı veya inceleme sitesi",
+      "friends_family": "Arkadaşlar, aile veya iş arkadaşı"
+    },
+    "job_roles": {
+      "label": "Rolünüz nedir?",
+      "subtitle": "Bu, kurulumunuzu uyarlamamıza yardımcı olur.",
+      "founder": "Kurucu veya CEO",
+      "product_ops": "Ürün veya işlemler",
+      "cs_education": "Müşteri başarısı, eğitimi veya etkinleştirilmesi",
+      "developer": "Geliştirici veya mühendis"
+    },
+    "company_sizes": {
+      "label": "Şirketiniz ne kadar büyük?",
+      "subtitle": "Sadece ekibinizi değil, şirketteki herkesi sayın.",
+      "enterprise": {
+        "label": "200+",
+        "description": "insanlar"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "insanlar"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "insanlar"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "insanlar"
+      },
+      "solo": {
+        "label": "Sadece ben",
+        "description": "Yalnız"
+      }
+    },
+    "learning_methods": {
+      "label": "Müşterileriniz bugün ürününüzü nasıl öğreniyor?",
+      "subtitle": "Şu anda nasıl çalıştığına en yakın olanı seçin.",
+      "self_serve": "Bunu kendi başlarına çözüyorlar",
+      "live_onboarding": "Canlı katılım oturumları veya çağrılar",
+      "help_docs": "Yardım belgeleri ve destek",
+      "no_training": "Henüz eğitimimiz yok"
+    },
+    "use_cases": {
+      "label": "ClassroomIO'yu ne için kullanmak istiyorsunuz?",
+      "subtitle": "Geçerli olanların tümünü seçin. Çalışma alanınızı bunun etrafında şekillendireceğiz.",
+      "customer_training": "Müşterilerimi ürünüm hakkında eğitin",
+      "customer_certification": "Müşterileri veya iş ortaklarını sertifikalandırın",
+      "partner_training": "İş ortaklarını veya satıcıları eğitin",
+      "team_training": "Kendi takımımı eğit",
+      "sell_courses": "Kursları halka satmak"
+    },
+    "ai_assistant": {
+      "label": "Yapay zeka asistanı",
+      "subtitle": "Hangisi bizi önerdi?"
+    },
+    "ai_providers": {
+      "chatgpt": "SohbetGPT",
+      "claude": "Claude",
+      "gemini": "İkizler",
+      "grok": "Grok",
+      "perplexity": "Şaşkınlık"
+    },
+    "step_labels": {
+      "use_cases": "Kullanım örneği",
+      "learning_methods": "Bugün antrenman",
+      "company_size": "Şirket büyüklüğü",
+      "job_role": "Rol",
+      "source": "Keşif"
+    },
+    "org_setup": {
+      "title": "Çalışma alanınızı ayarlayın",
+      "subtitle": "Başlamak için bize kendinizden ve kuruluşunuzdan bahsedin."
+    },
+    "header": {
+      "tagline": "Sistemlerinize Bağlantı Kuran Müşteri Eğitim Platformu"
+    }
   },
   "welcome_modal": {
     "we_at": "Biz",

@@ -4405,6 +4405,16 @@
     "customers": "Criar cursos para meus clientes",
     "explore": "Só estou aqui para explorar",
     "articles": "Artigos",
+    "ai": "IA",
+    "ai_select": "Selecione um assistente de IA",
+    "ai_required": "Selecione um assistente de IA",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Mecanismo de busca",
     "social": "Redes sociais",
     "friends": "Amigos e família",
@@ -4414,7 +4424,92 @@
     "what_brings": "O que leva você a",
     "how": "Como você ouviu falar de nós?",
     "back": "Voltar",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "other": "Outros (diga-nos)",
+    "other_placeholder": "Conte-nos mais",
+    "other_required": "Por favor, conte-nos mais",
+    "sources": {
+      "label": "Como você ouviu falar de nós?",
+      "blog": "Blog ou artigo",
+      "ai": "IA",
+      "search_engine": "Mecanismo de busca",
+      "github": "GitHub ou código aberto",
+      "youtube": "YouTube ou podcast",
+      "social_media": "Redes sociais",
+      "product_hunt": "Product Hunt ou um site de avaliação",
+      "friends_family": "Amigos, familiares ou um colega",
+      "subtitle": "Opcional, mas ajuda uma equipe pequena a saber o que está funcionando."
+    },
+    "job_roles": {
+      "label": "Qual é o seu papel?",
+      "founder": "Fundador ou CEO",
+      "product_ops": "Produto ou operações",
+      "cs_education": "Sucesso, educação ou capacitação do cliente",
+      "developer": "Desenvolvedor ou engenheiro",
+      "subtitle": "Isso nos ajuda a personalizar sua configuração."
+    },
+    "learning_methods": {
+      "label": "Como seus clientes aprendem seu produto hoje?",
+      "self_serve": "Eles descobrem isso sozinhos",
+      "live_onboarding": "Sessões ou chamadas de integração ao vivo",
+      "help_docs": "Documentos de ajuda e suporte",
+      "no_training": "Ainda não temos treinamento",
+      "subtitle": "Escolha aquele que mais se aproxima de como funciona agora."
+    },
+    "use_cases": {
+      "label": "Para que você deseja usar o ClassroomIO?",
+      "customer_training": "Treinar meus clientes sobre meu produto",
+      "customer_certification": "Certificar clientes ou parceiros",
+      "partner_training": "Treine parceiros ou revendedores",
+      "team_training": "Treinar minha própria equipe",
+      "sell_courses": "Venda cursos ao público",
+      "subtitle": "Escolha todas as opções aplicáveis. Nós moldaremos seu espaço de trabalho em torno disso."
+    },
+    "step_of": "Etapa {current} de {total}",
+    "skip": "Pular",
+    "finish_setup": "Concluir configuração",
+    "company_sizes": {
+      "label": "Qual é o tamanho da sua empresa?",
+      "subtitle": "Conte todos na empresa, não apenas sua equipe.",
+      "enterprise": {
+        "label": "200+",
+        "description": "pessoas"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "pessoas"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "pessoas"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "pessoas"
+      },
+      "solo": {
+        "label": "Só eu",
+        "description": "Sozinho"
+      }
+    },
+    "ai_assistant": {
+      "label": "Assistente de IA",
+      "subtitle": "Qual deles nos recomendou?"
+    },
+    "step_labels": {
+      "use_cases": "Caso de uso",
+      "learning_methods": "Treinando hoje",
+      "company_size": "Tamanho da empresa",
+      "job_role": "Função",
+      "source": "Descoberta"
+    },
+    "org_setup": {
+      "title": "Configure seu espaço de trabalho",
+      "subtitle": "Conte-nos sobre você e sua organização para começar."
+    },
+    "header": {
+      "tagline": "Plataforma de treinamento de clientes que se conecta aos seus sistemas"
+    }
   },
   "new_course_modal": {
     "live_class_label": "Aula ao vivo",

@@ -276,21 +276,105 @@
     }
   },
   "onboarding": {
-    "expanding": "On another platform, expanding here",
-    "employees": "Train my employees",
-    "customers": "Create courses for my customers",
-    "explore": "Just here to explore",
-    "articles": "Articles",
-    "search": "Search engine",
-    "social": "Social media",
-    "friends": "Friends and family",
+    "header": {
+      "tagline": "Customer Training Platform That Connects With Your Systems"
+    },
+    "org_setup": {
+      "title": "Set up your workspace",
+      "subtitle": "Tell us about you and your organization to get started."
+    },
+    "step_of": "Step {current} of {total}",
+    "step_labels": {
+      "use_cases": "Use case",
+      "learning_methods": "Training today",
+      "company_size": "Company size",
+      "job_role": "Role",
+      "source": "Discovery"
+    },
     "fullname": "Full Name",
     "name": "Name of Organization",
     "organisation_sitename": "Academy subdomain",
-    "what_brings": "What brings you to",
-    "how": "How did you hear about us?",
     "back": "Back",
-    "continue": "Continue"
+    "continue": "Continue",
+    "skip": "Skip",
+    "finish_setup": "Finish setup",
+    "other": "Other (tell us)",
+    "other_placeholder": "Tell us more",
+    "other_required": "Please tell us more",
+    "ai_select": "Select an AI assistant",
+    "ai_required": "Please select an AI assistant",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
+    "ai_assistant": {
+      "label": "AI assistant",
+      "subtitle": "Which one recommended us?"
+    },
+    "use_cases": {
+      "label": "What do you want to use ClassroomIO for?",
+      "subtitle": "Choose all that apply. We'll shape your workspace around it.",
+      "customer_training": "Train my customers on my product",
+      "customer_certification": "Certify customers or partners",
+      "partner_training": "Train partners or resellers",
+      "team_training": "Train my own team",
+      "sell_courses": "Sell courses to the public"
+    },
+    "learning_methods": {
+      "label": "How do your customers learn your product today?",
+      "subtitle": "Pick the one closest to how it works right now.",
+      "self_serve": "They figure it out on their own",
+      "live_onboarding": "Live onboarding sessions or calls",
+      "help_docs": "Help docs and support",
+      "no_training": "We don't have training yet"
+    },
+    "company_sizes": {
+      "label": "How big is your company?",
+      "subtitle": "Count everyone at the company, not just your team.",
+      "solo": {
+        "label": "Just me",
+        "description": "Solo"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "people"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "people"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "people"
+      },
+      "enterprise": {
+        "label": "200+",
+        "description": "people"
+      }
+    },
+    "job_roles": {
+      "label": "What's your role?",
+      "subtitle": "This helps us tailor your setup.",
+      "founder": "Founder or CEO",
+      "product_ops": "Product or operations",
+      "cs_education": "Customer success, education, or enablement",
+      "developer": "Developer or engineer"
+    },
+    "sources": {
+      "label": "How did you hear about us?",
+      "subtitle": "Optional, but it helps a small team know what's working.",
+      "blog": "Blog or article",
+      "ai": "AI assistant",
+      "search_engine": "Search engine",
+      "github": "GitHub or open source",
+      "youtube": "YouTube or podcast",
+      "social_media": "Social media",
+      "product_hunt": "Product Hunt or a review site",
+      "friends_family": "Friends, family, or a colleague"
+    }
   },
   "welcome_modal": {
     "we_at": "We at",
