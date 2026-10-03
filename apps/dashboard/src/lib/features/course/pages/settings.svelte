@@ -1131,8 +1131,8 @@
   <Field.Separator />
 
   <Field.Set>
-    <Field.Legend>{$t('course.navItem.settings.requires_learning_path')}</Field.Legend>
-    <Field.Description>{$t('course.navItem.settings.requires_learning_path_desc')}</Field.Description>
+    <Field.Legend>{$t('course.navItem.settings.enroll_only_in_learning_path')}</Field.Legend>
+    <Field.Description>{$t('course.navItem.settings.enroll_only_in_learning_path_desc')}</Field.Description>
     <Field.Field orientation="horizontal">
       <Switch
         id="requires-learning-path"

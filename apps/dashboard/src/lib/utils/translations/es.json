@@ -769,7 +769,7 @@
       "snackbar_success": "Usuarios asignados {assigned} a cursos ({alreadyEnrolled} ya inscritos, {emailsSent} correos electrónicos enviados)",
       "snackbar_no_courses": "Por favor seleccione al menos un curso",
       "snackbar_failed": "No se pudieron asignar cursos",
-      "snackbar_partial": "Usuarios {assigned} asignados ({alreadyEnrolled} ya tenía acceso, {emailsSent} correos electrónicos enviados). Cursos de solo ruta omitida: {names}: asigne la ruta de aprendizaje que contiene o desactive \"Requiere ruta de aprendizaje\" en la configuración del curso.",
+      "snackbar_partial": "Usuarios {assigned} asignados ({alreadyEnrolled} ya tenía acceso, {emailsSent} correos electrónicos enviados). Cursos de solo ruta omitidos: {names} — asigne la ruta de aprendizaje que contiene o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso.",
       "path_only_badge": "Sólo ruta"
     },
     "import": {
@@ -822,8 +822,8 @@
       "submit_count": "Importar {count} estudiantes",
       "result_heading": "{count} estudiantes importados",
       "start_over": "Elija un archivo diferente",
-      "skipped_path_gated_title": "Se omitieron {count} cursos de solo ruta",
-      "skipped_path_gated_description": "{names}. Estos cursos requieren inscripción a través de una ruta de aprendizaje. Asigne la ruta de aprendizaje que contiene (esto también otorga sus otros cursos) o desactive \"Requiere ruta de aprendizaje\" en la configuración del curso."
+      "skipped_path_only_title": "Se omitieron {count} cursos de solo ruta",
+      "skipped_path_only_description": "{nombres}. Estos cursos son solo para inscripción en una ruta de aprendizaje. Asigne la ruta de aprendizaje que contiene (esto también otorga sus otros cursos) o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso."
     },
     "page_subtitle": "Consulta quién pertenece a tu organización, quién está aprendiendo, quién está invitado y cómo contactarlos.",
     "user_analytics": {
@@ -1119,8 +1119,8 @@
         "open_link": "Abrir enlace en nueva pestaña",
         "copy_link": "Copiar enlace",
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo.",
-        "requires_learning_path": "Requerir ruta de aprendizaje",
-        "requires_learning_path_desc": "Cuando está activado, los alumnos solo pueden acceder a este curso a través de una ruta de aprendizaje. Se conservan las inscripciones existentes."
+        "enroll_only_in_learning_path": "Inscribirse solo en la ruta de aprendizaje",
+        "enroll_only_in_learning_path_desc": "Cuando está activado, los estudiantes solo pueden inscribirse en este curso a través de una ruta de aprendizaje. Se conservan las inscripciones existentes."
       },
       "analytics": {
         "title": "Analíticas"
@@ -1490,7 +1490,7 @@
             "description": "Da acceso a {email} a este curso. Le enviaremos un correo de invitación para unirse a tu organización e inscribirse en este curso.",
             "cancel": "Cancelar",
             "send_invite": "Enviar invitación",
-            "path_gated_notice": "Este curso requiere inscripción a través de una ruta de aprendizaje, por lo que no se puede otorgar acceso directo. En su lugar, asigne la ruta de aprendizaje que la contiene o desactive \"Requiere ruta de aprendizaje\" en la configuración del curso."
+            "path_only_notice": "Este curso es solo para inscripciones en una ruta de aprendizaje, por lo que no se puede otorgar acceso directo. En su lugar, asigne la ruta de aprendizaje que la contiene o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso."
           },
           "invite_new_students_title": "Invitar nuevos estudiantes",
           "invite_new_students_description": "Invita a personas nuevas a tu organización y asígnalas previamente a este curso. Crearán una cuenta, aceptarán la invitación y obtendrán acceso.",
@@ -1536,9 +1536,9 @@
             "custom": "personalizado"
           },
           "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes.",
-          "path_gated_notice_title": "Los estudiantes se unen a través de un camino de aprendizaje.",
-          "path_gated_notice_description": "Este curso requiere inscripción a través de una ruta de aprendizaje, por lo que no se puede invitar a los estudiantes aquí. Aún puedes invitar a tutores a continuación. Para otorgar acceso a los estudiantes, asigne la ruta de aprendizaje que la contiene o desactive \"Requiere ruta de aprendizaje\" en la configuración del curso.",
-          "members_added": "{count, plural, one {# miembro agregado exitosamente} other {# miembros agregado exitosamente}}"
+          "members_added": "{count, plural, one {# miembro agregado exitosamente} other {# miembros agregado exitosamente}}",
+          "path_only_notice_title": "Los estudiantes se unen a través de un camino de aprendizaje.",
+          "path_only_notice_description": "Este curso es solo para inscripciones en una ruta de aprendizaje, por lo que no se puede invitar a los estudiantes aquí. Aún puedes invitar a tutores a continuación. Para brindar acceso a los estudiantes, asigne la ruta de aprendizaje que la contiene o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso."
         },
         "learner": "Estudiante",
         "source": "Fuente",
