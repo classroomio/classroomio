@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isPriceConfigured, getSetupSteps } from './setup-steps';
+import { isPriceConfigured, hasLandingContent, getSetupSteps } from './setup-steps';
 import type { LearningPathDetail } from './types';
 
 function createMockPath(overrides: Partial<LearningPathDetail> = {}): LearningPathDetail {
@@ -82,6 +82,67 @@ describe('isPriceConfigured', () => {
       landingPage: {}
     });
     expect(isPriceConfigured(path)).toBe(true);
+  });
+});
+
+describe('hasLandingContent', () => {
+  it('returns false for empty landingPage or whitespace-only fields', () => {
+    expect(hasLandingContent(createMockPath({ landingPage: {} }))).toBe(false);
+    expect(
+      hasLandingContent(
+        createMockPath({
+          landingPage: {
+            title: '   ',
+            description: '',
+            requirements: ' \n ',
+            goals: ''
+          }
+        })
+      )
+    ).toBe(false);
+  });
+
+  it('returns false when only non-copy metadata or settings are present', () => {
+    expect(
+      hasLandingContent(
+        createMockPath({
+          landingPage: {
+            skills: [],
+            reviews: [],
+            faqs: []
+          }
+        })
+      )
+    ).toBe(false);
+  });
+
+  it('returns true when text content is present in title, description, requirements, or goals', () => {
+    expect(hasLandingContent(createMockPath({ landingPage: { title: 'Mastering TypeScript' } }))).toBe(true);
+    expect(hasLandingContent(createMockPath({ landingPage: { description: 'A comprehensive path.' } }))).toBe(true);
+    expect(hasLandingContent(createMockPath({ landingPage: { requirements: 'Basic JavaScript.' } }))).toBe(true);
+    expect(hasLandingContent(createMockPath({ landingPage: { goals: 'Build production apps.' } }))).toBe(true);
+  });
+
+  it('returns true when skills, reviews, or faqs have items', () => {
+    expect(hasLandingContent(createMockPath({ landingPage: { skills: ['React'] } }))).toBe(true);
+    expect(
+      hasLandingContent(
+        createMockPath({
+          landingPage: {
+            reviews: [{ id: '1', name: 'Alice', comment: 'Great path!', rating: 5 }]
+          }
+        })
+      )
+    ).toBe(true);
+    expect(
+      hasLandingContent(
+        createMockPath({
+          landingPage: {
+            faqs: [{ id: '1', question: 'Prerequisites?', answer: 'None' }]
+          }
+        })
+      )
+    ).toBe(true);
   });
 });
 
