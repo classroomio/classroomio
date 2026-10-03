@@ -45,6 +45,7 @@ const mocks = vi.hoisted(() => ({
   syncLearningPathMembersProgress: vi.fn(),
   scheduleLearningPathProgressSync: vi.fn(),
   supersedeStudentOrgInvites: vi.fn(),
+  getStaffInvitedEmails: vi.fn().mockResolvedValue(new Set<string>()),
   notifyStudentMilestone: vi.fn().mockResolvedValue(undefined)
 }));
 
@@ -136,6 +137,7 @@ vi.mock('../progress-sync-jobs', () => ({
 }));
 
 vi.mock('@cio/core/services/organization/supersede-invites', () => ({
+  getStaffInvitedEmails: mocks.getStaffInvitedEmails,
   supersedeStudentOrgInvites: mocks.supersedeStudentOrgInvites
 }));
 
@@ -322,7 +324,8 @@ describe('runQueuedPathBulkEnroll', () => {
     );
   });
 
-  it('reports emails skipped for an existing staff invite as failures and writes member rows in the invite transaction', async () => {
+  it('reports emails skipped for an existing staff invite as failures without writing a student member row', async () => {
+    mocks.getStaffInvitedEmails.mockResolvedValueOnce(new Set(['staff@test.dev']));
     mocks.supersedeStudentOrgInvites.mockResolvedValueOnce({
       invites: [],
       skipped: [{ email: 'staff@test.dev', reason: 'STAFF_INVITE' }]
@@ -342,10 +345,8 @@ describe('runQueuedPathBulkEnroll', () => {
       invited: 0,
       failed: [{ key: 'staff@test.dev', reason: 'STAFF_INVITE' }]
     });
-    expect(mocks.createOrganizationMembers).toHaveBeenCalledWith(
-      [expect.objectContaining({ email: 'staff@test.dev' })],
-      transactionClient
-    );
+    // A STUDENT row would commit without an invite and take a seat.
+    expect(mocks.createOrganizationMembers).not.toHaveBeenCalled();
   });
 
   it('resolves email-only entries to existing profiles', async () => {

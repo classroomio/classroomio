@@ -19,6 +19,7 @@ import {
   ZVerifyLearningPathCertificateParam
 } from '@cio/utils/validation/learning-path';
 import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
+import { ZAddableCoursesQuery } from '@cio/utils/validation/course';
 
 import type { TLearningPathCertificateDownloadRequest } from '@cio/utils/validation/learning-path';
 import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
@@ -40,6 +41,7 @@ import {
   getPathMemberDetailService,
   getPublicLearningPathBySlug,
   listPublicLearningPathsService,
+  listAddablePathCoursesService,
   listOrgLearningPaths,
   listPathMembersService,
   removeCourseFromPathService,
@@ -393,6 +395,31 @@ export const learningPathRouter = new Hono()
         return c.json({ success: true, data: member }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to enroll in learning path');
+      }
+    }
+  )
+
+  /**
+   * GET /learning-path/:pathId/available-courses
+   * Pages the courses the path can still add (add-courses picker)
+   */
+  .get(
+    '/:pathId/available-courses',
+    authMiddleware,
+    learningPathTeamMiddleware,
+    zValidator('param', ZPathParam),
+    zValidator('query', ZAddableCoursesQuery),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgRoles = getOrgRoles(c);
+        const { pathId } = c.req.valid('param');
+        const query = c.req.valid('query');
+        const result = await listAddablePathCoursesService(pathId, user.id, orgRoles, query);
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list available courses');
       }
     }
   )

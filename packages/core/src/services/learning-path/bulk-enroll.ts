@@ -27,7 +27,7 @@ import { env } from '../../config/env';
 import { buildOrgInviteLink } from '../../config/dashboard-url';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { enrollProfileCore } from './enroll-profile-core';
-import { supersedeStudentOrgInvites } from '../organization/supersede-invites';
+import { getStaffInvitedEmails, supersedeStudentOrgInvites } from '../organization/supersede-invites';
 import { EMAIL_FANOUT_CONCURRENCY, mapWithConcurrency } from './fanout';
 import { buildLearningPathLoginUrl, getInviteExpiryLabel, normalizeInviteEmails } from './path-invite-utils';
 import { resolveBulkMembers } from './member-resolve';
@@ -129,6 +129,30 @@ async function resolveBulkChunkMembers(
   return resolveBulkMembers(members);
 }
 
+/** Throws QUOTA_EXCEEDED when `newStudentCount` more students would pass the plan limit. */
+async function assertBulkInviteCapacity(organizationId: string, newStudentCount: number) {
+  if (env.PUBLIC_IS_SELFHOSTED === 'true') {
+    return;
+  }
+
+  const activePlan = await getActiveOrganizationPlan(organizationId);
+  const limit = getStudentLimit(activePlan?.planName);
+
+  if (!Number.isFinite(limit)) {
+    return;
+  }
+
+  const currentCount = await countActiveStudents(organizationId);
+
+  if (currentCount + newStudentCount > limit) {
+    throw new PathBulkEnrollError('QUOTA_EXCEEDED', `This organization has reached its ${limit}-student limit`, {
+      organizationId,
+      currentCount,
+      limit
+    });
+  }
+}
+
 type TBulkPathInvite = { email: string; inviteId: string; token: string; expiresAt: string };
 
 /**
@@ -152,31 +176,19 @@ async function createBulkPathInvites(
 
   const existingMembers = await getOrganizationMembersByNormalizedEmails(path.organizationId, normalized);
   const existingEmails = new Set(existingMembers.map((member) => member.normalizedEmail));
-  const newEmails = normalized.filter((email) => !existingEmails.has(email));
-
-  if (newEmails.length > 0) {
-    // Unlocked pre-check before writing invites. The strict locked check
-    // still runs per enrollment inside the chunk transaction.
-    if (env.PUBLIC_IS_SELFHOSTED !== 'true') {
-      const activePlan = await getActiveOrganizationPlan(path.organizationId);
-      const limit = getStudentLimit(activePlan?.planName);
-
-      if (Number.isFinite(limit)) {
-        const currentCount = await countActiveStudents(path.organizationId);
-
-        if (currentCount + newEmails.length > limit) {
-          throw new PathBulkEnrollError('QUOTA_EXCEEDED', `This organization has reached its ${limit}-student limit`, {
-            organizationId: path.organizationId,
-            currentCount,
-            limit
-          });
-        }
-      }
-    }
-  }
 
   const { invites, skipped } = await db.transaction(async (tx) => {
+    // The supersede below skips staff-invited emails, so leave them out of the
+    // member rows and the seat count: a STUDENT row written for them would
+    // commit without an invite and take a seat.
+    const staffInvitedEmails = await getStaffInvitedEmails(tx, { orgId: path.organizationId, emails: normalized });
+    const newEmails = normalized.filter((email) => !existingEmails.has(email) && !staffInvitedEmails.has(email));
+
     if (newEmails.length > 0) {
+      // Unlocked pre-check before writing invites. The strict locked check
+      // still runs per enrollment inside the chunk transaction.
+      await assertBulkInviteCapacity(path.organizationId, newEmails.length);
+
       await createOrganizationMembers(
         newEmails.map((email) => ({
           organizationId: path.organizationId,

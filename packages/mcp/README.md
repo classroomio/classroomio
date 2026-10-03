@@ -58,33 +58,13 @@ Current tools:
 - `tag_courses`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
-- `list_org_learning_paths`
-- `get_learning_path`
+- `list_learning_paths`
+- `get_learning_path_detail`
 - `create_learning_path`
-- `add_learning_path_courses`
+- `add_courses_to_learning_path`
 - `update_learning_path_landing_page`
-- `reorder_learning_path_courses`
-- `remove_learning_path_course`
-
-## Learning path tools
-
-Path tools work with UUIDs or 8-character public IDs anywhere a path ID goes.
-
-| Tool | Access | Notes |
-| --- | --- | --- |
-| `list_org_learning_paths` | read | paged (`page`, `limit`, `search`); returns `{ data, pagination }` |
-| `get_learning_path` | read | metadata, ordered course IDs, curriculum |
-| `create_learning_path` | write | always created **unpublished**; publish from the dashboard |
-| `add_learning_path_courses` | write | links courses; existing students are granted them |
-| `update_learning_path_landing_page` | write, idempotent | landing page copy only |
-| `reorder_learning_path_courses` | write, idempotent | full ordered course ID list |
-| `remove_learning_path_course` | destructive | unlinks the course; members keep direct access |
-
-Scopes: `learning_path:read` for reads, `learning_path:write` for writes.
-
-Who the key acts as: the API key creator must be an org admin or a tutor assigned to the path, otherwise 403. Creating a path is org-admin only. Listing shows org admins every path and tutors only the paths assigned to them. Keys never escalate past their creator's org role.
-
-Covered: listing, detail, create, course add/remove/reorder, landing page copy. Not covered: path members, publishing, pricing, certificates, analytics — use the dashboard for those.
+- `reorder_path_courses`
+- `remove_course_from_learning_path`
 
 ## Auth Model
 
@@ -422,12 +402,12 @@ Expected tool sequence:
 
 1. Agent calls `list_org_courses` to resolve the course IDs by name.
 2. Agent calls `create_learning_path`.
-3. Agent calls `add_learning_path_courses` with the ordered course IDs.
-4. Agent calls `get_learning_path` to confirm the curriculum and order.
+3. Agent calls `add_courses_to_learning_path` with the ordered course IDs.
+4. Agent calls `get_learning_path_detail` to confirm the curriculum and order.
 
 Result:
 
-- a learning path is created unpublished (publish it from the dashboard; paths have no draft state like courses)
+- a learning path is created (there's no draft state like courses)
 - courses are linked in order
 
 ### Flow 9: Add courses to a live learning path
@@ -440,10 +420,10 @@ Add the new Advanced Python course to the Python Pro path and rewrite its landin
 
 Expected tool sequence:
 
-1. Agent calls `list_org_learning_paths` if it needs to resolve the path ID by name.
-2. Agent calls `get_learning_path` to see the current order.
-3. Agent calls `add_learning_path_courses` (appends; members are granted the added courses).
-4. Agent calls `reorder_learning_path_courses` if the new course belongs earlier in the sequence.
+1. Agent calls `list_learning_paths` if it needs to resolve the path ID by name.
+2. Agent calls `get_learning_path_detail` to see the current order.
+3. Agent calls `add_courses_to_learning_path` (appends; members auto-enroll).
+4. Agent calls `reorder_path_courses` if the new course belongs earlier in the sequence.
 5. Agent calls `update_learning_path_landing_page` for the public copy.
 
 ## How Existing-Course Updates Work

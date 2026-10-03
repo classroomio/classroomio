@@ -567,3 +567,15 @@ export const ZCourseUserAnalyticsQuery = z.object({
     .transform((value) => value === 'true')
 });
 export type TCourseUserAnalyticsQuery = z.infer<typeof ZCourseUserAnalyticsQuery>;
+
+/**
+ * Query for the "add courses" pickers (cohort and learning path). The server
+ * pages, searches and excludes ineligible courses, so a page holds only
+ * courses the matching add call will accept.
+ */
+export const ZAddableCoursesQuery = z.object({
+  search: z.string().trim().max(200).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20)
+});
+export type TAddableCoursesQuery = z.infer<typeof ZAddableCoursesQuery>;
