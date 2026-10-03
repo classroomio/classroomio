@@ -3690,6 +3690,35 @@
             "disabled_notice": "This link is disabled. Enable it to allow new members to join via link.",
             "select_role": "Select a role"
           }
+        },
+        "filter": {
+          "title": "Filter people",
+          "role": "Role",
+          "all_roles": "All roles",
+          "progress": "Progress",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "certificate": "Certificate",
+          "earned": "Earned",
+          "not_earned": "Not earned",
+          "no_login_since": "No login since",
+          "joined_within": "Joined within"
+        },
+        "window": {
+          "7d": "7 days",
+          "30d": "30 days",
+          "90d": "90 days",
+          "180d": "180 days",
+          "never": "Never"
+        },
+        "views": {
+          "all": "All people",
+          "not_started": "Not started",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "never_logged_in": "Never logged in",
+          "awaiting_certificate": "Awaiting certificate",
+          "custom": "Custom filters"
         }
       },
       "certificates": {
@@ -5511,7 +5540,17 @@
       "add_another": "Add another",
       "invite_submit": "Send Invites",
       "empty_title": "No members yet",
-      "empty_description": "Invite people to join this cohort."
+      "empty_description": "Invite people to join this cohort.",
+      "name": "Name",
+      "joined": "Joined",
+      "filter_title": "Filter people",
+      "views": {
+        "all": "All people",
+        "tutors": "Tutors",
+        "students": "Students",
+        "pending_invites": "Pending invites",
+        "never_logged_in": "Never logged in"
+      }
     },
     "lms": {
       "empty_title": "No cohorts yet",

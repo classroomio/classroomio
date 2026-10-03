@@ -11,9 +11,9 @@ import {
 } from '@cio/db/queries/course/people';
 import { resetStudentCourseProgress } from '@cio/db/queries/course/reset-progress';
 
-import type { TAddCourseMembers, TCourseMembersQuery } from '@cio/utils/validation/course/people';
+import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
-import type { CourseMemberWithProfile } from '@cio/db/queries/course/people';
+import type { PaginatedCourseMember, PaginatedCourseMembersOptions } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
@@ -25,12 +25,13 @@ import { getCourseMemberProgressSummaries } from './member-progress';
 import { getWelcomeSessionIcs } from './session-invite';
 
 /**
- * Attaches progress, stage, last login and enrollment date to student members.
- * @param courseId Course ID
- * @param members Course members to decorate
- * @returns The same members, with progress fields set on students
+ * Attaches only `stage` to a page of members.
+ *
+ * Progress, last login and enrollment date already come from the query, but
+ * `stage` names a content item in canonical course order, which is derived in
+ * application code rather than SQL.
  */
-async function addProgressSummaries(courseId: string, members: CourseMemberWithProfile[]) {
+async function addMemberStages(courseId: string, members: PaginatedCourseMember[]) {
   const progressSummaries = await getCourseMemberProgressSummaries(
     courseId,
     members.map((member) => ({
@@ -41,33 +42,29 @@ async function addProgressSummaries(courseId: string, members: CourseMemberWithP
   );
 
   return members.map((member) => {
-    const progress =
-      member.profileId && member.roleId === ROLE.STUDENT ? progressSummaries.get(member.profileId) : undefined;
+    if (!member.profileId || member.roleId !== ROLE.STUDENT) {
+      return member;
+    }
 
+    const progress = progressSummaries.get(member.profileId);
     if (!progress) {
       return member;
     }
 
-    return {
-      ...member,
-      progressPercent: progress.progressPercent,
-      stage: progress.stage,
-      lastLoginAt: progress.lastLoginAt,
-      enrolledAt: progress.enrolledAt
-    };
+    return { ...member, stage: progress.stage };
   });
 }
 
 /**
- * Gets one filtered page of course members for a course.
+ * Gets one filtered, sorted page of course members for a course.
  * @param courseId Course ID
- * @param query Page, page size, search term and role filter
- * @returns One page of course members with profile and progress data, plus pagination totals
+ * @param query Page, page size, search term, filters and sort
+ * @returns One page of course members with profile, progress and stage data, plus pagination totals
  */
-export async function listPaginatedCourseMembers(courseId: string, query: TCourseMembersQuery) {
+export async function listPaginatedCourseMembers(courseId: string, query: PaginatedCourseMembersOptions) {
   try {
     const result = await getPaginatedCourseMembers(courseId, query);
-    const items = await addProgressSummaries(courseId, result.items);
+    const items = await addMemberStages(courseId, result.items);
 
     return {
       ...result,

@@ -1536,7 +1536,39 @@
           },
           "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes."
         },
-        "learner": "Estudiante"
+        "learner": "Estudiante",
+        "views": {
+          "all": "todas las personas",
+          "not_started": "No iniciado",
+          "in_progress": "En progreso",
+          "completed": "Completado",
+          "never_logged_in": "Nunca inicie sesión",
+          "awaiting_certificate": "En espera de certificado",
+          "custom": "Filtros personalizados"
+        },
+        "window": {
+          "7d": "7 dias",
+          "30d": "30 dias",
+          "90d": "90 dias",
+          "180d": "180 días",
+          "never": "nunca"
+        },
+        "filter": {
+          "title": "Filtrar personas",
+          "role": "Rol",
+          "all_roles": "Todos los roles",
+          "progress": "Progreso",
+          "in_progress": "En progreso",
+          "completed": "Completado",
+          "membership": "Membresía",
+          "joined": "Se unió",
+          "invited": "Invitado, aún no hay cuenta",
+          "certificate": "Certificado",
+          "earned": "Ganado",
+          "not_earned": "No ganado",
+          "no_login_since": "No he iniciado sesión desde",
+          "joined_within": "Unidos dentro"
+        }
       },
       "marks": {
         "title": "marcas",
@@ -5426,7 +5458,17 @@
       "add_another": "agregar otro",
       "invite_submit": "Enviar invitaciones",
       "empty_title": "Aún no hay miembros",
-      "empty_description": "Invita a personas a unirse a esta cohorte."
+      "empty_description": "Invita a personas a unirse a esta cohorte.",
+      "name": "Nombre",
+      "joined": "Se unió",
+      "filter_title": "Filtrar personas",
+      "views": {
+        "all": "todas las personas",
+        "tutors": "Tutores",
+        "students": "estudiantes",
+        "pending_invites": "Invitaciones pendientes",
+        "never_logged_in": "Nunca inicie sesión"
+      }
     },
     "courses": {
       "add": "Agregar curso",

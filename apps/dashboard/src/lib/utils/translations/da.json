@@ -1536,7 +1536,39 @@
           },
           "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever."
         },
-        "learner": "Studerende"
+        "learner": "Studerende",
+        "views": {
+          "all": "Alle mennesker",
+          "not_started": "Ikke startet",
+          "in_progress": "I gang",
+          "completed": "Afsluttet",
+          "never_logged_in": "Aldrig logget ind",
+          "awaiting_certificate": "Afventer certifikat",
+          "custom": "Brugerdefinerede filtre"
+        },
+        "window": {
+          "7d": "7 dage",
+          "30d": "30 dage",
+          "90d": "90 dage",
+          "180d": "180 dage",
+          "never": "Aldrig"
+        },
+        "filter": {
+          "title": "Filtrer folk",
+          "role": "Rolle",
+          "all_roles": "Alle roller",
+          "progress": "Fremskridt",
+          "in_progress": "I gang",
+          "completed": "Afsluttet",
+          "membership": "Medlemskab",
+          "joined": "Tiltrådte",
+          "invited": "Inviteret, ingen konto endnu",
+          "certificate": "Certifikat",
+          "earned": "Optjent",
+          "not_earned": "Ikke tjent",
+          "no_login_since": "Intet login siden",
+          "joined_within": "Tiltrådte indenfor"
+        }
       },
       "marks": {
         "title": "Mærker",
@@ -5426,7 +5458,17 @@
       "add_another": "Tilføj en anden",
       "invite_submit": "Send invitationer",
       "empty_title": "Ingen medlemmer endnu",
-      "empty_description": "Inviter folk til at deltage i dette kohorte."
+      "empty_description": "Inviter folk til at deltage i dette kohorte.",
+      "name": "Navn",
+      "joined": "Tiltrådte",
+      "filter_title": "Filtrer folk",
+      "views": {
+        "all": "Alle mennesker",
+        "tutors": "Undervisere",
+        "students": "studerende",
+        "pending_invites": "Afventende invitationer",
+        "never_logged_in": "Aldrig logget ind"
+      }
     },
     "courses": {
       "add": "Tilføj kursus",

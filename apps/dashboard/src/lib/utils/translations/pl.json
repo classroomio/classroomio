@@ -1536,7 +1536,39 @@
           },
           "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów."
         },
-        "learner": "Student"
+        "learner": "Student",
+        "views": {
+          "all": "Wszyscy ludzie",
+          "not_started": "Nie rozpoczęte",
+          "in_progress": "W toku",
+          "completed": "Ukończono",
+          "never_logged_in": "Nigdy się nie logowałem",
+          "awaiting_certificate": "Oczekiwanie na certyfikat",
+          "custom": "Filtry niestandardowe"
+        },
+        "window": {
+          "7d": "7 dni",
+          "30d": "30 dni",
+          "90d": "90 dni",
+          "180d": "180 dni",
+          "never": "Nigdy"
+        },
+        "filter": {
+          "title": "Filtruj ludzi",
+          "role": "Rola",
+          "all_roles": "Wszystkie role",
+          "progress": "Postęp",
+          "in_progress": "W toku",
+          "completed": "Ukończono",
+          "membership": "Członkostwo",
+          "joined": "Dołączył",
+          "invited": "Zaproszono, nie masz jeszcze konta",
+          "certificate": "Certyfikat",
+          "earned": "Zdobyte",
+          "not_earned": "Nie zarobione",
+          "no_login_since": "Od tego czasu brak logowania",
+          "joined_within": "Dołączył wewnątrz"
+        }
       },
       "marks": {
         "title": "Znaki",
@@ -5426,7 +5458,17 @@
       "add_another": "Dodaj kolejny",
       "invite_submit": "Wyślij zaproszenia",
       "empty_title": "Nie ma jeszcze członków",
-      "empty_description": "Zaproś osoby do dołączenia do tej kohorty."
+      "empty_description": "Zaproś osoby do dołączenia do tej kohorty.",
+      "name": "Imię",
+      "joined": "Dołączył",
+      "filter_title": "Filtruj ludzi",
+      "views": {
+        "all": "Wszyscy ludzie",
+        "tutors": "Korepetytorzy",
+        "students": "Studenci",
+        "pending_invites": "Oczekujące zaproszenia",
+        "never_logged_in": "Nigdy się nie logowałem"
+      }
     },
     "courses": {
       "add": "Dodaj kurs",
