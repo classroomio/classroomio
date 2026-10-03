@@ -60,6 +60,8 @@ services:
       storage:
         condition: service_healthy
     exclude_from_hc: true
+    # One-off job: without this Coolify's default restart policy re-runs it forever.
+    restart: "no"
     entrypoint:
       - /bin/sh
       - -c
@@ -122,6 +124,7 @@ services:
       - PRIVATE_SERVER_URL=http://api:3081
       - PRIVATE_SERVER_KEY=$SERVICE_HEX_64_PRIVATESERVER
       - CSP_MEDIA_SRC_DOMAINS=$SERVICE_URL_STORAGE
+      - CSP_CONNECT_SRC_DOMAINS=$SERVICE_URL_STORAGE
 
   jobs:
     image: classroomio/jobs:${CIO_VERSION:-latest}

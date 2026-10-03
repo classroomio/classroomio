@@ -153,6 +153,7 @@ OBJECT_STORAGE_BUCKET_VIDEOS=videos
 OBJECT_STORAGE_BUCKET_DOCUMENTS=documents
 OBJECT_STORAGE_BUCKET_MEDIA=media
 CSP_MEDIA_SRC_DOMAINS=https://storage.yourdomain.com   # so browsers can load media
+CSP_CONNECT_SRC_DOMAINS=https://storage.yourdomain.com # so browsers can upload
 
 # ── Email (SMTP — signup verification, password reset, invites) ──
 SMTP_HOST=smtp.yourprovider.com
@@ -199,6 +200,7 @@ SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | Public base URL for media (`…/media`). |
 | `OBJECT_STORAGE_BUCKET_VIDEOS/DOCUMENTS/MEDIA` | Bucket names (`videos`, `documents`, `media`). |
 | `CSP_MEDIA_SRC_DOMAINS` | Your storage domain — otherwise the browser's CSP blocks uploaded media. |
+| `CSP_CONNECT_SRC_DOMAINS` | Your storage domain — otherwise the browser's CSP blocks uploads (they go straight from the browser to storage). |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_SENDER` | SMTP server for signup verification, password reset, and invites. |
 
 :::warning[If the stack won't start at all]
@@ -229,6 +231,13 @@ won't work correctly without them. Set them all.
 Enable the **bundled store** (SeaweedFS) with `COMPOSE_PROFILES=storage` and Coolify runs it alongside the stack.
 **Give the `storage-data` volume persistent storage in Coolify** and route a domain to the `storage` service on port `9000`
 (`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers can load media.
+
+:::note[Domains: include the port, and use HTTPS]
+In Coolify, end each service domain with its container port (`https://dash.yourdomain.com:3082`,
+`https://storage.yourdomain.com:9000`), or the proxy returns **Bad Gateway**. Use `https://` for
+both: the dashboard tells browsers to upgrade requests to HTTPS, so over plain HTTP its scripts and
+styles fail to load, and uploads are blocked. Redeploy after changing a domain.
+:::
 
 :::warning[The storage volume is your durability boundary]
 The single-node bundled store has no redundancy: its volume is the only thing protecting your uploads, so give it

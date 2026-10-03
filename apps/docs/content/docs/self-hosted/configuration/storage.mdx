@@ -89,6 +89,14 @@ including Cloudflare R2 and AWS S3. Point them at the provider and start **witho
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | Public base URL for media (`…/media`) |
 | `OBJECT_STORAGE_BUCKET_VIDEOS` / `_DOCUMENTS` / `_MEDIA` | Bucket names (default `videos`, `documents`, `media`) |
 
+:::note[Allow the storage domain in the dashboard's CSP]
+Browsers upload straight to storage and load media from it, so when storage has its own domain
+(bundled storage behind a domain, or S3/R2), the dashboard must allow it: `CSP_CONNECT_SRC_DOMAINS`
+for uploads and `CSP_MEDIA_SRC_DOMAINS` for displaying files. `./classroomio.sh` adds the
+`OBJECT_STORAGE_PUBLIC_ENDPOINT` origin to both automatically (unless you use
+`ALLOWED_EXTERNAL_DOMAINS`, which replaces them). On Coolify, Dokploy or Railway, set them yourself.
+:::
+
 :::note[Legacy `CLOUDFLARE_*` variables]
 ClassroomIO also accepts a legacy Cloudflare R2 config (`CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ACCESS_KEY`,
 `CLOUDFLARE_SECRET_ACCESS_KEY`, …). It is a **fallback** used only when the `OBJECT_STORAGE_*` variables

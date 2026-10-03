@@ -269,6 +269,7 @@ derive_public_storage_urls() {
         echo "Derived OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL from DASHBOARD_ORIGIN (${derived})."
       fi
     fi
+    allow_storage_in_csp
   else
     # Local demo: ensure localhost defaults are present.
     if [[ -z "${public_endpoint}" ]]; then
@@ -277,6 +278,36 @@ derive_public_storage_urls() {
     if [[ -z "${media_base}" ]]; then
       upsert_env_value OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL "http://localhost:9000/media"
     fi
+  fi
+}
+
+url_origin() {
+  printf '%s' "$1" | sed -E 's#^(https?://[^/]+).*#\1#'
+}
+
+add_csp_domain() {
+  local key="$1" origin="$2" current
+  current="$(get_env_value "${key}")"
+  if [[ -z "${origin}" ]] || is_local_origin "${origin}" || [[ ",${current// /}," == *",${origin},"* ]]; then
+    return 0
+  fi
+  upsert_env_value "${key}" "${current:+${current},}${origin}"
+  echo "Allowed ${origin} in ${key} so browsers can reach object storage."
+}
+
+# Browsers upload straight to storage and load media from it, so the dashboard's CSP must allow both.
+allow_storage_in_csp() {
+  # ALLOWED_EXTERNAL_DOMAINS replaces every per-directive list; it's operator-owned.
+  if [[ -n "$(get_env_value ALLOWED_EXTERNAL_DOMAINS)" ]]; then
+    return 0
+  fi
+  local endpoint media
+  endpoint="$(url_origin "$(get_env_value OBJECT_STORAGE_PUBLIC_ENDPOINT)")"
+  media="$(url_origin "$(get_env_value OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL)")"
+  add_csp_domain CSP_CONNECT_SRC_DOMAINS "${endpoint}"
+  add_csp_domain CSP_MEDIA_SRC_DOMAINS "${endpoint}"
+  if [[ "${media}" != "$(url_origin "$(get_env_value DASHBOARD_ORIGIN)")" ]]; then
+    add_csp_domain CSP_MEDIA_SRC_DOMAINS "${media}"
   fi
 }
 
