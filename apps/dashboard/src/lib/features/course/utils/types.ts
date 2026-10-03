@@ -582,3 +582,13 @@ export type VideoRecordingPlaybackRequest =
 export type GetCourseRedirectRequest = (typeof classroomio.course)[':courseId']['redirect']['$get'];
 export type GetCourseRedirectSuccess = Extract<InferResponseType<GetCourseRedirectRequest>, { success: true }>;
 export type CourseRedirectTarget = GetCourseRedirectSuccess['data'];
+
+// Add-courses picker types (cohort and learning path share one response shape)
+export type GetCohortAddableCoursesRequest = (typeof classroomio.cohort)[':cohortId']['available-courses']['$get'];
+export type GetPathAddableCoursesRequest =
+  (typeof classroomio)['learning-path'][':pathId']['available-courses']['$get'];
+export type AddableCoursesSuccess = Extract<InferResponseType<GetCohortAddableCoursesRequest>, { success: true }>;
+export type AddableCourses = AddableCoursesSuccess['data'];
+export type AddableCoursesQuery = { page: number; limit: number; search?: string };
+/** Which resource the picker adds courses to; decides the endpoint and its exclusions. */
+export type CoursePickerSource = { kind: 'cohort'; cohortId: string } | { kind: 'learning-path'; pathId: string };
