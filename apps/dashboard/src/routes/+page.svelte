@@ -37,13 +37,13 @@
   const landingPageProps = $derived.by(() => {
     if (!data.isOrgSite || !data.org) return null;
 
-    return buildOrgLandingPageProps(
-      data.org,
-      normalizeLandingPageSettings(data.org.landingpage),
-      data.courses,
-      data.hasMoreCourses,
+    return buildOrgLandingPageProps(data.org, normalizeLandingPageSettings(data.org.landingpage), {
+      courses: data.courses,
+      learningPaths: data.learningPaths,
+      hasMoreCourses: data.hasMoreCourses,
+      hasMoreLearningPaths: data.hasMoreLearningPaths,
       authAction
-    );
+    });
   });
 
   onMount(() => {

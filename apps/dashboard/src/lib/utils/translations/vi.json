@@ -35,7 +35,8 @@
       "reward_help": "Tặng học viên một ưu đãi khi hoàn thành",
       "reward_description": "Mô tả phần thưởng",
       "placeholder_reward": "ví dụ: buổi cố vấn 1-1, quà lưu niệm hoặc quyền truy cập cộng đồng độc quyền"
-    }
+    },
+    "back_to_my_learning": "Quay lại việc học của tôi"
   },
   "validations": {
     "generic": {
@@ -734,7 +735,9 @@
       "cancel": "Hủy bỏ",
       "snackbar_success": "Đã chỉ định người dùng {assigned} cho các khóa học ({alreadyEnrolled} đã đăng ký, đã gửi {emailsSent} email)",
       "snackbar_no_courses": "Vui lòng chọn ít nhất một khóa học",
-      "snackbar_failed": "Không thể chỉ định khóa học"
+      "snackbar_failed": "Không thể chỉ định khóa học",
+      "snackbar_partial": "Người dùng {assigned} được chỉ định ({alreadyEnrolled} đã có quyền truy cập, email {emailsSent} đã được gửi). Các khóa học chỉ có lộ trình bị bỏ qua: {names} — chỉ định lộ trình học tập chứa hoặc tắt \"Chỉ đăng ký vào Lộ trình học tập\" trong cài đặt khóa học.",
+      "path_only_badge": "Chỉ đường dẫn"
     },
     "import": {
       "title": "Nhập người dùng",
@@ -785,7 +788,9 @@
       },
       "submit_count": "Nhập {count} học viên",
       "result_heading": "{count} học viên đã được nhập",
-      "start_over": "Chọn một tập tin khác"
+      "start_over": "Chọn một tập tin khác",
+      "skipped_path_only_title": "Đã bỏ qua {count} khóa học chỉ có đường dẫn",
+      "skipped_path_only_description": "{names}. Các khóa học này chỉ dành cho người đăng ký trong lộ trình học tập. Chỉ định lộ trình học tập chứa (điều này cũng cấp các khóa học khác) hoặc tắt 'Chỉ đăng ký vào Lộ trình học tập' trong cài đặt khóa học."
     },
     "page_subtitle": "Xem ai thuộc tổ chức của bạn, ai đang học, ai được mời và cách liên hệ với họ.",
     "user_analytics": {
@@ -921,7 +926,8 @@
       "custom": "Bộ lọc tùy chỉnh",
       "all": "Tất cả học viên"
     },
-    "learner_count": "{count} học sinh"
+    "learner_count": "{count} học sinh",
+    "path_only_badge": "Chỉ đường dẫn"
   },
   "community": {
     "title": "cộng đồng",
@@ -1079,7 +1085,9 @@
         "generate_link": "Tạo liên kết mới",
         "open_link": "Mở liên kết trong tab mới",
         "copy_link": "Sao chép liên kết",
-        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản."
+        "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
+        "enroll_only_in_learning_path": "Chỉ đăng ký vào Lộ trình Học tập",
+        "enroll_only_in_learning_path_desc": "Khi bật, sinh viên chỉ có thể đăng ký khóa học này thông qua lộ trình học tập. Tuyển sinh hiện tại được bảo tồn."
       },
       "analytics": {
         "title": "Phân tích"
@@ -1448,7 +1456,8 @@
             "title": "Cấp quyền truy cập cho học viên",
             "description": "Cấp cho {email} quyền truy cập khóa học này. Chúng tôi sẽ gửi email mời để tham gia tổ chức của bạn và đăng ký khóa học.",
             "cancel": "Hủy",
-            "send_invite": "Gửi lời mời"
+            "send_invite": "Gửi lời mời",
+            "path_only_notice": "Khóa học này chỉ dành cho người đăng ký trong lộ trình học tập nên không thể cấp quyền truy cập trực tiếp. Thay vào đó, hãy chỉ định lộ trình học tập chứa đựng — hoặc tắt 'Chỉ đăng ký vào Lộ trình học tập' trong cài đặt khóa học."
           },
           "invite_new_students_title": "Mời học viên mới",
           "invite_new_students_description": "Mời người mới vào tổ chức của bạn và gán trước cho khóa học này. Họ sẽ tạo tài khoản, chấp nhận lời mời và nhận quyền truy cập.",
@@ -1493,9 +1502,17 @@
             "multi_use_30d": "Sử dụng nhiều lần (30 ngày)",
             "custom": "tùy chỉnh"
           },
-          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
+          "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên.",
+          "members_added": "{count, plural, one {# thành viên được thêm thành công} other {# thành viên được thêm thành công}}",
+          "path_only_notice_title": "Học sinh tham gia thông qua lộ trình học tập",
+          "path_only_notice_description": "Khóa học này chỉ dành cho người đăng ký trong lộ trình học tập nên không thể mời học viên vào đây. Bạn vẫn có thể mời gia sư dưới đây. Để cấp cho học viên quyền truy cập, hãy chỉ định lộ trình học tập chứa đựng — hoặc tắt 'Chỉ đăng ký vào Lộ trình học tập' trong cài đặt khóa học."
         },
-        "learner": "Học viên"
+        "learner": "Học viên",
+        "source": "Nguồn",
+        "source_learning_path": "Lộ trình học tập",
+        "source_cohort": "đoàn hệ",
+        "source_filter_all": "Tất cả các nguồn",
+        "source_filter_direct": "trực tiếp"
       },
       "marks": {
         "title": "Điểm",
@@ -2842,6 +2859,11 @@
       "description": "Bạn sắp biết học viên sẽ thấy gì khi họ đăng ký khóa học này",
       "copy_link": "Sao chép liên kết",
       "go_to_lms": "Đi tới LMS"
+    },
+    "not_found": {
+      "header": "Không tìm thấy khóa học",
+      "body": "Khóa học bạn đang tìm kiếm không tồn tại hoặc có thể đã bị xóa.",
+      "button": "Về nhà"
     }
   },
   "courses": {
@@ -4177,9 +4199,6 @@
       "command_palette": {
         "title": "Bảng lệnh",
         "description": "Tìm kiếm và điều hướng trong tổ chức của bạn",
-        "placeholder": "Tìm kiếm khóa học, nhóm học tập, widget, sinh viên, thẻ, cài đặt...",
-        "org_placeholder": "Tìm kiếm khóa học, nhóm học tập, widget, sinh viên, thẻ, cài đặt...",
-        "lms_placeholder": "Tìm kiếm các khóa học, nhóm học tập và trang học tập của bạn...",
         "lms_description": "Tìm kiếm và điều hướng không gian học tập của bạn",
         "empty": "Không tìm thấy kết quả nào",
         "loading": "Đang tìm kiếm...",
@@ -4195,8 +4214,12 @@
           "tags": "Thẻ",
           "students": "Sinh viên",
           "settings": "Cài đặt",
-          "cohorts": "Nhóm học tập"
-        }
+          "cohorts": "Nhóm học tập",
+          "learning_paths": "Lộ trình học tập"
+        },
+        "placeholder": "Tìm kiếm các khóa học, nhóm thuần tập, lộ trình học tập, tiện ích, sinh viên, thẻ, cài đặt...",
+        "org_placeholder": "Tìm kiếm các khóa học, nhóm thuần tập, lộ trình học tập, tiện ích, sinh viên, thẻ, cài đặt...",
+        "lms_placeholder": "Tìm kiếm các khóa học, nhóm thuần tập, lộ trình học tập và trang học tập của bạn..."
       }
     },
     "cancel": "Hủy bỏ",
@@ -5257,7 +5280,9 @@
       "published_access_callout_description": "Sinh viên chỉ có quyền truy cập vào các khóa học được xuất bản. Các khóa học có thể nằm trong nhóm này cho nhóm của bạn mặc dù vẫn chưa được xuất bản nhưng chúng vẫn bị ẩn với học sinh cho đến khi bạn xuất bản chúng.",
       "empty_student_description": "Chưa có khóa học nào được xuất bản trong nhóm này.",
       "add_count": "Thêm {count} {count, plural, =1 {Khóa học} other {Khóa học}}",
-      "adding": "Đang thêm khóa học…"
+      "adding": "Đang thêm khóa học…",
+      "load_failed": "Không thể tải các khóa học.",
+      "retry": "Thử lại"
     },
     "newsfeed": {
       "post": "Bài đăng mới",
@@ -5498,17 +5523,19 @@
         "submit": "Thêm {count} {count, plural, =1 {Khóa học} other {Khóa học}}",
         "submitting": "Đang thêm khóa học…",
         "select_courses": "Chọn khóa học",
-        "pagination_status": "Trang {page} trong tổng số {totalPages}"
+        "pagination_status": "Trang {page} trong tổng số {totalPages}",
+        "load_failed": "Không thể tải các khóa học.",
+        "retry": "Thử lại"
       },
       "create": {
         "title": "Tạo Lộ trình Học tập",
         "name_label": "Tên Lộ trình",
         "name_placeholder": "Ví dụ: Phát triển Web Fullstack",
         "desc_label": "Mô tả",
-        "desc_placeholder": "Tóm tắt ngắn gọn về những gì người học sẽ đạt được...",
         "cancel": "Hủy",
         "submit": "Tạo lộ trình học tập",
-        "failed": "Không tạo được lộ trình học tập"
+        "failed": "Không tạo được lộ trình học tập",
+        "desc_placeholder": "Một bản tóm tắt ngắn gọn về những gì học sinh sẽ đạt được..."
       }
     },
     "workspace": {
@@ -5546,7 +5573,6 @@
     },
     "setup": {
       "title": "Thiết lập lộ trình của bạn",
-      "subtitle": "Hoàn thành các bước này để ra mắt {name} cho người học của bạn.",
       "summary": "Một lộ trình sẽ được kích hoạt khi các khóa học được đặt hàng, định giá và được đặt ở trạng thái Hoạt động.",
       "progress": "{completed} trong số {total} khóa học đã hoàn thành",
       "done": "Xong",
@@ -5566,12 +5592,13 @@
       "step_price_desc": "Định giá toàn bộ khóa học theo gói — học viên sẽ thấy được khoản tiết kiệm so với việc mua từng khóa học riêng lẻ.",
       "step_price_action": "Thiết lập giá",
       "step_landing_title": "Tùy chỉnh trang đích",
-      "step_landing_desc": "Kết quả học tập, kỹ năng, giảng viên, lời chứng thực và Câu hỏi thường gặp trên trang khóa học công khai.",
+      "step_landing_desc": "Mục tiêu, kỹ năng, giảng viên, đánh giá và Câu hỏi thường gặp trên trang khóa học công khai.",
       "step_landing_action": "Tùy chỉnh",
       "step_publish_title": "Xuất bản đường dẫn",
       "step_publish_desc": "Xuất bản Đường dẫn để nó xuất hiện trên trang đích và LMS của bạn.",
       "step_publish_action": "Xuất bản",
-      "reorder_action": "Sắp xếp lại"
+      "reorder_action": "Sắp xếp lại",
+      "subtitle": "Hãy hoàn tất các bước này để triển khai {name} cho học viên của bạn."
     },
     "builder": {
       "title": "Các khóa học",
@@ -5585,13 +5612,12 @@
       "remove_course": "Xóa khỏi lộ trình",
       "add_course_button": "Thêm khóa học vào lộ trình",
       "empty_title": "Chưa có khóa học nào trong lộ trình học tập này",
-      "empty_description": "Thêm các khóa học để hướng dẫn người học theo một trình tự có cấu trúc. Bắt đầu bằng cách nhấp vào nút Thêm.",
       "start_reorder": "Sắp xếp lại",
-      "end_reorder": "Kết thúc sắp xếp lại"
+      "end_reorder": "Kết thúc sắp xếp lại",
+      "empty_description": "Thêm các khóa học để hướng dẫn sinh viên theo một trình tự có cấu trúc. Bắt đầu bằng cách nhấp vào nút Thêm."
     },
     "listing": {
       "title": "Lộ trình học tập",
-      "subtitle": "Tạo và quản lý trải nghiệm học tập có cấu trúc hướng dẫn người học qua nhiều khóa học.",
       "create_path": "Tạo Lộ Trình Học Tập",
       "empty": {
         "title": "Tạo Lộ Trình Học Tập đầu tiên của bạn",
@@ -5629,7 +5655,9 @@
         "grid_view": "Chế độ xem lưới",
         "list_view": "Chế độ xem danh sách"
       },
-      "load_error_title": "Không tải được lộ trình học tập"
+      "load_error_title": "Không tải được lộ trình học tập",
+      "load_more": "Tải thêm",
+      "subtitle": "Tạo và quản lý trải nghiệm học tập có cấu trúc nhằm hướng dẫn sinh viên qua nhiều khóa học."
     },
     "view_path_site": {
       "unpublished_title": "Xuất bản lộ trình học tập của bạn",
@@ -5659,50 +5687,46 @@
       "course_added": "Đã thêm khóa học",
       "courses_added": "Đã thêm khóa học",
       "course_removed": "Đã xóa khóa học",
-      "members_added": "Người học được thêm vào đường dẫn",
-      "member_removed": "Người học đã bị xóa khỏi đường dẫn",
-      "tutors_added": "Đã thêm gia sư vào đường dẫn",
-      "tutor_added": "Đã thêm gia sư vào lộ trình",
       "tutor_removed": "Đã xóa gia sư khỏi lộ trình",
       "certificate_saved": "Đã lưu cài đặt chứng chỉ",
       "landing_saved": "Đã cập nhật trang đích",
       "landing_save_failed": "Không thể lưu trang đích",
       "link_generated": "Đã tạo liên kết mời và sao chép vào bảng nhớ tạm",
-      "settings_saved": "Đã cập nhật cài đặt lộ trình học tập"
+      "settings_saved": "Đã cập nhật cài đặt lộ trình học tập",
+      "members_add_partial": "{added} đã thêm, {invited} đã mời, không thể thêm {notAdded}",
+      "member_role_updated": "Đã cập nhật vai trò thành viên",
+      "delete_failed": "Không xóa được lộ trình học tập",
+      "member_removed": "Học sinh bị xóa khỏi đường dẫn"
     },
     "analytics": {
       "title": "Phân tích",
-      "subtitle": "Người học đang di chuyển như thế nào trên con đường này.",
-      "empty": "Chưa có dữ liệu. Đăng ký người học và họ sẽ bắt đầu hiển thị ở đây.",
-      "empty_desc": "Đăng ký người học vào lộ trình này và tiến trình của họ sẽ hiển thị tại đây.",
       "stuck": {
-        "title": "Nơi người học bị mắc kẹt",
-        "subtitle": "Những bài học, bài tập gây cản trở cho người học nhất hiện nay.",
         "badge": "{count} bị kẹt",
-        "lesson_desc": "{count} {count, plural, =1 {người học} other {người học}} khác đã dừng lại ở bài học này.",
-        "exercise_desc": "{count} {count, plural, =1 {người học} other {người học}} khác đã thực hiện bài tập này trong hơn 2 tuần.",
-        "empty": "Hiện tại không có người học nào bị mắc kẹt. Tiến bộ lớn!",
-        "empty_desc": "Khi người học bị mắc kẹt, họ sẽ hiển thị ở đây.",
         "lesson_prefix": "Bài học:",
         "exercise_prefix": "Bài tập:",
         "showing": "Đang hiển thị {start} đến {end} trong tổng số {total} mục",
         "table": {
           "item": "Mục",
           "course": "Khóa học"
-        }
+        },
+        "title": "Nơi học sinh mắc kẹt",
+        "subtitle": "Những bài học, bài tập gây cản trở cho học viên nhiều nhất hiện nay.",
+        "lesson_desc": "{count} {count, plural, =1 {học viên} other {học viên}} đã dừng lại ở bài học này.",
+        "exercise_desc": "{count} {count, plural, =1 {học viên} other {học viên}} đã thực hiện bài tập này được hơn 2 tuần.",
+        "empty": "Hiện tại không có học sinh nào bị mắc kẹt. Tiến bộ lớn!",
+        "empty_desc": "Khi học sinh gặp khó khăn, họ sẽ xuất hiện ở đây."
       },
       "funnel": {
         "title": "Kênh khóa học",
-        "subtitle": "Có bao nhiêu người học đã đạt và hoàn thành mỗi khóa học theo thứ tự.",
         "completed": "hoàn thành",
         "in_progress": "đang tiến hành",
-        "drop": "{count} {count, plural, =1 {người học} other {người học}} khác đã bỏ học sau Khóa học {n}",
         "biggest_drop": "sự sụt giảm lớn nhất",
-        "certificates": "{count} {count, plural, =1 {chứng chỉ} other {chứng chỉ}} khác được trao"
+        "certificates": "{count} {count, plural, =1 {chứng chỉ} other {chứng chỉ}} khác được trao",
+        "subtitle": "Có bao nhiêu học sinh đã đạt và hoàn thành mỗi khóa học theo thứ tự.",
+        "drop": "{count} {count, plural, =1 {học viên} other {học viên}} đã bỏ học sau Khóa học {n}"
       },
       "stat": {
         "learners": "Học viên",
-        "active": "Người học tích cực",
         "active_desc": "đã làm việc trong 14 ngày qua",
         "completion_rate": "Tỷ lệ hoàn thành",
         "completion_desc": "{completed} trong tổng số {total} đã hoàn thành",
@@ -5712,12 +5736,13 @@
         "pending_line": "{count} {count, plural, other {lời mời đang chờ}}",
         "team_desc": "{count, plural, one {# gia sư trong nhóm lộ trình} other {# gia sư trong nhóm lộ trình}}",
         "avg_time_weeks": "{value} tuần",
-        "avg_time_days": "{value} ngày"
+        "avg_time_days": "{value} ngày",
+        "active": "Sinh viên năng động"
       },
       "students": {
-        "subtitle": "Tiến trình lộ trình cho mỗi người học, khóa học hiện tại và ngày đăng ký.",
-        "title": "Tổng quan tiến trình người học",
-        "courses_completed": "Khóa học đã hoàn thành"
+        "courses_completed": "Khóa học đã hoàn thành",
+        "subtitle": "Tiến trình lộ trình của mỗi học sinh, khóa học hiện tại và ngày ghi danh.",
+        "title": "Tổng quan về tiến bộ của học sinh"
       },
       "member": {
         "courses_title": "Các khóa học trong lộ trình này",
@@ -5733,39 +5758,38 @@
       },
       "export": {
         "status": "Trạng thái"
-      }
+      },
+      "subtitle": "Học sinh đang di chuyển trên con đường như thế nào.",
+      "empty": "Chưa có dữ liệu. Ghi danh sinh viên và họ sẽ bắt đầu xuất hiện ở đây.",
+      "empty_desc": "Ghi danh học sinh vào lộ trình này và tiến bộ của họ sẽ hiển thị ở đây."
     },
     "people": {
       "title": "mọi người",
-      "subtitle": "{count} {count, plural, =1 {người học} other {người học}} khác đã đăng ký vào con đường này",
-      "info_banner": "Việc thêm người học vào đường dẫn này sẽ tự động đăng ký họ vào tất cả {count} {count, plural, =1 {khóa học} other {khóa học}} khác. Việc loại bỏ chúng sẽ bảo toàn quyền truy cập và tiến độ khóa học của họ.",
       "search_placeholder": "Tìm kiếm theo tên hoặc email…",
-      "empty": "Chưa có học viên nào đăng ký Thêm người học để bắt đầu.",
-      "no_results": "Không có người học phù hợp với tìm kiếm của bạn.",
       "invite": {
-        "title": "Thêm người học vào đường dẫn",
         "bulk_title": "Mời qua email",
         "bulk_description": "Nhập các địa chỉ email được phân tách bằng dấu phẩy hoặc dòng mới.",
-        "bulk_submit": "Thêm người học"
+        "title": "Thêm sinh viên vào đường dẫn",
+        "bulk_submit": "Thêm sinh viên"
       },
       "remove": {
-        "title": "Xóa người học",
         "title_non_student": "Xóa thành viên",
         "confirm": "Bạn có chắc chắn muốn xóa {name} khỏi lộ trình học tập này không? Họ sẽ giữ quyền truy cập và tiến bộ khóa học của họ.",
         "confirm_non_student": "Bạn có chắc muốn xóa {name} khỏi lộ trình này? Người này sẽ mất quyền quản lý lộ trình.",
         "cancel": "Hủy bỏ",
-        "yes": "Xóa"
+        "yes": "Xóa",
+        "title": "Xóa sinh viên"
       },
       "badge": {
         "certificate_earned": "Chứng chỉ đạt được",
         "not_started": "Chưa bắt đầu"
       },
       "table": {
-        "learner": "Người học",
         "progress": "Tiến trình đường dẫn",
         "current_course": "Khóa học hiện tại",
         "enrolled": "Đã đăng ký",
-        "actions": "hành động"
+        "actions": "hành động",
+        "learner": "Sinh viên"
       },
       "filter": {
         "all": "Tất cả tiến độ",
@@ -5784,8 +5808,20 @@
         "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong gói của mình. Nâng cấp để thêm sinh viên.",
         "invite": "Mời gia sư",
         "invite_students": "Mời sinh viên",
-        "finish": "Kết thúc"
-      }
+        "finish": "Kết thúc",
+        "bulk_enroll_queued": "Đang đăng ký {count} thành viên ở chế độ nền…",
+        "bulk_enroll_success": "Đã đăng ký {enrolled} thành viên ({invited} đã mời)",
+        "bulk_enroll_partial": "Đã đăng ký {enrolled} thành viên ({invited} đã mời, {failed} không thành công)",
+        "bulk_enroll_failed": "Đăng ký nền không thành công",
+        "bulk_enroll_lost": "Mất dấu vết đăng ký nền",
+        "bulk_enroll_backgrounded": "Đăng ký vẫn đang chạy ở chế độ nền. Làm mới mọi người để xem kết quả."
+      },
+      "change_role_to_tutor": "Làm gia sư",
+      "change_role_to_student": "Làm sinh viên",
+      "subtitle": "{count} {count, plural, =1 {học viên} other {học viên}} đã đăng ký vào đường dẫn này",
+      "info_banner": "Việc thêm một sinh viên vào đường dẫn này sẽ tự động đăng ký họ vào tất cả {count} {count, plural, =1 {khóa học} other {khóa học}} khác. Việc loại bỏ chúng sẽ bảo toàn quyền truy cập và tiến độ khóa học của họ.",
+      "empty": "Chưa có học viên nào đăng ký. Thêm sinh viên để bắt đầu.",
+      "no_results": "Không có sinh viên phù hợp với tìm kiếm của bạn."
     },
     "certificate": {
       "title": "Chứng chỉ",
@@ -5860,10 +5896,10 @@
       },
       "header": {
         "title_placeholder": "Ví dụ: Phát triển Web Fullstack",
-        "description_placeholder": "Tổng quan toàn diện về những gì người học sẽ đạt được...",
         "title": "Tiêu đề",
         "title_label": "Tiêu đề",
-        "description_label": "Mô tả"
+        "description_label": "Mô tả",
+        "description_placeholder": "Một cái nhìn tổng quan toàn diện về những gì học sinh sẽ đạt được..."
       },
       "reviews": {
         "title": "Đánh giá",
@@ -5939,9 +5975,7 @@
         "self_enrollment_label": "Cho phép tự đăng ký",
         "self_enrollment_desc": "Học viên có thể tự ghi danh vào lộ trình này.",
         "sequential_unlock_label": "Mở khóa khóa học tuần tự",
-        "sequential_unlock_desc": "Học viên phải hoàn thành các khóa học theo đúng thứ tự.",
-        "auto_enroll_label": "Tự động đăng ký vào các khóa học",
-        "auto_enroll_desc": "Tự động đăng ký học viên vào tất cả các khóa học khi họ tham gia lộ trình này."
+        "sequential_unlock_desc": "Học viên phải hoàn thành các khóa học theo đúng thứ tự."
       },
       "publishing": {
         "legend": "Xuất bản",
@@ -5982,12 +6016,6 @@
         "access_people": "Mọi người",
         "enabled": "Đã bật",
         "disabled": "Đã tắt"
-      },
-      "auto_enroll": {
-        "legend": "Tự động đăng ký vào các khóa học trong lộ trình",
-        "desc": "Tham gia lộ trình sẽ đăng ký học viên vào mọi khóa học trong lộ trình.",
-        "enabled": "Đã bật",
-        "disabled": "Đã tắt"
       }
     },
     "courses": {
@@ -5999,6 +6027,16 @@
       "description": "Bạn sắp biết học viên sẽ thấy gì khi họ đăng ký vào lộ trình học tập này",
       "copy_link": "Sao chép liên kết",
       "go_to_lms": "Đi tới LMS"
+    },
+    "hub": {
+      "placeholder_title": "Xem trước lộ trình học tập",
+      "placeholder_description": "Trải nghiệm học tập đầy đủ có trong LMS. Hãy mở Học tập của tôi để tiếp tục con đường này.",
+      "back_to_my_learning": "Quay lại việc học của tôi"
+    },
+    "not_permitted": {
+      "header": "Không có quyền",
+      "body": "Rất tiếc, bạn không có quyền truy cập vào lộ trình học tập này.",
+      "button": "Về nhà"
     }
   },
   "certificate": {

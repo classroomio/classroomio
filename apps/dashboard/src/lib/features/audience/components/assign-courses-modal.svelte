@@ -10,6 +10,7 @@
   interface Course {
     id: string;
     title: string;
+    enrollOnlyInLearningPath?: boolean;
   }
 
   interface Props {
@@ -80,7 +81,11 @@
     <MultiSelectList
       heading={$t('audience.assign.select_courses')}
       emptyMessage={$t('audience.assign.select_courses_placeholder')}
-      items={courses.map((c) => ({ id: c.id, label: c.title || c.id }))}
+      items={courses.map((c) => ({
+        id: c.id,
+        label: c.title || c.id,
+        description: c.enrollOnlyInLearningPath ? $t('audience.path_only_badge') : undefined
+      }))}
       isSelected={(id) => fields.selectedCourseIds.has(id)}
       onToggle={toggleCourse}
       namePrefix="assign-course"

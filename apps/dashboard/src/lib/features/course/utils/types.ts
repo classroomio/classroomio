@@ -477,6 +477,14 @@ export type DeletePeopleResponse = InferResponseType<DeletePeopleRequest>;
 export type DeletePeopleSuccess = Extract<DeletePeopleResponse, { success: true }>;
 export type DeletePeopleData = DeletePeopleSuccess['data'];
 
+/**
+ * The course People roster's source filter ("how did this member reach the course").
+ * TODO(#1226): fold `source` into `ListPeopleQuery` once the URL-backed roster merges,
+ * then replace `ListPeopleQueryWithSource` with `ListPeopleQuery` at its call sites.
+ */
+export type PeopleSourceFilter = NonNullable<ListPeopleRequestQuery['source']>;
+export type ListPeopleQueryWithSource = ListPeopleQuery & { source?: PeopleSourceFilter };
+
 export type GetUserCourseAnalyticsRequest =
   (typeof classroomio.course)[':courseId']['members'][':userId']['analytics']['$get'];
 export type GetUserCourseAnalyticsResponse = InferResponseType<GetUserCourseAnalyticsRequest>;
@@ -569,3 +577,18 @@ export type VideoRecordingUploadCompleteRequest =
   (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['question'][':questionId']['video-recording']['upload']['complete']['$post'];
 export type VideoRecordingPlaybackRequest =
   (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['submission'][':submissionId']['question'][':questionId']['video-recording']['playback']['$get'];
+
+/** Learner redirect decision for a course (course vs path vs hub). No UI calls this yet. */
+export type GetCourseRedirectRequest = (typeof classroomio.course)[':courseId']['redirect']['$get'];
+export type GetCourseRedirectSuccess = Extract<InferResponseType<GetCourseRedirectRequest>, { success: true }>;
+export type CourseRedirectTarget = GetCourseRedirectSuccess['data'];
+
+// Add-courses picker types (cohort and learning path share one response shape)
+export type GetCohortAddableCoursesRequest = (typeof classroomio.cohort)[':cohortId']['available-courses']['$get'];
+export type GetPathAddableCoursesRequest =
+  (typeof classroomio)['learning-path'][':pathId']['available-courses']['$get'];
+export type AddableCoursesSuccess = Extract<InferResponseType<GetCohortAddableCoursesRequest>, { success: true }>;
+export type AddableCourses = AddableCoursesSuccess['data'];
+export type AddableCoursesQuery = { page: number; limit: number; search?: string };
+/** Which resource the picker adds courses to; decides the endpoint and its exclusions. */
+export type CoursePickerSource = { kind: 'cohort'; cohortId: string } | { kind: 'learning-path'; pathId: string };

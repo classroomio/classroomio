@@ -3,9 +3,10 @@ import type { CourseMember, ListPeopleQuery, ListPeopleRequestQuery } from '$fea
 import { ROLE } from '@cio/utils/constants';
 
 /**
- * Student rows are the only ones the API decorates with a progress summary
- * (progress percent, stage, last login and enrollment date). Tutors keep the
- * plain member shape, so consumers must narrow before reading those fields.
+ * The member shape that carries progress fields (progress percent, stage,
+ * last login and enrollment date). Only student rows with an account hold
+ * meaningful values there, whatever the API sends for other roles, so
+ * consumers must narrow with `isStudentMember` before reading them.
  */
 type CourseMemberWithProgress = Extract<CourseMember, { progressPercent: number }>;
 
@@ -35,7 +36,7 @@ export function formatPeopleShortDate(value: string | null | undefined): string 
   return date.format('MMM D, YYYY');
 }
 
-/** Narrows to the student shape, which is the only one carrying progress fields. */
+/** Narrows to a student with an account, the only member whose progress fields are meaningful. */
 export function isStudentMember(member: CourseMember): member is CourseMemberWithProgress {
   return member.roleId === ROLE.STUDENT && !!member.profileId;
 }

@@ -35,7 +35,8 @@
       "reward_help": "Ofrece un incentivo a los estudiantes al completar",
       "reward_description": "Descripción de la recompensa",
       "placeholder_reward": "p. ej. sesión de mentoría individual, merchandising o acceso exclusivo a la comunidad"
-    }
+    },
+    "back_to_my_learning": "Volver a mi aprendizaje"
   },
   "validations": {
     "generic": {
@@ -734,7 +735,9 @@
       "cancel": "Cancelar",
       "snackbar_success": "Usuarios asignados {assigned} a cursos ({alreadyEnrolled} ya inscritos, {emailsSent} correos electrónicos enviados)",
       "snackbar_no_courses": "Por favor seleccione al menos un curso",
-      "snackbar_failed": "No se pudieron asignar cursos"
+      "snackbar_failed": "No se pudieron asignar cursos",
+      "snackbar_partial": "Usuarios {assigned} asignados ({alreadyEnrolled} ya tenía acceso, {emailsSent} correos electrónicos enviados). Cursos de solo ruta omitidos: {names} — asigne la ruta de aprendizaje que contiene o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso.",
+      "path_only_badge": "Sólo ruta"
     },
     "import": {
       "title": "Importar usuarios",
@@ -785,7 +788,9 @@
       },
       "submit_count": "Importar {count} estudiantes",
       "result_heading": "{count} estudiantes importados",
-      "start_over": "Elija un archivo diferente"
+      "start_over": "Elija un archivo diferente",
+      "skipped_path_only_title": "Se omitieron {count} cursos de solo ruta",
+      "skipped_path_only_description": "{names}. Estos cursos son solo para inscripción en una ruta de aprendizaje. Asigne la ruta de aprendizaje que contiene (esto también otorga sus otros cursos) o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso."
     },
     "page_subtitle": "Consulta quién pertenece a tu organización, quién está aprendiendo, quién está invitado y cómo contactarlos.",
     "user_analytics": {
@@ -921,7 +926,8 @@
       "custom": "Filtros personalizados",
       "all": "Todos los estudiantes"
     },
-    "learner_count": "{count} estudiantes"
+    "learner_count": "{count} estudiantes",
+    "path_only_badge": "Sólo ruta"
   },
   "community": {
     "title": "Comunidad",
@@ -1079,7 +1085,9 @@
         "generate_link": "Generar nuevo enlace",
         "open_link": "Abrir enlace en nueva pestaña",
         "copy_link": "Copiar enlace",
-        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo."
+        "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo.",
+        "enroll_only_in_learning_path": "Inscribirse solo en la ruta de aprendizaje",
+        "enroll_only_in_learning_path_desc": "Cuando está activado, los estudiantes solo pueden inscribirse en este curso a través de una ruta de aprendizaje. Se conservan las inscripciones existentes."
       },
       "analytics": {
         "title": "Analíticas"
@@ -1448,7 +1456,8 @@
             "title": "Dar acceso al estudiante",
             "description": "Da acceso a {email} a este curso. Le enviaremos un correo de invitación para unirse a tu organización e inscribirse en este curso.",
             "cancel": "Cancelar",
-            "send_invite": "Enviar invitación"
+            "send_invite": "Enviar invitación",
+            "path_only_notice": "Este curso es solo para inscripciones en una ruta de aprendizaje, por lo que no se puede otorgar acceso directo. En su lugar, asigne la ruta de aprendizaje que la contiene o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso."
           },
           "invite_new_students_title": "Invitar nuevos estudiantes",
           "invite_new_students_description": "Invita a personas nuevas a tu organización y asígnalas previamente a este curso. Crearán una cuenta, aceptarán la invitación y obtendrán acceso.",
@@ -1493,9 +1502,17 @@
             "multi_use_30d": "Multiuso (30 días)",
             "custom": "personalizado"
           },
-          "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes."
+          "student_limit_reached": "Has alcanzado el límite de estudiantes de tu plan. Actualice para invitar a más estudiantes.",
+          "members_added": "{count, plural, one {# miembro agregado exitosamente} other {# miembros agregado exitosamente}}",
+          "path_only_notice_title": "Los estudiantes se unen a través de un camino de aprendizaje.",
+          "path_only_notice_description": "Este curso es solo para inscripciones en una ruta de aprendizaje, por lo que no se puede invitar a los estudiantes aquí. Aún puedes invitar a tutores a continuación. Para brindar acceso a los estudiantes, asigne la ruta de aprendizaje que la contiene o desactive \"Inscribirse solo en la ruta de aprendizaje\" en la configuración del curso."
         },
-        "learner": "Estudiante"
+        "learner": "Estudiante",
+        "source": "Fuente",
+        "source_learning_path": "Ruta de aprendizaje",
+        "source_cohort": "cohorte",
+        "source_filter_all": "Todas las fuentes",
+        "source_filter_direct": "directo"
       },
       "marks": {
         "title": "marcas",
@@ -2842,6 +2859,11 @@
       "description": "Estás a punto de ver lo que verá un estudiante cuando se inscriba en este curso.",
       "copy_link": "Copiar enlace",
       "go_to_lms": "Ir a LMS"
+    },
+    "not_found": {
+      "header": "Curso no encontrado",
+      "body": "El curso que buscas no existe o puede haber sido eliminado.",
+      "button": "Vete a casa"
     }
   },
   "courses": {
@@ -4177,9 +4199,6 @@
       "command_palette": {
         "title": "paleta de comandos",
         "description": "Busque y navegue por su organización",
-        "placeholder": "Busca cursos, cohortes, widgets, estudiantes, etiquetas, configuraciones...",
-        "org_placeholder": "Busca cursos, cohortes, widgets, estudiantes, etiquetas, configuraciones...",
-        "lms_placeholder": "Busque sus cursos, cohortes y páginas de aprendizaje...",
         "lms_description": "Busque y navegue por su espacio de trabajo de aprendizaje",
         "empty": "No se encontraron resultados",
         "loading": "Buscando...",
@@ -4195,8 +4214,12 @@
           "tags": "Etiquetas",
           "students": "estudiantes",
           "settings": "Configuración",
-          "cohorts": "Cohortes"
-        }
+          "cohorts": "Cohortes",
+          "learning_paths": "Caminos de aprendizaje"
+        },
+        "placeholder": "Busque cursos, cohortes, rutas de aprendizaje, widgets, estudiantes, etiquetas, configuraciones...",
+        "org_placeholder": "Busque cursos, cohortes, rutas de aprendizaje, widgets, estudiantes, etiquetas, configuraciones...",
+        "lms_placeholder": "Busque sus cursos, cohortes, rutas de aprendizaje y páginas de aprendizaje..."
       }
     },
     "cancel": "Cancelar",
@@ -5257,7 +5280,9 @@
       "published_access_callout_description": "Los estudiantes solo tienen acceso a los cursos publicados. Los cursos pueden estar en esta cohorte para su equipo mientras aún no están publicados, pero permanecen ocultos para los estudiantes hasta que los publique.",
       "empty_student_description": "Aún no hay cursos publicados en esta cohorte.",
       "add_count": "Agregue {count} {count, plural, =1 {Curso} other {Cursos}}",
-      "adding": "Agregando cursos…"
+      "adding": "Agregando cursos…",
+      "load_failed": "No se pudieron cargar los cursos.",
+      "retry": "Reintentar"
     },
     "newsfeed": {
       "post": "Nueva publicación",
@@ -5498,7 +5523,9 @@
         "submit": "Añadir {count} {count, plural, =1 {Curso} other {Cursos}}",
         "submitting": "Añadiendo cursos…",
         "select_courses": "Seleccionar cursos",
-        "pagination_status": "Página {page} de {totalPages}"
+        "pagination_status": "Página {page} de {totalPages}",
+        "load_failed": "No se pudieron cargar los cursos.",
+        "retry": "Reintentar"
       },
       "create": {
         "title": "Crear ruta de aprendizaje",
@@ -5566,7 +5593,7 @@
       "step_price_desc": "Cotiza el curso como un paquete: los alumnos verán el ahorro en comparación con los cursos individuales.",
       "step_price_action": "Establecer precio",
       "step_landing_title": "Personalizar la página de inicio",
-      "step_landing_desc": "Resultados, habilidades, instructores, testimonios y preguntas frecuentes en la página pública del curso.",
+      "step_landing_desc": "Objetivos, habilidades, instructores, reseñas y preguntas frecuentes en la página pública del curso.",
       "step_landing_action": "Personalizar",
       "step_publish_title": "Publicar el camino",
       "step_publish_desc": "Publique la ruta para que aparezca en su página de destino y en su LMS.",
@@ -5629,7 +5656,8 @@
         "grid_view": "Vista de cuadrícula",
         "list_view": "Vista de lista"
       },
-      "load_error_title": "No se pudieron cargar las rutas de aprendizaje"
+      "load_error_title": "No se pudieron cargar las rutas de aprendizaje",
+      "load_more": "Cargar más"
     },
     "view_path_site": {
       "unpublished_title": "Publica tu ruta de aprendizaje",
@@ -5659,16 +5687,16 @@
       "course_added": "Curso agregado",
       "courses_added": "Cursos agregados",
       "course_removed": "Curso eliminado",
-      "members_added": "Estudiantes agregados a la ruta",
       "member_removed": "Alumno eliminado del camino",
-      "tutors_added": "Tutores agregados a la ruta",
-      "tutor_added": "Tutor añadido a la ruta",
       "tutor_removed": "Tutor eliminado de la ruta",
       "certificate_saved": "Configuración del certificado guardada",
       "landing_saved": "Página de inicio actualizada",
       "landing_save_failed": "No se pudo guardar la página de aterrizaje",
       "link_generated": "Enlace de invitación generado y copiado al portapapeles",
-      "settings_saved": "Configuración de la ruta de aprendizaje actualizada"
+      "settings_saved": "Configuración de la ruta de aprendizaje actualizada",
+      "members_add_partial": "{added} agregado, {invited} invitado, {notAdded} no se pudo agregar",
+      "member_role_updated": "Rol de miembro actualizado",
+      "delete_failed": "No se pudo eliminar la ruta de aprendizaje"
     },
     "analytics": {
       "title": "Analítica",
@@ -5761,11 +5789,11 @@
         "not_started": "No iniciado"
       },
       "table": {
-        "learner": "aprendiz",
         "progress": "Progreso del camino",
         "current_course": "Curso actual",
         "enrolled": "Inscrito",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "learner": "Alumno"
       },
       "filter": {
         "all": "Todo el progreso",
@@ -5784,8 +5812,16 @@
         "student_limit_reached": "Has alcanzado tu límite de estudiantes. Mejora tu plan para añadir más estudiantes.",
         "invite": "Invitar tutores",
         "invite_students": "Invitar estudiantes",
-        "finish": "terminar"
-      }
+        "finish": "terminar",
+        "bulk_enroll_queued": "Inscribiendo a {count} miembros en segundo plano...",
+        "bulk_enroll_success": "Miembros inscritos {enrolled} ({invited} invitados)",
+        "bulk_enroll_partial": "Miembros inscritos {enrolled} ({invited} invitados, {failed} fallidos)",
+        "bulk_enroll_failed": "Falló la inscripción en segundo plano",
+        "bulk_enroll_lost": "Se perdió la pista de la inscripción en segundo plano.",
+        "bulk_enroll_backgrounded": "La inscripción todavía se está ejecutando en segundo plano. Actualiza Personas para ver los resultados."
+      },
+      "change_role_to_tutor": "hacer tutor",
+      "change_role_to_student": "hacer estudiante"
     },
     "certificate": {
       "title": "Certificados",
@@ -5939,9 +5975,7 @@
         "self_enrollment_label": "Permitir autoinscripción",
         "self_enrollment_desc": "Los estudiantes pueden inscribirse por sí mismos en esta ruta.",
         "sequential_unlock_label": "Desbloqueo secuencial de cursos",
-        "sequential_unlock_desc": "Los estudiantes deben completar los cursos en orden.",
-        "auto_enroll_label": "Inscripción automática en los cursos",
-        "auto_enroll_desc": "Inscribir automáticamente a los estudiantes en todos los cursos al unirse a esta ruta."
+        "sequential_unlock_desc": "Los estudiantes deben completar los cursos en orden."
       },
       "publishing": {
         "legend": "Publicación",
@@ -5982,12 +6016,6 @@
         "access_people": "Personas",
         "enabled": "Activado",
         "disabled": "Desactivado"
-      },
-      "auto_enroll": {
-        "legend": "Inscripción automática en los cursos de la ruta",
-        "desc": "Unirse a la ruta inscribe al estudiante en todos los cursos que contiene.",
-        "enabled": "Activado",
-        "disabled": "Desactivado"
       }
     },
     "courses": {
@@ -5999,6 +6027,16 @@
       "description": "Estás a punto de ver lo que verá un estudiante cuando se inscriba en esta ruta de aprendizaje",
       "copy_link": "Copiar enlace",
       "go_to_lms": "Ir al LMS"
+    },
+    "hub": {
+      "placeholder_title": "Vista previa de la ruta de aprendizaje",
+      "placeholder_description": "La experiencia de aprendizaje completa vive en el LMS. Abre Mi Aprendizaje para continuar este camino.",
+      "back_to_my_learning": "Volver a mi aprendizaje"
+    },
+    "not_permitted": {
+      "header": "Sin permiso",
+      "body": "Lamentablemente no tienes acceso a esta ruta de aprendizaje.",
+      "button": "Vete a casa"
     }
   },
   "certificate": {

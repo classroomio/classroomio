@@ -4,7 +4,7 @@
   import * as Command from '@cio/ui/base/command';
   import { Button } from '@cio/ui/base/button';
   import { Spinner } from '@cio/ui/base/spinner';
-  import { BookOpen, Boxes, Clock, Goal, LayoutGrid, Settings, Tag, UserRound } from '@lucide/svelte';
+  import { BookOpen, Boxes, Clock, Goal, LayoutGrid, Route, Settings, Tag, UserRound } from '@lucide/svelte';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { searchApi } from '../api/search.svelte';
@@ -38,6 +38,7 @@
   const hasServerResults = $derived(
     searchApi.results.course.length > 0 ||
       searchApi.results.cohort.length > 0 ||
+      searchApi.results.learning_path.length > 0 ||
       searchApi.results.widget.length > 0 ||
       searchApi.results.tag.length > 0 ||
       searchApi.results.audience.length > 0
@@ -136,6 +137,12 @@
         heading={$t('app.search.command_palette.groups.cohorts')}
         items={groupItems('cohort')}
         fallbackIcon={Goal}
+        onSelect={handleSelect}
+      />
+      <SearchResultGroup
+        heading={$t('app.search.command_palette.groups.learning_paths')}
+        items={groupItems('learning_path')}
+        fallbackIcon={Route}
         onSelect={handleSelect}
       />
       {#if scope === 'org'}

@@ -15,6 +15,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { ComingSoon } from '$features/ui';
   import { TruncatedWithTooltip } from '$features/ui';
+  import { ROLE } from '@cio/utils/constants';
   import type { LearningPathMemberItem } from '../../utils/types';
   import {
     formatPathShortDate,
@@ -31,8 +32,11 @@
     canManage?: boolean;
     canView?: boolean;
     navigable?: boolean;
+    /** False hides the promote-to-tutor option (only org admins may assign it). */
+    canAssignTutor?: boolean;
     onView?: (member: LearningPathMemberItem) => void;
     onRemove?: (member: LearningPathMemberItem) => void;
+    onChangeRole?: (member: LearningPathMemberItem) => void;
     onRowClick?: (member: LearningPathMemberItem, event: MouseEvent) => void;
     onRowKeydown?: (member: LearningPathMemberItem, event: KeyboardEvent) => void;
   }
@@ -44,8 +48,10 @@
     canManage = true,
     canView = true,
     navigable = false,
+    canAssignTutor = false,
     onView,
     onRemove,
+    onChangeRole,
     onRowClick,
     onRowKeydown
   }: Props = $props();
@@ -55,6 +61,7 @@
   const displayName = $derived(member.fullName ?? getPathMemberDisplayEmail(member));
   const displayEmail = $derived(getPathMemberDisplayEmail(member));
   const isStudent = $derived(isPathStudentMember(member));
+  const isTutor = $derived(Number(member.roleId) === ROLE.TUTOR);
   const progressPercent = $derived(getPathMemberProgressPercent(member) ?? 0);
   const isCompleted = $derived(member.status === 'COMPLETED');
   const isNotStarted = $derived(member.status === 'NOT_STARTED');
@@ -238,6 +245,19 @@
               >
                 <TrashIcon class="custom mr-2 size-4" />
                 {$t('learningPath.people.delete_profile')}
+              </DropdownMenu.Item>
+            {/if}
+            {#if onChangeRole && canAssignTutor && (isStudent || isTutor)}
+              <DropdownMenu.Item
+                onclick={(event) => {
+                  event.stopPropagation();
+                  onChangeRole?.(member);
+                }}
+              >
+                <UserIcon class="custom mr-2 size-4" />
+                {isStudent
+                  ? $t('learningPath.people.change_role_to_tutor')
+                  : $t('learningPath.people.change_role_to_student')}
               </DropdownMenu.Item>
             {/if}
           </DropdownMenu.Content>

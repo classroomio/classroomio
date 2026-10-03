@@ -14,12 +14,8 @@
   import { ROLES } from '$lib/utils/constants/roles';
   import { isOrgAdmin, isStudentLimitReached } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
-  import {
-    DeleteConfirmation,
-    InvitePathMembersModal,
-    PathMemberRow,
-    deletePathMemberModal
-  } from '$features/learning-path';
+  import { DeleteConfirmation, PathMemberRow, deletePathMemberModal } from '$features/learning-path';
+  import InvitationModal from '$features/people/components/invitation-modal.svelte';
   import { RefreshPageData, TablePagination, UpgradeBanner } from '$features/ui';
   import { learningPathApi, pathMembersApi } from '$features/learning-path/api';
   import type { LearningPathMemberItem } from '$features/learning-path/utils/types';
@@ -51,15 +47,9 @@
   const pageSize = $derived(pathMembersApi.membersPagination?.limit ?? DEFAULT_PATH_PEOPLE_PAGE_SIZE);
   const courseCount = $derived(activePath?.courses.length ?? 0);
 
-  const currentUserRole = $derived.by(() => {
-    if (pathMembersApi.viewerRole !== undefined) return pathMembersApi.viewerRole;
-
-    const currentMember = pathMembersApi.members.find((member) => member.profileId === $profile.id);
-    return currentMember ? Number(currentMember.roleId) : null;
-  });
-  const canManageMembers = $derived.by(
-    () => Boolean($isOrgAdmin) || currentUserRole === ROLE.ADMIN || currentUserRole === ROLE.TUTOR
-  );
+  // Staff pages only render after GET /:pathId succeeds, which requires an org
+  // admin or an assigned tutor (learningPathTeamMiddleware).
+  const canManageMembers = $derived(!!learningPathApi.currentPath);
 
   const roleOptions = $derived(ROLES.map((role) => ({ label: $t(role.label), value: `${role.value}` })));
   const progressOptions = $derived([
@@ -156,6 +146,26 @@
     deletePathMemberModal.set({ open: true });
   }
 
+  /**
+   * Toggles a path member between STUDENT and TUTOR.
+   * Only STUDENT and TUTOR rows are actionable; other roles return early.
+   * The row already hides this action from non-admins, and the API returns
+   * 403 for tutors attempting to assign the tutor role.
+   */
+  async function handleChangeRole(member: LearningPathMemberItem) {
+    if (!pathId) return;
+
+    const roleId = Number(member.roleId);
+    if (roleId !== ROLE.STUDENT && roleId !== ROLE.TUTOR) return;
+
+    const nextRole = roleId === ROLE.STUDENT ? ROLE.TUTOR : ROLE.STUDENT;
+    const updated = await pathMembersApi.updateMemberRole(pathId, member.id, nextRole);
+
+    if (updated) {
+      refreshCurrentPage();
+    }
+  }
+
   function gotoMember(member: LearningPathMemberItem) {
     goto(`${page.url.pathname}/${member.profileId}`);
   }
@@ -192,12 +202,7 @@
     if (!id || id === loadedPathId) return;
 
     loadedPathId = id;
-    untrack(() => {
-      reloadFirstPage();
-      if ($profile.id) {
-        void pathMembersApi.fetchViewerRole(id, $profile.id);
-      }
-    });
+    untrack(reloadFirstPage);
   });
 
   onDestroy(() => {
@@ -314,9 +319,11 @@
                       showActions
                       canManage={canManageMembers}
                       canView={canManageMembers}
+                      canAssignTutor={$isOrgAdmin === true}
                       navigable
                       onView={gotoMember}
                       onRemove={openRemoveDialog}
+                      onChangeRole={handleChangeRole}
                       onRowClick={handleRowClick}
                       onRowKeydown={handleRowKeydown}
                     />
@@ -343,7 +350,16 @@
 </Page.Root>
 
 {#if pathId}
-  <InvitePathMembersModal {pathId} onMembersChanged={refreshCurrentPage} />
+  <InvitationModal
+    resourceType="LEARNING_PATH"
+    resourceId={pathId}
+    titleKey="learningPath.people.invite.title"
+    linkDescriptionKey="invite_link.learning_path_description"
+    bulkTitleKey="learningPath.people.invite.bulk_title"
+    bulkDescriptionKey="learningPath.people.invite.bulk_description"
+    bulkSubmitKey="learningPath.people.invite.bulk_submit"
+    onMembersChanged={refreshCurrentPage}
+  />
 {/if}
 
 <DeleteConfirmation

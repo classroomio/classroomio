@@ -46,3 +46,4 @@ export { default as RichTextSectionForm } from './rich-text-section-form.svelte'
 export { default as DisplaySectionToggle } from './landing/display-section-toggle.svelte';
 export { default as TagListInput } from './landing/tag-list-input.svelte';
 export { default as AddSectionButton } from './landing/add-section-button.svelte';
+export { default as NotPermittedModal } from './not-permitted-modal.svelte';

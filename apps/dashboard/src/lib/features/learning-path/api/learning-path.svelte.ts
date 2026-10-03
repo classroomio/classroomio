@@ -1,14 +1,16 @@
 import { ApiError, BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
+import { ErrorCodes } from '@cio/utils/constants';
 import type {
   CreateLearningPathData,
   CreateLearningPathInput,
   CreateLearningPathRequest,
   DeleteLearningPathRequest,
   GetLearningPathDetailRequest,
-  LearningPathAccessOptions,
   LearningPathDetail,
   LearningPathSummary,
+  LearningPathsPagination,
   ListLearningPathsRequest,
+  PathListFilters,
   UpdateLearningPathData,
   UpdateLearningPathRequest
 } from '../utils/types';
@@ -22,9 +24,12 @@ import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import { snackbar } from '$features/ui/snackbar/store';
+import { toPathListApiQuery } from '../utils/path-list-filters';
 
+/** Staff workspace API: every request hits team-only endpoints (org admin or assigned tutor). Learner data lives in pathJourneyApi. */
 export class LearningPathApi extends BaseApiWithErrors {
   paths = $state<LearningPathSummary[]>([]);
+  pathsPagination = $state<LearningPathsPagination | null>(null);
   currentPath = $state<LearningPathDetail | null>(null);
 
   private loadedPathId = $state<string | null>(null);
@@ -34,8 +39,25 @@ export class LearningPathApi extends BaseApiWithErrors {
   private listedOrgId: string | null = null;
   private listPathsRequestSeq = 0;
   isNotFound = $state(false);
+  isForbidden = $state(false);
   loadError = $state<string | null>(null);
+  isLoadingMorePaths = $state(false);
 
+  /**
+   * True while another server page exists (`page < totalPages`).
+   */
+  get hasMorePaths(): boolean {
+    const pagination = this.pathsPagination;
+    if (!pagination) return false;
+
+    return pagination.page < pagination.totalPages;
+  }
+
+  /**
+   * Ensures the staff detail for a path is loaded. Resolves to three outcomes
+   * the route renders directly: `isNotFound` for a 404, `isForbidden` for a
+   * 403 (not-permitted dialog), and `loadError` for any other failure.
+   */
   async ensurePath(pathId: string): Promise<LearningPathDetail | null> {
     if (!pathId) return null;
 
@@ -49,6 +71,7 @@ export class LearningPathApi extends BaseApiWithErrors {
 
     const navSeq = ++this.pathRequestSeq;
     this.isNotFound = false;
+    this.isForbidden = false;
     this.loadError = null;
 
     let fetchPromise = !this.isPathDirty ? this.inFlightPathRequests.get(pathId) : undefined;
@@ -71,10 +94,12 @@ export class LearningPathApi extends BaseApiWithErrors {
         this.loadedPathId = pathId;
         this.isPathDirty = false;
         this.isNotFound = false;
+        this.isForbidden = false;
         this.loadError = null;
       } else {
         this.currentPath = null;
         this.isNotFound = true;
+        this.isForbidden = false;
         this.loadError = null;
       }
 
@@ -87,7 +112,13 @@ export class LearningPathApi extends BaseApiWithErrors {
       this.currentPath = null;
       const status = error instanceof ApiError ? error.status : undefined;
       this.isNotFound = status === 404;
-      this.loadError = this.isNotFound ? null : error instanceof Error ? error.message : 'Failed to load learning path';
+      this.isForbidden = status === 403;
+      this.loadError =
+        this.isNotFound || this.isForbidden
+          ? null
+          : error instanceof Error
+            ? error.message
+            : 'Failed to load learning path';
 
       return null;
     } finally {
@@ -113,43 +144,72 @@ export class LearningPathApi extends BaseApiWithErrors {
     return this.ensurePath(pathId);
   }
 
-  async listPaths(organizationId?: string): Promise<void> {
+  /**
+   * Seeds the listing store from server `load` data. Replaces the list, so each
+   * navigation or invalidation starts from the server's page 1.
+   */
+  setPathList(paths: LearningPathSummary[], pagination: LearningPathsPagination | null) {
+    this.listPathsRequestSeq += 1;
+    this.paths = Array.isArray(paths) ? [...paths] : [];
+    this.pathsPagination = pagination;
+  }
+
+  /**
+   * Lists one server page of learning paths for the URL-driven listing.
+   * Page 1 replaces the list; later pages append, skipping ids already present.
+   */
+  async listPaths(organizationId?: string, filters?: PathListFilters, page = 1): Promise<void> {
     const orgId = organizationId || get(currentOrg).id;
-    if (!orgId) return;
+    if (!orgId || !filters) return;
 
     this.listedOrgId = orgId;
     const seq = ++this.listPathsRequestSeq;
+    const query = toPathListApiQuery(orgId, filters, page);
 
     await this.execute<ListLearningPathsRequest>({
-      requestFn: () => classroomio['learning-path'].$get({ query: { organizationId: orgId } }),
+      requestFn: () =>
+        classroomio['learning-path'].$get({
+          query
+        }),
       logContext: 'listing learning paths',
       onSuccess: (result) => {
-        if (this.listedOrgId === orgId && seq === this.listPathsRequestSeq) {
-          this.paths = result.data;
+        if (this.listedOrgId !== orgId || seq !== this.listPathsRequestSeq) return;
+
+        const incoming = Array.isArray(result.data) ? result.data : [];
+        if (page <= 1) {
+          this.paths = incoming;
+        } else {
+          const seen = new Set(this.paths.map((p) => p.id));
+          this.paths = [...this.paths, ...incoming.filter((p) => !seen.has(p.id))];
         }
+        this.pathsPagination = result.pagination ?? null;
       }
     });
   }
 
-  async get(pathId: string, _access?: LearningPathAccessOptions): Promise<LearningPathDetail | null> {
+  /**
+   * Appends the next server page to the listing, for the "Load more" button.
+   */
+  async loadMorePaths(organizationId?: string, filters?: PathListFilters): Promise<void> {
+    const orgId = organizationId || get(currentOrg).id;
+    if (!orgId || !filters || this.isLoadingMorePaths) return;
+
+    const nextPage = (this.pathsPagination?.page ?? 0) + 1;
+    this.isLoadingMorePaths = true;
+
+    try {
+      await this.listPaths(orgId, filters, nextPage);
+    } finally {
+      this.isLoadingMorePaths = false;
+    }
+  }
+
+  async get(pathId: string): Promise<LearningPathDetail | null> {
     let requestError: Error | null = null;
     let fetchedDetail: LearningPathDetail | null = null;
 
     await this.execute<GetLearningPathDetailRequest>({
-      requestFn: async () => {
-        const response = await classroomio['learning-path'][':pathId'].$get({ param: { pathId } });
-        if (!response.ok) {
-          const clone = response.clone();
-          const body = (await clone.json().catch(() => null)) as {
-            message?: string;
-            error?: string;
-            code?: string;
-          } | null;
-          const message = body?.error || body?.message || `HTTP ${response.status}: ${response.statusText}`;
-          requestError = new ApiError(message, response.status, response.statusText, response);
-        }
-        return response;
-      },
+      requestFn: () => classroomio['learning-path'][':pathId'].$get({ param: { pathId } }),
       logContext: 'getting learning path detail',
       onSuccess: (result) => {
         fetchedDetail = result.data;
@@ -158,13 +218,21 @@ export class LearningPathApi extends BaseApiWithErrors {
         );
       },
       onError: (err) => {
-        if (!requestError) {
-          const message =
-            typeof err === 'string'
-              ? err
-              : err && typeof err === 'object' && 'error' in err && typeof err.error === 'string'
-                ? err.error
-                : 'Failed to load learning path';
+        const message =
+          typeof err === 'string'
+            ? err
+            : err && typeof err === 'object' && 'error' in err
+              ? String((err as { error: unknown }).error)
+              : 'Failed to load learning path';
+        const code = err && typeof err === 'object' && 'code' in err ? String((err as { code: unknown }).code) : null;
+        // Preserve the access signals: execute swallows HTTP status, so map
+        // the shared error codes back here. ensurePath relies on them to
+        // render not-found vs not-permitted instead of a generic load error.
+        if (code === ErrorCodes.LEARNING_PATH_NOT_FOUND) {
+          requestError = new ApiError(message, 404);
+        } else if (code === ErrorCodes.UNAUTHORIZED || code === ErrorCodes.FORBIDDEN) {
+          requestError = new ApiError(message, 403);
+        } else {
           requestError = new Error(message);
         }
       }
@@ -215,6 +283,13 @@ export class LearningPathApi extends BaseApiWithErrors {
 
   removePathFromLists(pathId: string) {
     this.paths = this.paths.filter((p) => p.id !== pathId && p.publicId !== pathId);
+
+    if (this.pathsPagination) {
+      this.pathsPagination = {
+        ...this.pathsPagination,
+        total: Math.max(0, this.pathsPagination.total - 1)
+      };
+    }
   }
 
   async update(

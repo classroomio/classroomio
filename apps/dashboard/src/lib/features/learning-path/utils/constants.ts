@@ -1,9 +1,16 @@
-import type { StatusFilter, EnrollmentFilter, CompletionFilter, ViewMode } from './types';
+import type {
+  CompletionFilter,
+  EnrollmentFilter,
+  PathSortBy as PathSortByValue,
+  PathSortOrder as PathSortOrderValue,
+  StatusFilter,
+  ViewMode
+} from './types';
 
 export const LEARNING_PATHS_VIEW_MODE_KEY = 'pathView';
 export const DEFAULT_VIEW_MODE: ViewMode = 'grid';
 
-/** Named sort keys for learning path lists (URL `sort`, localStorage, filter UI). */
+/** Named sort keys for learning path lists (URL `sort`, localStorage, filter UI). Values match the backend `LEARNING_PATH_LIST_SORT_BY`. */
 export const PathSortBy = {
   DateCreated: 'date_created',
   LastUpdatedAt: 'last_updated_at',
@@ -11,19 +18,15 @@ export const PathSortBy = {
   Courses: 'courses'
 } as const;
 
-export type PathSortBy = (typeof PathSortBy)[keyof typeof PathSortBy];
+export const DEFAULT_PATH_SORT: PathSortByValue = PathSortBy.DateCreated;
 
-export const DEFAULT_PATH_SORT: PathSortBy = PathSortBy.DateCreated;
-
-/** URL `order` param and filter toggle (ascending vs descending). */
+/** URL `order` param and filter toggle (ascending vs descending). Values match the backend `LEARNING_PATH_LIST_SORT_ORDERS`. */
 export const PathSortOrder = {
   Asc: 'asc',
   Desc: 'desc'
 } as const;
 
-export type PathSortOrder = (typeof PathSortOrder)[keyof typeof PathSortOrder];
-
-export const DEFAULT_SORT_ORDER: PathSortOrder = PathSortOrder.Desc;
+export const DEFAULT_SORT_ORDER: PathSortOrderValue = PathSortOrder.Desc;
 
 export const PATH_SORT_OPTIONS = [
   { value: PathSortBy.DateCreated, label: 'learningPath.listing.filters.sort_date_created' },
@@ -31,27 +34,6 @@ export const PATH_SORT_OPTIONS = [
   { value: PathSortBy.Published, label: 'learningPath.listing.filters.sort_published' },
   { value: PathSortBy.Courses, label: 'learningPath.listing.filters.sort_courses' }
 ] as const;
-
-const PATH_SORT_VALUES = new Set<string>(Object.values(PathSortBy));
-
-export function parsePathSortValue(value: string | null | undefined): PathSortBy {
-  if (value == null || value === '') {
-    return DEFAULT_PATH_SORT;
-  }
-  if (PATH_SORT_VALUES.has(value)) {
-    return value as PathSortBy;
-  }
-  return DEFAULT_PATH_SORT;
-}
-
-const PATH_SORT_ORDER_VALUES = new Set<string>(Object.values(PathSortOrder));
-
-export function parsePathSortOrder(value: string | null | undefined): PathSortOrder {
-  if (value != null && PATH_SORT_ORDER_VALUES.has(value)) {
-    return value as PathSortOrder;
-  }
-  return DEFAULT_SORT_ORDER;
-}
 
 export const STATUS_FILTER_OPTIONS: { id: StatusFilter; labelKey: string }[] = [
   { id: 'all', labelKey: 'learningPath.listing.filters.all' },

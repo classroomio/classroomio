@@ -10,9 +10,14 @@
   import { learningPathApi, pathCoursesApi } from '$features/learning-path/api';
   import { t } from '$lib/utils/functions/translations';
 
-  let { data } = $props();
+  interface Props {
+    publicId: string;
+  }
 
-  let reorder = $state(page.url.searchParams.get('reorder') === 'true');
+  let { publicId }: Props = $props();
+
+  let reorderRequested = page.url.searchParams.get('reorder') === 'true';
+  let reorder = $state(false);
   let showAddDialog = $state(false);
 
   onMount(() => {
@@ -25,19 +30,33 @@
 
   const activePath = $derived(learningPathApi.currentPath);
 
+  $effect(() => {
+    if (reorderRequested && activePath?.courses) {
+      if (activePath.courses.length >= 2) {
+        reorder = true;
+      }
+      reorderRequested = false;
+    }
+  });
+
   function handleRefresh() {
-    if (data.publicId) {
-      learningPathApi.refreshPath(data.publicId);
+    if (publicId) {
+      learningPathApi.refreshPath(publicId);
     }
   }
 
   async function handleToggleReorder() {
-    if (reorder && activePath && activePath.courses && activePath.courses.length > 0) {
+    if (reorder && activePath && activePath.courses && activePath.courses.length >= 2) {
       await pathCoursesApi.reorderCourses(
         activePath.id,
         activePath.courses.map((c) => c.courseId)
       );
+
+      if (!pathCoursesApi.success) {
+        return;
+      }
     }
+
     reorder = !reorder;
   }
 </script>
@@ -51,10 +70,16 @@
     </Page.HeaderContent>
     <Page.Action>
       <div class="flex w-full justify-end gap-2">
-        <Button variant="outline" onclick={handleToggleReorder}>
+        <Button
+          variant="outline"
+          onclick={handleToggleReorder}
+          loading={pathCoursesApi.isLoading}
+          disabled={pathCoursesApi.isLoading ||
+            (!reorder && (!activePath || !activePath.courses || activePath.courses.length < 2))}
+        >
           {$t(`learningPath.builder.${reorder ? 'end_reorder' : 'start_reorder'}`)}
         </Button>
-        <Button onclick={() => (showAddDialog = true)}>
+        <Button onclick={() => (showAddDialog = true)} testId="path-builder-add-course">
           {$t('learningPath.builder.add_course_button')}
         </Button>
         <RefreshPageData onRefresh={handleRefresh} />

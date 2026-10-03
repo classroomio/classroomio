@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import type { TLandingPage } from '@cio/utils/validation/learning-path';
   import type { LearningPathDetail } from '$features/learning-path/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -23,7 +24,13 @@
     onChange
   }: Props = $props();
 
-  let isPaid = $derived(Boolean(landingPage.paymentEnabled));
+  onMount(() => {
+    if (landingPage.paymentEnabled === undefined) {
+      onChange({ paymentEnabled: Number(path.cost) > 0 });
+    }
+  });
+
+  let isPaid = $derived(landingPage.paymentEnabled ?? Number(path.cost) > 0);
   let paymentLink = $derived(landingPage.paymentLink ?? '');
   let showDiscount = $derived(Boolean(landingPage.showDiscount));
   let discount = $derived(landingPage.discount ?? 0);

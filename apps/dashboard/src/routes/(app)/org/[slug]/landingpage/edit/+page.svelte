@@ -1,6 +1,7 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import type { Component } from 'svelte';
+  import { untrack } from 'svelte';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
@@ -97,14 +98,14 @@
   const coursesLoaded = $derived(!previewSiteName || orgApi.publicCoursesLoadedSiteName === previewSiteName);
 
   const previewProps = $derived.by(() =>
-    buildOrgLandingPageProps(
-      $currentOrg,
-      previewLandingPageSettings,
-      orgApi.publicCourses,
-      orgApi.hasMorePublicCourses,
-      authAction,
-      { coursesLoaded }
-    )
+    buildOrgLandingPageProps($currentOrg, previewLandingPageSettings, {
+      courses: orgApi.publicCourses,
+      learningPaths: orgApi.publicLearningPaths,
+      hasMoreCourses: orgApi.hasMorePublicCourses,
+      hasMoreLearningPaths: orgApi.hasMorePublicLearningPaths,
+      coursesLoaded,
+      authAction
+    })
   );
 
   const ThemeComponent = $derived(landingPageThemeComponents[previewTheme] ?? landingPageThemeComponents.minimal);
@@ -112,7 +113,10 @@
   $effect(() => {
     if (!previewSiteName) return;
 
-    void orgApi.loadPublicCoursesIfNeeded(previewSiteName);
+    untrack(() => {
+      void orgApi.loadPublicCoursesIfNeeded(previewSiteName);
+      void orgApi.loadPublicLearningPathsIfNeeded(previewSiteName);
+    });
   });
 
   $effect(() => {

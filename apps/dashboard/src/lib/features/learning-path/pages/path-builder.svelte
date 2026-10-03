@@ -37,8 +37,6 @@
     }
   });
 
-  const existingCourseIds = $derived(courseItems.map((c) => c.courseId));
-
   const totalCourses = $derived(courseItems.length);
   const totalLessons = $derived(courseItems.reduce((acc, c) => acc + (c.lessonsCount || 0), 0));
   const totalExercises = $derived(courseItems.reduce((acc, c) => acc + (c.exercisesCount || 0), 0));
@@ -166,6 +164,7 @@
       }}
       onconsider={handleDndConsider}
       onfinalize={handleDndFinalize}
+      data-testid="path-builder-course-list"
       class="space-y-2.5 px-1 py-1 {reorder ? 'cursor-grab active:cursor-grabbing' : ''}"
     >
       {#each courseItems as course, index (course.id)}
@@ -176,9 +175,4 @@
 </div>
 
 <!-- Add Course Dialog -->
-<AddCourseToPathModal
-  bind:open={showAddDialog}
-  pathId={path.id}
-  {existingCourseIds}
-  onClose={() => (showAddDialog = false)}
-/>
+<AddCourseToPathModal bind:open={showAddDialog} pathId={path.id} onClose={() => (showAddDialog = false)} />
