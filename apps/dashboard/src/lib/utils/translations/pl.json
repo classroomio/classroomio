@@ -823,7 +823,7 @@
       "result_heading": "Zaimportowano {count} studentów",
       "start_over": "Wybierz inny plik",
       "skipped_path_only_title": "Pominięto {count} kursów obejmujących tylko ścieżkę",
-      "skipped_path_only_description": "{imiona}. Na te kursy można zapisać się wyłącznie w ramach ścieżki edukacyjnej. Przypisz zawierającą ścieżkę szkoleniową (to zapewnia również inne kursy) lub wyłącz opcję „Zapisz się tylko na ścieżce szkoleniowej” w ustawieniach kursu."
+      "skipped_path_only_description": "{names}. Na te kursy można zapisać się wyłącznie w ramach ścieżki edukacyjnej. Przypisz zawierającą ścieżkę szkoleniową (to zapewnia również inne kursy) lub wyłącz opcję „Zapisz się tylko na ścieżce szkoleniowej” w ustawieniach kursu."
     },
     "page_subtitle": "Zobacz, kto należy do Twojej organizacji, kto się uczy, kto jest zaproszony i jak się z nimi skontaktować.",
     "user_analytics": {

@@ -823,7 +823,7 @@
       "result_heading": "{count} alunos importados",
       "start_over": "Escolha um arquivo diferente",
       "skipped_path_only_title": "{count} cursos apenas do caminho ignorados",
-      "skipped_path_only_description": "{nomes}. Esses cursos são apenas para inscrição em um caminho de aprendizagem. Atribua o caminho de aprendizagem que o contém (isso também concede seus outros cursos) ou desative 'Inscrever-se apenas no caminho de aprendizagem' nas configurações do curso."
+      "skipped_path_only_description": "{names}. Esses cursos são apenas para inscrição em um caminho de aprendizagem. Atribua o caminho de aprendizagem que o contém (isso também concede seus outros cursos) ou desative 'Inscrever-se apenas no caminho de aprendizagem' nas configurações do curso."
     },
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {

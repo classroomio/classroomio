@@ -823,7 +823,7 @@
       "result_heading": "{count} studerende importeret",
       "start_over": "Vælg en anden fil",
       "skipped_path_only_title": "Sprang over {count} sti-kun kurser",
-      "skipped_path_only_description": "{navne}. Disse kurser er kun tilmelding til en læringssti. Tildel enten den indeholdende læringssti (dette giver også dens andre kurser), eller deaktiver 'Tilmeld dig kun i læringssti' i kursusindstillingerne."
+      "skipped_path_only_description": "{names}. Disse kurser er kun tilmelding til en læringssti. Tildel enten den indeholdende læringssti (dette giver også dens andre kurser), eller deaktiver 'Tilmeld dig kun i læringssti' i kursusindstillingerne."
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
