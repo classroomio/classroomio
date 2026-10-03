@@ -10,7 +10,7 @@ export const load = async ({ data }) => {
     data?.isOrgSite && data?.org?.settings?.language?.enforced ? data.org.settings.language.locale : undefined;
   const defaultOrgLocale = data?.isOrgSite ? data?.org?.settings?.language?.locale : undefined;
   const userLocale =
-    enforcedOrgLocale || persistedLocale || defaultOrgLocale || data?.locals?.profile?.locale || getInitialLocale(serverLang);
+    enforcedOrgLocale || persistedLocale || data?.locals?.profile?.locale || defaultOrgLocale || getInitialLocale(serverLang);
 
   const initLocale = getInitialLocale(userLocale);
   const translationsStart = performance.now();
