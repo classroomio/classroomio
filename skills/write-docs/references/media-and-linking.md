@@ -27,6 +27,25 @@ Use a diagram for relationships, lifecycle, inheritance, or branching that requi
 
 Every help article has one lead screenshot. Further screenshots are added only where a step needs them. A short answer does not get extra images to fill space, and a video does not replace the lead screenshot or the written steps.
 
+## Request missing media with context
+
+When the required screenshot or video is not already available, ask the user before finalizing the article. A useful request tells the user what to capture and why; a label-only list such as “Billing” or “View as student” is not sufficient.
+
+For each asset, include:
+
+1. **Destination:** Name the article and the section or step where the asset will appear.
+2. **Starting point:** State the role, page, tab, course, or other setup the user should begin from.
+3. **Required state:** Name the exact menu, dialog, control, result, empty state, or error that must be visible. Explain unfamiliar product terms.
+4. **Reader purpose:** State what the image will help a reader locate, distinguish, confirm, or understand.
+5. **Framing:** Say whether the capture should include surrounding navigation for orientation, be tightly cropped around a control, or be split into separate images so text remains readable.
+6. **Safety:** Request demo data and identify anything that must be excluded or redacted, such as customer names, student records, private domains, payment details, tokens, or notifications.
+
+Example:
+
+> **Course learner preview — “Preview your academy as a learner,” under “Open a course as a learner.”** From an administrator account, open a course and expand the three-dot menu in the course header. Capture the menu with **View as student** visible, along with enough of the course title and header to orient the reader. This shows where an administrator starts the signed-in learner preview; it is different from the public course landing page. Use a demo course and exclude student information or notifications.
+
+If one requested image would contain several small or distant targets, ask for separate captures. When the user supplies a URL or file, inspect it before accepting it: confirm that it shows the current interface, contains the required state, remains legible at help-center width, and is safe to publish. Explain any mismatch precisely instead of asking for a vague replacement.
+
 ## Screenshot placement
 
 ### Lead screenshot
@@ -72,6 +91,8 @@ For before/after states, label each state in the surrounding text and keep the i
 
 Capture a real, current ClassroomIO state using demo data.
 
+For a new product capture, follow [screenshot-capture.md](screenshot-capture.md). Use its standard `1231 × 870` source viewport and approved TinySnap background so screenshots remain visually consistent across the Help Center.
+
 - Show enough product chrome to orient the reader: page title, relevant sidebar item, tab, or modal title.
 - Capture one screen at 1350×830, not a full-page screenshot of the scrolled document. Leave out the real browser's tabs and address bar, since the browser-board frame draws its own, but never crop the app's UI down to a control or panel. Take that screen with the steps in `skills/add-docs-image/SKILL.md`.
 - Use the normal desktop layout unless the article is specifically about mobile.
@@ -115,8 +136,10 @@ Image requirements:
 
 - WebP for ordinary product screenshots.
 - Kebab-case filename describing the state or action, not `screenshot-1`.
-- Capture the app screen at 1350×830. The framed file is about 1479×991, because the browser board sits around the screen. Never upscale a smaller screen to get there, and never shrink the framed file back down to 1350.
-- Frame product screenshots with `skills/add-docs-image/SKILL.md`, which writes lossless WebP. For an unframed image, use about 80 quality, strip metadata, and inspect the result for text artifacts.
+- Capture the product at the standard `1231 × 870` viewport described in [screenshot-capture.md](screenshot-capture.md). TinySnap can add padding around that viewport, so its exported canvas may be larger.
+- Frame product screenshots with the TinySnap presentation in [screenshot-capture.md](screenshot-capture.md). For an unframed image, use about 80 quality.
+- After export, cap the article asset at 1280 pixels wide unless small text genuinely requires more; never upscale.
+- Strip metadata and inspect the result for text artifacts.
 - Keep the source aspect ratio.
 - Avoid animated GIFs. Use video for meaningful motion or a static frame for one state.
 

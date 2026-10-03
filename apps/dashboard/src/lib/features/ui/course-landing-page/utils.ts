@@ -78,7 +78,7 @@ export function getCourseSections(course: Course): LandingPageSection[] {
   return [
     {
       id: 'ungrouped',
-        title: course.title ?? t.get('course.navItem.landing_page.lessons'),
+      title: course.title ?? t.get('course.navItem.landing_page.lessons'),
       lessons: getLessonsFromItems(course.content.items),
       exerciseCount: getExerciseCountFromItems(course.content.items)
     }
