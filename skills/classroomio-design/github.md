@@ -74,3 +74,4 @@ date: 2026-10-02T10:42:27Z
 | components/forms/FileDropZone.jsx | packages/ui/src/custom/file-drop-zone/* |
 | components/forms/PricingToggle.jsx | packages/ui/src/custom/pricing-toggle/* |
 | components/surfaces/PricingCard.jsx | packages/ui/src/custom/pricing-card/* |
+| components/brand/Machines.jsx | packages/ui/src/custom/animation/machines/* |

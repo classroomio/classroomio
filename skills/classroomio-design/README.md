@@ -31,7 +31,7 @@ App tokens are namespaced `--ui-*` so they don't collide with marketing tokens (
   - `components/core/` — Eyebrow, Tag, Pill, Icon, Logo
   - `components/surfaces/` — NotchCard, CourseCard, BrowserFrame, BookSpine + Shelf, PricingCard
   - `components/marketing/` — CTAButton, Nav, ProductMenu, SectionHeader, FAQItem, TestimonialCard, VideoTestimonial, CTABand, Footer
-- `components/brand/` — launch/asset primitives: **Block/BlockStack/BlockGrid** (the signature notch-block — the unit the original brand is built from), PersonCard + PersonFan, CertifiedRibbon, CourseBook, FlowLines, DetailRows, Shelf + BookSpine, Stamp
+- `components/brand/` — launch/asset primitives: **Block/BlockStack/BlockGrid** (the signature notch-block — the unit the original brand is built from), PersonCard + PersonFan, CertifiedRibbon, CourseBook, FlowLines, DetailRows, Shelf + BookSpine, Stamp, and the seven isometric **Machines** illustrations (MachineTrainingLine, MachineRepeater, MachineSpectrum, MachineCertificatePress, MachineBrandStand, MachineEventWire, MachineGlassBox)
 - `templates/launch-gallery/LaunchGallery.dc.html` — **the canonical marketing template**: 9 launch frames (1270×760) built from the brand/* primitives. Every launch image, social post or thumbnail starts here (see `docs/brand-assets.md`)
 
 **Which button?** `Button` (app, 36px) for product UI and small actions; `CTAButton` (marketing, 16–18px) for site heroes and section CTAs.

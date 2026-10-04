@@ -26,6 +26,7 @@ For any launch image, social post, YouTube thumbnail, ad, OG image or deck slide
 - `tokens/` and `styles.css`: colours, type, spacing, schemes. `tokens/app.css` holds the `--ui-*` app tokens mapped from `packages/ui`.
 - `components/{forms,overlays,display}`: app components mirroring `packages/ui/src/base`.
 - `components/{core,surfaces,marketing,brand,loading}`: marketing and brand components.
+- `components/brand/Machines.jsx`: seven isometric line illustrations (hero and pillar art), one machine per section.
 - Each component has `.jsx`, `.d.ts` and `.prompt.md`. Read the `.prompt.md` before using one.
 - `guidelines/`: specimen cards. `Component Preview.html`: everything on one page.
 - `templates/launch-gallery/LaunchGallery.dc.html`: **canonical marketing frames**. Copy from here.
