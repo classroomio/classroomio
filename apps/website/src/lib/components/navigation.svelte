@@ -263,12 +263,12 @@
 
 <section class="fixed top-0 z-50 w-full border-b bg-white">
   <div
-    class="lg:h-nav mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between gap-10 px-4 md:px-8 xl:px-14"
+    class="lg:h-nav mx-auto flex h-14 w-full max-w-[1440px] items-center justify-between gap-10 px-4 md:px-8 xl:px-14"
   >
     <a href="/" class="shrink-0">
       <div class="flex w-full items-center">
         <img loading="lazy" width="28" height="28" src="/logo-512.png" alt="classroomio logo" class="w-7" />
-        <h1 class="ml-2 text-lg font-extrabold tracking-[-0.03em]">ClassroomIO</h1>
+        <h1 class="ml-2 text-base font-medium">ClassroomIO</h1>
       </div>
     </a>
 
@@ -280,7 +280,7 @@
               {#if navItem.items}
                 <NavigationMenu.Trigger
                   class={cn(
-                    'flex cursor-pointer items-center rounded-sm px-3.5 py-2 text-[15px] font-medium text-gray-800 transition-colors hover:bg-gray-100 data-[state=open]:bg-gray-100',
+                    'flex cursor-pointer items-center rounded-sm px-3 py-1.5 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-100 data-[state=open]:bg-gray-100',
                     isNavItemActive(navItem) && 'bg-gray-100!'
                   )}
                 >
@@ -304,7 +304,7 @@
                     <a
                       href={navItem.href}
                       class={cn(
-                        'cursor-pointer rounded-sm px-3.5 py-2 text-[15px] font-medium text-gray-800 no-underline transition-colors hover:bg-gray-100',
+                        'cursor-pointer rounded-sm px-3 py-1.5 text-sm font-medium text-gray-800 no-underline transition-colors hover:bg-gray-100',
                         isNavItemActive(navItem) && 'bg-gray-100'
                       )}
                     >
@@ -349,6 +349,7 @@
       </div>
       <Button
         href="https://app.classroomio.com"
+        size="sm"
         class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
       >
         <Waves

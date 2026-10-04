@@ -172,7 +172,7 @@
 <section class=" w-full bg-white px-1 md:w-full md:px-0">
   <ToolsHeader>
     <img src="/free-tools/pomodoro.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="text-h2 mt-5 font-medium text-balance text-[#040F2D]">Pomodoro Timer</h1>
+    <h1 class="text-title mt-5 font-medium text-balance text-[#040F2D]">Pomodoro Timer</h1>
     <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals
       called "pomodoros," followed by 5-minute breaks. take a longer break.

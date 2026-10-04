@@ -50,7 +50,7 @@
           <Code2 size={14} class="text-blue-700" />
           Developer reference
         </Badge>
-        <h1 class="text-h2 font-medium text-balance text-gray-950 lg:text-[64px]">
+        <h1 class="text-title font-medium text-balance text-gray-950 lg:text-[64px]">
           API, Webhooks, MCP.
           <em class="text-blue-700 not-italic">No integration tax.</em>
         </h1>

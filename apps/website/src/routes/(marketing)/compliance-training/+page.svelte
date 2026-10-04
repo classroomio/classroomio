@@ -163,7 +163,7 @@
         </span>
         Compliance Training
       </Badge>
-      <h1 class="text-h2 font-medium text-balance text-gray-950">
+      <h1 class="text-title font-medium text-balance text-gray-950">
         Keep your employees compliant and
         <em class="text-blue-700 not-italic">track who's falling behind.</em>
       </h1>

@@ -4,7 +4,7 @@
   import CtaButton from './ui/cta-button.svelte';
 </script>
 
-<section class="relative px-4 pt-20 md:px-6 lg:pt-[108px]">
+<section class="relative px-4 pt-[72px] md:px-6 lg:pt-[88px]">
   <div
     class="rounded-t-wash relative mx-auto max-w-[1400px] overflow-hidden bg-[linear-gradient(135deg,#f7f9fc_0%,#eef2fa_60%,#e5ecf7_100%)] px-6 pt-16 pb-16 md:px-10 lg:pt-24 lg:pb-24"
   >

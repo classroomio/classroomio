@@ -19,7 +19,7 @@
       Legal
     </span>
   </div>
-  <h1 class="text-h2 font-medium text-balance text-slate-900">Privacy Policy</h1>
+  <h1 class="text-title font-medium text-balance text-slate-900">Privacy Policy</h1>
 </PageHeader>
 
 <section class="max-w-lede mx-auto w-full px-6 py-16 md:px-10 md:py-20">

@@ -10,7 +10,7 @@
 </script>
 
 <header
-  class="relative w-full overflow-hidden border-b border-slate-100 pt-36 pb-20 lg:min-h-[20rem] lg:pt-44 lg:pb-24"
+  class="relative w-full overflow-hidden border-b border-slate-100 pt-28 pb-16 lg:min-h-[20rem] lg:pt-36 lg:pb-20"
 >
   <div class="cio-dotfield pointer-events-none absolute inset-0" aria-hidden="true"></div>
   <div class="relative z-10 {className}">

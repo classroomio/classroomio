@@ -21,7 +21,7 @@
   <PageHeader className="max-w-content mx-auto px-6 md:px-10 xl:px-0">
     <div class="grid items-center gap-12 lg:grid-cols-[1.2fr_1fr]">
       <div class="flex flex-col items-center text-center lg:items-start lg:text-left">
-        <h1 class="text-h2 flex flex-col font-medium text-slate-900 lg:text-[64px]">
+        <h1 class="text-title flex flex-col font-medium text-slate-900 lg:text-[64px]">
           <span>Pick a plan.</span>
           <span class="relative text-blue-700">Launch your academy.</span>
         </h1>

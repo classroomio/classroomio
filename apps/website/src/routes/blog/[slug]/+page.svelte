@@ -14,7 +14,7 @@
     <article class="py-16">
       <hgroup class="flex w-full flex-col items-center justify-center text-center">
         <p class="text-label font-mono text-gray-500 uppercase">{formatDate(data.meta.date)}</p>
-        <h1 class="text-h2 mt-4 max-w-[900px] text-center font-medium text-balance">{@html data.meta.title}</h1>
+        <h1 class="text-title mt-4 max-w-[900px] text-center font-medium text-balance">{@html data.meta.title}</h1>
       </hgroup>
       <main class="max-w-lede mx-auto mt-10">
         <div class="my-4 flex items-center justify-start gap-4 border-y border-gray-200 py-4">
