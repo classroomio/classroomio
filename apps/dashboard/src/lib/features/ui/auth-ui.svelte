@@ -13,7 +13,7 @@
   import { Separator } from '@cio/ui/base/separator';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { ROUTE } from '$lib/utils/constants/routes';
-  import { BlockSkyline, BrandWash } from '@cio/ui/custom/animation';
+  import { BrandWash, MachineTrainingLine } from '@cio/ui/custom/animation';
 
   interface Props {
     isLogin?: boolean;
@@ -81,7 +81,7 @@
 <div
   class={[
     'auth-ui-background ui:bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4',
-    showBlockFooter && 'pb-24'
+    showBlockFooter && 'md:pb-56'
   ]}
 >
   {#if authBackgroundUrl}
@@ -167,6 +167,11 @@
   </div>
 
   {#if showBlockFooter}
-    <BlockSkyline loop={false} repeat={3} class="absolute inset-x-0 bottom-0 z-0 px-4" />
+    <div
+      class="absolute bottom-0 left-1/2 z-0 hidden h-56 w-72 -translate-x-1/2 md:block"
+      style:--machine-face="var(--background)"
+    >
+      <MachineTrainingLine />
+    </div>
   {/if}
 </div>

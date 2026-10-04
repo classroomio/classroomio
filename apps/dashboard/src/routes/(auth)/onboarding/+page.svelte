@@ -5,7 +5,7 @@
   import { Button } from '@cio/ui/base/button';
   import { CheckboxOptionCardGroup } from '@cio/ui/custom/checkbox-option-card';
   import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
-  import { BlockSkyline } from '@cio/ui/custom/animation';
+  import { MachineTrainingLine } from '@cio/ui/custom/animation';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 
@@ -432,8 +432,8 @@
         </div>
       </div>
 
-      <div class="mx-auto hidden w-full max-w-xl pb-10 lg:block">
-        <BlockSkyline />
+      <div class="mx-auto hidden h-56 w-full max-w-xl lg:block" style:--machine-face="var(--background)">
+        <MachineTrainingLine />
       </div>
     </div>
 
