@@ -10,8 +10,13 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { courseCompletionModal, closeCourseCompletionModal } from '$features/course/store/course-completion-modal';
   import { getContentRoute } from '$features/course/utils/content';
-  import { formatBlockerMessage } from '$features/course/utils/certificate-utils';
-  import { isFreePlan } from '$lib/utils/store/org';
+  import { formatBlockerMessage, normalizeCertificateIssuedAt } from '$features/course/utils/certificate-utils';
+  import { isFreePlan, currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
+  import { courseApi } from '$features/course/api';
+  import { classroomio } from '$lib/utils/services/api';
+  import { snackbar } from '$features/ui/snackbar/store';
+  import DownloadIcon from '@lucide/svelte/icons/download';
   import { t } from '$lib/utils/functions/translations';
 
   let open = $state(false);
@@ -19,6 +24,9 @@
   let activeStep = $state<'checking' | 'eligible' | 'not-eligible'>('checking');
   let activeEvaluation = $state<Record<string, unknown> | null>(null);
   let activeExerciseId = $state<string | undefined>(undefined);
+  let isDownloading = $state(false);
+
+  const isInstantDownload = $derived($currentOrg?.customization?.pluginPreferences?.instantCertDownload !== false);
 
   onMount(() => {
     return courseCompletionModal.subscribe((v) => {
@@ -50,6 +58,46 @@
     if (!activeCourseId) return;
     onOpenChange(false);
     goto(resolve(`/courses/${activeCourseId}/certificates`, {}));
+  }
+
+  function triggerSave(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    document.body.append(link);
+    link.download = filename;
+    link.href = url;
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleDownloadCertificate() {
+    if (!activeCourseId) return;
+    isDownloading = true;
+    try {
+      const issuedAt = normalizeCertificateIssuedAt(
+        (activeEvaluation as Record<string, unknown> | null)?.certificateEarnedAt as string | null | undefined
+      );
+      const studentName = $profile.fullname || 'Recipient';
+      const studentId = $profile.id || undefined;
+
+      const response = await classroomio.course[':courseId']['download']['certificate']['$post']({
+        param: { courseId: activeCourseId },
+        json: {
+          studentName,
+          studentId,
+          issuedAt
+        }
+      });
+      const blobResponse = await response.blob();
+      const courseTitle = courseApi.course?.title ?? 'course';
+      triggerSave(new Blob([blobResponse], { type: 'application/pdf' }), `certificate-${courseTitle}.pdf`);
+    } catch (error) {
+      console.error('Error downloading certificate:', error);
+      snackbar.error('course.navItem.certificates.unexpected_error');
+    } finally {
+      isDownloading = false;
+    }
   }
 
   function goToExercise() {
@@ -92,7 +140,16 @@
       <Dialog.Footer class="gap-2">
         <Button variant="outline" onclick={() => onOpenChange(false)}>{$t('course.completion.modal.later')}</Button>
         {#if !$isFreePlan}
-          <Button onclick={goToCertificate}>{$t('course.completion.modal.view_certificate')}</Button>
+          {#if isInstantDownload}
+            <Button variant="outline" onclick={goToCertificate}>{$t('course.completion.modal.view_certificate')}</Button
+            >
+            <Button onclick={handleDownloadCertificate} loading={isDownloading} disabled={isDownloading}>
+              <DownloadIcon class="mr-1.5 size-4" />
+              {$t('course.completion.modal.download_certificate')}
+            </Button>
+          {:else}
+            <Button onclick={goToCertificate}>{$t('course.completion.modal.view_certificate')}</Button>
+          {/if}
         {/if}
       </Dialog.Footer>
     {:else if activeStep === 'not-eligible'}

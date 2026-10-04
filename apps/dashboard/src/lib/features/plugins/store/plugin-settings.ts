@@ -77,3 +77,64 @@ export function createAnnouncementSettingsStore() {
 }
 
 export const announcementSettingsStore = createAnnouncementSettingsStore();
+
+export interface GeneralPluginPreferences {
+  focusModeDefault: boolean;
+  instantCertDownload: boolean;
+}
+
+export const DEFAULT_PLUGIN_PREFERENCES: GeneralPluginPreferences = {
+  focusModeDefault: true,
+  instantCertDownload: true
+};
+
+function getPrefsStorageKey(orgId?: string | null) {
+  return orgId ? `cio_plugin_preferences_${orgId}` : 'cio_plugin_preferences_default';
+}
+
+export function loadPluginPreferences(orgId?: string | null): GeneralPluginPreferences {
+  if (!browser) return DEFAULT_PLUGIN_PREFERENCES;
+  try {
+    const raw = localStorage.getItem(getPrefsStorageKey(orgId));
+    if (raw) {
+      return { ...DEFAULT_PLUGIN_PREFERENCES, ...JSON.parse(raw) };
+    }
+  } catch {
+    // Fall back to default
+  }
+  return DEFAULT_PLUGIN_PREFERENCES;
+}
+
+export function createPluginPreferencesStore() {
+  const store = writable<GeneralPluginPreferences>(DEFAULT_PLUGIN_PREFERENCES);
+
+  return {
+    subscribe: store.subscribe,
+    set: store.set,
+    update: store.update,
+    init(orgId?: string | null, serverCustomization?: Partial<GeneralPluginPreferences> | null) {
+      if (
+        serverCustomization &&
+        typeof serverCustomization === 'object' &&
+        Object.keys(serverCustomization).length > 0
+      ) {
+        store.set({ ...DEFAULT_PLUGIN_PREFERENCES, ...serverCustomization });
+        return;
+      }
+      const loaded = loadPluginPreferences(orgId);
+      store.set(loaded);
+    },
+    save(prefs: GeneralPluginPreferences, orgId?: string | null) {
+      store.set(prefs);
+      if (browser) {
+        try {
+          localStorage.setItem(getPrefsStorageKey(orgId), JSON.stringify(prefs));
+        } catch {
+          // ignore
+        }
+      }
+    }
+  };
+}
+
+export const pluginPreferencesStore = createPluginPreferencesStore();

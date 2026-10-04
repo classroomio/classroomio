@@ -11,26 +11,39 @@
   import { orgApi } from '$features/org/api/org.svelte';
   import {
     announcementSettingsStore,
+    pluginPreferencesStore,
     PRESET_BANNER_COLORS,
     DEFAULT_ANNOUNCEMENT_SETTINGS,
-    type AnnouncementSettings
+    DEFAULT_PLUGIN_PREFERENCES,
+    type AnnouncementSettings,
+    type GeneralPluginPreferences
   } from '$features/plugins/store/plugin-settings';
   import { Sparkles, ArrowRight, X, Palette, BellRing, Settings2 } from '@lucide/svelte';
 
   let settings = $state<AnnouncementSettings>({ ...DEFAULT_ANNOUNCEMENT_SETTINGS });
-  let focusModeDefault = $state(true);
-  let instantCertDownload = $state(true);
+  let preferences = $state<GeneralPluginPreferences>({ ...DEFAULT_PLUGIN_PREFERENCES });
   let isSaving = $state(false);
 
   // Sync settings when org is loaded
   $effect(() => {
     if (browser && $currentOrg?.id) {
       const serverAnnouncement = $currentOrg.customization?.announcement;
+      const serverPrefs = $currentOrg.customization?.pluginPreferences as Partial<GeneralPluginPreferences> | undefined;
+
       announcementSettingsStore.init($currentOrg.id, serverAnnouncement);
-      const unsub = announcementSettingsStore.subscribe((val) => {
+      pluginPreferencesStore.init($currentOrg.id, serverPrefs);
+
+      const unsubSettings = announcementSettingsStore.subscribe((val) => {
         settings = { ...val };
       });
-      return unsub;
+      const unsubPrefs = pluginPreferencesStore.subscribe((val) => {
+        preferences = { ...val };
+      });
+
+      return () => {
+        unsubSettings();
+        unsubPrefs();
+      };
     }
   });
 
@@ -42,11 +55,14 @@
     isSaving = true;
     try {
       announcementSettingsStore.save(settings, $currentOrg?.id);
+      pluginPreferencesStore.save(preferences, $currentOrg?.id);
+
       if ($currentOrg?.id) {
         await orgApi.update($currentOrg.id, {
           customization: {
             ...$currentOrg.customization,
-            announcement: settings
+            announcement: settings,
+            pluginPreferences: preferences
           }
         });
       }
@@ -58,12 +74,16 @@
 
   async function handleReset() {
     settings = { ...DEFAULT_ANNOUNCEMENT_SETTINGS };
+    preferences = { ...DEFAULT_PLUGIN_PREFERENCES };
     announcementSettingsStore.save(settings, $currentOrg?.id);
+    pluginPreferencesStore.save(preferences, $currentOrg?.id);
+
     if ($currentOrg?.id) {
       await orgApi.update($currentOrg.id, {
         customization: {
           ...$currentOrg.customization,
-          announcement: settings
+          announcement: settings,
+          pluginPreferences: preferences
         }
       });
     }
@@ -304,7 +324,7 @@
               {$t('plugins.focus_mode_default_desc')}
             </Field.Description>
           </div>
-          <Switch bind:checked={focusModeDefault} />
+          <Switch bind:checked={preferences.focusModeDefault} />
         </Field.Field>
 
         <Field.Field
@@ -319,7 +339,7 @@
               {$t('plugins.instant_cert_download_desc')}
             </Field.Description>
           </div>
-          <Switch bind:checked={instantCertDownload} />
+          <Switch bind:checked={preferences.instantCertDownload} />
         </Field.Field>
       </div>
     </Field.Set>

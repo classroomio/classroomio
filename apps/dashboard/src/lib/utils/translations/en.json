@@ -58,7 +58,11 @@
     },
     "lesson_acknowledgment": {
       "name": "Lesson Acknowledgment",
-      "description": "Adds a learner compliance acknowledgment checkbox and audit log at the bottom of lessons."
+      "description": "Adds a learner compliance acknowledgment checkbox and audit log at the bottom of lessons.",
+      "understood": "Lesson Understood",
+      "prompt": "I have reviewed and understood the material in this lesson",
+      "acknowledge": "Acknowledge",
+      "undo": "Undo"
     },
     "settings_title": "Plugins & Extensions Settings",
     "settings_subtitle": "Configure global preferences, styles, and options for installed plugins.",
@@ -2410,6 +2414,7 @@
         "subtitle": "Congratulations — you can view and download your certificate anytime.",
         "subtitle_no_certificate": "Congratulations — you have completed this course.",
         "view_certificate": "View certificate",
+        "download_certificate": "Download Certificate",
         "later": "Close",
         "checking": "Checking eligibility…",
         "not_eligible_title": "Almost there",

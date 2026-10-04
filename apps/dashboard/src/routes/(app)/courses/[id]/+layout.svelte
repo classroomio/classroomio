@@ -2,7 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
   import { afterNavigate, goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { isFocusMode, exitFocusMode } from '$features/course/store/focus-mode';
+  import { isFocusMode, exitFocusMode, setFocusMode } from '$features/course/store/focus-mode';
   import { Empty } from '@cio/ui/custom/empty';
   import { Spinner } from '@cio/ui/base/spinner';
   import { CourseSidebar } from '$features/course/components/sidebar';
@@ -26,7 +26,7 @@
   import { get } from 'svelte/store';
   import { page } from '$app/state';
   import { profile } from '$lib/utils/store/user';
-  import { isOrgAdmin } from '$lib/utils/store/org';
+  import { isOrgAdmin, currentOrg } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { CourseMobileBottomNav } from '$features/course/components/mobile';
@@ -165,6 +165,13 @@
     if (IS_AI_ENABLED && get(initialChatPrompt)) {
       openAiAssistant();
     }
+
+    if (page.url.pathname.includes('/lesson/')) {
+      const focusModeDefault = $currentOrg?.customization?.pluginPreferences?.focusModeDefault ?? true;
+      if ($isCourseLearnerView && focusModeDefault) {
+        setFocusMode(true);
+      }
+    }
   });
 
   $effect(() => {
@@ -180,7 +187,14 @@
   });
 
   afterNavigate(() => {
-    exitFocusMode();
+    const isLesson = page.url.pathname.includes('/lesson/');
+    const focusModeDefault = $currentOrg?.customization?.pluginPreferences?.focusModeDefault ?? true;
+
+    if (isLesson && $isCourseLearnerView && focusModeDefault) {
+      setFocusMode(true);
+    } else {
+      exitFocusMode();
+    }
   });
 
   onDestroy(() => {
