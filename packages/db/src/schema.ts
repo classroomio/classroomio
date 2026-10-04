@@ -436,6 +436,7 @@ export const profile = pgTable(
     email: varchar(),
     canAddCourse: boolean('can_add_course').default(true),
     role: varchar(),
+    goal: varchar(),
     useCases: jsonb('use_cases').default([]).notNull().$type<string[]>(),
     useCaseOther: text('use_case_other'),
     learningMethod: varchar('learning_method'),

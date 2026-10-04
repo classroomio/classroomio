@@ -167,7 +167,8 @@
     const jobRoleOther = fields.jobRole === OTHER_VALUE ? fields.jobRoleOther : '';
     const sourceOther = fields.source === OTHER_VALUE ? fields.sourceOther : '';
     const aiProvider = fields.source === AI_SOURCE_VALUE ? fields.aiProvider : '';
-    const aiProviderOther = fields.source === AI_SOURCE_VALUE ? fields.aiProviderOther : '';
+    const aiProviderOther =
+      fields.source === AI_SOURCE_VALUE && fields.aiProvider === OTHER_VALUE ? fields.aiProviderOther : '';
 
     return {
       ...fields,

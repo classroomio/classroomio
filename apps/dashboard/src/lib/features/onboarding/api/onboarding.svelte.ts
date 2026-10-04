@@ -121,6 +121,8 @@ export class OnboardingApi extends BaseApiWithErrors {
     const errors = validateMetadata(data);
     if (errors) {
       this.errors = errors;
+      const [firstMessage] = Object.values(errors);
+      if (firstMessage) snackbar.error(firstMessage);
       return false;
     }
 

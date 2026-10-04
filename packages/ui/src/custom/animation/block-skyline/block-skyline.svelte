@@ -92,16 +92,27 @@
     );
   }
 
+  function playDrop(node: HTMLElement, { dropOrder, intervalMs, loop }: DropOptions) {
+    const startMs = dropOrder * intervalMs;
+
+    return loop ? playLoop(node, startMs) : playOnce(node, startMs);
+  }
+
   /**
    * Drops the block into place at its slot in the sequence. Looping blocks all clear together near the end of each cycle.
    */
-  function dropIn(node: HTMLElement, { dropOrder, intervalMs, loop }: DropOptions) {
+  function dropIn(node: HTMLElement, options: DropOptions) {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const startMs = dropOrder * intervalMs;
-    const animation = loop ? playLoop(node, startMs) : playOnce(node, startMs);
+    let animation = playDrop(node, options);
 
-    return { destroy: () => animation.cancel() };
+    return {
+      update(nextOptions: DropOptions) {
+        animation.cancel();
+        animation = playDrop(node, nextOptions);
+      },
+      destroy: () => animation.cancel()
+    };
   }
 </script>
 

@@ -290,7 +290,7 @@
     "what_brings": "Sizi buraya getiren nedir",
     "how": "Bizi nasıl duydunuz?",
     "back": "Back",
-    "continue": "Continue",
+    "continue": "Devam et",
     "step_of": "{total} adımının {current}. adımı",
     "skip": "Atla",
     "finish_setup": "Kurulumu bitir",
@@ -308,7 +308,7 @@
       "github": "GitHub veya açık kaynak",
       "youtube": "YouTube veya podcast",
       "social_media": "Sosyal medya",
-      "product_hunt": "Ürün Avı veya inceleme sitesi",
+      "product_hunt": "Product Hunt veya inceleme sitesi",
       "friends_family": "Arkadaşlar, aile veya iş arkadaşı"
     },
     "job_roles": {
@@ -365,11 +365,11 @@
       "subtitle": "Hangisi bizi önerdi?"
     },
     "ai_providers": {
-      "chatgpt": "SohbetGPT",
+      "chatgpt": "ChatGPT",
       "claude": "Claude",
-      "gemini": "İkizler",
+      "gemini": "Gemini",
       "grok": "Grok",
-      "perplexity": "Şaşkınlık"
+      "perplexity": "Perplexity"
     },
     "step_labels": {
       "use_cases": "Kullanım örneği",

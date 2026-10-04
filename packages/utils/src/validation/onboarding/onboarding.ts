@@ -46,6 +46,10 @@ function optionalEnum<const T extends readonly [string, ...string[]]>(values: T)
   return z.preprocess((value) => (value === '' ? undefined : value), z.enum(values).optional());
 }
 
+function clearableOptionalEnum<const T extends readonly [string, ...string[]]>(values: T) {
+  return z.preprocess((value) => (value === '' ? null : value), z.enum(values).nullable().optional());
+}
+
 export const ZOnboardingCreateOrg = z.object({
   fullname: fullnameValidation,
   orgName: z
@@ -73,9 +77,9 @@ export const ZOnboardingUpdateMetadata = z
     companySize: optionalEnum(ONBOARDING_COMPANY_SIZES),
     jobRole: optionalEnum(ONBOARDING_JOB_ROLES),
     jobRoleOther: otherText,
-    source: optionalEnum(ONBOARDING_SOURCES),
+    source: clearableOptionalEnum(ONBOARDING_SOURCES),
     sourceOther: otherText,
-    aiProvider: optionalEnum(ONBOARDING_AI_PROVIDERS),
+    aiProvider: clearableOptionalEnum(ONBOARDING_AI_PROVIDERS),
     aiProviderOther: otherText,
     locale: optionalEnum(ONBOARDING_LOCALES)
   })

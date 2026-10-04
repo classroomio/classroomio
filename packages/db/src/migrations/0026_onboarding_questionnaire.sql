@@ -1,7 +1,7 @@
 --> Replace the single onboarding goal with the structured onboarding questionnaire.
---> `goal` is superseded by `use_cases` (multi-select); the remaining columns hold the
---> single-select answers and the optional free-text "Other" values.
-ALTER TABLE "profile" DROP COLUMN IF EXISTS "goal";
+--> `goal` is superseded by `use_cases` (multi-select) and is left in place along with the other
+--> existing columns. The new columns hold the single-select answers and the optional free-text
+--> "Other" values.
 ALTER TABLE "profile" ADD COLUMN "use_cases" jsonb DEFAULT '[]'::jsonb NOT NULL;
 ALTER TABLE "profile" ADD COLUMN "use_case_other" text;
 ALTER TABLE "profile" ADD COLUMN "learning_method" varchar;

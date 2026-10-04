@@ -17,6 +17,14 @@ describe('ZOnboardingUpdateMetadata', () => {
     expect(result.success).toBe(true);
   });
 
+  it('treats blank source and provider values as explicit clears', () => {
+    const result = ZOnboardingUpdateMetadata.safeParse({ ...basePayload, source: '', aiProvider: '' });
+
+    expect(result.success).toBe(true);
+    expect(result.data?.source).toBeNull();
+    expect(result.data?.aiProvider).toBeNull();
+  });
+
   it('accepts an AI source with a provider', () => {
     const result = ZOnboardingUpdateMetadata.safeParse({
       ...basePayload,
