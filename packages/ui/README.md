@@ -352,7 +352,36 @@ The accent comes from `--primary` and the surface from `--muted`. Place a machin
 </div>
 ```
 
-Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag that assumes the Growth plan price.
+Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
+
+### Loaders (`src/custom/block-loader/`, `src/custom/compact-loader/`)
+
+Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `BlockLoader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
+
+`BlockLoader`: four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
+
+| Prop      | Type                | Default     | Description                                                                |
+| --------- | ------------------- | ----------- | -------------------------------------------------------------------------- |
+| `title`   | `string`            | `undefined` | Heading under the stack; also the accessible name when `label` is not set  |
+| `caption` | `string`            | `undefined` | Supporting line under the title                                            |
+| `label`   | `string`            | `undefined` | Accessible name when there is no `title`                                   |
+| `blocks`  | `BlockLoaderBlock[]`| 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`   |
+| `class`   | `string`            | `undefined` | Placement                                                                  |
+
+`CompactLoader`: three wordless blocks, so it works in any language.
+
+| Prop    | Type           | Default     | Description        |
+| ------- | -------------- | ----------- | ------------------ |
+| `size`  | `'sm' \| 'md'` | `'md'`      | `sm` is 60% of `md` |
+| `label` | `string`       | `undefined` | Accessible name    |
+| `class` | `string`       | `undefined` | Placement          |
+
+The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
+
+```svelte
+<BlockLoader title={$t('common.loading_states.opening_academy_title')} />
+<CompactLoader label={$t('common.loading')} />
+```
 
 ### Hooks (`src/hooks/`)
 
