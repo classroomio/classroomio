@@ -366,6 +366,7 @@ Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `B
 | `caption` | `string`            | `undefined` | Supporting line under the title                                            |
 | `label`   | `string`            | `undefined` | Accessible name when there is no `title`                                   |
 | `blocks`  | `BlockLoaderBlock[]`| 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`   |
+| `blockText` | `boolean`         | `true`      | Show the kind and title inside each block; `false` gives plain blocks    |
 | `class`   | `string`            | `undefined` | Placement                                                                  |
 
 `CompactLoader`: three wordless blocks, so it works in any language.

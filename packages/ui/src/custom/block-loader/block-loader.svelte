@@ -38,10 +38,11 @@
     caption?: string;
     label?: string;
     blocks?: BlockLoaderBlock[];
+    blockText?: boolean;
     class?: string;
   }
 
-  let { title, caption, label, blocks = DEFAULT_BLOCKS, class: className }: Props = $props();
+  let { title, caption, label, blocks = DEFAULT_BLOCKS, blockText = true, class: className }: Props = $props();
 
   const accessibleName = $derived(label ?? title);
 </script>
@@ -55,8 +56,11 @@
             block.tone
           ]}"
         >
-          <span class="ui:font-mono ui:text-[10px] ui:tracking-[0.12em] {KIND_CLASSES[block.tone]}">{block.kind}</span>
-          <b class="ui:text-[15px] ui:font-semibold">{block.title}</b>
+          {#if blockText}
+            <span class="ui:font-mono ui:text-[10px] ui:tracking-[0.12em] {KIND_CLASSES[block.tone]}">{block.kind}</span
+            >
+            <b class="ui:text-[15px] ui:font-semibold">{block.title}</b>
+          {/if}
         </div>
         {#if index > 0}
           <span class="tab {TAB_CLASSES[block.tone]}"></span>

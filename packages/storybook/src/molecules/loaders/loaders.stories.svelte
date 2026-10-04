@@ -31,6 +31,14 @@
   {/snippet}
 </Story>
 
+<Story name="BlockLoader without block text">
+  {#snippet template()}
+    <div class="flex h-[520px] w-full items-center justify-center">
+      <BlockLoader blockText={false} title="Opening your academy…" />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="BlockLoader custom blocks">
   {#snippet template()}
     <div class="flex h-[480px] w-full items-center justify-center">

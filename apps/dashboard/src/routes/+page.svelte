@@ -96,6 +96,7 @@
   <div class="m-2 flex h-screen w-screen flex-col items-center justify-center font-sans sm:m-0">
     <SimpleLogoNav />
     <BlockLoader
+      blockText={false}
       title={$t('common.loading_states.opening_academy.title')}
       caption={$t('common.loading_states.opening_academy.caption')}
     />

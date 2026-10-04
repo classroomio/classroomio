@@ -230,6 +230,7 @@
     {#if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
         <BlockLoader
+          blockText={false}
           title={$t('common.loading_states.opening_course.title')}
           caption={$t('common.loading_states.opening_course.caption')}
         />
