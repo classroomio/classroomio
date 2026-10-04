@@ -291,6 +291,26 @@ Each item owns its own handler, so the component carries no behaviour: the consu
 
 See `Molecules/ComboButton` in Storybook.
 
+### Machines (`src/custom/animation/machines/`)
+
+Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
+
+The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop      | Type     | Default     | Description                                              |
+| --------- | -------- | ----------- | -------------------------------------------------------- |
+| `label`   | `string` | `undefined` | Accessible description; omit to hide from assistive tech |
+| `stillAt` | `number` | `6`         | Second to freeze on under `prefers-reduced-motion`       |
+| `class`   | `string` | `undefined` | Size and placement                                       |
+
+```svelte
+<div class="bg-muted rounded-xl p-6">
+  <MachineTrainingLine label={$t('marketing.machines.training_line')} class="h-80" />
+</div>
+```
+
+Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag that assumes the Growth plan price.
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.

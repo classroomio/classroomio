@@ -10,6 +10,13 @@
     DotPattern,
     GradualSpacing,
     HeroVideoDialog,
+    MachineBrandStand,
+    MachineCertificatePress,
+    MachineEventWire,
+    MachineGlassBox,
+    MachineRepeater,
+    MachineSpectrum,
+    MachineTrainingLine,
     MagicCard,
     Meteors,
     ShimmerButton,
@@ -198,6 +205,44 @@
           <p class="text-sm">Square card body with icon</p>
         {/snippet}
       </SquareCardBody>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Machines">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 rounded-xl border p-6 md:grid-cols-2">
+      <div class="md:col-span-2">
+        <MachineTrainingLine label="Lessons move down a line and each one is stamped" class="mx-auto h-80" />
+      </div>
+      <MachineRepeater label="An expert repeats the same explanation to each new customer" class="h-64" />
+      <MachineSpectrum label="A learner rides up five levels to certified training" class="h-64" />
+      <MachineCertificatePress label="Certificates are stamped, then checked against a public URL" class="h-64" />
+      <MachineBrandStand label="A shop front changes branding for each customer" class="h-64" />
+      <MachineEventWire label="Events travel from ClassroomIO to a CRM and a help desk" class="h-64" />
+      <MachineGlassBox label="The same mechanism runs in plain sight inside a glass case" class="h-64" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Machine accent and surface">
+  {#snippet template()}
+    <div class="mx-auto flex w-full max-w-3xl flex-col gap-6">
+      <div class="ui:bg-muted rounded-xl border p-6">
+        <MachineRepeater label="An expert repeats the same explanation to each new customer" class="h-56" />
+      </div>
+      <div class="rounded-xl border p-6" style="--machine-ink: #16a34a; --machine-face: #f0fdf4; background: #f0fdf4;">
+        <MachineRepeater label="An expert repeats the same explanation to each new customer" class="h-56" />
+      </div>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Machine still frame">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto flex w-full max-w-3xl items-center justify-center gap-6 rounded-xl border p-6">
+      <MachineBrandStand stillAt={0} class="h-48" />
+      <MachineBrandStand stillAt={6} class="h-48" />
     </div>
   {/snippet}
 </Story>
