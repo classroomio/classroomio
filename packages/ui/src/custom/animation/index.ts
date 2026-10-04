@@ -13,3 +13,4 @@ export * from './magic-card';
 export * from './gradual-spacing';
 export * from './square-card';
 export * from './waves';
+export * from './machines';
