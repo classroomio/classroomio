@@ -79,10 +79,7 @@
 </script>
 
 <div
-  class={[
-    'auth-ui-background ui:bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4',
-    showBlockFooter && 'md:pb-56'
-  ]}
+  class="auth-ui-background ui:bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4"
 >
   {#if authBackgroundUrl}
     <div class="absolute inset-0 z-0">
