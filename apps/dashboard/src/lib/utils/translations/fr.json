@@ -24,6 +24,17 @@
       "included": "Inclus",
       "untitled_lesson": "Leçon sans titre",
       "format": "Format"
+    },
+    "loading": "Chargement…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Chargement du cours…",
+        "caption": "Veuillez patienter pendant que nous chargeons vos données de cours."
+      },
+      "opening_academy": {
+        "title": "Ouvrir votre académie…",
+        "caption": "Les blocs se mettent en place un par un, puis s'effacent et recommencent."
+      }
     }
   },
   "validations": {

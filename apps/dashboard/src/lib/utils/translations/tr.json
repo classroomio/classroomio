@@ -459,6 +459,17 @@
       "included": "Dahil",
       "untitled_lesson": "Başlıksız ders",
       "format": "Biçim"
+    },
+    "loading": "Yükleniyor…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Kurs yükleniyor…",
+        "caption": "Kurs verileriniz yüklenirken lütfen bekleyin."
+      },
+      "opening_academy": {
+        "title": "Akademiniz açılıyor…",
+        "caption": "Bloklar birer birer yerine düşer, ardından temizlenir ve tekrarlanır."
+      }
     }
   },
   "compliance": {

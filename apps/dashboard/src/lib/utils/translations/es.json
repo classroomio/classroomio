@@ -24,6 +24,17 @@
       "included": "Incluido",
       "untitled_lesson": "Lección sin título",
       "format": "Formato"
+    },
+    "loading": "Cargando…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Cargando curso…",
+        "caption": "Espere mientras cargamos los datos de su curso."
+      },
+      "opening_academy": {
+        "title": "Abriendo tu academia...",
+        "caption": "Los bloques caen en su lugar uno a la vez, luego se limpian y se repiten."
+      }
     }
   },
   "validations": {

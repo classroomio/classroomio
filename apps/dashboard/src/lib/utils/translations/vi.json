@@ -24,6 +24,17 @@
       "included": "Đã bao gồm",
       "untitled_lesson": "Bài học chưa có tiêu đề",
       "format": "Định dạng"
+    },
+    "loading": "Đang tải…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Đang tải khóa học…",
+        "caption": "Vui lòng đợi trong khi chúng tôi tải dữ liệu khóa học của bạn."
+      },
+      "opening_academy": {
+        "title": "Mở học viện của bạn…",
+        "caption": "Các khối lần lượt được thả vào vị trí, sau đó xóa và lặp lại."
+      }
     }
   },
   "validations": {

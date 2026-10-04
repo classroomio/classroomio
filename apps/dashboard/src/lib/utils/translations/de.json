@@ -24,6 +24,17 @@
       "included": "Enthalten",
       "untitled_lesson": "Lektion ohne Titel",
       "format": "Format"
+    },
+    "loading": "Laden…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Kurs wird geladen…",
+        "caption": "Bitte warten Sie, während wir Ihre Kursdaten laden."
+      },
+      "opening_academy": {
+        "title": "Eröffnung Ihrer Akademie…",
+        "caption": "Die Blöcke fallen einzeln an ihren Platz, werden dann gelöscht und wiederholt."
+      }
     }
   },
   "validations": {

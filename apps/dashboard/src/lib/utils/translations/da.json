@@ -24,6 +24,17 @@
       "included": "Inkluderet",
       "untitled_lesson": "Lektion uden titel",
       "format": "Format"
+    },
+    "loading": "Indlæser...",
+    "loading_states": {
+      "opening_course": {
+        "title": "Indlæser kursus...",
+        "caption": "Vent venligst mens vi indlæser dine kursusdata."
+      },
+      "opening_academy": {
+        "title": "Åbner dit akademi...",
+        "caption": "Blokke falder på plads én ad gangen, ryd derefter og gentag."
+      }
     }
   },
   "validations": {

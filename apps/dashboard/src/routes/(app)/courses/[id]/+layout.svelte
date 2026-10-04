@@ -2,8 +2,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { Empty } from '@cio/ui/custom/empty';
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { BlockLoader } from '@cio/ui/custom/block-loader';
   import { CourseSidebar } from '$features/course/components/sidebar';
   import { CourseHeader } from '$features/course/components';
   import type { Course } from '$features/course/types';
@@ -230,12 +229,9 @@
 
     {#if !isCourseReady}
       <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
-        <Empty
-          title="Loading course…"
-          description="Please wait while we load your course data."
-          icon={Spinner}
-          iconClass="h-8 w-8"
-          variant="page"
+        <BlockLoader
+          title={$t('common.loading_states.opening_course.title')}
+          caption={$t('common.loading_states.opening_course.caption')}
         />
       </div>
     {:else}
