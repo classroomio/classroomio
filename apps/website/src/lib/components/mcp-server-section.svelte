@@ -1,10 +1,10 @@
 <script>
   import CodeBlock from './code-block.svelte';
+  import Eyebrow from './ui/eyebrow.svelte';
+  import Section from './ui/section.svelte';
+  import SectionHeader from './ui/section-header.svelte';
 
   /**
-   * Shared MCP server section: dark background, copy + mcp.json on left/right.
-   * Used on /automation and /mcp-recipes.
-   *
    * @typedef {Object} Props
    * @property {string} [eyebrow]
    * @property {string} [title]
@@ -53,46 +53,49 @@
   ];
 </script>
 
-<section class="relative overflow-hidden bg-gray-950 px-6 py-12 text-white lg:px-12 lg:py-16">
+{#snippet heading()}{title}{/snippet}
+
+<Section
+  class="relative overflow-hidden bg-gray-950 text-white"
+  innerClass="grid grid-cols-1 items-start gap-12 lg:grid-cols-2 lg:gap-20"
+>
   <div
     class="pointer-events-none absolute -top-[200px] -right-[200px] h-[500px] w-[500px] bg-[radial-gradient(circle,rgba(2,51,189,0.18)_0%,transparent_70%)]"
   ></div>
 
-  <div class="relative mx-auto grid max-w-[1100px] grid-cols-1 items-start gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
-    <div>
-      <div class="mb-2 text-xs font-medium tracking-widest text-blue-400 uppercase">{eyebrow}</div>
-      <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight text-white">
-        {title}
-      </h2>
-      <p class="mt-5 max-w-[520px] text-sm leading-relaxed text-gray-400">
-        {description}
-      </p>
+  <div class="relative">
+    <SectionHeader
+      align="left"
+      size="h3"
+      {eyebrow}
+      eyebrowClass="text-blue-400"
+      titleClass="text-white"
+      ledeClass="text-gray-400"
+      lede={description}
+      title={heading}
+    />
 
-      {#if showTools}
-        <div class="mt-6">
-          <p class="mb-3 text-[10px] tracking-wider text-gray-500 uppercase">Available tools</p>
-          <div class="flex flex-wrap gap-2">
-            {#each mcpTools as tool}
-              <span
-                class="rounded-md border border-white/10 bg-white/[0.05] px-2.5 py-1 font-mono text-[11px] text-blue-300"
-              >
-                {tool}
-              </span>
-            {/each}
-          </div>
+    {#if showTools}
+      <div class="mt-8">
+        <Eyebrow size="sm" class="mb-3 text-gray-500">Available tools</Eyebrow>
+        <div class="flex flex-wrap gap-2">
+          {#each mcpTools as tool}
+            <span
+              class="rounded-tag border border-white/10 bg-white/[0.05] px-2.5 py-1 font-mono text-[12px] text-blue-300"
+            >
+              {tool}
+            </span>
+          {/each}
         </div>
-      {/if}
-    </div>
-
-    <div class="relative">
-      <div class="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.03]">
-        <CodeBlock
-          fileName="mcp.json"
-          lang="JSON"
-          codeLines={mcpJsonLines}
-          statusBar="paste into your agent's MCP config"
-        />
       </div>
-    </div>
+    {/if}
   </div>
-</section>
+
+  <CodeBlock
+    class="min-w-0"
+    fileName="mcp.json"
+    lang="JSON"
+    codeLines={mcpJsonLines}
+    statusBar="paste into your agent's MCP config"
+  />
+</Section>

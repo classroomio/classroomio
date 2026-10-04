@@ -3,9 +3,6 @@
   import { renderCertificateDocument, DEFAULT_CERTIFICATE_DESIGN } from '@cio/certificates';
 
   /**
-   * Renders the default ClassroomIO certificate template (classique) in an iframe.
-   * Used on customer-education and compliance-training pages.
-   *
    * @typedef {Object} Props
    * @property {string} recipient           Person's name
    * @property {string} achievement         Course or cohort name
@@ -56,7 +53,7 @@
 
 <div
   bind:this={stageEl}
-  class="relative overflow-hidden rounded-2xl border border-gray-200 shadow-2xl/10"
+  class="relative overflow-hidden rounded-xl border border-gray-200"
   style="aspect-ratio: {NATIVE_W} / {NATIVE_H};"
 >
   <iframe

@@ -24,7 +24,6 @@
 
   export function toggleTimer() {
     if (isPaused) {
-      // Start or resume the timer
       isPaused = false;
       if (totalSeconds <= 0) {
         totalSeconds = hours * 3600 + minutes * 60 + seconds;
@@ -47,7 +46,6 @@
         }
       }, 1000);
     } else {
-      // Pause the timer
       clearInterval(timer);
       isPaused = true;
     }
@@ -137,15 +135,14 @@
 <section class=" bg-white px-5 md:px-0">
   <ToolsHeader>
     <img src="/free-tools/name-picker.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="my-3 text-4xl font-bold text-[#040F2D] md:text-6xl">Activity Stopwatch</h1>
-    <p class="text-md mx-auto font-light text-[#656565] md:w-[45%] md:font-normal">
+    <h1 class="text-h2 mt-5 font-medium text-balance text-[#040F2D]">Activity Stopwatch</h1>
+    <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       Stay on track and enhance productivity with our customizable stopwatch for timed tasks, quizzes, and study
       sessions.
     </p>
   </ToolsHeader>
 
-  <div class="mx-auto my-10 w-full overflow-hidden rounded-md border bg-white md:w-2/4">
-    <!-- countdown setter -->
+  <div class="mx-auto my-10 w-full overflow-hidden rounded-xl border border-gray-200 bg-white md:w-2/4">
     {#if !isNextStep}
       <div transition:fly={{ y: -300, delay: 0, easing: sineInOut }} class="bg-white px-6 py-8">
         <form onsubmit={preventDefault(startTimer)}>
@@ -210,7 +207,6 @@
       </div>
     {/if}
 
-    <!-- countdown -->
     {#if isNextStep}
       <Timer
         {activityName}

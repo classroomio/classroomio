@@ -47,23 +47,19 @@
   }
 
   function newGame() {
-    // reset scores to zero
     scores.update(() => ({
       X: 0,
       O: 0,
       draw: 0
     }));
 
-    // disable ai
     $changeToComputer = { change: false };
 
-    // create a new game instance
     game = createGame();
   }
 
   function playAgain() {
     message = '';
-    // create a new game instance
     game = createGame();
   }
 
@@ -98,8 +94,8 @@
 <section class=" bg-white px-5 md:px-0">
   <ToolsHeader className="mb-10">
     <img src="/free-tools/tic-tac.svg" class="mx-auto w-14 rounded-full border md:w-[5%]" alt="Tic Tac Icon" />
-    <h1 class="my-3 text-4xl font-bold text-[#040F2D] md:text-6xl">Tic-Tac game</h1>
-    <p class="text-md mx-auto font-light text-[#656565] md:w-[45%] md:font-normal">
+    <h1 class="text-h2 mt-5 font-medium text-balance text-[#040F2D]">Tic-Tac game</h1>
+    <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.
     </p>
   </ToolsHeader>
@@ -107,7 +103,6 @@
   <div
     class="tic-tac-bg relative mx-auto flex h-[55vh] w-full items-center justify-center overflow-hidden border-8 border-black bg-white text-white md:h-[82vh] md:w-[59%]"
   >
-    <!-- congratulatory message -->
     {#if message}
       <div
         transition:fly={{ x: -100, delay: 600, easing: sineInOut }}
@@ -129,7 +124,6 @@
       </div>
     {/if}
 
-    <!-- this condition renders the game -->
     {#if startGame}
       <div class="flex h-full w-full flex-col items-center justify-between border p-5">
         <header class="flex w-full items-center justify-between">
@@ -153,10 +147,8 @@
           >
         </header>
 
-        <!-- board -->
         <Board {game} {winner} />
 
-        <!-- scores -->
         <div class="flex w-full items-center justify-between gap-10 font-semibold text-white md:justify-center">
           <div class="flex items-center gap-2 text-2xl md:gap-5 md:text-3xl">
             <span class="bg-[#FE28CB99] px-1 text-[10px] md:p-1 md:text-sm">Player 1</span>
@@ -172,8 +164,6 @@
           </div>
         </div>
       </div>
-
-      <!-- this condition renders the homepage -->
     {:else}
       <div class="flex flex-col items-center gap-5">
         <img src="/free-tools/tic-tac/tic-tac-start-icon.svg" alt="Tic tac toe game icon" class="w-[50%] md:w-[70%]" />
