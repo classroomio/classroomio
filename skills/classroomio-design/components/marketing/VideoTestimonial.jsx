@@ -1,4 +1,5 @@
 import React from 'react';
+import { notchStyle, tabStyle } from '../forms/uiShared.jsx';
 export function VideoTestimonial({ image, quote, attribution, duration, caseStudy, size = 'lg', onPlay, style }) {
   const lg = size === 'lg';
   return <a href="#" onClick={e => { e.preventDefault(); onPlay && onPlay(); }} style={{ position: 'relative', display: 'block', height: lg ? 460 : 222, borderRadius: 10, overflow: 'hidden', color: '#FFFFFF', background: 'var(--ink-900)', ...style }}>
@@ -13,6 +14,6 @@ export function VideoTestimonial({ image, quote, attribution, duration, caseStud
       <span style={{ fontSize: lg ? 24 : 14, fontWeight: lg ? 600 : 500, lineHeight: 1.3, letterSpacing: '-0.01em' }}>“{quote}”</span>
       <span style={{ fontSize: lg ? 15 : 12, color: 'var(--sand-300)' }}>{attribution}</span>
     </div>
-    <span aria-hidden="true" style={{ position: 'absolute', top: -1, left: 28, width: 46, height: 10, background: 'var(--page)', clipPath: 'polygon(0 0,100% 0,calc(100% - 8px) 100%,8px 100%)' }}/>
+    <span aria-hidden="true" style={notchStyle('var(--page)', 28)}/>
   </a>;
 }

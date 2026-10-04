@@ -1,4 +1,4 @@
-Branded loading states from the "Loading states" board: lesson blocks that drop, stack and clear. Use them instead of a generic spinner anywhere a wait is visible.
+Branded loading states from the "Loading states" board: lesson blocks that drop, stack and clear. In `BlockLoader` the blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block beneath it. Use them instead of a generic spinner anywhere a wait is visible.
 ```jsx
 <BlockLoader caption="Blocks drop into place one at a time, then clear and repeat." />   // 01 full page
 <CompactLoader />            // 02 wordless: panels, modals, small screens
