@@ -288,7 +288,9 @@ url_origin() {
 add_csp_domain() {
   local key="$1" origin="$2" current
   current="$(get_env_value "${key}")"
-  if [[ -z "${origin}" ]] || is_local_origin "${origin}" || [[ ",${current// /}," == *",${origin},"* ]]; then
+  # A bare host in the list means https://host, so both forms count as already listed.
+  if [[ -z "${origin}" ]] || is_local_origin "${origin}" ||
+    [[ ",${current// /}," == *",${origin},"* || ",${current// /}," == *",${origin#https://},"* ]]; then
     return 0
   fi
   upsert_env_value "${key}" "${current:+${current},}${origin}"
@@ -552,6 +554,9 @@ app_is_seaweedfs_ready() {
   local version image
   version="$(get_env_value CIO_VERSION)"
   image="${API_IMAGE_REPO}:${version:-latest}"
+  if ! docker image inspect "${image}" >/dev/null 2>&1; then
+    echo "Downloading ${image} to check it supports the new storage (this can take a few minutes)..." >&2
+  fi
   docker pull -q "${image}" >/dev/null 2>&1 || true
   [[ "$(docker image inspect "${image}" --format "{{index .Config.Labels \"${SEAWEEDFS_READY_LABEL}\"}}" 2>/dev/null)" == "true" ]]
 }
