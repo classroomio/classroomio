@@ -362,6 +362,7 @@
   </Section>
 
   <PageSignupCTA
+    variant="pricing"
     header="ClassroomIO can host your company academy."
     subText="Turn your docs, videos, policies, and product knowledge into a branded academy with courses, assessments, certificates, analytics, and a custom domain."
     btnLabel="Book a Demo"

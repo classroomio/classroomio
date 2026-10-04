@@ -381,6 +381,7 @@
   <MultiAcademySection />
 
   <PageSignupCTA
+    variant="brand"
     header="Launch your customer academy."
     subText="Build a branded learning portal customers actually use. Custom domain, AI tutoring, certificates, and analytics out of the box."
     btnLabel="Book a Demo"

@@ -360,6 +360,7 @@
   </Section>
 
   <PageSignupCTA
+    variant="brand"
     header="Certify your next partner cohort."
     subText="Turn your product knowledge into a repeatable program. Courses, certificates, branded portal, and analytics in one place."
     btnLabel="Book a Demo"

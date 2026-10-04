@@ -84,6 +84,7 @@
 <TestimonialCarousel {testimonials} />
 
 <PageSignupCTA
+  variant="pricing"
   header="Start building your academy."
   subText="Sign up free on Basic. Upgrade for more students, higher AI credits, or a custom domain."
   btnLabel="Sign up for free"

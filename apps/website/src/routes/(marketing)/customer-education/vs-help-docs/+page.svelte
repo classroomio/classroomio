@@ -111,6 +111,7 @@
   </Section>
 
   <PageSignupCTA
+    variant="pricing"
     header="Stop forwarding help articles to every new customer."
     subText="Bundle the articles into a real onboarding course, add a final assessment, issue a certificate, and watch retention move."
     btnLabel="Book a Demo"

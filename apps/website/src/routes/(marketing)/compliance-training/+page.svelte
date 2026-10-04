@@ -348,6 +348,7 @@
   </Section>
 
   <PageSignupCTA
+    variant="brand"
     header="Keep your employees compliant and track who's falling behind."
     subText="Build certified training from your existing policies, assign it to the right people, and keep proof of completion in one place."
     btnLabel="Book a Demo"

@@ -27,11 +27,8 @@
   const priceClass = $derived(
     isNumericPrice ? 'text-h3' : 'text-[28px] leading-tight font-semibold tracking-[-0.02em]'
   );
-  const cardClass = $derived(isPopular ? 'h-full bg-gray-950 text-white' : 'h-full bg-gray-50 text-gray-950');
-  const mutedClass = $derived(isPopular ? 'text-gray-400' : 'text-gray-500');
-  const featureTextClass = $derived(isPopular ? 'text-gray-300' : 'text-gray-600');
-  const checkClass = $derived(isPopular ? 'text-blue-300' : 'text-blue-700');
-  const dividerClass = $derived(isPopular ? 'border-white/10' : 'border-gray-200');
+  const cardClass = $derived(isPopular ? 'h-full bg-[#EEF2FF] text-gray-950' : 'h-full bg-gray-50 text-gray-950');
+  const dividerClass = $derived(isPopular ? 'border-blue-200' : 'border-gray-200');
 </script>
 
 <NotchCard class={cardClass}>
@@ -45,7 +42,7 @@
   <div class="mt-6 flex min-h-12 items-end">
     <span class={priceClass}>{plan.PRICE.CURRENCY}{price}</span>
   </div>
-  <p class="mt-1 text-sm {mutedClass}">{perOrgLabel}</p>
+  <p class="mt-1 text-sm text-gray-500">{perOrgLabel}</p>
 
   <Button
     href={plan.CTA.LINK}
@@ -59,12 +56,12 @@
   </Button>
 
   <div class="mt-8 flex-1 border-t pt-6 {dividerClass}">
-    <p class="text-label font-mono uppercase {mutedClass}">{featuresLabel}</p>
+    <p class="text-label font-mono text-gray-500 uppercase">{featuresLabel}</p>
     <ul class="mt-4 space-y-3">
       {#each plan.FEATURES as feature (feature)}
         <li class="flex items-start gap-3">
-          <CheckIcon class="mt-0.5 size-4 shrink-0 {checkClass}" strokeWidth={2.2} />
-          <span class="text-[15px] leading-snug {featureTextClass}">{feature}</span>
+          <CheckIcon class="custom mt-0.5 size-4 shrink-0 text-blue-700" strokeWidth={2.2} />
+          <span class="text-[15px] leading-snug text-gray-600">{feature}</span>
         </li>
       {/each}
     </ul>
