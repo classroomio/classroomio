@@ -99,7 +99,11 @@ class OrgCertificatePresetsApi extends BaseApiWithErrors {
     }
   }
 
-  async createPreset(orgId: string, data: CreateCertPresetPayload): Promise<OrgCertificatePreset | null> {
+  async createPreset(
+    orgId: string,
+    data: CreateCertPresetPayload,
+    successMessage = 'certificate_studio.snackbar_created'
+  ): Promise<OrgCertificatePreset | null> {
     const targetOrgId = orgId || this.activeOrgId;
     if (!targetOrgId) return null;
 
@@ -122,7 +126,7 @@ class OrgCertificatePresetsApi extends BaseApiWithErrors {
           createdItem = response.data;
           const currentList = this.presetsByOrg.get(targetOrgId) ?? [];
           this.presetsByOrg.set(targetOrgId, [...currentList, response.data]);
-          snackbar.success('certificate_studio.snackbar_created');
+          snackbar.success(successMessage);
         }
       });
     } finally {
@@ -217,17 +221,15 @@ class OrgCertificatePresetsApi extends BaseApiWithErrors {
     const clonedName = `${preset.name} (Copy)`;
     const design = (preset.design as Record<string, unknown>) ?? {};
 
-    const created = await this.createPreset(targetOrgId, {
-      name: clonedName,
-      description: preset.description ?? undefined,
-      design
-    });
-
-    if (created) {
-      snackbar.success('certificate_studio.snackbar_cloned');
-    }
-
-    return created;
+    return this.createPreset(
+      targetOrgId,
+      {
+        name: clonedName,
+        description: preset.description ?? undefined,
+        design
+      },
+      'certificate_studio.snackbar_cloned'
+    );
   }
 }
 

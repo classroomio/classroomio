@@ -58,21 +58,188 @@ export type TCourseDownloadParam = z.infer<typeof ZCourseDownloadParam>;
  * Per-course certificate design. Stored on `course.certificate.design`.
  * The 5 supported template ids match `@cio/certificates`.
  */
-export const ZCertificateSignatory = z.object({
-  name: z.string().max(80).default(''),
-  role: z.string().max(80).default(''),
-  enabled: z.boolean().default(true),
-  signatureUrl: z.string().optional()
-});
+const ZCertificateImageUrl = z
+  .url({ protocol: /^https?$/ })
+  .max(2048)
+  .refine(
+    (value) => {
+      const parsedUrl = new URL(value);
+
+      return (
+        parsedUrl.protocol === 'https:' ||
+        (parsedUrl.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(parsedUrl.hostname))
+      );
+    },
+    { message: 'Certificate image URLs must use HTTPS' }
+  );
+
+export const ZCertificateSignatory = z
+  .object({
+    id: z.string().min(1).max(64).optional(),
+    name: z.string().max(80).default(''),
+    role: z.string().max(80).default(''),
+    enabled: z.boolean().default(true),
+    signatureUrl: ZCertificateImageUrl.optional(),
+    signatureAssetId: z.string().uuid().optional()
+  })
+  .strict();
 export type TCertificateSignatory = z.infer<typeof ZCertificateSignatory>;
 
 export const ZCertificateTemplateId = z.enum(['classique', 'brutalist', 'noir', 'poster', 'minimal']);
 export type TCertificateTemplateId = z.infer<typeof ZCertificateTemplateId>;
 
+export const ZCertificateElementLayout = z
+  .object({
+    enabled: z.boolean().optional(),
+    positionMode: z.enum(['auto', 'custom']).optional(),
+    x: z.number().finite().min(0).max(1100).optional(),
+    y: z.number().finite().min(0).max(780).optional(),
+    width: z.number().finite().positive().max(1100).optional(),
+    height: z.number().finite().positive().max(780).optional(),
+    anchor: z.literal('top_left').optional(),
+    zIndex: z.number().int().min(0).max(20).optional()
+  })
+  .strict();
+export type TCertificateElementLayout = z.infer<typeof ZCertificateElementLayout>;
+
+export const ZCertificateElements = z
+  .object({
+    header: ZCertificateElementLayout.optional(),
+    title: ZCertificateElementLayout.optional(),
+    subtitle: ZCertificateElementLayout.optional(),
+    recipient: ZCertificateElementLayout.optional(),
+    course: ZCertificateElementLayout.optional(),
+    description: ZCertificateElementLayout.optional(),
+    date: ZCertificateElementLayout.optional(),
+    badge: ZCertificateElementLayout.optional(),
+    signatories: ZCertificateElementLayout.optional(),
+    'signatory-0': ZCertificateElementLayout.optional(),
+    'signatory-1': ZCertificateElementLayout.optional(),
+    'signatory-2': ZCertificateElementLayout.optional(),
+    qrCode: ZCertificateElementLayout.optional(),
+    border: ZCertificateElementLayout.optional(),
+    background: ZCertificateElementLayout.optional()
+  })
+  .strict()
+  .superRefine((elements, context) => {
+    for (const requiredElement of ['recipient', 'course'] as const) {
+      if (elements[requiredElement]?.enabled === false) {
+        context.addIssue({
+          code: 'custom',
+          message: `${requiredElement} cannot be hidden`,
+          path: [requiredElement, 'enabled']
+        });
+      }
+    }
+  });
+export type TCertificateElements = z.infer<typeof ZCertificateElements>;
+
+export const ZCertificateCopyOverrides = z
+  .object({
+    title: z.string().max(200).optional(),
+    presentation: z.string().max(200).optional(),
+    completion: z.string().max(200).optional(),
+    dateLabel: z.string().max(100).optional(),
+    verifiedCredentialLabel: z.string().max(100).optional(),
+    organizationName: z.string().max(200).optional()
+  })
+  .strict();
+export type TCertificateCopyOverrides = z.infer<typeof ZCertificateCopyOverrides>;
+
+const ZCertificateColor = z.string().regex(/^#[0-9a-fA-F]{6}$/, {
+  message: 'Certificate colors must be 6-digit hex values'
+});
+
+const ZCertificateBorder = z
+  .object({
+    style: z.enum(['victorian', 'double_gold', 'geometric', 'minimal']).optional(),
+    width: z.number().finite().min(1).max(48).optional(),
+    primaryColor: ZCertificateColor.optional(),
+    accentColor: ZCertificateColor.optional()
+  })
+  .strict();
+
+const ZCertificateTypography = z
+  .object({
+    titleFont: z
+      .enum([
+        'Great Vibes',
+        'Bodoni Moda',
+        'Cinzel',
+        'Cormorant Garamond',
+        'Playfair Display',
+        'Inter',
+        'Space Grotesk',
+        'Montserrat'
+      ])
+      .optional(),
+    recipientFont: z
+      .enum([
+        'Great Vibes',
+        'Bodoni Moda',
+        'Cinzel',
+        'Cormorant Garamond',
+        'Playfair Display',
+        'Inter',
+        'Space Grotesk',
+        'Montserrat'
+      ])
+      .optional(),
+    bodyFont: z
+      .enum([
+        'Great Vibes',
+        'Bodoni Moda',
+        'Cinzel',
+        'Cormorant Garamond',
+        'Playfair Display',
+        'Inter',
+        'Space Grotesk',
+        'Montserrat'
+      ])
+      .optional(),
+    primaryColor: ZCertificateColor.optional(),
+    letterSpacing: z.number().finite().min(0).max(0.5).optional()
+  })
+  .strict();
+
+const ZCertificateBackground = z
+  .object({
+    style: z.enum(['parchment', 'guilloche', 'solid', 'gradient']).optional(),
+    primaryColor: ZCertificateColor.optional(),
+    secondaryColor: ZCertificateColor.optional()
+  })
+  .strict();
+
+const ZCertificateBadge = z
+  .object({
+    style: z.enum(['gold_seal', 'ribbon', 'wax_stamp', 'none']).optional(),
+    label: z.string().max(80).optional(),
+    foilColor: ZCertificateColor.optional()
+  })
+  .strict();
+
+const ZCertificateQrCode = z
+  .object({
+    enabled: z.boolean().optional(),
+    position: z.enum(['bottom_right', 'bottom_left', 'center_footer', 'top_right', 'custom']).optional()
+  })
+  .strict();
+
+const ZLegacyCertificateLayout = z
+  .object({
+    headerOffsetY: z.number().finite().min(-780).max(780).optional(),
+    titleOffsetY: z.number().finite().min(-780).max(780).optional(),
+    recipientOffsetY: z.number().finite().min(-780).max(780).optional(),
+    courseOffsetY: z.number().finite().min(-780).max(780).optional(),
+    badgeOffsetY: z.number().finite().min(-780).max(780).optional(),
+    footerOffsetY: z.number().finite().min(-780).max(780).optional()
+  })
+  .strict();
+
 export const ZCertificateDesign = z
   .object({
-    rendererTemplateId: z.string().min(1).default('classique'),
-    templateId: z.string().optional(),
+    rendererTemplateId: z.string().min(1).max(64).default('classique'),
+    templateId: z.string().min(1).max(64).optional(),
     sourcePresetId: z.string().uuid().optional(),
     accentColor: z
       .string()
@@ -80,10 +247,18 @@ export const ZCertificateDesign = z
       .default('#0F62FE'),
     subtitle: z.string().max(256).optional(),
     descriptionOverride: z.string().max(1000).optional(),
-    signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]),
-    idFormat: z.string().max(64).optional().default('CERT-{seq}')
+    signatories: z.array(ZCertificateSignatory).max(3).default([]),
+    idFormat: z.string().max(64).optional().default('CERT-{seq}'),
+    elements: ZCertificateElements.optional(),
+    copy: ZCertificateCopyOverrides.optional(),
+    border: ZCertificateBorder.optional(),
+    typography: ZCertificateTypography.optional(),
+    background: ZCertificateBackground.optional(),
+    badge: ZCertificateBadge.optional(),
+    qrCode: ZCertificateQrCode.optional(),
+    layout: ZLegacyCertificateLayout.optional()
   })
-  .passthrough();
+  .strict();
 export type TCertificateDesign = z.infer<typeof ZCertificateDesign>;
 
 /**

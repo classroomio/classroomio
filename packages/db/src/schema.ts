@@ -771,8 +771,85 @@ export const course = pgTable(
         secondaryColor?: string;
         subtitle?: string;
         descriptionOverride?: string;
-        signatories?: { name?: string; role?: string; enabled?: boolean; signatureUrl?: string }[];
+        signatories?: {
+          id?: string;
+          name?: string;
+          role?: string;
+          enabled?: boolean;
+          signatureUrl?: string;
+          signatureAssetId?: string;
+        }[];
         idFormat?: string;
+        elements?: Partial<
+          Record<
+            | 'header'
+            | 'title'
+            | 'subtitle'
+            | 'recipient'
+            | 'course'
+            | 'description'
+            | 'date'
+            | 'badge'
+            | 'signatories'
+            | 'qrCode'
+            | 'border',
+            {
+              enabled?: boolean;
+              positionMode?: 'auto' | 'custom';
+              x?: number;
+              y?: number;
+              width?: number;
+              height?: number;
+              anchor?: 'top_left';
+              zIndex?: number;
+            }
+          >
+        >;
+        copy?: {
+          title?: string;
+          presentation?: string;
+          completion?: string;
+          dateLabel?: string;
+          verifiedCredentialLabel?: string;
+          organizationName?: string;
+        };
+        border?: {
+          style?: 'victorian' | 'double_gold' | 'geometric' | 'minimal' | 'custom_image';
+          width?: number;
+          primaryColor?: string;
+          accentColor?: string;
+          customImageUrl?: string;
+        };
+        typography?: {
+          titleFont?: string;
+          recipientFont?: string;
+          bodyFont?: string;
+          primaryColor?: string;
+          letterSpacing?: number;
+        };
+        background?: {
+          style?: 'parchment' | 'guilloche' | 'solid' | 'gradient';
+          primaryColor?: string;
+          secondaryColor?: string;
+        };
+        badge?: {
+          style?: 'gold_seal' | 'ribbon' | 'wax_stamp' | 'crest' | 'custom' | 'none';
+          label?: string;
+          foilColor?: string;
+          customImageUrl?: string;
+        };
+        qrCode?: {
+          enabled?: boolean;
+          position?: 'bottom_right' | 'bottom_left' | 'center_footer' | 'top_right' | 'custom';
+        };
+        layout?: {
+          headerOffsetY?: number;
+          titleOffsetY?: number;
+          recipientOffsetY?: number;
+          courseOffsetY?: number;
+          badgeOffsetY?: number;
+          footerOffsetY?: number;
+        };
       } | null;
       deadline?: string | null;
       threshold?: number;

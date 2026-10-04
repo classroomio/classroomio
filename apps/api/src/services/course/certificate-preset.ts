@@ -40,17 +40,13 @@ export async function applyCertificatePresetToCourseService(
   }
 
   const currentCertificate = (course.certificate as StoredCertificateRecord) ?? {};
-  const presetDesign = preset.design as Record<string, unknown>;
-
-  const rawSignatories = (presetDesign as StoredCertificateDesign).signatories;
-  const snapshotSignatories = rawSignatories ? [...rawSignatories] : undefined;
+  const presetDesign = structuredClone(preset.design as StoredCertificateDesign);
+  const rendererTemplateId = presetDesign.rendererTemplateId ?? presetDesign.templateId ?? 'classique';
 
   const snapshotDesign: StoredCertificateDesign = {
-    ...(presetDesign as StoredCertificateDesign),
-    signatories: snapshotSignatories,
+    ...presetDesign,
     sourcePresetId: preset.id,
-    rendererTemplateId:
-      (presetDesign.rendererTemplateId as string) ?? (presetDesign.templateId as string) ?? 'classique'
+    rendererTemplateId
   };
 
   const updatedCertificate: StoredCertificateRecord = {
@@ -58,9 +54,9 @@ export async function applyCertificatePresetToCourseService(
     design: snapshotDesign
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const certificateUpdate = updatedCertificate as TCourse['certificate'];
   const updatedCourse = await updateCourse(courseId, {
-    certificate: updatedCertificate as any
+    certificate: certificateUpdate
   });
 
   return updatedCourse;

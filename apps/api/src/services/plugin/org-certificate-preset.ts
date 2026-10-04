@@ -11,11 +11,19 @@ import type { TCreateOrgCertificatePreset, TUpdateOrgCertificatePreset } from '@
 import { CERTIFICATE_TEMPLATES } from '@cio/certificates';
 import { assertOrgCapabilityEnabled } from './org-capability';
 
-function assertValidRendererId(rendererId: string) {
-  const isBuiltIn = rendererId === 'modular' || CERTIFICATE_TEMPLATES.some((t) => t.id === rendererId);
+function assertValidTemplateId(templateId: string) {
+  const isBuiltIn = templateId === 'modular' || CERTIFICATE_TEMPLATES.some((template) => template.id === templateId);
 
   if (!isBuiltIn) {
-    throw new AppError(`Unknown certificate renderer "${rendererId}"`, ErrorCodes.VALIDATION_ERROR, 400);
+    throw new AppError(`Unknown certificate template "${templateId}"`, ErrorCodes.VALIDATION_ERROR, 400);
+  }
+}
+
+function assertValidDesignTemplateIds(design: TCreateOrgCertificatePreset['design']) {
+  assertValidTemplateId(design.rendererTemplateId);
+
+  if (design.templateId) {
+    assertValidTemplateId(design.templateId);
   }
 }
 
@@ -43,7 +51,7 @@ export async function getOrgCertificatePresetService(orgId: string, presetId: st
 
   const preset = await getOrgCertificatePreset(orgId, presetId);
 
-  if (!preset) {
+  if (!preset?.isActive) {
     throw new AppError('Certificate preset not found', ErrorCodes.NOT_FOUND, 404);
   }
 
@@ -61,10 +69,7 @@ export async function createOrgCertificatePresetService(
 ): Promise<TOrgCertificatePreset> {
   await assertOrgCapabilityEnabled(orgId, 'certificate_studio');
 
-  const rendererId = data.design.rendererTemplateId ?? data.design.templateId;
-  if (rendererId) {
-    assertValidRendererId(rendererId);
-  }
+  assertValidDesignTemplateIds(data.design);
 
   const preset = await createOrgCertificatePreset({
     orgId,
@@ -90,20 +95,17 @@ export async function updateOrgCertificatePresetService(
 
   const existing = await getOrgCertificatePreset(orgId, presetId);
 
-  if (!existing) {
+  if (!existing?.isActive) {
     throw new AppError('Certificate preset not found', ErrorCodes.NOT_FOUND, 404);
   }
 
   if (data.design) {
-    const rendererId = data.design.rendererTemplateId ?? data.design.templateId;
-    if (rendererId) {
-      assertValidRendererId(rendererId);
-    }
+    assertValidDesignTemplateIds(data.design);
   }
 
   const updated = await updateOrgCertificatePreset(orgId, presetId, {
     name: data.name,
-    description: data.description === null ? undefined : (data.description ?? undefined),
+    description: data.description,
     design: data.design
   });
 
@@ -124,7 +126,7 @@ export async function deleteOrgCertificatePresetService(orgId: string, presetId:
 
   const existing = await getOrgCertificatePreset(orgId, presetId);
 
-  if (!existing) {
+  if (!existing?.isActive) {
     throw new AppError('Certificate preset not found', ErrorCodes.NOT_FOUND, 404);
   }
 
