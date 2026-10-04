@@ -1,5 +1,10 @@
 <script lang="ts">
-  import { CERTIFICATE_TEMPLATES, type CertificateTemplateId } from '@cio/certificates';
+  import {
+    CERTIFICATE_TEMPLATES,
+    DEFAULT_CERTIFICATE_DESIGN,
+    type CertificateTemplateId,
+    type StoredCertificateDesign
+  } from '@cio/certificates';
   import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
   import TemplateThumb from './template-thumb.svelte';
@@ -38,8 +43,8 @@
     <div class="grid grid-cols-2 gap-3">
       {#each orgPresets as orgTemplate (orgTemplate.id)}
         {@const isActive = certificateEditorStore.draft.sourcePresetId === orgTemplate.id}
-        {@const design = (orgTemplate.design as Record<string, any>) ?? {}}
-        {@const accentColor = design.accentColor ?? '#D97706'}
+        {@const design = (orgTemplate.design as StoredCertificateDesign) ?? {}}
+        {@const accentColor = design.accentColor ?? DEFAULT_CERTIFICATE_DESIGN.accentColor}
         <button
           type="button"
           class={cn(
@@ -57,7 +62,7 @@
             style:background="linear-gradient(135deg, {accentColor}ee 0%, {accentColor} 100%)"
           >
             <span class="truncate text-[9px] font-medium tracking-wide uppercase opacity-80">
-              {design.subtitle ?? 'Certificate'}
+              {design.subtitle ?? $t('certificate_studio.preview')}
             </span>
             <div class="line-clamp-2 text-xs leading-tight font-bold drop-shadow-xs">
               {orgTemplate.name}

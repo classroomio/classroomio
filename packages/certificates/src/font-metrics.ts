@@ -6,14 +6,17 @@ export const CERTIFICATE_FONTS = {
   cormorantGaramond: 'Cormorant Garamond',
   jetbrainsMono: 'JetBrains Mono',
   spaceGrotesk: 'Space Grotesk',
-  dmMono: 'DM Mono'
+  dmMono: 'DM Mono',
+  greatVibes: 'Great Vibes',
+  inter: 'Inter',
+  montserrat: 'Montserrat'
 } as const;
 
 export type CertificateFontFamily = (typeof CERTIFICATE_FONTS)[keyof typeof CERTIFICATE_FONTS];
 
 /**
  * Average character advance-width ratios (width / fontSize) by character class.
- * Calibrated against Google Web Fonts metrics for these 8 certificate families.
+ * Calibrated against Google Web Fonts metrics for the certificate font families.
  */
 interface FontAdvanceProfile {
   isMonospace?: boolean;
@@ -31,6 +34,33 @@ const NARROW_CHARS = new Set('iljtrf1!|:;.,\'"`()[]{}-/\\');
 const WIDE_CHARS = new Set('MWmw@—%#&');
 
 const FONT_PROFILES: Record<CertificateFontFamily, FontAdvanceProfile> = {
+  'Great Vibes': {
+    defaultRatio: 0.5,
+    space: 0.24,
+    narrow: 0.24,
+    wide: 0.86,
+    capsStandard: 0.7,
+    lowerStandard: 0.45,
+    digitStandard: 0.48
+  },
+  Inter: {
+    defaultRatio: 0.53,
+    space: 0.26,
+    narrow: 0.29,
+    wide: 0.9,
+    capsStandard: 0.67,
+    lowerStandard: 0.51,
+    digitStandard: 0.56
+  },
+  Montserrat: {
+    defaultRatio: 0.57,
+    space: 0.27,
+    narrow: 0.31,
+    wide: 0.94,
+    capsStandard: 0.72,
+    lowerStandard: 0.54,
+    digitStandard: 0.58
+  },
   'JetBrains Mono': {
     isMonospace: true,
     defaultRatio: 0.6,

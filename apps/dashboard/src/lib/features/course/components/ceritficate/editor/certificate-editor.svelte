@@ -9,6 +9,7 @@
   import { t } from '$lib/utils/functions/translations';
 
   import { courseApi } from '$features/course/api';
+  import { UnsavedChanges } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { isFreePlan } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
@@ -54,9 +55,13 @@
   }
 
   function setActive(panel: CertificateEditorPanel) {
+    if (store.isSignatureUploading) return;
+
     store.activePanel = panel;
   }
 </script>
+
+<UnsavedChanges hasUnsavedChanges={store.isDirty || store.isSignatureUploading} />
 
 {#if courseApi.course?.id === courseId}
   <div class="ui:bg-background ui:text-foreground flex h-dvh flex-col">
@@ -152,7 +157,7 @@
           {#if store.activePanel === 'templates'}
             <TemplatesPanel
               value={store.draft.templateId}
-              disabled={$isFreePlan}
+              disabled={$isFreePlan || store.isSignatureUploading}
               onSelect={(id: CertificateTemplateId) => store.setTemplate(id)}
             />
           {:else if store.activePanel === 'content'}

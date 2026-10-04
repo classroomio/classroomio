@@ -2,7 +2,8 @@ import {
   DEFAULT_CERTIFICATE_DESIGN,
   resolveCertificateDesign,
   type CertificateDesign,
-  type CertificateTemplateId
+  type CertificateTemplateId,
+  type StoredCertificateDesign
 } from '@cio/certificates';
 
 import { courseApi } from '$features/course/api';
@@ -23,26 +24,32 @@ export interface CertificateEditorDraft {
   subtitle: string;
   descriptionOverride: string;
   idFormat: string;
-  signatories: [
-    { name: string; role: string; enabled: boolean; signatureUrl: string },
-    { name: string; role: string; enabled: boolean; signatureUrl: string }
-  ];
+  signatories: Array<{
+    id?: string;
+    name: string;
+    role: string;
+    enabled: boolean;
+    signatureUrl: string;
+    signatureAssetId?: string;
+  }>;
+  elements?: CertificateDesign['elements'];
+  copy?: CertificateDesign['copy'];
   border?: CertificateDesign['border'];
   typography?: CertificateDesign['typography'];
   background?: CertificateDesign['background'];
   badge?: CertificateDesign['badge'];
   qrCode?: CertificateDesign['qrCode'];
+  layout?: CertificateDesign['layout'];
 }
 
-function toDraftSignatory(
-  signatory: CertificateDesign['signatories'][number] | undefined,
-  fallback: CertificateDesign['signatories'][number]
-) {
+function toDraftSignatory(signatory: CertificateDesign['signatories'][number]) {
   return {
-    name: signatory?.name ?? fallback.name,
-    role: signatory?.role ?? fallback.role,
-    enabled: signatory?.enabled ?? fallback.enabled ?? true,
-    signatureUrl: signatory?.signatureUrl ?? ''
+    id: signatory.id,
+    name: signatory.name,
+    role: signatory.role,
+    enabled: signatory.enabled,
+    signatureUrl: signatory.signatureUrl ?? '',
+    signatureAssetId: signatory.signatureAssetId
   };
 }
 
@@ -57,30 +64,40 @@ function fromDraftSignatory(signatory: CertificateEditorDraft['signatories'][num
   const signatureUrl = signatory.signatureUrl.trim();
 
   return {
+    id: signatory.id,
     name: signatory.name,
     role: signatory.role,
     enabled: signatory.enabled,
-    signatureUrl: isPersistableSignatureUrl(signatureUrl) ? signatureUrl : undefined
+    signatureUrl: isPersistableSignatureUrl(signatureUrl) ? signatureUrl : undefined,
+    signatureAssetId: signatory.signatureAssetId
   };
+}
+
+function cloneElements(elements: CertificateDesign['elements']): CertificateDesign['elements'] {
+  if (!elements) return undefined;
+
+  return Object.fromEntries(
+    Object.entries(elements).map(([elementId, layout]) => [elementId, layout ? { ...layout } : layout])
+  ) as CertificateDesign['elements'];
 }
 
 function toDraft(design: CertificateDesign): CertificateEditorDraft {
   return {
     templateId: design.templateId,
-    sourcePresetId: (design as any).sourcePresetId,
+    sourcePresetId: design.sourcePresetId,
     accentColor: design.accentColor,
     subtitle: design.subtitle ?? '',
     descriptionOverride: design.descriptionOverride ?? '',
     idFormat: design.idFormat ?? '',
-    signatories: [
-      toDraftSignatory(design.signatories[0], DEFAULT_CERTIFICATE_DESIGN.signatories[0]),
-      toDraftSignatory(design.signatories[1], DEFAULT_CERTIFICATE_DESIGN.signatories[1])
-    ],
-    border: design.border,
-    typography: design.typography,
-    background: design.background,
-    badge: design.badge,
-    qrCode: design.qrCode
+    signatories: design.signatories.slice(0, 3).map(toDraftSignatory),
+    elements: cloneElements(design.elements),
+    copy: design.copy ? { ...design.copy } : undefined,
+    border: design.border ? { ...design.border } : undefined,
+    typography: design.typography ? { ...design.typography } : undefined,
+    background: design.background ? { ...design.background } : undefined,
+    badge: design.badge ? { ...design.badge } : undefined,
+    qrCode: design.qrCode ? { ...design.qrCode } : undefined,
+    layout: design.layout ? { ...design.layout } : undefined
   };
 }
 
@@ -92,12 +109,15 @@ function fromDraft(draft: CertificateEditorDraft): CertificateDesign {
     subtitle: draft.subtitle.trim() || undefined,
     descriptionOverride: draft.descriptionOverride.trim() || undefined,
     idFormat: draft.idFormat.trim() || undefined,
-    signatories: [fromDraftSignatory(draft.signatories[0]), fromDraftSignatory(draft.signatories[1])],
+    signatories: draft.signatories.map(fromDraftSignatory),
+    elements: draft.elements,
+    copy: draft.copy,
     border: draft.border,
     typography: draft.typography,
     background: draft.background,
     badge: draft.badge,
-    qrCode: draft.qrCode
+    qrCode: draft.qrCode,
+    layout: draft.layout
   };
 
   if (draft.sourcePresetId) {
@@ -131,46 +151,62 @@ class CertificateEditorStore {
   }
 
   reset() {
+    if (this.isSignatureUploading) return;
+
     this.draft = toDraft(fromDraft(this.initial));
   }
 
   setTemplate(templateId: CertificateTemplateId) {
+    if (this.isSignatureUploading) return;
+
     this.draft.templateId = templateId;
     this.draft.sourcePresetId = undefined;
+    this.draft.elements = undefined;
+    this.draft.copy = undefined;
     this.draft.border = undefined;
+    this.draft.typography = undefined;
+    this.draft.background = undefined;
     this.draft.badge = undefined;
+    this.draft.qrCode = undefined;
+    this.draft.layout = undefined;
   }
 
-  applyPreset(preset: { id: string; design: Record<string, any> }) {
-    const design = preset.design ?? {};
-    const rendererId = (design.rendererTemplateId || design.templateId || 'classique') as CertificateTemplateId;
-    this.draft.templateId = rendererId;
-    this.draft.sourcePresetId = preset.id;
-    if (design.accentColor) this.draft.accentColor = design.accentColor;
-    if (design.subtitle !== undefined) this.draft.subtitle = design.subtitle ?? '';
-    if (design.descriptionOverride !== undefined) this.draft.descriptionOverride = design.descriptionOverride ?? '';
-    if (design.idFormat !== undefined) this.draft.idFormat = design.idFormat ?? '';
-    if (Array.isArray(design.signatories)) {
-      this.draft.signatories = [
-        toDraftSignatory(design.signatories[0], DEFAULT_CERTIFICATE_DESIGN.signatories[0]),
-        toDraftSignatory(design.signatories[1], DEFAULT_CERTIFICATE_DESIGN.signatories[1])
-      ];
-    }
-    if (design.border) this.draft.border = design.border;
-    if (design.typography) this.draft.typography = design.typography;
-    if (design.background) this.draft.background = design.background;
-    if (design.badge) this.draft.badge = design.badge;
-    if (design.qrCode) this.draft.qrCode = design.qrCode;
+  applyPreset(preset: { id: string; design: Record<string, unknown> }) {
+    if (this.isSignatureUploading) return;
+
+    const design = resolveCertificateDesign({ design: preset.design as StoredCertificateDesign });
+    this.draft = toDraft({ ...design, sourcePresetId: preset.id });
   }
 
   setAccent(color: string) {
     this.draft.accentColor = color;
   }
 
-  setSignatorySignatureUrl(index: 0 | 1, signatureUrl: string) {
+  addSignatory() {
+    if (this.draft.signatories.length >= 3) return;
+
+    this.draft.signatories.push({
+      id: `sig-${crypto.randomUUID()}`,
+      name: '',
+      role: '',
+      enabled: true,
+      signatureUrl: '',
+      signatureAssetId: undefined
+    });
+  }
+
+  removeSignatory(index: number) {
+    if (!this.draft.signatories[index]) return;
+
+    this.draft.signatories.splice(index, 1);
+  }
+
+  setSignatorySignatureUrl(index: number, signatureUrl: string) {
     const signatory = this.draft.signatories[index];
-    const nextSignatories = [...this.draft.signatories] as CertificateEditorDraft['signatories'];
-    nextSignatories[index] = { ...signatory, signatureUrl };
+    if (!signatory) return;
+
+    const nextSignatories = [...this.draft.signatories];
+    nextSignatories[index] = { ...signatory, signatureUrl, signatureAssetId: undefined };
 
     this.draft = {
       ...this.draft,

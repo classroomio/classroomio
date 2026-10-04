@@ -37,7 +37,7 @@ const DEFAULT_DECLARATIVE_LABELS = {
   certificateTitle: 'CERTIFICATE OF COMPLETION',
   completionLabel: 'FOR SUCCESSFUL COMPLETION OF',
   presentedToLabel: 'THIS IS PROUDLY PRESENTED TO',
-  verifiedCredentialLabel: 'VERIFIED CREDENTIAL'
+  verifiedCredentialLabel: 'CREDENTIAL REFERENCE'
 };
 
 function interpolateTemplate(source: string, values: Record<string, string>): string {
@@ -135,7 +135,8 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
   const design = stored?.design;
   const legacyTheme = stored?.theme ?? undefined;
   const rawRendererId = design?.rendererTemplateId ?? design?.templateId ?? legacyTheme;
-  const templateId = resolveTemplateId(rawRendererId);
+  const rendererTemplateId = resolveTemplateId(rawRendererId);
+  const templateId = resolveTemplateId(design?.templateId ?? legacyTheme ?? rendererTemplateId);
 
   const accentColor =
     design?.accentColor && /^#[0-9a-fA-F]{6}$/.test(design.accentColor)
@@ -144,23 +145,36 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
 
   const storedSignatories = Array.isArray(design?.signatories) ? design.signatories : undefined;
 
-  const signatories: CertificateDesign['signatories'] = [
-    {
-      name: storedSignatories?.[0]?.name ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].name,
-      role: storedSignatories?.[0]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].role,
-      enabled: storedSignatories?.[0]?.enabled ?? DEFAULT_CERTIFICATE_DESIGN.signatories[0].enabled,
-      signatureUrl: storedSignatories?.[0]?.signatureUrl
+  const signatories: CertificateDesign['signatories'] = storedSignatories
+    ? storedSignatories.slice(0, 3).map((signatory, index) => ({
+        id: signatory.id ?? `sig-${index + 1}`,
+        name: signatory.name ?? '',
+        role: signatory.role ?? '',
+        enabled: signatory.enabled ?? true,
+        signatureUrl: signatory.signatureUrl,
+        signatureAssetId: signatory.signatureAssetId
+      }))
+    : DEFAULT_CERTIFICATE_DESIGN.signatories.map((signatory, index) => ({
+        ...signatory,
+        id: signatory.id ?? `sig-${index + 1}`
+      }));
+
+  const elements: CertificateDesign['elements'] = {
+    ...design?.elements,
+    recipient: { ...design?.elements?.recipient, enabled: true },
+    course: { ...design?.elements?.course, enabled: true },
+    badge: {
+      ...design?.elements?.badge,
+      enabled: design?.elements?.badge?.enabled ?? design?.badge?.style !== 'none'
     },
-    {
-      name: storedSignatories?.[1]?.name ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].name,
-      role: storedSignatories?.[1]?.role ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].role,
-      enabled: storedSignatories?.[1]?.enabled ?? DEFAULT_CERTIFICATE_DESIGN.signatories[1].enabled,
-      signatureUrl: storedSignatories?.[1]?.signatureUrl
+    qrCode: {
+      ...design?.elements?.qrCode,
+      enabled: design?.elements?.qrCode?.enabled ?? design?.qrCode?.enabled !== false
     }
-  ];
+  };
 
   return {
-    rendererTemplateId: templateId,
+    rendererTemplateId,
     templateId,
     sourcePresetId: design?.sourcePresetId,
     accentColor,
@@ -168,6 +182,8 @@ export function resolveCertificateDesign(stored?: StoredCertificateRecord | null
     descriptionOverride: design?.descriptionOverride,
     signatories,
     idFormat: design?.idFormat ?? DEFAULT_CERTIFICATE_DESIGN.idFormat,
+    elements,
+    copy: design?.copy,
     border: design?.border,
     typography: design?.typography,
     background: design?.background,
@@ -188,6 +204,7 @@ export function renderCertificate(design: CertificateDesign, data: CertificateRe
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=${CERTIFICATE_WIDTH},initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-src 'none'; connect-src 'none'; media-src 'none'; img-src https: http://localhost:* http://127.0.0.1:*; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'unsafe-inline'">
   <title>Certificate</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

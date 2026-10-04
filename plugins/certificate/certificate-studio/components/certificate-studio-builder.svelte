@@ -4,13 +4,19 @@
   import { goto } from '$app/navigation';
   import { currentOrg } from '$lib/utils/store/org';
   import { orgCertificatePresetsApi, type OrgCertificatePreset } from '$features/plugins';
+  import { UnsavedChanges } from '$features/ui';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import { Certificate } from '@cio/ui';
   import EyeIcon from '@lucide/svelte/icons/eye';
   import Loader2Icon from '@lucide/svelte/icons/loader-2';
   import { t } from '$lib/utils/functions/translations';
-  import type { CertificateDesign, CertificateTemplateId } from '@cio/certificates';
+  import {
+    resolveCertificateDesign,
+    type CertificateDesign,
+    type CertificateTemplateId,
+    type StoredCertificateDesign
+  } from '@cio/certificates';
   import type { ToolCategory, StudioElementId } from '../types';
 
   import StudioHeader from './studio-header.svelte';
@@ -28,29 +34,41 @@
   const starterTemplateId = $derived((page.url.searchParams.get('starter') ?? 'classique') as CertificateTemplateId);
   const initialName = $derived(page.url.searchParams.get('name') ?? '');
   const initialAccentColor = $derived(page.url.searchParams.get('color') ?? '#d4af37');
-  const initialSubtitle = $derived(page.url.searchParams.get('subtitle') ?? 'PROUDLY PRESENTED TO');
+  const initialSubtitle = $derived(page.url.searchParams.get('subtitle') ?? '');
 
-  let activePreset = $state<OrgCertificatePreset | null>(initialPreset);
-  let isLoading = $state(Boolean(presetId && !initialPreset));
+  let activePreset = $state<OrgCertificatePreset | null>(untrack(() => initialPreset));
+  let isLoading = $state(untrack(() => Boolean(presetId && !initialPreset)));
   let isSaving = $state(false);
   let isPreviewModalOpen = $state(false);
   let selectedTool = $state<ToolCategory>('borders');
   let selectedElement = $state<StudioElementId | null>(null);
+  let savedSnapshot = $state('');
+  let hasUnsavedChanges = $state(false);
 
   function handleSelectElement(el: StudioElementId | null) {
     selectedElement = el;
     if (!el) return;
-    if (el === 'title' || el === 'recipient') selectedTool = 'typography';
-    else if (el === 'course') selectedTool = 'layout';
-    else if (el === 'badge') selectedTool = 'badges';
-    else if (el === 'sig-left' || el === 'sig-right') selectedTool = 'signatories';
-    else if (el === 'qrcode') selectedTool = 'qrcode';
-    else if (el === 'border') selectedTool = 'borders';
+    if (['header', 'title', 'subtitle', 'recipient', 'date'].includes(el)) {
+      selectedTool = 'typography';
+    } else if (el === 'course' || el === 'description') {
+      selectedTool = 'layout';
+    } else if (el === 'badge') {
+      selectedTool = 'badges';
+    } else if (el === 'signatories') {
+      selectedTool = 'signatories';
+    } else if (el === 'qrCode') {
+      selectedTool = 'qrcode';
+    } else if (el === 'border') {
+      selectedTool = 'borders';
+    }
   }
 
   function handleSelectTool(tool: ToolCategory) {
     selectedTool = tool;
-    if (tool === 'typography' && selectedElement !== 'title' && selectedElement !== 'recipient') {
+    if (
+      tool === 'typography' &&
+      !['header', 'title', 'subtitle', 'recipient', 'date'].includes(selectedElement ?? '')
+    ) {
       selectedElement = 'title';
     } else if (tool === 'borders') {
       selectedElement = 'border';
@@ -59,27 +77,30 @@
     } else if (tool === 'layout') {
       selectedElement = 'course';
     } else if (tool === 'signatories') {
-      selectedElement = 'sig-left';
+      selectedElement = 'signatory-0';
     } else if (tool === 'qrcode') {
-      selectedElement = 'qrcode';
+      selectedElement = 'qrCode';
+    } else if (tool === 'background') {
+      selectedElement = 'background';
     }
   }
 
-  let templateName = $state('Acme Honors Gold 2026');
+  let templateName = $state('');
 
   // Reactive unified design state
   let design = $state<CertificateDesign>({
     rendererTemplateId: 'modular',
     templateId: 'classique',
     accentColor: '#d4af37',
-    subtitle: 'PROUDLY PRESENTED TO',
-    descriptionOverride:
-      'For successfully mastering Fullstack Engineering and demonstrating leadership and academic rigor.',
-    idFormat: 'ACM-{seq}',
+    subtitle: '',
+    descriptionOverride: undefined,
+    idFormat: 'CERT-{seq}',
     signatories: [
-      { name: 'Dr. Robert Ford', role: 'Dean of Academics', enabled: true },
-      { name: 'Sarah Dean', role: 'Lead Instructor', enabled: true }
+      { id: 'sig-1', name: 'Course Facilitator', role: 'Facilitator', enabled: true },
+      { id: 'sig-2', name: 'Organization Lead', role: 'Director', enabled: true }
     ],
+    elements: {},
+    copy: {},
     border: {
       style: 'victorian',
       width: 12,
@@ -100,32 +121,68 @@
     },
     badge: {
       style: 'gold_seal',
-      label: 'OFFICIAL SEAL',
       foilColor: '#d4af37'
     },
     qrCode: {
-      enabled: true
+      enabled: true,
+      position: 'bottom_right'
     }
+  });
+
+  const currentSnapshot = $derived(JSON.stringify({ templateName, design }));
+
+  $effect(() => {
+    hasUnsavedChanges = savedSnapshot !== '' && currentSnapshot !== savedSnapshot;
   });
 
   function applyPresetData(p: OrgCertificatePreset) {
     activePreset = p;
     templateName = p.name;
-    const raw = (p.design as Record<string, any>) ?? {};
-    design.rendererTemplateId = 'modular';
-    design.templateId = raw.rendererTemplateId || raw.templateId || 'classique';
-    design.accentColor = raw.accentColor || '#d4af37';
-    if (raw.subtitle) design.subtitle = raw.subtitle;
-    if (raw.descriptionOverride) design.descriptionOverride = raw.descriptionOverride;
-    if (raw.idFormat) design.idFormat = raw.idFormat;
-    if (raw.border) design.border = { ...design.border, ...raw.border };
-    if (raw.typography) design.typography = { ...design.typography, ...raw.typography };
-    if (raw.background) design.background = { ...design.background, ...raw.background };
-    if (raw.badge) design.badge = { ...design.badge, ...raw.badge };
-    if (raw.qrCode) design.qrCode = { ...design.qrCode, ...raw.qrCode };
-    if (Array.isArray(raw.signatories) && raw.signatories.length >= 2) {
-      design.signatories = [raw.signatories[0], raw.signatories[1]];
-    }
+    const resolved = resolveCertificateDesign({
+      design: p.design as StoredCertificateDesign,
+      theme: p.design?.templateId
+    });
+    const signatories =
+      resolved.signatories && resolved.signatories.length > 0
+        ? resolved.signatories
+        : [
+            { id: 'sig-1', name: 'Course Facilitator', role: 'Facilitator', enabled: true },
+            { id: 'sig-2', name: 'Organization Lead', role: 'Director', enabled: true }
+          ];
+    design = {
+      ...resolved,
+      signatories,
+      rendererTemplateId: 'modular',
+      sourcePresetId: p.id,
+      elements: resolved.elements ?? {},
+      copy: resolved.copy ?? {},
+      border: resolved.border ?? {
+        style: 'victorian',
+        width: 12,
+        primaryColor: resolved.accentColor,
+        accentColor: '#85581a'
+      },
+      typography: resolved.typography ?? {
+        titleFont: 'Bodoni Moda',
+        recipientFont: 'Great Vibes',
+        bodyFont: 'Cormorant Garamond',
+        primaryColor: '#1a1a2e',
+        letterSpacing: 0.05
+      },
+      background: resolved.background ?? {
+        style: 'parchment',
+        primaryColor: '#faf8f2',
+        secondaryColor: '#f3ede0'
+      },
+      badge: resolved.badge ?? {
+        style: 'gold_seal',
+        foilColor: resolved.accentColor
+      },
+      qrCode: resolved.qrCode ?? {
+        enabled: true,
+        position: 'bottom_right'
+      }
+    };
   }
 
   // Zoom management
@@ -160,35 +217,54 @@
     fitZoom = clampZoom(Math.min(horizontalScale, verticalScale));
   }
 
-  onMount(async () => {
-    if (initialPreset) {
-      applyPresetData(initialPreset);
-    } else if (presetId && $currentOrg.id) {
-      const fetched = await orgCertificatePresetsApi.fetchPreset($currentOrg.id, presetId);
-      if (fetched) applyPresetData(fetched);
-      isLoading = false;
-    } else {
-      if (initialName) templateName = initialName;
-      if (starterTemplateId) design.templateId = starterTemplateId;
-      if (initialAccentColor) {
-        design.accentColor = initialAccentColor;
-        if (design.border) design.border.primaryColor = initialAccentColor;
+  onMount(() => {
+    let isDisposed = false;
+    let resizeObserver: ResizeObserver | null = null;
+
+    async function initializeStudio() {
+      if (initialPreset) {
+        applyPresetData(initialPreset);
+      } else if (presetId && $currentOrg.id) {
+        const fetched = await orgCertificatePresetsApi.fetchPreset($currentOrg.id, presetId);
+        if (isDisposed) return;
+
+        if (fetched) applyPresetData(fetched);
+        isLoading = false;
+      } else {
+        if (initialName) templateName = initialName;
+        if (starterTemplateId) design.templateId = starterTemplateId;
+        if (initialAccentColor) {
+          design.accentColor = initialAccentColor;
+          if (design.border) design.border.primaryColor = initialAccentColor;
+        }
+        if (initialSubtitle) design.subtitle = initialSubtitle;
+        isLoading = false;
       }
-      if (initialSubtitle) design.subtitle = initialSubtitle;
-      isLoading = false;
+
+      if (isDisposed) return;
+
+      savedSnapshot = currentSnapshot;
+
+      if (!stageElement || typeof ResizeObserver === 'undefined') return;
+      resizeObserver = new ResizeObserver(() => untrack(computeFitZoom));
+      resizeObserver.observe(stageElement);
+      computeFitZoom();
     }
 
-    if (!stageElement || typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(() => untrack(computeFitZoom));
-    observer.observe(stageElement);
-    computeFitZoom();
-    return () => observer.disconnect();
+    void initializeStudio();
+
+    return () => {
+      isDisposed = true;
+      resizeObserver?.disconnect();
+    };
   });
 
   const previewData = $derived({
     recipientName: 'Jane Doe',
     courseName: 'Fullstack Engineering Masterclass',
-    courseDescription: design.descriptionOverride,
+    courseDescription:
+      design.descriptionOverride ??
+      'For successfully mastering Fullstack Engineering and demonstrating leadership and academic rigor.',
     orgName: $currentOrg.name || 'ACME UNIVERSITY',
     orgLogoUrl: $currentOrg.avatarUrl || undefined,
     date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
@@ -196,26 +272,41 @@
   });
 
   async function handleSave() {
-    if (!$currentOrg.id) return;
+    if (!$currentOrg.id || !templateName.trim()) return;
     isSaving = true;
+    const normalizedTemplateName = templateName.trim();
+
+    // Clean up any orphaned signatory element layouts beyond current signatories count
+    if (design.elements) {
+      const activeCount = (design.signatories ?? []).length;
+      for (let i = activeCount; i <= 3; i++) {
+        delete design.elements[`signatory-${i}` as StudioElementId];
+      }
+    }
 
     try {
       if (activePreset?.id) {
         const updated = await orgCertificatePresetsApi.updatePreset($currentOrg.id, activePreset.id, {
-          name: templateName,
+          name: normalizedTemplateName,
           description: design.descriptionOverride,
           design: design as Record<string, unknown>
         });
-        if (updated) activePreset = updated;
+        if (updated) {
+          applyPresetData(updated);
+          savedSnapshot = currentSnapshot;
+          hasUnsavedChanges = false;
+        }
       } else {
         const created = await orgCertificatePresetsApi.createPreset($currentOrg.id, {
-          name: templateName,
+          name: normalizedTemplateName,
           description: design.descriptionOverride,
           design: design as Record<string, unknown>
         });
         if (created) {
-          activePreset = created;
-          goto(`/org/${orgSlug}/plugins/certificate-studio/editor?id=${created.id}`, { replaceState: true });
+          applyPresetData(created);
+          savedSnapshot = currentSnapshot;
+          hasUnsavedChanges = false;
+          await goto(`/org/${orgSlug}/plugins/certificate-studio/editor?id=${created.id}`, { replaceState: true });
         }
       }
     } finally {
@@ -228,6 +319,8 @@
   }
 </script>
 
+<UnsavedChanges bind:hasUnsavedChanges />
+
 <div
   class="flex h-[calc(100dvh-3rem)] w-full flex-col overflow-hidden bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-200"
 >
@@ -239,6 +332,7 @@
     <StudioHeader
       bind:templateName
       {isSaving}
+      saveDisabled={!templateName.trim()}
       onBack={handleBack}
       onPreview={() => (isPreviewModalOpen = true)}
       onSave={handleSave}
@@ -284,7 +378,7 @@
         </div>
         <Dialog.Footer class="border-t border-slate-100 px-5 py-3 dark:border-slate-800">
           <Button variant="outline" size="sm" onclick={() => (isPreviewModalOpen = false)}>
-            {$t('certificate_studio.close') || 'Close Preview'}
+            {$t('certificate_studio.close')}
           </Button>
         </Dialog.Footer>
       </Dialog.Content>

@@ -11,12 +11,20 @@
   interface Props {
     templateName: string;
     isSaving?: boolean;
+    saveDisabled?: boolean;
     onBack: () => void;
     onPreview: () => void;
     onSave: () => void;
   }
 
-  let { templateName = $bindable(''), isSaving = false, onBack, onPreview, onSave }: Props = $props();
+  let {
+    templateName = $bindable(''),
+    isSaving = false,
+    saveDisabled = false,
+    onBack,
+    onPreview,
+    onSave
+  }: Props = $props();
 </script>
 
 <header
@@ -43,7 +51,7 @@
         <Input
           bind:value={templateName}
           class="h-8 border-slate-200 bg-slate-50 text-xs font-semibold text-slate-900 focus:border-amber-500 focus:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
-          placeholder="e.g. Acme Honors Gold 2026"
+          placeholder={$t('certificate_studio.template_name_placeholder')}
         />
       </div>
     </Field.Field>
@@ -55,7 +63,7 @@
       <span>{$t('certificate_studio.preview')}</span>
     </Button>
 
-    <Button size="sm" class="h-8 gap-1.5 text-xs font-semibold" disabled={isSaving} onclick={onSave}>
+    <Button size="sm" class="h-8 gap-1.5 text-xs font-semibold" disabled={isSaving || saveDisabled} onclick={onSave}>
       {#if isSaving}
         <Loader2Icon class="size-3.5 animate-spin" />
         <span>{$t('certificate_studio.saving')}</span>

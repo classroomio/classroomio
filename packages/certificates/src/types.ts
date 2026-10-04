@@ -3,18 +3,20 @@ export type BuiltInCertificateTemplateId = (typeof CERTIFICATE_TEMPLATE_IDS)[num
 export type CertificateTemplateId = BuiltInCertificateTemplateId | (string & {});
 
 export interface CertificateSignatory {
+  id?: string;
   name: string;
   role: string;
   enabled: boolean;
   signatureUrl?: string;
+  signatureAssetId?: string;
 }
 
 export interface CertificateBorderConfig {
-  style?: 'victorian' | 'double_gold' | 'geometric' | 'minimal' | 'custom_svg' | string;
+  style?: 'victorian' | 'double_gold' | 'geometric' | 'minimal' | 'custom_image';
   width?: number;
   primaryColor?: string;
   accentColor?: string;
-  customSvg?: string;
+  customImageUrl?: string;
 }
 
 export interface CertificateTypographyConfig {
@@ -26,20 +28,21 @@ export interface CertificateTypographyConfig {
 }
 
 export interface CertificateBackgroundConfig {
-  style?: 'parchment' | 'guilloche' | 'solid' | 'gradient' | string;
+  style?: 'parchment' | 'guilloche' | 'solid' | 'gradient';
   primaryColor?: string;
   secondaryColor?: string;
 }
 
 export interface CertificateBadgeConfig {
-  style?: 'gold_seal' | 'ribbon' | 'wax_stamp' | 'crest' | 'none' | string;
+  style?: 'gold_seal' | 'ribbon' | 'wax_stamp' | 'crest' | 'custom' | 'none';
   label?: string;
   foilColor?: string;
+  customImageUrl?: string;
 }
 
 export interface CertificateQrCodeConfig {
   enabled?: boolean;
-  position?: 'bottom_right' | 'bottom_left' | 'center' | string;
+  position?: 'bottom_right' | 'bottom_left' | 'center_footer' | 'top_right' | 'custom';
 }
 
 export interface CertificateLayoutConfig {
@@ -51,6 +54,45 @@ export interface CertificateLayoutConfig {
   footerOffsetY?: number;
 }
 
+export type CertificateElementId =
+  | 'header'
+  | 'title'
+  | 'subtitle'
+  | 'recipient'
+  | 'course'
+  | 'description'
+  | 'date'
+  | 'badge'
+  | 'signatories'
+  | 'signatory-0'
+  | 'signatory-1'
+  | 'signatory-2'
+  | 'qrCode'
+  | 'border'
+  | 'background';
+
+export interface CertificateElementLayout {
+  enabled?: boolean;
+  positionMode?: 'auto' | 'custom';
+  x?: number;
+  y?: number;
+  width?: number;
+  height?: number;
+  anchor?: 'top_left';
+  zIndex?: number;
+}
+
+export type CertificateElements = Partial<Record<CertificateElementId, CertificateElementLayout>>;
+
+export interface CertificateCopyOverrides {
+  title?: string;
+  presentation?: string;
+  completion?: string;
+  dateLabel?: string;
+  verifiedCredentialLabel?: string;
+  organizationName?: string;
+}
+
 export interface CertificateDesign {
   rendererTemplateId: CertificateTemplateId;
   templateId: CertificateTemplateId; // for backwards compatibility
@@ -58,8 +100,10 @@ export interface CertificateDesign {
   accentColor: string;
   subtitle?: string;
   descriptionOverride?: string;
-  signatories: [CertificateSignatory, CertificateSignatory];
+  signatories: CertificateSignatory[];
   idFormat?: string;
+  elements?: CertificateElements;
+  copy?: CertificateCopyOverrides;
   border?: CertificateBorderConfig;
   typography?: CertificateTypographyConfig;
   background?: CertificateBackgroundConfig;
@@ -69,10 +113,12 @@ export interface CertificateDesign {
 }
 
 export interface StoredCertificateSignatory {
+  id?: string;
   name?: string;
   role?: string;
   enabled?: boolean;
   signatureUrl?: string;
+  signatureAssetId?: string;
 }
 
 export interface StoredCertificateDesign {
@@ -84,6 +130,8 @@ export interface StoredCertificateDesign {
   descriptionOverride?: string;
   signatories?: StoredCertificateSignatory[];
   idFormat?: string;
+  elements?: CertificateElements;
+  copy?: CertificateCopyOverrides;
   border?: CertificateBorderConfig;
   typography?: CertificateTypographyConfig;
   background?: CertificateBackgroundConfig;

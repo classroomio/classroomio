@@ -1,16 +1,10 @@
-import type { CertificateTemplateId } from '@cio/certificates';
+import type { CertificateTemplateId, CertificateElementId } from '@cio/certificates';
 
 export type ToolCategory = 'layout' | 'borders' | 'typography' | 'badges' | 'qrcode' | 'signatories' | 'background';
 
-export type StudioElementId =
-  | 'title'
-  | 'recipient'
-  | 'course'
-  | 'badge'
-  | 'sig-left'
-  | 'sig-right'
-  | 'qrcode'
-  | 'border';
+export type StudioElementId = CertificateElementId;
+
+export type ResizeDirection = 'top' | 'bottom' | 'left' | 'right' | 'nw' | 'ne' | 'sw' | 'se';
 
 export interface StarterTemplate {
   id: CertificateTemplateId;

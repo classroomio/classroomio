@@ -19,6 +19,26 @@ export function escapeHtml(input: unknown): string {
   });
 }
 
+/**
+ * Returns a renderable image URL without allowing executable or embedded-data
+ * schemes into certificate HTML. Plain HTTP is limited to local development.
+ */
+export function getSafeCertificateImageUrl(value: string | undefined): string | null {
+  if (!value) return null;
+
+  try {
+    const parsedUrl = new URL(value);
+    const isLocalHttp =
+      parsedUrl.protocol === 'http:' && ['localhost', '127.0.0.1', '[::1]'].includes(parsedUrl.hostname);
+
+    if (parsedUrl.protocol !== 'https:' && !isLocalHttp) return null;
+
+    return parsedUrl.toString();
+  } catch {
+    return null;
+  }
+}
+
 export function getYear(value: string | undefined | null): string {
   const match = String(value ?? '').match(/\b(19|20|21)\d{2}\b/);
   if (match) return match[0];
@@ -260,7 +280,8 @@ export function renderSignatoryBlock(sig: CertificateSignatory | undefined, opti
     return `<div${wrapperClass} style="visibility: hidden;" aria-hidden="true"></div>`;
   }
 
-  const sigImg = sig.signatureUrl ? `<img class="sig-img" src="${escapeHtml(sig.signatureUrl)}" alt="" />` : '';
+  const signatureUrl = getSafeCertificateImageUrl(sig.signatureUrl);
+  const sigImg = signatureUrl ? `<img class="sig-img" src="${escapeHtml(signatureUrl)}" alt="" />` : '';
 
   const nameEl = `<div class="${options.nameClass}">${escapeHtml(sig.name)}</div>`;
   const roleEl = `<div class="${options.roleClass}">${escapeHtml(sig.role)}</div>`;

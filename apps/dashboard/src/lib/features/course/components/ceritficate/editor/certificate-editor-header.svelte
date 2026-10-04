@@ -69,7 +69,14 @@
 
   <div class="flex shrink-0 items-center gap-1.5">
     {#if isDirty}
-      <Button variant="ghost" size="sm" type="button" onclick={onDiscard} class="hidden sm:inline-flex">
+      <Button
+        variant="ghost"
+        size="sm"
+        type="button"
+        disabled={isSignatureUploading}
+        onclick={onDiscard}
+        class="hidden sm:inline-flex"
+      >
         {$t('course.navItem.certificates.editor.discard')}
       </Button>
     {/if}

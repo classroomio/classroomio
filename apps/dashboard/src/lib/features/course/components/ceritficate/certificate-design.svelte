@@ -30,8 +30,20 @@
     certificateId: (design.idFormat ?? 'N° {seq}').replace('{seq}', '0247')
   });
 
+  const sourcePreset = $derived(
+    design.sourcePresetId && $currentOrg.id
+      ? orgCertificatePresetsApi.getPresets($currentOrg.id).find((preset) => preset.id === design.sourcePresetId)
+      : undefined
+  );
+
+  $effect(() => {
+    if (!design.sourcePresetId || !$currentOrg.id || sourcePreset) return;
+
+    void orgCertificatePresetsApi.fetchPreset($currentOrg.id, design.sourcePresetId);
+  });
+
   const templateLabel = $derived(
-    orgCertificatePresetsApi.presets.find((preset) => preset.id === design.templateId)?.name ??
+    sourcePreset?.name ??
       CERTIFICATE_TEMPLATES.find((template) => template.id === design.templateId)?.label ??
       design.templateId
   );
@@ -72,14 +84,10 @@
             {$t('course.navItem.certificates.editor.field_signatories')}
           </span>
           <div class="text-right text-xs">
-            {#if design.signatories[0].enabled}
-              <div class="font-medium">{design.signatories[0].name}</div>
-              <div class="ui:text-muted-foreground">{design.signatories[0].role}</div>
-            {/if}
-            {#if design.signatories[1].enabled}
-              <div class:mt-1={design.signatories[0].enabled} class="font-medium">{design.signatories[1].name}</div>
-              <div class="ui:text-muted-foreground">{design.signatories[1].role}</div>
-            {/if}
+            {#each design.signatories.filter((signatory) => signatory.enabled) as signatory, index (signatory.id ?? index)}
+              <div class:mt-1={index > 0} class="font-medium">{signatory.name}</div>
+              <div class="ui:text-muted-foreground">{signatory.role}</div>
+            {/each}
           </div>
         </div>
       </Card.Content>

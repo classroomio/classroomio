@@ -34,7 +34,9 @@
 
   let stageElement = $state<HTMLDivElement | null>(null);
   let iframeElement = $state<HTMLIFrameElement | null>(null);
-  let manualScale = $state<number | null>(typeof zoom === 'number' ? clamp(zoom) : null);
+  // `zoom` seeds the local interactive state once; later changes are owned by
+  // the preview controls rather than mirrored from the prop.
+  let manualScale = $state<number | null>(untrack(() => (typeof zoom === 'number' ? clamp(zoom) : null)));
   let fitScale = $state(0.4);
 
   const renderedHtml = $derived(renderCertificateDocument(design, data));
@@ -96,7 +98,7 @@
     <iframe
       bind:this={iframeElement}
       title="Certificate preview"
-      sandbox="allow-same-origin allow-scripts"
+      sandbox="allow-same-origin"
       class="ui:h-full ui:w-full ui:rounded-sm ui:border-0 ui:shadow-[0_18px_40px_rgba(0,0,0,0.18),0_6px_12px_rgba(0,0,0,0.12)]"
       style:width="{width}px"
       style:height="{height}px"
