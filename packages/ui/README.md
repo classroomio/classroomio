@@ -163,7 +163,7 @@ Ambient brand animation: notch blocks drop in one at a time and stack. By defaul
 
 ### Notch cutout utility (`ui:notch-cutout`)
 
-Cuts the brand trapezoid notch out of an element's top edge with a CSS mask, so it reads correctly over gradients and images. Tune it with `--notch-x` (default `2.5rem`), `--notch-w` (`46px`) and `--notch-h` (`10px`). Masks clip `box-shadow`, so put shadows on a wrapper with `drop-shadow`.
+Cuts the brand notch (a trapezoid with flared top corners and rounded bottom corners) out of an element's top edge with a CSS mask, so it reads correctly over gradients and images. Tune it with `--notch-x` (default `2.5rem`), `--notch-w` (`46px`) and `--notch-h` (`11px`). Masks clip `box-shadow`, so put shadows on a wrapper with `drop-shadow`.
 
 ```svelte
 <div class="drop-shadow-md">
