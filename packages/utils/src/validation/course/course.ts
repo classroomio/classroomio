@@ -212,9 +212,10 @@ const ZCertificateBackground = z
 
 const ZCertificateBadge = z
   .object({
-    style: z.enum(['gold_seal', 'ribbon', 'wax_stamp', 'none']).optional(),
+    style: z.enum(['gold_seal', 'org_logo', 'ribbon', 'wax_stamp', 'crest', 'custom', 'none']).optional(),
     label: z.string().max(80).optional(),
-    foilColor: ZCertificateColor.optional()
+    foilColor: ZCertificateColor.optional(),
+    customImageUrl: z.string().url().max(2048).optional()
   })
   .strict();
 

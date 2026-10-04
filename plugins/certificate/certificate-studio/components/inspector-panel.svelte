@@ -13,6 +13,7 @@
   import AlignCenterVerticalIcon from '@lucide/svelte/icons/align-center-vertical';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import { t } from '$lib/utils/functions/translations';
+  import { currentOrg } from '$lib/utils/store/org';
   import type { CertificateDesign } from '@cio/certificates';
   import { FONT_OPTIONS, PALETTE_SWATCHES, type ToolCategory, type StudioElementId } from '../types';
 
@@ -147,6 +148,7 @@
   ] as const;
   const BADGE_OPTIONS = [
     { value: 'gold_seal', labelKey: 'certificate_studio.badge_gold_seal' },
+    { value: 'org_logo', labelKey: 'certificate_studio.badge_org_logo' },
     { value: 'ribbon', labelKey: 'certificate_studio.badge_ribbon' },
     { value: 'wax_stamp', labelKey: 'certificate_studio.badge_wax_stamp' },
     { value: 'none', labelKey: 'certificate_studio.badge_none' }
@@ -850,7 +852,68 @@
           </Select.Root>
         </Field.Field>
 
-        {#if design.badge.style !== 'none'}
+        {#if design.badge.style === 'org_logo'}
+          <div class="rounded-lg border border-slate-200 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-900/50">
+            {#if $currentOrg?.avatarUrl}
+              <div class="flex items-center gap-3">
+                <div
+                  class="relative size-12 shrink-0 rounded-full border-2 border-amber-400/80 bg-white p-1 shadow-xs dark:bg-slate-800"
+                >
+                  <img
+                    src={$currentOrg.avatarUrl}
+                    alt={$currentOrg.name}
+                    class="size-full rounded-full object-contain"
+                  />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-xs font-semibold text-slate-800 dark:text-slate-100">
+                    {$currentOrg.name}
+                  </p>
+                  <p class="text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                    {$t('certificate_studio.badge_org_logo_active')}
+                  </p>
+                </div>
+              </div>
+            {:else}
+              <div class="flex items-start gap-2.5">
+                <div
+                  class="flex size-9 shrink-0 items-center justify-center rounded-full bg-amber-100 font-serif text-sm font-bold text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+                >
+                  {($currentOrg?.name || 'O').charAt(0).toUpperCase()}
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                    {$t('certificate_studio.badge_org_logo_missing_title')}
+                  </p>
+                  <p class="mt-0.5 text-[11px] leading-tight text-slate-500 dark:text-slate-400">
+                    {$t('certificate_studio.badge_org_logo_missing_desc')}
+                  </p>
+                </div>
+              </div>
+            {/if}
+          </div>
+
+          <Field.Field>
+            <Field.Label class="text-xs font-semibold">{$t('certificate_studio.custom_seal_url')}</Field.Label>
+            <Input
+              bind:value={design.badge.customImageUrl}
+              placeholder="https://example.com/logo.png"
+              class="h-8 font-mono text-xs"
+            />
+          </Field.Field>
+
+          <Field.Field>
+            <Field.Label class="text-xs font-semibold">{$t('certificate_studio.foil_color')}</Field.Label>
+            <div class="flex items-center gap-2">
+              <Input
+                type="color"
+                bind:value={design.badge.foilColor}
+                class="size-7 cursor-pointer rounded-sm border-0 bg-transparent p-0"
+              />
+              <Input bind:value={design.badge.foilColor} class="h-7 font-mono text-xs" />
+            </div>
+          </Field.Field>
+        {:else if design.badge.style !== 'none'}
           <Field.Field>
             <Field.Label class="text-xs font-semibold">{$t('certificate_studio.badge_label')}</Field.Label>
             <Input

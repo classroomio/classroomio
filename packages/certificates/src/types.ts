@@ -34,7 +34,7 @@ export interface CertificateBackgroundConfig {
 }
 
 export interface CertificateBadgeConfig {
-  style?: 'gold_seal' | 'ribbon' | 'wax_stamp' | 'crest' | 'custom' | 'none';
+  style?: 'gold_seal' | 'org_logo' | 'ribbon' | 'wax_stamp' | 'crest' | 'custom' | 'none';
   label?: string;
   foilColor?: string;
   customImageUrl?: string;

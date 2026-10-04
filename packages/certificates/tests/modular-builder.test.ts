@@ -178,4 +178,31 @@ describe('modular certificate renderer', () => {
     expect(html).toContain('Content-Security-Policy');
     expect(html).toContain("default-src 'none'");
   });
+
+  it('renders organization logo seal with image when orgLogoUrl is provided and monogram fallback when omitted', () => {
+    const withLogoHtml = renderCertificateDocument(
+      createDesign({
+        badge: { style: 'org_logo', foilColor: '#D4AF37' }
+      }),
+      {
+        ...renderData,
+        orgLogoUrl: 'https://example.com/org-logo.png'
+      }
+    );
+
+    expect(withLogoHtml).toContain('class="modular-seal modular-org-logo-seal"');
+    expect(withLogoHtml).toContain('src="https://example.com/org-logo.png"');
+    expect(withLogoHtml).toContain('alt="Royal Academy"');
+
+    const monogramHtml = renderCertificateDocument(
+      createDesign({
+        badge: { style: 'org_logo', foilColor: '#D4AF37' }
+      }),
+      renderData
+    );
+
+    expect(monogramHtml).toContain('class="modular-seal modular-org-logo-seal"');
+    expect(monogramHtml).toContain('>R<');
+    expect(monogramHtml).toContain('SEAL');
+  });
 });

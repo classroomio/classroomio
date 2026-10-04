@@ -379,7 +379,42 @@ export const renderModular: TemplateRenderer = ({ design, data }: TemplateRender
   let badgeSvg = '';
   if (showBadge) {
     const customBadgeImageUrl = getSafeCertificateImageUrl(badge.customImageUrl);
-    if (badgeStyle === 'custom' && customBadgeImageUrl) {
+    const safeOrgLogoUrl = getSafeCertificateImageUrl(badge.customImageUrl || data.orgLogoUrl);
+    if (badgeStyle === 'org_logo') {
+      if (safeOrgLogoUrl) {
+        badgeSvg = `
+        <div class="modular-seal modular-org-logo-seal" title="${escapeHtml(orgNameValue)}">
+          <div class="org-logo-seal-inner">
+            <img src="${escapeHtml(safeOrgLogoUrl)}" alt="${escapeHtml(orgNameValue)}" />
+          </div>
+        </div>
+      `;
+      } else {
+        const orgInitial = escapeHtml((orgNameValue || 'O').charAt(0).toUpperCase());
+        badgeSvg = `
+        <div class="modular-seal modular-org-logo-seal" title="${escapeHtml(orgNameValue)}">
+          <svg viewBox="0 0 120 120" width="108" height="108">
+            <defs>
+              <linearGradient id="org-seal-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FFFDF5"/>
+                <stop offset="50%" stop-color="#F4ECE1"/>
+                <stop offset="100%" stop-color="#E2D4C3"/>
+              </linearGradient>
+            </defs>
+            <circle cx="60" cy="60" r="54" fill="url(#org-seal-grad)" stroke="${foilColor}" stroke-width="2.5"/>
+            <circle cx="60" cy="60" r="47" fill="none" stroke="${foilColor}" stroke-width="1.2" stroke-dasharray="3,2"/>
+            <circle cx="60" cy="60" r="41" fill="none" stroke="${foilColor}" stroke-width="0.8"/>
+            <text x="60" y="66" font-family="'Cinzel', serif" font-size="32" font-weight="700" fill="${primaryColor}" text-anchor="middle">
+              ${orgInitial}
+            </text>
+            <text x="60" y="80" font-family="'Bodoni Moda', serif" font-size="8" font-weight="600" fill="${foilColor}" text-anchor="middle" letter-spacing="1">
+              SEAL
+            </text>
+          </svg>
+        </div>
+      `;
+      }
+    } else if (badgeStyle === 'custom' && customBadgeImageUrl) {
       badgeSvg = `
         <div class="modular-seal modular-custom-seal" title="${badgeLabel}">
           <img src="${escapeHtml(customBadgeImageUrl)}" alt="${badgeLabel}" style="max-width: 108px; max-height: 108px; object-fit: contain;" />
@@ -830,12 +865,45 @@ export const renderModular: TemplateRenderer = ({ design, data }: TemplateRender
     .t-modular .badge-custom-wrap .modular-seal,
     .t-modular .badge-custom-wrap .modular-ribbon,
     .t-modular .badge-custom-wrap .modular-stamp,
-    .t-modular .badge-custom-wrap .modular-custom-seal {
+    .t-modular .badge-custom-wrap .modular-custom-seal,
+    .t-modular .badge-custom-wrap .modular-org-logo-seal {
       width: 100%;
       height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+    .t-modular .modular-org-logo-seal {
+      width: 108px;
+      height: 108px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .t-modular .org-logo-seal-inner {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      border: 3px solid ${foilColor};
+      box-shadow: 0 0 0 2px #ffffff, 0 4px 12px rgba(0, 0, 0, 0.12);
+      box-sizing: border-box;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      padding: 8px;
+    }
+    .t-modular .badge-custom-wrap .org-logo-seal-inner {
+      width: 100%;
+      height: 100%;
+    }
+    .t-modular .org-logo-seal-inner img {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
     }
     .t-modular .badge-custom-wrap svg,
     .t-modular .badge-custom-wrap img {
