@@ -47,3 +47,24 @@ export const focusStyle = (focus, invalid) => invalid ? { borderColor: 'var(--ui
 export function useOutside(ref, open, close) {
   React.useEffect(() => { if (!open) return; const f = (e) => { if (ref.current && !ref.current.contains(e.target)) close(); }; document.addEventListener('mousedown', f); return () => document.removeEventListener('mousedown', f); }, [open]);
 }
+
+const NOTCH_D = 'M0 0 H46 Q41.6 0 40.4 2.6 L38 8.4 Q36.9 11 34.2 11 H11.8 Q9.1 11 8 8.4 L5.6 2.6 Q4.4 0 0 0 Z';
+const TAB_D = 'M0 0 H47.2 Q42.8 0 41.6 2.6 L39.2 9.4 Q38.4 12 35.6 12 H11.6 Q8.8 12 8 9.4 L5.6 2.6 Q4.4 0 0 0 Z';
+const NOTCH_SM_D = 'M0 0 H22 Q19.8 0 19.2 1.4 L17.6 4.4 Q16.9 6 15.2 6 H6.8 Q5.1 6 4.4 4.4 L2.8 1.4 Q2.2 0 0 0 Z';
+const TAB_SM_D = 'M0 0 H18 Q15.8 0 15.3 1.4 L14.2 5.2 Q13.8 7 12 7 H6 Q4.2 7 3.8 5.2 L2.7 1.4 Q2.2 0 0 0 Z';
+function scalePath(d, k) {
+  return d.replace(/-?\d*\.?\d+/g, (n) => +(parseFloat(n) * k).toFixed(2));
+}
+/** The notch bite cut from a card's top edge; paint it in the colour behind the card. `scale` resizes it, `small` picks the compact shape. */
+export function notchStyle(bg, left = 24, scale = 1, small = false) {
+  const w = (small ? 22 : 46) * scale, h = (small ? 6 : 11) * scale;
+  const d = scale === 1 ? (small ? NOTCH_SM_D : NOTCH_D) : scalePath(small ? NOTCH_SM_D : NOTCH_D, scale);
+  return { position: 'absolute', top: -1, left, width: w, height: h, background: bg, clipPath: `path('${d}')`, pointerEvents: 'none', zIndex: 4 };
+}
+/** The tab that hangs below a block and locks into the notch of the block under it; `left` is the notch's left, the tab centres on it. */
+export function tabStyle(bg, left = 24, scale = 1, small = false) {
+  const w = (small ? 18 : 47.2) * scale, h = (small ? 7 : 12) * scale;
+  const d = scale === 1 ? (small ? TAB_SM_D : TAB_D) : scalePath(small ? TAB_SM_D : TAB_D, scale);
+  const x = small ? left + 2 * scale : left - 0.6 * scale;
+  return { position: 'absolute', bottom: -h, left: x, width: w, height: h, background: bg, clipPath: `path('${d}')`, pointerEvents: 'none', zIndex: 3 };
+}

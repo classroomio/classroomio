@@ -1,4 +1,4 @@
-The signature ClassroomIO surface: sand-filled 10px card with a trapezoid notch bitten out of the top edge; stack with `tab` for interlocking blocks (FAQ, loading states).
+The signature ClassroomIO surface: sand-filled 10px card with a trapezoid notch with softened corners bitten out of the top edge; stack with `tab` for interlocking blocks (FAQ, loading states).
 ```jsx
 <NotchCard><b style={{fontSize:48}}>12k</b><span>learners certified</span></NotchCard>
 <NotchCard tab padding="24px">01 How does my academy…</NotchCard>

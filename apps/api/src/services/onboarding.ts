@@ -75,6 +75,10 @@ export async function createOrganizationWithOwner(
         );
       }
 
+      if (input.fullname) {
+        await updateProfile(profileId, { fullname: input.fullname }, tx);
+      }
+
       const organizations = await getOrganizationByProfileId(profileId, tx);
 
       return { organization, member, organizations };

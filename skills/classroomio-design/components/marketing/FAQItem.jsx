@@ -1,4 +1,5 @@
 import React from 'react';
+import { notchStyle, tabStyle } from '../forms/uiShared.jsx';
 import { Icon } from '../core/Icon.jsx';
 export function FAQItem({ index, question, answer, open, onToggle, tab = true, z = 1, pageColor = 'var(--page)' }) {
   return <div style={{ position: 'relative', zIndex: z, background: 'var(--sand-200)', borderRadius: 10 }}>
@@ -7,7 +8,7 @@ export function FAQItem({ index, question, answer, open, onToggle, tab = true, z
       <Icon name="plus" size={18} strokeWidth={2} color="var(--ink-500)" style={{ transform: open ? 'rotate(45deg)' : 'none', transition: 'transform 200ms' }}/>
     </button>
     {open && answer && <div style={{ padding: '0 24px 24px 58px', fontSize: 17, lineHeight: 1.55, color: 'var(--ink-700)' }}>{answer}</div>}
-    <span aria-hidden="true" style={{ position: 'absolute', top: -1, left: 24, width: 46, height: 10, background: pageColor, clipPath: 'polygon(0 0,100% 0,calc(100% - 8px) 100%,8px 100%)', zIndex: 4 }}/>
-    {tab && <span aria-hidden="true" style={{ position: 'absolute', bottom: -16, left: 26, width: 42, height: 16, background: 'var(--sand-200)', clipPath: 'polygon(0 0,100% 0,calc(100% - 7px) 100%,7px 100%)', zIndex: 3 }}/>}
+    <span aria-hidden="true" style={notchStyle(pageColor)}/>
+    {tab && <span aria-hidden="true" style={tabStyle('var(--sand-200)')}/>}
   </div>;
 }

@@ -1,6 +1,5 @@
 import React from 'react';
-const notch = (bg, left = 24, w = 46, h = 10, inset = 8) => ({ position: 'absolute', top: -1, left, width: w, height: h, background: bg, clipPath: `polygon(0 0,100% 0,calc(100% - ${inset}px) 100%,${inset}px 100%)`, zIndex: 4, pointerEvents: 'none' });
-const tab = (bg, left = 26, w = 42, h = 16, inset = 7) => ({ position: 'absolute', bottom: -h, left, width: w, height: h, background: bg, clipPath: `polygon(0 0,100% 0,calc(100% - ${inset}px) 100%,${inset}px 100%)`, zIndex: 3, pointerEvents: 'none' });
+import { notchStyle, tabStyle } from '../forms/uiShared.jsx';
 const DEFAULT_BLOCKS = [
   { kind: 'LESSON', title: 'Getting started', bg: 'var(--sand-200)', fg: 'var(--ink-900)', label: 'var(--blue-700)', width: 340 },
   { kind: 'LESSON', title: 'Invite your team', bg: 'var(--blue-100)', fg: 'var(--ink-900)', label: 'var(--blue-700)', width: 300 },
@@ -11,9 +10,9 @@ const DEFAULT_BLOCKS = [
 export function BlockLoader({ blocks = DEFAULT_BLOCKS, title = 'Opening your academy…', caption, surface = '#FAFAF7', duration = 6, height = 400, style }) {
   const step = 0.14 * duration;
   return <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28, fontFamily: 'var(--font-sans)', ...style }}>
-    <div role="img" aria-label="Loading" style={{ width: '100%', height, borderRadius: 10, background: surface, display: 'flex', flexDirection: 'column-reverse', alignItems: 'center', gap: 8, paddingBottom: 60, boxSizing: 'border-box', overflow: 'hidden' }}>
-      {blocks.map((b, i) => <div key={i} data-cio-anim style={{ position: 'relative', zIndex: i + 1, width: b.width, maxWidth: '86%', height: 64, boxSizing: 'border-box', borderRadius: 10, background: b.bg, color: b.fg, padding: '14px 18px 0', display: 'flex', flexDirection: 'column', gap: 2, animation: `cio-ld-drop ${duration}s linear infinite both`, animationDelay: `${i * step - 0.02 * duration}s` }}>
-        <span aria-hidden="true" style={notch(surface)}/>{i > 0 && <span aria-hidden="true" style={tab(b.bg)}/>}
+    <div role="img" aria-label="Loading" style={{ width: '100%', height, borderRadius: 10, background: surface, display: 'flex', flexDirection: 'column-reverse', alignItems: 'flex-start', gap: 2, paddingBottom: 60, paddingLeft: `calc(50% - ${Math.max(...blocks.map((b) => b.width)) / 2}px)`, boxSizing: 'border-box', overflow: 'hidden' }}>
+      {blocks.map((b, i) => <div key={i} data-cio-anim style={{ position: 'relative', zIndex: i + 1, width: b.width, height: 64, boxSizing: 'border-box', borderRadius: 10, background: b.bg, color: b.fg, padding: '14px 18px 0', display: 'flex', flexDirection: 'column', gap: 2, animation: `cio-ld-drop ${duration}s linear infinite both`, animationDelay: `${i * step - 0.02 * duration}s` }}>
+        <span aria-hidden="true" style={notchStyle(surface)}/>{i > 0 && <span aria-hidden="true" style={tabStyle(b.bg)}/>}
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: b.label }}>{b.kind}</span>
         <b style={{ fontSize: 15, fontWeight: 600 }}>{b.title}</b>
       </div>)}
@@ -28,10 +27,10 @@ export function BlockLoader({ blocks = DEFAULT_BLOCKS, title = 'Opening your aca
 export function CompactLoader({ size = 'md', surface = '#FAFAF7', colors = ['var(--sand-200)', 'var(--blue-300)', 'var(--blue-700)'], framed = true, style }) {
   const s = size === 'sm' ? 0.6 : 1;
   const w = 84 * s, h = 26 * s;
-  return <div role="img" aria-label="Loading" style={{ width: framed ? 132 * s : undefined, minHeight: framed ? 96 * s : undefined, borderRadius: 10, background: framed ? surface : 'transparent', display: 'inline-flex', flexDirection: 'column-reverse', alignItems: 'center', justifyContent: 'center', gap: 5 * s, ...style }}>
+  return <div role="img" aria-label="Loading" style={{ width: framed ? 132 * s : undefined, minHeight: framed ? 96 * s : undefined, borderRadius: 10, background: framed ? surface : 'transparent', display: 'inline-flex', flexDirection: 'column-reverse', alignItems: 'center', justifyContent: 'center', gap: 2 * s, ...style }}>
     {colors.map((c, i) => <div key={i} data-cio-anim style={{ position: 'relative', zIndex: i + 1, width: w, height: h, borderRadius: 6 * s, background: c, animation: 'cio-ld-drop-sm 2.4s linear infinite both', animationDelay: `${i * 0.432}s` }}>
-      <span aria-hidden="true" style={notch(surface, 14 * s, 22 * s, 6 * s, 5 * s)}/>
-      {i > 0 && <span aria-hidden="true" style={tab(c, 16 * s, 18 * s, 11 * s, 4 * s)}/>}
+      <span aria-hidden="true" style={notchStyle(surface, 14 * s, s, true)}/>
+      {i > 0 && <span aria-hidden="true" style={tabStyle(c, 14 * s, s, true)}/>}
     </div>)}
   </div>;
 }
@@ -59,7 +58,7 @@ export function ImportProgress({ title = 'Importing 1,000 learners…', file = '
 /** 05 · Block skeleton — notch-card placeholder with shimmering lines. */
 export function BlockSkeleton({ lines = [90, 220], height = 84, surface = '#FFFFFF', style }) {
   return <div style={{ position: 'relative', height, background: 'var(--sand-200)', borderRadius: 10, padding: '20px 18px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column', gap: 10, ...style }}>
-    <span aria-hidden="true" style={notch(surface)}/>
+    <span aria-hidden="true" style={notchStyle(surface)}/>
     {lines.map((w, i) => <span key={i} data-cio-anim style={{ width: w, maxWidth: '100%', height: i === 0 ? 8 : 12, borderRadius: 4, background: '#DCD6CA', animation: 'cio-ld-shim 1.6s ease-in-out infinite', animationDelay: `${i * 0.2}s` }}/>)}
   </div>;
 }
@@ -74,7 +73,7 @@ export function AgentDrafting({ prompt = 'Drafting a course from setup-guide.pdf
     </div>
     <div style={{ display: 'grid', gridTemplateColumns: `repeat(${blocks.length}, minmax(0,1fr))`, gap: 10 }}>
       {blocks.map(([k, t, bg], i) => <div key={i} data-cio-anim style={{ position: 'relative', height: 54, background: bg, borderRadius: 10, padding: '14px 14px 0', boxSizing: 'border-box', animation: 'cio-ld-rise 6s ease infinite both', animationDelay: `${i * 0.4}s` }}>
-        <span aria-hidden="true" style={notch(surface, 18)}/>
+        <span aria-hidden="true" style={notchStyle(surface, 18)}/>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9.5, letterSpacing: '0.12em', color: 'var(--blue-700)' }}>{k}</span>
         <b style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--ink-900)' }}>{t}</b>
       </div>)}

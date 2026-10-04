@@ -24,6 +24,17 @@
       "included": "Enthalten",
       "untitled_lesson": "Lektion ohne Titel",
       "format": "Format"
+    },
+    "loading": "Laden…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Kurs wird geladen…",
+        "caption": "Bitte warten Sie, während wir Ihre Kursdaten laden."
+      },
+      "opening_academy": {
+        "title": "Eröffnung Ihrer Akademie…",
+        "caption": "Die Blöcke fallen einzeln an ihren Platz, werden dann gelöscht und wiederholt."
+      }
     }
   },
   "validations": {
@@ -4405,6 +4416,16 @@
     "customers": "Erstellen Sie Kurse für meine Kunden",
     "explore": "Nur zum Erkunden hier",
     "articles": "Artikel",
+    "ai": "KI",
+    "ai_select": "Wählen Sie einen KI-Assistenten",
+    "ai_required": "Bitte wählen Sie einen KI-Assistenten",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Suchmaschine",
     "social": "Soziale Medien",
     "friends": "Freunde und Familie",
@@ -4414,7 +4435,101 @@
     "what_brings": "Was bringt dich dazu",
     "how": "Wie haben Sie von uns erfahren?",
     "back": "Zurück",
-    "continue": "Weiter"
+    "continue": "Weiter",
+    "other": "Andere (sagen Sie es uns)",
+    "other_placeholder": "Erzählen Sie uns mehr",
+    "other_required": "Bitte erzählen Sie uns mehr",
+    "sources": {
+      "label": "Wie haben Sie von uns erfahren?",
+      "blog": "Blog oder Artikel",
+      "ai": "KI",
+      "search_engine": "Suchmaschine",
+      "github": "GitHub oder Open Source",
+      "youtube": "YouTube oder Podcast",
+      "social_media": "Soziale Medien",
+      "product_hunt": "Product Hunt oder eine Bewertungsseite",
+      "friends_family": "Freunde, Familie oder ein Kollege",
+      "subtitle": "Optional, aber es hilft einem kleinen Team zu wissen, was funktioniert."
+    },
+    "job_roles": {
+      "label": "Was ist deine Rolle?",
+      "founder": "Gründer oder CEO",
+      "product_ops": "Produkt oder Betrieb",
+      "cs_education": "Kundenerfolg, Bildung oder Befähigung",
+      "developer": "Entwickler oder Ingenieur",
+      "subtitle": "Dies hilft uns, Ihr Setup individuell anzupassen."
+    },
+    "learning_methods": {
+      "label": "Wie lernen Ihre Kunden heute Ihr Produkt kennen?",
+      "self_serve": "Sie finden es selbst heraus",
+      "live_onboarding": "Live-Onboarding-Sitzungen oder Anrufe",
+      "help_docs": "Hilfedokumente und Support",
+      "no_training": "Wir haben noch kein Training",
+      "subtitle": "Wählen Sie diejenige aus, die der aktuellen Funktionsweise am nächsten kommt."
+    },
+    "use_cases": {
+      "label": "Wofür möchten Sie ClassroomIO nutzen?",
+      "customer_training": "Schulen Sie meine Kunden in Bezug auf mein Produkt",
+      "customer_certification": "Zertifizieren Sie Kunden oder Partner",
+      "partner_training": "Schulungspartner oder Wiederverkäufer",
+      "team_training": "Trainiere mein eigenes Team",
+      "sell_courses": "Verkaufen Sie Kurse an die Öffentlichkeit",
+      "subtitle": "Wählen Sie alles aus, was zutrifft. Wir gestalten Ihre Organisation danach."
+    },
+    "step_of": "Schritt {current} von {total}",
+    "skip": "Überspringen",
+    "finish_setup": "Beenden Sie die Einrichtung",
+    "company_sizes": {
+      "label": "Wie groß ist Ihr Unternehmen?",
+      "subtitle": "Zählen Sie jeden im Unternehmen, nicht nur Ihr Team.",
+      "enterprise": {
+        "label": "200+",
+        "description": "Menschen"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "Menschen"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "Menschen"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "Menschen"
+      },
+      "solo": {
+        "label": "Nur ich",
+        "description": "Solo"
+      }
+    },
+    "ai_assistant": {
+      "label": "KI-Assistent",
+      "subtitle": "Wer hat uns empfohlen?"
+    },
+    "step_labels": {
+      "use_cases": "Anwendungsfall",
+      "learning_methods": "Heute Training",
+      "company_size": "Unternehmensgröße",
+      "job_role": "Rolle",
+      "source": "Entdeckung",
+      "org_setup": "Organisation"
+    },
+    "org_setup": {
+      "subtitle": "Erzählen Sie uns zunächst etwas über Sie und Ihre Organisation.",
+      "title": "Richten Sie Ihre Organisation ein",
+      "created_subtitle": "Ihre Organisation ist eingerichtet. Sie können diese Details später in den Einstellungen ändern."
+    },
+    "header": {
+      "tagline": "Kundenschulungsplattform, die sich mit Ihren Systemen verbindet"
+    },
+    "testimonials": {
+      "eyebrow": "Von den Teams, die es nutzen",
+      "footer": "Open Source · Selbsthost oder Cloud",
+      "headline": "Hören Sie auf, jeden Kunden {highlight} zu schulen.",
+      "headline_highlight": "von Hand",
+      "subtitle": "Richten Sie es einmal ein und registrieren Sie Ihre Kunden in großen Mengen über die API. Verfolgen Sie dann ihren Fortschritt mit Analysen."
+    }
   },
   "new_course_modal": {
     "live_class_label": "Live-Klasse",

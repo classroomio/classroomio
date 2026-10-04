@@ -128,6 +128,49 @@ Wrapper component that highlights its content with an animated focus pulse ring 
 </AttentionHighlight>
 ```
 
+### Brand wash (`src/custom/animation/brand-wash/`)
+
+Decorative background layer: a top-down gradient tinted from `--primary` with an optional faded dot grid. Because it reads `--primary`, it renders in ClassroomIO blue on the app and in the org's theme colour on org sites. Place it as the first child of a `relative` container; later siblings stack above it.
+
+| Prop    | Type      | Default     | Description                 |
+| ------- | --------- | ----------- | --------------------------- |
+| `dots`  | `boolean` | `true`      | Show the masked dot grid    |
+| `class` | `string`  | `undefined` | Additional classes on layer |
+
+```svelte
+<div class="relative">
+  <BrandWash />
+  <div class="relative">Content</div>
+</div>
+```
+
+### Block skyline (`src/custom/animation/block-skyline/`)
+
+Ambient brand animation: notch blocks drop in one at a time and stack. By default they clear together and repeat on a 10s loop; with `loop={false}` they drop in once and stay. Hidden from assistive tech and static under `prefers-reduced-motion`. Tones come from `--muted` and `--primary`. Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop     | Type      | Default     | Description                                                          |
+| -------- | --------- | ----------- | -------------------------------------------------------------------- |
+| `loop`   | `boolean` | `true`      | Clear and repeat every 10s; `false` drops in once and stays          |
+| `repeat` | `number`  | `1`         | Repeats the column pattern across the width (extra copies from `md`) |
+| `class`  | `string`  | `undefined` | Width / placement                                                    |
+
+```svelte
+<BlockSkyline class="w-full max-w-[400px]" />
+
+<!-- Full-width page footer -->
+<BlockSkyline loop={false} repeat={3} class="absolute inset-x-0 bottom-0 px-4" />
+```
+
+### Notch cutout utility (`ui:notch-cutout`)
+
+Cuts the brand notch (a trapezoid with flared top corners and rounded bottom corners) out of an element's top edge with a CSS mask, so it reads correctly over gradients and images. Tune it with `--notch-x` (default `2.5rem`), `--notch-w` (`46px`) and `--notch-h` (`11px`). Masks clip `box-shadow`, so put shadows on a wrapper with `drop-shadow`.
+
+```svelte
+<div class="drop-shadow-md">
+  <Card.Root class="ui:notch-cutout">…</Card.Root>
+</div>
+```
+
 ### Exercise question (`src/custom/exercise-question/`)
 
 Learner and author UIs for exercise questions (take, preview, review, submission, edit per question type).
@@ -310,6 +353,36 @@ The accent comes from `--primary` and the surface from `--muted`. Place a machin
 ```
 
 Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
+
+### Loaders (`src/custom/block-loader/`, `src/custom/compact-loader/`)
+
+Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `BlockLoader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
+
+`BlockLoader`: four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
+
+| Prop      | Type                | Default     | Description                                                                |
+| --------- | ------------------- | ----------- | -------------------------------------------------------------------------- |
+| `title`   | `string`            | `undefined` | Heading under the stack; also the accessible name when `label` is not set  |
+| `caption` | `string`            | `undefined` | Supporting line under the title                                            |
+| `label`   | `string`            | `undefined` | Accessible name when there is no `title`                                   |
+| `blocks`  | `BlockLoaderBlock[]`| 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`   |
+| `blockText` | `boolean`         | `true`      | Show the kind and title inside each block; `false` gives plain blocks    |
+| `class`   | `string`            | `undefined` | Placement                                                                  |
+
+`CompactLoader`: three wordless blocks, so it works in any language.
+
+| Prop    | Type           | Default     | Description        |
+| ------- | -------------- | ----------- | ------------------ |
+| `size`  | `'sm' \| 'md'` | `'md'`      | `sm` is 60% of `md` |
+| `label` | `string`       | `undefined` | Accessible name    |
+| `class` | `string`       | `undefined` | Placement          |
+
+The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
+
+```svelte
+<BlockLoader title={$t('common.loading_states.opening_academy_title')} />
+<CompactLoader label={$t('common.loading')} />
+```
 
 ### Hooks (`src/hooks/`)
 

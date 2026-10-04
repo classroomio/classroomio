@@ -24,6 +24,17 @@
       "included": "Đã bao gồm",
       "untitled_lesson": "Bài học chưa có tiêu đề",
       "format": "Định dạng"
+    },
+    "loading": "Đang tải…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Đang tải khóa học…",
+        "caption": "Vui lòng đợi trong khi chúng tôi tải dữ liệu khóa học của bạn."
+      },
+      "opening_academy": {
+        "title": "Mở học viện của bạn…",
+        "caption": "Các khối lần lượt được thả vào vị trí, sau đó xóa và lặp lại."
+      }
     }
   },
   "validations": {
@@ -4405,6 +4416,16 @@
     "customers": "Tạo khóa học cho khách hàng của tôi",
     "explore": "Chỉ ở đây để khám phá",
     "articles": "Bài viết",
+    "ai": "AI",
+    "ai_select": "Chọn một trợ lý AI",
+    "ai_required": "Vui lòng chọn một trợ lý AI",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Công cụ tìm kiếm",
     "social": "Phương tiện truyền thông xã hội",
     "friends": "Bạn bè và gia đình",
@@ -4414,7 +4435,101 @@
     "what_brings": "Điều gì đưa bạn đến",
     "how": "Bạn biết đến chúng tôi bằng cách nào?",
     "back": "Quay lại",
-    "continue": "Tiếp tục"
+    "continue": "Tiếp tục",
+    "other": "Khác (cho chúng tôi biết)",
+    "other_placeholder": "Hãy cho chúng tôi biết thêm",
+    "other_required": "Hãy cho chúng tôi biết thêm",
+    "sources": {
+      "label": "Bạn biết đến chúng tôi bằng cách nào?",
+      "blog": "Blog hoặc bài viết",
+      "ai": "trí tuệ nhân tạo",
+      "search_engine": "Công cụ tìm kiếm",
+      "github": "GitHub hoặc nguồn mở",
+      "youtube": "YouTube hoặc podcast",
+      "social_media": "Truyền thông xã hội",
+      "product_hunt": "Product Hunt hoặc một trang web đánh giá",
+      "friends_family": "Bạn bè, gia đình hoặc đồng nghiệp",
+      "subtitle": "Tùy chọn, nhưng nó giúp một nhóm nhỏ biết điều gì đang hiệu quả."
+    },
+    "job_roles": {
+      "label": "Vai trò của bạn là gì?",
+      "founder": "Người sáng lập hoặc CEO",
+      "product_ops": "Sản phẩm hoặc hoạt động",
+      "cs_education": "Sự thành công, giáo dục hoặc hỗ trợ của khách hàng",
+      "developer": "Nhà phát triển hoặc kỹ sư",
+      "subtitle": "Điều này giúp chúng tôi điều chỉnh thiết lập của bạn."
+    },
+    "learning_methods": {
+      "label": "Làm thế nào để khách hàng tìm hiểu sản phẩm của bạn ngày hôm nay?",
+      "self_serve": "Họ tự mình tìm ra nó",
+      "live_onboarding": "Các phiên hoặc cuộc gọi giới thiệu trực tiếp",
+      "help_docs": "Tài liệu trợ giúp và hỗ trợ",
+      "no_training": "Chúng tôi chưa được đào tạo",
+      "subtitle": "Chọn một cái gần nhất với cách nó hoạt động ngay bây giờ."
+    },
+    "use_cases": {
+      "label": "Bạn muốn sử dụng ClassroomIO để làm gì?",
+      "customer_training": "Đào tạo khách hàng về sản phẩm của tôi",
+      "customer_certification": "Chứng nhận khách hàng hoặc đối tác",
+      "partner_training": "Đào tạo đối tác hoặc đại lý",
+      "team_training": "Huấn luyện đội của riêng tôi",
+      "sell_courses": "Bán các khóa học cho công chúng",
+      "subtitle": "Chọn tất cả những gì áp dụng. Chúng tôi sẽ định hình tổ chức của bạn xung quanh nó."
+    },
+    "step_of": "Bước {current} / {total}",
+    "skip": "Bỏ qua",
+    "finish_setup": "Hoàn tất thiết lập",
+    "company_sizes": {
+      "label": "Công ty của bạn lớn đến mức nào?",
+      "subtitle": "Đếm tất cả mọi người trong công ty, không chỉ nhóm của bạn.",
+      "enterprise": {
+        "label": "200+",
+        "description": "mọi người"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "mọi người"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "mọi người"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "mọi người"
+      },
+      "solo": {
+        "label": "Chỉ có tôi",
+        "description": "Một mình"
+      }
+    },
+    "ai_assistant": {
+      "label": "Trợ lý AI",
+      "subtitle": "Cái nào đã đề nghị chúng tôi?"
+    },
+    "step_labels": {
+      "use_cases": "Trường hợp sử dụng",
+      "learning_methods": "Đào tạo ngày hôm nay",
+      "company_size": "Quy mô công ty",
+      "job_role": "Vai trò",
+      "source": "khám phá",
+      "org_setup": "Tổ chức"
+    },
+    "org_setup": {
+      "subtitle": "Hãy cho chúng tôi biết về bạn và tổ chức của bạn để bắt đầu.",
+      "title": "Thiết lập tổ chức của bạn",
+      "created_subtitle": "Tổ chức của bạn đã được thiết lập. Bạn có thể thay đổi những chi tiết này sau trong Cài đặt."
+    },
+    "header": {
+      "tagline": "Nền tảng đào tạo khách hàng kết nối với hệ thống của bạn"
+    },
+    "testimonials": {
+      "eyebrow": "Từ các đội sử dụng nó",
+      "footer": "Nguồn mở · Tự lưu trữ hoặc đám mây",
+      "headline": "Hãy ngừng đào tạo mọi khách hàng {highlight}.",
+      "headline_highlight": "bằng tay",
+      "subtitle": "Thiết lập một lần, đăng ký hàng loạt khách hàng của bạn thông qua API. Sau đó theo dõi tiến trình của họ bằng phân tích."
+    }
   },
   "new_course_modal": {
     "live_class_label": "Lớp học trực tiếp",
