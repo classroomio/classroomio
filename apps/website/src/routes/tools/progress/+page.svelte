@@ -87,7 +87,7 @@
 <section class=" w-full px-1 md:w-full md:px-0">
   <ToolsHeader>
     <img src="/free-tools/progress-report.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="text-h2 mt-5 font-medium text-balance text-[#040F2D]">Progress Report</h1>
+    <h1 class="text-title mt-5 font-medium text-balance text-[#040F2D]">Progress Report</h1>
     <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       Generate cool reports of your learning progress. Share reports with your network for collaborative learning
     </p>

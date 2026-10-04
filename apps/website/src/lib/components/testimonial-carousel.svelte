@@ -42,10 +42,10 @@
 
     <div class="relative max-w-[860px]">
       <div class="flex items-center gap-2">
-        <Button variant="secondary" size="icon-lg" aria-label="Previous testimonial" onclick={showPrevious}>
+        <Button variant="secondary" size="icon" aria-label="Previous testimonial" onclick={showPrevious}>
           <ArrowLeft />
         </Button>
-        <Button variant="secondary" size="icon-lg" aria-label="Next testimonial" onclick={showNext}>
+        <Button variant="secondary" size="icon" aria-label="Next testimonial" onclick={showNext}>
           <ArrowRight />
         </Button>
         <span class="text-label ml-3 font-mono text-blue-200 uppercase" aria-hidden="true">{counterLabel}</span>

@@ -49,7 +49,6 @@
     target="_blank"
     rel="noopener"
     variant={isPopular ? 'default' : 'outline'}
-    size="lg"
     class="mt-6 w-full"
   >
     {plan.CTA.LABEL}

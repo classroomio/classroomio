@@ -42,9 +42,7 @@
       ledeClass="text-gray-500"
     >
       {#snippet title()}
-        AI that turns company knowledge into trainings that drive <em class="text-blue-700 not-italic"
-          >business outcomes</em
-        >
+        Turn company knowledge into trainings that drive <em class="text-blue-700 not-italic">business outcomes</em>
       {/snippet}
     </SectionHeader>
   </BlurFade>

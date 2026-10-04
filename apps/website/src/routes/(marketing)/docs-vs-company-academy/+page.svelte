@@ -173,7 +173,7 @@
         Docs vs Company Academy
       </Badge>
 
-      <h1 class="text-h2 font-medium text-balance text-gray-950">
+      <h1 class="text-title font-medium text-balance text-gray-950">
         Documentation answers questions.
         <em class="text-blue-700 not-italic">A company academy teaches them to do the job.</em>
       </h1>

@@ -94,7 +94,7 @@
 <section class=" bg-white px-5 md:px-0">
   <ToolsHeader className="mb-10">
     <img src="/free-tools/tic-tac.svg" class="mx-auto w-14 rounded-full border md:w-[5%]" alt="Tic Tac Icon" />
-    <h1 class="text-h2 mt-5 font-medium text-balance text-[#040F2D]">Tic-Tac game</h1>
+    <h1 class="text-title mt-5 font-medium text-balance text-[#040F2D]">Tic-Tac game</h1>
     <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       More than just a game; it's an educational tool that teaches pattern recognition, and decision-making.
     </p>

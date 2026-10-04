@@ -17,7 +17,7 @@
 
   let {
     variant = 'primary',
-    size = 'lg',
+    size = 'md',
     href,
     arrow = false,
     class: className = '',

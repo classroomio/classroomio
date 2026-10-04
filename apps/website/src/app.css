@@ -46,11 +46,15 @@
   --text-cta--line-height: 1.04;
   --text-cta--letter-spacing: -0.045em;
   --text-cta--font-weight: 500;
-  --text-h2: clamp(34px, 4.4vw, 58px);
+  --text-title: clamp(34px, 4.4vw, 58px);
+  --text-title--line-height: 1.05;
+  --text-title--letter-spacing: -0.035em;
+  --text-title--font-weight: 500;
+  --text-h2: clamp(30px, 3.6vw, 46px);
   --text-h2--line-height: 1.05;
   --text-h2--letter-spacing: -0.035em;
   --text-h2--font-weight: 500;
-  --text-h3: clamp(28px, 3.4vw, 44px);
+  --text-h3: clamp(26px, 2.8vw, 36px);
   --text-h3--line-height: 1.1;
   --text-h3--letter-spacing: -0.03em;
   --text-h3--font-weight: 500;
@@ -83,7 +87,7 @@
 
   --container-content: 1200px;
   --container-lede: 760px;
-  --spacing-nav: 84px;
+  --spacing-nav: 64px;
   --spacing-gutter: 120px;
   --spacing-section: 150px;
 

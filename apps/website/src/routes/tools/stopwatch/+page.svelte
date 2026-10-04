@@ -135,7 +135,7 @@
 <section class=" bg-white px-5 md:px-0">
   <ToolsHeader>
     <img src="/free-tools/name-picker.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="text-h2 mt-5 font-medium text-balance text-[#040F2D]">Activity Stopwatch</h1>
+    <h1 class="text-title mt-5 font-medium text-balance text-[#040F2D]">Activity Stopwatch</h1>
     <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       Stay on track and enhance productivity with our customizable stopwatch for timed tasks, quizzes, and study
       sessions.

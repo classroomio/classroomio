@@ -29,31 +29,18 @@
 {#snippet copy()}
   <div class="flex flex-col gap-5 {isBrand ? 'items-center' : 'items-start'}">
     <h2
-      class="text-[clamp(36px,4.2vw,56px)] leading-[1.03] font-semibold tracking-[-0.045em] text-balance text-gray-950 {isBrand
-        ? 'lg:text-[60px]'
-        : ''}"
+      class="text-[clamp(30px,3.6vw,46px)] leading-[1.05] font-semibold tracking-[-0.04em] text-balance text-gray-950"
     >
       {header}
     </h2>
     <p class="max-w-[620px] text-lg leading-[1.55] text-[#4A443A]">{subText}</p>
     <div class="flex flex-wrap gap-3">
       {#if demo}
-        <Button
-          size="lg"
-          class="h-12 px-[22px] text-base font-semibold"
-          data-cal-config="'layout':'month_view'"
-          data-cal-link="classroomio/demo"
-        >
+        <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">
           {btnLabel}
         </Button>
       {:else}
-        <Button
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-          size="lg"
-          class="h-12 px-[22px] text-base font-semibold"
-        >
+        <Button href={link} target="_blank" rel="noopener noreferrer nofollow">
           {btnLabel}
         </Button>
       {/if}
