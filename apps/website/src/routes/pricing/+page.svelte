@@ -1,10 +1,10 @@
 <script lang="ts">
   import { PLANS } from '@cio/utils/plans';
-  import { PricingCard } from '@cio/ui/custom/pricing-card';
   import { PricingToggle } from '@cio/ui/custom/pricing-toggle';
   import { MachineGlassBox } from '@cio/ui/custom/animation/machines';
 
-  import { PageSignupCTA, PageHeader } from '$lib/components';
+  import { PageSignupCTA, PageHeader, PricingPlanCard, TestimonialCarousel } from '$lib/components';
+  import { testimonials } from '$lib/utils/testimonials';
   import { MachineCard } from '$lib/components/ui';
 
   let isYearlyPlan = $state(false);
@@ -64,23 +64,13 @@
 
   <div class="w-full px-6 py-20 md:px-10">
     <div class="max-w-content mx-auto">
-      <div class="flex w-full flex-wrap items-stretch justify-center gap-6">
-        {#each planNames as planName}
-          {@const plan = PLANS[planName]}
-          {@const isPopular = planName === 'EARLY_ADOPTER'}
-
-          <PricingCard
-            {plan}
-            {planName}
-            {isPopular}
+      <div class="mx-auto grid max-w-sm gap-6 lg:max-w-none lg:grid-cols-3">
+        {#each planNames as planName (planName)}
+          <PricingPlanCard
+            plan={PLANS[planName]}
+            isPopular={planName === 'EARLY_ADOPTER'}
             {isYearlyPlan}
-            className="mx-auto lg:mx-0 w-full max-w-xs! lg:max-w-sm!"
-            ctaLabel={plan.CTA.LABEL}
-            isDisabled={false}
             perOrgLabel={isYearlyPlan ? 'per year' : 'per month'}
-            handleClick={() => {
-              window.open(plan.CTA.LINK, '_blank');
-            }}
           />
         {/each}
       </div>
@@ -90,6 +80,8 @@
     </p>
   </div>
 </section>
+
+<TestimonialCarousel {testimonials} />
 
 <PageSignupCTA
   header="Start building your academy."
