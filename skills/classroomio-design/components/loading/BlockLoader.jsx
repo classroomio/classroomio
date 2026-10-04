@@ -27,7 +27,7 @@ export function BlockLoader({ blocks = DEFAULT_BLOCKS, title = 'Opening your aca
 export function CompactLoader({ size = 'md', surface = '#FAFAF7', colors = ['var(--sand-200)', 'var(--blue-300)', 'var(--blue-700)'], framed = true, style }) {
   const s = size === 'sm' ? 0.6 : 1;
   const w = 84 * s, h = 26 * s;
-  return <div role="img" aria-label="Loading" style={{ width: framed ? 132 * s : undefined, minHeight: framed ? 96 * s : undefined, borderRadius: 10, background: framed ? surface : 'transparent', display: 'inline-flex', flexDirection: 'column-reverse', alignItems: 'center', justifyContent: 'center', gap: 5 * s, ...style }}>
+  return <div role="img" aria-label="Loading" style={{ width: framed ? 132 * s : undefined, minHeight: framed ? 96 * s : undefined, borderRadius: 10, background: framed ? surface : 'transparent', display: 'inline-flex', flexDirection: 'column-reverse', alignItems: 'center', justifyContent: 'center', gap: 2 * s, ...style }}>
     {colors.map((c, i) => <div key={i} data-cio-anim style={{ position: 'relative', zIndex: i + 1, width: w, height: h, borderRadius: 6 * s, background: c, animation: 'cio-ld-drop-sm 2.4s linear infinite both', animationDelay: `${i * 0.432}s` }}>
       <span aria-hidden="true" style={notchStyle(surface, 14 * s, s, true)}/>
       {i > 0 && <span aria-hidden="true" style={tabStyle(c, 14 * s, s, true)}/>}
