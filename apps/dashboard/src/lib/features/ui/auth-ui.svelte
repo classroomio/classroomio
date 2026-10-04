@@ -81,6 +81,11 @@
 <div
   class="auth-ui-background ui:bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4"
 >
+  {#if showBlockFooter}
+    <div class="absolute inset-0 z-0 hidden md:block" style:--machine-face="var(--background)">
+      <MachineTrainingLine />
+    </div>
+  {/if}
   {#if authBackgroundUrl}
     <div class="absolute inset-0 z-0">
       <img src={authBackgroundUrl} alt="" class="h-full w-full object-cover" decoding="async" />
@@ -162,13 +167,4 @@
       {/if}
     </Card.Root>
   </div>
-
-  {#if showBlockFooter}
-    <div
-      class="absolute bottom-0 left-1/2 z-0 hidden h-56 w-72 -translate-x-1/2 md:block"
-      style:--machine-face="var(--background)"
-    >
-      <MachineTrainingLine />
-    </div>
-  {/if}
 </div>
