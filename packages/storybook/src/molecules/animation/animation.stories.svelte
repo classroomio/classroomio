@@ -209,6 +209,62 @@
   {/snippet}
 </Story>
 
+<Story name="MachineTrainingLine">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineTrainingLine label="Lessons move down a line and each one is stamped" class="h-96" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineRepeater">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineRepeater label="An expert repeats the same explanation to each new customer" class="h-80" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineSpectrum">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineSpectrum label="A learner rides up five levels to certified training" class="h-96" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineCertificatePress">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineCertificatePress label="Certificates are stamped, then checked against a public URL" class="h-80" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineBrandStand">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineBrandStand label="A shop front changes branding for each customer" class="h-80" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineEventWire">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineEventWire label="Events travel from ClassroomIO to a CRM and a help desk" class="h-80" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="MachineGlassBox">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineGlassBox label="The same mechanism runs in plain sight inside a glass case" class="h-80" />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Machines">
   {#snippet template()}
     <div class="ui:bg-muted mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 rounded-xl border p-6 md:grid-cols-2">
