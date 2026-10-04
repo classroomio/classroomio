@@ -82,7 +82,7 @@
   class="auth-ui-background ui:bg-background relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4"
 >
   {#if showBlockFooter}
-    <div class="absolute inset-0 z-0 hidden md:block" style:--machine-face="var(--background)">
+    <div class="absolute inset-0 z-0 hidden translate-x-[24%] md:block" style:--machine-face="var(--background)">
       <MachineTrainingLine />
     </div>
   {/if}
