@@ -1,5 +1,5 @@
 const C = window.CIO;
-const { Chip, UserAvatar, CircularProgress, PercentRingProgress, ResourceListGroup, ResourceListRow, ResourceListRowMain, ResourceListRowEnd, IconButton, BackButton, ComboButton, CheckboxOptionCardGroup, RadioOptionCardGroup, MultiSelectList, FileDropZone, MEGABYTE, PricingToggle, PricingCard, Ic, Collapsible, UnderlineTabs, Page, SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuBadge, SidebarInset, SidebarTrigger, HoverCard, Toast, Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, Menubar, NavigationMenu, NavigationMenuLink, CopyButton, ModeSwitcher, Button, ButtonGroup, Input, Textarea, Field, InputGroup, PasswordInput, Select, Checkbox, RadioGroup, Switch, Toggle, ToggleGroup,
+const { MachineTrainingLine, MachineRepeater, MachineSpectrum, MachineCertificatePress, MachineBrandStand, MachineEventWire, MachineGlassBox, Chip, UserAvatar, CircularProgress, PercentRingProgress, ResourceListGroup, ResourceListRow, ResourceListRowMain, ResourceListRowEnd, IconButton, BackButton, ComboButton, CheckboxOptionCardGroup, RadioOptionCardGroup, MultiSelectList, FileDropZone, MEGABYTE, PricingToggle, PricingCard, Ic, Collapsible, UnderlineTabs, Page, SidebarProvider, Sidebar, SidebarContent, SidebarGroup, SidebarGroupLabel, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarMenuBadge, SidebarInset, SidebarTrigger, HoverCard, Toast, Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, Menubar, NavigationMenu, NavigationMenuLink, CopyButton, ModeSwitcher, Button, ButtonGroup, Input, Textarea, Field, InputGroup, PasswordInput, Select, Checkbox, RadioGroup, Switch, Toggle, ToggleGroup,
   Dialog, Sheet, Popover, Tooltip, DropdownMenu, Badge, NumberBadge, Alert, Card, Avatar, Accordion, Tabs, Table, Progress, Skeleton, Spinner, Kbd, Separator, Item, Empty, Breadcrumb, Pagination,
   BlockLoader, CompactLoader, BlockGlyph, ImportProgress, BlockSkeleton, AgentDrafting, Icon, Logo, Eyebrow, Tag, Pill, NotchCard, CourseCard, BrowserFrame, BookSpine, Shelf, CTAButton, SectionHeader, ProductMenu, FAQItem, TestimonialCard, VideoTestimonial, CTABand, Footer } = C;
 
@@ -12,7 +12,7 @@ const Panel = ({ children, style }) => <div style={{ background: 'var(--ui-backg
 const plus = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>;
 const search = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
 const rows = [{ name: 'Amara Okafor', course: 'Admin 101', progress: 100, status: 'Passed' }, { name: 'Daniel Reyes', course: 'Partner cert', progress: 62, status: 'In progress' }, { name: 'Priya Nair', course: 'SSO setup', progress: 18, status: 'In progress' }];
-const NAV = [['buttons', 'Buttons'], ['inputs', 'Inputs'], ['choice', 'Choice controls'], ['overlays', 'Overlays'], ['display', 'Display'], ['data', 'Data & lists'], ['loading', 'Loading'], ['extended', 'Extended'], ['custom', 'Custom'], ['marketing', 'Marketing']];
+const NAV = [['buttons', 'Buttons'], ['inputs', 'Inputs'], ['choice', 'Choice controls'], ['overlays', 'Overlays'], ['display', 'Display'], ['data', 'Data & lists'], ['loading', 'Loading'], ['extended', 'Extended'], ['custom', 'Custom'], ['machines', 'Machines'], ['marketing', 'Marketing']];
 
 function App() {
   const [dlg, setDlg] = React.useState(false);
@@ -167,6 +167,18 @@ function App() {
       <Panel style={{ marginTop: 20, display: 'flex', gap: 24, flexWrap: 'wrap', justifyContent: 'center' }}>
         <PricingCard planName="early-adopter" isPopular isYearlyPlan plan={{ NAME: 'Early Adopters', PRICE: { CURRENCY: '$', MONTHLY: '35', YEARLY: '350', IS_PREMIUM: false }, FEATURES: ['Everything in Basic', '10K Students', 'Custom Branding'], CTA: { DASHBOARD_LABEL: 'Upgrade now', IS_DISABLED: false } }}/>
         <PricingCard planName="basic" isYearlyPlan plan={{ NAME: 'Basic', PRICE: { CURRENCY: '$', MONTHLY: '0', YEARLY: '0', IS_PREMIUM: false }, FEATURES: ['Unlimited courses', '100 Students'], CTA: { DASHBOARD_LABEL: 'Current plan', IS_DISABLED: true } }} isDisabled/>
+      </Panel>
+    </Section>
+
+    <Section id="machines" title="Machines" sub="brand/Machines · isometric line illustrations, one moving part in the accent">
+      <Panel style={{ background: 'var(--sand-200)', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+        <div style={{ gridColumn: '1 / -1', height: 340 }}><MachineTrainingLine label="Lessons move down a line and each one is stamped"/></div>
+        <div style={{ height: 260 }}><MachineRepeater label="An expert repeats the same explanation to each new customer"/></div>
+        <div style={{ height: 260 }}><MachineSpectrum label="A learner rides up five levels to certified training"/></div>
+        <div style={{ height: 260 }}><MachineCertificatePress label="Certificates are stamped, then checked against a public URL"/></div>
+        <div style={{ height: 260 }}><MachineBrandStand label="A shop front changes branding for each customer"/></div>
+        <div style={{ height: 260 }}><MachineEventWire label="Events travel from ClassroomIO to a CRM and a help desk"/></div>
+        <div style={{ height: 260 }}><MachineGlassBox label="The same mechanism runs in plain sight inside a glass case"/></div>
       </Panel>
     </Section>
 
