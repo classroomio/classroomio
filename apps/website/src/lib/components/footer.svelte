@@ -5,59 +5,12 @@
 </script>
 
 <footer
-  class="ui:border-border relative overflow-hidden border-t bg-[linear-gradient(to_top,#eef3fb_0%,#f8fafc_100%)] px-[5%] py-12 lg:px-[10%]"
+  class="ui:border-border relative overflow-hidden border-t bg-[linear-gradient(to_top,#eef3fb_0%,#f8fafc_100%)] px-6 pt-20 pb-10 md:px-10 lg:pt-24"
 >
-  <!-- Minor cloud, top-left, smaller than the hero -->
-  <svg
-    class="pointer-events-none absolute -top-4 left-3 z-[2] h-12 w-[160px] md:-top-5 md:left-4 md:h-16 md:w-[210px] lg:-top-6 lg:h-20 lg:w-[260px]"
-    viewBox="0 0 240 110"
-    fill="none"
-    aria-hidden="true"
-  >
-    <path
-      d="M 22 80
-         C 22 60, 42 50, 62 56
-         C 68 36, 100 30, 116 52
-         C 130 32, 168 38, 174 60
-         C 196 56, 216 68, 214 82
-         C 214 96, 196 102, 174 96
-         C 164 106, 130 106, 120 96
-         C 110 106, 78 106, 66 94
-         C 46 100, 22 96, 22 80 Z"
-      fill="white"
-      stroke="#94a3b8"
-      stroke-width="1.5"
-    />
-  </svg>
-
-  <!-- Second smaller cloud, offset right -->
-  <svg
-    class="pointer-events-none absolute top-3 left-32 z-[2] h-9 w-[110px] md:top-4 md:left-44 md:h-12 md:w-[140px] lg:top-6 lg:left-[200px] lg:h-14 lg:w-[180px]"
-    viewBox="0 0 200 90"
-    fill="none"
-    aria-hidden="true"
-  >
-    <path
-      d="M 16 64
-         C 16 48, 34 40, 52 46
-         C 58 30, 86 26, 100 44
-         C 114 28, 144 34, 150 52
-         C 168 48, 184 58, 182 70
-         C 182 82, 168 86, 150 82
-         C 142 90, 114 90, 106 82
-         C 98 90, 70 90, 60 80
-         C 42 86, 16 82, 16 64 Z"
-      fill="white"
-      stroke="#94a3b8"
-      stroke-width="1.5"
-    />
-  </svg>
-
-  <div class="relative z-10 flex flex-col gap-10 lg:flex-row lg:justify-between">
-    <!-- Brand -->
-    <div class="flex flex-col gap-4 lg:max-w-[220px]">
-      <img width="32" height="32" loading="lazy" src="/logo-192.png" alt="ClassroomIO logo" />
-      <p class="ui:text-muted-foreground text-sm leading-6">
+  <div class="max-w-content relative z-10 mx-auto flex flex-col gap-12 lg:flex-row lg:justify-between">
+    <div class="flex flex-col gap-5 lg:max-w-[280px]">
+      <img width="48" height="48" loading="lazy" src="/logo-192.png" alt="ClassroomIO logo" />
+      <p class="ui:text-muted-foreground text-[15px] leading-relaxed">
         The Open Source LMS for compliance training and certification programs.
       </p>
       <div class="flex items-center gap-2">
@@ -88,11 +41,10 @@
       </div>
     </div>
 
-    <!-- Nav columns -->
-    <nav class="grid grid-cols-2 gap-8 sm:grid-cols-4">
+    <nav class="grid grid-cols-2 gap-x-12 gap-y-10 sm:grid-cols-4">
       <div>
-        <p class="ui:text-foreground mb-4 text-sm font-semibold">Product</p>
-        <ul class="space-y-3">
+        <p class="ui:text-foreground mb-5 text-sm font-semibold">Product</p>
+        <ul class="space-y-3.5">
           <li>
             <a href="/mcp-recipes" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
               >MCP Recipes</a
@@ -112,8 +64,8 @@
       </div>
 
       <div>
-        <p class="ui:text-foreground mb-4 text-sm font-semibold">Solutions</p>
-        <ul class="space-y-3">
+        <p class="ui:text-foreground mb-5 text-sm font-semibold">Solutions</p>
+        <ul class="space-y-3.5">
           <li>
             <a
               href="/customer-education"
@@ -136,8 +88,8 @@
       </div>
 
       <div>
-        <p class="ui:text-foreground mb-4 text-sm font-semibold">Resources</p>
-        <ul class="space-y-3">
+        <p class="ui:text-foreground mb-5 text-sm font-semibold">Resources</p>
+        <ul class="space-y-3.5">
           <li>
             <a
               href="/docs-vs-company-academy"
@@ -179,8 +131,8 @@
       </div>
 
       <div>
-        <p class="ui:text-foreground mb-4 text-sm font-semibold">Company</p>
-        <ul class="space-y-3">
+        <p class="ui:text-foreground mb-5 text-sm font-semibold">Company</p>
+        <ul class="space-y-3.5">
           <li>
             <a
               href="https://feedback.classroomio.com/roadmap"
@@ -211,9 +163,7 @@
     </nav>
   </div>
 
-  <div
-    class="ui:border-border ui:text-muted-foreground relative z-10 mt-10 border-t pt-6 text-center text-xs lg:text-left"
-  >
+  <div class="max-w-content ui:text-muted-foreground relative z-10 mx-auto mt-16 text-center text-[13px] lg:text-left">
     All rights reserved. ClassroomIO © {new Date().getFullYear()}
   </div>
 </footer>

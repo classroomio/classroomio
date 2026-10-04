@@ -309,7 +309,7 @@ The accent comes from `--primary` and the surface from `--muted`. Place a machin
 </div>
 ```
 
-Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag that assumes the Growth plan price.
+Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
 
 ### Hooks (`src/hooks/`)
 

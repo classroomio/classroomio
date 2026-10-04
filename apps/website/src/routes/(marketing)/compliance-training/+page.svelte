@@ -11,8 +11,8 @@
     TrustBand,
     WorkflowSteps
   } from '$lib/components';
+  import { CtaButton, Section, SectionHeader } from '$lib/components/ui';
   import { Badge } from '@cio/ui/base/badge';
-  import { Button } from '@cio/ui/base/button';
   import { Meteors } from '@cio/ui/custom/animation/meteors';
   import AlertTriangle from '@lucide/svelte/icons/alert-triangle';
   import BadgeCheck from '@lucide/svelte/icons/badge-check';
@@ -154,8 +154,8 @@
 </svelte:head>
 
 <section class="bg-white">
-  <PageHeader className="px-6 lg:px-12">
-    <div class="mx-auto flex max-w-[820px] flex-col items-center text-center">
+  <PageHeader className="px-6 md:px-10">
+    <div class="mx-auto flex max-w-[960px] flex-col items-center text-center">
       <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
         <span class="relative flex h-2 w-2">
           <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500 opacity-75"></span>
@@ -163,7 +163,7 @@
         </span>
         Compliance Training
       </Badge>
-      <h1 class="text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
+      <h1 class="text-h2 font-medium text-balance text-gray-950">
         Keep your employees compliant and
         <em class="text-blue-700 not-italic">track who's falling behind.</em>
       </h1>
@@ -171,11 +171,13 @@
         Turn policies, SOPs, docs, and videos into assigned courses with quizzes, certificates, renewal rules, and
         completion evidence. Know exactly who is compliant, and prove it.
       </HeroSubtitle>
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
-        <Button href="/signup" variant="outline">Start free</Button>
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <CtaButton data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</CtaButton>
+        <CtaButton href="/signup" variant="secondary">Start free</CtaButton>
       </div>
-      <div class="mt-7 flex flex-wrap items-center justify-center gap-5 text-xs text-gray-500">
+      <div
+        class="text-label mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-gray-500 uppercase"
+      >
         <span class="flex items-center gap-1.5"><span class="font-medium text-blue-700">✓</span> SOC 2-friendly</span>
         <span class="flex items-center gap-1.5"
           ><span class="font-medium text-blue-700">✓</span> Self-hosted option</span
@@ -184,8 +186,8 @@
       </div>
     </div>
 
-    <div class="mx-auto mt-14 w-full max-w-[1100px]">
-      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+    <div class="max-w-content mx-auto mt-16 w-full">
+      <div class="overflow-hidden rounded-xl bg-white ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/compliance-training/org-compliance.jpeg"
           alt="Compliance dashboard with required learners grouped by compliant, expiring soon, and non-compliant"
@@ -228,7 +230,6 @@
     {features}
   />
 
-  <!-- Renewal split feature -->
   <SplitFeatureSection
     bgClass="bg-gray-50"
     eyebrow="Renewals on autopilot"
@@ -253,65 +254,67 @@
     {/snippet}
   </SplitFeatureSection>
 
-  <!-- Question types showcase -->
-  <section class="px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto max-w-[1100px]">
-      <div class="mb-10 max-w-[640px]">
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Assessments</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          15 question types. Twelve auto-graded.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Don't settle for multiple choice. Test understanding the way the policy requires, with partial credit, file
-          uploads, video evidence, and manual override when you need a human in the loop.
-        </p>
-        <div class="mt-6 flex flex-wrap gap-2">
-          <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">Auto-graded · 12</span>
-          <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">Partial credit · 9</span>
-          <span class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">Manual review · 3</span>
-        </div>
-      </div>
-
-      <div class="flex justify-center">
-        <div data-cio-widget="question-type-picker" class="w-full max-w-[900px]"></div>
-      </div>
+  <Section>
+    <SectionHeader
+      eyebrow="Assessments"
+      eyebrowClass="text-blue-700"
+      titleClass=""
+      ledeClass="text-gray-500"
+      lede="Don't settle for multiple choice. Test understanding the way the policy requires, with partial credit, file uploads, video evidence, and manual override when you need a human in the loop."
+    >
+      {#snippet title()}15 question types. Twelve auto-graded.{/snippet}
+    </SectionHeader>
+    <div class="mt-8 flex flex-wrap justify-center gap-2">
+      <span class="text-label rounded-full bg-blue-50 px-3 py-1 font-mono text-blue-700 uppercase"
+        >Auto-graded · 12</span
+      >
+      <span class="text-label rounded-full bg-amber-50 px-3 py-1 font-mono text-amber-700 uppercase"
+        >Partial credit · 9</span
+      >
+      <span class="text-label rounded-full bg-gray-100 px-3 py-1 font-mono text-gray-700 uppercase"
+        >Manual review · 3</span
+      >
     </div>
-  </section>
 
-  <!-- Certificates split -->
-  <section class="bg-gray-50 px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-      <div class="order-2 lg:order-1">
-        <CertificateMock
-          recipient="Sarah Chen"
-          achievement="Annual Security Training 2026"
-          issued="11 May 2026"
-          verifyValue="CIO-2026-05-0142"
-        />
-      </div>
-      <div class="order-1 lg:order-2">
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Certificates & evidence</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Proof of training, designed for your brand.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Configure the certificate ID format the way your records team needs it: by year, month, sequence, or a custom
-          prefix. Download as PDF or PNG. Every issuance is logged for audit.
-        </p>
-        <ul class="mt-6 space-y-3 text-sm text-gray-700">
-          <li class="flex items-start gap-2">
-            <GraduationCap size={16} class="mt-0.5 text-blue-700" /> Templated and branded with your logo and colours
-          </li>
-          <li class="flex items-start gap-2">
-            <BadgeCheck size={16} class="mt-0.5 text-blue-700" /> Tied to a required passing score and assessment
-          </li>
-          <li class="flex items-start gap-2">
-            <AlertTriangle size={16} class="mt-0.5 text-blue-700" /> Auto-revokes when a renewal lapses
-          </li>
-        </ul>
-      </div>
+    <div class="mt-12 flex justify-center md:mt-16">
+      <div data-cio-widget="question-type-picker" class="w-full max-w-[900px]"></div>
     </div>
-  </section>
+  </Section>
+
+  <Section class="bg-gray-50" innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div class="order-2 lg:order-1">
+      <CertificateMock
+        recipient="Sarah Chen"
+        achievement="Annual Security Training 2026"
+        issued="11 May 2026"
+        verifyValue="CIO-2026-05-0142"
+      />
+    </div>
+    <div class="order-1 lg:order-2">
+      <SectionHeader
+        align="left"
+        size="h3"
+        eyebrow="Certificates & evidence"
+        eyebrowClass="text-blue-700"
+        titleClass=""
+        ledeClass="text-gray-500"
+        lede="Configure the certificate ID format the way your records team needs it: by year, month, sequence, or a custom prefix. Download as PDF or PNG. Every issuance is logged for audit."
+      >
+        {#snippet title()}Proof of training, designed for your brand.{/snippet}
+      </SectionHeader>
+      <ul class="mt-8 space-y-3 text-[15px] text-gray-700">
+        <li class="flex items-start gap-2">
+          <GraduationCap size={16} class="mt-1 shrink-0 text-blue-700" /> Templated and branded with your logo and colours
+        </li>
+        <li class="flex items-start gap-2">
+          <BadgeCheck size={16} class="mt-1 shrink-0 text-blue-700" /> Tied to a required passing score and assessment
+        </li>
+        <li class="flex items-start gap-2">
+          <AlertTriangle size={16} class="mt-1 shrink-0 text-blue-700" /> Auto-revokes when a renewal lapses
+        </li>
+      </ul>
+    </div>
+  </Section>
 
   <AiTutorSection
     accent="In your dashboard"
@@ -321,34 +324,28 @@
     imageAlt="Course builder: plan, approve, implement. Templates, in-editor chat, and MCP."
   />
 
-  <!-- Use cases -->
-  <section class="px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto max-w-[1100px]">
-      <div class="mb-10 max-w-[640px]">
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Use cases</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Training for the work people are required to know.
-        </h2>
-      </div>
+  <Section>
+    <SectionHeader eyebrow="Use cases" eyebrowClass="text-blue-700" titleClass="" class="mb-12 md:mb-16">
+      {#snippet title()}Training for the work people are required to know.{/snippet}
+    </SectionHeader>
 
-      <div class="overflow-hidden border border-gray-200 bg-white">
-        <div
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 [&>*:nth-child(2n)]:sm:border-r-0 [&>*:nth-child(2n)]:lg:border-r [&>*:nth-child(3n)]:lg:border-r-0 [&>*:nth-last-child(-n+2)]:sm:border-b-0 [&>*:nth-last-child(-n+3)]:lg:border-b-0"
-        >
-          {#each useCases as useCase, i}
-            <div
-              class="group relative flex items-center gap-3 border-b border-gray-200 p-6 transition-colors hover:bg-gray-50/60 sm:border-r"
-            >
-              <span class="font-mono text-[11px] tracking-[0.15em] text-gray-400">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <span class="text-sm font-medium text-gray-900">{useCase}</span>
-            </div>
-          {/each}
-        </div>
+    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 [&>*:nth-child(2n)]:sm:border-r-0 [&>*:nth-child(2n)]:lg:border-r [&>*:nth-child(3n)]:lg:border-r-0 [&>*:nth-last-child(-n+2)]:sm:border-b-0 [&>*:nth-last-child(-n+3)]:lg:border-b-0"
+      >
+        {#each useCases as useCase, i}
+          <div
+            class="group relative flex items-center gap-4 border-b border-gray-200 p-6 transition-colors hover:bg-gray-50/60 sm:border-r"
+          >
+            <span class="text-tag font-mono text-gray-400">
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span class="text-[15px] font-medium text-gray-900">{useCase}</span>
+          </div>
+        {/each}
       </div>
     </div>
-  </section>
+  </Section>
 
   <PageSignupCTA
     header="Keep your employees compliant and track who's falling behind."
