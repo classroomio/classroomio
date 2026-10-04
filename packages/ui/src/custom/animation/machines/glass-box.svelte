@@ -2,7 +2,11 @@
   import MachineFrame from './machine-frame.svelte';
   import type { MachineProps } from './types';
 
-  let { label, stillAt, class: className }: MachineProps = $props();
+  interface Props extends MachineProps {
+    price?: string;
+  }
+
+  let { label, stillAt, class: className, price = '69/mo' }: Props = $props();
 </script>
 
 <MachineFrame viewBox="-152 -152 364 359" {label} {stillAt} class={className}>
@@ -263,7 +267,7 @@
         class="tk"
         x="20"
         y="3"
-        style="font-size: 9px; font-weight: 600;">69/mo</text
+        style="font-size: 9px; font-weight: 600;">{price}</text
       ></g
     ><text class="tx" x="100.6" y="107.0" style="font-size: 7px;">or self-host it</text></g
   >

@@ -9,16 +9,15 @@
   let { data } = $props();
 </script>
 
-<div class=" mt-[10%] md:mt-16">
+<div class="mt-[10%] px-6 md:mt-16 md:px-10">
   {#if data}
     <article class="py-16">
-      <!-- Title -->
       <hgroup class="flex w-full flex-col items-center justify-center text-center">
-        <p class="text-sm text-gray-500">{formatDate(data.meta.date)}</p>
-        <p class="py-2 text-center text-3xl font-bold md:w-[60%]">{@html data.meta.title}</p>
+        <p class="text-label font-mono text-gray-500 uppercase">{formatDate(data.meta.date)}</p>
+        <h1 class="text-h2 mt-4 max-w-[900px] text-center font-medium text-balance">{@html data.meta.title}</h1>
       </hgroup>
-      <main class="mx-auto max-w-3xl px-4 lg:px-8">
-        <div class="my-2 flex items-center justify-start gap-4 border-y border-gray-200 py-4">
+      <main class="max-w-lede mx-auto mt-10">
+        <div class="my-4 flex items-center justify-start gap-4 border-y border-gray-200 py-4">
           <img loading="lazy" src={data.meta.avatar} alt="avatar" class="h-10 w-10 rounded-full" />
           <span>
             <p class="font-semibold">{data.meta.author}</p>
@@ -26,20 +25,18 @@
           </span>
         </div>
 
-        <!-- Post -->
         <div class="prose border-b-2 border-gray-200 pt-2 pb-4">
           <data.content />
-          <!-- Tags -->
           <div class="flex gap-2 py-4">
             {#each data.meta.tags as tag}
-              <Badge variant="outline">{tag}</Badge>
+              <Badge variant="outline" class="text-tag rounded-full! font-mono uppercase">{tag}</Badge>
             {/each}
           </div>
         </div>
 
         {#if data.relatedPosts.length > 0}
           <section class="mt-5">
-            <p class="text-xl font-semibold">Related Posts</p>
+            <h2 class="text-h4 font-medium">Related Posts</h2>
             <ul class="flex items-start justify-start gap-3 overflow-x-scroll">
               {#each data.relatedPosts as post}
                 <li class="min-w-[80%] py-10 sm:w-80 sm:min-w-0">
@@ -70,7 +67,7 @@
 
   :global(.prose .gallery img) {
     max-height: 300px;
-    border-radius: 0.375rem;
+    border-radius: var(--radius-xl);
   }
 
   :global(.prose .gallery) {

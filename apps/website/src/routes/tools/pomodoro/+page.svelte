@@ -172,8 +172,8 @@
 <section class=" w-full bg-white px-1 md:w-full md:px-0">
   <ToolsHeader>
     <img src="/free-tools/pomodoro.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="my-3 text-3xl text-[#040F2D] md:text-5xl">Pomodoro Timer</h1>
-    <p class="mx-auto mt-10 text-sm font-light text-[#656565] md:w-[45%] md:font-normal">
+    <h1 class="text-h2 mt-5 font-medium text-balance text-[#040F2D]">Pomodoro Timer</h1>
+    <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       Make your workday more engaging and effective with the Pomodoro timer, break work into 25-minute focused intervals
       called "pomodoros," followed by 5-minute breaks. take a longer break.
     </p>
@@ -182,11 +182,9 @@
   <div
     class="body my-10 flex w-full flex-col justify-evenly gap-y-10 px-5 text-center text-white md:h-[60vh] md:flex-row md:px-10"
   >
-    <!-- left side -->
     <div
       class="flex w-full flex-col justify-between gap-y-16 rounded-lg bg-[#0D4CFF] px-5 py-7 md:w-[50%] md:gap-y-0 md:rounded-2xl md:p-10"
     >
-      <!-- types -->
       <div class="item-center flex justify-evenly">
         <button
           type="button"
@@ -214,12 +212,9 @@
         </button>
       </div>
 
-      <!-- countdown -->
       <h1 class="text-7xl font-bold md:text-9xl">{countdownDisplay}</h1>
 
-      <!-- controls -->
       <div class="flex items-center justify-center gap-7">
-        <!-- reset -->
         <button type="button" onclick={resetCountdown}>
           <img
             src="/free-tools/pomodoro/restart-icon.svg"
@@ -228,7 +223,6 @@
           />
         </button>
 
-        <!-- start (i intentionally disabled this button once the user clicks start so they can use the pause button to actually pause the countdown) -->
         <button
           type="button"
           onclick={isPaused ? startCountdown : pauseCountdown}
@@ -237,7 +231,6 @@
           {isPaused ? 'Start' : 'Pause'}
         </button>
 
-        <!-- next -->
         <button type="button" onclick={nextTimerState}>
           <img
             src="/free-tools/pomodoro/timer-play-icon.svg"
@@ -248,7 +241,6 @@
       </div>
     </div>
 
-    <!-- right side -->
     <div class="relative w-full md:w-[36%]">
       <h1
         class="bg-[#040F2D] py-4 text-xl font-bold uppercase"
@@ -258,7 +250,6 @@
       </h1>
 
       <div class="overflow-hidden">
-        <!-- todos -->
         <div class="mt-3 max-h-[40vh] overflow-y-auto md:max-h-[50vh]">
           {#each todoList as todo, i}
             <div class="border p-5 text-black">
@@ -287,7 +278,6 @@
                   <div class="flex justify-between">
                     <p class="text-sm font-medium">{todo.content}</p>
 
-                    <!-- pen and menu icon -->
                     <div class="relative flex w-[15%] justify-between">
                       <button type="button" onclick={() => setEditing(i, true)}>
                         <img src="/free-tools/pomodoro/pen-icon.svg" alt="Pen icon" class="w-5" />
@@ -362,7 +352,6 @@
           {/each}
         </div>
 
-        <!-- todo button -->
         <button
           type="button"
           onclick={addTodo}
@@ -380,6 +369,6 @@
   @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 
   .body {
-    font-family: 'Geist', sans-serif;
+    font-family: var(--font-sans);
   }
 </style>

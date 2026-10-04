@@ -314,6 +314,14 @@
   {/snippet}
 </Story>
 
+<Story name="MachineGlassBox with price">
+  {#snippet template()}
+    <div class="ui:bg-muted mx-auto w-full max-w-3xl rounded-xl border p-6">
+      <MachineGlassBox label="The same mechanism runs in plain sight inside a glass case" price="35/mo" class="h-80" />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Machines">
   {#snippet template()}
     <div class="ui:bg-muted mx-auto grid w-full max-w-5xl grid-cols-1 gap-6 rounded-xl border p-6 md:grid-cols-2">

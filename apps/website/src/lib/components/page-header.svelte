@@ -1,6 +1,4 @@
 <script>
-  import { DotPattern } from '@cio/ui/custom/animation/dot-pattern';
-
   /**
    * @typedef {Object} Props
    * @property {string} [className]
@@ -11,8 +9,10 @@
   let { className = '', children } = $props();
 </script>
 
-<header class="relative w-full overflow-hidden border-b border-slate-100 pt-32 pb-16 lg:min-h-[20rem]">
-  <DotPattern fillColor="rgb(2 51 189 / 0.25)" class="pointer-events-none absolute inset-0 h-full w-full" />
+<header
+  class="relative w-full overflow-hidden border-b border-slate-100 pt-36 pb-20 lg:min-h-[20rem] lg:pt-44 lg:pb-24"
+>
+  <div class="cio-dotfield pointer-events-none absolute inset-0" aria-hidden="true"></div>
   <div class="relative z-10 {className}">
     {@render children?.()}
   </div>

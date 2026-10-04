@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Faq, FeatureGrid, PageHeader, PageSignupCTA, TrustBand, WorkflowSteps } from '$lib/components';
+  import { CtaButton, Eyebrow, Section, SectionHeader } from '$lib/components/ui';
   import { Badge } from '@cio/ui/base/badge';
-  import { Button } from '@cio/ui/base/button';
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import Check from '@lucide/svelte/icons/check';
   import Globe from '@lucide/svelte/icons/globe';
@@ -157,121 +157,118 @@
 </svelte:head>
 
 <section class="bg-white">
-  <PageHeader className="px-6 lg:px-12">
-    <div class="mx-auto flex max-w-[820px] flex-col items-center text-center">
-      <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
+  <PageHeader className="px-6 md:px-10">
+    <div class="mx-auto flex max-w-[1000px] flex-col items-center text-center">
+      <Badge
+        variant="outline"
+        class="text-label mb-6 gap-2! rounded-full! bg-white px-3.5! py-1.5! font-mono uppercase"
+      >
         <Globe size={14} class="text-blue-700" />
         Public Courses
       </Badge>
 
-      <h1 class="text-[clamp(2.4rem,4vw,3.6rem)] leading-[1.08] font-medium tracking-tight text-gray-950">
-        Publish free courses that lead to paid enrollments.
-      </h1>
+      <h1 class="text-display text-balance text-gray-950">Publish free courses that lead to paid enrollments.</h1>
 
-      <p class="mt-6 text-sm leading-relaxed lg:text-base">
+      <p class="text-lead mt-6 max-w-[680px] text-pretty">
         Public courses let you share lessons without asking people to create an account first. You can publish free
         course content, add quizzes, customize the page, and guide interested learners into a paid course or community.
       </p>
 
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
-        <Button href="/signup" variant="outline">Start free</Button>
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <CtaButton data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</CtaButton>
+        <CtaButton href="/signup" variant="secondary">Start free</CtaButton>
       </div>
     </div>
 
-    <div class="mx-auto mt-14 w-full max-w-[1100px]">
+    <div class="max-w-content mx-auto mt-16 w-full">
       <img
         src="https://assets.cdn.clsrio.com/www/public-courses/public-courses-hero.jpeg"
         alt="Public course page on desktop"
         width="1920"
         height="1481"
         loading="eager"
-        class="w-full rounded-2xl border border-gray-200 shadow-sm"
+        class="w-full rounded-xl border border-gray-200"
       />
     </div>
   </PageHeader>
 
-  <!-- Use cases: two-column split -->
-  <section class="bg-gray-50 px-6 py-16 lg:px-12 lg:py-24">
-    <div class="mx-auto max-w-[1120px]">
-      <div class="mb-10 max-w-[720px]">
-        <div class="mb-3 text-xs font-medium tracking-widest text-blue-700 uppercase">Why teams use it</div>
-        <h2 class="text-[clamp(2rem,3vw,2.7rem)] leading-[1.15] font-medium tracking-tight text-gray-950">
-          Public courses are useful before someone is ready to enroll.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Teams use them to share sample lessons, open training, and course previews. Learners get a low-friction way to
-          read or try the material before deciding what to do next.
-        </p>
+  <Section class="bg-gray-50">
+    <SectionHeader
+      eyebrow="Why teams use it"
+      eyebrowClass="text-blue-700"
+      ledeClass="text-gray-500"
+      lede="Teams use them to share sample lessons, open training, and course previews. Learners get a low-friction way to read or try the material before deciding what to do next."
+    >
+      {#snippet title()}
+        Public courses are useful before someone is ready to enroll.
+      {/snippet}
+    </SectionHeader>
+
+    <div class="mt-16 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-gray-200">
+      <div class="flex flex-col rounded-xl border border-gray-200 bg-white p-8 lg:rounded-r-none lg:border-r-0">
+        <p class="text-label font-mono text-blue-700 uppercase">For creators</p>
+        <h3 class="text-h4 mt-4 font-medium text-gray-950">
+          A practical way to publish useful course content in public.
+        </h3>
+
+        <div class="my-7 border-t border-gray-200"></div>
+
+        <ul class="space-y-4">
+          {#each creatorUseCases as useCase}
+            <li class="flex items-start gap-3 text-[15px] leading-relaxed text-gray-700">
+              <span
+                class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700"
+              >
+                <Check size={12} strokeWidth={2.5} />
+              </span>
+              {useCase}
+            </li>
+          {/each}
+        </ul>
+
+        <div class="mt-auto pt-8">
+          <span
+            class="text-tag inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 font-mono text-blue-700 uppercase"
+          >
+            <GraduationCap size={13} strokeWidth={2} />
+            Shareable by default
+          </span>
+        </div>
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
-        <div class="rounded-2xl border border-gray-200 bg-white p-8 lg:rounded-r-none lg:border-r-0">
-          <div class="text-[11px] font-medium tracking-widest text-blue-700 uppercase">For creators</div>
-          <h3 class="mt-4 text-[clamp(1.4rem,2.2vw,1.9rem)] leading-[1.15] font-medium tracking-tight text-gray-950">
-            A practical way to publish useful course content in public.
-          </h3>
+      <div class="flex flex-col rounded-xl border border-gray-200 bg-white p-8 lg:rounded-l-none lg:border-l-0">
+        <p class="text-label font-mono text-emerald-700 uppercase">For learners</p>
+        <h3 class="text-h4 mt-4 font-medium text-gray-950">
+          A simple course page that is easy to browse and easy to read.
+        </h3>
 
-          <div class="my-7 border-t border-gray-200"></div>
+        <div class="my-7 border-t border-gray-200"></div>
 
-          <ul class="space-y-4">
-            {#each creatorUseCases as useCase}
-              <li class="flex items-start gap-3 text-sm text-gray-700">
-                <span
-                  class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700"
-                >
-                  <Check size={12} strokeWidth={2.5} />
-                </span>
-                {useCase}
-              </li>
-            {/each}
-          </ul>
+        <ul class="space-y-4">
+          {#each learnerUseCases as useCase}
+            <li class="flex items-start gap-3 text-[15px] leading-relaxed text-gray-700">
+              <span
+                class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"
+              >
+                <Check size={12} strokeWidth={2.5} />
+              </span>
+              {useCase}
+            </li>
+          {/each}
+        </ul>
 
-          <div class="mt-8">
-            <span
-              class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700"
-            >
-              <GraduationCap size={13} strokeWidth={2} />
-              Shareable by default
-            </span>
-          </div>
-        </div>
-
-        <div class="mt-6 rounded-2xl border border-gray-200 bg-white p-8 lg:mt-0 lg:rounded-l-none lg:border-l-0">
-          <div class="text-[11px] font-medium tracking-widest text-emerald-700 uppercase">For learners</div>
-          <h3 class="mt-4 text-[clamp(1.4rem,2.2vw,1.9rem)] leading-[1.15] font-medium tracking-tight text-gray-950">
-            A simple course page that is easy to browse and easy to read.
-          </h3>
-
-          <div class="my-7 border-t border-gray-200"></div>
-
-          <ul class="space-y-4">
-            {#each learnerUseCases as useCase}
-              <li class="flex items-start gap-3 text-sm text-gray-700">
-                <span
-                  class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"
-                >
-                  <Check size={12} strokeWidth={2.5} />
-                </span>
-                {useCase}
-              </li>
-            {/each}
-          </ul>
-
-          <div class="mt-8">
-            <span
-              class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700"
-            >
-              <Users size={13} strokeWidth={2} />
-              No login wall
-            </span>
-          </div>
+        <div class="mt-auto pt-8">
+          <span
+            class="text-tag inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 font-mono text-emerald-700 uppercase"
+          >
+            <Users size={13} strokeWidth={2} />
+            No login wall
+          </span>
         </div>
       </div>
     </div>
-  </section>
+  </Section>
 
-  <!-- Key features -->
   <FeatureGrid
     eyebrow="What you get"
     title="The essentials are already built in."
@@ -280,47 +277,40 @@
     columns={4}
   />
 
-  <!-- Drive-to-paid story -->
-  <section class="bg-white px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-      <div>
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Moving people forward</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          If someone wants more, you can give them a clear next step.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Public courses are useful on their own, but they can also lead into a paid course, a cohort, or a community.
-          Add callouts inside lessons, lock selected content, and guide people into enrollment when it makes sense.
-        </p>
-        <ul class="mt-6 space-y-3 text-sm text-gray-700">
-          {#each conversionMechanics as item, i}
-            <BlurFade delay={0.06 * i} once>
-              <li class="flex gap-3">
-                <span class="mt-1.5 inline-flex h-1.5 w-1.5 shrink-0 rounded-full bg-blue-700"></span>
-                <span>
-                  <span class="font-medium text-gray-950">{item.title}.</span>
-                  <span class="ml-1 text-gray-500">{item.description}</span>
-                </span>
-              </li>
-            </BlurFade>
-          {/each}
-        </ul>
-      </div>
-      <img
-        src="https://assets.cdn.clsrio.com/www/public-courses/public-course-empty-state.jpeg"
-        alt="Public course empty state in the dashboard"
-        width="1920"
-        height="1410"
-        loading="lazy"
-        class="w-full rounded-2xl border border-gray-200 shadow-sm"
-      />
+  <Section class="bg-white" innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <Eyebrow class="text-blue-700">Moving people forward</Eyebrow>
+      <h2 class="text-h3 mt-4 text-balance">If someone wants more, you can give them a clear next step.</h2>
+      <p class="text-lead mt-[18px] text-pretty text-gray-500">
+        Public courses are useful on their own, but they can also lead into a paid course, a cohort, or a community. Add
+        callouts inside lessons, lock selected content, and guide people into enrollment when it makes sense.
+      </p>
+      <ul class="mt-8 space-y-3 text-[15px] leading-relaxed text-gray-700">
+        {#each conversionMechanics as item, i}
+          <BlurFade delay={0.06 * i} once>
+            <li class="flex gap-3">
+              <span class="mt-2 inline-flex h-1.5 w-1.5 shrink-0 rounded-full bg-blue-700"></span>
+              <span>
+                <span class="font-medium text-gray-950">{item.title}.</span>
+                <span class="ml-1 text-gray-500">{item.description}</span>
+              </span>
+            </li>
+          </BlurFade>
+        {/each}
+      </ul>
     </div>
-  </section>
+    <img
+      src="https://assets.cdn.clsrio.com/www/public-courses/public-course-empty-state.jpeg"
+      alt="Public course empty state in the dashboard"
+      width="1920"
+      height="1410"
+      loading="lazy"
+      class="w-full rounded-xl border border-gray-200"
+    />
+  </Section>
 
-  <!-- Custom domain + branding trust band -->
   <TrustBand caption="Branding options" items={brandingItems} />
 
-  <!-- How it works -->
   <WorkflowSteps
     eyebrow="How it works"
     title="Set it up in the same workflow you already use."
@@ -328,7 +318,6 @@
     steps={workflow}
   />
 
-  <!-- FAQ -->
   <section class="bg-white px-6 lg:px-12">
     <Faq
       heading="Public courses, answered"
@@ -338,7 +327,6 @@
     />
   </section>
 
-  <!-- Final CTA -->
   <PageSignupCTA
     header="Publish a public course without spinning up a separate site."
     subText="Use the same ClassroomIO workspace to share free lessons, add quizzes, and point interested learners toward the next step."

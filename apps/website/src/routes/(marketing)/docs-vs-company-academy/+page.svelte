@@ -1,7 +1,7 @@
 <script lang="ts">
   import { PageHeader, PageSignupCTA, WorkflowSteps } from '$lib/components';
+  import { CtaButton, Section, SectionHeader } from '$lib/components/ui';
   import { Badge } from '@cio/ui/base/badge';
-  import { Button } from '@cio/ui/base/button';
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import AlertCircle from '@lucide/svelte/icons/alert-circle';
   import BarChart3 from '@lucide/svelte/icons/bar-chart-3';
@@ -166,31 +166,31 @@
 </svelte:head>
 
 <section class="bg-white">
-  <PageHeader className="px-6 lg:px-12">
-    <div class="mx-auto flex max-w-[820px] flex-col items-center text-center">
+  <PageHeader className="px-6 md:px-10">
+    <div class="mx-auto flex max-w-[1000px] flex-col items-center text-center">
       <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
         <BookOpen size={14} class="text-blue-700" />
         Docs vs Company Academy
       </Badge>
 
-      <h1 class="text-[clamp(2.4rem,4vw,3.6rem)] leading-[1.08] font-medium tracking-tight text-gray-950">
+      <h1 class="text-h2 font-medium text-balance text-gray-950">
         Documentation answers questions.
         <em class="text-blue-700 not-italic">A company academy teaches them to do the job.</em>
       </h1>
 
-      <p class="mt-6 text-sm leading-relaxed lg:text-base">
+      <p class="text-lead mt-6 max-w-[640px]">
         Most teams do not need to choose one forever. They need to understand the job each format performs. This guide
         explains when docs are enough, when a company academy is the better tool, and how the two should work together.
       </p>
 
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
-        <Button href="/customer-education" variant="outline">Explore academies</Button>
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <CtaButton data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</CtaButton>
+        <CtaButton href="/customer-education" variant="secondary">Explore academies</CtaButton>
       </div>
     </div>
 
-    <div class="mx-auto mt-14 w-full max-w-[1100px]">
-      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+    <div class="max-w-content mx-auto mt-16 w-full">
+      <div class="overflow-hidden rounded-xl bg-white ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/docs-vs-company-academy/docs-vs-customer-site.jpeg"
           alt="Docs answering questions and a customer academy building capability, side by side"
@@ -202,134 +202,121 @@
     </div>
   </PageHeader>
 
-  <section class="bg-gray-50 px-6 py-16 lg:px-12 lg:py-24">
-    <div class="mx-auto max-w-[1120px]">
-      <div class="mb-10 max-w-[720px]">
-        <div class="mb-3 text-xs font-medium tracking-widest text-blue-700 uppercase">Decision table</div>
-        <h2 class="text-[clamp(2rem,3vw,2.7rem)] leading-[1.15] font-medium tracking-tight text-gray-950">
-          Start with the need, then choose the format.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          If the person wants one answer, documentation is usually right. If the person needs a path, proof, or
-          repeatable onboarding, a company academy is usually right.
-        </p>
+  <Section class="bg-gray-50">
+    <SectionHeader
+      eyebrow="Decision table"
+      eyebrowClass="text-blue-700"
+      ledeClass="text-gray-500"
+      lede="If the person wants one answer, documentation is usually right. If the person needs a path, proof, or repeatable onboarding, a company academy is usually right."
+      class="mb-12 md:mb-16"
+    >
+      {#snippet title()}Start with the need, then choose the format.{/snippet}
+    </SectionHeader>
+
+    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div
+        class="grid grid-cols-[1fr_84px_96px] border-b border-gray-200 bg-gray-950 text-white md:grid-cols-[1fr_110px_130px_1.3fr]"
+      >
+        <div class="px-5 py-4 text-sm font-medium">Need</div>
+        <div class="px-3 py-4 text-center text-sm font-medium md:px-5">Docs</div>
+        <div class="px-3 py-4 text-center text-sm font-medium md:px-5">Academy</div>
+        <div class="hidden px-5 py-4 text-sm font-medium md:block">Why</div>
       </div>
 
-      <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white">
+      {#each comparisonRows as row}
         <div
-          class="grid grid-cols-[1fr_84px_96px] border-b border-gray-200 bg-gray-950 text-white md:grid-cols-[1fr_110px_130px_1.3fr]"
+          class="grid grid-cols-[1fr_84px_96px] border-b border-gray-100 last:border-b-0 md:grid-cols-[1fr_110px_130px_1.3fr]"
         >
-          <div class="px-5 py-4 text-sm font-medium">Need</div>
-          <div class="px-3 py-4 text-center text-sm font-medium md:px-5">Docs</div>
-          <div class="px-3 py-4 text-center text-sm font-medium md:px-5">Academy</div>
-          <div class="hidden px-5 py-4 text-sm font-medium md:block">Why</div>
-        </div>
-
-        {#each comparisonRows as row}
-          <div
-            class="grid grid-cols-[1fr_84px_96px] border-b border-gray-100 last:border-b-0 md:grid-cols-[1fr_110px_130px_1.3fr]"
-          >
-            <div class="bg-gray-50 px-5 py-5 text-sm font-medium text-gray-950">{row.need}</div>
-            <div class="flex items-center justify-center px-3 py-5 md:px-5">
-              {#if row.docs}
-                <span class="text-xl text-green-600" aria-label="Yes">✓</span>
-              {:else}
-                <span class="text-xl text-red-500" aria-label="No">×</span>
-              {/if}
-            </div>
-            <div class="flex items-center justify-center px-3 py-5 md:px-5">
-              {#if row.academy}
-                <span class="text-xl text-green-600" aria-label="Yes">✓</span>
-              {:else}
-                <span class="text-xl text-red-500" aria-label="No">×</span>
-              {/if}
-            </div>
-            <div class="hidden px-5 py-5 text-sm leading-relaxed text-gray-600 md:block">{row.note}</div>
+          <div class="bg-gray-50 px-5 py-5 text-sm font-medium text-gray-950">{row.need}</div>
+          <div class="flex items-center justify-center px-3 py-5 md:px-5">
+            {#if row.docs}
+              <span class="text-xl text-green-600" aria-label="Yes">✓</span>
+            {:else}
+              <span class="text-xl text-red-500" aria-label="No">×</span>
+            {/if}
           </div>
+          <div class="flex items-center justify-center px-3 py-5 md:px-5">
+            {#if row.academy}
+              <span class="text-xl text-green-600" aria-label="Yes">✓</span>
+            {:else}
+              <span class="text-xl text-red-500" aria-label="No">×</span>
+            {/if}
+          </div>
+          <div class="hidden px-5 py-5 text-sm leading-relaxed text-gray-600 md:block">{row.note}</div>
+        </div>
+      {/each}
+    </div>
+  </Section>
+
+  <Section innerClass="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-gray-200">
+    <div class="lg:pr-12">
+      <p class="text-label font-mono text-blue-700 uppercase">When docs are enough</p>
+      <h2 class="text-h3 mt-4 text-balance text-gray-950">
+        Choose documentation when the task is searchable, narrow, and repeatable.
+      </h2>
+      <p class="mt-5 text-base leading-relaxed text-gray-500">
+        Documentation works best when the user has a specific job and needs a precise answer. Easy to find, easy to
+        scan, easy to trust, and no enrollment required.
+      </p>
+
+      <div class="my-8 border-t border-gray-200"></div>
+
+      <ul class="space-y-4">
+        {#each docsUseCases as useCase}
+          <li class="flex items-start gap-3 text-[15px] text-gray-700">
+            <span class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700">
+              <Check size={12} strokeWidth={2.5} />
+            </span>
+            {useCase}
+          </li>
         {/each}
+      </ul>
+
+      <div class="mt-8">
+        <span
+          class="text-label inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 font-mono text-blue-700 uppercase"
+        >
+          <FileText size={13} strokeWidth={2} />
+          Reference & retrieval
+        </span>
       </div>
     </div>
-  </section>
 
-  <section class="px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto max-w-[1120px]">
-      <div class="grid grid-cols-1 lg:grid-cols-2 lg:divide-x lg:divide-gray-200">
-        <!-- When docs are enough -->
-        <div class="lg:pr-10">
-          <div class="text-[11px] font-medium tracking-widest text-blue-700 uppercase">When docs are enough</div>
-          <h2 class="mt-4 text-[clamp(1.6rem,2.6vw,2.2rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-            Choose documentation when the task is searchable, narrow, and repeatable.
-          </h2>
-          <p class="mt-5 text-sm leading-relaxed text-gray-500">
-            Documentation works best when the user has a specific job and needs a precise answer. Easy to find, easy to
-            scan, easy to trust, and no enrollment required.
-          </p>
+    <div class="lg:pl-12">
+      <p class="text-label font-mono text-emerald-700 uppercase">When an academy is better</p>
+      <h2 class="text-h3 mt-4 text-balance text-gray-950">
+        Choose a company academy when capability, behavior change, or proof matters.
+      </h2>
+      <p class="mt-5 text-base leading-relaxed text-gray-500">
+        An academy turns scattered knowledge into a structured path. Use it when the learner needs context before
+        details, practice before independence, or a certificate before being trusted with a role.
+      </p>
 
-          <div class="my-7 border-t border-gray-200"></div>
+      <div class="my-8 border-t border-gray-200"></div>
 
-          <ul class="space-y-4">
-            {#each docsUseCases as useCase}
-              <li class="flex items-start gap-3 text-sm text-gray-700">
-                <span
-                  class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700"
-                >
-                  <Check size={12} strokeWidth={2.5} />
-                </span>
-                {useCase}
-              </li>
-            {/each}
-          </ul>
-
-          <div class="mt-8">
+      <ul class="space-y-4">
+        {#each academyUseCases as useCase}
+          <li class="flex items-start gap-3 text-[15px] text-gray-700">
             <span
-              class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700"
+              class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"
             >
-              <FileText size={13} strokeWidth={2} />
-              Reference & retrieval
+              <Check size={12} strokeWidth={2.5} />
             </span>
-          </div>
-        </div>
+            {useCase}
+          </li>
+        {/each}
+      </ul>
 
-        <!-- When an academy is better -->
-        <div class="mt-12 lg:mt-0 lg:pl-10">
-          <div class="text-[11px] font-medium tracking-widest text-emerald-700 uppercase">
-            When an academy is better
-          </div>
-          <h2 class="mt-4 text-[clamp(1.6rem,2.6vw,2.2rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
-            Choose a company academy when capability, behavior change, or proof matters.
-          </h2>
-          <p class="mt-5 text-sm leading-relaxed text-gray-500">
-            An academy turns scattered knowledge into a structured path. Use it when the learner needs context before
-            details, practice before independence, or a certificate before being trusted with a role.
-          </p>
-
-          <div class="my-7 border-t border-gray-200"></div>
-
-          <ul class="space-y-4">
-            {#each academyUseCases as useCase}
-              <li class="flex items-start gap-3 text-sm text-gray-700">
-                <span
-                  class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700"
-                >
-                  <Check size={12} strokeWidth={2.5} />
-                </span>
-                {useCase}
-              </li>
-            {/each}
-          </ul>
-
-          <div class="mt-8">
-            <span
-              class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-medium text-emerald-700"
-            >
-              <GraduationCap size={13} strokeWidth={2} />
-              Structured learning
-            </span>
-          </div>
-        </div>
+      <div class="mt-8">
+        <span
+          class="text-label inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 font-mono text-emerald-700 uppercase"
+        >
+          <GraduationCap size={13} strokeWidth={2} />
+          Structured learning
+        </span>
       </div>
     </div>
-  </section>
+  </Section>
 
   <WorkflowSteps
     eyebrow="Decision framework"
@@ -342,40 +329,40 @@
     }))}
   />
 
-  <section class="px-6 py-16 lg:px-12 lg:py-24">
-    <div class="mx-auto grid max-w-[1120px] grid-cols-1 items-start gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
-      <div>
-        <div class="mb-3 text-xs font-medium tracking-widest text-blue-700 uppercase">The hybrid model</div>
-        <h2 class="text-[clamp(2rem,3vw,2.7rem)] leading-[1.15] font-medium tracking-tight text-gray-950">
-          The strongest teams use docs and academies together.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Treat documentation as the reference layer and the academy as the enablement layer. The academy should not
-          duplicate every page in your docs. It should organize the important material into an outcome-driven path.
-        </p>
-      </div>
+  <Section innerClass="grid grid-cols-1 items-start gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16">
+    <SectionHeader
+      align="left"
+      size="h3"
+      eyebrow="The hybrid model"
+      eyebrowClass="text-blue-700"
+      ledeClass="text-gray-500"
+      lede="Treat documentation as the reference layer and the academy as the enablement layer. The academy should not duplicate every page in your docs. It should organize the important material into an outcome-driven path."
+      class="lg:sticky lg:top-28"
+    >
+      {#snippet title()}The strongest teams use docs and academies together.{/snippet}
+    </SectionHeader>
 
-      <div class="space-y-4">
-        {#each hybridModel as item, i}
-          <BlurFade delay={0.08 * i} once>
-            <div class="flex gap-4 rounded-2xl border border-gray-200 bg-white p-5">
-              <div
-                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-700 text-sm font-medium text-white"
-              >
-                {i + 1}
-              </div>
-              <div>
-                <h3 class="text-base font-medium text-gray-950">{item.title}</h3>
-                <p class="mt-2 text-sm leading-relaxed text-gray-500">{item.description}</p>
-              </div>
+    <div class="space-y-4">
+      {#each hybridModel as item, i}
+        <BlurFade delay={0.08 * i} once>
+          <div class="flex gap-4 rounded-xl border border-gray-200 bg-white p-6">
+            <div
+              class="flex size-9 shrink-0 items-center justify-center rounded-full bg-blue-700 font-mono text-sm font-medium text-white"
+            >
+              {i + 1}
             </div>
-          </BlurFade>
-        {/each}
-      </div>
+            <div>
+              <h3 class="text-card-title font-medium text-gray-950">{item.title}</h3>
+              <p class="mt-2 text-[15px] leading-relaxed text-gray-500">{item.description}</p>
+            </div>
+          </div>
+        </BlurFade>
+      {/each}
     </div>
-  </section>
+  </Section>
 
   <PageSignupCTA
+    variant="pricing"
     header="ClassroomIO can host your company academy."
     subText="Turn your docs, videos, policies, and product knowledge into a branded academy with courses, assessments, certificates, analytics, and a custom domain."
     btnLabel="Book a Demo"
