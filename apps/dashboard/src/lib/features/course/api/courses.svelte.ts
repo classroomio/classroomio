@@ -4,6 +4,7 @@ import type {
   GetOrgCoursesRequestQuery,
   GetRecommendedCoursesRequest,
   GetUserEnrolledCoursesRequest,
+  LatestCourseInfo,
   OrgCourses,
   OrgCoursesPagination,
   OrgCoursesQuery,
@@ -168,6 +169,59 @@ export class CoursesApi extends BaseApiWithErrors {
         }
       }
     });
+  }
+
+  /**
+   * Fetches the single latest published course for student-facing features (e.g. announcement banner).
+   * Reuses the student recommended / public catalog endpoints without clobbering
+   * `this.recommendedCourses` or toggling `this.isLoading` on the explore page.
+   */
+  async getLatestCourse(siteName?: string): Promise<LatestCourseInfo | null> {
+    try {
+      const response = await classroomio.organization.courses.recommended.$get({
+        query: { limit: '1' }
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        if (json.success && json.data && json.data.length > 0) {
+          const course = json.data[0];
+
+          return {
+            id: course.id,
+            title: course.title,
+            slug: course.slug
+          };
+        }
+      }
+    } catch {
+      // Fall through to public catalog below
+    }
+
+    if (siteName) {
+      try {
+        const publicResponse = await classroomio.organization.courses.public.$get({
+          query: { siteName, limit: '1' }
+        });
+
+        if (publicResponse.ok) {
+          const json = await publicResponse.json();
+          if (json.success && json.data?.courses && json.data.courses.length > 0) {
+            const course = json.data.courses[0];
+
+            return {
+              id: course.id,
+              title: course.title,
+              slug: course.slug
+            };
+          }
+        }
+      } catch {
+        // Ignore fallback error
+      }
+    }
+
+    return null;
   }
 }
 

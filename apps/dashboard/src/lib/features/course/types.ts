@@ -29,6 +29,18 @@ export type RecommendedCoursesResponse = InferResponseType<GetRecommendedCourses
 export type RecommendedCoursesSuccess = Extract<InferResponseType<GetRecommendedCoursesRequest>, { success: true }>;
 export type RecommendedCourses = RecommendedCoursesSuccess['data'];
 
+// Public Courses types
+export type GetPublicCoursesRequest = typeof classroomio.organization.courses.public.$get;
+export type PublicCoursesResponse = InferResponseType<GetPublicCoursesRequest> | null;
+export type PublicCoursesSuccess = Extract<InferResponseType<GetPublicCoursesRequest>, { success: true }>;
+export type PublicCoursesData = PublicCoursesSuccess['data'];
+
+export type LatestCourseInfo = {
+  id: string;
+  title: string;
+  slug?: string | null;
+};
+
 // Get course types
 export type GetCourseRequest = (typeof classroomio.course)[':courseId']['$get'];
 export type GetCourseResponse = InferResponseType<GetCourseRequest>;
