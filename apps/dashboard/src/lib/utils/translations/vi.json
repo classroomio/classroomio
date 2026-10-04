@@ -4463,7 +4463,7 @@
       "partner_training": "Đào tạo đối tác hoặc đại lý",
       "team_training": "Huấn luyện đội của riêng tôi",
       "sell_courses": "Bán các khóa học cho công chúng",
-      "subtitle": "Chọn tất cả những gì áp dụng. Chúng tôi sẽ định hình không gian làm việc của bạn xung quanh nó."
+      "subtitle": "Chọn tất cả những gì áp dụng. Chúng tôi sẽ định hình tổ chức của bạn xung quanh nó."
     },
     "step_of": "Bước {current} / {total}",
     "skip": "Bỏ qua",
@@ -4502,12 +4502,12 @@
       "company_size": "Quy mô công ty",
       "job_role": "Vai trò",
       "source": "khám phá",
-      "org_setup": "Không gian làm việc"
+      "org_setup": "Tổ chức"
     },
     "org_setup": {
-      "title": "Thiết lập không gian làm việc của bạn",
       "subtitle": "Hãy cho chúng tôi biết về bạn và tổ chức của bạn để bắt đầu.",
-      "created_subtitle": "Không gian làm việc của bạn đã được thiết lập. Bạn có thể thay đổi những chi tiết này sau trong Cài đặt."
+      "title": "Thiết lập tổ chức của bạn",
+      "created_subtitle": "Tổ chức của bạn đã được thiết lập. Bạn có thể thay đổi những chi tiết này sau trong Cài đặt."
     },
     "header": {
       "tagline": "Nền tảng đào tạo khách hàng kết nối với hệ thống của bạn"

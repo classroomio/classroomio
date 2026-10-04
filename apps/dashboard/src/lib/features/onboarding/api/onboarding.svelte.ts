@@ -2,7 +2,7 @@ import type { OnboardingField, OnboardingStep } from '../utils/types';
 import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 import { getNextStep, getPreviousStep, ONBOARDING_STEPS } from '../utils/constants';
 import { validateMetadata, validateOrgSetup, validateQuestionStep } from '../utils/validations';
-import { hasManagedWorkspace } from '../utils/completeness';
+import { hasManagedOrganization } from '../utils/completeness';
 
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import { handleLocaleChange } from '$lib/utils/functions/translations';
@@ -27,7 +27,7 @@ export class OnboardingApi extends BaseApiWithErrors {
 
   async next(data: OnboardingField) {
     if (this.step === ONBOARDING_STEPS.ORG_SETUP) {
-      if (!hasManagedWorkspace(get(currentOrg))) return this.submitOrgSetup(data);
+      if (!hasManagedOrganization(get(currentOrg))) return this.submitOrgSetup(data);
 
       this.errors = {};
       this.step = ONBOARDING_STEPS.USE_CASES;

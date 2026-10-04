@@ -22,8 +22,8 @@ export function resolveResumeStep(answers: OnboardingAnswers): OnboardingStepVal
 }
 
 /**
- * True when the user already created the workspace this onboarding sets up: the current org exists and they manage it.
+ * True when the user already created the organization this onboarding sets up: the current org exists and they manage it.
  */
-export function hasManagedWorkspace(org: { id: string; roleId: number }): boolean {
+export function hasManagedOrganization(org: { id: string; roleId: number }): boolean {
   return !!org.id && isOrgManagerRole(org.roleId);
 }

@@ -13,7 +13,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
-  import { hasManagedWorkspace, resolveResumeStep } from '$features/onboarding/utils/completeness';
+  import { hasManagedOrganization, resolveResumeStep } from '$features/onboarding/utils/completeness';
   import { generateSitename } from '$lib/utils/functions/org';
   import { t } from '$lib/utils/functions/translations';
   import {
@@ -58,7 +58,7 @@
   });
   let isSiteNameTouched = $state(false);
 
-  const isWorkspaceCreated = $derived(hasManagedWorkspace($currentOrg));
+  const isOrganizationCreated = $derived(hasManagedOrganization($currentOrg));
 
   const isQuestionStep = $derived(onboardingApi.step !== ONBOARDING_STEPS.ORG_SETUP);
   const stepNumber = $derived(getQuestionIndex(onboardingApi.step) + 1);
@@ -144,7 +144,7 @@
     hasInitializedFromProfile = true;
     hydrateFieldsFromProfile();
 
-    if (hasManagedWorkspace($currentOrg)) {
+    if (hasManagedOrganization($currentOrg)) {
       onboardingApi.step = resolveResumeStep($profile);
     }
   });
@@ -153,7 +153,7 @@
 
   $effect(() => {
     const org = $currentOrg;
-    if (!hasManagedWorkspace(org) || org.id === hydratedOrgId) return;
+    if (!hasManagedOrganization(org) || org.id === hydratedOrgId) return;
 
     hydratedOrgId = org.id;
     isSiteNameTouched = true;
@@ -220,7 +220,7 @@
           {#if onboardingApi.step === ONBOARDING_STEPS.ORG_SETUP}
             <h1 class="mt-8 text-2xl font-semibold dark:text-white">{$t('onboarding.org_setup.title')}</h1>
             <p class="ui:text-muted-foreground mt-2 text-sm">
-              {$t(isWorkspaceCreated ? 'onboarding.org_setup.created_subtitle' : 'onboarding.org_setup.subtitle')}
+              {$t(isOrganizationCreated ? 'onboarding.org_setup.created_subtitle' : 'onboarding.org_setup.subtitle')}
             </p>
 
             <Field.Group class="mt-8">
@@ -231,7 +231,7 @@
                   name="fullname"
                   type="text"
                   placeholder="e.g Joke Silva"
-                  disabled={isWorkspaceCreated}
+                  disabled={isOrganizationCreated}
                 />
                 {#if onboardingApi.errors.fullname}
                   <Field.Error>{onboardingApi.errors.fullname}</Field.Error>
@@ -245,7 +245,7 @@
                   name="orgname"
                   type="text"
                   placeholder="e.g My School Name"
-                  disabled={isWorkspaceCreated}
+                  disabled={isOrganizationCreated}
                 />
                 {#if onboardingApi.errors.orgName}
                   <Field.Error>{onboardingApi.errors.orgName}</Field.Error>
@@ -256,7 +256,7 @@
                 <Field.Label>{$t('onboarding.organisation_sitename')}</Field.Label>
                 <DomainInput
                   bind:value={fields.siteName}
-                  disabled={isWorkspaceCreated}
+                  disabled={isOrganizationCreated}
                   placeholder="myschool"
                   prefix="https://"
                   suffix=".classroomio.com"

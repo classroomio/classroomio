@@ -353,12 +353,12 @@
     },
     "use_cases": {
       "label": "ClassroomIO'yu ne için kullanmak istiyorsunuz?",
-      "subtitle": "Geçerli olanların tümünü seçin. Çalışma alanınızı bunun etrafında şekillendireceğiz.",
       "customer_training": "Müşterilerimi ürünüm hakkında eğitin",
       "customer_certification": "Müşterileri veya iş ortaklarını sertifikalandırın",
       "partner_training": "İş ortaklarını veya satıcıları eğitin",
       "team_training": "Kendi takımımı eğit",
-      "sell_courses": "Kursları halka satmak"
+      "sell_courses": "Kursları halka satmak",
+      "subtitle": "Geçerli olanların tümünü seçin. Kuruluşunuzu bunun etrafında şekillendireceğiz."
     },
     "ai_assistant": {
       "label": "Yapay zeka asistanı",
@@ -377,12 +377,12 @@
       "company_size": "Şirket büyüklüğü",
       "job_role": "Rol",
       "source": "Keşif",
-      "org_setup": "Çalışma alanı"
+      "org_setup": "Kuruluş"
     },
     "org_setup": {
-      "title": "Çalışma alanınızı ayarlayın",
       "subtitle": "Başlamak için bize kendinizden ve kuruluşunuzdan bahsedin.",
-      "created_subtitle": "Çalışma alanınız kuruldu. Bu ayrıntıları daha sonra Ayarlar'dan değiştirebilirsiniz."
+      "title": "Kuruluşunuzu kurun",
+      "created_subtitle": "Kuruluşunuz kuruldu. Bu ayrıntıları daha sonra Ayarlar'dan değiştirebilirsiniz."
     },
     "header": {
       "tagline": "Sistemlerinize Bağlantı Kuran Müşteri Eğitim Platformu"

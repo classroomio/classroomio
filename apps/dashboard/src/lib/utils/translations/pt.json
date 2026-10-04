@@ -4463,7 +4463,7 @@
       "partner_training": "Treine parceiros ou revendedores",
       "team_training": "Treinar minha própria equipe",
       "sell_courses": "Venda cursos ao público",
-      "subtitle": "Escolha todas as opções aplicáveis. Nós moldaremos seu espaço de trabalho em torno disso."
+      "subtitle": "Escolha todas as opções aplicáveis. Nós moldaremos sua organização em torno disso."
     },
     "step_of": "Etapa {current} de {total}",
     "skip": "Pular",
@@ -4502,12 +4502,12 @@
       "company_size": "Tamanho da empresa",
       "job_role": "Função",
       "source": "Descoberta",
-      "org_setup": "Espaço de trabalho"
+      "org_setup": "Organização"
     },
     "org_setup": {
-      "title": "Configure seu espaço de trabalho",
       "subtitle": "Conte-nos sobre você e sua organização para começar.",
-      "created_subtitle": "Seu espaço de trabalho está configurado. Você pode alterar esses detalhes posteriormente em Configurações."
+      "title": "Configure sua organização",
+      "created_subtitle": "Sua organização está configurada. Você pode alterar esses detalhes posteriormente em Configurações."
     },
     "header": {
       "tagline": "Plataforma de treinamento de clientes que se conecta aos seus sistemas"

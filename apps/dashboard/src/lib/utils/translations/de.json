@@ -4463,7 +4463,7 @@
       "partner_training": "Schulungspartner oder Wiederverkäufer",
       "team_training": "Trainiere mein eigenes Team",
       "sell_courses": "Verkaufen Sie Kurse an die Öffentlichkeit",
-      "subtitle": "Wählen Sie alles aus, was zutrifft. Wir gestalten Ihren Arbeitsplatz danach."
+      "subtitle": "Wählen Sie alles aus, was zutrifft. Wir gestalten Ihre Organisation danach."
     },
     "step_of": "Schritt {current} von {total}",
     "skip": "Überspringen",
@@ -4502,12 +4502,12 @@
       "company_size": "Unternehmensgröße",
       "job_role": "Rolle",
       "source": "Entdeckung",
-      "org_setup": "Arbeitsbereich"
+      "org_setup": "Organisation"
     },
     "org_setup": {
-      "title": "Richten Sie Ihren Arbeitsbereich ein",
       "subtitle": "Erzählen Sie uns zunächst etwas über Sie und Ihre Organisation.",
-      "created_subtitle": "Ihr Arbeitsbereich ist eingerichtet. Sie können diese Details später in den Einstellungen ändern."
+      "title": "Richten Sie Ihre Organisation ein",
+      "created_subtitle": "Ihre Organisation ist eingerichtet. Sie können diese Details später in den Einstellungen ändern."
     },
     "header": {
       "tagline": "Kundenschulungsplattform, die sich mit Ihren Systemen verbindet"

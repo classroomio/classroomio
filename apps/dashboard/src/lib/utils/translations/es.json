@@ -4463,7 +4463,7 @@
       "partner_training": "Formar socios o revendedores",
       "team_training": "Entrenar a mi propio equipo",
       "sell_courses": "Vender cursos al público.",
-      "subtitle": "Elija todo lo que corresponda. Le daremos forma a su espacio de trabajo a su alrededor."
+      "subtitle": "Elija todo lo que corresponda. Daremos forma a su organización en torno a esto."
     },
     "step_of": "Paso {current} de {total}",
     "skip": "Saltar",
@@ -4502,12 +4502,12 @@
       "company_size": "Tamaño de la empresa",
       "job_role": "Rol",
       "source": "Descubrimiento",
-      "org_setup": "Espacio de trabajo"
+      "org_setup": "Organización"
     },
     "org_setup": {
-      "title": "Configura tu espacio de trabajo",
       "subtitle": "Cuéntenos sobre usted y su organización para comenzar.",
-      "created_subtitle": "Su espacio de trabajo está configurado. Puede cambiar estos detalles más adelante en Configuración."
+      "title": "Configura tu organización",
+      "created_subtitle": "Su organización está configurada. Puede cambiar estos detalles más adelante en Configuración."
     },
     "header": {
       "tagline": "Plataforma de formación de clientes que se conecta con sus sistemas"

@@ -280,13 +280,13 @@
       "tagline": "Customer Training Platform That Connects With Your Systems"
     },
     "org_setup": {
-      "title": "Set up your workspace",
+      "title": "Set up your organization",
       "subtitle": "Tell us about you and your organization to get started.",
-      "created_subtitle": "Your workspace is set up. You can change these details later in Settings."
+      "created_subtitle": "Your organization is set up. You can change these details later in Settings."
     },
     "step_of": "Step {current} of {total}",
     "step_labels": {
-      "org_setup": "Workspace",
+      "org_setup": "Organization",
       "use_cases": "Use case",
       "learning_methods": "Training today",
       "company_size": "Company size",
@@ -318,7 +318,7 @@
     },
     "use_cases": {
       "label": "What do you want to use ClassroomIO for?",
-      "subtitle": "Choose all that apply. We'll shape your workspace around it.",
+      "subtitle": "Choose all that apply. We'll shape your organization around it.",
       "customer_training": "Train my customers on my product",
       "customer_certification": "Certify customers or partners",
       "partner_training": "Train partners or resellers",
