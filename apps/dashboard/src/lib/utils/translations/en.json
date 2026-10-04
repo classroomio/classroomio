@@ -281,10 +281,12 @@
     },
     "org_setup": {
       "title": "Set up your workspace",
-      "subtitle": "Tell us about you and your organization to get started."
+      "subtitle": "Tell us about you and your organization to get started.",
+      "created_subtitle": "Your workspace is set up. You can change these details later in Settings."
     },
     "step_of": "Step {current} of {total}",
     "step_labels": {
+      "org_setup": "Workspace",
       "use_cases": "Use case",
       "learning_methods": "Training today",
       "company_size": "Company size",
@@ -374,6 +376,13 @@
       "social_media": "Social media",
       "product_hunt": "Product Hunt or a review site",
       "friends_family": "Friends, family, or a colleague"
+    },
+    "testimonials": {
+      "eyebrow": "From the teams using it",
+      "headline": "Stop training every customer {highlight}.",
+      "headline_highlight": "by hand",
+      "subtitle": "Set it up once, bulk enrol your customers through the API. Then track their progress with analytics.",
+      "footer": "Open source · Self-host or cloud"
     }
   },
   "welcome_modal": {

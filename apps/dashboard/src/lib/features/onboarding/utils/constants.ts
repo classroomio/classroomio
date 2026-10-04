@@ -29,6 +29,7 @@ export const QUESTION_STEPS = [
 export const ONBOARDING_STEP_ORDER: OnboardingStepValue[] = [ONBOARDING_STEPS.ORG_SETUP, ...QUESTION_STEPS];
 
 export const OTHER_VALUE = 'other';
+export const TESTIMONIALS_WIDGET_ID = 'd25263b3-f71c-4d2a-bb4f-4c627c2257af';
 export const AI_SOURCE_VALUE = 'ai';
 
 const USE_CASE_LABELS: Record<(typeof ONBOARDING_USE_CASES)[number], string> = {

@@ -4501,14 +4501,23 @@
       "learning_methods": "Entrenamiento hoy",
       "company_size": "Tamaño de la empresa",
       "job_role": "Rol",
-      "source": "Descubrimiento"
+      "source": "Descubrimiento",
+      "org_setup": "Espacio de trabajo"
     },
     "org_setup": {
       "title": "Configura tu espacio de trabajo",
-      "subtitle": "Cuéntenos sobre usted y su organización para comenzar."
+      "subtitle": "Cuéntenos sobre usted y su organización para comenzar.",
+      "created_subtitle": "Su espacio de trabajo está configurado. Puede cambiar estos detalles más adelante en Configuración."
     },
     "header": {
       "tagline": "Plataforma de formación de clientes que se conecta con sus sistemas"
+    },
+    "testimonials": {
+      "eyebrow": "De los equipos que lo usan",
+      "footer": "Código abierto · Autohospedaje o nube",
+      "headline": "Deje de capacitar a cada cliente {highlight}.",
+      "headline_highlight": "a mano",
+      "subtitle": "Configúrelo una vez, inscriba de forma masiva a sus clientes a través de la API. Luego, realice un seguimiento de su progreso con análisis."
     }
   },
   "new_course_modal": {

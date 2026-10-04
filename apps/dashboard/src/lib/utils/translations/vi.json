@@ -4501,14 +4501,23 @@
       "learning_methods": "Đào tạo ngày hôm nay",
       "company_size": "Quy mô công ty",
       "job_role": "Vai trò",
-      "source": "khám phá"
+      "source": "khám phá",
+      "org_setup": "Không gian làm việc"
     },
     "org_setup": {
       "title": "Thiết lập không gian làm việc của bạn",
-      "subtitle": "Hãy cho chúng tôi biết về bạn và tổ chức của bạn để bắt đầu."
+      "subtitle": "Hãy cho chúng tôi biết về bạn và tổ chức của bạn để bắt đầu.",
+      "created_subtitle": "Không gian làm việc của bạn đã được thiết lập. Bạn có thể thay đổi những chi tiết này sau trong Cài đặt."
     },
     "header": {
       "tagline": "Nền tảng đào tạo khách hàng kết nối với hệ thống của bạn"
+    },
+    "testimonials": {
+      "eyebrow": "Từ các đội sử dụng nó",
+      "footer": "Nguồn mở · Tự lưu trữ hoặc đám mây",
+      "headline": "Hãy ngừng đào tạo mọi khách hàng {highlight}.",
+      "headline_highlight": "bằng tay",
+      "subtitle": "Thiết lập một lần, đăng ký hàng loạt khách hàng của bạn thông qua API. Sau đó theo dõi tiến trình của họ bằng phân tích."
     }
   },
   "new_course_modal": {

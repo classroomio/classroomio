@@ -4501,14 +4501,23 @@
       "learning_methods": "Entraînement aujourd'hui",
       "company_size": "Taille de l'entreprise",
       "job_role": "Rôle",
-      "source": "Découverte"
+      "source": "Découverte",
+      "org_setup": "Espace de travail"
     },
     "org_setup": {
       "title": "Configurez votre espace de travail",
-      "subtitle": "Parlez-nous de vous et de votre organisation pour commencer."
+      "subtitle": "Parlez-nous de vous et de votre organisation pour commencer.",
+      "created_subtitle": "Votre espace de travail est configuré. Vous pourrez modifier ces détails ultérieurement dans Paramètres."
     },
     "header": {
       "tagline": "Plateforme de formation client qui se connecte à vos systèmes"
+    },
+    "testimonials": {
+      "eyebrow": "Des équipes qui l'utilisent",
+      "footer": "Open source · Auto-hébergement ou cloud",
+      "headline": "Arrêtez de former chaque client {highlight}.",
+      "headline_highlight": "à la main",
+      "subtitle": "Configurez-le une fois, inscrivez en masse vos clients via l'API. Suivez ensuite leurs progrès grâce aux analyses."
     }
   },
   "new_course_modal": {

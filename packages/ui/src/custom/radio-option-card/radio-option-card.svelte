@@ -36,7 +36,9 @@
           {@render titleSuffix()}
         {/if}
       </Field.Title>
-      <Field.Description>{description}</Field.Description>
+      {#if description}
+        <Field.Description>{description}</Field.Description>
+      {/if}
     </Field.Content>
     <RadioGroup.Item {value} {id} aria-label={title} {disabled} />
   </Field.Field>

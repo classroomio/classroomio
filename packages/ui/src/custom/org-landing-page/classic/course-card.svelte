@@ -73,7 +73,10 @@
         <p class="ui:text-xs ui:pl-2 ui:dark:text-white">
           <span>{labels?.lessonsLabel?.(course.lessonCount || 0) ?? `${course.lessonCount || 0} lessons`}</span>
           &
-          <span>{labels?.exercisesLabel?.(course.exerciseCount ?? 0) ?? formatExerciseCountLabel(course.exerciseCount ?? 0)}</span>
+          <span
+            >{labels?.exercisesLabel?.(course.exerciseCount ?? 0) ??
+              formatExerciseCountLabel(course.exerciseCount ?? 0)}</span
+          >
         </p>
         <div class="ui:py-2 ui:text-xs">
           {#if course.price != null && String(course.price).length > 0}

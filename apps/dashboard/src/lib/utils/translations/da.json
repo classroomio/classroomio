@@ -4501,14 +4501,23 @@
       "learning_methods": "Træning i dag",
       "company_size": "Virksomhedens størrelse",
       "job_role": "Rolle",
-      "source": "Opdagelse"
+      "source": "Opdagelse",
+      "org_setup": "Arbejdsplads"
     },
     "org_setup": {
       "title": "Indstil dit arbejdsområde",
-      "subtitle": "Fortæl os om dig og din organisation for at komme i gang."
+      "subtitle": "Fortæl os om dig og din organisation for at komme i gang.",
+      "created_subtitle": "Dit arbejdsområde er sat op. Du kan ændre disse detaljer senere i Indstillinger."
     },
     "header": {
       "tagline": "Kundeuddannelsesplatform, der forbinder med dine systemer"
+    },
+    "testimonials": {
+      "eyebrow": "Fra de hold, der bruger det",
+      "footer": "Open source · Selvvært eller sky",
+      "headline": "Stop med at træne hver kunde {highlight}.",
+      "headline_highlight": "manuelt",
+      "subtitle": "Konfigurer det én gang, massetilmeld dine kunder gennem API'en. Følg derefter deres fremskridt med analyser."
     }
   },
   "new_course_modal": {

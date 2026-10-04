@@ -4501,14 +4501,23 @@
       "learning_methods": "Treinando hoje",
       "company_size": "Tamanho da empresa",
       "job_role": "Função",
-      "source": "Descoberta"
+      "source": "Descoberta",
+      "org_setup": "Espaço de trabalho"
     },
     "org_setup": {
       "title": "Configure seu espaço de trabalho",
-      "subtitle": "Conte-nos sobre você e sua organização para começar."
+      "subtitle": "Conte-nos sobre você e sua organização para começar.",
+      "created_subtitle": "Seu espaço de trabalho está configurado. Você pode alterar esses detalhes posteriormente em Configurações."
     },
     "header": {
       "tagline": "Plataforma de treinamento de clientes que se conecta aos seus sistemas"
+    },
+    "testimonials": {
+      "eyebrow": "Das equipes que o utilizam",
+      "footer": "Código aberto · Auto-hospedado ou nuvem",
+      "headline": "Pare de treinar cada cliente {highlight}.",
+      "headline_highlight": "à mão",
+      "subtitle": "Configure uma vez e inscreva seus clientes em massa por meio da API. Em seguida, acompanhe seu progresso com análises."
     }
   },
   "new_course_modal": {

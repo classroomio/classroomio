@@ -4501,14 +4501,23 @@
       "learning_methods": "Dzisiaj trening",
       "company_size": "Wielkość firmy",
       "job_role": "Rola",
-      "source": "Odkrycie"
+      "source": "Odkrycie",
+      "org_setup": "Obszar roboczy"
     },
     "org_setup": {
       "title": "Skonfiguruj swoje miejsce pracy",
-      "subtitle": "Opowiedz nam o sobie i swojej organizacji, aby rozpocząć."
+      "subtitle": "Opowiedz nam o sobie i swojej organizacji, aby rozpocząć.",
+      "created_subtitle": "Twój obszar roboczy jest skonfigurowany. Możesz zmienić te dane później w Ustawieniach."
     },
     "header": {
       "tagline": "Platforma szkoleniowa dla klientów, która łączy się z Twoimi systemami"
+    },
+    "testimonials": {
+      "eyebrow": "Od zespołów, które go używają",
+      "footer": "Open source · Self-host lub chmura",
+      "headline": "Przestań szkolić każdego klienta {highlight}.",
+      "headline_highlight": "ręcznie",
+      "subtitle": "Skonfiguruj raz i zbiorczo rejestruj klientów za pośrednictwem interfejsu API. Następnie śledź ich postępy za pomocą analiz."
     }
   },
   "new_course_modal": {

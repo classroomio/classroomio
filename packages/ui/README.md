@@ -128,6 +128,49 @@ Wrapper component that highlights its content with an animated focus pulse ring 
 </AttentionHighlight>
 ```
 
+### Brand wash (`src/custom/animation/brand-wash/`)
+
+Decorative background layer: a top-down gradient tinted from `--primary` with an optional faded dot grid. Because it reads `--primary`, it renders in ClassroomIO blue on the app and in the org's theme colour on org sites. Place it as the first child of a `relative` container; later siblings stack above it.
+
+| Prop    | Type      | Default     | Description                 |
+| ------- | --------- | ----------- | --------------------------- |
+| `dots`  | `boolean` | `true`      | Show the masked dot grid    |
+| `class` | `string`  | `undefined` | Additional classes on layer |
+
+```svelte
+<div class="relative">
+  <BrandWash />
+  <div class="relative">Content</div>
+</div>
+```
+
+### Block skyline (`src/custom/animation/block-skyline/`)
+
+Ambient brand animation: notch blocks drop in one at a time and stack. By default they clear together and repeat on a 10s loop; with `loop={false}` they drop in once and stay. Hidden from assistive tech and static under `prefers-reduced-motion`. Tones come from `--muted` and `--primary`. Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop     | Type      | Default     | Description                                                          |
+| -------- | --------- | ----------- | -------------------------------------------------------------------- |
+| `loop`   | `boolean` | `true`      | Clear and repeat every 10s; `false` drops in once and stays          |
+| `repeat` | `number`  | `1`         | Repeats the column pattern across the width (extra copies from `md`) |
+| `class`  | `string`  | `undefined` | Width / placement                                                    |
+
+```svelte
+<BlockSkyline class="w-full max-w-[400px]" />
+
+<!-- Full-width page footer -->
+<BlockSkyline loop={false} repeat={3} class="absolute inset-x-0 bottom-0 px-4" />
+```
+
+### Notch cutout utility (`ui:notch-cutout`)
+
+Cuts the brand trapezoid notch out of an element's top edge with a CSS mask, so it reads correctly over gradients and images. Tune it with `--notch-x` (default `2.5rem`), `--notch-w` (`46px`) and `--notch-h` (`10px`). Masks clip `box-shadow`, so put shadows on a wrapper with `drop-shadow`.
+
+```svelte
+<div class="drop-shadow-md">
+  <Card.Root class="ui:notch-cutout">…</Card.Root>
+</div>
+```
+
 ### Exercise question (`src/custom/exercise-question/`)
 
 Learner and author UIs for exercise questions (take, preview, review, submission, edit per question type).

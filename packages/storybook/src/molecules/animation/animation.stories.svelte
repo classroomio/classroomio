@@ -1,9 +1,11 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
   import {
+    BlockSkyline,
     BlurFade,
     BlurIn,
     BorderBeam,
+    BrandWash,
     CardBody,
     CardContainer,
     DotField,
@@ -205,6 +207,53 @@
           <p class="text-sm">Square card body with icon</p>
         {/snippet}
       </SquareCardBody>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="BrandWash">
+  {#snippet template()}
+    <div class="ui:bg-background relative mx-auto h-80 w-full max-w-3xl overflow-hidden rounded-xl border">
+      <BrandWash />
+      <div class="relative flex h-full items-center justify-center text-sm">Brand wash with dots</div>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="BrandWash without dots">
+  {#snippet template()}
+    <div class="ui:bg-background relative mx-auto h-80 w-full max-w-3xl overflow-hidden rounded-xl border">
+      <BrandWash dots={false} />
+      <div class="relative flex h-full items-center justify-center text-sm">Brand wash only</div>
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="BlockSkyline">
+  {#snippet template()}
+    <div class="ui:bg-background mx-auto flex w-full max-w-md items-end rounded-xl border p-8">
+      <BlockSkyline class="w-full" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="BlockSkyline once, full width">
+  {#snippet template()}
+    <div class="ui:bg-background relative mx-auto h-64 w-full overflow-hidden rounded-xl border">
+      <BlockSkyline loop={false} repeat={3} class="absolute inset-x-0 bottom-0 px-4" />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Notch cutout">
+  {#snippet template()}
+    <div class="ui:bg-background relative mx-auto h-80 w-full max-w-3xl overflow-hidden rounded-xl border">
+      <BrandWash />
+      <div class="relative flex h-full items-center justify-center">
+        <div class="ui:bg-background ui:notch-cutout h-40 w-72 rounded-xl border p-6 text-sm">
+          The notch is a mask, so the wash shows through it.
+        </div>
+      </div>
     </div>
   {/snippet}
 </Story>

@@ -4501,14 +4501,23 @@
       "learning_methods": "Heute Training",
       "company_size": "Unternehmensgröße",
       "job_role": "Rolle",
-      "source": "Entdeckung"
+      "source": "Entdeckung",
+      "org_setup": "Arbeitsbereich"
     },
     "org_setup": {
       "title": "Richten Sie Ihren Arbeitsbereich ein",
-      "subtitle": "Erzählen Sie uns zunächst etwas über Sie und Ihre Organisation."
+      "subtitle": "Erzählen Sie uns zunächst etwas über Sie und Ihre Organisation.",
+      "created_subtitle": "Ihr Arbeitsbereich ist eingerichtet. Sie können diese Details später in den Einstellungen ändern."
     },
     "header": {
       "tagline": "Kundenschulungsplattform, die sich mit Ihren Systemen verbindet"
+    },
+    "testimonials": {
+      "eyebrow": "Von den Teams, die es nutzen",
+      "footer": "Open Source · Selbsthost oder Cloud",
+      "headline": "Hören Sie auf, jeden Kunden {highlight} zu schulen.",
+      "headline_highlight": "von Hand",
+      "subtitle": "Richten Sie es einmal ein und registrieren Sie Ihre Kunden in großen Mengen über die API. Verfolgen Sie dann ihren Fortschritt mit Analysen."
     }
   },
   "new_course_modal": {

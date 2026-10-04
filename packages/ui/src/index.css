@@ -54,6 +54,21 @@
 @source inline('ui:z-modal{,!}');
 @source inline('ui:z-menu-elevated{,!}');
 
+/* Masks clip box-shadow: put any shadow on a wrapper with `drop-shadow` instead. */
+@utility notch-cutout {
+  -webkit-mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 10' preserveAspectRatio='none'%3E%3Cpolygon points='0,0 46,0 38,10 8,10'/%3E%3C/svg%3E")
+      var(--notch-x, 2.5rem) 0 / var(--notch-w, 46px) var(--notch-h, 10px) no-repeat,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 46 10' preserveAspectRatio='none'%3E%3Cpolygon points='0,0 46,0 38,10 8,10'/%3E%3C/svg%3E")
+      var(--notch-x, 2.5rem) 0 / var(--notch-w, 46px) var(--notch-h, 10px) no-repeat exclude,
+    linear-gradient(#000 0 0);
+}
+
+@source inline('ui:notch-cutout');
+
 :root {
   --spacing: var(--ui-spacing);
   --background: oklch(1 0 0);

@@ -1,3 +1,4 @@
+import { isOrgManagerRole } from '$lib/utils/store/org';
 import { ONBOARDING_STEPS, type OnboardingStepValue } from './constants';
 
 export interface OnboardingAnswers {
@@ -18,4 +19,11 @@ export function resolveResumeStep(answers: OnboardingAnswers): OnboardingStepVal
   if (!answers.jobRole) return ONBOARDING_STEPS.JOB_ROLE;
 
   return ONBOARDING_STEPS.SOURCE;
+}
+
+/**
+ * True when the user already created the workspace this onboarding sets up: the current org exists and they manage it.
+ */
+export function hasManagedWorkspace(org: { id: string; roleId: number }): boolean {
+  return !!org.id && isOrgManagerRole(org.roleId);
 }
