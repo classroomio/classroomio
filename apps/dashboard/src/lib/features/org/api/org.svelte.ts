@@ -11,6 +11,7 @@ import type {
   GetAudienceRequest,
   GetLinkInviteRequest,
   GetOrgPublicCoursesRequest,
+  GetStudentEmailTemplatesRequest,
   ImportAudienceRequest,
   InviteTeamRequest,
   JoinAcademyRequest,
@@ -21,13 +22,18 @@ import type {
   OrganizationAudienceQuery,
   OrganizationTeamMembers,
   ResendAudienceInviteRequest,
+  ResetStudentEmailTemplateRequest,
   ReorderOrgCoursesRequest,
   RevokeAudienceInviteRequest,
+  SaveStudentEmailTemplateRequest,
+  SendStudentEmailTemplateTestRequest,
+  StudentEmailTemplateTestDraft,
   ToggleLinkInviteRequest,
   UndoBulkAudienceActionRequest,
   UpdateOrganizationRequest,
   TOrgUpdateForm
 } from '../utils/types';
+import type { EmailLocale, StudentEmailId } from '@cio/utils/email';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   TAssignAudienceCourses,
@@ -543,6 +549,69 @@ class OrgApi extends BaseApiWithErrors {
         this.errors = { ...this.errors, general: message };
         snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
       }
+    });
+  }
+
+  private showStudentEmailTemplateError(result: unknown) {
+    if (typeof result === 'string') {
+      snackbar.error(result);
+      return;
+    }
+
+    const { message, error } = (result ?? {}) as { message?: unknown; error?: unknown };
+    const text = [message, error].find((value) => typeof value === 'string' && value.length > 0);
+    snackbar.error(typeof text === 'string' ? text : 'snackbar.something');
+  }
+
+  async listStudentEmailTemplates() {
+    return this.execute<GetStudentEmailTemplatesRequest>({
+      requestFn: () => classroomio.organization['email-templates'].$get(),
+      logContext: 'fetching student email templates',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async saveStudentEmailTemplate(
+    emailId: StudentEmailId,
+    locale: EmailLocale,
+    content: string,
+    subject?: string | null
+  ) {
+    return this.execute<SaveStudentEmailTemplateRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].$put({
+          param: { emailId, locale },
+          json: { content, subject }
+        }),
+      logContext: 'saving student email template',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async resetStudentEmailTemplate(emailId: StudentEmailId, locale: EmailLocale) {
+    return this.execute<ResetStudentEmailTemplateRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].$delete({
+          param: { emailId, locale }
+        }),
+      logContext: 'resetting student email template',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async sendStudentEmailTemplateTest(
+    emailId: StudentEmailId,
+    locale: EmailLocale,
+    draft: StudentEmailTemplateTestDraft
+  ) {
+    return this.execute<SendStudentEmailTemplateTestRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].test.$post({
+          param: { emailId, locale },
+          json: draft
+        }),
+      logContext: 'sending student email test',
+      onError: (result) => this.showStudentEmailTemplateError(result)
     });
   }
 

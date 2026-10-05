@@ -17,7 +17,8 @@
 
 <script lang="ts">
   // Type-only imports are erased at build time — no static TipTap dependency.
-  import type { HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
+  import type { EditorToolbarPreset, HTMLContent, TiptapEditor } from '@cio/ui/custom/editor';
+  import type { Snippet } from 'svelte';
   import { cn } from '@cio/ui/tools';
   import { uploadImage } from '$lib/utils/services/upload';
   import { queryUnsplash } from './upload-widget/utils';
@@ -26,6 +27,8 @@
     placeholder?: string | ((node: any) => string);
     content?: HTMLContent;
     showToolBar?: boolean;
+    toolbarPreset?: EditorToolbarPreset;
+    toolbarTrailing?: Snippet<[]>;
     editable?: boolean;
     enablePersistence?: boolean;
     contentStorageKey?: string;
@@ -44,6 +47,8 @@
   let {
     content = '',
     showToolBar = true,
+    toolbarPreset = 'default',
+    toolbarTrailing,
     editable = true,
     enablePersistence = false,
     contentStorageKey = 'edra-content',
@@ -76,6 +81,8 @@
   <Editor
     {content}
     {showToolBar}
+    {toolbarPreset}
+    {toolbarTrailing}
     {editable}
     {enablePersistence}
     {contentStorageKey}

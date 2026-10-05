@@ -32,6 +32,7 @@ export type { EmailId, EmailSchemaFor } from './utils/types';
 export { deliverEmail } from './send';
 export { buildEmailFromName, escapeHtml, sanitizeEmailSubject } from './utils/functions/email-helpers';
 export { getDefaultTemplate } from './templates/default';
+export { renderStudentEmail, renderStudentEmailSubject } from './core/student-email';
 export { buildEmailBranding, resolveThemeColor, ZEmailBranding } from './core/branding';
 export { buildSessionIcs, type SessionIcsInput } from './ics';
 export type { EmailBranding } from './core/branding';

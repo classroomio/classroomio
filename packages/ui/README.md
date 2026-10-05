@@ -152,10 +152,14 @@ Ambient brand animation: notch blocks drop in one at a time and stack. By defaul
 | -------- | --------- | ----------- | -------------------------------------------------------------------- |
 | `loop`   | `boolean` | `true`      | Clear and repeat every 10s; `false` drops in once and stays          |
 | `repeat` | `number`  | `1`         | Repeats the column pattern across the width (extra copies from `md`) |
+| `rows`   | `number`  | `3`         | Tallest stack; values above 3 add same-size blocks to every column   |
 | `class`  | `string`  | `undefined` | Width / placement                                                    |
 
 ```svelte
 <BlockSkyline class="w-full max-w-[400px]" />
+
+<!-- Taller stacks -->
+<BlockSkyline rows={6} class="w-full" />
 
 <!-- Full-width page footer -->
 <BlockSkyline loop={false} repeat={3} class="absolute inset-x-0 bottom-0 px-4" />

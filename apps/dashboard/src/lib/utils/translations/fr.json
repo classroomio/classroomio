@@ -33,7 +33,7 @@
       },
       "opening_academy": {
         "title": "Ouvrir votre académie…",
-        "caption": "Les blocs se mettent en place un par un, puis s'effacent et recommencent."
+        "caption": "Préparation de vos cours, étudiants et paramètres."
       }
     }
   },
@@ -3613,7 +3613,8 @@
       "branding": "Image de marque",
       "ai": "IA",
       "search": "Rechercher dans les paramètres...",
-      "extensions": "Rallonges"
+      "extensions": "Rallonges",
+      "new_badge": "Nouveau"
     },
     "heading": "Paramètres",
     "billing": {
@@ -4066,7 +4067,8 @@
       "teams_tab": "Équipes",
       "ai_credits_tab": "Crédits IA",
       "ai_tutor_tab": "Tuteur IA",
-      "notifications_tab": "Notifications"
+      "notifications_tab": "Notifications",
+      "emails_tab": "E-mails"
     },
     "subheadings": {
       "view_site": "Votre académie"
@@ -4315,6 +4317,101 @@
     "account": {
       "language": "Langue",
       "select_language": "Sélectionnez une langue"
+    },
+    "emails": {
+      "page_title": "Modèles d'e-mails",
+      "language_note": "Les e-mails des étudiants utilisent le langage imposé par votre organisation. Lorsqu’il n’est pas appliqué, les emails utilisent l’anglais.",
+      "heading": "Modèles de courrier électronique pour étudiants",
+      "description": "Personnalisez les e-mails que les étudiants reçoivent. Les e-mails du personnel sont toujours envoyés en anglais.",
+      "paid_plan_note": "Mettez à niveau votre plan pour traduire et personnaliser les e-mails des étudiants.",
+      "sending_in": "Envoi",
+      "change": "Changement",
+      "template_navigation": "Types de courrier électronique des étudiants",
+      "edited": "Modifié",
+      "insert": "Insérer",
+      "link_chip": "Lien",
+      "edit": "Modifier",
+      "preview": "Aperçu",
+      "unsaved_changes": "Modifications non enregistrées",
+      "send_test": "Envoyer le test",
+      "test_sent": "E-mail test mis en file d'attente pour livraison",
+      "template": "Courriel",
+      "language": "Langue",
+      "language_note_link": "Modifiez ici la langue par défaut de votre organisation.",
+      "subject": "Sujet",
+      "editor_heading": "Corps du message",
+      "editor_description": "Modifiez le message pour cette langue. Les valeurs dynamiques sont ajoutées lors de l'envoi de l'e-mail et ne sont jamais traduites.",
+      "editor_placeholder": "Écrivez le message électronique",
+      "dynamic_content": "Contenu dynamique",
+      "dynamic_content_description": "Insérez des valeurs ou un lien facultatif au niveau du curseur. Gardez les accolades inchangées afin que la valeur puisse être ajoutée au moment de l'envoi.",
+      "dynamic_link": "Insérer un lien dynamique",
+      "protected_content": "Contenu de courrier électronique protégé",
+      "protected_content_description": "Le bouton d'action, la destination, la marque et le pied de page requis sont gérés par ClassroomIO et ne peuvent pas être supprimés.",
+      "reset": "Réinitialiser à la valeur par défaut traduite",
+      "templates": {
+        "studentCourseInvite": "Invitation au cours",
+        "studentCourseWelcome": "Accueil du cours",
+        "studentCourseCompletion": "Achèvement du cours",
+        "studentOrgInvite": "Invitation à l'organisation",
+        "studentCohortWelcome": "Accueil de la cohorte",
+        "studentProvePayment": "Demande de justificatif de paiement",
+        "cohortGoalReminder": "Rappel des objectifs de la cohorte",
+        "quizAssigned": "Quiz attribué",
+        "sessionReminder": "Rappel de session en direct",
+        "sessionUpdated": "Session en direct mise à jour",
+        "submissionGraded": "Soumission notée",
+        "newsfeedPost": "Publication du fil d'actualité du cours"
+      },
+      "descriptions": {
+        "studentCourseInvite": "Envoyé lorsque vous invitez quelqu'un à un cours.",
+        "studentOrgInvite": "Envoyé lorsque vous invitez quelqu'un dans votre organisation.",
+        "studentCourseWelcome": "Envoyé lorsqu'un étudiant a accès à un cours.",
+        "studentCohortWelcome": "Envoyé lorsqu’un étudiant a accès à une cohorte.",
+        "quizAssigned": "Envoyé lorsqu'un quiz est attribué à un étudiant.",
+        "submissionGraded": "Envoyé lorsque la soumission d'un exercice d'un étudiant est examinée.",
+        "cohortGoalReminder": "Envoyé lorsqu'un objectif de cohorte est dû ou en retard.",
+        "studentCourseCompletion": "Envoyé lorsqu'un étudiant termine un cours.",
+        "sessionReminder": "Envoyé avant une session en direct programmée.",
+        "sessionUpdated": "Envoyé lorsque les détails de la session en direct changent.",
+        "newsfeedPost": "Envoyé lorsqu'un nouveau message de cours est publié.",
+        "studentProvePayment": "Envoyé lorsqu'un étudiant doit fournir une preuve de paiement."
+      },
+      "groups": {
+        "enrollment": "Inscription",
+        "learning": "Apprentissage",
+        "live_sessions": "Séances en direct",
+        "updates_billing": "Mises à jour et facturation"
+      },
+      "variables": {
+        "organization": "Organisation",
+        "expires_at": "Date d'expiration",
+        "course_name": "Nom du cours",
+        "cohort_name": "Nom de la cohorte",
+        "student_name": "Nom de l'étudiant",
+        "course_message": "Message de l'instructeur",
+        "course_names": "Cours",
+        "teacher_name": "Nom de l'enseignant",
+        "teacher_email": "Courriel de l'enseignant",
+        "goal_title": "Objectif",
+        "due_status": "Statut dû",
+        "completed_count": "Décompte terminé",
+        "required_count": "Nombre requis",
+        "exercise_title": "Titre de l'exercice",
+        "session_title": "Titre de la séance",
+        "session_time": "Durée de la séance",
+        "when": "Heure de début",
+        "status": "Statut",
+        "score": "Score",
+        "lesson_title": "Titre de la leçon",
+        "post_content": "Publier du contenu"
+      },
+      "test_dialog": {
+        "title": "Envoyer un e-mail de test",
+        "description": "Nous enverrons le brouillon actuel avec des exemples de valeurs à la place des espaces réservés. Il n'est pas nécessaire de le sauvegarder au préalable.",
+        "recipients": "Envoyer à",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Saisissez jusqu'à 5 adresses e-mail valides, séparées par des virgules."
+      }
     }
   },
   "profileMenu": {

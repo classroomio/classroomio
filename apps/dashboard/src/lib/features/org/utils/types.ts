@@ -143,6 +143,21 @@ export type DeleteAudienceMemberSuccess = Extract<InferResponseType<DeleteAudien
 export type UpdateOrganizationRequest = (typeof classroomio.organization)['$put'];
 export type UpdateOrganizationResponse = InferResponseType<UpdateOrganizationRequest>;
 export type UpdateOrganizationSuccess = Extract<UpdateOrganizationResponse, { success: true }>;
+export type GetStudentEmailTemplatesRequest = (typeof classroomio.organization)['email-templates']['$get'];
+export type StudentEmailTemplateRecord = Extract<
+  InferResponseType<GetStudentEmailTemplatesRequest>,
+  { success: true }
+>['data'][number];
+export type SaveStudentEmailTemplateRequest =
+  (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['$put'];
+export type ResetStudentEmailTemplateRequest =
+  (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['$delete'];
+export type SendStudentEmailTemplateTestRequest =
+  (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['test']['$post'];
+export type StudentEmailTemplateTestDraft = InferRequestType<SendStudentEmailTemplateTestRequest>['json'];
+export type StudentEmailTemplateTestInput = Omit<StudentEmailTemplateTestDraft, 'recipientEmails'> & {
+  recipients: string;
+};
 export interface TOrgUpdateForm {
   name?: string;
   avatar?: string | File | undefined;
