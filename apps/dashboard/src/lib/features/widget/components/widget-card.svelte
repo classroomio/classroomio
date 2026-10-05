@@ -1,5 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
+  import { invalidateAll } from '$app/navigation';
   import pluralize from 'pluralize';
   import type { WidgetListItem } from '../utils/types';
   import { Button } from '@cio/ui/base/button';
@@ -22,6 +23,13 @@
   }
 
   let { widget, mode = 'active', isAdmin = false }: Props = $props();
+
+  async function handleRestore() {
+    const restored = await widgetApi.restoreWidget(widget.id);
+    if (restored) {
+      await invalidateAll();
+    }
+  }
 
   const isArchived = $derived(mode === 'archived');
   const widgetHref = $derived(resolve(`/widgets/${widget.id}`, {}));
@@ -100,12 +108,7 @@
 
     {#if isArchived && isAdmin}
       <div class="ui:border-border/60 mt-3 flex items-center justify-end border-t pt-2.5">
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={() => widgetApi.restoreWidget(widget.id)}
-          class="h-8 gap-1.5 rounded-full px-3 text-xs"
-        >
+        <Button variant="outline" size="sm" onclick={handleRestore} class="h-8 gap-1.5 rounded-full px-3 text-xs">
           <RotateCcwIcon size={13} />
           {$t('widgets.actions.restore')}
         </Button>

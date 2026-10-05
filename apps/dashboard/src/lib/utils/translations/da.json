@@ -5093,6 +5093,20 @@
     "delete_modal": {
       "title": "Slet widget permanent",
       "description": "Er du sikker på, at du vil slette \"{name}\" permanent? Denne handling kan ikke fortrydes."
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filtre",
+      "clear_all": "Ryd alle",
+      "search_placeholder": "Søg efter widgets efter navn",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Valgtilstand",
+      "no_results_title": "Ingen widgets matcher dine filtre",
+      "no_results_description": "Prøv en anden søgeterm, eller ryd dine filtre for at se alt igen.",
+      "no_results_page_title": "Intet på denne side",
+      "no_results_page_description": "Disse filtre matcher færre widgets end denne side starter ved.",
+      "back_to_first_page": "Tilbage til første side"
     }
   },
   "side_panel": {

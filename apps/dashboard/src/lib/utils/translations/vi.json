@@ -5093,6 +5093,20 @@
     "delete_modal": {
       "title": "Xóa tiện ích vĩnh viễn",
       "description": "Bạn có chắc chắn muốn xóa vĩnh viễn \"{name}\" không? Hành động này không thể hoàn tác."
+    },
+    "filters": {
+      "filter": "Lọc",
+      "popover_title": "Bộ lọc",
+      "clear_all": "Xóa tất cả",
+      "search_placeholder": "Tìm kiếm widget theo tên",
+      "status": "Trạng thái",
+      "layout_type": "Kiểu bố cục",
+      "selection_mode": "Chế độ lựa chọn",
+      "no_results_title": "Không có vật dụng nào phù hợp với bộ lọc của bạn",
+      "no_results_description": "Hãy thử một cụm từ tìm kiếm khác hoặc xóa bộ lọc của bạn để xem lại mọi thứ.",
+      "no_results_page_title": "Không có gì trên trang này",
+      "no_results_page_description": "Các bộ lọc này phù hợp với ít tiện ích hơn trang này bắt đầu.",
+      "back_to_first_page": "Quay lại trang đầu tiên"
     }
   },
   "side_panel": {

@@ -39,7 +39,7 @@
 
 <Page.Root class="w-full">
   <Page.Header>
-    <Page.HeaderContent>
+    <Page.HeaderContent class="">
       <Page.Title>{$t('widgets.heading')}</Page.Title>
       <Page.Subtitle>{$t('widgets.subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
@@ -53,6 +53,8 @@
       <WidgetsPage
         initialWidgets={data.initialWidgets}
         initialArchivedWidgets={data.initialArchivedWidgets}
+        widgetPagination={data.widgetPagination}
+        archivedWidgetPagination={data.archivedWidgetPagination}
         onCreate={() => {
           createModalOpen = true;
         }}

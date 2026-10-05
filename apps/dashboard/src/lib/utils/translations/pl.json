@@ -5093,6 +5093,20 @@
     "delete_modal": {
       "title": "Usuń widżet trwale",
       "description": "Czy na pewno chcesz trwale usunąć „{name}”? Tej czynności nie można cofnąć."
+    },
+    "filters": {
+      "filter": "Filtruj",
+      "popover_title": "Filtry",
+      "clear_all": "Wyczyść wszystko",
+      "search_placeholder": "Wyszukaj widżety według nazwy",
+      "status": "Stan",
+      "layout_type": "Typ układu",
+      "selection_mode": "Tryb selekcji",
+      "no_results_title": "Żaden widżet nie pasuje do Twoich filtrów",
+      "no_results_description": "Wypróbuj inne wyszukiwane hasło lub wyczyść filtry, aby zobaczyć wszystko ponownie.",
+      "no_results_page_title": "Nic na tej stronie",
+      "no_results_page_description": "Te filtry pasują do mniejszej liczby widżetów, niż zaczyna się ta strona.",
+      "back_to_first_page": "Powrót do pierwszej strony"
     }
   },
   "side_panel": {
