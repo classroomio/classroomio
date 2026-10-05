@@ -8,7 +8,7 @@
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isCoursePaid } from '$lib/utils/functions/course';
-  import { toFiniteNumber } from '@cio/utils/functions';
+  import { parseBoundedInteger, toFiniteNumber } from '@cio/utils/functions';
 
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
@@ -113,8 +113,17 @@
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.cost')}
       type="number"
+      min={0}
       value={cost}
-      oninput={(e) => setter(toFiniteNumber(e.currentTarget.value) ?? 0, 'cost')}
+      oninput={(e) => {
+        const val = toFiniteNumber(e.currentTarget.value);
+        if (val !== undefined) setter(Math.max(0, val), 'cost');
+      }}
+      onchange={(e) => {
+        const nextVal = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 1_000_000 }) ?? 0;
+        e.currentTarget.value = String(nextVal);
+        setter(nextVal, 'cost');
+      }}
     />
 
     <InputField
@@ -149,8 +158,18 @@
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.percent')}
       type="number"
+      min={0}
+      max={100}
       value={discount}
-      oninput={(e) => setter(toFiniteNumber(e.currentTarget.value) ?? 0, 'metadata.discount')}
+      oninput={(e) => {
+        const val = toFiniteNumber(e.currentTarget.value);
+        if (val !== undefined) setter(Math.min(100, Math.max(0, val)), 'metadata.discount');
+      }}
+      onchange={(e) => {
+        const nextVal = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? 0;
+        e.currentTarget.value = String(nextVal);
+        setter(nextVal, 'metadata.discount');
+      }}
       helperMessage={$t('course.navItem.landing_page.editor.pricing_form.percentage_helper')}
     />
   {/if}

@@ -18,6 +18,17 @@ export function toFiniteNumber(value: unknown): number | undefined {
   return undefined;
 }
 
+/**
+ * Parses a committed numeric input, rounded and clamped to [min, max].
+ * Returns undefined for empty/invalid input.
+ */
+export function parseBoundedInteger(raw: string, bounds: { min: number; max: number }): number | undefined {
+  const parsed = toFiniteNumber(raw);
+  if (parsed === undefined) return undefined;
+
+  return Math.min(bounds.max, Math.max(bounds.min, Math.round(parsed)));
+}
+
 const COMPACT_COUNT_UNITS = [
   { suffix: 'b', divisor: 1_000_000_000 },
   { suffix: 'm', divisor: 1_000_000 },

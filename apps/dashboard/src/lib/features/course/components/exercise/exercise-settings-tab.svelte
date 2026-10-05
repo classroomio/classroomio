@@ -9,6 +9,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { slugifyTitle } from '@cio/utils/validation';
+  import { parseBoundedInteger } from '@cio/utils/functions';
   import * as Select from '@cio/ui/base/select';
 
   type Props = {
@@ -27,6 +28,15 @@
   });
 
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
+
+  function commitPassThreshold(event: Event & { currentTarget: HTMLInputElement }) {
+    const currentThreshold = $questionnaire.passThreshold ?? 100;
+    const nextThreshold = parseBoundedInteger(event.currentTarget.value, { min: 0, max: 100 }) ?? currentThreshold;
+    event.currentTarget.value = String(nextThreshold);
+    if (nextThreshold === currentThreshold) return;
+
+    questionnaire.update((state) => ({ ...state, passThreshold: nextThreshold }));
+  }
 
   async function saveSettings() {
     if (!courseApi.course?.id) return;
@@ -125,12 +135,7 @@
           type="number"
           label={$t('course.navItem.lessons.exercises.all_exercises.settings_pass_threshold')}
           value={String($questionnaire.passThreshold ?? 100)}
-          onInputChange={(event) => {
-            const parsed = Number(event.currentTarget.value);
-            if (!Number.isNaN(parsed)) {
-              questionnaire.update((state) => ({ ...state, passThreshold: parsed }));
-            }
-          }}
+          onchange={commitPassThreshold}
         />
       </div>
     {/if}
@@ -143,7 +148,7 @@
         helperMessage={$t('course.navItem.settings.slug.description')}
         value={slug}
         placeholder={slugifyTitle($questionnaire.title ?? '')}
-        onInputChange={(e) => {
+        oninput={(e) => {
           slug = e.currentTarget.value;
         }}
         errorMessage={exerciseApi.errors.slug}

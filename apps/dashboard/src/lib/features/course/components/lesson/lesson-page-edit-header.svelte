@@ -58,7 +58,7 @@
           className="max-w-xl"
           value={title}
           placeholder={$t('course.navItem.lessons.add_lesson.lesson_title')}
-          onInputChange={(e) => onTitleChange(e.currentTarget.value)}
+          oninput={(e) => onTitleChange(e.currentTarget.value)}
         />
         {#if false && showSlugEditor}
           <InputField
@@ -67,7 +67,7 @@
             helperMessage={$t('course.navItem.settings.slug.description')}
             value={slug}
             placeholder={slugifyTitle(title || '')}
-            onInputChange={(e) => onSlugChange(e.currentTarget.value)}
+            oninput={(e) => onSlugChange(e.currentTarget.value)}
             errorMessage={slugError}
           />
         {/if}

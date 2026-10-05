@@ -42,9 +42,12 @@
   import type { Course } from '../utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
-  import { snackbar } from '$features/ui/snackbar/store';
-  import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
-  import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
+  import {
+    generateSlug,
+    isPublishedComplianceMissingDeadline,
+    isSelfEnrollmentAllowed,
+    parseBoundedInteger
+  } from '@cio/utils/functions';
   import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
@@ -534,9 +537,13 @@
     hasUnsavedChanges = true;
   }
 
-  function onThresholdInput(e: Event) {
-    const value = Number((e.currentTarget as HTMLInputElement).value);
-    $settings.certificate.threshold = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 100;
+  function onThresholdChange(e: Event & { currentTarget: HTMLInputElement }) {
+    const current = $settings.certificate.threshold;
+    const next = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? current;
+    e.currentTarget.value = String(next);
+    if (next === current) return;
+
+    $settings.certificate.threshold = next;
     delete courseApi.errors['certificate.threshold'];
     hasUnsavedChanges = true;
   }
@@ -555,9 +562,13 @@
     hasUnsavedChanges = true;
   }
 
-  function onMinExerciseScoreInput(e: Event) {
-    const value = Number((e.currentTarget as HTMLInputElement).value);
-    $settings.certificate.exerciseMinScorePercent = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 100;
+  function onMinExerciseScoreChange(e: Event & { currentTarget: HTMLInputElement }) {
+    const current = $settings.certificate.exerciseMinScorePercent ?? 100;
+    const next = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? current;
+    e.currentTarget.value = String(next);
+    if (next === current) return;
+
+    $settings.certificate.exerciseMinScorePercent = next;
     delete courseApi.errors['certificate.exerciseMinScorePercent'];
     hasUnsavedChanges = true;
   }
@@ -612,7 +623,7 @@
           isRequired
           bind:value={$settings.courseTitle}
           errorMessage={errors?.title || courseApi.errors?.title}
-          onInputChange={() => {
+          oninput={() => {
             errors.title = undefined;
             delete courseApi.errors.title;
             hasUnsavedChanges = true;
@@ -859,7 +870,7 @@
             max={100}
             class="w-full"
             value={String($settings.certificate.threshold)}
-            oninput={onThresholdInput}
+            onchange={onThresholdChange}
           />
           <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
           {#if courseApi.errors['certificate.threshold']}
@@ -910,7 +921,7 @@
               max={100}
               class="w-full"
               value={String($settings.certificate.exerciseMinScorePercent ?? 100)}
-              oninput={onMinExerciseScoreInput}
+              onchange={onMinExerciseScoreChange}
             />
             <Field.Description>{$t('course.certification.min_exercise_score_helper')}</Field.Description>
             {#if courseApi.errors['certificate.exerciseMinScorePercent']}
@@ -1022,7 +1033,7 @@
           <Field.Label>{$t('course.navItem.settings.callout.title_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.title}
-            onInputChange={() => (hasUnsavedChanges = true)}
+            oninput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.title_placeholder')}
           />
         </Field.Field>
@@ -1041,7 +1052,7 @@
           <Field.Label>{$t('course.navItem.settings.callout.button_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.buttonLabel}
-            onInputChange={() => (hasUnsavedChanges = true)}
+            oninput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.button_label_placeholder')}
           />
         </Field.Field>
@@ -1050,7 +1061,7 @@
           <Field.Label>{$t('course.navItem.settings.callout.button_url_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.buttonUrl}
-            onInputChange={() => (hasUnsavedChanges = true)}
+            oninput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.button_url_placeholder')}
             type="url"
           />

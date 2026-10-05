@@ -3,8 +3,6 @@
   import * as Field from '../../base/field';
   import { Input, type InputProps } from '../../base/input';
 
-  type InputOnChangeEvent = Parameters<NonNullable<InputProps['onchange']>>[0];
-
   interface Props {
     label?: string;
     placeholder?: string;
@@ -27,9 +25,9 @@
     autoComplete?: boolean;
     /** Stable hook for Playwright (`data-testid`). Prefer over CSS classes or translated labels. */
     testId?: string;
-    onchange?: (e: InputOnChangeEvent) => void;
-    onInputChange?: (e: InputOnChangeEvent) => void;
-    oninput?: (e: Event) => void;
+    oninput?: InputProps['oninput'];
+    onchange?: InputProps['onchange'];
+    onblur?: InputProps['onblur'];
     labelAction?: import('svelte').Snippet;
   }
 
@@ -54,9 +52,9 @@
     helperMessage = '',
     autoComplete = true,
     testId,
-    onchange = () => {},
-    onInputChange = () => {},
-    oninput = () => {},
+    oninput,
+    onchange,
+    onblur,
     labelAction
   }: Props = $props();
 
@@ -67,16 +65,6 @@
       inputRef.focus();
     }
   });
-
-  // Handle input change event
-  function handleInputChange(e: InputOnChangeEvent) {
-    onInputChange(e);
-  }
-
-  // Handle blur event
-  function handleBlur(e: InputOnChangeEvent) {
-    onchange(e);
-  }
 </script>
 
 <Field.Field class={className}>
@@ -108,9 +96,9 @@
     aria-invalid={errorMessage ? 'true' : undefined}
     autofocus={autoFocus}
     onkeydown={onKeyDown}
-    onchange={handleInputChange}
-    onblur={handleBlur}
     {oninput}
+    {onchange}
+    {onblur}
   />
 
   {#if errorMessage}
