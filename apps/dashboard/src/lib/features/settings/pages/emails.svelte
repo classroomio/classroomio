@@ -116,6 +116,34 @@
   });
 </script>
 
+{#snippet emailToolbarInsert()}
+  <div class="ml-auto flex shrink-0 items-center gap-1 overflow-x-auto pl-2">
+    <span class="ui:text-muted-foreground mr-1 text-xs">{$t('settings.emails.insert')}</span>
+    {#each variables as variable (variable)}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        class="h-7 px-2 text-xs whitespace-nowrap"
+        onclick={() => insertVariable(variable)}
+      >
+        + {variableChipLabel(variable)}
+      </Button>
+    {/each}
+    {#if dynamicLink}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        class="h-7 px-2 text-xs whitespace-nowrap"
+        onclick={insertDynamicLink}
+      >
+        + {$t('settings.emails.link_chip')}
+      </Button>
+    {/if}
+  </div>
+{/snippet}
+
 <div class="space-y-5 px-2 pt-6">
   <UnsavedChanges {hasUnsavedChanges} />
   <header class="mb-6 flex flex-wrap items-start justify-between gap-4 border-b pb-6">
@@ -238,33 +266,6 @@
 
         <Field.Field>
           <Field.Label>{$t('settings.emails.editor_heading')}</Field.Label>
-          {#snippet emailToolbarInsert()}
-            <div class="ml-auto flex shrink-0 items-center gap-1 overflow-x-auto pl-2">
-              <span class="ui:text-muted-foreground mr-1 text-xs">{$t('settings.emails.insert')}</span>
-              {#each variables as variable (variable)}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  class="h-7 px-2 text-xs whitespace-nowrap"
-                  onclick={() => insertVariable(variable)}
-                >
-                  + {variableChipLabel(variable)}
-                </Button>
-              {/each}
-              {#if dynamicLink}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  class="h-7 px-2 text-xs whitespace-nowrap"
-                  onclick={insertDynamicLink}
-                >
-                  + {$t('settings.emails.link_chip')}
-                </Button>
-              {/if}
-            </div>
-          {/snippet}
           {#key `${selectedTemplate}:${selectedLocale}`}
             {@const editorTemplate = selectedTemplate}
             {@const editorLocale = selectedLocale}

@@ -41,13 +41,19 @@ export async function getStudentEmailDeliveryLocale(
 
 /**
  * Rechecks the org's entitlement at send time. Entitled orgs keep the queued locale and get their saved template;
- * everyone else gets the English default.
+ * everyone else, and any failed lookup, gets the English default.
  */
 export async function getStudentEmailSendContext(organizationId: string, emailId: string, queuedLocale: EmailLocale) {
-  if (!isStudentEmailId(emailId) || !(await canCustomizeStudentEmails(organizationId))) {
-    return { locale: 'en' as const, templateOverride: undefined };
-  }
+  const englishDefault = { locale: 'en' as EmailLocale, templateOverride: undefined };
+  if (!isStudentEmailId(emailId)) return englishDefault;
 
-  const templateOverride = await getOrganizationStudentEmailTemplate(organizationId, emailId, queuedLocale);
-  return { locale: queuedLocale, templateOverride };
+  try {
+    if (!(await canCustomizeStudentEmails(organizationId))) return englishDefault;
+
+    const templateOverride = await getOrganizationStudentEmailTemplate(organizationId, emailId, queuedLocale);
+    return { locale: queuedLocale, templateOverride };
+  } catch (error) {
+    console.error('getStudentEmailSendContext error:', error);
+    return englishDefault;
+  }
 }

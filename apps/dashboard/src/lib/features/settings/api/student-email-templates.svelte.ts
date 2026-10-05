@@ -1,8 +1,31 @@
 import { isEmailLocale, isStudentEmailId } from '@cio/utils/email';
-import type { EmailLocale, StudentEmailId, StudentEmailTemplateOverrides } from '@cio/utils/email';
+import type {
+  EmailLocale,
+  StudentEmailId,
+  StudentEmailTemplateOverride,
+  StudentEmailTemplateOverrides
+} from '@cio/utils/email';
 import { orgApi } from '$features/org/api/org.svelte';
 import type { StudentEmailTemplateRecord, StudentEmailTemplateTestDraft } from '$features/org/utils/types';
 import { snackbar } from '$features/ui/snackbar/store';
+
+/**
+ * Returns a copy of `overrides` with one email/locale entry set, or removed when `override` is undefined.
+ */
+function withOverride(
+  overrides: StudentEmailTemplateOverrides,
+  emailId: StudentEmailId,
+  locale: EmailLocale,
+  override: StudentEmailTemplateOverride | undefined
+): StudentEmailTemplateOverrides {
+  const localeOverrides = { ...overrides[emailId], [locale]: override };
+  if (!override) delete localeOverrides[locale];
+
+  const next = { ...overrides, [emailId]: localeOverrides };
+  if (Object.keys(localeOverrides).length === 0) delete next[emailId];
+
+  return next;
+}
 
 class StudentEmailTemplatesApi {
   drafts = $state<StudentEmailTemplateOverrides>({});
@@ -61,16 +84,7 @@ class StudentEmailTemplatesApi {
   }
 
   resetDraft(emailId: StudentEmailId, locale: EmailLocale) {
-    const templateOverrides = { ...this.drafts[emailId] };
-    delete templateOverrides[locale];
-
-    if (Object.keys(templateOverrides).length === 0) {
-      delete this.drafts[emailId];
-    } else {
-      this.drafts[emailId] = templateOverrides;
-    }
-
-    this.drafts = { ...this.drafts };
+    this.drafts = withOverride(this.drafts, emailId, locale, undefined);
   }
 
   discard() {
@@ -98,21 +112,17 @@ class StudentEmailTemplatesApi {
             );
       if (!result || this.organizationId !== organizationId) return;
 
-      if (nextOverride === undefined) {
-        this.editedTemplateIds = this.editedTemplateIds.filter((savedId) => savedId !== emailId);
-      } else {
-        const savedTemplate = result.data;
-        this.drafts[emailId] = {
-          ...this.drafts[emailId],
-          [locale]: { content: savedTemplate.content, subject: savedTemplate.subject ?? undefined }
-        };
-        this.editedTemplateIds = savedTemplate.isCustomized
-          ? [...new Set([...this.editedTemplateIds, emailId])]
-          : this.editedTemplateIds.filter((savedId) => savedId !== emailId);
-      }
+      const savedTemplate = 'content' in result.data ? result.data : undefined;
+      const savedOverride = savedTemplate
+        ? { content: savedTemplate.content, subject: savedTemplate.subject ?? undefined }
+        : undefined;
+      const draftUnchangedDuringSave = JSON.stringify(this.drafts[emailId]?.[locale]) === JSON.stringify(nextOverride);
 
-      this.drafts = { ...this.drafts };
-      this.saved = this.clone(this.drafts);
+      this.saved = withOverride(this.saved, emailId, locale, savedOverride);
+      if (draftUnchangedDuringSave) this.drafts = withOverride(this.drafts, emailId, locale, savedOverride);
+      this.editedTemplateIds = savedTemplate?.isCustomized
+        ? [...new Set([...this.editedTemplateIds, emailId])]
+        : this.editedTemplateIds.filter((savedId) => savedId !== emailId);
     } finally {
       this.isSaving = false;
     }

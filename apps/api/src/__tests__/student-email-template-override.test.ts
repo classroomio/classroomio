@@ -40,6 +40,17 @@ describe('getStudentEmailSendContext', () => {
     expect(getOrganizationStudentEmailTemplate).not.toHaveBeenCalled();
   });
 
+  it('sends the English default when a send-time lookup fails', async () => {
+    vi.mocked(getActiveOrganizationPlan).mockResolvedValue({ planName: 'EARLY_ADOPTER' } as never);
+    vi.mocked(getOrganizationStudentEmailTemplate).mockRejectedValue(new Error('database unavailable'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(getStudentEmailSendContext('org-1', 'studentCourseWelcome', 'fr')).resolves.toEqual({
+      locale: 'en',
+      templateOverride: undefined
+    });
+  });
+
   it('ignores emails that are not student templates', async () => {
     vi.mocked(getActiveOrganizationPlan).mockResolvedValue({ planName: 'EARLY_ADOPTER' } as never);
 
