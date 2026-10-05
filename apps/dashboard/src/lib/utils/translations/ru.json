@@ -1847,7 +1847,9 @@
               "begin_section": "Начальный раздел",
               "complete_section": "Полный раздел",
               "instructions": "Инструкции",
-              "close_instructions": "Закрыть инструкции"
+              "close_instructions": "Закрыть инструкции",
+              "show_more": "Показать больше",
+              "show_less": "Показать меньше"
             },
             "edit_mode": {
               "delete_modal": "Удалить упражнение",

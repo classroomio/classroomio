@@ -1847,7 +1847,9 @@
               "begin_section": "Start sektion",
               "complete_section": "Fuldfør afsnit",
               "instructions": "Instruktioner",
-              "close_instructions": "Luk instruktionerne"
+              "close_instructions": "Luk instruktionerne",
+              "show_more": "Vis mere",
+              "show_less": "Vis mindre"
             },
             "edit_mode": {
               "delete_modal": "Slet øvelse",

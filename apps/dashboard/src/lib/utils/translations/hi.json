@@ -1847,7 +1847,9 @@
               "begin_section": "प्रारंभ अनुभाग",
               "complete_section": "पूरा अनुभाग",
               "instructions": "अनुदेश",
-              "close_instructions": "निर्देश बंद करें"
+              "close_instructions": "निर्देश बंद करें",
+              "show_more": "और दिखाएँ",
+              "show_less": "कम दिखाओ"
             },
             "edit_mode": {
               "delete_modal": "व्यायाम हटाएँ",

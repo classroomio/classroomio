@@ -3189,6 +3189,8 @@
               "not_passed_completion_result_description": "You scored {scorePercent}%. This exercise requires {requiredPercent}% to count as complete.",
               "checking_submission": "Checking your submission...",
               "instructor_feedback": "Instructor feedback",
+              "show_more": "Show more",
+              "show_less": "Show less",
               "back": "Back",
               "begin_section": "Start section",
               "complete_section": "Complete section"

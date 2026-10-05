@@ -1847,7 +1847,9 @@
               "begin_section": "Startabschnitt",
               "complete_section": "Vollständiger Abschnitt",
               "instructions": "Anweisungen",
-              "close_instructions": "Anweisungen schließen"
+              "close_instructions": "Anweisungen schließen",
+              "show_more": "Mehr anzeigen",
+              "show_less": "Weniger anzeigen"
             },
             "edit_mode": {
               "delete_modal": "Übung löschen",
