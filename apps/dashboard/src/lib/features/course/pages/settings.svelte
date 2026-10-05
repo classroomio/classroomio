@@ -42,12 +42,14 @@
   import type { Course } from '../utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
+  import { snackbar } from '$features/ui/snackbar/store';
   import {
     generateSlug,
     isPublishedComplianceMissingDeadline,
     isSelfEnrollmentAllowed,
     parseBoundedInteger
   } from '@cio/utils/functions';
+  import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
@@ -537,11 +539,23 @@
     hasUnsavedChanges = true;
   }
 
+  function onThresholdInput(e: Event & { currentTarget: HTMLInputElement }) {
+    const raw = e.currentTarget.value;
+    if (raw.trim() === '') return;
+    const next = Number(raw);
+    if (!Number.isInteger(next) || next < 0 || next > 100) return;
+    if (next === $settings.certificate.threshold) return;
+
+    $settings.certificate.threshold = next;
+    delete courseApi.errors['certificate.threshold'];
+    hasUnsavedChanges = true;
+  }
+
   function onThresholdChange(e: Event & { currentTarget: HTMLInputElement }) {
-    const current = $settings.certificate.threshold;
-    const next = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? current;
+    const committed = courseApi.course?.certificate?.threshold ?? 100;
+    const next = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? committed;
     e.currentTarget.value = String(next);
-    if (next === current) return;
+    if (next === $settings.certificate.threshold) return;
 
     $settings.certificate.threshold = next;
     delete courseApi.errors['certificate.threshold'];
@@ -562,11 +576,26 @@
     hasUnsavedChanges = true;
   }
 
+  function onMinExerciseScoreInput(e: Event & { currentTarget: HTMLInputElement }) {
+    const raw = e.currentTarget.value;
+    if (raw.trim() === '') return;
+    const next = Number(raw);
+    if (!Number.isInteger(next) || next < 0 || next > 100) return;
+    if (next === ($settings.certificate.exerciseMinScorePercent ?? 100)) return;
+
+    $settings.certificate.exerciseMinScorePercent = next;
+    delete courseApi.errors['certificate.exerciseMinScorePercent'];
+    hasUnsavedChanges = true;
+  }
+
   function onMinExerciseScoreChange(e: Event & { currentTarget: HTMLInputElement }) {
-    const current = $settings.certificate.exerciseMinScorePercent ?? 100;
-    const next = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? current;
+    const committed =
+      courseApi.course?.certificate?.exerciseMinScorePercent ??
+      (courseApi.course?.certificate?.requiredExerciseId ? 100 : null);
+    const fallback = committed ?? 100;
+    const next = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? fallback;
     e.currentTarget.value = String(next);
-    if (next === current) return;
+    if (next === $settings.certificate.exerciseMinScorePercent) return;
 
     $settings.certificate.exerciseMinScorePercent = next;
     delete courseApi.errors['certificate.exerciseMinScorePercent'];
@@ -870,6 +899,7 @@
             max={100}
             class="w-full"
             value={String($settings.certificate.threshold)}
+            oninput={onThresholdInput}
             onchange={onThresholdChange}
           />
           <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
@@ -921,6 +951,7 @@
               max={100}
               class="w-full"
               value={String($settings.certificate.exerciseMinScorePercent ?? 100)}
+              oninput={onMinExerciseScoreInput}
               onchange={onMinExerciseScoreChange}
             />
             <Field.Description>{$t('course.certification.min_exercise_score_helper')}</Field.Description>

@@ -18,15 +18,33 @@ export function toFiniteNumber(value: unknown): number | undefined {
   return undefined;
 }
 
+function clamp(value: number, bounds: { min?: number; max?: number }): number {
+  let result = value;
+  if (bounds.min !== undefined && result < bounds.min) result = bounds.min;
+  if (bounds.max !== undefined && result > bounds.max) result = bounds.max;
+  return result;
+}
+
 /**
- * Parses a committed numeric input, rounded and clamped to [min, max].
+ * Parses a committed numeric input, rounded and clamped to optional [min, max].
  * Returns undefined for empty/invalid input.
  */
-export function parseBoundedInteger(raw: string, bounds: { min: number; max: number }): number | undefined {
+export function parseBoundedInteger(raw: string, bounds: { min?: number; max?: number } = {}): number | undefined {
   const parsed = toFiniteNumber(raw);
   if (parsed === undefined) return undefined;
 
-  return Math.min(bounds.max, Math.max(bounds.min, Math.round(parsed)));
+  return clamp(Math.round(parsed), bounds);
+}
+
+/**
+ * Parses a committed numeric input, clamped to optional [min, max] without rounding.
+ * Returns undefined for empty/invalid input.
+ */
+export function parseBoundedNumber(raw: string, bounds: { min?: number; max?: number } = {}): number | undefined {
+  const parsed = toFiniteNumber(raw);
+  if (parsed === undefined) return undefined;
+
+  return clamp(parsed, bounds);
 }
 
 const COMPACT_COUNT_UNITS = [

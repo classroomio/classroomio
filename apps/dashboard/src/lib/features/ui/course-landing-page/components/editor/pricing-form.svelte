@@ -8,7 +8,7 @@
   import type { Course } from '$features/course/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { isCoursePaid } from '$lib/utils/functions/course';
-  import { parseBoundedInteger, toFiniteNumber } from '@cio/utils/functions';
+  import { parseBoundedInteger, parseBoundedNumber, toFiniteNumber } from '@cio/utils/functions';
 
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
@@ -77,6 +77,35 @@
   function handleChange(content: string) {
     setter(content, 'metadata.reward.description');
   }
+
+  let committedCost = toFiniteNumber(course?.cost) ?? 0;
+  let committedDiscount = toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0;
+
+  function handleCostInput(e: Event & { currentTarget: HTMLInputElement }) {
+    const val = toFiniteNumber(e.currentTarget.value);
+    if (val !== undefined) setter(Math.max(0, Math.floor(val)), 'cost');
+  }
+
+  function handleCostChange(e: Event & { currentTarget: HTMLInputElement }) {
+    const parsed = parseBoundedInteger(e.currentTarget.value, { min: 0 });
+    const nextVal = parsed ?? committedCost;
+    if (parsed !== undefined) committedCost = nextVal;
+    e.currentTarget.value = String(nextVal);
+    setter(nextVal, 'cost');
+  }
+
+  function handleDiscountInput(e: Event & { currentTarget: HTMLInputElement }) {
+    const val = toFiniteNumber(e.currentTarget.value);
+    if (val !== undefined) setter(Math.min(100, Math.max(0, val)), 'metadata.discount');
+  }
+
+  function handleDiscountChange(e: Event & { currentTarget: HTMLInputElement }) {
+    const parsed = parseBoundedNumber(e.currentTarget.value, { min: 0, max: 100 });
+    const nextVal = parsed ?? committedDiscount;
+    if (parsed !== undefined) committedDiscount = nextVal;
+    e.currentTarget.value = String(nextVal);
+    setter(nextVal, 'metadata.discount');
+  }
 </script>
 
 {#if typeof course !== 'undefined'}
@@ -115,15 +144,8 @@
       type="number"
       min={0}
       value={cost}
-      oninput={(e) => {
-        const val = toFiniteNumber(e.currentTarget.value);
-        if (val !== undefined) setter(Math.max(0, val), 'cost');
-      }}
-      onchange={(e) => {
-        const nextVal = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 1_000_000 }) ?? 0;
-        e.currentTarget.value = String(nextVal);
-        setter(nextVal, 'cost');
-      }}
+      oninput={handleCostInput}
+      onchange={handleCostChange}
     />
 
     <InputField
@@ -160,16 +182,10 @@
       type="number"
       min={0}
       max={100}
+      step="any"
       value={discount}
-      oninput={(e) => {
-        const val = toFiniteNumber(e.currentTarget.value);
-        if (val !== undefined) setter(Math.min(100, Math.max(0, val)), 'metadata.discount');
-      }}
-      onchange={(e) => {
-        const nextVal = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? 0;
-        e.currentTarget.value = String(nextVal);
-        setter(nextVal, 'metadata.discount');
-      }}
+      oninput={handleDiscountInput}
+      onchange={handleDiscountChange}
       helperMessage={$t('course.navItem.landing_page.editor.pricing_form.percentage_helper')}
     />
   {/if}
