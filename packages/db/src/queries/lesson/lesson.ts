@@ -40,16 +40,23 @@ export async function getPaginatedLessonsByCourseId(
 
     const [countRows, items] = await Promise.all([
       db.select({ total: count() }).from(schema.lesson).where(where),
+      // Lesson order restarts in each section; lessons without a section sort last.
       db
-        .select()
+        .select({ lesson: schema.lesson })
         .from(schema.lesson)
+        .leftJoin(schema.courseSection, eq(schema.courseSection.id, schema.lesson.sectionId))
         .where(where)
-        .orderBy(asc(schema.lesson.order), asc(schema.lesson.id))
+        .orderBy(
+          asc(schema.courseSection.order),
+          asc(schema.lesson.sectionId),
+          asc(schema.lesson.order),
+          asc(schema.lesson.id)
+        )
         .limit(limit)
         .offset((page - 1) * limit)
     ]);
 
-    return { items, total: Number(countRows[0]?.total ?? 0) };
+    return { items: items.map((row) => row.lesson), total: Number(countRows[0]?.total ?? 0) };
   } catch (error) {
     console.error('getPaginatedLessonsByCourseId error:', error);
     throw new Error(
@@ -273,6 +280,15 @@ export async function getLessonCommentsByLessonId(lessonId: string) {
   }
 }
 
+// Date.parse rolls Feb 31 over to March; Postgres rejects it.
+function isRealTimestamp(value: string): boolean {
+  if (Number.isNaN(Date.parse(value))) return false;
+
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+}
+
 // Cursor is `<createdAt>|<id>`; a bare id is the format dashboards loaded before this change still hold.
 function parseLessonCommentCursor(cursor?: string): { createdAt?: string; id: number } | undefined {
   if (!cursor) return undefined;
@@ -281,7 +297,7 @@ function parseLessonCommentCursor(cursor?: string): { createdAt?: string; id: nu
   const separatorIndex = cursor.lastIndexOf('|');
   const createdAt = cursor.slice(0, separatorIndex);
   const id = cursor.slice(separatorIndex + 1);
-  if (separatorIndex <= 0 || !/^\d+$/.test(id) || Number.isNaN(Date.parse(createdAt))) return undefined;
+  if (separatorIndex <= 0 || !/^\d+$/.test(id) || !isRealTimestamp(createdAt)) return undefined;
 
   return { createdAt, id: Number(id) };
 }

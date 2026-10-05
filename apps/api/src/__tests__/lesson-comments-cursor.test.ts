@@ -76,4 +76,10 @@ describe('getLessonCommentsByLessonIdPaginated cursor', () => {
 
     expect(where.params).toEqual([LESSON_ID]);
   });
+
+  it('treats a date that does not exist as a malformed cursor', async () => {
+    const { where } = await listComments('2026-02-31 10:00:00+00|7');
+
+    expect(where.params).toEqual([LESSON_ID]);
+  });
 });

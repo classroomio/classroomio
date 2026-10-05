@@ -98,7 +98,14 @@ describe('public API course content request contract', () => {
     expect(ZPublicApiCourseLessonCommentsQuery.safeParse({ cursor: '2026-09-30 10:00:00.123456+00|7' }).success).toBe(
       true
     );
-    for (const cursor of ['7', 'abc', 'garbage|7', '9999-99-99 00:00:00+00|7', '2026-09-30 10:00:00+00|x']) {
+    for (const cursor of [
+      '7',
+      'abc',
+      'garbage|7',
+      '9999-99-99 00:00:00+00|7',
+      '2026-02-31T00:00:00Z|7',
+      '2026-09-30 10:00:00+00|x'
+    ]) {
       expect(ZPublicApiCourseLessonCommentsQuery.safeParse({ cursor }).success).toBe(false);
     }
     expect(
