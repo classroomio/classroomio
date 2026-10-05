@@ -667,6 +667,10 @@ export default defineConfig({
             ]
           },
           {
+            label: 'Customize student emails',
+            root: '/publish-and-brand/customize-student-emails'
+          },
+          {
             label: 'Build your academy landing page',
             display: 'group',
             collapsed: true,
