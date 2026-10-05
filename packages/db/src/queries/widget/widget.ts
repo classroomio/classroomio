@@ -7,7 +7,7 @@ import type {
   TWidgetCourse,
   TWidgetVersion
 } from '@db/types';
-import { and, asc, count, desc, eq, ilike, inArray, isNull, ne, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, inArray, isNull, ne, sql } from 'drizzle-orm';
 
 import { db } from '@db/drizzle';
 
@@ -29,6 +29,26 @@ export interface ListOrganizationWidgetsOptions {
 export interface TWidgetListPage {
   items: TWidgetListItem[];
   total: number;
+}
+
+const WIDGET_SEARCH_ESCAPE_CHAR = '!';
+
+/**
+ * `%` and `_` are ILIKE wildcards, so a search for `100%` would otherwise match any
+ * name beginning with `100`, and `a_b` would match `axb`. Escape those, plus the
+ * escape character itself, before the surrounding wildcards are added.
+ */
+function escapeWidgetSearchPattern(value: string) {
+  return value.replace(/[!%_]/g, (character) => `${WIDGET_SEARCH_ESCAPE_CHAR}${character}`);
+}
+
+/** Contains-match on the widget name, with the caller's text treated as literal text. */
+function widgetNameContainsIlike(search: string) {
+  const pattern = `%${escapeWidgetSearchPattern(search.trim())}%`;
+
+  // The escape character is a module constant inlined as a literal: Postgres cannot
+  // infer a type for a bind parameter in an ESCAPE clause.
+  return sql`${schema.widget.name} ILIKE ${pattern} ESCAPE '${sql.raw(WIDGET_SEARCH_ESCAPE_CHAR)}'`;
 }
 
 function widgetListItemSelect() {
@@ -65,7 +85,7 @@ function buildWidgetListWhereClause(orgId: string, options: ListOrganizationWidg
 
   const search = options.search?.trim();
   if (search) {
-    conditions.push(ilike(schema.widget.name, `%${search}%`));
+    conditions.push(widgetNameContainsIlike(search));
   }
 
   const statuses = toFilterArray(options.status);
@@ -138,8 +158,6 @@ export async function listArchivedWidgetsByOrganization(
 
 export async function searchOrgWidgets(orgId: string, search: string, limit: number): Promise<TWidgetListItem[]> {
   try {
-    const searchValue = `%${search.trim()}%`;
-
     return await db
       .select(widgetListItemSelect())
       .from(schema.widget)
@@ -149,7 +167,7 @@ export async function searchOrgWidgets(orgId: string, search: string, limit: num
           eq(schema.widget.organizationId, orgId),
           isNull(schema.widget.deletedAt),
           ne(schema.widget.status, 'ARCHIVED'),
-          ilike(schema.widget.name, searchValue)
+          widgetNameContainsIlike(search)
         )
       )
       .groupBy(schema.widget.id)

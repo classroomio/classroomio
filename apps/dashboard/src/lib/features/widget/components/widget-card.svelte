@@ -27,7 +27,11 @@
   async function handleRestore() {
     const restored = await widgetApi.restoreWidget(widget.id);
     if (restored) {
-      await invalidateAll();
+      try {
+        await invalidateAll();
+      } catch (error) {
+        console.error('Failed to refresh widgets after restore:', error);
+      }
     }
   }
 

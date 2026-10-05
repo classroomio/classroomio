@@ -13,6 +13,9 @@ export interface WidgetListFilters {
   selectionModes: TWidgetSelectionMode[];
 }
 
+/** Mirrors the `max` on `ZListWidgetsQuery.search`, so the request can never be rejected for length. */
+export const WIDGET_LIST_SEARCH_MAX_LENGTH = 120;
+
 export const DEFAULT_WIDGET_LIST_FILTERS: WidgetListFilters = {
   page: 1,
   search: '',
@@ -109,11 +112,17 @@ export function clearWidgetListFilters(filters: WidgetListFilters): WidgetListFi
 /**
  * Query object for the RPC client. Arrays become comma-separated strings, which is
  * the shape the API's `csvEnum` schema parses.
+ *
+ * The search is clamped to the API's `ZListWidgetsQuery` limit: the URL can hold a
+ * longer value than the schema accepts, and an over-long search is rejected with a
+ * 400 that the loader renders as two empty lists rather than an error.
  */
 export function toWidgetListRequestQuery(filters: WidgetListFilters) {
+  const search = filters.search.slice(0, WIDGET_LIST_SEARCH_MAX_LENGTH);
+
   return {
     page: String(filters.page),
-    search: filters.search || undefined,
+    search: search || undefined,
     status: filters.statuses.length > 0 ? filters.statuses.join(',') : undefined,
     layoutType: filters.layoutTypes.length > 0 ? filters.layoutTypes.join(',') : undefined,
     selectionMode: filters.selectionModes.length > 0 ? filters.selectionModes.join(',') : undefined

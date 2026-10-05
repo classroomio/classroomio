@@ -8,6 +8,7 @@ import {
   getWidgetListSearchParams,
   mergeWidgetListSearchParams,
   toWidgetListRequestQuery,
+  WIDGET_LIST_SEARCH_MAX_LENGTH,
   withFilterChange,
   withoutStatusFilter,
   type WidgetListFilters
@@ -179,5 +180,20 @@ describe('toWidgetListRequestQuery', () => {
     }
 
     expect(getWidgetListFiltersFromSearchParams(params)).toEqual(FILTERED);
+  });
+
+  it('clamps a search past the API limit so the request is not rejected', () => {
+    const overlongSearch = 'a'.repeat(WIDGET_LIST_SEARCH_MAX_LENGTH + 40);
+    const query = toWidgetListRequestQuery({ ...FILTERED, search: overlongSearch });
+
+    expect(query.search).toHaveLength(WIDGET_LIST_SEARCH_MAX_LENGTH);
+  });
+
+  it('never exceeds the length the API schema accepts', () => {
+    for (const length of [0, 1, WIDGET_LIST_SEARCH_MAX_LENGTH - 1, WIDGET_LIST_SEARCH_MAX_LENGTH, 5000]) {
+      const query = toWidgetListRequestQuery({ ...FILTERED, search: 'x'.repeat(length) });
+
+      expect(query.search === undefined || query.search.length <= WIDGET_LIST_SEARCH_MAX_LENGTH).toBe(true);
+    }
   });
 });

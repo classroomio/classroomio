@@ -45,7 +45,11 @@
 
     const renamed = await widgetApi.updateWidget(id, { name: trimmedDraftName });
     if (renamed) {
-      await invalidateAll();
+      try {
+        await invalidateAll();
+      } catch (error) {
+        console.error('Failed to refresh widgets after rename:', error);
+      }
     }
 
     renameOpen = false;
@@ -61,7 +65,11 @@
   async function handlePermanentDelete() {
     const deleted = await widgetApi.deleteWidget(id);
     if (deleted) {
-      await invalidateAll();
+      try {
+        await invalidateAll();
+      } catch (error) {
+        console.error('Failed to refresh widgets after delete:', error);
+      }
     }
 
     deleteOpen = false;

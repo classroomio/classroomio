@@ -5,6 +5,7 @@
   import {
     clearWidgetListFilters,
     countActiveWidgetFilters,
+    DEFAULT_WIDGET_LIST_FILTERS,
     getWidgetListFiltersFromSearchParams,
     mergeWidgetListSearchParams,
     withFilterChange,
@@ -97,9 +98,16 @@
     void navigateFilters(withFilterChange(filters, { selectionModes }));
   }
 
-  function handleClearFilters() {
+  function handleClearFilters(resetPage = false) {
     searchValue = '';
-    void navigateFilters(clearWidgetListFilters(filters));
+    const clearedFilters = clearWidgetListFilters(filters);
+    void navigateFilters(resetPage ? { ...clearedFilters, page: 1 } : clearedFilters);
+  }
+
+  function handleTabChange() {
+    if (filters.page === DEFAULT_WIDGET_LIST_FILTERS.page) return;
+
+    void navigateFilters({ ...filters, page: DEFAULT_WIDGET_LIST_FILTERS.page });
   }
 
   const tabs = $derived([
@@ -122,11 +130,11 @@
     onStatusesChange={handleStatusesChange}
     onLayoutTypesChange={handleLayoutTypesChange}
     onSelectionModesChange={handleSelectionModesChange}
-    onClearFilters={handleClearFilters}
+    onClearFilters={() => handleClearFilters()}
   />
 </Page.BodyHeader>
 
-<UnderlineTabs.Root bind:value={currentTab}>
+<UnderlineTabs.Root bind:value={currentTab} onValueChange={handleTabChange}>
   <UnderlineTabs.List class="mb-6">
     {#each tabs as tab (tab.value)}
       <UnderlineTabs.Trigger value={tab.value}>
@@ -144,7 +152,7 @@
       emptyTitle={$t('widgets.empty.heading')}
       emptyDescription={$t('widgets.empty.description')}
       emptyIcon={PanelsTopLeftIcon}
-      onClearFilters={handleClearFilters}
+      onClearFilters={() => handleClearFilters(true)}
       onPageChange={handlePageChange}
     >
       {#snippet emptyAction()}
@@ -162,7 +170,7 @@
       emptyTitle={$t('widgets.archived.empty')}
       emptyDescription={$t('widgets.archived.empty_description')}
       emptyIcon={ArchiveIcon}
-      onClearFilters={handleClearFilters}
+      onClearFilters={() => handleClearFilters(true)}
       onPageChange={handlePageChange}
     />
   </UnderlineTabs.Content>
