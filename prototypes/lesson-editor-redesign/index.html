@@ -242,16 +242,32 @@
   .canvas-wrap { padding: 22px 28px 60px; max-width: 820px; margin: 0 auto; width: 100%; }
   .canvas { display: flex; flex-direction: column; }
   .content-section { padding: 18px 0 22px; }
-  /* Desktop screen only: every top-level block reads as its own large, framed, heavily-shadowed
-     panel on a soft canvas backdrop — generously spaced so a long lesson reads as a sequence of
-     slides, not a form. Nested content inside a Tabs pane stays bare (no card-in-a-card) — only
-     #canvas's own direct children get this treatment. */
-  #screen-desktop .canvas-wrap { background: var(--muted); padding-right: 64px; }
-  #canvas > .content-section {
+  /* Desktop screen, Edit mode only: every top-level block reads as its own large, framed,
+     heavily-shadowed panel on a soft canvas backdrop — generously spaced so a long lesson reads
+     as a sequence of slides, not a form. Nested content inside a Tabs pane stays bare (no
+     card-in-a-card) — only #canvas's own direct children get this treatment. Preview strips all
+     of this back off below (search "Preview: written on the canvas"), since a learner should see
+     a flowing document, not an editor's card stack. */
+  #screen-desktop:not(.mode-preview) .canvas-wrap { background: var(--muted); }
+  #screen-desktop:not(.mode-preview) #canvas > .content-section {
     background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl);
     box-shadow: var(--shadow-lg); padding: 26px;
   }
-  #canvas > .block-gap { margin: 26px 0; }
+  #screen-desktop:not(.mode-preview) #canvas > .block-gap { margin: 26px 0; }
+
+  /* Preview: written on the canvas, not in cards — each block keeps only the visual structure it
+     actually needs (a quiz reads as a question, a document as a file row); plain text and media
+     that already have their own frame (video/slide/image/flashcards) sit directly on the page.
+     Spacing between blocks is a single density the author can choose (see "reading density"). */
+  :root { --preview-gap-compact: 24px; --preview-gap-comfortable: 40px; --preview-gap-spacious: 64px; }
+  .mode-preview #canvas > .content-section { margin-bottom: var(--preview-gap, var(--preview-gap-comfortable)); }
+  .mode-preview #canvas > .content-section:last-of-type { margin-bottom: 0; }
+  #screen-desktop.density-compact { --preview-gap: var(--preview-gap-compact); }
+  #screen-desktop.density-spacious { --preview-gap: var(--preview-gap-spacious); }
+  .mode-preview .preview-doc-link { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+  .mode-preview .quiz-block, .mode-preview .process-block {
+    border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 22px 24px;
+  }
 
   /* unified canvas: one block per content item, reorderable as a sequence */
   .content-section { transition: opacity .15s; }
@@ -934,7 +950,7 @@
     </div>
   </div>
 
-  <div class="floating-nav-wrap" id="floatingNav-canvas">
+  <div class="floating-nav-wrap edit-only" id="floatingNav-canvas">
     <div class="floating-nav" role="toolbar" aria-label="Add content" id="floatingNavBar-canvas"></div>
   </div>
 
@@ -977,6 +993,15 @@
         <p class="field-legend">Engagement</p>
         <p class="field-desc">Comments are on for this course — turn them off for just this lesson if needed.</p>
         <div class="field-row-h"><label class="switch"><input type="checkbox" id="commentsToggle" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Allow comments on this lesson</span></div>
+      </div>
+      <div class="field-set">
+        <p class="field-legend">Reading density</p>
+        <p class="field-desc">How much room shows between blocks when students view this lesson in Preview.</p>
+        <div class="seg-toggle" id="densityToggle">
+          <button type="button" data-density="compact">Compact</button>
+          <button type="button" class="on" data-density="comfortable">Comfortable</button>
+          <button type="button" data-density="spacious">Spacious</button>
+        </div>
       </div>
     </div>
   </aside>
@@ -1025,7 +1050,7 @@
     </div>
   </div>
 
-  <div class="floating-nav-wrap" id="floatingNav-emptyCanvas">
+  <div class="floating-nav-wrap edit-only" id="floatingNav-emptyCanvas">
     <div class="floating-nav" role="toolbar" aria-label="Add content" id="floatingNavBar-emptyCanvas"></div>
   </div>
 </section>
@@ -1215,6 +1240,17 @@
   }
   document.getElementById('btnSettingsDesktop').onclick = () => openSettings('Desktop');
   document.getElementById('btnSettingsMobile').onclick = () => openSettings('Mobile');
+
+  // ---- Preview reading density (how much space shows between blocks in Preview) ----
+  document.getElementById('densityToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('#densityToggle button').forEach((b) => b.classList.remove('on'));
+    btn.classList.add('on');
+    const screenEl = document.getElementById('screen-desktop');
+    screenEl.classList.remove('density-compact', 'density-spacious');
+    if (btn.dataset.density !== 'comfortable') screenEl.classList.add('density-' + btn.dataset.density);
+  });
 
   function onPolicyChange() {
     const isWatch = document.getElementById('completionPolicy').value === 'video_watch';
