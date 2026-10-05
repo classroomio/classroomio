@@ -78,7 +78,7 @@
     };
   });
   const showContentCount = $derived(sidebar.open && !sidebar.isMobile && contentCount.total > 0);
-  const isContentTreeExpanded = $derived(isOnContentRoute && !contentTreeCollapsed);
+  const isContentTreeExpanded = $derived(!contentTreeCollapsed);
   const studentComplianceRecord = $derived(complianceApi.learnerHistory?.currentRecord ?? null);
   const showComplianceBanner = $derived(
     isStudent && courseApi.course?.type === 'COMPLIANCE' && (sidebar.open || sidebar.isMobile)
