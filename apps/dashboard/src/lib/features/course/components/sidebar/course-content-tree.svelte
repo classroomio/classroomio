@@ -71,6 +71,9 @@
     expandedSectionIds.add(activeSectionId);
   });
 
+  /**
+   * Resolves whether a course section is currently open in the tree.
+   */
   function isSectionOpen(sectionId: string): boolean {
     return isSectionExpanded({
       sectionId,
@@ -80,6 +83,9 @@
     });
   }
 
+  /**
+   * Handles section open/close state transitions from the collapsible trigger.
+   */
   function handleSectionOpenChange(sectionId: string, open: boolean) {
     updateSectionExpansionState({
       sectionId,

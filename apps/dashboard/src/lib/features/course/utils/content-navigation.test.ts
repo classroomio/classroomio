@@ -137,3 +137,38 @@ describe('updateSectionExpansionState', () => {
     expect(expandedSectionIds.has('section-2')).toBe(true);
   });
 });
+
+describe('admin collapsible section toggle workflow', () => {
+  it('toggles section open and closed through the collapsible trigger cycle', () => {
+    const collapsedSectionIds = new Set<string>();
+    const expandedSectionIds = new Set<string>();
+
+    const checkOpen = (sectionId: string) =>
+      isSectionExpanded({
+        sectionId,
+        isStudent: false,
+        expandedSectionIds,
+        collapsedSectionIds
+      });
+
+    const triggerToggle = (sectionId: string, open: boolean) =>
+      updateSectionExpansionState({
+        sectionId,
+        open,
+        isStudent: false,
+        expandedSectionIds,
+        collapsedSectionIds
+      });
+
+    expect(checkOpen('section-1')).toBe(true);
+    expect(checkOpen('section-2')).toBe(true);
+
+    triggerToggle('section-1', false);
+    expect(checkOpen('section-1')).toBe(false);
+    expect(checkOpen('section-2')).toBe(true);
+
+    triggerToggle('section-1', true);
+    expect(checkOpen('section-1')).toBe(true);
+    expect(checkOpen('section-2')).toBe(true);
+  });
+});

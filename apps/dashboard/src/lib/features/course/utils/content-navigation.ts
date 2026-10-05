@@ -130,6 +130,9 @@ export function collapseExpandedSectionsToActive(activeSectionId: string | null)
   return new Set([activeSectionId]);
 }
 
+/**
+ * Resolves whether a course section is expanded based on the viewer role and expansion tracking sets.
+ */
 export function isSectionExpanded(params: {
   sectionId: string;
   isStudent: boolean;
@@ -143,6 +146,9 @@ export function isSectionExpanded(params: {
   return params.expandedSectionIds.has(params.sectionId);
 }
 
+/**
+ * Updates the expansion tracking sets for a course section when its open state changes.
+ */
 export function updateSectionExpansionState(params: {
   sectionId: string;
   open: boolean;
