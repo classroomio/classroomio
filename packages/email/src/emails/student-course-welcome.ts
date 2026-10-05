@@ -15,13 +15,17 @@ export const studentCourseWelcomeEmail = defineEmail({
     customMessage: z.string().optional(),
     branding: ZEmailBranding
   }),
-  render: (fields, context) =>
-    renderStudentEmail({
+  render: (fields, context) => {
+    const hasCourseMessage = Boolean(fields.customMessage?.trim());
+    const bodyContext = hasCourseMessage ? { ...context, contentOverride: '{{course_message}}' } : context;
+
+    return renderStudentEmail({
       id: 'studentCourseWelcome',
       values: { org_name: fields.orgName, course_name: fields.courseName },
       trustedHtml: { course_message: fields.customMessage },
       actionUrl: fields.loginUrl,
       branding: fields.branding,
-      context
-    })
+      context: bodyContext
+    });
+  }
 });

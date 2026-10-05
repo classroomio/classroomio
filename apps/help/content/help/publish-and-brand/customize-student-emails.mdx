@@ -61,13 +61,15 @@ Select **Save changes** in the bar at the bottom of the page, or **Discard** to 
 
 After you save, the email shows **Edited** in the list. Students receive your version from then on.
 
+If a course has its own message under **Settings → Welcome email**, that message replaces the whole **Course welcome** body for that course. The subject, button, branding, and footer still come from **Settings → Emails**.
+
 ## What you can't change
 
 The action button, its destination, your organization's branding, and the email footer are added by ClassroomIO and can't be removed. The **Protected email content** box shows the button students will see.
 
 Some values only appear when they exist:
 
-- `{{course_message}}` is the course's own welcome message. Set it in the course's **Settings** under **Welcome email**.
+- In **Course completion**, `{{course_message}}` is the message set on the course's **Certificates** page under **Email Message**.
 - In **Submission graded**, a paragraph that contains `{{score}}` or `{{lesson_title}}` is left out when the submission has no score or isn't part of a lesson.
 
 ## Available placeholders
@@ -78,7 +80,7 @@ Every email can use **Organization** (`{{org_name}}`). These emails also support
 | --------------------------- | ------------------------------------------- | ---------------------------------------------------------------------- |
 | **Course invitation**       | You invite someone to a course              | Course name, Expiry date                                               |
 | **Organization invitation** | You invite someone to your organization     | Expiry date, Courses                                                   |
-| **Course welcome**          | A student gets access to a course           | Course name, Instructor message                                        |
+| **Course welcome**          | A student gets access to a course           | Course name                                                            |
 | **Cohort welcome**          | A student gets access to a cohort           | Cohort name                                                            |
 | **Quiz assigned**           | A quiz is assigned to a student             | Course name, Exercise title                                            |
 | **Submission graded**       | A student's exercise submission is reviewed | Student name, Exercise title, Course name, Status, Score, Lesson title |
@@ -99,6 +101,6 @@ If your organization moves to the Free plan, every student email goes back to th
 
 ## Related guides
 
-- [Customize the welcome email](/manage-students/welcome-email) — write the course message that fills `{{course_message}}`
+- [Customize the welcome email](/manage-students/welcome-email) — write a course's own welcome message, which replaces the **Course welcome** body
 - [Invite students](/manage-students/invite-students) — send the course invitation email
 - [Manage your notification preferences](/account-team-security/manage-your-notification-preferences) — choose which emails you receive yourself

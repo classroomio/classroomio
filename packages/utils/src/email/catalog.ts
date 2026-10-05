@@ -10,7 +10,7 @@ const en: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'You have access to {{course_name}}',
-      body: '<p>Hi there,</p><p>You now have access to <strong>{{course_name}}</strong> in <strong>{{org_name}}</strong>.</p>{{course_message}}<p>If you run into any issues, reach out to your instructor.</p><p>Cheers,<br>{{org_name}}</p>',
+      body: '<p>Hi there,</p><p>You now have access to <strong>{{course_name}}</strong> in <strong>{{org_name}}</strong>.</p><p>If you run into any issues, reach out to your instructor.</p><p>Cheers,<br>{{org_name}}</p>',
       cta: 'Open course'
     },
     studentCourseCompletion: {
@@ -81,7 +81,7 @@ const fr: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'Vous avez accès à {{course_name}}',
-      body: '<p>Bonjour,</p><p>Vous avez maintenant accès à <strong>{{course_name}}</strong> dans <strong>{{org_name}}</strong>.</p>{{course_message}}<p>En cas de problème, contactez votre formateur.</p><p>À bientôt,<br>{{org_name}}</p>',
+      body: '<p>Bonjour,</p><p>Vous avez maintenant accès à <strong>{{course_name}}</strong> dans <strong>{{org_name}}</strong>.</p><p>En cas de problème, contactez votre formateur.</p><p>À bientôt,<br>{{org_name}}</p>',
       cta: 'Ouvrir le cours'
     },
     studentCourseCompletion: {
@@ -152,7 +152,7 @@ const de: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'Sie haben Zugriff auf {{course_name}}',
-      body: '<p>Hallo,</p><p>Sie haben jetzt Zugriff auf <strong>{{course_name}}</strong> bei <strong>{{org_name}}</strong>.</p>{{course_message}}<p>Bei Problemen wenden Sie sich an Ihre Lehrkraft.</p><p>Viele Grüße,<br>{{org_name}}</p>',
+      body: '<p>Hallo,</p><p>Sie haben jetzt Zugriff auf <strong>{{course_name}}</strong> bei <strong>{{org_name}}</strong>.</p><p>Bei Problemen wenden Sie sich an Ihre Lehrkraft.</p><p>Viele Grüße,<br>{{org_name}}</p>',
       cta: 'Kurs öffnen'
     },
     studentCourseCompletion: {
@@ -223,7 +223,7 @@ const es: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'Tienes acceso a {{course_name}}',
-      body: '<p>Hola,</p><p>Ya tienes acceso a <strong>{{course_name}}</strong> en <strong>{{org_name}}</strong>.</p>{{course_message}}<p>Si tienes algún problema, contacta con tu instructor.</p><p>Saludos,<br>{{org_name}}</p>',
+      body: '<p>Hola,</p><p>Ya tienes acceso a <strong>{{course_name}}</strong> en <strong>{{org_name}}</strong>.</p><p>Si tienes algún problema, contacta con tu instructor.</p><p>Saludos,<br>{{org_name}}</p>',
       cta: 'Abrir curso'
     },
     studentCourseCompletion: {
@@ -289,7 +289,7 @@ const pt: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'Você tem acesso a {{course_name}}',
-      body: '<p>Olá,</p><p>Agora você tem acesso a <strong>{{course_name}}</strong> na <strong>{{org_name}}</strong>.</p>{{course_message}}<p>Se tiver algum problema, fale com seu instrutor.</p><p>Até breve,<br>{{org_name}}</p>',
+      body: '<p>Olá,</p><p>Agora você tem acesso a <strong>{{course_name}}</strong> na <strong>{{org_name}}</strong>.</p><p>Se tiver algum problema, fale com seu instrutor.</p><p>Até breve,<br>{{org_name}}</p>',
       cta: 'Abrir curso'
     },
     studentCourseCompletion: {
@@ -355,7 +355,7 @@ const hi: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'आपको {{course_name}} की पहुँच मिल गई है',
-      body: '<p>नमस्ते,</p><p>अब आपको <strong>{{org_name}}</strong> में <strong>{{course_name}}</strong> की पहुँच है।</p>{{course_message}}<p>किसी समस्या पर अपने प्रशिक्षक से संपर्क करें।</p><p>शुभकामनाएँ,<br>{{org_name}}</p>',
+      body: '<p>नमस्ते,</p><p>अब आपको <strong>{{org_name}}</strong> में <strong>{{course_name}}</strong> की पहुँच है।</p><p>किसी समस्या पर अपने प्रशिक्षक से संपर्क करें।</p><p>शुभकामनाएँ,<br>{{org_name}}</p>',
       cta: 'कोर्स खोलें'
     },
     studentCourseCompletion: {
@@ -426,7 +426,7 @@ const vi: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'Bạn đã có quyền truy cập {{course_name}}',
-      body: '<p>Xin chào,</p><p>Bạn đã có quyền truy cập <strong>{{course_name}}</strong> tại <strong>{{org_name}}</strong>.</p>{{course_message}}<p>Nếu gặp vấn đề, hãy liên hệ với giảng viên.</p><p>Thân mến,<br>{{org_name}}</p>',
+      body: '<p>Xin chào,</p><p>Bạn đã có quyền truy cập <strong>{{course_name}}</strong> tại <strong>{{org_name}}</strong>.</p><p>Nếu gặp vấn đề, hãy liên hệ với giảng viên.</p><p>Thân mến,<br>{{org_name}}</p>',
       cta: 'Mở khóa học'
     },
     studentCourseCompletion: {
@@ -492,7 +492,7 @@ const ru: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'Вам доступен курс {{course_name}}',
-      body: '<p>Здравствуйте!</p><p>Теперь вам доступен курс <strong>{{course_name}}</strong> в <strong>{{org_name}}</strong>.</p>{{course_message}}<p>Если возникнут проблемы, обратитесь к преподавателю.</p><p>С уважением,<br>{{org_name}}</p>',
+      body: '<p>Здравствуйте!</p><p>Теперь вам доступен курс <strong>{{course_name}}</strong> в <strong>{{org_name}}</strong>.</p><p>Если возникнут проблемы, обратитесь к преподавателю.</p><p>С уважением,<br>{{org_name}}</p>',
       cta: 'Открыть курс'
     },
     studentCourseCompletion: {
@@ -558,7 +558,7 @@ const pl: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'Masz dostęp do {{course_name}}',
-      body: '<p>Cześć,</p><p>Masz teraz dostęp do <strong>{{course_name}}</strong> w <strong>{{org_name}}</strong>.</p>{{course_message}}<p>W razie problemów skontaktuj się z prowadzącym.</p><p>Pozdrawiamy,<br>{{org_name}}</p>',
+      body: '<p>Cześć,</p><p>Masz teraz dostęp do <strong>{{course_name}}</strong> w <strong>{{org_name}}</strong>.</p><p>W razie problemów skontaktuj się z prowadzącym.</p><p>Pozdrawiamy,<br>{{org_name}}</p>',
       cta: 'Otwórz kurs'
     },
     studentCourseCompletion: {
@@ -629,7 +629,7 @@ const da: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: 'Du har adgang til {{course_name}}',
-      body: '<p>Hej,</p><p>Du har nu adgang til <strong>{{course_name}}</strong> hos <strong>{{org_name}}</strong>.</p>{{course_message}}<p>Kontakt din underviser, hvis du oplever problemer.</p><p>Venlig hilsen,<br>{{org_name}}</p>',
+      body: '<p>Hej,</p><p>Du har nu adgang til <strong>{{course_name}}</strong> hos <strong>{{org_name}}</strong>.</p><p>Kontakt din underviser, hvis du oplever problemer.</p><p>Venlig hilsen,<br>{{org_name}}</p>',
       cta: 'Åbn kursus'
     },
     studentCourseCompletion: {
@@ -695,7 +695,7 @@ const tr: StudentEmailLocaleCopy = {
     },
     studentCourseWelcome: {
       subject: '{{course_name}} kursuna erişiminiz var',
-      body: '<p>Merhaba,</p><p><strong>{{org_name}}</strong> bünyesindeki <strong>{{course_name}}</strong> kursuna artık erişebilirsiniz.</p>{{course_message}}<p>Bir sorun yaşarsanız eğitmeninizle iletişime geçin.</p><p>Sevgiler,<br>{{org_name}}</p>',
+      body: '<p>Merhaba,</p><p><strong>{{org_name}}</strong> bünyesindeki <strong>{{course_name}}</strong> kursuna artık erişebilirsiniz.</p><p>Bir sorun yaşarsanız eğitmeninizle iletişime geçin.</p><p>Sevgiler,<br>{{org_name}}</p>',
       cta: 'Kursu aç'
     },
     studentCourseCompletion: {

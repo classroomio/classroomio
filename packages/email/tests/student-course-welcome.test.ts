@@ -24,7 +24,7 @@ describe('studentCourseWelcomeEmail', () => {
     ).toBe('Bienvenue dans React Basics');
   });
 
-  it('localizes system copy while preserving the organization message', () => {
+  it('sends the course welcome message in place of the default body', () => {
     const rendered = studentCourseWelcomeEmail.template.render(
       {
         orgName: 'Academy',
@@ -37,8 +37,18 @@ describe('studentCourseWelcomeEmail', () => {
     );
 
     expect(rendered).toContain('<html lang="fr">');
-    expect(rendered).toContain('Vous avez maintenant accès à');
     expect(rendered).toContain('<p>Welcome from your instructor.</p>');
+    expect(rendered).not.toContain('Vous avez maintenant accès à');
+    expect(rendered).toContain('Ouvrir le cours');
+  });
+
+  it('sends the default body when the course has no welcome message', () => {
+    const rendered = studentCourseWelcomeEmail.template.render(
+      { orgName: 'Academy', courseName: 'React Basics', loginUrl: 'https://example.com/course', branding: {} },
+      { locale: 'fr' }
+    );
+
+    expect(rendered).toContain('Vous avez maintenant accès à');
   });
 
   it('resolves dynamic action links in organization overrides', () => {

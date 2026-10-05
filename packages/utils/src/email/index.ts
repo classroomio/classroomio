@@ -75,7 +75,7 @@ export interface StudentEmailLocaleCopy {
 
 export const STUDENT_EMAIL_VARIABLES: Record<StudentEmailId, readonly string[]> = {
   studentCourseInvite: ['org_name', 'course_name', 'expires_at'],
-  studentCourseWelcome: ['org_name', 'course_name', 'course_message'],
+  studentCourseWelcome: ['org_name', 'course_name'],
   studentCourseCompletion: ['org_name', 'course_name', 'student_name', 'course_message'],
   studentOrgInvite: ['org_name', 'expires_at', 'course_names'],
   studentCohortWelcome: ['org_name', 'cohort_name'],
