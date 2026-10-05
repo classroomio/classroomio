@@ -16,6 +16,9 @@
     { grow: 2, tones: ['tint'] }
   ];
 
+  const BASE_ROWS = Math.max(...COLUMNS.map((column) => column.tones.length));
+  const EXTRA_TONES: Tone[] = ['muted', 'tint', 'muted', 'soft'];
+
   const TONE_CLASSES: Record<Tone, string> = {
     muted: 'ui:bg-muted',
     tint: 'ui:bg-[color-mix(in_srgb,var(--primary)_14%,transparent)]',
@@ -43,14 +46,26 @@
     return [...items.slice(offset), ...items.slice(0, offset)];
   }
 
-  function buildGroups(repeat: number) {
+  function stackTones(tones: Tone[], extraRows: number, columnIndex: number): Tone[] {
+    const extraTones = Array.from(
+      { length: extraRows },
+      (_, extraIndex) => EXTRA_TONES[(columnIndex + extraIndex) % EXTRA_TONES.length]
+    );
+
+    return [...tones, ...extraTones];
+  }
+
+  function buildGroups(repeat: number, rows: number) {
+    const extraRows = Math.max(rows - BASE_ROWS, 0);
+
     return Array.from({ length: repeat }, (_, groupIndex) =>
       rotate(COLUMNS, groupIndex * 2).map((column, columnIndex) => {
         const globalColumn = groupIndex * COLUMNS.length + columnIndex;
+        const tones = stackTones(column.tones, extraRows, globalColumn);
 
         return {
           grow: column.grow,
-          blocks: column.tones.map((tone, level) => ({
+          blocks: tones.map((tone, level) => ({
             tone,
             dropOrder: level * COLUMNS.length * repeat + globalColumn
           }))
@@ -122,16 +137,21 @@
   interface Props {
     loop?: boolean;
     repeat?: number;
+    rows?: number;
     class?: string;
   }
 
-  let { loop = true, repeat = 1, class: className }: Props = $props();
+  let { loop = true, repeat = 1, rows = BASE_ROWS, class: className }: Props = $props();
 
-  const groups = $derived(buildGroups(repeat));
-  const intervalMs = $derived(SEQUENCE_MS / (COLUMNS.length * repeat));
+  const stackRows = $derived(Math.max(rows, BASE_ROWS));
+  const groups = $derived(buildGroups(repeat, stackRows));
+  const intervalMs = $derived((SEQUENCE_MS * BASE_ROWS) / (COLUMNS.length * repeat * stackRows));
 </script>
 
-<div aria-hidden="true" class={cn('ui:pointer-events-none ui:flex ui:h-16 ui:items-end ui:gap-1.5', className)}>
+<div
+  aria-hidden="true"
+  class={cn('ui:pointer-events-none ui:flex ui:items-end ui:gap-1.5', stackRows === BASE_ROWS && 'ui:h-16', className)}
+>
   {#each groups as columns, groupIndex (groupIndex)}
     <div class={cn('ui:flex ui:flex-1 ui:items-end ui:gap-1.5', groupIndex > 0 && 'ui:hidden ui:md:flex')}>
       {#each columns as column, columnIndex (columnIndex)}

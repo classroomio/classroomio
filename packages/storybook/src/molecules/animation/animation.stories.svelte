@@ -237,6 +237,14 @@
   {/snippet}
 </Story>
 
+<Story name="BlockSkyline tall">
+  {#snippet template()}
+    <div class="ui:bg-background mx-auto flex w-full max-w-md items-end rounded-xl border p-8">
+      <BlockSkyline rows={6} class="w-full" />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="BlockSkyline once, full width">
   {#snippet template()}
     <div class="ui:bg-background relative mx-auto h-64 w-full overflow-hidden rounded-xl border">
