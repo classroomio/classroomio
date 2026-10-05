@@ -317,25 +317,33 @@
   .gap-flyout-item.gap-flyout-ai { color: var(--primary); }
   .gap-flyout-div { grid-column: 1 / -1; height: 1px; background: var(--border); margin: 2px 0; }
 
-  /* side scroll-progress rail: shows how far through a long lesson the canvas has scrolled,
-     with one dot per top-level block so position stays legible without reading any text. */
-  .scroll-rail { position: fixed; right: 22px; top: 150px; bottom: 36px; width: 36px; z-index: 15; pointer-events: none; }
-  .scroll-rail-track { position: absolute; right: 16px; top: 0; bottom: 0; width: 4px; background: var(--border); border-radius: 999px; }
-  .scroll-rail-thumb { position: absolute; right: 16px; width: 4px; min-height: 28px; background: var(--primary); border-radius: 999px; transition: top .08s linear, height .08s linear; }
-  .scroll-rail-dots { position: absolute; inset: 0; }
-  .scroll-rail-dot { position: absolute; right: 0; width: 6px; height: 6px; border-radius: 999px; background: var(--border); transform: translateY(-3px); transition: background .15s, width .15s, height .15s; }
-  .scroll-rail-dot.on { width: 8px; height: 8px; background: var(--primary); transform: translateY(-4px); }
-  @media (max-width: 780px) { .scroll-rail { display: none; } }
-
-  .content-type-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-  .content-type-btn {
-    display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 12px; border: 1px solid var(--border);
-    border-radius: var(--radius-lg); background: var(--background); cursor: pointer; font: inherit; color: var(--foreground);
+  /* shared pill styling: the same look is used by the floating in-editor nav and by the
+     "Add content" dialog, so there is one visual language for "add content" everywhere. */
+  .nav-pill-row { display: flex; align-items: stretch; gap: 1px; flex-wrap: wrap; justify-content: center; }
+  .nav-pill {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; border-radius: var(--radius-md);
+    border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; padding: 8px 12px; font: inherit;
+    transition: background .12s, color .12s;
   }
-  .content-type-btn:hover { border-color: var(--ring); background: var(--accent); }
-  .content-type-btn .ic { width: 34px; height: 34px; border-radius: 999px; background: var(--muted); display: grid; place-items: center; }
-  .content-type-btn .ic svg { width: 16px; height: 16px; stroke-width: 2; }
-  .content-type-btn .nm { font-size: 13px; font-weight: 500; }
+  .nav-pill:hover, .nav-pill:focus-visible { background: var(--accent); color: var(--foreground); }
+  .nav-pill svg { width: 17px; height: 17px; stroke-width: 2; }
+  .nav-pill .lb { font-size: 9.5px; font-weight: 600; }
+  .nav-pill.nav-pill-ai { color: var(--primary); }
+  .nav-pill-div { width: 1px; align-self: stretch; background: var(--border); margin: 4px 1px; }
+
+  /* floating in-editor nav: centered on the editor column (not the whole viewport, so it never
+     drifts under the left course sidebar), and only shown once the lesson actually has content —
+     the empty canvas already has its own centered "Add content" prompt. */
+  .floating-nav-wrap {
+    position: fixed; bottom: 22px; left: calc(236px + (100vw - 236px) / 2); transform: translateX(-50%);
+    z-index: 15; display: none;
+  }
+  .floating-nav-wrap.is-visible { display: block; }
+  .floating-nav {
+    display: flex; align-items: stretch; gap: 1px; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 6px 8px; box-shadow: 0 10px 25px -5px rgb(0 0 0 / .15), 0 8px 10px -6px rgb(0 0 0 / .1);
+    max-width: calc(100vw - 236px - 48px); overflow-x: auto;
+  }
 
   .preview-banner {
     display: none; align-items: flex-start; gap: 10px; padding: 11px 14px; border-radius: var(--radius-md);
@@ -687,6 +695,7 @@
   @media (max-width: 780px) {
     .shell { grid-template-columns: 1fr; }
     .course-sidebar { display: none; }
+    .floating-nav-wrap { display: none; }
     .lesson-header { padding: 16px 16px 0; }
     .lesson-header-row { flex-direction: column; align-items: stretch; }
     .canvas-wrap { padding: 16px 16px 50px; }
@@ -932,6 +941,10 @@
     </div>
   </div>
 
+  <div class="floating-nav-wrap" id="floatingNav-canvas">
+    <div class="floating-nav" role="toolbar" aria-label="Add content" id="floatingNavBar-canvas"></div>
+  </div>
+
   <div class="slider-overlay" onclick="closeSettings('Desktop')"></div>
   <aside class="slider-panel" role="dialog" aria-label="Lesson settings">
     <div class="slider-head">
@@ -974,12 +987,6 @@
       </div>
     </div>
   </aside>
-
-  <div class="scroll-rail" id="scrollRail" aria-hidden="true">
-    <div class="scroll-rail-track"></div>
-    <div class="scroll-rail-thumb" id="scrollRailThumb"></div>
-    <div class="scroll-rail-dots" id="scrollRailDots"></div>
-  </div>
 </section>
 
 <!-- ============ SCREEN: EMPTY LESSON ============ -->
@@ -1023,6 +1030,10 @@
         </div>
       </main>
     </div>
+  </div>
+
+  <div class="floating-nav-wrap" id="floatingNav-emptyCanvas">
+    <div class="floating-nav" role="toolbar" aria-label="Add content" id="floatingNavBar-emptyCanvas"></div>
   </div>
 </section>
 
@@ -1172,7 +1183,6 @@
     if (!btn) return;
     document.querySelectorAll('.screen-switch button').forEach((b) => b.classList.toggle('on', b === btn));
     document.querySelectorAll('.screen').forEach((s) => (s.hidden = s.id !== 'screen-' + btn.dataset.screen));
-    updateScrollRail();
   });
 
   // ---- Edit / Preview toggle (scoped to the desktop screen) ----
@@ -1415,7 +1425,6 @@
     if (gap && gap.classList.contains('block-gap')) gap.remove();
     section.remove();
     updateEmptyState(canvas.id);
-    updateScrollRail();
     simulateSave();
   }
 
@@ -1438,7 +1447,6 @@
       canvas.insertBefore(nextSection, section);
       if (nextGap) canvas.insertBefore(nextGap, section);
     }
-    updateScrollRail();
     simulateSave();
   }
 
@@ -1447,6 +1455,10 @@
     const hasBlocks = canvas.querySelectorAll('.content-section').length > 0;
     const empty = canvas.querySelector('.empty-page');
     if (empty) empty.hidden = hasBlocks;
+    // The floating nav only exists for top-level canvases (not nested Tabs panes), and only
+    // shows once there's content — the empty canvas already has its own centered prompt.
+    const floatingNav = document.getElementById('floatingNav-' + canvasId);
+    if (floatingNav) floatingNav.classList.toggle('is-visible', hasBlocks);
   }
 
   // ---- Unified canvas: block markup generators (one independent block per add) ----
@@ -2624,7 +2636,6 @@
     // re-clicking) lands below it instead of repeatedly at the same old spot.
     setActiveGapEl(newGap);
     updateEmptyState(canvasId);
-    updateScrollRail();
   }
 
   function openAddContentMenu(canvasId, gapEl) {
@@ -2637,18 +2648,7 @@
     document.getElementById('dialogBox').style.maxWidth = '480px';
     document.getElementById('dialogBox').innerHTML = `
       <div class="dialog-head"><h2 class="dialog-title">Add content</h2><p class="dialog-desc">Choose a content type to add to this lesson.</p></div>
-      <div class="dialog-body"><div class="content-type-grid">
-        <button class="content-type-btn" onclick="chooseContentType('video')"><span class="ic">${ICON_VIDEO}</span><span class="nm">Video</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('image')"><span class="ic">${ICON_IMAGE}</span><span class="nm">Image</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('slide')"><span class="ic">${ICON_SLIDE}</span><span class="nm">Slides</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('note')"><span class="ic">${ICON_NOTE}</span><span class="nm">Note</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('document')"><span class="ic">${ICON_DOCUMENT}</span><span class="nm">Document</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('chart')"><span class="ic">${ICON_CHART}</span><span class="nm">Chart</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('flashcards')"><span class="ic">${ICON_FLASHCARDS}</span><span class="nm">Flashcards</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('tabs')"><span class="ic">${ICON_TABS}</span><span class="nm">Tabs</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('quiz')"><span class="ic">${ICON_QUIZ}</span><span class="nm">Multiple Choice</span></button>
-        <button class="content-type-btn" onclick="chooseContentType('process')"><span class="ic">${ICON_PROCESS}</span><span class="nm">Process</span></button>
-      </div></div>`;
+      <div class="dialog-body"><div class="nav-pill-row">${buildNavPillsHtml('dialog')}</div></div>`;
     document.body.classList.add('dialog-open');
   }
 
@@ -2677,6 +2677,50 @@
       insertBlock(activeCanvasId, sampleBuilder());
       simulateSave();
     }
+  }
+
+  const NAV_PILL_TYPES = [
+    ['note', 'Note', ICON_NOTE],
+    ['video', 'Video', ICON_VIDEO],
+    ['slide', 'Slides', ICON_SLIDE],
+    ['document', 'Document', ICON_DOCUMENT],
+    ['image', 'Image', ICON_IMAGE],
+    ['chart', 'Chart', ICON_CHART],
+    ['flashcards', 'Flashcards', ICON_FLASHCARDS],
+    ['tabs', 'Tabs', ICON_TABS],
+    ['quiz', 'Quiz', ICON_QUIZ],
+    ['process', 'Process', ICON_PROCESS]
+  ];
+
+  // Shared by the floating in-editor nav and the "Add content" dialog, so both read as the
+  // same picker — only the click targets differ (dock inserts directly; the dialog is already
+  // open, so it just swaps its own content type).
+  function buildNavPillsHtml(mode, canvasId) {
+    const aiOnclick = mode === 'dialog' ? 'openAiAssistant()' : `openAiAssistantFromDock('${canvasId}')`;
+    const typeOnclick = (type) =>
+      mode === 'dialog' ? `chooseContentType('${type}')` : `addContentFromDock('${canvasId}','${type}')`;
+    const aiPill = `<button type="button" class="nav-pill nav-pill-ai" aria-label="Ask AI assistant" onclick="${aiOnclick}">${ICON_AI}<span class="lb">AI</span></button>`;
+    const divider = '<span class="nav-pill-div"></span>';
+    const typePills = NAV_PILL_TYPES.map(
+      ([type, label, icon]) =>
+        `<button type="button" class="nav-pill" aria-label="Add ${label.toLowerCase()}" onclick="${typeOnclick(type)}">${icon}<span class="lb">${label}</span></button>`
+    ).join('');
+    return aiPill + divider + typePills;
+  }
+
+  // Floating in-editor nav: always appends to the end of the lesson, regardless of where the
+  // user last clicked in the canvas — precise mid-lesson insertion still lives in the per-gap
+  // hover flyout.
+  function addContentFromDock(canvasId, type) {
+    activeCanvasId = canvasId;
+    activeGapEl = null;
+    chooseContentType(type);
+  }
+
+  function openAiAssistantFromDock(canvasId) {
+    activeCanvasId = canvasId;
+    activeGapEl = null;
+    openAiAssistant();
   }
 
   function applyEditDialogLabels() {
@@ -3117,7 +3161,6 @@
     if (!section) return;
     section.classList.remove('dragging');
     section.draggable = false;
-    updateScrollRail();
     simulateSave();
   });
   document.addEventListener('dragover', (e) => {
@@ -3138,53 +3181,8 @@
     else document.querySelectorAll('.settings-open').forEach((el) => el.classList.remove('settings-open'));
   });
 
-  // ---- Desktop canvas: side scroll-progress rail ----
-  // Dots sit at even intervals (not pixel-mapped to each block's real height) so a lesson with
-  // a mix of tall and short blocks still reads as a clean, evenly-spaced sequence; the thumb
-  // alone tracks real scroll position.
-  function updateScrollRail() {
-    const screenEl = document.getElementById('screen-desktop');
-    const rail = document.getElementById('scrollRail');
-    const canvas = document.getElementById('canvas');
-    if (!screenEl || screenEl.hidden || !rail || !canvas) return;
-    const sections = [...canvas.querySelectorAll(':scope > .content-section')];
-    if (sections.length === 0) {
-      rail.style.display = 'none';
-      return;
-    }
-    rail.style.display = '';
-
-    const thumb = document.getElementById('scrollRailThumb');
-    const dotsWrap = document.getElementById('scrollRailDots');
-    const railHeight = rail.getBoundingClientRect().height;
-    const viewportH = window.innerHeight;
-    const scrollableH = Math.max(1, document.documentElement.scrollHeight - viewportH);
-    const progress = Math.min(1, Math.max(0, window.scrollY / scrollableH));
-    const thumbHeight = Math.max(28, railHeight * (viewportH / document.documentElement.scrollHeight));
-    thumb.style.height = `${thumbHeight}px`;
-    thumb.style.top = `${progress * (railHeight - thumbHeight)}px`;
-
-    let activeIndex = 0;
-    let bestDistance = Infinity;
-    sections.forEach((section, i) => {
-      const distance = Math.abs(section.getBoundingClientRect().top - 120);
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        activeIndex = i;
-      }
-    });
-
-    if (dotsWrap.children.length !== sections.length) {
-      dotsWrap.innerHTML = sections.map(() => '<span class="scroll-rail-dot"></span>').join('');
-    }
-    [...dotsWrap.children].forEach((dot, i) => {
-      dot.classList.toggle('on', i === activeIndex);
-      dot.style.top = `${sections.length > 1 ? (i / (sections.length - 1)) * 100 : 50}%`;
-    });
-  }
-  window.addEventListener('scroll', updateScrollRail, { passive: true });
-  window.addEventListener('resize', updateScrollRail);
-  updateScrollRail();
+  document.getElementById('floatingNavBar-canvas').innerHTML = buildNavPillsHtml('dock', 'canvas');
+  document.getElementById('floatingNavBar-emptyCanvas').innerHTML = buildNavPillsHtml('dock', 'emptyCanvas');
 </script>
   </body>
 </html>
