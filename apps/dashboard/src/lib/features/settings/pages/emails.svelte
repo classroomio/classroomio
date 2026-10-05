@@ -25,7 +25,7 @@
   import InfoIcon from '@lucide/svelte/icons/info';
   import Pencil from '@lucide/svelte/icons/pencil';
 
-  import { InputField } from '@cio/ui/custom/input-field';
+  import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { TextEditor, UnsavedChanges, UpgradeBanner } from '$features/ui';
   import { profile } from '$lib/utils/store/user';
   import { studentEmailTemplatesApi } from '../api/student-email-templates.svelte';
@@ -360,8 +360,9 @@
       <Dialog.Description>{$t('settings.emails.test_dialog.description')}</Dialog.Description>
     </Dialog.Header>
 
-    <InputField
+    <TextareaField
       label={$t('settings.emails.test_dialog.recipients')}
+      rows={3}
       bind:value={testRecipients}
       placeholder={$t('settings.emails.test_dialog.recipients_placeholder')}
       errorMessage={studentEmailTemplatesApi.testRecipientsError

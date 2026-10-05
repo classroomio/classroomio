@@ -137,7 +137,7 @@ class StudentEmailTemplatesApi {
     if (this.isSendingTest) return false;
 
     const recipientEmails = input.recipients
-      .split(',')
+      .split(/[,\n]/)
       .map((email) => email.trim())
       .filter(Boolean);
     const parsedRecipients = ZStudentEmailTestRecipients.safeParse(recipientEmails);
