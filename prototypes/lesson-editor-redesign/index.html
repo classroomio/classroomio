@@ -302,20 +302,13 @@
   .modern-canvas .block-gap:hover .gap-line,
   .modern-canvas .block-gap.gap-flyout-open .gap-line { background: var(--primary); height: 2px; }
 
+  /* Same pills as the floating nav and the "Add content" dialog — one visual language for
+     every "add content" trigger, anchored differently depending on where it's opened from. */
   .gap-flyout {
     position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 25;
     background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
-    padding: 8px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; width: 232px;
+    padding: 6px 8px; width: max-content; max-width: 280px;
   }
-  .gap-flyout-item {
-    display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border: none; background: transparent;
-    border-radius: var(--radius-md); color: var(--foreground); cursor: pointer; font: inherit;
-  }
-  .gap-flyout-item:hover, .gap-flyout-item:focus-visible { background: var(--accent); }
-  .gap-flyout-item svg { width: 16px; height: 16px; stroke-width: 2; }
-  .gap-flyout-item span { font-size: 9.5px; font-weight: 600; text-align: center; line-height: 1.15; }
-  .gap-flyout-item.gap-flyout-ai { color: var(--primary); }
-  .gap-flyout-div { grid-column: 1 / -1; height: 1px; background: var(--border); margin: 2px 0; }
 
   /* shared pill styling: the same look is used by the floating in-editor nav and by the
      "Add content" dialog, so there is one visual language for "add content" everywhere. */
@@ -2530,22 +2523,9 @@
     activeFlyoutGapEl = null;
   }
 
-  const GAP_FLYOUT_ITEMS = [
-    { type: 'ai', label: 'AI Assistant', icon: ICON_AI, ai: true },
-    { divider: true },
-    { type: 'video', label: 'Video', icon: ICON_VIDEO },
-    { type: 'image', label: 'Image', icon: ICON_IMAGE },
-    { type: 'slide', label: 'Slides', icon: ICON_SLIDE },
-    { type: 'note', label: 'Note', icon: ICON_NOTE },
-    { type: 'document', label: 'Document', icon: ICON_DOCUMENT },
-    { type: 'chart', label: 'Chart', icon: ICON_CHART },
-    { type: 'flashcards', label: 'Flashcards', icon: ICON_FLASHCARDS },
-    { type: 'tabs', label: 'Tabs', icon: ICON_TABS },
-    { type: 'quiz', label: 'Quiz', icon: ICON_QUIZ },
-    { type: 'process', label: 'Process', icon: ICON_PROCESS }
-  ];
-
   // Anchored to one gap at a time: opening another, or clicking outside, closes it first.
+  // Built from the same NAV_PILL_TYPES list and nav-pill classes as the floating nav and the
+  // "Add content" dialog, so every "add content" trigger looks and reads identically.
   function openGapFlyout(gapEl) {
     if (activeFlyoutGapEl === gapEl) {
       closeGapFlyout();
@@ -2558,25 +2538,40 @@
     const flyout = document.createElement('div');
     flyout.className = 'gap-flyout';
     flyout.setAttribute('role', 'menu');
-    for (const item of GAP_FLYOUT_ITEMS) {
-      if (item.divider) {
-        const divider = document.createElement('span');
-        divider.className = 'gap-flyout-div';
-        flyout.appendChild(divider);
-        continue;
-      }
+    const row = document.createElement('div');
+    row.className = 'nav-pill-row';
+    flyout.appendChild(row);
+
+    const aiBtn = document.createElement('button');
+    aiBtn.type = 'button';
+    aiBtn.className = 'nav-pill nav-pill-ai';
+    aiBtn.setAttribute('aria-label', 'Ask AI assistant');
+    aiBtn.innerHTML = `${ICON_AI}<span class="lb">AI</span>`;
+    aiBtn.addEventListener('click', () => {
+      closeGapFlyout();
+      activeCanvasId = canvasEl.id;
+      activeGapEl = gapEl;
+      openAiAssistant();
+    });
+    row.appendChild(aiBtn);
+
+    const divider = document.createElement('span');
+    divider.className = 'nav-pill-div';
+    row.appendChild(divider);
+
+    for (const [type, label, icon] of NAV_PILL_TYPES) {
       const itemBtn = document.createElement('button');
       itemBtn.type = 'button';
-      itemBtn.className = item.ai ? 'gap-flyout-item gap-flyout-ai' : 'gap-flyout-item';
-      itemBtn.innerHTML = `${item.icon}<span>${item.label}</span>`;
+      itemBtn.className = 'nav-pill';
+      itemBtn.setAttribute('aria-label', `Add ${label.toLowerCase()}`);
+      itemBtn.innerHTML = `${icon}<span class="lb">${label}</span>`;
       itemBtn.addEventListener('click', () => {
         closeGapFlyout();
         activeCanvasId = canvasEl.id;
         activeGapEl = gapEl;
-        if (item.ai) openAiAssistant();
-        else chooseContentType(item.type);
+        chooseContentType(type);
       });
-      flyout.appendChild(itemBtn);
+      row.appendChild(itemBtn);
     }
     gapEl.appendChild(flyout);
   }
