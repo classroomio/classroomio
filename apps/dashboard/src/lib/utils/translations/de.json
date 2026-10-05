@@ -4404,6 +4404,13 @@
         "score": "Punktzahl",
         "lesson_title": "Titel der Lektion",
         "post_content": "Inhalte posten"
+      },
+      "test_dialog": {
+        "title": "Senden Sie eine Test-E-Mail",
+        "description": "Wir senden den aktuellen Entwurf mit Beispielwerten anstelle der Platzhalter. Es muss nicht zuerst gespeichert werden.",
+        "recipients": "Senden an",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Geben Sie bis zu 5 gültige E-Mail-Adressen ein, getrennt durch Kommas."
       }
     }
   },

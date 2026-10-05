@@ -4404,6 +4404,13 @@
         "score": "Pontuação",
         "lesson_title": "Título da lição",
         "post_content": "Postar conteúdo"
+      },
+      "test_dialog": {
+        "title": "Envie um e-mail de teste",
+        "description": "Enviaremos o rascunho atual com valores de exemplo no lugar dos espaços reservados. Não precisa ser salvo primeiro.",
+        "recipients": "Enviar para",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Insira até 5 endereços de e-mail válidos, separados por vírgulas."
       }
     }
   },

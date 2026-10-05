@@ -640,6 +640,13 @@
       "preview": "Preview",
       "unsaved_changes": "Unsaved changes",
       "send_test": "Send test",
+      "test_dialog": {
+        "title": "Send a test email",
+        "description": "We'll send the current draft with example values in place of the placeholders. It doesn't need to be saved first.",
+        "recipients": "Send to",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Enter up to 5 valid email addresses, separated by commas."
+      },
       "test_sent": "Test email queued for delivery",
       "groups": {
         "enrollment": "Enrollment",

@@ -4404,6 +4404,13 @@
         "score": "Điểm",
         "lesson_title": "Tiêu đề bài học",
         "post_content": "Đăng nội dung"
+      },
+      "test_dialog": {
+        "title": "Gửi email kiểm tra",
+        "description": "Chúng tôi sẽ gửi bản nháp hiện tại cùng với các giá trị mẫu thay cho phần giữ chỗ. Nó không cần phải được lưu trước.",
+        "recipients": "Gửi tới",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Nhập tối đa 5 địa chỉ email hợp lệ, phân tách bằng dấu phẩy."
       }
     }
   },

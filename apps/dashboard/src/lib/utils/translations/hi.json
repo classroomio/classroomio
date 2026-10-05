@@ -4404,6 +4404,13 @@
         "score": "स्कोर",
         "lesson_title": "पाठ का शीर्षक",
         "post_content": "सामग्री पोस्ट करें"
+      },
+      "test_dialog": {
+        "title": "एक परीक्षण ईमेल भेजें",
+        "description": "हम वर्तमान ड्राफ्ट को प्लेसहोल्डर्स के स्थान पर उदाहरण मानों के साथ भेजेंगे। इसे पहले सहेजने की आवश्यकता नहीं है.",
+        "recipients": "को भेजें",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "अल्पविराम से अलग किए गए अधिकतम 5 वैध ईमेल पते दर्ज करें।"
       }
     }
   },

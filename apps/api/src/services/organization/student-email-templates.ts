@@ -95,7 +95,7 @@ export async function sendStudentEmailTemplateTest(input: {
   locale: EmailLocale;
   content: string;
   subject: string;
-  recipientEmail: string;
+  recipientEmails: string[];
 }) {
   await assertStudentEmailCustomizationEntitlement(input.organizationId);
   const draftContent = sanitizeHtml(input.content);
@@ -119,7 +119,7 @@ export async function sendStudentEmailTemplateTest(input: {
   });
   const subject = renderStudentEmailSubject(input.emailId, sampleValues, context);
   const result = await enqueueRawEmail({
-    to: input.recipientEmail,
+    to: input.recipientEmails,
     subject,
     content,
     from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`)

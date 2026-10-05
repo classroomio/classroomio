@@ -44,15 +44,14 @@ export const studentEmailTemplatesRouter = new Hono()
       try {
         const organizationId = c.req.header('cio-org-id')!;
         const { emailId, locale } = c.req.valid('param');
-        const { subject, content } = c.req.valid('json');
-        const user = c.get('user')!;
+        const { subject, content, recipientEmails } = c.req.valid('json');
         const result = await sendStudentEmailTemplateTest({
           organizationId,
           emailId,
           locale,
           subject,
           content,
-          recipientEmail: user.email
+          recipientEmails
         });
         return c.json({ success: true, data: result }, 202);
       } catch (error) {

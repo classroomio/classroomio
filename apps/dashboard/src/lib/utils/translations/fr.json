@@ -4404,6 +4404,13 @@
         "score": "Score",
         "lesson_title": "Titre de la leçon",
         "post_content": "Publier du contenu"
+      },
+      "test_dialog": {
+        "title": "Envoyer un e-mail de test",
+        "description": "Nous enverrons le brouillon actuel avec des exemples de valeurs à la place des espaces réservés. Il n'est pas nécessaire de le sauvegarder au préalable.",
+        "recipients": "Envoyer à",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Saisissez jusqu'à 5 adresses e-mail valides, séparées par des virgules."
       }
     }
   },

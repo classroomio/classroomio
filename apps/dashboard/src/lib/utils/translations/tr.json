@@ -1373,6 +1373,13 @@
         "score": "Puan",
         "lesson_title": "Ders başlığı",
         "post_content": "İçerik yayınlayın"
+      },
+      "test_dialog": {
+        "title": "Test e-postası gönder",
+        "description": "Yer tutucuların yerine örnek değerleri içeren mevcut taslağı göndereceğiz. Önce kaydedilmesine gerek yok.",
+        "recipients": "Gönder",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Virgülle ayırarak en fazla 5 geçerli e-posta adresi girin."
       }
     }
   },

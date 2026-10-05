@@ -4404,6 +4404,13 @@
         "score": "Score",
         "lesson_title": "Lektionens titel",
         "post_content": "Post indhold"
+      },
+      "test_dialog": {
+        "title": "Send en test-e-mail",
+        "description": "Vi sender det aktuelle udkast med eksempelværdier i stedet for pladsholderne. Det behøver ikke at blive gemt først.",
+        "recipients": "Send til",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Indtast op til 5 gyldige e-mailadresser, adskilt af kommaer."
       }
     }
   },

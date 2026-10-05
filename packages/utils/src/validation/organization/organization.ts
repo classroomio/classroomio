@@ -196,9 +196,12 @@ export const ZUpsertStudentEmailTemplate = z.object({
   subject: z.string().min(1).max(200).nullable().optional()
 });
 
+export const ZStudentEmailTestRecipients = z.array(z.string().trim().email()).min(1).max(5);
+
 export const ZTestStudentEmailTemplate = z.object({
   content: z.string().min(1).max(50_000),
-  subject: z.string().min(1).max(200)
+  subject: z.string().min(1).max(200),
+  recipientEmails: ZStudentEmailTestRecipients
 });
 
 export const ZInviteTeamMembers = z.object({

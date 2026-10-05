@@ -4404,6 +4404,13 @@
         "sessionUpdated": "Онлайн-занятие изменено",
         "submissionGraded": "Работа проверена",
         "newsfeedPost": "Публикация в ленте курса"
+      },
+      "test_dialog": {
+        "title": "Отправить тестовое письмо",
+        "description": "Мы отправим текущий черновик с примерами значений вместо заполнителей. Его не нужно предварительно сохранять.",
+        "recipients": "Отправить",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Введите до 5 действительных адресов электронной почты, разделенных запятыми."
       }
     }
   },

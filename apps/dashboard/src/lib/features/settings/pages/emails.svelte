@@ -14,6 +14,7 @@
   } from '@cio/utils/email';
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
+  import * as Dialog from '@cio/ui/base/dialog';
   import * as Field from '@cio/ui/base/field';
   import * as Page from '@cio/ui/base/page';
   import * as Select from '@cio/ui/base/select';
@@ -24,7 +25,9 @@
   import InfoIcon from '@lucide/svelte/icons/info';
   import Pencil from '@lucide/svelte/icons/pencil';
 
+  import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor, UnsavedChanges, UpgradeBanner } from '$features/ui';
+  import { profile } from '$lib/utils/store/user';
   import { studentEmailTemplatesApi } from '../api/student-email-templates.svelte';
   import { t } from '$lib/utils/functions/translations';
   import { LANGUAGE } from '$lib/utils/constants/translation';
@@ -37,6 +40,8 @@
   let editor: TiptapEditor | null = $state(null);
   let capturedOrgId = $state('');
   let viewMode = $state<'edit' | 'preview'>('edit');
+  let isTestDialogOpen = $state(false);
+  let testRecipients = $state('');
 
   const templateGroups = [
     {
@@ -89,6 +94,28 @@
     const url = new URL(page.url);
     url.searchParams.set('template', emailId);
     replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
+  }
+
+  function openTestDialog() {
+    testRecipients = $profile.email ?? '';
+    isTestDialogOpen = true;
+  }
+
+  function handleTestDialogOpenChange(isOpen: boolean) {
+    isTestDialogOpen = isOpen;
+
+    if (!isOpen) {
+      studentEmailTemplatesApi.testRecipientsError = '';
+    }
+  }
+
+  async function sendTest() {
+    const isSent = await studentEmailTemplatesApi.sendTest(selectedTemplate, selectedLocale, {
+      subject: editorSubject,
+      content: editorContent,
+      recipients: testRecipients
+    });
+    if (isSent) handleTestDialogOpenChange(false);
   }
 
   function insertVariable(variable: string) {
@@ -307,17 +334,7 @@
           {$t('settings.emails.reset')}
         </Button>
         <div class="flex flex-wrap items-center justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            disabled={studentEmailTemplatesApi.isSendingTest}
-            onclick={() =>
-              studentEmailTemplatesApi.sendTest(selectedTemplate, selectedLocale, {
-                subject: editorSubject,
-                content: editorContent
-              })}
-          >
+          <Button type="button" variant="outline" size="sm" onclick={openTestDialog}>
             {$t('settings.emails.send_test')}
           </Button>
         </div>
@@ -335,3 +352,30 @@
   onSave={() => studentEmailTemplatesApi.save(selectedTemplate, selectedLocale, currentCopy.subject)}
   onDiscard={() => studentEmailTemplatesApi.discard()}
 />
+
+<Dialog.Root open={isTestDialogOpen} onOpenChange={handleTestDialogOpenChange}>
+  <Dialog.Content class="sm:max-w-md">
+    <Dialog.Header>
+      <Dialog.Title>{$t('settings.emails.test_dialog.title')}</Dialog.Title>
+      <Dialog.Description>{$t('settings.emails.test_dialog.description')}</Dialog.Description>
+    </Dialog.Header>
+
+    <InputField
+      label={$t('settings.emails.test_dialog.recipients')}
+      bind:value={testRecipients}
+      placeholder={$t('settings.emails.test_dialog.recipients_placeholder')}
+      errorMessage={studentEmailTemplatesApi.testRecipientsError
+        ? $t(studentEmailTemplatesApi.testRecipientsError)
+        : ''}
+    />
+
+    <Dialog.Footer>
+      <Button variant="outline" size="sm" type="button" onclick={() => handleTestDialogOpenChange(false)}>
+        {$t('app.cancel')}
+      </Button>
+      <Button size="sm" type="button" loading={studentEmailTemplatesApi.isSendingTest} onclick={sendTest}>
+        {$t('settings.emails.send_test')}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

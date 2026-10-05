@@ -148,16 +148,16 @@ export type StudentEmailTemplateRecord = Extract<
   InferResponseType<GetStudentEmailTemplatesRequest>,
   { success: true }
 >['data'][number];
-export interface StudentEmailTemplateTestDraft {
-  content: string;
-  subject: string;
-}
 export type SaveStudentEmailTemplateRequest =
   (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['$put'];
 export type ResetStudentEmailTemplateRequest =
   (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['$delete'];
 export type SendStudentEmailTemplateTestRequest =
   (typeof classroomio.organization)['email-templates'][':emailId'][':locale']['test']['$post'];
+export type StudentEmailTemplateTestDraft = InferRequestType<SendStudentEmailTemplateTestRequest>['json'];
+export type StudentEmailTemplateTestInput = Omit<StudentEmailTemplateTestDraft, 'recipientEmails'> & {
+  recipients: string;
+};
 export interface TOrgUpdateForm {
   name?: string;
   avatar?: string | File | undefined;

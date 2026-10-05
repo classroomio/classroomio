@@ -4404,6 +4404,13 @@
         "score": "Wynik",
         "lesson_title": "Tytuł lekcji",
         "post_content": "Opublikuj treść"
+      },
+      "test_dialog": {
+        "title": "Wyślij e-mail testowy",
+        "description": "Wyślemy bieżącą wersję roboczą z przykładowymi wartościami zamiast symboli zastępczych. Nie trzeba go najpierw zapisywać.",
+        "recipients": "Wyślij do",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Wpisz maksymalnie 5 prawidłowych adresów e-mail, oddzielonych przecinkami."
       }
     }
   },

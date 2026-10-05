@@ -6,7 +6,8 @@ import type {
   StudentEmailTemplateOverrides
 } from '@cio/utils/email';
 import { orgApi } from '$features/org/api/org.svelte';
-import type { StudentEmailTemplateRecord, StudentEmailTemplateTestDraft } from '$features/org/utils/types';
+import type { StudentEmailTemplateRecord, StudentEmailTemplateTestInput } from '$features/org/utils/types';
+import { ZStudentEmailTestRecipients } from '@cio/utils/validation/organization';
 import { snackbar } from '$features/ui/snackbar/store';
 
 /**
@@ -33,6 +34,7 @@ class StudentEmailTemplatesApi {
   editedTemplateIds = $state<StudentEmailId[]>([]);
   isSaving = $state(false);
   isSendingTest = $state(false);
+  testRecipientsError = $state('');
 
   private organizationId = '';
 
@@ -128,13 +130,31 @@ class StudentEmailTemplatesApi {
     }
   }
 
-  async sendTest(emailId: StudentEmailId, locale: EmailLocale, draft: StudentEmailTemplateTestDraft) {
-    if (this.isSendingTest) return;
+  /**
+   * Sends the draft to a comma-separated list of addresses. Returns true once the emails are queued.
+   */
+  async sendTest(emailId: StudentEmailId, locale: EmailLocale, input: StudentEmailTemplateTestInput) {
+    if (this.isSendingTest) return false;
 
+    const recipientEmails = input.recipients
+      .split(',')
+      .map((email) => email.trim())
+      .filter(Boolean);
+    const parsedRecipients = ZStudentEmailTestRecipients.safeParse(recipientEmails);
+    if (!parsedRecipients.success) {
+      this.testRecipientsError = 'settings.emails.test_dialog.invalid_recipients';
+      return false;
+    }
+
+    this.testRecipientsError = '';
     this.isSendingTest = true;
     try {
+      const draft = { subject: input.subject, content: input.content, recipientEmails: parsedRecipients.data };
       const result = await orgApi.sendStudentEmailTemplateTest(emailId, locale, draft);
-      if (result) snackbar.success('settings.emails.test_sent');
+      if (!result) return false;
+
+      snackbar.success('settings.emails.test_sent');
+      return true;
     } finally {
       this.isSendingTest = false;
     }

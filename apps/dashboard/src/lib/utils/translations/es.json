@@ -4404,6 +4404,13 @@
         "score": "Puntuación",
         "lesson_title": "Título de la lección",
         "post_content": "Publicar contenido"
+      },
+      "test_dialog": {
+        "title": "Enviar un correo electrónico de prueba",
+        "description": "Enviaremos el borrador actual con valores de ejemplo en lugar de los marcadores de posición. No es necesario guardarlo primero.",
+        "recipients": "Enviar a",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Ingrese hasta 5 direcciones de correo electrónico válidas, separadas por comas."
       }
     }
   },
