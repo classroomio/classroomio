@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "एक और अभ्यास बनाएँ",
         "add_content_open_now": "अभी खोलें",
         "add_content_later": "बाद में",
-        "add_content_add_to_section": "सामग्री जोड़ें"
+        "add_content_add_to_section": "सामग्री जोड़ें",
+        "expand_content": "सामग्री का विस्तार करें",
+        "collapse_content": "सामग्री संक्षिप्त करें"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",

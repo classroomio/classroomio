@@ -3600,7 +3600,9 @@
           },
           "by_author": "tarafından {name}",
           "empty": "Henüz sürüm yok"
-        }
+        },
+        "expand_content": "İçeriği genişlet",
+        "collapse_content": "İçeriği daralt"
       },
       "attendance": {
         "title": "Attendance",
