@@ -795,7 +795,7 @@ export const course = pgTable(
         accentColor: string;
         subtitle?: string;
         descriptionOverride?: string;
-        signatories: [
+        signatories?: [
           { name: string; role: string; enabled?: boolean; signatureUrl?: string },
           { name: string; role: string; enabled?: boolean; signatureUrl?: string }
         ];
