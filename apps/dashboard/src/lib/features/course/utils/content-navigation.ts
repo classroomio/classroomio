@@ -130,6 +130,44 @@ export function collapseExpandedSectionsToActive(activeSectionId: string | null)
   return new Set([activeSectionId]);
 }
 
+export function isSectionExpanded(params: {
+  sectionId: string;
+  isStudent: boolean;
+  expandedSectionIds: Set<string>;
+  collapsedSectionIds: Set<string>;
+}): boolean {
+  if (!params.isStudent) {
+    return !params.collapsedSectionIds.has(params.sectionId);
+  }
+
+  return params.expandedSectionIds.has(params.sectionId);
+}
+
+export function updateSectionExpansionState(params: {
+  sectionId: string;
+  open: boolean;
+  isStudent: boolean;
+  expandedSectionIds: Set<string>;
+  collapsedSectionIds: Set<string>;
+}): void {
+  if (!params.isStudent) {
+    if (params.open) {
+      params.collapsedSectionIds.delete(params.sectionId);
+      return;
+    }
+
+    params.collapsedSectionIds.add(params.sectionId);
+    return;
+  }
+
+  if (params.open) {
+    params.expandedSectionIds.add(params.sectionId);
+    return;
+  }
+
+  params.expandedSectionIds.delete(params.sectionId);
+}
+
 export function scrollOutlineToActiveItem(container: HTMLElement | null, itemId: string): void {
   if (!container || !itemId) {
     return;

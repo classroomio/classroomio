@@ -13,7 +13,9 @@
     formatSectionCompletionLabel,
     getActiveSectionId,
     getSectionIdForContentItem,
-    isContentItemInPath
+    isContentItemInPath,
+    isSectionExpanded,
+    updateSectionExpansionState
   } from '$features/course/utils/content-navigation';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
@@ -40,7 +42,20 @@
   const activeSectionId = $derived(getActiveSectionId(courseApi.course, currentPath));
 
   let expandedSectionIds = new SvelteSet<string>();
+  let collapsedSectionIds = new SvelteSet<string>();
   let trackedActiveSectionId = $state<string | null>(null);
+  let trackedCourseId = $state<string | null>(null);
+
+  $effect(() => {
+    if (id === trackedCourseId) {
+      return;
+    }
+
+    trackedCourseId = id;
+    collapsedSectionIds.clear();
+    expandedSectionIds.clear();
+    trackedActiveSectionId = null;
+  });
 
   $effect(() => {
     if (!isStudent || !contentData.grouped || !activeSectionId) {
@@ -57,24 +72,22 @@
   });
 
   function isSectionOpen(sectionId: string): boolean {
-    if (!isStudent) {
-      return true;
-    }
-
-    return expandedSectionIds.has(sectionId);
+    return isSectionExpanded({
+      sectionId,
+      isStudent,
+      expandedSectionIds,
+      collapsedSectionIds
+    });
   }
 
   function handleSectionOpenChange(sectionId: string, open: boolean) {
-    if (!isStudent) {
-      return;
-    }
-
-    if (open) {
-      expandedSectionIds.add(sectionId);
-      return;
-    }
-
-    expandedSectionIds.delete(sectionId);
+    updateSectionExpansionState({
+      sectionId,
+      open,
+      isStudent,
+      expandedSectionIds,
+      collapsedSectionIds
+    });
   }
 </script>
 
