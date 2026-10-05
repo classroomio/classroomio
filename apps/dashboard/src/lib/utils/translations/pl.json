@@ -3613,7 +3613,8 @@
       "branding": "Marka",
       "ai": "AI",
       "search": "Szukaj w ustawieniach...",
-      "extensions": "Rozszerzenia"
+      "extensions": "Rozszerzenia",
+      "new_badge": "Nowy"
     },
     "heading": "Ustawienia",
     "billing": {

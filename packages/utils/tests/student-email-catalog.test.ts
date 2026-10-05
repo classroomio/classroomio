@@ -68,10 +68,20 @@ describe('student email catalog', () => {
         locale: 'en',
         content: STUDENT_EMAIL_CATALOG.en.templates.studentCourseCompletion.body.replace(
           '{{course_message}}',
-          '<p>{{course_message}}</p><p></p>'
+          '<p>{{course_message}}</p>'
         )
       })
     ).toBe(false);
+  });
+
+  it('marks an added blank line as customized', () => {
+    expect(
+      isStudentEmailTemplateCustomized({
+        emailId: 'studentCourseCompletion',
+        locale: 'en',
+        content: `${STUDENT_EMAIL_CATALOG.en.templates.studentCourseCompletion.body}<p></p>`
+      })
+    ).toBe(true);
   });
 
   it('marks changed subjects or body copy as customized', () => {

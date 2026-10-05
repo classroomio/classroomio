@@ -20,7 +20,7 @@ describe('submissionGradedEmail', () => {
     );
 
     expect(rendered).toContain('Your score:');
-    expect(rendered).toContain('This exercise is for <strong>Looping</strong> in <strong>JavaScript Basics</strong>.');
+    expect(rendered).toContain('This exercise is part of the lesson <strong>Looping</strong>.');
     expect(rendered).toContain('View your result');
     expect(rendered).not.toContain('Open exercise');
   });
@@ -29,7 +29,8 @@ describe('submissionGradedEmail', () => {
     const rendered = submissionGradedEmail.template.render(baseFields, { locale: 'en' });
 
     expect(rendered).not.toContain('Your score:');
-    expect(rendered).not.toContain('This exercise is for');
+    expect(rendered).not.toContain('This exercise is part of the lesson');
+    expect(rendered).toContain('in <strong>JavaScript Basics</strong> is now');
     expect(rendered).toContain('Open exercise');
     expect(rendered).not.toContain('View your result');
   });

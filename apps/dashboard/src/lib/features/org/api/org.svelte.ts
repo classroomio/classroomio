@@ -552,10 +552,22 @@ class OrgApi extends BaseApiWithErrors {
     });
   }
 
+  private showStudentEmailTemplateError(result: unknown) {
+    if (typeof result === 'string') {
+      snackbar.error(result);
+      return;
+    }
+
+    const { message, error } = (result ?? {}) as { message?: string; error?: string };
+    const text = message ?? error;
+    if (text) snackbar.error(text);
+  }
+
   async listStudentEmailTemplates() {
     return this.execute<GetStudentEmailTemplatesRequest>({
       requestFn: () => classroomio.organization['email-templates'].$get(),
-      logContext: 'fetching student email templates'
+      logContext: 'fetching student email templates',
+      onError: (result) => this.showStudentEmailTemplateError(result)
     });
   }
 
@@ -571,7 +583,8 @@ class OrgApi extends BaseApiWithErrors {
           param: { emailId, locale },
           json: { content, subject }
         }),
-      logContext: 'saving student email template'
+      logContext: 'saving student email template',
+      onError: (result) => this.showStudentEmailTemplateError(result)
     });
   }
 
@@ -581,7 +594,8 @@ class OrgApi extends BaseApiWithErrors {
         classroomio.organization['email-templates'][':emailId'][':locale'].$delete({
           param: { emailId, locale }
         }),
-      logContext: 'resetting student email template'
+      logContext: 'resetting student email template',
+      onError: (result) => this.showStudentEmailTemplateError(result)
     });
   }
 
@@ -596,7 +610,8 @@ class OrgApi extends BaseApiWithErrors {
           param: { emailId, locale },
           json: draft
         }),
-      logContext: 'sending student email test'
+      logContext: 'sending student email test',
+      onError: (result) => this.showStudentEmailTemplateError(result)
     });
   }
 

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { replaceState } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import type { TiptapEditor } from '@cio/ui/custom/editor';
   import {
@@ -17,8 +18,10 @@
   import * as Page from '@cio/ui/base/page';
   import * as Select from '@cio/ui/base/select';
   import * as Tabs from '@cio/ui/base/tabs';
+  import * as Tooltip from '@cio/ui/base/tooltip';
   import Eye from '@lucide/svelte/icons/eye';
   import Globe from '@lucide/svelte/icons/globe';
+  import InfoIcon from '@lucide/svelte/icons/info';
   import Pencil from '@lucide/svelte/icons/pencil';
 
   import { TextEditor, UnsavedChanges, UpgradeBanner } from '$features/ui';
@@ -85,7 +88,7 @@
     selectedTemplate = emailId;
     const url = new URL(page.url);
     url.searchParams.set('template', emailId);
-    void goto(url, { replaceState: true, keepFocus: true, noScroll: true });
+    replaceState(resolve(`${url.pathname}${url.search}`, {}), page.state);
   }
 
   function insertVariable(variable: string) {
@@ -109,8 +112,7 @@
     if (!organizationId || organizationId === capturedOrgId) return;
 
     capturedOrgId = organizationId;
-    studentEmailTemplatesApi.clear();
-    void studentEmailTemplatesApi.load(organizationId, selectedLocale, () => $currentOrg.id === organizationId);
+    void studentEmailTemplatesApi.load(organizationId, selectedLocale);
   });
 </script>
 
@@ -125,6 +127,16 @@
       <Globe class="ui:text-muted-foreground size-4" />
       <span class="ui:text-muted-foreground">{$t('settings.emails.sending_in')}</span>
       <span class="font-medium">{LANGUAGE[selectedLocale]}</span>
+      <Tooltip.Provider>
+        <Tooltip.Root>
+          <Tooltip.Trigger aria-label={$t('settings.emails.language_note')}>
+            <InfoIcon class="ui:text-muted-foreground size-4" />
+          </Tooltip.Trigger>
+          <Tooltip.Content side="bottom" sideOffset={4} class="max-w-xs">
+            {$t('settings.emails.language_note')}
+          </Tooltip.Content>
+        </Tooltip.Root>
+      </Tooltip.Provider>
       <span class="ui:text-muted-foreground" aria-hidden="true">·</span>
       <a
         class="ui:text-primary text-sm font-medium"
@@ -133,7 +145,6 @@
         {$t('settings.emails.change')}
       </a>
     </div>
-    <p class="ui:text-muted-foreground w-full text-right text-xs">{$t('settings.emails.language_note')}</p>
   </header>
 
   <UpgradeBanner>{$t('settings.emails.paid_plan_note')}</UpgradeBanner>

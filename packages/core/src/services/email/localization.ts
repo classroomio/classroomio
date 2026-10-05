@@ -20,25 +20,34 @@ export async function getStudentEmailDeliveryLocale(
 ): Promise<EmailLocale> {
   if (!organizationId || !isStudentEmailId(emailId)) return 'en';
 
-  const [organization, canCustomize] = await Promise.all([
-    getOrganizationById(organizationId),
-    canCustomizeStudentEmails(organizationId)
-  ]);
-  if (!organization) return 'en';
+  try {
+    const [organization, canCustomize] = await Promise.all([
+      getOrganizationById(organizationId),
+      canCustomizeStudentEmails(organizationId)
+    ]);
+    if (!organization) return 'en';
 
-  const language = organization.settings?.language;
-  return resolveStudentEmailLocale({
-    isEligible: canCustomize,
-    enforced: language?.enforced === true,
-    locale: language?.locale
-  });
+    const language = organization.settings?.language;
+    return resolveStudentEmailLocale({
+      isEligible: canCustomize,
+      enforced: language?.enforced === true,
+      locale: language?.locale
+    });
+  } catch (error) {
+    console.error('getStudentEmailDeliveryLocale error:', error);
+    return 'en';
+  }
 }
 
 /**
- * Returns the org's saved template for this email and locale, or undefined when the org is not entitled to one.
+ * Rechecks the org's entitlement at send time. Entitled orgs keep the queued locale and get their saved template;
+ * everyone else gets the English default.
  */
-export async function getStudentEmailTemplateOverride(organizationId: string, emailId: string, locale: EmailLocale) {
-  if (!isStudentEmailId(emailId) || !(await canCustomizeStudentEmails(organizationId))) return undefined;
+export async function getStudentEmailSendContext(organizationId: string, emailId: string, queuedLocale: EmailLocale) {
+  if (!isStudentEmailId(emailId) || !(await canCustomizeStudentEmails(organizationId))) {
+    return { locale: 'en' as const, templateOverride: undefined };
+  }
 
-  return getOrganizationStudentEmailTemplate(organizationId, emailId, locale);
+  const templateOverride = await getOrganizationStudentEmailTemplate(organizationId, emailId, queuedLocale);
+  return { locale: queuedLocale, templateOverride };
 }

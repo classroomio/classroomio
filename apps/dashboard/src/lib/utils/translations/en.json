@@ -577,7 +577,8 @@
       "billing": "Billing",
       "branding": "Branding",
       "ai": "AI",
-      "search": "Search settings..."
+      "search": "Search settings...",
+      "new_badge": "New"
     },
     "subheadings": {
       "view_site": "Your Academy"
@@ -602,7 +603,7 @@
     },
     "emails": {
       "page_title": "Email templates",
-      "language_note": "Student emails use the enforced organization language. Customizations are saved per language and do not carry over when that language changes; otherwise, emails use English.",
+      "language_note": "Student emails use your organization's enforced language. When it is not enforced, emails use English.",
       "heading": "Student email templates",
       "description": "Customize the emails students receive. Staff emails always send in English.",
       "paid_plan_note": "Upgrade your plan to translate and customize student emails.",
@@ -662,7 +663,6 @@
       },
       "template": "Email",
       "language": "Language",
-      "language_note": "Student emails use your organization's enforced language. When it is not enforced, emails use English.",
       "language_note_link": "Change your organization's language default here.",
       "subject": "Subject",
       "editor_heading": "Message body",

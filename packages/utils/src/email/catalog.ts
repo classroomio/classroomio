@@ -54,7 +54,7 @@ const en: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Your exercise submission has been updated',
-      body: '<p>Hello {{student_name}},</p><p>The status of your submission for <strong>{{exercise_title}}</strong> is now <strong>{{status}}</strong>.</p><p><strong>Your score:</strong> {{score}}</p><p>This exercise is for <strong>{{lesson_title}}</strong> in <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Hello {{student_name}},</p><p>The status of your submission for <strong>{{exercise_title}}</strong> in <strong>{{course_name}}</strong> is now <strong>{{status}}</strong>.</p><p><strong>Your score:</strong> {{score}}</p><p>This exercise is part of the lesson <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Open exercise',
       ctaWhenScored: 'View your result'
     },
@@ -125,7 +125,7 @@ const fr: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Votre devoir a été mis à jour',
-      body: '<p>Bonjour {{student_name}},</p><p>Le statut de votre devoir <strong>{{exercise_title}}</strong> est maintenant <strong>{{status}}</strong>.</p><p><strong>Votre score :</strong> {{score}}</p><p>Cet exercice concerne la leçon <strong>{{lesson_title}}</strong> du cours <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Bonjour {{student_name}},</p><p>Le statut de votre devoir <strong>{{exercise_title}}</strong> du cours <strong>{{course_name}}</strong> est maintenant <strong>{{status}}</strong>.</p><p><strong>Votre score :</strong> {{score}}</p><p>Cet exercice fait partie de la leçon <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Ouvrir l’exercice',
       ctaWhenScored: 'Voir votre résultat'
     },
@@ -196,7 +196,7 @@ const de: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Ihre Einreichung wurde aktualisiert',
-      body: '<p>Hallo {{student_name}},</p><p>Der Status Ihrer Einreichung für <strong>{{exercise_title}}</strong> ist jetzt <strong>{{status}}</strong>.</p><p><strong>Ihre Punktzahl:</strong> {{score}}</p><p>Diese Übung gehört zur Lektion <strong>{{lesson_title}}</strong> im Kurs <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Hallo {{student_name}},</p><p>Der Status Ihrer Einreichung für <strong>{{exercise_title}}</strong> im Kurs <strong>{{course_name}}</strong> ist jetzt <strong>{{status}}</strong>.</p><p><strong>Ihre Punktzahl:</strong> {{score}}</p><p>Diese Übung gehört zur Lektion <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Übung öffnen',
       ctaWhenScored: 'Ergebnis ansehen'
     },
@@ -267,7 +267,7 @@ const es: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Tu entrega se ha actualizado',
-      body: '<p>Hola {{student_name}},</p><p>El estado de tu entrega de <strong>{{exercise_title}}</strong> ahora es <strong>{{status}}</strong>.</p><p><strong>Tu puntuación:</strong> {{score}}</p><p>Este ejercicio corresponde a la lección <strong>{{lesson_title}}</strong> del curso <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Hola {{student_name}},</p><p>El estado de tu entrega de <strong>{{exercise_title}}</strong> del curso <strong>{{course_name}}</strong> ahora es <strong>{{status}}</strong>.</p><p><strong>Tu puntuación:</strong> {{score}}</p><p>Este ejercicio corresponde a la lección <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Abrir ejercicio',
       ctaWhenScored: 'Ver tu resultado'
     },
@@ -333,7 +333,7 @@ const pt: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Sua atividade foi atualizada',
-      body: '<p>Olá, {{student_name}},</p><p>O status da sua atividade <strong>{{exercise_title}}</strong> agora é <strong>{{status}}</strong>.</p><p><strong>Sua pontuação:</strong> {{score}}</p><p>Este exercício pertence à lição <strong>{{lesson_title}}</strong> do curso <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Olá, {{student_name}},</p><p>O status da sua atividade <strong>{{exercise_title}}</strong> do curso <strong>{{course_name}}</strong> agora é <strong>{{status}}</strong>.</p><p><strong>Sua pontuação:</strong> {{score}}</p><p>Este exercício pertence à lição <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Abrir exercício',
       ctaWhenScored: 'Ver seu resultado'
     },
@@ -399,7 +399,7 @@ const hi: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'आपकी गतिविधि अपडेट हो गई है',
-      body: '<p>नमस्ते {{student_name}},</p><p><strong>{{exercise_title}}</strong> के लिए आपकी गतिविधि की स्थिति अब <strong>{{status}}</strong> है।</p><p><strong>आपका स्कोर:</strong> {{score}}</p><p>यह अभ्यास <strong>{{course_name}}</strong> के <strong>{{lesson_title}}</strong> पाठ के लिए है।</p>',
+      body: '<p>नमस्ते {{student_name}},</p><p><strong>{{course_name}}</strong> में <strong>{{exercise_title}}</strong> के लिए आपकी गतिविधि की स्थिति अब <strong>{{status}}</strong> है।</p><p><strong>आपका स्कोर:</strong> {{score}}</p><p>यह अभ्यास <strong>{{lesson_title}}</strong> पाठ का हिस्सा है।</p>',
       cta: 'अभ्यास खोलें',
       ctaWhenScored: 'अपना परिणाम देखें'
     },
@@ -470,7 +470,7 @@ const vi: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Bài nộp của bạn đã được cập nhật',
-      body: '<p>Xin chào {{student_name}},</p><p>Trạng thái bài nộp <strong>{{exercise_title}}</strong> hiện là <strong>{{status}}</strong>.</p><p><strong>Điểm của bạn:</strong> {{score}}</p><p>Bài tập này thuộc bài học <strong>{{lesson_title}}</strong> trong khóa học <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Xin chào {{student_name}},</p><p>Trạng thái bài nộp <strong>{{exercise_title}}</strong> trong khóa học <strong>{{course_name}}</strong> hiện là <strong>{{status}}</strong>.</p><p><strong>Điểm của bạn:</strong> {{score}}</p><p>Bài tập này thuộc bài học <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Mở bài tập',
       ctaWhenScored: 'Xem kết quả của bạn'
     },
@@ -536,7 +536,7 @@ const ru: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Ваша работа обновлена',
-      body: '<p>Здравствуйте, {{student_name}}!</p><p>Статус работы <strong>{{exercise_title}}</strong>: <strong>{{status}}</strong>.</p><p><strong>Ваш результат:</strong> {{score}}</p><p>Это задание относится к уроку <strong>{{lesson_title}}</strong> курса <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Здравствуйте, {{student_name}}!</p><p>Статус работы <strong>{{exercise_title}}</strong> в курсе <strong>{{course_name}}</strong>: <strong>{{status}}</strong>.</p><p><strong>Ваш результат:</strong> {{score}}</p><p>Это задание относится к уроку <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Открыть задание',
       ctaWhenScored: 'Посмотреть результат'
     },
@@ -602,7 +602,7 @@ const pl: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Twoje zadanie zostało zaktualizowane',
-      body: '<p>Cześć {{student_name}},</p><p>Status zadania <strong>{{exercise_title}}</strong> to teraz <strong>{{status}}</strong>.</p><p><strong>Twój wynik:</strong> {{score}}</p><p>To ćwiczenie należy do lekcji <strong>{{lesson_title}}</strong> w kursie <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Cześć {{student_name}},</p><p>Status zadania <strong>{{exercise_title}}</strong> w kursie <strong>{{course_name}}</strong> to teraz <strong>{{status}}</strong>.</p><p><strong>Twój wynik:</strong> {{score}}</p><p>To ćwiczenie należy do lekcji <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Otwórz ćwiczenie',
       ctaWhenScored: 'Zobacz swój wynik'
     },
@@ -673,7 +673,7 @@ const da: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Din opgave er blevet opdateret',
-      body: '<p>Hej {{student_name}},</p><p>Status for <strong>{{exercise_title}}</strong> er nu <strong>{{status}}</strong>.</p><p><strong>Din score:</strong> {{score}}</p><p>Denne øvelse hører til lektionen <strong>{{lesson_title}}</strong> på kurset <strong>{{course_name}}</strong>.</p>',
+      body: '<p>Hej {{student_name}},</p><p>Status for <strong>{{exercise_title}}</strong> på kurset <strong>{{course_name}}</strong> er nu <strong>{{status}}</strong>.</p><p><strong>Din score:</strong> {{score}}</p><p>Denne øvelse hører til lektionen <strong>{{lesson_title}}</strong>.</p>',
       cta: 'Åbn øvelse',
       ctaWhenScored: 'Se dit resultat'
     },
@@ -739,7 +739,7 @@ const tr: StudentEmailLocaleCopy = {
     },
     submissionGraded: {
       subject: 'Gönderiniz güncellendi',
-      body: '<p>Merhaba {{student_name}},</p><p><strong>{{exercise_title}}</strong> gönderinizin durumu artık <strong>{{status}}</strong>.</p><p><strong>Puanınız:</strong> {{score}}</p><p>Bu alıştırma, <strong>{{course_name}}</strong> kursundaki <strong>{{lesson_title}}</strong> dersi içindir.</p>',
+      body: '<p>Merhaba {{student_name}},</p><p><strong>{{course_name}}</strong> kursundaki <strong>{{exercise_title}}</strong> gönderinizin durumu artık <strong>{{status}}</strong>.</p><p><strong>Puanınız:</strong> {{score}}</p><p>Bu alıştırma <strong>{{lesson_title}}</strong> dersine aittir.</p>',
       cta: 'Alıştırmayı aç',
       ctaWhenScored: 'Sonucunuzu görüntüleyin'
     },

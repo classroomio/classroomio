@@ -587,7 +587,8 @@
       "billing": "Faturalandırma",
       "branding": "Markalaştırma",
       "ai": "AI",
-      "search": "Arama ayarları..."
+      "search": "Arama ayarları...",
+      "new_badge": "Yeni"
     },
     "subheadings": {
       "view_site": "Akademiniz"

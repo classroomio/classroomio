@@ -109,7 +109,6 @@ export function isEmailLocale(value: unknown): value is EmailLocale {
 function normalizeStudentEmailBody(content: string): string {
   return content
     .replace(/<p>\s*({{[a-z_]+}})\s*<\/p>/g, '$1')
-    .replace(/<p>\s*<\/p>/g, '')
     .replace(/>\s+</g, '><')
     .trim();
 }

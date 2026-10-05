@@ -11,18 +11,23 @@ class StudentEmailTemplatesApi {
   isSaving = $state(false);
   isSendingTest = $state(false);
 
-  clear() {
+  private organizationId = '';
+
+  async load(organizationId: string, locale: EmailLocale) {
+    this.organizationId = organizationId;
     this.drafts = {};
     this.saved = {};
     this.editedTemplateIds = [];
-  }
 
-  async load(organizationId: string, locale: EmailLocale, isCurrentOrganization: () => boolean) {
     const result = await orgApi.listStudentEmailTemplates();
-    if (!result || !isCurrentOrganization()) return;
+    if (!result || this.organizationId !== organizationId) return;
 
-    this.drafts = this.mapRecords(result.data);
-    this.saved = this.clone(this.drafts);
+    const draftsEditedWhileLoading = this.drafts;
+    this.saved = this.mapRecords(result.data);
+    this.drafts = this.clone(this.saved);
+    for (const emailId of Object.keys(draftsEditedWhileLoading).filter(isStudentEmailId)) {
+      this.drafts[emailId] = { ...this.drafts[emailId], ...draftsEditedWhileLoading[emailId] };
+    }
     this.editedTemplateIds = result.data
       .filter((record) => record.locale === locale && record.isCustomized)
       .map((record) => record.emailId)
@@ -79,6 +84,7 @@ class StudentEmailTemplatesApi {
     const nextOverride = this.drafts[emailId]?.[locale];
     if (JSON.stringify(previousOverride) === JSON.stringify(nextOverride)) return;
 
+    const organizationId = this.organizationId;
     this.isSaving = true;
     try {
       const result =
@@ -90,7 +96,7 @@ class StudentEmailTemplatesApi {
               nextOverride.content,
               nextOverride.subject === defaultSubject ? null : nextOverride.subject
             );
-      if (!result) return;
+      if (!result || this.organizationId !== organizationId) return;
 
       if (nextOverride === undefined) {
         this.editedTemplateIds = this.editedTemplateIds.filter((savedId) => savedId !== emailId);

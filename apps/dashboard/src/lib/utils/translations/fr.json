@@ -3613,7 +3613,8 @@
       "branding": "Image de marque",
       "ai": "IA",
       "search": "Rechercher dans les paramètres...",
-      "extensions": "Rallonges"
+      "extensions": "Rallonges",
+      "new_badge": "Nouveau"
     },
     "heading": "Paramètres",
     "billing": {

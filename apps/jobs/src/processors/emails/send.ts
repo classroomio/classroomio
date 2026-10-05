@@ -1,6 +1,6 @@
 import { deliverEmail, sendEmail, type EmailId } from '@cio/email';
 import { ZSendEmailPayload } from '@cio/jobs';
-import { getStudentEmailTemplateOverride } from '@cio/core/services/email/localization';
+import { getStudentEmailSendContext } from '@cio/core/services/email/localization';
 
 import { log } from '../../utils/logger';
 
@@ -17,10 +17,9 @@ export async function processSendEmail(rawPayload: unknown): Promise<SendResult>
   const payload = ZSendEmailPayload.parse(rawPayload);
 
   if (payload.kind === 'template') {
-    const locale = payload.locale ?? 'en';
-    const templateOverride = payload.organizationId
-      ? await getStudentEmailTemplateOverride(payload.organizationId, payload.template, locale)
-      : undefined;
+    const { locale, templateOverride } = payload.organizationId
+      ? await getStudentEmailSendContext(payload.organizationId, payload.template, payload.locale ?? 'en')
+      : { locale: payload.locale ?? 'en', templateOverride: undefined };
     const responses = await sendEmail(payload.template as EmailId, {
       to: payload.to,
       // Re-validated by `sendEmail` against the registered template schema; the
