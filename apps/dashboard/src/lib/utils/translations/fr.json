@@ -1847,7 +1847,9 @@
               "begin_section": "Section de démarrage",
               "complete_section": "Rubrique complète",
               "instructions": "Instructions",
-              "close_instructions": "Fermer les instructions"
+              "close_instructions": "Fermer les instructions",
+              "show_more": "Afficher plus",
+              "show_less": "Afficher moins"
             },
             "edit_mode": {
               "delete_modal": "Supprimer l'exercice",
