@@ -133,7 +133,7 @@
 
     if (currentContent === nextContent) return;
 
-    editor.commands.setContent(nextContent, false);
+    editor.commands.setContent(nextContent, { emitUpdate: false });
   });
 
   function onUpdate(props: { editor: Editor; transaction: Transaction }) {
