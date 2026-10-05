@@ -23,6 +23,7 @@
         { key: 'settings.tabs.domains_tab', path: '/settings/domains' },
         { key: 'settings.tabs.teams_tab', path: '/settings/teams' },
         { key: 'settings.tabs.customize_lms_tab', path: '/settings/customize-lms' },
+        { key: 'settings.tabs.emails_tab', path: '/settings/emails' },
         { key: 'settings.tabs.billing_tab', path: '/settings/billing' }
       ]
     },

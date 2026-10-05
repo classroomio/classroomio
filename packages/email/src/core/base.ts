@@ -12,11 +12,18 @@ import { sanitizeEmailSubject } from '../utils/functions/email-helpers';
 export async function sendTemplateEmail<TSchema extends z.ZodType>(
   config: SendTemplateConfig<TSchema>
 ): Promise<EmailResponse[]> {
-  const content = config.template.render(config.fields);
+  const context = {
+    locale: config.locale,
+    contentOverride: config.contentOverride,
+    subjectOverride: config.subjectOverride
+  };
+  const content = config.template.render(config.fields, context);
 
   const resolvedSubject =
     config.subject ??
-    (typeof config.template.subject === 'function' ? config.template.subject(config.fields) : config.template.subject);
+    (typeof config.template.subject === 'function'
+      ? config.template.subject(config.fields, context)
+      : config.template.subject);
 
   return deliverEmail([
     {

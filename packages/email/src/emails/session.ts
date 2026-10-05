@@ -1,12 +1,12 @@
 import * as z from 'zod';
 
 import { defineEmail } from '../send';
-import { getDefaultTemplate } from '../templates';
 import { ZEmailBranding } from '../core/branding';
+import { renderStudentEmail, renderStudentEmailSubject } from '../core/student-email';
 
 export const sessionReminderEmail = defineEmail({
   id: 'sessionReminder',
-  subject: 'Reminder: your live session is coming up',
+  subject: (fields, context) => renderStudentEmailSubject('sessionReminder', fields, context),
   schema: z.object({
     orgName: z.string().min(1),
     courseName: z.string().min(1),
@@ -16,25 +16,25 @@ export const sessionReminderEmail = defineEmail({
     joinUrl: z.string().min(1),
     branding: ZEmailBranding
   }),
-  render: (fields) => {
-    const content = `
-      <p>Hi there,</p>
-      <p>Your live session <strong>${fields.sessionTitle}</strong> in <strong>${fields.courseName}</strong> starts <strong>${fields.whenLabel}</strong>.</p>
-      <p><strong>When:</strong> ${fields.sessionTimeLabel}</p>
-      <div>
-        <a class="button" href="${fields.joinUrl}">Join the session</a>
-      </div>
-      <p>See you there,</p>
-      <p>${fields.orgName}</p>
-    `;
-
-    return getDefaultTemplate(content, fields.branding);
-  }
+  render: (fields, context) =>
+    renderStudentEmail({
+      id: 'sessionReminder',
+      values: {
+        org_name: fields.orgName,
+        course_name: fields.courseName,
+        session_title: fields.sessionTitle,
+        session_time: fields.sessionTimeLabel,
+        when: fields.whenLabel
+      },
+      actionUrl: fields.joinUrl,
+      branding: fields.branding,
+      context
+    })
 });
 
 export const sessionUpdatedEmail = defineEmail({
   id: 'sessionUpdated',
-  subject: 'Updated: your live session details changed',
+  subject: (fields, context) => renderStudentEmailSubject('sessionUpdated', fields, context),
   schema: z.object({
     orgName: z.string().min(1),
     courseName: z.string().min(1),
@@ -43,19 +43,17 @@ export const sessionUpdatedEmail = defineEmail({
     joinUrl: z.string().min(1),
     branding: ZEmailBranding
   }),
-  render: (fields) => {
-    const content = `
-      <p>Hi there,</p>
-      <p>The live session <strong>${fields.sessionTitle}</strong> in <strong>${fields.courseName}</strong> has been updated.</p>
-      <p><strong>New time:</strong> ${fields.sessionTimeLabel}</p>
-      <p>The attached calendar invite will update the event already on your calendar.</p>
-      <div>
-        <a class="button" href="${fields.joinUrl}">Join the session</a>
-      </div>
-      <p>Cheers,</p>
-      <p>${fields.orgName}</p>
-    `;
-
-    return getDefaultTemplate(content, fields.branding);
-  }
+  render: (fields, context) =>
+    renderStudentEmail({
+      id: 'sessionUpdated',
+      values: {
+        org_name: fields.orgName,
+        course_name: fields.courseName,
+        session_title: fields.sessionTitle,
+        session_time: fields.sessionTimeLabel
+      },
+      actionUrl: fields.joinUrl,
+      branding: fields.branding,
+      context
+    })
 });

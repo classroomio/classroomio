@@ -11,7 +11,7 @@
   import type { TLocale } from '@cio/db/types';
   import { LANGUAGES } from '$lib/utils/constants/translation';
 
-  import { UploadWidget } from '$features/ui';
+  import { AttentionHighlight, UploadWidget } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   interface Props {
@@ -98,29 +98,31 @@
 </script>
 
 <Field.Group class="w-full max-w-md! px-2">
-  <Field.Set>
-    <Field.Legend>{$t('components.settings.customize_lms.language.title')}</Field.Legend>
-    <Field.Description>{$t('components.settings.customize_lms.language.description')}</Field.Description>
-    <Field.Group>
-      <Field.Field>
-        <Field.Label>{$t('components.settings.customize_lms.language.default_language')}</Field.Label>
-        <Select.Root type="single" bind:value={languageLocale}>
-          <Select.Trigger class="w-full">
-            {LANGUAGES.find((language) => language.id === languageLocale)?.text}
-          </Select.Trigger>
-          <Select.Content>
-            {#each LANGUAGES as language (language.id)}
-              <Select.Item value={language.id}>{language.text}</Select.Item>
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      </Field.Field>
-      <Field.Field orientation="horizontal">
-        <Switch bind:checked={languageEnforced} />
-        <Field.Label>{$t('components.settings.customize_lms.language.enforce')}</Field.Label>
-      </Field.Field>
-    </Field.Group>
-  </Field.Set>
+  <AttentionHighlight id="language-settings" scrollBlock="center">
+    <Field.Set>
+      <Field.Legend>{$t('components.settings.customize_lms.language.title')}</Field.Legend>
+      <Field.Description>{$t('components.settings.customize_lms.language.description')}</Field.Description>
+      <Field.Group>
+        <Field.Field>
+          <Field.Label>{$t('components.settings.customize_lms.language.default_language')}</Field.Label>
+          <Select.Root type="single" bind:value={languageLocale}>
+            <Select.Trigger class="w-full">
+              {LANGUAGES.find((language) => language.id === languageLocale)?.text}
+            </Select.Trigger>
+            <Select.Content>
+              {#each LANGUAGES as language (language.id)}
+                <Select.Item value={language.id}>{language.text}</Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
+        </Field.Field>
+        <Field.Field orientation="horizontal">
+          <Switch bind:checked={languageEnforced} />
+          <Field.Label>{$t('components.settings.customize_lms.language.enforce')}</Field.Label>
+        </Field.Field>
+      </Field.Group>
+    </Field.Set>
+  </AttentionHighlight>
 
   <Field.Separator />
 

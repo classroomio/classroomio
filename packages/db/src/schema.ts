@@ -25,11 +25,12 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
-export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr']);
+export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
@@ -2484,6 +2485,26 @@ export const organization = pgTable(
       name: 'organization_parent_organization_id_fkey'
     }).onDelete('set null'),
     index('idx_organization_parent_id').on(table.parentOrganizationId)
+  ]
+);
+
+export const organizationStudentEmailTemplate = pgTable(
+  'organization_student_email_template',
+  {
+    organizationId: uuid('organization_id').notNull(),
+    emailId: varchar('email_id').notNull(),
+    subject: text(),
+    locale: locale().notNull(),
+    content: text().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    primaryKey({ columns: [table.organizationId, table.emailId, table.locale] }),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_student_email_template_organization_id_fkey'
+    }).onDelete('cascade')
   ]
 );
 

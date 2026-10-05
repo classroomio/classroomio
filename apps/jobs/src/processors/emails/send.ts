@@ -1,5 +1,6 @@
 import { deliverEmail, sendEmail, type EmailId } from '@cio/email';
 import { ZSendEmailPayload } from '@cio/jobs';
+import { getStudentEmailTemplateOverride } from '@cio/core/services/email/localization';
 
 import { log } from '../../utils/logger';
 
@@ -16,6 +17,10 @@ export async function processSendEmail(rawPayload: unknown): Promise<SendResult>
   const payload = ZSendEmailPayload.parse(rawPayload);
 
   if (payload.kind === 'template') {
+    const locale = payload.locale ?? 'en';
+    const templateOverride = payload.organizationId
+      ? await getStudentEmailTemplateOverride(payload.organizationId, payload.template, locale)
+      : undefined;
     const responses = await sendEmail(payload.template as EmailId, {
       to: payload.to,
       // Re-validated by `sendEmail` against the registered template schema; the
@@ -24,7 +29,10 @@ export async function processSendEmail(rawPayload: unknown): Promise<SendResult>
       from: payload.from,
       replyTo: payload.replyTo,
       subject: payload.subject,
-      ics: payload.ics
+      ics: payload.ics,
+      locale,
+      contentOverride: templateOverride?.content,
+      subjectOverride: templateOverride?.subject ?? undefined
     });
     const result = extractProviderId(responses);
     log.info('email-sent', {
