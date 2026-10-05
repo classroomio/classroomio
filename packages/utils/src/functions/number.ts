@@ -18,6 +18,9 @@ export function toFiniteNumber(value: unknown): number | undefined {
   return undefined;
 }
 
+/**
+ * Clamps a number to optional minimum and maximum bounds.
+ */
 function clamp(value: number, bounds: { min?: number; max?: number }): number {
   let result = value;
   if (bounds.min !== undefined && result < bounds.min) result = bounds.min;

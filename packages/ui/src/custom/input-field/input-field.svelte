@@ -28,6 +28,7 @@
     oninput?: InputProps['oninput'];
     onchange?: InputProps['onchange'];
     onblur?: InputProps['onblur'];
+    onfocus?: InputProps['onfocus'];
     labelAction?: import('svelte').Snippet;
   }
 
@@ -55,6 +56,7 @@
     oninput,
     onchange,
     onblur,
+    onfocus,
     labelAction
   }: Props = $props();
 
@@ -99,6 +101,7 @@
     {oninput}
     {onchange}
     {onblur}
+    {onfocus}
   />
 
   {#if errorMessage}

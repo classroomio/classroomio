@@ -21,6 +21,9 @@
 
   let { course = $bindable(), setter, showPaymentError = $bindable(false) }: Props = $props();
 
+  let baselineCost = $state(toFiniteNumber(course?.cost) ?? 0);
+  let baselineDiscount = $state(toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0);
+
   let paymentLink = $derived(get(course, 'metadata.paymentLink', '') ?? '');
   let isPaid = $derived(isCoursePaid(course));
   let cost = $derived(toFiniteNumber(course.cost) ?? 0);
@@ -78,20 +81,25 @@
     setter(content, 'metadata.reward.description');
   }
 
-  let committedCost = toFiniteNumber(course?.cost) ?? 0;
-  let committedDiscount = toFiniteNumber(get(course, 'metadata.discount', 0)) ?? 0;
+  function handleCostFocus() {
+    baselineCost = cost;
+  }
 
   function handleCostInput(e: Event & { currentTarget: HTMLInputElement }) {
     const val = toFiniteNumber(e.currentTarget.value);
-    if (val !== undefined) setter(Math.max(0, Math.floor(val)), 'cost');
+    if (val !== undefined) setter(Math.max(0, Math.round(val)), 'cost');
   }
 
   function handleCostChange(e: Event & { currentTarget: HTMLInputElement }) {
     const parsed = parseBoundedInteger(e.currentTarget.value, { min: 0 });
-    const nextVal = parsed ?? committedCost;
-    if (parsed !== undefined) committedCost = nextVal;
+    const nextVal = parsed ?? baselineCost;
+    baselineCost = nextVal;
     e.currentTarget.value = String(nextVal);
     setter(nextVal, 'cost');
+  }
+
+  function handleDiscountFocus() {
+    baselineDiscount = discount;
   }
 
   function handleDiscountInput(e: Event & { currentTarget: HTMLInputElement }) {
@@ -101,8 +109,8 @@
 
   function handleDiscountChange(e: Event & { currentTarget: HTMLInputElement }) {
     const parsed = parseBoundedNumber(e.currentTarget.value, { min: 0, max: 100 });
-    const nextVal = parsed ?? committedDiscount;
-    if (parsed !== undefined) committedDiscount = nextVal;
+    const nextVal = parsed ?? baselineDiscount;
+    baselineDiscount = nextVal;
     e.currentTarget.value = String(nextVal);
     setter(nextVal, 'metadata.discount');
   }
@@ -144,6 +152,7 @@
       type="number"
       min={0}
       value={cost}
+      onfocus={handleCostFocus}
       oninput={handleCostInput}
       onchange={handleCostChange}
     />
@@ -184,6 +193,7 @@
       max={100}
       step="any"
       value={discount}
+      onfocus={handleDiscountFocus}
       oninput={handleDiscountInput}
       onchange={handleDiscountChange}
       helperMessage={$t('course.navItem.landing_page.editor.pricing_form.percentage_helper')}
