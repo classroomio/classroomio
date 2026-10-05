@@ -44,15 +44,15 @@ Media notes:
 ### `content/help/get-started/understand-usage-and-plan-limits.mdx` — Understand usage and plan limits
 
 - **Article type:** Concept and feature reference.
-- **Cover:** Each tracked resource; how active students and workspaces are counted; reset or billing-cycle behavior where applicable; warning and blocked states; how removals, archiving, and plan changes affect usage.
+- **Cover:** Each tracked resource; how active students and organizations are counted; reset or billing-cycle behavior where applicable; warning and blocked states; how removals, archiving, and plan changes affect usage.
 - **Images:** Usage/limits panel showing safe sample values and one limit-warning state if it can be reproduced safely.
 - **Video:** No video.
 
-### `content/help/get-started/create-and-manage-workspaces.mdx` — Create and manage workspaces
+### `content/help/get-started/create-and-manage-organizations.mdx` — Create and manage organizations
 
-- **Article type:** Overview that routes to workspace tasks.
-- **Cover:** What a workspace is; primary versus secondary workspace behavior; who can create one; how data and members are separated; plan limits; links to create, switch, and delete task guides.
-- **Images:** Workspace switcher with multiple demo workspaces and the workspace-management screen.
+- **Article type:** Overview that routes to organization tasks.
+- **Cover:** Primary versus additional organization behavior; who can create one; how data and members are separated; plan limits; links to create, switch, and delete task guides.
+- **Images:** Organization switcher with multiple demo organizations and the organization-management screen.
 - **Video:** No video; link to the focused task guides instead.
 
 ## Build courses
@@ -462,7 +462,7 @@ Media notes:
 ### `content/help/account-team-security/manage-your-notification-preferences.mdx` — Manage your notification preferences
 
 - **Article type:** Settings guide.
-- **Cover:** Opening **Settings → Notifications**; every preference category; email versus in-app behavior; mandatory operational/security messages; save timing; workspace or organization scope.
+- **Cover:** Opening **Settings → Notifications**; every preference category; email versus in-app behavior; mandatory operational/security messages; save timing; organization scope.
 - **Images:** Notification preferences grouped by category.
 - **Video:** No video.
 
@@ -473,31 +473,31 @@ Media notes:
 - **Images:** Team-member action menu and consequence-focused removal confirmation with demo data.
 - **Video:** No video.
 
-### `content/help/account-team-security/understand-primary-and-secondary-workspaces.mdx` — Understand primary and secondary workspaces
+### `content/help/account-team-security/understand-primary-and-additional-organizations.mdx` — Understand primary and additional organizations
 
 - **Article type:** Concept reference.
-- **Cover:** Definitions; ownership and billing relationship; plan limits; data and team separation; switching behavior; what can or cannot move between workspaces; deletion constraints.
-- **Images:** Relationship diagram plus workspace switcher showing primary/secondary labels if the UI exposes them.
+- **Cover:** Definitions; ownership and billing relationship; plan limits; data and team separation; switching behavior; what can or cannot move between organizations; deletion constraints.
+- **Images:** Relationship diagram plus organization switcher showing primary/additional labels if the UI exposes them.
 - **Video:** No video.
 
-### `content/help/account-team-security/create-another-workspace.mdx` — Create another workspace
+### `content/help/account-team-security/create-another-organization.mdx` — Create another organization
 
 - **Article type:** Task guide.
-- **Cover:** Eligibility and limits; opening workspace management; naming and site identifier; initial setup; owner/team defaults; billing impact; success state and next setup steps.
-- **Images:** Create-workspace action, form, and new workspace in the switcher.
+- **Cover:** Eligibility and limits; opening organization management; naming and site identifier; initial setup; owner/team defaults; billing impact; success state and next setup steps.
+- **Images:** Create-organization action, form, and new organization in the switcher.
 - **Video:** No video.
 
-### `content/help/account-team-security/switch-between-workspaces.mdx` — Switch between workspaces
+### `content/help/account-team-security/switch-between-organizations.mdx` — Switch between organizations
 
 - **Article type:** Quick task guide.
-- **Cover:** Opening the switcher; identifying the active workspace; switching; URL and context changes; unsaved-work warning if applicable; troubleshooting a missing workspace.
-- **Images:** Open workspace switcher with active and available workspaces clearly labeled.
+- **Cover:** Opening the switcher; identifying the active organization; switching; URL and context changes; unsaved-work warning if applicable; troubleshooting a missing organization.
+- **Images:** Open organization switcher with active and available organizations clearly labeled.
 - **Video:** No video.
 
-### `content/help/account-team-security/delete-a-workspace.mdx` — Delete a workspace
+### `content/help/account-team-security/delete-an-organization.mdx` — Delete an organization
 
 - **Article type:** Destructive task guide.
-- **Cover:** Required ownership; primary-workspace restrictions; everything deleted or retained; custom-domain, billing, student, content, certificate, and integration effects; export/backup steps; confirmation; recovery policy.
+- **Cover:** Required ownership; primary-organization restrictions; everything deleted or retained; custom-domain, billing, student, content, certificate, and integration effects; export/backup steps; confirmation; recovery policy.
 - **Images:** Delete control and full consequence confirmation. Never use a real organization.
 - **Video:** No video.
 
@@ -508,17 +508,17 @@ Media notes:
 - **Images:** Current-plan panel, plan chooser, and change confirmation with no private billing data.
 - **Video:** No video.
 
-### `content/help/account-team-security/understand-student-and-workspace-limits.mdx` — Understand student and workspace limits
+### `content/help/account-team-security/understand-student-and-organization-limits.mdx` — Understand student and organization limits
 
 - **Article type:** Limit reference and troubleshooting guide.
-- **Cover:** How each resource is counted; active versus invited/removed students; primary/secondary workspace count; warning thresholds; blocked actions; reducing usage; upgrade behavior.
+- **Cover:** How each resource is counted; active versus invited/removed students; primary/additional organization count; warning thresholds; blocked actions; reducing usage; upgrade behavior.
 - **Images:** Usage panel and a reproducible limit warning or blocked state.
 - **Video:** No video.
 
 ### `content/help/account-team-security/view-and-manage-ai-credits.mdx` — View and manage AI credits
 
 - **Article type:** Usage and billing guide.
-- **Cover:** What consumes credits; where balance and history appear; reset or purchase behavior; organization/workspace scope; insufficient-credit state; controlling usage; billing implications.
+- **Cover:** What consumes credits; where balance and history appear; reset or purchase behavior; organization scope; insufficient-credit state; controlling usage; billing implications.
 - **Images:** **Settings → AI Credits** overview and usage-history or insufficient-credit state with demo values.
 - **Video:** No video.
 
@@ -569,7 +569,7 @@ Media notes:
 ### `content/help/integrations-and-automation/understand-mcp-limits-and-permissions.mdx` — Understand MCP limits and permissions
 
 - **Article type:** Security and limit reference.
-- **Cover:** Available tools/actions; read versus write capabilities; organization/workspace scope; role inheritance; rate or usage limits; AI-credit implications if any; auditability; safe least-privilege practices.
+- **Cover:** Available tools/actions; read versus write capabilities; organization scope; role inheritance; rate or usage limits; AI-credit implications if any; auditability; safe least-privilege practices.
 - **Images:** Permission/scope matrix or diagram. Add a settings screenshot only if scopes are configurable in the UI.
 - **Video:** No video.
 
@@ -703,11 +703,11 @@ Media notes:
 - **Images:** One screenshot of the in-product support entry point if it exists and is stable.
 - **Video:** No video.
 
-### `content/help/troubleshooting-and-reference/workspace.mdx` — Workspace
+### `content/help/troubleshooting-and-reference/organization.mdx` — Organization structure
 
 - **Article type:** Concept reference.
-- **Cover:** Definition; relationship to an organization and academy; primary/secondary distinctions; ownership, teams, billing, and limits; what data is scoped to a workspace; links to create, switch, and delete guides.
-- **Images:** Relationship diagram; no UI screenshot unless labels are necessary to distinguish workspace context.
+- **Cover:** Definition; relationship to an academy; primary/additional distinctions; ownership, teams, billing, and limits; what data belongs to an organization; links to create, switch, and delete guides.
+- **Images:** Relationship diagram; no UI screenshot unless labels are necessary to distinguish organization context.
 - **Video:** No video.
 
 ### `content/help/troubleshooting-and-reference/section-lesson-and-exercise.mdx` — Section, lesson, and exercise
@@ -726,7 +726,7 @@ Media notes:
 
 ## Suggested production order
 
-1. Write foundational concept pages that other guides need to link to: ClassroomIO, workspace, content hierarchy, course locking, and compliance concepts.
+1. Write foundational concept pages that other guides need to link to: ClassroomIO, organization structure, content hierarchy, course locking, and compliance concepts.
 2. Complete the highest-frequency setup journeys: plans/billing, course creation, lesson creation, people management, authentication, and student sign-in/course-taking.
 3. Complete feature families together so screenshots and terminology remain consistent: AI Tutor, compliance, widgets, analytics, and LMS customization.
 4. Write troubleshooting pages after their canonical task guides so diagnostics can link to stable instructions instead of repeating them.
