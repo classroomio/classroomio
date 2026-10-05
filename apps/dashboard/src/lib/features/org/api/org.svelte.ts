@@ -558,9 +558,9 @@ class OrgApi extends BaseApiWithErrors {
       return;
     }
 
-    const { message, error } = (result ?? {}) as { message?: string; error?: string };
-    const text = message ?? error;
-    if (text) snackbar.error(text);
+    const { message, error } = (result ?? {}) as { message?: unknown; error?: unknown };
+    const text = [message, error].find((value) => typeof value === 'string' && value.length > 0);
+    snackbar.error(typeof text === 'string' ? text : 'snackbar.something');
   }
 
   async listStudentEmailTemplates() {
