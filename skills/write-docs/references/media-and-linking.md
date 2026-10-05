@@ -91,8 +91,6 @@ For before/after states, label each state in the surrounding text and keep the i
 
 Capture a real, current ClassroomIO state using demo data.
 
-For a new product capture, follow [screenshot-capture.md](screenshot-capture.md). Use its standard `1231 × 870` source viewport and approved TinySnap background so screenshots remain visually consistent across the Help Center.
-
 - Show enough product chrome to orient the reader: page title, relevant sidebar item, tab, or modal title.
 - Capture one screen at 1350×830, not a full-page screenshot of the scrolled document. Leave out the real browser's tabs and address bar, since the browser-board frame draws its own, but never crop the app's UI down to a control or panel. Take that screen with the steps in `skills/add-docs-image/SKILL.md`.
 - Use the normal desktop layout unless the article is specifically about mobile.
