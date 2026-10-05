@@ -1,0 +1,2 @@
+export interface LabelProps { htmlFor?: string; required?: boolean; disabled?: boolean; children?: React.ReactNode; style?: React.CSSProperties; }
+export declare function Label(props: LabelProps): JSX.Element;

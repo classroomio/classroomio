@@ -34,6 +34,7 @@ export type CourseItem = {
   title: string;
   description: string;
   type?: string;
+  typeLabel?: string;
   isPublished?: boolean;
   cost?: number;
   currency?: string;
@@ -224,6 +225,12 @@ export interface OrgLandingPageLabels {
   learningPathHoursLabel?: (hours: number) => string;
   /** Certificate label for a learning path card. Default: "Certificate". */
   learningPathCertificateLabel?: string;
+  courseOutlineHeading?: string;
+  courseOutlineDescription?: string;
+  courseCountLabel?: (count: number) => string;
+  learnersLabel?: (count: number) => string;
+  tracksLabel?: (count: number) => string;
+  terminalEnrollLabel?: string;
 }
 
 export type CourseCurriculumLesson = {

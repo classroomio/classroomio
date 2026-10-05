@@ -1,0 +1,129 @@
+{
+  "series": "INSIGHTS",
+  "kind": "talking-head",
+  "source": "recording.mp4",
+  "transcript": "recording.en.vtt",
+  "output": "edited",
+  "work": "work",
+  "corrections": {
+    "SAS": "SaaS",
+    "classroom": "ClassroomIO"
+  },
+  "sign_off": {
+    "headline": ["Set up training", "once."],
+    "swipe": "once.",
+    "url": "CLASSROOMIO.COM"
+  },
+  "guide": {
+    "title": "Two clips. Four platforms.",
+    "band": "SERIES RUNS MON TO FRI · ONE POST A DAY",
+    "schedule_intro": "Post the same clip on every platform on the same day.",
+    "notes": [
+      { "title": "Consent", "text": "Everyone who appears on camera or is named agrees before anything is published." },
+      { "title": "Sources", "text": "Every news screenshot is credited on screen with the outlet and date." }
+    ]
+  },
+  "clips": [
+    {
+      "id": "01-why-onboarding-fails",
+      "start": 312.4,
+      "end": 361.0,
+      "title": "Most customer onboarding fails in week one",
+      "thumbnail": "Onboarding fails in week one",
+      "framing": { "cx": 0.32, "vx": 160 },
+      "hook": "nobody reads the onboarding email",
+      "explainers": [
+        {
+          "trigger": "there was a report last month",
+          "duration": 6.0,
+          "kind": "browser",
+          "mode": { "16x9": "full", "9x16": "full" },
+          "props": {
+            "eyebrow": "IN THE NEWS",
+            "image": "explainer-assets/news-headline.png",
+            "url": "example-news.com/business",
+            "credit": "SOURCE · OUTLET NAME · DD MON YYYY"
+          }
+        },
+        {
+          "trigger": "three things go wrong",
+          "until": "nobody owns it",
+          "hold": 1.5,
+          "kind": "numbered",
+          "mode": { "16x9": "split", "9x16": "full" },
+          "props": {
+            "eyebrow": "WHY ONBOARDING FAILS",
+            "items": [
+              { "text": "Training lives in a PDF", "at": "a pdf" },
+              { "text": "Nobody tracks completion", "at": "tracks" },
+              { "text": "Nobody owns it", "at": "nobody owns it" }
+            ]
+          }
+        },
+        {
+          "trigger": "so what we do instead",
+          "duration": 4.5,
+          "kind": "statement",
+          "mode": "split",
+          "props": {
+            "eyebrow": "THE FIX",
+            "lines": ["Train once.", "Track everyone."],
+            "swipe": [1, "everyone."]
+          }
+        }
+      ],
+      "posts": {
+        "order": 1,
+        "date": "Mon",
+        "youtube_title": "Most customer onboarding fails in week one",
+        "youtube_description": "Why customer training stuck in PDFs and inboxes doesn't get finished, and what to do instead.",
+        "x": "Most customer onboarding fails in week one.\n\nTraining lives in a PDF. Nobody tracks completion. Nobody owns it.",
+        "linkedin": "Most customer onboarding fails in the first week.\n\nThree reasons we see again and again: training lives in a PDF, nobody tracks completion, and nobody owns it.\n\n#customereducation #SaaS",
+        "instagram": "Onboarding fails in week one. Here’s why.\n\n#customereducation #saas #startup #onboarding #b2b"
+      }
+    },
+    {
+      "id": "02-training-feeds-your-crm",
+      "start_phrase": "your customers need training",
+      "end_phrase": "the life cycle of their customer",
+      "title": "Customer training should end in your CRM",
+      "thumbnail": "Training that feeds your CRM",
+      "framing": { "cx": 0.32, "vx": 160 },
+      "hook": "they earn a certificate and your crm knows",
+      "explainers": [
+        {
+          "trigger": "your customers need training",
+          "until": "they earn a certificate",
+          "hold": 1.4,
+          "kind": "blocks",
+          "mode": { "16x9": "split", "9x16": "full" },
+          "props": {
+            "eyebrow": "THE PITCH",
+            "blocks": [
+              { "kind": "CUSTOMER", "title": "Needs training", "at": "need training" },
+              { "kind": "SETUP", "title": "You set it up once", "at": "set it up once" },
+              { "kind": "TRACK", "title": "Same track for everyone", "at": "same track" },
+              { "kind": "CERTIFICATE", "title": "Earned", "at": "earn a certificate", "blue": true }
+            ]
+          }
+        },
+        {
+          "trigger": "your crm knows",
+          "duration": 5.5,
+          "kind": "flow",
+          "mode": { "16x9": "split", "9x16": "full" },
+          "props": {
+            "eyebrow": "YOUR CRM KNOWS",
+            "image": "design:integration-hubspot.png",
+            "image_label": "CRM",
+            "image_title": "HubSpot",
+            "nodes": [
+              { "label": "CLASSROOMIO", "title": "Certificate issued" },
+              { "label": "CRM", "title": "Contact updated", "blue": true }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

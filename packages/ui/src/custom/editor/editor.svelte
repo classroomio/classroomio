@@ -2,6 +2,7 @@
   import type { HTMLContent, Content, Editor } from '@tiptap/core';
   import type { Transaction } from '@tiptap/pm/state';
   import type { UnsplashPhoto } from './types';
+  import type { Snippet } from 'svelte';
   import { EdraEditor, EdraToolBar, EdraBubbleMenu, EdraDragHandleExtended } from './ui';
   import { slide } from 'svelte/transition';
   import { cn } from '$src/tools';
@@ -13,6 +14,8 @@
     content?: HTMLContent;
     // Whether the toolbar should be visible
     showToolBar?: boolean;
+    toolbarPreset?: 'default' | 'email';
+    toolbarTrailing?: Snippet<[]>;
     // Whether the editor is editable
     editable?: boolean;
     // Whether to enable localStorage persistence
@@ -44,6 +47,8 @@
   let {
     content = $bindable(''),
     showToolBar = true,
+    toolbarPreset = 'default',
+    toolbarTrailing,
     editable = true,
     enablePersistence = false,
     contentStorageKey = 'edra-content',
@@ -128,7 +133,7 @@
 
     if (currentContent === nextContent) return;
 
-    editor.commands.setContent(nextContent, false);
+    editor.commands.setContent(nextContent, { emitUpdate: false });
   });
 
   function onUpdate(props: { editor: Editor; transaction: Transaction }) {
@@ -158,12 +163,16 @@
           <EdraToolBar
             class="ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:overflow-x-auto ui:border-b ui:border-dashed ui:p-0.5"
             {editor}
+            preset={toolbarPreset}
+            trailingContent={toolbarTrailing}
           />
         </div>
       {/if}
-      <EdraBubbleMenu {editor} />
+      {#if toolbarPreset !== 'email'}
+        <EdraBubbleMenu {editor} />
+      {/if}
 
-      {#if editable && showDragHandle}
+      {#if editable && showDragHandle && toolbarPreset !== 'email'}
         <EdraDragHandleExtended {editor} />
       {/if}
     {/if}
@@ -171,6 +180,7 @@
       class={cn('ui:relative ui:h-full ui:overflow-auto ui:p-4', editorClass)}
       bind:editor
       {editable}
+      emailSafe={toolbarPreset === 'email'}
       {content}
       {onUpdate}
       {placeholder}
@@ -193,6 +203,8 @@
             <ExpandedEditor
               {content}
               {editable}
+              {toolbarPreset}
+              {toolbarTrailing}
               {placeholder}
               {onImageUpload}
               {onSearchUnsplash}

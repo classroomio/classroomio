@@ -1,4 +1,8 @@
 <script>
+  import NotchCard from './ui/notch-card.svelte';
+  import Section from './ui/section.svelte';
+  import SectionHeader from './ui/section-header.svelte';
+
   const integrations = [
     {
       icon: '🔌',
@@ -21,27 +25,23 @@
   ];
 </script>
 
-<section class="bg-gray-50 px-6 py-16 lg:px-12 lg:py-24">
-  <div class="mx-auto max-w-[1100px]">
-    <div class="mb-3.5 text-xs font-medium tracking-widest text-blue-700 uppercase">Automate the boring parts</div>
-    <h2 class="mb-4 text-[clamp(2rem,3vw,2.8rem)] leading-[1.15] font-medium tracking-tight">
-      Set it up once.<br />Let it run.
-    </h2>
-    <p class="mb-14 max-w-[520px] text-base leading-relaxed text-gray-500 lg:text-lg">
-      Connect ClassroomIO to everything you already use. New hire joins Slack? They're enrolled. Course completed? Your
-      HRIS knows.
-    </p>
+<Section class="bg-gray-50">
+  <SectionHeader
+    eyebrow="Automate the boring parts"
+    eyebrowClass="text-blue-700"
+    ledeClass="text-gray-500"
+    lede="Connect ClassroomIO to everything you already use. New hire joins Slack? They're enrolled. Course completed? Your HRIS knows."
+  >
+    {#snippet title()}Set it up once.<br />Let it run.{/snippet}
+  </SectionHeader>
 
-    <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
-      {#each integrations as item}
-        <div
-          class="rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-200 hover:border-gray-950 hover:shadow-lg hover:shadow-black/5"
-        >
-          <div class="mb-4 text-3xl">{item.icon}</div>
-          <h3 class="mb-2 text-base font-medium">{item.title}</h3>
-          <p class="text-sm leading-relaxed text-gray-500">{item.description}</p>
-        </div>
-      {/each}
-    </div>
+  <div class="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3">
+    {#each integrations as item}
+      <NotchCard class="h-full bg-white" notchClass="bg-gray-50">
+        <div class="mb-4 flex size-10 items-center justify-center rounded-md bg-gray-100 text-xl">{item.icon}</div>
+        <h3 class="text-card-title mb-2 font-medium">{item.title}</h3>
+        <p class="text-[15px] leading-relaxed text-gray-500">{item.description}</p>
+      </NotchCard>
+    {/each}
   </div>
-</section>
+</Section>

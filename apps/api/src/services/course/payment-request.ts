@@ -82,6 +82,7 @@ export async function createPaymentRequest(data: PaymentRequestData) {
         },
         from: buildEmailFromName(`${orgName} - ClassroomIO`),
         replyTo: teacherEmail,
+        organizationId: course.orgId,
         idempotencyKey: `payment-request:student:${data.courseId}:${data.studentEmail}`
       });
     } catch (emailError) {

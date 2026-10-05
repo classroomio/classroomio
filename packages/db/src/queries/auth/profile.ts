@@ -128,11 +128,15 @@ export async function getProfilesByEmails(emails: string[]) {
   return db.select().from(schema.profile).where(inArray(schema.profile.email, emails));
 }
 
-export const updateProfile = async (id: string, data: Partial<Omit<TProfile, 'id' | 'createdAt' | 'updatedAt'>>) => {
+export const updateProfile = async (
+  id: string,
+  data: Partial<Omit<TProfile, 'id' | 'createdAt' | 'updatedAt'>>,
+  dbClient: DbOrTxClient = db
+) => {
   let setData = { ...data };
 
   if (data.settings !== undefined) {
-    const [existing] = await db
+    const [existing] = await dbClient
       .select({ settings: schema.profile.settings })
       .from(schema.profile)
       .where(eq(schema.profile.id, id))
@@ -165,7 +169,11 @@ export const updateProfile = async (id: string, data: Partial<Omit<TProfile, 'id
     setData = { ...setData, settings: mergedSettings as TProfile['settings'] };
   }
 
-  const [updatedProfile] = await db.update(schema.profile).set(setData).where(eq(schema.profile.id, id)).returning();
+  const [updatedProfile] = await dbClient
+    .update(schema.profile)
+    .set(setData)
+    .where(eq(schema.profile.id, id))
+    .returning();
 
   return updatedProfile;
 };

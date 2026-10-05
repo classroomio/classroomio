@@ -1,7 +1,7 @@
 <script>
   /**
    * Standard hero subtitle paragraph used across marketing pages.
-   * Defaults: `mt-6 max-w-[640px] text-lg leading-relaxed text-gray-600`.
+   * Defaults: `text-lead mt-6 max-w-[640px] text-gray-600`.
    * Pass `class` to override or extend (e.g. a different max-width).
    *
    * @typedef {Object} Props
@@ -13,6 +13,6 @@
   let { class: className = '', children } = $props();
 </script>
 
-<p class="mt-6 max-w-[640px] text-lg leading-relaxed text-gray-600 {className}">
+<p class="text-lead mt-6 max-w-[640px] text-gray-600 {className}">
   {@render children?.()}
 </p>

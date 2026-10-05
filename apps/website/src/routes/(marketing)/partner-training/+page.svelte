@@ -10,8 +10,8 @@
     TrustBand,
     WorkflowSteps
   } from '$lib/components';
+  import { CtaButton, Section, SectionHeader } from '$lib/components/ui';
   import { Badge } from '@cio/ui/base/badge';
-  import { Button } from '@cio/ui/base/button';
   import { Meteors } from '@cio/ui/custom/animation/meteors';
   import BadgeCheck from '@lucide/svelte/icons/badge-check';
   import BookOpenCheck from '@lucide/svelte/icons/book-open-check';
@@ -191,13 +191,13 @@
 </svelte:head>
 
 <section class="bg-white">
-  <PageHeader className="px-6 lg:px-12">
-    <div class="mx-auto flex max-w-[820px] flex-col items-center text-center">
+  <PageHeader className="px-6 md:px-10">
+    <div class="mx-auto flex max-w-[1000px] flex-col items-center text-center">
       <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
         <Trophy size={14} class="text-blue-700" />
         Partner Training
       </Badge>
-      <h1 class="text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
+      <h1 class="text-display text-balance text-gray-950">
         Train the partners
         <em class="text-blue-700 not-italic">who sell your product.</em>
       </h1>
@@ -205,11 +205,13 @@
         Run a partner workspace alongside your customer academy. Separate brand, separate domain, same account. Certify
         resellers, agencies, and integrators with programs and assessments that stay in sync as your product changes.
       </HeroSubtitle>
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
-        <Button href="/signup" variant="outline">Start free</Button>
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <CtaButton data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</CtaButton>
+        <CtaButton href="/signup" variant="secondary">Start free</CtaButton>
       </div>
-      <div class="mt-7 flex flex-wrap items-center justify-center gap-5 text-xs text-gray-500">
+      <div
+        class="text-label mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-gray-500 uppercase"
+      >
         <span class="flex items-center gap-1.5"><span class="font-medium text-blue-700">✓</span> Custom domain</span>
         <span class="flex items-center gap-1.5"
           ><span class="font-medium text-blue-700">✓</span> Separate workspace</span
@@ -218,8 +220,8 @@
       </div>
     </div>
 
-    <div class="mx-auto mt-14 w-full max-w-[1100px]">
-      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+    <div class="max-w-content mx-auto mt-16 w-full">
+      <div class="overflow-hidden rounded-xl bg-white ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/partner-training/latest-courses.jpeg"
           alt="Partner academy with latest courses, cohort structure, and learner state"
@@ -300,65 +302,65 @@
     footerLabel="8 lessons"
   />
 
-  <!-- Analytics split -->
-  <section class="px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-      <div>
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Readiness analytics</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          See which partners are ready to sell, and which need help.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Drill into completion rates, time-to-certify, exercise marks, and submission quality. Filter by partner org,
-          cohort, geography, or certification path. Export anything to CSV.
-        </p>
-        <ul class="mt-6 space-y-3 text-sm text-gray-700">
-          <li class="flex items-start gap-2">
-            <BookOpenCheck size={16} class="mt-0.5 text-blue-700" /> Course-level and cohort-level dashboards
-          </li>
-          <li class="flex items-start gap-2">
-            <ChartNoAxesCombined size={16} class="mt-0.5 text-blue-700" /> Per-learner gradebook with manual override
-          </li>
-          <li class="flex items-start gap-2">
-            <MessageSquareText size={16} class="mt-0.5 text-blue-700" /> Newsfeed activity and Q&A participation
-          </li>
-        </ul>
-      </div>
-      <!-- IMAGE STUB: partner-analytics-dashboard.png -->
-      <div class="relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl/5">
-        <div class="aspect-[4/3] w-full bg-gradient-to-br from-blue-50 via-white to-gray-50 p-6">
-          <div class="grid h-full grid-cols-2 gap-3">
-            <div class="rounded-xl bg-white p-3 ring-1 ring-gray-100">
-              <p class="text-[10px] text-gray-500">Time to certify</p>
-              <p class="mt-1 text-xl font-medium text-gray-950">11.2d</p>
-              <p class="text-[10px] text-green-600">↓ 2.4d</p>
-            </div>
-            <div class="rounded-xl bg-white p-3 ring-1 ring-gray-100">
-              <p class="text-[10px] text-gray-500">Pass rate</p>
-              <p class="mt-1 text-xl font-medium text-blue-700">87%</p>
-            </div>
-            <div class="col-span-2 rounded-xl bg-white p-3 ring-1 ring-gray-100">
-              <p class="mb-2 text-[10px] text-gray-500">Completion by partner org</p>
-              <div class="space-y-1.5">
-                {#each [{ n: 'Northwind', v: 92 }, { n: 'Acme Resellers', v: 78 }, { n: 'Globex Implements', v: 64 }] as row}
-                  <div class="flex items-center gap-2">
-                    <span class="w-24 text-[10px] text-gray-600">{row.n}</span>
-                    <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
-                      <div class="h-full rounded-full bg-blue-700" style="width: {row.v}%"></div>
-                    </div>
-                    <span class="text-[10px] font-medium text-gray-700">{row.v}%</span>
+  <Section innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <SectionHeader
+        align="left"
+        size="h3"
+        eyebrow="Readiness analytics"
+        eyebrowClass="text-blue-700"
+        titleClass=""
+        ledeClass="text-gray-500"
+        lede="Drill into completion rates, time-to-certify, exercise marks, and submission quality. Filter by partner org, cohort, geography, or certification path. Export anything to CSV."
+      >
+        {#snippet title()}See which partners are ready to sell, and which need help.{/snippet}
+      </SectionHeader>
+      <ul class="mt-8 space-y-3 text-[15px] text-gray-700">
+        <li class="flex items-start gap-2">
+          <BookOpenCheck size={16} class="mt-1 shrink-0 text-blue-700" /> Course-level and cohort-level dashboards
+        </li>
+        <li class="flex items-start gap-2">
+          <ChartNoAxesCombined size={16} class="mt-1 shrink-0 text-blue-700" /> Per-learner gradebook with manual override
+        </li>
+        <li class="flex items-start gap-2">
+          <MessageSquareText size={16} class="mt-1 shrink-0 text-blue-700" /> Newsfeed activity and Q&A participation
+        </li>
+      </ul>
+    </div>
+    <div class="relative overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div class="aspect-[4/3] w-full bg-gradient-to-br from-blue-50 via-white to-gray-50 p-6">
+        <div class="grid h-full grid-cols-2 gap-3">
+          <div class="rounded-md bg-white p-3 ring-1 ring-gray-100">
+            <p class="text-[10px] text-gray-500">Time to certify</p>
+            <p class="mt-1 text-xl font-semibold tracking-tight text-gray-950">11.2d</p>
+            <p class="text-[10px] text-green-600">↓ 2.4d</p>
+          </div>
+          <div class="rounded-md bg-white p-3 ring-1 ring-gray-100">
+            <p class="text-[10px] text-gray-500">Pass rate</p>
+            <p class="mt-1 text-xl font-semibold tracking-tight text-blue-700">87%</p>
+          </div>
+          <div class="col-span-2 rounded-md bg-white p-3 ring-1 ring-gray-100">
+            <p class="mb-2 text-[10px] text-gray-500">Completion by partner org</p>
+            <div class="space-y-1.5">
+              {#each [{ n: 'Northwind', v: 92 }, { n: 'Acme Resellers', v: 78 }, { n: 'Globex Implements', v: 64 }] as row}
+                <div class="flex items-center gap-2">
+                  <span class="w-24 text-[10px] text-gray-600">{row.n}</span>
+                  <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100">
+                    <div class="h-full rounded-full bg-blue-700" style="width: {row.v}%"></div>
                   </div>
-                {/each}
-              </div>
+                  <span class="font-mono text-[10px] font-medium text-gray-700">{row.v}%</span>
+                </div>
+              {/each}
             </div>
           </div>
         </div>
-        <p class="pb-3 text-center text-xs text-gray-400">Replace with /static/partner-analytics-dashboard.png</p>
       </div>
+      <p class="pb-3 text-center text-xs text-gray-400">Replace with /static/partner-analytics-dashboard.png</p>
     </div>
-  </section>
+  </Section>
 
   <PageSignupCTA
+    variant="brand"
     header="Certify your next partner cohort."
     subText="Turn your product knowledge into a repeatable program. Courses, certificates, branded portal, and analytics in one place."
     btnLabel="Book a Demo"

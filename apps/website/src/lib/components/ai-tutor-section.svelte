@@ -2,13 +2,9 @@
   import { BlurFade } from '@cio/ui/custom/animation/blurfade';
   import { BotIcon, BotOffIcon } from '@cio/ui/custom/moving-icons';
   import ImagePlaceholder from './image-placeholder.svelte';
-  import ArrowRight from '@lucide/svelte/icons/arrow-right';
+  import CtaButton from './ui/cta-button.svelte';
 
   /**
-   * AI teaching assistant section: centered, light theme, logo on top, gradient accent,
-   * large heading, short subhead, optional CTA, and an image placeholder underneath.
-   * Used on the homepage + each solution page with variant copy.
-   *
    * @typedef {Object} Props
    * @property {string} [accent]          Small gradient line above the heading (e.g. "Academy", "Compliance AI")
    * @property {string} [title]           Main heading
@@ -62,9 +58,9 @@
   onmouseleave={() => (inZone = false)}
   class="{bgClass} {inZone
     ? inZoneBorder
-    : outZoneBorder} border-t-2 border-dashed px-6 py-12 transition-colors duration-200 lg:px-12 lg:py-16"
+    : outZoneBorder} xl:py-section border-t-2 border-dashed px-6 py-20 transition-colors duration-200 md:px-10 md:py-28"
 >
-  <div class="mx-auto max-w-[1100px] text-center">
+  <div class="max-w-content mx-auto w-full text-center">
     <BlurFade once>
       <div class="relative mx-auto mb-2 h-12 w-12">
         <div
@@ -103,36 +99,30 @@
     {/if}
 
     <BlurFade delay={0.1} once>
-      <h2
-        class="mx-auto max-w-[820px] text-[clamp(1.75rem,3.4vw,2.6rem)] leading-[1.1] font-medium tracking-tight text-gray-950"
-      >
+      <h2 class="text-h2 mx-auto max-w-[900px] text-balance text-gray-950">
         {title}
       </h2>
     </BlurFade>
 
     <BlurFade delay={0.2} once>
-      <p class="mx-auto mt-4 max-w-[600px] text-sm leading-relaxed text-gray-500">
+      <p class="text-lead max-w-lede mx-auto mt-[18px] text-pretty text-gray-500">
         {description}
       </p>
     </BlurFade>
 
     {#if ctaLabel}
       <BlurFade delay={0.3} once>
-        <div class="mt-6 flex justify-center">
-          <a
-            href={ctaHref}
-            class="inline-flex items-center gap-2 rounded-full bg-gray-950 px-5 py-2.5 text-sm font-medium text-white no-underline transition-all hover:-translate-y-0.5 hover:bg-blue-700"
-          >
+        <div class="mt-9 flex justify-center">
+          <CtaButton href={ctaHref} arrow class="bg-gray-950 hover:bg-blue-700 hover:brightness-100">
             {ctaLabel}
-            <ArrowRight size={14} />
-          </a>
+          </CtaButton>
         </div>
       </BlurFade>
     {/if}
 
     {#if !imageSrc && !vimeoVideoId && showImage}
       <BlurFade delay={0.35} once>
-        <div class="mx-auto mt-10 w-full max-w-[820px]">
+        <div class="mx-auto mt-12 w-full max-w-[820px]">
           <ImagePlaceholder suggestedFile={imagePath} caption={imageCaption} aspect="aspect-[16/9]" />
         </div>
       </BlurFade>
@@ -141,15 +131,15 @@
 
   {#if imageSrc}
     <BlurFade delay={0.35} once>
-      <div class="mx-auto mt-10 w-full max-w-[1100px]">
-        <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+      <div class="max-w-content mx-auto mt-12 w-full">
+        <div class="overflow-hidden rounded-xl bg-white ring-1 ring-gray-200">
           <img src={imageSrc} alt={imageAlt} class="block h-auto w-full" loading="lazy" decoding="async" />
         </div>
       </div>
     </BlurFade>
   {:else if vimeoVideoId}
     <BlurFade delay={0.35} once>
-      <div class="mx-auto mt-10 w-full max-w-[960px] overflow-hidden rounded-lg">
+      <div class="mx-auto mt-12 w-full max-w-[960px] overflow-hidden rounded-xl ring-1 ring-gray-200">
         <div style="padding:{videoAspect} 0 0 0;position:relative;">
           <iframe
             src="https://player.vimeo.com/video/{vimeoVideoId}?badge=0&autopause=0&player_id=0&app_id=58479&loop=1"
