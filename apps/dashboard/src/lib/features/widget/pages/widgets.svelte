@@ -98,10 +98,10 @@
     void navigateFilters(withFilterChange(filters, { selectionModes }));
   }
 
-  function handleClearFilters(resetPage = false) {
+  function handleClearFilters() {
     searchValue = '';
     const clearedFilters = clearWidgetListFilters(filters);
-    void navigateFilters(resetPage ? { ...clearedFilters, page: 1 } : clearedFilters);
+    void navigateFilters({ ...clearedFilters, page: DEFAULT_WIDGET_LIST_FILTERS.page });
   }
 
   function handleTabChange() {
@@ -130,7 +130,7 @@
     onStatusesChange={handleStatusesChange}
     onLayoutTypesChange={handleLayoutTypesChange}
     onSelectionModesChange={handleSelectionModesChange}
-    onClearFilters={() => handleClearFilters()}
+    onClearFilters={handleClearFilters}
   />
 </Page.BodyHeader>
 
@@ -152,7 +152,7 @@
       emptyTitle={$t('widgets.empty.heading')}
       emptyDescription={$t('widgets.empty.description')}
       emptyIcon={PanelsTopLeftIcon}
-      onClearFilters={() => handleClearFilters(true)}
+      onClearFilters={handleClearFilters}
       onPageChange={handlePageChange}
     >
       {#snippet emptyAction()}
@@ -170,7 +170,7 @@
       emptyTitle={$t('widgets.archived.empty')}
       emptyDescription={$t('widgets.archived.empty_description')}
       emptyIcon={ArchiveIcon}
-      onClearFilters={() => handleClearFilters(true)}
+      onClearFilters={handleClearFilters}
       onPageChange={handlePageChange}
     />
   </UnderlineTabs.Content>
