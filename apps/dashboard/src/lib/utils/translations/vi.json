@@ -1847,7 +1847,9 @@
               "begin_section": "Phần bắt đầu",
               "complete_section": "Hoàn thành phần",
               "instructions": "Hướng dẫn",
-              "close_instructions": "Đóng hướng dẫn"
+              "close_instructions": "Đóng hướng dẫn",
+              "show_more": "Hiển thị thêm",
+              "show_less": "Hiển thị ít hơn"
             },
             "edit_mode": {
               "delete_modal": "Xóa bài tập",

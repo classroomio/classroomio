@@ -82,6 +82,16 @@
   let slideDirection = $state<'next' | 'prev'>('next');
   let selectedTryIndex = $state(-1);
   let isInstructionsOpen = $state(false);
+  let feedbackElement = $state<HTMLElement | null>(null);
+  let isFeedbackTruncated = $state(false);
+  let isFeedbackSheetOpen = $state(false);
+
+  $effect(() => {
+    void $questionnaireMetaData.comment;
+    if (!feedbackElement) return;
+
+    isFeedbackTruncated = feedbackElement.scrollHeight > feedbackElement.clientHeight;
+  });
   const isWideScreen = new MediaQuery('(min-width: 1280px)');
   const questionLabels = $derived(getExerciseQuestionLabels());
   const sectionFallbackTitle = $derived($t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'));
@@ -922,16 +932,8 @@
                 {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
               </Badge>
 
-              <div class="flex w-full flex-col items-start gap-2 md:flex-row md:items-center">
-                {#if $questionnaireMetaData.comment}
-                  <Alert.Callout
-                    variant="information"
-                    title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructor_feedback')}
-                    description={$questionnaireMetaData.comment}
-                    class="h-fit! w-full! flex-1!"
-                  />
-                {/if}
-                <div class="flex flex-col justify-between gap-2 rounded-md border p-4">
+              <div class="flex w-full flex-col items-stretch gap-2 md:flex-row md:items-center">
+                <div class="flex shrink-0 flex-col justify-between gap-2 rounded-md border p-4">
                   <p>
                     <span class="text-2xl font-bold">{$questionnaireMetaData.finalTotalGrade}/</span>
 
@@ -981,6 +983,30 @@
                   </Alert.Root>
                 {/if}
               </div>
+
+              {#if $questionnaireMetaData.comment}
+                <Alert.Root variant="information" class="h-fit! w-full!">
+                  <Alert.Title>
+                    {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructor_feedback')}
+                  </Alert.Title>
+                  <Alert.Description class="w-full">
+                    <p bind:this={feedbackElement} class="line-clamp-2 whitespace-pre-line">
+                      {$questionnaireMetaData.comment}
+                    </p>
+                    {#if isFeedbackTruncated}
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="sm"
+                        class="h-auto p-0"
+                        onclick={() => (isFeedbackSheetOpen = true)}
+                      >
+                        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.show_more')}
+                      </Button>
+                    {/if}
+                  </Alert.Description>
+                </Alert.Root>
+              {/if}
             </div>
           {:else if isSelfPacedLikeCourse(courseApi.course?.type)}
             <Badge
@@ -1196,6 +1222,22 @@
     </aside>
   {/if}
 </div>
+
+<Sheet.Root bind:open={isFeedbackSheetOpen}>
+  <Sheet.Content side="right" class="w-full gap-0 overflow-y-auto sm:max-w-md">
+    <Sheet.Header>
+      <Sheet.Title>
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructor_feedback')}
+      </Sheet.Title>
+    </Sheet.Header>
+    <p class="px-4 text-sm whitespace-pre-line">{$questionnaireMetaData.comment}</p>
+    <Sheet.Footer>
+      <Button type="button" variant="outline" size="sm" onclick={() => (isFeedbackSheetOpen = false)}>
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.show_less')}
+      </Button>
+    </Sheet.Footer>
+  </Sheet.Content>
+</Sheet.Root>
 
 <Sheet.Root open={isInstructionsSheetOpen} onOpenChange={handleInstructionsSheetOpenChange}>
   <Sheet.Content side="right" class="w-full gap-0 overflow-y-auto sm:max-w-md">

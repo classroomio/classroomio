@@ -1847,7 +1847,9 @@
               "begin_section": "Seção inicial",
               "complete_section": "Seção completa",
               "instructions": "Instruções",
-              "close_instructions": "Fechar instruções"
+              "close_instructions": "Fechar instruções",
+              "show_more": "Mostrar mais",
+              "show_less": "Mostrar menos"
             },
             "edit_mode": {
               "delete_modal": "Excluir exercício",
