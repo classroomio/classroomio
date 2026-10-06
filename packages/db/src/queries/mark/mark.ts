@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, db, eq, or, sql } from '@db/drizzle';
+import { and, db, eq, isNotNull, or, sql } from '@db/drizzle';
 
 /**
  * Mark record with fields in camelCase matching database schema convention.
@@ -22,13 +22,14 @@ export interface Mark {
  * @param courseId Course ID
  * @param submittedBy Optional group member ID. When set, only that learner's
  * submissions are joined so other students' scores never leave the database.
+ * Work left by removed learners (null `submitted_by`) is never joined.
  * @returns Array of mark records
  */
 export async function getMarksByCourseId(courseId: string, submittedBy?: string): Promise<Mark[]> {
   try {
     const submissionJoin = submittedBy
       ? and(eq(schema.exercise.id, schema.submission.exerciseId), eq(schema.submission.submittedBy, submittedBy))
-      : eq(schema.exercise.id, schema.submission.exerciseId);
+      : and(eq(schema.exercise.id, schema.submission.exerciseId), isNotNull(schema.submission.submittedBy));
 
     const result = await db
       .select({
