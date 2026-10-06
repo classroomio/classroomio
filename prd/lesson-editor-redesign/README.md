@@ -2,10 +2,17 @@
 
 ## Prototype — visual and interaction reference
 
-A clickable, high-fidelity prototype lives at [`prototypes/lesson-editor-redesign/index.html`](../../prototypes/lesson-editor-redesign/index.html) — a single self-contained HTML file, built on the real `@cio/ui` design tokens, that a developer or reviewer can open directly in a browser (`open prototypes/lesson-editor-redesign/index.html`, no build step required). It demonstrates every interaction described in this PRD: the unified canvas, the Settings slider, the Edit/Preview toggle, and the Add Video / Add Slide / Add Document flows, including the two states below that were added after hands-on review of this prototype and are now part of this PRD's scope:
+A clickable, high-fidelity prototype lives at [`prototypes/lesson-editor-redesign/index.html`](../../prototypes/lesson-editor-redesign/index.html) — a single self-contained HTML file, built on the real `@cio/ui` design tokens, that a developer or reviewer can open directly in a browser (`open prototypes/lesson-editor-redesign/index.html`, no build step required). It demonstrates every interaction described in this PRD: the unified canvas, the Settings slider, the Edit/Preview toggle, and the Add Video / Add Slide / Add Document / Add Image flows. The states below were added after hands-on review of this prototype and are now part of this PRD's scope:
 
-* **Preview renders Video and Slides large and prominent** (a full-width player/viewer, not a compact edit-mode card), and hides the Video/Note/Slide/Document labels, so Preview reads as one continuous learner page rather than a labeled form.
-* **Documents can be added as inline Note content or as a Downloadable Link** — a new proposed capability, not present in production today (see [Confirmed Decision 8](#8-documents-can-become-inline-note-content-or-stay-a-downloadable-link) and [Data Model and API](#data-model-and-api)).
+* **The canvas is an ordered list of content blocks, not one section per type.** An admin can add any number of Video, Note, Slide, Document, and Image blocks, in any order they choose, interleaved freely — not a fixed Video-then-Note-then-Slide-then-Document arrangement (see [Confirmed Decision 2](#2-the-canvas-is-an-ordered-list-of-blocks-not-one-section-per-type)).
+* **Image is a new, fifth content type**, alongside Video, Note, Slide, and Document (see [Confirmed Decision 3](#3-image-becomes-a-fifth-content-type)).
+* **An AI assistant can draft a Note block from a one-line prompt**, which the admin then edits before it's part of the lesson (see [Confirmed Decision 4](#4-an-ai-assistant-can-draft-a-note-block)).
+* **Adding Video, Slides, Document, or Image inserts a real, fully-rendered example immediately** — not a blank form — which the admin either keeps, edits in place, or replaces via "Change …" (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)).
+* Blocks can be reordered by drag handle or explicit move up/down controls, and removed from a per-block menu.
+* Notes support callout styles (Info, Tip, Important, Warning, Highlight) in addition to plain text.
+* **Preview renders Video and Slides large and prominent** (a full-width player/viewer, not a compact edit-mode card), and hides every block's type label, so Preview reads as one continuous learner page rather than a labeled form.
+* Preview offers a reading-density control (Compact / Comfortable / Spacious) that adjusts the spacing between blocks.
+* A scroll-position indicator — one dot per block, inside the canvas column — shows where the admin is in a long lesson and jumps to any block on click; Preview shows the equivalent as a continuous progress fill.
 
 When this document and the prototype disagree on a UI detail, the prototype wins.
 
@@ -16,13 +23,14 @@ Replace the current tab-based lesson editor with a unified authoring canvas.
 Today, Video, Notes, Slides, Documents, and Settings are separate tabs, with only one panel visible at a time. The redesigned editor will let admins:
 
 * Edit all existing lesson content from one canvas
-* See content together in its configured order
+* Add, reorder, and remove any number of content blocks — of any of five types, in any order — without being limited to one section per type
+* See content together in the order they actually arranged it
 * Preview the lesson from the in-app learner perspective without leaving the page
 * Access lesson settings through a right-side slider
 
 The editing philosophy is inspired by Notion's directness, where the content itself is the main editing surface.
 
-This does **not** mean adopting Notion's visual design, colors, branding, block system, or drag-and-drop model. ClassroomIO's existing `@cio/ui` design system remains the visual language.
+This does **not** mean adopting Notion's visual design, colors, branding, or free-form block system. ClassroomIO's existing `@cio/ui` design system remains the visual language, and block types stay fixed to the five this PRD defines — admins choose from Video, Note, Slide, Document, and Image, not an open-ended block palette.
 
 ---
 
@@ -62,13 +70,11 @@ Therefore, the new Preview must clearly represent the **authenticated in-app lea
 
 Public renderer parity is outside this PRD.
 
-### 5. Content ordering is managed at course level
+### 5. Content ordering is hard-coded to one slot per type, at course level
 
-`course.metadata.lessonTabsOrder` controls the order of Video, Note, Slide, and Document.
+`course.metadata.lessonTabsOrder` orders exactly four fixed slots — Video, Note, Slide, Document — and that order applies to every lesson in the course.
 
-The ordering UI remains on the course-level Settings page.
-
-This PRD does not move that control. The existing order simply determines the order of sections in the new canvas.
+An earlier version of this PRD proposed leaving that control untouched and simply following its existing order inside the new canvas. That is no longer sufficient: the canvas this PRD now describes lets an admin add any number of blocks of any type, interleaved in any sequence, per lesson (see [Confirmed Decision 2](#2-the-canvas-is-an-ordered-list-of-blocks-not-one-section-per-type)). A single course-wide, one-slot-per-type array cannot express two Note blocks separated by a Video, or a lesson with three Images and no Slide. Content order must become a **per-lesson** property. What happens to the existing course-level reorder control (`reorder-material-tabs.svelte`) for lessons that use the new canvas is an implementation decision — see [Data Model and API](#data-model-and-api) — not something to guess at here.
 
 ### 6. There is no dedicated mobile editing layout
 
@@ -76,9 +82,9 @@ The current tab strip horizontally scrolls on smaller screens.
 
 A stacked canvas removes the need for content tabs and allows the lesson to naturally stack on mobile.
 
-### 7. A document can only ever be a file attachment
+### 7. An admin can only ever have one of each content type
 
-Today a document is always rendered the same way to a learner: a file row with view/download actions (`document.svelte`, `AttachmentList`). There is no way to present a document's actual content as part of the lesson text itself — an admin who wants a PDF's content to read as part of the lesson has to manually retype it into the Note section, duplicating the content and creating two sources of truth.
+Today's model treats Video, Note, Slide, and Document as four fixed destinations, each holding one thing. An admin who wants two videos with a note in between, or three reference images in a row, has no way to express that — the editor has no concept of ordering or repeating individual pieces of content, only of switching between four panels.
 
 ---
 
@@ -93,30 +99,43 @@ Do not introduce Notion's:
 * Colors
 * Branding
 * Iconography
-* Block-drag system
-* Free-form block canvas
+* Free-form block canvas (block types stay fixed to the five this PRD defines)
 
 Continue using `@cio/ui`.
 
-## 2. No content or capability removal
+## 2. The canvas is an ordered list of blocks, not one section per type
 
-The editor continues to support:
+The canvas holds an ordered sequence of content blocks. Each block is one of: Video, Note, Slide, Document, Image.
 
-* Video
-* Note
-* Slide
-* Document
-* 6 video sources
-* 10 slide platforms
-* PDF viewer
-* TipTap notes
-* Note version history
-* `lessonTabsOrder`
-* Existing save/autosave behavior
+* Any number of blocks of the same type is allowed (two Notes, three Images, etc.).
+* Blocks can appear in any order the admin chooses, not a fixed Video → Note → Slide → Document arrangement.
+* A block can be inserted at the end of the lesson, or precisely between any two existing blocks.
+* Blocks can be reordered after the fact, by:
+  * Dragging a block by its drag handle to a new position, or
+  * Using explicit "move up" / "move down" controls in the block's own menu.
+* A block is removed from that same per-block menu ("Remove block"), not an instant delete.
 
-This is an information architecture change, not a functionality cut.
+This replaces the one-section-per-type model and supersedes `course.metadata.lessonTabsOrder` as the mechanism for ordering content within a lesson — see [Problem Statement #5](#5-content-ordering-is-hard-coded-to-one-slot-per-type-at-course-level) and [Data Model and API](#data-model-and-api).
 
-## 3. Settings becomes a right-side slider
+## 3. Image becomes a fifth content type
+
+Image joins Video, Note, Slide, and Document as a first-class block type.
+
+* Added by uploading an image file (drag-and-drop or click-to-browse); no stock-photo library or other image source is in scope for v1.
+* Each Image block has its own settings: **Alt text** (for accessibility) and **Fit** — Fill (crop to fit its frame) or Fit (show the whole image, letterboxed if needed).
+* Replacing an image is a distinct action ("Change image") from editing its alt text/fit (opened via a small on-image toolbar).
+* No existing component renders Image today — this is new UI and, unlike Video/Slide/Document, has no existing add/edit modal to re-host.
+
+## 4. An AI assistant can draft a Note block
+
+An admin can describe what part of the lesson should cover, in a single prompt, and get a draft Note block back to edit and refine — not a finished, unreviewed piece of content.
+
+* The AI entry point sits alongside the other content-type choices (Note, Video, Slides, Document, Image) wherever content is added.
+* Submitting a prompt inserts a new, fully editable Note block pre-filled with a generated draft. It behaves exactly like any other Note block from that point on — there is no separate "AI block" type, and no indicator in Preview that a given Note started from a prompt.
+* The admin's prompt itself is not proposed to be stored or shown again once the draft is generated.
+* Which model/provider is used, and how generation cost, rate limits, and content moderation are handled, are implementation decisions — see [Data Model and API](#data-model-and-api) — not something to guess at here.
+
+## 5. Settings becomes a right-side slider
 
 Settings is removed from content navigation.
 
@@ -136,7 +155,7 @@ No new settings are introduced.
 
 Closing the slider must not navigate away, reload the lesson, reset scroll position, or lose edits.
 
-## 4. Edit/Preview toggle instead of split view
+## 6. Edit/Preview toggle instead of split view
 
 Use an Edit/Preview toggle in the lesson header.
 
@@ -146,7 +165,7 @@ Reuse the existing `mode=view` and `getViewModeComponents` learner rendering pat
 
 A split view can be considered later if a reusable resizable-panel primitive is added to the design system.
 
-## 5. Preview represents the in-app learner experience
+## 7. Preview represents the in-app learner experience
 
 Preview uses the existing authenticated learner rendering path.
 
@@ -156,19 +175,15 @@ It must not imply parity with the public/unauthenticated course renderer.
 
 The existing `viewAsStudent()` flow remains available as a supplementary course/public check.
 
-## 6. No data model or API changes for the canvas, Settings slider, or Preview
+Preview also offers a reading-density control (Compact / Comfortable / Spacious) that changes the vertical spacing between blocks. This is a presentation preference only — it is not persisted as part of the lesson content, and it has no effect in Edit mode.
 
-The unified canvas, the Settings slider, and the Edit/Preview toggle continue using the existing:
+## 8. The ordered block list is a necessary data-model change
 
-* `lesson`
-* `lesson_language`
-* `lesson_language_history`
-* Lesson APIs
-* Lesson-language APIs
+An earlier version of this PRD stated that the canvas, Settings slider, and Preview would require no data-model or API changes. That held only for a one-section-per-type canvas. It no longer holds: representing an arbitrary, per-lesson, ordered sequence of Video/Note/Slide/Document/Image blocks — including repeats — is a real change to how lesson content is structured, not just how it's hosted.
 
-No new database or API changes are expected for these three pieces. The one exception is the new Document capability in Decision 8 below, which does require a data-model addition — scoped and called out there, not silently introduced.
+The Settings slider and Preview's rendering path still need no changes beyond consuming the new ordered content. The one necessary addition is the ordered block list itself, plus the new Image type and the AI-drafting entry point — all scoped in [Data Model and API](#data-model-and-api), not prescribed in full here.
 
-## 7. Scope
+## 9. Scope
 
 Only the single-lesson content area changes.
 
@@ -177,42 +192,36 @@ The following remain unchanged:
 * `CourseSidebar`
 * `CourseHeader`
 * Course-level Settings
-* Course-level `lessonTabsOrder`
 * Other dashboard routes
 
-## 8. Documents can become inline Note content or stay a Downloadable Link
-
-This is a new proposed capability, not present in production today, added to this PRD after it was demonstrated in the prototype.
-
-* When adding a document, the admin chooses one of two modes, presented as a simple choice at add time: **Add as Note** or **Add as Downloadable Link**. The choice can be changed later per document.
-* **Add as Downloadable Link** is today's existing behavior: the document renders to the learner as a file row with a download/open action. No change here.
-* **Add as Note** is new: the document's content appears directly in the lesson as readable text, styled like the existing Note content, instead of requiring the learner to open or download the original file.
-* This PRD does **not** propose automatic text extraction (OCR, PDF parsing, etc.) from the uploaded file. "Add as Note" assumes the admin supplies or edits the text that will display — see [Data Model and API](#data-model-and-api) for what this requires and what remains an open implementation question.
-* This applies only to newly-added or explicitly-reconfigured documents. Existing documents keep behaving exactly as they do today (Downloadable Link) unless an admin opts them into Note mode.
-
-## 9. Existing Add Video / Add Slide flows are preserved exactly, only re-hosted
+## 10. Existing Add Video / Add Slide flows are preserved exactly, only re-hosted
 
 The current add-content pickers for Video and Slide are more capable than a simple form, and this PRD does not simplify them:
 
 * **Add Video** already offers 6 sources (YouTube, Vimeo, Embed link, Upload, Library, Google Drive) in a tabbed modal.
 * **Add Slide** already offers a two-pane picker: a searchable list of the 10 supported platforms (with real platform branding) on one side, and platform-specific step-by-step instructions, an embed-code field, a live "embed ready" preview, and a "how to embed" doc link on the other (`SlideEmbedPicker`). The "Add slide" action stays disabled until a valid embed is pasted.
-* Removing a video or slide already goes through a confirmation-style menu (a "⋯" action opening a small menu with a single "Remove" item), not an instant delete.
+* Removing a block already goes through a confirmation-style menu (a "⋯" action opening a small menu with a single "Remove block" item), not an instant delete.
 
-The redesign re-hosts these exact flows inside the unified canvas — it does not rebuild, simplify, or restyle them.
+The redesign re-hosts these exact flows inside the unified canvas — it does not rebuild, simplify, or restyle them. What changes is **when** they open:
+
+* Choosing Video, Slides, Document, or Image from either Add Content entry point inserts a realistic, fully-rendered example of that type immediately (see [Functional Requirements #2](#2-add-content)) — it does not open the add modal first.
+* That inserted example is a starting point, not configured content — its own "Change video" / "Change slide" / "Change document" / "Change image" action opens the existing Add modal, blank, exactly as if the admin had chosen that type for the first time.
+* Editing a block the admin has actually configured (whether from scratch or by changing an example) opens the same existing modal, pre-filled with its current source, exactly as today.
 
 ---
 
 # Current-State Audit
 
 | Area               | Current implementation                                                        |
-| ------------------ | ----------------------------------------------------------------------------- |
+| ------------------ | ------------------------------------------------------------------------------ |
 | Editor             | `lessons/[lessonId]`, edit mode via `?mode=edit`                              |
 | Content navigation | `UnderlineTabs`: Video, Note, Slide, Document, Settings                       |
-| Content order      | `course.metadata.lessonTabsOrder`                                             |
+| Content order      | `course.metadata.lessonTabsOrder` — one course-wide slot per type, no per-lesson ordering, no repeats |
 | Video              | Card grid + tabbed Add Video modal; 6 sources (YouTube, Vimeo, Embed, Upload, Library, Google Drive) |
 | Slides             | Embed-only; two-pane picker (searchable platform list + steps + embed textarea + live preview validity); 10 platforms; remove via a "⋯" menu, not instant delete |
-| Notes              | TipTap; per-locale content + version history                                  |
-| Documents          | Upload + reorder; custom PDF viewer; always rendered as a file/download row — no inline-note mode exists today |
+| Notes              | TipTap; per-locale content + version history; no callout/style variants |
+| Documents          | Upload + reorder; custom PDF viewer; always rendered as a file/download row  |
+| Image               | No dedicated content type exists today                                       |
 | Settings           | Full-panel tab                                                                |
 | Preview            | `viewAsStudent()` opens a new tab                                             |
 | In-app learner     | Existing Note/Slide/Video/Document components                                 |
@@ -231,7 +240,7 @@ The redesign is based on the current implementation in:
 * `apps/dashboard/src/lib/features/course/components/lesson/constants.ts`
 * `apps/dashboard/src/lib/features/course/components/lesson/lesson-settings-tab.svelte`
 * `apps/dashboard/src/lib/features/course/components/lesson/{video,slide,note,document}/*.svelte`
-* `apps/dashboard/src/lib/features/course/components/lesson/utils.ts`
+* `apps/dashboard/src/lib/features/course/utils.ts`
 * `apps/dashboard/src/lib/features/course/utils/course-preview.ts`
 * `apps/dashboard/src/lib/features/course/utils/lesson-draft.ts`
 * `apps/dashboard/src/lib/features/course/utils/public-course-mappers.ts`
@@ -260,12 +269,13 @@ The redesign is based on the current implementation in:
 
 # Product Goals
 
-1. Edit Video, Note, Slide, and Document content from one lesson canvas.
+1. Edit Video, Note, Slide, Document, and Image content — as any number of blocks, in any admin-chosen order — from one lesson canvas.
 2. Preview the in-app learner experience without leaving the editor, with Video and Slides rendered at learner-facing size and prominence.
 3. Open lesson settings without replacing the content being edited.
-4. Preserve all existing content types and capabilities, including the full Add Video / Add Slide pickers exactly as they work today.
+4. Preserve all existing content capabilities, including the full Add Video / Add Slide pickers exactly as they work today, re-hosted behind a "Change …" action rather than a first-add modal.
 5. Continue using the existing ClassroomIO design system.
-6. Let an admin present a document's content as part of the lesson text, not only as a downloadable file.
+6. Let an admin add images directly to a lesson as their own content block, not only as formatting inside a Note.
+7. Let an admin get a first draft of a Note from a one-line prompt, as a starting point they edit rather than a finished product.
 
 ---
 
@@ -276,10 +286,11 @@ The following are outside v1:
 * Public renderer parity
 * Learner experience redesign
 * Persistent editor/preview split view
-* Free-form Notion-style block editing
-* Moving `lessonTabsOrder` into the editor
-* New video, slide, or document integrations
-* Automatic text extraction from uploaded documents (OCR, PDF-to-text parsing, etc.) for the new "Add as Note" mode — the admin supplies the note text
+* Free-form Notion-style block editing (block types remain the fixed five: Video, Note, Slide, Document, Image)
+* New video or slide source integrations beyond the existing 6 video sources and 10 slide platforms
+* A stock-photo library, or any image source other than direct upload
+* AI-generated content for any block type other than Note (no AI-generated video, slides, images, or documents)
+* Persisting or re-surfacing the prompt used to generate an AI draft
 * Course creation, enrollment, analytics, attendance, marks, submissions, certificates, compliance, or landing-page editing
 * Changes to `CourseSidebar` or `CourseHeader`
 
@@ -289,17 +300,11 @@ The following are outside v1:
 
 ## 1. Unified Content Canvas
 
-Replace the current `UnderlineTabs.Root` content area with one scrollable canvas.
+Replace the current `UnderlineTabs.Root` content area with one scrollable canvas holding an ordered list of content blocks.
 
-Content sections render in the order defined by `course.metadata.lessonTabsOrder`.
+Each block is one of: Video, Note, Slide, Document, Image. Any number of blocks of any type, in any order the admin has arranged, render top to bottom.
 
-Reuse/adapt `orderedTabs()` from `constants.ts`.
-
-Only content types that currently contain content should render.
-
-For example, a lesson containing Video, Note, and Document should show those three sections in the configured order, without an empty Slide section.
-
-Existing components and flows must be reused:
+Existing components and flows must be reused for configuring each block's underlying content:
 
 * `AddVideoModal`
 * `SlideEmbedPicker`
@@ -307,30 +312,30 @@ Existing components and flows must be reused:
 * `AddDocumentModal`
 * Existing Video/Slide/Note/Document components
 
-The main change is how these components are hosted, not how they work.
+Image has no existing component to reuse — it is new (see [Confirmed Decision 3](#3-image-becomes-a-fifth-content-type)).
 
-Content tabs are removed. Scrolling becomes the normal way to move between sections.
+Each block's type label, drag handle, and action menu are edit-mode affordances only — all hidden in Preview, where only the content itself renders.
+
+Content tabs are removed. Scrolling becomes the normal way to move between blocks.
 
 ---
 
 ## 2. Add Content
 
-Add an **Add content** entry point.
+There are two entry points for adding a block, both offering the same six choices — **AI**, Note, Video, Slides, Document, Image — and both always available regardless of what the canvas already contains:
 
-It should show content types not currently present:
+* **End-of-canvas row.** A horizontal row of content-type actions, always visible once the lesson has content (and shown as the canvas's own starting state before any content exists). Choosing one always appends a new block at the end of the lesson.
+* **Per-gap control.** A "+" between any two existing blocks (or above the first / below the last) opens the same six choices in a small popover anchored to that exact gap, for precise mid-canvas insertion. The "+" itself is a quiet, low-contrast affordance in its resting state and becomes clearly actionable (accent color) on hover or focus — it must not look like a heavier, permanent part of the canvas.
 
-* Video
-* Note
-* Slide
-* Document
+Selecting a choice behaves as follows:
 
-Selecting a type opens its existing add flow.
+* **AI** opens a prompt field; submitting it inserts a new Note block pre-filled with a generated draft (see [Confirmed Decision 4](#4-an-ai-assistant-can-draft-a-note-block)).
+* **Note** inserts a new Note block with real starting guidance text the admin edits or replaces — not an empty field.
+* **Video**, **Slides**, **Document**, **Image** each insert a realistic, fully-rendered example of that type immediately, flagged internally as a starting example. Its own "Change …" action always opens a fresh Add modal (never pre-filled from the example); any other, admin-configured block of that type opens the same modal pre-filled with its real source, exactly as today (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)).
 
-After content is added, its section appears according to `lessonTabsOrder`.
+After insertion, the new block is briefly highlighted and the canvas scrolls the minimum distance needed to bring it fully into view — never a jarring, page-length scroll.
 
-Existing "add another" functionality remains unchanged.
-
-Do not redesign the existing add flows.
+Do not redesign the existing Add Video / Add Slide / Add Document flows themselves — only how and when they're reached.
 
 ---
 
@@ -343,14 +348,14 @@ Preview uses `getViewModeComponents` and the existing authenticated learner rend
 It must:
 
 * Be read-only
-* Use the same content ordering as the learner experience
+* Use the same block order as configured in Edit
 * Be clearly labeled **In-app learner experience**
 * Stay on the same page
 * Not open a new browser tab
 * Render Video as a large, prominent player (full canvas width, learner-page proportions) instead of the compact edit-mode card
 * Render Slides as a large, prominent viewer (full canvas width) instead of the compact edit-mode card
-* Render each Document according to its configured mode: inline Note-styled text, or a simple "Open/Download document" link (see [Confirmed Decision 8](#8-documents-can-become-inline-note-content-or-stay-a-downloadable-link))
-* Hide the Video / Note / Slide / Document section labels, so the lesson reads as one continuous page rather than a labeled form — the learner already knows what they're looking at from the content itself
+* Hide every block's type label, drag handle, and action menu, so the lesson reads as one continuous page rather than a labeled form — the learner already knows what they're looking at from the content itself
+* Offer the reading-density control (Compact / Comfortable / Spacious), affecting only the spacing between blocks in Preview
 
 Preview must not discard unsaved edits. Existing autosave continues to handle persistence.
 
@@ -403,20 +408,29 @@ On smaller screens, it may become full-width.
 
 ---
 
-## 5. Documents: Note or Downloadable Link
+## 5. Block actions: reorder and remove
 
-New capability (see [Confirmed Decision 8](#8-documents-can-become-inline-note-content-or-stay-a-downloadable-link)).
+Every block exposes, from a per-block menu:
 
-When adding a document, the admin sees a simple choice: **Add as Note** or **Add as Downloadable Link**. Each already-added document shows this same choice, so it can be changed at any time, not only at add time.
+* **Edit [type]** — for Video, Slide, Document, and Image, opens that type's existing Add/Edit modal pre-filled with the block's current source. Note has no separate edit entry; its text is directly editable in place.
+* **Remove block** — removes the block immediately; this is the only delete path (no separate confirmation step beyond opening the menu).
 
-* **Downloadable Link** (default for existing documents): unchanged from today — a file row with view/download actions in edit mode, and a simple "Open/Download document" link in Preview.
-* **Note**: in edit mode, the document keeps its existing file row (so the original file is never lost or hidden); in Preview, its content renders as Note-styled text directly in the lesson instead of the file row.
+Independently of the menu, every block also has:
 
-Switching modes must not delete or re-upload the underlying file — it only changes how the document is presented to the learner.
+* A **drag handle** that picks the block up and drops it at a new position among the other blocks.
+* **Move up** / **move down** controls, for reordering without dragging.
+
+A dismissible hint banner introduces the drag-to-reorder affordance the first time a lesson has reorderable content; dismissing it does not reappear for that admin.
 
 ---
 
-## 6. Saving
+## 6. Note callout styles
+
+A Note block's toolbar includes a style picker with six options: Default (no callout), Info, Tip, Important, Warning, Highlight. Each styled option renders the note body inside a colored callout with its own icon and label, in both Edit and Preview. Switching styles does not alter the note's text.
+
+---
+
+## 7. Saving
 
 No changes to saving behavior.
 
@@ -432,7 +446,7 @@ Do not introduce another save system.
 
 ---
 
-## 7. Existing Capabilities
+## 8. Existing Capabilities
 
 The redesign must preserve:
 
@@ -448,9 +462,8 @@ The redesign must preserve:
 * Completion policies
 * Video-watch threshold
 * Per-video watch enforcement
-* Course-level `lessonTabsOrder`
 
-Only the page arrangement changes.
+Only the page arrangement and ordering model change.
 
 ---
 
@@ -460,26 +473,23 @@ Only the page arrangement changes.
 
 `Video | Note | Slide | Document | Settings`
 
-Each is treated as a separate destination.
+Each is treated as a separate destination, one slot per type.
 
 ### Proposed
 
-Content becomes sections within one canvas:
-
-`Video → Note → Slide → Document`
-
-The actual order follows `lessonTabsOrder` and only existing content types are displayed.
+Content becomes an ordered list of blocks within one canvas. Each block is one of: Video, Note, Slide, Document, Image — any count, any order, set per lesson by the admin, not derived from a single course-wide `lessonTabsOrder`.
 
 Settings becomes a header action that opens the right-side slider.
 
-| Content      | Discovery                   | Access                                                  |
-| ------------ | --------------------------- | -------------------------------------------------------- |
-| Video        | Canvas section when present | Existing video editor and tabbed Add Video modal          |
-| Note         | Canvas section when present | Existing TipTap editor                                   |
-| Slide        | Canvas section when present | Existing two-pane `SlideEmbedPicker`                      |
-| Document     | Canvas section when present | Existing document manager, plus a Note/Downloadable Link choice per document |
-| Missing type | Add content                 | Existing add flow                                        |
-| Settings     | Header action                | Right-side slider                                        |
+| Content      | Discovery                                | Access                                                     |
+| ------------ | ----------------------------------------- | ----------------------------------------------------------- |
+| Video        | Canvas block                              | Realistic example on add; existing tabbed Add Video modal via "Change video" or Edit |
+| Note         | Canvas block                              | Existing TipTap editor, directly in place; optional AI-drafted starting text |
+| Slide        | Canvas block                              | Realistic example on add; existing two-pane `SlideEmbedPicker` via "Change slide" or Edit |
+| Document     | Canvas block                              | Realistic example on add; existing document manager via "Change document" or Edit |
+| Image        | Canvas block                              | Upload on add; alt text + fit settings via its own toolbar  |
+| Any type     | Add Content (end-of-canvas row or per-gap "+") | Always available, regardless of what the canvas already has |
+| Settings     | Header action                             | Right-side slider                                            |
 
 ---
 
@@ -487,19 +497,23 @@ Settings becomes a header action that opens the right-side slider.
 
 ### Editing
 
-Admin opens a lesson and sees all existing content sections in the configured order.
+Admin opens a lesson and sees all existing content blocks in the order they were arranged.
 
-They edit directly within the sections.
+They edit directly within each block.
 
 Autosave continues using the existing save system.
 
 ### Adding content
 
-Admin selects **Add content**, chooses a missing type, completes the existing add flow, and the new section appears in the configured position.
+Admin selects Add Content — either the end-of-canvas row or a per-gap "+" — and chooses a type (or AI). A Note, or a realistic example of Video/Slides/Document/Image, appears immediately at the chosen position, briefly highlighted, with the canvas scrolled to show it.
 
-### Choosing how a document presents (new)
+### Drafting a note with AI
 
-Admin adds a document, or opens an existing one already in the lesson, and picks **Add as Note** or **Add as Downloadable Link**. Switching to Preview immediately reflects the choice — inline text for Note, a link for Downloadable Link — without leaving the canvas.
+Admin chooses AI from either Add Content entry point, describes what that part of the lesson should cover, and a draft Note block is inserted for them to edit before it's part of the lesson.
+
+### Reordering content
+
+Admin drags a block by its handle to a new position, or uses its move up/down controls. The canvas reflects the new order immediately; autosave persists it.
 
 ### Settings
 
@@ -507,7 +521,7 @@ Admin selects Settings, the slider opens, they update a field, then close it and
 
 ### Preview
 
-Admin selects Preview and sees Video and Slides rendered large, Documents rendered per their configured mode, and no content-type labels — reviewing the **in-app learner experience** as one continuous page — then selects Edit to return to the authoring canvas.
+Admin selects Preview and sees Video and Slides rendered large, no block-type labels, and the lesson at their chosen reading density — reviewing the **in-app learner experience** as one continuous page — then selects Edit to return to the authoring canvas.
 
 ---
 
@@ -530,15 +544,22 @@ Add:
 
 ## Canvas
 
-* Stacked content sections
-* Order follows `lessonTabsOrder`
-* Existing content components remain unchanged
+* Stacked content blocks, in the admin-defined per-lesson order
+* Any number of blocks of the same type
+* Flat visual treatment — no card drop-shadows
+* Existing content components remain unchanged for configuring a block's source
 * No horizontal content-tab navigation
+* A per-gap "+" for precise insertion, quiet/low-contrast at rest and only clearly visible (accent color) on hover or focus
+* A drag handle and move up/down controls on every block for reordering
+* A newly inserted block is briefly highlighted and auto-scrolled into view
+* A scroll-position indicator — one dot per block, inside the canvas column, not pinned to the viewport edge — highlights the block currently in view and jumps to a block on click. Present on the desktop and empty-lesson screens; the mobile frame keeps native scrolling with no dot rail.
 
 ## Add Content
 
-* Only show missing content types
-* Use existing add flows
+* Two entry points: an always-visible end-of-canvas row, and a per-gap control for mid-canvas insertion
+* Both offer all six choices (AI, Note, Video, Slides, Document, Image) regardless of what already exists — no "only show missing types"
+* Video, Slides, Document, and Image insert a realistic example immediately; Note and AI insert real/generated text immediately
+* Use existing add flows for "Change …" and for editing an admin-configured block
 * Use existing `Empty` pattern when the lesson has no content
 
 ## Preview
@@ -548,14 +569,20 @@ Add:
 * Clearly labeled as the in-app learner experience
 * Video renders as a large, full-width player, not a compact card
 * Slides render as a large, full-width viewer, not a compact card
-* Documents render per their configured mode (inline Note text, or a Downloadable Link)
-* Video / Note / Slide / Document labels are hidden — the page reads as one continuous lesson
+* All block-type labels are hidden — the page reads as one continuous lesson
+* Reading-density control (Compact / Comfortable / Spacious) changes spacing between blocks only
+* The scroll-position indicator becomes a continuous progress fill instead of discrete dots
 
 ## Documents
 
-* Existing file row (upload, reorder, PDF viewer, download) is unchanged
-* A Note/Downloadable Link choice is available per document, in edit mode
-* Switching modes never deletes or re-uploads the file
+* Existing file row (upload, PDF viewer, download) is unchanged
+* Reordering now happens at the block level (drag handle / move up-down), alongside every other content type, rather than a document-specific reorder control
+
+## Image
+
+* Upload only — drag-and-drop or click to browse; no stock-photo library
+* Per-image Alt text and Fit (Fill / Fit) settings, reachable from an on-image toolbar
+* "Change image" replaces the file; editing alt text/fit does not
 
 ## Settings
 
@@ -571,6 +598,8 @@ The content tab strip is removed.
 The canvas stacks naturally on smaller screens.
 
 The Settings slider should use an appropriate breakpoint for switching to full-width.
+
+The per-gap Add Content popover shrinks to fit a narrower column (the mobile frame, a resized window) rather than overflowing it.
 
 ---
 
@@ -590,13 +619,13 @@ Reuse the existing:
 * `AddDocumentModal`
 * `getViewModeComponents`
 * `mode=view`
-* `orderedTabs()`
-* `course.metadata.lessonTabsOrder`
 * `@cio/ui` Sheet/Drawer
 * `Empty`
 * `Chip`
 
 Do not rebuild existing content functionality — this applies in full to `SlideEmbedPicker`, which already has more surface area (search, guided per-platform steps, live embed validation) than a simple "add" form.
+
+Image has no existing component or modal to reuse — it is new work, modeled after the existing Document upload pattern where practical (see [Data Model and API](#data-model-and-api)).
 
 ## Likely Refactoring
 
@@ -615,8 +644,8 @@ Refactor:
 The editor now needs:
 
 * Edit/Preview state
-* Canvas sections
-* Canvas scrolling
+* An ordered list of block components, rendered from the new per-lesson block data (see [Data Model and API](#data-model-and-api))
+* Canvas scrolling, including the scroll-position indicator
 
 ### `lesson-settings-tab.svelte`
 
@@ -626,64 +655,54 @@ Keep the existing field logic.
 
 ### `constants.ts`
 
-The existing `MaterialTab` model may need to be adapted because content is no longer navigated through tabs.
+The existing `MaterialTab` model and `orderedTabs()` are no longer sufficient: they assume exactly one slot per type, ordered by a single course-wide `lessonTabsOrder`. Both need to be replaced by logic that reads and writes the new per-lesson ordered block list.
 
-Content presence can be derived from existing lesson data:
+### AI note drafting (new)
 
-* Non-empty `videos`
-* Non-empty `slides`
-* Non-empty `documents`
-* Existing note content
+Needs a server endpoint that accepts a prompt and returns generated note content (HTML/rich text) for the client to insert as a new Note block. Provider/model choice, cost controls, rate limiting, and any content moderation are implementation decisions, not specified here.
 
-No new database field is required.
+### Image block (new)
+
+Needs upload handling for the new Image type — object storage, a served URL, and a reasonable size limit — modeled after the existing document-upload path where practical. No existing `Image` component exists to extend.
 
 ---
 
 # Data Model and API
 
-## Canvas, Settings, and Preview
+## Settings slider and Preview rendering
 
-No changes are expected.
+No changes are expected beyond consuming the new ordered block data described below. Continue using:
 
-Continue using:
-
-* `lesson.videos`
-* `lesson.slides`
-* `lesson.documents`
-* `lesson.note`
 * `lesson_language`
-* Existing lesson endpoints
 * Existing lesson-language endpoints
 
-Existing persistence continues through:
+## The ordered block list (new)
 
-`PUT /course/:courseId/lesson/:lessonId`
+This is the change Decision 8 calls out as necessary. Scoped narrowly to what it requires:
 
-and:
+* Each lesson needs an ordered list of block entries — not the current fixed `videos` / `slides` / `documents` / `note` shape, which has no way to express repeats or an interleaved order.
+* Each entry needs at minimum: a block type (Video / Note / Slide / Document / Image), a position, and a reference to its underlying content — an existing video/slide/document record, inline note content, or a new image reference.
+* The exact shape (a new ordered jsonb array on `lesson`, a new child table, or another approach) is an implementation decision to make against the real shape in `packages/db/src/schema.ts`, not something to guess at here.
+* What becomes of `course.metadata.lessonTabsOrder` and the course-level reorder control (`reorder-material-tabs.svelte`) once lessons carry their own order is also an implementation decision — options range from leaving it as a legacy/default ordering for lessons that haven't been touched, to retiring it entirely — not prescribed here.
 
-`apps/api/src/routes/course/lesson-language.ts`
+## Image (new)
 
-## Documents: Note or Downloadable Link (new)
+* Needs a way to store an uploaded image's reference (object storage key/URL), alt text, and fit mode, associated with its position in the lesson's block list.
+* No change is proposed to how other lesson media (e.g. documents) is uploaded, stored, or served — Image should follow the same underlying storage approach where practical.
 
-This is the one part of this PRD that requires a data-model addition, scoped narrowly to what Decision 8 needs:
+## AI note drafting (new)
 
-* Each entry in `lesson.documents` needs a way to record its presentation mode (Note vs Downloadable Link) alongside its existing `type`, `name`, `link`, `size`, and `key`/`assetId` fields.
-* "Note" mode needs somewhere to hold the text the admin wants displayed — this PRD does not prescribe whether that is a new field on the document entry itself, a reuse of the existing rich-text infrastructure, or another approach. That is an implementation decision to make against the actual `lesson.documents` jsonb shape in `packages/db/src/schema.ts`, not something to guess at here.
-* No change is proposed to how the underlying file is uploaded, stored, or served — only to how its presence is presented to the learner.
+* Needs a server endpoint that takes a prompt and returns generated note content; the client inserts the result as an ordinary, immediately-editable Note block.
+* No persistence of the prompt itself is proposed.
+* Provider/model selection, cost, rate limiting, and content moderation are implementation decisions, out of scope for this PRD.
 
-If implementation discovers that any other part of this PRD requires a data-model change beyond this one, flag it before introducing it.
+If implementation discovers that any other part of this PRD requires a data-model change beyond these, flag it before introducing it.
 
 ---
 
 # Migration and Backward Compatibility
 
-No migration or backfill is required.
-
-Existing lessons should render using:
-
-* Existing content
-* Existing `lessonTabsOrder`
-* Existing lesson data
+Existing lessons must map into the new ordered block list without loss or unintended reordering: a lesson's current Video/Note/Slide/Document content becomes an equivalent block list, in its existing `lessonTabsOrder`-derived order, the first time it's represented in the new canvas. The exact migration mechanics (a one-time backfill, a read-time fallback, or another approach) are an implementation decision against the real schema, not prescribed here.
 
 The public course renderer is unchanged.
 
@@ -695,39 +714,53 @@ No lesson content should be lost, modified, or unintentionally reordered.
 
 # Implementation Order
 
-## 1. Canvas
+## 1. Ordered block data model
 
-Replace the tab content area with the stacked canvas.
+Introduce the per-lesson ordered block list described in [Data Model and API](#data-model-and-api), and a migration path for existing lessons' current content.
 
-Use `orderedTabs()` and `lessonTabsOrder`.
+## 2. Canvas
 
-Verify all existing content components work when mounted together.
+Render the stacked canvas from the new ordered block list.
 
-## 2. Add Content
+Verify all existing content components work when mounted together, any number of times, in any order.
 
-Add the missing-content entry point and connect each option to its existing add flow.
+## 3. Add Content
 
-## 3. Settings Slider
+Add both entry points (end-of-canvas row, per-gap popover), the six content choices, and the realistic-example-on-add behavior for Video/Slides/Document/Image.
+
+## 4. Block actions
+
+Add the per-block menu (Edit/Remove), drag reordering, and move up/down controls.
+
+## 5. Image
+
+Build the new Image block: upload, rendering, and its alt-text/fit settings.
+
+## 6. AI note drafting
+
+Build the prompt entry point and the server-side draft-generation endpoint.
+
+## 7. Settings Slider
 
 Remove Settings from the tab structure and re-host `LessonSettingsTab` inside the existing slider primitive.
 
 Verify scroll position and editing context are preserved.
 
-## 4. Preview
+## 8. Preview
 
 Add Edit/Preview.
 
 Connect Preview to `getViewModeComponents`.
 
-Add clear in-app learner labeling.
+Add clear in-app learner labeling, the reading-density control, and the progress-fill scroll indicator.
 
-## 5. Responsive
+## 9. Responsive
 
-Verify desktop and mobile layouts.
+Verify desktop and mobile layouts, including the per-gap popover's narrower-column behavior.
 
 Determine the breakpoint for switching the Settings slider to full-width.
 
-## 6. Verification
+## 10. Verification
 
 Run:
 
@@ -736,12 +769,14 @@ Run:
 Manually verify:
 
 * Existing published courses
-* Existing lessons
-* All four content types
+* Existing lessons, migrated into the new block list
+* All five content types, including multiple blocks of the same type
+* Drag and move-up/down reordering
+* AI note drafting
 * In-app learner rendering
 * Public rendering
 * Autosave
-* Preview
+* Preview, including reading density and the progress-fill indicator
 * Settings
 * Mobile behavior
 
@@ -749,7 +784,7 @@ Manually verify:
 
 # Acceptance Criteria
 
-1. Video, Note, Slide, and Document can be viewed and edited in one canvas.
+1. Video, Note, Slide, Document, and Image can be viewed and edited in one canvas, as any number of blocks in any admin-chosen order.
 2. All existing content capabilities remain available.
 3. Content tabs are removed.
 4. Admins can Preview without opening another page or browser tab.
@@ -760,19 +795,24 @@ Manually verify:
 9. Closing Settings preserves the editing context and scroll position.
 10. All existing `LessonSettingsTab` fields remain functional.
 11. Autosave, save status, save queue, and draft recovery continue working.
-12. Existing published lessons continue to work in both in-app and public experiences.
-13. Existing content is not lost, changed, or unintentionally reordered.
+12. Existing published lessons continue to work in both in-app and public experiences after migrating into the new block list.
+13. Existing content is not lost, changed, or unintentionally reordered by the migration.
 14. The editor works across existing desktop and mobile breakpoints without horizontal content tabs.
 15. `viewAsStudent()` continues to work.
-16. `lessonTabsOrder` continues to control content order.
-17. Required dashboard builds pass.
-18. In Preview, Video renders as a large, full-width player, not a compact edit-mode card.
-19. In Preview, Slides render as a large, full-width viewer, not a compact edit-mode card.
-20. In Preview, the Video / Note / Slide / Document section labels are not shown.
-21. The existing Add Video (6 sources) and Add Slide (search, 10 platforms, guided steps, live embed validation) flows are re-hosted unchanged — no reduction in sources, platforms, or steps.
-22. Each document can be set to **Add as Note** or **Add as Downloadable Link**; Preview reflects the selected mode.
-23. Switching a document's mode does not delete, re-upload, or otherwise alter the underlying file.
-24. Existing documents default to Downloadable Link and continue rendering exactly as they do today unless an admin explicitly changes the mode.
+16. Required dashboard builds pass.
+17. In Preview, Video renders as a large, full-width player, not a compact edit-mode card.
+18. In Preview, Slides render as a large, full-width viewer, not a compact edit-mode card.
+19. In Preview, no block's type label is shown.
+20. The existing Add Video (6 sources) and Add Slide (search, 10 platforms, guided steps, live embed validation) flows are re-hosted unchanged, reached via "Change …" or Edit — no reduction in sources, platforms, or steps.
+21. A lesson can contain more than one block of the same type (e.g. two Notes, three Images), in an order the admin controls.
+22. A block can be moved via drag handle or move up/down controls without any content being lost.
+23. Adding Video, Slides, Document, or Image inserts a realistic, immediately-viewable example rather than a blank form; its "Change …" action opens the existing Add modal blank, not pre-filled from the example.
+24. A new block is briefly highlighted and the canvas scrolls it into view without a jarring, page-length jump.
+25. The AI entry point inserts an editable Note block from a prompt; the prompt itself is not persisted.
+26. Note blocks support the six callout styles (Default, Info, Tip, Important, Warning, Highlight), selectable without altering the note's text.
+27. Image blocks can be uploaded, and their alt text and fit can be edited independently of replacing the image.
+28. The reading-density control changes block spacing in Preview only, with no effect on persisted content or on Edit mode.
+29. The scroll-position indicator (dots in Edit, progress fill in Preview) reflects the block currently in view and can jump to any block on click; it does not appear on the mobile frame.
 
 ---
 
@@ -780,6 +820,6 @@ Manually verify:
 
 Draft, backed by a working prototype (`prototypes/lesson-editor-redesign/index.html`). This PRD defines the scope, information architecture, interaction model, existing behavior to preserve, and implementation direction for the lesson editor redesign.
 
-**Core decision:** The lesson becomes one editable canvas instead of four separate content tabs. Settings becomes a right-side slider, and Preview becomes an in-page toggle using the existing learner rendering path, rendering Video and Slides at full learner-facing size and hiding content-type labels.
+**Core decision:** The lesson becomes one editable canvas holding an ordered list of Video/Note/Slide/Document/Image blocks — any count, any order, per lesson — instead of four fixed content tabs. Settings becomes a right-side slider, and Preview becomes an in-page toggle using the existing learner rendering path, rendering Video and Slides at full learner-facing size, hiding block-type labels, and offering a reading-density control.
 
-**Scope of data-model change:** none, except the new Documents Note/Downloadable Link capability (Decision 8), which needs a small, implementation-defined addition to how a document's presentation mode is stored.
+**Scope of data-model change:** the per-lesson ordered block list (replacing `lessonTabsOrder`'s role in content ordering), a new Image block, and a new AI note-drafting endpoint. Everything else — Settings, Preview's rendering path, and the existing Add Video/Add Slide/Add Document flows — continues on existing data and APIs.

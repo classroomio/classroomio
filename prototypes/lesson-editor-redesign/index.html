@@ -242,22 +242,22 @@
   .canvas-wrap { padding: 22px 28px 60px; max-width: 820px; margin: 0 auto; width: 100%; flex: 1; min-width: 0; }
   .canvas { display: flex; flex-direction: column; }
   .content-section { padding: 18px 0 22px; }
-  /* Desktop screen, Edit mode only: every top-level block reads as its own large, framed,
-     heavily-shadowed panel on a soft canvas backdrop — generously spaced so a long lesson reads
-     as a sequence of slides, not a form. Nested content inside a Tabs pane stays bare (no
-     card-in-a-card) — only #canvas's own direct children get this treatment. Preview strips all
-     of this back off below (search "Preview: written on the canvas"), since a learner should see
-     a flowing document, not an editor's card stack. */
-  #screen-desktop:not(.mode-preview) .canvas-wrap { background: var(--muted); }
-  #screen-desktop:not(.mode-preview) #canvas > .content-section {
+  /* Edit mode, any desktop editor canvas: every top-level block reads as its own large, flat,
+     framed panel on a soft canvas backdrop — separated by its border and generous spacing rather
+     than elevation, so a long lesson reads as a sequence of slides, not a form. Scoped to
+     .modern-canvas rather than one screen's id, so the empty-lesson canvas builds up exactly the
+     same way as the main one. Preview strips all of this back off below (search "Preview: written
+     on the canvas"), since a learner should see a flowing document, not an editor's card stack. */
+  .screen:not(.mode-preview) .canvas-wrap:has(> .modern-canvas) { background: var(--muted); }
+  .screen:not(.mode-preview) .modern-canvas > .content-section {
     background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg); padding: 26px;
+    padding: 26px;
   }
-  #screen-desktop:not(.mode-preview) #canvas > .block-gap { margin: 26px 0; }
+  .screen:not(.mode-preview) .modern-canvas > .block-gap { margin: 26px 0; }
 
   /* Preview: written on the canvas, not in cards — each block keeps only the visual structure it
-     actually needs (a quiz reads as a question, a document as a file row); plain text and media
-     that already have their own frame (video/slide/image/flashcards) sit directly on the page.
+     actually needs (a document reads as a file row); plain text and media that already have their
+     own frame (video/slide/image) sit directly on the page.
      Spacing between blocks is a single density the author can choose (see "reading density"). */
   :root { --preview-gap-compact: 24px; --preview-gap-comfortable: 40px; --preview-gap-spacious: 64px; }
   .mode-preview #canvas > .content-section { margin-bottom: var(--preview-gap, var(--preview-gap-comfortable)); }
@@ -265,39 +265,74 @@
   #screen-desktop.density-compact { --preview-gap: var(--preview-gap-compact); }
   #screen-desktop.density-spacious { --preview-gap: var(--preview-gap-spacious); }
   .mode-preview .preview-doc-link { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
-  .mode-preview .quiz-block, .mode-preview .process-block {
-    border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); padding: 22px 24px;
-  }
-
-  /* Preview only: a slim sticky outline of THIS lesson's blocks (not the course's lesson list),
-     with a thin progress bar — lets a learner jump straight to a section and see how far through
-     they are, without needing the course sidebar's much coarser lesson-to-lesson navigation. */
-  .lesson-body-row { display: flex; align-items: flex-start; }
-  .lesson-outline-rail {
-    width: 168px; flex-shrink: 0; box-sizing: border-box; padding: 20px 10px 20px 28px;
-    position: sticky; top: calc(var(--proto-bar-height, 0px) + 48px + var(--lesson-header-height, 0px)); align-self: flex-start;
-  }
-  .outline-items { display: flex; flex-direction: column; gap: 2px; }
-  .outline-item {
-    display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 7px; font-size: 11.5px; font-weight: 500;
-    color: var(--muted-foreground); border: none; background: none; cursor: pointer; text-align: left; width: 100%; font: inherit;
-  }
-  .outline-item:hover { background: var(--muted); }
-  .outline-item.on { color: var(--primary); font-weight: 700; background: color-mix(in oklab, var(--primary) 7%, transparent); }
-  .outline-item .ic {
-    width: 18px; height: 18px; border-radius: 5px; background: var(--muted); display: flex; align-items: center;
-    justify-content: center; flex-shrink: 0; color: var(--foreground);
-  }
-  .outline-item.on .ic { background: var(--primary); color: var(--primary-foreground); }
-  .outline-item .ic svg { width: 9px; height: 9px; stroke-width: 2.4; }
-  .outline-item .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .outline-progress { height: 2px; background: var(--border); border-radius: 2px; margin: 12px 8px 0; position: relative; }
-  .outline-progress-bar { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--primary); border-radius: 2px; }
-  @media (max-width: 900px) { .lesson-outline-rail { display: none; } }
 
   /* unified canvas: one block per content item, reorderable as a sequence */
   .content-section { transition: opacity .15s; }
   .content-section.dragging { opacity: .45; }
+
+  /* Just-added state. A block arrives with a short settle, then wears a soft primary wash and
+     ring that fades on its own — enough to answer "where did that go?" without reading as an
+     alert. The wash lives on an overlay so it never touches the block's own background, which
+     differs between Edit (card) and Preview (bare page). */
+  /* Bottom margin clears the floating add-content dock as well as the viewport edge, so an
+     auto-scrolled block never lands underneath it. */
+  .content-section { position: relative; scroll-margin-block: 104px 104px; }
+  .content-section.is-new { animation: block-enter .34s cubic-bezier(.22,.61,.36,1); }
+  .content-section.is-new::after {
+    content: ''; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; z-index: 1;
+    background: color-mix(in oklab, var(--primary) 6%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 32%, transparent);
+    animation: block-added 2.6s ease-out forwards;
+  }
+  @keyframes block-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  @keyframes block-added { 0%, 55% { opacity: 1; } 100% { opacity: 0; } }
+
+  /* The marker sits on the block's top edge, in the same key as the block-type label. */
+  .new-flag {
+    position: absolute; top: -8px; left: 22px; z-index: 2; pointer-events: none;
+    display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px;
+    background: var(--primary); color: var(--primary-foreground);
+    font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    animation: new-flag-life 2.6s ease-out forwards;
+  }
+  @keyframes new-flag-life {
+    0% { opacity: 0; transform: translateY(3px); }
+    12%, 62% { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: translateY(-2px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .content-section.is-new, .content-section.is-new::after, .new-flag { animation-duration: .01ms; animation-iteration-count: 1; }
+    .content-section.is-new::after { opacity: 0; }
+  }
+
+  /* ===== scroll dots =====
+     One dot per top-level block, not per pixel scrolled — "block 3 of 6", not "40% down the
+     page". Positioned inside the reading column itself (just inside its right padding, computed
+     from the canvas's own box) rather than pinned to the browser's outer edge, so it reads as
+     part of the lesson rather than a page-chrome scrollbar. Quiet at rest: only the current
+     block's dot carries any color; the rest sit at low opacity until hovered or scrolled. */
+  .scroll-dots {
+    position: fixed; width: 20px; z-index: 12; display: none;
+    top: calc(var(--proto-bar-height, 0px) + 48px + var(--lesson-header-height, 0px) + 14px);
+    bottom: 20px;
+    flex-direction: column; align-items: center; justify-content: center; gap: 9px;
+  }
+  .scroll-dots.is-ready { display: flex; }
+  .scroll-dot {
+    width: 5px; height: 5px; border-radius: 999px; padding: 0; border: none; flex-shrink: 0;
+    background: var(--muted-foreground); opacity: .3; cursor: pointer;
+    transition: opacity .2s, width .2s, height .2s, border-radius .2s, background .2s;
+  }
+  .scroll-dot:hover, .scroll-dot:focus-visible { opacity: .75; outline: none; }
+  .scroll-dot.on { opacity: 1; background: var(--primary); width: 6px; height: 18px; border-radius: 3px; }
+
+  /* Preview: a learner reading, not an author navigating — dots stay reachable (jumping between
+     sections is still useful) but rest even quieter, so the rail reads as ambient, not a control
+     panel. */
+  .mode-preview .scroll-dot { opacity: .18; }
+  .mode-preview .scroll-dot:hover, .mode-preview .scroll-dot:focus-visible { opacity: .55; }
+  .mode-preview .scroll-dot.on { opacity: .85; }
   .block-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
   .block-drag { display: flex; align-items: center; cursor: grab; color: var(--muted-foreground); flex-shrink: 0; margin-left: -4px; border-radius: var(--radius-sm); padding: 2px; position: relative; }
   .block-drag:hover { background: var(--accent); color: var(--foreground); }
@@ -326,35 +361,58 @@
   .block-gap .gap-add {
     width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; border: 1px solid var(--border); background: var(--background);
     color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
-    transition: border-color .12s, color .12s, box-shadow .12s;
+    transition: background .12s, border-color .12s, color .12s;
   }
   .block-gap .gap-add svg { width: 14px; height: 14px; stroke-width: 2; }
-  .block-gap .gap-add:hover, .block-gap .gap-add:focus-visible { border-color: var(--ring); color: var(--foreground); box-shadow: var(--shadow-md); }
-  /* Desktop canvas: the line and "+" stay invisible until the gap is hovered (or its flyout is
-     open), so a long lesson reads as a sequence of clean, framed blocks rather than a row of
-     ever-present controls. Clicking the "+" opens gap-flyout, anchored right there. */
+  .block-gap .gap-add:hover, .block-gap .gap-add:focus-visible { border-color: var(--ring); color: var(--foreground); }
+  /* Desktop canvas: the "+" is always there, so every insertion point is discoverable without
+     hunting, but it sits muted against the backdrop and only turns primary on hover (or while its
+     popover is open). Clicking it fans the content types out in a radial arc anchored right at
+     the "+", so the insertion point is never in doubt. */
   .modern-canvas .block-gap .gap-line { background: transparent; transition: background .12s, height .12s; }
   .modern-canvas .block-gap .gap-add {
-    opacity: 0; pointer-events: none; background: var(--primary); border-color: var(--primary); color: var(--primary-foreground);
-    box-shadow: var(--shadow-md); transition: opacity .12s, box-shadow .12s;
+    background: var(--background); border-color: var(--border); color: var(--muted-foreground);
+    transition: background .12s, border-color .12s, color .12s;
   }
   .modern-canvas .block-gap:hover .gap-add,
   .modern-canvas .block-gap:focus-within .gap-add,
-  .modern-canvas .block-gap.gap-flyout-open .gap-add { opacity: 1; pointer-events: auto; }
-  .modern-canvas .block-gap:hover .gap-line,
-  .modern-canvas .block-gap.gap-flyout-open .gap-line { background: var(--primary); height: 2px; }
-
-  /* Same pills as the floating nav and the "Add content" dialog — one visual language for
-     every "add content" trigger, anchored differently depending on where it's opened from. */
-  .gap-flyout {
-    position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%); z-index: 25;
-    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
-    padding: 6px 8px; width: max-content; max-width: 280px;
+  .modern-canvas .block-gap.gap-popover-open .gap-add {
+    background: var(--primary); border-color: var(--primary); color: var(--primary-foreground);
   }
+  .modern-canvas .block-gap:hover .gap-line,
+  .modern-canvas .block-gap.gap-popover-open .gap-line { background: var(--primary); height: 2px; }
+
+  /* Anchored popover, radial: the types fan out in an arc around the "+" rather than sitting in
+     a row — every target is the same short reach from the cursor, pinned to the exact point
+     clicked. Arcs upward by default and flips to arc downward when there isn't room above in the
+     viewport. The rest of the canvas dims back so the fan (and the gap it belongs to) hold the
+     eye without a layout shift. */
+  .gap-popover {
+    position: absolute; left: 50%; top: 50%; width: 0; height: 0; z-index: 30;
+  }
+  .gap-radial-node {
+    position: absolute; left: 0; top: 0; width: 46px; height: 46px; margin: -23px 0 0 -23px;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--popover); color: var(--muted-foreground);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    cursor: pointer; padding: 0; box-shadow: var(--shadow-md);
+    opacity: 0; pointer-events: none; transform: translate(0, 0) scale(.4);
+    transition: transform .26s cubic-bezier(.34,1.56,.64,1), opacity .16s, border-color .12s, color .12s;
+  }
+  .gap-radial-node svg { width: 16px; height: 16px; stroke-width: 2; }
+  .gap-radial-node .lb {
+    position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%);
+    font-size: 9.5px; font-weight: 600; white-space: nowrap; color: var(--muted-foreground);
+  }
+  .gap-popover.is-open .gap-radial-node { opacity: 1; pointer-events: auto; transform: translate(var(--x), var(--y)) scale(1); }
+  .gap-radial-node:hover, .gap-radial-node:focus-visible { border-color: var(--primary); color: var(--primary); outline: none; }
+  .gap-radial-node:hover .lb, .gap-radial-node:focus-visible .lb { color: var(--primary); }
+  .gap-radial-node.ai { color: var(--primary); border-color: color-mix(in oklab, var(--primary) 35%, var(--border)); }
+  .canvas.popover-dim > .content-section { opacity: .4; transition: opacity .16s; }
+
 
   /* shared pill styling: the same look is used by the floating in-editor nav and by the
      "Add content" dialog, so there is one visual language for "add content" everywhere. */
-  .nav-pill-row { display: flex; align-items: stretch; gap: 1px; flex-wrap: wrap; justify-content: center; }
+  .nav-pill-row { display: flex; align-items: stretch; gap: 1px; flex-wrap: nowrap; justify-content: center; }
   .nav-pill {
     display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; border-radius: var(--radius-md);
     border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; padding: 8px 12px; font: inherit;
@@ -401,7 +459,7 @@
   .reorder-hint-banner .dismiss svg { width: 13px; height: 13px; stroke-width: 2; }
   .mode-preview .edit-only { display: none !important; }
   .mode-preview .lesson-title-input { pointer-events: none; border-color: transparent !important; box-shadow: none !important; }
-  #screen-desktop:not(.mode-preview) .preview-only { display: none !important; }
+  .screen:not(.mode-preview) .preview-only { display: none !important; }
 
   .media-thumb { position: relative; aspect-ratio: 16/9; background: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; }
   .media-thumb svg.big { width: 36px; height: 36px; stroke-width: 1.5; color: var(--muted-foreground); }
@@ -409,6 +467,10 @@
   /* preview-only, large learner-facing renders (video / slide / document) */
   .preview-video-player { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; overflow: hidden; }
   .preview-video-player .play-btn { width: 60px; height: 60px; border-radius: 999px; background: rgb(255 255 255 / .16); border: 1.5px solid rgb(255 255 255 / .55); display: grid; place-items: center; cursor: pointer; }
+  .video-poster { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: none; background: none; cursor: pointer; display: grid; place-items: center; }
+  .video-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .video-poster .play-btn { position: relative; backdrop-filter: blur(2px); transition: background .12s, transform .12s; }
+  .video-poster:hover .play-btn { background: rgb(255 255 255 / .3); transform: scale(1.06); }
   .preview-video-player .play-btn svg { width: 24px; height: 24px; fill: #fff; stroke: none; margin-left: 3px; }
   .preview-video-player .real-media { width: 100%; height: 100%; border: 0; display: block; }
   .preview-media-caption { margin-top: 12px; }
@@ -423,21 +485,9 @@
   .preview-doc-link .open { font-size: 12.5px; font-weight: 500; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; }
   .preview-doc-link .open svg { width: 13px; height: 13px; stroke-width: 2.2; }
 
-  /* Instant realistic preview states: a freshly-inserted, not-yet-configured block looks like
-     the real thing (not an empty placeholder), with a hover overlay to configure or replace it. */
-  .media-overlay {
-    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    background: rgb(0 0 0 / .45); opacity: 0; transition: opacity .12s;
-  }
-  .preview-video-player:hover .media-overlay, .preview-video-player:focus-within .media-overlay,
-  .preview-slide-frame:hover .media-overlay, .preview-slide-frame:focus-within .media-overlay,
-  .image-block:hover .media-overlay, .image-block:focus-within .media-overlay,
-  .doc-sample:hover .media-overlay, .doc-sample:focus-within .media-overlay { opacity: 1; }
-  .media-overlay-btn {
-    display: inline-flex; align-items: center; gap: 6px; background: #fff; color: var(--foreground);
-    border: none; font-size: 13px; font-weight: 600; padding: 9px 16px; border-radius: 999px; cursor: pointer;
-  }
-  .media-overlay-btn svg { width: 14px; height: 14px; stroke-width: 2.2; }
+  /* Instant realistic content: a freshly-inserted block renders a genuine example of its type
+     rather than an empty placeholder, with one subtle corner action — the same on every type —
+     to swap in the author's own. It sits over a corner, never across the content. */
   .media-edit-corner {
     position: absolute; top: 10px; right: 10px; opacity: 0; transition: opacity .12s;
     display: inline-flex; align-items: center; gap: 6px; background: rgb(0 0 0 / .6); color: #fff;
@@ -448,86 +498,59 @@
   .image-block:hover .media-edit-corner, .image-block:focus-within .media-edit-corner { opacity: 1; }
   .media-edit-corner svg { width: 13px; height: 13px; stroke-width: 2.2; }
 
-  .slide-sample { width: 100%; height: 100%; background: #fff; padding: 8% 9%; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px; color: var(--foreground); }
-  .slide-sample-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--primary); }
-  .slide-sample-heading { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
-  .slide-sample-body { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
-  .slide-sample-line { height: 7px; border-radius: 4px; background: var(--border); }
-  .slide-sample-visual { margin-top: auto; height: 34%; border-radius: var(--radius-md); background: linear-gradient(135deg, color-mix(in oklab, var(--primary), transparent 75%), color-mix(in oklab, var(--primary), transparent 40%)); }
+  /* A default slide is a real slide — a split editorial composition with a headline column and a
+     data visual, the kind of thing a customer-education team would actually present. The frame is
+     a fixed 16/9 box, so every size is expressed in cqw and the whole composition scales in
+     proportion from the mobile frame up to a full-width canvas. */
+  /* A branded cover slide — the kind a design team would open a customer-education deck with, not
+     a chart slide. Deliberately opaque to the editor's own light/dark theme (same precedent as
+     the slide this replaces): a presentation asset carries its own fixed palette regardless of
+     what mode the editor happens to be in. Two radial glows over a near-black base give it the
+     same depth as an exported deck cover; everything else is a thin-stroke, high-contrast system
+     so it holds up at both full canvas width and the mobile frame. */
+  .slide-sample {
+    container-type: inline-size; width: 100%; height: 100%; box-sizing: border-box;
+    padding: 6.5% 7%; display: flex; flex-direction: column; justify-content: space-between;
+    color: #fff; text-align: left; position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 55% at 76% 0%, rgba(91,123,255,.5), transparent 60%),
+      radial-gradient(ellipse 65% 55% at 6% 100%, rgba(147,90,255,.55), transparent 62%),
+      linear-gradient(160deg, #0b0c14, #07070b 60%);
+  }
+  .slide-cover-row { display: flex; align-items: center; gap: 1.6cqw; position: relative; z-index: 1; }
+  .slide-cover-mark {
+    width: 3.4cqw; height: 3.4cqw; flex-shrink: 0; border-radius: .9cqw;
+    background: linear-gradient(135deg, #6d8dff, #9b6dff);
+  }
+  .slide-cover-brand { font-size: 1.7cqw; font-weight: 600; letter-spacing: .01em; white-space: nowrap; }
+  .slide-cover-rule { flex: 1; height: 2.9cqw; border-radius: 999px; border: 1px solid rgba(255,255,255,.22); }
+  .slide-cover-rule.short { flex: none; width: 48%; }
+  .slide-cover-headline {
+    position: relative; z-index: 1; font-size: 6.2cqw; font-weight: 700; letter-spacing: -.03em;
+    line-height: 1.08; display: flex; flex-direction: column; gap: .1em;
+  }
+  .slide-cover-headline .ln { display: inline-flex; align-items: center; gap: .18em; }
+  .slide-cover-headline svg { width: .78em; height: .78em; stroke-width: 1.8; flex-shrink: 0; }
+  .slide-cover-headline .rings { width: .9em; height: .56em; }
+  .slide-cover-bottom-row { display: flex; align-items: center; gap: 1.6cqw; position: relative; z-index: 1; }
+  .slide-cover-badge {
+    flex-shrink: 0; font-size: 1.5cqw; font-weight: 500; color: rgba(255,255,255,.82);
+    border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: .55em 1.3em; white-space: nowrap;
+    background: rgba(255,255,255,.05);
+  }
 
-  .doc-sample { position: relative; display: flex; gap: 16px; overflow: hidden; }
-  .doc-sample-icon { width: 52px; height: 52px; flex-shrink: 0; border-radius: var(--radius-lg); background: color-mix(in oklab, var(--primary), transparent 88%); color: var(--primary); display: flex; align-items: center; justify-content: center; }
-  .doc-sample-icon svg { width: 24px; height: 24px; stroke-width: 1.6; }
-  .doc-sample-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; padding-top: 2px; }
-  .doc-sample-title { font-size: 14.5px; font-weight: 600; }
-  .doc-sample-line { height: 7px; border-radius: 4px; background: var(--muted); }
-  .doc-sample-pages { margin-top: 4px; font-size: 11.5px; color: var(--muted-foreground); }
 
   .image-block { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: var(--radius-xl); overflow: hidden; background: var(--muted); }
-  .image-block img, .image-block .image-sample-art { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .image-block img { width: 100%; height: 100%; display: block; object-fit: cover; }
   .image-toolbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; opacity: 0; transition: opacity .12s; }
   .image-block:hover .image-toolbar, .image-block:focus-within .image-toolbar { opacity: 1; }
   .image-toolbar button { width: 34px; height: 34px; flex-shrink: 0; border-radius: 999px; border: none; background: rgb(0 0 0 / .6); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
   .image-toolbar button:hover { background: rgb(0 0 0 / .8); }
   .image-toolbar button svg { width: 15px; height: 15px; stroke-width: 2.1; }
 
-  .chart-block { display: flex; flex-direction: column; gap: 10px; }
-  .chart-title-input { font-size: 16px; font-weight: 700; border: none; background: transparent; padding: 2px 0; outline: none; border-bottom: 1px solid transparent; color: var(--foreground); width: 100%; }
-  .chart-title-input:hover, .chart-title-input:focus { border-bottom-color: var(--border); }
-  .chart-title-display { font-size: 16px; font-weight: 700; margin: 0; letter-spacing: -.01em; }
-  .chart-canvas { width: 100%; }
-  .chart-canvas svg.chart-svg { width: 100%; height: auto; display: block; }
-  .chart-controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding-top: 10px; border-top: 1px solid var(--border); }
-  .chart-type-tabs { display: flex; gap: 2px; background: var(--muted); border-radius: 999px; padding: 2px; }
-  .chart-type-tabs button { font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; }
-  .chart-type-tabs button.active { background: var(--card); color: var(--foreground); box-shadow: var(--shadow-md); }
-  .chart-data-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
 
-  .flash-block { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 18px; }
-  .flash-card { position: relative; perspective: 1200px; aspect-ratio: 1/1; cursor: pointer; }
-  .flash-card-inner { position: relative; width: 100%; height: 100%; transition: transform .5s; transform-style: preserve-3d; }
-  .flash-card.flipped .flash-card-inner { transform: rotateY(180deg); }
-  .flash-card-face { position: absolute; inset: 0; backface-visibility: hidden; border-radius: var(--radius-lg); border: 2px solid var(--primary); background: var(--card); display: flex; align-items: center; justify-content: center; padding: 16px; text-align: center; box-sizing: border-box; }
-  .flash-back { transform: rotateY(180deg); }
-  .flash-text { font-size: 15px; font-weight: 500; margin: 0; color: var(--foreground); line-height: 1.4; }
-  .flash-flip-btn { position: absolute; bottom: -8px; right: -8px; width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--primary); color: var(--primary-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow-md); z-index: 2; }
-  .flash-flip-btn svg { width: 14px; height: 14px; stroke-width: 2.3; }
-  .flash-edit-row { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 12px; margin-bottom: 10px; }
 
-  .tabs-block { display: flex; flex-direction: column; gap: 14px; }
-  .tabs-pill-row { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
-  .tabs-pill { display: inline-flex; align-items: center; gap: 4px; border-bottom: 2px solid transparent; margin-bottom: -1px; }
-  .tabs-pill.active { border-bottom-color: var(--primary); }
-  .tabs-pill-input { font-size: 14.5px; font-weight: 500; color: var(--muted-foreground); border: none; background: transparent; padding: 11px 10px; border-radius: var(--radius-sm); outline: none; min-width: 50px; text-align: center; }
-  .tabs-pill-input:hover { background: var(--accent); }
-  .tabs-pill-input:focus { background: var(--accent); color: var(--foreground); }
-  .tabs-pill.active .tabs-pill-input { color: var(--foreground); font-weight: 700; }
-  .tabs-pill-remove { width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--card); box-shadow: var(--shadow-md); color: var(--foreground); align-items: center; justify-content: center; cursor: pointer; display: none; }
-  .tabs-pill.active .tabs-pill-remove.edit-only { display: flex; }
-  .tabs-pill-remove:hover { background: var(--accent); }
-  .tabs-pill-remove svg { width: 13px; height: 13px; stroke-width: 2; }
-  .tabs-add-btn { width: 30px; height: 30px; flex-shrink: 0; border-radius: 999px; border: none; background: var(--primary); color: var(--primary-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 8px; box-shadow: var(--shadow-md); }
-  .tabs-add-btn:hover { background: color-mix(in oklab, var(--primary) 90%, transparent); }
-  .tabs-add-btn svg { width: 16px; height: 16px; stroke-width: 2.4; }
-  .tabs-pane .canvas { padding: 2px 0 0; }
-  .tabs-pane .empty-page { max-width: none; margin: 0; padding: 24px 20px; }
 
-  .quiz-block { display: flex; flex-direction: column; gap: 18px; }
-  .quiz-toolbar { display: flex; justify-content: flex-end; }
-  .quiz-media { margin-bottom: 2px; }
-  .quiz-media img { width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--radius-lg); display: block; }
-  .quiz-question { font-size: 19px; font-weight: 600; letter-spacing: -.01em; outline: none; border-radius: var(--radius-sm); }
-  .quiz-question:focus { background: var(--accent); }
-  .quiz-options { display: flex; flex-direction: column; gap: 6px; }
-  .quiz-option { display: flex; align-items: center; gap: 12px; cursor: pointer; padding: 6px 8px; border-radius: var(--radius-md); }
-  .quiz-option input[type="radio"] { width: 20px; height: 20px; accent-color: var(--primary); flex-shrink: 0; cursor: pointer; }
-  .quiz-option-text { font-size: 15px; outline: none; flex: 1; border-radius: var(--radius-sm); }
-  .quiz-option-text:focus { background: var(--accent); }
-  .quiz-option-badge { display: none; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: oklch(0.55 0.15 150); background: oklch(0.96 0.05 150); padding: 2px 8px; border-radius: 999px; flex-shrink: 0; }
-  .quiz-option.is-correct .quiz-option-badge { display: inline-flex; }
-  .quiz-option-remove { width: 22px; height: 22px; border-radius: 999px; border: none; background: transparent; color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-  .quiz-option-remove:hover { background: var(--accent); color: var(--foreground); }
-  .quiz-option-remove svg { width: 12px; height: 12px; stroke-width: 2.2; }
   .ghost-add-tile {
     margin-top: 6px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 10px;
     display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; box-sizing: border-box;
@@ -541,28 +564,7 @@
   .toolbar-group .icobtn:hover { background: var(--card); }
   .toolbar-group .icobtn svg { width: 13px; height: 13px; stroke-width: 2; }
   .toolbar-group .tgdiv { width: 1px; height: 14px; background: var(--border); margin: 0 2px; }
-  .quiz-submit { align-self: center; min-width: 140px; }
-  .quiz-option.submitted-correct { background: color-mix(in oklab, oklch(0.6 0.15 150), transparent 90%); }
-  .quiz-option.submitted-wrong { background: color-mix(in oklab, oklch(0.55 0.2 25), transparent 90%); }
 
-  .process-block { display: flex; flex-direction: column; gap: 14px; }
-  .process-toolbar { display: flex; justify-content: flex-end; gap: 8px; }
-  .process-chip-row { display: flex; align-items: center; justify-content: center; }
-  .process-chip { width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: 700; border: none; cursor: pointer; padding: 0; }
-  .process-chip svg { width: 12px; height: 12px; stroke-width: 3; }
-  .process-chip.done { background: var(--primary); color: var(--primary-foreground); }
-  .process-chip.on { background: var(--card); color: var(--primary); border: 2px solid var(--primary); }
-  .process-chip.todo { background: var(--muted); color: var(--muted-foreground); }
-  .process-chipline { width: 34px; height: 2px; background: var(--border); flex-shrink: 0; }
-  .process-chipline.done { background: var(--primary); }
-  .process-step { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; padding: 4px 24px; }
-  .process-heading { font-size: 26px; font-weight: 700; letter-spacing: -.01em; outline: none; margin: 0; border-radius: var(--radius-sm); }
-  .process-heading:focus { background: var(--accent); }
-  .process-media:empty { display: none; }
-  .process-media img { max-width: 100%; max-height: 280px; border-radius: var(--radius-lg); display: block; object-fit: cover; }
-  .process-body { font-size: 14.5px; line-height: 1.6; color: var(--foreground); outline: none; max-width: 520px; margin: 0; border-radius: var(--radius-sm); }
-  .process-body:focus { background: var(--accent); }
-  .process-btnrow { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--border); }
 
   .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
   .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
@@ -571,11 +573,28 @@
   .note-toolbar .tb-sep { width: 1px; height: 18px; background: var(--border); margin: 0 5px; }
   .note-content { font-size: 14.5px; line-height: 1.7; color: var(--foreground); }
   .note-content h3 { font-size: 16.5px; font-weight: 600; margin: 0 0 8px; letter-spacing: -.01em; }
-  .note-content p { margin: 0 0 12px; }
+  /* A browser wraps each new line a user presses Enter on in a plain <div>, not a <p> — give
+     it the same paragraph spacing so a real, multi-line written note reads as one in both Edit
+     and Preview, not a run-on block. */
+  .note-content p, .note-content > div { margin: 0 0 12px; }
   .note-content ul { margin: 0 0 12px; padding-left: 20px; }
   .note-content li { margin-bottom: 4px; }
   .note-content code { background: var(--muted); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
   .note-content strong { font-weight: 600; }
+  /* Empty-note cue: rendered from data-placeholder at display time, never written into the note's
+     own content — Preview shows a learner's finished page, not an editor's "start typing" prompt,
+     so an empty note renders nothing there instead of this text. Only the desktop screen ever
+     carries .mode-preview, so every other screen (empty-lesson, mobile) shows the cue as normal. */
+  .note-content:empty::before { content: attr(data-placeholder); color: var(--muted-foreground); }
+  .mode-preview .note-content:empty::before { content: none; }
+  /* The note's action state is the note itself — it edits in place, so hovering tints the text
+     area to say "click here to write" rather than covering it with an overlay the other types
+     need. Edit mode only; a learner is reading, not editing. */
+  .screen:not(.mode-preview) .note-content {
+    border-radius: var(--radius-md); margin: 0 -8px; padding: 2px 8px; transition: background .12s;
+  }
+  .screen:not(.mode-preview) .note-content:hover { background: var(--muted); }
+  .screen:not(.mode-preview) .note-content:focus { background: transparent; outline: none; }
 
   /* Note callout styles: Info / Tip / Important / Warning / Highlight, chosen from the note
      toolbar. Presentation lives on the wrapper's data-style attribute, never in the content. */
@@ -655,11 +674,17 @@
   .slide-preview-frame { background: var(--muted); border-radius: var(--radius-md); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); overflow: hidden; }
   .slide-preview-frame svg { width: 32px; height: 32px; stroke-width: 1.5; }
 
-  .empty-page { border: 1px dashed var(--border); border-radius: var(--radius-xl); max-width: 560px; margin: 40px auto 0; padding: 48px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+  .empty-page { border: 1px dashed var(--border); border-radius: var(--radius-xl); width: 100%; max-width: 560px; box-sizing: border-box; margin: 40px auto 0; padding: 48px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
   .empty-page .ic { width: 40px; height: 40px; border-radius: var(--radius-lg); background: var(--muted); display: grid; place-items: center; }
   .empty-page .ic svg { width: 20px; height: 20px; stroke-width: 1.7; }
   .empty-page h2 { font-size: 16.5px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
   .empty-page p { font-size: 13px; color: var(--muted-foreground); max-width: 360px; margin: 0; line-height: 1.55; }
+  /* The floating nav stays hidden while a canvas is empty, so the empty state carries its own
+     copy of the same pill row — one click to the first block, instead of a button into a dialog. */
+  .empty-pill-row {
+    display: flex; align-items: stretch; gap: 1px; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 6px 8px; margin-top: 4px; max-width: 100%; overflow-x: auto;
+  }
 
   /* settings slider */
   .slider-overlay { position: fixed; inset: 0; background: rgb(0 0 0 / .5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
@@ -803,11 +828,6 @@
         </div>
       </div>
 
-      <div class="lesson-body-row">
-      <aside class="lesson-outline-rail preview-only" id="lessonOutlineRail" aria-label="Lesson outline">
-        <div class="outline-items" id="outlineItems"></div>
-        <div class="outline-progress"><div class="outline-progress-bar" id="outlineProgressBar"></div></div>
-      </aside>
       <main class="canvas-wrap">
         <div class="preview-banner">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -837,12 +857,15 @@
               </div>
             </div>
             <div class="preview-video-player">
-              <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
+              <button type="button" class="video-poster" data-embed-src="https://www.youtube.com/embed/cx0S8JyiVxc" aria-label="Play Learn React PropTypes In 13 Minutes" onclick="playVideoPoster(this)">
+                <img src="https://i.ytimg.com/vi/cx0S8JyiVxc/maxresdefault.jpg" alt="" loading="lazy" />
+                <span class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span>
+              </button>
               <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'video-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Change video</button>
             </div>
             <div class="preview-media-caption">
-              <div class="preview-media-title">React Props Explained in 10 Minutes</div>
-              <div class="preview-media-sub">Web Dev Simplified · 10:24</div>
+              <div class="preview-media-title">Learn React PropTypes In 13 Minutes</div>
+              <div class="preview-media-sub">Web Dev Simplified · YouTube</div>
             </div>
           </section>
           <div class="block-gap edit-only">
@@ -917,12 +940,12 @@
               </div>
             </div>
             <div class="preview-slide-frame">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
+              <div class="slide-sample" id="seedSlideSample"></div>
               <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'slide-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Change slide</button>
             </div>
             <div class="preview-media-caption">
-              <div class="preview-media-title">Google Slides</div>
-              <div class="preview-media-sub">docs.google.com</div>
+              <div class="preview-media-title">Customer Onboarding Playbook</div>
+              <div class="preview-media-sub">Cover · Customer onboarding deck</div>
             </div>
           </section>
           <div class="block-gap edit-only">
@@ -974,11 +997,10 @@
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></span>
             <h2>This lesson doesn't have any content yet</h2>
             <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
-            <button class="btn btn-primary btn-sm" onclick="openAddContentMenu('canvas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
+            <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-canvas"></div>
           </div>
         </div>
       </main>
-      </div>
     </div>
   </div>
 
@@ -1065,17 +1087,17 @@
           </div>
           <div class="lesson-actions-row"><span class="save-status">Saved</span>
             <button class="icon-btn" title="Lesson settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-            <div class="seg-toggle"><button class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit</button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button></div>
+            <div class="seg-toggle" id="modeToggleEmpty"><button class="on" data-mode="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit</button><button data-mode="preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button></div>
           </div>
         </div>
       </div>
       <main class="canvas-wrap">
-        <div class="canvas" id="emptyCanvas">
-          <div class="empty-page" id="emptyState">
+        <div class="canvas modern-canvas" id="emptyCanvas">
+          <div class="empty-page edit-only" id="emptyState">
             <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
             <h2>This lesson doesn't have any content yet</h2>
             <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
-            <button class="btn btn-primary btn-sm" onclick="openAddContentMenu('emptyCanvas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
+            <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-emptyCanvas"></div>
           </div>
         </div>
       </main>
@@ -1105,7 +1127,7 @@
             <div class="lesson-actions-row">
               <span class="save-status">Saved</span>
               <button class="icon-btn" id="btnSettingsMobile" title="Lesson settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
-              <div class="seg-toggle"><button class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button><button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+              <div class="seg-toggle" id="modeToggleMobile"><button class="on" data-mode="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button><button data-mode="preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
             </div>
           </div>
         </div>
@@ -1170,7 +1192,7 @@
               <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></span>
               <h2>This lesson doesn't have any content yet</h2>
               <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
-              <button class="btn btn-primary btn-sm" onclick="openAddContentMenu('mobileCanvas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>Add content</button>
+              <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-mobileCanvas"></div>
             </div>
           </div>
         </main>
@@ -1204,8 +1226,8 @@
   setProtoBarHeightVar();
   window.addEventListener('resize', setProtoBarHeightVar);
 
-  // Same idea, scoped to the desktop screen's lesson header, so the lesson outline rail (Preview
-  // only) docks right below it instead of guessing a fixed pixel offset.
+  // Same idea, scoped to the desktop screen's lesson header, so the scroll-dots rail docks right
+  // below it instead of guessing a fixed pixel offset.
   function setLessonHeaderHeightVar() {
     const header = document.querySelector('#screen-desktop .lesson-header');
     if (!header) return;
@@ -1245,40 +1267,28 @@
     document.querySelectorAll('.screen').forEach((s) => (s.hidden = s.id !== 'screen-' + btn.dataset.screen));
   });
 
-  // ---- Edit / Preview toggle (scoped to the desktop screen) ----
-  document.getElementById('modeToggle').addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    document.querySelectorAll('#modeToggle button').forEach((b) => b.classList.remove('on'));
-    btn.classList.add('on');
-    const isPreview = btn.dataset.mode === 'preview';
-    document.getElementById('screen-desktop').classList.toggle('mode-preview', isPreview);
-    // Tab pills stay clickable so a learner can switch tabs, but must not be renamable.
-    document.querySelectorAll('.tabs-pill-input').forEach((input) => (input.readOnly = isPreview));
-    // Quizzes: entering Preview clears the author's answer-key selection so it isn't a giveaway,
-    // and resets any previous submit; leaving Preview restores the marked-correct radio.
-    document.querySelectorAll('.quiz-block').forEach((block) => {
-      const submitBtn = block.querySelector('.quiz-submit');
-      if (isPreview) {
-        block.querySelectorAll('input[type="radio"]').forEach((r) => (r.checked = false));
-        block.querySelectorAll('.quiz-option').forEach((o) => o.classList.remove('submitted-correct', 'submitted-wrong'));
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Submit';
-        }
-      } else {
-        const correctRadio = block.querySelector('.quiz-option.is-correct input[type="radio"]');
-        if (correctRadio) correctRadio.checked = true;
-      }
+  // ---- Edit / Preview toggle: every screen has its own seg-toggle in the markup, but only the
+  // desktop screen's used to be wired up — the empty-lesson and mobile screens' Preview buttons
+  // were dead, so content typed in Edit there had no way to ever be seen rendered as Preview.
+  // Wired identically for all three. ----
+  function wireModeToggle(toggleId, screenId) {
+    const toggle = document.getElementById(toggleId);
+    const screenEl = document.getElementById(screenId);
+    if (!toggle || !screenEl) return;
+
+    toggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      toggle.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+      btn.classList.add('on');
+      const isPreview = btn.dataset.mode === 'preview';
+      screenEl.classList.toggle('mode-preview', isPreview);
+      if (isPreview && screenId === 'screen-desktop') setLessonHeaderHeightVar();
     });
-    // The outline rail only shows in Preview and only needs rebuilding when entering it — nothing
-    // in the lesson can be added, removed, or reordered while Preview is active.
-    if (isPreview) {
-      setLessonHeaderHeightVar();
-      buildLessonOutline();
-      updateLessonOutline();
-    }
-  });
+  }
+  wireModeToggle('modeToggle', 'screen-desktop');
+  wireModeToggle('modeToggleEmpty', 'screen-empty');
+  wireModeToggle('modeToggleMobile', 'screen-mobile');
 
   // ---- Settings slider (desktop + mobile, each scoped to their own screen) ----
   function openSettings(which) {
@@ -1533,94 +1543,11 @@
     const hasBlocks = canvas.querySelectorAll('.content-section').length > 0;
     const empty = canvas.querySelector('.empty-page');
     if (empty) empty.hidden = hasBlocks;
-    // The floating nav only exists for top-level canvases (not nested Tabs panes), and only
-    // shows once there's content — the empty canvas already has its own centered prompt.
+    // The floating nav only shows once there's content — the empty canvas already has its own
+    // centered prompt.
     const floatingNav = document.getElementById('floatingNav-' + canvasId);
     if (floatingNav) floatingNav.classList.toggle('is-visible', hasBlocks);
   }
-
-  // ---- Preview-only lesson outline rail: one entry per top-level block in #canvas ----
-  const OUTLINE_ICON_BY_TYPE = {
-    video: () => ICON_VIDEO,
-    slide: () => ICON_SLIDE,
-    document: () => ICON_DOCUMENT,
-    image: () => ICON_IMAGE,
-    note: () => ICON_NOTE,
-    chart: () => ICON_CHART,
-    flashcards: () => ICON_FLASHCARDS,
-    tabs: () => ICON_TABS,
-    quiz: () => ICON_QUIZ,
-    process: () => ICON_PROCESS
-  };
-
-  function outlineLabelFor(section) {
-    const type = section.dataset.type;
-    if (type === 'video' || type === 'slide') {
-      const title = section.querySelector('.preview-media-title');
-      return (title && title.textContent.trim()) || (type === 'video' ? 'Video' : 'Slides');
-    }
-    if (type === 'document') {
-      const name = section.querySelector('.preview-doc-link .name, .file-row .name');
-      return (name && name.textContent.trim()) || 'Document';
-    }
-    if (type === 'note') {
-      const heading = section.querySelector('.note-content h1, .note-content h2, .note-content h3');
-      if (heading && heading.textContent.trim()) return heading.textContent.trim();
-      const body = section.querySelector('.note-content');
-      const text = body ? body.textContent.trim() : '';
-      return text ? text.slice(0, 30) + (text.length > 30 ? '…' : '') : 'Note';
-    }
-    if (type === 'quiz') {
-      const question = section.querySelector('.quiz-question');
-      return (question && question.textContent.trim()) || 'Quiz';
-    }
-    const fallback = { image: 'Image', chart: 'Chart', flashcards: 'Flashcards', tabs: 'Tabs', process: 'Process' };
-    return fallback[type] || 'Content';
-  }
-
-  function buildLessonOutline() {
-    const canvas = document.getElementById('canvas');
-    const itemsWrap = document.getElementById('outlineItems');
-    if (!canvas || !itemsWrap) return;
-    const sections = [...canvas.querySelectorAll(':scope > .content-section')];
-    itemsWrap.innerHTML = '';
-    sections.forEach((section) => {
-      const iconFn = OUTLINE_ICON_BY_TYPE[section.dataset.type];
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className = 'outline-item';
-      item.innerHTML = `<span class="ic">${iconFn ? iconFn() : ICON_NOTE}</span><span class="nm">${escapeHtml(outlineLabelFor(section))}</span>`;
-      item.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-      itemsWrap.appendChild(item);
-    });
-  }
-
-  function updateLessonOutline() {
-    const screenEl = document.getElementById('screen-desktop');
-    if (!screenEl || !screenEl.classList.contains('mode-preview')) return;
-    const canvas = document.getElementById('canvas');
-    const itemsWrap = document.getElementById('outlineItems');
-    if (!canvas || !itemsWrap) return;
-    const sections = [...canvas.querySelectorAll(':scope > .content-section')];
-    const items = [...itemsWrap.children];
-    if (sections.length === 0 || items.length !== sections.length) return;
-    let activeIndex = 0;
-    let bestDistance = Infinity;
-    sections.forEach((section, i) => {
-      const distance = Math.abs(section.getBoundingClientRect().top - 160);
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        activeIndex = i;
-      }
-    });
-    items.forEach((item, i) => item.classList.toggle('on', i === activeIndex));
-    const progressBar = document.getElementById('outlineProgressBar');
-    if (progressBar) {
-      const scrollableH = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      progressBar.style.width = Math.min(1, Math.max(0, window.scrollY / scrollableH)) * 100 + '%';
-    }
-  }
-  window.addEventListener('scroll', updateLessonOutline, { passive: true });
 
   // ---- Unified canvas: block markup generators (one independent block per add) ----
   const ICON_DRAG =
@@ -1639,20 +1566,9 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
   const ICON_IMAGE =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
-  const ICON_CHART =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>';
-  const ICON_FLASHCARDS =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="8" width="14" height="10" rx="2" transform="rotate(-6 10 13)"/><rect x="7" y="5" width="14" height="10" rx="2"/></svg>';
-  const ICON_TABS =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9h18"/><path d="M3 5h18v14H3z"/><path d="M9 9v10"/></svg>';
   const ICON_SETTINGS =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="4" x2="20" y1="6" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" x2="20" y1="12" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" x2="20" y1="18" y2="18"/><circle cx="7" cy="18" r="2"/></svg>';
-  const ICON_QUIZ =
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
-  const ICON_CHECK_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>';
-  const ICON_CLOSE_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg>';
   const ICON_CHEVRON_DOWN_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
-  const ICON_PROCESS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
   const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
   const ICON_EDIT =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
@@ -1748,13 +1664,61 @@
     </div>`;
   }
 
-  function buildVideoBlock(source) {
+  // Realistic starting content. A freshly inserted block shows a genuine, viewable example of
+  // its own type instead of an empty frame, so the canvas reads as a built lesson from the first
+  // click. Each default stays flagged data-sample="true": it is a starting state the author did
+  // not choose, so its "Change …" action opens a clean picker rather than priming the dialog
+  // with the demo's own source.
+  const DEFAULT_VIDEO = {
+    platform: 'youtube',
+    src: 'https://www.youtube.com/embed/cx0S8JyiVxc',
+    originalUrl: 'https://www.youtube.com/watch?v=cx0S8JyiVxc',
+    thumbnailUrl: 'https://i.ytimg.com/vi/cx0S8JyiVxc/maxresdefault.jpg',
+    title: 'Learn React PropTypes In 13 Minutes',
+    sub: 'Web Dev Simplified · YouTube'
+  };
+  const DEFAULT_IMAGE_SRC = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600&q=80';
+  const DEFAULT_IMAGE_ALT = 'A laptop on a desk showing source code in an editor';
+  const DEFAULT_NOTE_BODY = `
+    <h3>What makes a component reusable</h3>
+    <p>A component becomes reusable the moment its content comes from the outside. Instead of hard-coding a name inside <code>Avatar</code>, pass it in as a prop — and the same component now renders every user in your app.</p>
+    <ul>
+      <li>Props are <strong>read-only</strong> — a component never edits what it receives</li>
+      <li>Data flows in one direction, parent to child</li>
+      <li>Default values keep a component safe when a prop is missing</li>
+    </ul>
+    <p>Before the next lesson, refactor one hard-coded component in your own project to take a prop instead.</p>`;
+
+  // A thumbnail poster stands in for the player until it is clicked. It keeps the block looking
+  // like the real video (its own frame and title) without paying for an embed per block, and it
+  // still renders when the prototype is opened over file://, where YouTube refuses to embed at
+  // all for want of an origin. Clicking swaps in the actual player.
+  function playVideoPoster(poster) {
+    const player = poster.closest('.preview-video-player');
+    const src = poster.dataset.embedSrc;
+    if (!src) return;
+
+    poster.remove();
+    player.insertAdjacentHTML(
+      'afterbegin',
+      `<iframe class="real-media" src="${escapeHtml(src)}?autoplay=1" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+    );
+  }
+
+  function buildVideoBlock(source, isDefault) {
+    const poster = source.thumbnailUrl
+      ? `<button type="button" class="video-poster" data-embed-src="${escapeHtml(source.src)}" aria-label="Play ${escapeHtml(source.title)}" onclick="playVideoPoster(this)">
+           <img src="${escapeHtml(source.thumbnailUrl)}" alt="" loading="lazy" />
+           <span class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span>
+         </button>`
+      : '';
     const media =
       source.kind === 'file'
         ? `<video class="real-media" src="${escapeHtml(source.src)}" controls preload="metadata"></video>`
-        : `<iframe class="real-media" src="${escapeHtml(source.src)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+        : poster ||
+          `<iframe class="real-media" src="${escapeHtml(source.src)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     return `
-      <section class="content-section" data-type="video" data-platform="${escapeHtml(source.platform)}" data-source-url="${escapeHtml(source.originalUrl || '')}" data-thumb-url="${escapeHtml(source.thumbnailUrl || '')}">
+      <section class="content-section" data-type="video"${isDefault ? ' data-sample="true"' : ''} data-platform="${escapeHtml(source.platform)}" data-source-url="${escapeHtml(source.originalUrl || '')}" data-thumb-url="${escapeHtml(source.thumbnailUrl || '')}">
         ${blockHead('Video', ICON_VIDEO, 'video-more')}
         <div class="preview-video-player">
           ${media}
@@ -1768,20 +1732,7 @@
   }
 
   function buildVideoBlockSample() {
-    return `
-      <section class="content-section" data-type="video" data-sample="true">
-        ${blockHead('Video', ICON_VIDEO, 'video-more')}
-        <div class="preview-video-player">
-          <button type="button" class="play-btn" aria-label="Play video" tabindex="-1"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
-          <div class="media-overlay edit-only">
-            <button type="button" class="media-overlay-btn" onclick="editBlock(this, 'video-more')">${ICON_PLUS}Add video</button>
-          </div>
-        </div>
-        <div class="preview-media-caption">
-          <div class="preview-media-title">Untitled video</div>
-          <div class="preview-media-sub">Click to add a YouTube or Vimeo link</div>
-        </div>
-      </section>`;
+    return buildVideoBlock(DEFAULT_VIDEO, true);
   }
 
   function buildNoteBlock(bodyHtml) {
@@ -1806,7 +1757,7 @@
         </div>
         <div class="note-callout" data-style="">
           <div class="note-callout-label" hidden></div>
-          <div class="note-content" contenteditable="true">${bodyHtml || '<p style="color:var(--muted-foreground)">Start writing…</p>'}</div>
+          <div class="note-content" contenteditable="true" data-placeholder="Start writing…">${bodyHtml || ''}</div>
         </div>
       </section>`;
   }
@@ -1838,27 +1789,42 @@
       </section>`;
   }
 
+  // The slide's two decorative marks: a simple up-right arrow before the headline's first line,
+  // and a pair of interlocking rings closing the second — the same thin-stroke language as the
+  // rest of the editor's icons, just inline with the headline's own text size (em-sized, so they
+  // scale with it instead of needing their own cqw value).
+  const ICON_SLIDE_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>';
+  const ICON_SLIDE_RINGS = '<svg class="rings" viewBox="0 0 48 30" fill="none" stroke="currentColor" stroke-linecap="round"><ellipse cx="18" cy="15" rx="11" ry="13" stroke-width="2.4"/><ellipse cx="32" cy="15" rx="11" ry="13" stroke-width="2.4"/></svg>';
+
+  function buildSlideSampleInner() {
+    const updated = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    return `
+      <div class="slide-cover-row">
+        <span class="slide-cover-mark"></span>
+        <span class="slide-cover-brand">ClassroomIO</span>
+        <span class="slide-cover-rule"></span>
+      </div>
+      <div class="slide-cover-headline">
+        <span class="ln">${ICON_SLIDE_ARROW} Customer Onboarding</span>
+        <span class="ln">Playbook ${ICON_SLIDE_RINGS}</span>
+      </div>
+      <div class="slide-cover-bottom-row">
+        <span class="slide-cover-rule short"></span>
+        <span class="slide-cover-badge">Updated ${updated}</span>
+      </div>`;
+  }
+
   function buildSlideBlockSample() {
     return `
       <section class="content-section" data-type="slide" data-sample="true">
         ${blockHead('Slide', ICON_SLIDE, 'slide-more')}
         <div class="preview-slide-frame">
-          <div class="slide-sample">
-            <div class="slide-sample-eyebrow">Slide title</div>
-            <div class="slide-sample-heading">Add your key point</div>
-            <div class="slide-sample-body">
-              <div class="slide-sample-line" style="width:88%"></div>
-              <div class="slide-sample-line" style="width:64%"></div>
-            </div>
-            <div class="slide-sample-visual"></div>
-          </div>
-          <div class="media-overlay edit-only">
-            <button type="button" class="media-overlay-btn" onclick="editBlock(this, 'slide-more')">${ICON_PLUS}Add slides</button>
-          </div>
+          <div class="slide-sample">${buildSlideSampleInner()}</div>
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'slide-more')">${ICON_EDIT}Change slide</button>
         </div>
         <div class="preview-media-caption">
-          <div class="preview-media-title">Untitled slide deck</div>
-          <div class="preview-media-sub">Click to connect Google Slides, PowerPoint, or an embed link</div>
+          <div class="preview-media-title">Customer Onboarding Playbook</div>
+          <div class="preview-media-sub">Cover · Customer onboarding deck</div>
         </div>
       </section>`;
   }
@@ -1902,44 +1868,37 @@
   }
 
   function buildDocumentBlockSample() {
+    const fileName = 'Component Patterns Handbook.pdf';
     return `
       <section class="content-section" data-type="document" data-sample="true">
         ${blockHead('Document', ICON_DOCUMENT, 'document')}
-        <div class="doc-sample">
-          <div class="doc-sample-icon">${ICON_DOCUMENT}</div>
-          <div class="doc-sample-body">
-            <div class="doc-sample-title">Untitled document</div>
-            <div class="doc-sample-line" style="width:92%"></div>
-            <div class="doc-sample-line" style="width:78%"></div>
-            <div class="doc-sample-line" style="width:60%"></div>
-            <div class="doc-sample-pages">Page 1 of 4</div>
+        <div class="doc-entry">
+          <div class="file-row edit-only">
+            <div class="file-icon">${ICON_DOCUMENT}</div>
+            <div class="file-info"><div class="file-name">${fileName}</div><div class="file-size">1.4 MB</div></div>
+            <div class="file-actions">
+              <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Preview file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Download file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
+            </div>
           </div>
-          <div class="media-overlay edit-only">
-            <button type="button" class="media-overlay-btn" onclick="editBlock(this, 'document')">${ICON_PLUS}Add document</button>
+          <div class="preview-doc-link preview-only">
+            <div class="file-icon">${ICON_DOCUMENT}</div>
+            <div class="info">
+              <span class="name">${fileName}</span>
+              <span class="open">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
           </div>
         </div>
       </section>`;
   }
 
-  let imageBlockCounter = 0;
-
   function buildImageBlockSample() {
-    imageBlockCounter += 1;
-    const gradId = 'imgGrad' + imageBlockCounter;
     return `
       <section class="content-section" data-type="image" data-sample="true">
         ${blockHead('Image', ICON_IMAGE, 'image')}
         <div class="image-block">
-          <svg class="image-sample-art" viewBox="0 0 400 225" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <defs><linearGradient id="${gradId}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--primary)"/><stop offset="1" style="stop-color:#7dd3fc"/></linearGradient></defs>
-            <rect width="400" height="225" fill="url(#${gradId})"/>
-            <circle cx="320" cy="55" r="26" fill="#fff" opacity=".85"/>
-            <polygon points="0,225 130,110 210,170 260,120 400,225" fill="#ffffff" opacity=".55"/>
-            <polygon points="120,225 230,95 400,225" fill="#ffffff" opacity=".8"/>
-          </svg>
-          <div class="media-overlay edit-only">
-            <button type="button" class="media-overlay-btn" onclick="editBlock(this, 'image')">${ICON_PLUS}Add image</button>
-          </div>
+          <img src="${DEFAULT_IMAGE_SRC}" alt="${DEFAULT_IMAGE_ALT}" loading="lazy" />
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'image')">${ICON_EDIT}Change image</button>
         </div>
       </section>`;
   }
@@ -1988,765 +1947,14 @@
     simulateSave();
   }
 
-  // ---- Chart: bar / line / pie / donut, generated as inline SVG from a small data model ----
-  const CHART_COLORS = [
-    'var(--primary)',
-    'oklch(0.7 0.15 200)',
-    'oklch(0.75 0.16 140)',
-    'oklch(0.78 0.17 80)',
-    'oklch(0.65 0.2 20)',
-    'oklch(0.6 0.14 300)'
-  ];
-
-  function chartPolarPoint(cx, cy, r, angle) {
-    return { x: cx + r * Math.cos(angle), y: cy + r * Math.sin(angle) };
-  }
-
-  function buildBarChartSvg(data) {
-    const w = 400,
-      h = 220,
-      padTop = 16,
-      padBottom = 34,
-      padSide = 16;
-    const chartW = w - padSide * 2,
-      chartH = h - padTop - padBottom;
-    const max = Math.max(...data.values, 1);
-    const n = data.values.length;
-    const gap = 14;
-    const barW = (chartW - gap * (n - 1)) / n;
-    let bars = '';
-    let labels = '';
-    data.values.forEach((v, i) => {
-      const barH = (v / max) * chartH;
-      const x = padSide + i * (barW + gap);
-      const y = padTop + chartH - barH;
-      const color = CHART_COLORS[i % CHART_COLORS.length];
-      bars += `<rect x="${x}" y="${y}" width="${barW}" height="${Math.max(barH, 1)}" rx="4" fill="${color}"/>`;
-      labels += `<text x="${x + barW / 2}" y="${h - 12}" text-anchor="middle" font-size="11" fill="var(--muted-foreground)">${escapeHtml(data.labels[i] || '')}</text>`;
-    });
-    return `<svg viewBox="0 0 ${w} ${h}" class="chart-svg">${bars}${labels}</svg>`;
-  }
-
-  function buildLineChartSvg(data) {
-    const w = 400,
-      h = 220,
-      padTop = 16,
-      padBottom = 34,
-      padSide = 20;
-    const chartW = w - padSide * 2,
-      chartH = h - padTop - padBottom;
-    const max = Math.max(...data.values, 1);
-    const n = data.values.length;
-    const stepX = n > 1 ? chartW / (n - 1) : 0;
-    const points = data.values.map((v, i) => ({
-      x: padSide + i * stepX,
-      y: padTop + chartH - (v / max) * chartH
-    }));
-    const path = points.map((p, i) => (i === 0 ? 'M' : 'L') + p.x + ',' + p.y).join(' ');
-    const dots = points.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="4" fill="var(--primary)"/>`).join('');
-    const labels = points
-      .map((p, i) => `<text x="${p.x}" y="${h - 12}" text-anchor="middle" font-size="11" fill="var(--muted-foreground)">${escapeHtml(data.labels[i] || '')}</text>`)
-      .join('');
-    return `<svg viewBox="0 0 ${w} ${h}" class="chart-svg"><path d="${path}" fill="none" stroke="var(--primary)" stroke-width="2.5"/>${dots}${labels}</svg>`;
-  }
-
-  function buildPieChartSvg(data, donut) {
-    const w = 300,
-      cx = 110,
-      cy = 110,
-      r = 90,
-      inner = donut ? 50 : 0;
-    const total = data.values.reduce((a, b) => a + b, 0) || 1;
-    let angle = -Math.PI / 2;
-    let slices = '';
-    data.values.forEach((v, i) => {
-      const sweep = (v / total) * Math.PI * 2;
-      const end = angle + sweep;
-      const p1 = chartPolarPoint(cx, cy, r, angle);
-      const p2 = chartPolarPoint(cx, cy, r, end);
-      const largeArc = sweep > Math.PI ? 1 : 0;
-      const color = CHART_COLORS[i % CHART_COLORS.length];
-      let d;
-      if (donut) {
-        const ip1 = chartPolarPoint(cx, cy, inner, end);
-        const ip2 = chartPolarPoint(cx, cy, inner, angle);
-        d = `M ${p1.x},${p1.y} A ${r},${r} 0 ${largeArc} 1 ${p2.x},${p2.y} L ${ip1.x},${ip1.y} A ${inner},${inner} 0 ${largeArc} 0 ${ip2.x},${ip2.y} Z`;
-      } else {
-        d = `M ${cx},${cy} L ${p1.x},${p1.y} A ${r},${r} 0 ${largeArc} 1 ${p2.x},${p2.y} Z`;
-      }
-      slices += `<path d="${d}" fill="${color}"/>`;
-      angle = end;
-    });
-    let legend = '';
-    data.values.forEach((v, i) => {
-      const color = CHART_COLORS[i % CHART_COLORS.length];
-      const ly = 24 + i * 22;
-      legend += `<circle cx="230" cy="${ly}" r="5" fill="${color}"/><text x="242" y="${ly + 4}" font-size="11" fill="var(--foreground)">${escapeHtml(data.labels[i] || '')}</text>`;
-    });
-    return `<svg viewBox="0 0 ${w} 220" class="chart-svg">${slices}${legend}</svg>`;
-  }
-
-  function renderChartSvg(data) {
-    if (data.type === 'line') return buildLineChartSvg(data);
-    if (data.type === 'pie') return buildPieChartSvg(data, false);
-    if (data.type === 'donut') return buildPieChartSvg(data, true);
-    return buildBarChartSvg(data);
-  }
-
-  function buildChartBlockHtml(data) {
-    const svg = renderChartSvg(data);
-    const tab = (type, label) =>
-      `<button type="button" data-ctype="${type}" class="${data.type === type ? 'active' : ''}" onclick="setChartType(this,'${type}')">${label}</button>`;
-    return `
-      <section class="content-section" data-type="chart" data-chart='${escapeHtml(JSON.stringify(data))}'>
-        ${blockHead('Chart', ICON_CHART)}
-        <div class="chart-block">
-          <input class="chart-title-input edit-only" value="${escapeHtml(data.title)}" oninput="onChartTitleInput(this)" />
-          <h3 class="chart-title-display preview-only">${escapeHtml(data.title)}</h3>
-          <div class="chart-canvas">${svg}</div>
-          <div class="chart-controls edit-only">
-            <div class="chart-type-tabs">${tab('bar', 'Bar')}${tab('line', 'Line')}${tab('pie', 'Pie')}${tab('donut', 'Donut')}</div>
-            <button type="button" class="btn btn-outline btn-sm" onclick="openChartDataEditor(this)">Edit data</button>
-          </div>
-        </div>
-      </section>`;
-  }
-
-  function buildChartBlockSample() {
-    return buildChartBlockHtml({ title: 'Quarterly Revenue', type: 'bar', labels: ['Q1', 'Q2', 'Q3', 'Q4'], values: [30, 55, 40, 70] });
-  }
-
-  function renderChart(section) {
-    const data = JSON.parse(section.dataset.chart);
-    section.querySelector('.chart-canvas').innerHTML = renderChartSvg(data);
-    const titleInput = section.querySelector('.chart-title-input');
-    const titleDisplay = section.querySelector('.chart-title-display');
-    if (titleInput) titleInput.value = data.title;
-    if (titleDisplay) titleDisplay.textContent = data.title;
-    section.querySelectorAll('.chart-type-tabs button').forEach((btn) => btn.classList.toggle('active', btn.dataset.ctype === data.type));
-  }
-
-  function setChartType(btn, type) {
-    const section = btn.closest('.content-section');
-    const data = JSON.parse(section.dataset.chart);
-    data.type = type;
-    section.dataset.chart = JSON.stringify(data);
-    renderChart(section);
-    simulateSave();
-  }
-
-  function onChartTitleInput(input) {
-    const section = input.closest('.content-section');
-    const data = JSON.parse(section.dataset.chart);
-    data.title = input.value;
-    section.dataset.chart = JSON.stringify(data);
-    const display = section.querySelector('.chart-title-display');
-    if (display) display.textContent = input.value;
-    simulateSave();
-  }
-
-  let activeChartEditEl = null;
-
-  function buildChartDataRows(labels, values) {
-    return labels
-      .map(
-        (label, i) => `
-      <div class="chart-data-row">
-        <input class="input chart-row-label" value="${escapeHtml(label)}" style="flex:2" placeholder="Label" />
-        <input class="input chart-row-value" type="number" value="${values[i]}" style="flex:1" placeholder="Value" />
-        <button type="button" class="icon-btn" style="width:30px;height:30px;flex-shrink:0" onclick="this.closest('.chart-data-row').remove()" aria-label="Remove data point">${ICON_TRASH}</button>
-      </div>`
-      )
-      .join('');
-  }
-
-  function openChartDataEditor(btn) {
-    activeChartEditEl = btn.closest('.content-section');
-    const data = JSON.parse(activeChartEditEl.dataset.chart);
-    document.getElementById('dialogBox').style.maxWidth = '480px';
-    document.getElementById('dialogBox').innerHTML = `
-      <div class="dialog-head"><h2 class="dialog-title">Edit chart data</h2></div>
-      <div class="dialog-body">
-        <div class="field"><label class="label" for="chartDataTitle">Title</label><input class="input" id="chartDataTitle" value="${escapeHtml(data.title)}" /></div>
-        <div id="chartDataRows" style="margin-top:14px">${buildChartDataRows(data.labels, data.values)}</div>
-        <button type="button" class="btn btn-outline btn-sm" style="margin-top:4px" onclick="addChartDataRow()">${ICON_PLUS}Add data point</button>
-      </div>
-      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmChartDataEdit()">Save changes</button></div>`;
-    document.body.classList.add('dialog-open');
-  }
-
-  function addChartDataRow() {
-    document.getElementById('chartDataRows').insertAdjacentHTML('beforeend', buildChartDataRows(['New'], [0]));
-  }
-
-  function confirmChartDataEdit() {
-    if (!activeChartEditEl) return;
-    const title = document.getElementById('chartDataTitle').value.trim() || 'Untitled chart';
-    const rows = [...document.querySelectorAll('#chartDataRows .chart-data-row')];
-    const labels = rows.map((r) => r.querySelector('.chart-row-label').value.trim() || 'Untitled');
-    const values = rows.map((r) => Number(r.querySelector('.chart-row-value').value) || 0);
-    const data = JSON.parse(activeChartEditEl.dataset.chart);
-    data.title = title;
-    if (labels.length) {
-      data.labels = labels;
-      data.values = values;
-    }
-    activeChartEditEl.dataset.chart = JSON.stringify(data);
-    renderChart(activeChartEditEl);
-    closeDialog();
-    activeChartEditEl = null;
-    simulateSave();
-  }
-
-  // ---- Flashcards: flip-card preview + a simple manage-cards dialog ----
-  function buildFlashcardHtml(card) {
-    return `
-      <div class="flash-card" onclick="flipFlashcard(this)">
-        <div class="flash-card-inner">
-          <div class="flash-card-face flash-front"><p class="flash-text">${escapeHtml(card.q)}</p></div>
-          <div class="flash-card-face flash-back"><p class="flash-text">${escapeHtml(card.a)}</p></div>
-        </div>
-        <button type="button" class="flash-flip-btn" onclick="event.stopPropagation(); flipFlashcard(this.closest('.flash-card'))" aria-label="Flip card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
-      </div>`;
-  }
-
-  function buildFlashcardsBlockHtml(data) {
-    return `
-      <section class="content-section" data-type="flashcards" data-flashcards='${escapeHtml(JSON.stringify(data))}'>
-        ${blockHead('Flashcards', ICON_FLASHCARDS)}
-        <div class="flash-block">${data.cards.map((c) => buildFlashcardHtml(c)).join('')}</div>
-        <div class="edit-only" style="text-align:center;margin-top:14px">
-          <button type="button" class="btn btn-outline btn-sm" onclick="openFlashcardEditor(this)">Manage cards</button>
-        </div>
-      </section>`;
-  }
-
-  function buildFlashcardsBlockSample() {
-    return buildFlashcardsBlockHtml({
-      cards: [
-        { q: 'What is customer retention?', a: 'The ability of a business to keep customers over time.' },
-        { q: 'Why does retention matter more than acquisition?', a: "It's typically 5-7x cheaper to keep an existing customer than to win a new one." },
-        { q: 'What is a simple way to measure it?', a: 'Compare how many customers you had at the start of a period to how many remain at the end.' }
-      ]
-    });
-  }
-
-  function renderFlashcardsGrid(section) {
-    const data = JSON.parse(section.dataset.flashcards);
-    section.querySelector('.flash-block').innerHTML = data.cards.map((c) => buildFlashcardHtml(c)).join('');
-  }
-
-  function flipFlashcard(cardEl) {
-    if (cardEl) cardEl.classList.toggle('flipped');
-  }
-
-  let activeFlashcardsEditEl = null;
-
-  function buildFlashcardRows(cards) {
-    return cards
-      .map(
-        (c, i) => `
-      <div class="flash-edit-row">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-          <span style="font-size:11.5px;font-weight:600;color:var(--muted-foreground)">Card ${i + 1}</span>
-          <div style="display:flex;gap:4px">
-            <button type="button" class="icon-btn" style="width:26px;height:26px" onclick="moveFlashcardRow(this,-1)" aria-label="Move card up">${ICON_CHEVRON_UP}</button>
-            <button type="button" class="icon-btn" style="width:26px;height:26px" onclick="moveFlashcardRow(this,1)" aria-label="Move card down">${ICON_CHEVRON_DOWN}</button>
-            <button type="button" class="icon-btn" style="width:26px;height:26px" onclick="this.closest('.flash-edit-row').remove()" aria-label="Remove card">${ICON_TRASH}</button>
-          </div>
-        </div>
-        <div class="field" style="margin-bottom:8px"><label class="label">Question</label><textarea class="textarea flash-row-q" style="min-height:50px">${escapeHtml(c.q)}</textarea></div>
-        <div class="field"><label class="label">Answer</label><textarea class="textarea flash-row-a" style="min-height:50px">${escapeHtml(c.a)}</textarea></div>
-      </div>`
-      )
-      .join('');
-  }
-
-  function moveFlashcardRow(btn, dir) {
-    const row = btn.closest('.flash-edit-row');
-    const sibling = dir === -1 ? row.previousElementSibling : row.nextElementSibling;
-    if (!sibling) return;
-    if (dir === -1) row.parentElement.insertBefore(row, sibling);
-    else row.parentElement.insertBefore(sibling, row);
-  }
-
-  function openFlashcardEditor(btn) {
-    activeFlashcardsEditEl = btn.closest('.content-section');
-    const data = JSON.parse(activeFlashcardsEditEl.dataset.flashcards);
-    document.getElementById('dialogBox').style.maxWidth = '520px';
-    document.getElementById('dialogBox').innerHTML = `
-      <div class="dialog-head"><h2 class="dialog-title">Manage flashcards</h2></div>
-      <div class="dialog-body" style="max-height:60vh;overflow-y:auto">
-        <div id="flashcardRows">${buildFlashcardRows(data.cards)}</div>
-        <button type="button" class="btn btn-outline btn-sm" onclick="addFlashcardRow()">${ICON_PLUS}Add card</button>
-      </div>
-      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmFlashcardsEdit()">Save changes</button></div>`;
-    document.body.classList.add('dialog-open');
-  }
-
-  function addFlashcardRow() {
-    document.getElementById('flashcardRows').insertAdjacentHTML('beforeend', buildFlashcardRows([{ q: '', a: '' }]));
-  }
-
-  function confirmFlashcardsEdit() {
-    if (!activeFlashcardsEditEl) return;
-    const rows = [...document.querySelectorAll('#flashcardRows .flash-edit-row')];
-    const cards = rows
-      .map((r) => ({ q: r.querySelector('.flash-row-q').value.trim(), a: r.querySelector('.flash-row-a').value.trim() }))
-      .filter((c) => c.q || c.a);
-    activeFlashcardsEditEl.dataset.flashcards = JSON.stringify({ cards });
-    renderFlashcardsGrid(activeFlashcardsEditEl);
-    closeDialog();
-    activeFlashcardsEditEl = null;
-    simulateSave();
-  }
-
-  // ---- Tabs: each pane is its own nested canvas, so it holds any other content type ----
-  let tabsInstanceCounter = 0;
-
-  function buildTabPaneCanvasHtml(canvasId, seedHtml) {
-    const hasContent = !!seedHtml;
-    return `
-      <div class="canvas modern-canvas" id="${canvasId}">
-        ${seedHtml || ''}
-        ${hasContent ? blockGap() : ''}
-        <div class="empty-page edit-only" ${hasContent ? 'hidden' : ''}>
-          <p style="font-size:12.5px;color:var(--muted-foreground);margin:0">This tab is empty — use the dock below to add content.</p>
-        </div>
-      </div>`;
-  }
-
-  function buildTabPillHtml(tab, isActive) {
-    return `
-      <span class="tabs-pill${isActive ? ' active' : ''}" data-tab-id="${tab.id}">
-        <input class="tabs-pill-input" value="${escapeHtml(tab.label)}" onfocus="selectTabFromInput(this)" oninput="renameTab(this)" />
-        <button type="button" class="tabs-pill-remove edit-only" onclick="removeTab(this)" aria-label="Remove tab">${ICON_TRASH}</button>
-      </span>`;
-  }
-
-  function buildTabsBlockHtml(tabs, seedByTabId) {
-    tabsInstanceCounter += 1;
-    const instanceId = 'tabs' + tabsInstanceCounter;
-    seedByTabId = seedByTabId || {};
-    const pills = tabs.map((t, i) => buildTabPillHtml(t, i === 0)).join('');
-    const panes = tabs
-      .map(
-        (t, i) => `
-      <div class="tabs-pane${i === 0 ? ' active' : ''}" data-tab-id="${t.id}" ${i === 0 ? '' : 'hidden'}>
-        ${buildTabPaneCanvasHtml(instanceId + '-' + t.id, seedByTabId[t.id])}
-      </div>`
-      )
-      .join('');
-    return `
-      <section class="content-section" data-type="tabs">
-        ${blockHead('Tabs', ICON_TABS)}
-        <div class="tabs-block">
-          <div class="tabs-pill-row">
-            ${pills}
-            <button type="button" class="tabs-add-btn edit-only" onclick="addTab(this)" aria-label="Add tab">${ICON_PLUS}</button>
-          </div>
-          <div class="tabs-panes">${panes}</div>
-        </div>
-      </section>`;
-  }
-
-  function buildTabsBlockSample() {
-    const tabs = [
-      { id: 'a', label: 'Overview' },
-      { id: 'b', label: 'Setup' },
-      { id: 'c', label: 'Advanced' }
-    ];
-    return buildTabsBlockHtml(tabs, { a: buildNoteBlock('<p>Give a quick overview of what this section covers.</p>') });
-  }
-
-  function selectTabFromInput(input) {
-    const pill = input.closest('.tabs-pill');
-    const block = pill.closest('.tabs-block');
-    const tabId = pill.dataset.tabId;
-    block.querySelectorAll('.tabs-pill').forEach((p) => p.classList.toggle('active', p === pill));
-    block.querySelectorAll('.tabs-pane').forEach((pane) => {
-      const isActive = pane.dataset.tabId === tabId;
-      pane.classList.toggle('active', isActive);
-      pane.hidden = !isActive;
-    });
-    const paneCanvas = block.querySelector(`.tabs-pane[data-tab-id="${CSS.escape(tabId)}"] .canvas`);
-    if (paneCanvas) activeCanvasId = paneCanvas.id;
-  }
-
-  function renameTab() {
-    simulateSave();
-  }
-
-  function addTab(btn) {
-    const section = btn.closest('.content-section');
-    const block = btn.closest('.tabs-block');
-    const instanceId = section.querySelector('.tabs-pane .canvas').id.split('-')[0];
-    const newId = 't' + Date.now().toString(36);
-    btn.insertAdjacentHTML('beforebegin', buildTabPillHtml({ id: newId, label: 'New tab' }, false));
-    block.querySelector('.tabs-panes').insertAdjacentHTML('beforeend', `<div class="tabs-pane" data-tab-id="${newId}" hidden>${buildTabPaneCanvasHtml(instanceId + '-' + newId)}</div>`);
-    const newInput = block.querySelector(`.tabs-pill[data-tab-id="${CSS.escape(newId)}"] .tabs-pill-input`);
-    newInput.focus();
-    newInput.select();
-    simulateSave();
-  }
-
-  function removeTab(btn) {
-    const pill = btn.closest('.tabs-pill');
-    const block = pill.closest('.tabs-block');
-    const allPills = block.querySelectorAll('.tabs-pill');
-    if (allPills.length <= 1) return;
-    const tabId = pill.dataset.tabId;
-    const wasActive = pill.classList.contains('active');
-    const pane = block.querySelector(`.tabs-pane[data-tab-id="${CSS.escape(tabId)}"]`);
-    const remaining = [...allPills].filter((p) => p !== pill);
-    pill.remove();
-    if (pane) pane.remove();
-    if (wasActive && remaining.length) remaining[0].querySelector('.tabs-pill-input').focus();
-    simulateSave();
-  }
-
-  // ---- Multiple Choice: direct-edit question/options, real submit/grade in Preview ----
-  let quizInstanceCounter = 0;
-
-  function buildQuizOptionHtml(option) {
-    return `
-      <label class="quiz-option${option.correct ? ' is-correct' : ''}">
-        <input type="radio" name="__quizGroup__" onclick="onQuizOptionClick(this)" />
-        <span class="quiz-option-text" contenteditable="true" oninput="simulateSave()">${escapeHtml(option.text)}</span>
-        <span class="quiz-option-badge edit-only">${ICON_CHECK_SMALL}Correct</span>
-        <button type="button" class="quiz-option-remove edit-only" onclick="removeQuizOption(this)" aria-label="Remove option">${ICON_CLOSE_SMALL}</button>
-      </label>`;
-  }
-
-  function buildQuizBlockHtml(data) {
-    quizInstanceCounter += 1;
-    const groupName = 'quizGroup' + quizInstanceCounter;
-    const optionsHtml = data.options.map((o) => buildQuizOptionHtml(o)).join('').split('__quizGroup__').join(groupName);
-    return `
-      <section class="content-section" data-type="quiz">
-        ${blockHead('Multiple Choice', ICON_QUIZ)}
-        <div class="quiz-block">
-          <div class="quiz-toolbar edit-only">
-            <input type="file" accept="image/*" hidden class="quiz-image-input" onchange="onQuizImageChosen(this)" />
-            <div class="toolbar-group">
-              <div class="dd-menu">
-                <button type="button" class="icobtn" data-tip="Add media" aria-label="Add media" onclick="toggleBlockMenu(this)">${ICON_IMAGE}</button>
-                <div class="dd-menu-panel">
-                  <button type="button" class="dd-menu-item" onclick="triggerQuizImageUpload(this)">${ICON_IMAGE}Image</button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="quiz-question" contenteditable="true" oninput="simulateSave()">${escapeHtml(data.question)}</div>
-          <div class="quiz-options">
-            ${optionsHtml}
-            <button type="button" class="ghost-add-tile edit-only" onclick="addQuizOption(this)">${ICON_PLUS}Add option</button>
-          </div>
-          <button type="button" class="btn btn-primary quiz-submit" disabled onclick="submitQuiz(this)">Submit</button>
-        </div>
-      </section>`;
-  }
-
-  function buildQuizBlockSample() {
-    return buildQuizBlockHtml({
-      question: 'What is the capital city of Italy?',
-      options: [
-        { text: 'Rome', correct: true },
-        { text: 'Athens', correct: false }
-      ]
-    });
-  }
-
-  function triggerQuizImageUpload(btn) {
-    const block = btn.closest('.quiz-block');
-    block.querySelector('.quiz-image-input').click();
-    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
-  }
-
-  function onQuizImageChosen(input) {
-    const file = input.files && input.files[0];
-    if (!file) return;
-    const block = input.closest('.quiz-block');
-    const objectUrl = URL.createObjectURL(file);
-    let mediaEl = block.querySelector('.quiz-media');
-    if (!mediaEl) {
-      mediaEl = document.createElement('div');
-      mediaEl.className = 'quiz-media';
-      block.querySelector('.quiz-question').insertAdjacentElement('beforebegin', mediaEl);
-    }
-    mediaEl.innerHTML = `<img src="${objectUrl}" alt="" />`;
-    simulateSave();
-  }
-
-  function onQuizOptionClick(radio) {
-    const block = radio.closest('.quiz-block');
-    const isPreview = document.getElementById('screen-desktop').classList.contains('mode-preview');
-    if (!isPreview) {
-      block.querySelectorAll('.quiz-option').forEach((opt) => opt.classList.remove('is-correct'));
-      radio.closest('.quiz-option').classList.add('is-correct');
-      simulateSave();
-      return;
-    }
-    const submitBtn = block.querySelector('.quiz-submit');
-    if (submitBtn) submitBtn.disabled = false;
-  }
-
-  function addQuizOption(btn) {
-    btn.insertAdjacentHTML('beforebegin', buildQuizOptionHtml({ text: 'New option', correct: false }).replace('__quizGroup__', btn.closest('.quiz-options').querySelector('input[type="radio"]').name));
-    simulateSave();
-  }
-
-  function removeQuizOption(btn) {
-    const options = btn.closest('.quiz-options');
-    if (options.querySelectorAll('.quiz-option').length <= 2) return;
-    btn.closest('.quiz-option').remove();
-    simulateSave();
-  }
-
-  function submitQuiz(btn) {
-    const block = btn.closest('.quiz-block');
-    const selected = block.querySelector('input[type="radio"]:checked');
-    let wasCorrect = false;
-    block.querySelectorAll('.quiz-option').forEach((opt) => {
-      const isCorrectOpt = opt.classList.contains('is-correct');
-      opt.classList.toggle('submitted-correct', isCorrectOpt);
-      const radio = opt.querySelector('input[type="radio"]');
-      if (radio === selected) {
-        if (isCorrectOpt) wasCorrect = true;
-        else opt.classList.add('submitted-wrong');
-      }
-    });
-    btn.disabled = true;
-    btn.textContent = wasCorrect ? 'Correct!' : 'Incorrect';
-  }
-
-  // ---- Process: a step-by-step flow, each step with an optional image + heading + body ----
-  function buildProcessChipsHtml(total, current) {
-    let html = '';
-    for (let i = 0; i < total; i++) {
-      const state = i < current ? 'done' : i === current ? 'on' : 'todo';
-      const content = i < current ? ICON_CHECK_SMALL : String(i + 1);
-      html += `<button type="button" class="process-chip ${state}" onclick="jumpProcessStep(this,${i})" aria-label="Go to step ${i + 1}">${content}</button>`;
-      if (i < total - 1) html += `<span class="process-chipline${i < current ? ' done' : ''}"></span>`;
-    }
-    return html;
-  }
-
-  function buildProcessBlockHtml(data) {
-    const total = data.steps.length;
-    const step = data.steps[0];
-    const isLast = total === 1;
-    const mediaHtml = step.image ? `<img src="${escapeHtml(step.image)}" alt="" />` : '';
-    return `
-      <section class="content-section" data-type="process" data-process='${escapeHtml(JSON.stringify(data))}' data-current-step="0">
-        ${blockHead('Process', ICON_PROCESS)}
-        <div class="process-block">
-          <div class="process-toolbar edit-only">
-            <input type="file" accept="image/*" hidden class="process-image-input" onchange="onProcessImageChosen(this)" />
-            <div class="toolbar-group">
-              <div class="dd-menu">
-                <button type="button" class="icobtn" data-tip="Add media" aria-label="Add media" onclick="toggleBlockMenu(this)">${ICON_IMAGE}</button>
-                <div class="dd-menu-panel">
-                  <button type="button" class="dd-menu-item" onclick="triggerProcessImageUpload(this)">${ICON_IMAGE}Image</button>
-                </div>
-              </div>
-              <span class="tgdiv"></span>
-              <button type="button" class="icobtn" data-tip="Delete this step" onclick="removeProcessStep(this)" aria-label="Delete this step">${ICON_TRASH}</button>
-            </div>
-          </div>
-          <div class="process-chip-row">${buildProcessChipsHtml(total, 0)}</div>
-          <div class="process-step">
-            <h3 class="process-heading" contenteditable="true" oninput="onProcessFieldInput(this,'heading')">${escapeHtml(step.heading)}</h3>
-            <div class="process-media">${mediaHtml}</div>
-            <p class="process-body" contenteditable="true" oninput="onProcessFieldInput(this,'body')">${escapeHtml(step.body)}</p>
-          </div>
-          <div class="process-btnrow">
-            <button type="button" class="btn btn-outline btn-sm process-back" onclick="navProcessStep(this,-1)" aria-label="Previous step" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>Back</button>
-            <button type="button" class="btn btn-primary btn-sm process-advance" onclick="advanceProcessStep(this)">${isLast ? 'Finish' : 'Next'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg></button>
-          </div>
-          <button type="button" class="ghost-add-tile edit-only" onclick="addProcessStep(this)">${ICON_PLUS}Add step</button>
-        </div>
-      </section>`;
-  }
-
-  function buildProcessBlockSample() {
-    return buildProcessBlockHtml({
-      steps: [
-        {
-          heading: 'Introduction',
-          body: 'Artificial intelligence, or AI, has become one of the most transformative and rapidly evolving fields in technology. It involves the creation of intelligent machines that can perform tasks typically associated with human intelligence, such as learning, problem-solving, and decision-making.',
-          image: null
-        },
-        { heading: 'How it works', body: 'Describe what happens in this step of the process.', image: null }
-      ]
-    });
-  }
-
-  function renderProcess(section) {
-    const data = JSON.parse(section.dataset.process);
-    const total = data.steps.length;
-    let current = parseInt(section.dataset.currentStep || '0', 10);
-    current = Math.max(0, Math.min(current, total - 1));
-    section.dataset.currentStep = current;
-    const step = data.steps[current];
-    const isFirst = current === 0;
-    const isLast = current === total - 1;
-    section.querySelector('.process-chip-row').innerHTML = buildProcessChipsHtml(total, current);
-    section.querySelector('.process-heading').textContent = step.heading;
-    section.querySelector('.process-media').innerHTML = step.image ? `<img src="${escapeHtml(step.image)}" alt="" />` : '';
-    section.querySelector('.process-body').textContent = step.body;
-    section.querySelector('.process-back').disabled = isFirst;
-    const advanceBtn = section.querySelector('.process-advance');
-    advanceBtn.innerHTML = `${isLast ? 'Finish' : 'Next'}<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m9 18 6-6-6-6"/></svg>`;
-  }
-
-  function navProcessStep(btn, dir) {
-    const section = btn.closest('.content-section');
-    const data = JSON.parse(section.dataset.process);
-    const current = parseInt(section.dataset.currentStep || '0', 10);
-    const next = current + dir;
-    if (next < 0 || next >= data.steps.length) return;
-    section.dataset.currentStep = next;
-    renderProcess(section);
-  }
-
-  function jumpProcessStep(btn, index) {
-    const section = btn.closest('.content-section');
-    section.dataset.currentStep = index;
-    renderProcess(section);
-  }
-
-  function advanceProcessStep(btn) {
-    const section = btn.closest('.content-section');
-    const data = JSON.parse(section.dataset.process);
-    const current = parseInt(section.dataset.currentStep || '0', 10);
-    section.dataset.currentStep = current >= data.steps.length - 1 ? 0 : current + 1;
-    renderProcess(section);
-  }
-
-  function onProcessFieldInput(el, field) {
-    const section = el.closest('.content-section');
-    const data = JSON.parse(section.dataset.process);
-    const current = parseInt(section.dataset.currentStep || '0', 10);
-    data.steps[current][field] = el.textContent;
-    section.dataset.process = JSON.stringify(data);
-    simulateSave();
-  }
-
-  function triggerProcessImageUpload(btn) {
-    const block = btn.closest('.process-block');
-    block.querySelector('.process-image-input').click();
-    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
-  }
-
-  function onProcessImageChosen(input) {
-    const file = input.files && input.files[0];
-    if (!file) return;
-    const section = input.closest('.content-section');
-    const data = JSON.parse(section.dataset.process);
-    const current = parseInt(section.dataset.currentStep || '0', 10);
-    data.steps[current].image = URL.createObjectURL(file);
-    section.dataset.process = JSON.stringify(data);
-    renderProcess(section);
-    simulateSave();
-  }
-
-  function addProcessStep(btn) {
-    const section = btn.closest('.content-section');
-    const data = JSON.parse(section.dataset.process);
-    data.steps.push({ heading: 'New step', body: 'Describe this step.', image: null });
-    section.dataset.process = JSON.stringify(data);
-    section.dataset.currentStep = data.steps.length - 1;
-    renderProcess(section);
-    simulateSave();
-  }
-
-  function removeProcessStep(btn) {
-    const section = btn.closest('.content-section');
-    const data = JSON.parse(section.dataset.process);
-    if (data.steps.length <= 1) return;
-    const current = parseInt(section.dataset.currentStep || '0', 10);
-    data.steps.splice(current, 1);
-    section.dataset.process = JSON.stringify(data);
-    section.dataset.currentStep = Math.max(0, current - 1);
-    renderProcess(section);
-    simulateSave();
-  }
-
   let activeCanvasId = 'canvas';
   let activeGapEl = null;
-  let activeFlyoutGapEl = null;
 
   function setActiveGapEl(gapEl) {
     if (!gapEl) return;
     document.querySelectorAll('.block-gap.gap-active').forEach((g) => g.classList.remove('gap-active'));
     gapEl.classList.add('gap-active');
   }
-
-  function closeGapFlyout() {
-    if (!activeFlyoutGapEl) return;
-    activeFlyoutGapEl.classList.remove('gap-flyout-open');
-    const flyout = activeFlyoutGapEl.querySelector('.gap-flyout');
-    if (flyout) flyout.remove();
-    activeFlyoutGapEl = null;
-  }
-
-  // Anchored to one gap at a time: opening another, or clicking outside, closes it first.
-  // Built from the same NAV_PILL_TYPES list and nav-pill classes as the floating nav and the
-  // "Add content" dialog, so every "add content" trigger looks and reads identically.
-  function openGapFlyout(gapEl) {
-    if (activeFlyoutGapEl === gapEl) {
-      closeGapFlyout();
-      return;
-    }
-    closeGapFlyout();
-    const canvasEl = gapEl.closest('.canvas');
-    activeFlyoutGapEl = gapEl;
-    gapEl.classList.add('gap-flyout-open');
-    const flyout = document.createElement('div');
-    flyout.className = 'gap-flyout';
-    flyout.setAttribute('role', 'menu');
-    const row = document.createElement('div');
-    row.className = 'nav-pill-row';
-    flyout.appendChild(row);
-
-    const aiBtn = document.createElement('button');
-    aiBtn.type = 'button';
-    aiBtn.className = 'nav-pill nav-pill-ai';
-    aiBtn.setAttribute('aria-label', 'Ask AI assistant');
-    aiBtn.innerHTML = `${ICON_AI}<span class="lb">AI</span>`;
-    aiBtn.addEventListener('click', () => {
-      closeGapFlyout();
-      activeCanvasId = canvasEl.id;
-      activeGapEl = gapEl;
-      openAiAssistant();
-    });
-    row.appendChild(aiBtn);
-
-    const divider = document.createElement('span');
-    divider.className = 'nav-pill-div';
-    row.appendChild(divider);
-
-    for (const [type, label, icon] of NAV_PILL_TYPES) {
-      const itemBtn = document.createElement('button');
-      itemBtn.type = 'button';
-      itemBtn.className = 'nav-pill';
-      itemBtn.setAttribute('aria-label', `Add ${label.toLowerCase()}`);
-      itemBtn.innerHTML = `${icon}<span class="lb">${label}</span>`;
-      itemBtn.addEventListener('click', () => {
-        closeGapFlyout();
-        activeCanvasId = canvasEl.id;
-        activeGapEl = gapEl;
-        chooseContentType(type);
-      });
-      row.appendChild(itemBtn);
-    }
-    gapEl.appendChild(flyout);
-  }
-
-  document.addEventListener('click', (e) => {
-    if (activeFlyoutGapEl && !e.target.closest('.block-gap')) closeGapFlyout();
-  });
 
   function openAiAssistant() {
     document.getElementById('dialogBox').style.maxWidth = '480px';
@@ -2799,44 +2007,180 @@
     // re-clicking) lands below it instead of repeatedly at the same old spot.
     setActiveGapEl(newGap);
     updateEmptyState(canvasId);
+    flagNewBlock(block);
   }
 
+  const NEW_BLOCK_MS = 2600;
+
+  function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  // Answers "where did that go?" and then gets out of the way: the block settles in, wears a soft
+  // wash and a dated marker for a couple of seconds, and the canvas scrolls the smallest distance
+  // that brings it fully into view (scroll-margin keeps it clear of the sticky header).
+  function flagNewBlock(block) {
+    block.classList.add('is-new');
+    const flag = document.createElement('span');
+    flag.className = 'new-flag edit-only';
+    flag.textContent = 'Added just now';
+    block.appendChild(flag);
+    window.setTimeout(() => {
+      block.classList.remove('is-new');
+      flag.remove();
+    }, NEW_BLOCK_MS);
+
+    // Deferred a frame: the trailing gap and the empty-state toggle both change the page's height,
+    // and measuring before that settles aims the scroll at a stale position.
+    requestAnimationFrame(() => revealBlock(block));
+  }
+
+  // scrollIntoView's own heuristics land inconsistently here, because the page is still growing
+  // as media lays out, so the travel is worked out directly instead: move the least distance that
+  // puts the block inside the band between the sticky header and the floating dock, and nothing
+  // at all when it already sits there.
+  function revealBlock(block) {
+    const phoneScreen = block.closest('.phone-screen');
+    const screenEl = block.closest('.screen');
+    const rect = block.getBoundingClientRect();
+    const behavior = prefersReducedMotion() ? 'auto' : 'smooth';
+    const GUTTER = 16;
+
+    let topLimit;
+    let bottomLimit;
+    if (phoneScreen) {
+      const frame = phoneScreen.getBoundingClientRect();
+      topLimit = frame.top + GUTTER;
+      bottomLimit = frame.bottom - GUTTER;
+    } else {
+      const header = screenEl && screenEl.querySelector('.lesson-header');
+      const dock = screenEl && screenEl.querySelector('.floating-nav');
+      const dockVisible = dock && dock.offsetParent !== null;
+      topLimit = (header ? header.getBoundingClientRect().bottom : 0) + GUTTER;
+      bottomLimit = (dockVisible ? dock.getBoundingClientRect().top : window.innerHeight) - GUTTER;
+    }
+
+    const band = bottomLimit - topLimit;
+    let delta = 0;
+    if (rect.height > band || rect.top < topLimit) {
+      // Taller than the band, or hanging off the top: align the top and let the rest run on.
+      delta = rect.top - topLimit;
+    } else if (rect.bottom > bottomLimit) {
+      delta = rect.bottom - bottomLimit;
+    }
+    if (Math.abs(delta) < 2) return;
+
+    // Gliding thousands of pixels is neither smooth nor intentional — it is a long disorienting
+    // ride. Past a couple of screens the jump is instant, and the just-added highlight is what
+    // orients the author on arrival.
+    const viewportHeight = phoneScreen ? phoneScreen.clientHeight : window.innerHeight;
+    const travel = Math.abs(delta) > viewportHeight * 2.5 ? 'auto' : behavior;
+
+    if (phoneScreen) phoneScreen.scrollBy({ top: delta, behavior: travel });
+    else window.scrollBy({ top: delta, behavior: travel });
+  }
+
+  let activePopoverGapEl = null;
+
+  function closeGapPopover() {
+    if (!activePopoverGapEl) return;
+
+    const canvasEl = activePopoverGapEl.closest('.canvas');
+    if (canvasEl) canvasEl.classList.remove('popover-dim');
+    activePopoverGapEl.classList.remove('gap-popover-open');
+    const popover = activePopoverGapEl.querySelector('.gap-popover');
+    if (popover) popover.remove();
+    activePopoverGapEl = null;
+  }
+
+  // Radius and node size match the concept exactly; RADIAL_RADIUS is the full-size target and
+  // only shrinks (see openAddContentMenu) when the canvas column it opens in is too narrow to
+  // fit it at full size — a mobile frame, a resized window, a nested Tabs pane.
+  const RADIAL_RADIUS = 118;
+  const RADIAL_MIN_RADIUS = 64;
+  const RADIAL_NODE_SIZE = 46;
+  const RADIAL_START_DEG = -175;
+  const RADIAL_END_DEG = -5;
+
+  // Reach needed from the gap's center to clear the fan's arc + node radius + its label, used to
+  // decide whether there's room to fan upward before falling back to downward.
+  function radialReach(radius) {
+    return radius + RADIAL_NODE_SIZE / 2 + 24;
+  }
+
+  function buildGapRadialHtml(direction, radius) {
+    const items = [['ai', 'AI', ICON_AI, true], ...NAV_PILL_TYPES.map(([type, label, icon]) => [type, label, icon, false])];
+    const step = (RADIAL_END_DEG - RADIAL_START_DEG) / (items.length - 1);
+    const nodes = items
+      .map(([type, label, icon, isAi], i) => {
+        const angle = ((RADIAL_START_DEG + step * i) * Math.PI) / 180;
+        const x = Math.round(Math.cos(angle) * radius);
+        const yUp = Math.round(Math.sin(angle) * radius);
+        const y = direction === 'down' ? -yUp : yUp;
+        const onclick = isAi ? 'closeGapPopover(); openAiAssistant()' : `chooseContentType('${type}')`;
+        const label2 = isAi ? 'Ask AI assistant' : `Add ${label.toLowerCase()}`;
+        return `<button type="button" class="gap-radial-node${isAi ? ' ai' : ''}" style="--x:${x}px;--y:${y}px;transition-delay:${i * 18}ms" aria-label="${label2}" onclick="${onclick}">${icon}<span class="lb">${label}</span></button>`;
+      })
+      .join('');
+    return `<div class="gap-popover">${nodes}</div>`;
+  }
+
+  // Anchored to one gap at a time: opening another, pressing Escape, or clicking outside closes it.
   function openAddContentMenu(canvasId, gapEl) {
-    if (gapEl && gapEl.closest('.modern-canvas')) {
-      openGapFlyout(gapEl);
+    if (!gapEl) return;
+
+    if (activePopoverGapEl === gapEl) {
+      closeGapPopover();
       return;
     }
+    closeGapPopover();
     activeCanvasId = canvasId;
-    activeGapEl = gapEl || null;
-    document.getElementById('dialogBox').style.maxWidth = '480px';
-    document.getElementById('dialogBox').innerHTML = `
-      <div class="dialog-head"><h2 class="dialog-title">Add content</h2><p class="dialog-desc">Choose a content type to add to this lesson.</p></div>
-      <div class="dialog-body"><div class="nav-pill-row">${buildNavPillsHtml('dialog')}</div></div>`;
-    document.body.classList.add('dialog-open');
+    activeGapEl = gapEl;
+    activePopoverGapEl = gapEl;
+    gapEl.classList.add('gap-popover-open');
+
+    // Responsive radius: full size by default, shrinking only as far as it needs to so the arc's
+    // widest points (the AI and Image nodes, at the ends of the sweep) stay inside the column it
+    // opened in — the mobile frame, a narrowed desktop window, a nested Tabs pane.
+    const canvasEl = gapEl.closest('.canvas');
+    const columnWidth = canvasEl ? canvasEl.clientWidth : window.innerWidth;
+    const radiusForWidth = columnWidth / 2 - RADIAL_NODE_SIZE / 2 - 16;
+    const radius = Math.max(RADIAL_MIN_RADIUS, Math.min(RADIAL_RADIUS, radiusForWidth));
+
+    // Fan upward by default; fall back to downward when the viewport doesn't have room above
+    // the gap for the arc.
+    const gapRect = gapEl.getBoundingClientRect();
+    const direction = gapRect.top < radialReach(radius) ? 'down' : 'up';
+    gapEl.insertAdjacentHTML('beforeend', buildGapRadialHtml(direction, radius));
+
+    if (canvasEl) canvasEl.classList.add('popover-dim');
+
+    // Inserted closed (opacity 0, scaled down) so this class toggle is what the fan transitions from.
+    const popover = gapEl.querySelector('.gap-popover');
+    requestAnimationFrame(() => popover.classList.add('is-open'));
   }
+
+  document.addEventListener('click', (e) => {
+    if (activePopoverGapEl && !e.target.closest('.block-gap')) closeGapPopover();
+  });
 
   const SAMPLE_BUILDERS = {
     video: buildVideoBlockSample,
     slide: buildSlideBlockSample,
     document: buildDocumentBlockSample,
-    image: buildImageBlockSample,
-    chart: buildChartBlockSample,
-    flashcards: buildFlashcardsBlockSample,
-    tabs: buildTabsBlockSample,
-    quiz: buildQuizBlockSample,
-    process: buildProcessBlockSample
+    image: buildImageBlockSample
   };
 
   function chooseContentType(type) {
     if (type === 'note') {
-      closeDialog();
-      insertBlock(activeCanvasId, buildNoteBlock());
+      closeGapPopover();
+      insertBlock(activeCanvasId, buildNoteBlock(DEFAULT_NOTE_BODY));
       simulateSave();
       return;
     }
     const sampleBuilder = SAMPLE_BUILDERS[type];
     if (sampleBuilder) {
-      closeDialog();
+      closeGapPopover();
       insertBlock(activeCanvasId, sampleBuilder());
       simulateSave();
     }
@@ -2847,21 +2191,14 @@
     ['video', 'Video', ICON_VIDEO],
     ['slide', 'Slides', ICON_SLIDE],
     ['document', 'Document', ICON_DOCUMENT],
-    ['image', 'Image', ICON_IMAGE],
-    ['chart', 'Chart', ICON_CHART],
-    ['flashcards', 'Flashcards', ICON_FLASHCARDS],
-    ['tabs', 'Tabs', ICON_TABS],
-    ['quiz', 'Quiz', ICON_QUIZ],
-    ['process', 'Process', ICON_PROCESS]
+    ['image', 'Image', ICON_IMAGE]
   ];
 
-  // Shared by the floating in-editor nav and the "Add content" dialog, so both read as the
-  // same picker — only the click targets differ (dock inserts directly; the dialog is already
-  // open, so it just swaps its own content type).
+  // Used by the floating in-editor nav and each empty state's pill row — the one-click row for
+  // adding at the end of a canvas. Precise mid-lesson insertion lives in the per-gap radial fan.
   function buildNavPillsHtml(mode, canvasId) {
-    const aiOnclick = mode === 'dialog' ? 'openAiAssistant()' : `openAiAssistantFromDock('${canvasId}')`;
-    const typeOnclick = (type) =>
-      mode === 'dialog' ? `chooseContentType('${type}')` : `addContentFromDock('${canvasId}','${type}')`;
+    const aiOnclick = `openAiAssistantFromDock('${canvasId}')`;
+    const typeOnclick = (type) => `addContentFromDock('${canvasId}','${type}')`;
     const aiPill = `<button type="button" class="nav-pill nav-pill-ai" aria-label="Ask AI assistant" onclick="${aiOnclick}">${ICON_AI}<span class="lb">AI</span></button>`;
     const divider = '<span class="nav-pill-div"></span>';
     const typePills = NAV_PILL_TYPES.map(
@@ -2872,8 +2209,8 @@
   }
 
   // Floating in-editor nav: always appends to the end of the lesson, regardless of where the
-  // user last clicked in the canvas — precise mid-lesson insertion still lives in the per-gap
-  // hover flyout.
+  // user last clicked in the canvas — precise mid-lesson insertion still lives in the "Add
+  // content" dialog opened from a gap's "+".
   function addContentFromDock(canvasId, type) {
     activeCanvasId = canvasId;
     activeGapEl = null;
@@ -3238,11 +2575,149 @@
   }
   document.getElementById('lessonTitle').addEventListener('input', simulateSave);
   document.addEventListener('input', (e) => {
-    if (e.target.closest('.note-content')) simulateSave();
+    const noteContent = e.target.closest('.note-content');
+    if (!noteContent) return;
+
+    if (noteContent.innerHTML === '<br>') noteContent.innerHTML = '';
+    simulateSave();
   });
   document.querySelectorAll('.canvas').forEach((canvas) => updateEmptyState(canvas.id));
+  // ---- Scroll dots: one per window-scrolled screen (desktop canvas, empty lesson). The mobile
+  // screen keeps the phone's own scrolling, since a device frame simulating a real phone should
+  // scroll like one, not grow a second floating indicator inside its small frame. ----
+  const DOTS_INSET = 20; // distance from the canvas column's right edge to the dots' center
+  const DOTS_IDLE_MS = 900;
+
+  function initScrollDots(canvasId, screenId) {
+    const screenEl = document.getElementById(screenId);
+    const canvasWrap = screenEl && screenEl.querySelector('.canvas-wrap');
+    if (!screenEl || !canvasWrap) return;
+
+    const dots = document.createElement('div');
+    dots.className = 'scroll-dots';
+    dots.setAttribute('role', 'tablist');
+    dots.setAttribute('aria-label', 'Lesson sections');
+    screenEl.appendChild(dots);
+    let idleTimer = 0;
+    let blocks = [];
+    let suppressAutoActiveUntil = 0;
+
+    function markActive() {
+      dots.classList.add('is-active');
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => dots.classList.remove('is-active'), DOTS_IDLE_MS);
+    }
+
+    // Inside the canvas, not pinned to the viewport edge: the dots sit just inside the reading
+    // column's own right padding, so they move with it as the window resizes.
+    function positionDots() {
+      const rect = canvasWrap.getBoundingClientRect();
+      dots.style.left = Math.round(rect.right - DOTS_INSET) + 'px';
+    }
+
+    function labelFor(section) {
+      const type = section.dataset.type;
+      return type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Block';
+    }
+
+    // Rebuilt whenever the canvas's own children change — added, removed, reordered — rather than
+    // threading an update call through every one of those code paths.
+    function rebuild() {
+      const canvasEl = document.getElementById(canvasId);
+      blocks = canvasEl ? [...canvasEl.querySelectorAll(':scope > .content-section')] : [];
+      if (blocks.length < 2) {
+        dots.classList.remove('is-ready');
+        dots.innerHTML = '';
+        return;
+      }
+      dots.classList.add('is-ready');
+      dots.innerHTML = blocks
+        .map((b, i) => `<button type="button" class="scroll-dot" role="tab" aria-label="Jump to ${escapeHtml(labelFor(b))} section" data-i="${i}"></button>`)
+        .join('');
+      positionDots();
+      updateActive();
+    }
+
+    // Whichever block overlaps the focus band most is "active" — the same band revealBlock
+    // aligns to, so a block it just bottom-aligned (the last block in the lesson, with nothing
+    // below to push it to the top) is correctly picked, not whatever happens to cross a fixed
+    // fraction of the viewport.
+    function updateActive() {
+      if (!blocks.length || Date.now() < suppressAutoActiveUntil) return;
+
+      // Scrolled to (or within a few px of) the bottom of the page: the last block wins outright.
+      // A short final block — nothing below it to push it to the top of the band — can otherwise
+      // overlap the focus band less than the taller block still sitting above it, so the overlap
+      // rule below would hand activity back to its neighbor right as the reader reaches the end.
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (atBottom) {
+        dots.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('on', i === blocks.length - 1));
+        return;
+      }
+
+      const header = screenEl.querySelector('.lesson-header');
+      const dock = screenEl.querySelector('.floating-nav');
+      const dockVisible = dock && dock.offsetParent !== null;
+      const topLimit = (header ? header.getBoundingClientRect().bottom : 0);
+      const bottomLimit = (dockVisible ? dock.getBoundingClientRect().top : window.innerHeight);
+
+      let activeIndex = 0;
+      let bestOverlap = -1;
+      blocks.forEach((b, i) => {
+        const rect = b.getBoundingClientRect();
+        const overlap = Math.min(rect.bottom, bottomLimit) - Math.max(rect.top, topLimit);
+        if (overlap > bestOverlap) {
+          bestOverlap = overlap;
+          activeIndex = i;
+        }
+      });
+      dots.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('on', i === activeIndex));
+    }
+
+    dots.addEventListener('click', (e) => {
+      const btn = e.target.closest('.scroll-dot');
+      if (!btn) return;
+
+      const index = Number(btn.dataset.i);
+      const block = blocks[index];
+      if (!block) return;
+
+      revealBlock(block);
+      // Marked active immediately rather than waiting on a scroll event to confirm it — the
+      // click itself is the clearest signal of intent, and it keeps the dot from lagging behind
+      // a scroll that may be instant, smooth, or (for an already-visible block) not move at all.
+      // Auto-detection is then held off for a beat: a short block revealed at the bottom of the
+      // band (nothing below it to push it higher, usually the last one) can occupy less of the
+      // screen than its taller neighbor above, which would otherwise win the clicked dot right
+      // back by the overlap rule below the moment the triggered scroll's own event fires.
+      dots.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('on', i === index));
+      suppressAutoActiveUntil = Date.now() + 700;
+    });
+
+    // A real scroll gesture always wins over the suppression window above — only a click's own
+    // triggered scroll should be held off, never the user actually scrolling right after.
+    const clearSuppression = () => { suppressAutoActiveUntil = 0; };
+    window.addEventListener('wheel', clearSuppression, { passive: true });
+    window.addEventListener('touchstart', clearSuppression, { passive: true });
+
+    window.addEventListener('scroll', () => {
+      updateActive();
+      markActive();
+    }, { passive: true });
+    window.addEventListener('resize', positionDots);
+    new ResizeObserver(positionDots).observe(canvasWrap);
+    new MutationObserver(rebuild).observe(document.getElementById(canvasId), { childList: true });
+
+    rebuild();
+  }
+
+  initScrollDots('canvas', 'screen-desktop');
+  initScrollDots('emptyCanvas', 'screen-empty');
+
   const seedNoteStyleMenu = document.getElementById('seedNoteStyleMenu');
   if (seedNoteStyleMenu) seedNoteStyleMenu.innerHTML = buildNoteStyleMenu();
+  const seedSlideSample = document.getElementById('seedSlideSample');
+  if (seedSlideSample) seedSlideSample.innerHTML = buildSlideSampleInner();
 
   async function confirmAdd(kind) {
     let html = null;
@@ -3340,12 +2815,15 @@
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (document.body.classList.contains('dialog-open')) closeDialog();
-    else if (activeFlyoutGapEl) closeGapFlyout();
+    else if (activePopoverGapEl) closeGapPopover();
     else document.querySelectorAll('.settings-open').forEach((el) => el.classList.remove('settings-open'));
   });
 
   document.getElementById('floatingNavBar-canvas').innerHTML = buildNavPillsHtml('dock', 'canvas');
   document.getElementById('floatingNavBar-emptyCanvas').innerHTML = buildNavPillsHtml('dock', 'emptyCanvas');
+  ['canvas', 'emptyCanvas', 'mobileCanvas'].forEach((id) => {
+    document.getElementById('emptyPills-' + id).innerHTML = buildNavPillsHtml('dock', id);
+  });
 </script>
   </body>
 </html>
