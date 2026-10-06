@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Exercise media — student view</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #0a0a0a;
+        --muted: #f5f5f5;
+        --muted-fg: #737373;
+        --border: #e5e5e5;
+        --primary: #1d4ed8;
+        --primary-fg: #ffffff;
+        --primary-soft: #eff4ff;
+        --sidebar: #fafafa;
+        --pin: #e11d48;
+        --radius: 8px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        font-family: Geist, ui-sans-serif, system-ui, sans-serif;
+        font-size: 14px;
+        color: var(--fg);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+      button { font: inherit; color: inherit; }
+
+      .app { display: grid; grid-template-columns: 264px minmax(0, 1fr); min-height: 100vh; }
+      .side { background: var(--sidebar); border-right: 1px solid var(--border); padding: 16px 12px; }
+      .side-course { display: flex; gap: 10px; align-items: center; padding: 4px 8px 16px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+      .side-course .logo { width: 32px; height: 32px; border-radius: 6px; background: #0f766e; color: #fff; display: grid; place-items: center; font-weight: 600; }
+      .side-course .t { font-weight: 600; line-height: 1.2; }
+      .side-course .s { font-size: 12px; color: var(--muted-fg); }
+      .side-sec { font-size: 12px; color: var(--muted-fg); padding: 8px 8px 4px; }
+      .side-row { display: flex; gap: 8px; align-items: center; padding: 7px 8px; border-radius: 6px; color: #404040; }
+      .side-row svg { width: 16px; height: 16px; flex: none; }
+      .side-row.on { background: #ececec; color: var(--fg); font-weight: 500; }
+
+      .main { display: flex; flex-direction: column; min-width: 0; }
+      .topbar { height: 52px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; padding: 0 20px; font-weight: 500; }
+      .topbar .crumb { color: var(--muted-fg); font-weight: 400; }
+      .stage { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); }
+      .stage.docked { grid-template-columns: minmax(0, 1fr) 400px; }
+      .content { padding: 28px 32px 120px; max-width: 860px; width: 100%; margin: 0 auto; }
+
+      .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 16px; border-radius: 6px; border: 1px solid transparent; background: var(--primary); color: var(--primary-fg); font-weight: 500; cursor: pointer; white-space: nowrap; }
+      .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+      .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; }
+      .btn-outline { background: var(--bg); color: var(--fg); border-color: var(--border); }
+      .btn-outline:hover:not(:disabled) { background: var(--muted); }
+      .btn-outline.on { background: var(--primary-soft); border-color: #bfd0fb; color: var(--primary); }
+      .btn svg { width: 16px; height: 16px; }
+      .icon-btn { width: 32px; height: 32px; border-radius: 6px; border: 0; background: var(--muted); display: grid; place-items: center; cursor: pointer; }
+      .icon-btn svg { width: 16px; height: 16px; }
+
+      h2 { font-size: 24px; margin: 4px 0; font-weight: 600; }
+      .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; color: #404040; margin: 8px 0 4px; }
+      .meta .sep { color: var(--border); }
+      .prose { line-height: 1.65; font-size: 15px; color: #262626; }
+      .prose p { margin: 0 0 12px; }
+      .prose ul { margin: 0 0 12px; padding-left: 20px; }
+      .prose table { border-collapse: collapse; margin: 4px 0 14px; font-size: 14px; }
+      .prose td, .prose th { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+      .prose th { background: var(--muted); font-weight: 500; }
+      .prose img { max-width: 100%; border-radius: 6px; border: 1px solid var(--border); }
+      .start-foot { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-top: 20px; }
+      .hint { font-size: 13px; color: var(--muted-fg); }
+
+      .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+      .progress-row .count { color: var(--muted-fg); font-size: 13px; font-variant-numeric: tabular-nums; }
+      .bar { flex: 1; height: 8px; border-radius: 99px; background: #e8edfb; overflow: hidden; }
+      .bar span { display: block; height: 100%; background: var(--primary); transition: width 0.3s ease; }
+
+      .surface { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+      .q-head { display: flex; align-items: center; gap: 8px; }
+      .num { width: 26px; height: 26px; border-radius: 99px; background: var(--primary); color: #fff; font-size: 12px; font-weight: 600; display: grid; place-items: center; flex: none; }
+      .q-head h4 { margin: 0; font-size: 16px; font-weight: 600; }
+      .q-desc { margin: 12px 0 0; font-size: 14px; color: var(--muted-fg); }
+      .q-media { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 12px; }
+      .q-body { margin-top: 16px; }
+
+      .thumb { width: 160px; height: 160px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+      .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .opt-thumb { width: 112px; height: 112px; }
+
+      .shot { position: relative; display: block; width: 100%; padding: 0; border: 1px solid var(--border); border-radius: 6px; background: var(--muted); cursor: zoom-in; }
+      .shot img { display: block; width: 100%; max-height: 440px; object-fit: contain; border-radius: 5px; }
+      .shot .expand { position: absolute; right: 8px; bottom: 8px; display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 6px; background: rgba(10, 10, 10, 0.72); color: #fff; font-size: 12px; opacity: 0; transform: translateY(2px); transition: opacity 0.15s ease, transform 0.15s ease; }
+      .shot .expand svg { width: 14px; height: 14px; }
+      .shot:hover .expand, .shot:focus-visible .expand { opacity: 1; transform: none; }
+      .shot:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+      .q-media.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .q-media.single { display: block; }
+
+      .opts { display: flex; flex-direction: column; gap: 8px; }
+      .opts.img-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+      .opt { border: 1px solid var(--border); border-radius: 6px; padding: 8px; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+      .opts.img-grid .opt { flex-direction: column; align-items: stretch; }
+      .opt.sel { border-color: var(--primary); }
+      .opt-row { display: flex; align-items: center; gap: 8px; }
+      .radio { width: 16px; height: 16px; border-radius: 99px; border: 1px solid #a3a3a3; flex: none; display: grid; place-items: center; }
+      .opt.sel .radio { border-color: var(--primary); }
+      .opt.sel .radio::after { content: ''; width: 8px; height: 8px; border-radius: 99px; background: var(--primary); }
+      .opt .shot img { max-height: 200px; }
+      .input, .textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font: inherit; background: var(--bg); }
+      .input { height: 38px; max-width: 320px; }
+      .textarea { min-height: 120px; resize: vertical; }
+      .input:focus, .textarea:focus { outline: 2px solid #bfd0fb; border-color: var(--primary); }
+      .nav { display: flex; justify-content: flex-end; gap: 12px; margin-top: 16px; }
+
+      .done { text-align: center; padding: 60px 0; }
+      .badge { display: inline-block; padding: 3px 10px; border-radius: 99px; background: #dcfce7; color: #166534; font-size: 12px; font-weight: 500; }
+
+      .panel { border-left: 1px solid var(--border); background: var(--bg); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+      .panel-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+      .panel-head .t { font-weight: 600; flex: 1; }
+      .panel-head .s { font-size: 12px; color: var(--muted-fg); font-weight: 400; }
+      .panel-body { padding: 16px; overflow-y: auto; }
+      .panel-body .prose { font-size: 14px; }
+      .panel.overlay { position: fixed; right: 0; top: 0; width: min(420px, 92vw); z-index: 30; box-shadow: -12px 0 40px rgba(0, 0, 0, 0.12); animation: slideIn 0.22s cubic-bezier(0.32, 0.72, 0, 1); }
+      @keyframes slideIn { from { transform: translateX(24px); opacity: 0; } }
+
+      .lightbox { position: fixed; inset: 0; z-index: 50; background: rgba(8, 8, 8, 0.9); display: flex; flex-direction: column; animation: fade 0.15s ease; }
+      @keyframes fade { from { opacity: 0; } }
+      .lb-bar { display: flex; align-items: center; gap: 8px; padding: 12px 16px; color: #e5e5e5; }
+      .lb-bar .t { flex: 1; font-size: 13px; }
+      .lb-bar button { height: 32px; min-width: 32px; padding: 0 8px; border-radius: 6px; border: 0; background: rgba(255, 255, 255, 0.1); color: #fff; cursor: pointer; display: grid; place-items: center; }
+      .lb-bar button:hover { background: rgba(255, 255, 255, 0.2); }
+      .lb-bar svg { width: 16px; height: 16px; }
+      .lb-bar .zoom { font-variant-numeric: tabular-nums; font-size: 13px; width: 48px; text-align: center; }
+      .lb-stage { flex: 1; overflow: auto; display: grid; place-items: center; padding: 8px 64px 32px; position: relative; }
+      .lb-stage img { max-width: 100%; max-height: calc(100vh - 110px); cursor: zoom-in; border-radius: 4px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); }
+      .lb-stage.zoomed { place-items: start; }
+      .lb-stage.zoomed img { max-width: none; max-height: none; cursor: zoom-out; }
+      .lb-arrow { position: fixed; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 99px; border: 0; background: rgba(255, 255, 255, 0.12); color: #fff; cursor: pointer; display: grid; place-items: center; }
+      .lb-arrow:hover { background: rgba(255, 255, 255, 0.24); }
+      .lb-arrow svg { width: 18px; height: 18px; }
+      .lb-arrow.prev { left: 16px; }
+      .lb-arrow.next { right: 16px; }
+
+      .pin { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 99px; background: var(--pin); color: #fff; font-size: 11px; font-weight: 700; flex: none; box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.18); }
+      .pin-abs { position: absolute; top: -8px; left: -8px; z-index: 2; }
+      .rel { position: relative; }
+      body:not(.notes) .pin { display: none; }
+
+      .legend { position: fixed; left: 16px; bottom: 72px; width: 300px; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); padding: 14px; z-index: 20; font-size: 13px; }
+      body:not(.notes) .legend { display: none; }
+      .legend h5 { margin: 0 0 10px; font-size: 13px; }
+      .legend .row { display: flex; gap: 10px; margin-bottom: 10px; line-height: 1.45; color: #404040; }
+      .legend .row:last-child { margin-bottom: 0; }
+      .legend b { color: var(--fg); font-weight: 600; }
+
+      .proto-bar { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 40; display: flex; gap: 4px; align-items: center; padding: 6px; background: #171717; color: #d4d4d4; border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); font-size: 13px; }
+      .proto-bar .lbl { padding: 0 8px; color: #8a8a8a; font-size: 12px; }
+      .proto-bar button { border: 0; background: transparent; color: #d4d4d4; padding: 6px 10px; border-radius: 6px; cursor: pointer; }
+      .proto-bar button:hover { background: #262626; }
+      .proto-bar button.on { background: #fafafa; color: #0a0a0a; }
+      .proto-bar .sep { width: 1px; height: 18px; background: #333; margin: 0 4px; }
+
+      @media (max-width: 1180px) {
+        .stage.docked { grid-template-columns: minmax(0, 1fr); }
+      }
+      @media (max-width: 860px) {
+        .app { grid-template-columns: minmax(0, 1fr); }
+        .side { display: none; }
+        .content { padding: 20px 16px 120px; }
+        .legend { display: none !important; }
+        .q-media.grid2, .opts.img-grid { grid-template-columns: minmax(0, 1fr); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after { animation: none !important; transition: none !important; }
+      }
+    </style>
+  </head>
+  <body class="notes">
+    <div class="app">
+      <aside class="side">
+        <div class="side-course">
+          <div class="logo">O</div>
+          <div>
+            <div class="t">Okayo for sales teams</div>
+            <div class="s">Module 2 · Quotes</div>
+          </div>
+        </div>
+        <div class="side-sec">Lessons</div>
+        <div class="side-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5" /></svg>Finding your way around</div>
+        <div class="side-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5" /></svg>Clients and contacts</div>
+        <div class="side-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5" /></svg>Anatomy of a quote</div>
+        <div class="side-row on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>Case study: Dupont SARL quote</div>
+        <div class="side-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" /></svg>Turning a quote into an invoice</div>
+      </aside>
+
+      <div class="main">
+        <header class="topbar"><span class="crumb">Exercises /</span>Case study: Dupont SARL quote</header>
+        <div class="stage" id="stage">
+          <div class="content" id="content"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="proto-bar">
+      <span class="lbl">Version</span>
+      <button data-mode="today">Today</button>
+      <button data-mode="proposed">Proposed</button>
+      <span class="sep"></span>
+      <button id="notes-toggle" class="on">Notes</button>
+      <button id="restart">Restart</button>
+    </div>
+
+    <script>
+      const ICON = {
+        doc: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>',
+        x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+        expand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>',
+        plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>',
+        minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>',
+        left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>',
+        right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>'
+      };
+
+      function svgUri(svg) {
+        return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      }
+
+      function okayoFrame(activeItem, body) {
+        const items = ['Dashboard', 'Clients', 'Sales', '  Quotes', '  Orders', '  Invoices', 'Products', 'Reports', 'Settings'];
+        const nav = items
+          .map((item, index) => {
+            const isSub = item.startsWith('  ');
+            const label = item.trim();
+            const y = 120 + index * 44;
+            const active = label === activeItem;
+            return `${active ? `<rect x="12" y="${y - 26}" width="216" height="38" rx="6" fill="#2f6fed"/>` : ''}
+              <text x="${isSub ? 52 : 32}" y="${y}" font-size="17" fill="${active ? '#fff' : isSub ? '#9fb3d9' : '#dbe5f7'}">${label}</text>`;
+          })
+          .join('');
+        return `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800" font-family="Helvetica, Arial, sans-serif">
+          <rect width="1280" height="800" fill="#f4f6fa"/>
+          <rect width="240" height="800" fill="#16233f"/>
+          <text x="32" y="52" font-size="26" font-weight="700" fill="#fff">okayo</text>
+          ${nav}
+          <rect x="240" width="1040" height="64" fill="#fff"/>
+          <line x1="240" y1="64" x2="1280" y2="64" stroke="#e3e7ef"/>
+          <rect x="272" y="16" width="360" height="32" rx="6" fill="#f1f3f7"/>
+          <text x="288" y="38" font-size="15" fill="#8b95a7">Search clients, documents…</text>
+          <circle cx="1232" cy="32" r="16" fill="#c9d6f2"/>
+          <text x="1222" y="38" font-size="14" fill="#16233f">ML</text>
+          ${body}
+        </svg>`;
+      }
+
+      const SHOT_QUOTES = svgUri(
+        okayoFrame(
+          'Quotes',
+          `<text x="272" y="116" font-size="28" font-weight="700" fill="#16233f">Quotes</text>
+          <rect x="1068" y="88" width="180" height="42" rx="6" fill="#2f6fed"/>
+          <text x="1098" y="115" font-size="17" font-weight="600" fill="#fff">+ New quote</text>
+          <rect x="272" y="150" width="976" height="600" rx="8" fill="#fff" stroke="#e3e7ef"/>
+          ${['Number', 'Client', 'Date', 'Status', 'Total excl. VAT']
+            .map((head, index) => `<text x="${296 + index * 190}" y="186" font-size="15" font-weight="600" fill="#6b7589">${head}</text>`)
+            .join('')}
+          ${[
+            ['Q-2026-0142', 'Martin &amp; Fils', '24/09/2026', 'Sent', '€ 2 180.00'],
+            ['Q-2026-0141', 'Atelier Lumière', '22/09/2026', 'Accepted', '€ 9 460.00'],
+            ['Q-2026-0140', 'Boulangerie Roux', '19/09/2026', 'Draft', '€ 640.00'],
+            ['Q-2026-0139', 'Nord Logistique', '15/09/2026', 'Declined', '€ 12 300.00'],
+            ['Q-2026-0138', 'Café des Arts', '12/09/2026', 'Accepted', '€ 1 095.00'],
+            ['Q-2026-0137', 'Studio Kéa', '09/09/2026', 'Sent', '€ 3 870.00']
+          ]
+            .map(
+              (row, rowIndex) =>
+                `<line x1="272" x2="1248" y1="${206 + rowIndex * 64}" y2="${206 + rowIndex * 64}" stroke="#eef1f6"/>` +
+                row.map((cell, index) => `<text x="${296 + index * 190}" y="${246 + rowIndex * 64}" font-size="16" fill="#1f2a44">${cell}</text>`).join('')
+            )
+            .join('')}`
+        )
+      );
+
+      const SHOT_EDITOR = svgUri(
+        okayoFrame(
+          'Quotes',
+          `<text x="272" y="116" font-size="28" font-weight="700" fill="#16233f">New quote · Q-2026-0143</text>
+          <rect x="272" y="140" width="470" height="120" rx="8" fill="#fff" stroke="#e3e7ef"/>
+          <text x="292" y="172" font-size="14" fill="#6b7589">Client</text>
+          <text x="292" y="202" font-size="20" font-weight="600" fill="#16233f">Dupont SARL</text>
+          <text x="292" y="230" font-size="15" fill="#6b7589">12 rue des Tanneurs, 69002 Lyon</text>
+          <rect x="762" y="140" width="486" height="120" rx="8" fill="#fff" stroke="#e3e7ef"/>
+          <text x="782" y="172" font-size="14" fill="#6b7589">Client discount</text>
+          <rect x="782" y="186" width="180" height="40" rx="6" fill="#f1f3f7" stroke="#d6dbe5"/>
+          <text x="798" y="212" font-size="17" fill="#16233f">10 %</text>
+          <text x="982" y="212" font-size="15" fill="#6b7589">applies to: Furniture</text>
+          <rect x="272" y="280" width="976" height="330" rx="8" fill="#fff" stroke="#e3e7ef"/>
+          ${['Item', 'Category', 'Qty', 'Unit price', 'VAT', 'Line total']
+            .map((head, index) => `<text x="${292 + [0, 300, 480, 570, 720, 820][index]}" y="316" font-size="15" font-weight="600" fill="#6b7589">${head}</text>`)
+            .join('')}
+          ${[
+            ['Ergonomic chair', 'Furniture', '12', '€ 145.00', '20 %', '€ 1 740.00'],
+            ['Standing desk', 'Furniture', '4', '€ 480.00', '20 %', '€ 1 920.00'],
+            ['Delivery &amp; install', 'Service', '1', '€ 250.00', '20 %', '€ 250.00']
+          ]
+            .map(
+              (row, rowIndex) =>
+                `<line x1="272" x2="1248" y1="${336 + rowIndex * 60}" y2="${336 + rowIndex * 60}" stroke="#eef1f6"/>` +
+                row.map((cell, index) => `<text x="${292 + [0, 300, 480, 570, 720, 820][index]}" y="${374 + rowIndex * 60}" font-size="17" fill="#1f2a44">${cell}</text>`).join('')
+            )
+            .join('')}
+          <text x="292" y="580" font-size="16" fill="#2f6fed">+ Add line</text>
+          <rect x="848" y="630" width="400" height="140" rx="8" fill="#fff" stroke="#e3e7ef"/>
+          <text x="868" y="664" font-size="16" fill="#6b7589">Subtotal excl. VAT</text><text x="1228" y="664" font-size="16" text-anchor="end" fill="#1f2a44">—</text>
+          <text x="868" y="698" font-size="16" fill="#6b7589">VAT</text><text x="1228" y="698" font-size="16" text-anchor="end" fill="#1f2a44">—</text>
+          <text x="868" y="742" font-size="19" font-weight="700" fill="#16233f">Total incl. VAT</text><text x="1228" y="742" font-size="19" font-weight="700" text-anchor="end" fill="#16233f">—</text>`
+        )
+      );
+
+      function shotVat(selectedRate) {
+        const rates = ['0 %', '5.5 %', '10 %', '20 %'];
+        return svgUri(
+          okayoFrame(
+            'Settings',
+            `<text x="272" y="116" font-size="28" font-weight="700" fill="#16233f">Settings · Default VAT</text>
+            <rect x="272" y="146" width="620" height="440" rx="8" fill="#fff" stroke="#e3e7ef"/>
+            <text x="300" y="190" font-size="16" fill="#6b7589">Default VAT rate for new quote lines</text>
+            <rect x="300" y="208" width="320" height="46" rx="6" fill="#fff" stroke="#2f6fed" stroke-width="2"/>
+            <text x="318" y="238" font-size="18" fill="#16233f">${selectedRate}</text>
+            ${rates
+              .map((rate, index) => {
+                const y = 270 + index * 50;
+                const active = rate === selectedRate;
+                return `<rect x="300" y="${y}" width="320" height="46" fill="${active ? '#e8efff' : '#fff'}" stroke="#e3e7ef"/>
+                  <text x="318" y="${y + 30}" font-size="17" fill="${active ? '#2f6fed' : '#1f2a44'}">${rate}${active ? '   ✓' : ''}</text>`;
+              })
+              .join('')}
+            <text x="300" y="500" font-size="15" fill="#6b7589">Applies to: Furniture, Services</text>
+            <rect x="300" y="522" width="120" height="40" rx="6" fill="#2f6fed"/>
+            <text x="336" y="548" font-size="16" fill="#fff">Save</text>`
+          )
+        );
+      }
+
+      const EXERCISE = {
+        title: 'Case study: Dupont SARL quote',
+        points: 40,
+        brief: {
+          html: `<p><b>The situation.</b> Dupont SARL, a returning customer in Lyon, is refitting their office and has asked you for a quote.</p>
+            <table>
+              <tr><th>Item</th><th>Qty</th><th>Unit price (excl. VAT)</th></tr>
+              <tr><td>Ergonomic chair</td><td>12</td><td>€145</td></tr>
+              <tr><td>Standing desk</td><td>4</td><td>€480</td></tr>
+              <tr><td>Delivery &amp; install</td><td>1</td><td>€250</td></tr>
+            </table>
+            <ul>
+              <li>Returning customers get <b>10% off furniture only</b>. Delivery is never discounted.</li>
+              <li>Everything on this quote uses the <b>standard VAT rate (20%)</b>.</li>
+            </ul>
+            <p>This is the quote screen you'll be working in:</p>`,
+          image: { src: SHOT_EDITOR, caption: 'Okayo quote editor with the Dupont SARL lines' }
+        },
+        questions: [
+          {
+            type: 'radio',
+            title: 'Where do you start a new quote in Okayo?',
+            description: 'Look at the screen below.',
+            images: [{ src: SHOT_QUOTES, caption: 'Okayo, Sales › Quotes' }],
+            options: ['Clients › Dupont SARL › New invoice', 'Sales › Quotes › + New quote', 'Settings › Documents › Templates', 'Reports › Sales › Export']
+          },
+          {
+            type: 'short',
+            title: 'What is the subtotal excluding VAT after the discount?',
+            description: 'Use the line items and discount rule from the brief.',
+            images: [{ src: SHOT_EDITOR, caption: 'Okayo quote editor' }],
+            placeholder: 'e.g. € 1 234.00'
+          },
+          {
+            type: 'radio',
+            title: 'Which VAT setting matches the brief?',
+            description: 'Pick the screen that is configured correctly.',
+            images: [],
+            options: ['5.5 %', '10 %', '20 %', '0 %'],
+            optionImages: [shotVat('5.5 %'), shotVat('10 %'), shotVat('20 %'), shotVat('0 %')]
+          },
+          {
+            type: 'paragraph',
+            title: 'Final answer: what total including VAT do you send to Dupont SARL?',
+            description: 'Show each step: line totals, discount, subtotal, VAT and total.',
+            images: [],
+            placeholder: 'Students will answer with long-form text'
+          }
+        ]
+      };
+
+      const state = {
+        mode: 'proposed',
+        step: 0,
+        answers: {},
+        panelOpen: false,
+        lightbox: null
+      };
+
+      const content = document.getElementById('content');
+      const stage = document.getElementById('stage');
+      const legend = document.getElementById('legend');
+      const isProposed = () => state.mode === 'proposed';
+      const isWide = () => window.matchMedia('(min-width: 1181px)').matches;
+
+      let galleries = [];
+
+      function registerGallery(images) {
+        galleries.push(images);
+        return galleries.length - 1;
+      }
+
+      function shotButton(image, galleryId, index, pin) {
+        return `<button type="button" class="shot rel" data-gallery="${galleryId}" data-index="${index}" aria-label="Enlarge image: ${image.caption}">
+          ${pin ? `<span class="pin pin-abs">${pin}</span>` : ''}
+          <img src="${image.src}" alt="${image.caption}" />
+          <span class="expand">${ICON.expand}Click to enlarge</span>
+        </button>`;
+      }
+
+      function thumb(src, alt, extraClass = '') {
+        return `<div class="thumb ${extraClass}"><img src="${src}" alt="${alt}" /></div>`;
+      }
+
+      function renderQuestionMedia(question) {
+        if (!question.images.length) return '';
+
+        if (!isProposed()) {
+          return `<div class="q-media rel">${question.images.map((image) => thumb(image.src, image.caption)).join('')}<span class="pin pin-abs" style="left:-8px;top:-8px">B</span></div>`;
+        }
+
+        const galleryId = registerGallery(question.images);
+        const layout = question.images.length === 1 ? 'single' : 'grid2';
+        return `<div class="q-media ${layout}">${question.images.map((image, index) => shotButton(image, galleryId, index, index === 0 ? '2' : '')).join('')}</div>`;
+      }
+
+      function renderOptions(question, questionIndex) {
+        const answer = state.answers[questionIndex];
+        const hasImages = Boolean(question.optionImages);
+        const galleryId = hasImages && isProposed() ? registerGallery(question.optionImages.map((src, index) => ({ src, caption: `Option ${index + 1}: VAT ${question.options[index]}` }))) : null;
+
+        const optionsHtml = question.options
+          .map((label, index) => {
+            const selected = answer === index;
+            let media = '';
+            if (hasImages) {
+              media = isProposed()
+                ? shotButton({ src: question.optionImages[index], caption: `Option ${index + 1}: VAT ${label}` }, galleryId, index, index === 0 ? '3' : '')
+                : `<div class="rel">${thumb(question.optionImages[index], label, 'opt-thumb')}${index === 0 ? '<span class="pin pin-abs">C</span>' : ''}</div>`;
+            }
+            return `<div class="opt ${selected ? 'sel' : ''}" data-option="${index}">${media}<div class="opt-row"><span class="radio"></span><span>${label}</span></div></div>`;
+          })
+          .join('');
+
+        return `<div class="opts ${hasImages ? 'img-grid' : ''}">${optionsHtml}</div>`;
+      }
+
+      function renderAnswerField(question, questionIndex) {
+        const value = state.answers[questionIndex] ?? '';
+        if (question.type === 'radio') return renderOptions(question, questionIndex);
+        if (question.type === 'short') return `<input class="input" data-text value="${value}" placeholder="${question.placeholder}" />`;
+
+        return `<textarea class="textarea" data-text placeholder="${question.placeholder}">${value}</textarea>`;
+      }
+
+      function hasAnswer(questionIndex) {
+        const value = state.answers[questionIndex];
+        return value !== undefined && String(value).trim().length > 0;
+      }
+
+      function renderBrief(inPanel) {
+        if (!isProposed()) return `${EXERCISE.brief.html}<img src="${EXERCISE.brief.image.src}" alt="${EXERCISE.brief.image.caption}" />`;
+
+        const galleryId = registerGallery([EXERCISE.brief.image]);
+        return `${EXERCISE.brief.html}${shotButton(EXERCISE.brief.image, galleryId, 0, inPanel ? '' : '2')}`;
+      }
+
+      function renderStart() {
+        const total = EXERCISE.questions.length;
+        return `<h2>${EXERCISE.title}</h2>
+          <div class="meta"><span><b>${total}</b> questions</span><span class="sep">|</span><span><b>${EXERCISE.points}</b> points.</span><span class="sep">|</span><span>All questions are required</span></div>
+          <article class="prose rel" style="margin-top:12px">${!isProposed() ? '<span class="pin pin-abs" style="left:-28px;top:0">A</span>' : ''}${renderBrief(false)}</article>
+          <div class="start-foot">
+            ${isProposed() ? '<span class="hint">You can reopen these instructions from any question.</span>' : ''}
+            <button class="btn" data-action="start">Start</button>
+          </div>`;
+      }
+
+      function renderQuestion() {
+        const questionIndex = state.step - 1;
+        const question = EXERCISE.questions[questionIndex];
+        const total = EXERCISE.questions.length;
+        const isLast = state.step === total;
+        const instructionsButton = isProposed()
+          ? `<span class="rel" style="display:inline-flex"><span class="pin pin-abs">1</span><button class="btn btn-outline btn-sm ${state.panelOpen ? 'on' : ''}" data-action="toggle-panel" aria-pressed="${state.panelOpen}">${ICON.doc}Instructions</button></span>`
+          : '';
+
+        return `<div class="progress-row">
+            <span class="count">${state.step}/${total}</span>
+            <div class="bar"><span style="width:${(state.step / total) * 100}%"></span></div>
+            ${instructionsButton}
+          </div>
+          <div class="surface">
+            <div class="q-head"><span class="num">${state.step}</span><h4>${question.title}</h4></div>
+            <p class="q-desc">${question.description}</p>
+            ${renderQuestionMedia(question)}
+            <div class="q-body">${renderAnswerField(question, questionIndex)}</div>
+          </div>
+          <div class="nav">
+            <button class="btn btn-outline btn-sm" data-action="prev" ${state.step <= 1 ? 'disabled' : ''}>Previous</button>
+            <button class="btn btn-sm" data-action="next" id="next-btn" ${hasAnswer(questionIndex) ? '' : 'disabled'}>${isLast ? 'Finish' : 'Next'}</button>
+          </div>`;
+      }
+
+      function renderDone() {
+        return `<div class="done"><span class="badge">Submitted</span><h2 style="margin-top:14px">Nice work</h2><p class="hint">Your answers were sent to your instructor.</p><button class="btn btn-outline btn-sm" data-action="restart" style="margin-top:12px">Try again</button></div>`;
+      }
+
+      function renderPanel() {
+        const existing = document.getElementById('panel');
+        existing?.remove();
+
+        const showPanel = isProposed() && state.panelOpen && state.step > 0 && state.step <= EXERCISE.questions.length;
+        const docked = showPanel && isWide();
+        stage.classList.toggle('docked', docked);
+        if (!showPanel) return;
+
+        const panel = document.createElement('aside');
+        panel.id = 'panel';
+        panel.className = `panel ${docked ? '' : 'overlay'}`;
+        panel.setAttribute('aria-label', 'Exercise instructions');
+        panel.innerHTML = `<div class="panel-head"><div class="t">Instructions <div class="s">${EXERCISE.title}</div></div><button class="icon-btn" data-action="toggle-panel" aria-label="Close instructions">${ICON.x}</button></div>
+          <div class="panel-body"><article class="prose">${renderBrief(true)}</article></div>`;
+        stage.appendChild(panel);
+      }
+
+      function renderLegend() {
+        legend.innerHTML = isProposed()
+          ? `<h5>What changes</h5>
+            <div class="row"><span class="pin">1</span><div><b>Instructions button</b> on every question. It reopens the intro beside the question, docked on wide screens and as a sheet on small ones. The student keeps their place.</div></div>
+            <div class="row"><span class="pin">2</span><div><b>Screenshots shown whole</b>, full width, not cropped. <b>Click to enlarge</b> and zoom. Arrow keys move between images.</div></div>
+            <div class="row"><span class="pin">3</span><div><b>Answer option images</b> get the same treatment, so students can compare four screens properly.</div></div>`
+          : `<h5>What students get today</h5>
+            <div class="row"><span class="pin">A</span><div>The brief, with its table and screenshot, is <b>only on the start screen</b>. After Start, Previous stops at question 1, so there's no way back to it.</div></div>
+            <div class="row"><span class="pin">B</span><div>Question images are <b>160px squares, cropped</b> to fill. A software screenshot is unreadable, and clicking does nothing.</div></div>
+            <div class="row"><span class="pin">C</span><div>Option images are <b>112px squares</b>, also cropped. The four VAT screens can't be told apart.</div></div>`;
+      }
+
+      function render() {
+        galleries = [];
+        const total = EXERCISE.questions.length;
+        if (state.step === 0) content.innerHTML = renderStart();
+        else if (state.step > total) content.innerHTML = renderDone();
+        else content.innerHTML = renderQuestion();
+        renderPanel();
+        renderLegend();
+        document.querySelectorAll('[data-mode]').forEach((button) => button.classList.toggle('on', button.dataset.mode === state.mode));
+      }
+
+      function openLightbox(galleryId, index) {
+        state.lightbox = { images: galleries[galleryId], index, zoom: 1 };
+        renderLightbox();
+      }
+
+      function closeLightbox() {
+        state.lightbox = null;
+        document.getElementById('lightbox')?.remove();
+      }
+
+      function renderLightbox() {
+        document.getElementById('lightbox')?.remove();
+        if (!state.lightbox) return;
+
+        const { images, index, zoom } = state.lightbox;
+        const image = images[index];
+        const hasMany = images.length > 1;
+        const box = document.createElement('div');
+        box.id = 'lightbox';
+        box.className = 'lightbox';
+        box.setAttribute('role', 'dialog');
+        box.setAttribute('aria-modal', 'true');
+        box.innerHTML = `<div class="lb-bar">
+            <span class="t">${image.caption}${hasMany ? ` · ${index + 1} of ${images.length}` : ''}</span>
+            <button data-lb="zoom-out" aria-label="Zoom out">${ICON.minus}</button>
+            <span class="zoom">${Math.round(zoom * 100)}%</span>
+            <button data-lb="zoom-in" aria-label="Zoom in">${ICON.plus}</button>
+            <button data-lb="close" aria-label="Close">${ICON.x}</button>
+          </div>
+          <div class="lb-stage ${zoom > 1 ? 'zoomed' : ''}" data-lb="backdrop"><img src="${image.src}" alt="${image.caption}" data-lb="image" /></div>
+          ${hasMany ? `<button class="lb-arrow prev" data-lb="prev" aria-label="Previous image">${ICON.left}</button><button class="lb-arrow next" data-lb="next" aria-label="Next image">${ICON.right}</button>` : ''}`;
+        document.body.appendChild(box);
+
+        const img = box.querySelector('img');
+        if (zoom > 1) img.style.width = `${Math.min(window.innerWidth - 128, 1280) * zoom}px`;
+        box.querySelector('[data-lb="close"]').focus();
+      }
+
+      function setZoom(nextZoom) {
+        state.lightbox.zoom = Math.min(3, Math.max(1, nextZoom));
+        renderLightbox();
+      }
+
+      function stepLightbox(delta) {
+        const count = state.lightbox.images.length;
+        state.lightbox.index = (state.lightbox.index + delta + count) % count;
+        state.lightbox.zoom = 1;
+        renderLightbox();
+      }
+
+      document.addEventListener('click', (event) => {
+        const lb = event.target.closest('[data-lb]');
+        if (lb && state.lightbox) {
+          const action = lb.dataset.lb;
+          if (action === 'close' || (action === 'backdrop' && event.target === lb)) closeLightbox();
+          else if (action === 'zoom-in') setZoom(state.lightbox.zoom + 0.5);
+          else if (action === 'zoom-out') setZoom(state.lightbox.zoom - 0.5);
+          else if (action === 'image') setZoom(state.lightbox.zoom > 1 ? 1 : 2);
+          else if (action === 'prev') stepLightbox(-1);
+          else if (action === 'next') stepLightbox(1);
+          return;
+        }
+
+        const shot = event.target.closest('.shot');
+        if (shot) {
+          event.stopPropagation();
+          openLightbox(Number(shot.dataset.gallery), Number(shot.dataset.index));
+          return;
+        }
+
+        const option = event.target.closest('[data-option]');
+        if (option) {
+          state.answers[state.step - 1] = Number(option.dataset.option);
+          render();
+          return;
+        }
+
+        const action = event.target.closest('[data-action]')?.dataset.action;
+        if (action === 'start') state.step = 1;
+        else if (action === 'next') state.step += 1;
+        else if (action === 'prev') state.step = Math.max(1, state.step - 1);
+        else if (action === 'toggle-panel') state.panelOpen = !state.panelOpen;
+        else if (action === 'restart') {
+          state.step = 0;
+          state.answers = {};
+          state.panelOpen = false;
+        } else return;
+        render();
+      });
+
+      document.addEventListener('input', (event) => {
+        if (!event.target.matches('[data-text]')) return;
+
+        state.answers[state.step - 1] = event.target.value;
+        document.getElementById('next-btn').disabled = !hasAnswer(state.step - 1);
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (state.lightbox) {
+          if (event.key === 'Escape') closeLightbox();
+          else if (event.key === 'ArrowLeft' && state.lightbox.images.length > 1) stepLightbox(-1);
+          else if (event.key === 'ArrowRight' && state.lightbox.images.length > 1) stepLightbox(1);
+          else if (event.key === '+' || event.key === '=') setZoom(state.lightbox.zoom + 0.5);
+          else if (event.key === '-') setZoom(state.lightbox.zoom - 0.5);
+          return;
+        }
+
+        if (event.key === 'Escape' && state.panelOpen) {
+          state.panelOpen = false;
+          render();
+        }
+      });
+
+      document.querySelectorAll('[data-mode]').forEach((button) =>
+        button.addEventListener('click', () => {
+          state.mode = button.dataset.mode;
+          if (state.mode === 'today') state.panelOpen = false;
+          closeLightbox();
+          render();
+        })
+      );
+
+      document.getElementById('notes-toggle').addEventListener('click', (event) => {
+        const on = document.body.classList.toggle('notes');
+        event.currentTarget.classList.toggle('on', on);
+      });
+
+      document.getElementById('restart').addEventListener('click', () => {
+        state.step = 0;
+        state.answers = {};
+        state.panelOpen = false;
+        closeLightbox();
+        render();
+      });
+
+      window.addEventListener('resize', () => renderPanel());
+
+      render();
+    </script>
+  </body>
+</html>

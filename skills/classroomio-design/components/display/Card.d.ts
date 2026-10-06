@@ -1,0 +1,3 @@
+export interface CardProps { title?: React.ReactNode; description?: React.ReactNode; /** top-right slot (button/menu) */ action?: React.ReactNode; footer?: React.ReactNode; children?: React.ReactNode; /** divider under header */ bordered?: boolean; style?: React.CSSProperties; }
+/** @startingPoint section="Display" subtitle="App card with header, action, footer" viewport="700x300" */
+export declare function Card(props: CardProps): JSX.Element;

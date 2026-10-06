@@ -7,8 +7,11 @@
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
+  import * as Select from '@cio/ui/base/select';
+  import type { TLocale } from '@cio/db/types';
+  import { LANGUAGES } from '$lib/utils/constants/translation';
 
-  import { UploadWidget } from '$features/ui';
+  import { AttentionHighlight, UploadWidget } from '$features/ui';
   import * as Field from '@cio/ui/base/field';
 
   interface Props {
@@ -19,6 +22,9 @@
 
   let widgetKey = $state('');
   let savedCustomizationSnapshot = $state('');
+  let capturedOrgId = $state('');
+  let languageLocale = $state<TLocale>('en');
+  let languageEnforced = $state(false);
 
   function widgetControl(key: string) {
     widgetKey = key;
@@ -39,26 +45,39 @@
   }
 
   function captureCustomizationSnapshot() {
-    savedCustomizationSnapshot = JSON.stringify($currentOrg.customization);
+    savedCustomizationSnapshot = JSON.stringify({
+      customization: $currentOrg.customization,
+      language: { locale: languageLocale, enforced: languageEnforced }
+    });
   }
 
   $effect(() => {
-    if (!$currentOrg?.id) return;
+    const organizationId = $currentOrg?.id;
+    if (!organizationId || organizationId === capturedOrgId) return;
 
-    if (!savedCustomizationSnapshot) {
-      captureCustomizationSnapshot();
-    }
+    capturedOrgId = organizationId;
+    languageLocale = $currentOrg.settings?.language?.locale ?? 'en';
+    languageEnforced = $currentOrg.settings?.language?.enforced ?? false;
+    savedCustomizationSnapshot = '';
+    captureCustomizationSnapshot();
   });
 
   $effect(() => {
     if (!$currentOrg?.id || !savedCustomizationSnapshot) return;
 
-    hasUnsavedChanges = JSON.stringify($currentOrg.customization) !== savedCustomizationSnapshot;
+    hasUnsavedChanges =
+      JSON.stringify({
+        customization: $currentOrg.customization,
+        language: { locale: languageLocale, enforced: languageEnforced }
+      }) !== savedCustomizationSnapshot;
   });
 
   export async function handleSave() {
     await orgApi.update($currentOrg.id, {
-      customization: $currentOrg.customization
+      customization: $currentOrg.customization,
+      settings: {
+        language: { locale: languageLocale, enforced: languageEnforced }
+      }
     });
 
     if (orgApi.success) {
@@ -70,12 +89,43 @@
   export function handleDiscard() {
     if (!savedCustomizationSnapshot) return;
 
-    $currentOrg.customization = JSON.parse(savedCustomizationSnapshot);
+    const savedSettings = JSON.parse(savedCustomizationSnapshot);
+    $currentOrg.customization = savedSettings.customization;
+    languageLocale = savedSettings.language.locale;
+    languageEnforced = savedSettings.language.enforced;
     hasUnsavedChanges = false;
   }
 </script>
 
 <Field.Group class="w-full max-w-md! px-2">
+  <AttentionHighlight id="language-settings" scrollBlock="center">
+    <Field.Set>
+      <Field.Legend>{$t('components.settings.customize_lms.language.title')}</Field.Legend>
+      <Field.Description>{$t('components.settings.customize_lms.language.description')}</Field.Description>
+      <Field.Group>
+        <Field.Field>
+          <Field.Label>{$t('components.settings.customize_lms.language.default_language')}</Field.Label>
+          <Select.Root type="single" bind:value={languageLocale}>
+            <Select.Trigger class="w-full">
+              {LANGUAGES.find((language) => language.id === languageLocale)?.text}
+            </Select.Trigger>
+            <Select.Content>
+              {#each LANGUAGES as language (language.id)}
+                <Select.Item value={language.id}>{language.text}</Select.Item>
+              {/each}
+            </Select.Content>
+          </Select.Root>
+        </Field.Field>
+        <Field.Field orientation="horizontal">
+          <Switch bind:checked={languageEnforced} />
+          <Field.Label>{$t('components.settings.customize_lms.language.enforce')}</Field.Label>
+        </Field.Field>
+      </Field.Group>
+    </Field.Set>
+  </AttentionHighlight>
+
+  <Field.Separator />
+
   <Field.Set>
     <Field.Legend>{$t('components.settings.customize_lms.dashboard.title')}</Field.Legend>
     <Field.Group>

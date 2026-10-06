@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { EMAIL_LOCALES } from '@cio/utils/email';
 
 /**
  * Payload for an `emails:send` job that uses a registered `@cio/email`
@@ -14,8 +15,10 @@ export const ZSendTemplateEmailPayload = z.object({
   replyTo: z.string().optional(),
   /** Override the template's default subject (e.g. org-scoped transactional mail). */
   subject: z.string().min(1).optional(),
+  organizationId: z.string().uuid().optional(),
   /** Optional iCalendar (.ics) body attached as a text/calendar part. */
-  ics: z.string().optional()
+  ics: z.string().optional(),
+  locale: z.enum(EMAIL_LOCALES).optional()
 });
 export type TSendTemplateEmailPayload = z.infer<typeof ZSendTemplateEmailPayload>;
 

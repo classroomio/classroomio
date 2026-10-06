@@ -1,0 +1,20 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Buttons" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--ui-background);font-family:var(--font-sans);color:var(--ui-foreground)}.lbl{font-family:var(--font-mono);font-size:10px;color:var(--ink-500);letter-spacing:.08em;width:78px;flex-shrink:0}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].NotchCard && window[k].Select; } catch (e) { return false; } })] || {};
+const Row = ({ l, children, top }) => <div style={{ display: 'flex', alignItems: top ? 'flex-start' : 'center', gap: 12, marginBottom: 14, flexWrap: 'wrap' }}><span className="lbl">{l}</span>{children}</div>;
+const { Button, ButtonGroup } = NS;
+const plus = <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>;
+ReactDOM.createRoot(document.getElementById('root')).render(<div>
+<Row l="VARIANTS"><Button>Default</Button><Button variant="light-default">Light</Button><Button variant="outline">Outline</Button><Button variant="secondary">Secondary</Button><Button variant="ghost">Ghost</Button></Row>
+<Row l=""><Button variant="ghost-default">Ghost default</Button><Button variant="ghost-outline">Ghost outline</Button><Button variant="destructive">Destructive</Button><Button variant="link">Link</Button></Row>
+<Row l="SIZES"><Button size="xs">Extra small</Button><Button size="sm">Small</Button><Button>Default</Button><Button size="lg">Large</Button><Button size="icon-sm" variant="outline">{plus}</Button><Button size="icon">{plus}</Button><Button size="icon-lg" variant="secondary">{plus}</Button></Row>
+<Row l="STATES"><Button>{plus}New course</Button><Button loading>Saving</Button><Button disabled>Disabled</Button><Button variant="outline" disabled>Disabled</Button></Row>
+<Row l="GROUP"><ButtonGroup><Button variant="outline">Day</Button><Button variant="outline">Week</Button><Button variant="outline">Month</Button></ButtonGroup></Row>
+</div>);
+</script></body></html>

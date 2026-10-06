@@ -1,0 +1,15 @@
+<!-- @dsCard group="Components" viewport="700x260" name="Block (signature unit)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>body{padding:20px;background:var(--page);font-family:var(--font-sans)}</style></head><body><div id="root"></div>
+<script type="text/babel">
+const NS = window.ClassroomIODesignSystem || window[Object.keys(window).find(k => { try { return window[k] && window[k].Block; } catch (e) { return false; } })] || {};
+const { Block, BlockStack, BlockGrid } = NS;
+ReactDOM.createRoot(document.getElementById('root')).render(<div style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
+<BlockStack blocks={[{kind:'LESSON',title:'Getting started',tone:'sand'},{kind:'LESSON',title:'Invite your team',tone:'tint'},{kind:'QUIZ',title:'Setup check',tone:'blue'},{kind:'CERTIFICATE',title:'Certified admin',tone:'ink'}]}/>
+<BlockGrid columns={2} style={{width:260}} blocks={[{kind:'01',title:'Self-paced tracks'},{kind:'02',title:'Certificates'},{kind:'03',title:'Custom domain',tone:'tint'},{kind:'04',title:'Real API',tone:'tint'}]}/>
+</div>);
+</script></body></html>

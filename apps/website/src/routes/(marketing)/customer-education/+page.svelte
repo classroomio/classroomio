@@ -16,8 +16,8 @@
     VsHelpDocs,
     WorkflowSteps
   } from '$lib/components';
+  import { CtaButton, Section, SectionHeader } from '$lib/components/ui';
   import { Badge } from '@cio/ui/base/badge';
-  import { Button } from '@cio/ui/base/button';
   import { Meteors } from '@cio/ui/custom/animation/meteors';
   import BarChart3 from '@lucide/svelte/icons/bar-chart-3';
   import BookMarked from '@lucide/svelte/icons/book-marked';
@@ -209,25 +209,27 @@
 </svelte:head>
 
 <section class="bg-white">
-  <PageHeader className="px-6 lg:px-12">
-    <div class="mx-auto flex max-w-[820px] flex-col items-center text-center">
+  <PageHeader className="px-6 md:px-10">
+    <div class="mx-auto flex max-w-[1000px] flex-col items-center text-center">
       <Badge variant="outline" class="mb-6 gap-2! bg-white px-3.5! py-1.5!">
         <Crown size={14} class="text-blue-700" />
         Customer Education
       </Badge>
-      <h1 class="text-[clamp(2rem,3.4vw,2.8rem)] leading-[1.1] font-medium tracking-tight text-gray-950">
+      <h1 class="text-display text-balance text-gray-950">
         Launch an academy<br />
-        <em class="whitespace-nowrap text-blue-700 not-italic">customers actually love.</em>
+        <em class="text-blue-700 not-italic">customers actually love.</em>
       </h1>
       <HeroSubtitle class="mx-auto">
         Turn your help docs, onboarding videos, and product knowledge into a branded learning portal. Train customers,
         certify power users, and drive adoption under your own domain, with an AI tutor in every lesson.
       </HeroSubtitle>
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</Button>
-        <Button href="/signup" variant="outline">Start free</Button>
+      <div class="mt-9 flex flex-wrap items-center justify-center gap-3">
+        <CtaButton data-cal-config="'layout':'month_view'" data-cal-link="classroomio/demo">Book a Demo</CtaButton>
+        <CtaButton href="/signup" variant="secondary">Start free</CtaButton>
       </div>
-      <div class="mt-7 flex flex-wrap items-center justify-center gap-5 text-xs text-gray-500">
+      <div
+        class="text-label mt-7 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 font-mono text-gray-500 uppercase"
+      >
         <span class="flex items-center gap-1.5"><span class="font-medium text-blue-700">✓</span> Custom domain</span>
         <span class="flex items-center gap-1.5"><span class="font-medium text-blue-700">✓</span> Embed anywhere</span>
         <span class="flex items-center gap-1.5"
@@ -236,8 +238,8 @@
       </div>
     </div>
 
-    <div class="mx-auto mt-14 w-full max-w-[1100px]">
-      <div class="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200">
+    <div class="max-w-content mx-auto mt-16 w-full">
+      <div class="overflow-hidden rounded-xl bg-white ring-1 ring-gray-200">
         <img
           src="https://assets.cdn.clsrio.com/www/customer-education/beautiful-academy-site.jpeg"
           alt="Branded customer academy on a custom domain: hero, catalog, and themed branding"
@@ -328,63 +330,58 @@
     bgClass="bg-gray-50"
   />
 
-  <!-- Cohorts / certificates split -->
-  <section class="px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto grid max-w-[1100px] grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-      <div>
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Certified champions</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Turn power users into a public community.
-        </h2>
-        <p class="mt-5 text-base leading-relaxed text-gray-500">
-          Bundle courses into cohorts, gate them with a required exercise, and issue shareable certificates. Customer
-          champions love showing them off, and your product gets a quiet army of advocates.
-        </p>
-        <ul class="mt-6 space-y-3 text-sm text-gray-700">
-          <li class="flex items-start gap-2">
-            <GraduationCap size={16} class="mt-0.5 text-blue-700" /> Branded PDF/PNG certificates with verifiable IDs
-          </li>
-          <li class="flex items-start gap-2">
-            <BookMarked size={16} class="mt-0.5 text-blue-700" /> Cohorts with required completion order
-          </li>
-          <li class="flex items-start gap-2">
-            <MessagesSquare size={16} class="mt-0.5 text-blue-700" /> Per-course Q&A and cohort-wide newsfeed
-          </li>
-        </ul>
-      </div>
-      <CertificateMock
-        recipient="Alex Rivera"
-        achievement="YourCo Admin Bootcamp · 2026"
-        issued="11 May 2026"
-        verifyValue="CIO-2026-05-0214"
-      />
+  <Section innerClass="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+    <div>
+      <SectionHeader
+        align="left"
+        size="h3"
+        eyebrow="Certified champions"
+        eyebrowClass="text-blue-700"
+        titleClass=""
+        ledeClass="text-gray-500"
+        lede="Bundle courses into cohorts, gate them with a required exercise, and issue shareable certificates. Customer champions love showing them off, and your product gets a quiet army of advocates."
+      >
+        {#snippet title()}Turn power users into a public community.{/snippet}
+      </SectionHeader>
+      <ul class="mt-8 space-y-3 text-[15px] text-gray-700">
+        <li class="flex items-start gap-2">
+          <GraduationCap size={16} class="mt-1 shrink-0 text-blue-700" /> Branded PDF/PNG certificates with verifiable IDs
+        </li>
+        <li class="flex items-start gap-2">
+          <BookMarked size={16} class="mt-1 shrink-0 text-blue-700" /> Cohorts with required completion order
+        </li>
+        <li class="flex items-start gap-2">
+          <MessagesSquare size={16} class="mt-1 shrink-0 text-blue-700" /> Per-course Q&A and cohort-wide newsfeed
+        </li>
+      </ul>
     </div>
-  </section>
+    <CertificateMock
+      recipient="Alex Rivera"
+      achievement="YourCo Admin Bootcamp · 2026"
+      issued="11 May 2026"
+      verifyValue="CIO-2026-05-0214"
+    />
+  </Section>
 
-  <!-- Outcomes -->
-  <section class="bg-gray-50 px-6 py-12 lg:px-12 lg:py-16">
-    <div class="mx-auto max-w-[1100px]">
-      <div class="mb-10 max-w-[640px]">
-        <div class="mb-2 text-xs font-medium tracking-widest text-blue-700 uppercase">Why teams ship this</div>
-        <h2 class="text-[clamp(1.75rem,2.6vw,2.2rem)] leading-[1.15] font-medium tracking-tight">
-          Educated customers churn less.
-        </h2>
-      </div>
+  <Section class="bg-gray-50">
+    <SectionHeader eyebrow="Why teams ship this" eyebrowClass="text-blue-700" titleClass="" class="mb-12 md:mb-16">
+      {#snippet title()}Educated customers churn less.{/snippet}
+    </SectionHeader>
 
-      <BoxedGrid items={outcomes} cols={3}>
-        {#snippet cell(outcome)}
-          <h3 class="text-base font-medium text-gray-950">{outcome.title}</h3>
-          <p class="mt-2 text-sm leading-relaxed text-gray-500">{outcome.sub}</p>
-        {/snippet}
-      </BoxedGrid>
-    </div>
-  </section>
+    <BoxedGrid items={outcomes} cols={3}>
+      {#snippet cell(outcome)}
+        <h3 class="text-card-title font-medium text-gray-950">{outcome.title}</h3>
+        <p class="mt-2 text-[15px] leading-relaxed text-gray-500">{outcome.sub}</p>
+      {/snippet}
+    </BoxedGrid>
+  </Section>
 
   <VsHelpDocs bgClass="bg-white" />
 
   <MultiAcademySection />
 
   <PageSignupCTA
+    variant="brand"
     header="Launch your customer academy."
     subText="Build a branded learning portal customers actually use. Custom domain, AI tutoring, certificates, and analytics out of the box."
     btnLabel="Book a Demo"

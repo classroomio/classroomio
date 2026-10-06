@@ -7,11 +7,12 @@ import { fileURLToPath } from 'node:url';
 
 const dashboardDir = path.dirname(fileURLToPath(import.meta.url));
 
-function watchWorkspaceUiSource() {
+function watchWorkspaceSources() {
   return {
-    name: 'watch-workspace-ui-source',
+    name: 'watch-workspace-sources',
     configureServer(server) {
       server.watcher.add(path.resolve(dashboardDir, '../../packages/ui/src'));
+      server.watcher.add(path.resolve(dashboardDir, '../../packages/utils/dist'));
     }
   };
 }
@@ -29,7 +30,7 @@ export default ({ mode }) => {
         }
       }
     },
-    plugins: [watchWorkspaceUiSource(), sveltekit(), ...(useHttps ? [mkcert()] : [])],
+    plugins: [watchWorkspaceSources(), sveltekit(), ...(useHttps ? [mkcert()] : [])],
     server: {
       host,
       fs: {

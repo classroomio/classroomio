@@ -10,7 +10,6 @@
   let avatarUrls: string[] = $state([]);
   let avatarUrlsFetched = $state(false);
 
-  // function to shuffle an array
   const shuffleArray = (array: string[]) => {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -19,7 +18,6 @@
     return array;
   };
 
-  // function to reset entries
   const resetEntry = () => {
     namesInput = '';
     numNames = 0;
@@ -27,7 +25,6 @@
     selectedNames = [];
   };
 
-  // function to sort the input alphabetically
   const sortRandom = () => {
     const sortedNames = namesInput
       .split(',')
@@ -36,7 +33,6 @@
     namesInput = sortedNames.join(', ');
   };
 
-  // function to unsort
   const unsortRandom = () => {
     const unsortedNames = namesInput
       .split(',')
@@ -61,10 +57,8 @@
     avatarUrlsFetched = false; // reset avatarUrlsFetched flag
 
     try {
-      // set loading state
       avatarUrlsFetched = false;
 
-      // generate avatar for each selected name
       for (const name of selectedNames) {
         const avatarUrl = await generateRandomAvatar('pixel-art');
         if (avatarUrl) {
@@ -72,7 +66,6 @@
         }
       }
 
-      // set avatarUrlsFetched to true after avatars are fetched
       avatarUrlsFetched = true;
     } catch (error) {
       console.error('Error fetching avatars:', error);
@@ -80,7 +73,6 @@
     }
   };
 
-  // function to generate a random avatar
   async function generateRandomAvatar(styleName: string, format = 'svg') {
     const baseUrl = 'https://api.dicebear.com/8.x/';
     const randomSeed = Math.random().toString(36).substring(7);
@@ -127,22 +119,20 @@
 <section class="bg-white px-5 md:px-0">
   <ToolsHeader>
     <img src="/free-tools/name-picker.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="my-3 text-3xl text-[#040F2D] md:text-5xl">Random Name Picker</h1>
-    <p class="text-md mx-auto font-light text-[#656565] md:w-[45%] md:font-normal">
+    <h1 class="text-title mt-5 font-medium text-balance text-[#040F2D]">Random Name Picker</h1>
+    <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       Use this online name picker to draw a random name from a list of names, or to draw several names randomly out of a
       list. You can use it as a name randomizer for a class activities.
     </p>
   </ToolsHeader>
 
-  <div class="mx-auto my-10 rounded-md border bg-white py-8 shadow-md md:w-[60%] md:py-[3%]">
+  <div class="mx-auto my-10 rounded-xl border border-gray-200 bg-white py-8 md:w-[60%] md:py-[3%]">
     <div class="mx-auto w-[85%] bg-white md:w-[70%]">
       <h1 class="text-sm">List of names</h1>
 
-      <!-- container -->
       <div
         class="relative mt-5 h-48 overflow-hidden rounded-sm border-2 bg-[#F1F2F4] pt-2 pl-3 focus-within:border-[#0233BD]"
       >
-        <!-- sidebar -->
         <div class="absolute top-3 right-2 flex flex-col gap-y-3 md:right-7">
           <button
             type="button"
@@ -160,7 +150,6 @@
           </button>
         </div>
 
-        <!-- content -->
         <div class="z-10 h-[80%]">
           <span
             role="textbox"
@@ -171,7 +160,6 @@
           ></span>
         </div>
 
-        <!-- word count -->
         <p class="mt-1 w-[80px] rounded-xl bg-[#D9E0F5] py-1 text-center text-[10px] font-semibold text-[#0F62FE]">
           name count: {wordCount}
         </p>
@@ -180,7 +168,6 @@
 
       <div class="mt-10">
         <h1 class="text-sm">Number of Names</h1>
-        <!-- number input & button -->
         <div class="mt-5 flex w-full flex-wrap justify-between gap-y-3">
           <input
             type="number"
@@ -196,7 +183,6 @@
         </div>
       </div>
 
-      <!-- footer logo -->
       <div class="mt-10 mb-5 flex items-center justify-center gap-3 bg-[#F1F6FF] py-3">
         <img src="/free-tools/name-picker.svg" class="w-[12%] md:w-[9%]" alt="" />
         {#if selectedNames.length > 0}
@@ -204,14 +190,12 @@
         {/if}
       </div>
 
-      <!-- loading state -->
       {#if selectedNames.length > 0 && !avatarUrlsFetched}
         <div class="flex w-full items-center justify-center">
           <p class="font-bold">Loading...</p>
         </div>
       {/if}
 
-      <!-- generated name -->
       {#if selectedNames.length > 0 && avatarUrlsFetched}
         <div>
           <ul>
