@@ -2965,7 +2965,7 @@
       "completion_rules_heading": "पूर्णता के नियम",
       "completion_rules_description": "ये नियम तय करते हैं कि यह प्रमाणपत्र किसे मिलेगा। इन्हें कोर्स के सेटिंग्स टैब में सेट किया जाता है।",
       "completion_rules_threshold": "न्यूनतम पूर्णता: {percent}%",
-      "completion_rules_deadline": "{date} से पहले पूरा करें",
+      "completion_rules_deadline": "{date} तक पूरा करें",
       "completion_rules_no_deadline": "कोई समय सीमा नहीं",
       "completion_rules_final_exercise": "\"{title}\" में कम से कम {score}% स्कोर करें",
       "completion_rules_no_final_exercise": "किसी अंतिम अभ्यास की आवश्यकता नहीं",

@@ -2965,7 +2965,7 @@
       "completion_rules_heading": "Reglas de finalización",
       "completion_rules_description": "Estas reglas deciden quién obtiene este certificado. Se configuran en la pestaña Configuración del curso.",
       "completion_rules_threshold": "Finalización mínima: {percent}%",
-      "completion_rules_deadline": "Completar antes del {date}",
+      "completion_rules_deadline": "Completar a más tardar el {date}",
       "completion_rules_no_deadline": "Sin fecha límite",
       "completion_rules_final_exercise": "Obtener al menos {score}% en \"{title}\"",
       "completion_rules_no_final_exercise": "No se requiere ejercicio final",

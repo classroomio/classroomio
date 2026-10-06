@@ -2965,7 +2965,7 @@
       "completion_rules_heading": "Правила завершения",
       "completion_rules_description": "Эти правила определяют, кто получит этот сертификат. Они задаются на вкладке «Настройки» курса.",
       "completion_rules_threshold": "Минимальное завершение: {percent}%",
-      "completion_rules_deadline": "Завершить до {date}",
+      "completion_rules_deadline": "Завершить не позднее {date}",
       "completion_rules_no_deadline": "Без срока",
       "completion_rules_final_exercise": "Набрать не менее {score}% в «{title}»",
       "completion_rules_no_final_exercise": "Финальное упражнение не требуется",

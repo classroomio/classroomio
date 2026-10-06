@@ -2414,7 +2414,7 @@
       "completion_rules_heading": "Tamamlama kuralları",
       "completion_rules_description": "Bu kurallar bu sertifikayı kimin alacağını belirler. Kursun Ayarlar sekmesinde belirlenir.",
       "completion_rules_threshold": "Minimum tamamlama: %{percent}",
-      "completion_rules_deadline": "{date} tarihinden önce tamamlayın",
+      "completion_rules_deadline": "En geç {date} tarihine kadar tamamlayın",
       "completion_rules_no_deadline": "Son tarih yok",
       "completion_rules_final_exercise": "\"{title}\" alıştırmasında en az %{score} puan alın",
       "completion_rules_no_final_exercise": "Son alıştırma gerekmiyor",

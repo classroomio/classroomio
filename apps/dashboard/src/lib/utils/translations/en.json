@@ -2404,7 +2404,7 @@
       "completion_rules_heading": "Completion rules",
       "completion_rules_description": "These rules decide who earns this certificate. They are set on the course Settings tab.",
       "completion_rules_threshold": "Minimum completion: {percent}%",
-      "completion_rules_deadline": "Complete before {date}",
+      "completion_rules_deadline": "Complete by {date}",
       "completion_rules_no_deadline": "No deadline",
       "completion_rules_final_exercise": "Score at least {score}% on \"{title}\"",
       "completion_rules_no_final_exercise": "No final exercise required",

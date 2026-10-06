@@ -20,6 +20,11 @@ test('certificate settings link to the completion rules and back', async ({ page
   const rulesSummary = page.getByTestId('certificate-completion-rules-summary');
   await rulesSummary.scrollIntoViewIfNeeded();
   await expect(rulesSummary).toBeVisible();
+  // The seeded course stores no rules, so the summary shows the API defaults: 100% completion, no deadline,
+  // no final exercise.
+  const ruleItems = rulesSummary.locator('li');
+  await expect(ruleItems).toHaveCount(3);
+  await expect(ruleItems.first()).toContainText('100%');
   await rulesSummary.locator('xpath=ancestor::fieldset[1]').screenshot({
     path: 'test-results/certificate-completion-rules-summary.png'
   });

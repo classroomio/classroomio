@@ -579,13 +579,20 @@
     hasUnsavedChanges = true;
   }
 
+  // Default for the type being saved, not the stored one, using the compliance settings handleSave will send.
+  function getPendingExerciseMinScoreDefault() {
+    const pendingCompliance = courseApi.course?.compliance ?? DEFAULT_COMPLIANCE_SETTINGS;
+
+    return getDefaultExerciseMinScorePercent({ type: $settings.type, compliance: pendingCompliance });
+  }
+
   function onFinalExerciseChange(value: string) {
     $settings.certificate.requiredExerciseId = value && value !== 'none' ? value : null;
 
     if (!$settings.certificate.requiredExerciseId) {
       $settings.certificate.exerciseMinScorePercent = null;
     } else if (typeof $settings.certificate.exerciseMinScorePercent !== 'number') {
-      $settings.certificate.exerciseMinScorePercent = getDefaultExerciseMinScorePercent(courseApi.course);
+      $settings.certificate.exerciseMinScorePercent = getPendingExerciseMinScoreDefault();
     }
 
     delete courseApi.errors['certificate.requiredExerciseId'];

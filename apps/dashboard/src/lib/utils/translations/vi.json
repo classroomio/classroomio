@@ -2965,7 +2965,7 @@
       "completion_rules_heading": "Quy tắc hoàn thành",
       "completion_rules_description": "Các quy tắc này quyết định ai nhận được chứng chỉ này. Chúng được thiết lập trong tab Cài đặt của khóa học.",
       "completion_rules_threshold": "Hoàn thành tối thiểu: {percent}%",
-      "completion_rules_deadline": "Hoàn thành trước {date}",
+      "completion_rules_deadline": "Hoàn thành chậm nhất vào {date}",
       "completion_rules_no_deadline": "Không có thời hạn",
       "completion_rules_final_exercise": "Đạt ít nhất {score}% ở \"{title}\"",
       "completion_rules_no_final_exercise": "Không yêu cầu bài tập cuối cùng",

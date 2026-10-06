@@ -2965,7 +2965,7 @@
       "completion_rules_heading": "Zasady ukończenia",
       "completion_rules_description": "Te zasady decydują, kto otrzyma ten certyfikat. Ustawia się je na karcie Ustawienia kursu.",
       "completion_rules_threshold": "Minimalne ukończenie: {percent}%",
-      "completion_rules_deadline": "Ukończ przed {date}",
+      "completion_rules_deadline": "Ukończ najpóźniej {date}",
       "completion_rules_no_deadline": "Brak terminu",
       "completion_rules_final_exercise": "Uzyskaj co najmniej {score}% w „{title}”",
       "completion_rules_no_final_exercise": "Ćwiczenie końcowe nie jest wymagane",

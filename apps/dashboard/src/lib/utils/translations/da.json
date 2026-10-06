@@ -2965,7 +2965,7 @@
       "completion_rules_heading": "Regler for fuldførelse",
       "completion_rules_description": "Disse regler afgør, hvem der får dette certifikat. De angives under fanen Indstillinger for kurset.",
       "completion_rules_threshold": "Minimum fuldførelse: {percent}%",
-      "completion_rules_deadline": "Fuldfør før {date}",
+      "completion_rules_deadline": "Fuldfør senest {date}",
       "completion_rules_no_deadline": "Ingen frist",
       "completion_rules_final_exercise": "Opnå mindst {score}% i \"{title}\"",
       "completion_rules_no_final_exercise": "Ingen afsluttende øvelse påkrævet",

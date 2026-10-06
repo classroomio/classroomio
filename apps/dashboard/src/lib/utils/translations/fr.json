@@ -2965,7 +2965,7 @@
       "completion_rules_heading": "Règles d'achèvement",
       "completion_rules_description": "Ces règles déterminent qui obtient ce certificat. Elles se configurent dans l'onglet Paramètres du cours.",
       "completion_rules_threshold": "Achèvement minimum : {percent} %",
-      "completion_rules_deadline": "Terminer avant le {date}",
+      "completion_rules_deadline": "Terminer au plus tard le {date}",
       "completion_rules_no_deadline": "Aucune date limite",
       "completion_rules_final_exercise": "Obtenir au moins {score} % à « {title} »",
       "completion_rules_no_final_exercise": "Aucun exercice final requis",
