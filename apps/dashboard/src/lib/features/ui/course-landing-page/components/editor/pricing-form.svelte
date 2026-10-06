@@ -152,9 +152,9 @@
       type="number"
       min={0}
       value={cost}
-      onfocus={handleCostFocus}
-      oninput={handleCostInput}
-      onchange={handleCostChange}
+      onFocus={handleCostFocus}
+      onInput={handleCostInput}
+      onChange={handleCostChange}
     />
 
     <InputField
@@ -165,7 +165,7 @@
       isRequired
       errorMessage={paymentLinkErrorMessage}
       value={paymentLink}
-      oninput={(e) => handlePaymentLinkChange(e.currentTarget.value)}
+      onInput={(e) => handlePaymentLinkChange(e.currentTarget.value)}
     />
   {/if}
 
@@ -193,9 +193,9 @@
       max={100}
       step="any"
       value={discount}
-      onfocus={handleDiscountFocus}
-      oninput={handleDiscountInput}
-      onchange={handleDiscountChange}
+      onFocus={handleDiscountFocus}
+      onInput={handleDiscountInput}
+      onChange={handleDiscountChange}
       helperMessage={$t('course.navItem.landing_page.editor.pricing_form.percentage_helper')}
     />
   {/if}

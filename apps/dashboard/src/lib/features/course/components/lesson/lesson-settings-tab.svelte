@@ -208,7 +208,7 @@
             label={$t('course.navItem.lessons.session.link_label')}
             placeholder="https://zoom.us/j/..."
             value={sessionCallUrl}
-            oninput={(e) => (sessionCallUrl = e.currentTarget.value)}
+            onInput={(e) => (sessionCallUrl = e.currentTarget.value)}
           />
         </Field.Field>
 
@@ -328,7 +328,7 @@
               type="number"
               label={$t('course.navItem.lessons.completion_policy.watch_threshold')}
               value={String(videoWatchThreshold)}
-              onchange={commitVideoWatchThreshold}
+              onChange={commitVideoWatchThreshold}
             />
           </Field.Field>
 

@@ -77,7 +77,7 @@
           type="number"
           min={1}
           step={1}
-          onchange={onPointsChange}
+          onChange={onPointsChange}
         />
 
         {#if Number(pointsValue) === 0}

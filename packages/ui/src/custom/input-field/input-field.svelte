@@ -25,10 +25,10 @@
     autoComplete?: boolean;
     /** Stable hook for Playwright (`data-testid`). Prefer over CSS classes or translated labels. */
     testId?: string;
-    oninput?: InputProps['oninput'];
-    onchange?: InputProps['onchange'];
-    onblur?: InputProps['onblur'];
-    onfocus?: InputProps['onfocus'];
+    onInput?: InputProps['oninput'];
+    onChange?: InputProps['onchange'];
+    onBlur?: InputProps['onblur'];
+    onFocus?: InputProps['onfocus'];
     labelAction?: import('svelte').Snippet;
   }
 
@@ -53,10 +53,10 @@
     helperMessage = '',
     autoComplete = true,
     testId,
-    oninput,
-    onchange,
-    onblur,
-    onfocus,
+    onInput,
+    onChange,
+    onBlur,
+    onFocus,
     labelAction
   }: Props = $props();
 
@@ -98,10 +98,10 @@
     aria-invalid={errorMessage ? 'true' : undefined}
     autofocus={autoFocus}
     onkeydown={onKeyDown}
-    {oninput}
-    {onchange}
-    {onblur}
-    {onfocus}
+    oninput={onInput}
+    onchange={onChange}
+    onblur={onBlur}
+    onfocus={onFocus}
   />
 
   {#if errorMessage}

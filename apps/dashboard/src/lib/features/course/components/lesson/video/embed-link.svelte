@@ -81,7 +81,7 @@
     bind:value={genericLinks}
     className="flex-1"
     isDisabled={isSubmitting}
-    oninput={handleInputChange}
+    onInput={handleInputChange}
     placeholder="https://www.videoplayer.com/"
     errorMessage={error}
   />

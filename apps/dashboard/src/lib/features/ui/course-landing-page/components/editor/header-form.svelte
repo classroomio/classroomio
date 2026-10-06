@@ -18,7 +18,7 @@
   labelClassName="font-bold"
   label={$t('course.navItem.landing_page.editor.header_form.title')}
   bind:value={course.title}
-  oninput={markDirty}
+  onInput={markDirty}
 >
   {#snippet labelAction()}
     <AIGenerateButton
@@ -60,7 +60,7 @@
   helperMessage={$t('course.navItem.landing_page.editor.header_form.helper')}
   type="text"
   bind:value={course.metadata.videoUrl}
-  oninput={markDirty}
+  onInput={markDirty}
 />
 <div class="mt-7">
   <p class="mb-3 font-bold">{$t('course.navItem.landing_page.editor.header_form.replace_cover')}</p>

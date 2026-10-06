@@ -652,7 +652,7 @@
           isRequired
           bind:value={$settings.courseTitle}
           errorMessage={errors?.title || courseApi.errors?.title}
-          oninput={() => {
+          onInput={() => {
             errors.title = undefined;
             delete courseApi.errors.title;
             hasUnsavedChanges = true;
@@ -1064,7 +1064,7 @@
           <Field.Label>{$t('course.navItem.settings.callout.title_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.title}
-            oninput={() => (hasUnsavedChanges = true)}
+            onInput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.title_placeholder')}
           />
         </Field.Field>
@@ -1083,7 +1083,7 @@
           <Field.Label>{$t('course.navItem.settings.callout.button_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.buttonLabel}
-            oninput={() => (hasUnsavedChanges = true)}
+            onInput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.button_label_placeholder')}
           />
         </Field.Field>
@@ -1092,7 +1092,7 @@
           <Field.Label>{$t('course.navItem.settings.callout.button_url_label')}</Field.Label>
           <InputField
             bind:value={$settings.callout.buttonUrl}
-            oninput={() => (hasUnsavedChanges = true)}
+            onInput={() => (hasUnsavedChanges = true)}
             placeholder={$t('course.navItem.settings.callout.button_url_placeholder')}
             type="url"
           />

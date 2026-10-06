@@ -135,7 +135,7 @@
           type="number"
           label={$t('course.navItem.lessons.exercises.all_exercises.settings_pass_threshold')}
           value={String($questionnaire.passThreshold ?? 100)}
-          onchange={commitPassThreshold}
+          onChange={commitPassThreshold}
         />
       </div>
     {/if}
@@ -148,7 +148,7 @@
         helperMessage={$t('course.navItem.settings.slug.description')}
         value={slug}
         placeholder={slugifyTitle($questionnaire.title ?? '')}
-        oninput={(e) => {
+        onInput={(e) => {
           slug = e.currentTarget.value;
         }}
         errorMessage={exerciseApi.errors.slug}
