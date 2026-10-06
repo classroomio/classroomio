@@ -39,9 +39,10 @@ vi.mock('@api/services/dash', () => ({
 vi.mock('@cio/core/services/course/course', () => ({
   buildCourseStudentAnalytics: vi.fn(),
   ensureProgramCourseAccess: vi.fn(),
-  getCourseAnalytics: vi.fn(),
-  listCourseAnalyticsStudents: vi.fn()
+  getCourseAnalytics: vi.fn()
 }));
+
+vi.mock('@cio/db/queries/course/people', () => ({ getPaginatedCourseMembers: vi.fn() }));
 
 vi.mock('@api/services/course/compliance', () => ({
   getOrgComplianceOverview: vi.fn()
@@ -62,11 +63,8 @@ vi.mock('@api/utils/redis/cached-read', () => ({
 import { getOrganizationMemberIdByOrgAndProfile, getOrganizationMemberRoleId } from '@cio/db/queries/organization';
 import { getCountryBreakdown, getCourseFunnel, getLandingStats, getTopCoursesByViews } from '@api/services/analytics';
 import { getOrganisationAnalytics, getStudentLoginActivity } from '@api/services/dash';
-import {
-  buildCourseStudentAnalytics,
-  getCourseAnalytics,
-  listCourseAnalyticsStudents
-} from '@cio/core/services/course/course';
+import { buildCourseStudentAnalytics, getCourseAnalytics } from '@cio/core/services/course/course';
+import { getPaginatedCourseMembers } from '@cio/db/queries/course/people';
 import {
   getPublicApiCourseAnalyticsService,
   listPublicApiCourseAnalyticsStudentsService
@@ -423,14 +421,15 @@ describe('public API analytics services', () => {
       );
     });
 
-    it('orders students by name then profile id and computes stats for the requested page only', async () => {
+    it('pages students by name in the database and computes stats for that page only', async () => {
       const member = (profileId: string, fullname: string | null) => ({ profileId, profile: { fullname } });
-      vi.mocked(listCourseAnalyticsStudents).mockResolvedValue([
-        member('p-b', 'Bola'),
-        member('p-a2', 'Ade'),
-        member('p-a1', 'Ade'),
-        member('p-z', null)
-      ] as never);
+      vi.mocked(getPaginatedCourseMembers).mockResolvedValue({
+        items: [member('p-b', 'Bola'), member('p-z', null)],
+        page: 2,
+        limit: 2,
+        total: 4,
+        totalPages: 2
+      } as never);
       vi.mocked(buildCourseStudentAnalytics).mockImplementation(async (_courseId, pageMembers) =>
         pageMembers.map((pageMember) => student(pageMember.profileId!, pageMember.profile?.fullname || 'Unknown'))
       );
@@ -448,7 +447,16 @@ describe('public API analytics services', () => {
         expect.any(Function)
       );
       expect(getCourseAnalytics).not.toHaveBeenCalled();
+      expect(getPaginatedCourseMembers).toHaveBeenCalledWith(COURSE_ID, {
+        page: 2,
+        limit: 2,
+        roleId: ROLE.STUDENT,
+        membership: 'joined',
+        sortBy: 'name',
+        sortOrder: 'asc'
+      });
       expect(buildCourseStudentAnalytics).toHaveBeenCalledTimes(1);
+      expect(vi.mocked(buildCourseStudentAnalytics).mock.calls[0][2]).toEqual({ failOnError: true });
       expect(vi.mocked(buildCourseStudentAnalytics).mock.calls[0][1].map((row) => row.profileId)).toEqual([
         'p-b',
         'p-z'
@@ -464,7 +472,22 @@ describe('public API analytics services', () => {
       await expect(
         listPublicApiCourseAnalyticsStudentsService(ORG_ID, ACTOR_ID, { courseId: COURSE_ID }, FIRST_PAGE)
       ).rejects.toMatchObject({ statusCode: 403 });
-      expect(listCourseAnalyticsStudents).not.toHaveBeenCalled();
+      expect(getPaginatedCourseMembers).not.toHaveBeenCalled();
+    });
+
+    it('fails the page when a student\x27s stats cannot be loaded', async () => {
+      vi.mocked(getPaginatedCourseMembers).mockResolvedValue({
+        items: [{ profileId: 'p-a', profile: { fullname: 'Ade' } }],
+        page: 1,
+        limit: 20,
+        total: 1,
+        totalPages: 1
+      } as never);
+      vi.mocked(buildCourseStudentAnalytics).mockRejectedValue(new Error('stats failed'));
+
+      await expect(
+        listPublicApiCourseAnalyticsStudentsService(ORG_ID, ACTOR_ID, { courseId: COURSE_ID }, FIRST_PAGE)
+      ).rejects.toThrow('stats failed');
     });
   });
 });

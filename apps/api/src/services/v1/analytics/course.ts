@@ -7,13 +7,11 @@ import type {
 import {
   assertCourseBelongsToOrganization,
   assertCourseTeamMemberOrOrgAdmin,
-  paginateInMemory
+  toPublicApiPagination
 } from '@api/services/v1/shared';
-import {
-  buildCourseStudentAnalytics,
-  getCourseAnalytics,
-  listCourseAnalyticsStudents
-} from '@cio/core/services/course/course';
+import { buildCourseStudentAnalytics, getCourseAnalytics } from '@cio/core/services/course/course';
+import { getPaginatedCourseMembers } from '@cio/db/queries/course/people';
+import { ROLE } from '@cio/utils/constants';
 import { PUBLIC_API_ANALYTICS_TTL_SECONDS, publicApiAnalyticsKey } from '@api/utils/redis/key-generators';
 import { cachedRead, type CachedRead } from '@api/utils/redis/cached-read';
 import { getCourseFunnel } from '@api/services/analytics';
@@ -79,12 +77,16 @@ export async function getPublicApiCourseAnalyticsService(
 }
 
 async function loadCourseStudentsPage(courseId: string, query: TPublicApiCourseAnalyticsStudentsQuery) {
-  const members = await listCourseAnalyticsStudents(courseId);
-  const sortName = (member: (typeof members)[number]) => member.profile?.fullname || 'Unknown';
-  members.sort((a, b) => sortName(a).localeCompare(sortName(b)) || a.profileId.localeCompare(b.profileId));
-
-  const { items: pageMembers, pagination } = paginateInMemory(members, query);
-  const rows = await buildCourseStudentAnalytics(courseId, pageMembers);
+  const { items: pageMembers, total } = await getPaginatedCourseMembers(courseId, {
+    page: query.page,
+    limit: query.limit,
+    roleId: ROLE.STUDENT,
+    membership: 'joined',
+    sortBy: 'name',
+    sortOrder: 'asc'
+  });
+  // A student whose stats fail to load fails the page, so totals always match the rows and zeros are never cached.
+  const rows = await buildCourseStudentAnalytics(courseId, pageMembers, { failOnError: true });
   const items = rows.map((student) => ({
     profileId: student.id,
     fullname: student.profile.fullname,
@@ -99,7 +101,7 @@ async function loadCourseStudentsPage(courseId: string, query: TPublicApiCourseA
     lastSeen: student.lastSeen ?? null
   }));
 
-  return { items, pagination };
+  return { items, pagination: toPublicApiPagination(query.page, query.limit, total) };
 }
 
 export async function listPublicApiCourseAnalyticsStudentsService(

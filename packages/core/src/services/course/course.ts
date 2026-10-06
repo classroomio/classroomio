@@ -595,27 +595,14 @@ type TCourseAnalyticsMember = {
 };
 
 /**
- * Lists a course's student members, the rows `getCourseAnalytics` reports on. Throws 404 when the course is missing.
- */
-export async function listCourseAnalyticsStudents(courseId: string) {
-  const course = await getCourseWithRelations(courseId);
-  if (!course) {
-    throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-  }
-
-  const members = course.group?.members || [];
-
-  return members.filter(
-    (member): member is (typeof members)[number] & { profileId: string } =>
-      member.roleId === ROLE.STUDENT && member.profileId !== null
-  );
-}
-
-/**
  * Builds per-student progress, exercise and grade rows for the given course members. Members without a profile,
- * and members whose stats fail to load, are left out.
+ * and members whose stats fail to load, are left out. With `failOnError`, a failed load throws instead.
  */
-export async function buildCourseStudentAnalytics(courseId: string, students: TCourseAnalyticsMember[]) {
+export async function buildCourseStudentAnalytics(
+  courseId: string,
+  students: TCourseAnalyticsMember[],
+  options: { failOnError?: boolean } = {}
+) {
   const studentsWithProfile = students.filter(
     (student): student is TCourseAnalyticsMember & { profileId: string } => student.profileId !== null
   );
@@ -626,7 +613,7 @@ export async function buildCourseStudentAnalytics(courseId: string, students: TC
       try {
         const [courseProgress, userExercisesStats] = await Promise.all([
           getCourseProgressQuery(courseId, student.profileId),
-          getUserExercisesStats(courseId, student.profileId)
+          getUserExercisesStats(courseId, student.profileId, options)
         ]);
 
         if (!courseProgress) {
@@ -668,6 +655,9 @@ export async function buildCourseStudentAnalytics(courseId: string, students: TC
         };
       } catch (error) {
         console.error('Error getting student overview:', error);
+        if (options.failOnError) {
+          throw new AppError('Failed to load student analytics', ErrorCodes.INTERNAL_ERROR, 500);
+        }
         return null;
       }
     })
