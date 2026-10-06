@@ -2397,7 +2397,7 @@
                 "size": "(Maks. 500 MB)",
                 "oops": "Ups `😬, videoen kunne ikke uploades",
                 "big_file": "Beklager, at videoen ikke blev uploadet. Filstørrelsen er for stor,",
-                "maximum_size": "maksimal størrelse er 30 MB. Prøv igen!",
+                "maximum_size": "maksimal størrelse er {size}. Prøv igen!",
                 "button": "Prøv en anden fil",
                 "try_again": "Prøv venligst igen",
                 "unsupported_format": "Beklager, at videoen ikke blev uploadet, filformatet understøttes ikke, eller noget gik galt på serveren.",

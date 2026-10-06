@@ -2397,7 +2397,7 @@
                 "size": "(Tối đa 500 MB)",
                 "oops": "Rất tiếc `😬, không thể tải video lên",
                 "big_file": "Rất tiếc, video của chúng tôi chưa được tải lên. Kích thước tập tin quá lớn,",
-                "maximum_size": "kích thước tối đa là 30 MB. Hãy thử lại!",
+                "maximum_size": "kích thước tối đa là {size}. Hãy thử lại!",
                 "button": "Hãy thử một tập tin khác",
                 "try_again": "Vui lòng thử lại",
                 "unsupported_format": "Rất tiếc, video của chúng tôi không được tải lên, định dạng tệp không được hỗ trợ hoặc đã xảy ra lỗi trên máy chủ.",
