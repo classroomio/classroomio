@@ -487,9 +487,10 @@ export class CourseApi extends BaseApiWithErrors {
     const result = ZCourseUpdate.safeParse(fields);
     if (!result.success) {
       this.errors = mapZodErrorsToTranslations(result.error, 'course');
-      const firstError = this.errors.general ?? Object.values(this.errors).find(Boolean);
-      if (firstError) {
-        snackbar.error(firstError);
+      const firstEntry = Object.entries(this.errors).find(([, message]) => !!message);
+      if (firstEntry) {
+        const [field, message] = firstEntry;
+        snackbar.error(field === 'general' ? message : `${field}: ${message}`);
       }
       return null;
     }

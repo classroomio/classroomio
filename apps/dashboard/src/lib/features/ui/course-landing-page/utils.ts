@@ -8,6 +8,7 @@ import type { AccountOrg, PublicOrg } from '$features/app/types';
 import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
 import type { CourseLandingPageProps, OrgLandingPageTheme } from '@cio/ui/custom/org-landing-page';
 import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
+import { toFiniteNumber } from '@cio/utils/functions';
 import { t } from '$lib/utils/functions/translations';
 
 export type LandingPageLesson = {
@@ -78,7 +79,7 @@ export function getCourseSections(course: Course): LandingPageSection[] {
   return [
     {
       id: 'ungrouped',
-        title: course.title ?? t.get('course.navItem.landing_page.lessons'),
+      title: course.title ?? t.get('course.navItem.landing_page.lessons'),
       lessons: getLessonsFromItems(course.content.items),
       exerciseCount: getExerciseCountFromItems(course.content.items)
     }
@@ -93,6 +94,29 @@ export function getTotalLessons(sections: LandingPageSection[]) {
 
 export function resolveCourseNavHref(href: string) {
   return href.startsWith('#') ? `/${href}` : href;
+}
+
+export function isEmptyReview(review: Review | null | undefined) {
+  if (!review) return true;
+
+  const hasName = !!review.name?.trim();
+  const hasDescription = !!review.description?.trim();
+  const hasAvatar = !!review.avatar_url;
+
+  return !hasName && !hasDescription && !hasAvatar;
+}
+
+export function normalizeReview(review: Review): Review {
+  const parsedRating = toFiniteNumber(review.rating) ?? 1;
+
+  return {
+    ...review,
+    hide: !!review.hide,
+    name: typeof review.name === 'string' ? review.name : '',
+    avatar_url: typeof review.avatar_url === 'string' ? review.avatar_url : '',
+    description: typeof review.description === 'string' ? review.description : '',
+    rating: parsedRating
+  };
 }
 
 export function filterNavItems(course: Course, reviews: Review[]) {

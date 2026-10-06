@@ -44,6 +44,7 @@
   import { useSidebar } from '@cio/ui/base/sidebar';
 
   import type { Course } from '$features/course/utils/types';
+  import { isEmptyReview, normalizeReview } from '../../utils';
   import { t } from '$lib/utils/functions/translations';
   import { isCoursePaid } from '$lib/utils/functions/course';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -196,6 +197,14 @@
       snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
       selectedSectionKey = 'pricing';
       return;
+    }
+
+    const courseReviews = course.metadata?.reviews;
+    if (courseReviews?.length) {
+      const savedReviews = courseReviews
+        .filter((review) => !isEmptyReview(review))
+        .map((review) => normalizeReview(review));
+      courseReviews.splice(0, courseReviews.length, ...savedReviews);
     }
 
     loading = true;

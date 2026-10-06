@@ -6,6 +6,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
   import ReviewFormEditor from './review-form-editor.svelte';
+  import { isEmptyReview } from '../../utils';
   import * as Avatar from '@cio/ui/base/avatar';
   import { processErrors } from '$lib/utils/functions/validator';
   import { t } from '$lib/utils/functions/translations';
@@ -21,19 +22,26 @@
   let reviews = $state(get(course, 'metadata.reviews', []));
   let reviewToExpand = $state<number | null>(null);
   let errors = $state({});
+  let reviewIdSequence = 0;
+
+  function nextReviewId() {
+    reviewIdSequence += 1;
+    return Date.now() + reviewIdSequence;
+  }
 
   function addReviewForm() {
-    const _review = {
-      id: new Date().getTime(),
+    const reviewId = nextReviewId();
+    const newReview = {
+      id: reviewId,
       hide: false,
       name: '',
       avatar_url: '',
       rating: 1,
-      created_at: new Date().getTime(),
+      created_at: Date.now(),
       description: ''
     };
-    reviews = [...reviews, _review];
-    reviewToExpand = _review.id;
+    reviews = [...reviews, newReview];
+    reviewToExpand = reviewId;
   }
 
   function validateReviews(id) {
@@ -62,18 +70,28 @@
     return processErrors(error);
   }
 
-  function onExpand(id) {
+  function removeReview(id: number) {
+    reviews = reviews.filter((review) => review.id !== id);
+  }
+
+  function onExpand(id: number) {
     errors = {};
 
-    if (reviewToExpand) {
-      const validationRes = validateReviews(reviewToExpand);
-      if (Object.keys(validationRes).length) {
-        errors = Object.assign(errors, validationRes);
+    if (id === reviewToExpand) {
+      const openReview = reviews.find((review) => review.id === id);
+
+      if (isEmptyReview(openReview)) {
+        removeReview(id);
+        reviewToExpand = null;
         return;
       }
-    }
 
-    if (id === reviewToExpand) {
+      const validationRes = validateReviews(id);
+      if (Object.keys(validationRes).length) {
+        errors = validationRes;
+        return;
+      }
+
       reviewToExpand = null;
       return;
     }
@@ -89,7 +107,7 @@
 <!-- Sections - Reviews -->
 <section id="reviews">
   <div class="">
-    {#each reviews || [] as review, index}
+    {#each reviews || [] as review, index (review.id)}
       <div
         id={String(review.id)}
         class="relative my-2.5 flex flex-col items-center rounded-lg border border-gray-300 p-2"
