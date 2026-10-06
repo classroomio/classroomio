@@ -7,7 +7,7 @@ A clickable, high-fidelity prototype lives at [`prototypes/lesson-editor-redesig
 * **The canvas is an ordered list of content blocks, not one section per type.** An admin can add any number of Video, Note, Slide, Document, and Image blocks, in any order they choose, interleaved freely — not a fixed Video-then-Note-then-Slide-then-Document arrangement (see [Confirmed Decision 2](#2-the-canvas-is-an-ordered-list-of-blocks-not-one-section-per-type)).
 * **Image is a new, fifth content type**, alongside Video, Note, Slide, and Document (see [Confirmed Decision 3](#3-image-becomes-a-fifth-content-type)).
 * **An AI assistant can draft a Note block from a one-line prompt**, which the admin then edits before it's part of the lesson (see [Confirmed Decision 4](#4-an-ai-assistant-can-draft-a-note-block)).
-* **Adding Video, Slides, Document, or Image inserts a real, fully-rendered example immediately** — not a blank form — which the admin either keeps, edits in place, or replaces via "Change …" (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)).
+* **Adding Video, Slides, Document, or Image inserts a real, fully-rendered example immediately** — not a blank form — which the admin either keeps, edits in place, or replaces via "Change …". The prototype's specific examples (one particular YouTube video, one particular stock photo) are illustrative only, not a literal product requirement (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)).
 * Blocks can be reordered by drag handle or explicit move up/down controls, and removed from a per-block menu.
 * Notes support callout styles (Info, Tip, Important, Warning, Highlight) in addition to plain text.
 * **Preview renders Video and Slides large and prominent** (a full-width player/viewer, not a compact edit-mode card), and hides every block's type label, so Preview reads as one continuous learner page rather than a labeled form.
@@ -207,6 +207,8 @@ The redesign re-hosts these exact flows inside the unified canvas — it does no
 * Choosing Video, Slides, Document, or Image from either Add Content entry point inserts a realistic, fully-rendered example of that type immediately (see [Functional Requirements #2](#2-add-content)) — it does not open the add modal first.
 * That inserted example is a starting point, not configured content — its own "Change video" / "Change slide" / "Change document" / "Change image" action opens the existing Add modal, blank, exactly as if the admin had chosen that type for the first time.
 * Editing a block the admin has actually configured (whether from scratch or by changing an example) opens the same existing modal, pre-filled with its current source, exactly as today.
+
+**What the example itself is made of is illustrative, not prescribed.** The prototype hotlinks one specific real YouTube video and one specific real Unsplash photo so the canvas reads as a genuinely built lesson in a demo, rather than an empty frame. This PRD does not propose that production literally defaults every new Video/Image block to that same third-party video/photo for every admin. The actual default asset per type — e.g. a ClassroomIO-owned example video and image, served from ClassroomIO's own storage rather than hotlinked from YouTube/Unsplash — is an implementation decision, not something to guess at here. The Slide and Document examples (a designed cover-slide layout, a sample file row) are already ClassroomIO-authored content, not third-party hotlinks, and need no equivalent decision.
 
 ---
 
@@ -689,6 +691,7 @@ This is the change Decision 8 calls out as necessary. Scoped narrowly to what it
 
 * Needs a way to store an uploaded image's reference (object storage key/URL), alt text, and fit mode, associated with its position in the lesson's block list.
 * No change is proposed to how other lesson media (e.g. documents) is uploaded, stored, or served — Image should follow the same underlying storage approach where practical.
+* The default example shown when an admin first adds a Video or Image block (see [Confirmed Decision 10](#10-existing-add-video--add-slide-flows-are-preserved-exactly-only-re-hosted)) needs its own ClassroomIO-owned asset — not a hotlinked third-party URL — stored and served the same way as any other lesson media. Sourcing/producing that specific asset is an implementation detail, not prescribed here.
 
 ## AI note drafting (new)
 
