@@ -219,8 +219,31 @@ describe('gradeCourseSubmissionService', () => {
     expect(updateSubmissionGradesBatch).not.toHaveBeenCalled();
   });
 
+  it('returns 400 for a question the learner did not answer, without saving', async () => {
+    vi.mocked(getQuestionsByExerciseIds).mockResolvedValue([{ id: 7 }, { id: 8 }] as never);
+    vi.mocked(getSubmission).mockResolvedValue({
+      ...(submissionRow() as object),
+      answers: [{ questionId: 7 }]
+    } as never);
+
+    await expect(
+      gradeCourseSubmissionService(ORG_ID, ACTOR_ID, submissionParams, {
+        answers: [
+          { questionId: 7, points: 1 },
+          { questionId: 8, points: 1 }
+        ],
+        total: 2
+      })
+    ).rejects.toMatchObject({ statusCode: 400 });
+    expect(updateSubmissionGradesBatch).not.toHaveBeenCalled();
+  });
+
   it('grades through the dashboard service', async () => {
     vi.mocked(getQuestionsByExerciseIds).mockResolvedValue([{ id: 7 }] as never);
+    vi.mocked(getSubmission).mockResolvedValue({
+      ...(submissionRow() as object),
+      answers: [{ questionId: 7 }]
+    } as never);
     vi.mocked(updateSubmissionGradesBatch).mockResolvedValue(submissionRow({ gradingState: 'completed', total: 2 }));
     const payload = { answers: [{ questionId: 7, points: 2 }], total: 2, feedback: 'Good' };
 

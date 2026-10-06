@@ -356,6 +356,54 @@ describe('updateCourseExerciseService', () => {
     expect(internal.questions?.[0]).not.toHaveProperty('delete');
   });
 
+  it.each([
+    ['options left out', undefined, [100, 101]],
+    ['only one option sent', [{ id: 101, label: 'B2', isCorrect: false }], [100, 101]],
+    ['one option deleted', [{ id: 101, label: 'B', isCorrect: false, delete: true }], [100, 101]]
+  ])('keeps the options the caller did not mention when %s', async (_case, options, expectedIds) => {
+    vi.mocked(updateExerciseService).mockResolvedValue(exerciseDetail());
+
+    await updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+      questions: [question({ id: 10, question: 'Pick one, reworded', options })]
+    });
+
+    const [, internal] = vi.mocked(updateExerciseService).mock.calls[0];
+    const sent = internal.questions?.[0].options ?? [];
+    expect(sent.map((option) => option.id)).toEqual(expectedIds);
+    expect(sent[0]).toMatchObject({ id: 100, label: 'A', isCorrect: true });
+    expect(sent[0].deletedAt).toBeUndefined();
+  });
+
+  it('returns 400 when a removed section still holds a question', async () => {
+    const newSection = '66666666-6666-4666-8666-666666666666';
+    const sections = [
+      {
+        id: newSection,
+        title: 'New part',
+        order: 0,
+        colorTheme: 'blue' as const,
+        afterBehavior: { action: 'continue' as const }
+      }
+    ];
+
+    await expect(updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, { sections })).rejects.toMatchObject({
+      statusCode: 400
+    });
+    expect(updateExerciseService).not.toHaveBeenCalled();
+
+    vi.mocked(updateExerciseService).mockResolvedValue(exerciseDetail());
+    await updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+      sections,
+      questions: [question({ id: 10, exerciseSectionId: newSection })]
+    });
+    await updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+      sections,
+      questions: [question({ id: 10, delete: true })]
+    });
+    await updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, { sections: [] });
+    expect(updateExerciseService).toHaveBeenCalledTimes(3);
+  });
+
   it('checks premium types only on questions that are not being deleted', async () => {
     vi.mocked(isOrgOnPaidPlan).mockResolvedValue(false);
     vi.mocked(updateExerciseService).mockResolvedValue(exerciseDetail());
@@ -408,7 +456,12 @@ describe('getCourseExerciseNotifyStatusService', () => {
 
   it.each([
     ['a missing job', null],
-    ['another course', { name: 'notify-course-exercise', data: { courseId: 'course-2' } }],
+    ['another course', { name: 'notify-course-exercise', data: { courseId: 'course-2', exerciseId: EXERCISE_ID } }],
+    [
+      'another exercise in the same course',
+      { name: 'notify-course-exercise', data: { courseId: COURSE_ID, exerciseId: 'exercise-2' } }
+    ],
+    ['a job queued without an exercise id', { name: 'notify-course-exercise', data: { courseId: COURSE_ID } }],
     ['another job type', { name: 'notify-course-session-update', data: { courseId: COURSE_ID } }]
   ])('returns 404 for %s', async (_case, job) => {
     vi.mocked(getQueueJobMeta).mockResolvedValue(job);
@@ -419,8 +472,11 @@ describe('getCourseExerciseNotifyStatusService', () => {
     expect(getNotifyCourseExerciseStatusService).not.toHaveBeenCalled();
   });
 
-  it("returns this course's job status", async () => {
-    vi.mocked(getQueueJobMeta).mockResolvedValue({ name: 'notify-course-exercise', data: { courseId: COURSE_ID } });
+  it("returns this exercise's job status", async () => {
+    vi.mocked(getQueueJobMeta).mockResolvedValue({
+      name: 'notify-course-exercise',
+      data: { courseId: COURSE_ID, exerciseId: EXERCISE_ID }
+    });
     vi.mocked(getNotifyCourseExerciseStatusService).mockResolvedValue({
       job: { id: 'job-1', status: 'completed', createdAt: 'a', updatedAt: 'b', error: null },
       nextPollMs: 0

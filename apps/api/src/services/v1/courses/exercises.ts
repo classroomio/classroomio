@@ -176,22 +176,61 @@ async function assertUpdateIdsBelongToExercise(
       );
     }
   }
+
+  if (!payload.sections || payload.sections.length === 0) return;
+
+  // Deleting a section nulls its questions' section, so every question that stays must land in a sent section.
+  const incomingById = new Map((payload.questions ?? []).filter((q) => q.id).map((q) => [q.id, q]));
+  for (const question of current.questions ?? []) {
+    const incoming = incomingById.get(Number(question.id));
+    if (incoming?.delete) continue;
+
+    const sectionId =
+      incoming?.exerciseSectionId !== undefined ? incoming.exerciseSectionId : question.exerciseSectionId;
+    if (!sectionId || !assignableSectionIds.has(sectionId)) {
+      throw new AppError(
+        `Question ${question.id} would be left without a section: move it to a section you are sending or delete it`,
+        ErrorCodes.VALIDATION_ERROR,
+        400
+      );
+    }
+  }
 }
 
-function toInternalUpdate(payload: TPublicApiUpdateCourseExercise): TExerciseUpdate {
+// The core diff deletes any option missing from the request, so options the caller left out are sent back unchanged.
+function toInternalUpdate(payload: TPublicApiUpdateCourseExercise, current: ExerciseDetail): TExerciseUpdate {
   const deletedAt = new Date().toISOString();
   const { questions, ...fields } = payload;
+  const currentOptionsByQuestionId = new Map(
+    (current.questions ?? []).map((question) => [Number(question.id), question.options])
+  );
 
   return {
     ...fields,
-    questions: questions?.map(({ delete: isDeleted, options, ...question }) => ({
-      ...question,
-      deletedAt: isDeleted ? deletedAt : undefined,
-      options: options?.map(({ delete: isOptionDeleted, ...option }) => ({
+    questions: questions?.map(({ delete: isDeleted, options, ...question }) => {
+      const sentOptionIds = new Set((options ?? []).map((option) => option.id));
+      const keptOptions =
+        question.id && !isDeleted
+          ? (currentOptionsByQuestionId.get(question.id) ?? [])
+              .filter((option) => !sentOptionIds.has(Number(option.id)))
+              .map((option) => ({
+                id: Number(option.id),
+                label: option.label ?? '',
+                isCorrect: option.isCorrect,
+                settings: option.settings ?? undefined
+              }))
+          : [];
+      const sentOptions = options?.map(({ delete: isOptionDeleted, ...option }) => ({
         ...option,
         deletedAt: isOptionDeleted ? deletedAt : undefined
-      }))
-    }))
+      }));
+
+      return {
+        ...question,
+        deletedAt: isDeleted ? deletedAt : undefined,
+        options: sentOptions || keptOptions.length > 0 ? [...keptOptions, ...(sentOptions ?? [])] : undefined
+      };
+    })
   };
 }
 
@@ -294,7 +333,7 @@ export async function updateCourseExerciseService(
     (payload.questions ?? []).filter((question) => !question.delete).map((question) => question.questionTypeId)
   );
 
-  const exercise = await updateExerciseService(params.exerciseId, toInternalUpdate(payload));
+  const exercise = await updateExerciseService(params.exerciseId, toInternalUpdate(payload, current));
 
   return toPublicExerciseDetail(exercise as ExerciseDetail);
 }
@@ -331,9 +370,14 @@ export async function getCourseExerciseNotifyStatusService(
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
 
-  // Job ids are global to the notifications queue, so check the job is this course's exercise notification.
+  // Job ids are global to the notifications queue, so check the job is this exercise's notification.
   const job = await getQueueJobMeta(QUEUE_NAMES.notifications, params.jobId);
-  if (!job || job.name !== JOB_NAMES.notifications.notifyCourseExercise || job.data.courseId !== params.courseId) {
+  if (
+    !job ||
+    job.name !== JOB_NAMES.notifications.notifyCourseExercise ||
+    job.data.courseId !== params.courseId ||
+    job.data.exerciseId !== params.exerciseId
+  ) {
     throw new AppError('Notification job not found', ErrorCodes.NOT_FOUND, 404);
   }
 

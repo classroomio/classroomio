@@ -142,6 +142,19 @@ export async function gradeCourseSubmissionService(
     throw new AppError(`Question ${unknownAnswer.questionId} not found in this exercise`, ErrorCodes.NOT_FOUND, 404);
   }
 
+  // The grade update skips questions with no answer row, which would save a total that the stored points do not back.
+  const answeredQuestionIds = new Set(
+    ((await getSubmission(params.submissionId)).answers ?? []).map((answer) => Number(answer.questionId))
+  );
+  const unanswered = payload.answers.find((answer) => !answeredQuestionIds.has(answer.questionId));
+  if (unanswered) {
+    throw new AppError(
+      `Question ${unanswered.questionId} has no answer on this submission, so it cannot be graded`,
+      ErrorCodes.VALIDATION_ERROR,
+      400
+    );
+  }
+
   const updated = await updateSubmissionGradesBatch(params.submissionId, payload);
 
   return toPublicSubmission(updated);
