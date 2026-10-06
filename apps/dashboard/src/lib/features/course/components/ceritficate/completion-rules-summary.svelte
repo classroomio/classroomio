@@ -2,7 +2,6 @@
   import * as Field from '@cio/ui/base/field';
   import { Button } from '@cio/ui/base/button';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
-  import { UpgradeBanner } from '$features/ui';
   import { courseApi } from '$features/course/api';
   import { getCompletionRulesSummary } from '$features/course/utils/completion-rules-utils';
   import { getHighlightHref } from '$lib/routing/go-and-highlight';
@@ -14,6 +13,7 @@
   const courseId = $derived(courseApi.course?.id);
   const deadlineLabel = $derived(formatDeadline(summary.deadline));
   const editRulesHref = $derived(courseId ? getEditRulesHref(courseId) : undefined);
+  const isEditRulesLocked = $derived($isFreePlan);
 
   function getEditRulesHref(id: string) {
     return getHighlightHref(ROUTE_NAME.COURSE_SETTINGS, ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES, {
@@ -62,13 +62,12 @@
     </li>
   </ul>
 
-  {#if $isFreePlan}
-    <UpgradeBanner>{$t('course.certification.completion_rules_upgrade')}</UpgradeBanner>
-  {:else if editRulesHref}
-    <div>
+  {#if editRulesHref}
+    <div class="w-fit" class:cursor-not-allowed={isEditRulesLocked}>
       <Button
         variant="outline"
-        href={editRulesHref}
+        href={isEditRulesLocked ? undefined : editRulesHref}
+        disabled={isEditRulesLocked}
         data-sveltekit-noscroll
         testId="certificate-settings-completion-rules-link"
       >
