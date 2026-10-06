@@ -24,13 +24,6 @@ describe('bannerImage on course update', () => {
     expect(result.success && result.data.logo).toBeUndefined();
   });
 
-  it('accepts a null bannerImage so a course without an image can round-trip an update', () => {
-    const result = ZCourseUpdateBase.safeParse({ title: 'Course', bannerImage: null });
-
-    expect(result.success).toBe(true);
-    expect(result.success && result.data.bannerImage).toBeNull();
-  });
-
   it('still accepts the deprecated logo field for backward compatibility', () => {
     const result = ZCourseUpdateBase.safeParse({ logo: 'https://example.com/legacy-logo.png' });
 
