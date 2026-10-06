@@ -212,7 +212,6 @@
 
     const updatePayload = {
       ...course,
-      bannerImage: course.bannerImage || undefined,
       type: course.type!,
       slug: course.slug!,
       isPublished: course.isPublished ?? undefined,
