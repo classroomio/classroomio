@@ -15,13 +15,12 @@ export const ROUTE_PATHS = {
 export const ROUTE_SECTIONS = {
   [ROUTE_NAME.COURSE_SETTINGS]: {
     PUBLISH: 'publish',
+    COMPLETION_RULES: 'completion-rules',
     COMPLETION_DEADLINE: 'course-completion-deadline',
     COURSE_COMMENTS: 'course-comments'
   },
 
   [ROUTE_NAME.COURSE_CERTIFICATE]: {
-    THRESHOLD: 'cert-threshold',
-    CERT_DEADLINE: 'cert-deadline',
     CERT_EMAIL_MESSAGE: 'cert-email-message'
   },
 
@@ -30,6 +29,13 @@ export const ROUTE_SECTIONS = {
     TUTOR_SETTINGS: 'tutor-settings'
   }
 } as const;
+
+/** Query param a cross-page link sets so the destination can offer a way back. */
+export const NAVIGATION_SOURCE_PARAM = 'from';
+
+export enum NAVIGATION_SOURCE {
+  CERTIFICATE_SETTINGS = 'certificate-settings'
+}
 
 export type SectionsFor<R extends ROUTE_NAME> = R extends keyof typeof ROUTE_SECTIONS
   ? (typeof ROUTE_SECTIONS)[R][keyof (typeof ROUTE_SECTIONS)[R]]

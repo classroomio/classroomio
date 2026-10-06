@@ -5,6 +5,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
   import { isFreePlan } from '$lib/utils/store/org';
+  import CompletionRulesSummary from './completion-rules-summary.svelte';
 
   type Props = {
     errors: Record<string, string>;
@@ -46,6 +47,10 @@
       </div>
     </Field.Field>
   </Field.Set>
+
+  <Field.Separator />
+
+  <CompletionRulesSummary />
 
   <Field.Separator />
 

@@ -36,7 +36,8 @@
       <RefreshPageData disabled={isSaving} onRefresh={() => courseApi.refreshCourse(data.courseId, $profile.id)} />
     </Page.Action>
   </Page.Header>
-  <Page.Body>
+  <!-- Page.Body clips overflow-x; the extra inline room keeps AttentionHighlight's outer ring from being cut off. -->
+  <Page.Body class="-mx-2 px-2">
     {#snippet child()}
       <CourseSettingsPage bind:this={settingsComponent} bind:hasUnsavedChanges />
     {/snippet}
