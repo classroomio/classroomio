@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { CompactLoader } from '@cio/ui/custom/compact-loader';
   import { currentOrg, isEnterprisePlan } from '$lib/utils/store/org';
   import { tokenAuthApi } from '$features/org/api/token-auth.svelte';
   import { t } from '$lib/utils/functions/translations';
@@ -71,7 +71,7 @@ main();`;
 
 {#if tokenAuthApi.isLoading && tokenAuthApi.tokenAuth === null && !tokenAuthApi.generatedSecret}
   <div class="flex justify-center py-10">
-    <Spinner class="size-10! text-blue-700!" />
+    <CompactLoader label={$t('common.loading')} />
   </div>
 {:else}
   <Field.Group class="w-full max-w-2xl! space-y-8 px-2">

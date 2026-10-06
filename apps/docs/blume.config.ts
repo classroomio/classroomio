@@ -10,35 +10,35 @@ const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, 
 // Sidebar layout for the API tab: resource sections, then one group per tag.
 // Without this, Blume orders tags by first path seen, which scatters them.
 const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
-  { label: 'Audience', tags: ['Public API Audience'] },
+  { label: 'Audience', tags: ['Audience'] },
   {
     label: 'Courses',
     tags: [
-      'Public API Courses',
-      'Public API Course Members',
-      'Public API Course Invites',
-      'Public API Course Exercises',
-      'Public API Exercise Templates',
-      'Public API Course Submissions',
-      'Public API Course Marks',
-      'Public API Course Certificates'
+      'Courses',
+      'Course Members',
+      'Course Invites',
+      'Course Exercises',
+      'Exercise Templates',
+      'Course Submissions',
+      'Course Marks',
+      'Course Certificates'
     ]
   },
   {
     label: 'Cohorts',
     tags: [
-      'Public API Cohorts',
-      'Public API Cohort Members',
-      'Public API Cohort Courses',
-      'Public API Cohort Invites',
-      'Public API Cohort Goals',
-      'Public API Cohort Newsfeed'
+      'Cohorts',
+      'Cohort Members',
+      'Cohort Courses',
+      'Cohort Invites',
+      'Cohort Goals',
+      'Cohort Newsfeed'
     ]
   }
 ];
 
 const tagGroup = (tag: (typeof apiTags)[number]) => ({
-  label: tag.name.replace(/^Public API /, ''),
+  label: tag.name,
   display: 'group' as const,
   collapsed: true,
   items: Object.values(apiOperations)

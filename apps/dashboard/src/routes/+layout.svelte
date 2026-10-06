@@ -12,6 +12,7 @@
   import { get } from 'svelte/store';
   import { user } from '$lib/utils/store/user';
   import { setTheme } from '$lib/utils/functions/theme';
+  import { activateLocale, ensureTranslations } from '$lib/utils/functions/translations';
   import { authClient } from '$lib/utils/services/auth/client';
   import merge from 'lodash/merge';
   import { MetaTags } from 'svelte-meta-tags';
@@ -46,10 +47,22 @@
   });
 
   $effect(() => {
+    let isCurrent = true;
+    const isOrgSiteRoute = data.isOrgSite && page.url.pathname.length > 0;
+
     if (!data.isOrgSite || !data.org) {
       $globalStore.isOrgSite = false;
       $globalStore.orgSiteName = '';
-      return;
+      return () => {
+        isCurrent = false;
+      };
+    }
+
+    const enforcedLocale = data.org.settings?.language?.enforced ? data.org.settings.language.locale : undefined;
+    if (isOrgSiteRoute && enforcedLocale) {
+      void ensureTranslations(enforcedLocale, () => isCurrent).then(() => {
+        if (isCurrent) activateLocale(enforcedLocale);
+      });
     }
 
     $globalStore.orgSiteName = data.orgSiteName || '';
@@ -64,6 +77,10 @@
     }
 
     setTheme(data.org.theme || 'blue');
+
+    return () => {
+      isCurrent = false;
+    };
   });
 
   const session = authClient.useSession();

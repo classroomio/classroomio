@@ -5,25 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
     <meta name="theme-color" content="#333333" />
 
-    <!-- Fonts as <link> (not @import in app.css) so Tailwind isn’t blocked on first paint -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Geist (site body font) — synchronous so first paint has the brand font. -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap" />
-
-    <!-- JetBrains Mono (code blocks) — non-blocking. Preload as a stylesheet, then swap rel to apply. -->
-    <link
-      rel="preload"
-      as="style"
-      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
-      onload="this.onload=null;this.rel='stylesheet'"
-    />
-    <noscript>
-      <link
-        rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap"
-      />
-    </noscript>
+    <link rel="preload" href="/fonts/Geist-Variable-latin.woff2" as="font" type="font/woff2" crossorigin />
 
     <!-- <title>ClassroomIO –&nbsp;The Open Source Learning Management System for Companies</title>
   <meta name="description" content="ClassroomIO" />

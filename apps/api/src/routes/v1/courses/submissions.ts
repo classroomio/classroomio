@@ -22,7 +22,7 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, PAGINATION_NOTE, mcpRateLimitResponse, submissionForbiddenResponses } from './docs';
 
-const TAG = 'Public API Course Submissions';
+const TAG = 'Course Submissions';
 const SubmissionResponse = itemResponse(ZPublicApiCourseSubmissionResponse);
 
 const GRADING_STATES_NOTE =

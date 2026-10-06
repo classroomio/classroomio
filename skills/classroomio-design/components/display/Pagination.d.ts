@@ -1,0 +1,2 @@
+export interface PaginationProps { page?: number; count?: number; onChange?: (page: number) => void; siblings?: number; style?: React.CSSProperties; }
+export declare function Pagination(props: PaginationProps): JSX.Element;

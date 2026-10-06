@@ -1306,6 +1306,9 @@ importers:
       '@cio/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@cio/utils':
+        specifier: workspace:*
+        version: link:../utils
       bullmq:
         specifier: ^5.34.0
         version: 5.76.5

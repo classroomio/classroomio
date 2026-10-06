@@ -18,7 +18,9 @@
   );
 </script>
 
-<Page.Root class="w-full gap-2 pb-10 md:max-w-3xl lg:mx-auto">
+<Page.Root
+  class={`w-full gap-2 pb-10 lg:mx-auto ${page.url.pathname.endsWith('/settings/emails') ? 'md:max-w-6xl' : 'md:max-w-3xl'}`}
+>
   {#if showOrgSettingsTabs}
     <Page.Header class="my-1 py-1">
       <Page.HeaderContent>

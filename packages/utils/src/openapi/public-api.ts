@@ -225,74 +225,23 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link'
 };
 
-// Scalar groups its sidebar by tag when the spec declares top-level `tags`
-// with descriptions; without this, operations list flat with no section
-// headers at all.
+// Scalar groups operations under these tags.
 const OPERATION_TAGS = [
-  {
-    name: 'Public API Audience',
-    description: "Manage your organization's audience — invite, assign to courses, update, and remove members."
-  },
-  {
-    name: 'Public API Courses',
-    description: 'Create and manage courses, read their structure, and list enrolled students.'
-  },
-  {
-    name: 'Public API Course Certificates',
-    description:
-      "Read and update a course's certificate design and settings, list the students who earned it, and download their certificates."
-  },
-  {
-    name: 'Public API Course Members',
-    description:
-      "Manage a course's membership — list, add, update roles, remove, reset progress, and view analytics. A course member row is distinct from Public API Audience (organization-wide people); adding a member here requires the person already be an organization member — use Public API Course Invites to onboard someone new."
-  },
-  {
-    name: 'Public API Course Invites',
-    description:
-      'Invite people to a course by email or CSV, list invites, and revoke pending ones. Invites can onboard people who are not yet organization members.'
-  },
-  {
-    name: 'Public API Course Exercises',
-    description:
-      "Create, read, edit, and delete a course's exercises, their questions and exercise sections, and email course members about an exercise."
-  },
-  {
-    name: 'Public API Exercise Templates',
-    description: 'Browse the built-in exercise templates you can create an exercise from.'
-  },
-  {
-    name: 'Public API Course Submissions',
-    description: "Review, grade, and manage learners' exercise submissions."
-  },
-  {
-    name: 'Public API Course Marks',
-    description: "Read a course's gradebook: every student's points on every exercise."
-  },
-  {
-    name: 'Public API Cohorts',
-    description: 'Create and manage cohorts.'
-  },
-  {
-    name: 'Public API Cohort Members',
-    description: "Manage a cohort's members."
-  },
-  {
-    name: 'Public API Cohort Courses',
-    description: 'Link and unlink courses on a cohort.'
-  },
-  {
-    name: 'Public API Cohort Newsfeed',
-    description: "Post, comment, and react on a cohort's newsfeed."
-  },
-  {
-    name: 'Public API Cohort Goals',
-    description: 'Create and manage cohort progress goals.'
-  },
-  {
-    name: 'Public API Cohort Invites',
-    description: 'Invite students to a cohort and manage its join link.'
-  }
+  { name: 'Audience', description: 'Manage people in your organization.' },
+  { name: 'Courses', description: 'Create and manage courses.' },
+  { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
+  { name: 'Course Members', description: 'Manage the people in a course.' },
+  { name: 'Course Invites', description: 'Invite people to a course.' },
+  { name: 'Course Exercises', description: 'Create and manage course exercises.' },
+  { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
+  { name: 'Course Submissions', description: 'Review and grade exercise submissions.' },
+  { name: 'Course Marks', description: 'Read the course gradebook.' },
+  { name: 'Cohorts', description: 'Create and manage cohorts.' },
+  { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
+  { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },
+  { name: 'Cohort Newsfeed', description: 'Post, comment, and react on a cohort newsfeed.' },
+  { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
+  { name: 'Cohort Invites', description: 'Invite people to a cohort.' }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {

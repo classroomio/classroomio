@@ -24,88 +24,105 @@ export default (
   content?: Content,
   extensions?: Extensions,
   options?: Partial<EditorOptions>,
-  placeholder?: string | ((node: any) => string)
+  placeholder?: string | ((node: any) => string),
+  emailSafe = false
 ) => {
+  const starterKitConfig = {
+    heading: { levels: [1, 2, 3, 4] },
+    link: {
+      openOnClick: false,
+      autolink: true,
+      linkOnPaste: true,
+      HTMLAttributes: {
+        target: '_blank',
+        rel: 'noopener noreferrer nofollow'
+      }
+    },
+    codeBlock: false
+  } as const;
+
   const editor = new Editor({
     element,
     content,
-    extensions: [
-      StarterKit.configure({
-        heading: {
-          levels: [1, 2, 3, 4]
-        },
-        link: {
-          openOnClick: false,
-          autolink: true,
-          linkOnPaste: true,
-          HTMLAttributes: {
-            target: '_blank',
-            rel: 'noopener noreferrer nofollow'
-          }
-        },
-        codeBlock: false
-      }),
-      Highlight.configure({
-        multicolor: true
-      }),
-      Placeholder.configure({
-        emptyEditorClass: 'is-empty',
-        // Use a placeholder:
-        // Use different placeholders depending on the node type:
-        placeholder:
-          placeholder ||
-          (({ node }) => {
-            if (node.type.name === 'heading') {
-              return "What's the title?";
-            } else if (node.type.name === 'paragraph') {
-              return 'Press / or write something ...';
+    extensions: emailSafe
+      ? [
+          StarterKit.configure({
+            ...starterKitConfig,
+            blockquote: false,
+            code: false,
+            horizontalRule: false,
+            strike: false
+          }),
+          Placeholder.configure({
+            emptyEditorClass: 'is-empty',
+            placeholder: placeholder || ''
+          }),
+          TextAlign.configure({ types: ['heading', 'paragraph'] }),
+          ...(extensions ?? [])
+        ]
+      : [
+          StarterKit.configure(starterKitConfig),
+          Highlight.configure({
+            multicolor: true
+          }),
+          Placeholder.configure({
+            emptyEditorClass: 'is-empty',
+            // Use a placeholder:
+            // Use different placeholders depending on the node type:
+            placeholder:
+              placeholder ||
+              (({ node }) => {
+                if (node.type.name === 'heading') {
+                  return "What's the title?";
+                } else if (node.type.name === 'paragraph') {
+                  return 'Press / or write something ...';
+                }
+                return '';
+              })
+          }),
+          Color,
+          Subscript,
+          Superscript,
+          Typography,
+          ColorHighlighter,
+          TextStyle,
+          FontSize,
+          TextAlign.configure({
+            types: ['heading', 'paragraph']
+          }),
+          TaskList,
+          TaskItem.configure({
+            nested: true
+          }),
+          SearchAndReplace,
+          InlineMathReplacer,
+          MathMatics.configure({
+            blockOptions: {
+              onClick: (node, pos) => {
+                const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
+                if (newCalculation) {
+                  editor.chain().setNodeSelection(pos).updateBlockMath({ latex: newCalculation }).focus().run();
+                }
+              }
+            },
+            inlineOptions: {
+              onClick: (node, pos) => {
+                const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
+                if (newCalculation) {
+                  editor.chain().setNodeSelection(pos).updateInlineMath({ latex: newCalculation }).focus().run();
+                }
+              }
             }
-            return '';
-          })
-      }),
-      Color,
-      Subscript,
-      Superscript,
-      Typography,
-      ColorHighlighter,
-      TextStyle,
-      FontSize,
-      TextAlign.configure({
-        types: ['heading', 'paragraph']
-      }),
-      TaskList,
-      TaskItem.configure({
-        nested: true
-      }),
-      SearchAndReplace,
-      InlineMathReplacer,
-      MathMatics.configure({
-        blockOptions: {
-          onClick: (node, pos) => {
-            const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
-            if (newCalculation) {
-              editor.chain().setNodeSelection(pos).updateBlockMath({ latex: newCalculation }).focus().run();
-            }
-          }
-        },
-        inlineOptions: {
-          onClick: (node, pos) => {
-            const newCalculation = prompt('Enter new calculation:', node.attrs.latex);
-            if (newCalculation) {
-              editor.chain().setNodeSelection(pos).updateInlineMath({ latex: newCalculation }).focus().run();
-            }
-          }
-        }
-      }),
-      AutoJoiner,
-      Table,
-      TableHeader,
-      TableRow,
-      TableCell,
-      Markdown,
+          }),
+          AutoJoiner,
+          Table,
+          TableHeader,
+          TableRow,
+          TableCell,
+          Markdown,
 
-      ...(extensions ?? [])
-    ],
+          ...(extensions ?? [])
+        ],
     ...options
   });
 

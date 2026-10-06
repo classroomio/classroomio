@@ -969,7 +969,6 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
 
   const orgName = orgResult?.orgName || 'ClassroomIO';
 
-  const statusText = LEGACY_BOARD_STATUS_LABELS[newStatusId] || 'Updated';
   const baseUrl = getDashboardBaseUrl({
     siteName: orgResult?.orgSiteName,
     customDomain: orgResult?.orgCustomDomain,
@@ -993,7 +992,7 @@ async function sendSubmissionUpdateEmail(submissionId: string, newStatusId: numb
         studentName: fullSubmission.groupmember.profile.fullname || 'Student',
         exerciseTitle: fullSubmission.exercise.title,
         courseName: course.title,
-        statusText,
+        statusId: newStatusId,
         exerciseLink,
         score,
         lessonTitle: fullSubmission.lesson?.title,

@@ -128,6 +128,53 @@ Wrapper component that highlights its content with an animated focus pulse ring 
 </AttentionHighlight>
 ```
 
+### Brand wash (`src/custom/animation/brand-wash/`)
+
+Decorative background layer: a top-down gradient tinted from `--primary` with an optional faded dot grid. Because it reads `--primary`, it renders in ClassroomIO blue on the app and in the org's theme colour on org sites. Place it as the first child of a `relative` container; later siblings stack above it.
+
+| Prop    | Type      | Default     | Description                 |
+| ------- | --------- | ----------- | --------------------------- |
+| `dots`  | `boolean` | `true`      | Show the masked dot grid    |
+| `class` | `string`  | `undefined` | Additional classes on layer |
+
+```svelte
+<div class="relative">
+  <BrandWash />
+  <div class="relative">Content</div>
+</div>
+```
+
+### Block skyline (`src/custom/animation/block-skyline/`)
+
+Ambient brand animation: notch blocks drop in one at a time and stack. By default they clear together and repeat on a 10s loop; with `loop={false}` they drop in once and stay. Hidden from assistive tech and static under `prefers-reduced-motion`. Tones come from `--muted` and `--primary`. Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop     | Type      | Default     | Description                                                          |
+| -------- | --------- | ----------- | -------------------------------------------------------------------- |
+| `loop`   | `boolean` | `true`      | Clear and repeat every 10s; `false` drops in once and stays          |
+| `repeat` | `number`  | `1`         | Repeats the column pattern across the width (extra copies from `md`) |
+| `rows`   | `number`  | `3`         | Tallest stack; values above 3 add same-size blocks to every column   |
+| `class`  | `string`  | `undefined` | Width / placement                                                    |
+
+```svelte
+<BlockSkyline class="w-full max-w-[400px]" />
+
+<!-- Taller stacks -->
+<BlockSkyline rows={6} class="w-full" />
+
+<!-- Full-width page footer -->
+<BlockSkyline loop={false} repeat={3} class="absolute inset-x-0 bottom-0 px-4" />
+```
+
+### Notch cutout utility (`ui:notch-cutout`)
+
+Cuts the brand notch (a trapezoid with flared top corners and rounded bottom corners) out of an element's top edge with a CSS mask, so it reads correctly over gradients and images. Tune it with `--notch-x` (default `2.5rem`), `--notch-w` (`46px`) and `--notch-h` (`11px`). Masks clip `box-shadow`, so put shadows on a wrapper with `drop-shadow`.
+
+```svelte
+<div class="drop-shadow-md">
+  <Card.Root class="ui:notch-cutout">…</Card.Root>
+</div>
+```
+
 ### Exercise question (`src/custom/exercise-question/`)
 
 Learner and author UIs for exercise questions (take, preview, review, submission, edit per question type).
@@ -137,6 +184,15 @@ Learner and author UIs for exercise questions (take, preview, review, submission
 - **`renderers/option-image.svelte`**, **`renderers/submission-utils.ts`** — Existing shared helpers at the `renderers/` root; keep importing from there unless consolidating in a later pass.
 
 **Types with heavier or distinct UIs** (textarea editor, file upload, matching/hotspot authoring, link lists) intentionally keep separate `take` / `preview` implementations until a second consumer (for example a dedicated `review` mode) justifies extracting more shared fragments.
+
+### Image lightbox (`src/custom/image-lightbox/`)
+
+Full-screen image viewer for screenshots and other detailed images. `ZoomableImage` renders an image uncropped (`object-contain`) as a button with a hover "enlarge" hint. `ImageLightbox` opens one image or a gallery: click or `+`/`-` to zoom (up to 300%), arrow keys or the side buttons to move between images, Esc or a click on the backdrop to close. Both `open` and `index` are bindable. Copy is passed via `labels: ImageLightboxLabels` (`close`, `zoomIn`, `zoomOut`, `previous`, `next`). Exercise question and option images use both in every non-edit mode. See `Molecules/ImageLightbox` in Storybook.
+
+```svelte
+<ZoomableImage {src} {alt} enlargeLabel="Click to enlarge" onclick={() => (open = true)} />
+<ImageLightbox images={[{ src, alt }]} {labels} bind:open />
+```
 
 ### Question type picker (`src/custom/question-type-picker/`)
 
@@ -281,6 +337,56 @@ Each item owns its own handler, so the component carries no behaviour: the consu
 `ComboButtonItem` takes `id`, `label`, and `onSelect`, plus optional `icon`, `description` (rendered muted beneath the label — use it to say _why_ an item is disabled rather than hiding it), `disabled` and `destructive`.
 
 See `Molecules/ComboButton` in Storybook.
+
+### Machines (`src/custom/animation/machines/`)
+
+Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
+
+The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop      | Type     | Default     | Description                                              |
+| --------- | -------- | ----------- | -------------------------------------------------------- |
+| `label`   | `string` | `undefined` | Accessible description; omit to hide from assistive tech |
+| `stillAt` | `number` | `6`         | Second to freeze on under `prefers-reduced-motion`       |
+| `class`   | `string` | `undefined` | Size and placement                                       |
+
+```svelte
+<div class="bg-muted rounded-xl p-6">
+  <MachineTrainingLine label={$t('marketing.machines.training_line')} class="h-80" />
+</div>
+```
+
+Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
+
+### Loaders (`src/custom/block-loader/`, `src/custom/compact-loader/`)
+
+Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `BlockLoader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
+
+`BlockLoader`: four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
+
+| Prop      | Type                | Default     | Description                                                                |
+| --------- | ------------------- | ----------- | -------------------------------------------------------------------------- |
+| `title`   | `string`            | `undefined` | Heading under the stack; also the accessible name when `label` is not set  |
+| `caption` | `string`            | `undefined` | Supporting line under the title                                            |
+| `label`   | `string`            | `undefined` | Accessible name when there is no `title`                                   |
+| `blocks`  | `BlockLoaderBlock[]`| 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`   |
+| `blockText` | `boolean`         | `true`      | Show the kind and title inside each block; `false` gives plain blocks    |
+| `class`   | `string`            | `undefined` | Placement                                                                  |
+
+`CompactLoader`: three wordless blocks, so it works in any language.
+
+| Prop    | Type           | Default     | Description        |
+| ------- | -------------- | ----------- | ------------------ |
+| `size`  | `'sm' \| 'md'` | `'md'`      | `sm` is 60% of `md` |
+| `label` | `string`       | `undefined` | Accessible name    |
+| `class` | `string`       | `undefined` | Placement          |
+
+The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
+
+```svelte
+<BlockLoader title={$t('common.loading_states.opening_academy_title')} />
+<CompactLoader label={$t('common.loading')} />
+```
 
 ### Hooks (`src/hooks/`)
 

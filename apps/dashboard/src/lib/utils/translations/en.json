@@ -276,21 +276,114 @@
     }
   },
   "onboarding": {
-    "expanding": "On another platform, expanding here",
-    "employees": "Train my employees",
-    "customers": "Create courses for my customers",
-    "explore": "Just here to explore",
-    "articles": "Articles",
-    "search": "Search engine",
-    "social": "Social media",
-    "friends": "Friends and family",
+    "header": {
+      "tagline": "Customer Training Platform That Connects With Your Systems"
+    },
+    "org_setup": {
+      "title": "Set up your organization",
+      "subtitle": "Tell us about you and your organization to get started.",
+      "created_subtitle": "Your organization is set up. You can change these details later in Settings."
+    },
+    "step_of": "Step {current} of {total}",
+    "step_labels": {
+      "org_setup": "Organization",
+      "use_cases": "Use case",
+      "learning_methods": "Training today",
+      "company_size": "Company size",
+      "job_role": "Role",
+      "source": "Discovery"
+    },
     "fullname": "Full Name",
     "name": "Name of Organization",
     "organisation_sitename": "Academy subdomain",
-    "what_brings": "What brings you to",
-    "how": "How did you hear about us?",
     "back": "Back",
-    "continue": "Continue"
+    "continue": "Continue",
+    "skip": "Skip",
+    "finish_setup": "Finish setup",
+    "other": "Other (tell us)",
+    "other_placeholder": "Tell us more",
+    "other_required": "Please tell us more",
+    "ai_select": "Select an AI assistant",
+    "ai_required": "Please select an AI assistant",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
+    "ai_assistant": {
+      "label": "AI assistant",
+      "subtitle": "Which one recommended us?"
+    },
+    "use_cases": {
+      "label": "What do you want to use ClassroomIO for?",
+      "subtitle": "Choose all that apply. We'll shape your organization around it.",
+      "customer_training": "Train my customers on my product",
+      "customer_certification": "Certify customers or partners",
+      "partner_training": "Train partners or resellers",
+      "team_training": "Train my own team",
+      "sell_courses": "Sell courses to the public"
+    },
+    "learning_methods": {
+      "label": "How do your customers learn your product today?",
+      "subtitle": "Pick the one closest to how it works right now.",
+      "self_serve": "They figure it out on their own",
+      "live_onboarding": "Live onboarding sessions or calls",
+      "help_docs": "Help docs and support",
+      "no_training": "We don't have training yet"
+    },
+    "company_sizes": {
+      "label": "How big is your company?",
+      "subtitle": "Count everyone at the company, not just your team.",
+      "solo": {
+        "label": "Just me",
+        "description": "Solo"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "people"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "people"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "people"
+      },
+      "enterprise": {
+        "label": "200+",
+        "description": "people"
+      }
+    },
+    "job_roles": {
+      "label": "What's your role?",
+      "subtitle": "This helps us tailor your setup.",
+      "founder": "Founder or CEO",
+      "product_ops": "Product or operations",
+      "cs_education": "Customer success, education, or enablement",
+      "developer": "Developer or engineer"
+    },
+    "sources": {
+      "label": "How did you hear about us?",
+      "subtitle": "Optional, but it helps a small team know what's working.",
+      "blog": "Blog or article",
+      "ai": "AI assistant",
+      "search_engine": "Search engine",
+      "github": "GitHub or open source",
+      "youtube": "YouTube or podcast",
+      "social_media": "Social media",
+      "product_hunt": "Product Hunt or a review site",
+      "friends_family": "Friends, family, or a colleague"
+    },
+    "testimonials": {
+      "eyebrow": "From the teams using it",
+      "headline": "Stop training every customer {highlight}.",
+      "headline_highlight": "by hand",
+      "subtitle": "Set it up once, bulk enrol your customers through the API. Then track their progress with analytics.",
+      "footer": "Open source · Self-host or cloud"
+    }
   },
   "welcome_modal": {
     "we_at": "We at",
@@ -332,6 +425,17 @@
     }
   },
   "common": {
+    "loading": "Loading…",
+    "loading_states": {
+      "opening_academy": {
+        "title": "Opening your academy…",
+        "caption": "Getting your courses, students and settings ready."
+      },
+      "opening_course": {
+        "title": "Loading course…",
+        "caption": "Please wait while we load your course data."
+      }
+    },
     "unsaved_changes": {
       "message": "You have unsaved changes. Are you sure you want to leave?",
       "label": "Unsaved changes"
@@ -345,7 +449,18 @@
     "save_changes": "Save changes",
     "refresh": "Refresh",
     "scroll_to_top": "Scroll to top",
-    "delete": "Delete"
+    "delete": "Delete",
+    "restricted_page": {
+      "title": "Restricted page",
+      "description": "This organization is restricted. In the meantime, you can check out our features.",
+      "home": "Go home",
+      "learning_paths_heading": "Learning paths",
+      "learning_path_label": "Learning path",
+      "tracks_label": "{count, plural, one {# track} other {# tracks}}",
+      "included": "Included",
+      "untitled_lesson": "Untitled lesson",
+      "format": "Format"
+    }
   },
   "compliance": {
     "title": "Compliance",
@@ -414,6 +529,7 @@
     "login_with_google": "Login with Google",
     "create_to_join": "Create a free account to join",
     "create_account": "Create Account",
+    "sign_in_to_continue": "Sign in to continue",
     "login_to_join": "Log in to join",
     "fields": {
       "email": "Your Email",
@@ -461,7 +577,8 @@
       "billing": "Billing",
       "branding": "Branding",
       "ai": "AI",
-      "search": "Search settings..."
+      "search": "Search settings...",
+      "new_badge": "New"
     },
     "subheadings": {
       "view_site": "Your Academy"
@@ -480,8 +597,104 @@
       "sso_tab": "SSO",
       "token_auth_tab": "Token Auth",
       "customize_lms_tab": "Customize LMS",
+      "emails_tab": "Emails",
       "domains_tab": "Domains",
       "teams_tab": "Teams"
+    },
+    "emails": {
+      "page_title": "Email templates",
+      "language_note": "Student emails use your organization's enforced language. When it is not enforced, emails use English.",
+      "heading": "Student email templates",
+      "description": "Customize the emails students receive. Staff emails always send in English.",
+      "paid_plan_note": "Upgrade your plan to translate and customize student emails.",
+      "sending_in": "Sending in",
+      "change": "Change",
+      "template_navigation": "Student email types",
+      "edited": "Edited",
+      "insert": "Insert",
+      "link_chip": "Link",
+      "variables": {
+        "organization": "Organization",
+        "expires_at": "Expiry date",
+        "course_name": "Course name",
+        "cohort_name": "Cohort name",
+        "student_name": "Student name",
+        "course_message": "Instructor message",
+        "course_names": "Courses",
+        "teacher_name": "Teacher name",
+        "teacher_email": "Teacher email",
+        "goal_title": "Goal",
+        "due_status": "Due status",
+        "completed_count": "Completed count",
+        "required_count": "Required count",
+        "exercise_title": "Exercise title",
+        "session_title": "Session title",
+        "session_time": "Session time",
+        "when": "Start time",
+        "status": "Status",
+        "score": "Score",
+        "lesson_title": "Lesson title",
+        "post_content": "Post content"
+      },
+      "edit": "Edit",
+      "preview": "Preview",
+      "unsaved_changes": "Unsaved changes",
+      "send_test": "Send test",
+      "test_dialog": {
+        "title": "Send a test email",
+        "description": "We'll send the current draft with example values in place of the placeholders. It doesn't need to be saved first.",
+        "recipients": "Send to",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Enter up to 5 valid email addresses, separated by commas."
+      },
+      "test_sent": "Test email queued for delivery",
+      "groups": {
+        "enrollment": "Enrollment",
+        "learning": "Learning",
+        "live_sessions": "Live sessions",
+        "updates_billing": "Updates & billing"
+      },
+      "descriptions": {
+        "studentCourseInvite": "Sent when you invite someone to a course.",
+        "studentOrgInvite": "Sent when you invite someone to your organization.",
+        "studentCourseWelcome": "Sent when a student receives access to a course.",
+        "studentCohortWelcome": "Sent when a student receives access to a cohort.",
+        "quizAssigned": "Sent when a quiz is assigned to a student.",
+        "submissionGraded": "Sent when a student's exercise submission is reviewed.",
+        "cohortGoalReminder": "Sent when a cohort goal is due or overdue.",
+        "studentCourseCompletion": "Sent when a student completes a course.",
+        "sessionReminder": "Sent before a scheduled live session.",
+        "sessionUpdated": "Sent when live session details change.",
+        "newsfeedPost": "Sent when a new course post is published.",
+        "studentProvePayment": "Sent when a student needs to provide payment proof."
+      },
+      "template": "Email",
+      "language": "Language",
+      "language_note_link": "Change your organization's language default here.",
+      "subject": "Subject",
+      "editor_heading": "Message body",
+      "editor_description": "Edit the message for this language. Dynamic values are added when the email is sent and are never translated.",
+      "editor_placeholder": "Write the email message",
+      "dynamic_content": "Dynamic content",
+      "dynamic_content_description": "Insert values or an optional link at the cursor. Keep the braces unchanged so the value can be added at send time.",
+      "dynamic_link": "Insert dynamic link",
+      "protected_content": "Protected email content",
+      "protected_content_description": "The required action button, destination, branding, and footer are managed by ClassroomIO and cannot be removed.",
+      "reset": "Reset to translated default",
+      "templates": {
+        "studentCourseInvite": "Course invitation",
+        "studentCourseWelcome": "Course welcome",
+        "studentCourseCompletion": "Course completion",
+        "studentOrgInvite": "Organization invitation",
+        "studentCohortWelcome": "Cohort welcome",
+        "studentProvePayment": "Payment proof request",
+        "cohortGoalReminder": "Cohort goal reminder",
+        "quizAssigned": "Quiz assigned",
+        "sessionReminder": "Live session reminder",
+        "sessionUpdated": "Live session updated",
+        "submissionGraded": "Submission graded",
+        "newsfeedPost": "Course newsfeed post"
+      }
     },
     "profile": {
       "page_subtitle": "Your name, email, and how you appear wherever you work in ClassroomIO.",
@@ -1439,7 +1652,9 @@
     "upgrade_count": "{studentCount}/{studentLimit}",
     "upgrade_students": "{studentCount} of {studentLimit} students",
     "upgrade_left": "{count} left",
-    "cohorts": "Cohorts"
+    "cohorts": "Cohorts",
+    "exit_course": "Exit this course",
+    "exit_cohort": "Exit this cohort"
   },
   "pricing": {
     "plan_names": {
@@ -1846,6 +2061,12 @@
       "customize_lms": {
         "page_subtitle": "Choose which tabs, banners, course tools, and extras students see.",
         "title": "Customize LMS",
+        "language": {
+          "title": "Language",
+          "description": "Choose the language used for the student-facing LMS interface.",
+          "default_language": "Default language",
+          "enforce": "Enforce this language for students"
+        },
         "disabled": "Disabled",
         "enabled": "Enabled",
         "save": "Save Changes",
@@ -2856,7 +3077,8 @@
               "title": "Title",
               "heading": "Description",
               "describe": "Describe the exercise to your student",
-              "no": "No description"
+              "no": "No description",
+              "expand": "Expand"
             },
             "delete_confirmation": {
               "title": "Delete question",
@@ -2920,6 +3142,8 @@
               }
             },
             "view_mode": {
+              "instructions": "Instructions",
+              "close_instructions": "Close instructions",
               "attempt_counter": "Attempt {current} of {total}",
               "previous_try": "Previous attempt",
               "next_try": "Next attempt",
@@ -2951,6 +3175,8 @@
               "not_passed_completion_result_description": "You scored {scorePercent}%. This exercise requires {requiredPercent}% to count as complete.",
               "checking_submission": "Checking your submission...",
               "instructor_feedback": "Instructor feedback",
+              "show_more": "Show more",
+              "show_less": "Show less",
               "back": "Back",
               "begin_section": "Start section",
               "complete_section": "Complete section"
@@ -3009,6 +3235,7 @@
                   "description_placeholder": "Add additional context for this question",
                   "add_description": "Add description",
                   "remove_description": "Remove description",
+                  "expand": "Expand",
                   "media_menu_sr": "Question extras menu",
                   "add_image": "Add image",
                   "add_video": "Add video",
@@ -3025,6 +3252,14 @@
                   "upload_error_only_images": "Only image files are supported.",
                   "upload_error_skipped": "Some files were skipped because they are not images.",
                   "upload_error_failed": "Failed to upload image. Try again."
+                },
+                "media": {
+                  "enlarge_image": "Click to enlarge",
+                  "close": "Close",
+                  "zoom_in": "Zoom in",
+                  "zoom_out": "Zoom out",
+                  "previous_image": "Previous image",
+                  "next_image": "Next image"
                 }
               },
               "radio": {
@@ -3658,6 +3893,35 @@
             "disabled_notice": "This link is disabled. Enable it to allow new members to join via link.",
             "select_role": "Select a role"
           }
+        },
+        "filter": {
+          "title": "Filter people",
+          "role": "Role",
+          "all_roles": "All roles",
+          "progress": "Progress",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "certificate": "Certificate",
+          "earned": "Earned",
+          "not_earned": "Not earned",
+          "no_login_since": "No login since",
+          "joined_within": "Joined within"
+        },
+        "window": {
+          "7d": "7 days",
+          "30d": "30 days",
+          "90d": "90 days",
+          "180d": "180 days",
+          "never": "Never"
+        },
+        "views": {
+          "all": "All people",
+          "not_started": "Not started",
+          "in_progress": "In progress",
+          "completed": "Completed",
+          "never_logged_in": "Never logged in",
+          "awaiting_certificate": "Awaiting certificate",
+          "custom": "Custom filters"
         }
       },
       "certificates": {
@@ -4992,6 +5256,12 @@
         "join_failed": "Failed to join organization",
         "try_again": "Try again"
       },
+      "limit_reached": {
+        "title": "This academy is full right now",
+        "description": "{orgName} has reached its student limit on its current plan, so we couldn't add you. Your account is fine and nothing you did caused this.",
+        "technical_details": "Technical details",
+        "error_code": "Error"
+      },
       "not_found": "This invite is no longer available.",
       "loading": "Loading invite..."
     },
@@ -5473,7 +5743,17 @@
       "add_another": "Add another",
       "invite_submit": "Send Invites",
       "empty_title": "No members yet",
-      "empty_description": "Invite people to join this cohort."
+      "empty_description": "Invite people to join this cohort.",
+      "name": "Name",
+      "joined": "Joined",
+      "filter_title": "Filter people",
+      "views": {
+        "all": "All people",
+        "tutors": "Tutors",
+        "students": "Students",
+        "pending_invites": "Pending invites",
+        "never_logged_in": "Never logged in"
+      }
     },
     "lms": {
       "empty_title": "No cohorts yet",

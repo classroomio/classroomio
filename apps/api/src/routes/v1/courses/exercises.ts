@@ -27,7 +27,7 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, PAGINATION_NOTE, exerciseForbiddenResponses, mcpRateLimitResponse } from './docs';
 
-const TAG = 'Public API Course Exercises';
+const TAG = 'Course Exercises';
 const ExerciseDetailResponse = itemResponse(ZPublicApiCourseExerciseDetailResponse);
 
 const QUESTION_TYPES_NOTE =

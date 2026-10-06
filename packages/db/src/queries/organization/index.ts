@@ -6,3 +6,4 @@ export * from './invite';
 export * from './link-invite';
 export * from './automation-key';
 export * from './automation-usage';
+export * from './student-email-template';

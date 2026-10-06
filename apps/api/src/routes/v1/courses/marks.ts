@@ -15,7 +15,7 @@ export const v1CourseMarksRouter = new Hono().get(
   '/',
   describeRoute({
     description: `The course gradebook: one row per student, with their points on every exercise in course order (null when not graded yet). A student actor only gets their own row, as in the dashboard. ${PAGINATION_NOTE} ${COURSE_MEMBER_RULE}`,
-    tags: ['Public API Course Marks'],
+    tags: ['Course Marks'],
     responses: {
       200: jsonResponse('Marks returned successfully', paginatedResponse(ZPublicApiCourseMarksRowResponse)),
       400: errorResponses.badRequest,

@@ -1,6 +1,6 @@
 export { PAGINATION_NOTE, mcpRateLimitResponse } from '../courses/docs';
 
-export const TAG = 'Public API Exercise Templates';
+export const TAG = 'Exercise Templates';
 export const ORG_TEAM_RULE =
   'The automation actor (the key creator) must be an organization admin or tutor, or this fails with 403.';
 export const forbiddenResponse = {

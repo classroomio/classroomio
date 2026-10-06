@@ -2,6 +2,7 @@ import {
   ZPublicApiCourseParam,
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
+  ZPublicApiPaginationQuery,
   ZPublicApiUpdateCourse,
   ZPublicApiUpdateCourseStructure
 } from '@cio/utils/validation/public-api';
@@ -19,6 +20,8 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
+import { jsonResponse, PaginatedListResponse } from '@api/utils/openapi/responses';
+import { PAGINATION_NOTE } from './docs';
 
 const PaginationSchema = {
   type: 'object' as const,
@@ -53,15 +56,6 @@ const CoursesListResponse = {
   required: ['success', 'data', 'pagination', 'query']
 };
 
-const CourseStudentsResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } }
-  },
-  required: ['success', 'data']
-};
-
 const NonAutoGradableQuestionOffenderSchema = {
   type: 'object' as const,
   properties: {
@@ -92,7 +86,7 @@ export const v1CourseRouter = new Hono()
     '/',
     describeRoute({
       description: 'List courses for the authenticated organization',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Courses returned successfully',
@@ -131,7 +125,7 @@ export const v1CourseRouter = new Hono()
     '/',
     describeRoute({
       description: 'Create a course for the authenticated organization',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         201: {
           description: 'Course created successfully',
@@ -169,33 +163,34 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/students',
     describeRoute({
-      description: 'List enrolled students for a course',
-      tags: ['Public API Courses'],
+      description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
+      tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Course students returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseStudentsResponse
-            }
-          }
-        },
+        200: jsonResponse('Course students returned successfully', PaginatedListResponse),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
       }
     }),
     validator('param', ZPublicApiCourseParam),
+    validator('query', ZPublicApiPaginationQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
         const params = c.req.valid('param');
-        const students = await listCourseStudentsService(orgId, params);
+        const query = c.req.valid('query');
+        const studentsPage = await listCourseStudentsService(orgId, params, query);
 
         return c.json(
           {
             success: true,
-            data: students
+            data: studentsPage.items,
+            pagination: {
+              page: studentsPage.page,
+              limit: studentsPage.limit,
+              total: studentsPage.total,
+              totalPages: studentsPage.totalPages
+            }
           },
           200
         );
@@ -208,7 +203,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/export',
     describeRoute({
       description: 'Export a course structure snapshot',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course export returned successfully',
@@ -246,7 +241,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/structure',
     describeRoute({
       description: 'Get a course structure snapshot',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course structure returned successfully',
@@ -284,7 +279,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/structure',
     describeRoute({
       description: 'Synchronize a course structure using the draft payload shape',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course structure updated successfully',
@@ -326,7 +321,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId',
     describeRoute({
       description: 'Get a single course by id',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course returned successfully',
@@ -364,7 +359,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId',
     describeRoute({
       description: 'Update a course by id',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course updated successfully',
@@ -406,7 +401,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId',
     describeRoute({
       description: 'Delete a course by id',
-      tags: ['Public API Courses'],
+      tags: ['Courses'],
       responses: {
         200: {
           description: 'Course deleted successfully',

@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 
 import { blockedSubdomain } from '@cio/utils/constants';
 import { ZCourseType } from '../course/course-type';
@@ -160,6 +161,12 @@ export const ZUpdateOrganization = z.object({
         })
         .optional(),
       internalEnrollmentOnly: z.boolean().optional(),
+      language: z
+        .object({
+          locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr']).optional(),
+          enforced: z.boolean().optional()
+        })
+        .optional(),
       emailNotifications: z
         .object({
           newStudent: z.boolean().optional(),
@@ -178,6 +185,24 @@ export const ZUpdateOrganization = z.object({
 });
 
 export type TUpdateOrganization = z.infer<typeof ZUpdateOrganization>;
+
+export const ZStudentEmailTemplateParams = z.object({
+  emailId: z.enum(STUDENT_EMAIL_IDS),
+  locale: z.enum(EMAIL_LOCALES)
+});
+
+export const ZUpsertStudentEmailTemplate = z.object({
+  content: z.string().min(1).max(50_000),
+  subject: z.string().min(1).max(200).nullable().optional()
+});
+
+export const ZStudentEmailTestRecipients = z.array(z.string().trim().email()).min(1).max(5);
+
+export const ZTestStudentEmailTemplate = z.object({
+  content: z.string().min(1).max(50_000),
+  subject: z.string().min(1).max(200),
+  recipientEmails: ZStudentEmailTestRecipients
+});
 
 export const ZInviteTeamMembers = z.object({
   emails: z.array(z.string().email()).min(1).max(50),
