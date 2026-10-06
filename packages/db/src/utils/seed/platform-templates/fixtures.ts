@@ -73,6 +73,11 @@ export type LaunchTemplateFixture = {
   sections: LaunchSection[];
 };
 
+const DEFAULT_TEMPLATE_SIGNATORIES = [
+  { name: 'Course Facilitator', role: 'Facilitator', enabled: true },
+  { name: 'Organization Lead', role: 'Director', enabled: true }
+];
+
 function templateBanner(slug: string) {
   return `https://assets.cdn.clsrio.com/www/course-templates/${slug}.jpg`;
 }
@@ -1422,7 +1427,12 @@ const chatgptWork: LaunchTemplateFixture = {
     isDownloadable: true,
     threshold: 100,
     exerciseMinScorePercent: 70,
-    design: { templateId: 'minimal', accentColor: '#111111', subtitle: 'Getting Started with ChatGPT Work' }
+    design: {
+      templateId: 'minimal',
+      accentColor: '#111111',
+      subtitle: 'Getting Started with ChatGPT Work',
+      signatories: DEFAULT_TEMPLATE_SIGNATORIES
+    }
   },
   highlights: [
     { title: 'Official OpenAI videos', description: 'Every lesson embeds a video from OpenAI’s YouTube series.' },
@@ -1894,7 +1904,12 @@ const aiFluency: LaunchTemplateFixture = {
     isDownloadable: true,
     threshold: 100,
     exerciseMinScorePercent: 70,
-    design: { templateId: 'minimal', accentColor: '#111111', subtitle: 'AI Fluency: Framework & Foundations' }
+    design: {
+      templateId: 'minimal',
+      accentColor: '#111111',
+      subtitle: 'AI Fluency: Framework & Foundations',
+      signatories: DEFAULT_TEMPLATE_SIGNATORIES
+    }
   },
   highlights: [
     { title: 'A research-backed framework', description: 'Four competencies learners can apply to any AI tool.' },
@@ -2451,7 +2466,12 @@ const hubspotSalesHub: LaunchTemplateFixture = {
     isDownloadable: true,
     threshold: 100,
     exerciseMinScorePercent: 70,
-    design: { templateId: 'minimal', accentColor: '#111111', subtitle: 'HubSpot Sales Hub Essentials' }
+    design: {
+      templateId: 'minimal',
+      accentColor: '#111111',
+      subtitle: 'HubSpot Sales Hub Essentials',
+      signatories: DEFAULT_TEMPLATE_SIGNATORIES
+    }
   },
   highlights: [
     { title: 'Official HubSpot Academy videos', description: 'Every lesson embeds a HubSpot Academy tutorial.' },
@@ -2881,7 +2901,12 @@ const salesforceCpq: LaunchTemplateFixture = {
     isDownloadable: true,
     threshold: 100,
     exerciseMinScorePercent: 70,
-    design: { templateId: 'minimal', accentColor: '#111111', subtitle: 'Salesforce CPQ Admin Essentials' }
+    design: {
+      templateId: 'minimal',
+      accentColor: '#111111',
+      subtitle: 'Salesforce CPQ Admin Essentials',
+      signatories: DEFAULT_TEMPLATE_SIGNATORIES
+    }
   },
   highlights: [
     {

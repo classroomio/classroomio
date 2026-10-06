@@ -86,6 +86,17 @@ Read [references/media-and-linking.md](references/media-and-linking.md) whenever
 
 Every article includes one lead screenshot after the opening paragraph and before the first `##`. Choose any further screenshots after the written procedure is known. Do not add extra screenshots to fill space, and do not use a video to compensate for missing written instructions.
 
+If an article needs media that is not available, ask the user for it before treating the article as complete. Do not request screenshots as a list of unexplained UI labels. For every requested asset, state:
+
+- the article and section where it will appear;
+- the page, menu, or workflow the user should open;
+- the exact control or state that must be visible;
+- what uncertainty the image resolves for the reader;
+- the preferred crop or whether separate captures are needed;
+- any demo-data, privacy, or redaction requirements.
+
+Explain product-specific terms in plain language so the user can reproduce the requested state without already knowing the documentation plan. If a supplied image does not match the requested state, explain the mismatch and request a replacement with the same level of context.
+
 ### 6. Write the MDX
 
 Every page starts with:
@@ -151,7 +162,7 @@ When only planning or auditing content, do not modify product code or capture ne
 
 ## ClassroomIO terminology
 
-- **organization**: the administrator workspace that owns courses, people, settings, and branding;
+- **organization**: the administrator-managed entity that owns courses, people, settings, branding, and an academy;
 - **academy**: the public-facing organization site on a ClassroomIO subdomain or custom domain;
 - **LMS**: the signed-in student learning area;
 - **student**: the person taking a course; use “learner” only when quoting an exact UI label;
@@ -160,3 +171,5 @@ When only planning or auditing content, do not modify product code or capture ne
 - **course landing page**: the public page for one course.
 
 Use **ClassroomIO** exactly. Use American English because the current interface uses forms such as “organization” and “customize.”
+
+Use **organization**, not **workspace**, in customer-facing prose, titles, routes, and article names. Use **Workspace** only when reproducing an exact current ClassroomIO UI label, and use third-party product names such as **Google Workspace** unchanged.

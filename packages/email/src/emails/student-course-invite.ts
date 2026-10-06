@@ -1,12 +1,12 @@
 import * as z from 'zod';
 
 import { defineEmail } from '../send';
-import { getDefaultTemplate } from '../templates';
 import { ZEmailBranding } from '../core/branding';
+import { renderStudentEmail, renderStudentEmailSubject } from '../core/student-email';
 
 export const studentCourseInviteEmail = defineEmail({
   id: 'studentCourseInvite',
-  subject: 'You are invited to join a course',
+  subject: (fields, context) => renderStudentEmailSubject('studentCourseInvite', fields, context),
   schema: z.object({
     orgName: z.string().min(1),
     courseName: z.string().min(1),
@@ -14,16 +14,12 @@ export const studentCourseInviteEmail = defineEmail({
     expiresAt: z.string().min(1),
     branding: ZEmailBranding
   }),
-  render: (fields) => {
-    const content = `
-      <p>Hi there,</p>
-      <p>You have been invited to join <strong>${fields.courseName}</strong> on ${fields.orgName}.</p>
-      <p>This invitation expires at <strong>${fields.expiresAt}</strong>.</p>
-      <div>
-        <a class="button" href="${fields.inviteLink}">Join Course</a>
-      </div>
-    `;
-
-    return getDefaultTemplate(content, fields.branding);
-  }
+  render: (fields, context) =>
+    renderStudentEmail({
+      id: 'studentCourseInvite',
+      values: { org_name: fields.orgName, course_name: fields.courseName, expires_at: fields.expiresAt },
+      actionUrl: fields.inviteLink,
+      branding: fields.branding,
+      context
+    })
 });

@@ -1,0 +1,2 @@
+export interface FlowLinesProps { from?: { x: number; y: number }; width?: number; height?: number; mode?: 'fan'|'single'; toCount?: number; color?: string; style?: React.CSSProperties; }
+export declare function FlowLines(props: FlowLinesProps): JSX.Element;

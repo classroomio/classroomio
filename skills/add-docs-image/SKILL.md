@@ -1,6 +1,6 @@
 ---
 name: add-docs-image
-description: Prepare and place screenshots for ClassroomIO Help Center articles under apps/help/content/help. Use when a guide needs a new, replaced, framed, annotated, or optimized product screenshot. Do not use for decorative marketing imagery.
+description: Capture, frame, and place screenshots for ClassroomIO Help Center articles under apps/help/content/help. Use for any request to take, capture, retake, or fix screenshots for a help guide, including a pasted shot list with filenames and sizes, and when a screenshot looks pixelated or unframed. Every help screenshot is captured at 1350×830 and framed in the ClassroomIO browser board with frame-screenshot. Do not use for decorative marketing imagery.
 ---
 
 # Add a ClassroomIO help screenshot

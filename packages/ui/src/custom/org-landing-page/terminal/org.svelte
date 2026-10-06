@@ -55,7 +55,8 @@
   const tabs = $derived<{ key: TabKey; label: string }[]>([
     { key: 'all', label: labels?.filterAllLabel ?? 'All' },
     ...courseTypeKeys.map((type) => {
-      const meta = getCourseTypeLandingMeta({ id: '', title: '', description: '', type } as CourseItem);
+      const course = courses.find((candidate) => candidate.type === type);
+      const meta = course ? getCourseTypeLandingMeta(course) : undefined;
 
       return { key: type, label: meta?.label ?? type };
     })
@@ -80,7 +81,7 @@
 
 <LandingThemeScope theme="terminal" class="ui:w-full ui:font-sans">
   <main>
-    <TerminalHero {orgName} {hero} {courses}>
+    <TerminalHero {orgName} {hero} {courses} {labels}>
       {#snippet navigation()}
         <TerminalNav {orgName} {logoUrl} {navItems} {authAction} {learnerAccount} />
       {/snippet}

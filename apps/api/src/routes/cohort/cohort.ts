@@ -14,7 +14,9 @@ import {
   ZUpdateCohortGoal,
   ZUpdateCohortMember,
   ZUpdateCohortNewsfeed,
-  ZUpdateCohortReaction
+  ZUpdateCohortReaction,
+  ZCohortPeopleParam,
+  ZCohortPeopleQuery
 } from '@cio/utils/validation/cohort';
 import {
   addCourseToCohortService,
@@ -31,6 +33,7 @@ import {
   listOrgCohorts,
   listCohortCourses,
   listCohortMembers,
+  listPaginatedCohortPeople,
   listCohortNewsfeed,
   listCohortNewsfeedComments,
   removeCourseFromCohortService,
@@ -199,6 +202,27 @@ export const cohortRouter = new Hono()
       return handleError(c, error, 'Failed to list cohort members');
     }
   })
+
+  /**
+   * Returns one filtered, sorted page of the cohort roster.
+   */
+  .get(
+    '/:cohortId/people',
+    authMiddleware,
+    cohortMemberMiddleware,
+    zValidator('param', ZCohortPeopleParam),
+    zValidator('query', ZCohortPeopleQuery),
+    async (c) => {
+      try {
+        const { cohortId } = c.req.valid('param');
+        const result = await listPaginatedCohortPeople(cohortId, c.req.valid('query'));
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list cohort people');
+      }
+    }
+  )
 
   /**
    * POST /cohort/:cohortId/members

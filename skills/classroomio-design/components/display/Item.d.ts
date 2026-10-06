@@ -1,0 +1,2 @@
+export interface ItemProps { media?: React.ReactNode; mediaVariant?: 'default'|'icon'|'image'; title?: React.ReactNode; description?: React.ReactNode; actions?: React.ReactNode; variant?: 'default'|'outline'|'muted'|'muted-border'; size?: 'default'|'sm'; href?: string; onClick?: () => void; style?: React.CSSProperties; }
+export declare function Item(props: ItemProps): JSX.Element;

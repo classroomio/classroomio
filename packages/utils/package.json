@@ -76,6 +76,10 @@
     "./notifications": {
       "types": "./dist/notifications/index.d.ts",
       "default": "./dist/notifications/index.js"
+    },
+    "./email": {
+      "types": "./dist/email/index.d.ts",
+      "default": "./dist/email/index.js"
     }
   },
   "scripts": {

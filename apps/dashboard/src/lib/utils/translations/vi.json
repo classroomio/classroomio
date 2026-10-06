@@ -13,7 +13,29 @@
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi",
     "scroll_to_top": "Cuộn lên đầu trang",
-    "delete": "Xóa"
+    "delete": "Xóa",
+    "restricted_page": {
+      "title": "Trang bị hạn chế",
+      "description": "Tổ chức này đang bị hạn chế. Trong lúc này, bạn có thể xem các tính năng của chúng tôi.",
+      "home": "Về trang chủ",
+      "learning_paths_heading": "Lộ trình học tập",
+      "learning_path_label": "Lộ trình học tập",
+      "tracks_label": "{count, plural, one {# lộ trình} other {# lộ trình}}",
+      "included": "Đã bao gồm",
+      "untitled_lesson": "Bài học chưa có tiêu đề",
+      "format": "Định dạng"
+    },
+    "loading": "Đang tải…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Đang tải khóa học…",
+        "caption": "Vui lòng đợi trong khi chúng tôi tải dữ liệu khóa học của bạn."
+      },
+      "opening_academy": {
+        "title": "Mở học viện của bạn…",
+        "caption": "Đang chuẩn bị khóa học, học viên và cài đặt của bạn."
+      }
+    }
   },
   "validations": {
     "generic": {
@@ -1525,7 +1547,39 @@
           },
           "student_limit_reached": "Bạn đã đạt đến giới hạn sinh viên trong kế hoạch của mình. Nâng cấp để mời thêm sinh viên."
         },
-        "learner": "Học viên"
+        "learner": "Học viên",
+        "views": {
+          "all": "Tất cả mọi người",
+          "not_started": "Chưa bắt đầu",
+          "in_progress": "Đang tiến hành",
+          "completed": "Đã hoàn thành",
+          "never_logged_in": "Chưa bao giờ đăng nhập",
+          "awaiting_certificate": "Đang chờ chứng chỉ",
+          "custom": "Bộ lọc tùy chỉnh"
+        },
+        "window": {
+          "7d": "7 ngày",
+          "30d": "30 ngày",
+          "90d": "90 ngày",
+          "180d": "180 ngày",
+          "never": "không bao giờ"
+        },
+        "filter": {
+          "title": "Lọc người",
+          "role": "Vai trò",
+          "all_roles": "Tất cả vai trò",
+          "progress": "Tiến độ",
+          "in_progress": "Đang tiến hành",
+          "completed": "Đã hoàn thành",
+          "membership": "Tư cách thành viên",
+          "joined": "Đã tham gia",
+          "invited": "Đã được mời, chưa có tài khoản",
+          "certificate": "Giấy chứng nhận",
+          "earned": "kiếm được",
+          "not_earned": "Không kiếm được",
+          "no_login_since": "Không đăng nhập kể từ đó",
+          "joined_within": "Đã tham gia bên trong"
+        }
       },
       "marks": {
         "title": "Điểm",
@@ -1791,7 +1845,11 @@
               "try_again": "Thử lại",
               "back": "Quay lại",
               "begin_section": "Phần bắt đầu",
-              "complete_section": "Hoàn thành phần"
+              "complete_section": "Hoàn thành phần",
+              "instructions": "Hướng dẫn",
+              "close_instructions": "Đóng hướng dẫn",
+              "show_more": "Hiển thị thêm",
+              "show_less": "Hiển thị ít hơn"
             },
             "edit_mode": {
               "delete_modal": "Xóa bài tập",
@@ -1840,7 +1898,8 @@
               "title": "Tiêu đề",
               "heading": "Mô tả",
               "describe": "Mô tả bài tập cho học sinh của bạn",
-              "no": "Không có mô tả"
+              "no": "Không có mô tả",
+              "expand": "Mở rộng"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2106,16 @@
                   "video_invalid_link": "Vui lòng nhập liên kết YouTube hợp lệ.",
                   "upload_error_only_images": "Chỉ hỗ trợ các tập tin hình ảnh.",
                   "upload_error_skipped": "Một số tệp đã bị bỏ qua vì chúng không phải là hình ảnh.",
-                  "upload_error_failed": "Không thể tải lên hình ảnh. Hãy thử lại."
+                  "upload_error_failed": "Không thể tải lên hình ảnh. Hãy thử lại.",
+                  "expand": "Mở rộng"
+                },
+                "media": {
+                  "enlarge_image": "Bấm vào để phóng to",
+                  "close": "Đóng",
+                  "zoom_in": "Phóng to",
+                  "zoom_out": "Thu nhỏ",
+                  "previous_image": "Hình ảnh trước đó",
+                  "next_image": "Hình ảnh tiếp theo"
                 }
               },
               "navigation": {
@@ -3152,6 +3220,12 @@
     "settings": {
       "customize_lms": {
         "title": "Tùy chỉnh LMS",
+        "language": {
+          "title": "Ngôn ngữ",
+          "description": "Chọn ngôn ngữ được sử dụng trong giao diện LMS dành cho học viên.",
+          "default_language": "Ngôn ngữ mặc định",
+          "enforce": "Bắt buộc học viên sử dụng ngôn ngữ này"
+        },
         "disabled": "Đã tắt",
         "enabled": "Đã bật",
         "save": "Lưu thay đổi",
@@ -3373,6 +3447,8 @@
     "analytics": "Phân tích",
     "compliance": "Tuân thủ",
     "cohorts": "Nhóm học tập",
+    "exit_course": "Thoát khóa học này",
+    "exit_cohort": "Thoát nhóm học tập này",
     "upgrade_now": "Nâng cấp ngay bây giờ",
     "upgrade_label": "Nâng cấp",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -3539,7 +3615,8 @@
       "branding": "Thương hiệu",
       "ai": "AI",
       "search": "Tìm kiếm cài đặt...",
-      "extensions": "Tiện ích mở rộng"
+      "extensions": "Tiện ích mở rộng",
+      "new_badge": "Mới"
     },
     "heading": "Cài đặt",
     "billing": {
@@ -3992,7 +4069,8 @@
       "teams_tab": "Đội",
       "ai_credits_tab": "Tín dụng AI",
       "ai_tutor_tab": "Gia sư AI",
-      "notifications_tab": "Thông báo"
+      "notifications_tab": "Thông báo",
+      "emails_tab": "Email"
     },
     "subheadings": {
       "view_site": "Học viện của bạn"
@@ -4241,6 +4319,101 @@
     "account": {
       "language": "Ngôn ngữ",
       "select_language": "Chọn một ngôn ngữ"
+    },
+    "emails": {
+      "page_title": "Mẫu email",
+      "language_note": "Email của sinh viên sử dụng ngôn ngữ bắt buộc của tổ chức bạn. Khi nó không được thực thi, email sẽ sử dụng tiếng Anh.",
+      "heading": "Mẫu email sinh viên",
+      "description": "Tùy chỉnh các email sinh viên nhận được. Email nhân viên luôn gửi bằng tiếng Anh.",
+      "paid_plan_note": "Nâng cấp gói dịch và tùy chỉnh email của sinh viên.",
+      "sending_in": "Gửi vào",
+      "change": "Thay đổi",
+      "template_navigation": "Các loại email sinh viên",
+      "edited": "Đã chỉnh sửa",
+      "insert": "Chèn",
+      "link_chip": "liên kết",
+      "edit": "Chỉnh sửa",
+      "preview": "Xem trước",
+      "unsaved_changes": "Những thay đổi chưa được lưu",
+      "send_test": "Gửi bài kiểm tra",
+      "test_sent": "Email kiểm tra đang xếp hàng chờ gửi",
+      "template": "Email",
+      "language": "Ngôn ngữ",
+      "language_note_link": "Thay đổi mặc định ngôn ngữ của tổ chức của bạn tại đây.",
+      "subject": "Chủ đề",
+      "editor_heading": "Nội dung thư",
+      "editor_description": "Chỉnh sửa tin nhắn cho ngôn ngữ này. Các giá trị động được thêm vào khi email được gửi và không bao giờ được dịch.",
+      "editor_placeholder": "Viết nội dung email",
+      "dynamic_content": "Nội dung động",
+      "dynamic_content_description": "Chèn các giá trị hoặc một liên kết tùy chọn vào con trỏ. Giữ các dấu ngoặc nhọn không thay đổi để giá trị có thể được thêm vào lúc gửi.",
+      "dynamic_link": "Chèn liên kết động",
+      "protected_content": "Nội dung email được bảo vệ",
+      "protected_content_description": "Nút hành động, đích đến, nhãn hiệu và chân trang bắt buộc do ClassroomIO quản lý và không thể xóa được.",
+      "reset": "Đặt lại về mặc định đã dịch",
+      "templates": {
+        "studentCourseInvite": "Lời mời khóa học",
+        "studentCourseWelcome": "Chào mừng khóa học",
+        "studentCourseCompletion": "Hoàn thành khóa học",
+        "studentOrgInvite": "Lời mời tổ chức",
+        "studentCohortWelcome": "chào mừng đoàn hệ",
+        "studentProvePayment": "Yêu cầu bằng chứng thanh toán",
+        "cohortGoalReminder": "Lời nhắc mục tiêu nhóm",
+        "quizAssigned": "Đã giao bài kiểm tra",
+        "sessionReminder": "Nhắc nhở phiên trực tiếp",
+        "sessionUpdated": "Đã cập nhật phiên trực tiếp",
+        "submissionGraded": "Đã chấm điểm bài nộp",
+        "newsfeedPost": "Bài đăng trên nguồn cấp tin tức của khóa học"
+      },
+      "descriptions": {
+        "studentCourseInvite": "Được gửi khi bạn mời ai đó tham gia một khóa học.",
+        "studentOrgInvite": "Được gửi khi bạn mời ai đó vào tổ chức của mình.",
+        "studentCourseWelcome": "Được gửi khi một sinh viên nhận được quyền truy cập vào một khóa học.",
+        "studentCohortWelcome": "Được gửi khi một học sinh nhận được quyền truy cập vào một nhóm.",
+        "quizAssigned": "Được gửi khi một bài kiểm tra được giao cho một học sinh.",
+        "submissionGraded": "Được gửi khi bài tập nộp của học sinh được xem xét.",
+        "cohortGoalReminder": "Được gửi khi mục tiêu nhóm thuần tập đến hạn hoặc quá hạn.",
+        "studentCourseCompletion": "Gửi khi học viên hoàn thành khóa học.",
+        "sessionReminder": "Được gửi trước phiên trực tiếp đã lên lịch.",
+        "sessionUpdated": "Được gửi khi chi tiết phiên trực tiếp thay đổi.",
+        "newsfeedPost": "Được gửi khi một bài viết khóa học mới được xuất bản.",
+        "studentProvePayment": "Được gửi khi sinh viên cần cung cấp bằng chứng thanh toán."
+      },
+      "groups": {
+        "enrollment": "tuyển sinh",
+        "learning": "học tập",
+        "live_sessions": "Phiên trực tiếp",
+        "updates_billing": "Cập nhật và thanh toán"
+      },
+      "variables": {
+        "organization": "Tổ chức",
+        "expires_at": "Ngày hết hạn",
+        "course_name": "Tên khóa học",
+        "cohort_name": "Tên nhóm",
+        "student_name": "Tên sinh viên",
+        "course_message": "Tin nhắn của giảng viên",
+        "course_names": "Khóa học",
+        "teacher_name": "Tên giáo viên",
+        "teacher_email": "Email giáo viên",
+        "goal_title": "Mục tiêu",
+        "due_status": "tình trạng đến hạn",
+        "completed_count": "Số lượng đã hoàn thành",
+        "required_count": "Số lượng bắt buộc",
+        "exercise_title": "Tên bài tập",
+        "session_title": "Tiêu đề phiên",
+        "session_time": "Thời gian phiên",
+        "when": "Thời gian bắt đầu",
+        "status": "Trạng thái",
+        "score": "Điểm",
+        "lesson_title": "Tiêu đề bài học",
+        "post_content": "Đăng nội dung"
+      },
+      "test_dialog": {
+        "title": "Gửi email kiểm tra",
+        "description": "Chúng tôi sẽ gửi bản nháp hiện tại cùng với các giá trị mẫu thay cho phần giữ chỗ. Nó không cần phải được lưu trước.",
+        "recipients": "Gửi tới",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Nhập tối đa 5 địa chỉ email hợp lệ, phân tách bằng dấu phẩy."
+      }
     }
   },
   "profileMenu": {
@@ -4272,6 +4445,7 @@
     "login_with_google": "Đăng nhập bằng Google",
     "create_to_join": "Tạo một tài khoản miễn phí để tham gia",
     "create_account": "Tạo tài khoản",
+    "sign_in_to_continue": "Đăng nhập để tiếp tục",
     "login_to_join": "Đăng nhập để tham gia",
     "validation": {
       "unable_to_create_profile": "Không thể tạo hồ sơ",
@@ -4341,6 +4515,16 @@
     "customers": "Tạo khóa học cho khách hàng của tôi",
     "explore": "Chỉ ở đây để khám phá",
     "articles": "Bài viết",
+    "ai": "AI",
+    "ai_select": "Chọn một trợ lý AI",
+    "ai_required": "Vui lòng chọn một trợ lý AI",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Công cụ tìm kiếm",
     "social": "Phương tiện truyền thông xã hội",
     "friends": "Bạn bè và gia đình",
@@ -4350,7 +4534,101 @@
     "what_brings": "Điều gì đưa bạn đến",
     "how": "Bạn biết đến chúng tôi bằng cách nào?",
     "back": "Quay lại",
-    "continue": "Tiếp tục"
+    "continue": "Tiếp tục",
+    "other": "Khác (cho chúng tôi biết)",
+    "other_placeholder": "Hãy cho chúng tôi biết thêm",
+    "other_required": "Hãy cho chúng tôi biết thêm",
+    "sources": {
+      "label": "Bạn biết đến chúng tôi bằng cách nào?",
+      "blog": "Blog hoặc bài viết",
+      "ai": "trí tuệ nhân tạo",
+      "search_engine": "Công cụ tìm kiếm",
+      "github": "GitHub hoặc nguồn mở",
+      "youtube": "YouTube hoặc podcast",
+      "social_media": "Truyền thông xã hội",
+      "product_hunt": "Product Hunt hoặc một trang web đánh giá",
+      "friends_family": "Bạn bè, gia đình hoặc đồng nghiệp",
+      "subtitle": "Tùy chọn, nhưng nó giúp một nhóm nhỏ biết điều gì đang hiệu quả."
+    },
+    "job_roles": {
+      "label": "Vai trò của bạn là gì?",
+      "founder": "Người sáng lập hoặc CEO",
+      "product_ops": "Sản phẩm hoặc hoạt động",
+      "cs_education": "Sự thành công, giáo dục hoặc hỗ trợ của khách hàng",
+      "developer": "Nhà phát triển hoặc kỹ sư",
+      "subtitle": "Điều này giúp chúng tôi điều chỉnh thiết lập của bạn."
+    },
+    "learning_methods": {
+      "label": "Làm thế nào để khách hàng tìm hiểu sản phẩm của bạn ngày hôm nay?",
+      "self_serve": "Họ tự mình tìm ra nó",
+      "live_onboarding": "Các phiên hoặc cuộc gọi giới thiệu trực tiếp",
+      "help_docs": "Tài liệu trợ giúp và hỗ trợ",
+      "no_training": "Chúng tôi chưa được đào tạo",
+      "subtitle": "Chọn một cái gần nhất với cách nó hoạt động ngay bây giờ."
+    },
+    "use_cases": {
+      "label": "Bạn muốn sử dụng ClassroomIO để làm gì?",
+      "customer_training": "Đào tạo khách hàng về sản phẩm của tôi",
+      "customer_certification": "Chứng nhận khách hàng hoặc đối tác",
+      "partner_training": "Đào tạo đối tác hoặc đại lý",
+      "team_training": "Huấn luyện đội của riêng tôi",
+      "sell_courses": "Bán các khóa học cho công chúng",
+      "subtitle": "Chọn tất cả những gì áp dụng. Chúng tôi sẽ định hình tổ chức của bạn xung quanh nó."
+    },
+    "step_of": "Bước {current} / {total}",
+    "skip": "Bỏ qua",
+    "finish_setup": "Hoàn tất thiết lập",
+    "company_sizes": {
+      "label": "Công ty của bạn lớn đến mức nào?",
+      "subtitle": "Đếm tất cả mọi người trong công ty, không chỉ nhóm của bạn.",
+      "enterprise": {
+        "label": "200+",
+        "description": "mọi người"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "mọi người"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "mọi người"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "mọi người"
+      },
+      "solo": {
+        "label": "Chỉ có tôi",
+        "description": "Một mình"
+      }
+    },
+    "ai_assistant": {
+      "label": "Trợ lý AI",
+      "subtitle": "Cái nào đã đề nghị chúng tôi?"
+    },
+    "step_labels": {
+      "use_cases": "Trường hợp sử dụng",
+      "learning_methods": "Đào tạo ngày hôm nay",
+      "company_size": "Quy mô công ty",
+      "job_role": "Vai trò",
+      "source": "khám phá",
+      "org_setup": "Tổ chức"
+    },
+    "org_setup": {
+      "subtitle": "Hãy cho chúng tôi biết về bạn và tổ chức của bạn để bắt đầu.",
+      "title": "Thiết lập tổ chức của bạn",
+      "created_subtitle": "Tổ chức của bạn đã được thiết lập. Bạn có thể thay đổi những chi tiết này sau trong Cài đặt."
+    },
+    "header": {
+      "tagline": "Nền tảng đào tạo khách hàng kết nối với hệ thống của bạn"
+    },
+    "testimonials": {
+      "eyebrow": "Từ các đội sử dụng nó",
+      "footer": "Nguồn mở · Tự lưu trữ hoặc đám mây",
+      "headline": "Hãy ngừng đào tạo mọi khách hàng {highlight}.",
+      "headline_highlight": "bằng tay",
+      "subtitle": "Thiết lập một lần, đăng ký hàng loạt khách hàng của bạn thông qua API. Sau đó theo dõi tiến trình của họ bằng phân tích."
+    }
   },
   "new_course_modal": {
     "live_class_label": "Lớp học trực tiếp",
@@ -4524,6 +4802,12 @@
         "joined": "Đã tham gia tổ chức",
         "join_failed": "Không thể tham gia tổ chức",
         "try_again": "Thử lại"
+      },
+      "limit_reached": {
+        "title": "Học viện này hiện đã đầy rồi",
+        "description": "{orgName} đã đạt đến giới hạn số sinh viên trong gói hiện tại nên chúng tôi không thể thêm bạn. Tài khoản của bạn vẫn ổn và bạn không làm gì gây ra điều này.",
+        "technical_details": "Chi tiết kỹ thuật",
+        "error_code": "Lỗi"
       },
       "not_found": "Lời mời này không còn hiệu lực.",
       "loading": "Đang tải lời mời..."
@@ -5388,7 +5672,17 @@
       "add_another": "Thêm cái khác",
       "invite_submit": "Gửi lời mời",
       "empty_title": "Chưa có thành viên nào",
-      "empty_description": "Mời mọi người tham gia nhóm học tập này."
+      "empty_description": "Mời mọi người tham gia nhóm học tập này.",
+      "name": "Tên",
+      "joined": "Đã tham gia",
+      "filter_title": "Lọc người",
+      "views": {
+        "all": "Tất cả mọi người",
+        "tutors": "Gia sư",
+        "students": "Sinh viên",
+        "pending_invites": "Lời mời đang chờ xử lý",
+        "never_logged_in": "Chưa bao giờ đăng nhập"
+      }
     },
     "courses": {
       "add": "Thêm khóa học",
