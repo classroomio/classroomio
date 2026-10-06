@@ -32,7 +32,7 @@ test('certificate settings link to the completion rules and back', async ({ page
 
   await page.getByTestId('certificate-settings-completion-rules-link').click();
   await expect(page).toHaveURL(
-    new RegExp(`/courses/${courseId}/settings\\?from=certificate-settings(&highlight=completion-rules)?$`)
+    new RegExp(`/courses/${courseId}/settings\\?from=certificate-settings&highlight=completion-rules$`)
   );
 
   const backLink = page.getByTestId('course-settings-back-to-certificate-settings');
