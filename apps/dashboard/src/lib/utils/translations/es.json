@@ -2397,7 +2397,7 @@
                 "size": "(Máx. 500 MB)",
                 "oops": "Ups `😬, no se pudo subir el video",
                 "big_file": "Lo sentimos, el video no fue subido. El tamaño del archivo es demasiado grande,",
-                "maximum_size": "el tamaño máximo es 30 MB. ¡Intentar otra vez!",
+                "maximum_size": "el tamaño máximo es {size}. ¡Intentar otra vez!",
                 "button": "Prueba con otro archivo",
                 "try_again": "Por favor inténtalo de nuevo",
                 "unsupported_format": "Lo sentimos, el video no se subió, el formato de archivo no es compatible o algo salió mal en el servidor.",
@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Crear otro ejercicio",
         "add_content_open_now": "Abrir ahora",
         "add_content_later": "Más tarde",
-        "add_content_add_to_section": "Añadir contenido"
+        "add_content_add_to_section": "Añadir contenido",
+        "expand_content": "Ampliar contenido",
+        "collapse_content": "Contraer contenido"
       },
       "news_feed": {
         "heading": "Noticias",
