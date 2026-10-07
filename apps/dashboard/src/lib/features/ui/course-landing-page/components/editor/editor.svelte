@@ -241,13 +241,16 @@
         : undefined
     } as TCourseUpdate;
 
+    const submittedSnapshot = JSON.stringify(course);
     const updated = await courseApi.update(courseId, updatePayload);
     loading = false;
     if (!updated) return;
 
     syncCourseStore(course);
-    courseSnapshot = JSON.stringify(course);
-    hasUnsavedChanges = false;
+    courseSnapshot = submittedSnapshot;
+    if (JSON.stringify(course) === submittedSnapshot) {
+      hasUnsavedChanges = false;
+    }
   }
 
   function handlePreview() {
