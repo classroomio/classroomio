@@ -113,7 +113,7 @@
                         >
                           <input
                             type="checkbox"
-                            checked={item.checked}
+                            bind:checked={item.checked}
                             name={item.title}
                             onchange={applyFilter}
                             class="focus:ring-0"

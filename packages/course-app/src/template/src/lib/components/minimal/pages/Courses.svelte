@@ -6,7 +6,6 @@
   import type { Page } from '@/utils/types/page';
   import { getPageSection } from '@/utils/helpers/page';
   import PrimaryButton from '../PrimaryButton.svelte';
-  import { courses } from '@/utils/stores/course';
   import CourseCard from '../CourseCard.svelte';
   import { SECTION } from '@/utils/constants/page';
 
@@ -92,7 +91,7 @@
         {section.courses.settings.title}
       </p>
       <div class="py-10">
-        {#if $courses.length > 0}
+        {#if data.courses.length > 0}
           <div class="mx-auto max-w-5xl items-start gap-8 lg:flex">
             <div class="hidden w-max lg:block">
               <p class="mb-2 font-medium">Filter by</p>
@@ -103,7 +102,7 @@
                   >
                     <input
                       type="checkbox"
-                      checked={item.checked}
+                      bind:checked={item.checked}
                       name={item.title}
                       onchange={applyFilter}
                     />

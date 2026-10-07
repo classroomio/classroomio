@@ -396,6 +396,14 @@ Pattern:
 
 Use `@cio/ui/custom/*-field` wrappers for standard app forms. When building larger settings/editor screens that need legends, descriptions, separators, grouped rows, or mixed controls such as `Switch`, `Checkbox`, `RadioGroup`, image pickers, and action buttons, compose the form with `@cio/ui/base/field` primitives and the matching base inputs instead.
 
+### Form inputs: live updates
+
+- Anything the user should see react to typing (dirty state, save bars, enabled buttons, answers, counters, previews, search, error clearing) updates on `input`, never only on `change`/`blur`.
+- Number inputs use `NumberField` (`@cio/ui/custom/number-field`). Never `Number(value)` an input directly.
+- A field whose text is a formatted version of a parsed value (comma lists, JSON, trimmed lists) uses `FieldDraft` (`@cio/ui/hooks/field-draft.svelte`).
+- Server-backed search boxes use `DebouncedSearch` (`$lib/utils/functions/debounced-search.svelte`).
+- Edit page-local drafts, never global stores; never write the edited model from an `$effect` on mount.
+
 ### Reactive built-in collections
 
 In Svelte 5, the built-in `Set` and `Map` classes are **not** reactive. Use `SvelteSet` and `SvelteMap` from `svelte/reactivity` instead. They are already reactive on their own — do **not** wrap them in `$state()`.

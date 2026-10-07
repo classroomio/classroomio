@@ -69,6 +69,21 @@
   let showPaymentError = $state(false);
   // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: bound to UnsavedChanges
   let hasUnsavedChanges = $state(false);
+  let courseSnapshot = $state('');
+  let snapshottedCourseId = $state<string | null>(null);
+
+  $effect(() => {
+    if (!courseId || snapshottedCourseId === courseId) return;
+
+    snapshottedCourseId = courseId;
+    courseSnapshot = '';
+  });
+
+  function restoreCourseSnapshot() {
+    if (!courseSnapshot) return;
+
+    course = JSON.parse(courseSnapshot);
+  }
 
   const paymentLink = $derived((course.metadata?.paymentLink ?? '').trim());
   const courseIsPaid = $derived(isCoursePaid(course));
@@ -203,9 +218,11 @@
 
     const updatePayload = {
       ...course,
-      type: course.type!,
+      type: course.type ?? undefined,
       slug: course.slug!,
       isPublished: course.isPublished ?? undefined,
+      bannerImage: course.bannerImage ?? undefined,
+      cost: course.cost ?? undefined,
       overview: course.overview ?? undefined,
       compliance: course.compliance ?? undefined,
       certificate: course.certificate
@@ -217,10 +234,12 @@
         : undefined
     } as TCourseUpdate;
 
-    await courseApi.update(courseId, updatePayload);
+    const updated = await courseApi.update(courseId, updatePayload);
+    if (!updated) return;
 
     loading = false;
     syncCourseStore(course);
+    courseSnapshot = JSON.stringify(course);
     hasUnsavedChanges = false;
   }
 
@@ -237,6 +256,8 @@
 
     if (isEqual(get(course, setterKey), value)) return;
 
+    if (!courseSnapshot) courseSnapshot = JSON.stringify(course);
+
     const _course = untrack(() => cloneDeep(course));
     set(_course, setterKey, value);
 
@@ -249,7 +270,7 @@
   }
 </script>
 
-<UnsavedChanges bind:hasUnsavedChanges />
+<UnsavedChanges bind:hasUnsavedChanges onAbandon={restoreCourseSnapshot} />
 
 <Sidebar.Header
   class="flex flex-row! items-center {sidebar.open ? 'justify-between' : 'justify-center'} border-b px-2 py-2"

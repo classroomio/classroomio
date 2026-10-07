@@ -99,7 +99,7 @@
                     <input
                       type="checkbox"
                       name={item.title}
-                      checked={item.checked}
+                      bind:checked={item.checked}
                       onchange={applyFilter}
                     />
                     <label for={item.title}>{item.title}</label>

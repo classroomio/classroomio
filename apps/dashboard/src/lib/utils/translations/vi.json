@@ -3553,7 +3553,6 @@
     },
     "filters": {
       "search_placeholder": "Tìm kiếm nội dung",
-      "apply": "Áp dụng",
       "status_options": {
         "all": "Tất cả trạng thái",
         "active": "Đang hoạt động",

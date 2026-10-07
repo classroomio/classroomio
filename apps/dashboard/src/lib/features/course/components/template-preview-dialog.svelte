@@ -180,6 +180,7 @@
                 label={$t('course_templates.preview.course_name')}
                 bind:value={courseName}
                 errorMessage={courseTemplateApi.errors.title}
+                onInput={() => courseTemplateApi.clearError('title')}
               />
               <div class="mt-3 flex flex-wrap justify-end gap-2">
                 <Button variant="outline" size="sm" type="button" onclick={() => handleOpenChange(false)}>

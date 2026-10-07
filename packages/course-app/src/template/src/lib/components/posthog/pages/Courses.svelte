@@ -102,7 +102,7 @@
                 >
                   <input
                     type="checkbox"
-                    checked={item.checked}
+                    bind:checked={item.checked}
                     name={item.title}
                     onchange={applyFilter}
                     class="accent-[#F54E00] focus:ring-0 dark:accent-[#EB9D2A]"

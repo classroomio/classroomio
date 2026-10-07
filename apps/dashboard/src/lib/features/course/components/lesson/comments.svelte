@@ -24,6 +24,7 @@
   let openDeleteModal = $state(false);
   let deleteCommentId: number | null = $state(null);
   let editCommentId: number | null = $state(null);
+  let editingText = $state('');
 
   const courseId = $derived(courseApi.course?.id ?? '');
   const groupmemberId = $derived(courseApi.group.memberId ?? '');
@@ -139,7 +140,12 @@
               </DropdownMenu.Trigger>
               <DropdownMenu.Content align="end">
                 {#if courseApi.group.memberId === commentItem.groupmemberId}
-                  <DropdownMenu.Item onclick={() => (editCommentId = commentItem.id)}>
+                  <DropdownMenu.Item
+                    onclick={() => {
+                      editCommentId = commentItem.id;
+                      editingText = commentItem.comment ?? '';
+                    }}
+                  >
                     {$t('course.navItem.lessons.comments.edit')}
                   </DropdownMenu.Item>
                   <DropdownMenu.Item
@@ -159,22 +165,19 @@
           </div>
 
           {#if editCommentId === commentItem.id}
-            <TextareaField
-              placeholder={$t('course.navItem.lessons.comments.placeholder')}
-              bind:value={commentItem.comment}
-            />
+            <TextareaField placeholder={$t('course.navItem.lessons.comments.placeholder')} bind:value={editingText} />
             <div class="mt-2 flex flex-row-reverse items-center gap-2">
               <Button variant="outline" onclick={() => (editCommentId = null)} disabled={lessonApi.isUpdatingComment}>
                 {$t('course.navItem.lessons.comments.cancel_btn')}
               </Button>
               <Button
                 onclick={async () => {
-                  await lessonApi.updateComment(courseId, lessonId, String(editCommentId), commentItem.comment!);
+                  await lessonApi.updateComment(courseId, lessonId, String(editCommentId), editingText);
                   if (lessonApi.success) {
                     editCommentId = null;
                   }
                 }}
-                disabled={!commentItem.comment}
+                disabled={!editingText.trim()}
                 loading={lessonApi.isUpdatingComment}
               >
                 {$t('course.navItem.lessons.comments.comment_btn')}

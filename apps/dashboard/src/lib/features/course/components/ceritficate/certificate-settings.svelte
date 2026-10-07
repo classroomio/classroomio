@@ -22,6 +22,7 @@
   }
 
   function onEmailMessageInput(e: Event) {
+    delete errors['certificate.emailMessage'];
     updateCertificate({ emailMessage: (e.currentTarget as HTMLTextAreaElement).value || null });
   }
 </script>

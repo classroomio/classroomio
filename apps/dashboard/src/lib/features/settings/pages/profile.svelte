@@ -20,6 +20,8 @@
   let avatar = $state<string | File | undefined>();
   let hasLangChanged = $state(false);
   let locale = $derived<TLocale | undefined>($profile.locale || undefined);
+  let fullname = $state('');
+  let username = $state('');
   let savedFullname = $state('');
   let savedUsername = $state('');
   let savedLocale = $state<TLocale | undefined>(undefined);
@@ -31,8 +33,8 @@
   export async function handleUpdate() {
     await profileApi.submit(
       {
-        fullname: $profile.fullname,
-        username: $profile.username,
+        fullname,
+        username,
         locale,
         avatar
       },
@@ -41,7 +43,8 @@
     );
 
     if (profileApi.success) {
-      hasUnsavedChanges = false;
+      $profile.fullname = fullname;
+      $profile.username = username;
       avatar = undefined;
       captureSavedFields();
     }
@@ -71,7 +74,9 @@
 
   function captureSavedFields() {
     savedFullname = $profile.fullname;
+    fullname = $profile.fullname;
     savedUsername = $profile.username;
+    username = $profile.username;
     savedLocale = $profile.locale || undefined;
   }
 
@@ -84,13 +89,21 @@
     }
   });
 
+  $effect(() => {
+    hasUnsavedChanges =
+      fullname !== savedFullname || username !== savedUsername || avatar !== undefined || hasLangChanged;
+  });
+
+  $effect(() => {
+    hasLangChanged = locale !== savedLocale;
+  });
+
   export function handleDiscard() {
-    $profile.fullname = savedFullname;
-    $profile.username = savedUsername;
+    fullname = savedFullname;
+    username = savedUsername;
     $profile.locale = savedLocale;
     avatar = undefined;
     hasLangChanged = false;
-    hasUnsavedChanges = false;
     profileApi.errors = {};
   }
 </script>
@@ -106,7 +119,6 @@
         src={$profile.avatarUrl}
         widthHeight="w-16 h-16 lg:w-24 lg:h-24"
         isDisabled={profileApi.isLoading}
-        change={() => (hasUnsavedChanges = true)}
       />
     </Field.Field>
   </Field.Set>
@@ -126,14 +138,14 @@
     <Field.Group>
       <Field.Field>
         <Field.Label>{$t('settings.profile.personal_information.full_name')}</Field.Label>
-        <Input bind:value={$profile.fullname} class="" oninput={() => (hasUnsavedChanges = true)} />
+        <Input bind:value={fullname} class="" />
         {#if profileApi.errors.fullname}
           <Field.Error>{$t(profileApi.errors.fullname)}</Field.Error>
         {/if}
       </Field.Field>
       <Field.Field>
         <Field.Label>{$t('settings.profile.personal_information.username')}</Field.Label>
-        <Input bind:value={$profile.username} oninput={() => (hasUnsavedChanges = true)} />
+        <Input bind:value={username} />
         {#if profileApi.errors.username}
           <Field.Error>{$t(profileApi.errors.username)}</Field.Error>
         {/if}
@@ -189,12 +201,7 @@
         {/if}
       </Field.Field>
       <Field.Field>
-        <LanguagePicker
-          change={() => (hasUnsavedChanges = true)}
-          bind:hasLangChanged
-          bind:value={locale}
-          className=""
-        />
+        <LanguagePicker bind:hasLangChanged bind:value={locale} className="" />
       </Field.Field>
     </Field.Group>
   </Field.Set>

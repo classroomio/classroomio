@@ -2,7 +2,6 @@
   import { COURSE_TYPE } from '@/utils/constants/course';
   import { SECTION } from '@/utils/constants/page';
   import { getPageSection } from '@/utils/helpers/page';
-  import { courses } from '@/utils/stores/course';
   import type { Course, CourseFilterItem } from '@/utils/types/course';
   import type { Page } from '@/utils/types/page';
   import CourseCard from '../CourseCard.svelte';
@@ -104,7 +103,7 @@
         </span>
       </div>
       <div>
-        {#if $courses.length > 0}
+        {#if data.courses.length > 0}
           <div class="w-full items-start gap-6 lg:ml-[5%] lg:flex">
             <div class="hidden w-fit lg:block">
               <p class="mb-2 font-medium">Filter by</p>
@@ -129,7 +128,7 @@
             <section
               class="flex flex-wrap items-center justify-center gap-4 p-4 lg:w-fit lg:justify-start"
             >
-              {#each $courses.slice(0, viewAll ? $courses.length : 3) as courseData}
+              {#each filteredCourses.slice(0, viewAll ? filteredCourses.length : 3) as courseData}
                 <CourseCard
                   className="bg-gray-50"
                   slug={courseData.slug}
@@ -138,9 +137,15 @@
                 />
               {/each}
             </section>
+
+            {#if filteredCourses.length === 0}
+              <div class="px-4 md:px-10">
+                <EmptyState className="bg-slate-100" />
+              </div>
+            {/if}
           </div>
 
-          {#if $courses.length > 3}
+          {#if filteredCourses.length > 3}
             <div class="my-5 flex w-full items-center justify-center">
               <PrimaryButton
                 label="VIEW MORE"
