@@ -260,10 +260,16 @@
      own frame (video/slide/image) sit directly on the page.
      Spacing between blocks is a single density the author can choose (see "reading density"). */
   :root { --preview-gap-compact: 24px; --preview-gap-comfortable: 40px; --preview-gap-spacious: 64px; }
-  .mode-preview #canvas > .content-section { margin-bottom: var(--preview-gap, var(--preview-gap-comfortable)); }
-  .mode-preview #canvas > .content-section:last-of-type { margin-bottom: 0; }
-  #screen-desktop.density-compact { --preview-gap: var(--preview-gap-compact); }
-  #screen-desktop.density-spacious { --preview-gap: var(--preview-gap-spacious); }
+  .mode-preview .canvas > .content-section { margin-bottom: var(--preview-gap, var(--preview-gap-comfortable)); }
+  .mode-preview .canvas > .content-section:last-of-type { margin-bottom: 0; }
+  .screen.density-compact { --preview-gap: var(--preview-gap-compact); }
+  .screen.density-spacious { --preview-gap: var(--preview-gap-spacious); }
+  .density-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .density-swatch { display: flex; flex-direction: column; width: 34px; padding: 6px 5px; background: var(--muted); border-radius: var(--radius-md); }
+  .density-swatch span { display: block; height: 4px; border-radius: 2px; background: var(--muted-foreground); opacity: .55; }
+  .density-swatch span + span { margin-top: 7px; }
+  .density-swatch[data-density="compact"] span + span { margin-top: 4px; }
+  .density-swatch[data-density="spacious"] span + span { margin-top: 11px; }
   .mode-preview .preview-doc-link { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
 
   /* unified canvas: one block per content item, reorderable as a sequence */
@@ -1016,45 +1022,38 @@
     </div>
     <div class="slider-body">
       <div class="field-set">
-        <p class="field-legend">Live class</p>
-        <p class="field-desc">Shown to students because this course runs as scheduled live sessions.</p>
+        <p class="field-legend">Progression</p>
+        <p class="field-desc">Choose how students complete this lesson and move through the course.</p>
+        <p class="field-desc">These rules apply to students only. You can preview and navigate freely while teaching.</p>
         <div class="field-stack">
-          <div class="field"><label class="label" for="callUrl">Call URL</label><input class="input" id="callUrl" value="https://meet.google.com/abc-defg-hij" /></div>
-          <div style="display:flex;gap:10px">
-            <div class="field" style="flex:1"><label class="label" for="sessDate">Date</label><input class="input" id="sessDate" type="date" value="2026-10-02" /></div>
-            <div class="field" style="flex:1"><label class="label" for="sessTz">Timezone</label><select class="select" id="sessTz"><option>West Africa Time (WAT)</option><option>Eastern Time (ET)</option><option>UTC</option></select></div>
-          </div>
-        </div>
-      </div>
-      <div class="field-set">
-        <p class="field-legend">Completion</p>
-        <p class="field-desc">Controls when this lesson counts as complete for a student.</p>
-        <div class="field-stack">
-          <div class="field"><label class="label" for="completionPolicy">Completion policy</label>
+          <div class="field"><label class="label" for="completionPolicy">Completion rule</label>
             <select class="select" id="completionPolicy" onchange="onPolicyChange()">
-              <option value="manual">Manual — student marks it complete</option>
-              <option value="video_watch" selected>Video watch — must watch required videos</option>
+              <option value="manual" selected>Manual — student marks it complete</option>
+              <option value="video_watch">Video watch — must watch required videos</option>
               <option value="none">None — always counts as complete</option>
             </select>
           </div>
-          <div class="field" id="watchThresholdField"><label class="label" for="watchThreshold">Video-watch threshold</label><input class="input" id="watchThreshold" type="number" value="95" style="max-width:110px" /><p class="hint">Percentage of the video's duration a student must watch.</p></div>
-          <div class="field" id="watchEnforceField"><label class="label">Videos that must be watched</label><p class="hint" style="margin-top:0">Only uploaded videos can be enforced — embedded/linked videos can't be tracked.</p>
+          <div class="field" id="watchThresholdField" style="display:none"><label class="label" for="watchThreshold">Video-watch threshold</label><input class="input" id="watchThreshold" type="number" value="95" style="max-width:110px" /><p class="hint">Percentage of the video's duration a student must watch.</p></div>
+          <div class="field" id="watchEnforceField" style="display:none"><label class="label">Videos that must be watched</label><p class="hint" style="margin-top:0">Only uploaded videos can be enforced — embedded/linked videos can't be tracked.</p>
             <div class="field-checklist"><label class="field-row-h"><input type="checkbox" class="checkbox" id="wv1" checked /><span class="label" style="margin:0">React Props Explained in 10 Minutes</span></label></div>
           </div>
         </div>
       </div>
       <div class="field-set">
-        <p class="field-legend">Engagement</p>
-        <p class="field-desc">Comments are on for this course — turn them off for just this lesson if needed.</p>
-        <div class="field-row-h"><label class="switch"><input type="checkbox" id="commentsToggle" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Allow comments on this lesson</span></div>
+        <p class="field-legend">Lesson comments</p>
+        <p class="field-desc">Choose whether students can view and add comments on this lesson.</p>
+        <div class="field-row-h"><label class="switch"><input type="checkbox" id="commentsToggle" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Comments enabled</span></div>
       </div>
       <div class="field-set">
         <p class="field-legend">Reading density</p>
         <p class="field-desc">How much room shows between blocks when students view this lesson in Preview.</p>
-        <div class="seg-toggle" id="densityToggle">
-          <button type="button" data-density="compact">Compact</button>
-          <button type="button" class="on" data-density="comfortable">Comfortable</button>
-          <button type="button" data-density="spacious">Spacious</button>
+        <div class="density-row">
+          <div class="seg-toggle" id="densityToggle">
+            <button type="button" data-density="compact">Compact</button>
+            <button type="button" class="on" data-density="comfortable">Comfortable</button>
+            <button type="button" data-density="spacious">Spacious</button>
+          </div>
+          <div class="density-swatch" id="densitySwatch-Desktop" aria-hidden="true"><span></span><span></span><span></span></div>
         </div>
       </div>
     </div>
@@ -1200,13 +1199,24 @@
         <aside class="slider-panel" style="position:absolute" role="dialog" aria-label="Lesson settings">
           <div class="slider-head"><div><h2>Lesson settings</h2><p>Applies to this lesson only.</p></div><button class="icon-btn" onclick="closeSettings('Mobile')" aria-label="Close settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
           <div class="slider-body">
-            <div class="field-set"><p class="field-legend">Completion</p><p class="field-desc">Controls when this lesson counts as complete for a student.</p>
+            <div class="field-set"><p class="field-legend">Progression</p><p class="field-desc">Choose how students complete this lesson and move through the course.</p><p class="field-desc">These rules apply to students only. You can preview and navigate freely while teaching.</p>
               <div class="field-stack">
-                <div class="field"><label class="label">Completion policy</label><select class="select"><option>Manual — student marks it complete</option><option selected>Video watch — must watch required videos</option><option>None — always counts as complete</option></select></div>
-                <div class="field"><label class="label">Video-watch threshold</label><input class="input" type="number" value="95" style="max-width:110px" /></div>
+                <div class="field"><label class="label">Completion rule</label><select class="select"><option selected>Manual — student marks it complete</option><option>Video watch — must watch required videos</option><option>None — always counts as complete</option></select></div>
               </div>
             </div>
-            <div class="field-set"><p class="field-legend">Engagement</p><div class="field-row-h"><label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Allow comments on this lesson</span></div></div>
+            <div class="field-set"><p class="field-legend">Lesson comments</p><p class="field-desc">Choose whether students can view and add comments on this lesson.</p><div class="field-row-h"><label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Comments enabled</span></div></div>
+            <div class="field-set">
+              <p class="field-legend">Reading density</p>
+              <p class="field-desc">How much room shows between blocks when students view this lesson in Preview.</p>
+              <div class="density-row">
+                <div class="seg-toggle" id="densityToggle-Mobile">
+                  <button type="button" data-density="compact">Compact</button>
+                  <button type="button" class="on" data-density="comfortable">Comfortable</button>
+                  <button type="button" data-density="spacious">Spacious</button>
+                </div>
+                <div class="density-swatch" id="densitySwatch-Mobile" aria-hidden="true"><span></span><span></span><span></span></div>
+              </div>
+            </div>
           </div>
         </aside>
       </div>
@@ -1301,15 +1311,26 @@
   document.getElementById('btnSettingsMobile').onclick = () => openSettings('Mobile');
 
   // ---- Preview reading density (how much space shows between blocks in Preview) ----
-  document.getElementById('densityToggle').addEventListener('click', (e) => {
-    const btn = e.target.closest('button');
-    if (!btn) return;
-    document.querySelectorAll('#densityToggle button').forEach((b) => b.classList.remove('on'));
-    btn.classList.add('on');
-    const screenEl = document.getElementById('screen-desktop');
-    screenEl.classList.remove('density-compact', 'density-spacious');
-    if (btn.dataset.density !== 'comfortable') screenEl.classList.add('density-' + btn.dataset.density);
-  });
+  // The swatch updates immediately regardless of Edit/Preview mode, so choosing a density is
+  // never silent — its real effect (block spacing in Preview) only shows once in Preview mode.
+  function wireDensityToggle(toggleId, screenId, swatchId) {
+    const toggle = document.getElementById(toggleId);
+    const screenEl = document.getElementById(screenId);
+    const swatch = document.getElementById(swatchId);
+    if (!toggle || !screenEl) return;
+
+    toggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      toggle.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+      btn.classList.add('on');
+      screenEl.classList.remove('density-compact', 'density-spacious');
+      if (btn.dataset.density !== 'comfortable') screenEl.classList.add('density-' + btn.dataset.density);
+      if (swatch) swatch.dataset.density = btn.dataset.density;
+    });
+  }
+  wireDensityToggle('densityToggle', 'screen-desktop', 'densitySwatch-Desktop');
+  wireDensityToggle('densityToggle-Mobile', 'screen-mobile', 'densitySwatch-Mobile');
 
   function onPolicyChange() {
     const isWatch = document.getElementById('completionPolicy').value === 'video_watch';

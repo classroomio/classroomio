@@ -11,7 +11,7 @@ A clickable, high-fidelity prototype lives at [`prototypes/lesson-editor-redesig
 * Blocks can be reordered by drag handle or explicit move up/down controls, and removed from a per-block menu.
 * Notes support callout styles (Info, Tip, Important, Warning, Highlight) in addition to plain text.
 * **Preview renders Video and Slides large and prominent** (a full-width player/viewer, not a compact edit-mode card), and hides every block's type label, so Preview reads as one continuous learner page rather than a labeled form.
-* Preview offers a reading-density control (Compact / Comfortable / Spacious) that adjusts the spacing between blocks.
+* The Settings slider offers a persisted, per-lesson reading-density setting (Compact / Comfortable / Spacious) that adjusts block spacing wherever the lesson is rendered for viewing (see [Confirmed Decision 7](#7-preview-represents-the-in-app-learner-experience)).
 * A scroll-position indicator — one dot per block, inside the canvas column — shows where the admin is in a long lesson and jumps to any block on click; Preview shows the equivalent as a continuous progress fill.
 
 When this document and the prototype disagree on a UI detail, the prototype wins.
@@ -141,17 +141,14 @@ Settings is removed from content navigation.
 
 Clicking Settings opens a right-side slider without replacing the lesson canvas.
 
-The slider contains exactly the fields currently provided by `LessonSettingsTab`:
+The slider contains exactly the fields currently provided by `LessonSettingsTab`, matching its existing conditional behavior — nothing is shown unconditionally that isn't unconditional today:
 
-* Live-session call URL
-* Live-session date
-* Timezone
-* Completion policy
-* Video-watch threshold
-* Per-video watch enforcement
-* Comments toggle
+* **Live class fields** (call URL, date, timezone) — shown only when the course is a live-class-type course (`courseApi.course?.type === 'LIVE_CLASS'`). Most lessons are not live-class lessons and will not see this section at all, exactly as today.
+* **Progression** — a single "Completion rule" field (Manual / Video watch / None). Choosing "Video watch" reveals the video-watch threshold and the per-video "must be watched" checklist; any other choice keeps them hidden. This matches today's conditional reveal exactly — nothing new.
+* **Lesson comments** — the existing comments toggle.
+* **Reading density** (new) — see [Confirmed Decision 7](#7-preview-represents-the-in-app-learner-experience).
 
-No new settings are introduced.
+No other new settings are introduced.
 
 Closing the slider must not navigate away, reload the lesson, reset scroll position, or lose edits.
 
@@ -175,7 +172,7 @@ It must not imply parity with the public/unauthenticated course renderer.
 
 The existing `viewAsStudent()` flow remains available as a supplementary course/public check.
 
-Preview also offers a reading-density control (Compact / Comfortable / Spacious) that changes the vertical spacing between blocks. This is a presentation preference only — it is not persisted as part of the lesson content, and it has no effect in Edit mode.
+Preview also offers a reading-density control (Compact / Comfortable / Spacious) that changes the vertical spacing between blocks wherever the lesson is rendered for viewing — the admin's own Preview and the real in-app learner view alike. Unlike the earlier draft of this PRD, this is now a **persisted, per-lesson setting**: the admin sets it once, from the Settings slider (alongside Progression and Lesson comments), and it applies for every subsequent viewer until changed — it is not a per-session, forgotten-on-reload preference. It has no effect on the Edit canvas itself, which keeps its own fixed block spacing regardless of this setting.
 
 ## 8. The ordered block list is a necessary data-model change
 
@@ -357,7 +354,7 @@ It must:
 * Render Video as a large, prominent player (full canvas width, learner-page proportions) instead of the compact edit-mode card
 * Render Slides as a large, prominent viewer (full canvas width) instead of the compact edit-mode card
 * Hide every block's type label, drag handle, and action menu, so the lesson reads as one continuous page rather than a labeled form — the learner already knows what they're looking at from the content itself
-* Offer the reading-density control (Compact / Comfortable / Spacious), affecting only the spacing between blocks in Preview
+* Reflect the lesson's persisted reading-density setting (Compact / Comfortable / Spacious, set from the Settings slider) as spacing between blocks — Preview shows exactly what the in-app learner view will show
 
 Preview must not discard unsaved edits. Existing autosave continues to handle persistence.
 
@@ -373,25 +370,31 @@ Add a persistent Settings action to the lesson header.
 
 Clicking Settings opens a right-side slider using the existing `@cio/ui` Sheet/Drawer primitives.
 
-The slider contains the existing `LessonSettingsTab` fields:
+The slider contains the existing `LessonSettingsTab` fields, including their existing conditional visibility, plus one new field:
 
 ### Live class
+
+Shown only when the course is a live-class-type course; not shown at all for any other course type (unchanged from today).
 
 * Call URL
 * Date
 * Timezone
 
-### Completion
+### Progression
 
-* Completion policy
-* Video-watch threshold
-* Per-video watch enforcement
+* Completion rule (Manual / Video watch / None)
+* Video-watch threshold — shown only when the completion rule is "Video watch" (unchanged from today)
+* Per-video watch enforcement — shown only when the completion rule is "Video watch" (unchanged from today)
 
-### Engagement
+### Lesson comments
 
-* Comments toggle
+* Comments enabled toggle
 
-Existing validation and behavior remain unchanged.
+### Reading density (new)
+
+* Compact / Comfortable / Spacious — a persisted, per-lesson setting controlling block spacing wherever the lesson is rendered for viewing (Preview and the real in-app learner view); no effect on the Edit canvas
+
+Existing validation and behavior remain unchanged for every field except Reading density, which is new.
 
 The slider can be closed through:
 
@@ -572,7 +575,7 @@ Add:
 * Video renders as a large, full-width player, not a compact card
 * Slides render as a large, full-width viewer, not a compact card
 * All block-type labels are hidden — the page reads as one continuous lesson
-* Reading-density control (Compact / Comfortable / Spacious) changes spacing between blocks only
+* Reflects the lesson's persisted reading-density setting (Compact / Comfortable / Spacious, set from the Settings slider) as spacing between blocks
 * The scroll-position indicator becomes a continuous progress fill instead of discrete dots
 
 ## Documents
@@ -673,10 +676,15 @@ Needs upload handling for the new Image type — object storage, a served URL, a
 
 ## Settings slider and Preview rendering
 
-No changes are expected beyond consuming the new ordered block data described below. Continue using:
+No changes are expected for the existing settings (Live class, Progression/completion rule, video-watch threshold and enforcement, Lesson comments) beyond consuming the new ordered block data described below. Continue using:
 
 * `lesson_language`
 * Existing lesson-language endpoints
+
+## Reading density (new)
+
+* Needs a persisted, per-lesson field (e.g. `lesson.readingDensity`, enum `compact` / `comfortable` / `spacious`, default `comfortable`) — its exact shape is an implementation decision against `packages/db/src/schema.ts`.
+* Read wherever the lesson is rendered for viewing: the admin's in-page Preview and the real in-app learner view. Not read or applied anywhere in the Edit canvas.
 
 ## The ordered block list (new)
 
@@ -814,8 +822,9 @@ Manually verify:
 25. The AI entry point inserts an editable Note block from a prompt; the prompt itself is not persisted.
 26. Note blocks support the six callout styles (Default, Info, Tip, Important, Warning, Highlight), selectable without altering the note's text.
 27. Image blocks can be uploaded, and their alt text and fit can be edited independently of replacing the image.
-28. The reading-density control changes block spacing in Preview only, with no effect on persisted content or on Edit mode.
-29. The scroll-position indicator (dots in Edit, progress fill in Preview) reflects the block currently in view and can jump to any block on click; it does not appear on the mobile frame.
+28. Reading density is a persisted, per-lesson setting: set once from the Settings slider, it determines block spacing in both Preview and the real in-app learner view, with no effect on the Edit canvas.
+29. The Settings slider's visibility rules match production exactly: Live class fields only for live-class-type courses; video-watch threshold and per-video enforcement only when the completion rule is "Video watch".
+30. The scroll-position indicator (dots in Edit, progress fill in Preview) reflects the block currently in view and can jump to any block on click; it does not appear on the mobile frame.
 
 ---
 
@@ -825,4 +834,4 @@ Draft, backed by a working prototype (`prototypes/lesson-editor-redesign/index.h
 
 **Core decision:** The lesson becomes one editable canvas holding an ordered list of Video/Note/Slide/Document/Image blocks — any count, any order, per lesson — instead of four fixed content tabs. Settings becomes a right-side slider, and Preview becomes an in-page toggle using the existing learner rendering path, rendering Video and Slides at full learner-facing size, hiding block-type labels, and offering a reading-density control.
 
-**Scope of data-model change:** the per-lesson ordered block list (replacing `lessonTabsOrder`'s role in content ordering), a new Image block, and a new AI note-drafting endpoint. Everything else — Settings, Preview's rendering path, and the existing Add Video/Add Slide/Add Document flows — continues on existing data and APIs.
+**Scope of data-model change:** the per-lesson ordered block list (replacing `lessonTabsOrder`'s role in content ordering), a new Image block, a new AI note-drafting endpoint, and a new persisted reading-density field. Everything else — the existing Live class / Progression / Lesson comments settings (with their existing conditional visibility unchanged), Preview's rendering path, and the existing Add Video/Add Slide/Add Document flows — continues on existing data and APIs.
