@@ -101,7 +101,7 @@ export function isEmptyReview(review: Review | null | undefined) {
 
   const hasName = !!review.name?.trim();
   const hasDescription = !!review.description?.trim();
-  const hasAvatar = !!review.avatar_url;
+  const hasAvatar = !!review.avatar_url?.trim();
 
   return !hasName && !hasDescription && !hasAvatar;
 }

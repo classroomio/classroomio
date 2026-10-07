@@ -202,8 +202,8 @@
     const courseReviews = course.metadata?.reviews;
     if (courseReviews?.length) {
       const savedReviews = courseReviews
-        .filter((review) => !isEmptyReview(review))
-        .map((review) => normalizeReview(review));
+        .map((review) => normalizeReview(review))
+        .filter((review) => !isEmptyReview(review));
       courseReviews.splice(0, courseReviews.length, ...savedReviews);
     }
 

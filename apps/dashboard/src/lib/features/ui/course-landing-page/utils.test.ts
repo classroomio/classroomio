@@ -50,6 +50,10 @@ describe('isEmptyReview', () => {
     expect(isEmptyReview(makeReview({ description: 'A great course.' }))).toBe(false);
   });
 
+  it('treats a review with a whitespace-only avatar as empty', () => {
+    expect(isEmptyReview(makeReview({ avatar_url: '   ' }))).toBe(true);
+  });
+
   it('keeps a review that only has an avatar', () => {
     expect(isEmptyReview(makeReview({ avatar_url: 'https://example.com/avatar.png' }))).toBe(false);
   });
@@ -90,5 +94,18 @@ describe('normalizeReview', () => {
 
   it('coerces a non-boolean hide flag to false', () => {
     expect(normalizeReview(makeReview({ hide: undefined as unknown as boolean })).hide).toBe(false);
+  });
+
+  it('makes a review with only a non-string avatar empty after normalizing', () => {
+    const review = normalizeReview(makeReview({ avatar_url: 42 as unknown as string }));
+
+    expect(isEmptyReview(review)).toBe(true);
+  });
+
+  it('normalizes before the empty check so a non-string name cannot throw', () => {
+    const review = normalizeReview(makeReview({ name: 42 as unknown as string }));
+
+    expect(review.name).toBe('');
+    expect(isEmptyReview(review)).toBe(true);
   });
 });
