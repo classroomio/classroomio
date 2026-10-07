@@ -2397,7 +2397,7 @@
                 "size": "(Máx. 500 MB)",
                 "oops": "Ops `😬, não foi possível enviar o vídeo",
                 "big_file": "Desculpe, o vídeo não foi enviado. O tamanho do arquivo é muito grande,",
-                "maximum_size": "o tamanho máximo é 30 MB. Tente novamente!",
+                "maximum_size": "o tamanho máximo é {size}. Tente novamente!",
                 "button": "Tente outro arquivo",
                 "try_again": "Por favor, tente novamente",
                 "unsupported_format": "Desculpe, o vídeo não foi enviado, o formato do arquivo não é compatível ou algo deu errado no servidor.",

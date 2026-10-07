@@ -2820,7 +2820,7 @@
                 "size": "(Max 500 MB)",
                 "oops": "Oops `😬, couldn’t upload video",
                 "big_file": "Sorry we video wasn’t uploaded. The file size is too big,",
-                "maximum_size": "maximum size is 30 MB. Try again!",
+                "maximum_size": "maximum size is {size}. Try again!",
                 "button": "Try another file",
                 "try_again": "Please try again",
                 "unsupported_format": "Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on the server.",
