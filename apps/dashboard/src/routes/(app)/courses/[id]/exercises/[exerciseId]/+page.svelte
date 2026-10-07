@@ -61,6 +61,7 @@
           conflictCount: restoredDraft.conflictCount,
           exerciseId: currentExerciseId,
           remoteState: restoredDraft.remoteState,
+          source: 'draft',
           type: 'conflict'
         });
       }

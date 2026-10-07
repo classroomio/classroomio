@@ -26,6 +26,7 @@ export interface ExerciseRemoteUpdateNotice {
   conflictCount: number;
   exerciseId: string;
   remoteState: QuestionnaireState;
+  source: 'draft' | 'remote';
   type: 'conflict' | 'merged';
 }
 
@@ -175,6 +176,7 @@ export function reconcileExercisePageData(exercise: Exercise, exerciseId: string
     conflictCount: localMerge.conflictCount,
     exerciseId,
     remoteState: snapshotQuestionnaireState(remoteState),
+    source: 'remote',
     type: localMerge.conflictCount > 0 ? 'conflict' : 'merged'
   });
 }

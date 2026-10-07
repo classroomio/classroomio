@@ -173,6 +173,18 @@
     }
   }
 
+  function applyAssistantExerciseConflictChoice() {
+    const shouldClearDraft = $exerciseRemoteUpdateNotice?.source === 'draft';
+    applyAssistantExerciseConflicts(exerciseId);
+
+    if (!shouldClearDraft) return;
+
+    const courseId = courseApi.course?.id;
+    if (courseId) {
+      clearExerciseDraft(courseId, exerciseId);
+    }
+  }
+
   async function handleDeleteExercise() {
     if (!courseApi.course?.id) return;
     isDeleting = true;
@@ -558,7 +570,11 @@
   $effect(() => {
     const courseId = courseApi.course?.id;
     const state = $questionnaire;
-    const shouldSaveDraft = !!courseId && questionnaireHasChanges;
+    const hasUnresolvedDraftConflict =
+      $exerciseRemoteUpdateNotice?.exerciseId === exerciseId &&
+      $exerciseRemoteUpdateNotice.source === 'draft' &&
+      $exerciseRemoteUpdateNotice.type === 'conflict';
+    const shouldSaveDraft = !!courseId && questionnaireHasChanges && !hasUnresolvedDraftConflict;
 
     if (draftSaveTimer) {
       clearTimeout(draftSaveTimer);
@@ -889,7 +905,7 @@
           <Button size="sm" variant="outline" onclick={dismissExerciseRemoteUpdateNotice}>
             {$t('course.navItem.lessons.exercises.all_exercises.remote_update.keep_mine')}
           </Button>
-          <Button size="sm" onclick={() => applyAssistantExerciseConflicts(exerciseId)}>
+          <Button size="sm" onclick={applyAssistantExerciseConflictChoice}>
             {$t('course.navItem.lessons.exercises.all_exercises.remote_update.use_assistant')}
           </Button>
         {:else}
