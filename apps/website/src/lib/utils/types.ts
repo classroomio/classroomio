@@ -37,3 +37,13 @@ export type Testimonial = {
   role: string;
   avatar: string;
 };
+
+export type ChangelogEntry = {
+  id: string;
+  title: string;
+  summary: string | null;
+  url: string;
+  coverUrl: string | null;
+  publishedAt: string;
+  tags: string[];
+};
