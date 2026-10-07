@@ -60,8 +60,8 @@
       onValueChange?.(next);
     },
     onCommit: (next) => {
-      baseline = next;
       onCommit?.(next);
+      baseline = next;
     },
     onReseed: (next) => {
       baseline = next;
