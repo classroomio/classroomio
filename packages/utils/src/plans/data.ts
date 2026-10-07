@@ -48,7 +48,7 @@ export default {
       'Includes all upcoming features'
     ],
     CTA: {
-      LABEL: 'I want in 😍',
+      LABEL: 'I want in',
       LINK: '/signup?plan=early-adopter',
       DASHBOARD_LABEL: 'Upgrade now',
       DASHBOARD_LINK: '',

@@ -1,13 +1,25 @@
 <script lang="ts">
-  import { PLANS } from '@cio/utils/plans';
+  import { page } from '$app/state';
+  import { PLANS, isEarlyAdopterOfferActive } from '@cio/utils/plans';
   import { PricingToggle } from '@cio/ui/custom/pricing-toggle';
   import { MachineGlassBox } from '@cio/ui/custom/animation/machines';
 
-  import { PageSignupCTA, PageHeader, PricingPlanCard, TestimonialCarousel } from '$lib/components';
+  import {
+    EarlyAdopterCallout,
+    PageSignupCTA,
+    PageHeader,
+    PricingPlanCard,
+    TestimonialCarousel
+  } from '$lib/components';
+  import { getLockInHref, type LockInInterval } from '$lib/utils/lock-in';
   import { testimonials } from '$lib/utils/testimonials';
   import { MachineCard } from '$lib/components/ui';
 
   let isYearlyPlan = $state(false);
+
+  const isOfferActive = isEarlyAdopterOfferActive();
+  const lockInInterval = $derived<LockInInterval>(isYearlyPlan ? 'year' : 'month');
+  const isCheckoutUnavailable = $derived(page.url.searchParams.get('checkout') === 'unavailable');
 
   const planNames = Object.keys(PLANS) as Array<keyof typeof PLANS>;
   const glassBoxPrice = `${PLANS.EARLY_ADOPTER.PRICE.CURRENCY}${PLANS.EARLY_ADOPTER.PRICE.MONTHLY}/mo`;
@@ -64,11 +76,18 @@
 
   <div class="w-full px-6 py-20 md:px-10">
     <div class="max-w-content mx-auto">
+      {#if isCheckoutUnavailable}
+        <p class="mb-6 rounded-sm border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">
+          We could not start checkout. Please try again, or email help@classroomio.com and we will sort it out.
+        </p>
+      {/if}
+      <EarlyAdopterCallout interval={lockInInterval} class="mb-10" />
       <div class="mx-auto grid max-w-sm gap-6 lg:max-w-none lg:grid-cols-3">
         {#each planNames as planName (planName)}
           <PricingPlanCard
             plan={PLANS[planName]}
             isPopular={planName === 'EARLY_ADOPTER'}
+            ctaHref={planName === 'EARLY_ADOPTER' && isOfferActive ? getLockInHref(lockInInterval) : undefined}
             {isYearlyPlan}
             perOrgLabel={isYearlyPlan ? 'per year' : 'per month'}
           />

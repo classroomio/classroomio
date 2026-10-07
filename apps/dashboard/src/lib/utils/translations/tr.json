@@ -1682,7 +1682,16 @@
       "monthly": "Aylık",
       "annually": "Yıllık",
       "popular": "Popüler",
-      "per_org": "Kuruluş Başına"
+      "per_org": "Kuruluş Başına",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter fiyatı · {days, plural, one {# gün kaldı} other {# gün kaldı}}",
+        "eyebrow_closing": "Early Adopter fiyatı · Son {days} gün",
+        "eyebrow_today": "Early Adopter fiyatı · Bugün bitiyor",
+        "title": "Bilerek düşük fiyat. Uzun sürmeyecek.",
+        "title_closing": "Bilerek düşük fiyat. Yakında kapanıyor.",
+        "body": "ClassroomIO’yu uygun fiyatlı tutuyoruz çünkü onu yalnızca müşterilerimiz için değil, müşterilerimizle birlikte geliştiriyoruz. Bugünkü fiyatı {date} tarihinden önce sabitleyin. Ardından Early Adopter planı kapanır ve yeni fiyatlar geçerli olur.",
+        "link": "Bunu neden yaptığımızı okuyun"
+      }
     }
   },
   "widgets": {

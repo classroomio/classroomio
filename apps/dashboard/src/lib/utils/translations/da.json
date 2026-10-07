@@ -3522,7 +3522,16 @@
       "monthly": "Månedligt",
       "annually": "Årligt",
       "popular": "Populært",
-      "per_org": "Per organisation"
+      "per_org": "Per organisation",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter-pris · {days, plural, one {# dag tilbage} other {# dage tilbage}}",
+        "eyebrow_closing": "Early Adopter-pris · Sidste {days} dage",
+        "eyebrow_today": "Early Adopter-pris · Slutter i dag",
+        "title": "Lav pris med vilje. Ikke for evigt.",
+        "title_closing": "Lav pris med vilje. Lukker snart.",
+        "body": "Vi holder ClassroomIO billig, fordi vi bygger det sammen med vores kunder, ikke kun til dem. Lås dagens pris inden {date}. Derefter lukker Early Adopter-planen, og nye priser træder i kraft.",
+        "link": "Læs hvorfor vi gør det"
+      }
     },
     "plan_names": {
       "free": "Gratis",

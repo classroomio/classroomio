@@ -40,7 +40,7 @@ export const PUBLIC_ROUTES = [
   '^/csp-report$'
 ];
 
-export const PUBLIC_API_ROUTES = ['/api/polar/webhook', '/api/lmz', '/api/verify'];
+export const PUBLIC_API_ROUTES = ['/api/polar/webhook', '/api/polar/lock-in', '/api/lmz', '/api/verify'];
 
 export const ROUTES_TO_HIDE_NAV = [
   `^${ROUTE.LOGIN}$`,

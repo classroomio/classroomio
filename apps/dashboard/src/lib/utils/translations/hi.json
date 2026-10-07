@@ -3522,7 +3522,16 @@
       "monthly": "मासिक",
       "annually": "वार्षिक रूप से",
       "popular": "लोकप्रिय",
-      "per_org": "प्रति संगठन"
+      "per_org": "प्रति संगठन",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter दर · {days, plural, one {# दिन बचा} other {# दिन बचे}}",
+        "eyebrow_closing": "Early Adopter दर · आख़िरी {days} दिन",
+        "eyebrow_today": "Early Adopter दर · आज समाप्त",
+        "title": "जानबूझकर कम कीमत। ज़्यादा समय के लिए नहीं।",
+        "title_closing": "जानबूझकर कम कीमत। जल्द ही बंद।",
+        "body": "हम ClassroomIO को किफ़ायती रखते हैं क्योंकि हम इसे अपने ग्राहकों के साथ मिलकर बनाते हैं, सिर्फ़ उनके लिए नहीं। {date} से पहले आज की दर पक्की कर लें। उसके बाद Early Adopter प्लान बंद हो जाएगा और नई कीमतें लागू होंगी।",
+        "link": "जानें हम ऐसा क्यों करते हैं"
+      }
     },
     "plan_names": {
       "free": "निःशुल्क",

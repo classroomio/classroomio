@@ -13,6 +13,7 @@ export { default as CodeBlock } from './code-block.svelte';
 export { default as CoreFeatureSection } from './core-feature-section.svelte';
 export { default as CustomImg } from './custom-img.svelte';
 export { default as DeploySection } from './deploy-section.svelte';
+export { default as EarlyAdopterCallout } from './early-adopter-callout.svelte';
 export { default as EmbedCodePreview } from './embed-code-preview.svelte';
 export { default as EnterpriseSection } from './enterprise-section.svelte';
 export { default as Faq } from './faq.svelte';

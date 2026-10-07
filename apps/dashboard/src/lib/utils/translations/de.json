@@ -3522,7 +3522,16 @@
       "monthly": "Monatlich",
       "annually": "Jährlich",
       "popular": "Beliebt",
-      "per_org": "Pro Organisation"
+      "per_org": "Pro Organisation",
+      "priced_low": {
+        "eyebrow_open": "Early-Adopter-Preis · {days, plural, one {# Tag übrig} other {# Tage übrig}}",
+        "eyebrow_closing": "Early-Adopter-Preis · Letzte {days} Tage",
+        "eyebrow_today": "Early-Adopter-Preis · Endet heute",
+        "title": "Bewusst günstig. Nicht für lange.",
+        "title_closing": "Bewusst günstig. Bald vorbei.",
+        "body": "Wir halten ClassroomIO bezahlbar, weil wir es gemeinsam mit unseren Kunden aufbauen, nicht nur für sie. Sichern Sie sich den heutigen Preis vor dem {date}. Danach wird der Early-Adopter-Tarif geschlossen und neue Preise gelten.",
+        "link": "Warum wir das tun"
+      }
     },
     "plan_names": {
       "free": "Kostenlos",

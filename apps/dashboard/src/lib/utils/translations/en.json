@@ -1672,7 +1672,16 @@
       "monthly": "Monthly",
       "annually": "Annually",
       "popular": "Popular",
-      "per_org": "Per Organization"
+      "per_org": "Per Organization",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter rate · {days, plural, one {# day left} other {# days left}}",
+        "eyebrow_closing": "Early Adopter rate · Last {days} days",
+        "eyebrow_today": "Early Adopter rate · Ends today",
+        "title": "Priced low on purpose. Not for long.",
+        "title_closing": "Priced low on purpose. Closing soon.",
+        "body": "We keep ClassroomIO affordable because we build it with our customers, not for them. Lock in today’s rate before {date}. After that, the Early Adopter plan closes and new pricing applies.",
+        "link": "Read why we do it"
+      }
     }
   },
   "widgets": {

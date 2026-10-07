@@ -3522,7 +3522,16 @@
       "monthly": "hàng tháng",
       "annually": "Hàng năm",
       "popular": "phổ biến",
-      "per_org": "Mỗi tổ chức"
+      "per_org": "Mỗi tổ chức",
+      "priced_low": {
+        "eyebrow_open": "Giá Early Adopter · Còn {days, plural, other {# ngày}}",
+        "eyebrow_closing": "Giá Early Adopter · {days} ngày cuối",
+        "eyebrow_today": "Giá Early Adopter · Kết thúc hôm nay",
+        "title": "Giá thấp có chủ đích. Không kéo dài lâu.",
+        "title_closing": "Giá thấp có chủ đích. Sắp đóng.",
+        "body": "Chúng tôi giữ ClassroomIO ở mức giá phải chăng vì chúng tôi xây dựng nó cùng khách hàng, không chỉ dành cho họ. Hãy chốt mức giá hôm nay trước {date}. Sau đó, gói Early Adopter sẽ đóng và giá mới sẽ được áp dụng.",
+        "link": "Đọc lý do chúng tôi làm vậy"
+      }
     },
     "plan_names": {
       "free": "miễn phí",
