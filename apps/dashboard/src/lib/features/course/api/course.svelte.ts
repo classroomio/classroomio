@@ -219,6 +219,9 @@ export class CourseApi extends BaseApiWithErrors {
    * @returns The course data or null on error
    */
   async get(courseId: string) {
+    const courseAtRequest = this.course;
+    const snapshotAtRequest = courseAtRequest ? JSON.stringify(courseAtRequest) : null;
+
     await this.execute<GetCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].$get({
@@ -229,7 +232,16 @@ export class CourseApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         console.log('response', response.data);
         if (response.data) {
-          this.course = response.data;
+          const editedDuringFetch =
+            snapshotAtRequest !== null &&
+            courseAtRequest?.id === courseId &&
+            this.course?.id === courseId &&
+            JSON.stringify(this.course) !== snapshotAtRequest;
+
+          // Preserve edits made while the fetch was pending; assigning now would revert them.
+          if (!editedDuringFetch) {
+            this.course = response.data;
+          }
           this.success = true;
           this.errors = {};
         }
@@ -496,6 +508,10 @@ export class CourseApi extends BaseApiWithErrors {
 
     let conversionOffenders: NonAutoGradableQuestionOffender[] = [];
 
+    const courseAtRequest = this.course;
+    const snapshotAtRequest = courseAtRequest ? JSON.stringify(courseAtRequest) : null;
+    let changedDuringRequest = false;
+
     const response = await this.execute<UpdateCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].$put({
@@ -508,8 +524,12 @@ export class CourseApi extends BaseApiWithErrors {
           // Update the stored course data, preserving fields not in the update response
           // The update response may not include all fields (like group, lessons, etc.)
           if (this.course) {
-            // Merge update response with existing course data
-            Object.assign(this.course, response.data);
+            changedDuringRequest = snapshotAtRequest !== null && JSON.stringify(this.course) !== snapshotAtRequest;
+
+            // Preserve edits made while the request was pending; merging now would revert them.
+            if (!changedDuringRequest) {
+              Object.assign(this.course, response.data);
+            }
           } else {
             this.course = response.data as Course;
           }
@@ -557,7 +577,9 @@ export class CourseApi extends BaseApiWithErrors {
     const updated = response?.data ?? null;
 
     // Some update responses may omit related data (group/lessons/sections), so refresh the store.
-    if (updated) {
+    // Skip when the user kept editing during the save: refetching now would replace
+    // their newer edits with the just-saved server state.
+    if (updated && !changedDuringRequest) {
       const profileId = get(profile)?.id;
       if (profileId) {
         await this.refreshCourse(courseId, profileId);
