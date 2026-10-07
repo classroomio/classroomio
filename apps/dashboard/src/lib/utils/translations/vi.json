@@ -6243,5 +6243,25 @@
       "description": "Một khóa học hoàn chỉnh với các bài học, bài tập và cài đặt. Sao chép nó, sau đó biến nó thành của bạn.",
       "browse": "Duyệt qua tất cả các mẫu"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Đã nhận thanh toán. Còn một bước nữa.",
+      "body": "Tạo tài khoản hoặc đăng nhập, và chúng tôi sẽ tự động kết nối gói Early Adopter với học viện của bạn.",
+      "sign_up": "Tạo tài khoản",
+      "log_in": "Đăng nhập",
+      "continue": "Tiếp tục đến học viện của tôi"
+    },
+    "success": {
+      "title": "Gói Early Adopter của bạn đã được kích hoạt",
+      "body": "Mức giá của bạn đã được giữ cố định và mọi tính năng Early Adopter đã được mở cho học viện của bạn.",
+      "continue": "Bắt đầu xây dựng"
+    },
+    "errors": {
+      "invalid": "Liên kết này không hợp lệ. Hãy kiểm tra email chúng tôi đã gửi hoặc liên hệ hỗ trợ.",
+      "expired": "Liên kết này đã hết hạn. Hãy liên hệ hỗ trợ và chúng tôi sẽ giúp bạn kết nối gói.",
+      "unavailable": "Liên kết gói này đã được dùng hoặc không còn hiệu lực. Hãy liên hệ hỗ trợ nếu đây là nhầm lẫn.",
+      "conflict": "Học viện này đã có gói trả phí nên chúng tôi không thể kết nối gói này. Hãy liên hệ hỗ trợ và chúng tôi sẽ giúp."
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { OrgPlanApiServer } from '$features/org/api/org-plan.server';
 import { CreditPurchaseApiServer } from '$features/agent/api/credit-purchase.server';
-import { PLAN, TOKEN_PACK } from '@cio/utils/plans';
-import type { TCreateOrgPlan } from '@cio/utils/validation/organization';
+import { EARLY_ADOPTER_CLAIM_CHECKOUT_KIND, PLAN, TOKEN_PACK } from '@cio/utils/plans';
+import type { TCreateOrgPlan, TEarlyAdopterSubscriptionEvent } from '@cio/utils/validation/organization';
 import type {
   PolarOrderWebhookPayload,
   PolarSubscriptionWebhookPayload,
@@ -26,6 +26,56 @@ function isSubscriptionPayload(payload: PolarWebhookPayload): payload is PolarSu
 
 function isOrderPayload(payload: PolarWebhookPayload): payload is PolarOrderWebhookPayload {
   return payload.type === 'order.paid' || payload.type === 'order.created' || payload.type === 'order.refunded';
+}
+
+function getEarlyAdopterEvent(type: string, data: SubscriptionData): TEarlyAdopterSubscriptionEvent['event'] | null {
+  const isActive = data.status === 'active';
+
+  switch (type) {
+    case 'subscription.created':
+      return isActive ? 'activated' : null;
+    case 'subscription.updated':
+      return isActive ? 'activated' : 'updated';
+    case 'subscription.active':
+    case 'subscription.uncanceled':
+      return 'activated';
+    case 'subscription.past_due':
+    case 'subscription.canceled':
+      return 'updated';
+    case 'subscription.revoked':
+      return 'revoked';
+    default:
+      return null;
+  }
+}
+
+async function recordEarlyAdopterPurchase(type: string, data: SubscriptionData) {
+  const event = getEarlyAdopterEvent(type, data);
+
+  if (!event) {
+    return;
+  }
+
+  const customerEmail = data.customer?.email;
+
+  if (!customerEmail) {
+    console.error('early adopter subscription event missing customer email', data.id);
+
+    return;
+  }
+
+  const result = await OrgPlanApiServer.recordEarlyAdopterEvent({
+    event,
+    subscriptionId: data.id,
+    customerId: data.customerId,
+    customerEmail,
+    checkoutId: data.checkoutId,
+    payload: data as unknown as Record<string, unknown>
+  });
+
+  if (!result) {
+    throw new Error('Early adopter purchase request failed');
+  }
 }
 
 function getOrgPlanData(data: SubscriptionData): TCreateOrgPlan | null {
@@ -119,6 +169,15 @@ async function onPayload(payload: PolarWebhookPayload) {
   }
 
   const data = payload.data as SubscriptionData;
+
+  if (data.metadata?.kind === EARLY_ADOPTER_CLAIM_CHECKOUT_KIND) {
+    if (payload.type.startsWith('subscription.')) {
+      await recordEarlyAdopterPurchase(payload.type, data);
+    }
+
+    return;
+  }
+
   const subscriptionId = data.id;
   const isSubscriptionActive = data.status === 'active';
 

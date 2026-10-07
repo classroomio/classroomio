@@ -6243,5 +6243,25 @@
       "description": "Un cours complet avec leçons, exercices et paramètres. Copiez-le, puis personnalisez-le.",
       "browse": "Parcourez tous les modèles"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Paiement reçu. Plus qu’une étape.",
+      "body": "Créez votre compte ou connectez-vous, et nous relions automatiquement votre plan Early Adopter à votre académie.",
+      "sign_up": "Créer mon compte",
+      "log_in": "Se connecter",
+      "continue": "Continuer vers mon académie"
+    },
+    "success": {
+      "title": "Votre plan Early Adopter est actif",
+      "body": "Votre tarif est verrouillé et toutes les fonctionnalités Early Adopter sont désormais débloquées pour votre académie.",
+      "continue": "Commencer à créer"
+    },
+    "errors": {
+      "invalid": "Ce lien n’est pas valide. Vérifiez l’e-mail que nous vous avons envoyé ou contactez le support.",
+      "expired": "Ce lien a expiré. Contactez le support et nous vous aiderons à connecter votre plan.",
+      "unavailable": "Ce lien de plan a déjà été utilisé ou n’est plus actif. Contactez le support s’il s’agit d’une erreur.",
+      "conflict": "Cette académie a déjà un plan payant, nous n’avons donc pas pu connecter celui-ci. Contactez le support et nous vous aiderons."
+    }
   }
 }

@@ -6243,5 +6243,25 @@
       "description": "Et komplet kursus med lektioner, øvelser og indstillinger. Kopier det, og gør det derefter til dit.",
       "browse": "Gennemse alle skabeloner"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Betaling modtaget. Ét trin tilbage.",
+      "body": "Opret din konto eller log ind, så forbinder vi automatisk din Early Adopter-plan med dit akademi.",
+      "sign_up": "Opret min konto",
+      "log_in": "Log ind",
+      "continue": "Fortsæt til mit akademi"
+    },
+    "success": {
+      "title": "Din Early Adopter-plan er aktiv",
+      "body": "Din pris er låst, og alle Early Adopter-funktioner er nu låst op for dit akademi.",
+      "continue": "Kom i gang"
+    },
+    "errors": {
+      "invalid": "Dette link er ikke gyldigt. Tjek den e-mail, vi sendte dig, eller kontakt support.",
+      "expired": "Dette link er udløbet. Kontakt support, så hjælper vi dig med at forbinde din plan.",
+      "unavailable": "Dette planlink er allerede brugt eller er ikke længere aktivt. Kontakt support, hvis det er en fejl.",
+      "conflict": "Dette akademi har allerede en betalt plan, så vi kunne ikke forbinde denne. Kontakt support, så hjælper vi dig."
+    }
   }
 }

@@ -6243,5 +6243,25 @@
       "description": "Um curso completo com lições, exercícios e configurações. Copie-o e torne-o seu.",
       "browse": "Navegue por todos os modelos"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Pagamento recebido. Falta um passo.",
+      "body": "Crie a sua conta ou inicie sessão e ligamos o seu plano Early Adopter à sua academia automaticamente.",
+      "sign_up": "Criar a minha conta",
+      "log_in": "Iniciar sessão",
+      "continue": "Continuar para a minha academia"
+    },
+    "success": {
+      "title": "O seu plano Early Adopter está ativo",
+      "body": "O seu preço está garantido e todas as funcionalidades Early Adopter já estão desbloqueadas para a sua academia.",
+      "continue": "Começar a criar"
+    },
+    "errors": {
+      "invalid": "Este link não é válido. Verifique o e-mail que lhe enviámos ou contacte o suporte.",
+      "expired": "Este link expirou. Contacte o suporte e ajudamos a ligar o seu plano.",
+      "unavailable": "Este link de plano já foi usado ou já não está ativo. Contacte o suporte se for um engano.",
+      "conflict": "Esta academia já tem um plano pago, por isso não foi possível ligar este. Contacte o suporte e ajudamos."
+    }
   }
 }

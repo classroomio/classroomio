@@ -6223,5 +6223,25 @@
       "description": "Dersler, alıştırmalar ve ayarlarla eksiksiz bir kurs. Kopyalayın ve kendinize ait yapın.",
       "browse": "Tüm şablonlara göz atın"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Ödeme alındı. Bir adım kaldı.",
+      "body": "Hesabınızı oluşturun veya giriş yapın, Early Adopter planınızı akademinize otomatik olarak bağlayalım.",
+      "sign_up": "Hesabımı oluştur",
+      "log_in": "Giriş yap",
+      "continue": "Akademime devam et"
+    },
+    "success": {
+      "title": "Early Adopter planınız etkin",
+      "body": "Fiyatınız sabitlendi ve tüm Early Adopter özellikleri artık akademiniz için açık.",
+      "continue": "Oluşturmaya başla"
+    },
+    "errors": {
+      "invalid": "Bu bağlantı geçerli değil. Size gönderdiğimiz e-postayı kontrol edin veya destekle iletişime geçin.",
+      "expired": "Bu bağlantının süresi doldu. Destekle iletişime geçin, planınızı bağlamanıza yardım edelim.",
+      "unavailable": "Bu plan bağlantısı daha önce kullanıldı veya artık etkin değil. Bir hata olduğunu düşünüyorsanız destekle iletişime geçin.",
+      "conflict": "Bu akademinin zaten ücretli bir planı var, bu yüzden bunu bağlayamadık. Destekle iletişime geçin, yardımcı olalım."
+    }
   }
 }

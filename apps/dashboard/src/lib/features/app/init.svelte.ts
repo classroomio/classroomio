@@ -460,6 +460,18 @@ class AppInitApi extends BaseApi {
     });
   }
 
+  /**
+   * Re-fetches the account and re-seeds the stores, e.g. after a plan is connected to the organization.
+   */
+  async refreshAccountData(): Promise<void> {
+    const accountData = await this.fetchAccountData();
+
+    if (!accountData) return;
+
+    this.data = accountData;
+    this.setupStores();
+  }
+
   async handlePendingInviteAccepted(redirectTo?: string): Promise<void> {
     this.showPendingInviteModal = false;
     this.pendingOrgInvite = null;

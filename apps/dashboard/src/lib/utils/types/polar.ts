@@ -101,9 +101,9 @@ export interface SubscriptionData {
   customerCancellationReason: string | null;
   customerCancellationComment: string | null;
   metadata: {
-    orgId: string;
-    orgSlug: string;
-    triggeredBy: string;
+    orgId?: string;
+    orgSlug?: string;
+    triggeredBy?: string;
     kind?: string;
   };
   customFieldData: Record<string, any>;
