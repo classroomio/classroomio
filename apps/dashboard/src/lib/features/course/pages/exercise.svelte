@@ -154,9 +154,23 @@
   const passedPolicyReviewStoragePrefix = 'classroomio:passed-policy-review';
   let lastHandledHighlight = $state<string | null>(null);
   let draftSaveTimer: ReturnType<typeof setTimeout> | null = null;
+  const questionnaireHasChanges = $derived(!$isOrgStudent && hasUnsavedExerciseState(exerciseId, $questionnaire));
 
   function hasDirtyQuestionnaire() {
-    return hasUnsavedExerciseState(exerciseId, $questionnaire);
+    return questionnaireHasChanges;
+  }
+
+  function discardExerciseDraft() {
+    const courseId = courseApi.course?.id;
+
+    if (draftSaveTimer) {
+      clearTimeout(draftSaveTimer);
+      draftSaveTimer = null;
+    }
+
+    if (courseId) {
+      clearExerciseDraft(courseId, exerciseId);
+    }
   }
 
   async function handleDeleteExercise() {
@@ -493,7 +507,7 @@
     }
 
     const courseId = courseApi.course?.id;
-    if (!$isOrgStudent && courseId && hasDirtyQuestionnaire()) {
+    if (hasUnsavedChanges && courseId && hasDirtyQuestionnaire()) {
       const baseState = getExerciseServerState(exerciseId);
       if (baseState) {
         saveExerciseDraft(courseId, exerciseId, $questionnaire, baseState);
@@ -538,13 +552,13 @@
   });
 
   $effect(() => {
-    hasUnsavedChanges = !$isOrgStudent && hasDirtyQuestionnaire();
+    hasUnsavedChanges = questionnaireHasChanges;
   });
 
   $effect(() => {
     const courseId = courseApi.course?.id;
     const state = $questionnaire;
-    const shouldSaveDraft = !$isOrgStudent && !!courseId && hasUnsavedExerciseState(exerciseId, state);
+    const shouldSaveDraft = !!courseId && questionnaireHasChanges;
 
     if (draftSaveTimer) {
       clearTimeout(draftSaveTimer);
@@ -1075,4 +1089,4 @@
   {/snippet}
 </Page.Body>
 
-<UnsavedChanges bind:hasUnsavedChanges />
+<UnsavedChanges bind:hasUnsavedChanges onAbandonChanges={discardExerciseDraft} />

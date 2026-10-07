@@ -180,6 +180,28 @@ function mergeEntities<T extends { id: string | number }>(
   return { conflictCount, entities };
 }
 
+function ensureUniqueQuestionOrder(questions: Question[]) {
+  const activeQuestions = questions.filter((question) => !question.deletedAt);
+  const seenOrders = new Set<number>();
+  const hasDuplicateOrder = activeQuestions.some((question) => {
+    if (question.order == null || seenOrders.has(question.order)) return true;
+
+    seenOrders.add(question.order);
+    return false;
+  });
+
+  if (!hasDuplicateOrder) return questions;
+
+  let nextOrder = 1;
+  return questions.map((question) => {
+    if (question.deletedAt) return question;
+
+    const orderedQuestion = { ...question, order: nextOrder };
+    nextOrder += 1;
+    return orderedQuestion;
+  });
+}
+
 export function hasQuestionnaireChanges(baseState: QuestionnaireState, currentState: QuestionnaireState) {
   return !equalEditorValues(baseState, currentState);
 }
@@ -256,7 +278,7 @@ export function mergeExerciseStates(
       isTitleDirty: title.usedLocal && localState.isTitleDirty,
       description: description.value,
       isDescriptionDirty: description.usedLocal && localState.isDescriptionDirty,
-      questions: questions.entities,
+      questions: ensureUniqueQuestionOrder(questions.entities),
       sections: sections.entities,
       sectionDisplayMode: sectionDisplayMode.value,
       totalSubmissions: remoteState.totalSubmissions,

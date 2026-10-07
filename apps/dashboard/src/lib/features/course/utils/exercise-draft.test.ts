@@ -51,23 +51,28 @@ describe('exercise drafts', () => {
     const baseState = makeState('Server title');
     saveExerciseDraft('course-1', 'exercise-1', makeState('Unsaved title'), baseState);
 
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(true);
+    expect(restoreExerciseDraft('course-1', 'exercise-1')).not.toBeNull();
     expect(get(questionnaire).title).toBe('Unsaved title');
 
     questionnaire.set(makeState('Server title'));
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(true);
+    expect(restoreExerciseDraft('course-1', 'exercise-1')).not.toBeNull();
 
     clearExerciseDraft('course-1', 'exercise-1');
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(false);
+    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBeNull();
   });
 
-  it('keeps newer server changes when they conflict with a stored draft', () => {
+  it('restores the draft side of conflicts and offers the server version as a choice', () => {
     const baseState = makeState('Original title');
     saveExerciseDraft('course-1', 'exercise-1', makeState('Draft title'), baseState);
     questionnaire.set(makeState('Assistant title'));
 
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(true);
-    expect(get(questionnaire).title).toBe('Assistant title');
+    const restoredDraft = restoreExerciseDraft('course-1', 'exercise-1');
+
+    expect(restoredDraft).toMatchObject({
+      conflictCount: 1,
+      remoteState: { title: 'Assistant title' }
+    });
+    expect(get(questionnaire).title).toBe('Draft title');
   });
 
   it('restores non-conflicting draft edits alongside newer server changes', () => {
@@ -76,7 +81,7 @@ describe('exercise drafts', () => {
     saveExerciseDraft('course-1', 'exercise-1', draftState, baseState);
     questionnaire.set(makeState('Original title', 'Assistant description'));
 
-    expect(restoreExerciseDraft('course-1', 'exercise-1')).toBe(true);
+    expect(restoreExerciseDraft('course-1', 'exercise-1')).not.toBeNull();
     expect(get(questionnaire).title).toBe('Draft title');
     expect(get(questionnaire).description).toBe('Assistant description');
   });

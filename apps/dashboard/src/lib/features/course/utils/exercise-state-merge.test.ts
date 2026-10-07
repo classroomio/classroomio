@@ -53,7 +53,7 @@ describe('mergeExerciseStates', () => {
     expect(result.conflictCount).toBe(0);
     expect(result.state.description).toBe('Assistant description');
     expect(result.state.questions).toHaveLength(2);
-    expect(result.state.questions[1]).toEqual(localImageQuestion);
+    expect(result.state.questions[1]).toEqual({ ...localImageQuestion, order: 2 });
   });
 
   it('preserves the local question when both sides edited it', () => {
@@ -132,6 +132,33 @@ describe('mergeExerciseStates', () => {
       'Assistant question',
       'Local image question'
     ]);
+  });
+
+  it('treats an edited question deleted by the Assistant as a resolvable conflict', () => {
+    const base = makeState();
+    const local = makeState({ questions: [makeQuestion({ title: 'My edited question' })] });
+    const remote = makeState({ questions: [] });
+
+    const localResult = mergeExerciseStates(base, local, remote, 'local');
+    const remoteResult = mergeExerciseStates(base, local, remote, 'remote');
+
+    expect(localResult.conflictCount).toBe(1);
+    expect(localResult.state.questions[0]?.title).toBe('My edited question');
+    expect(remoteResult.conflictCount).toBe(1);
+    expect(remoteResult.state.questions).toEqual([]);
+  });
+
+  it('assigns unique orders when both sides add a question at the same position', () => {
+    const base = makeState();
+    const localQuestion = makeQuestion({ id: 'local-question', order: 2, title: 'Local question' });
+    const remoteQuestion = makeQuestion({ id: 'remote-question', order: 2, title: 'Assistant question' });
+    const local = makeState({ questions: [...base.questions, localQuestion] });
+    const remote = makeState({ questions: [...base.questions, remoteQuestion] });
+
+    const result = mergeExerciseStates(base, local, remote);
+
+    expect(result.conflictCount).toBe(0);
+    expect(result.state.questions.map((question) => question.order)).toEqual([1, 2, 3]);
   });
 
   it('preserves edits made after a conflict notice when applying the Assistant conflict choice', () => {

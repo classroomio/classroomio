@@ -5,16 +5,21 @@
   interface Props {
     hasUnsavedChanges?: boolean;
     skipPrompt?: boolean;
+    onAbandonChanges?: () => void;
     children?: import('svelte').Snippet;
   }
 
-  let { hasUnsavedChanges = $bindable(false), skipPrompt = false, children }: Props = $props();
+  let { hasUnsavedChanges = $bindable(false), skipPrompt = false, onAbandonChanges, children }: Props = $props();
 
   beforeNavigate(({ cancel }) => {
+    const shouldNotifyAbandon = hasUnsavedChanges && !skipPrompt;
+
     if (!shouldAbandonChanges()) {
       cancel();
     } else {
-      // User clicked OK, reset the flag
+      if (shouldNotifyAbandon) {
+        onAbandonChanges?.();
+      }
       hasUnsavedChanges = false;
     }
   });

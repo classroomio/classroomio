@@ -13,6 +13,12 @@ interface StoredExerciseDraft {
   questionnaire: QuestionnaireState;
 }
 
+export interface RestoredExerciseDraft {
+  baseState: QuestionnaireState;
+  conflictCount: number;
+  remoteState: QuestionnaireState;
+}
+
 function getStorageKey(courseId: string, exerciseId: string) {
   return `${EXERCISE_DRAFT_STORAGE_PREFIX}:${courseId}:${exerciseId}`;
 }
@@ -69,11 +75,15 @@ function loadExerciseDraft(courseId: string, exerciseId: string): StoredExercise
 export function restoreExerciseDraft(courseId: string, exerciseId: string) {
   const draft = loadExerciseDraft(courseId, exerciseId);
 
-  if (!draft) return false;
+  if (!draft) return null;
 
   const remoteState = get(questionnaire);
-  const restoredState = mergeExerciseStates(draft.baseQuestionnaire, draft.questionnaire, remoteState, 'remote');
+  const restoredState = mergeExerciseStates(draft.baseQuestionnaire, draft.questionnaire, remoteState, 'local');
   questionnaire.set(restoredState.state);
 
-  return true;
+  return {
+    baseState: structuredClone(draft.baseQuestionnaire),
+    conflictCount: restoredState.conflictCount,
+    remoteState: structuredClone(remoteState)
+  } satisfies RestoredExerciseDraft;
 }

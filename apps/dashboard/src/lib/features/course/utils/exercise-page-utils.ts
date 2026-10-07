@@ -37,7 +37,7 @@ function snapshotQuestionnaireState(state: QuestionnaireState) {
   return structuredClone(state);
 }
 
-function getUntitledSectionId(exerciseId: string) {
+function getStableUntitledSectionId(exerciseId: string) {
   const leadingNibble = Number.parseInt(exerciseId[0] ?? '', 16);
   if (Number.isNaN(leadingNibble)) return exerciseId;
 
@@ -94,7 +94,7 @@ function toQuestionnaireState(exercise: Exercise): QuestionnaireState {
       );
 
       if (unsectionedQuestions.length > 0) {
-        const untitledSectionId = getUntitledSectionId(exercise.id);
+        const untitledSectionId = getStableUntitledSectionId(exercise.id);
         const nextSectionOrder =
           sections.reduce((highestOrder, section) => Math.max(highestOrder, section.order), -1) + 1;
         sections.push({
