@@ -18,6 +18,7 @@
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { getBrowserTimezone, instantToZonedWallClock, zonedWallClockToInstant } from '$lib/utils/functions/date';
   import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
+  import { parseBoundedInteger } from '@cio/utils/functions';
 
   type LessonCompletionPolicy = 'manual' | 'video_watch' | 'none';
 
@@ -154,11 +155,13 @@
     lessonApi.updateLessonState('completionPolicy', value);
   }
 
-  function handleVideoWatchThresholdChange(event: Event) {
-    const parsed = Number((event.currentTarget as HTMLInputElement).value);
-    if (Number.isNaN(parsed)) return;
+  function commitVideoWatchThreshold(event: Event & { currentTarget: HTMLInputElement }) {
+    const currentThreshold = videoWatchThreshold;
+    const nextThreshold = parseBoundedInteger(event.currentTarget.value, { min: 1, max: 100 }) ?? currentThreshold;
+    event.currentTarget.value = String(nextThreshold);
+    if (nextThreshold === currentThreshold) return;
 
-    lessonApi.updateLessonState('videoWatchThreshold', parsed);
+    lessonApi.updateLessonState('videoWatchThreshold', nextThreshold);
   }
 
   function toggleVideoWatchEnforced(index: number, checked: boolean) {
@@ -205,7 +208,7 @@
             label={$t('course.navItem.lessons.session.link_label')}
             placeholder="https://zoom.us/j/..."
             value={sessionCallUrl}
-            onInputChange={(e) => (sessionCallUrl = (e.currentTarget as HTMLInputElement).value)}
+            onInput={(e) => (sessionCallUrl = e.currentTarget.value)}
           />
         </Field.Field>
 
@@ -325,7 +328,7 @@
               type="number"
               label={$t('course.navItem.lessons.completion_policy.watch_threshold')}
               value={String(videoWatchThreshold)}
-              onInputChange={handleVideoWatchThresholdChange}
+              onChange={commitVideoWatchThreshold}
             />
           </Field.Field>
 
