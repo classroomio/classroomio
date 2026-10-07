@@ -73,10 +73,17 @@
   let snapshottedCourseId = $state<string | null>(null);
 
   $effect(() => {
-    if (!courseId || snapshottedCourseId === courseId) return;
+    if (!courseId) return;
 
-    snapshottedCourseId = courseId;
-    courseSnapshot = '';
+    if (snapshottedCourseId !== courseId) {
+      snapshottedCourseId = courseId;
+      courseSnapshot = '';
+      return;
+    }
+
+    if (!courseSnapshot && course?.id) {
+      courseSnapshot = JSON.stringify(course);
+    }
   });
 
   function restoreCourseSnapshot() {
@@ -235,9 +242,9 @@
     } as TCourseUpdate;
 
     const updated = await courseApi.update(courseId, updatePayload);
+    loading = false;
     if (!updated) return;
 
-    loading = false;
     syncCourseStore(course);
     courseSnapshot = JSON.stringify(course);
     hasUnsavedChanges = false;

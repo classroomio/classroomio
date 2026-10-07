@@ -201,7 +201,7 @@
         {/if}
       </Field.Field>
       <Field.Field>
-        <LanguagePicker bind:hasLangChanged bind:value={locale} className="" />
+        <LanguagePicker bind:value={locale} className="" />
       </Field.Field>
     </Field.Group>
   </Field.Set>

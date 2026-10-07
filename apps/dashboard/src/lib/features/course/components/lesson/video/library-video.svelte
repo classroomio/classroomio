@@ -117,7 +117,14 @@
       className="flex-1"
       placeholder={$t('course.navItem.lessons.materials.tabs.video.add_video.search_library')}
     />
-    <Button onclick={() => search.flush()} loading={isLoading} disabled={isLoading}>
+    <Button
+      onclick={() => {
+        search.takePending();
+        void loadLibrary(1);
+      }}
+      loading={isLoading}
+      disabled={isLoading}
+    >
       {$t('course.navItem.lessons.materials.tabs.video.add_video.search_library_action')}
     </Button>
   </div>

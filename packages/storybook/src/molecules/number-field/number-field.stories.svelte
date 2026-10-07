@@ -17,6 +17,7 @@
       onCommit: { control: false },
       onFocus: { control: false },
       onBlur: { control: false },
+      onInput: { control: false },
       labelAction: { control: false }
     },
     tags: ['autodocs']

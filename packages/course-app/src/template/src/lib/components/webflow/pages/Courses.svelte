@@ -38,7 +38,15 @@
     }
   ]);
 
-  let filteredCourses = $state([...data.courses]);
+  const filteredCourses = $derived.by(() => {
+    const active = new Set(
+      filter.filter((filterItem) => filterItem.checked).map((filterItem) => filterItem.type.toLowerCase())
+    );
+
+    return active.size === 0
+      ? data.courses
+      : data.courses.filter((course) => active.has(course.type.toLowerCase()));
+  });
 
   /**
    * Constants
@@ -48,21 +56,6 @@
     courses: getPageSection(data.page, SECTION.COURSE)
   });
 
-  /**
-   * Functions
-   */
-  function applyFilter() {
-    const activeFilters = new Set(
-      filter
-        .filter((filterItem) => filterItem.checked)
-        .map((filterItem) => filterItem.type.toLowerCase())
-    );
-
-    filteredCourses =
-      activeFilters.size === 0
-        ? data.courses
-        : data.courses.filter((course) => activeFilters.has(course.type.toLowerCase()));
-  }
 </script>
 
 <section class="bg-black text-white">
@@ -115,7 +108,6 @@
                             type="checkbox"
                             bind:checked={item.checked}
                             name={item.title}
-                            onchange={applyFilter}
                             class="focus:ring-0"
                           />
 

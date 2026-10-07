@@ -33,6 +33,9 @@
     onBlur
   }: NumberFieldProps = $props();
 
+  const uid = $props.id();
+  const inputId = $derived(name || `number-field-${uid}`);
+
   let baseline: number | null = null;
 
   const numberField = new FieldDraft<number | null>({
@@ -98,7 +101,7 @@
 <Field.Field class={className}>
   {#if label}
     <div class="ui:flex ui:items-center ui:justify-between">
-      <Field.Label for={name || 'number-field'} class={labelClassName} required={isRequired}>
+      <Field.Label for={inputId} class={labelClassName} required={isRequired}>
         {label}
       </Field.Label>
       {@render labelAction?.()}
@@ -108,7 +111,7 @@
   <Input
     class={inputClassName}
     bind:ref={inputRef}
-    id={name || 'number-field'}
+    id={inputId}
     data-testid={testId}
     type="number"
     {placeholder}
@@ -123,6 +126,9 @@
     autofocus={autoFocus}
     oninput={handleInput}
     onchange={handleCommit}
+    onkeydown={(event) => {
+      if (event.key === 'Enter') handleCommit(event);
+    }}
     onfocus={handleFocus}
     onblur={onBlur}
   />
