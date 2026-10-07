@@ -8,6 +8,7 @@
     AutomationBand,
     MultiAcademySection,
     Testimonial,
+    ChangelogSection,
     PageSignupCTA
   } from '$lib/components';
 </script>
@@ -34,6 +35,8 @@
 <MultiAcademySection />
 
 <Testimonial />
+
+<ChangelogSection />
 
 <PageSignupCTA
   header="Stop forwarding help articles."
