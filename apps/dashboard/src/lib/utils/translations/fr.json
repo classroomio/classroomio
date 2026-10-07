@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Créer un autre exercice",
         "add_content_open_now": "Ouvrir maintenant",
         "add_content_later": "Plus tard",
-        "add_content_add_to_section": "Ajouter du contenu"
+        "add_content_add_to_section": "Ajouter du contenu",
+        "expand_content": "Développer le contenu",
+        "collapse_content": "Réduire le contenu"
       },
       "news_feed": {
         "heading": "Fil d'actualité",

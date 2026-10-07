@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Создать ещё одно упражнение",
         "add_content_open_now": "Открыть сейчас",
         "add_content_later": "Позже",
-        "add_content_add_to_section": "Добавить в раздел"
+        "add_content_add_to_section": "Добавить в раздел",
+        "expand_content": "Развернуть контент",
+        "collapse_content": "Свернуть содержимое"
       },
       "news_feed": {
         "heading": "Лента новостей",

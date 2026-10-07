@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Crear otro ejercicio",
         "add_content_open_now": "Abrir ahora",
         "add_content_later": "Más tarde",
-        "add_content_add_to_section": "Añadir contenido"
+        "add_content_add_to_section": "Añadir contenido",
+        "expand_content": "Ampliar contenido",
+        "collapse_content": "Contraer contenido"
       },
       "news_feed": {
         "heading": "Noticias",

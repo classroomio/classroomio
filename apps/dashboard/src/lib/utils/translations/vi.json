@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Tạo thêm bài tập khác",
         "add_content_open_now": "Mở ngay",
         "add_content_later": "Để sau",
-        "add_content_add_to_section": "Thêm nội dung"
+        "add_content_add_to_section": "Thêm nội dung",
+        "expand_content": "Mở rộng nội dung",
+        "collapse_content": "Thu gọn nội dung"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

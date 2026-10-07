@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Opret en anden øvelse",
         "add_content_open_now": "Åbn nu",
         "add_content_later": "Senere",
-        "add_content_add_to_section": "Tilføj indhold"
+        "add_content_add_to_section": "Tilføj indhold",
+        "expand_content": "Udvid indhold",
+        "collapse_content": "Skjul indholdet"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",

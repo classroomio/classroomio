@@ -2626,6 +2626,8 @@
           "cancel": "Cancel"
         },
         "add_content": "Add content",
+        "expand_content": "Expand content",
+        "collapse_content": "Collapse content",
         "add_content_description": "Select the type of content you want to add.",
         "add_content_details": "Fill in the details for this content.",
         "add_content_adding_to": "Adding to",

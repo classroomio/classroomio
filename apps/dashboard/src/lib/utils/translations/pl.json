@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Utwórz kolejne ćwiczenie",
         "add_content_open_now": "Otwórz teraz",
         "add_content_later": "Później",
-        "add_content_add_to_section": "Dodaj treść"
+        "add_content_add_to_section": "Dodaj treść",
+        "expand_content": "Rozwiń treść",
+        "collapse_content": "Zwiń zawartość"
       },
       "news_feed": {
         "heading": "Kanał wiadomości",

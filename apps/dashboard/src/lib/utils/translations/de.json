@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Weitere Übung erstellen",
         "add_content_open_now": "Jetzt öffnen",
         "add_content_later": "Später",
-        "add_content_add_to_section": "Inhalte hinzufügen"
+        "add_content_add_to_section": "Inhalte hinzufügen",
+        "expand_content": "Inhalte erweitern",
+        "collapse_content": "Inhalt reduzieren"
       },
       "news_feed": {
         "heading": "Newsfeed",
