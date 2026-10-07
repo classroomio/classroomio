@@ -293,17 +293,31 @@
         ...(hasTagChanges ? { tagIds: normalizedSelectedTagIds } : {})
       };
 
+      const draftAtSave = JSON.stringify({
+        settings: $settings,
+        tagIds: [...selectedTagIds].sort(),
+        avatar
+      });
+
       const response = await courseApi.update(courseApi.course.id, updatePayload, {
         showSuccessToast: !hasTagChanges
       });
 
       if (courseApi.success && response) {
+        const draftUnchanged =
+          JSON.stringify({ settings: $settings, tagIds: [...selectedTagIds].sort(), avatar }) === draftAtSave;
+
         if (hasTagChanges) {
+          // The server stored the submitted tags; keep the user's newer toggles selected.
           initialTagIds = normalizedSelectedTagIds;
-          selectedTagIds = normalizedSelectedTagIds;
+          if (draftUnchanged) {
+            selectedTagIds = normalizedSelectedTagIds;
+          }
         }
 
-        hasUnsavedChanges = false;
+        if (draftUnchanged) {
+          hasUnsavedChanges = false;
+        }
       }
     } catch (error) {
       console.error(error);

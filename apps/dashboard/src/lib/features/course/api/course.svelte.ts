@@ -79,6 +79,8 @@ export class CourseApi extends BaseApiWithErrors {
   private isCourseDirty = $state(false);
   private inFlightCourseRequest: Promise<Course | null> | null = null;
   private inFlightCourseId = $state<string | null>(null);
+  private courseFetchSeq = 0;
+  private latestFetchSeqByCourseId = new Map<string, number>();
 
   /**
    * Updates a single lesson/exercise item in the local course content store.
@@ -221,6 +223,8 @@ export class CourseApi extends BaseApiWithErrors {
   async get(courseId: string) {
     const courseAtRequest = this.course;
     const snapshotAtRequest = courseAtRequest ? JSON.stringify(courseAtRequest) : null;
+    const fetchSeq = ++this.courseFetchSeq;
+    this.latestFetchSeqByCourseId.set(courseId, fetchSeq);
 
     await this.execute<GetCourseRequest>({
       requestFn: () =>
@@ -232,14 +236,16 @@ export class CourseApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         console.log('response', response.data);
         if (response.data) {
+          const superseded = this.latestFetchSeqByCourseId.get(courseId) !== fetchSeq;
           const editedDuringFetch =
             snapshotAtRequest !== null &&
             courseAtRequest?.id === courseId &&
             this.course?.id === courseId &&
             JSON.stringify(this.course) !== snapshotAtRequest;
 
-          // Preserve edits made while the fetch was pending; assigning now would revert them.
-          if (!editedDuringFetch) {
+          // Preserve newer responses and edits made while the fetch was pending;
+          // assigning a stale response now would revert them.
+          if (!superseded && !editedDuringFetch) {
             this.course = response.data;
           }
           this.success = true;
