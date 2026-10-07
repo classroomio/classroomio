@@ -82,6 +82,32 @@ export class CourseApi extends BaseApiWithErrors {
   private courseFetchSeq = 0;
   private latestFetchSeqByCourseId = new Map<string, number>();
 
+  private isStaleFetch(courseId: string, fetchSeq: number) {
+    return this.latestFetchSeqByCourseId.get(courseId) !== fetchSeq;
+  }
+
+  private wasEditedSinceFetch(courseId: string, courseAtRequest: Course | null, snapshotAtRequest: string | null) {
+    return (
+      snapshotAtRequest !== null &&
+      courseAtRequest?.id === courseId &&
+      this.course?.id === courseId &&
+      JSON.stringify(this.course) !== snapshotAtRequest
+    );
+  }
+
+  private selectionMatchesRequest(courseId: string, courseAtRequest: Course | null) {
+    return this.course?.id === courseId || (courseAtRequest === null && this.course === null);
+  }
+
+  private async refreshStoredCourseAfterUpdate(courseId: string, changedDuringRequest: boolean) {
+    if (changedDuringRequest) return;
+
+    const profileId = get(profile)?.id;
+    if (profileId) {
+      await this.refreshCourse(courseId, profileId);
+    }
+  }
+
   /**
    * Updates a single lesson/exercise item in the local course content store.
    * This avoids list staleness when navigating back from item detail pages.
@@ -236,16 +262,11 @@ export class CourseApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         console.log('response', response.data);
         if (response.data) {
-          const superseded = this.latestFetchSeqByCourseId.get(courseId) !== fetchSeq;
-          const editedDuringFetch =
-            snapshotAtRequest !== null &&
-            courseAtRequest?.id === courseId &&
-            this.course?.id === courseId &&
-            JSON.stringify(this.course) !== snapshotAtRequest;
+          const supersededFetch = this.isStaleFetch(courseId, fetchSeq);
+          const editedDuringFetch = this.wasEditedSinceFetch(courseId, courseAtRequest, snapshotAtRequest);
+          const selectionMatches = this.selectionMatchesRequest(courseId, courseAtRequest);
 
-          // Preserve newer responses and edits made while the fetch was pending;
-          // assigning a stale response now would revert them.
-          if (!superseded && !editedDuringFetch) {
+          if (!supersededFetch && !editedDuringFetch && selectionMatches) {
             this.course = response.data;
           }
           this.success = true;
@@ -527,12 +548,9 @@ export class CourseApi extends BaseApiWithErrors {
       logContext: 'updating course',
       onSuccess: (response) => {
         if (response.data) {
-          // Update the stored course data, preserving fields not in the update response
-          // The update response may not include all fields (like group, lessons, etc.)
           if (this.course) {
             changedDuringRequest = snapshotAtRequest !== null && JSON.stringify(this.course) !== snapshotAtRequest;
 
-            // Preserve edits made while the request was pending; merging now would revert them.
             if (!changedDuringRequest) {
               Object.assign(this.course, response.data);
             }
@@ -582,14 +600,8 @@ export class CourseApi extends BaseApiWithErrors {
 
     const updated = response?.data ?? null;
 
-    // Some update responses may omit related data (group/lessons/sections), so refresh the store.
-    // Skip when the user kept editing during the save: refetching now would replace
-    // their newer edits with the just-saved server state.
-    if (updated && !changedDuringRequest) {
-      const profileId = get(profile)?.id;
-      if (profileId) {
-        await this.refreshCourse(courseId, profileId);
-      }
+    if (updated) {
+      await this.refreshStoredCourseAfterUpdate(courseId, changedDuringRequest);
     }
 
     return updated;
