@@ -121,7 +121,7 @@
       "learnersHeading": "Studenti",
       "headerLearner": "Studente",
       "headerMessages": "Messaggi",
-      "headerTokens": "Gettoni",
+      "headerTokens": "Token",
       "headerStatus": "Stato",
       "statusUnder": "Sotto il tappo",
       "statusApproaching": "Avvicinamento",
@@ -307,10 +307,10 @@
     "ai_required": "Seleziona un assistente AI",
     "ai_providers": {
       "chatgpt": "ChatGPT",
-      "claude": "Claudio",
-      "gemini": "Gemelli",
+      "claude": "Claude",
+      "gemini": "Gemini",
       "grok": "Grok",
-      "perplexity": "Perplessità"
+      "perplexity": "Perplexity"
     },
     "ai_assistant": {
       "label": "Assistente AI",
@@ -4761,14 +4761,14 @@
       "api": "API"
     },
     "clients": {
-      "claude_code": "Codice Claudio",
-      "codex": "Codice",
-      "cursor": "Cursore",
+      "claude_code": "Claude Code",
+      "codex": "Codex",
+      "cursor": "Cursor",
       "opencode": "OpenCode",
-      "curl": "arricciare",
+      "curl": "cURL",
       "javascript": "JavaScript",
-      "python": "Pitone",
-      "go": "Andare"
+      "python": "Python",
+      "go": "Go"
     },
     "keys": {
       "active": "Attivo",
@@ -4795,12 +4795,12 @@
         "description": "MCP è disponibile su ogni piano. L'utilizzo è controllato da limiti chiave e limiti di velocità.",
         "keys_title": "Chiavi attive",
         "keys_description": "Utilizza una chiave MCP per integrazione in modo che l'accesso possa essere ruotato o revocato in modo pulito.",
-        "rate_limits_title": "Limiti di tariffa",
+        "rate_limits_title": "Rate limit",
         "rate_limits_description": "Richieste di lettura/scrittura/pubblicazione consentite al minuto.",
         "used_label": "Usato:"
       },
       "keys": {
-        "title": "Tasti MCP",
+        "title": "Chiavi MCP",
         "description": "Queste chiavi autenticano l'organizzazione corrente quando un client MCP chiama ClassroomIO tramite `@classroomio/mcp`.",
         "generate": "Genera la chiave MCP",
         "secret_once": "Questo segreto viene mostrato una volta. Copialo ora nel tuo client MCP.",
@@ -4843,7 +4843,7 @@
       },
       "setup": {
         "title": "Avvio rapido",
-        "description": "Utilizza la tua chiave API come token al portatore su ogni richiesta. Sostituisci il segnaposto con una chiave dall'alto o incolla il segreto immediatamente dopo averne generato uno."
+        "description": "Utilizza la tua chiave API come token Bearer su ogni richiesta. Sostituisci il segnaposto con una chiave dall'alto o incolla il segreto immediatamente dopo averne generato uno."
       },
       "view_docs": "Visualizza documenti"
     },
