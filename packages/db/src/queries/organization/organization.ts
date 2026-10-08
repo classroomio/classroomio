@@ -211,7 +211,8 @@ export async function getOrganizationMemberRoleId(organizationId: string, profil
       .where(
         and(
           eq(schema.organizationmember.organizationId, organizationId),
-          eq(schema.organizationmember.profileId, profileId)
+          eq(schema.organizationmember.profileId, profileId),
+          eq(schema.organizationmember.status, 'ACTIVE')
         )
       )
       .limit(1);

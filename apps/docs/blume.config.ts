@@ -11,6 +11,7 @@ const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, 
 // Without this, Blume orders tags by first path seen, which scatters them.
 const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
   { label: 'Audience', tags: ['Audience'] },
+  { label: 'Analytics', tags: ['Analytics'] },
   {
     label: 'Courses',
     tags: [
