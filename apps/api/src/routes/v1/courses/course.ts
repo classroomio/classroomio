@@ -20,7 +20,6 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { jsonResponse, PaginatedListResponse } from '@api/utils/openapi/responses';
 import { PAGINATION_NOTE } from './docs';
 
 const PaginationSchema = {
@@ -136,9 +135,10 @@ const CourseStudentsResponse = {
   type: 'object' as const,
   properties: {
     success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: CourseStudentSchema }
+    data: { type: 'array' as const, items: CourseStudentSchema },
+    pagination: PaginationSchema
   },
-  required: ['success', 'data']
+  required: ['success', 'data', 'pagination']
 };
 
 const NonAutoGradableQuestionOffenderSchema = {
@@ -251,7 +251,14 @@ export const v1CourseRouter = new Hono()
       description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
       tags: ['Public API Courses'],
       responses: {
-        200: jsonResponse('Course students returned successfully', PaginatedListResponse),
+        200: {
+          description: 'Course students returned successfully',
+          content: {
+            'application/json': {
+              schema: CourseStudentsResponse
+            }
+          }
+        },
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
