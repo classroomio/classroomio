@@ -26,8 +26,12 @@ export const MCP_TOOL_CREDIT_COST = {
   tag_course_draft: 1,
   tag_courses: 1,
   create_course_exercise: 1,
-  create_course_exercise_from_template: 1,
   update_course_exercise: 1,
+  delete_course_exercise: 1,
+  notify_course_exercise: 1,
+  get_course_exercise_notify_status: 0,
+  list_exercise_templates: 0,
+  get_exercise_template: 0,
   publish_course_draft: 5,
   publish_course_draft_to_existing_course: 5,
   list_org_cohorts: 0,
@@ -80,6 +84,12 @@ export const MCP_TOOL_CREDIT_COST = {
   list_course_certificates: 0,
   download_course_certificate: 0,
   update_course_certificate: 1,
+  list_course_submissions: 0,
+  get_course_submission: 0,
+  grade_course_submission: 1,
+  update_course_submission: 1,
+  delete_course_submission: 1,
+  get_course_marks: 0,
   get_org_analytics: 0,
   list_compliance_learners: 0,
   get_learner_analytics: 0,
@@ -180,6 +190,12 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_certificate' ||
     toolName === 'list_course_certificates' ||
     toolName === 'download_course_certificate' ||
+    toolName === 'get_course_exercise_notify_status' ||
+    toolName === 'list_exercise_templates' ||
+    toolName === 'get_exercise_template' ||
+    toolName === 'list_course_submissions' ||
+    toolName === 'get_course_submission' ||
+    toolName === 'get_course_marks' ||
     toolName === 'get_org_analytics' ||
     toolName === 'list_compliance_learners' ||
     toolName === 'get_learner_analytics' ||

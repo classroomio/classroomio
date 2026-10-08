@@ -18,6 +18,10 @@ const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
       'Courses',
       'Course Members',
       'Course Invites',
+      'Course Exercises',
+      'Exercise Templates',
+      'Course Submissions',
+      'Course Marks',
       'Course Certificates'
     ]
   },

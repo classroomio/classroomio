@@ -200,7 +200,7 @@ function validateSectionQuestionAssignments(data: TExerciseUpdate) {
   }
 }
 
-async function resolveExerciseCourseId(exercise: TExercise): Promise<string | null> {
+export async function resolveExerciseCourseId(exercise: TExercise): Promise<string | null> {
   if (exercise.courseId) {
     return exercise.courseId;
   }
@@ -214,6 +214,39 @@ async function resolveExerciseCourseId(exercise: TExercise): Promise<string | nu
   return lesson?.courseId ?? null;
 }
 
+async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
+  await guardNonAutoGradableQuestionsForCourseType({
+    courseId: sanitizedData.courseId,
+    questionTypeIds: (sanitizedData.questions ?? []).map((question) => question.questionTypeId)
+  });
+
+  const slug = await resolveItemSlug({
+    courseId: sanitizedData.courseId,
+    title: sanitizedData.title,
+    requestedSlug: sanitizedData.slug
+  });
+
+  return {
+    title: sanitizedData.title,
+    description: sanitizedData.description ?? null,
+    lessonId: sanitizedData.lessonId || null,
+    courseId: sanitizedData.courseId,
+    sectionId: sanitizedData.sectionId || null,
+    order: sanitizedData.order,
+    dueBy: sanitizedData.dueBy || null,
+    slug
+  };
+}
+
+async function insertExerciseRow(exerciseData: Awaited<ReturnType<typeof prepareExerciseRow>>, txClient: DbOrTxClient) {
+  const [exercise] = await createExercises([exerciseData], txClient);
+  if (!exercise) {
+    throw new AppError('Failed to create exercise', ErrorCodes.INTERNAL_ERROR, 500);
+  }
+
+  return exercise;
+}
+
 /**
  * Creates a new exercise with optional questions and options
  * @param data Exercise creation data
@@ -222,38 +255,13 @@ async function resolveExerciseCourseId(exercise: TExercise): Promise<string | nu
 export async function createExercise(data: TExerciseCreate): Promise<TExercise> {
   try {
     const sanitizedData = sanitizeExercisePayload(data);
+    const exerciseData = await prepareExerciseRow(sanitizedData);
 
-    await guardNonAutoGradableQuestionsForCourseType({
-      courseId: sanitizedData.courseId,
-      questionTypeIds: (sanitizedData.questions ?? []).map((question) => question.questionTypeId)
-    });
+    const exercise = await db.transaction(async (tx) => {
+      const txClient = tx as DbOrTxClient;
+      const exercise = await insertExerciseRow(exerciseData, txClient);
 
-    const slug = await resolveItemSlug({
-      courseId: sanitizedData.courseId,
-      title: sanitizedData.title,
-      requestedSlug: sanitizedData.slug
-    });
-
-    const exerciseData = {
-      title: sanitizedData.title,
-      description: sanitizedData.description ?? null,
-      lessonId: sanitizedData.lessonId || null,
-      courseId: sanitizedData.courseId,
-      sectionId: sanitizedData.sectionId || null,
-      order: sanitizedData.order,
-      dueBy: sanitizedData.dueBy || null,
-      slug
-    };
-
-    const [exercise] = await createExercises([exerciseData]);
-    if (!exercise) {
-      throw new AppError('Failed to create exercise', ErrorCodes.INTERNAL_ERROR, 500);
-    }
-
-    // Create questions and options if provided
-    if (sanitizedData.questions && sanitizedData.questions.length > 0) {
-      await db.transaction(async (tx) => {
-        const txClient = tx as DbOrTxClient;
+      if (sanitizedData.questions && sanitizedData.questions.length > 0) {
         const questionsData: TNewQuestion[] = sanitizedData.questions!.map((q) => ({
           exerciseId: exercise.id,
           title: q.question,
@@ -284,8 +292,10 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
 
           await createOptions(optionsData, txClient);
         }
-      });
-    }
+      }
+
+      return exercise;
+    });
 
     // Fetch the complete exercise with questions and options
     const result = await getExercise(exercise.id);
@@ -810,14 +820,16 @@ export async function createExerciseFromTemplate(
       courseId
     };
 
-    const exercise = await createExercise(exerciseData);
+    const exerciseRow = await prepareExerciseRow(sanitizeExercisePayload(exerciseData));
 
     // Process the questionnaire to create questions and options
     const { questions } = template.questionnaire!;
 
-    if (questions && questions.length > 0) {
-      await db.transaction(async (tx) => {
-        const txClient = tx as DbOrTxClient;
+    const exercise = await db.transaction(async (tx) => {
+      const txClient = tx as DbOrTxClient;
+      const exercise = await insertExerciseRow(exerciseRow, txClient);
+
+      if (questions && questions.length > 0) {
         const hasTemplateOptions = questions.some(
           (question) => question.question_type.id !== 3 && (question.options?.length ?? 0) > 0
         );
@@ -864,8 +876,12 @@ export async function createExerciseFromTemplate(
             await createOptions(optionsData, txClient);
           }
         }
-      });
-    }
+      }
+
+      return exercise;
+    });
+
+    await touchCourseUpdatedAt(courseId);
 
     // Fetch the complete exercise with questions and options
     return await getExercise(exercise.id);

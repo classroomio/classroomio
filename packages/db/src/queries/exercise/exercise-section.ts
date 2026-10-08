@@ -38,6 +38,20 @@ export async function getExerciseSectionsByExerciseIds(exerciseIds: string[], db
   }
 }
 
+export async function getExerciseSectionOwnersByIds(ids: string[], dbClient: DbOrTxClient = db) {
+  if (ids.length === 0) return [];
+
+  try {
+    return dbClient
+      .select({ id: schema.exerciseSection.id, exerciseId: schema.exerciseSection.exerciseId })
+      .from(schema.exerciseSection)
+      .where(inArray(schema.exerciseSection.id, ids));
+  } catch (error) {
+    console.error('getExerciseSectionOwnersByIds error:', error);
+    throw new Error(`Failed to get exercise sections: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function createExerciseSections(sections: TNewExerciseSection[], dbClient: DbOrTxClient = db) {
   if (sections.length === 0) return [];
 

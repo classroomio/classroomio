@@ -98,7 +98,7 @@ function projectLegacyStatusId(gradingState: SubmissionGradingState): number {
   return GRADING_STATE_TO_LEGACY_STATUS[gradingState];
 }
 
-function resolveSubmissionGradingState(submission: Partial<TSubmission>): SubmissionGradingState {
+export function resolveSubmissionGradingState(submission: Partial<TSubmission>): SubmissionGradingState {
   const rawState = typeof submission.gradingState === 'string' ? submission.gradingState : '';
   if (rawState && rawState in GRADING_STATE_TO_LEGACY_STATUS) {
     return rawState as SubmissionGradingState;
@@ -389,6 +389,9 @@ export async function listSubmissionsForGrading(courseId: string) {
       isEarly: boolean;
       feedback: string | null;
       submittedAt: string;
+      createdAt: string | null;
+      memberId: string | null;
+      total: number | null;
       exercise: {
         id: string;
         title: string;
@@ -469,6 +472,9 @@ export async function listSubmissionsForGrading(courseId: string) {
         isEarly,
         feedback: submission.feedback,
         submittedAt,
+        createdAt: submission.createdAt ?? null,
+        memberId: submission.submittedBy ?? null,
+        total: submission.total ?? null,
         exercise: {
           id: submission.exercise.id,
           title: submission.exercise.title

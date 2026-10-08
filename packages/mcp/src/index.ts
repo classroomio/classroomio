@@ -9,7 +9,9 @@ import { registerCohortNewsfeedTools } from './tools/cohort-newsfeed';
 import { registerCohortTools } from './tools/cohorts';
 import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseDraftTools } from './tools/course-drafts';
+import { registerCourseExerciseTools } from './tools/course-exercises';
 import { registerCourseMemberTools } from './tools/course-members';
+import { registerCourseSubmissionTools } from './tools/course-submissions';
 
 async function main() {
   const config = getConfig();
@@ -25,6 +27,8 @@ async function main() {
   registerCohortGoalTools(server, apiClient);
   registerCourseMemberTools(server, apiClient);
   registerCourseCertificateTools(server, apiClient);
+  registerCourseExerciseTools(server, apiClient);
+  registerCourseSubmissionTools(server, apiClient);
   registerAnalyticsTools(server, apiClient);
 
   const transport = new StdioServerTransport();

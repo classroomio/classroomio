@@ -14,3 +14,7 @@ export * from './course-member';
 export * from './course-member-responses';
 export * from './course-invite';
 export * from './course-certificate';
+export * from './course-exercise';
+export * from './course-exercise-responses';
+export * from './course-submission';
+export * from './exercise-template';
