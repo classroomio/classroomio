@@ -29,4 +29,7 @@ EXPOSE 3081
 ENV NODE_ENV=production \
     PORT=3081
 
+# classroomio.sh checks this before moving an install onto the bundled SeaweedFS store.
+LABEL com.classroomio.storage.seaweedfs-ready="true"
+
 ENTRYPOINT ["/app/entrypoint.sh"]
