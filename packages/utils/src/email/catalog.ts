@@ -685,6 +685,72 @@ const da: StudentEmailLocaleCopy = {
   }
 };
 
+const it: StudentEmailLocaleCopy = {
+  footer: { rightsReserved: 'Tutti i diritti riservati.', website: 'Sito web', terms: 'Termini', privacy: 'Privacy' },
+  templates: {
+    studentCourseInvite: {
+      subject: 'Sei invitato a iscriverti a un corso',
+      body: '<p>Ciao,</p><p>Sei stato invitato a iscriverti a <strong>{{course_name}}</strong> su {{org_name}}.</p><p>Questo invito scade il <strong>{{expires_at}}</strong>.</p>',
+      cta: 'Iscriviti al corso'
+    },
+    studentCourseWelcome: {
+      subject: 'Hai accesso a {{course_name}}',
+      body: '<p>Ciao,</p><p>Ora hai accesso a <strong>{{course_name}}</strong> in <strong>{{org_name}}</strong>.</p><p>Se hai problemi, contatta il tuo istruttore.</p><p>A presto,<br>{{org_name}}</p>',
+      cta: 'Apri il corso'
+    },
+    studentCourseCompletion: {
+      subject: 'Congratulazioni — hai completato i requisiti del corso',
+      body: '<p>Ciao {{student_name}},</p><p>Congratulazioni! Hai soddisfatto i requisiti di completamento di <strong>{{course_name}}</strong>.</p>{{course_message}}<p>A presto,<br>{{org_name}}</p>',
+      cta: 'Vedi il certificato'
+    },
+    studentOrgInvite: {
+      subject: 'Sei stato invitato a unirti come studente',
+      body: '<p>Ciao,</p><p>Sei stato invitato a unirti a <strong>{{org_name}}</strong> come studente.</p>{{course_names}}<p>Questo invito scade il <strong>{{expires_at}}</strong>.</p>',
+      cta: "Accetta l'invito"
+    },
+    studentCohortWelcome: {
+      subject: 'Hai accesso a un gruppo',
+      body: '<p>Ciao,</p><p>Ora hai accesso a <strong>{{cohort_name}}</strong> in <strong>{{org_name}}</strong>.</p><p>Se hai problemi, contatta il tuo istruttore.</p><p>A presto,<br>{{org_name}}</p>',
+      cta: 'Apri il gruppo'
+    },
+    studentProvePayment: {
+      subject: 'Manca solo un passaggio',
+      body: "<p>Ciao {{student_name}},</p><p>Sei a un passo dall'iscriverti a <strong>{{course_name}}</strong>.</p><p>Invia la prova di pagamento a <strong>{{teacher_email}}</strong> per iscriverti al corso.</p><p>A presto in classe.</p><p>{{org_name}}</p>"
+    },
+    cohortGoalReminder: {
+      subject: 'Promemoria: un obiettivo del gruppo è in scadenza',
+      body: "<p>Ciao,</p><p>L'obiettivo <strong>{{goal_title}}</strong> in <strong>{{cohort_name}}</strong> su {{org_name}} richiede la tua attenzione.</p><p>{{due_status}}</p><p>I tuoi progressi: <strong>{{completed_count}} di {{required_count}} corsi completati</strong>.</p><p>A presto,<br>{{org_name}}</p>",
+      cta: "Apri l'LMS"
+    },
+    quizAssigned: {
+      subject: 'Hai un quiz da completare',
+      body: '<p>Ciao,</p><p>Ti è stato assegnato un quiz — <strong>{{exercise_title}}</strong> — in <strong>{{course_name}}</strong> su <strong>{{org_name}}</strong>.</p><p>A presto,<br>{{org_name}}</p>',
+      cta: 'Svolgi il quiz'
+    },
+    sessionReminder: {
+      subject: 'Promemoria: la tua sessione live sta per iniziare',
+      body: '<p>Ciao,</p><p>La sessione live <strong>{{session_title}}</strong> in <strong>{{course_name}}</strong> inizia <strong>{{when}}</strong>.</p><p><strong>Quando:</strong> {{session_time}}</p><p>Ci vediamo là,<br>{{org_name}}</p>',
+      cta: 'Partecipa alla sessione'
+    },
+    sessionUpdated: {
+      subject: 'Aggiornamento: i dettagli della sessione live sono cambiati',
+      body: "<p>Ciao,</p><p>La sessione live <strong>{{session_title}}</strong> in <strong>{{course_name}}</strong> è stata aggiornata.</p><p><strong>Nuovo orario:</strong> {{session_time}}</p><p>L'invito del calendario in allegato aggiornerà l'evento sul tuo calendario.</p><p>A presto,<br>{{org_name}}</p>",
+      cta: 'Partecipa alla sessione'
+    },
+    submissionGraded: {
+      subject: "La tua consegna dell'esercizio è stata aggiornata",
+      body: '<p>Ciao {{student_name}},</p><p>Lo stato della tua consegna per <strong>{{exercise_title}}</strong> in <strong>{{course_name}}</strong> è ora <strong>{{status}}</strong>.</p><p><strong>Il tuo punteggio:</strong> {{score}}</p><p>Questo esercizio fa parte della lezione <strong>{{lesson_title}}</strong>.</p>',
+      cta: "Apri l'esercizio",
+      ctaWhenScored: 'Vedi il tuo risultato'
+    },
+    newsfeedPost: {
+      subject: 'Nuovo post nel corso',
+      body: '<p><strong>{{teacher_name}}</strong> ha pubblicato un post in un corso che stai frequentando: <strong>{{course_name}}</strong>.</p>{{post_content}}',
+      cta: 'Vedi il post'
+    }
+  }
+};
+
 const tr: StudentEmailLocaleCopy = {
   footer: { rightsReserved: 'Tüm hakları saklıdır.', website: 'Web sitesi', terms: 'Koşullar', privacy: 'Gizlilik' },
   templates: {
@@ -762,5 +828,6 @@ export const STUDENT_EMAIL_CATALOG: Record<EmailLocale, StudentEmailLocaleCopy> 
   es,
   pl,
   da,
-  tr
+  tr,
+  it
 };
