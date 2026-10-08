@@ -1262,7 +1262,8 @@
               "name": {
                 "min_char": "Tên quá ngắn, tối thiểu 5 ký tự"
               }
-            }
+            },
+            "validation_error": "Một hoặc nhiều bài đánh giá không hợp lệ. Hãy mở từng bài đánh giá và sửa tên, hình đại diện, xếp hạng và mô tả trước khi lưu."
           },
           "header_form": {
             "title": "Tiêu đề",

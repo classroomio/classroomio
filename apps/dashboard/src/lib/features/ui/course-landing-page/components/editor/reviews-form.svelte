@@ -1,15 +1,13 @@
 <script lang="ts">
   import get from 'lodash/get';
   import cloneDeep from 'lodash/cloneDeep';
-  import z from 'zod';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import UserIcon from '@lucide/svelte/icons/user';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
   import ReviewFormEditor from './review-form-editor.svelte';
-  import { isEmptyReview } from '../../utils';
+  import { isEmptyReview, validateReview } from '../../utils';
   import * as Avatar from '@cio/ui/base/avatar';
-  import { processErrors } from '$lib/utils/functions/validator';
   import { t } from '$lib/utils/functions/translations';
   import type { Course } from '$features/course/utils/types';
 
@@ -46,32 +44,6 @@
     syncReviews();
   }
 
-  function validateReviews(id) {
-    const review = reviews.find((r) => r.id === id);
-    const reviewSchema = z.object({
-      name: z.string().min(5, {
-        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.name.min_char')}`
-      }),
-      avatar_url: z.string().min(6, {
-        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message')}`
-      }),
-      rating: z
-        .number()
-        .min(1, {
-          message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.rating.message')}`
-        })
-        .max(5, {
-          message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.rating.message')}`
-        }),
-      description: z.string().min(10, {
-        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.description.min_char')}`
-      })
-    });
-
-    const { error } = reviewSchema.safeParse(review);
-    return processErrors(error);
-  }
-
   function removeReview(id: number) {
     reviews = reviews.filter((review) => review.id !== id);
   }
@@ -88,7 +60,7 @@
         return;
       }
 
-      const validationRes = validateReviews(id);
+      const validationRes = validateReview(openReview);
       if (Object.keys(validationRes).length) {
         errors = validationRes;
         return;

@@ -1,5 +1,5 @@
 import type { Review } from '$features/course/utils/types';
-import { isEmptyReview, normalizeReview, resolveCourseNavHref } from './utils';
+import { isEmptyReview, normalizeReview, resolveCourseNavHref, validateReview } from './utils';
 
 function makeReview(overrides: Partial<Review> = {}): Review {
   return {
@@ -107,5 +107,47 @@ describe('normalizeReview', () => {
 
     expect(review.name).toBe('');
     expect(isEmptyReview(review)).toBe(true);
+  });
+});
+
+describe('validateReview', () => {
+  const validReview = {
+    name: 'Jane Doe',
+    avatar_url: 'https://example.com/avatar.png',
+    rating: 5,
+    description: 'A full review body with enough characters.'
+  };
+
+  it('returns no errors for a valid review', () => {
+    expect(validateReview(makeReview(validReview))).toEqual({});
+  });
+
+  it('flags a name shorter than five characters', () => {
+    const errors = validateReview(makeReview({ ...validReview, name: 'Al' }));
+
+    expect(Object.keys(errors)).toContain('name');
+  });
+
+  it('flags a missing avatar', () => {
+    const errors = validateReview(makeReview({ ...validReview, avatar_url: '' }));
+
+    expect(Object.keys(errors)).toContain('avatar_url');
+  });
+
+  it('flags a rating outside the 1-5 range', () => {
+    const errors = validateReview(makeReview({ ...validReview, rating: 9 }));
+
+    expect(Object.keys(errors)).toContain('rating');
+  });
+
+  it('flags a description shorter than ten characters', () => {
+    const errors = validateReview(makeReview({ ...validReview, description: 'Too short' }));
+
+    expect(Object.keys(errors)).toContain('description');
+  });
+
+  it('treats a missing review as valid', () => {
+    expect(validateReview(undefined)).toEqual({});
+    expect(validateReview(null)).toEqual({});
   });
 });

@@ -4068,7 +4068,8 @@
               "description": {
                 "min_char": "'La descrizione è troppo breve, minimo 5 caratteri"
               }
-            }
+            },
+            "validation_error": "Una o più recensioni non sono valide. Apri ogni recensione e correggi nome, avatar, valutazione e descrizione prima di salvare."
           },
           "certificate_form": {
             "upload_template": "Modello di certificato"

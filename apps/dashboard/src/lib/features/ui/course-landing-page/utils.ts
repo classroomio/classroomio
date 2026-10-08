@@ -10,6 +10,8 @@ import type { CourseLandingPageProps, OrgLandingPageTheme } from '@cio/ui/custom
 import { calcCourseCost, isCourseFree } from '$lib/utils/functions/course';
 import { toFiniteNumber } from '@cio/utils/functions';
 import { t } from '$lib/utils/functions/translations';
+import { processErrors } from '$lib/utils/functions/validator';
+import z from 'zod';
 
 export type LandingPageLesson = {
   id: string;
@@ -117,6 +119,34 @@ export function normalizeReview(review: Review): Review {
     description: typeof review.description === 'string' ? review.description : '',
     rating: parsedRating
   };
+}
+
+export function validateReview(review?: Review | null): Record<string, string> {
+  if (!review) return {};
+
+  const reviewSchema = z.object({
+    name: z.string().min(5, {
+      message: t.get('course.navItem.landing_page.editor.reviews_form.validations.name.min_char')
+    }),
+    avatar_url: z.string().min(6, {
+      message: t.get('course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message')
+    }),
+    rating: z
+      .number()
+      .min(1, {
+        message: t.get('course.navItem.landing_page.editor.reviews_form.validations.rating.message')
+      })
+      .max(5, {
+        message: t.get('course.navItem.landing_page.editor.reviews_form.validations.rating.message')
+      }),
+    description: z.string().min(10, {
+      message: t.get('course.navItem.landing_page.editor.reviews_form.validations.description.min_char')
+    })
+  });
+
+  const { error } = reviewSchema.safeParse(review);
+
+  return processErrors(error);
 }
 
 export function filterNavItems(course: Course, reviews: Review[]) {
