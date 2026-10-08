@@ -411,6 +411,7 @@ class OrgApi extends BaseApiWithErrors {
     fields: TOrgUpdateForm,
     options: { onSuccess?: (data: TUpdateOrganization) => void } = {}
   ) {
+    this.success = false;
     const { avatar, favicon, ...rest } = fields;
     const validationPayload = {
       ...rest,

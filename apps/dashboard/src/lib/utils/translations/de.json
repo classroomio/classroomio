@@ -3553,7 +3553,6 @@
     },
     "filters": {
       "search_placeholder": "Suchen Sie nach Assets",
-      "apply": "Bewerben",
       "status_options": {
         "all": "Alle Status",
         "active": "Aktiv",

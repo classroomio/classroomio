@@ -18,10 +18,6 @@
   let { course = $bindable(), setter }: Props = $props();
 
   let show = $derived(get(course, `metadata.sectionDisplay.${NAV_ITEM_KEY.REQUIREMENT}`) ?? true);
-
-  $effect(() => {
-    setter(show, `metadata.sectionDisplay.${NAV_ITEM_KEY.REQUIREMENT}`);
-  });
 </script>
 
 <div>
@@ -43,7 +39,10 @@
   </p>
 
   <div class="flex items-center space-x-2">
-    <Switch bind:checked={show} />
+    <Switch
+      checked={show}
+      onCheckedChange={(checked) => setter(checked, `metadata.sectionDisplay.${NAV_ITEM_KEY.REQUIREMENT}`)}
+    />
 
     <Label class="text-gray-600">
       {show ? $t('settings.landing_page.show_section') : $t('settings.landing_page.hide_section')}

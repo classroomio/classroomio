@@ -43,7 +43,7 @@ export const v1CohortGoalsRouter = new Hono()
     '/',
     describeRoute({
       description: `List the active goals in a cohort, with per-status learner counts. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goals returned successfully', paginatedResponse(ZPublicApiCohortGoalListItemResponse)),
         400: errorResponses.badRequest,
@@ -72,7 +72,7 @@ export const v1CohortGoalsRouter = new Hono()
     '/',
     describeRoute({
       description: `Create a cohort goal. Required fields depend on type (complete_all, n_of_m, score, pass_rate, readiness) and deadlineKind (absolute, relative_to_join, recurring, none); see the schema for per-combination requirements. Every courseId must already be linked to the cohort. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         201: jsonResponse('Goal created successfully', GoalResponse),
         400: errorResponses.badRequest,
@@ -101,7 +101,7 @@ export const v1CohortGoalsRouter = new Hono()
     '/evaluate-all',
     describeRoute({
       description: `Re-evaluate every active goal in the cohort now, instead of waiting for the scheduled run. data.evaluated is the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goals evaluated', EvaluateResponse),
         400: errorResponses.badRequest,
@@ -128,7 +128,7 @@ export const v1CohortGoalsRouter = new Hono()
     '/:goalId',
     describeRoute({
       description: `Get a cohort goal. ${COHORT_MEMBER_RULE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal returned successfully', GoalResponse),
         400: errorResponses.badRequest,
@@ -155,7 +155,7 @@ export const v1CohortGoalsRouter = new Hono()
     '/:goalId',
     describeRoute({
       description: `Update a cohort goal. Send only the fields to change; omitted fields keep their current values, and the resulting goal must still satisfy the create rules. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal updated successfully', GoalResponse),
         400: errorResponses.badRequest,
@@ -184,7 +184,7 @@ export const v1CohortGoalsRouter = new Hono()
     '/:goalId',
     describeRoute({
       description: `Permanently delete a cohort goal and its learner progress. Use the archive action to keep history. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal deleted successfully', GoalResponse),
         400: errorResponses.badRequest,
@@ -211,7 +211,7 @@ export const v1CohortGoalsRouter = new Hono()
     '/:goalId/archive',
     describeRoute({
       description: `Archive a cohort goal. It stops being evaluated and drops out of the goal list, but its history is kept. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal archived successfully', GoalResponse),
         400: errorResponses.badRequest,
@@ -238,7 +238,7 @@ export const v1CohortGoalsRouter = new Hono()
     '/:goalId/evaluate',
     describeRoute({
       description: `Re-evaluate one goal's learner statuses now, instead of waiting for the scheduled run. data.evaluated is the number of learner assignments evaluated. Archived goals are not evaluated, so their history is kept; evaluating one returns 409. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal evaluated', EvaluateResponse),
         400: errorResponses.badRequest,
@@ -268,7 +268,7 @@ export const v1OrgCohortGoalsRouter = new Hono()
     '/my/goals',
     describeRoute({
       description: `List the automation actor's own goal assignments across their cohorts (active goals only), with status and progress. ${ACTOR_OWN_DATA_NOTE} ${PAGINATION_NOTE}`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal assignments returned successfully', paginatedResponse(ZPublicApiMyCohortGoalResponse)),
         400: errorResponses.badRequest,
@@ -294,7 +294,7 @@ export const v1OrgCohortGoalsRouter = new Hono()
     '/goals/overview',
     describeRoute({
       description: `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status. ${PAGINATION_NOTE} The automation actor (the key creator) must be an organization admin or tutor, or this fails with 403.`,
-      tags: ['Public API Cohort Goals'],
+      tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse(
           'Goals overview returned successfully',

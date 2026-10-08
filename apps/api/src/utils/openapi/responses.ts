@@ -44,6 +44,16 @@ export const itemResponse = (schema: z.ZodType) => ({
   required: ['success', 'data']
 });
 
+export const itemWithMetaResponse = (schema: z.ZodType, meta: z.ZodType) => ({
+  type: 'object' as const,
+  properties: {
+    success: { type: 'boolean' as const },
+    data: toResponseJsonSchema(schema),
+    meta: toResponseJsonSchema(meta)
+  },
+  required: ['success', 'data', 'meta']
+});
+
 export const nullableItemResponse = (schema: z.ZodType) => itemResponse(schema.nullable());
 
 export const paginatedResponse = (schema: z.ZodType) => ({

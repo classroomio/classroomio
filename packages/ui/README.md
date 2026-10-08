@@ -388,6 +388,32 @@ The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are
 <CompactLoader label={$t('common.loading')} />
 ```
 
+### Number field (`src/custom/number-field/`)
+
+Number input that emits live only for valid in-range values and never rewrites text while typing. Use it for every numeric field instead of `Number(value)`.
+
+| User does | Text shown | Value emitted |
+| --------- | ---------- | ------------- |
+| types a valid in-range number | as typed | that number, on the keystroke |
+| types an intermediate (`-`, `1.`, `1e`) | as typed | nothing |
+| types out of range (`150` in 0–100) | as typed | nothing until blur |
+| blurs or presses Enter | normalized (`100`; `3` for `2.5` integer) | the normalized value, if it changed |
+| clears an optional field | empty | `null`, on the keystroke |
+| clears a required field, then blurs | the value it had when focused is restored | that value, if it changed |
+| value changes from outside | re-seeded | — |
+
+Pass `onCommit` for follow-up work that must run only on blur or Enter with the normalized value (for example re-clamping a dependent field). It fires after the value settles, even when the value itself did not change.
+
+```svelte
+<script lang="ts">
+  import { NumberField } from '@cio/ui/custom/number-field';
+
+  let points = $state<number | null>(1);
+</script>
+
+<NumberField label="Points" integer min={1} bind:value={points} />
+```
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.
@@ -396,6 +422,7 @@ Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelt
 
 - `is-mobile.svelte.ts` - Media query hook for mobile breakpoints
 - `use-clipboard.svelte.ts` - Clipboard copy functionality with state management
+- `field-draft.svelte.ts` - Text draft separate from stored value that re-seeds only on external change, with live `input()` and blur-time `commit()`
 
 **Usage:**
 

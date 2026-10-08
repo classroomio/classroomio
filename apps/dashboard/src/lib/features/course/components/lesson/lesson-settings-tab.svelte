@@ -17,8 +17,14 @@
   import { goAndHighlight } from '$lib/routing/go-and-highlight';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { getBrowserTimezone, instantToZonedWallClock, zonedWallClockToInstant } from '$lib/utils/functions/date';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
-  import { parseBoundedInteger } from '@cio/utils/functions';
+
+  interface Props {
+    hasUnsavedSessionChanges?: boolean;
+  }
+
+  let { hasUnsavedSessionChanges = $bindable(false) }: Props = $props();
 
   type LessonCompletionPolicy = 'manual' | 'video_watch' | 'none';
 
@@ -61,7 +67,7 @@
 
     return (
       sessionCallUrl.trim() !== (lessonApi.lesson?.callUrl ?? '') ||
-      computeNewInstant() !== (lessonApi.lesson?.lessonAt ?? '') ||
+      sessionWallClock !== instantToZonedWallClock(lessonApi.lesson?.lessonAt, currentTz) ||
       sessionTimezone !== currentTz
     );
   }
@@ -124,6 +130,10 @@
     await notifySessionUpdate();
   }
 
+  $effect(() => {
+    hasUnsavedSessionChanges = sessionChanged();
+  });
+
   const completionPolicy = $derived(lessonApi.lesson?.completionPolicy ?? 'manual');
   const courseCommentsEnabled = $derived(courseApi.course?.metadata?.commentsEnabled ?? true);
   const lessonCommentsEnabled = $derived(lessonApi.lesson?.commentsEnabled ?? true);
@@ -153,15 +163,6 @@
     if (value !== 'manual' && value !== 'video_watch' && value !== 'none') return;
 
     lessonApi.updateLessonState('completionPolicy', value);
-  }
-
-  function commitVideoWatchThreshold(event: Event & { currentTarget: HTMLInputElement }) {
-    const currentThreshold = videoWatchThreshold;
-    const nextThreshold = parseBoundedInteger(event.currentTarget.value, { min: 1, max: 100 }) ?? currentThreshold;
-    event.currentTarget.value = String(nextThreshold);
-    if (nextThreshold === currentThreshold) return;
-
-    lessonApi.updateLessonState('videoWatchThreshold', nextThreshold);
   }
 
   function toggleVideoWatchEnforced(index: number, checked: boolean) {
@@ -324,11 +325,13 @@
 
         {#if completionPolicy === 'video_watch'}
           <Field.Field>
-            <InputField
-              type="number"
+            <NumberField
+              integer
+              min={1}
+              max={100}
               label={$t('course.navItem.lessons.completion_policy.watch_threshold')}
-              value={String(videoWatchThreshold)}
-              onChange={commitVideoWatchThreshold}
+              value={videoWatchThreshold}
+              onValueChange={(next) => lessonApi.updateLessonState('videoWatchThreshold', next ?? 95)}
             />
           </Field.Field>
 

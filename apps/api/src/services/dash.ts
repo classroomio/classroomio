@@ -140,10 +140,14 @@ function parseLoginActivityCache(raw: string): StudentLoginActivityRow[] | null 
 }
 
 /** Day-of-week login chart; results cached in Redis (24h TTL) when `REDIS_URL` is set. */
-export async function getStudentLoginActivity(orgId: string, days: number): Promise<StudentLoginActivityRow[]> {
+export async function getStudentLoginActivity(
+  orgId: string,
+  days: number,
+  bustCache = false
+): Promise<StudentLoginActivityRow[]> {
   const cacheKey = dashLoginActivityKey(orgId, days);
 
-  if (env.REDIS_URL) {
+  if (env.REDIS_URL && !bustCache) {
     try {
       const cached = await redis.get(cacheKey);
       if (cached) {

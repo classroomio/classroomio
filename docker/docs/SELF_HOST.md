@@ -15,9 +15,9 @@ cp .env.example .env
 ./classroomio.sh start
 ```
 
-The script pulls and starts: **postgres**, **redis**, **minio** (object storage), **api** (`localhost:3081`), **dashboard** (`localhost:3082`), and the **jobs** worker (background processing). Pass `--build` to build the application images from this checkout instead of pulling published ones. Database schema setup runs automatically inside the `api` container on startup (see [`docker/entrypoint-api.sh`](../entrypoint-api.sh); skip with `SKIP_DB_SETUP=true`).
+The script pulls and starts: **postgres**, **redis**, **storage** (SeaweedFS object storage), **api** (`localhost:3081`), **dashboard** (`localhost:3082`), and the **jobs** worker (background processing). Pass `--build` to build the application images from this checkout instead of pulling published ones. Database schema setup runs automatically inside the `api` container on startup (see [`docker/entrypoint-api.sh`](../entrypoint-api.sh); skip with `SKIP_DB_SETUP=true`).
 
-It auto-generates secure values for `PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET` when they are missing or left at placeholders, and randomizes MinIO credentials on first provision.
+It auto-generates secure values for `PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET` when they are missing or left at placeholders, and randomizes the object-storage credentials on first provision.
 
 > **The jobs worker is required, not optional.** Without it, video processing, captions/transcription, AI course generation, and most emails are enqueued in Redis but never run: uploads stay stuck "processing" with no error. See [Background Jobs Worker](#background-jobs-worker) below.
 
@@ -97,7 +97,7 @@ needed), and none of it needs to include the API for normal dashboard calls.
 
 `PRIVATE_SERVER_KEY` and `BETTER_AUTH_SECRET` are generated for you by `./classroomio.sh` if you
 leave them blank, and a value you set yourself is never overwritten; the script also ensures
-`PRIVATE_SERVER_KEY` matches between API and dashboard. The same goes for the `MINIO_*` /
+`PRIVATE_SERVER_KEY` matches between API and dashboard. The same goes for the
 `OBJECT_STORAGE_*` vars: the startup script configures them with randomized credentials. Email is
 effectively required: without SMTP (or Zoho) configured, signup verification, password resets, and
 invites silently don't send (see [Email](#email)). Google OAuth, Unsplash, and `LICENSE_KEY` stay
@@ -133,10 +133,11 @@ dc = docker compose --env-file .env -p classroomio -f docker-compose.yaml
 | Task | Command |
 |------|---------|
 | Interactive lifecycle menu (install/start/stop/upgrade/logs/backup) | `./classroomio.sh` |
-| Full stack (pulls pre-built images, with MinIO) | `./classroomio.sh start` |
+| Full stack (pulls pre-built images, with bundled storage) | `./classroomio.sh start` |
 | Build from source instead of pulling | `./classroomio.sh start --build` |
-| Exclude MinIO | `./classroomio.sh start --no-minio` |
-| Back up Postgres + MinIO volume | `./classroomio.sh backup` |
+| Exclude bundled storage | `./classroomio.sh start --no-storage` |
+| Back up Postgres + object-storage volume | `./classroomio.sh backup` |
+| Copy uploads from the old bundled MinIO | `./classroomio.sh migrate-storage` |
 | Upgrade published images (backs up first) | `./classroomio.sh upgrade` |
 | Upgrade a source build (backs up first, then rebuilds) | `./classroomio.sh upgrade --build` |
 | API-only smoke test | `dc up --build -d postgres redis api` |
@@ -161,43 +162,28 @@ docker exec cio-api env | sort
 docker exec cio-dashboard env | sort
 ```
 
-Container names: `cio-postgres`, `cio-redis`, `cio-api`, `cio-dashboard`, `cio-jobs`, `cio-minio`.
+Container names: `cio-postgres`, `cio-redis`, `cio-api`, `cio-dashboard`, `cio-jobs`, `cio-storage`.
 
-## MinIO (Object Storage)
+## Object Storage (SeaweedFS)
 
-MinIO is included by default. The startup script auto-configures env vars, starts MinIO, and creates `videos`, `documents`, and `media` buckets.
+An S3-compatible store ([SeaweedFS](https://github.com/seaweedfs/seaweedfs)) is included by default as the `storage` service. The startup script auto-configures env vars, starts it, and creates the `videos`, `documents`, and `media` buckets. `media` is public-read; the other two need the key pair or a presigned URL.
 
-- **S3 API Endpoint (Port 9000):** `http://localhost:9000` (used for `OBJECT_STORAGE_ENDPOINT` and browser presigned uploads)
-- **Web Console UI (Port 9001):** `http://localhost:9001` (default credentials: `minioadmin` / `minioadmin` or randomized in `.env`)
+- **S3 API Endpoint (Port 9000):** `http://localhost:9000` (used for `OBJECT_STORAGE_ENDPOINT` and browser presigned uploads). This is the only published port: SeaweedFS's internal master/volume/filer ports have no auth and stay on the compose network.
+- **No web console.** Browse buckets with any S3 client (`rclone`, AWS CLI) using `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` from `.env`.
+- **CORS:** all origins are allowed, so browser presigned uploads work from any dashboard origin.
+- **App version:** browser uploads to the bundled store need app images built after the SeaweedFS switch. If you pin an older `CIO_VERSION`, uploads fail with `BadDigest`; upgrade the pin.
 
-### Viewing Buckets and Uploaded Files
-
-1. Open `http://localhost:9001` in your browser.
-2. Log in using `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD`.
-3. In the left navigation bar, click **Object Browser** to inspect all buckets (`videos`, `documents`, `media`) and view file previews.
-
-### CORS & Presigned URL Uploads
-
-If uploading files from a custom web origin (e.g. `http://localhost:5173`), set `MINIO_API_CORS_ALLOW_ORIGIN="*"` in `.env` so MinIO returns `Access-Control-Allow-Origin` headers on preflight `OPTIONS` requests.
-
-To start MinIO manually (e.g. after `--no-minio`):
+To start it manually (e.g. after `--no-storage`):
 
 ```bash
-docker compose -f docker-compose.yaml --profile minio up -d
+docker compose -f docker-compose.yaml --profile storage up -d
 ```
 
-**Security:** The startup script randomizes `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` on first provision and mirrors them into `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY`. If you change them, keep both pairs in sync.
+**Security:** The startup script randomizes `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` on first provision. The `storage`, `api` and `jobs` services all read that one pair.
 
-### MinIO Web UI Not Loading
+### Migrating from the old bundled MinIO
 
-If port 9001 does not respond, recreate the container:
-
-```bash
-docker rm -f cio-minio
-docker compose -f docker-compose.yaml --profile minio up -d
-```
-
-Data is preserved in the `minio-data` volume.
+Earlier versions bundled MinIO, whose images have been removed from Docker Hub. Re-download `classroomio.sh` and run `./classroomio.sh upgrade`: it backs up, copies your uploads from the old `minio-data` volume into the new store, and never deletes the old volume. It refuses to migrate under a pinned `CIO_VERSION` that predates the switch, and reads old data from a non-default location via `MINIO_LEGACY_DATA` (`none` confirms there is nothing to copy). Once storage has switched, the copy does not run again unless forced with `MINIO_MIGRATION_FORCE=1`. Full steps, the manual path for Coolify/Dokploy, and troubleshooting: [Migrating from MinIO](https://classroomio.com/docs/self-hosted/migrating-from-minio).
 
 ## Background Jobs Worker
 
@@ -233,22 +219,22 @@ succeed in the UI but no email is delivered (`ECONNREFUSED` in logs).
 
 ## Production Object Storage
 
-The bundled MinIO is fine for a single host. Two things matter for a real deployment:
+The bundled store is fine for a single host. Two things matter for a real deployment:
 
 1. **Public media URLs must point at your domain, not `localhost`.** Media URLs are embedded in
    pages served to browsers, so `http://localhost:9000/...` breaks for every remote visitor. The
    startup script derives `OBJECT_STORAGE_PUBLIC_ENDPOINT` and
    `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` from `DASHBOARD_ORIGIN` when it is a real domain. Make
-   sure your reverse proxy routes `<your-domain>/media` to MinIO on port 9000 (or set those two
+   sure your reverse proxy routes `<your-domain>/media` to the `storage` service on port 9000 (or set those two
    variables explicitly).
-2. **External S3 / Cloudflare R2 instead of MinIO.** Run with `--no-minio` and set the
+2. **External S3 / Cloudflare R2 instead of the bundled store.** Run with `--no-storage` and set the
    `OBJECT_STORAGE_*` variables (endpoint, public endpoint, access key, secret, buckets) to your
-   provider. The startup script fails fast if `--no-minio` is used without an
+   provider. The startup script fails fast if `--no-storage` is used without an
    `OBJECT_STORAGE_ENDPOINT`, so you cannot accidentally launch with no storage.
 
 ## Backups & Persistence
 
-All state lives in named Docker volumes: `postgres-data`, `redis-data`, `minio-data`
+All state lives in named Docker volumes: `postgres-data`, `redis-data`, `storage-data`
 (see `docker-compose.yaml`). **`docker compose ... down -v` deletes them, and all your
 data.** Back up regularly:
 
@@ -256,7 +242,8 @@ data.** Back up regularly:
 # Database (most important)
 docker exec cio-postgres pg_dump -U postgres classroomio > backup-$(date +%F).sql
 
-# Object storage — copy the minio-data volume, or use `mc mirror` to an off-box bucket
+# Object storage — `./classroomio.sh backup` archives the storage-data volume, or use
+# `rclone sync` to an off-box bucket
 ```
 
 Restore the database into a fresh stack with `psql`/`pg_restore` against `cio-postgres`.
@@ -302,7 +289,7 @@ docker image prune -a -f       # free unused images
 docker container prune -f      # free stopped containers
 ```
 
-> **Warning:** `docker volume prune` removes volumes not used by any container. If run after `docker compose ... down`, it deletes `postgres-data`, `redis-data`, and `minio-data`. Use only the prunes above to free space safely.
+> **Warning:** `docker volume prune` removes volumes not used by any container. If run after `docker compose ... down`, it deletes `postgres-data`, `redis-data`, and `storage-data`. Use only the prunes above to free space safely.
 
 Then restart: `./classroomio.sh start`
 
@@ -310,13 +297,18 @@ Then restart: `./classroomio.sh start`
 
 Postgres has not finished starting. Wait 30-60 seconds and retry. The compose healthcheck requires a successful `SELECT 1` before dependent services start.
 
-### MinIO "Storage reached its minimum free drive threshold"
+### Uploads fail while the disk is full
 
-Same root cause as disk full. Free space using the steps above and restart MinIO:
+Same root cause as disk full. Free space using the steps above and restart the storage service:
 
 ```bash
-docker compose --env-file .env -p classroomio -f docker-compose.yaml restart minio
+docker compose --env-file .env -p classroomio -f docker-compose.yaml --profile storage restart storage
 ```
+
+### Pull fails for `minio/minio` or `minio/mc`
+
+Your compose file predates the switch to SeaweedFS. See
+[Migrating from the old bundled MinIO](#migrating-from-the-old-bundled-minio).
 
 ### SMTP Errors in Logs
 

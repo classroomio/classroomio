@@ -3,13 +3,13 @@
   import { Label } from '@cio/ui/base/label';
   import { Button } from '@cio/ui/base/button';
   import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { questionnaire } from './store';
   import { exerciseApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { slugifyTitle } from '@cio/utils/validation';
-  import { parseBoundedInteger } from '@cio/utils/functions';
   import * as Select from '@cio/ui/base/select';
 
   type Props = {
@@ -28,15 +28,6 @@
   });
 
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
-
-  function commitPassThreshold(event: Event & { currentTarget: HTMLInputElement }) {
-    const currentThreshold = $questionnaire.passThreshold ?? 100;
-    const nextThreshold = parseBoundedInteger(event.currentTarget.value, { min: 0, max: 100 }) ?? currentThreshold;
-    event.currentTarget.value = String(nextThreshold);
-    if (nextThreshold === currentThreshold) return;
-
-    questionnaire.update((state) => ({ ...state, passThreshold: nextThreshold }));
-  }
 
   async function saveSettings() {
     if (!courseApi.course?.id) return;
@@ -131,11 +122,15 @@
             </p>
           {/if}
         </div>
-        <InputField
-          type="number"
+        <NumberField
+          integer
+          min={0}
+          max={100}
           label={$t('course.navItem.lessons.exercises.all_exercises.settings_pass_threshold')}
-          value={String($questionnaire.passThreshold ?? 100)}
-          onChange={commitPassThreshold}
+          value={$questionnaire.passThreshold ?? 100}
+          onValueChange={(next) => {
+            questionnaire.update((state) => ({ ...state, passThreshold: next ?? 100 }));
+          }}
         />
       </div>
     {/if}

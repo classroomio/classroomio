@@ -1,6 +1,7 @@
 <script lang="ts">
   import { getExerciseQuestionLabel, type ExerciseQuestionRendererProps } from '@cio/question-types';
   import { Textarea } from '../../../../base/textarea';
+  import { FieldDraft } from '../../../../hooks/field-draft.svelte';
 
   let {
     question,
@@ -12,11 +13,6 @@
 
   const label = (key: Parameters<typeof getExerciseQuestionLabel>[1], fallback = '') =>
     getExerciseQuestionLabel(labels, key, fallback);
-
-  const value = $derived.by(() => {
-    if (answer?.type === 'HOTSPOT') return JSON.stringify(answer.coordinates, null, 2);
-    return '';
-  });
 
   function parseCoordinates(raw: string): Array<{ x: number; y: number }> {
     try {
@@ -33,18 +29,22 @@
       return [];
     }
   }
+
+  const coordinates = new FieldDraft<Array<{ x: number; y: number }>, string>({
+    value: () => (answer?.type === 'HOTSPOT' ? answer.coordinates : []),
+    format: (list) => (list.length === 0 ? '' : JSON.stringify(list, null, 2)),
+    parse: parseCoordinates,
+    onChange: (next) => onAnswerChange({ type: 'HOTSPOT', coordinates: next })
+  });
 </script>
 
 <div class="ui:space-y-2">
   <Textarea
     class="ui:w-full"
     rows={4}
-    {value}
+    value={coordinates.draft}
     {disabled}
     placeholder={label('hotspot.take.placeholder')}
-    onchange={(event) => {
-      const coordinates = parseCoordinates(event.currentTarget.value);
-      onAnswerChange({ type: 'HOTSPOT', coordinates });
-    }}
+    oninput={(event) => coordinates.input(event.currentTarget.value)}
   />
 </div>

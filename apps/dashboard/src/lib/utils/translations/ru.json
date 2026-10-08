@@ -3553,7 +3553,6 @@
     },
     "filters": {
       "search_placeholder": "Поиск активов",
-      "apply": "Применить",
       "status_options": {
         "all": "Все статусы",
         "active": "Активный",

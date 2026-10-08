@@ -1,5 +1,6 @@
 <script lang="ts">
   import get from 'lodash/get';
+  import cloneDeep from 'lodash/cloneDeep';
   import z from 'zod';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import UserIcon from '@lucide/svelte/icons/user';
@@ -19,7 +20,7 @@
 
   let { course = $bindable(), setter }: Props = $props();
 
-  let reviews = $state(get(course, 'metadata.reviews', []));
+  let reviews = $state(cloneDeep(get(course, 'metadata.reviews', [])));
   let reviewToExpand = $state<number | null>(null);
   let errors = $state({});
   let reviewIdSequence = 0;
@@ -42,6 +43,7 @@
     };
     reviews = [...reviews, newReview];
     reviewToExpand = reviewId;
+    syncReviews();
   }
 
   function validateReviews(id) {
@@ -99,9 +101,9 @@
     reviewToExpand = id;
   }
 
-  $effect(() => {
-    setter(reviews, 'metadata.reviews');
-  });
+  function syncReviews() {
+    setter($state.snapshot(reviews), 'metadata.reviews');
+  }
 </script>
 
 <!-- Sections - Reviews -->
@@ -132,7 +134,7 @@
         {/if}
         <!-- the body -->
         {#if review.id === reviewToExpand}
-          <ReviewFormEditor bind:reviews bind:review={reviews[index]} {errors} {onExpand} />
+          <ReviewFormEditor bind:reviews bind:review={reviews[index]} {errors} {onExpand} onChange={syncReviews} />
         {/if}
       </div>
     {/each}

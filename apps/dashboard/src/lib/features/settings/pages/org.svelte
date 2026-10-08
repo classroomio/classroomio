@@ -19,6 +19,7 @@
   let { hasUnsavedChanges = $bindable(false) }: Props = $props();
 
   let avatar = $state<string | File | undefined>();
+  let name = $state('');
   let savedName = $state('');
   let capturedOrgId = $state<string | null>(null);
 
@@ -57,19 +58,20 @@
 
   export async function handleUpdate() {
     await orgApi.update($currentOrg.id, {
-      name: $currentOrg.name,
+      name,
       avatar
     });
 
     if (orgApi.success) {
-      hasUnsavedChanges = false;
+      $currentOrg.name = name;
       avatar = undefined;
-      savedName = $currentOrg.name;
+      savedName = name;
     }
   }
 
   function captureSavedFields() {
     savedName = $currentOrg.name;
+    name = $currentOrg.name;
   }
 
   $effect(() => {
@@ -81,10 +83,13 @@
     }
   });
 
+  $effect(() => {
+    hasUnsavedChanges = name !== savedName || avatar !== undefined;
+  });
+
   export function handleDiscard() {
-    $currentOrg.name = savedName;
+    name = savedName;
     avatar = undefined;
-    hasUnsavedChanges = false;
     orgApi.errors = {};
   }
 
@@ -99,19 +104,13 @@
     <Field.Group class="gap-3!">
       <Field.Field>
         <Field.Label>{$t('settings.organization.organization_profile.organization_name')}</Field.Label>
-        <Input bind:value={$currentOrg.name} oninput={() => (hasUnsavedChanges = true)} class="w-full lg:w-60" />
+        <Input bind:value={name} class="w-full lg:w-60" />
         {#if orgApi.errors.name}
           <Field.Error>{$t(orgApi.errors.name)}</Field.Error>
         {/if}
       </Field.Field>
       <Field.Field>
-        <UploadImage
-          bind:avatar
-          src={$currentOrg.avatarUrl}
-          shape="rounded-md"
-          widthHeight="w-24 h-24"
-          change={() => (hasUnsavedChanges = true)}
-        />
+        <UploadImage bind:avatar src={$currentOrg.avatarUrl} shape="rounded-md" widthHeight="w-24 h-24" />
       </Field.Field>
     </Field.Group>
   </Field.Set>

@@ -135,6 +135,10 @@ const DUE_STATUS: Record<EmailLocale, { overdue: string; due: (relativeTime: str
   tr: {
     overdue: 'Bu hedefin süresi geçti.',
     due: (relativeTime) => `Bu hedefin son tarihi ${relativeTime}.`
+  },
+  it: {
+    overdue: 'Questo obiettivo è scaduto.',
+    due: (relativeTime) => `Questo obiettivo scade ${relativeTime}.`
   }
 };
 
