@@ -132,6 +132,9 @@ export const ZPublicApiUpdateExerciseQuestion = z
     if (question.delete && !question.id) {
       ctx.addIssue({ code: 'custom', message: 'delete needs the id of an existing question', path: ['delete'] });
     }
+    // An existing question sends an option diff, not the full list; its rules run on the merged options in the service.
+    if (question.id) return;
+
     validateQuestionOptions(
       {
         ...question,

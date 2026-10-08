@@ -359,7 +359,14 @@ describe('updateCourseExerciseService', () => {
   it.each([
     ['options left out', undefined, [100, 101]],
     ['only one option sent', [{ id: 101, label: 'B2', isCorrect: false }], [100, 101]],
-    ['one option deleted', [{ id: 101, label: 'B', isCorrect: false, delete: true }], [100, 101]]
+    [
+      'one option swapped for a new one',
+      [
+        { id: 101, label: 'B', isCorrect: false, delete: true },
+        { label: 'C', isCorrect: false }
+      ],
+      [100, 101, undefined]
+    ]
   ])('keeps the options the caller did not mention when %s', async (_case, options, expectedIds) => {
     vi.mocked(updateExerciseService).mockResolvedValue(exerciseDetail());
 
@@ -372,6 +379,30 @@ describe('updateCourseExerciseService', () => {
     expect(sent.map((option) => option.id)).toEqual(expectedIds);
     expect(sent[0]).toMatchObject({ id: 100, label: 'A', isCorrect: true });
     expect(sent[0].deletedAt).toBeUndefined();
+  });
+
+  it.each([
+    ['only one option', [{ id: 101, label: 'B', isCorrect: false, delete: true }]],
+    ['no correct option', [{ id: 100, label: 'A', isCorrect: false }]]
+  ])('returns 400 when an option edit would leave the question with %s', async (_case, options) => {
+    await expect(
+      updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, { questions: [question({ id: 10, options })] })
+    ).rejects.toMatchObject({ statusCode: 400 });
+    expect(updateExerciseService).not.toHaveBeenCalled();
+  });
+
+  it('does not judge the options when an edit sends neither options nor a question type', async () => {
+    vi.mocked(getExercise).mockResolvedValue({
+      ...(exerciseDetail() as object),
+      questions: [{ id: 10, title: 'Old', questionTypeId: 1, points: 1, order: 0, settings: {}, options: [] }]
+    } as never);
+    vi.mocked(updateExerciseService).mockResolvedValue(exerciseDetail());
+
+    await updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+      questions: [{ id: 10, question: 'Reworded', points: 2 }]
+    });
+
+    expect(updateExerciseService).toHaveBeenCalled();
   });
 
   it('returns 400 when a removed section still holds a question', async () => {

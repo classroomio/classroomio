@@ -13,7 +13,7 @@ import { getCourseSectionById } from '@cio/db/queries/course';
 import { getExerciseById, getExerciseSectionOwnersByIds } from '@cio/db/queries/exercise';
 import { getLessonById } from '@cio/db/queries/lesson';
 import type { TExercise } from '@cio/db/types';
-import type { TExerciseUpdate } from '@cio/utils/validation/exercise';
+import { getQuestionOptionIssues, type TExerciseUpdate } from '@cio/utils/validation/exercise';
 import type {
   TPublicApiCourseExerciseNotifyParam,
   TPublicApiCourseExerciseNotifyStatusQuery,
@@ -197,6 +197,31 @@ async function assertUpdateIdsBelongToExercise(
   }
 }
 
+// options is a diff on an existing question, so the option rules are checked on what the question ends up with.
+function assertEditedQuestionOptionsValid(current: ExerciseDetail, payload: TPublicApiUpdateCourseExercise) {
+  const currentById = new Map((current.questions ?? []).map((question) => [Number(question.id), question]));
+
+  for (const question of payload.questions ?? []) {
+    const existing = question.id ? currentById.get(question.id) : undefined;
+    if (!existing || question.delete) continue;
+    if (question.options === undefined && question.questionTypeId === undefined) continue;
+
+    const sent = question.options ?? [];
+    const sentIds = new Set(sent.map((option) => option.id));
+    const [issue] = getQuestionOptionIssues({
+      questionTypeId: question.questionTypeId ?? existing.questionTypeId ?? undefined,
+      settings: question.settings ?? (existing.settings as Record<string, unknown> | null) ?? undefined,
+      options: [
+        ...existing.options.filter((option) => !sentIds.has(Number(option.id))),
+        ...sent.filter((option) => !option.delete)
+      ].map((option) => ({ isCorrect: option.isCorrect === true }))
+    });
+    if (issue) {
+      throw new AppError(`Question ${question.id}: ${issue}`, ErrorCodes.VALIDATION_ERROR, 400, 'questions');
+    }
+  }
+}
+
 // The core diff deletes any option missing from the request, so options the caller left out are sent back unchanged.
 function toInternalUpdate(payload: TPublicApiUpdateCourseExercise, current: ExerciseDetail): TExerciseUpdate {
   const deletedAt = new Date().toISOString();
@@ -327,6 +352,7 @@ export async function updateCourseExerciseService(
 
   const current = await getExercise(params.exerciseId);
   await assertUpdateIdsBelongToExercise(params.exerciseId, current, payload);
+  assertEditedQuestionOptionsValid(current, payload);
 
   await assertQuestionTypesAllowed(
     orgId,

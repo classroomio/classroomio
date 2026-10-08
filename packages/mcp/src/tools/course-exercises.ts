@@ -52,7 +52,7 @@ const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawS
 export function registerCourseExerciseTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_course_exercises',
-    `List a live course's exercises in course order, without their questions (use get_course_exercise for those). Optionally filter by sectionId. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+    `List a live course's exercises in course order, without their questions (use get_course_exercise for those). Optionally filter by sectionId (course section) or the deprecated lessonId. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
     shape(ZListCourseExercisesToolInput),
     READ_ONLY,
     async (args) => {
@@ -74,7 +74,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'create_course_exercise',
-    `Create an exercise on a live course. Either send title and questions, or send templateId (from list_exercise_templates) to copy a built-in template; with templateId only sectionId and order may be sent alongside it. sectionId must be a section of this course. ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
+    `Create an exercise on a live course. Either send title and questions, or send templateId (from list_exercise_templates) to copy a built-in template; with templateId only sectionId, lessonId and order may be sent alongside it. sectionId and lessonId must belong to this course. ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
     shape(ZCreateCourseExerciseToolInput),
     CREATE,
     async (args) => {

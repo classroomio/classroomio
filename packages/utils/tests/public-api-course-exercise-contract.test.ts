@@ -69,12 +69,11 @@ describe('public API course exercise request contract', () => {
     expect(
       ZPublicApiUpdateCourseExercise.safeParse({ questions: [{ question: 'Q', points: 1, delete: true }] }).success
     ).toBe(false);
-    // Deleted options don't count towards the per-type option rules.
+    // A new question sends its full option list, and deleted options don't count towards the per-type rules.
     expect(
       ZPublicApiUpdateCourseExercise.safeParse({
         questions: [
           {
-            id: 1,
             ...choice([
               { label: 'A', isCorrect: true },
               { label: 'B', isCorrect: false },
@@ -88,6 +87,12 @@ describe('public API course exercise request contract', () => {
         ]
       }).success
     ).toBe(false);
+    // An existing question sends an option diff, so one option alone is a valid request here.
+    expect(
+      ZPublicApiUpdateCourseExercise.safeParse({
+        questions: [{ id: 1, ...choice([]), options: [{ id: 2, label: 'B, reworded', isCorrect: false }] }]
+      }).success
+    ).toBe(true);
   });
 
   it('keeps the submission rules that are not visible in the JSON shape', () => {
