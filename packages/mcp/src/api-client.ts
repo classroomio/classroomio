@@ -3,7 +3,7 @@ import type {
   TAutomationDraftTagAssignment,
   TAutomationDraftTagParam
 } from '@cio/utils/validation/tag';
-import type { TCourseContentReorder, TCourseLandingPageUpdate, TCourseUpdateParam } from '@cio/utils/validation/course';
+import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import type {
   TCourseImportCourseParam,
   TCourseImportDraftCreate,
@@ -33,8 +33,20 @@ import type {
   TPublicApiCertificateFileFormat,
   TPublicApiCohortNewsfeedQuery,
   TPublicApiCourseInvitesQuery,
+  TPublicApiCourseLessonCommentsQuery,
+  TPublicApiCourseLessonHistoryQuery,
+  TPublicApiCourseLessonsQuery,
   TPublicApiCourseMemberAnalyticsQuery,
   TPublicApiCourseMembersQuery,
+  TPublicApiCreateCourseLessonComment,
+  TPublicApiCreateCourseSection,
+  TPublicApiDeleteCourseContent,
+  TPublicApiLessonLocale,
+  TPublicApiReorderCourseContent,
+  TPublicApiSetCourseLessonTranslation,
+  TPublicApiUpdateCourseContentLock,
+  TPublicApiUpdateCourseLessonComment,
+  TPublicApiUpdateCourseSection,
   TPublicApiCreateCohort,
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
@@ -142,13 +154,6 @@ export class ClassroomIoApiClient {
 
   async updateCourseLandingPage(courseId: TCourseImportCourseParam['courseId'], payload: TCourseLandingPageUpdate) {
     return this.request(`/course/${courseId}/landing-page`, {
-      method: 'PUT',
-      body: payload
-    });
-  }
-
-  async reorderCourseContent(courseId: TCourseUpdateParam['courseId'], payload: TCourseContentReorder) {
-    return this.request(`/course/${courseId}/content/reorder`, {
       method: 'PUT',
       body: payload
     });
@@ -286,6 +291,134 @@ export class ClassroomIoApiClient {
     const mimeType = response.headers.get('content-type') ?? 'application/octet-stream';
 
     return { base64: bytes.toString('base64'), mimeType };
+  }
+
+  // ─── Course Sections, Lessons and Content (public API) ──────────────────
+
+  async listCourseSections(courseId: string, query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/sections${toPageQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async createCourseSection(courseId: string, payload: TPublicApiCreateCourseSection) {
+    return this.request(`/public-api/v1/courses/${courseId}/sections`, { method: 'POST', body: payload });
+  }
+
+  async updateCourseSection(courseId: string, sectionId: string, payload: TPublicApiUpdateCourseSection) {
+    return this.request(`/public-api/v1/courses/${courseId}/sections/${sectionId}`, { method: 'PUT', body: payload });
+  }
+
+  async deleteCourseSection(courseId: string, sectionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/sections/${sectionId}`, { method: 'DELETE' });
+  }
+
+  async listCourseLessons(courseId: string, query: Partial<TPublicApiCourseLessonsQuery> = {}) {
+    const searchParams = new URLSearchParams(toPageQuerySuffix(query).slice(1));
+    if (query.sectionId) searchParams.set('sectionId', query.sectionId);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/lessons${querySuffix}`, { method: 'GET' });
+  }
+
+  async getCourseLesson(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}`, { method: 'GET' });
+  }
+
+  async deleteCourseLesson(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
+  }
+
+  async notifyCourseLessonSessionUpdate(courseId: string, lessonId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/notify-session-update`, {
+      method: 'POST'
+    });
+  }
+
+  async listCourseLessonTranslations(courseId: string, lessonId: string, locale?: TPublicApiLessonLocale) {
+    const querySuffix = locale ? `?locale=${locale}` : '';
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/translations${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  async setCourseLessonTranslation(
+    courseId: string,
+    lessonId: string,
+    locale: TPublicApiLessonLocale,
+    payload: TPublicApiSetCourseLessonTranslation
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/translations/${locale}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async listCourseLessonHistory(
+    courseId: string,
+    lessonId: string,
+    query: Partial<TPublicApiCourseLessonHistoryQuery>
+  ) {
+    const searchParams = new URLSearchParams();
+    if (query.locale) searchParams.set('locale', query.locale);
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.cursor) searchParams.set('cursor', query.cursor);
+
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/history?${searchParams.toString()}`, {
+      method: 'GET'
+    });
+  }
+
+  async listCourseLessonComments(
+    courseId: string,
+    lessonId: string,
+    query: Partial<TPublicApiCourseLessonCommentsQuery> = {}
+  ) {
+    const searchParams = new URLSearchParams();
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.cursor) searchParams.set('cursor', query.cursor);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments${querySuffix}`, {
+      method: 'GET'
+    });
+  }
+
+  async createCourseLessonComment(courseId: string, lessonId: string, payload: TPublicApiCreateCourseLessonComment) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateCourseLessonComment(
+    courseId: string,
+    lessonId: string,
+    commentId: number,
+    payload: TPublicApiUpdateCourseLessonComment
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments/${commentId}`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async deleteCourseLessonComment(courseId: string, lessonId: string, commentId: number) {
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}/comments/${commentId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async reorderCourseContent(courseId: string, payload: TPublicApiReorderCourseContent) {
+    return this.request(`/public-api/v1/courses/${courseId}/content/reorder`, { method: 'PUT', body: payload });
+  }
+
+  async setCourseContentUnlocked(courseId: string, payload: TPublicApiUpdateCourseContentLock) {
+    return this.request(`/public-api/v1/courses/${courseId}/content`, { method: 'PATCH', body: payload });
+  }
+
+  async deleteCourseContent(courseId: string, payload: TPublicApiDeleteCourseContent) {
+    return this.request(`/public-api/v1/courses/${courseId}/content/delete`, { method: 'POST', body: payload });
   }
 
   // ─── Course Members (public API) ────────────────────────────────────────

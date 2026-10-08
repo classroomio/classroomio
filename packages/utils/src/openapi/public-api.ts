@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, course certificate, and course section, lesson and content endpoints, through their \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, and \`course:read\`/\`course:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -161,6 +161,25 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
   'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
   'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate',
+  'GET /public-api/v1/courses/{courseId}/sections': 'List course sections',
+  'POST /public-api/v1/courses/{courseId}/sections': 'Create a course section',
+  'PUT /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Update a course section',
+  'DELETE /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Delete a course section',
+  'GET /public-api/v1/courses/{courseId}/lessons': 'List course lessons',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Get a course lesson',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Delete a course lesson',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/notify-session-update':
+    'Notify students of a session update',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations': 'List lesson translations',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations/{locale}': 'Save a lesson translation',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/history': 'List lesson version history',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments': 'List lesson comments',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments': 'Post a lesson comment',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Edit a lesson comment',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Delete a lesson comment',
+  'PUT /public-api/v1/courses/{courseId}/content/reorder': 'Reorder course content',
+  'PATCH /public-api/v1/courses/{courseId}/content': 'Lock or unlock course content',
+  'POST /public-api/v1/courses/{courseId}/content/delete': 'Delete course content',
   'GET /public-api/v1/courses/{courseId}/members': 'List course members',
   'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
   'GET /public-api/v1/courses/{courseId}/members/{memberId}': 'Get a course member',
@@ -222,6 +241,9 @@ const OPERATION_TAGS = [
   { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
   { name: 'Course Members', description: 'Manage the people in a course.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },
+  { name: 'Course Sections', description: 'Add, rename, move and delete course sections.' },
+  { name: 'Course Lessons', description: 'Read and delete lessons, and manage their translations, history and comments.' },
+  { name: 'Course Content', description: 'Reorder, lock and delete lessons and exercises in bulk.' },
   { name: 'Cohorts', description: 'Create and manage cohorts.' },
   { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
   { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },

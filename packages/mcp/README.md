@@ -43,7 +43,6 @@ Current tools:
 
 - `list_org_courses`
 - `get_course_structure`
-- `reorder_course_content`
 - `update_course_landing_page`
 - `create_course_draft`
 - `create_course_draft_from_course`
@@ -137,6 +136,22 @@ What the tools cover compared with the dashboard:
 - Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
 - Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
 
+Course section, lesson and content tools:
+
+- `list_course_sections`, `create_course_section`, `update_course_section`, `delete_course_section`
+- `list_course_lessons`, `get_course_lesson`, `delete_course_lesson`, `notify_course_lesson_session_update`
+- `list_course_lesson_translations`, `set_course_lesson_translation`, `list_course_lesson_history`
+- `list_course_lesson_comments`, `create_course_lesson_comment`, `update_course_lesson_comment`, `delete_course_lesson_comment`
+- `reorder_course_content`, `set_course_content_unlocked`, `delete_course_content`
+
+They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's `course:read` (reads) and `course:write` (everything else) scopes, which MCP keys have by default. Every tool, reads included, needs the key creator to be a course tutor/admin or an org admin.
+
+- `create_course_section` with `moveUngrouped: true` moves every lesson and exercise without a section into the new section.
+- `delete_course_section`, `delete_course_lesson` and `delete_course_content` are hard deletes. Deleting a section also deletes its lessons and exercises.
+- `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
+- Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
+- Not covered here: creating and editing lessons, uploads, and restoring a lesson version.
+
 ## Auth Model
 
 The package expects an org-scoped ClassroomIO automation key generated from `Automation -> MCP` in the ClassroomIO dashboard.
@@ -156,7 +171,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, and analytics routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, course section, lesson and content, and analytics routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 

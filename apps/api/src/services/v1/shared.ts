@@ -1,4 +1,7 @@
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { getCourseSectionById } from '@cio/db/queries/course';
+import { getLessonById, type LessonById } from '@cio/db/queries/lesson';
+import type { TCourseSection } from '@cio/db/types';
 import {
   getCohortMemberByProfileId,
   getCohortMemberRole,
@@ -6,7 +9,11 @@ import {
   isCohortMember,
   isOrgAdminByCohortId
 } from '@cio/db/queries/cohort';
-import { isCourseTeamMemberOrOrgAdmin, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
+import {
+  getGroupMemberIdByCourseAndProfile,
+  isCourseTeamMemberOrOrgAdmin,
+  isUserCourseMemberOrOrgAdmin
+} from '@cio/db/queries/group';
 import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import {
   getOrganizationMemberIdByOrgAndProfile,
@@ -213,4 +220,52 @@ export async function assertCourseTeamMemberOrOrgAdmin(courseId: string, actorId
       403
     );
   }
+}
+
+export async function assertSectionInCourse(courseId: string, sectionId: string): Promise<TCourseSection> {
+  const section = await getCourseSectionById(sectionId);
+  if (!section || section.courseId !== courseId) {
+    throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+  }
+
+  return section;
+}
+
+export async function assertLessonInCourse(courseId: string, lessonId: string): Promise<LessonById> {
+  const lesson = await getLessonById(lessonId);
+  if (!lesson || lesson.courseId !== courseId) {
+    throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+  }
+
+  return lesson;
+}
+
+/** Edit is author-only, as in the dashboard UI; delete also allows the course team and org admins. */
+export async function assertLessonCommentAuthorOrTeam(
+  courseId: string,
+  actorId: string | null,
+  commentAuthorMemberId: string | null,
+  action: 'edit' | 'delete'
+): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const actorMemberId = await getGroupMemberIdByCourseAndProfile(courseId, actorId);
+  if (actorMemberId && actorMemberId === commentAuthorMemberId) {
+    return;
+  }
+
+  if (action === 'delete' && (await isCourseTeamMemberOrOrgAdmin(courseId, actorId))) {
+    return;
+  }
+
+  const message =
+    action === 'edit'
+      ? 'Only the comment author can edit this comment'
+      : 'Only the comment author or a course team member can delete this comment';
+  throw new AppError(message, ErrorCodes.FORBIDDEN, 403);
+}
+
+export async function assertCourseTeamAccess(orgId: string, actorId: string | null, courseId: string): Promise<void> {
+  await assertCourseBelongsToOrganization(orgId, courseId);
+  await assertCourseTeamMemberOrOrgAdmin(courseId, actorId);
 }

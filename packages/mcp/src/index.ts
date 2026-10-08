@@ -8,8 +8,11 @@ import { registerCohortGoalTools } from './tools/cohort-goals';
 import { registerCohortNewsfeedTools } from './tools/cohort-newsfeed';
 import { registerCohortTools } from './tools/cohorts';
 import { registerCourseCertificateTools } from './tools/course-certificates';
+import { registerCourseContentTools } from './tools/course-content';
 import { registerCourseDraftTools } from './tools/course-drafts';
+import { registerCourseLessonTools } from './tools/course-lessons';
 import { registerCourseMemberTools } from './tools/course-members';
+import { registerCourseSectionTools } from './tools/course-sections';
 
 async function main() {
   const config = getConfig();
@@ -25,6 +28,9 @@ async function main() {
   registerCohortGoalTools(server, apiClient);
   registerCourseMemberTools(server, apiClient);
   registerCourseCertificateTools(server, apiClient);
+  registerCourseSectionTools(server, apiClient);
+  registerCourseLessonTools(server, apiClient);
+  registerCourseContentTools(server, apiClient);
   registerAnalyticsTools(server, apiClient);
 
   const transport = new StdioServerTransport();

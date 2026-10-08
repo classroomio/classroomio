@@ -18,6 +18,7 @@ import {
   getLessonVideoProgress,
   getLessonVideoProgressForLesson,
   getLessonsByCourseId,
+  getPaginatedLessonsByCourseId,
   updateLesson,
   updateLessonComment,
   upsertLessonCompletion,
@@ -208,6 +209,27 @@ export async function listLessons(courseId: string, sectionId?: string): Promise
     }
 
     return lessons;
+  } catch (error) {
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to list lessons',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+/**
+ * Lists one page of a course's lessons, in course order
+ * @param courseId Course ID
+ * @param options Section filter and page options
+ * @returns Lessons on the page and the total count
+ */
+export async function listLessonsPaginated(
+  courseId: string,
+  options: { sectionId?: string; page: number; limit: number }
+): Promise<{ items: TLesson[]; total: number }> {
+  try {
+    return await getPaginatedLessonsByCourseId(courseId, options);
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list lessons',

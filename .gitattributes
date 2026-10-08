@@ -2,3 +2,6 @@
 # shebangs at container start (e.g. /app/entrypoint.sh) regardless of core.autocrlf.
 *.sh text eol=lf
 Dockerfile* text eol=lf
+
+# Vitest writes snapshots with LF; without this they show as modified on Windows.
+*.snap text eol=lf
