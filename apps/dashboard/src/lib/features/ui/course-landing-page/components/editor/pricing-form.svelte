@@ -11,6 +11,7 @@
   import { toFiniteNumber } from '@cio/utils/functions';
 
   import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { TextEditor } from '$features/ui';
 
   interface Props {
@@ -108,13 +109,14 @@
       </Select.Root>
     </div>
 
-    <InputField
+    <NumberField
       className="mt-5"
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.cost')}
-      type="number"
+      integer
+      min={0}
       value={cost}
-      oninput={(e) => setter(toFiniteNumber(e.currentTarget.value) ?? 0, 'cost')}
+      onValueChange={(next) => setter(next ?? cost, 'cost')}
     />
 
     <InputField
@@ -125,7 +127,7 @@
       isRequired
       errorMessage={paymentLinkErrorMessage}
       value={paymentLink}
-      oninput={(e) => handlePaymentLinkChange(e.currentTarget.value)}
+      onInput={(e) => handlePaymentLinkChange(e.currentTarget.value)}
     />
   {/if}
 
@@ -144,13 +146,14 @@
   </div>
 
   {#if showDiscount}
-    <InputField
+    <NumberField
       className="mt-5"
       labelClassName="font-bold"
       label={$t('course.navItem.landing_page.editor.pricing_form.percent')}
-      type="number"
+      min={0}
+      max={100}
       value={discount}
-      oninput={(e) => setter(toFiniteNumber(e.currentTarget.value) ?? 0, 'metadata.discount')}
+      onValueChange={(next) => setter(next ?? discount, 'metadata.discount')}
       helperMessage={$t('course.navItem.landing_page.editor.pricing_form.percentage_helper')}
     />
   {/if}

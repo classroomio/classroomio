@@ -179,7 +179,7 @@ This generates every secret for you. Paste it whole:
 
 ```zsh title="Terminal"
 cd ~/classroomio
-MINIO_PASS=$(openssl rand -hex 24)
+STORAGE_PASS=$(openssl rand -hex 24)
 
 cat > .env <<EOF
 CIO_VERSION=1.0.0
@@ -199,12 +199,10 @@ PRIVATE_APP_SUBDOMAINS=app
 PUBLIC_SERVER_URL=https://app.$DOMAIN
 TRUSTED_ORIGINS=
 
-MINIO_ROOT_USER=cio-storage-admin
-MINIO_ROOT_PASSWORD=$MINIO_PASS
-OBJECT_STORAGE_ENDPOINT=http://minio:9000
+OBJECT_STORAGE_ENDPOINT=http://storage:9000
 OBJECT_STORAGE_PUBLIC_ENDPOINT=https://s3.$DOMAIN
 OBJECT_STORAGE_ACCESS_KEY_ID=cio-storage-admin
-OBJECT_STORAGE_SECRET_ACCESS_KEY=$MINIO_PASS
+OBJECT_STORAGE_SECRET_ACCESS_KEY=$STORAGE_PASS
 OBJECT_STORAGE_FORCE_PATH_STYLE=true
 OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://s3.$DOMAIN/media
 
@@ -288,10 +286,9 @@ services:
     ports: !override
       - '127.0.0.1:3082:3082'
 
-  minio:
+  storage:
     ports: !override
       - '127.0.0.1:9000:9000'
-      - '127.0.0.1:9001:9001'
 
 volumes:
   caddy-data:
@@ -307,7 +304,7 @@ app.$DOMAIN {
 }
 
 s3.$DOMAIN {
-	reverse_proxy minio:9000
+	reverse_proxy storage:9000
 }
 EOF
 ```
@@ -334,13 +331,13 @@ the same internal Docker network. Step 9 proves it from outside the server.
 Save the long compose command as an alias first:
 
 ```zsh title="Terminal"
-echo "alias dc='docker compose -f ~/classroomio/docker-compose.images.yaml -f ~/classroomio/docker-compose.caddy.yaml --env-file ~/classroomio/.env -p classroomio --profile minio'" >> ~/.bashrc
+echo "alias dc='docker compose -f ~/classroomio/docker-compose.images.yaml -f ~/classroomio/docker-compose.caddy.yaml --env-file ~/classroomio/.env -p classroomio --profile storage'" >> ~/.bashrc
 source ~/.bashrc
 
 dc config --services
 ```
 
-You should see: `postgres redis api dashboard jobs minio minio-init caddy`
+You should see: `postgres redis api dashboard jobs storage storage-init caddy`
 
 Then pull:
 
@@ -372,22 +369,21 @@ cio-api         Up About a minute (healthy)   127.0.0.1:3081->3081/tcp
 cio-caddy       Up 42 seconds                 0.0.0.0:80->80/tcp, 0.0.0.0:443->443/tcp, ...
 cio-dashboard   Up 43 seconds                 3000/tcp, 127.0.0.1:3082->3082/tcp
 cio-jobs        Up About a minute
-cio-minio       Up About a minute             127.0.0.1:9000-9001->9000-9001/tcp
+cio-storage     Up About a minute (healthy)   127.0.0.1:9000->9000/tcp
 cio-postgres    Up About a minute (healthy)
 cio-redis       Up About a minute (healthy)
 ```
 
-`cio-minio-init` is absent on purpose: it creates the storage buckets and exits. Confirm it worked:
+`cio-storage-init` is absent on purpose: it creates the storage buckets and exits. Confirm it worked:
 
 ```zsh title="Terminal"
-docker logs cio-minio-init | tail -4
+docker logs cio-storage-init 2>&1 | grep "created bucket"
 ```
 
 ```
-Bucket created successfully `local/videos`.
-Bucket created successfully `local/documents`.
-Bucket created successfully `local/media`.
-Access permission for `local/media` is set to `download`
+created bucket videos
+created bucket documents
+created bucket media
 ```
 
 Check the certificates were issued:
@@ -399,14 +395,14 @@ docker logs cio-caddy 2>&1 | grep "certificate obtained"
 Now confirm nothing internal is exposed. **Run this from your own machine, not the droplet:**
 
 ```zsh title="Terminal"
-for p in 3081 3082 9000 9001; do
+for p in 3081 3082 9000; do
   curl -s --max-time 6 -o /dev/null "http://<your-droplet-ip>:$p" \
     && echo "port $p REACHABLE  <-- problem" \
     || echo "port $p no response (correct)"
 done
 ```
 
-All four must report `no response`. If any is reachable, your Compose version ignored `!override`.
+All three must report `no response`. If any is reachable, your Compose version ignored `!override`.
 Check that `docker compose version` is v2.24.0 or newer.
 
 ### 10. Sign up
@@ -429,7 +425,7 @@ dc down                   # stop, keeping all data
 ```
 
 :::danger[Never use `dc down -v`]
-The `-v` flag deletes the `postgres-data`, `redis-data` and `minio-data` volumes: your database and
+The `-v` flag deletes the `postgres-data`, `redis-data` and `storage-data` volumes: your database and
 every upload. Plain `dc down` is always safe.
 :::
 
@@ -440,8 +436,8 @@ mkdir -p ~/backups
 
 docker exec cio-postgres pg_dump -U postgres classroomio | gzip > ~/backups/cio-db-$(date +%F).sql.gz
 
-docker run --rm -v classroomio_minio-data:/data -v ~/backups:/backup alpine \
-  tar czf /backup/cio-minio-$(date +%F).tar.gz -C /data .
+docker run --rm -v classroomio_storage-data:/data -v ~/backups:/backup alpine \
+  tar czf /backup/cio-storage-$(date +%F).tar.gz -C /data .
 ```
 
 Run both on a daily cron, copy them off the droplet, and enable DigitalOcean snapshots for whole-box
@@ -514,7 +510,7 @@ This deployment reads the same variables as every other self-hosted install:
     Signup verification, password resets, invites.
   </Card>
   <Card title="Object storage & uploads" href="/self-hosted/configuration/storage" icon="hard-drive">
-    MinIO or external S3/R2, plus upload size limits.
+    Bundled storage or external S3/R2, plus upload size limits.
   </Card>
   <Card title="CSP / allowed domains" href="/self-hosted/configuration/csp" icon="shield">
     Allowed external CDN, font, and media domains.

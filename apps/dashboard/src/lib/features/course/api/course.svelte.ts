@@ -79,6 +79,34 @@ export class CourseApi extends BaseApiWithErrors {
   private isCourseDirty = $state(false);
   private inFlightCourseRequest: Promise<Course | null> | null = null;
   private inFlightCourseId = $state<string | null>(null);
+  private courseFetchSeq = 0;
+  private latestFetchSeqByCourseId = new Map<string, number>();
+
+  private isStaleFetch(courseId: string, fetchSeq: number) {
+    return this.latestFetchSeqByCourseId.get(courseId) !== fetchSeq;
+  }
+
+  private wasEditedSinceFetch(courseId: string, courseAtRequest: Course | null, snapshotAtRequest: string | null) {
+    return (
+      snapshotAtRequest !== null &&
+      courseAtRequest?.id === courseId &&
+      this.course?.id === courseId &&
+      JSON.stringify(this.course) !== snapshotAtRequest
+    );
+  }
+
+  private selectionMatchesRequest(courseId: string, courseAtRequest: Course | null) {
+    return this.course?.id === courseId || (courseAtRequest === null && this.course === null);
+  }
+
+  private async refreshStoredCourseAfterUpdate(courseId: string, changedDuringRequest: boolean) {
+    if (changedDuringRequest) return;
+
+    const profileId = get(profile)?.id;
+    if (profileId) {
+      await this.refreshCourse(courseId, profileId);
+    }
+  }
 
   /**
    * Updates a single lesson/exercise item in the local course content store.
@@ -219,6 +247,11 @@ export class CourseApi extends BaseApiWithErrors {
    * @returns The course data or null on error
    */
   async get(courseId: string) {
+    const courseAtRequest = this.course;
+    const snapshotAtRequest = courseAtRequest ? JSON.stringify(courseAtRequest) : null;
+    const fetchSeq = ++this.courseFetchSeq;
+    this.latestFetchSeqByCourseId.set(courseId, fetchSeq);
+
     await this.execute<GetCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].$get({
@@ -229,7 +262,13 @@ export class CourseApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         console.log('response', response.data);
         if (response.data) {
-          this.course = response.data;
+          const supersededFetch = this.isStaleFetch(courseId, fetchSeq);
+          const editedDuringFetch = this.wasEditedSinceFetch(courseId, courseAtRequest, snapshotAtRequest);
+          const selectionMatches = this.selectionMatchesRequest(courseId, courseAtRequest);
+
+          if (!supersededFetch && !editedDuringFetch && selectionMatches) {
+            this.course = response.data;
+          }
           this.success = true;
           this.errors = {};
         }
@@ -496,6 +535,10 @@ export class CourseApi extends BaseApiWithErrors {
 
     let conversionOffenders: NonAutoGradableQuestionOffender[] = [];
 
+    const courseAtRequest = this.course;
+    const snapshotAtRequest = courseAtRequest ? JSON.stringify(courseAtRequest) : null;
+    let changedDuringRequest = false;
+
     const response = await this.execute<UpdateCourseRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].$put({
@@ -505,11 +548,12 @@ export class CourseApi extends BaseApiWithErrors {
       logContext: 'updating course',
       onSuccess: (response) => {
         if (response.data) {
-          // Update the stored course data, preserving fields not in the update response
-          // The update response may not include all fields (like group, lessons, etc.)
           if (this.course) {
-            // Merge update response with existing course data
-            Object.assign(this.course, response.data);
+            changedDuringRequest = snapshotAtRequest !== null && JSON.stringify(this.course) !== snapshotAtRequest;
+
+            if (!changedDuringRequest) {
+              Object.assign(this.course, response.data);
+            }
           } else {
             this.course = response.data as Course;
           }
@@ -556,12 +600,8 @@ export class CourseApi extends BaseApiWithErrors {
 
     const updated = response?.data ?? null;
 
-    // Some update responses may omit related data (group/lessons/sections), so refresh the store.
     if (updated) {
-      const profileId = get(profile)?.id;
-      if (profileId) {
-        await this.refreshCourse(courseId, profileId);
-      }
+      await this.refreshStoredCourseAfterUpdate(courseId, changedDuringRequest);
     }
 
     return updated;

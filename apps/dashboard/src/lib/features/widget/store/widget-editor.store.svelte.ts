@@ -161,6 +161,11 @@ class WidgetEditorStore {
   resetDraft() {
     if (!this.detail) return;
     this.applyDetail(this.detail);
+    widgetApi.resetErrors();
+  }
+
+  clearError(path: string) {
+    widgetApi.clearError(path);
   }
 
   clearFilters() {

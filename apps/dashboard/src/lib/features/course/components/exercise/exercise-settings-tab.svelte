@@ -3,6 +3,7 @@
   import { Label } from '@cio/ui/base/label';
   import { Button } from '@cio/ui/base/button';
   import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { questionnaire } from './store';
   import { exerciseApi } from '$features/course/api';
   import { courseApi } from '$features/course/api';
@@ -121,15 +122,14 @@
             </p>
           {/if}
         </div>
-        <InputField
-          type="number"
+        <NumberField
+          integer
+          min={0}
+          max={100}
           label={$t('course.navItem.lessons.exercises.all_exercises.settings_pass_threshold')}
-          value={String($questionnaire.passThreshold ?? 100)}
-          onInputChange={(event) => {
-            const parsed = Number(event.currentTarget.value);
-            if (!Number.isNaN(parsed)) {
-              questionnaire.update((state) => ({ ...state, passThreshold: parsed }));
-            }
+          value={$questionnaire.passThreshold ?? 100}
+          onValueChange={(next) => {
+            questionnaire.update((state) => ({ ...state, passThreshold: next ?? 100 }));
           }}
         />
       </div>
@@ -143,7 +143,7 @@
         helperMessage={$t('course.navItem.settings.slug.description')}
         value={slug}
         placeholder={slugifyTitle($questionnaire.title ?? '')}
-        onInputChange={(e) => {
+        onInput={(e) => {
           slug = e.currentTarget.value;
         }}
         errorMessage={exerciseApi.errors.slug}

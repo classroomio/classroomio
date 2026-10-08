@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { t } from '$lib/utils/functions/translations';
-  import { snackbar } from '$features/ui/snackbar/store';
 
   interface Props {
     gradeMax?: number;
@@ -10,28 +9,17 @@
   }
 
   let { gradeMax = 0, disableGrading = false, grade = $bindable(0) }: Props = $props();
-
-  $effect(() => {
-    if (grade && grade > gradeMax) {
-      snackbar.error('grade cant be more than max value');
-      grade = gradeMax;
-    }
-    if (grade && grade < 0) {
-      snackbar.error('grade cant be less than 0');
-      grade = 0;
-    }
-  });
 </script>
 
 <div class="flex items-center">
-  <InputField
+  <NumberField
     placeholder={$t('course.navItem.lessons.exercises.new_exercise_modal.points')}
-    bind:value={grade}
-    max={gradeMax}
+    integer
     min={0}
-    type="number"
-    inputClassName="!w-16"
+    max={gradeMax}
+    bind:value={grade}
     isDisabled={disableGrading}
+    inputClassName="!w-16"
   />
 
   <p class="ml-2 flex items-center text-base dark:text-white">

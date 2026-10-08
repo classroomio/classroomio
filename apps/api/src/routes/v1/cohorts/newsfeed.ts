@@ -38,7 +38,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/',
     describeRoute({
       description: `List a cohort newsfeed, newest first. Cursor-paginated: pass data.nextCursor back as cursor to get the next page; limit defaults to 10, max 50. ${COHORT_MEMBER_RULE}`,
-      tags: ['Public API Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed'],
       responses: {
         200: jsonResponse('Newsfeed returned successfully', itemResponse(ZPublicApiCohortNewsfeedPageResponse)),
         400: errorResponses.badRequest,
@@ -67,7 +67,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/',
     describeRoute({
       description: `Create a cohort newsfeed post, authored by the automation actor. ${COHORT_TEAM_RULE} The actor must also be a member of the cohort to author a post; an org admin who is not a member gets 403.`,
-      tags: ['Public API Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed'],
       responses: {
         201: jsonResponse('Newsfeed post created successfully', FeedResponse),
         400: errorResponses.badRequest,
@@ -99,7 +99,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/:feedId',
     describeRoute({
       description: `Update a cohort newsfeed post's content or pinned state. Send only the fields to change. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed'],
       responses: {
         200: jsonResponse('Newsfeed post updated successfully', FeedResponse),
         400: errorResponses.badRequest,
@@ -129,7 +129,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     describeRoute({
       description:
         "Set the automation actor's own reaction on a cohort newsfeed post: one of clap, smile, thumbsup, thumbsdown, or null to remove it. Only the actor's reaction changes; other members' reactions are untouched. Setting the same value again is a no-op, so retries are safe. The automation actor (the key creator) must be a member of the cohort, or this fails with 403; being an org admin is not enough.",
-      tags: ['Public API Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed'],
       responses: {
         200: jsonResponse('Reaction set successfully', FeedResponse),
         400: errorResponses.badRequest,
@@ -161,7 +161,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/:feedId',
     describeRoute({
       description: `Permanently delete a cohort newsfeed post and its comments. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed'],
       responses: {
         200: jsonResponse('Newsfeed post deleted successfully', FeedResponse),
         400: errorResponses.badRequest,
@@ -188,7 +188,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/:feedId/comments',
     describeRoute({
       description: `List the comments on a cohort newsfeed post, oldest first. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
-      tags: ['Public API Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed'],
       responses: {
         200: jsonResponse(
           'Comments returned successfully',
@@ -220,7 +220,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/:feedId/comment',
     describeRoute({
       description: `Add a comment to a cohort newsfeed post, authored by the automation actor. The automation actor (the key creator) must be a member of the cohort, or this fails with 403; being an org admin is not enough.`,
-      tags: ['Public API Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed'],
       responses: {
         201: jsonResponse('Comment created successfully', CommentResponse),
         400: errorResponses.badRequest,
@@ -250,7 +250,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     describeRoute({
       description:
         'Permanently delete a comment from a cohort newsfeed post. The automation actor (the key creator) must be the comment author, a cohort tutor/admin, or an org admin, or this fails with 403.',
-      tags: ['Public API Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed'],
       responses: {
         200: jsonResponse('Comment deleted successfully', CommentResponse),
         400: errorResponses.badRequest,

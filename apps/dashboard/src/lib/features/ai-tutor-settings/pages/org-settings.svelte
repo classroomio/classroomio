@@ -4,6 +4,7 @@
 
   import * as Page from '@cio/ui/base/page';
   import { t } from '$lib/utils/functions/translations';
+  import { UnsavedChanges } from '$features/ui';
   import { aiTutorApi } from '../api/ai-tutor.svelte';
   import { applyOrgSettings, orgTutorSettingsStore } from '../store/tutor-settings-store';
   import TutorSettingsForm from '../components/tutor-settings-form.svelte';
@@ -59,6 +60,7 @@
 </script>
 
 <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+  <UnsavedChanges {hasUnsavedChanges} />
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>{$t('aiTutor.page.org.title')}</Page.Title>

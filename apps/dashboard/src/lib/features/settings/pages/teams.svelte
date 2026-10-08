@@ -116,6 +116,10 @@
           bind:value={emailsStr}
           class="w-full"
           disabled={$isFreePlan}
+          oninput={() => {
+            errorMessage = '';
+            orgApi.clearError('emails');
+          }}
         />
         {#if errorMessage}
           <Field.Error>{errorMessage}</Field.Error>
