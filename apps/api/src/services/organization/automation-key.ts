@@ -35,6 +35,7 @@ const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]
     'course:member:write',
     'course:certificate:read',
     'course:certificate:write',
+    'analytics:read',
     'course:submission:read',
     'course:submission:write'
   ],

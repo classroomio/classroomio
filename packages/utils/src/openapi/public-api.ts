@@ -4,7 +4,7 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts, and to read analytics, with organization-scoped API keys.
 
 # Authentication
 
@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, course certificate, course exercise and exercise template, and course submission and marks endpoints, through their \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:exercise:*\`, and \`course:submission:*\` scopes, and every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, course certificate, course exercise and exercise template, and course submission and marks endpoints, through their \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:exercise:*\`, and \`course:submission:*\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -222,7 +222,12 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/cohorts/{cohortId}/invite/assign': 'Assign existing students to a cohort',
   'GET /public-api/v1/cohorts/{cohortId}/invite-link': 'Get the cohort join link',
   'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
-  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link'
+  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link',
+  'GET /public-api/v1/analytics': 'Get organization analytics',
+  'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
+  'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
+  'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
+  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics'
 };
 
 // Scalar groups operations under these tags.
@@ -241,7 +246,8 @@ const OPERATION_TAGS = [
   { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },
   { name: 'Cohort Newsfeed', description: 'Post, comment, and react on a cohort newsfeed.' },
   { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
-  { name: 'Cohort Invites', description: 'Invite people to a cohort.' }
+  { name: 'Cohort Invites', description: 'Invite people to a cohort.' },
+  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {

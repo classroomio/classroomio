@@ -2397,7 +2397,7 @@
                 "size": "(Max 500 Mo)",
                 "oops": "Oups 😬, impossible de télécharger la vidéo",
                 "big_file": "Désolé, la vidéo n'a pas été téléchargée. La taille du fichier est trop grande,",
-                "maximum_size": "la taille maximale est de 30 Mo. Essayer à nouveau!",
+                "maximum_size": "la taille maximale est de {size}. Essayer à nouveau!",
                 "button": "Essayez un autre fichier",
                 "try_again": "Veuillez réessayer",
                 "unsupported_format": "Désolé, notre vidéo n'a pas été téléchargée, le format de fichier n'est pas pris en charge ou quelque chose s'est mal passé sur le serveur.",
@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Créer un autre exercice",
         "add_content_open_now": "Ouvrir maintenant",
         "add_content_later": "Plus tard",
-        "add_content_add_to_section": "Ajouter du contenu"
+        "add_content_add_to_section": "Ajouter du contenu",
+        "expand_content": "Développer le contenu",
+        "collapse_content": "Réduire le contenu"
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -3551,7 +3553,6 @@
     },
     "filters": {
       "search_placeholder": "Rechercher des ressources",
-      "apply": "Postuler",
       "status_options": {
         "all": "Tous les statuts",
         "active": "Actif",

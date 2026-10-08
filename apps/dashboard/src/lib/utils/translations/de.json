@@ -2397,7 +2397,7 @@
                 "size": "(Max. 500 MB)",
                 "oops": "Hoppla 😬, Video konnte nicht hochgeladen werden",
                 "big_file": "Es tut uns leid, dass das Video nicht hochgeladen wurde. Die Dateigröße ist zu groß,",
-                "maximum_size": "Die maximale Größe beträgt 30 MB. Versuchen Sie es erneut!",
+                "maximum_size": "Die maximale Größe beträgt {size}. Versuchen Sie es erneut!",
                 "button": "Versuchen Sie es mit einer anderen Datei",
                 "try_again": "Bitte versuchen Sie es erneut",
                 "unsupported_format": "Es tut uns leid, dass das Video nicht hochgeladen wurde, das Dateiformat nicht unterstützt wird oder auf dem Server ein Fehler aufgetreten ist.",
@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Weitere Übung erstellen",
         "add_content_open_now": "Jetzt öffnen",
         "add_content_later": "Später",
-        "add_content_add_to_section": "Inhalte hinzufügen"
+        "add_content_add_to_section": "Inhalte hinzufügen",
+        "expand_content": "Inhalte erweitern",
+        "collapse_content": "Inhalt reduzieren"
       },
       "news_feed": {
         "heading": "Newsfeed",
@@ -3551,7 +3553,6 @@
     },
     "filters": {
       "search_placeholder": "Suchen Sie nach Assets",
-      "apply": "Bewerben",
       "status_options": {
         "all": "Alle Status",
         "active": "Aktiv",

@@ -19,6 +19,7 @@ export const ZOrganizationApiKeyScope = z.enum([
   'course:member:write',
   'course:certificate:read',
   'course:certificate:write',
+  'analytics:read',
   'course:submission:read',
   'course:submission:write',
   'public_api:*'

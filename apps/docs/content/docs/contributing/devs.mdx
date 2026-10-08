@@ -72,7 +72,7 @@ Visit `http://localhost:5173/login` and sign in with the seeded demo account —
 
 ## Object storage (optional)
 
-Media uploads (video, documents, images) need S3-compatible storage. Run MinIO locally with `docker compose -f docker-compose.yaml --profile minio up -d minio minio-init`, then point `apps/api/.env`'s `OBJECT_STORAGE_*` variables at it. See the full variable list in the root [README](https://github.com/classroomio/classroomio#getting-started).
+Media uploads (video, documents, images) need S3-compatible storage. Run the bundled store (SeaweedFS) locally with `docker compose -f docker-compose.yaml --profile storage up -d storage storage-init`, then point `apps/api/.env`'s `OBJECT_STORAGE_*` variables at it. See the full variable list in the root [README](https://github.com/classroomio/classroomio#getting-started).
 
 ## Contributing your changes
 

@@ -1412,7 +1412,6 @@
     },
     "filters": {
       "search_placeholder": "Search assets",
-      "apply": "Apply",
       "refresh": "Refresh",
       "kind_options": {
         "all": "All types",
@@ -2626,6 +2625,8 @@
           "cancel": "Cancel"
         },
         "add_content": "Add content",
+        "expand_content": "Expand content",
+        "collapse_content": "Collapse content",
         "add_content_description": "Select the type of content you want to add.",
         "add_content_details": "Fill in the details for this content.",
         "add_content_adding_to": "Adding to",
@@ -2820,7 +2821,7 @@
                 "size": "(Max 500 MB)",
                 "oops": "Oops `😬, couldn’t upload video",
                 "big_file": "Sorry we video wasn’t uploaded. The file size is too big,",
-                "maximum_size": "maximum size is 30 MB. Try again!",
+                "maximum_size": "maximum size is {size}. Try again!",
                 "button": "Try another file",
                 "try_again": "Please try again",
                 "unsupported_format": "Sorry we video wasn’t uploaded, the file format isn’t supported or something went wrong on the server.",

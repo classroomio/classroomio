@@ -11,6 +11,7 @@ const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, 
 // Without this, Blume orders tags by first path seen, which scatters them.
 const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
   { label: 'Audience', tags: ['Audience'] },
+  { label: 'Analytics', tags: ['Analytics'] },
   {
     label: 'Courses',
     tags: [
@@ -201,7 +202,7 @@ export default defineConfig({
             label: 'Manage',
             display: 'group',
             collapsed: true,
-            items: ['/self-hosted/configuration/versions', '/self-hosted/backups']
+            items: ['/self-hosted/configuration/versions', '/self-hosted/backups', '/self-hosted/migrating-from-minio']
           },
           {
             label: 'Troubleshoot',

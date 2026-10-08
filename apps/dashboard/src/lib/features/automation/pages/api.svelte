@@ -270,6 +270,7 @@
         placeholder={$t('automation.api.keys.modal.name_placeholder')}
         bind:value={keyLabel}
         errorMessage={automationApi.errors.label}
+        onInput={() => automationApi.clearError('label')}
         autoFocus
       />
     </div>

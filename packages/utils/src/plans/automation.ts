@@ -89,7 +89,12 @@ export const MCP_TOOL_CREDIT_COST = {
   grade_course_submission: 1,
   update_course_submission: 1,
   delete_course_submission: 1,
-  get_course_marks: 0
+  get_course_marks: 0,
+  get_org_analytics: 0,
+  list_compliance_learners: 0,
+  get_learner_analytics: 0,
+  get_course_analytics: 0,
+  list_course_analytics_students: 0
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -190,7 +195,12 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_exercise_template' ||
     toolName === 'list_course_submissions' ||
     toolName === 'get_course_submission' ||
-    toolName === 'get_course_marks'
+    toolName === 'get_course_marks' ||
+    toolName === 'get_org_analytics' ||
+    toolName === 'list_compliance_learners' ||
+    toolName === 'get_learner_analytics' ||
+    toolName === 'get_course_analytics' ||
+    toolName === 'list_course_analytics_students'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

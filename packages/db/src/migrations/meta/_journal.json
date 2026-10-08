@@ -201,8 +201,15 @@
     {
       "idx": 28,
       "version": "7",
-      "when": 1791275375643,
-      "tag": "0028_mcp_submission_scopes",
+      "when": 1791279608156,
+      "tag": "0028_mcp_key_analytics_scope",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1791461576762,
+      "tag": "0029_mcp_submission_scopes",
       "breakpoints": true
     }
   ]

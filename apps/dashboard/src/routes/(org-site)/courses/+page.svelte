@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { afterNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
+  import { onDestroy, untrack } from 'svelte';
   import { SvelteSet, SvelteURLSearchParams } from 'svelte/reactivity';
 
   import { t } from '$lib/utils/functions/translations';
@@ -20,6 +21,7 @@
 
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Input } from '@cio/ui/base/input';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
   import { Empty } from '@cio/ui/custom/empty';
   import { Separator } from '@cio/ui/base/separator';
   import * as Pagination from '@cio/ui/base/pagination';
@@ -28,19 +30,51 @@
 
   let { data } = $props();
 
-  let selectedTags = $derived<string[]>(data.activeTags || []);
-  let selectedTypes = $derived<string[]>(data.activeTypes || []);
+  let pendingFilters = $state<{ tags: string[]; types: string[]; pricing: 'free' | 'paid' | null } | null>(null);
+
+  function toPricingFilter(value: unknown): 'free' | 'paid' | null {
+    return value === 'free' || value === 'paid' ? value : null;
+  }
+
+  let selectedTags = $derived<string[]>(pendingFilters?.tags ?? data.activeTags ?? []);
+  let selectedTypes = $derived<string[]>(pendingFilters?.types ?? data.activeTypes ?? []);
   let activeSearch = $derived(data.activeSearch || '');
-  let activePricing = $derived<'free' | 'paid' | undefined>(data.activePricing);
-  let searchInput = $state('');
+  let activePricing = $derived<'free' | 'paid' | undefined>(
+    pendingFilters ? (pendingFilters.pricing ?? undefined) : (toPricingFilter(data.activePricing) ?? undefined)
+  );
+
+  $effect(() => {
+    if (!pendingFilters) return;
+
+    const serverTags = [...(data.activeTags ?? [])].sort();
+    const serverTypes = [...(data.activeTypes ?? [])].sort();
+    const serverPricing = toPricingFilter(data.activePricing);
+    const pending = pendingFilters;
+    if (
+      JSON.stringify([...pending.tags].sort()) === JSON.stringify(serverTags) &&
+      JSON.stringify([...pending.types].sort()) === JSON.stringify(serverTypes) &&
+      pending.pricing === serverPricing
+    ) {
+      pendingFilters = null;
+    }
+  });
+
+  const search = new DebouncedSearch({
+    initial: untrack(() => activeSearch),
+    onApply: (nextSearch) => void applyFilters({ search: nextSearch })
+  });
+
+  afterNavigate(() => {
+    search.sync(activeSearch);
+  });
+
+  onDestroy(() => {
+    search.destroy();
+  });
   let filterSheetOpen = $state(false);
   type FilterSection = 'types' | 'pricing' | 'tags';
   // let openFilterSection = $state<FilterSection | null>('types');
   let openFilterSection = $state<FilterSection | string[] | undefined>('types');
-
-  $effect(() => {
-    searchInput = activeSearch;
-  });
 
   const COURSE_TYPES = [
     { value: 'SELF_PACED', label: t.get('analytics.popularTypes.types.SELF_PACED') },
@@ -155,6 +189,8 @@
     }
 
     const params = new SvelteURLSearchParams(page.url.searchParams);
+    const pendingSearch = search.takePending();
+    pendingSearch ? params.set('search', pendingSearch) : params.delete('search');
 
     if (nextPage > 1) {
       params.set('page', String(nextPage));
@@ -168,6 +204,10 @@
     await goto(resolve(`/courses${suffix}`, {}), { invalidateAll: true });
   }
 
+  function currentPendingPricing(): 'free' | 'paid' | null {
+    return pendingFilters ? pendingFilters.pricing : toPricingFilter(data.activePricing);
+  }
+
   function toggleTag(tagSlug: string, checked: boolean) {
     const next = new SvelteSet(selectedTags);
     if (checked) {
@@ -176,7 +216,8 @@
       next.delete(tagSlug);
     }
 
-    applyFilters({ tags: Array.from(next) });
+    pendingFilters = { tags: Array.from(next), types: selectedTypes, pricing: currentPendingPricing() };
+    applyFilters({ tags: Array.from(next), search: search.takePending() });
   }
 
   function toggleType(typeValue: string, checked: boolean) {
@@ -187,7 +228,13 @@
       next.delete(typeValue);
     }
 
-    applyFilters({ types: Array.from(next) });
+    pendingFilters = { tags: selectedTags, types: Array.from(next), pricing: currentPendingPricing() };
+    applyFilters({ types: Array.from(next), search: search.takePending() });
+  }
+
+  function togglePricing(nextPricing: 'free' | 'paid' | null) {
+    pendingFilters = { tags: selectedTags, types: selectedTypes, pricing: nextPricing };
+    applyFilters({ pricing: nextPricing, search: search.takePending() });
   }
 
   function clearFilters() {
@@ -195,28 +242,19 @@
       return;
     }
 
-    searchInput = '';
+    search.reset();
+    pendingFilters = { tags: [], types: [], pricing: null };
     applyFilters({ tags: [], types: [], search: '', pricing: null });
   }
 
-  let searchDebounce: ReturnType<typeof setTimeout>;
   function onSearchInput(value: string) {
-    searchInput = value;
-    clearTimeout(searchDebounce);
-    searchDebounce = setTimeout(() => applyFilters({ search: value }), 300);
+    search.input(value);
   }
 
   function onSearchKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter') {
-      clearTimeout(searchDebounce);
-      applyFilters({ search: searchInput });
+      search.flush();
     }
-  }
-
-  function clearSearch() {
-    searchInput = '';
-    clearTimeout(searchDebounce);
-    applyFilters({ search: '' });
   }
 
   function isTagSelected(tagSlug: string) {
@@ -254,16 +292,16 @@
   <div class="relative mx-auto w-full max-w-xl">
     <Input
       type="text"
-      value={searchInput}
+      value={search.draft}
       oninput={(e) => onSearchInput(e.currentTarget.value)}
       onkeydown={onSearchKeydown}
       placeholder={$t('public_courses.filters.search_placeholder')}
       class="ui:text-foreground pr-8!"
     />
-    {#if searchInput}
+    {#if search.draft}
       <button
         type="button"
-        onclick={clearSearch}
+        onclick={() => search.input('')}
         class="ui:text-muted-foreground ui:hover:text-foreground absolute top-1/2 right-2 -translate-y-1/2"
         aria-label={$t('public_courses.filters.clear_search')}
       >
@@ -320,8 +358,7 @@
                 >
                   <Checkbox
                     checked={activePricing === option.value}
-                    onCheckedChange={(checked) =>
-                      applyFilters({ pricing: checked ? (option.value as 'free' | 'paid') : null })}
+                    onCheckedChange={(checked) => togglePricing(checked ? (option.value as 'free' | 'paid') : null)}
                   />
                   <span class="text-sm">{option.label}</span>
                 </label>

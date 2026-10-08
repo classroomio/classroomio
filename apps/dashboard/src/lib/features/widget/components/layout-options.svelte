@@ -3,6 +3,7 @@
   import * as Select from '@cio/ui/base/select';
   import { Switch } from '@cio/ui/base/switch';
   import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { t } from '$lib/utils/functions/translations';
   import type { WidgetDetail } from '../utils/types';
   import type { WidgetConfig } from '../utils/types';
@@ -35,8 +36,10 @@
       </Select.Content>
     </Select.Root>
   </Field.Field>
-  <InputField
-    type="number"
+  <NumberField
+    integer
+    min={3}
+    max={24}
     label={$t('widgets.layoutOptions.max_count')}
     bind:value={draftConfig.layoutOptions.cardGrid.maxCount}
   />
@@ -45,8 +48,10 @@
     <Field.Label>{$t('widgets.layoutOptions.show_rating')}</Field.Label>
   </Field.Field>
 {:else if draftLayoutType === 'tag_filter'}
-  <InputField
-    type="number"
+  <NumberField
+    integer
+    min={4}
+    max={24}
     label={$t('widgets.layoutOptions.max_count')}
     bind:value={draftConfig.layoutOptions.tagFilter.maxCount}
   />
@@ -80,8 +85,10 @@
       </Select.Content>
     </Select.Root>
   </Field.Field>
-  <InputField
-    type="number"
+  <NumberField
+    integer
+    min={3}
+    max={12}
     label={$t('widgets.layoutOptions.max_count')}
     bind:value={draftConfig.layoutOptions.carousel.maxCount}
   />
@@ -90,8 +97,10 @@
     <Field.Label>{$t('widgets.layoutOptions.auto_play')}</Field.Label>
   </Field.Field>
   {#if draftConfig.layoutOptions.carousel.autoPlay}
-    <InputField
-      type="number"
+    <NumberField
+      integer
+      min={3000}
+      max={10000}
       label={$t('widgets.layoutOptions.auto_play_interval')}
       bind:value={draftConfig.layoutOptions.carousel.autoPlayIntervalMs}
     />
@@ -137,14 +146,18 @@
     label={$t('widgets.layoutOptions.cta_label')}
     bind:value={draftConfig.layoutOptions.primaryCourse.ctaLabel}
   />
-  <InputField
-    type="number"
+  <NumberField
+    integer
+    min={0}
+    max={6}
     label={$t('widgets.layoutOptions.secondary_max_count')}
     bind:value={draftConfig.layoutOptions.primaryCourse.secondaryMaxCount}
   />
 {:else if draftLayoutType === 'compact_list'}
-  <InputField
-    type="number"
+  <NumberField
+    integer
+    min={1}
+    max={12}
     label={$t('widgets.layoutOptions.max_count')}
     bind:value={draftConfig.layoutOptions.compactList.maxCount}
   />
@@ -191,8 +204,10 @@
       </Select.Content>
     </Select.Root>
   </Field.Field>
-  <InputField
-    type="number"
+  <NumberField
+    integer
+    min={2}
+    max={4}
     label={$t('widgets.layoutOptions.secondary_max_count')}
     bind:value={draftConfig.layoutOptions.editorialSpotlight.secondaryMaxCount}
   />
@@ -234,8 +249,10 @@
     <Switch bind:checked={draftConfig.layoutOptions.categoryShelf.showAllTab} />
     <Field.Label>{$t('widgets.layoutOptions.show_all_tab')}</Field.Label>
   </Field.Field>
-  <InputField
-    type="number"
+  <NumberField
+    integer
+    min={3}
+    max={9}
     label={$t('widgets.layoutOptions.max_per_category')}
     bind:value={draftConfig.layoutOptions.categoryShelf.maxPerCategory}
   />
