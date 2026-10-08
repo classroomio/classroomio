@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Select from '@cio/ui/base/select';
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { CompactLoader } from '@cio/ui/custom/compact-loader';
   import CopyIcon from '@lucide/svelte/icons/copy';
 
   import { profile } from '$lib/utils/store/user';
@@ -116,6 +116,10 @@
           bind:value={emailsStr}
           class="w-full"
           disabled={$isFreePlan}
+          oninput={() => {
+            errorMessage = '';
+            orgApi.clearError('emails');
+          }}
         />
         {#if errorMessage}
           <Field.Error>{errorMessage}</Field.Error>
@@ -165,7 +169,7 @@
     <Field.Legend>{$t('course.navItem.people.teams.members')}</Field.Legend>
     <Field.Group>
       {#if orgApi.isLoading && orgApi.teamMembers.length === 0}
-        <Spinner class="size-10! text-blue-700!" />
+        <CompactLoader label={$t('common.loading')} />
       {:else if orgApi.teamMembers.length > 0}
         {#each orgApi.teamMembers as teamMember}
           <Field.Field>

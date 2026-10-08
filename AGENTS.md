@@ -14,6 +14,10 @@ When a task requires factual information (API specifications, context window siz
 
 The `prototypes/` directory holds standalone HTML/CSS design mocks for exploration. Do not treat prototype files as production code: avoid implementing features there unless explicitly asked, and do not apply production review standards (CodeRabbit/Greptile exclude this path via `.coderabbit.yaml` and `.greptile/config.json`).
 
+## Help Center screenshots
+
+**Read [`skills/add-docs-image/SKILL.md`](skills/add-docs-image/SKILL.md) before capturing, producing, or placing any screenshot under `apps/help/**`.** Every help screenshot is captured at 1350×830 with device scale 1 and framed in the ClassroomIO browser board with `pnpm --filter @cio/help frame-screenshot`. Never ship an unframed image, and do not try to fix a soft-looking screenshot by raising the capture scale.
+
 ## Translation, Formatting, and Git Workflow
 
 - If `apps/dashboard/src/lib/utils/translations/en.json` changes, update the other dashboard locale files before staging or committing.
@@ -391,6 +395,14 @@ Pattern:
 ```
 
 Use `@cio/ui/custom/*-field` wrappers for standard app forms. When building larger settings/editor screens that need legends, descriptions, separators, grouped rows, or mixed controls such as `Switch`, `Checkbox`, `RadioGroup`, image pickers, and action buttons, compose the form with `@cio/ui/base/field` primitives and the matching base inputs instead.
+
+### Form inputs: live updates
+
+- Anything the user should see react to typing (dirty state, save bars, enabled buttons, answers, counters, previews, search, error clearing) updates on `input`, never only on `change`/`blur`.
+- Number inputs use `NumberField` (`@cio/ui/custom/number-field`). Never `Number(value)` an input directly.
+- A field whose text is a formatted version of a parsed value (comma lists, JSON, trimmed lists) uses `FieldDraft` (`@cio/ui/hooks/field-draft.svelte`).
+- Server-backed search boxes use `DebouncedSearch` (`$lib/utils/functions/debounced-search.svelte`).
+- Edit page-local drafts, never global stores; never write the edited model from an `$effect` on mount.
 
 ### Reactive built-in collections
 
@@ -921,7 +933,7 @@ Do not use `pnpm dev` (it trips turbo's concurrency cap). Build shared package `
 
 ### Known caveats
 - **Vite SSR circular dependency (layerchart):** authenticated/chart pages occasionally render "Something unexpected occurred" on a cold load. Reload the page (or restart `dashboard:dev`) and it renders — it is intermittent, not a setup failure.
-- **MinIO is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start it with `docker compose -f docker-compose.yaml --profile minio up -d minio minio-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
+- **Object storage is optional and not started by default.** Without it, image/media thumbnails show "Failed to load"; that is expected. Start the bundled SeaweedFS with `docker compose -f docker-compose.yaml --profile storage up -d storage storage-init` and add the `OBJECT_STORAGE_*` vars from `README.md` to `apps/api/.env`.
 - **Pre-existing lint/test issues (not environment problems):** `pnpm --filter @cio/api lint` fails (missing ESLint v9 `eslint.config.*`); `pnpm --filter @cio/dashboard lint` runs but reports pre-existing errors; api `vitest run` passes 61 tests but 5 files fail to load `@cio/core/services/*/*` subpaths (Vite nested-wildcard exports quirk; Node resolves them fine); `pnpm --filter @cio/dashboard test` (jest) fails to parse `jest.config.ts`. The pre-commit gate `pnpm format:check` passes.
 - The optional `@cio/storybook` build fails on an unresolved `@lucide/svelte/icons/bot` import; it does not affect api/dashboard.
 

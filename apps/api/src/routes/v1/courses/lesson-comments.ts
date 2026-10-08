@@ -20,7 +20,7 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse } from './docs';
 
-const TAG = 'Public API Course Lessons';
+const TAG = 'Course Lessons';
 const CommentResponse = itemResponse(ZPublicApiCourseLessonCommentResponse);
 const COMMENTS_OFF = 'Fails with 403 COMMENTS_DISABLED when comments are off for the organization, course or lesson.';
 

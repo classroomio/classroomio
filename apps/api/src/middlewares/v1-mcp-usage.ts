@@ -82,7 +82,12 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     PUT: 'update_cohort_goal',
     DELETE: 'delete_cohort_goal'
   },
-  '/public-api/v1/cohorts/:cohortId/goals/:goalId/archive': { POST: 'archive_cohort_goal' }
+  '/public-api/v1/cohorts/:cohortId/goals/:goalId/archive': { POST: 'archive_cohort_goal' },
+  '/public-api/v1/analytics': { GET: 'get_org_analytics' },
+  '/public-api/v1/analytics/compliance/learners': { GET: 'list_compliance_learners' },
+  '/public-api/v1/analytics/learners/:profileId': { GET: 'get_learner_analytics' },
+  '/public-api/v1/courses/:courseId/analytics': { GET: 'get_course_analytics' },
+  '/public-api/v1/courses/:courseId/analytics/students': { GET: 'list_course_analytics_students' }
 };
 
 function resolveMcpToolName(method: string, routePath: string): TMcpToolName | undefined {
@@ -96,8 +101,9 @@ export const v1McpUsageMiddleware = async (c: Context, next: Next) => {
     return next();
   }
 
-  // Every v1 tool is GET→read or write→write, so the category is known before routing.
-  const category: TAutomationUsageCategory = c.req.method === 'GET' ? 'read' : 'write';
+  // GET and HEAD are reads (as in publicApiScopesMiddleware); everything else is a write, known before routing.
+  const isRead = c.req.method === 'GET' || c.req.method === 'HEAD';
+  const category: TAutomationUsageCategory = isRead ? 'read' : 'write';
 
   let reservationId: string;
   try {

@@ -173,9 +173,11 @@
                     box-shadow: 0 30px 60px -20px rgba(0,0,0,0.35);
                   "
                   >
-                    <p class="ui:m-0 ui:mb-1 ui:text-[16px] ui:font-semibold">Course outline</p>
+                    <p class="ui:m-0 ui:mb-1 ui:text-[16px] ui:font-semibold">
+                      {labels?.courseOutlineHeading ?? 'Course outline'}
+                    </p>
                     <p class="ui:m-0 ui:mb-5 ui:text-[13px]" style="color: #8a93a0;">
-                      Pick up where you left off — anytime.
+                      {labels?.courseOutlineDescription ?? 'Pick up where you left off — anytime.'}
                     </p>
                     <div class="ui:flex ui:flex-col ui:gap-2">
                       {#each Array.from({ length: Math.min(featured.lessonCount ?? 4, 4) }) as _, idx (idx)}

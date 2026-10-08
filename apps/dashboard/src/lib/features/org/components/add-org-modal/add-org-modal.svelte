@@ -13,11 +13,12 @@
   import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 
   let orgName = $state('');
-  let siteName = $derived(generateSitename(orgName));
+  let siteNameOverride = $state<string | null>(null);
+  const siteName = $derived(siteNameOverride ?? generateSitename(orgName));
 
   function resetForm() {
     orgName = '';
-    siteName = '';
+    siteNameOverride = null;
     orgApi.errors = {};
   }
 
@@ -45,7 +46,15 @@
       <Field.Group>
         <Field.Field>
           <Field.Label>{$t('add_org.name')}</Field.Label>
-          <Input bind:value={orgName} placeholder="e.g Pepsi Co" autofocus />
+          <Input
+            bind:value={orgName}
+            placeholder="e.g Pepsi Co"
+            autofocus
+            oninput={() => {
+              orgApi.clearError('name');
+              orgApi.clearError('orgName');
+            }}
+          />
           {#if orgApi.errors.name || orgApi.errors.orgName}
             <Field.Error>{orgApi.errors.name || orgApi.errors.orgName}</Field.Error>
           {/if}
@@ -53,7 +62,18 @@
 
         <Field.Field>
           <Field.Label>{$t('add_org.org_sitename')}</Field.Label>
-          <DomainInput bind:value={siteName} placeholder="myschool" prefix="https://" suffix=".{TENANT_ROOT_DOMAIN}" />
+          <DomainInput
+            bind:value={
+              () => siteName,
+              (nextSiteName) => {
+                siteNameOverride = nextSiteName;
+                orgApi.clearError('siteName');
+              }
+            }
+            placeholder="myschool"
+            prefix="https://"
+            suffix=".{TENANT_ROOT_DOMAIN}"
+          />
           {#if orgApi.errors.siteName || orgApi.errors.general}
             <Field.Error>{orgApi.errors.siteName || orgApi.errors.general}</Field.Error>
           {/if}

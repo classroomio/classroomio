@@ -51,35 +51,40 @@
     class: className,
     placeholder = '',
     onImageUpload,
-    onSearchUnsplash
+    onSearchUnsplash,
+    emailSafe = false
   }: EdraEditorProps = $props();
 
   let isImageModalOpen = $state(false);
 
   onMount(() => {
+    const editorExtensions = [
+      ImagePlaceholder(ImagePlaceholderComp).configure({
+        onOpenModal: () => (isImageModalOpen = true)
+      }),
+      ImageExtended(ImageExtendedComp),
+      ...(emailSafe
+        ? []
+        : [
+            CodeBlockLowlight.configure({ lowlight }).extend({
+              addNodeView() {
+                return SvelteNodeViewRenderer(CodeBlock);
+              }
+            }),
+            VideoPlaceholder(VideoPlaceHolderComp),
+            VideoExtended(VideoExtendedComp),
+            AudioPlaceholder(AudioPlaceHolderComp),
+            AudioExtended(AudioExtendedComp),
+            IFramePlaceholder(IFramePlaceHolderComp),
+            IFrameExtended(IFrameExtendedComp),
+            slashcommand(SlashCommandList)
+          ])
+    ];
+
     editor = initEditor(
       element,
       content,
-      [
-        CodeBlockLowlight.configure({
-          lowlight
-        }).extend({
-          addNodeView() {
-            return SvelteNodeViewRenderer(CodeBlock);
-          }
-        }),
-        ImagePlaceholder(ImagePlaceholderComp).configure({
-          onOpenModal: () => (isImageModalOpen = true)
-        }),
-        ImageExtended(ImageExtendedComp),
-        VideoPlaceholder(VideoPlaceHolderComp),
-        VideoExtended(VideoExtendedComp),
-        AudioPlaceholder(AudioPlaceHolderComp),
-        AudioExtended(AudioExtendedComp),
-        IFramePlaceholder(IFramePlaceHolderComp),
-        IFrameExtended(IFrameExtendedComp),
-        slashcommand(SlashCommandList)
-      ],
+      editorExtensions,
       {
         onUpdate,
         // onTransaction(props) {
@@ -90,7 +95,8 @@
         editable,
         autofocus
       },
-      placeholder
+      placeholder,
+      emailSafe
     );
   });
 

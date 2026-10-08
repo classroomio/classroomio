@@ -4,18 +4,67 @@ import { extractOperations, type ApiDocument } from 'blume/openapi/model.ts';
 import { z } from 'zod';
 
 const API_ROUTE = '/api';
-const apiSpec = JSON.parse(
-  readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')
-) as ApiDocument;
+const apiSpec = JSON.parse(readFileSync(new URL('./openapi/public-api.json', import.meta.url), 'utf-8')) as ApiDocument;
 const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, API_ROUTE);
-const apiSidebarGroups = apiTags.map((tag) => ({
-  label: tag.name.replace(/^Public API /, ''),
+
+// Sidebar layout for the API tab: resource sections, then one group per tag.
+// Without this, Blume orders tags by first path seen, which scatters them.
+const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
+  { label: 'Audience', tags: ['Audience'] },
+  { label: 'Analytics', tags: ['Analytics'] },
+  {
+    label: 'Courses',
+    tags: [
+      'Courses',
+      'Course Members',
+      'Course Invites',
+      'Course Sections',
+      'Course Lessons',
+      'Course Content',
+      'Course Certificates'
+    ]
+  },
+  {
+    label: 'Cohorts',
+    tags: [
+      'Cohorts',
+      'Cohort Members',
+      'Cohort Courses',
+      'Cohort Invites',
+      'Cohort Goals',
+      'Cohort Newsfeed'
+    ]
+  }
+];
+
+const tagGroup = (tag: (typeof apiTags)[number]) => ({
+  label: tag.name,
   display: 'group' as const,
-  collapsed: false,
+  collapsed: true,
   items: Object.values(apiOperations)
     .filter((operation) => operation.tagSlug === tag.slug)
     .map((operation) => operation.route)
-}));
+});
+
+const placedTags = new Set(API_SECTIONS.flatMap((section) => section.tags));
+const unplacedTags = apiTags.filter((tag) => !placedTags.has(tag.name));
+if (unplacedTags.length > 0) {
+  console.warn(
+    `[docs] API tags missing from API_SECTIONS in blume.config.ts: ${unplacedTags.map((tag) => tag.name).join(', ')}`
+  );
+}
+
+const apiSidebarSections = [
+  ...API_SECTIONS.map((section) => ({
+    label: section.label,
+    display: 'flat' as const,
+    items: apiTags
+      .filter((tag) => section.tags.includes(tag.name))
+      .sort((a, b) => section.tags.indexOf(a.name) - section.tags.indexOf(b.name))
+      .map(tagGroup)
+  })).filter((section) => section.items.length > 0),
+  ...unplacedTags.map(tagGroup)
+];
 
 /**
  * The site is served at classroomio.com/docs, proxied to this worker by the
@@ -152,7 +201,7 @@ export default defineConfig({
             label: 'Manage',
             display: 'group',
             collapsed: true,
-            items: ['/self-hosted/configuration/versions', '/self-hosted/backups']
+            items: ['/self-hosted/configuration/versions', '/self-hosted/backups', '/self-hosted/migrating-from-minio']
           },
           {
             label: 'Troubleshoot',
@@ -180,7 +229,7 @@ export default defineConfig({
       {
         label: 'API',
         root: API_ROUTE,
-        items: [API_ROUTE, ...apiSidebarGroups]
+        items: [API_ROUTE, ...apiSidebarSections]
       }
     ]
   }

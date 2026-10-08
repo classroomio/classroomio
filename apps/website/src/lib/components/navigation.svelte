@@ -19,6 +19,9 @@
   import type { HTMLAttributes } from 'svelte/elements';
   import * as NavigationMenu from '@cio/ui/base/navigation-menu';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
+  import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+  import { Button } from '@cio/ui/base/button';
+  import { Waves } from '@cio/ui/custom/animation';
   import { cn } from '@cio/ui/tools';
 
   let { stars }: { stars: number } = $props();
@@ -210,10 +213,12 @@
       {#snippet child()}
         <a
           {href}
-          class="flex w-full flex-row items-center rounded-lg p-2 no-underline transition-colors duration-200 hover:bg-gray-100 focus:bg-gray-100 focus:outline-none {className} [&_svg]:stroke-blue-600"
+          class="flex w-full flex-row items-center gap-3 rounded-lg p-2.5 no-underline transition-colors hover:bg-gray-100 focus:bg-gray-100 focus:outline-none {className} [&_svg]:stroke-blue-600"
           {...restProps}
         >
-          <div class="shrink-0">
+          <div
+            class="flex size-10 shrink-0 items-center justify-center rounded-md bg-gray-100 [&_svg]:size-5 [&_svg]:stroke-[1.8]"
+          >
             {#if key === 'compliance-training'}
               <LibraryBigIcon size={24} />
             {:else if key === 'partner-training'}
@@ -242,11 +247,11 @@
               <Gamepad size={24} />
             {/if}
           </div>
-          <div class="ml-3 text-start">
-            <p class="text-sm">
+          <div class="text-start">
+            <p class="text-sm font-medium">
               {title}
             </p>
-            <p class="ui:text-muted-foreground mt-1 text-xs">
+            <p class="ui:text-muted-foreground mt-0.5 text-[13px] leading-snug">
               {subtitle}
             </p>
           </div>
@@ -257,8 +262,10 @@
 {/snippet}
 
 <section class="fixed top-0 z-50 w-full border-b bg-white">
-  <div class="mx-auto flex w-full items-center justify-between gap-20 px-4 py-1 lg:w-[90%] lg:px-0">
-    <a href="/" class="w-[10%]">
+  <div
+    class="lg:h-nav mx-auto flex h-14 w-full max-w-[1440px] items-center justify-between gap-10 px-4 md:px-8 xl:px-14"
+  >
+    <a href="/" class="shrink-0">
       <div class="flex w-full items-center">
         <img loading="lazy" width="28" height="28" src="/logo-512.png" alt="classroomio logo" class="w-7" />
         <h1 class="ml-2 text-base font-medium">ClassroomIO</h1>
@@ -273,14 +280,14 @@
               {#if navItem.items}
                 <NavigationMenu.Trigger
                   class={cn(
-                    'flex cursor-pointer items-center rounded-md px-4 py-2 text-sm font-medium text-gray-800 transition-all duration-200 hover:bg-gray-100 data-[state=open]:bg-gray-100',
+                    'flex cursor-pointer items-center rounded-sm px-3 py-1.5 text-sm font-medium text-gray-800 transition-colors hover:bg-gray-100 data-[state=open]:bg-gray-100',
                     isNavItemActive(navItem) && 'bg-gray-100!'
                   )}
                 >
                   <a href={navItem.href} class="no-underline">{navItem.title}</a>
                 </NavigationMenu.Trigger>
                 <NavigationMenu.Content>
-                  <ul class="grid w-[560px] grid-cols-2 gap-2 p-2">
+                  <ul class="grid w-[640px] grid-cols-2 gap-1 p-3">
                     {#each navItem.items as item}
                       {@render list_item({
                         href: item.href,
@@ -297,7 +304,7 @@
                     <a
                       href={navItem.href}
                       class={cn(
-                        'cursor-pointer rounded-md px-4 py-2 text-sm font-medium text-gray-800 no-underline transition-all duration-200 hover:bg-gray-100',
+                        'cursor-pointer rounded-sm px-3 py-1.5 text-sm font-medium text-gray-800 no-underline transition-colors hover:bg-gray-100',
                         isNavItemActive(navItem) && 'bg-gray-100'
                       )}
                     >
@@ -325,7 +332,7 @@
         <a
           href="/github"
           target="_blank"
-          class="group flex items-center gap-1.5 rounded-md p-2 transition-all duration-200 ease-in-out hover:bg-gray-100"
+          class="group flex items-center gap-1.5 rounded-sm p-2 transition-colors hover:bg-gray-100"
         >
           <img
             loading="lazy"
@@ -340,12 +347,23 @@
           </span>
         </a>
       </div>
-      <a
-        class="text-sm font-medium transition-opacity duration-200 after:ml-2 after:content-['→'] hover:opacity-80"
+      <Button
         href="https://app.classroomio.com"
+        size="sm"
+        class="ui:bg-primary ui:text-primary-foreground relative overflow-hidden border-0"
       >
-        Dashboard
-      </a>
+        <Waves
+          lineColor="rgba(255,255,255,0.55)"
+          xGap={8}
+          yGap={12}
+          waveAmpX={18}
+          waveAmpY={9}
+          waveSpeedX={0.04}
+          waveSpeedY={0.02}
+        />
+        <span class="relative z-10">Dashboard</span>
+        <ArrowRightIcon class="relative z-10" />
+      </Button>
     </div>
 
     <button type="button" aria-label="Hamburger Menu" class="shrink-0 lg:hidden!" onclick={handleShowSolutions}>

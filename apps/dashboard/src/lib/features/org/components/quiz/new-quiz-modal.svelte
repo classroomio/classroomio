@@ -116,6 +116,7 @@
         className="mb-4"
         isRequired={true}
         errorMessage={errors.title}
+        onInput={() => delete errors.title}
         autoComplete={false}
       />
 

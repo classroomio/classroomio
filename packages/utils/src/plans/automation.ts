@@ -96,7 +96,12 @@ export const MCP_TOOL_CREDIT_COST = {
   update_course_lesson_comment: 1,
   delete_course_lesson_comment: 1,
   set_course_content_unlocked: 1,
-  delete_course_content: 1
+  delete_course_content: 1,
+  get_org_analytics: 0,
+  list_compliance_learners: 0,
+  get_learner_analytics: 0,
+  get_course_analytics: 0,
+  list_course_analytics_students: 0
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -197,7 +202,12 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_lesson' ||
     toolName === 'list_course_lesson_translations' ||
     toolName === 'list_course_lesson_history' ||
-    toolName === 'list_course_lesson_comments'
+    toolName === 'list_course_lesson_comments' ||
+    toolName === 'get_org_analytics' ||
+    toolName === 'list_compliance_learners' ||
+    toolName === 'get_learner_analytics' ||
+    toolName === 'get_course_analytics' ||
+    toolName === 'list_course_analytics_students'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

@@ -43,7 +43,7 @@ Log in to Coolify and **create a project**. When you add a resource, Coolify ask
 
 ### 2. Confirm the services parsed
 
-After saving, Coolify parses the compose file and lists the services: `postgres`, `redis`, `api`, `dashboard`, `jobs` (and `minio` once you enable its profile in the next step). Confirm they all appear before moving on.
+After saving, Coolify parses the compose file and lists the services: `postgres`, `redis`, `api`, `dashboard`, `jobs` (and `storage` once you enable its profile in the next step). Confirm they all appear before moving on.
 ![Select composer file type](/docs/coolify-01-add-resource.webp)
 ![Coolify showing the parsed ClassroomIO services](/docs/coolify-02-services.webp)
 
@@ -52,7 +52,7 @@ After saving, Coolify parses the compose file and lists the services: `postgres`
 Open the resource's **Environment Variables** page. This is where most Coolify deployments go wrong, so treat the [Environment variable reference](#environment-variable-reference) below as the source of truth: **set every variable it lists as required, and leave the optional ones blank.** The block here covers the essentials to get you started; the full copy-paste reference is a few sections down.
 
 ```zsh title="Essentials — set all of these"
-COMPOSE_PROFILES=minio                      # runs the bundled MinIO object storage
+COMPOSE_PROFILES=storage                    # runs the bundled object storage (SeaweedFS)
 DASHBOARD_ORIGIN=https://dash.yourdomain.com
 BETTER_AUTH_SECRET=<openssl rand -hex 32>
 PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # must be identical in the api and dashboard services
@@ -127,7 +127,7 @@ BETTER_AUTH_SECRET=<openssl rand -hex 32>
 PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # identical in the api and dashboard services
 
 # ── Object storage profile ──
-COMPOSE_PROFILES=minio                      # runs the bundled MinIO alongside the stack
+COMPOSE_PROFILES=storage                    # runs the bundled object storage alongside the stack
 
 # ── Database ──
 POSTGRES_DB=classroomio
@@ -142,20 +142,18 @@ PRIVATE_SERVER_URL=http://api:3081
 PRIVATE_APP_HOST=dash.yourdomain.com
 PRIVATE_APP_SUBDOMAINS=app
 
-# ── Object storage (MinIO) ──
-MINIO_ROOT_USER=<storage access key>
-MINIO_ROOT_PASSWORD=<storage secret>
-MINIO_SERVER_URL=https://storage.yourdomain.com
-OBJECT_STORAGE_ENDPOINT=http://minio:9000
+# ── Object storage (bundled SeaweedFS) ──
+OBJECT_STORAGE_ENDPOINT=http://storage:9000
 OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
-OBJECT_STORAGE_ACCESS_KEY_ID=<same as MINIO_ROOT_USER>
-OBJECT_STORAGE_SECRET_ACCESS_KEY=<same as MINIO_ROOT_PASSWORD>
+OBJECT_STORAGE_ACCESS_KEY_ID=<storage access key>
+OBJECT_STORAGE_SECRET_ACCESS_KEY=<openssl rand -hex 32>
 OBJECT_STORAGE_FORCE_PATH_STYLE=true
 OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media
 OBJECT_STORAGE_BUCKET_VIDEOS=videos
 OBJECT_STORAGE_BUCKET_DOCUMENTS=documents
 OBJECT_STORAGE_BUCKET_MEDIA=media
 CSP_MEDIA_SRC_DOMAINS=https://storage.yourdomain.com   # so browsers can load media
+CSP_CONNECT_SRC_DOMAINS=https://storage.yourdomain.com # so browsers can upload
 
 # ── Email (SMTP — signup verification, password reset, invites) ──
 SMTP_HOST=smtp.yourprovider.com
@@ -188,22 +186,21 @@ SKIP_DB_SETUP=              # blank = run DB setup on first boot (leave blank)
 |----------|---------------|
 | `BETTER_AUTH_SECRET` | Session-signing secret. Generate with `openssl rand -hex 32`. |
 | `PRIVATE_SERVER_KEY` | Dashboard-to-API auth key. Must be **identical** in the api and dashboard services. |
-| `COMPOSE_PROFILES` | Set to `minio` to run the bundled object storage with the stack. |
+| `COMPOSE_PROFILES` | Set to `storage` to run the bundled object storage with the stack. |
 | `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD` | Database name, user, and a **strong** password. |
 | `PUBLIC_IS_SELFHOSTED` | `true` for self-hosted mode. |
 | `DASHBOARD_ORIGIN` | Public dashboard URL — used as the auth base URL and in invite/email links. |
 | `PUBLIC_SERVER_URL` | Public origin the browser uses (your dashboard domain). |
 | `PRIVATE_SERVER_URL` | Internal API URL over the Docker network (`http://api:3081`). |
 | `PRIVATE_APP_HOST` / `PRIVATE_APP_SUBDOMAINS` | Dashboard host and subdomain routing. |
-| `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` | MinIO credentials — also used as the object-storage access key / secret. |
-| `MINIO_SERVER_URL` | Public storage URL (fixes MinIO console redirects behind the proxy). |
-| `OBJECT_STORAGE_ENDPOINT` | Internal endpoint the app uploads to (`http://minio:9000`). |
+| `OBJECT_STORAGE_ENDPOINT` | Internal endpoint the app uploads to (`http://storage:9000`). |
 | `OBJECT_STORAGE_PUBLIC_ENDPOINT` | Public storage endpoint browsers download from. |
-| `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` | Storage credentials (match the MinIO root user/password). |
-| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` — required for MinIO. |
+| `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` | Storage credentials. You choose them; in `docker-compose.images.yaml` the `storage`, `api` and `jobs` services all read this pair, so changing it and redeploying rotates the keys. |
+| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` — required for the bundled store. |
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | Public base URL for media (`…/media`). |
 | `OBJECT_STORAGE_BUCKET_VIDEOS/DOCUMENTS/MEDIA` | Bucket names (`videos`, `documents`, `media`). |
 | `CSP_MEDIA_SRC_DOMAINS` | Your storage domain — otherwise the browser's CSP blocks uploaded media. |
+| `CSP_CONNECT_SRC_DOMAINS` | Your storage domain — otherwise the browser's CSP blocks uploads (they go straight from the browser to storage). |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_SENDER` | SMTP server for signup verification, password reset, and invites. |
 
 :::warning[If the stack won't start at all]
@@ -225,23 +222,37 @@ won't work correctly without them. Set them all.
 | `ALLOWED_EXTERNAL_DOMAINS` | Overrides all `CSP_*_DOMAINS` vars with one comma-separated allowlist. |
 | `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS` | Per-directive CSP allowlists for extra CDN/font/frame domains. |
 | `TRUSTED_ORIGINS` | Extra origins allowed to call the API directly (normal dashboard traffic is same-origin via the proxy). |
-| `OBJECT_STORAGE_REGION` | Region for some external S3 providers (not needed for MinIO). |
+| `OBJECT_STORAGE_REGION` | Region for some external S3 providers (not needed for the bundled store). |
 | `SKIP_DB_SETUP` | Skips first-boot database setup — leave blank so it runs. |
 | `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL` | Custom branding / meta tags. |
 
 ### Object storage
 
-Enable the **bundled MinIO** with `COMPOSE_PROFILES=minio` and Coolify runs it alongside the stack.
-**Give the MinIO volume persistent storage in Coolify** and route its public URL
+Enable the **bundled store** (SeaweedFS) with `COMPOSE_PROFILES=storage` and Coolify runs it alongside the stack.
+**Give the `storage-data` volume persistent storage in Coolify** and route a domain to the `storage` service on port `9000`
 (`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL`) so browsers can load media.
 
-:::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy: its volume is the only thing protecting your uploads, so give it
+:::note[Domains: include the port, and use HTTPS]
+In Coolify, end each service domain with its container port (`https://dash.yourdomain.com:3082`,
+`https://storage.yourdomain.com:9000`), or the proxy returns **Bad Gateway**. Use `https://` for
+both: the dashboard tells browsers to upgrade requests to HTTPS, so over plain HTTP its scripts and
+styles fail to load, and uploads are blocked. Redeploy after changing a domain.
+:::
+
+:::warning[The storage volume is your durability boundary]
+The single-node bundled store has no redundancy: its volume is the only thing protecting your uploads, so give it
 persistent storage in Coolify and back it up.
 :::
 
+:::note[Using the Coolify service template instead?]
+This guide pastes `docker-compose.images.yaml`, where you set the storage keys yourself. The separate
+template at `docker/coolify/docker-compose.yaml` ignores `OBJECT_STORAGE_ACCESS_KEY_ID` /
+`OBJECT_STORAGE_SECRET_ACCESS_KEY`: there, Coolify generates the pair as `SERVICE_USER_STORAGE` /
+`SERVICE_PASSWORD_STORAGE`, and you rotate it by regenerating those two values.
+:::
+
 Prefer managed storage? Point the `OBJECT_STORAGE_*` variables at external S3 / Cloudflare R2 and leave
-the `minio` profile off. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage).
+the `storage` profile off. See [Configuration → Object storage & uploads](/self-hosted/configuration/storage).
 
 ### Upload size limits (optional)
 

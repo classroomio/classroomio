@@ -18,7 +18,7 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse } from './docs';
 
-const TAG = 'Public API Course Content';
+const TAG = 'Course Content';
 const ATOMIC_NOTE =
   'All or nothing: if any id is not a lesson or exercise of this course, nothing changes and this fails with 404. Up to 500 items; an id may appear once per type.';
 

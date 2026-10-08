@@ -430,6 +430,7 @@ async function createEmailInviteAndSend(input: {
   recipientEmail: string;
   policy: { expiresAt: string; maxUses: number };
   orgName: string;
+  organizationId: string;
   courseName: string;
   courseSlug: string;
   org: OrgUrlInfo;
@@ -474,6 +475,7 @@ async function createEmailInviteAndSend(input: {
         branding: input.branding
       },
       from: buildEmailFromName(`${input.orgName} (via ClassroomIO.com)`),
+      organizationId: input.organizationId,
       idempotencyKey: `course-invite-email:${createdInvite.id}`
     });
 
@@ -584,6 +586,7 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
         recipientEmail,
         policy,
         orgName,
+        organizationId: courseOrgData.orgId,
         courseName,
         courseSlug,
         org: orgUrlInfo,

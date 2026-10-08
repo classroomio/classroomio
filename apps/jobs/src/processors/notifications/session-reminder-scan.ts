@@ -4,6 +4,8 @@ import { buildEmailBranding, buildEmailFromName, buildSessionIcs } from '@cio/em
 import { enqueueEmailSend } from '@cio/jobs';
 
 import { log } from '../../utils/logger';
+import { getStudentEmailDeliveryLocale } from '@cio/core/services/email/localization';
+import type { EmailLocale } from '@cio/utils/email';
 
 interface ScanResult {
   scanned: number;
@@ -12,9 +14,9 @@ interface ScanResult {
 
 const OFFSETS_MINUTES = [1440, 60] as const;
 
-function formatSessionTime(lessonAt: string, timezone: string | null): string {
+function formatSessionTime(lessonAt: string, timezone: string | null, locale: EmailLocale): string {
   try {
-    return new Intl.DateTimeFormat('en-US', {
+    return new Intl.DateTimeFormat(locale, {
       timeZone: timezone ?? 'UTC',
       dateStyle: 'medium',
       timeStyle: 'short',
@@ -36,6 +38,7 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
 
   let remindersEnqueued = 0;
   const preferenceCache = new EmailPreferenceLookupCache();
+  const deliveryLocales = new Map<string, EmailLocale>();
 
   for (const row of rows) {
     if (!row.email) continue;
@@ -46,17 +49,23 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
     const minutesUntil = Math.round((startMs - now) / 60_000);
     if (minutesUntil <= 0) continue;
 
+    let locale = deliveryLocales.get(row.organizationId);
+    if (!locale) {
+      locale = await getStudentEmailDeliveryLocale(row.organizationId, 'sessionReminder');
+      deliveryLocales.set(row.organizationId, locale);
+    }
+
     const branding = buildEmailBranding({
       name: row.organizationName,
       avatarUrl: row.organizationAvatarUrl,
       theme: row.organizationTheme
     });
-    const sessionTimeLabel = formatSessionTime(row.lessonAt, row.sessionTimezone);
+    const sessionTimeLabel = formatSessionTime(row.lessonAt, row.sessionTimezone, locale);
 
     for (const offset of OFFSETS_MINUTES) {
       if (minutesUntil > offset) continue;
 
-      const whenLabel = offset === 1440 ? 'in about 24 hours' : 'in about 1 hour';
+      const whenLabel = new Intl.RelativeTimeFormat(locale, { numeric: 'always' }).format(offset / 60, 'hour');
       const ics =
         offset === 1440
           ? buildSessionIcs({
@@ -98,6 +107,8 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
               branding
             },
             from: buildEmailFromName(`${row.organizationName} (via ClassroomIO.com)`),
+            organizationId: row.organizationId,
+            locale,
             ...(ics ? { ics } : {})
           },
           { idempotencyKey: `session-reminder:${row.lessonId}:${row.profileId}:${offset}` }

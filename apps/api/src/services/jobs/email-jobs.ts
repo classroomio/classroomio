@@ -4,6 +4,7 @@ import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import * as z from 'zod';
 
 import { logRedisUnavailableOnce } from '@cio/core/utils/redis/redis';
+import { getStudentEmailDeliveryLocale } from '@cio/core/services/email/localization';
 
 type Recipient = string | string[];
 
@@ -25,6 +26,7 @@ export interface EnqueueTemplateEmailInput<TId extends EmailId> extends CommonOp
   subject?: string;
   /** Optional iCalendar (.ics) body attached as a text/calendar part. */
   ics?: string;
+  organizationId?: string;
   preference?: {
     organizationId?: string;
     recipientProfileId?: string;
@@ -87,7 +89,8 @@ export async function enqueueTransactionalEmail<TId extends EmailId>(
   const recipients = toRecipientArray(input.to);
   const jobIds: string[] = [];
   const preferenceCache = input.preference ? new EmailPreferenceLookupCache() : null;
-
+  const organizationId = input.organizationId ?? input.preference?.organizationId;
+  const locale = await getStudentEmailDeliveryLocale(organizationId, template);
   for (const recipient of recipients) {
     if (preferenceCache && input.preference) {
       const allowed = await preferenceCache.shouldSend({
@@ -111,7 +114,9 @@ export async function enqueueTransactionalEmail<TId extends EmailId>(
         from: input.from,
         replyTo: input.replyTo,
         subject: input.subject,
-        ics: input.ics
+        ics: input.ics,
+        organizationId,
+        locale
       },
       { idempotencyKey: recipientKey(input.idempotencyKey, recipient, recipients.length) }
     );

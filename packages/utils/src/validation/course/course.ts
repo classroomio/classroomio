@@ -74,7 +74,7 @@ export const ZCertificateDesign = z.object({
   accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/, { message: 'Accent must be a 6-digit hex color' }),
   subtitle: z.string().max(120).optional(),
   descriptionOverride: z.string().max(500).optional(),
-  signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]),
+  signatories: z.tuple([ZCertificateSignatory, ZCertificateSignatory]).optional(),
   idFormat: z.string().max(40).optional()
 });
 export type TCertificateDesign = z.infer<typeof ZCertificateDesign>;

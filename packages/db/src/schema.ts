@@ -25,11 +25,12 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
-export const locale = pgEnum('LOCALE', ['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']);
+export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
@@ -437,7 +438,17 @@ export const profile = pgTable(
     canAddCourse: boolean('can_add_course').default(true),
     role: varchar(),
     goal: varchar(),
+    useCases: jsonb('use_cases').default([]).notNull().$type<string[]>(),
+    useCaseOther: text('use_case_other'),
+    learningMethod: varchar('learning_method'),
+    learningMethodOther: text('learning_method_other'),
+    companySize: varchar('company_size'),
+    jobRole: varchar('job_role'),
+    jobRoleOther: text('job_role_other'),
     source: varchar(),
+    sourceOther: text('source_other'),
+    aiProvider: varchar('ai_provider'),
+    aiProviderOther: text('ai_provider_other'),
     metadata: json(),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     telegramChatId: bigint('telegram_chat_id', { mode: 'number' }),
@@ -784,7 +795,7 @@ export const course = pgTable(
         accentColor: string;
         subtitle?: string;
         descriptionOverride?: string;
-        signatories: [
+        signatories?: [
           { name: string; role: string; enabled?: boolean; signatureUrl?: string },
           { name: string; role: string; enabled?: boolean; signatureUrl?: string }
         ];
@@ -2263,6 +2274,10 @@ export const organization = pgTable(
         inviteOnly?: boolean;
       };
       internalEnrollmentOnly?: boolean;
+      language?: {
+        locale?: (typeof locale.enumValues)[number];
+        enforced?: boolean;
+      };
       studentLimitNotified?: {
         half?: boolean;
         reached?: boolean;
@@ -2470,6 +2485,26 @@ export const organization = pgTable(
       name: 'organization_parent_organization_id_fkey'
     }).onDelete('set null'),
     index('idx_organization_parent_id').on(table.parentOrganizationId)
+  ]
+);
+
+export const organizationStudentEmailTemplate = pgTable(
+  'organization_student_email_template',
+  {
+    organizationId: uuid('organization_id').notNull(),
+    emailId: varchar('email_id').notNull(),
+    subject: text(),
+    locale: locale().notNull(),
+    content: text().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    primaryKey({ columns: [table.organizationId, table.emailId, table.locale] }),
+    foreignKey({
+      columns: [table.organizationId],
+      foreignColumns: [organization.id],
+      name: 'organization_student_email_template_organization_id_fkey'
+    }).onDelete('cascade')
   ]
 );
 

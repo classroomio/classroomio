@@ -1,0 +1,4 @@
+numpy>=2.0
+pillow>=11.0
+fonttools>=4.50
+brotli>=1.1

@@ -128,6 +128,53 @@ Wrapper component that highlights its content with an animated focus pulse ring 
 </AttentionHighlight>
 ```
 
+### Brand wash (`src/custom/animation/brand-wash/`)
+
+Decorative background layer: a top-down gradient tinted from `--primary` with an optional faded dot grid. Because it reads `--primary`, it renders in ClassroomIO blue on the app and in the org's theme colour on org sites. Place it as the first child of a `relative` container; later siblings stack above it.
+
+| Prop    | Type      | Default     | Description                 |
+| ------- | --------- | ----------- | --------------------------- |
+| `dots`  | `boolean` | `true`      | Show the masked dot grid    |
+| `class` | `string`  | `undefined` | Additional classes on layer |
+
+```svelte
+<div class="relative">
+  <BrandWash />
+  <div class="relative">Content</div>
+</div>
+```
+
+### Block skyline (`src/custom/animation/block-skyline/`)
+
+Ambient brand animation: notch blocks drop in one at a time and stack. By default they clear together and repeat on a 10s loop; with `loop={false}` they drop in once and stay. Hidden from assistive tech and static under `prefers-reduced-motion`. Tones come from `--muted` and `--primary`. Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop     | Type      | Default     | Description                                                          |
+| -------- | --------- | ----------- | -------------------------------------------------------------------- |
+| `loop`   | `boolean` | `true`      | Clear and repeat every 10s; `false` drops in once and stays          |
+| `repeat` | `number`  | `1`         | Repeats the column pattern across the width (extra copies from `md`) |
+| `rows`   | `number`  | `3`         | Tallest stack; values above 3 add same-size blocks to every column   |
+| `class`  | `string`  | `undefined` | Width / placement                                                    |
+
+```svelte
+<BlockSkyline class="w-full max-w-[400px]" />
+
+<!-- Taller stacks -->
+<BlockSkyline rows={6} class="w-full" />
+
+<!-- Full-width page footer -->
+<BlockSkyline loop={false} repeat={3} class="absolute inset-x-0 bottom-0 px-4" />
+```
+
+### Notch cutout utility (`ui:notch-cutout`)
+
+Cuts the brand notch (a trapezoid with flared top corners and rounded bottom corners) out of an element's top edge with a CSS mask, so it reads correctly over gradients and images. Tune it with `--notch-x` (default `2.5rem`), `--notch-w` (`46px`) and `--notch-h` (`11px`). Masks clip `box-shadow`, so put shadows on a wrapper with `drop-shadow`.
+
+```svelte
+<div class="drop-shadow-md">
+  <Card.Root class="ui:notch-cutout">…</Card.Root>
+</div>
+```
+
 ### Exercise question (`src/custom/exercise-question/`)
 
 Learner and author UIs for exercise questions (take, preview, review, submission, edit per question type).
@@ -137,6 +184,15 @@ Learner and author UIs for exercise questions (take, preview, review, submission
 - **`renderers/option-image.svelte`**, **`renderers/submission-utils.ts`** — Existing shared helpers at the `renderers/` root; keep importing from there unless consolidating in a later pass.
 
 **Types with heavier or distinct UIs** (textarea editor, file upload, matching/hotspot authoring, link lists) intentionally keep separate `take` / `preview` implementations until a second consumer (for example a dedicated `review` mode) justifies extracting more shared fragments.
+
+### Image lightbox (`src/custom/image-lightbox/`)
+
+Full-screen image viewer for screenshots and other detailed images. `ZoomableImage` renders an image uncropped (`object-contain`) as a button with a hover "enlarge" hint. `ImageLightbox` opens one image or a gallery: click or `+`/`-` to zoom (up to 300%), arrow keys or the side buttons to move between images, Esc or a click on the backdrop to close. Both `open` and `index` are bindable. Copy is passed via `labels: ImageLightboxLabels` (`close`, `zoomIn`, `zoomOut`, `previous`, `next`). Exercise question and option images use both in every non-edit mode. See `Molecules/ImageLightbox` in Storybook.
+
+```svelte
+<ZoomableImage {src} {alt} enlargeLabel="Click to enlarge" onclick={() => (open = true)} />
+<ImageLightbox images={[{ src, alt }]} {labels} bind:open />
+```
 
 ### Question type picker (`src/custom/question-type-picker/`)
 
@@ -282,6 +338,82 @@ Each item owns its own handler, so the component carries no behaviour: the consu
 
 See `Molecules/ComboButton` in Storybook.
 
+### Machines (`src/custom/animation/machines/`)
+
+Isometric line illustrations that show a mechanism instead of describing it: grey hairlines everywhere and one moving part in the accent colour. Seven machines, one per marketing section: `MachineTrainingLine` (hero), `MachineRepeater` (problem), `MachineSpectrum` (education), `MachineCertificatePress`, `MachineBrandStand`, `MachineEventWire` and `MachineGlassBox` (pillars 2 to 5). The animation is SVG SMIL, so it needs no JavaScript to run. Under `prefers-reduced-motion` each machine freezes on the frame at `stillAt` seconds. Without a `label` the SVG is hidden from assistive tech; with one it is an `img`.
+
+The accent comes from `--primary` and the surface from `--muted`. Place a machine on a `--muted` card, or set `--machine-face` to the card colour so hidden lines stay hidden, and set `--machine-ink` to change the accent. Size it with the height or width you give it. Text inside the drawings is placeholder copy (brand and domain names are placeholders). Use it for ClassroomIO-branded surfaces only, not org sites.
+
+| Prop      | Type     | Default     | Description                                              |
+| --------- | -------- | ----------- | -------------------------------------------------------- |
+| `label`   | `string` | `undefined` | Accessible description; omit to hide from assistive tech |
+| `stillAt` | `number` | `6`         | Second to freeze on under `prefers-reduced-motion`       |
+| `class`   | `string` | `undefined` | Size and placement                                       |
+
+```svelte
+<div class="bg-muted rounded-xl p-6">
+  <MachineTrainingLine label={$t('marketing.machines.training_line')} class="h-80" />
+</div>
+```
+
+Three machines show features that are not shipped yet: the training line and event wire show webhook deliveries, and the certificate press shows a public verification URL and expiry. The glass box shows a 69/mo tag by default; pass `price` (e.g. `price="35/mo"`) to show the real plan price.
+
+### Loaders (`src/custom/block-loader/`, `src/custom/compact-loader/`)
+
+Branded loading states: lesson blocks drop in, stack and clear on a loop. Use `BlockLoader` for page-level waits (the root page, a course opening) and `CompactLoader` for small waits inside panels, tables, settings pages and modals. The blocks use the theme tokens (`--muted`, `--primary`, `--foreground`), cut the notch with `ui:notch-cutout`, and need no surface colour. Under `prefers-reduced-motion` the stack is shown without animation.
+
+`BlockLoader`: four blocks share a left edge and stack with a 2px gap, each block's tab locking into the notch of the block under it.
+
+| Prop      | Type                | Default     | Description                                                                |
+| --------- | ------------------- | ----------- | -------------------------------------------------------------------------- |
+| `title`   | `string`            | `undefined` | Heading under the stack; also the accessible name when `label` is not set  |
+| `caption` | `string`            | `undefined` | Supporting line under the title                                            |
+| `label`   | `string`            | `undefined` | Accessible name when there is no `title`                                   |
+| `blocks`  | `BlockLoaderBlock[]`| 4 blocks    | `{ kind, title, tone: 'muted' \| 'tint' \| 'primary' \| 'dark', width }`   |
+| `blockText` | `boolean`         | `true`      | Show the kind and title inside each block; `false` gives plain blocks    |
+| `class`   | `string`            | `undefined` | Placement                                                                  |
+
+`CompactLoader`: three wordless blocks, so it works in any language.
+
+| Prop    | Type           | Default     | Description        |
+| ------- | -------------- | ----------- | ------------------ |
+| `size`  | `'sm' \| 'md'` | `'md'`      | `sm` is 60% of `md` |
+| `label` | `string`       | `undefined` | Accessible name    |
+| `class` | `string`       | `undefined` | Placement          |
+
+The default block labels in `BlockLoader` ("LESSON", "Getting started", ...) are illustrative English copy; pass `blocks` with translated text where that matters. Pass `title`, `caption` and `label` from the host (`$t(...)` in the dashboard).
+
+```svelte
+<BlockLoader title={$t('common.loading_states.opening_academy_title')} />
+<CompactLoader label={$t('common.loading')} />
+```
+
+### Number field (`src/custom/number-field/`)
+
+Number input that emits live only for valid in-range values and never rewrites text while typing. Use it for every numeric field instead of `Number(value)`.
+
+| User does | Text shown | Value emitted |
+| --------- | ---------- | ------------- |
+| types a valid in-range number | as typed | that number, on the keystroke |
+| types an intermediate (`-`, `1.`, `1e`) | as typed | nothing |
+| types out of range (`150` in 0–100) | as typed | nothing until blur |
+| blurs or presses Enter | normalized (`100`; `3` for `2.5` integer) | the normalized value, if it changed |
+| clears an optional field | empty | `null`, on the keystroke |
+| clears a required field, then blurs | the value it had when focused is restored | that value, if it changed |
+| value changes from outside | re-seeded | — |
+
+Pass `onCommit` for follow-up work that must run only on blur or Enter with the normalized value (for example re-clamping a dependent field). It fires after the value settles, even when the value itself did not change.
+
+```svelte
+<script lang="ts">
+  import { NumberField } from '@cio/ui/custom/number-field';
+
+  let points = $state<number | null>(1);
+</script>
+
+<NumberField label="Points" integer min={1} bind:value={points} />
+```
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.
@@ -290,6 +422,7 @@ Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelt
 
 - `is-mobile.svelte.ts` - Media query hook for mobile breakpoints
 - `use-clipboard.svelte.ts` - Clipboard copy functionality with state management
+- `field-draft.svelte.ts` - Text draft separate from stored value that re-seeds only on external change, with live `input()` and blur-time `commit()`
 
 **Usage:**
 

@@ -8,10 +8,17 @@ const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
 const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
 const COURSE_CONTENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:sections|lessons|content)(?:\/|$)/;
+const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
+  const isRead = method === 'GET' || method === 'HEAD';
+
   if (COHORT_PATH.test(path)) {
-    return method === 'GET' || method === 'HEAD' ? 'cohort:read' : 'cohort:write';
+    return isRead ? 'cohort:read' : 'cohort:write';
+  }
+
+  if (ANALYTICS_PATH.test(path) && isRead) {
+    return 'analytics:read';
   }
 
   if (COURSE_MEMBER_PATH.test(path)) {

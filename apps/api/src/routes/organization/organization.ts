@@ -92,6 +92,7 @@ import { tagsRouter } from '@api/routes/organization/tags';
 import { widgetsRouter } from '@api/routes/organization/widgets';
 import { zValidator } from '@hono/zod-validator';
 import { ZGetRecommendedCourses } from '@cio/utils/validation/course';
+import { studentEmailTemplatesRouter } from '@api/routes/organization/email-templates';
 
 export const organizationRouter = new Hono()
   /**
@@ -957,6 +958,7 @@ export const organizationRouter = new Hono()
     }
   )
   .route('/automation', automationRouter)
+  .route('/email-templates', studentEmailTemplatesRouter)
   .route('/course-import', courseImportRouter)
   .route('/search', searchRouter)
   .route('/tags', tagsRouter)

@@ -69,6 +69,29 @@
   let showPaymentError = $state(false);
   // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: bound to UnsavedChanges
   let hasUnsavedChanges = $state(false);
+  let editRevision = $state(0);
+  let courseSnapshot = $state('');
+  let snapshottedCourseId = $state<string | null>(null);
+
+  $effect(() => {
+    if (!courseId) return;
+
+    if (snapshottedCourseId !== courseId) {
+      snapshottedCourseId = courseId;
+      courseSnapshot = '';
+      return;
+    }
+
+    if (!courseSnapshot && course?.id) {
+      courseSnapshot = JSON.stringify(course);
+    }
+  });
+
+  function restoreCourseSnapshot() {
+    if (!courseSnapshot) return;
+
+    course = JSON.parse(courseSnapshot);
+  }
 
   const paymentLink = $derived((course.metadata?.paymentLink ?? '').trim());
   const courseIsPaid = $derived(isCoursePaid(course));
@@ -199,29 +222,39 @@
     }
 
     loading = true;
-    course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
+    try {
+      course.slug = course.slug || generateSlug(course.title, { appendTimestamp: true });
 
-    const updatePayload = {
-      ...course,
-      type: course.type!,
-      slug: course.slug!,
-      isPublished: course.isPublished ?? undefined,
-      overview: course.overview ?? undefined,
-      compliance: course.compliance ?? undefined,
-      certificate: course.certificate
-        ? {
-            ...course.certificate,
-            isDownloadable: course.certificate.isDownloadable ?? undefined,
-            theme: course.certificate.theme ?? undefined
-          }
-        : undefined
-    } as TCourseUpdate;
+      const updatePayload = {
+        ...course,
+        type: course.type ?? undefined,
+        slug: course.slug!,
+        isPublished: course.isPublished ?? undefined,
+        bannerImage: course.bannerImage ?? undefined,
+        cost: course.cost ?? undefined,
+        overview: course.overview ?? undefined,
+        compliance: course.compliance ?? undefined,
+        certificate: course.certificate
+          ? {
+              ...course.certificate,
+              isDownloadable: course.certificate.isDownloadable ?? undefined,
+              theme: course.certificate.theme ?? undefined
+            }
+          : undefined
+      } as TCourseUpdate;
 
-    await courseApi.update(courseId, updatePayload);
+      const submittedRevision = editRevision;
+      const updated = await courseApi.update(courseId, updatePayload);
+      if (!updated) return;
 
-    loading = false;
-    syncCourseStore(course);
-    hasUnsavedChanges = false;
+      syncCourseStore(course);
+      courseSnapshot = JSON.stringify(course);
+      if (editRevision === submittedRevision) {
+        hasUnsavedChanges = false;
+      }
+    } finally {
+      loading = false;
+    }
   }
 
   function handlePreview() {
@@ -237,19 +270,23 @@
 
     if (isEqual(get(course, setterKey), value)) return;
 
+    if (!courseSnapshot) courseSnapshot = JSON.stringify(course);
+
     const _course = untrack(() => cloneDeep(course));
     set(_course, setterKey, value);
 
     course = _course;
     hasUnsavedChanges = true;
+    editRevision += 1;
   }
 
   function markDirty() {
     hasUnsavedChanges = true;
+    editRevision += 1;
   }
 </script>
 
-<UnsavedChanges bind:hasUnsavedChanges />
+<UnsavedChanges bind:hasUnsavedChanges onAbandon={restoreCourseSnapshot} />
 
 <Sidebar.Header
   class="flex flex-row! items-center {sidebar.open ? 'justify-between' : 'justify-center'} border-b px-2 py-2"

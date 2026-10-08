@@ -151,6 +151,12 @@ export class BaseApiWithErrors extends BaseApi {
     this.errors = {};
   }
 
+  clearError(field: string) {
+    if (!(field in this.errors)) return;
+
+    delete this.errors[field];
+  }
+
   /**
    * Reset the API state including errors and success
    */

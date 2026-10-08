@@ -6,12 +6,16 @@
   import { InputField } from '@cio/ui/custom/input-field';
   import { TextEditor } from '$features/ui';
   import { QuestionContainer } from '$features/course/components';
+  import { Button } from '@cio/ui/base/button';
+  import { HoverableItem, MaximizeIcon } from '@cio/ui/custom/moving-icons';
 
   interface Props {
     preview: boolean;
   }
 
   let { preview }: Props = $props();
+
+  let isDescriptionExpanded = $state(false);
 
   function getTotalPossibleGrade(questions: { points: number | string }[]) {
     return questions.reduce((acc, question) => {
@@ -70,23 +74,31 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
         bind:value={$questionnaire.title}
         className="mb-2"
-        onchange={() => ($questionnaire.isTitleDirty = true)}
+        onInput={() => ($questionnaire.isTitleDirty = true)}
       />
       <InputField
         label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
         type="datetime-local"
         className="w-fit"
         value={$questionnaire.dueBy ?? ''}
-        onchange={(e) => {
+        onChange={(e) => {
           $questionnaire.dueBy = e.currentTarget.value;
           $questionnaire.isDueByDirty = true;
         }}
       />
 
       <div class="mt-3">
-        <p class="mb-1">
-          {$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
-        </p>
+        <div class="mb-1 flex items-center justify-between gap-2">
+          <p>{$t('course.navItem.lessons.exercises.all_exercises.description.heading')}</p>
+          <HoverableItem>
+            {#snippet children(isHovered)}
+              <Button type="button" variant="outline" size="sm" onclick={() => (isDescriptionExpanded = true)}>
+                <MaximizeIcon {isHovered} size={16} ariaHidden />
+                {$t('course.navItem.lessons.exercises.all_exercises.description.expand')}
+              </Button>
+            {/snippet}
+          </HoverableItem>
+        </div>
 
         <TextEditor
           content={$questionnaire.description || ''}
@@ -96,6 +108,10 @@
           }}
           editorClass="max-h-[100px]"
           placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.describe')}
+          expandable
+          bind:expanded={isDescriptionExpanded}
+          expandedTitle={$questionnaire.title}
+          expandedDescription={$t('course.navItem.lessons.exercises.all_exercises.description.heading')}
         />
       </div>
     {/if}

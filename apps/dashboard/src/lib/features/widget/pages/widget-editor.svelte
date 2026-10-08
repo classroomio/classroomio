@@ -157,6 +157,7 @@
               bind:draftConfig={store.draftConfig}
               planGatedFields={store.detail.planGatedFields}
               errors={store.validationErrors}
+              onFieldChange={(path) => store.clearError(path)}
             />
           {:else}
             <EmbedPanel

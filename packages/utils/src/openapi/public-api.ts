@@ -4,7 +4,7 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts, and to read analytics, with organization-scoped API keys.
 
 # Authentication
 
@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, course certificate, and course section, lesson and content endpoints, through their \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, and \`course:read\`/\`course:write\` scopes, and every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, course certificate, and course section, lesson and content endpoints, through their \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, and \`course:read\`/\`course:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -226,67 +226,31 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/cohorts/{cohortId}/invite/assign': 'Assign existing students to a cohort',
   'GET /public-api/v1/cohorts/{cohortId}/invite-link': 'Get the cohort join link',
   'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
-  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link'
+  'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link',
+  'GET /public-api/v1/analytics': 'Get organization analytics',
+  'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
+  'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
+  'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
+  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics'
 };
 
-// Scalar groups its sidebar by tag when the spec declares top-level `tags`
-// with descriptions; without this, operations list flat with no section
-// headers at all.
+// Scalar groups operations under these tags.
 const OPERATION_TAGS = [
-  {
-    name: 'Public API Audience',
-    description: "Manage your organization's audience — invite, assign to courses, update, and remove members."
-  },
-  {
-    name: 'Public API Courses',
-    description: 'Create and manage courses, read their structure, and list enrolled students.'
-  },
-  {
-    name: 'Public API Course Certificates',
-    description:
-      "Read and update a course's certificate design and settings, list the students who earned it, and download their certificates."
-  },
-  {
-    name: 'Public API Course Members',
-    description:
-      "Manage a course's membership and invites — list, add, update roles, remove, reset progress, view analytics, and invite people into the course. A course member row is distinct from Public API Audience (organization-wide people); adding a member here requires the person already be an organization member — use the invites endpoints to onboard someone new."
-  },
-  {
-    name: 'Public API Course Sections',
-    description: "Add, rename, move and delete a course's sections."
-  },
-  {
-    name: 'Public API Course Lessons',
-    description: "Read and delete lessons, and manage a lesson's translations, version history and comments."
-  },
-  {
-    name: 'Public API Course Content',
-    description: 'Reorder, lock and delete lessons and exercises across a course in one call.'
-  },
-  {
-    name: 'Public API Cohorts',
-    description: 'Create and manage cohorts.'
-  },
-  {
-    name: 'Public API Cohort Members',
-    description: "Manage a cohort's members."
-  },
-  {
-    name: 'Public API Cohort Courses',
-    description: 'Link and unlink courses on a cohort.'
-  },
-  {
-    name: 'Public API Cohort Newsfeed',
-    description: "Post, comment, and react on a cohort's newsfeed."
-  },
-  {
-    name: 'Public API Cohort Goals',
-    description: 'Create and manage cohort progress goals.'
-  },
-  {
-    name: 'Public API Cohort Invites',
-    description: 'Invite students to a cohort and manage its join link.'
-  }
+  { name: 'Audience', description: 'Manage people in your organization.' },
+  { name: 'Courses', description: 'Create and manage courses.' },
+  { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
+  { name: 'Course Members', description: 'Manage the people in a course.' },
+  { name: 'Course Invites', description: 'Invite people to a course.' },
+  { name: 'Course Sections', description: 'Add, rename, move and delete course sections.' },
+  { name: 'Course Lessons', description: 'Read and delete lessons, and manage their translations, history and comments.' },
+  { name: 'Course Content', description: 'Reorder, lock and delete lessons and exercises in bulk.' },
+  { name: 'Cohorts', description: 'Create and manage cohorts.' },
+  { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
+  { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },
+  { name: 'Cohort Newsfeed', description: 'Post, comment, and react on a cohort newsfeed.' },
+  { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
+  { name: 'Cohort Invites', description: 'Invite people to a cohort.' },
+  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {

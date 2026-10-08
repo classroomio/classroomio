@@ -117,6 +117,7 @@
           label={$t('course_templates.save.name')}
           bind:value={$saveTemplateModal.name}
           errorMessage={courseTemplateApi.errors.title}
+          onInput={() => courseTemplateApi.clearError('title')}
         />
       {/if}
 

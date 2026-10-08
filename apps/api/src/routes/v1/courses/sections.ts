@@ -20,7 +20,7 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, PAGINATION_NOTE, contentForbiddenResponses, mcpRateLimitResponse } from './docs';
 
-const TAG = 'Public API Course Sections';
+const TAG = 'Course Sections';
 const SectionResponse = itemResponse(ZPublicApiCourseSectionResponse);
 
 export const v1CourseSectionsRouter = new Hono()

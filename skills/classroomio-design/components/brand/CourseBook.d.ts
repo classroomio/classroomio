@@ -1,0 +1,2 @@
+export interface CourseBookProps { label?: string; title: string; value: string | number; caption: string; width?: number; height?: number; style?: React.CSSProperties; }
+export declare function CourseBook(props: CourseBookProps): JSX.Element;

@@ -2,7 +2,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import { Input } from '@cio/ui/base/input';
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { CompactLoader } from '@cio/ui/custom/compact-loader';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as Field from '@cio/ui/base/field';
 
@@ -102,7 +102,7 @@
 
       <Field.Group>
         {#if accountApi.isLoading && workspaces.length === 0}
-          <Spinner class="size-10! text-blue-700!" />
+          <CompactLoader label={$t('common.loading')} />
         {:else}
           {#each workspaces as workspace}
             <Field.Field>
@@ -145,7 +145,7 @@
     <Field.Group>
       <Field.Field>
         <Field.Label>{$t('account.workspaces.name_label')}</Field.Label>
-        <Input bind:value={formName} />
+        <Input bind:value={formName} oninput={() => accountApi.clearError('name')} />
         {#if accountApi.errors.name}
           <Field.Error>{accountApi.errors.name}</Field.Error>
         {/if}
@@ -153,7 +153,7 @@
 
       <Field.Field>
         <Field.Label>{$t('account.workspaces.site_name_label')}</Field.Label>
-        <Input bind:value={formSiteName} />
+        <Input bind:value={formSiteName} oninput={() => accountApi.clearError('siteName')} />
         {#if accountApi.errors.siteName}
           <Field.Error>{accountApi.errors.siteName}</Field.Error>
         {/if}

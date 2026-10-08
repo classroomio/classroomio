@@ -1,60 +1,83 @@
 ---
 title: Object storage & uploads
-description: Configure object storage (MinIO or S3-compatible) for file and video uploads, plus upload size limits.
+description: Configure object storage (bundled SeaweedFS or any S3-compatible service) for file and video uploads, plus upload size limits.
 ---
 
 ClassroomIO stores uploaded files and videos in **object storage**. You have two choices: run the
-**bundled MinIO** alongside the stack, or point ClassroomIO at an **external S3-compatible** service
-(AWS S3, Cloudflare R2, etc.). Both speak the S3 API and use the same `OBJECT_STORAGE_*` variables.
+**bundled store** ([SeaweedFS](https://github.com/seaweedfs/seaweedfs)) alongside the stack, or point
+ClassroomIO at an **external S3-compatible** service (AWS S3, Cloudflare R2, etc.). Both speak the S3
+API and use the same `OBJECT_STORAGE_*` variables.
 
-## Option 1: Bundled MinIO (default)
+## Option 1: Bundled storage (default)
 
-The Docker and Coolify compose files include **MinIO** under the `minio` profile, and the startup
-script auto-configures it. You only change these for custom credentials.
+The Docker and Coolify compose files include **SeaweedFS** as the `storage` service under the
+`storage` profile, and the startup script auto-configures it. You only change these for custom
+credentials.
 
 | Variable | Default |
 |----------|---------|
-| `MINIO_ROOT_USER` | randomized by the script (`minioadmin` if you skip it) |
-| `MINIO_ROOT_PASSWORD` | randomized by the script (`minioadmin` if you skip it) |
-| `MINIO_API_CORS_ALLOW_ORIGIN` | `*` (enables cross-origin presigned URL uploads from browser origins) |
-| `OBJECT_STORAGE_ENDPOINT` | `http://minio:9000` |
+| `OBJECT_STORAGE_ENDPOINT` | `http://storage:9000` |
 | `OBJECT_STORAGE_PUBLIC_ENDPOINT` | `http://localhost:9000` |
-| `OBJECT_STORAGE_ACCESS_KEY_ID` | matches `MINIO_ROOT_USER` |
-| `OBJECT_STORAGE_SECRET_ACCESS_KEY` | matches `MINIO_ROOT_PASSWORD` |
-| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` (required for MinIO) |
+| `OBJECT_STORAGE_ACCESS_KEY_ID` | randomized by the script |
+| `OBJECT_STORAGE_SECRET_ACCESS_KEY` | randomized by the script |
+| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` (required for the bundled store) |
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | `http://localhost:9000/media` |
 
-### Accessing the MinIO Console & Browsing Buckets
+The bundled store, the API and the jobs worker all read the same key pair, so there is nothing to
+keep in sync. CORS allows all origins, so browser uploads work from any dashboard origin.
 
-MinIO provides a Web Console on **Port 9001** (while S3 API requests use **Port 9000**):
+### Buckets & browsing files
 
-- **Local Docker Compose Web UI:** Navigate to `http://localhost:9001` in your browser.
-- **Log in:** Use your `MINIO_ROOT_USER` and `MINIO_ROOT_PASSWORD` (default: `minioadmin` / `minioadmin`).
-- **Browse Files:** In the left sidebar, click **Object Browser** to inspect buckets and uploaded files:
-  - `videos`: Raw and encoded HLS course videos.
-  - `documents`: Course lesson documents and student assignment uploads.
-  - `media`: Public avatars, course thumbnails, and landing page images.
+A one-shot `storage-init` container creates three buckets on first start:
+
+- `videos`: Raw and encoded HLS course videos. Private.
+- `documents`: Course lesson documents and student assignment uploads. Private.
+- `media`: Avatars, course thumbnails, and landing page images. **Public-read.**
+
+Only the S3 API is published, on **port 9000**; there is no web console. To browse files, use any S3
+client with the key pair from your `.env`, for example:
+
+```zsh title="Terminal"
+docker run --rm --network classroomio_default \
+  -e RCLONE_CONFIG_CIO_TYPE=s3 -e RCLONE_CONFIG_CIO_PROVIDER=SeaweedFS \
+  -e RCLONE_CONFIG_CIO_ENDPOINT=http://storage:9000 \
+  -e RCLONE_CONFIG_CIO_ACCESS_KEY_ID=<OBJECT_STORAGE_ACCESS_KEY_ID> \
+  -e RCLONE_CONFIG_CIO_SECRET_ACCESS_KEY=<OBJECT_STORAGE_SECRET_ACCESS_KEY> \
+  rclone/rclone ls cio:media
+```
+
+:::warning[Minimum app version]
+Browser uploads to the bundled store need app images built after the switch to SeaweedFS. If you
+pin an older `CIO_VERSION`, uploads fail with a `BadDigest` error. Upgrade the pin, or use external
+storage.
+:::
 
 :::note[Changing your domain later]
 If you change `DASHBOARD_ORIGIN` after Install, `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` is
 re-derived from it automatically the next time you run `./classroomio.sh restart` (or
-`start`/`upgrade`). If you've bundled MinIO but manually pinned
+`start`/`upgrade`). If you use the bundled store but manually pinned
 `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` to a custom media CDN, note that a domain change will
 overwrite it back to `<DASHBOARD_ORIGIN>/media` — re-set it afterward if you need the custom
 value.
 :::
 
-:::warning[MinIO is your durability boundary]
-Single-node MinIO has no redundancy: its volume is the only thing protecting your uploads. Give it
-**persistent storage** (`minio-data:/data` in Docker Compose or a Railway Volume mounted to `/data`) and **back it up**. If you'd rather not operate storage yourself, use external
-**Cloudflare R2 / AWS S3** instead (R2 has no egress fees); see below.
+:::warning[The storage volume is your durability boundary]
+The single-node bundled store has no redundancy: its volume is the only thing protecting your
+uploads. Give it **persistent storage** (`storage-data:/data` in Docker Compose) and **back it up**.
+If you'd rather not operate storage yourself, use external **Cloudflare R2 / AWS S3** instead (R2
+has no egress fees); see below.
 :::
+
+### Migrating from the bundled MinIO
+
+Installs created before the switch keep their uploads in a MinIO volume and must copy them across
+once. Follow [Migrating from MinIO](/self-hosted/migrating-from-minio).
 
 ## Option 2: External S3 / Cloudflare R2
 
 The `OBJECT_STORAGE_*` variables speak the S3 API, so they work with **any S3-compatible provider**,
-including Cloudflare R2 and AWS S3. Point them at the provider and start **without** the bundled MinIO
-(`./classroomio.sh start --no-minio`, or leave the `minio` profile off).
+including Cloudflare R2 and AWS S3. Point them at the provider and start **without** the bundled store
+(`./classroomio.sh start --no-storage`, or leave the `storage` profile off).
 
 | Variable | Description |
 |----------|-------------|
@@ -62,9 +85,17 @@ including Cloudflare R2 and AWS S3. Point them at the provider and start **witho
 | `OBJECT_STORAGE_PUBLIC_ENDPOINT` | Public endpoint browsers download from |
 | `OBJECT_STORAGE_ACCESS_KEY_ID` / `OBJECT_STORAGE_SECRET_ACCESS_KEY` | Provider credentials |
 | `OBJECT_STORAGE_REGION` | Region (some providers require it; `auto` for R2) |
-| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` for MinIO; `false` for R2 |
+| `OBJECT_STORAGE_FORCE_PATH_STYLE` | `true` for the bundled store and most self-hosted S3 servers; `false` for R2 |
 | `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` | Public base URL for media (`…/media`) |
 | `OBJECT_STORAGE_BUCKET_VIDEOS` / `_DOCUMENTS` / `_MEDIA` | Bucket names (default `videos`, `documents`, `media`) |
+
+:::note[Allow the storage domain in the dashboard's CSP]
+Browsers upload straight to storage and load media from it, so when storage has its own domain
+(bundled storage behind a domain, or S3/R2), the dashboard must allow it: `CSP_CONNECT_SRC_DOMAINS`
+for uploads and `CSP_MEDIA_SRC_DOMAINS` for displaying files. `./classroomio.sh` adds the
+`OBJECT_STORAGE_PUBLIC_ENDPOINT` origin to both automatically (unless you use
+`ALLOWED_EXTERNAL_DOMAINS`, which replaces them). On Coolify, Dokploy or Railway, set them yourself.
+:::
 
 :::note[Legacy `CLOUDFLARE_*` variables]
 ClassroomIO also accepts a legacy Cloudflare R2 config (`CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_ACCESS_KEY`,

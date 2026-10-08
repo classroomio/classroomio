@@ -1,6 +1,7 @@
 <script lang="ts">
   import { get } from 'svelte/store';
   import { untrack } from 'svelte';
+  import { MediaQuery } from 'svelte/reactivity';
   import { fly } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
   import { courseApi } from '$features/course/api';
@@ -12,10 +13,12 @@
     resetStudentExerciseTake
   } from './store';
   import Preview from './preview.svelte';
+  import ExerciseDescription from './exercise-description.svelte';
   import { ExerciseQuestion } from '@cio/ui';
   import * as Alert from '@cio/ui/base/alert';
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import * as Sheet from '@cio/ui/base/sheet';
   import { RoleBasedSecurity } from '$features/ui';
   import { Empty } from '@cio/ui/custom/empty';
   import FileQuestionIcon from '@lucide/svelte/icons/file-question';
@@ -33,7 +36,6 @@
   } from '@cio/question-types';
   import { exerciseApi, presignApi } from '$features/course/api';
   import type { SubmissionListItem } from '$features/course/utils/types';
-  import { SafeHtmlContent } from '@cio/ui/custom/safe-html-content';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { toggleConfetti } from '$features/ui/confetti/store';
@@ -53,6 +55,8 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
+  import InfoIcon from '@lucide/svelte/icons/info';
+  import XIcon from '@lucide/svelte/icons/x';
   import type { Question } from '$features/course/types';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
 
@@ -77,6 +81,18 @@
   let prevExerciseId = $state('');
   let slideDirection = $state<'next' | 'prev'>('next');
   let selectedTryIndex = $state(-1);
+  let isInstructionsOpen = $state(false);
+  let feedbackElement = $state<HTMLElement | null>(null);
+  let isFeedbackTruncated = $state(false);
+  let isFeedbackSheetOpen = $state(false);
+
+  $effect(() => {
+    void $questionnaireMetaData.comment;
+    if (!feedbackElement) return;
+
+    isFeedbackTruncated = feedbackElement.scrollHeight > feedbackElement.clientHeight;
+  });
+  const isWideScreen = new MediaQuery('(min-width: 1280px)');
   const questionLabels = $derived(getExerciseQuestionLabels());
   const sectionFallbackTitle = $derived($t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'));
 
@@ -93,6 +109,25 @@
 
   /** Attempt currently shown: -1 means "latest" (e.g. right after submitting). */
   const viewedAttemptIndex = $derived(selectedTryIndex >= 0 ? selectedTryIndex : submissionList.length - 1);
+
+  const isTakingQuestions = $derived(
+    !preview &&
+      $questionnaire.questions.length > 0 &&
+      !$questionnaireMetaData.isFinished &&
+      $questionnaireMetaData.currentQuestionIndex > 0
+  );
+  const hasInstructions = $derived(Boolean($questionnaire.description?.trim()));
+  const showInstructions = $derived(isTakingQuestions && hasInstructions && isInstructionsOpen);
+  const isInstructionsDocked = $derived(showInstructions && isWideScreen.current);
+  const isInstructionsSheetOpen = $derived(showInstructions && !isWideScreen.current);
+
+  function toggleInstructions() {
+    isInstructionsOpen = !isInstructionsOpen;
+  }
+
+  function handleInstructionsSheetOpenChange(isOpen: boolean) {
+    isInstructionsOpen = isOpen;
+  }
 
   function handleStart() {
     questionnaireMetaData.update((m) => ({
@@ -327,7 +362,7 @@
     if (stringifiedQuestionnaireMetaData) {
       const autoSavedData = JSON.parse(stringifiedQuestionnaireMetaData);
       if (autoSavedData) {
-        questionnaireMetaData.set(autoSavedData);
+        questionnaireMetaData.update((metaData) => ({ ...autoSavedData, exerciseId: metaData.exerciseId }));
       }
     }
     isLoadingAutoSavedData = false;
@@ -501,15 +536,21 @@
     }));
   }
 
-  function onSectionQuestionAnswerChange(question: Question, answerValue: AnswerData) {
+  function onSectionQuestionAnswerChange(question: Question, answerValue: AnswerData | null) {
     const questionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(question));
-    questionnaireMetaData.update((metaData) => ({
-      ...metaData,
-      answers: {
-        ...metaData.answers,
-        [questionKey]: answerValue
+    questionnaireMetaData.update((metaData) => {
+      const answers = { ...metaData.answers };
+      if (answerValue === null) {
+        delete answers[questionKey];
+      } else {
+        answers[questionKey] = answerValue;
       }
-    }));
+
+      return {
+        ...metaData,
+        answers
+      };
+    });
   }
 
   function completeAllQuestionsSection() {
@@ -528,29 +569,15 @@
 
   function handleEnterKey(e: KeyboardEvent) {
     if (hasSectionedExercise && $questionnaire.sectionDisplayMode === 'all_questions') return;
-    if (e.key !== 'Enter' || isSubmitting || !currentQuestion) return;
+    if (e.key !== 'Enter' || e.defaultPrevented || isSubmitting || !currentQuestion) return;
 
     const target = e.target as HTMLElement;
     if (target?.tagName === 'TEXTAREA' || isTextEditorTarget(target)) return;
+    if (target?.closest('[role="dialog"], [data-instructions-control]')) return;
 
     e.preventDefault();
 
-    let valueToUse: AnswerData | undefined = sharedCurrentAnswer as AnswerData | undefined;
-
-    if (target instanceof HTMLInputElement && sharedQuestionModel) {
-      const questionTypeKey = sharedQuestionModel.questionType;
-      const trimmed = target.value?.trim() ?? '';
-
-      if (questionTypeKey === 'SHORT_ANSWER' && trimmed) {
-        valueToUse = { type: 'SHORT_ANSWER', text: trimmed };
-        onSharedAnswerChange(valueToUse);
-      } else if (questionTypeKey === 'NUMERIC' && trimmed) {
-        const num = Number(trimmed);
-        valueToUse = !Number.isNaN(num) ? { type: 'NUMERIC', value: num } : undefined;
-
-        if (valueToUse) onSharedAnswerChange(valueToUse);
-      }
-    }
+    const valueToUse: AnswerData | undefined = sharedCurrentAnswer as AnswerData | undefined;
     if (!hasAnswerValue(valueToUse)) {
       snackbar.error($t('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
       return;
@@ -776,12 +803,15 @@
       skipHydrateFromSubmissions = false;
       selectedTryIndex = -1;
       localSubmissions = [];
+      isInstructionsOpen = false;
     }
     prevExerciseId = exerciseId;
   });
 </script>
 
-{#if !preview && $questionnaire.questions.length && !$questionnaireMetaData.isFinished && $questionnaireMetaData.currentQuestionIndex > 0}
+<svelte:window onkeydown={handleEnterKey} />
+
+{#if isTakingQuestions}
   <div class="mb-6 flex min-w-0 items-center gap-3">
     <span class="ui:text-muted-foreground shrink-0 text-sm tabular-nums">
       {#if hasSectionedExercise}
@@ -792,334 +822,419 @@
       {/if}
     </span>
     <Progress class="min-w-0 flex-1" value={$questionnaireMetaData.progressValue} />
+    {#if hasInstructions}
+      <Button
+        data-instructions-control
+        type="button"
+        variant="outline"
+        size="sm"
+        class="shrink-0"
+        aria-pressed={isInstructionsOpen}
+        onclick={toggleInstructions}
+      >
+        <InfoIcon />
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructions')}
+      </Button>
+    {/if}
   </div>
 {/if}
 
-<svelte:window onkeydown={handleEnterKey} />
-
-{#if preview}
-  <RoleBasedSecurity allowedRoles={[1, 2]}>
-    <Preview
-      questions={filterOutDeleted($questionnaire.questions)}
-      sections={$questionnaire.sections}
-      questionnaireMetaData={$questionnaireMetaData}
-    />
-  </RoleBasedSecurity>
-{:else if !$questionnaire.questions.length}
-  <Empty
-    title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.no_question')}
-    icon={FileQuestionIcon}
-    variant="page"
-  >
-    <RoleBasedSecurity allowedRoles={[1, 2]}>
-      <p class="ui:text-primary text-center text-sm">
-        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.empty_edit_hint_prefix')}
-
-        <span class="font-semibold">
-          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')}
-        </span>
-
-        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.empty_edit_hint_suffix')}
-      </p>
-    </RoleBasedSecurity>
-  </Empty>
-{:else if $questionnaireMetaData.currentQuestionIndex === 0}
-  <RoleBasedSecurity allowedRoles={[3]}>
-    <div>
-      <h2 class="my-1">{$questionnaire.title}</h2>
-
-      <div class="flex items-center">
-        <p class="mx-2 dark:text-white">
-          <strong>{$questionnaire.questions.length}</strong>
-          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
-        </p>
-        |
-        {#if hasSectionedExercise}
-          <p class="mx-2 dark:text-white">
-            <strong>{activeSections.length}</strong>
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.sections')}
-          </p>
-          |
-        {/if}
-        <p class="mx-2 dark:text-white">
-          <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
-          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.
-        </p>
-        |
-        <p class="mx-2 dark:text-white">{$t('course.navItem.lessons.exercises.all_exercises.view_mode.all')}</p>
-        {#if $questionnaire.dueBy}
-          |
-          <p class="mx-2 dark:text-white">
-            <strong>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}:</strong>
-            {new Date($questionnaire.dueBy).toLocaleString()}
-          </p>
-        {/if}
-      </div>
-
-      <article class="preview prose prose-sm sm:prose mt-3 p-2">
-        <SafeHtmlContent
-          content={$questionnaire.description ||
-            $t('course.navItem.lessons.exercises.all_exercises.view_mode.no_description')}
+<div class={isInstructionsDocked ? 'grid items-start gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]' : ''}>
+  <div class="min-w-0">
+    {#if preview}
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        <Preview
+          questions={filterOutDeleted($questionnaire.questions)}
+          sections={$questionnaire.sections}
+          questionnaireMetaData={$questionnaireMetaData}
         />
-      </article>
+      </RoleBasedSecurity>
+    {:else if !$questionnaire.questions.length}
+      <Empty
+        title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.no_question')}
+        icon={FileQuestionIcon}
+        variant="page"
+      >
+        <RoleBasedSecurity allowedRoles={[1, 2]}>
+          <p class="ui:text-primary text-center text-sm">
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.empty_edit_hint_prefix')}
 
-      <Button onclick={handleStart} type="button" class="float-right my-5">
-        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.start')}
-      </Button>
-    </div>
-  </RoleBasedSecurity>
-{:else if $questionnaireMetaData.isFinished}
-  {#if !isLoadingAutoSavedData}
-    <div class="flex w-full flex-col items-start lg:flex-row lg:items-center lg:space-x-4">
-      {#if STATUS.GRADED === $questionnaireMetaData.status}
-        <div class="mb-8 w-full space-y-2">
-          <Badge variant="success" title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}>
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
-          </Badge>
+            <span class="font-semibold">
+              {$t('course.navItem.lessons.exercises.all_exercises.view_mode.edit')}
+            </span>
 
-          <div class="flex w-full flex-col items-start gap-2 md:flex-row md:items-center">
-            {#if $questionnaireMetaData.comment}
-              <Alert.Callout
-                variant="information"
-                title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructor_feedback')}
-                description={$questionnaireMetaData.comment}
-                class="h-fit! w-full! flex-1!"
-              />
-            {/if}
-            <div class="flex flex-col justify-between gap-2 rounded-md border p-4">
-              <p>
-                <span class="text-2xl font-bold">{$questionnaireMetaData.finalTotalGrade}/</span>
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.empty_edit_hint_suffix')}
+          </p>
+        </RoleBasedSecurity>
+      </Empty>
+    {:else if $questionnaireMetaData.currentQuestionIndex === 0}
+      <RoleBasedSecurity allowedRoles={[3]}>
+        <div>
+          <h2 class="my-1">{$questionnaire.title}</h2>
 
-                <span class="text-xl">{$questionnaireMetaData.totalPossibleGrade}</span>
+          <div class="flex items-center">
+            <p class="mx-2 dark:text-white">
+              <strong>{$questionnaire.questions.length}</strong>
+              {$t('course.navItem.lessons.exercises.all_exercises.view_mode.questions')}
+            </p>
+            |
+            {#if hasSectionedExercise}
+              <p class="mx-2 dark:text-white">
+                <strong>{activeSections.length}</strong>
+                {$t('course.navItem.lessons.exercises.all_exercises.view_mode.sections')}
               </p>
-            </div>
-            {#if shouldShowPassedCompletionResult}
-              <Alert.Root variant={didCurrentAttemptPass ? 'information' : 'warning'} class="h-fit! w-full! flex-1!">
-                <div class="col-start-2 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div class="min-w-0 space-y-1">
-                    <p class="font-medium">
-                      {didCurrentAttemptPass
-                        ? $t('course.navItem.lessons.exercises.all_exercises.view_mode.passed_completion_result_title')
-                        : $t(
-                            'course.navItem.lessons.exercises.all_exercises.view_mode.not_passed_completion_result_title'
-                          )}
-                    </p>
-                    <p class="ui:text-muted-foreground text-sm">
-                      {didCurrentAttemptPass
-                        ? $t(
-                            'course.navItem.lessons.exercises.all_exercises.view_mode.passed_completion_result_description',
-                            {
-                              scorePercent: gradedScorePercentLabel,
-                              requiredPercent: passThresholdPercentLabel
-                            }
-                          )
-                        : $t(
-                            'course.navItem.lessons.exercises.all_exercises.view_mode.not_passed_completion_result_description',
-                            {
-                              scorePercent: gradedScorePercentLabel,
-                              requiredPercent: passThresholdPercentLabel
-                            }
-                          )}
-                    </p>
-                  </div>
-                  {#if $questionnaire.allowMultipleAttempts && !didCurrentAttemptPass}
-                    <Button type="button" variant="outline" onclick={tryAgain} class="shrink-0">
-                      {$t('course.navItem.lessons.exercises.all_exercises.view_mode.try_again')}
-                    </Button>
-                  {/if}
-                </div>
-              </Alert.Root>
+              |
+            {/if}
+            <p class="mx-2 dark:text-white">
+              <strong>{getTotalPossibleGrade($questionnaire.questions)}</strong>
+              {$t('course.navItem.lessons.exercises.all_exercises.view_mode.points')}.
+            </p>
+            |
+            <p class="mx-2 dark:text-white">{$t('course.navItem.lessons.exercises.all_exercises.view_mode.all')}</p>
+            {#if $questionnaire.dueBy}
+              |
+              <p class="mx-2 dark:text-white">
+                <strong>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}:</strong>
+                {new Date($questionnaire.dueBy).toLocaleString()}
+              </p>
             {/if}
           </div>
-        </div>
-      {:else if isSelfPacedLikeCourse(courseApi.course?.type)}
-        <Badge
-          variant="success"
-          title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
-        >
-          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.submitted')}
-        </Badge>
-      {:else}
-        <Badge variant="warning" title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_pending')}>
-          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.pending')}
-        </Badge>
-      {/if}
-    </div>
 
-    {#if submissionList.length > 1}
-      <div class="mb-4 flex flex-wrap items-center gap-2">
-        <IconButton
-          disabled={viewedAttemptIndex <= 0}
-          onclick={goPrevTry}
-          tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.previous_try')}
-        >
-          <ChevronLeftIcon class="h-4 w-4" />
-        </IconButton>
-        <span class="ui:text-muted-foreground text-sm">
-          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.attempt_counter', {
-            current: viewedAttemptIndex + 1,
-            total: submissionList.length
-          })}
-        </span>
-        <IconButton
-          disabled={viewedAttemptIndex >= submissionList.length - 1}
-          onclick={goNextTry}
-          tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.next_try')}
-        >
-          <ChevronRightIcon class="h-4 w-4" />
-        </IconButton>
-      </div>
-    {/if}
+          <ExerciseDescription
+            class="mt-3 p-2"
+            content={$questionnaire.description ||
+              $t('course.navItem.lessons.exercises.all_exercises.view_mode.no_description')}
+          />
 
-    <Preview
-      questions={[...$questionnaire.questions].sort(
-        (leftQuestion, rightQuestion) => leftQuestion.order - rightQuestion.order
-      )}
-      sections={$questionnaire.sections}
-      questionnaireMetaData={$questionnaireMetaData}
-      grades={$questionnaireMetaData.grades}
-      disableGrading={true}
-    />
-
-    <RoleBasedSecurity allowedRoles={[3]}>
-      {#if $questionnaire.allowMultipleAttempts && !shouldShowPassedCompletionResult}
-        <div class="mt-4">
-          <Button type="button" variant="secondary" onclick={tryAgain}>
-            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.try_again')}
+          <Button onclick={handleStart} type="button" class="float-right my-5">
+            {$t('course.navItem.lessons.exercises.all_exercises.view_mode.start')}
           </Button>
         </div>
+      </RoleBasedSecurity>
+    {:else if $questionnaireMetaData.isFinished}
+      {#if !isLoadingAutoSavedData}
+        <div class="flex w-full flex-col items-start lg:flex-row lg:items-center lg:space-x-4">
+          {#if STATUS.GRADED === $questionnaireMetaData.status}
+            <div class="mb-8 w-full space-y-2">
+              <Badge
+                variant="success"
+                title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_graded')}
+              >
+                {$t('course.navItem.lessons.exercises.all_exercises.view_mode.graded')}
+              </Badge>
+
+              <div class="flex w-full flex-col items-stretch gap-2 md:flex-row md:items-center">
+                <div class="flex shrink-0 flex-col justify-between gap-2 rounded-md border p-4">
+                  <p>
+                    <span class="text-2xl font-bold">{$questionnaireMetaData.finalTotalGrade}/</span>
+
+                    <span class="text-xl">{$questionnaireMetaData.totalPossibleGrade}</span>
+                  </p>
+                </div>
+                {#if shouldShowPassedCompletionResult}
+                  <Alert.Root
+                    variant={didCurrentAttemptPass ? 'information' : 'warning'}
+                    class="h-fit! w-full! flex-1!"
+                  >
+                    <div class="col-start-2 flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div class="min-w-0 space-y-1">
+                        <p class="font-medium">
+                          {didCurrentAttemptPass
+                            ? $t(
+                                'course.navItem.lessons.exercises.all_exercises.view_mode.passed_completion_result_title'
+                              )
+                            : $t(
+                                'course.navItem.lessons.exercises.all_exercises.view_mode.not_passed_completion_result_title'
+                              )}
+                        </p>
+                        <p class="ui:text-muted-foreground text-sm">
+                          {didCurrentAttemptPass
+                            ? $t(
+                                'course.navItem.lessons.exercises.all_exercises.view_mode.passed_completion_result_description',
+                                {
+                                  scorePercent: gradedScorePercentLabel,
+                                  requiredPercent: passThresholdPercentLabel
+                                }
+                              )
+                            : $t(
+                                'course.navItem.lessons.exercises.all_exercises.view_mode.not_passed_completion_result_description',
+                                {
+                                  scorePercent: gradedScorePercentLabel,
+                                  requiredPercent: passThresholdPercentLabel
+                                }
+                              )}
+                        </p>
+                      </div>
+                      {#if $questionnaire.allowMultipleAttempts && !didCurrentAttemptPass}
+                        <Button type="button" variant="outline" onclick={tryAgain} class="shrink-0">
+                          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.try_again')}
+                        </Button>
+                      {/if}
+                    </div>
+                  </Alert.Root>
+                {/if}
+              </div>
+
+              {#if $questionnaireMetaData.comment}
+                <Alert.Root variant="information" class="h-fit! w-full!">
+                  <Alert.Title>
+                    {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructor_feedback')}
+                  </Alert.Title>
+                  <Alert.Description class="w-full">
+                    <p bind:this={feedbackElement} class="line-clamp-2 whitespace-pre-line">
+                      {$questionnaireMetaData.comment}
+                    </p>
+                    {#if isFeedbackTruncated}
+                      <Button
+                        type="button"
+                        variant="link"
+                        size="sm"
+                        class="h-auto p-0"
+                        onclick={() => (isFeedbackSheetOpen = true)}
+                      >
+                        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.show_more')}
+                      </Button>
+                    {/if}
+                  </Alert.Description>
+                </Alert.Root>
+              {/if}
+            </div>
+          {:else if isSelfPacedLikeCourse(courseApi.course?.type)}
+            <Badge
+              variant="success"
+              title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_submitted')}
+            >
+              {$t('course.navItem.lessons.exercises.all_exercises.view_mode.submitted')}
+            </Badge>
+          {:else}
+            <Badge
+              variant="warning"
+              title={$t('course.navItem.lessons.exercises.all_exercises.view_mode.status_pending')}
+            >
+              {$t('course.navItem.lessons.exercises.all_exercises.view_mode.pending')}
+            </Badge>
+          {/if}
+        </div>
+
+        {#if submissionList.length > 1}
+          <div class="mb-4 flex flex-wrap items-center gap-2">
+            <IconButton
+              disabled={viewedAttemptIndex <= 0}
+              onclick={goPrevTry}
+              tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.previous_try')}
+            >
+              <ChevronLeftIcon class="h-4 w-4" />
+            </IconButton>
+            <span class="ui:text-muted-foreground text-sm">
+              {$t('course.navItem.lessons.exercises.all_exercises.view_mode.attempt_counter', {
+                current: viewedAttemptIndex + 1,
+                total: submissionList.length
+              })}
+            </span>
+            <IconButton
+              disabled={viewedAttemptIndex >= submissionList.length - 1}
+              onclick={goNextTry}
+              tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.next_try')}
+            >
+              <ChevronRightIcon class="h-4 w-4" />
+            </IconButton>
+          </div>
+        {/if}
+
+        <Preview
+          questions={[...$questionnaire.questions].sort(
+            (leftQuestion, rightQuestion) => leftQuestion.order - rightQuestion.order
+          )}
+          sections={$questionnaire.sections}
+          questionnaireMetaData={$questionnaireMetaData}
+          grades={$questionnaireMetaData.grades}
+          disableGrading={true}
+        />
+
+        <RoleBasedSecurity allowedRoles={[3]}>
+          {#if $questionnaire.allowMultipleAttempts && !shouldShowPassedCompletionResult}
+            <div class="mt-4">
+              <Button type="button" variant="secondary" onclick={tryAgain}>
+                {$t('course.navItem.lessons.exercises.all_exercises.view_mode.try_again')}
+              </Button>
+            </div>
+          {/if}
+        </RoleBasedSecurity>
       {/if}
-    </RoleBasedSecurity>
-  {/if}
-{:else if hasSectionedExercise && currentSection && $questionnaireMetaData.sectionPhase === 'overview'}
-  <ExerciseQuestion.SectionOverview
-    sectionTitle={currentSectionDisplayTitle}
-    sectionDescription={currentSection.description}
-    sectionNumber={$questionnaireMetaData.currentSectionIndex + 1}
-    totalSections={activeSections.length}
-    questionCount={currentSectionQuestions.length}
-    totalPoints={sectionQuestionTotalPoints}
-    colorTheme={currentSection.colorTheme}
-    onBegin={beginCurrentSection}
-    onBack={goBackFromSectionOverview}
-    labels={{
-      beginSection: $t('course.navItem.lessons.exercises.all_exercises.view_mode.begin_section'),
-      back: $t('course.navItem.lessons.exercises.all_exercises.view_mode.back'),
-      questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
-      points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points'),
-      section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title')
-    }}
-  />
-{:else if hasSectionedExercise && currentSection && $questionnaire.sectionDisplayMode === 'all_questions' && $questionnaireMetaData.sectionPhase === 'questions'}
-  <div class="grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]">
-    <ExerciseQuestion.SectionNavigationSidebar sections={sectionNavigationGroups} />
-    <section class="space-y-4">
-      <ExerciseQuestion.SectionHeader
-        title={currentSectionDisplayTitle}
-        description={currentSection.description}
+    {:else if hasSectionedExercise && currentSection && $questionnaireMetaData.sectionPhase === 'overview'}
+      <ExerciseQuestion.SectionOverview
+        sectionTitle={currentSectionDisplayTitle}
+        sectionDescription={currentSection.description}
         sectionNumber={$questionnaireMetaData.currentSectionIndex + 1}
         totalSections={activeSections.length}
-        colorTheme={currentSection.colorTheme}
         questionCount={currentSectionQuestions.length}
         totalPoints={sectionQuestionTotalPoints}
+        colorTheme={currentSection.colorTheme}
+        onBegin={beginCurrentSection}
+        onBack={goBackFromSectionOverview}
         labels={{
-          section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'),
+          beginSection: $t('course.navItem.lessons.exercises.all_exercises.view_mode.begin_section'),
+          back: $t('course.navItem.lessons.exercises.all_exercises.view_mode.back'),
           questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
-          points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points')
+          points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points'),
+          section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title')
         }}
       />
+    {:else if hasSectionedExercise && currentSection && $questionnaire.sectionDisplayMode === 'all_questions' && $questionnaireMetaData.sectionPhase === 'questions'}
+      <div class="grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]">
+        <ExerciseQuestion.SectionNavigationSidebar sections={sectionNavigationGroups} />
+        <section class="space-y-4">
+          <ExerciseQuestion.SectionHeader
+            title={currentSectionDisplayTitle}
+            description={currentSection.description}
+            sectionNumber={$questionnaireMetaData.currentSectionIndex + 1}
+            totalSections={activeSections.length}
+            colorTheme={currentSection.colorTheme}
+            questionCount={currentSectionQuestions.length}
+            totalPoints={sectionQuestionTotalPoints}
+            labels={{
+              section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'),
+              questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
+              points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points')
+            }}
+          />
 
-      {#each currentSectionQuestions as sectionQuestion, sectionQuestionIndex (sectionQuestion.id)}
-        {@const sectionQuestionModel = toExerciseQuestionModel(sectionQuestion)}
-        {@const sectionQuestionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(sectionQuestion))}
-        <ExerciseQuestion.QuestionRenderer
-          contract={{
-            mode: 'take',
-            question: sectionQuestionModel,
-            answer: $questionnaireMetaData.answers[sectionQuestionKey],
-            labels: questionLabels,
-            disabled: isSubmitting,
-            platformMaxFileSizeMb,
-            onFileUpload: handleFileUpload,
-            onVideoRecordingUpload: handleVideoRecordingUpload
-          }}
-          questionNumber={sectionQuestionIndex + 1}
-          questionNumberActive={false}
-          onAnswerChange={(answerValue) => onSectionQuestionAnswerChange(sectionQuestion, answerValue)}
-        />
-      {/each}
+          {#each currentSectionQuestions as sectionQuestion, sectionQuestionIndex (sectionQuestion.id)}
+            {@const sectionQuestionModel = toExerciseQuestionModel(sectionQuestion)}
+            {@const sectionQuestionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(sectionQuestion))}
+            <ExerciseQuestion.QuestionRenderer
+              contract={{
+                mode: 'take',
+                question: sectionQuestionModel,
+                answer: $questionnaireMetaData.answers[sectionQuestionKey],
+                labels: questionLabels,
+                disabled: isSubmitting,
+                platformMaxFileSizeMb,
+                onFileUpload: handleFileUpload,
+                onVideoRecordingUpload: handleVideoRecordingUpload
+              }}
+              questionNumber={sectionQuestionIndex + 1}
+              questionNumberActive={false}
+              onAnswerChange={(answerValue) => onSectionQuestionAnswerChange(sectionQuestion, answerValue)}
+            />
+          {/each}
 
-      <div class="flex justify-end">
-        <Button type="button" onclick={completeAllQuestionsSection} disabled={isSubmitting} loading={isSubmitting}>
-          {$questionnaireMetaData.currentSectionIndex === activeSections.length - 1
-            ? $t('course.navItem.lessons.exercises.all_exercises.finish')
-            : $t('course.navItem.lessons.exercises.all_exercises.view_mode.complete_section')}
-        </Button>
-      </div>
-    </section>
-  </div>
-{:else if currentQuestion && currentQuestion?.id}
-  <div class={hasSectionedExercise ? 'grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]' : ''}>
-    {#if hasSectionedExercise}
-      <ExerciseQuestion.SectionNavigationSidebar sections={sectionNavigationGroups} />
-    {/if}
-    <div class="flex min-w-0 flex-col gap-4">
-      {#if hasSectionedExercise && currentSection}
-        <ExerciseQuestion.SectionHeader
-          title={currentSectionDisplayTitle}
-          description={currentSection.description}
-          sectionNumber={$questionnaireMetaData.currentSectionIndex + 1}
-          totalSections={activeSections.length}
-          colorTheme={currentSection.colorTheme}
-          questionCount={currentSectionQuestions.length}
-          totalPoints={sectionQuestionTotalPoints}
-          labels={{
-            section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'),
-            questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
-            points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points')
-          }}
-        />
-      {/if}
-      <div class="grid overflow-hidden" style="grid-template-areas: 'slot';">
-        {#key currentQuestion.id}
-          <div
-            id="question"
-            class="min-w-0 [grid-area:slot]"
-            in:fly={{ x: flyX, duration: 350, easing: cubicInOut }}
-            out:fly={{ x: flyOutX, duration: 350, easing: cubicInOut }}
-          >
-            {#if sharedQuestionModel}
-              <ExerciseQuestion.QuestionRenderer
-                contract={{
-                  mode: 'take',
-                  question: sharedQuestionModel,
-                  answer: sharedCurrentAnswer,
-                  labels: questionLabels,
-                  disabled: isSubmitting,
-                  platformMaxFileSizeMb,
-                  onFileUpload: handleFileUpload,
-                  onVideoRecordingUpload: handleVideoRecordingUpload
-                }}
-                questionNumber={$questionnaireMetaData.currentQuestionIndex}
-                onAnswerChange={onSharedAnswerChange}
-              />
-            {/if}
+          <div class="flex justify-end">
+            <Button type="button" onclick={completeAllQuestionsSection} disabled={isSubmitting} loading={isSubmitting}>
+              {$questionnaireMetaData.currentSectionIndex === activeSections.length - 1
+                ? $t('course.navItem.lessons.exercises.all_exercises.finish')
+                : $t('course.navItem.lessons.exercises.all_exercises.view_mode.complete_section')}
+            </Button>
           </div>
-        {/key}
+        </section>
       </div>
-      <div>
-        <ExerciseQuestion.QuestionNavigation
-          canGoBack={hasSectionedExercise || $questionnaireMetaData.currentQuestionIndex > 1}
-          canGoNext={canGoNextForSharedQuestion && !isSubmitting}
-          isLast={$questionnaireMetaData.currentQuestionIndex === currentQuestionList.length}
-          {isSubmitting}
-          previousLabel={t.get('course.navItem.lessons.exercises.all_exercises.previous')}
-          nextLabel={t.get('course.navItem.lessons.exercises.all_exercises.next')}
-          finishLabel={t.get('course.navItem.lessons.exercises.all_exercises.finish')}
-          {onPrevious}
-          onNext={onSharedNext}
-        />
+    {:else if currentQuestion && currentQuestion?.id}
+      <div class={hasSectionedExercise ? 'grid gap-4 lg:grid-cols-[180px_minmax(0,1fr)]' : ''}>
+        {#if hasSectionedExercise}
+          <ExerciseQuestion.SectionNavigationSidebar sections={sectionNavigationGroups} />
+        {/if}
+        <div class="flex min-w-0 flex-col gap-4">
+          {#if hasSectionedExercise && currentSection}
+            <ExerciseQuestion.SectionHeader
+              title={currentSectionDisplayTitle}
+              description={currentSection.description}
+              sectionNumber={$questionnaireMetaData.currentSectionIndex + 1}
+              totalSections={activeSections.length}
+              colorTheme={currentSection.colorTheme}
+              questionCount={currentSectionQuestions.length}
+              totalPoints={sectionQuestionTotalPoints}
+              labels={{
+                section: $t('course.navItem.lessons.exercises.all_exercises.section.fallback_title'),
+                questions: $t('course.navItem.lessons.exercises.all_exercises.view_mode.questions'),
+                points: $t('course.navItem.lessons.exercises.all_exercises.view_mode.points')
+              }}
+            />
+          {/if}
+          <div class="grid overflow-hidden" style="grid-template-areas: 'slot';">
+            {#key currentQuestion.id}
+              <div
+                id="question"
+                class="min-w-0 [grid-area:slot]"
+                in:fly={{ x: flyX, duration: 350, easing: cubicInOut }}
+                out:fly={{ x: flyOutX, duration: 350, easing: cubicInOut }}
+              >
+                {#if sharedQuestionModel}
+                  <ExerciseQuestion.QuestionRenderer
+                    contract={{
+                      mode: 'take',
+                      question: sharedQuestionModel,
+                      answer: sharedCurrentAnswer,
+                      labels: questionLabels,
+                      disabled: isSubmitting,
+                      platformMaxFileSizeMb,
+                      onFileUpload: handleFileUpload,
+                      onVideoRecordingUpload: handleVideoRecordingUpload
+                    }}
+                    questionNumber={$questionnaireMetaData.currentQuestionIndex}
+                    onAnswerChange={onSharedAnswerChange}
+                  />
+                {/if}
+              </div>
+            {/key}
+          </div>
+          <div>
+            <ExerciseQuestion.QuestionNavigation
+              canGoBack={hasSectionedExercise || $questionnaireMetaData.currentQuestionIndex > 1}
+              canGoNext={canGoNextForSharedQuestion && !isSubmitting}
+              isLast={$questionnaireMetaData.currentQuestionIndex === currentQuestionList.length}
+              {isSubmitting}
+              previousLabel={t.get('course.navItem.lessons.exercises.all_exercises.previous')}
+              nextLabel={t.get('course.navItem.lessons.exercises.all_exercises.next')}
+              finishLabel={t.get('course.navItem.lessons.exercises.all_exercises.finish')}
+              {onPrevious}
+              onNext={onSharedNext}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+    {/if}
   </div>
-{/if}
+
+  {#if isInstructionsDocked}
+    <aside data-instructions-control class="sticky top-4 flex max-h-[calc(100vh-2rem)] flex-col rounded-md border">
+      <div class="flex items-center gap-2 border-b px-3 py-1">
+        <p class="min-w-0 flex-1 truncate text-sm font-semibold">
+          {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructions')}
+        </p>
+        <IconButton
+          onclick={toggleInstructions}
+          tooltip={$t('course.navItem.lessons.exercises.all_exercises.view_mode.close_instructions')}
+          size="icon-xs"
+        >
+          <XIcon class="h-3.5 w-3.5" />
+        </IconButton>
+      </div>
+      <ExerciseDescription class="overflow-y-auto p-4" content={$questionnaire.description} />
+    </aside>
+  {/if}
+</div>
+
+<Sheet.Root bind:open={isFeedbackSheetOpen}>
+  <Sheet.Content side="right" class="w-full gap-0 overflow-y-auto sm:max-w-md">
+    <Sheet.Header>
+      <Sheet.Title>
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructor_feedback')}
+      </Sheet.Title>
+    </Sheet.Header>
+    <p class="px-4 text-sm whitespace-pre-line">{$questionnaireMetaData.comment}</p>
+    <Sheet.Footer>
+      <Button type="button" variant="outline" size="sm" onclick={() => (isFeedbackSheetOpen = false)}>
+        {$t('course.navItem.lessons.exercises.all_exercises.view_mode.show_less')}
+      </Button>
+    </Sheet.Footer>
+  </Sheet.Content>
+</Sheet.Root>
+
+<Sheet.Root open={isInstructionsSheetOpen} onOpenChange={handleInstructionsSheetOpenChange}>
+  <Sheet.Content side="right" class="w-full gap-0 overflow-y-auto sm:max-w-md">
+    <Sheet.Header>
+      <Sheet.Title>{$t('course.navItem.lessons.exercises.all_exercises.view_mode.instructions')}</Sheet.Title>
+    </Sheet.Header>
+    <ExerciseDescription class="px-4 pb-6" content={$questionnaire.description} />
+  </Sheet.Content>
+</Sheet.Root>

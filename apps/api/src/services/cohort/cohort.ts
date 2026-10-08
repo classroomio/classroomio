@@ -44,6 +44,8 @@ import {
   updateCohortMember as updateCohortMemberQuery,
   updateCohortNewsfeed as updateCohortNewsfeedQuery,
   updateCohortNewsfeedReaction,
+  getPaginatedCohortPeople,
+  type PaginatedCohortPeopleOptions,
   type TCohortListPage
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
@@ -230,6 +232,29 @@ export async function listCohortMembers(cohortId: string) {
     if (error instanceof AppError) throw error;
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list cohort members',
+      ErrorCodes.INTERNAL_ERROR,
+      500
+    );
+  }
+}
+
+export async function listPaginatedCohortPeople(cohortId: string, query: PaginatedCohortPeopleOptions) {
+  try {
+    const { items, total } = await getPaginatedCohortPeople(cohortId, query);
+
+    return {
+      items,
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: total === 0 ? 0 : Math.ceil(total / query.limit)
+      }
+    };
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to list cohort people',
       ErrorCodes.INTERNAL_ERROR,
       500
     );

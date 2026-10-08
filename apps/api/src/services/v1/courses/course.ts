@@ -2,6 +2,7 @@ import type {
   TPublicApiCourseParam,
   TPublicApiCoursesQuery,
   TPublicApiCreateCourse,
+  TPublicApiPaginationQuery,
   TPublicApiUpdateCourse,
   TPublicApiUpdateCourseStructure
 } from '@cio/utils/validation/public-api';
@@ -19,7 +20,7 @@ import {
   publishCourseImportDraftToExistingCourseService
 } from '@api/services/course-import/course-import';
 import { getOrganizationCourses } from '@api/services/organization';
-import { listCourseMembers } from '@api/services/course/people';
+import { listPaginatedCourseMembers } from '@api/services/course/people';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertCourseBelongsToOrganization } from '@api/services/v1/shared';
 import { assertCertificateChangeAllowed } from '@api/services/course/certificate-plan';
@@ -34,11 +35,18 @@ export async function getCourseService(orgId: string, params: TPublicApiCoursePa
   return getCourse(params.courseId);
 }
 
-export async function listCourseStudentsService(orgId: string, params: TPublicApiCourseParam) {
+export async function listCourseStudentsService(
+  orgId: string,
+  params: TPublicApiCourseParam,
+  query: TPublicApiPaginationQuery
+) {
   await assertCourseBelongsToOrganization(orgId, params.courseId);
 
-  const members = await listCourseMembers(params.courseId);
-  return members.filter((member) => member.roleId === ROLE.STUDENT);
+  return listPaginatedCourseMembers(params.courseId, {
+    page: query.page,
+    limit: query.limit,
+    roleId: ROLE.STUDENT
+  });
 }
 
 export async function exportCourseService(orgId: string, params: TPublicApiCourseParam) {

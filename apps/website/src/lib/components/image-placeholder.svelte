@@ -14,15 +14,13 @@
 </script>
 
 <div
-  class="relative flex w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 via-white to-gray-100 p-6 text-center {aspect} {className}"
+  class="relative flex w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-xl border-2 border-dashed border-blue-300 bg-gradient-to-br from-blue-50 via-white to-gray-100 p-6 text-center {aspect} {className}"
 >
-  <div
-    class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-blue-700 shadow ring-1 ring-blue-100"
-  >
+  <div class="flex h-14 w-14 items-center justify-center rounded-md bg-white text-blue-700 ring-1 ring-blue-100">
     <Image size={26} strokeWidth={1.6} />
   </div>
   <p class="text-sm font-medium text-gray-700">Image placeholder</p>
-  <p class="text-xs text-gray-500">Suggested: {suggestedFile}</p>
+  <p class="font-mono text-xs text-gray-500">Suggested: {suggestedFile}</p>
   {#if caption}
     <p class="max-w-[80%] text-[11px] text-gray-400">{caption}</p>
   {/if}

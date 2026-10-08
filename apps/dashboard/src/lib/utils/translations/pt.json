@@ -13,7 +13,29 @@
     "discard": "Descartar",
     "save_changes": "Salvar alterações",
     "scroll_to_top": "Voltar ao topo",
-    "delete": "Excluir"
+    "delete": "Excluir",
+    "restricted_page": {
+      "title": "Página restrita",
+      "description": "Esta organização está restrita. Enquanto isso, confira nossos recursos.",
+      "home": "Ir para o início",
+      "learning_paths_heading": "Trilhas de aprendizagem",
+      "learning_path_label": "Trilha de aprendizagem",
+      "tracks_label": "{count, plural, one {# trilha} other {# trilhas}}",
+      "included": "Incluído",
+      "untitled_lesson": "Lição sem título",
+      "format": "Formato"
+    },
+    "loading": "Carregando…",
+    "loading_states": {
+      "opening_course": {
+        "title": "Carregando curso…",
+        "caption": "Aguarde enquanto carregamos os dados do seu curso."
+      },
+      "opening_academy": {
+        "title": "Abrindo sua academia…",
+        "caption": "Preparando seus cursos, alunos e configurações."
+      }
+    }
   },
   "validations": {
     "generic": {
@@ -1525,7 +1547,39 @@
           },
           "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
         },
-        "learner": "Aluno"
+        "learner": "Aluno",
+        "views": {
+          "all": "Todas as pessoas",
+          "not_started": "Não iniciado",
+          "in_progress": "Em andamento",
+          "completed": "Concluído",
+          "never_logged_in": "Nunca logado",
+          "awaiting_certificate": "Aguardando certificado",
+          "custom": "Filtros personalizados"
+        },
+        "window": {
+          "7d": "7 dias",
+          "30d": "30 dias",
+          "90d": "90 dias",
+          "180d": "180 dias",
+          "never": "Nunca"
+        },
+        "filter": {
+          "title": "Filtrar pessoas",
+          "role": "Função",
+          "all_roles": "Todas as funções",
+          "progress": "Progresso",
+          "in_progress": "Em andamento",
+          "completed": "Concluído",
+          "membership": "Associação",
+          "joined": "Ingressou",
+          "invited": "Convidado, sem conta ainda",
+          "certificate": "Certificado",
+          "earned": "Ganhou",
+          "not_earned": "Não ganho",
+          "no_login_since": "Sem login desde",
+          "joined_within": "Juntou-se dentro"
+        }
       },
       "marks": {
         "title": "Marcas",
@@ -1791,7 +1845,11 @@
               "try_again": "Tente novamente",
               "back": "Voltar",
               "begin_section": "Seção inicial",
-              "complete_section": "Seção completa"
+              "complete_section": "Seção completa",
+              "instructions": "Instruções",
+              "close_instructions": "Fechar instruções",
+              "show_more": "Mostrar mais",
+              "show_less": "Mostrar menos"
             },
             "edit_mode": {
               "delete_modal": "Excluir exercício",
@@ -1840,7 +1898,8 @@
               "title": "Título",
               "heading": "Descrição",
               "describe": "Descreva o exercício para seu aluno",
-              "no": "Sem descrição"
+              "no": "Sem descrição",
+              "expand": "Expandir"
             },
             "shared_question": {
               "textarea": {
@@ -2047,7 +2106,16 @@
                   "video_invalid_link": "Insira um link válido do YouTube.",
                   "upload_error_only_images": "Somente arquivos de imagem são suportados.",
                   "upload_error_skipped": "Alguns arquivos foram ignorados porque não são imagens.",
-                  "upload_error_failed": "Falha ao carregar a imagem. Tente novamente."
+                  "upload_error_failed": "Falha ao carregar a imagem. Tente novamente.",
+                  "expand": "Expandir"
+                },
+                "media": {
+                  "enlarge_image": "Clique para ampliar",
+                  "close": "Fechar",
+                  "zoom_in": "Ampliar",
+                  "zoom_out": "Diminuir zoom",
+                  "previous_image": "Imagem anterior",
+                  "next_image": "Próxima imagem"
                 }
               },
               "navigation": {
@@ -2329,7 +2397,7 @@
                 "size": "(Máx. 500 MB)",
                 "oops": "Ops `😬, não foi possível enviar o vídeo",
                 "big_file": "Desculpe, o vídeo não foi enviado. O tamanho do arquivo é muito grande,",
-                "maximum_size": "o tamanho máximo é 30 MB. Tente novamente!",
+                "maximum_size": "o tamanho máximo é {size}. Tente novamente!",
                 "button": "Tente outro arquivo",
                 "try_again": "Por favor, tente novamente",
                 "unsupported_format": "Desculpe, o vídeo não foi enviado, o formato do arquivo não é compatível ou algo deu errado no servidor.",
@@ -2658,7 +2726,9 @@
         "add_content_create_another_exercise": "Criar outro exercício",
         "add_content_open_now": "Abrir agora",
         "add_content_later": "Mais tarde",
-        "add_content_add_to_section": "Adicionar conteúdo"
+        "add_content_add_to_section": "Adicionar conteúdo",
+        "expand_content": "Expandir conteúdo",
+        "collapse_content": "Recolher conteúdo"
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -3152,6 +3222,12 @@
     "settings": {
       "customize_lms": {
         "title": "Personalizar LMS",
+        "language": {
+          "title": "Idioma",
+          "description": "Escolha o idioma usado na interface do LMS para alunos.",
+          "default_language": "Idioma padrão",
+          "enforce": "Impor este idioma aos alunos"
+        },
         "disabled": "Desativado",
         "enabled": "Habilitado",
         "save": "Salvar alterações",
@@ -3373,6 +3449,8 @@
     "analytics": "Análises",
     "compliance": "Conformidade",
     "cohorts": "Coortes",
+    "exit_course": "Sair deste curso",
+    "exit_cohort": "Sair desta coorte",
     "upgrade_now": "Atualize agora",
     "upgrade_label": "Atualizar",
     "upgrade_count": "{studentCount}/{studentLimit}",
@@ -3475,7 +3553,6 @@
     },
     "filters": {
       "search_placeholder": "Pesquisar ativos",
-      "apply": "Aplicar",
       "status_options": {
         "all": "Todos os status",
         "active": "Ativo",
@@ -3539,7 +3616,8 @@
       "branding": "Marca",
       "ai": "IA",
       "search": "Pesquisar configurações...",
-      "extensions": "Extensões"
+      "extensions": "Extensões",
+      "new_badge": "Novo"
     },
     "heading": "Configurações",
     "billing": {
@@ -3992,7 +4070,8 @@
       "teams_tab": "Equipes",
       "ai_credits_tab": "Créditos de IA",
       "ai_tutor_tab": "Tutor de IA",
-      "notifications_tab": "Notificações"
+      "notifications_tab": "Notificações",
+      "emails_tab": "E-mails"
     },
     "subheadings": {
       "view_site": "Sua academia"
@@ -4241,6 +4320,101 @@
     "account": {
       "language": "Idioma",
       "select_language": "Selecione um idioma"
+    },
+    "emails": {
+      "page_title": "Modelos de e-mail",
+      "language_note": "Os e-mails dos alunos usam a linguagem imposta pela sua organização. Quando não é aplicado, os e-mails usam o inglês.",
+      "heading": "Modelos de e-mail para estudantes",
+      "description": "Personalize os e-mails que os alunos recebem. Os e-mails da equipe sempre são enviados em inglês.",
+      "paid_plan_note": "Atualize seu plano para traduzir e personalizar e-mails de alunos.",
+      "sending_in": "Enviando",
+      "change": "Mudança",
+      "template_navigation": "Tipos de e-mail de estudante",
+      "edited": "Editado",
+      "insert": "Inserir",
+      "link_chip": "Ligação",
+      "edit": "Editar",
+      "preview": "Visualização",
+      "unsaved_changes": "Alterações não salvas",
+      "send_test": "Enviar teste",
+      "test_sent": "E-mail de teste na fila para entrega",
+      "template": "E-mail",
+      "language": "Idioma",
+      "language_note_link": "Altere o idioma padrão da sua organização aqui.",
+      "subject": "Assunto",
+      "editor_heading": "Corpo da mensagem",
+      "editor_description": "Edite a mensagem para este idioma. Valores dinâmicos são adicionados quando o email é enviado e nunca são traduzidos.",
+      "editor_placeholder": "Escreva a mensagem de e-mail",
+      "dynamic_content": "Conteúdo dinâmico",
+      "dynamic_content_description": "Insira valores ou um link opcional no cursor. Mantenha as chaves inalteradas para que o valor possa ser adicionado no momento do envio.",
+      "dynamic_link": "Inserir link dinâmico",
+      "protected_content": "Conteúdo de e-mail protegido",
+      "protected_content_description": "O botão de ação necessário, o destino, a marca e o rodapé são gerenciados pelo ClassroomIO e não podem ser removidos.",
+      "reset": "Redefinir para o padrão traduzido",
+      "templates": {
+        "studentCourseInvite": "Convite para curso",
+        "studentCourseWelcome": "Curso bem-vindo",
+        "studentCourseCompletion": "Conclusão do curso",
+        "studentOrgInvite": "Convite da organização",
+        "studentCohortWelcome": "Coorte bem-vinda",
+        "studentProvePayment": "Solicitação de comprovante de pagamento",
+        "cohortGoalReminder": "Lembrete de meta de coorte",
+        "quizAssigned": "Questionário atribuído",
+        "sessionReminder": "Lembrete de sessão ao vivo",
+        "sessionUpdated": "Sessão ao vivo atualizada",
+        "submissionGraded": "Envio avaliado",
+        "newsfeedPost": "Postagem no feed de notícias do curso"
+      },
+      "descriptions": {
+        "studentCourseInvite": "Enviado quando você convida alguém para um curso.",
+        "studentOrgInvite": "Enviado quando você convida alguém para sua organização.",
+        "studentCourseWelcome": "Enviado quando um aluno recebe acesso a um curso.",
+        "studentCohortWelcome": "Enviado quando um aluno recebe acesso a um coorte.",
+        "quizAssigned": "Enviado quando um questionário é atribuído a um aluno.",
+        "submissionGraded": "Enviado quando o envio do exercício de um aluno é revisado.",
+        "cohortGoalReminder": "Enviado quando uma meta de coorte está vencida ou atrasada.",
+        "studentCourseCompletion": "Enviado quando um aluno conclui um curso.",
+        "sessionReminder": "Enviado antes de uma sessão ao vivo agendada.",
+        "sessionUpdated": "Enviado quando os detalhes da sessão ao vivo mudam.",
+        "newsfeedPost": "Enviado quando uma nova postagem do curso é publicada.",
+        "studentProvePayment": "Enviado quando um aluno precisa fornecer comprovante de pagamento."
+      },
+      "groups": {
+        "enrollment": "Inscrição",
+        "learning": "Aprendizagem",
+        "live_sessions": "Sessões ao vivo",
+        "updates_billing": "Atualizações e faturamento"
+      },
+      "variables": {
+        "organization": "Organização",
+        "expires_at": "Data de validade",
+        "course_name": "Nome do curso",
+        "cohort_name": "Nome da coorte",
+        "student_name": "Nome do aluno",
+        "course_message": "Mensagem do instrutor",
+        "course_names": "Cursos",
+        "teacher_name": "Nome do professor",
+        "teacher_email": "E-mail do professor",
+        "goal_title": "Objetivo",
+        "due_status": "Status devido",
+        "completed_count": "Contagem concluída",
+        "required_count": "Contagem necessária",
+        "exercise_title": "Título do exercício",
+        "session_title": "Título da sessão",
+        "session_time": "Tempo da sessão",
+        "when": "Hora de início",
+        "status": "Estado",
+        "score": "Pontuação",
+        "lesson_title": "Título da lição",
+        "post_content": "Postar conteúdo"
+      },
+      "test_dialog": {
+        "title": "Envie um e-mail de teste",
+        "description": "Enviaremos o rascunho atual com valores de exemplo no lugar dos espaços reservados. Não precisa ser salvo primeiro.",
+        "recipients": "Enviar para",
+        "recipients_placeholder": "you@example.com, colleague@example.com",
+        "invalid_recipients": "Insira até 5 endereços de e-mail válidos, separados por vírgulas."
+      }
     }
   },
   "profileMenu": {
@@ -4272,6 +4446,7 @@
     "login_with_google": "Faça login com o Google",
     "create_to_join": "Crie uma conta gratuita para participar",
     "create_account": "Criar conta",
+    "sign_in_to_continue": "Faça login para continuar",
     "login_to_join": "Faça login para participar",
     "validation": {
       "unable_to_create_profile": "Não foi possível criar o perfil",
@@ -4341,6 +4516,16 @@
     "customers": "Criar cursos para meus clientes",
     "explore": "Só estou aqui para explorar",
     "articles": "Artigos",
+    "ai": "IA",
+    "ai_select": "Selecione um assistente de IA",
+    "ai_required": "Selecione um assistente de IA",
+    "ai_providers": {
+      "chatgpt": "ChatGPT",
+      "claude": "Claude",
+      "gemini": "Gemini",
+      "grok": "Grok",
+      "perplexity": "Perplexity"
+    },
     "search": "Mecanismo de busca",
     "social": "Redes sociais",
     "friends": "Amigos e família",
@@ -4350,7 +4535,101 @@
     "what_brings": "O que leva você a",
     "how": "Como você ouviu falar de nós?",
     "back": "Voltar",
-    "continue": "Continuar"
+    "continue": "Continuar",
+    "other": "Outros (diga-nos)",
+    "other_placeholder": "Conte-nos mais",
+    "other_required": "Por favor, conte-nos mais",
+    "sources": {
+      "label": "Como você ouviu falar de nós?",
+      "blog": "Blog ou artigo",
+      "ai": "IA",
+      "search_engine": "Mecanismo de busca",
+      "github": "GitHub ou código aberto",
+      "youtube": "YouTube ou podcast",
+      "social_media": "Redes sociais",
+      "product_hunt": "Product Hunt ou um site de avaliação",
+      "friends_family": "Amigos, familiares ou um colega",
+      "subtitle": "Opcional, mas ajuda uma equipe pequena a saber o que está funcionando."
+    },
+    "job_roles": {
+      "label": "Qual é o seu papel?",
+      "founder": "Fundador ou CEO",
+      "product_ops": "Produto ou operações",
+      "cs_education": "Sucesso, educação ou capacitação do cliente",
+      "developer": "Desenvolvedor ou engenheiro",
+      "subtitle": "Isso nos ajuda a personalizar sua configuração."
+    },
+    "learning_methods": {
+      "label": "Como seus clientes aprendem seu produto hoje?",
+      "self_serve": "Eles descobrem isso sozinhos",
+      "live_onboarding": "Sessões ou chamadas de integração ao vivo",
+      "help_docs": "Documentos de ajuda e suporte",
+      "no_training": "Ainda não temos treinamento",
+      "subtitle": "Escolha aquele que mais se aproxima de como funciona agora."
+    },
+    "use_cases": {
+      "label": "Para que você deseja usar o ClassroomIO?",
+      "customer_training": "Treinar meus clientes sobre meu produto",
+      "customer_certification": "Certificar clientes ou parceiros",
+      "partner_training": "Treine parceiros ou revendedores",
+      "team_training": "Treinar minha própria equipe",
+      "sell_courses": "Venda cursos ao público",
+      "subtitle": "Escolha todas as opções aplicáveis. Nós moldaremos sua organização em torno disso."
+    },
+    "step_of": "Etapa {current} de {total}",
+    "skip": "Pular",
+    "finish_setup": "Concluir configuração",
+    "company_sizes": {
+      "label": "Qual é o tamanho da sua empresa?",
+      "subtitle": "Conte todos na empresa, não apenas sua equipe.",
+      "enterprise": {
+        "label": "200+",
+        "description": "pessoas"
+      },
+      "large": {
+        "label": "51–200",
+        "description": "pessoas"
+      },
+      "medium": {
+        "label": "10–50",
+        "description": "pessoas"
+      },
+      "small": {
+        "label": "2–9",
+        "description": "pessoas"
+      },
+      "solo": {
+        "label": "Só eu",
+        "description": "Sozinho"
+      }
+    },
+    "ai_assistant": {
+      "label": "Assistente de IA",
+      "subtitle": "Qual deles nos recomendou?"
+    },
+    "step_labels": {
+      "use_cases": "Caso de uso",
+      "learning_methods": "Treinando hoje",
+      "company_size": "Tamanho da empresa",
+      "job_role": "Função",
+      "source": "Descoberta",
+      "org_setup": "Organização"
+    },
+    "org_setup": {
+      "subtitle": "Conte-nos sobre você e sua organização para começar.",
+      "title": "Configure sua organização",
+      "created_subtitle": "Sua organização está configurada. Você pode alterar esses detalhes posteriormente em Configurações."
+    },
+    "header": {
+      "tagline": "Plataforma de treinamento de clientes que se conecta aos seus sistemas"
+    },
+    "testimonials": {
+      "eyebrow": "Das equipes que o utilizam",
+      "footer": "Código aberto · Auto-hospedado ou nuvem",
+      "headline": "Pare de treinar cada cliente {highlight}.",
+      "headline_highlight": "à mão",
+      "subtitle": "Configure uma vez e inscreva seus clientes em massa por meio da API. Em seguida, acompanhe seu progresso com análises."
+    }
   },
   "new_course_modal": {
     "live_class_label": "Aula ao vivo",
@@ -4524,6 +4803,12 @@
         "joined": "Organização aderida",
         "join_failed": "Falha ao ingressar na organização",
         "try_again": "Tentar novamente"
+      },
+      "limit_reached": {
+        "title": "Esta academia está cheia agora",
+        "description": "{orgName} atingiu o limite de alunos no plano atual, por isso não foi possível adicionar você. Sua conta está bem e nada do que você fez causou isso.",
+        "technical_details": "Detalhes técnicos",
+        "error_code": "Erro"
       },
       "not_found": "Este convite não está mais disponível.",
       "loading": "Carregando convite..."
@@ -5388,7 +5673,17 @@
       "add_another": "Adicionar outro",
       "invite_submit": "Enviar convites",
       "empty_title": "Ainda não há membros",
-      "empty_description": "Convide pessoas para participar desta coorte."
+      "empty_description": "Convide pessoas para participar desta coorte.",
+      "name": "Nome",
+      "joined": "Ingressou",
+      "filter_title": "Filtrar pessoas",
+      "views": {
+        "all": "Todas as pessoas",
+        "tutors": "Tutores",
+        "students": "Alunos",
+        "pending_invites": "Convites pendentes",
+        "never_logged_in": "Nunca logado"
+      }
     },
     "courses": {
       "add": "Adicionar curso",

@@ -22,7 +22,6 @@
   let isDownloading: boolean = false;
   let isDisabled: boolean = $state();
 
-  // sets the result of the mini validation for the htmlBody store
   const unsubscribe = isFormComplete.subscribe((value) => {
     isDisabled = value;
   });
@@ -88,28 +87,25 @@
 <section class=" w-full px-1 md:w-full md:px-0">
   <ToolsHeader>
     <img src="/free-tools/progress-report.svg" class="mx-auto w-[15%] rounded-full border md:w-[5%]" alt="" />
-    <h1 class="my-3 text-3xl text-[#040F2D] md:text-5xl">Progress Report</h1>
-    <p class="text-md mx-auto font-light text-[#656565] md:w-[45%] md:font-normal">
+    <h1 class="text-title mt-5 font-medium text-balance text-[#040F2D]">Progress Report</h1>
+    <p class="text-lead mx-auto mt-5 max-w-[640px] text-pretty text-[#656565]">
       Generate cool reports of your learning progress. Share reports with your network for collaborative learning
     </p>
   </ToolsHeader>
 
-  <!-- modals -->
   <Avatar />
   <Mood />
   <Background />
   <FullView />
 
   <div
-    class="mx-auto my-10 flex w-full flex-col justify-evenly rounded-md border shadow-md md:w-11/12 md:flex-row lg:w-[80%]"
+    class="mx-auto my-10 flex w-full flex-col justify-evenly rounded-xl border border-gray-200 md:w-11/12 md:flex-row lg:w-[80%]"
   >
-    <!-- left side -->
     {#if showSetter}
       <div
         transition:fly={{ y: 100, easing: sineInOut }}
         class="mx-auto w-full p-5 md:w-[48%] md:max-w-[500px] md:border-r"
       >
-        <!-- preview button -->
         <div class="mb-5 flex justify-end md:hidden">
           <button
             type="button"
@@ -124,7 +120,6 @@
           </button>
         </div>
 
-        <!-- name input -->
         <div>
           <p class="text-sm text-[#656565]">Add your name</p>
           <input
@@ -136,7 +131,6 @@
           />
         </div>
 
-        <!-- mood input -->
         <div class="mt-3">
           <p class="text-sm text-[#656565]">Select your mood</p>
           <button
@@ -166,7 +160,6 @@
           </button>
         </div>
 
-        <!-- learning input -->
         <div class="mt-5">
           <p class="text-sm text-[#656565]">What are you learning?</p>
           <textarea
@@ -179,7 +172,6 @@
           <p class="text-right text-xs text-[#656565]">{remainingChars} characters remaining</p>
         </div>
 
-        <!-- range input -->
         <div class="mt-3">
           <p class="pb-4 text-sm text-[#656565]">Estimate your progress</p>
           <div class="flex items-center justify-between">
@@ -196,7 +188,6 @@
           </div>
         </div>
 
-        <!-- avatar button -->
         <div class="mt-3 flex flex-wrap items-center justify-between">
           <div class="w-full md:w-2/4">
             <p class="text-[12px] text-[#656565] md:text-sm">Choose your avatar</p>
@@ -218,7 +209,6 @@
             </button>
           </div>
 
-          <!-- & background -->
           <div class="w-full md:w-2/4">
             <p class="text-[12px] text-[#656565] md:text-sm">Choose your background</p>
             <button
@@ -245,8 +235,6 @@
       </div>
     {/if}
 
-    <!-- right side -->
-
     <div
       transition:fly={{ y: 100, easing: sineInOut }}
       class="mx-auto mt-5 w-full px-5 md:mt-0 md:w-[48%] md:max-w-[500px] md:min-w-[400px] md:p-5 md:px-1"
@@ -254,11 +242,9 @@
       <div class="hidden md:block">
         <Report />
 
-        <!-- download & share button -->
         <div class="mt-9 h-auto border-t px-2 pt-8">
           <DownloadButton {isDisabled} {isDownloading} text="Download Image" />
 
-          <!-- share button -->
           <div class="mx-auto my-5 w-full md:w-[70%]">
             <h1 class="text-center text-sm font-semibold">Share on image on social media:</h1>
 
@@ -286,7 +272,6 @@
       </div>
 
       {#if showReport}
-        <!-- hide button -->
         <div class="mb-5 flex justify-end">
           <button
             type="button"
@@ -302,11 +287,9 @@
         </div>
         <Report />
 
-        <!-- download & share button -->
         <div class="mt-9 h-auto border-t px-2 pt-8">
           <DownloadButton {isDisabled} {isDownloading} />
 
-          <!-- share button -->
           <div class="mx-auto my-5 w-full md:w-[70%]">
             <h1 class="text-center text-sm font-semibold">Share on image on social media:</h1>
 

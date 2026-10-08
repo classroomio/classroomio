@@ -1,3 +1,5 @@
+export * from './analytics';
+export * from './analytics-responses';
 export * from './audience';
 export * from './cohort';
 export * from './cohort-course';

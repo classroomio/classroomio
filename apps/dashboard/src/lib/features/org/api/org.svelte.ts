@@ -11,6 +11,7 @@ import type {
   GetAudienceRequest,
   GetLinkInviteRequest,
   GetOrgPublicCoursesRequest,
+  GetStudentEmailTemplatesRequest,
   ImportAudienceRequest,
   InviteTeamRequest,
   JoinAcademyRequest,
@@ -21,12 +22,18 @@ import type {
   OrganizationAudienceQuery,
   OrganizationTeamMembers,
   ResendAudienceInviteRequest,
+  ResetStudentEmailTemplateRequest,
   ReorderOrgCoursesRequest,
   RevokeAudienceInviteRequest,
+  SaveStudentEmailTemplateRequest,
+  SendStudentEmailTemplateTestRequest,
+  StudentEmailTemplateTestDraft,
   ToggleLinkInviteRequest,
   UndoBulkAudienceActionRequest,
-  UpdateOrganizationRequest
+  UpdateOrganizationRequest,
+  TOrgUpdateForm
 } from '../utils/types';
+import type { EmailLocale, StudentEmailId } from '@cio/utils/email';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   TAssignAudienceCourses,
@@ -63,23 +70,6 @@ import type { ZodError } from 'zod';
 
 const PUBLISHED_COURSES_ORDERING_LIMIT = 100;
 
-export interface TOrgUpdateForm {
-  name?: string;
-  avatar?: string | File | undefined;
-  favicon?: string | File | null | undefined;
-  theme?: string;
-  landingpage?: AccountOrg['landingpage'];
-  siteName?: string;
-  customDomain?: string | null;
-  isCustomDomainVerified?: boolean;
-  customization?: AccountOrg['customization'];
-  disableSignup?: boolean;
-  disableSignupMessage?: string;
-  disableEmailPassword?: boolean;
-  disableGoogleAuth?: boolean;
-  settings?: { signup?: { inviteOnly?: boolean }; emailNotifications?: Record<string, boolean> };
-}
-
 /**
  * API class for organization operations
  */
@@ -90,6 +80,7 @@ class OrgApi extends BaseApiWithErrors {
   publicCourses: OrgPublicCourses = $state([]);
   hasMorePublicCourses = $state(false);
   publicCoursesLoadedSiteName: string | null = $state(null);
+  joinErrorCode = $state<string | null>(null);
 
   isFetchingOrgPublicCourses = $state(false);
   private activePublicCoursesFetch: Promise<void> | null = null;
@@ -97,6 +88,8 @@ class OrgApi extends BaseApiWithErrors {
   private activeAudienceRequestController: AbortController | null = null;
 
   async joinAcademy(orgId: string, redirectTo = '/lms') {
+    this.joinErrorCode = null;
+
     return this.execute<JoinAcademyRequest>({
       requestFn: () => classroomio.organization.join.$post({}, { headers: { 'cio-org-id': orgId } }),
       logContext: 'joining academy',
@@ -109,7 +102,11 @@ class OrgApi extends BaseApiWithErrors {
         await authClient.getSession({ query: { disableCookieCache: true } });
         window.location.href = resolveOrgJoinRedirect(redirectTo, window.location.origin);
       },
-      onError: () => {
+      onError: (result) => {
+        if (typeof result === 'object' && 'code' in result && typeof result.code === 'string') {
+          this.joinErrorCode = result.code;
+        }
+
         snackbar.error('invite.organization.messages.join_failed');
       }
     });
@@ -414,6 +411,7 @@ class OrgApi extends BaseApiWithErrors {
     fields: TOrgUpdateForm,
     options: { onSuccess?: (data: TUpdateOrganization) => void } = {}
   ) {
+    this.success = false;
     const { avatar, favicon, ...rest } = fields;
     const validationPayload = {
       ...rest,
@@ -552,6 +550,69 @@ class OrgApi extends BaseApiWithErrors {
         this.errors = { ...this.errors, general: message };
         snackbar.error(`${t.get('snackbar.update_failed')}: ${message}`);
       }
+    });
+  }
+
+  private showStudentEmailTemplateError(result: unknown) {
+    if (typeof result === 'string') {
+      snackbar.error(result);
+      return;
+    }
+
+    const { message, error } = (result ?? {}) as { message?: unknown; error?: unknown };
+    const text = [message, error].find((value) => typeof value === 'string' && value.length > 0);
+    snackbar.error(typeof text === 'string' ? text : 'snackbar.something');
+  }
+
+  async listStudentEmailTemplates() {
+    return this.execute<GetStudentEmailTemplatesRequest>({
+      requestFn: () => classroomio.organization['email-templates'].$get(),
+      logContext: 'fetching student email templates',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async saveStudentEmailTemplate(
+    emailId: StudentEmailId,
+    locale: EmailLocale,
+    content: string,
+    subject?: string | null
+  ) {
+    return this.execute<SaveStudentEmailTemplateRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].$put({
+          param: { emailId, locale },
+          json: { content, subject }
+        }),
+      logContext: 'saving student email template',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async resetStudentEmailTemplate(emailId: StudentEmailId, locale: EmailLocale) {
+    return this.execute<ResetStudentEmailTemplateRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].$delete({
+          param: { emailId, locale }
+        }),
+      logContext: 'resetting student email template',
+      onError: (result) => this.showStudentEmailTemplateError(result)
+    });
+  }
+
+  async sendStudentEmailTemplateTest(
+    emailId: StudentEmailId,
+    locale: EmailLocale,
+    draft: StudentEmailTemplateTestDraft
+  ) {
+    return this.execute<SendStudentEmailTemplateTestRequest>({
+      requestFn: () =>
+        classroomio.organization['email-templates'][':emailId'][':locale'].test.$post({
+          param: { emailId, locale },
+          json: draft
+        }),
+      logContext: 'sending student email test',
+      onError: (result) => this.showStudentEmailTemplateError(result)
     });
   }
 

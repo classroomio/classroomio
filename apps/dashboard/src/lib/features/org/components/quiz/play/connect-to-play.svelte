@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { Spinner } from '@cio/ui/base/spinner';
+  import { CompactLoader } from '@cio/ui/custom/compact-loader';
+  import { t } from '$lib/utils/functions/translations';
   import PlayContainer from './container.svelte';
   import PlayHeader from './header/index.svelte';
   import { quizStore, playQuizStore } from '$lib/utils/store/org';
@@ -42,7 +43,7 @@
       <div class="">
         <p>2. Enter Pin</p>
         {#if isGettingPin}
-          <Spinner class="size-10! text-blue-700!" />
+          <CompactLoader label={$t('common.loading')} />
         {:else}
           <h3>{$quizStore.pin}</h3>
         {/if}
