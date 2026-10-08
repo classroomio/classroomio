@@ -1,4 +1,4 @@
-export const TAG = 'Public API Analytics';
+export const TAG = 'Analytics';
 
 export const ORG_TEAM_RULE =
   'The automation actor (the key creator) must be an org admin or tutor, or this fails with 403.';

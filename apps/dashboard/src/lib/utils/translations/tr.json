@@ -2830,7 +2830,7 @@
                 "size": "(Maks. 500 MB)",
                 "oops": "Hata `😬, video yüklenemedi",
                 "big_file": "Maalesef video yüklenemedi. Dosya boyutu çok büyük,",
-                "maximum_size": "maksimum boyut 30 MB. Tekrar deneyin!",
+                "maximum_size": "maksimum boyut {size}. Tekrar deneyin!",
                 "button": "Başka bir dosya deneyin",
                 "try_again": "Lütfen tekrar deneyin",
                 "unsupported_format": "Maalesef video yüklenmedi, dosya formatı desteklenmiyor veya sunucuda bir şeyler ters gitti.",
@@ -3600,7 +3600,9 @@
           },
           "by_author": "tarafından {name}",
           "empty": "Henüz sürüm yok"
-        }
+        },
+        "expand_content": "İçeriği genişlet",
+        "collapse_content": "İçeriği daralt"
       },
       "attendance": {
         "title": "Attendance",

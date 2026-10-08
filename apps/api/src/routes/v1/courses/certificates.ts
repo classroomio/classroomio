@@ -31,7 +31,7 @@ import {
   mcpRateLimitResponse
 } from './docs';
 
-const TAG = 'Public API Course Certificates';
+const TAG = 'Course Certificates';
 
 const CONTENT_TYPES = { pdf: 'application/pdf', png: 'image/png' } as const;
 

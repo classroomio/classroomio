@@ -2397,7 +2397,7 @@
                 "size": "(Maks. 500 MB)",
                 "oops": "Ups `😬, nie można przesłać filmu",
                 "big_file": "Przepraszamy, film nie został przesłany. Rozmiar pliku jest zbyt duży,",
-                "maximum_size": "maksymalny rozmiar to 30 MB. Spróbuj ponownie!",
+                "maximum_size": "maksymalny rozmiar to {size}. Spróbuj ponownie!",
                 "button": "Spróbuj innego pliku",
                 "try_again": "Spróbuj ponownie",
                 "unsupported_format": "Przepraszamy, film nie został przesłany, format pliku nie jest obsługiwany lub coś poszło nie tak na serwerze.",
@@ -2726,7 +2726,9 @@
         "add_content_create_another_exercise": "Utwórz kolejne ćwiczenie",
         "add_content_open_now": "Otwórz teraz",
         "add_content_later": "Później",
-        "add_content_add_to_section": "Dodaj treść"
+        "add_content_add_to_section": "Dodaj treść",
+        "expand_content": "Rozwiń treść",
+        "collapse_content": "Zwiń zawartość"
       },
       "news_feed": {
         "heading": "Kanał wiadomości",

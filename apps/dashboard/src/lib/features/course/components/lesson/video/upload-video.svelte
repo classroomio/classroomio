@@ -11,6 +11,8 @@
   import { env as publicEnv } from '$env/dynamic/public';
   import { Button } from '@cio/ui/base/button';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
+  import { displaySize } from '@cio/ui/custom/file-drop-zone';
+  import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
   import { mediaApi } from '$features/media/api';
   import { JobPoller, jobsApi, type MediaJobEnvelope } from '$features/jobs';
   import { onDestroy } from 'svelte';
@@ -335,11 +337,21 @@
     }
   }
 
-  function onFileRejected() {
+  function onFileRejected({ reason }: { reason: FileRejectedReason }) {
+    if (reason === 'File type not allowed') {
+      formRes = {
+        type: 'UNSUPPORTED_FORMAT',
+        status: 415,
+        message: t.get(`${ADD_VIDEO}.unsupported_format`)
+      };
+      isLoaded = true;
+      return;
+    }
+
     formRes = {
       type: 'FILE_TOO_LARGE',
       status: 413,
-      message: t.get(`${ADD_VIDEO}.maximum_size`)
+      message: t.get(`${ADD_VIDEO}.maximum_size`, { size: displaySize(maxVideoSize) })
     };
     isLoaded = true;
   }
@@ -427,7 +439,7 @@
       </h3>
       <p class="text-center text-xs font-normal text-[#ADADAD]">
         {$t(`${ADD_VIDEO}.big_file`)}<br />
-        {$t(`${ADD_VIDEO}.maximum_size`)}
+        {$t(`${ADD_VIDEO}.maximum_size`, { size: displaySize(maxVideoSize) })}
       </p>
     </span>
     <Button onclick={tryAgain}>

@@ -31,8 +31,8 @@ chmod +x classroomio.sh
 ```
 
 Choose **1) Install**. The script downloads the compose file, creates `.env` from the template,
-generates the auth secrets and MinIO credentials for you, then pulls the images and starts the
-stack. Re-running Install is safe: it never overwrites an existing `.env` or compose file.
+generates the auth secrets and object-storage credentials for you, then pulls the images and starts the
+stack. Re-running Install is safe: it never overwrites an existing `.env`, and only replaces a compose file that still references the removed MinIO images (keeping a `.bak`).
 
 ### 3. Edit the required values
 
@@ -58,8 +58,8 @@ install](/self-hosted/configuration/secrets#rotating-postgres_password-after-ins
 just restarting/recreating containers will break the DB connection instead of fixing it.
 :::
 
-The dashboard is at http://localhost:3082, the API at http://localhost:3081, and the MinIO console
-at http://localhost:9001 (credentials are in your `.env`).
+The dashboard is at http://localhost:3082, the API at http://localhost:3081, and the object-storage S3 API
+at http://localhost:9000 (credentials are in your `.env`).
 
 :::warning[Pin `CIO_VERSION` in production]
 The default tags track moving builds: `latest` changes on every merge to `main`. Pin an exact
@@ -83,7 +83,7 @@ Use an `https://` origin: session cookies are `Secure`, so
 | 4 Restart | Restart containers, e.g. after editing `.env`. |
 | 5 Upgrade | **Backs up first**, then pulls newer images and restarts. |
 | 6 View logs | Follow logs for all services or one (`./classroomio.sh logs api`). |
-| 7 Backup | Dump Postgres and archive the MinIO volume into `./backups/`. See [Backups](/self-hosted/backups). |
+| 7 Backup | Dump Postgres and archive the object-storage volume into `./backups/`. See [Backups](/self-hosted/backups). |
 
 Every option is also a subcommand (`./classroomio.sh upgrade`), so you can script or cron it.
 
@@ -100,7 +100,7 @@ cp .env.example .env
 ```
 
 Without `--build` the script pulls the published `classroomio/*` images at your `CIO_VERSION`,
-which is the faster default. `--no-minio` excludes the bundled MinIO if you use external
+which is the faster default. `--no-storage` excludes the bundled object storage if you use external
 [S3/R2 storage](/self-hosted/configuration/storage).
 
 </Expandable>
@@ -143,7 +143,7 @@ Every variable the stack reads is documented in the shared
     SMTP for signup verification, password resets, and invites.
   </Card>
   <Card title="Object storage & uploads" href="/self-hosted/configuration/storage" icon="hard-drive">
-    MinIO or external S3/R2, plus upload size limits.
+    Bundled storage or external S3/R2, plus upload size limits.
   </Card>
   <Card title="CSP / allowed domains" href="/self-hosted/configuration/csp" icon="shield">
     Allowed external CDN, font, and media domains.
@@ -158,8 +158,9 @@ Every variable the stack reads is documented in the shared
 
 ## Upgrading
 
-Run `./classroomio.sh upgrade`: it backs up Postgres and MinIO first, then pulls the images at
+Run `./classroomio.sh upgrade`: it backs up Postgres and object storage first, then pulls the images at
 your (possibly newly pinned) `CIO_VERSION` and restarts. Rollback = set `CIO_VERSION` back and
-upgrade again. Details: [Versions & upgrades](/self-hosted/configuration/versions).
+upgrade again. Details: [Versions & upgrades](/self-hosted/configuration/versions). Upgrading an
+install that still uses the bundled MinIO? Read [Migrating from MinIO](/self-hosted/migrating-from-minio) first.
 
 Something not working? See [Troubleshooting](/self-hosted/troubleshooting).

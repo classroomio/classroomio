@@ -74,14 +74,14 @@
         placeholder={$t('course.navItem.lessons.exercises.all_exercises.description.title')}
         bind:value={$questionnaire.title}
         className="mb-2"
-        onchange={() => ($questionnaire.isTitleDirty = true)}
+        onChange={() => ($questionnaire.isTitleDirty = true)}
       />
       <InputField
         label={$t('course.navItem.lessons.exercises.all_exercises.view_mode.due')}
         type="datetime-local"
         className="w-fit"
         value={$questionnaire.dueBy ?? ''}
-        onchange={(e) => {
+        onChange={(e) => {
           $questionnaire.dueBy = e.currentTarget.value;
           $questionnaire.isDueByDirty = true;
         }}

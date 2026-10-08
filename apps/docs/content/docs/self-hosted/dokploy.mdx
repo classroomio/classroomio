@@ -46,8 +46,8 @@ See [Configuration → Environment & secrets](/self-hosted/configuration/secrets
 
 This uses a Dokploy **Compose** service: you paste the compose file, set every environment value
 yourself, deploy, then attach the dashboard domain. The flow is: **create a project → add a Compose
-service → paste the compose file → set environment variables → point your domain → deploy → add the
-dashboard domain → sign up**.
+service → paste the compose file → set environment variables → point your domains → deploy → add the
+dashboard and storage domains → sign up**.
 
 ### 1. Create a project
 
@@ -78,12 +78,20 @@ deployments.
 Open the service's **Environment** tab and add your configuration. At minimum:
 
 ```zsh title="Environment"
-COMPOSE_PROFILES=minio                      # runs the bundled MinIO object storage
+COMPOSE_PROFILES=storage                    # runs the bundled object storage (SeaweedFS)
 DASHBOARD_ORIGIN=https://dash.yourdomain.com
 PUBLIC_SERVER_URL=https://dash.yourdomain.com
 BETTER_AUTH_SECRET=<openssl rand -hex 32>
 PRIVATE_SERVER_KEY=<openssl rand -hex 32>   # identical in the api and dashboard services
 POSTGRES_PASSWORD=<strong password>
+# Bundled object storage (reached through the storage domain you add in step 8)
+OBJECT_STORAGE_ENDPOINT=http://storage:9000
+OBJECT_STORAGE_PUBLIC_ENDPOINT=https://storage.yourdomain.com
+OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://storage.yourdomain.com/media
+OBJECT_STORAGE_ACCESS_KEY_ID=<storage access key>
+OBJECT_STORAGE_SECRET_ACCESS_KEY=<openssl rand -hex 32>
+CSP_MEDIA_SRC_DOMAINS=https://storage.yourdomain.com   # so browsers can load media
+CSP_CONNECT_SRC_DOMAINS=https://storage.yourdomain.com # so browsers can upload
 # Email (signup verification, password reset, invites)
 SMTP_HOST=smtp.yourprovider.com
 SMTP_PORT=587
@@ -97,15 +105,15 @@ shared [Configuration](/self-hosted/configuration) section. Copy what you need b
 
 ![Setting the environment variables in Dokploy](/docs/dokploy-04-env-vars.webp)
 
-### 5. Point your domain at the server
+### 5. Point your domains at the server
 
-Before the domain will work, add a DNS **A record** for it (e.g. `dash.yourdomain.com`) pointing at
-your server's public IP. Do this for the dashboard domain, and any other domain you plan to use (such
-as storage). DNS can take a few minutes to propagate.
+Add a DNS **A record** pointing at your server's public IP for the dashboard domain (e.g.
+`dash.yourdomain.com`) and, if you use the bundled storage, for the storage domain (e.g.
+`storage.yourdomain.com`). DNS can take a few minutes to propagate.
 
 ### 6. Deploy
 
-Click **Deploy**. Dokploy pulls `classroomio/{api,dashboard,jobs}` plus Postgres, Redis, and MinIO,
+Click **Deploy**. Dokploy pulls `classroomio/{api,dashboard,jobs}` plus Postgres, Redis, and the bundled object storage,
 then starts the stack. The API runs database setup on first boot. Watch the **logs** until every
 service is up. This is your first deploy.
 
@@ -124,7 +132,19 @@ Create the domain. Dokploy provisions the certificate through Traefik, which usu
 
 ![Adding the dashboard domain with port 3082 and Let's Encrypt](/docs/dokploy-06-add-domain.webp)
 
-### 8. Open the app and sign up
+### 8. Add the storage domain
+
+Skip this if you use external S3/R2. For the bundled storage, DNS alone isn't enough: the domain
+must also be routed to the `storage` service, or browser uploads and media won't load. Click
+**Add Domain** again:
+
+- **Service:** select **storage**.
+- **Host:** your storage domain, e.g. `storage.yourdomain.com` (the host you used in
+  `OBJECT_STORAGE_PUBLIC_ENDPOINT`).
+- **Container Port:** `9000`, the S3 API port.
+- **HTTPS:** on, with **Let's Encrypt**.
+
+### 9. Open the app and sign up
 
 Once the certificate is issued, open your dashboard URL (`https://dash.yourdomain.com`) in a new browser
 tab and **sign up**. The **first** account becomes the organization **admin**; every signup after that
@@ -145,7 +165,7 @@ shared [Configuration](/self-hosted/configuration) section:
     Signup verification, password resets, invites.
   </Card>
   <Card title="Object storage & uploads" href="/self-hosted/configuration/storage" icon="hard-drive">
-    MinIO or external S3/R2, plus upload size limits.
+    Bundled storage or external S3/R2, plus upload size limits.
   </Card>
   <Card title="CSP / allowed domains" href="/self-hosted/configuration/csp" icon="shield">
     Allowed external CDN, font, and media domains.
@@ -158,10 +178,9 @@ shared [Configuration](/self-hosted/configuration) section:
   </Card>
 </CardGroup>
 
-:::warning[MinIO is your durability boundary]
-If you use the bundled MinIO, give its volume **persistent storage** in Dokploy and set
-`OBJECT_STORAGE_PUBLIC_ENDPOINT` / `OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL` to a domain that resolves to
-your server, so browsers can load uploaded media. Prefer managed storage? Point the `OBJECT_STORAGE_*`
+:::warning[The storage volume is your durability boundary]
+If you use the bundled store, give its volume **persistent storage** in Dokploy and route a storage
+domain to it ([step 8](#8-add-the-storage-domain)) so browsers can load uploaded media. Prefer managed storage? Point the `OBJECT_STORAGE_*`
 vars at Cloudflare R2 / AWS S3 instead. See [Object storage & uploads](/self-hosted/configuration/storage).
 :::
 
