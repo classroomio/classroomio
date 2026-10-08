@@ -12,31 +12,7 @@
     },
     "discard": "Descartar",
     "save_changes": "Salvar alterações",
-    "scroll_to_top": "Voltar ao topo",
-    "add": "Adicionar",
-    "remove": "Remover",
-    "back": "Voltar",
-    "close": "Fechar",
-    "edit": "Editar",
-    "coming_soon": "Em breve",
-    "pricing": {
-      "enable_paid": "Ativar pago",
-      "yes": "Sim",
-      "no": "Não",
-      "currency": "Moeda",
-      "cost": "Custo",
-      "payment_link": "Link de pagamento",
-      "payment_required": "O link de pagamento é obrigatório quando o pagamento está ativado",
-      "payment_invalid_url": "Insira um URL válido",
-      "discount": "Desconto",
-      "show_discount": "Mostrar desconto",
-      "discount_percentage": "Percentual de desconto",
-      "reward": "Recompensa / Presente",
-      "reward_help": "Ofereça um incentivo aos alunos após a conclusão",
-      "reward_description": "Descrição da recompensa",
-      "placeholder_reward": "ex. Sessão de mentoria individual, brindes ou acesso exclusivo à comunidade"
-    },
-    "back_to_my_learning": "De volta ao meu aprendizado"
+    "scroll_to_top": "Voltar ao topo"
   },
   "validations": {
     "generic": {
@@ -235,8 +211,6 @@
       "section_update_failed": "Falha ao atualizar a seção do curso",
       "sections_reordered": "Seções do curso reordenadas com sucesso",
       "sections_reorder_failed": "Falha ao reordenar as seções do curso",
-      "lessons_reordered": "Lições reordenadas com sucesso",
-      "lessons_reorder_failed": "Falha ao reordenar aulas",
       "comment_fetch_failed": "Falha ao buscar comentários da lição",
       "load_more_comments_failed": "Falha ao carregar mais comentários",
       "comment_add_failed": "Falha ao adicionar comentário",
@@ -495,18 +469,7 @@
     }
   },
   "explore": {
-    "heading": "Explorar",
-    "subtitle": "Descubra experiências de aprendizagem projetadas para ajudar você a obter mais valor da plataforma.",
-    "search_placeholder": "Pesquise caminhos de aprendizagem e cursos…",
-    "content_type": "Tipo de conteúdo",
-    "content_type_all": "Todos",
-    "section_paths": "Caminhos de aprendizagem",
-    "section_courses": "Cursos",
-    "view_learning_path": "Ver caminho de aprendizagem",
-    "paths_empty_title": "Nenhum caminho encontrado",
-    "paths_empty_description": "Tente uma pesquisa diferente ou limpe seus filtros.",
-    "courses_empty_title": "Nenhum curso corresponde à sua pesquisa",
-    "courses_empty_description": "Experimente um termo de pesquisa diferente."
+    "heading": "Explorar"
   },
   "exercises": {
     "heading": "Exercícios",
@@ -514,29 +477,7 @@
     "submitted": "Enviado",
     "in_progress": "Avaliação em andamento",
     "graded": "Classificado",
-    "lesson": "Lição",
-    "total": "Total",
-    "completed": "Concluído",
-    "overdue": "Atrasado",
-    "empty": "Ainda não há exercícios.",
-    "actions": {
-      "view": "Ver",
-      "continue": "Continuar",
-      "start": "Começar"
-    },
-    "submission_states": {
-      "not_submitted": "Não enviado",
-      "awaiting_grade": "Aguardando nota",
-      "submitted": "Enviado"
-    },
-    "table": {
-      "assignment": "Tarefa",
-      "course": "Curso",
-      "status": "Estado",
-      "due_date": "Data de vencimento",
-      "submission": "Envio",
-      "grade": "Nota"
-    }
+    "lesson": "Lição"
   },
   "my_learning": {
     "heading": "Meu aprendizado",
@@ -570,9 +511,7 @@
     "explore": "Explorar",
     "help": "Ajuda",
     "settings": "Configurações",
-    "cohorts": "Coortes",
-    "learning_paths": "Percursos de Aprendizagem",
-    "my_courses": "Meus cursos"
+    "cohorts": "Coortes"
   },
   "upgrade": {
     "certificate": "Atualize seu plano para gerar certificados",
@@ -768,9 +707,7 @@
       "cancel": "Cancelar",
       "snackbar_success": "{assigned} usuários atribuídos aos cursos ({alreadyEnrolled} já inscrito, {emailsSent} e-mails enviados)",
       "snackbar_no_courses": "Selecione pelo menos um curso",
-      "snackbar_failed": "Falha ao atribuir cursos",
-      "snackbar_partial": "Atribuídos {assigned} usuários ({alreadyEnrolled} já teve acesso, {emailsSent} emails enviados). Cursos somente de caminho ignorados: {names} — atribua o caminho de aprendizagem que o contém ou desative \"Inscrever-se apenas no caminho de aprendizagem\" nas configurações do curso.",
-      "path_only_badge": "Somente caminho"
+      "snackbar_failed": "Falha ao atribuir cursos"
     },
     "import": {
       "title": "Importar usuários",
@@ -793,11 +730,6 @@
       "all_cohorts": "Todas as coortes",
       "select_cohorts": "Selecione coortes específicas",
       "select_cohorts_placeholder": "Escolha coortes...",
-      "select_paths_placeholder": "Escolha trilhas de aprendizagem...",
-      "path_access": "Acesso a trilhas de aprendizagem",
-      "no_paths": "Sem atribuição de trilha de aprendizagem",
-      "all_paths": "Todas as trilhas de aprendizagem",
-      "select_paths": "Selecione trilhas de aprendizagem específicas",
       "drop_csv": "Arraste e solte um arquivo CSV aqui ou clique para escolher um",
       "csv_hint": "CSV em UTF-8 com uma coluna de e-mail. Até {rows} linhas, 5 MB.",
       "download_template": "Baixe o modelo",
@@ -821,9 +753,7 @@
       },
       "submit_count": "Importar {count} alunos",
       "result_heading": "{count} alunos importados",
-      "start_over": "Escolha um arquivo diferente",
-      "skipped_path_only_title": "{count} cursos apenas do caminho ignorados",
-      "skipped_path_only_description": "{names}. Esses cursos são apenas para inscrição em um caminho de aprendizagem. Atribua o caminho de aprendizagem que o contém (isso também concede seus outros cursos) ou desative 'Inscrever-se apenas no caminho de aprendizagem' nas configurações do curso."
+      "start_over": "Escolha um arquivo diferente"
     },
     "page_subtitle": "Veja quem pertence à sua organização, quem está aprendendo, quem foi convidado e como entrar em contato.",
     "user_analytics": {
@@ -959,8 +889,7 @@
       "custom": "Filtros personalizados",
       "all": "Todos os alunos"
     },
-    "learner_count": "{count} alunos",
-    "path_only_badge": "Somente caminho"
+    "learner_count": "{count} alunos"
   },
   "community": {
     "title": "Comunidade",
@@ -1118,9 +1047,7 @@
         "generate_link": "Gerar novo link",
         "open_link": "Abrir link em nova aba",
         "copy_link": "Copiar link",
-        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
-        "enroll_only_in_learning_path": "Inscrever-se apenas no caminho de aprendizagem",
-        "enroll_only_in_learning_path_desc": "Quando ativado, os alunos só podem se inscrever neste curso por meio de um caminho de aprendizagem. As inscrições existentes são preservadas."
+        "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar."
       },
       "analytics": {
         "title": "Análises"
@@ -1365,12 +1292,7 @@
           "signature_upload_hint": "Faça upload de uma imagem de assinatura (opcional)",
           "signature_dont_crop": "Não corte",
           "signature_upload_in_progress": "Aguarde o término do upload da assinatura antes de salvar.",
-          "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente.",
-          "signatory_one": "Signatário 1",
-          "signatory_two": "Signatário 2",
-          "signatory_name": "Nome do signatário",
-          "signatory_role": "Função do signatário",
-          "signature_image": "Imagem de assinatura"
+          "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente."
         }
       },
       "people": {
@@ -1489,8 +1411,7 @@
             "title": "Conceder acesso ao aluno",
             "description": "Conceda acesso a {email} a este curso. Enviaremos um e-mail de convite para que a pessoa entre na sua organização e se inscreva neste curso.",
             "cancel": "Cancelar",
-            "send_invite": "Enviar convite",
-            "path_only_notice": "Este curso é apenas para inscrição em um caminho de aprendizagem, portanto, o acesso direto não pode ser concedido. Em vez disso, atribua o caminho de aprendizagem ou desative 'Inscrever-se apenas no caminho de aprendizagem' nas configurações do curso."
+            "send_invite": "Enviar convite"
           },
           "invite_new_students_title": "Convidar novos alunos",
           "invite_new_students_description": "Convide novas pessoas para sua organização e pré-atribua-as a este curso. Elas criarão uma conta, aceitarão o convite e terão acesso.",
@@ -1535,17 +1456,9 @@
             "multi_use_30d": "Multiuso (30 dias)",
             "custom": "Personalizado"
           },
-          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos.",
-          "members_added": "{count, plural, one {# membro adicionado com sucesso} other {# membros adicionados com sucesso}}",
-          "path_only_notice_title": "Os alunos ingressam por meio de um caminho de aprendizagem",
-          "path_only_notice_description": "Este curso é apenas para inscrição em um caminho de aprendizagem, portanto, os alunos não podem ser convidados aqui. Você ainda pode convidar tutores abaixo. Para conceder acesso aos alunos, atribua o caminho de aprendizagem que o contém ou desative 'Inscrever-se apenas no caminho de aprendizagem' nas configurações do curso."
+          "student_limit_reached": "Você atingiu o limite de alunos do seu plano. Atualize para convidar mais alunos."
         },
-        "learner": "Aluno",
-        "source": "Fonte",
-        "source_learning_path": "Caminho de aprendizagem",
-        "source_cohort": "Coorte",
-        "source_filter_all": "Todas as fontes",
-        "source_filter_direct": "Direto"
+        "learner": "Aluno"
       },
       "marks": {
         "title": "Marcas",
@@ -2892,11 +2805,6 @@
       "description": "Você está prestes a ver o que um aluno verá ao se inscrever neste curso",
       "copy_link": "Copiar link",
       "go_to_lms": "Acesse o LMS"
-    },
-    "not_found": {
-      "header": "Curso não encontrado",
-      "body": "O curso que você procura não existe ou pode ter sido excluído.",
-      "button": "Vá para casa"
     }
   },
   "courses": {
@@ -2915,8 +2823,7 @@
       },
       "success": {
         "course_cloned": "Curso copiado com sucesso"
-      },
-      "title_copy_format": "{title} (Cópia)"
+      }
     },
     "new_course_modal": {
       "heading": "Crie um curso",
@@ -2996,8 +2903,7 @@
       "tags": "Etiquetas",
       "empty_tags": "Nenhuma tag disponível"
     },
-    "page_subtitle": "Onde lições viram cursos e cursos viram matrículas.",
-    "pricing_free": "Livre"
+    "page_subtitle": "Onde lições viram cursos e cursos viram matrículas."
   },
   "ai": {
     "help_me": "Ajude-me a escrever",
@@ -3071,24 +2977,7 @@
     "open_academy": "Academia Aberta",
     "explore_more_courses": "Explorar mais cursos",
     "view_more": "Ver mais",
-    "upcoming_sessions_heading": "Sessões ao vivo",
-    "completed": "Concluído",
-    "completed_of": "{completed} de {total}",
-    "continue_course": "Continuar Curso",
-    "course_position": "Curso {course} de {total}",
-    "enrolled": "Inscrito",
-    "explore_courses_hours": "{count} cursos · {hours}h",
-    "explore_lessons_count": "{count} aulas",
-    "explore_something_new": "Explore Algo Novo",
-    "lessons_done": "{completed} de {total} aulas concluídas",
-    "no_recommendations": "Nada recomendado ainda",
-    "no_recommendations_description": "Explore o catálogo para encontrar seu próximo curso ou caminho de aprendizado.",
-    "exercise_status_in_progress": "Em andamento",
-    "exercise_status_overdue": "Atrasado",
-    "exercise_status_not_submitted": "Não enviado",
-    "no_exercises": "Não há exercícios futuros",
-    "no_exercises_description": "Os exercícios que você precisa enviar aparecerão aqui.",
-    "upcoming_exercises": "Próximos exercícios"
+    "upcoming_sessions_heading": "Sessões ao vivo"
   },
   "schedule": {
     "title": "Sua programação",
@@ -3330,8 +3219,7 @@
     "back_to_app": "Voltar ao aplicativo",
     "create": "Criar",
     "distribute": "Distribuir",
-    "tools": "Ferramentas",
-    "learning_paths": "Trilhas de aprendizagem"
+    "tools": "Ferramentas"
   },
   "media_manager": {
     "page_title": "Gerenciador de mídia - ClassroomIO",
@@ -3425,7 +3313,6 @@
     },
     "filters": {
       "search_placeholder": "Pesquisar ativos",
-      "apply": "Aplicar",
       "status_options": {
         "all": "Todos os status",
         "active": "Ativo",
@@ -4263,8 +4150,7 @@
           "tags": "Etiquetas",
           "students": "Alunos",
           "settings": "Configurações",
-          "cohorts": "Coortes",
-          "learning_paths": "Caminhos de aprendizagem"
+          "cohorts": "Coortes"
         },
         "placeholder": "Pesquise cursos, grupos, caminhos de aprendizagem, widgets, alunos, tags, configurações...",
         "org_placeholder": "Pesquise cursos, grupos, caminhos de aprendizagem, widgets, alunos, tags, configurações...",
@@ -5327,11 +5213,7 @@
       "pagination_status": "Página {page} de {totalPages}",
       "published_access_callout_title": "Acesso de estudante",
       "published_access_callout_description": "Os alunos só têm acesso aos cursos publicados. Os cursos podem estar neste grupo para sua equipe enquanto ainda não foram publicados, mas permanecem ocultos aos alunos até que você os publique.",
-      "empty_student_description": "Ainda não há cursos publicados nesta coorte.",
-      "add_count": "Adicione {count} {count, plural, =1 {Curso} other {Cursos}}",
-      "adding": "Adicionando cursos…",
-      "load_failed": "Falha ao carregar cursos.",
-      "retry": "Tentar novamente"
+      "empty_student_description": "Ainda não há cursos publicados nesta coorte."
     },
     "newsfeed": {
       "post": "Nova postagem",
@@ -5509,13 +5391,11 @@
       "disabled": "Este link de convite foi desativado.",
       "closed": "Não estamos mais aceitando novos membros.",
       "succeeded": "Você se inscreveu",
-      "failed": "Não foi possível se inscrever. Tente novamente.",
-      "learning_path_button": "Junte-se ao caminho de aprendizagem"
+      "failed": "Não foi possível se inscrever. Tente novamente."
     },
     "load_failed": "Não foi possível carregar o link de convite",
     "generate_failed": "Não foi possível criar o link de convite",
-    "toggle_failed": "Não foi possível atualizar o link de convite",
-    "learning_path_description": "Qualquer pessoa com este link pode ingressar neste caminho de aprendizagem e em todos os cursos dele. Compartilhe-o em vez de inserir e-mails um por um."
+    "toggle_failed": "Não foi possível atualizar o link de convite"
   },
   "lms": {
     "view_landing_page": "Início"
@@ -5560,860 +5440,5 @@
     "format_json": "JSON",
     "copied": "Copiado para a área de transferência",
     "copy_failed": "Não foi possível copiar para a área de transferência"
-  },
-  "learningPath": {
-    "legacy": {
-      "title": "Trilhas de Aprendizagem",
-      "subtitle": "Trilhas estruturadas nas quais você está inscrito."
-    },
-    "settings": {
-      "heading": "Configurações",
-      "subtitle": "Gerencie como esta trilha aparece, é precificada e se comporta para os alunos.",
-      "identity_heading": "Identidade",
-      "path_name": "Nome da trilha",
-      "description": "Descrição",
-      "pricing_heading": "Preço",
-      "pricing_description": "Preço do pacote para esta trilha. Individualmente, estes cursos totalizam {total}.",
-      "path_price": "Preço da trilha",
-      "savings_badge": "Os alunos economizam {savings}",
-      "show_savings": "Mostrar economia em relação aos cursos individuais",
-      "behaviour_heading": "Comportamento",
-      "self_enrollment": "Permitir auto-inscrição",
-      "sequential_unlock": "Desbloquear cursos em ordem",
-      "auto_enroll": "Inscrição automática na compra",
-      "status_heading": "Status",
-      "status_description": "Controla onde a trilha aparece.",
-      "status_visible": "Visível",
-      "status_hidden": "Oculto",
-      "status_active": "Ativo",
-      "status_active_description": "Disponível na sua página inicial e no LMS para alunos matriculados.",
-      "status_draft": "Rascunho",
-      "status_draft_description": "Oculto de visitantes e alunos enquanto você o desenvolve.",
-      "status_archived": "Arquivado",
-      "status_archived_description": "Removido de todos os lugares. O progresso do aluno e o acesso ao curso são preservados.",
-      "danger_heading": "Zona de perigo",
-      "archive_button": "Arquivar caminho",
-      "delete_button": "Excluir caminho"
-    },
-    "certificate": {
-      "heading": "Certificado",
-      "subtitle": "Conceda um certificado de nível de caminho quando um aluno concluir todos os cursos.",
-      "award_label": "Conceder um certificado de caminho",
-      "award_description": "Emitido automaticamente após a conclusão e exibido na página de Certificados do aluno.",
-      "requirement_courses": "Todos os cursos concluídos — todas as lições finalizadas",
-      "requirement_exercises": "Todos os exercícios enviados ou aprovados em cada curso",
-      "award_hint": "{count} certificados concedidos até o momento.",
-      "details_heading": "Detalhes do certificado",
-      "details_description": "O que aparece no certificado emitido.",
-      "certificate_title": "Título do certificado",
-      "certificate_issuer": "Emitido por",
-      "preview_recipient": "Este certificado atesta que",
-      "preview_line": "concluiu com sucesso este percurso de aprendizagem."
-    },
-    "landing_editor": {
-      "heading": "Página inicial",
-      "subtitle": "Controle o que os visitantes veem na página pública do percurso em /path/{slug}.",
-      "headline": "Título",
-      "subheadline": "Subtítulo",
-      "visitor_access": "O que os visitantes podem ver",
-      "access_teaser": "Apenas um resumo",
-      "access_teaser_description": "Descrição do percurso, títulos dos cursos e preço — sem detalhes das lições.",
-      "access_syllabus": "Ementa completa",
-      "access_syllabus_description": "Os visitantes veem todos os cursos e seus respectivos resumos, mas não o conteúdo.",
-      "access_preview": "Plano de estudos + aulas de pré-visualização",
-      "access_preview_description": "Esboço completo, além de aulas marcadas como pré-visualizações, que podem ser acessadas gratuitamente.",
-      "show_instructors": "Mostrar instrutores",
-      "show_testimonials": "Mostrar depoimentos",
-      "show_faqs": "Mostrar perguntas frequentes",
-      "preview_public_page": "Página pública de pré-visualização"
-    },
-    "analytics": {
-      "heading": "Análises",
-      "subtitle": "Como os alunos estão progredindo no curso.",
-      "range": "Últimos 90 dias",
-      "enrolled": "Matriculados",
-      "enrolled_hint": "Total de alunos",
-      "active_learners": "Alunos ativos",
-      "active_hint": "Trabalharam nos últimos 14 dias",
-      "completion_rate": "Taxa de conclusão",
-      "completion_hint": "Concluído no geral",
-      "avg_time": "Tempo médio para conclusão",
-      "avg_time_hint": "Conclusões",
-      "funnel_heading": "Funil do curso",
-      "funnel_subtitle": "Quantos alunos acessaram e concluíram cada curso, em ordem.",
-      "funnel_empty": "Adicione cursos para ver o funil.",
-      "stuck_heading": "Onde os alunos estão com dificuldades",
-      "stuck_subtitle": "Lições e exercícios que estão bloqueando a maioria dos alunos no momento.",
-      "stuck_lesson": "Lição",
-      "stuck_exercise": "Exercício",
-      "stuck_blocked_singular": "Travado",
-      "stuck_blocked_plural": "Travado"
-    },
-    "people": {
-      "heading": "Pessoas",
-      "subtitle": "{count} alunos matriculados neste caminho.",
-      "search": "Pesquisar por nome ou e-mail…",
-      "learner": "Aluno",
-      "learners": "Alunos",
-      "path_progress": "Progresso do caminho",
-      "current_course": "Curso atual",
-      "enrolled": "Matriculado",
-      "not_started": "Não iniciado",
-      "completed": "Concluído",
-      "certificate_earned": "Certificado obtido",
-      "remove_member": "Remover aluno",
-      "empty": "Nenhum aluno corresponde a esta pesquisa."
-    },
-    "courses_builder": {
-      "heading": "Cursos",
-      "subtitle": "Adicione cursos e arraste para definir a ordem em que os alunos avançam por eles.",
-      "count": "{count} cursos neste caminho",
-      "add_course": "Adicionar curso",
-      "add_course_picker_label": "Escolha um curso para adicionar",
-      "no_courses_available": "Não há mais cursos disponíveis",
-      "empty": "Ainda não há cursos — adicione um para começar.",
-      "drag_hint": "Arraste para reordenar",
-      "sequential_label": "Desbloquear cursos em ordem",
-      "sequential_description": "Cada curso permanece bloqueado até que o aluno conclua as lições e os exercícios do curso anterior.",
-      "course_lessons": "Lições",
-      "course_exercises": "Exercícios",
-      "move_up": "Mover para cima",
-      "move_down": "Mover para baixo",
-      "remove_course": "Remover do caminho"
-    },
-    "admin": {
-      "heading": "Trilhas de Aprendizagem",
-      "subtitle": "Agrupe seus cursos em jornadas guiadas que os alunos completam em ordem.",
-      "active_paths": "Caminhos ativos",
-      "enrolled_learners": "Alunos matriculados",
-      "completions": "Conclusões",
-      "completion_rate": "Taxa de conclusão",
-      "completion": "Conclusão",
-      "learners": "Alunos",
-      "updated": "Atualizado",
-      "search": "Pesquisar caminhos…",
-      "filter_all": "Todos",
-      "create_path": "Criar caminho",
-      "create_course": "Novo curso",
-      "manage": "Gerenciar",
-      "continue_setup": "Continuar configuração",
-      "new_path_name": "Novo caminho de aprendizagem",
-      "untitled_path": "Caminho sem título"
-    },
-    "detail": {
-      "course_heading": "Cursos do caminho",
-      "courses_complete": "Cursos concluídos",
-      "all_courses_complete": "Todos os cursos concluídos",
-      "sequential": "Conclua cada curso para desbloquear o próximo.",
-      "unlock_hint": "Cada curso é desbloqueado após você concluir todas as lições e exercícios do curso anterior.",
-      "unlocks_after": "Desbloqueia após",
-      "lessons": "aulas",
-      "exercises": "exercícios",
-      "review": "Revisar",
-      "enroll": "Inscrever-se",
-      "hours": "~{count} horas",
-      "certificate_on_completion": "Obtenha um certificado ao concluir cada curso.",
-      "certificate_hint": "Complete todos os {count} cursos para desbloquear e baixar seu certificado.",
-      "certificate_earned": "Certificado obtido",
-      "view_certificate": "Ver certificado"
-    },
-    "my_learning": {
-      "heading": "Meu aprendizado",
-      "subtitle": "Acompanhe os caminhos e cursos que você está seguindo.",
-      "heading_learning_paths": "Percursos de Aprendizagem",
-      "heading_courses": "Meus cursos",
-      "courses_subtitle": "Todos os cursos que você iniciou, independentemente de onde estejam hospedados.",
-      "paths_title": "Percursos de Aprendizagem",
-      "courses_title": "Meus cursos",
-      "course_paths_title": "Percursos do curso",
-      "course_paths_description": "Os cursos que fazem parte de um percurso de aprendizagem indicam a qual percurso pertencem.",
-      "currently_learning": "Atualmente aprendendo"
-    },
-    "empty": {
-      "title": "Ainda não existem percursos de aprendizagem.",
-      "description": "Os cursos estruturados nos quais você está matriculado aparecerão aqui. Matricule-se em um curso do catálogo para começar a aprender na ordem correta.",
-      "back_to_paths": "Voltar aos percursos de aprendizagem",
-      "path_not_found_title": "Caminho não encontrado",
-      "path_not_found_description": "Este percurso de aprendizagem pode ter sido despublicado ou removido.",
-      "library_no_results_title": "Nada corresponde aos seus filtros",
-      "library_no_results_description": "Experimente um filtro diferente ou limpe-os para ver tudo."
-    },
-    "explore": {
-      "title": "Explore mais caminhos",
-      "tagline": "Trilhas construídas para te levar mais longe.",
-      "view_path": "Caminho de visualização",
-      "view_more": "Ver mais"
-    },
-    "enrollment": {
-      "not_started": "Não iniciado",
-      "in_progress": "Em andamento",
-      "completed": "Concluído",
-      "locked": "Trancado",
-      "lessons_label": "lições"
-    },
-    "toolbar": {
-      "search": "Procurar",
-      "filters": "Filtros",
-      "clear_all": "Limpar tudo",
-      "status": "Status",
-      "all": "Todos",
-      "grid_view": "Visualização em grade",
-      "list_view": "Visualização em lista",
-      "results": "resultados",
-      "difficulty": "Dificuldade",
-      "difficulty_any": "Qualquer",
-      "difficulty_beginner": "Iniciante",
-      "difficulty_intermediate": "Intermediário",
-      "difficulty_advanced": "Avançado"
-    },
-    "row": {
-      "completed": "Concluído"
-    },
-    "card": {
-      "course": "curso",
-      "courses": "cursos",
-      "of": "de",
-      "view_certificate": "Ver certificado",
-      "certificate_earned": "Certificado obtido",
-      "actions_menu_aria": "Ações de caminho",
-      "updated_at": "Atualizado em {date}",
-      "published": "Publicado",
-      "unpublished": "Não publicado",
-      "badge": "Caminho de aprendizagem",
-      "lesson": "lição",
-      "lessons": "lições",
-      "exercise": "exercício",
-      "exercises": "exercícios"
-    },
-    "hero": {
-      "currently_learning": "Atualmente aprendendo",
-      "continue_learning": "Continue aprendendo",
-      "start_learning": "Comece a aprender",
-      "up_next": "A seguir",
-      "view_path": "Caminho de visualização",
-      "courses_completed": "Cursos concluídos"
-    },
-    "status": {
-      "draft": "Rascunho",
-      "active": "Ativo",
-      "archived": "Arquivado"
-    },
-    "ribbon": {
-      "part_of": "faz parte de",
-      "view_path": "Caminho de visualização",
-      "path_label": "Caminho de aprendizagem",
-      "course_n_of_total": "Curso {position} de {total}",
-      "next_in_path": "PRÓXIMO NO SEU CAMINHO",
-      "next_course_position": "Curso {position}",
-      "unlocks_after_finish": "Desbloqueia quando você termina este curso — {lessons} lições e {exercises} exercícios restantes.",
-      "locked": "Bloqueado",
-      "path_complete": "Caminho concluído – todos os cursos concluídos. Ótimo trabalho!"
-    },
-    "progress": {
-      "label": "progresso"
-    },
-    "badge": {
-      "learning_path": "Percurso de Aprendizagem",
-      "course": "Curso"
-    },
-    "course": {
-      "part_of": "Parte de",
-      "continue_course": "Continuar o curso",
-      "review_course": "Revisar o curso",
-      "completed_label": "Concluído",
-      "view_course": "Ver curso",
-      "view_more": "Ver mais",
-      "explore_more_title": "Explorar mais cursos",
-      "explore_more_tagline": "Alguns cursos selecionados com base no que você está fazendo agora.",
-      "type_self_paced": "Individualizado",
-      "type_live_class": "Aula ao vivo",
-      "type_compliance": "Conformidade",
-      "type_public": "Público"
-    },
-    "modals": {
-      "add_courses": {
-        "title": "Adicionar cursos ao percurso",
-        "search_placeholder": "Pesquisar cursos…",
-        "no_courses": "Nenhum curso disponível para adicionar.",
-        "no_matches": "Nenhum curso corresponde à sua pesquisa.",
-        "cancel": "Cancelar",
-        "submit": "Adicionar {count} {count, plural, =1 {Curso} other {Cursos}}",
-        "submitting": "Adicionando cursos…",
-        "select_courses": "Selecione os cursos",
-        "pagination_status": "Página {page} de {totalPages}",
-        "load_failed": "Falha ao carregar cursos.",
-        "retry": "Tentar novamente"
-      },
-      "create": {
-        "title": "Criar Percurso de Aprendizagem",
-        "name_label": "Nome do Percurso",
-        "name_placeholder": "Ex.: Desenvolvimento Web Fullstack",
-        "desc_label": "Descrição",
-        "desc_placeholder": "Um breve resumo do que os alunos irão alcançar...",
-        "cancel": "Cancelar",
-        "submit": "Criar Trilha de Aprendizagem",
-        "failed": "Falha ao criar caminho de aprendizagem"
-      }
-    },
-    "workspace": {
-      "finish_setup": "Finalizar configuração · {percent}%",
-      "view_path_site": "Ver site do caminho",
-      "coming_soon": {
-        "title": "{tab} — Em breve",
-        "description": "Esta aba do espaço de trabalho estará disponível na Fase 3. O gerenciamento e a configuração do curso estão totalmente funcionais nesta versão."
-      },
-      "tabs": {
-        "courses": "Cursos",
-        "people": "Pessoas",
-        "analytics": "Análises",
-        "landing": "Página inicial",
-        "certificate": "Certificados",
-        "settings": "Configurações",
-        "setup": "Configurar"
-      },
-      "publish_path": "Publicar caminho",
-      "published": "Caminho de aprendizagem publicado",
-      "copy_path_url": "Copiar URL do caminho",
-      "preview_missing_slug": "Gere e salve um slug de caminho antes de visualizar.",
-      "url_copied": "URL do caminho de aprendizagem copiado para a área de transferência",
-      "loading_title": "Carregando caminho de aprendizagem…",
-      "loading_description": "Aguarde enquanto carregamos os dados do seu caminho de aprendizagem.",
-      "publish_failed": "Falha ao publicar o caminho de aprendizagem",
-      "not_found_title": "Caminho de aprendizagem não encontrado",
-      "not_found_description": "O caminho de aprendizagem que você procura não existe ou foi excluído.",
-      "back_to_paths": "Voltar aos caminhos de aprendizagem",
-      "load_failed_title": "Não foi possível carregar este caminho de aprendizagem",
-      "load_failed_description": "Verifique sua conexão e tente novamente."
-    },
-    "setup": {
-      "title": "Configure seu caminho",
-      "subtitle": "Conclua estas etapas para lançar {name} para seus alunos.",
-      "summary": "Um caminho é ativado assim que seus cursos são encomendados, precificados e definidos como Ativos.",
-      "progress": "{completed} de {total} concluídos",
-      "done": "Concluído",
-      "launch_title": "{count} {count, plural, =1 {etapa} other {etapas}} restantes para lançar",
-      "launch_desc": "Encomende os cursos, defina um preço, aprimore a página de destino e ative.",
-      "activate_now": "Ative agora",
-      "step_name_title": "Nomeie e descreva seu caminho",
-      "step_name_desc": "Dê ao caminho um nome claro, baseado em resultados, e um breve resumo.",
-      "step_name_action": "Editar detalhes",
-      "step_courses_title": "Adicionar cursos",
-      "step_courses_desc": "Selecione os cursos que compõem este percurso de aprendizagem.",
-      "step_courses_action": "Adicionar cursos",
-      "step_order_title": "Definir a ordem dos cursos",
-      "step_order_desc": "Arraste os cursos para a ordem em que os alunos devem concluí-los.",
-      "step_order_action": "Definir ordem",
-      "step_price_title": "Definir o preço",
-      "step_price_desc": "Precifique o percurso como um pacote — os alunos veem a economia em comparação com os cursos individuais.",
-      "step_price_action": "Definir preço",
-      "step_landing_title": "Personalizar a página inicial",
-      "step_landing_desc": "Objetivos, habilidades, instrutores, avaliações e perguntas frequentes na página pública do percurso.",
-      "step_landing_action": "Personalizar",
-      "step_publish_title": "Publique o caminho",
-      "step_publish_desc": "Publique o caminho para que apareça na sua landing page e no LMS.",
-      "step_publish_action": "Publicar",
-      "reorder_action": "Reordenar"
-    },
-    "builder": {
-      "title": "Cursos",
-      "subtitle": "Adicione cursos e arraste para definir a ordem em que os alunos avançam por eles.",
-      "unlock_rule_title": "Desbloquear cursos em ordem",
-      "unlock_rule_desc": "Cada curso permanece bloqueado até que o aluno conclua as lições e exercícios do curso anterior. Desative para permitir qualquer ordem.",
-      "drag_hint": "Arraste para reordenar",
-      "lessons_count": "{count} {count, plural, =1 {aula} other {aulas}}",
-      "exercises_count": "{count} {count, plural, =1 {exercício} other {exercícios}}",
-      "open_course": "Abrir curso",
-      "remove_course": "Remover do caminho",
-      "add_course_button": "Adicionar curso ao caminho",
-      "empty_title": "Ainda não há cursos neste caminho de aprendizagem",
-      "empty_description": "Adicione cursos para orientar os alunos através de uma sequência estruturada. Comece clicando no botão Adicionar.",
-      "start_reorder": "Reordenar",
-      "end_reorder": "Finalizar novo pedido"
-    },
-    "listing": {
-      "title": "Caminhos de Aprendizagem",
-      "subtitle": "Crie e gerencie experiências de aprendizagem estruturadas que guiam os alunos por vários cursos.",
-      "create_path": "Criar Trilha de Aprendizagem",
-      "empty": {
-        "title": "Crie sua primeira Trilha de Aprendizagem",
-        "description": "Agrupe vários cursos em uma sequência ordenada com acompanhamento de marcos, restrições de acesso e um certificado de conclusão opcional.",
-        "create_path": "Criar Trilha de Aprendizagem",
-        "no_matches_title": "Nenhum caminho de aprendizagem corresponde aos seus filtros ativos",
-        "no_matches_description": "Tente limpar seus filtros ou alterar sua consulta de pesquisa."
-      },
-      "card": {
-        "courses_count": "{count} {count, plural, =1 {curso} other {cursos}}",
-        "learners_count": "{count} {count, plural, =1 {aluno} other {alunos}}"
-      },
-      "filters": {
-        "title": "Filtros",
-        "clear_all": "Limpar tudo",
-        "group_status": "Status",
-        "group_enrollment": "Matrículas",
-        "group_completion": "Taxa de conclusão",
-        "all": "Total",
-        "published": "Publicados",
-        "no_learners": "Ainda sem alunos",
-        "enrollment_1_49": "1–49",
-        "enrollment_50_plus": "50+",
-        "low": "Baixa (menos de 25%)",
-        "medium": "Média (25–75%)",
-        "high": "Alta (75% ou mais)",
-        "sort_date_created": "Data de criação",
-        "sort_last_updated_at": "Última atualização em",
-        "sort_published": "Publicado",
-        "sort_courses": "Cursos",
-        "unpublished": "Não publicado"
-      },
-      "toolbar": {
-        "search_placeholder": "Pesquisar trilhas de aprendizagem…",
-        "grid_view": "Visualização em grade",
-        "list_view": "Visualização em lista"
-      },
-      "load_error_title": "Falha ao carregar caminhos de aprendizagem",
-      "load_more": "Carregar mais"
-    },
-    "view_path_site": {
-      "unpublished_title": "Publique seu caminho de aprendizagem",
-      "unpublished_description": "Você deve publicar este roteiro de aprendizagem antes de poder ver o site",
-      "cancel": "Cancelar",
-      "publish_path": "Publicar caminho"
-    },
-    "context_menu": {
-      "open": "Abrir",
-      "share": "Compartilhar",
-      "invite": "Convidar",
-      "delete": "Excluir",
-      "view_as_student": "Ver como aluno"
-    },
-    "snackbar": {
-      "created": "Caminho de aprendizagem criado",
-      "updated": "Caminho de aprendizagem atualizado",
-      "deleted": "Caminho de aprendizagem excluído",
-      "reordered": "Ordem do curso atualizada",
-      "course_added": "Curso adicionado",
-      "courses_added": "Cursos adicionados",
-      "course_removed": "Curso removido",
-      "member_removed": "Aluno removido do caminho",
-      "tutor_removed": "Tutor removido da trilha",
-      "certificate_saved": "Configurações do certificado salvas",
-      "landing_saved": "Página de destino atualizada",
-      "landing_save_failed": "Falha ao salvar a landing page",
-      "link_generated": "Link de convite gerado e copiado para a área de transferência",
-      "settings_saved": "Configurações do caminho de aprendizagem atualizadas",
-      "members_add_partial": "{added} adicionado, {invited} convidado, {notAdded} não pôde ser adicionado",
-      "member_role_updated": "Função do membro atualizada",
-      "delete_failed": "Falha ao excluir o caminho de aprendizagem"
-    },
-    "analytics": {
-      "title": "Análise",
-      "subtitle": "Como os alunos estão avançando no caminho.",
-      "empty": "Ainda não há dados. Inscreva os alunos e eles começarão a aparecer aqui.",
-      "empty_desc": "Inscreva alunos nesta trilha e o progresso deles aparecerá aqui.",
-      "stuck": {
-        "title": "Onde os alunos ficam presos",
-        "subtitle": "Lições e exercícios que estão bloqueando a maioria dos alunos no momento.",
-        "badge": "{count} travado",
-        "lesson_desc": "{count} {count, plural, =1 {aluno} other {alunos}} parou nesta lição.",
-        "exercise_desc": "{count} {count, plural, =1 {aluno} other {alunos}} estão com este exercício em andamento há mais de 2 semanas.",
-        "empty": "Nenhum aluno está preso no momento. Grande progresso!",
-        "empty_desc": "Quando os alunos travarem, aparecerão aqui.",
-        "lesson_prefix": "Lição:",
-        "exercise_prefix": "Exercício:",
-        "showing": "Exibindo {start} a {end} de {total} itens",
-        "table": {
-          "item": "Item",
-          "course": "Curso"
-        }
-      },
-      "funnel": {
-        "title": "Funil do curso",
-        "subtitle": "Quantos alunos alcançaram e concluíram cada curso, em ordem.",
-        "completed": "concluído",
-        "in_progress": "em andamento",
-        "drop": "{count} {count, plural, =1 {aluno} other {alunos}} abandonados após o curso {n}",
-        "biggest_drop": "maior queda",
-        "certificates": "{count} {count, plural, =1 {certificado} other {certificados}} concedidos"
-      },
-      "stat": {
-        "learners": "Alunos",
-        "active": "Alunos ativos",
-        "active_desc": "trabalhou nos últimos 14 dias",
-        "completion_rate": "Taxa de conclusão",
-        "completion_desc": "{completed} de {total} concluído",
-        "avg_time": "Tempo médio para concluir",
-        "avg_time_desc": "entre conclusões",
-        "enrolled_desc": "+{count} este mês",
-        "pending_line": "{count} {count, plural, =1 {convite pendente} other {convites pendentes}}",
-        "team_desc": "{count, plural, one {# tutor na equipe da trilha} other {# tutores na equipe da trilha}}",
-        "avg_time_weeks": "{value} sem.",
-        "avg_time_days": "{value} dias"
-      },
-      "students": {
-        "subtitle": "Progresso do caminho por aluno, curso atual e data de inscrição.",
-        "title": "Visão geral do progresso do aluno",
-        "courses_completed": "Cursos concluídos"
-      },
-      "member": {
-        "courses_title": "Cursos neste caminho",
-        "remove": "Remover do caminho",
-        "status": {
-          "not_started": "Não iniciado",
-          "in_progress": "Em andamento",
-          "completed": "Concluído",
-          "locked": "Bloqueado"
-        },
-        "export": "Exportar CSV",
-        "progress_label": "Progresso do caminho"
-      },
-      "export": {
-        "status": "Status"
-      }
-    },
-    "people": {
-      "title": "Pessoas",
-      "subtitle": "{count} {count, plural, =1 {aluno} other {alunos}} inscritos neste caminho",
-      "info_banner": "Adicionar um aluno a este caminho o inscreve automaticamente em todos os {count} {count, plural, =1 {curso} other {cursos}}. Removê-los preserva o acesso e o progresso do curso.",
-      "search_placeholder": "Pesquise por nome ou e-mail…",
-      "empty": "Nenhum aluno inscrito ainda. Adicione alunos para começar.",
-      "no_results": "Nenhum aluno corresponde à sua pesquisa.",
-      "invite": {
-        "title": "Adicionar alunos ao caminho",
-        "bulk_title": "Convidar por e-mail",
-        "bulk_description": "Insira os endereços de e-mail separados por vírgulas ou novas linhas.",
-        "bulk_submit": "Adicionar alunos"
-      },
-      "remove": {
-        "title": "Remover aluno",
-        "title_non_student": "Remover membro",
-        "confirm": "Tem certeza de que deseja remover {name} deste roteiro de aprendizagem? Eles manterão o acesso e o progresso do curso.",
-        "confirm_non_student": "Tem certeza que deseja remover {name} desta trilha? Essa pessoa perderá o acesso para gerenciar esta trilha.",
-        "cancel": "Cancelar",
-        "yes": "Remover"
-      },
-      "badge": {
-        "certificate_earned": "Certificado obtido",
-        "not_started": "Não iniciado"
-      },
-      "table": {
-        "learner": "Aluno",
-        "progress": "Progresso do caminho",
-        "current_course": "Curso atual",
-        "enrolled": "Inscrito",
-        "actions": "Ações"
-      },
-      "filter": {
-        "all": "Todo o progresso",
-        "not_started": "Não iniciado",
-        "in_progress": "Em andamento",
-        "completed": "Concluído"
-      },
-      "info_title": "Sobre inscrição de caminho",
-      "add": "Adicionar",
-      "last_login_at": "Último login em",
-      "you": "Você",
-      "view": "Ver",
-      "delete_profile": "Remover",
-      "invite_modal": {
-        "loading": "Adicionando…",
-        "student_limit_reached": "Você atingiu seu limite de alunos. Faça upgrade para adicionar mais alunos.",
-        "invite": "Convidar tutores",
-        "invite_students": "Convidar alunos",
-        "finish": "Concluir",
-        "bulk_enroll_queued": "Inscrevendo {count} membros em segundo plano…",
-        "bulk_enroll_success": "Membros {enrolled} inscritos ({invited} convidados)",
-        "bulk_enroll_partial": "Membros {enrolled} inscritos ({invited} convidado, {failed} falhou)",
-        "bulk_enroll_failed": "Falha na inscrição em segundo plano",
-        "bulk_enroll_lost": "Perdeu o controle da inscrição em segundo plano",
-        "bulk_enroll_backgrounded": "A inscrição ainda está em execução em segundo plano. Atualize Pessoas para ver os resultados."
-      },
-      "change_role_to_tutor": "Faça tutor",
-      "change_role_to_student": "Faça aluno"
-    },
-    "certificate": {
-      "title": "Certificados",
-      "awarded_count": "{count, plural, =0 {Nenhum certificado emitido ainda} =1 {1 certificado emitido até agora} other {# certificados emitidos até agora}}",
-      "allow": "Permitir que os alunos baixem o certificado",
-      "email_message_label": "Mensagem de e-mail",
-      "email_message_placeholder": "ex.: Parabéns pela conclusão da trilha de aprendizagem!",
-      "editor": {
-        "title": "Design do certificado"
-      }
-    },
-    "landing": {
-      "page_builder": "Criador de páginas",
-      "display_section": "Exibir seção",
-      "hero": {
-        "title": "Destaque",
-        "headline": "Título principal",
-        "headline_placeholder": "ex.: Torne-se um Engenheiro Fullstack Sênior",
-        "subheadline": "Subtítulo",
-        "subheadline_placeholder": "ex.: Domine frontend, backend e deploy moderno através de projetos práticos."
-      },
-      "access": {
-        "title": "Acesso de visitantes",
-        "description": "Controla quanto conteúdo visitantes não matriculados podem explorar na página pública.",
-        "teaser_title": "Amostra",
-        "teaser_desc": "Exibir apenas títulos dos cursos e objetivos principais.",
-        "syllabus_title": "Ementa (recomendado)",
-        "syllabus_desc": "Exibir ementa completa com títulos das aulas e indicadores de bloqueio.",
-        "preview_title": "Prévia",
-        "preview_desc": "Permitir que visitantes visualizem a primeira aula de cada curso sem se matricular."
-      },
-      "skills": {
-        "title": "Habilidades",
-        "placeholder": "ex.: TypeScript, Docker, PostgreSQL",
-        "help": "Pressione Enter para adicionar. Elas aparecem como marcadores na sua página."
-      },
-      "instructors": {
-        "title": "Instrutores",
-        "auto_populated_note": "Instrutores são obtidos automaticamente dos cursos incluídos nesta trilha.",
-        "courses_note": "{count, plural, =0 {Nenhum curso adicionado ainda} =1 {Extraído de 1 curso nesta trilha} other {Extraído de todos os # cursos nesta trilha}}",
-        "role_placeholder": "ex. Instrutor principal · Frontend",
-        "default_role": "Instrutor do curso",
-        "untitled": "Instrutor sem título",
-        "add": "Adicionar instrutor",
-        "no_tutors_found": "Nenhum instrutor encontrado",
-        "min_one_required": "Pelo menos um instrutor é obrigatório",
-        "remove": "Remover instrutor",
-        "upload": "Logotipo do instrutor",
-        "name": "Nome do instrutor",
-        "name_placeholder": "Nome da sua empresa",
-        "role": "Função do instrutor",
-        "about": "Sobre o instrutor",
-        "about_placeholder": "Uma breve apresentação sobre o instrutor",
-        "total": "Nº de cursos"
-      },
-      "testimonials": {
-        "title": "Depoimentos",
-        "untitled": "Depoimento sem título",
-        "name": "Nome",
-        "role": "Função / Cargo",
-        "quote": "Depoimento",
-        "add": "Adicionar depoimento"
-      },
-      "faqs": {
-        "title": "Perguntas frequentes",
-        "untitled": "Pergunta sem título",
-        "question": "Pergunta",
-        "answer": "Resposta",
-        "add": "Adicionar pergunta",
-        "question_placeholder": "O que é necessário para concluir este caminho?",
-        "answer_placeholder": "Você deve concluir todas as aulas e exercícios de cada curso."
-      },
-      "header": {
-        "title_placeholder": "ex. Desenvolvimento Web Fullstack",
-        "description_placeholder": "Uma visão geral do que os alunos vão alcançar...",
-        "title": "Cabeçalho",
-        "title_label": "Título",
-        "description_label": "Descrição"
-      },
-      "reviews": {
-        "title": "Avaliações",
-        "untitled": "Avaliação sem título",
-        "name_placeholder": "Jane Doe",
-        "avatar_placeholder": "https://...",
-        "avatar_url": "URL da imagem do avatar",
-        "rating_placeholder": "Opcional (1-5)",
-        "clear_rating": "Limpar avaliação",
-        "description_placeholder": "Este caminho de aprendizagem me deu as habilidades e a confiança exatas de que eu precisava.",
-        "add_reviews": "Adicionar avaliações",
-        "fullname": "Nome completo",
-        "description": "Descrição",
-        "rating": "Avaliação"
-      },
-      "preview": "Pré-visualização",
-      "save": "Salvar alterações",
-      "requirement": {
-        "title": "Requisito"
-      },
-      "description": {
-        "title": "Descrição"
-      },
-      "goals": {
-        "title": "Objetivos"
-      },
-      "certificate": {
-        "title": "Certificado",
-        "upload_template": "Modelo de certificado"
-      },
-      "pricing": {
-        "title": "Preço",
-        "payment_required": "O link de pagamento é obrigatório",
-        "payment_invalid_url": "Insira um URL válido",
-        "enable_paid": "Ativar pago",
-        "currency": "Moeda",
-        "cost": "Custo",
-        "payment": "Link de pagamento",
-        "payment_helper": "Stripe, Lemon Squeezy ou qualquer link de pagamento",
-        "discount": "Desconto",
-        "no": "Não",
-        "yes": "Sim",
-        "percent": "Porcentagem de desconto",
-        "percentage_helper": "Em porcentagem%",
-        "gift_on_completion": "Presente na conclusão",
-        "gift": "Sobre presente"
-      }
-    },
-    "settings": {
-      "title": "Configurações",
-      "general": {
-        "legend": "Informações gerais",
-        "desc": "Detalhes básicos sobre esta trilha de aprendizagem.",
-        "name_label": "Nome da trilha",
-        "name_placeholder": "ex.: Desenvolvimento Web Fullstack",
-        "name_required": "O nome da trilha é obrigatório",
-        "description_label": "Descrição",
-        "description_placeholder": "Um breve resumo do que os alunos irão conquistar...",
-        "description_required": "A descrição é obrigatória",
-        "cover_image_legend": "Imagem de capa",
-        "cover_image_desc": "Envie uma imagem de capa para esta trilha. Tamanho recomendado: 1200x630px.",
-        "replace_image": "Substituir imagem",
-        "reset_image": "Redefinir",
-        "link": "Link da trilha",
-        "generate_link": "Gerar novo link",
-        "open_link": "Abrir link em nova guia",
-        "copy_link": "Copiar link",
-        "setup_landing_for_link": "Configure a landing page para obter o link da trilha"
-      },
-      "enrollment": {
-        "legend": "Matrícula e progressão",
-        "desc": "Configure como os alunos se matriculam e avançam pelos cursos.",
-        "self_enrollment_label": "Permitir auto-matrícula",
-        "self_enrollment_desc": "Os alunos podem se matricular sozinhos nesta trilha.",
-        "sequential_unlock_label": "Desbloqueio sequencial de cursos",
-        "sequential_unlock_desc": "Os alunos devem concluir os cursos na ordem estabelecida."
-      },
-      "publishing": {
-        "legend": "Publicação",
-        "desc": "Torne esta trilha de aprendizagem visível para os alunos.",
-        "publish_label": "Publicar trilha de aprendizagem",
-        "publish_desc": "Tornar esta trilha visível e abrir as matrículas.",
-        "published": "Publicado",
-        "unpublished": "Não publicado"
-      },
-      "danger": {
-        "legend": "Zona de perigo",
-        "desc": "Excluir permanentemente esta trilha de aprendizagem e todos os seus dados associados.",
-        "delete_button": "Excluir trilha de aprendizagem",
-        "delete_title": "Excluir caminho de aprendizagem",
-        "delete_description": "Tem certeza de que deseja excluir \"{name}\"? Esta ação não pode ser desfeita."
-      },
-      "cover_image": {
-        "legend": "Imagem de capa",
-        "desc": "Se incluir uma, deve ter pelo menos 280 x 200.",
-        "replace": "Substituir",
-        "reset": "Redefinir",
-        "alt": "Cobertura do caminho"
-      },
-      "welcome_email": {
-        "legend": "E-mail de boas-vindas",
-        "desc": "Personalize o e-mail que os alunos recebem após a inscrição. Adicione uma nota pessoal, instruções ou um link de sessão ao vivo.",
-        "placeholder": "Escreva a mensagem de boas-vindas que os alunos recebem ao se inscrever…"
-      },
-      "progression": {
-        "legend": "Progressão do aluno",
-        "desc": "Controle se os alunos podem acessar todos os cursos ou devem concluí-los em ordem.",
-        "free": "Livre — todos os cursos estão disponíveis",
-        "sequential": "Sequencial — conclua os cursos anteriores para desbloquear o próximo"
-      },
-      "self_enrollment": {
-        "legend": "Os alunos podem se inscrever sozinhos",
-        "access": "Quando desativado, os alunos só podem participar por link de convite ou ao serem adicionados em {people}.",
-        "access_people": "Pessoas",
-        "enabled": "Ativado",
-        "disabled": "Desativado"
-      }
-    },
-    "courses": {
-      "lessons": "Aulas",
-      "exercises": "Exercícios"
-    },
-    "view_as_student": {
-      "title": "Isso vai redirecionar você para o LMS do Aluno.",
-      "description": "Você está prestes a ver o que um aluno verá ao se inscrever neste caminho de aprendizagem",
-      "copy_link": "Copiar link",
-      "go_to_lms": "Ir para o LMS"
-    },
-    "hub": {
-      "placeholder_title": "Visualização do caminho de aprendizagem",
-      "placeholder_description": "A experiência completa de aprendizagem reside no LMS. Abra Meu aprendizado para continuar este caminho.",
-      "back_to_my_learning": "De volta ao meu aprendizado"
-    },
-    "not_permitted": {
-      "header": "Sem permissão",
-      "body": "Infelizmente você não tem acesso a este caminho de aprendizagem.",
-      "button": "Vá para casa"
-    }
-  },
-  "certificate": {
-    "tab_design": "Design",
-    "tab_settings": "Configurações",
-    "allow": "Permitir que os alunos baixem o certificado",
-    "email_message_label": "Mensagem de e-mail",
-    "email_message_placeholder": "por exemplo Estamos orgulhosos do seu progresso – continue aprendendo!",
-    "rules": "Regras",
-    "editor": {
-      "title": "Projeto de certificado",
-      "back": "Voltar para certificados",
-      "unsaved": "Não salvo",
-      "free_plan": "Plano grátis",
-      "discard": "Descartar",
-      "save": "Salvar alterações",
-      "saved": "Design de certificado salvo",
-      "save_failed": "Não foi possível salvar o design do certificado. Verifique o formulário e tente novamente.",
-      "signature_upload_in_progress": "Aguarde o término do upload da assinatura antes de salvar.",
-      "sections": "Seções do editor",
-      "preview": "Visualização ao vivo",
-      "panel_templates": "Modelos",
-      "panel_templates_subtitle": "Escolha um modelo para ancorar o estilo visual.",
-      "panel_content": "Conteúdo",
-      "panel_content_subtitle": "Ajuste as palavras que aparecem no certificado.",
-      "panel_colors": "Cor de destaque",
-      "panel_colors_subtitle": "Usado para a linha do destinatário, acentos e carimbo.",
-      "panel_export": "Exportar",
-      "panel_export_subtitle": "Visualize o design atual conforme ele será entregue.",
-      "section_header": "Cópia do cabeçalho",
-      "section_signatories": "Signatários",
-      "section_reference": "Referência",
-      "subtitle": "Legenda",
-      "subtitle_placeholder": "Premiado com a mais alta distinção",
-      "description_override": "Substituição de descrição",
-      "description_override_placeholder": "O padrão é a descrição do curso.",
-      "description_override_hint": "Deixe em branco para retornar à descrição do curso ao salvar.",
-      "signatory_one_name": "Nome do signatário 1",
-      "signatory_one_role": "Função do Signatário 1",
-      "signatory_two_name": "Nome do Signatário 2",
-      "signatory_two_role": "Papel do Signatário 2",
-      "signatory_one_toggle": "Mostrar signatário 1",
-      "signatory_two_toggle": "Mostrar signatário 2",
-      "signature_upload": "Imagem de assinatura",
-      "signature_upload_hint": "Faça upload de uma imagem de assinatura (opcional)",
-      "signature_dont_crop": "Não corte",
-      "id_format": "Formato de ID do certificado",
-      "id_format_hint": "Use '{'seq'}' para os últimos quatro dígitos, '{'year'}' para o ano de emissão, '{'month'}' para o mês.",
-      "accent_hint": "A cor de destaque aparece na regra do destinatário, nos carimbos e no destaque do título do modelo.",
-      "templates_hint": "Os modelos são renderizados com o mesmo renderizador usado para PDF e PNG baixados.",
-      "download_pdf": "Baixar PDF",
-      "download_png": "Baixar PNG",
-      "print": "Imprimir",
-      "export_hint": "As exportações usam seu nome como destinatário para que você possa visualizar o layout final.",
-      "preview_failed": "Não foi possível gerar a visualização do certificado",
-      "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certificado de Excelência",
-      "sample_description": "Em reconhecimento às conquistas notáveis e à dedicação exemplar ao ofício.",
-      "sample_org": "A Academia Real de Artes",
-      "summary_title": "Design ativo",
-      "summary_subtitle": "Instantâneo de como ficará o certificado quando emitido.",
-      "field_template": "Modelo",
-      "field_accent": "Destaque",
-      "field_signatories": "Signatários",
-      "customize_design": "Personalizar design",
-      "signatory_one": "Signatário 1",
-      "signatory_two": "Signatário 2",
-      "signatory_name": "Nome do signatário",
-      "signatory_role": "Função do signatário",
-      "signature_image": "Imagem de assinatura"
-    }
   }
 }
