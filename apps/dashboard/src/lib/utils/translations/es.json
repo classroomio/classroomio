@@ -1747,6 +1747,15 @@
           "chill": "relájate con los grandes",
           "add_exercise": "Comparte tus conocimientos con el mundo creando ejercicios atractivos. Añade un ejercicio ahora.",
           "all_exercises": {
+            "remote_update": {
+              "merged_title": "Cambios del Asistente combinados",
+              "merged_description": "Tus ediciones sin guardar se conservaron mientras se añadían los cambios del Asistente.",
+              "conflict_title": "Revisar cambios del Asistente",
+              "conflict_description": "El Asistente cambió {count} elemento(s) que también editaste. Tu versión se conserva por ahora.",
+              "keep_mine": "Conservar mis ediciones",
+              "use_assistant": "Usar cambios del Asistente",
+              "dismiss": "Cerrar"
+            },
             "heading": "Todo ejercicio",
             "questions": "Preguntas",
             "submissions": "Envíos",

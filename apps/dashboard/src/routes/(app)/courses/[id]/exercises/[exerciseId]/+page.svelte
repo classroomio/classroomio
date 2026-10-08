@@ -8,7 +8,7 @@
   import { questionnaireMetaData, reset } from '$features/course/components/exercise/store';
   import { courseApi } from '$features/course/api';
   import { isOrgStudent } from '$lib/utils/store/app';
-  import { hydrateExercisePageData } from '$features/course/utils/exercise-page-utils';
+  import { exerciseRemoteUpdateNotice, hydrateExercisePageData } from '$features/course/utils/exercise-page-utils';
   import { restoreExerciseDraft } from '$features/course/utils/exercise-draft';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -53,7 +53,18 @@
     hydrateExercisePageData(data.exercise, currentExerciseId);
 
     // Puts back work stashed before an upgrade checkout redirect.
-    if (restoreExerciseDraft(data.courseId, currentExerciseId)) {
+    const restoredDraft = restoreExerciseDraft(data.courseId, currentExerciseId);
+    if (restoredDraft) {
+      if (restoredDraft.conflictCount > 0) {
+        exerciseRemoteUpdateNotice.set({
+          baseState: restoredDraft.baseState,
+          conflictCount: restoredDraft.conflictCount,
+          exerciseId: currentExerciseId,
+          remoteState: restoredDraft.remoteState,
+          source: 'draft',
+          type: 'conflict'
+        });
+      }
       snackbar.success('snackbar.exercise.draft_restored');
     }
   });

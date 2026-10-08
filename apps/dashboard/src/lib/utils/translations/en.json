@@ -3008,6 +3008,15 @@
               "sent": "Notified {count} students",
               "failed": "Couldn't notify students"
             },
+            "remote_update": {
+              "merged_title": "Assistant changes merged",
+              "merged_description": "Your unsaved edits were preserved while the Assistant's changes were added.",
+              "conflict_title": "Review Assistant changes",
+              "conflict_description": "The Assistant changed {count} item(s) that you also edited. Your version is currently preserved.",
+              "keep_mine": "Keep my edits",
+              "use_assistant": "Use Assistant changes",
+              "dismiss": "Dismiss"
+            },
             "questions": "Questions",
             "settings": "Settings",
             "settings_allow_multiple": "Allow multiple attempts",

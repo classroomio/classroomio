@@ -3016,6 +3016,15 @@
               "sent": "Bildirildi {count} öğrenciler",
               "failed": "Öğrencilere bildirim yapılamadı"
             },
+            "remote_update": {
+              "merged_title": "Asistan değişiklikleri birleştirildi",
+              "merged_description": "Kaydedilmemiş düzenlemeleriniz korunurken Asistan'ın değişiklikleri eklendi.",
+              "conflict_title": "Asistan değişikliklerini inceleyin",
+              "conflict_description": "Asistan, sizin de düzenlediğiniz {count} öğeyi değiştirdi. Sürümünüz şu anda korunuyor.",
+              "keep_mine": "Düzenlemelerimi koru",
+              "use_assistant": "Asistan değişikliklerini kullan",
+              "dismiss": "Kapat"
+            },
             "questions": "Sorular",
             "settings": "Ayarlar",
             "settings_allow_multiple": "Birden fazla denemeye izin ver",
