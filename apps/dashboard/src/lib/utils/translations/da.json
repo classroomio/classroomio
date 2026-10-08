@@ -12,31 +12,7 @@
     },
     "discard": "Kassér",
     "save_changes": "Gem ændringer",
-    "scroll_to_top": "Rul til toppen",
-    "add": "Tilføj",
-    "remove": "Fjern",
-    "back": "Tilbage",
-    "close": "Luk",
-    "edit": "Rediger",
-    "coming_soon": "Kommer snart",
-    "pricing": {
-      "enable_paid": "Aktiver betalt",
-      "yes": "Ja",
-      "no": "Nej",
-      "currency": "Valuta",
-      "cost": "Pris",
-      "payment_link": "Betalingslink",
-      "payment_required": "Betalingslink er påkrævet, når betalt er aktiveret",
-      "payment_invalid_url": "Indtast venligst en gyldig URL",
-      "discount": "Rabat",
-      "show_discount": "Vis rabat",
-      "discount_percentage": "Rabatprocent",
-      "reward": "Belønning / gave",
-      "reward_help": "Tilbyd eleverne et incitament ved færdigførelse",
-      "reward_description": "Belønningsbeskrivelse",
-      "placeholder_reward": "f.eks. 1-til-1 mentorsession, merchandise eller eksklusiv adgang til fællesskabet"
-    },
-    "back_to_my_learning": "Tilbage til Min Læring"
+    "scroll_to_top": "Rul til toppen"
   },
   "validations": {
     "generic": {
@@ -235,8 +211,6 @@
       "section_update_failed": "Kunne ikke opdatere kursusafsnittet",
       "sections_reordered": "Kursusafsnit blev omorganiseret",
       "sections_reorder_failed": "Kunne ikke omarrangere kursusafsnit",
-      "lessons_reordered": "Lektioner blev omorganiseret",
-      "lessons_reorder_failed": "Kunne ikke omarrangere undervisningen",
       "comment_fetch_failed": "Kunne ikke hente lektionskommentarer",
       "load_more_comments_failed": "Kunne ikke indlæse flere kommentarer",
       "comment_add_failed": "Kunne ikke tilføje kommentar",
@@ -495,18 +469,7 @@
     }
   },
   "explore": {
-    "heading": "Udforsk",
-    "subtitle": "Oplev læringsoplevelser designet til at hjælpe dig med at få mere værdi ud af platformen.",
-    "search_placeholder": "Søg læringsveje og kurser...",
-    "content_type": "Indholdstype",
-    "content_type_all": "Alle",
-    "section_paths": "Læringsveje",
-    "section_courses": "Kurser",
-    "view_learning_path": "Se læringsstien",
-    "paths_empty_title": "Ingen stier fundet",
-    "paths_empty_description": "Prøv en anden søgning, eller ryd dine filtre.",
-    "courses_empty_title": "Ingen kurser matcher din søgning",
-    "courses_empty_description": "Prøv et andet søgeord."
+    "heading": "Udforsk"
   },
   "exercises": {
     "heading": "Øvelser",
@@ -514,29 +477,7 @@
     "submitted": "Indsendt",
     "in_progress": "Bedømmelse i gang",
     "graded": "Bedømt",
-    "lesson": "Lektion",
-    "total": "I alt",
-    "completed": "Afsluttet",
-    "overdue": "Forfalden",
-    "empty": "Ingen øvelser endnu.",
-    "actions": {
-      "view": "Visning",
-      "continue": "Fortsæt",
-      "start": "Start"
-    },
-    "submission_states": {
-      "not_submitted": "Ikke indsendt",
-      "awaiting_grade": "Afventer karakter",
-      "submitted": "Indsendt"
-    },
-    "table": {
-      "assignment": "Opgave",
-      "course": "Kursus",
-      "status": "Status",
-      "due_date": "Forfaldsdato",
-      "submission": "Indsendelse",
-      "grade": "Karakter"
-    }
+    "lesson": "Lektion"
   },
   "my_learning": {
     "heading": "Min Læring",
@@ -570,9 +511,7 @@
     "explore": "Udforsk",
     "help": "Hjælp",
     "settings": "Indstillinger",
-    "cohorts": "Kohorter",
-    "learning_paths": "Læringsstier",
-    "my_courses": "Mine kurser"
+    "cohorts": "Kohorter"
   },
   "upgrade": {
     "certificate": "Opgrader din plan for at generere certifikater",
@@ -768,9 +707,7 @@
       "cancel": "Annuller",
       "snackbar_success": "Tildelt {assigned} brugere til kurser ({alreadyEnrolled} allerede tilmeldt, {emailsSent} e-mails sendt)",
       "snackbar_no_courses": "Vælg venligst mindst ét kursus",
-      "snackbar_failed": "Kunne ikke tildele kurser",
-      "snackbar_partial": "Tildelte {assigned} brugere ({alreadyEnrolled} havde allerede adgang, {emailsSent} e-mails sendt). Kurser, der kun er oversprunget af sti: {names} — tildel den indeholdende læringssti, eller deaktiver 'Tilmeld dig kun i læringssti' i kursusindstillinger.",
-      "path_only_badge": "Kun sti"
+      "snackbar_failed": "Kunne ikke tildele kurser"
     },
     "import": {
       "title": "Importer brugere",
@@ -793,11 +730,6 @@
       "all_cohorts": "Alle kohorter",
       "select_cohorts": "Vælg specifikke kohorter",
       "select_cohorts_placeholder": "Vælg kohorter...",
-      "select_paths_placeholder": "Vælg læringsstier...",
-      "path_access": "Læringsstiadgang",
-      "no_paths": "Ingen læringsstitildeling",
-      "all_paths": "Alle læringsstier",
-      "select_paths": "Vælg specifikke læringsstier",
       "drop_csv": "Slip en CSV-fil her, eller klik for at vælge en",
       "csv_hint": "UTF-8 CSV med en e-mail-kolonne. Op til {rows} rækker, 5 MB.",
       "download_template": "Download skabelonen",
@@ -821,9 +753,7 @@
       },
       "submit_count": "Importer {count} studerende",
       "result_heading": "{count} studerende importeret",
-      "start_over": "Vælg en anden fil",
-      "skipped_path_only_title": "Sprang over {count} sti-kun kurser",
-      "skipped_path_only_description": "{names}. Disse kurser er kun tilmelding til en læringssti. Tildel enten den indeholdende læringssti (dette giver også dens andre kurser), eller deaktiver 'Tilmeld dig kun i læringssti' i kursusindstillingerne."
+      "start_over": "Vælg en anden fil"
     },
     "page_subtitle": "Se hvem der hører til din organisation, hvem der lærer, hvem der er inviteret, og hvordan du kan kontakte dem.",
     "user_analytics": {
@@ -959,8 +889,7 @@
       "custom": "Brugerdefinerede filtre",
       "all": "Alle studerende"
     },
-    "learner_count": "{count} elever",
-    "path_only_badge": "Kun sti"
+    "learner_count": "{count} elever"
   },
   "community": {
     "title": "Fællesskab",
@@ -1118,9 +1047,7 @@
         "generate_link": "Generer nyt link",
         "open_link": "Åbn link i ny fane",
         "copy_link": "Kopiér link",
-        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
-        "enroll_only_in_learning_path": "Tilmeld dig kun i læringssti",
-        "enroll_only_in_learning_path_desc": "Når den er aktiveret, kan eleverne kun tilmelde sig dette kursus gennem en læringsvej. Eksisterende tilmeldinger bevares."
+        "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer."
       },
       "analytics": {
         "title": "Analyse"
@@ -1365,12 +1292,7 @@
           "signature_upload_hint": "Upload et signaturbillede (valgfrit)",
           "signature_dont_crop": "Beskær ikke",
           "signature_upload_in_progress": "Vent på, at signaturoverførslen er færdig, før du gemmer.",
-          "save_failed": "Kunne ikke gemme certifikatdesignet. Tjek formularen og prøv igen.",
-          "signatory_one": "Underskriver 1",
-          "signatory_two": "Underskriver 2",
-          "signatory_name": "Underskrivers navn",
-          "signatory_role": "Underskrivers rolle",
-          "signature_image": "Signaturbillede"
+          "save_failed": "Kunne ikke gemme certifikatdesignet. Tjek formularen og prøv igen."
         }
       },
       "people": {
@@ -1489,8 +1411,7 @@
             "title": "Giv studerende adgang",
             "description": "Giv {email} adgang til dette kursus. Vi sender en invitationsmail, så vedkommende kan tilslutte sig din organisation og tilmelde sig kurset.",
             "cancel": "Annuller",
-            "send_invite": "Send invitationen",
-            "path_only_notice": "Dette kursus er kun tilmelding til et læringsforløb, så direkte adgang kan ikke gives. Tildel i stedet den indeholdende læringssti - eller sluk 'Tilmeld dig kun i læringssti' i kursusindstillingerne."
+            "send_invite": "Send invitationen"
           },
           "invite_new_students_title": "Inviter nye studerende",
           "invite_new_students_description": "Inviter nye personer til din organisation og forudtildel dem til dette kursus. De opretter en konto, accepterer invitationen og får adgang.",
@@ -1535,17 +1456,9 @@
             "multi_use_30d": "Multi-brug (30 dage)",
             "custom": "Brugerdefineret"
           },
-          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever.",
-          "members_added": "{count, plural, one {# medlem tilføjet} other {# medlemmer tilføjet}}",
-          "path_only_notice_title": "Eleverne følger med gennem en læringsvej",
-          "path_only_notice_description": "Dette kursus er kun tilmelding til en læringssti, så studerende kan ikke inviteres hertil. Du kan stadig invitere undervisere nedenfor. For at give eleverne adgang skal du tildele den indeholdende læringssti - eller deaktivere 'Tilmeld dig kun i læringssti' i kursusindstillingerne."
+          "student_limit_reached": "Du har nået din plans elevgrænse. Opgrader for at invitere flere elever."
         },
-        "learner": "Studerende",
-        "source": "Kilde",
-        "source_learning_path": "Læringsvej",
-        "source_cohort": "Kohorte",
-        "source_filter_all": "Alle kilder",
-        "source_filter_direct": "Direkte"
+        "learner": "Studerende"
       },
       "marks": {
         "title": "Mærker",
@@ -2892,11 +2805,6 @@
       "description": "Du er ved at se, hvad en studerende vil se, når de tilmelder sig dette kursus",
       "copy_link": "Kopiér link",
       "go_to_lms": "Gå til LMS"
-    },
-    "not_found": {
-      "header": "Kurset ikke fundet",
-      "body": "Kurset du leder efter findes ikke eller kan være blevet slettet.",
-      "button": "Gå hjem"
     }
   },
   "courses": {
@@ -2910,7 +2818,6 @@
       "course_description_label": "Kursusbeskrivelse",
       "course_description_placeholder": "Indtast en beskrivelse af dit kursus",
       "create_button": "Opret",
-      "title_copy_format": "{title} (Kopi)",
       "error": {
         "failed_to_clone": "Kurset kunne ikke klones"
       },
@@ -2996,8 +2903,7 @@
       "tags": "Tags",
       "empty_tags": "Ingen tags tilgængelige"
     },
-    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger.",
-    "pricing_free": "Gratis"
+    "page_subtitle": "Hvor lektioner bliver til kurser, og kurser bliver til tilmeldinger."
   },
   "ai": {
     "help_me": "Hjælp mig med at skrive",
@@ -3071,24 +2977,7 @@
     "open_academy": "Åbent Akademi",
     "explore_more_courses": "Udforsk flere kurser",
     "view_more": "Se mere",
-    "upcoming_sessions_heading": "Live sessioner",
-    "completed": "Afsluttet",
-    "completed_of": "{completed} af {total}",
-    "continue_course": "Fortsæt kursus",
-    "course_position": "Kursus {course} af {total}",
-    "enrolled": "Tilmeldt",
-    "explore_courses_hours": "{count} kurser · {hours}t",
-    "explore_lessons_count": "{count} lektioner",
-    "explore_something_new": "Udforsk noget nyt",
-    "lessons_done": "{completed} af {total} lektioner gennemført",
-    "no_recommendations": "Intet anbefalet endnu",
-    "no_recommendations_description": "Udforsk kataloget for at finde dit næste kursus eller din næste læringssti.",
-    "exercise_status_in_progress": "Igangværende",
-    "exercise_status_overdue": "Forfalden",
-    "exercise_status_not_submitted": "Ikke indsendt",
-    "no_exercises": "Ingen kommende øvelser",
-    "no_exercises_description": "Øvelser, du skal indsende, vises her.",
-    "upcoming_exercises": "Kommende øvelser"
+    "upcoming_sessions_heading": "Live sessioner"
   },
   "schedule": {
     "title": "Dit skema",
@@ -3330,8 +3219,7 @@
     "back_to_app": "Tilbage til app",
     "create": "Opret",
     "distribute": "Fordel",
-    "tools": "Værktøjer",
-    "learning_paths": "Læringsstier"
+    "tools": "Værktøjer"
   },
   "media_manager": {
     "page_title": "Medieadministrator - ClassroomIO",
@@ -3425,7 +3313,6 @@
     },
     "filters": {
       "search_placeholder": "Søg efter aktiver",
-      "apply": "Ansøg",
       "status_options": {
         "all": "Alle statusser",
         "active": "Aktiv",
@@ -4263,8 +4150,7 @@
           "tags": "Tags",
           "students": "studerende",
           "settings": "Indstillinger",
-          "cohorts": "Kohorter",
-          "learning_paths": "Læringsveje"
+          "cohorts": "Kohorter"
         },
         "placeholder": "Søg i kurser, kohorter, læringsstier, widgets, studerende, tags, indstillinger...",
         "org_placeholder": "Søg i kurser, kohorter, læringsstier, widgets, studerende, tags, indstillinger...",
@@ -5327,11 +5213,7 @@
       "pagination_status": "Side {page} af {totalPages}",
       "published_access_callout_title": "Studerendes adgang",
       "published_access_callout_description": "Studerende har kun adgang til offentliggjorte kurser. Kurser kan være i denne kohorte for dit team, mens de stadig ikke er udgivet, men de forbliver skjulte for eleverne, indtil du udgiver dem.",
-      "empty_student_description": "Der er endnu ingen offentliggjorte kurser i denne kohorte.",
-      "add_count": "Tilføj {count} {count, plural, =1 {kursus} other {kurser}}",
-      "adding": "Tilføjer kurser...",
-      "load_failed": "Kunne ikke indlæse kurser.",
-      "retry": "Prøv igen"
+      "empty_student_description": "Der er endnu ingen offentliggjorte kurser i denne kohorte."
     },
     "newsfeed": {
       "post": "Nyt indlæg",
@@ -5509,13 +5391,11 @@
       "disabled": "Dette invitationslink er blevet deaktiveret.",
       "closed": "Dette accepterer ikke længere nye medlemmer.",
       "succeeded": "Du er tilmeldt",
-      "failed": "Kunne ikke deltage. Prøv igen.",
-      "learning_path_button": "Deltag i læringsstien"
+      "failed": "Kunne ikke deltage. Prøv igen."
     },
     "load_failed": "Kunne ikke indlæse invitationslinket",
     "generate_failed": "Kunne ikke oprette invitationslinket",
-    "toggle_failed": "Kunne ikke opdatere invitationslinket",
-    "learning_path_description": "Alle med dette link kan deltage i denne læringssti og hvert kursus i den. Del det i stedet for at indtaste e-mails én efter én."
+    "toggle_failed": "Kunne ikke opdatere invitationslinket"
   },
   "lms": {
     "view_landing_page": "Hjem"
@@ -5560,860 +5440,5 @@
     "format_json": "JSON",
     "copied": "Kopieret til udklipsholder",
     "copy_failed": "Kunne ikke kopiere til udklipsholder"
-  },
-  "learningPath": {
-    "legacy": {
-      "title": "Læringsstier",
-      "subtitle": "Strukturerede spor, du er tilmeldt."
-    },
-    "settings": {
-      "heading": "Indstillinger",
-      "subtitle": "Administrer, hvordan denne sti vises, prissættes og opfører sig for elever.",
-      "identity_heading": "Identitet",
-      "path_name": "Stiens navn",
-      "description": "Beskrivelse",
-      "pricing_heading": "Priser",
-      "pricing_description": "Sammenlagt pris for denne sti. Individuelt er disse kurser i alt {total}.",
-      "path_price": "Stiens pris",
-      "savings_badge": "Elever sparer {savings}",
-      "show_savings": "Vis besparelser vs. individuelle kurser",
-      "behaviour_heading": "Adfærd",
-      "self_enrollment": "Tillad selvtilmelding",
-      "sequential_unlock": "Lås kurser op i rækkefølge",
-      "auto_enroll": "Automatisk tilmelding ved køb",
-      "status_heading": "Status",
-      "status_description": "Styrer, hvor stien vises.",
-      "status_visible": "Synlig",
-      "status_hidden": "Skjult",
-      "status_active": "Aktiv",
-      "status_active_description": "Live på din landingsside og i LMS'et for tilmeldte elever.",
-      "status_draft": "Kladde",
-      "status_draft_description": "Skjult for besøgende og elever, mens du bygger det.",
-      "status_archived": "Arkiveret",
-      "status_archived_description": "Fjernet overalt. Elevens fremskridt og kursusadgang bevares.",
-      "danger_heading": "Farezone",
-      "archive_button": "Arkiv sti",
-      "delete_button": "Slet sti"
-    },
-    "certificate": {
-      "heading": "Certifikat",
-      "subtitle": "Tildel et certifikat på stiniveau, når en elev gennemfører hvert kursus.",
-      "award_label": "Tildel et sticertifikat",
-      "award_description": "Udstedes automatisk ved afslutning og vises på elevens certifikatside.",
-      "requirement_courses": "Alle gennemførte kurser — hver lektion afsluttet",
-      "requirement_exercises": "Alle øvelser indsendt eller bestået i hvert kursus",
-      "award_hint": "{count} certifikater tildelt indtil videre",
-      "details_heading": "Certifikatoplysninger",
-      "details_description": "Hvad der vises på det udstedte certifikat.",
-      "certificate_title": "Certifikattitel",
-      "certificate_issuer": "Udstedt af",
-      "preview_recipient": "Dette bekræfter, at",
-      "preview_line": "har gennemført denne læringssti."
-    },
-    "landing_editor": {
-      "heading": "Landingsside",
-      "subtitle": "Kontroller, hvad besøgende ser på den offentlige stiside på /path/{slug}.",
-      "headline": "Overskrift",
-      "subheadline": "Underoverskrift",
-      "visitor_access": "Hvad besøgende kan se",
-      "access_teaser": "Kun teaser",
-      "access_teaser_description": "Stibeskrivelse, kursustitler og pris — ingen lektionsdetaljer.",
-      "access_syllabus": "Fuld pensum",
-      "access_syllabus_description": "Besøgende ser hvert kursus og dets lektionsoversigt, men intet indhold.",
-      "access_preview": "Pensum + forhåndsvisning af lektioner",
-      "access_preview_description": "Fuld oversigt, plus lektioner markeret som forhåndsvisninger er gratis at åbne.",
-      "show_instructors": "Vis instruktører",
-      "show_testimonials": "Vis udtalelser",
-      "show_faqs": "Vis ofte stillede spørgsmål",
-      "preview_public_page": "Forhåndsvisning af offentlig side"
-    },
-    "analytics": {
-      "heading": "Analytik",
-      "subtitle": "Hvordan eleverne bevæger sig gennem stien.",
-      "range": "Sidste 90 dage",
-      "enrolled": "Tilmeldte",
-      "enrolled_hint": "samlet antal elever",
-      "active_learners": "Aktive elever",
-      "active_hint": "arbejdet i de sidste 14 dage",
-      "completion_rate": "Fuldførelsesprocent",
-      "completion_hint": "samlet færdiggjort",
-      "avg_time": "Gennemsnitlig tid til at afslutte",
-      "avg_time_hint": "på tværs af fuldførelser",
-      "funnel_heading": "Kursustragt",
-      "funnel_subtitle": "Hvor mange elever der har nået og gennemført hvert kursus, i rækkefølge.",
-      "funnel_empty": "Tilføj kurser for at se tragten",
-      "stuck_heading": "Hvor eleverne sidder fast",
-      "stuck_subtitle": "Lektioner og øvelser blokerer de fleste elever lige nu.",
-      "stuck_lesson": "Lektion",
-      "stuck_exercise": "Øvelse",
-      "stuck_blocked_singular": "fastlåst",
-      "stuck_blocked_plural": "fastlåst"
-    },
-    "people": {
-      "heading": "Personer",
-      "subtitle": "{count} elever tilmeldt denne sti.",
-      "search": "Søg efter navn eller e-mail…",
-      "learner": "Elev",
-      "learners": "Elever",
-      "path_progress": "Stiens fremskridt",
-      "current_course": "Aktuelt kursus",
-      "enrolled": "Tilmeldt",
-      "not_started": "Ikke startet",
-      "completed": "Afsluttet",
-      "certificate_earned": "Opnået certifikat",
-      "remove_member": "Fjern elev",
-      "empty": "Ingen elever matcher denne søgning."
-    },
-    "courses_builder": {
-      "heading": "Kurser",
-      "subtitle": "Tilføj kurser og træk for at indstille den rækkefølge, eleverne bevæger sig gennem dem.",
-      "count": "{count} kurser i denne sti",
-      "add_course": "Tilføj kursus",
-      "add_course_picker_label": "Vælg et kursus, der skal tilføjes",
-      "no_courses_available": "Ingen flere kurser tilgængelige",
-      "empty": "Ingen kurser endnu — tilføj et for at komme i gang.",
-      "drag_hint": "Træk for at ændre rækkefølgen",
-      "sequential_label": "Lås kurser op i rækkefølge",
-      "sequential_description": "Hvert kursus forbliver låst, indtil en elev gennemfører det forrige kursuss lektioner og øvelser.",
-      "course_lessons": "lektioner",
-      "course_exercises": "øvelser",
-      "move_up": "Flyt op",
-      "move_down": "Flyt ned",
-      "remove_course": "Fjern fra sti"
-    },
-    "admin": {
-      "heading": "Læringsstier",
-      "subtitle": "Gruppér dine kurser i guidede rejser, som eleverne gennemfører i rækkefølge.",
-      "active_paths": "Aktive stier",
-      "enrolled_learners": "Tilmeldte elever",
-      "completions": "Fuldførelser",
-      "completion_rate": "Fuldførelsesrate",
-      "completion": "Fuldførelse",
-      "learners": "elever",
-      "updated": "Opdateret",
-      "search": "Søg i stier…",
-      "filter_all": "Alle",
-      "create_path": "Opret sti",
-      "create_course": "Nyt kursus",
-      "manage": "Administrer",
-      "continue_setup": "Fortsæt opsætning",
-      "new_path_name": "Ny læringssti",
-      "untitled_path": "Unavngivet sti"
-    },
-    "detail": {
-      "course_heading": "Stikurser",
-      "courses_complete": "kurser fuldførte",
-      "all_courses_complete": "Alle kurser fuldførte",
-      "sequential": "Fuldfør hvert kursus for at låse det næste op.",
-      "unlock_hint": "Hvert kursus låses op, når du har afsluttet hver lektion og øvelse i det foregående.",
-      "unlocks_after": "Låser op efter",
-      "lessons": "lektioner",
-      "exercises": "øvelser",
-      "review": "Gennemgang",
-      "enroll": "Tilmelding",
-      "hours": "~{count} timer",
-      "certificate_on_completion": "Optjen et certifikat, når du gennemfører hvert kursus.",
-      "certificate_hint": "Fuldfør alle {count} kurser for at låse op og downloade dit certifikat.",
-      "certificate_earned": "Optjent certifikat",
-      "view_certificate": "Se certifikat"
-    },
-    "my_learning": {
-      "heading": "Min læring",
-      "subtitle": "Spor de stier og kurser, du arbejder dig igennem.",
-      "heading_learning_paths": "Læringsstier",
-      "heading_courses": "Mine kurser",
-      "courses_subtitle": "Hvert kursus, du har startet, uanset hvor det befinder sig.",
-      "paths_title": "Læringsstier",
-      "courses_title": "Mine kurser",
-      "course_paths_title": "Kursusstier",
-      "course_paths_description": "Kurser, der er en del af et læringssti, viser, hvilket sti de tilhører.",
-      "currently_learning": "Lærer i øjeblikket"
-    },
-    "empty": {
-      "title": "Ingen læringsstier endnu",
-      "description": "Strukturerede spor, du er tilmeldt, vises her. Tilmeld dig et sti fra kataloget for at starte læringen i rækkefølge.",
-      "back_to_paths": "Tilbage til læringsstier",
-      "path_not_found_title": "Sti ikke fundet",
-      "path_not_found_description": "Denne læringssti er muligvis blevet afpubliceret eller fjernet.",
-      "library_no_results_title": "Intet matcher dine filtre",
-      "library_no_results_description": "Prøv et andet filter, eller ryd dem for at se alt."
-    },
-    "explore": {
-      "title": "Udforsk flere stier",
-      "tagline": "Ruter bygget til at tage dig længere.",
-      "view_path": "Vis sti",
-      "view_more": "Se mere"
-    },
-    "enrollment": {
-      "not_started": "Ikke startet",
-      "in_progress": "Igangværende",
-      "completed": "Afsluttet",
-      "locked": "Låst",
-      "lessons_label": "lektioner"
-    },
-    "toolbar": {
-      "search": "Søgning",
-      "filters": "Filtre",
-      "clear_all": "Ryd alle",
-      "status": "Status",
-      "all": "Alle",
-      "grid_view": "Gittervisning",
-      "list_view": "Listevisning",
-      "results": "resultater",
-      "difficulty": "Sværhedsgrad",
-      "difficulty_any": "Enhver",
-      "difficulty_beginner": "Begynder",
-      "difficulty_intermediate": "Mellemniveau",
-      "difficulty_advanced": "Avanceret"
-    },
-    "row": {
-      "completed": "Afsluttet"
-    },
-    "card": {
-      "course": "kursus",
-      "courses": "kurser",
-      "of": "af",
-      "view_certificate": "Vis certifikat",
-      "certificate_earned": "Opnået certifikat",
-      "actions_menu_aria": "Stihandlinger",
-      "updated_at": "Opdateret {date}",
-      "published": "Udgivet",
-      "unpublished": "Upubliceret",
-      "badge": "Læringsvej",
-      "lesson": "lektion",
-      "lessons": "lektioner",
-      "exercise": "øvelse",
-      "exercises": "øvelser"
-    },
-    "hero": {
-      "currently_learning": "Under uddannelse",
-      "continue_learning": "Fortsæt læring",
-      "start_learning": "Start læring",
-      "up_next": "Næste",
-      "view_path": "Se sti",
-      "courses_completed": "kurser gennemført"
-    },
-    "status": {
-      "draft": "Kladde",
-      "active": "Aktiv",
-      "archived": "Arkiveret"
-    },
-    "ribbon": {
-      "part_of": "er en del af",
-      "view_path": "Se sti",
-      "path_label": "Læringsvej",
-      "course_n_of_total": "Kursus {position} af {total}",
-      "next_in_path": "NÆSTE PÅ DIN VEJ",
-      "next_course_position": "Kursus {position}",
-      "unlocks_after_finish": "Låser op, når du er færdig med dette kursus — {lessons} lektioner og {exercises} øvelser tilbage.",
-      "locked": "Låst",
-      "path_complete": "Sti færdig - alle kurser afsluttet. Flot arbejde!"
-    },
-    "progress": {
-      "label": "fremskridt"
-    },
-    "badge": {
-      "learning_path": "Læringssti",
-      "course": "Kursus"
-    },
-    "course": {
-      "part_of": "Del af",
-      "continue_course": "Fortsæt kursus",
-      "review_course": "Gennemgå kursus",
-      "completed_label": "Afsluttet",
-      "view_course": "Se kursus",
-      "view_more": "Se mere",
-      "explore_more_title": "Udforsk flere kurser",
-      "explore_more_tagline": "Et par kurser valgt baseret på, hvad du tager nu.",
-      "type_self_paced": "Selv-tempo",
-      "type_live_class": "Live klasse",
-      "type_compliance": "Overholdelse",
-      "type_public": "Offentlig"
-    },
-    "modals": {
-      "add_courses": {
-        "title": "Tilføj kurser til sti",
-        "search_placeholder": "Søg efter kurser…",
-        "no_courses": "Ingen tilgængelige kurser at tilføje.",
-        "no_matches": "Ingen kurser matcher din søgning.",
-        "cancel": "Annuller",
-        "submit": "Tilføj {count} {count, plural, =1 {Kursus} other {Kurser}}",
-        "submitting": "Tilføjer kurser…",
-        "select_courses": "Vælg kurser",
-        "pagination_status": "Side {page} af {totalPages}",
-        "load_failed": "Kunne ikke indlæse kurser.",
-        "retry": "Prøv igen"
-      },
-      "create": {
-        "title": "Opret læringssti",
-        "name_label": "Stinavn",
-        "name_placeholder": "f.eks. Fullstack webudvikling",
-        "desc_label": "Beskrivelse",
-        "desc_placeholder": "En kort opsummering af, hvad eleverne vil opnå...",
-        "cancel": "Annuller",
-        "submit": "Opret læringssti",
-        "failed": "Det lykkedes ikke at oprette læringsvej"
-      }
-    },
-    "workspace": {
-      "finish_setup": "Afslut opsætning · {percent}%",
-      "view_path_site": "Se stiwebsted",
-      "coming_soon": {
-        "title": "{tab} — Kommer snart",
-        "description": "Denne arbejdsområdefane vil være tilgængelig i fase 3. Kursusadministration og opsætning er fuldt funktionel i denne udgivelse."
-      },
-      "tabs": {
-        "courses": "Kurser",
-        "people": "Personer",
-        "analytics": "Analyse",
-        "landing": "Landingsside",
-        "certificate": "Certifikater",
-        "settings": "Indstillinger",
-        "setup": "Opsætning"
-      },
-      "publish_path": "Udgiv sti",
-      "published": "Læringsvej offentliggjort",
-      "publish_failed": "Kunne ikke udgive læringsstien",
-      "not_found_title": "Læringssti ikke fundet",
-      "not_found_description": "Den læringssti, du leder efter, findes ikke eller er blevet slettet.",
-      "back_to_paths": "Tilbage til læringsstier",
-      "copy_path_url": "Kopiér sti-URL",
-      "preview_missing_slug": "Generer og gem en stisnegl før forhåndsvisning.",
-      "url_copied": "Læringssti-URL kopieret til udklipsholder",
-      "loading_title": "Indlæser læringssti...",
-      "loading_description": "Vent venligst, mens vi indlæser dine læringsstidata.",
-      "load_failed_title": "Denne læringssti kunne ikke indlæses",
-      "load_failed_description": "Tjek din forbindelse, og prøv igen."
-    },
-    "setup": {
-      "title": "Opsæt din sti",
-      "subtitle": "Færdiggør disse trin for at lancere {name} til dine elever.",
-      "summary": "En sti går live, når dens kurser er bestilt, prissat og indstillet til Aktiv.",
-      "progress": "{completed} af {total} fuldført",
-      "done": "Udført",
-      "launch_title": "{count} {count, plural, =1 {trin} other {trin}} tilbage til lancering",
-      "launch_desc": "Bestil kurserne, angiv en pris, finpudse landingssiden og aktivér.",
-      "activate_now": "Aktivér nu",
-      "step_name_title": "Navngiv og beskriv din sti",
-      "step_name_desc": "Giv stien et klart, resultatbaseret navn og en kort opsummering.",
-      "step_name_action": "Rediger detaljer",
-      "step_courses_title": "Tilføj kurser",
-      "step_courses_desc": "Vælg de kurser, der udgør denne læringssti.",
-      "step_courses_action": "Tilføj kurser",
-      "step_order_title": "Angiv kursusrækkefølgen",
-      "step_order_desc": "Træk kurser ind i den rækkefølge, som eleverne skal gennemføre dem.",
-      "step_order_action": "Angiv rækkefølge",
-      "step_price_title": "Angiv din pris",
-      "step_price_desc": "Pris stien som en pakke — eleverne ser besparelserne i forhold til individuelle kurser.",
-      "step_price_action": "Angiv pris",
-      "step_landing_title": "Tilpas din landingsside",
-      "step_landing_desc": "Mål, færdigheder, instruktører, anmeldelser og ofte stillede spørgsmål på den offentlige stiside.",
-      "step_landing_action": "Tilpas",
-      "step_publish_title": "Udgiv stien",
-      "step_publish_desc": "Udgiv stien, så den vises på din landingsside og dit LMS.",
-      "step_publish_action": "Udgiv",
-      "reorder_action": "Genbestil"
-    },
-    "builder": {
-      "title": "Kurser",
-      "subtitle": "Tilføj kurser, og træk for at indstille den rækkefølge, eleverne bevæger sig gennem dem.",
-      "unlock_rule_title": "Lås kurser op i rækkefølge",
-      "unlock_rule_desc": "Hvert kursus forbliver låst, indtil en elev gennemfører det forrige kursuss lektioner og øvelser. Slå fra for at tillade enhver rækkefølge.",
-      "drag_hint": "Træk for at ændre rækkefølgen",
-      "lessons_count": "{count} {count, plural, =1 {lektion} other {lektioner}}",
-      "exercises_count": "{count} {count, plural, =1 {øvelse} other {øvelser}}",
-      "open_course": "Åbn kursus",
-      "remove_course": "Fjern fra sti",
-      "add_course_button": "Tilføj kursus til sti",
-      "empty_title": "Ingen kurser i denne læringsvej endnu",
-      "empty_description": "Tilføj kurser for at guide eleverne gennem en struktureret sekvens. Start med at klikke på knappen Tilføj.",
-      "start_reorder": "Genbestil",
-      "end_reorder": "Afslut genbestilling"
-    },
-    "listing": {
-      "title": "Læringsstier",
-      "subtitle": "Opret og administrer strukturerede læringsoplevelser, der guider eleverne gennem flere kurser.",
-      "create_path": "Opret læringssti",
-      "empty": {
-        "title": "Opret din første læringssti",
-        "description": "Saml flere kurser i en ordnet rækkefølge med milepælssporing, gating og et valgfrit færdiggørelsescertifikat.",
-        "create_path": "Opret læringssti",
-        "no_matches_title": "Ingen læringsstier matcher dine aktive filtre",
-        "no_matches_description": "Prøv at rydde dine filtre eller ændre din søgeforespørgsel."
-      },
-      "card": {
-        "courses_count": "{count} {count, plural, =1 {kursus} other {kurser}}",
-        "learners_count": "{count} {count, plural, =1 {elev} other {elever}}"
-      },
-      "filters": {
-        "title": "Filtre",
-        "clear_all": "Ryd alle",
-        "group_status": "Status",
-        "group_enrollment": "Tilmelding",
-        "group_completion": "Fuldførelsesprocent",
-        "all": "Alle",
-        "published": "Udgivet",
-        "no_learners": "Ingen elever endnu",
-        "enrollment_1_49": "1–49",
-        "enrollment_50_plus": "50+",
-        "low": "Lav (under 25%)",
-        "medium": "Mellem (25–75%)",
-        "high": "Høj (75%+)",
-        "sort_date_created": "Dato oprettet",
-        "sort_last_updated_at": "Sidst opdateret kl",
-        "sort_published": "Udgivet",
-        "sort_courses": "Kurser",
-        "unpublished": "Upubliceret"
-      },
-      "toolbar": {
-        "search_placeholder": "Søg i læringsstier…",
-        "grid_view": "Gittervisning",
-        "list_view": "Listevisning"
-      },
-      "load_error_title": "Kunne ikke indlæse læringsstier",
-      "load_more": "Indlæs mere"
-    },
-    "view_path_site": {
-      "unpublished_title": "Offentliggør din læringsvej",
-      "unpublished_description": "Du bør offentliggøre denne læringssti, før du kan se webstedet",
-      "cancel": "Annuller",
-      "publish_path": "Udgiv sti"
-    },
-    "context_menu": {
-      "open": "Åbn",
-      "share": "Del",
-      "invite": "Inviter",
-      "delete": "Slet",
-      "view_as_student": "Se som elev"
-    },
-    "snackbar": {
-      "created": "Læringsvej oprettet",
-      "updated": "Læringsvej opdateret",
-      "deleted": "Læringsvej slettet",
-      "reordered": "Kursusrækkefølgen er opdateret",
-      "course_added": "Kursus tilføjet",
-      "courses_added": "Kurser tilføjet",
-      "course_removed": "Kursus fjernet",
-      "member_removed": "Elev fjernet fra stien",
-      "tutor_removed": "Underviser fjernet fra forløbet",
-      "certificate_saved": "Certifikatindstillinger gemt",
-      "landing_saved": "Destinationsside opdateret",
-      "landing_save_failed": "Kunne ikke gemme landingssiden",
-      "link_generated": "Invitationslink genereret og kopieret til udklipsholder",
-      "settings_saved": "Læringsstiens indstillinger er opdateret",
-      "members_add_partial": "{added} tilføjet, {invited} inviteret, {notAdded} kunne ikke tilføjes",
-      "member_role_updated": "Medlemsrolle opdateret",
-      "delete_failed": "Kunne ikke slette læringsstien"
-    },
-    "analytics": {
-      "title": "Analyse",
-      "subtitle": "Hvordan eleverne bevæger sig gennem stien.",
-      "empty": "Ingen data endnu. Tilmeld elever, og de vil begynde at dukke op her.",
-      "empty_desc": "Tilmeld elever til dette forløb, så vises deres fremskridt her.",
-      "stuck": {
-        "title": "Hvor eleverne sidder fast",
-        "subtitle": "Lektioner og øvelser blokerer for flest elever lige nu.",
-        "badge": "{count} sidder fast",
-        "lesson_desc": "{count} {count, plural, =1 {elev} other {elever}} stoppede ved denne lektion.",
-        "exercise_desc": "{count} {count, plural, =1 {elev} other {elever}} har haft denne øvelse i gang i over 2 uger.",
-        "empty": "Ingen elever sidder fast i øjeblikket. Store fremskridt!",
-        "empty_desc": "Når elever sidder fast, vises de her.",
-        "lesson_prefix": "Lektion:",
-        "exercise_prefix": "Øvelse:",
-        "showing": "Viser {start} til {end} af {total} elementer",
-        "table": {
-          "item": "Element",
-          "course": "Kursus"
-        }
-      },
-      "funnel": {
-        "title": "Kursustragt",
-        "subtitle": "Hvor mange elever har nået og gennemført hvert kursus i rækkefølge.",
-        "completed": "afsluttet",
-        "in_progress": "i gang",
-        "drop": "{count} {count, plural, =1 {elev} other {elever}} faldt efter kursus {n}",
-        "biggest_drop": "største frafald",
-        "certificates": "{count} {count, plural, =1 {certifikat} other {certifikater}} tildelt"
-      },
-      "stat": {
-        "learners": "Elever",
-        "active": "Aktive elever",
-        "active_desc": "arbejdet inden for de sidste 14 dage",
-        "completion_rate": "Gennemførelsesgrad",
-        "completion_desc": "{completed} af {total} færdig",
-        "avg_time": "Gns. tid til at blive færdig",
-        "avg_time_desc": "på tværs af færdiggørelser",
-        "enrolled_desc": "+{count} denne måned",
-        "pending_line": "{count} {count, plural, =1 {afventende invitation} other {afventende invitationer}}",
-        "team_desc": "{count, plural, one {# underviser på path-teamet} other {# undervisere på path-teamet}}",
-        "avg_time_weeks": "{value} uger",
-        "avg_time_days": "{value} dage"
-      },
-      "students": {
-        "subtitle": "Kursusforløb pr. elev, nuværende kursus og tilmeldingsdato.",
-        "title": "Overblik over elevers fremskridt",
-        "courses_completed": "Gennemførte kurser"
-      },
-      "member": {
-        "courses_title": "Kurser på denne vej",
-        "remove": "Fjern fra stien",
-        "status": {
-          "not_started": "Ikke startet",
-          "in_progress": "I gang",
-          "completed": "Afsluttet",
-          "locked": "Låst"
-        },
-        "export": "Eksporter CSV",
-        "progress_label": "Sti fremskridt"
-      },
-      "export": {
-        "status": "Status"
-      }
-    },
-    "people": {
-      "title": "Mennesker",
-      "subtitle": "{count} {count, plural, =1 {elev} other {elever}} tilmeldt denne sti",
-      "info_banner": "Hvis du tilføjer en elev til denne sti, tilmeldes vedkommende automatisk i alle {count} {count, plural, =1 {kursus} other {kurser}}. Fjernelse af dem bevarer deres kursusadgang og fremskridt.",
-      "search_placeholder": "Søg på navn eller e-mail...",
-      "empty": "Ingen elever er tilmeldt endnu. Tilføj elever for at komme i gang.",
-      "no_results": "Ingen elever matcher din søgning.",
-      "invite": {
-        "title": "Tilføj elever til stien",
-        "bulk_title": "Inviter via e-mail",
-        "bulk_description": "Indtast e-mailadresser adskilt af kommaer eller nye linjer.",
-        "bulk_submit": "Tilføj elever"
-      },
-      "remove": {
-        "title": "Fjern eleven",
-        "title_non_student": "Fjern medlem",
-        "confirm": "Er du sikker på, at du vil fjerne {name} fra denne læringssti? De vil beholde deres kursusadgang og fremskridt.",
-        "confirm_non_student": "Er du sikker på, at du vil fjerne {name} fra dette forløb? Vedkommende mister adgangen til at administrere forløbet.",
-        "cancel": "Annuller",
-        "yes": "Fjern"
-      },
-      "badge": {
-        "certificate_earned": "Certifikat optjent",
-        "not_started": "Ikke startet"
-      },
-      "table": {
-        "learner": "Elev",
-        "progress": "Sti fremskridt",
-        "current_course": "Nuværende kursus",
-        "enrolled": "Tilmeldt",
-        "actions": "Handlinger"
-      },
-      "filter": {
-        "all": "Alle fremskridt",
-        "not_started": "Ikke startet",
-        "in_progress": "I gang",
-        "completed": "Afsluttet"
-      },
-      "info_title": "Om stitilmelding",
-      "add": "Tilføj",
-      "last_login_at": "Sidste login",
-      "you": "Dig",
-      "view": "Se",
-      "delete_profile": "Fjern",
-      "invite_modal": {
-        "loading": "Tilføjer…",
-        "student_limit_reached": "Du har nået din elevgrænse. Opgrader for at tilføje flere elever.",
-        "invite": "Inviter undervisere",
-        "invite_students": "Inviter studerende",
-        "finish": "Afslut",
-        "bulk_enroll_queued": "Tilmelder {count} medlemmer i baggrunden...",
-        "bulk_enroll_success": "Tilmeldte {enrolled} medlemmer ({invited} inviteret)",
-        "bulk_enroll_partial": "Tilmeldte {enrolled} medlemmer ({invited} inviteret, {failed} mislykkedes)",
-        "bulk_enroll_failed": "Baggrundstilmelding mislykkedes",
-        "bulk_enroll_lost": "Mistet overblikket over baggrundstilmeldingen",
-        "bulk_enroll_backgrounded": "Tilmeldingen kører stadig i baggrunden. Opdater Personer for at se resultaterne."
-      },
-      "change_role_to_tutor": "Gør vejleder",
-      "change_role_to_student": "Gør studerende"
-    },
-    "certificate": {
-      "title": "Certifikater",
-      "awarded_count": "{count, plural, =0 {Ingen certifikater tildelt endnu} =1 {1 certifikat tildelt indtil videre} other {# certifikater tildelt indtil videre}}",
-      "allow": "Tillad elever at downloade certifikat",
-      "email_message_label": "E-mail besked",
-      "email_message_placeholder": "f.eks. Tillykke med fuldførelsen af læringsstien!",
-      "editor": {
-        "title": "Certifikatdesign"
-      }
-    },
-    "landing": {
-      "page_builder": "Sidebygger",
-      "display_section": "Vis sektion",
-      "hero": {
-        "title": "Hero",
-        "headline": "Overskrift",
-        "headline_placeholder": "f.eks. Bliv en Senior Fullstack Ingeniør",
-        "subheadline": "Underoverskrift",
-        "subheadline_placeholder": "f.eks. Behersk moderne frontend, backend og udrulning gennem projektbaseret læring."
-      },
-      "access": {
-        "title": "Besøgsadgang",
-        "description": "Styrer, hvor meget indhold ikke-tilmeldte besøgende kan udforske på den offentlige stiside.",
-        "teaser_title": "Teaser",
-        "teaser_desc": "Vis kun kurstitler og overordnede mål.",
-        "syllabus_title": "Pensum (anbefalet)",
-        "syllabus_desc": "Vis det fulde pensum med lektionstitler og låste indikatorer.",
-        "preview_title": "Forhåndsvisning",
-        "preview_desc": "Giv besøgende mulighed for at forhåndsvise den første lektion af hvert kursus uden at tilmelde sig."
-      },
-      "skills": {
-        "title": "Færdigheder, du opnår",
-        "placeholder": "f.eks. TypeScript, Docker, PostgreSQL",
-        "help": "Tryk på Enter for at tilføje. De vises som chips på din landingsside."
-      },
-      "instructors": {
-        "title": "Instruktører",
-        "auto_populated_note": "Instruktører samles automatisk fra kurserne i denne sti.",
-        "courses_note": "{count, plural, =0 {Ingen kurser tilføjet endnu} =1 {Hentet fra 1 kursus i denne sti} other {Hentet fra alle # kurser i denne sti}}",
-        "role_placeholder": "f.eks. Hovedunderviser · Frontend",
-        "default_role": "Kursusunderviser",
-        "untitled": "Ikke-navngivet underviser",
-        "add": "Tilføj underviser",
-        "no_tutors_found": "Ingen undervisere fundet",
-        "min_one_required": "Mindst én underviser er påkrævet",
-        "remove": "Fjern underviser",
-        "upload": "Underviserlogo",
-        "name": "Undervisers navn",
-        "name_placeholder": "Dit firmanavn",
-        "role": "Underviserrolle",
-        "about": "Om underviseren",
-        "about_placeholder": "En kort baggrund om underviseren",
-        "total": "Antal kurser"
-      },
-      "testimonials": {
-        "title": "Udtalelser",
-        "untitled": "Ikke-navngivet udtalelse",
-        "name": "Navn",
-        "role": "Rolle / Titel",
-        "quote": "Citat",
-        "add": "Tilføj udtalelse"
-      },
-      "faqs": {
-        "title": "Ofte stillede spørgsmål",
-        "untitled": "Ikke-navngivet spørgsmål",
-        "question": "Spørgsmål",
-        "answer": "Svar",
-        "add": "Tilføj ofte stillet spørgsmål",
-        "question_placeholder": "Hvad kræves der for at gennemføre denne sti?",
-        "answer_placeholder": "Du skal gennemføre alle lektioner og øvelser i hvert kursus."
-      },
-      "header": {
-        "title_placeholder": "f.eks. Fullstack webudvikling",
-        "description_placeholder": "Et omfattende overblik over, hvad eleverne vil opnå…",
-        "title": "Header",
-        "title_label": "Titel",
-        "description_label": "Beskrivelse"
-      },
-      "reviews": {
-        "title": "Anmeldelser",
-        "untitled": "Ikke-navngivet anmeldelse",
-        "name_placeholder": "Camilla Nielsen",
-        "avatar_placeholder": "https://...",
-        "avatar_url": "Avatarbilled-URL",
-        "rating_placeholder": "Valgfri (1-5)",
-        "clear_rating": "Ryd bedømmelse",
-        "description_placeholder": "Denne læringssti gav mig præcis de færdigheder og den selvtillid, jeg havde brug for.",
-        "add_reviews": "Tilføj anmeldelser",
-        "fullname": "Fulde navn",
-        "description": "Beskrivelse",
-        "rating": "Bedømmelse"
-      },
-      "preview": "Forhåndsvisning",
-      "save": "Gem",
-      "requirement": {
-        "title": "Krav"
-      },
-      "description": {
-        "title": "Beskrivelse"
-      },
-      "goals": {
-        "title": "Mål"
-      },
-      "certificate": {
-        "title": "Certifikat",
-        "upload_template": "Certifikatskabelon"
-      },
-      "pricing": {
-        "title": "Prissætning",
-        "payment_required": "Betalingslink er påkrævet",
-        "payment_invalid_url": "Indtast venligst en gyldig URL",
-        "enable_paid": "Aktiver betalt",
-        "currency": "Valuta",
-        "cost": "Omkostninger",
-        "payment": "Betalingslink",
-        "payment_helper": "Stripe, Lemon Squeezy eller et hvilket som helst betalingslink",
-        "discount": "Rabat",
-        "no": "Nej",
-        "yes": "Ja",
-        "percent": "Rabatprocent",
-        "percentage_helper": "I procent %",
-        "gift_on_completion": "Gave ved færdiggørelse",
-        "gift": "Om gave"
-      }
-    },
-    "settings": {
-      "title": "Indstillinger",
-      "general": {
-        "legend": "Stidetaljer",
-        "desc": "Grundlæggende oplysninger om denne læringssti.",
-        "name_label": "Stinavn",
-        "name_placeholder": "f.eks. Fullstack Webudvikling",
-        "name_required": "Stinavn er påkrævet",
-        "description_label": "Beskrivelse",
-        "description_placeholder": "En kort oversigt over, hvad eleverne vil opnå...",
-        "description_required": "Beskrivelse er påkrævet",
-        "cover_image_legend": "Forsidebillede",
-        "cover_image_desc": "Upload et forsidebillede til denne læringssti. Anbefalet størrelse: 1200x630px.",
-        "replace_image": "Erstat billede",
-        "reset_image": "Nulstil",
-        "link": "Stilink",
-        "generate_link": "Generer nyt link",
-        "open_link": "Åbn link i ny fane",
-        "copy_link": "Kopiér link",
-        "setup_landing_for_link": "Opsæt landingsside for at få stilink"
-      },
-      "enrollment": {
-        "legend": "Tilmelding og progression",
-        "desc": "Konfigurer, hvordan elever tilmelder sig og bevæger sig gennem kurser.",
-        "self_enrollment_label": "Tillad selvtilmelding",
-        "self_enrollment_desc": "Elever kan selv tilmelde sig denne sti.",
-        "sequential_unlock_label": "Sekventiel oplåsning af kurser",
-        "sequential_unlock_desc": "Elever skal gennemføre kurser i rækkefølge."
-      },
-      "publishing": {
-        "legend": "Udgiv sti",
-        "desc": "Dette afgør, om din sti vises på din landingsside",
-        "publish_label": "Udgiv læringssti",
-        "publish_desc": "Gør denne læringssti synlig og åben for tilmelding.",
-        "published": "Udgivet",
-        "unpublished": "Upubliceret"
-      },
-      "danger": {
-        "legend": "Slet sti",
-        "desc": "Slet denne sti. Denne handling kan ikke fortrydes. Kurser, tilmeldinger og elevers fremskridt slettes ikke.",
-        "delete_button": "Slet læringssti",
-        "delete_title": "Slet læringssti",
-        "delete_description": "Er du sikker på, at du vil slette \"{name}\"? Denne handling kan ikke fortrydes."
-      },
-      "cover_image": {
-        "legend": "Forsidebillede",
-        "desc": "Hvis du inkluderer et, skal det være mindst 280 x 200.",
-        "replace": "Udskift",
-        "reset": "Nulstil",
-        "alt": "Stiforside"
-      },
-      "welcome_email": {
-        "legend": "Velkomstmail",
-        "desc": "Tilpas den e-mail, som eleverne modtager efter tilmelding. Tilføj en personlig note, instruktioner eller et link til en livesession.",
-        "placeholder": "Skriv den velkomstbesked, eleverne får, når de tilmelder sig…"
-      },
-      "progression": {
-        "legend": "Elevprogression",
-        "desc": "Styr, om elever kan få adgang til alle kurser eller skal gennemføre dem i rækkefølge.",
-        "free": "Fri — alle kurser er tilgængelige",
-        "sequential": "Sekventiel — gennemfør tidligere kurser for at låse næste op"
-      },
-      "self_enrollment": {
-        "legend": "Elever kan tilmelde sig selv",
-        "access": "Når det er slået fra, kan elever kun deltage via et invitationslink eller ved at blive tilføjet under {people}.",
-        "access_people": "Personer",
-        "enabled": "Aktiveret",
-        "disabled": "Deaktiveret"
-      }
-    },
-    "courses": {
-      "lessons": "Lektioner",
-      "exercises": "Øvelser"
-    },
-    "view_as_student": {
-      "title": "Dette vil omdirigere dig til elev-LMS'et.",
-      "description": "Du er ved at se, hvad en elev vil se, når vedkommende tilmelder sig denne læringssti",
-      "copy_link": "Kopiér link",
-      "go_to_lms": "Gå til LMS"
-    },
-    "hub": {
-      "placeholder_title": "Forhåndsvisning af læringssti",
-      "placeholder_description": "Den fulde læringsoplevelse bor i LMS. Åbn Min Læring for at fortsætte denne vej.",
-      "back_to_my_learning": "Tilbage til Min Læring"
-    },
-    "not_permitted": {
-      "header": "Ingen tilladelse",
-      "body": "Desværre har du ikke adgang til denne læringsvej.",
-      "button": "Gå hjem"
-    }
-  },
-  "certificate": {
-    "tab_design": "Design",
-    "tab_settings": "Indstillinger",
-    "allow": "Tillad elever at downloade certifikat",
-    "email_message_label": "E-mail besked",
-    "email_message_placeholder": "f.eks. Vi er stolte af dine fremskridt - fortsæt med at lære!",
-    "rules": "Regler",
-    "editor": {
-      "title": "Certifikat design",
-      "back": "Tilbage til certifikater",
-      "unsaved": "Ikke gemt",
-      "free_plan": "Gratis plan",
-      "discard": "Kassér",
-      "save": "Gem ændringer",
-      "saved": "Certifikatdesign gemt",
-      "save_failed": "Kunne ikke gemme certifikatdesignet. Tjek formularen og prøv igen.",
-      "signature_upload_in_progress": "Vent på, at signaturoverførslen er færdig, før du gemmer.",
-      "sections": "Redaktørsektioner",
-      "preview": "Live forhåndsvisning",
-      "panel_templates": "Skabeloner",
-      "panel_templates_subtitle": "Vælg en skabelon til at forankre den visuelle stil.",
-      "panel_content": "Indhold",
-      "panel_content_subtitle": "Finjuster de ord, der står på certifikatet.",
-      "panel_colors": "Accent farve",
-      "panel_colors_subtitle": "Bruges til modtagerlinjen, accenter og stempel.",
-      "panel_export": "Eksporter",
-      "panel_export_subtitle": "Se forhåndsvisning af det aktuelle design, efterhånden som det vil blive leveret.",
-      "section_header": "Header kopi",
-      "section_signatories": "Underskrivere",
-      "section_reference": "Reference",
-      "subtitle": "Undertekst",
-      "subtitle_placeholder": "Tildelt med højeste udmærkelse",
-      "description_override": "Beskrivelse tilsidesættelse",
-      "description_override_placeholder": "Standard til kursusbeskrivelsen.",
-      "description_override_hint": "Lad stå tomt for at vende tilbage til kursusbeskrivelsen ved gem.",
-      "signatory_one_name": "Underskriver 1 navn",
-      "signatory_one_role": "Underskriver 1 rolle",
-      "signatory_two_name": "Underskriver 2 navn",
-      "signatory_two_role": "Underskriver 2 rolle",
-      "signatory_one_toggle": "Vis underskriver 1",
-      "signatory_two_toggle": "Vis underskriver 2",
-      "signature_upload": "Signaturbillede",
-      "signature_upload_hint": "Upload et signaturbillede (valgfrit)",
-      "signature_dont_crop": "Beskær ikke",
-      "id_format": "Certifikat-id-format",
-      "id_format_hint": "Brug '{'seq'}' for de sidste fire cifre, '{'year'}' for udstedelsesåret, '{'month'}' for måneden.",
-      "accent_hint": "Accentfarve vises på modtagerreglen, stemplerne og skabelonens overskriftsfremhævning.",
-      "templates_hint": "Skabeloner gengives med den samme renderer, der bruges til den downloadede PDF og PNG.",
-      "download_pdf": "Download PDF",
-      "download_png": "Download PNG",
-      "print": "Udskriv",
-      "export_hint": "Eksporter bruger dit navn som modtager, så du kan få vist det endelige layout.",
-      "preview_failed": "Kunne ikke generere certifikateksempel",
-      "sample_recipient": "Mette Jensen",
-      "sample_course": "Udmærkelsescertifikat",
-      "sample_description": "Som en anerkendelse af enestående præstation og eksemplarisk dedikation til håndværket.",
-      "sample_org": "Det Kongelige Kunstakademi",
-      "summary_title": "Aktivt design",
-      "summary_subtitle": "Snapshot af, hvordan certifikatet vil se ud, når det udstedes.",
-      "field_template": "Skabelon",
-      "field_accent": "Accent",
-      "field_signatories": "Underskrivere",
-      "customize_design": "Tilpas design",
-      "signatory_one": "Underskriver 1",
-      "signatory_two": "Underskriver 2",
-      "signatory_name": "Underskrivers navn",
-      "signatory_role": "Underskrivers rolle",
-      "signature_image": "Signaturbillede"
-    }
   }
 }

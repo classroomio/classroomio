@@ -12,31 +12,7 @@
     },
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany",
-    "scroll_to_top": "Przewiń do góry",
-    "add": "Dodaj",
-    "remove": "Usuń",
-    "back": "Wstecz",
-    "close": "Zamknij",
-    "edit": "Edytuj",
-    "coming_soon": "Wkrótce",
-    "pricing": {
-      "enable_paid": "Włącz Płatne",
-      "yes": "Tak",
-      "no": "Nie",
-      "currency": "Waluta",
-      "cost": "Koszt",
-      "payment_link": "Link do płatności",
-      "payment_required": "Link płatności jest wymagany, gdy włączona jest płatność",
-      "payment_invalid_url": "Wprowadź prawidłowy adres URL",
-      "discount": "Rabat",
-      "show_discount": "Pokaż zniżkę",
-      "discount_percentage": "Procent zniżki",
-      "reward": "Nagroda / Prezent",
-      "reward_help": "Zaoferuj uczniom zachętę za ukończenie",
-      "reward_description": "Opis nagrody",
-      "placeholder_reward": "np. sesja mentoringowa 1 na 1, gadżety lub ekskluzywny dostęp do społeczności"
-    },
-    "back_to_my_learning": "Powrót do Mojej nauki"
+    "scroll_to_top": "Przewiń do góry"
   },
   "validations": {
     "generic": {
@@ -235,8 +211,6 @@
       "section_update_failed": "Nie udało się zaktualizować sekcji kursu",
       "sections_reordered": "Pomyślnie zmieniono kolejność sekcji kursu",
       "sections_reorder_failed": "Nie udało się zmienić kolejności sekcji kursu",
-      "lessons_reordered": "Pomyślnie zmieniono kolejność lekcji",
-      "lessons_reorder_failed": "Nie udało się zmienić kolejności zajęć",
       "comment_fetch_failed": "Nie udało się pobrać komentarzy do lekcji",
       "load_more_comments_failed": "Nie udało się załadować więcej komentarzy",
       "comment_add_failed": "Nie udało się dodać komentarza",
@@ -495,18 +469,7 @@
     }
   },
   "explore": {
-    "heading": "Eksploruj",
-    "subtitle": "Odkryj doświadczenia edukacyjne zaprojektowane, aby pomóc Ci uzyskać więcej korzyści z platformy.",
-    "search_placeholder": "Wyszukaj ścieżki edukacyjne i kursy…",
-    "content_type": "Typ treści",
-    "content_type_all": "Wszystko",
-    "section_paths": "Ścieżki uczenia się",
-    "section_courses": "Kursy",
-    "view_learning_path": "Wyświetl ścieżkę szkoleniową",
-    "paths_empty_title": "Nie znaleziono ścieżek",
-    "paths_empty_description": "Spróbuj innego wyszukiwania lub wyczyść filtry.",
-    "courses_empty_title": "Żaden kurs nie pasuje do Twojego wyszukiwania",
-    "courses_empty_description": "Wypróbuj inne wyszukiwane hasło."
+    "heading": "Eksploruj"
   },
   "exercises": {
     "heading": "Ćwiczenia",
@@ -514,29 +477,7 @@
     "submitted": "Przesłane",
     "in_progress": "Ocena w toku",
     "graded": "Ocenione",
-    "lesson": "Lekcja",
-    "total": "Razem",
-    "completed": "Ukończono",
-    "overdue": "Zaległe",
-    "empty": "Nie ma jeszcze żadnych ćwiczeń.",
-    "actions": {
-      "view": "Zobacz",
-      "continue": "Kontynuuj",
-      "start": "Zacznij"
-    },
-    "submission_states": {
-      "not_submitted": "Nie przesłano",
-      "awaiting_grade": "Oczekiwanie na ocenę",
-      "submitted": "Przesłane"
-    },
-    "table": {
-      "assignment": "Przypisanie",
-      "course": "Kurs",
-      "status": "Stan",
-      "due_date": "Termin",
-      "submission": "Poddanie",
-      "grade": "Ocena"
-    }
+    "lesson": "Lekcja"
   },
   "my_learning": {
     "heading": "Moja nauka",
@@ -570,9 +511,7 @@
     "explore": "Eksploruj",
     "help": "Pomoc",
     "settings": "Ustawienia",
-    "cohorts": "Kohorty",
-    "learning_paths": "Ścieżki nauki",
-    "my_courses": "Moje kursy"
+    "cohorts": "Kohorty"
   },
   "upgrade": {
     "certificate": "Uaktualnij swój plan, aby generować certyfikaty",
@@ -768,9 +707,7 @@
       "cancel": "Anuluj",
       "snackbar_success": "Przypisano {assigned} użytkowników do kursów ({alreadyEnrolled} jest już zapisanych, wysłano e-maile: {emailsSent})",
       "snackbar_no_courses": "Proszę wybrać przynajmniej jeden kurs",
-      "snackbar_failed": "Nie udało się przypisać kursów",
-      "snackbar_partial": "Przypisano {assigned} użytkowników ({alreadyEnrolled} miało już dostęp, wysłano e-maile: {emailsSent}). Pominięte kursy zawierające tylko ścieżkę: {names} — przypisz zawierającą ścieżkę nauczania lub wyłącz opcję „Zapisz się tylko na ścieżce szkoleniowej” w ustawieniach kursu.",
-      "path_only_badge": "Tylko ścieżka"
+      "snackbar_failed": "Nie udało się przypisać kursów"
     },
     "import": {
       "title": "Importuj użytkowników",
@@ -793,11 +730,6 @@
       "all_cohorts": "Wszystkie kohorty",
       "select_cohorts": "Wybierz konkretne kohorty",
       "select_cohorts_placeholder": "Wybierz kohorty...",
-      "select_paths_placeholder": "Wybierz ścieżki edukacyjne...",
-      "path_access": "Dostęp do ścieżek edukacyjnych",
-      "no_paths": "Bez przypisania do ścieżki edukacyjnej",
-      "all_paths": "Wszystkie ścieżki edukacyjne",
-      "select_paths": "Wybierz konkretne ścieżki edukacyjne",
       "drop_csv": "Upuść plik CSV tutaj lub kliknij, aby wybrać jeden",
       "csv_hint": "Plik CSV w formacie UTF-8 z kolumną adresu e-mail. Maks. liczba wierszy: {rows}, 5 MB.",
       "download_template": "Pobierz szablon",
@@ -821,9 +753,7 @@
       },
       "submit_count": "Importuj {count} studentów",
       "result_heading": "Zaimportowano {count} studentów",
-      "start_over": "Wybierz inny plik",
-      "skipped_path_only_title": "Pominięto {count} kursów obejmujących tylko ścieżkę",
-      "skipped_path_only_description": "{names}. Na te kursy można zapisać się wyłącznie w ramach ścieżki edukacyjnej. Przypisz zawierającą ścieżkę szkoleniową (to zapewnia również inne kursy) lub wyłącz opcję „Zapisz się tylko na ścieżce szkoleniowej” w ustawieniach kursu."
+      "start_over": "Wybierz inny plik"
     },
     "page_subtitle": "Zobacz, kto należy do Twojej organizacji, kto się uczy, kto jest zaproszony i jak się z nimi skontaktować.",
     "user_analytics": {
@@ -959,8 +889,7 @@
       "custom": "Filtry niestandardowe",
       "all": "Wszyscy studenci"
     },
-    "learner_count": "{count} studentów",
-    "path_only_badge": "Tylko ścieżka"
+    "learner_count": "{count} studentów"
   },
   "community": {
     "title": "Społeczność",
@@ -1118,9 +1047,7 @@
         "generate_link": "Wygeneruj nowy link",
         "open_link": "Otwórz link w nowej karcie",
         "copy_link": "Skopiuj link",
-        "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
-        "enroll_only_in_learning_path": "Zapisz się tylko na ścieżkę szkoleniową",
-        "enroll_only_in_learning_path_desc": "Gdy ta opcja jest włączona, uczniowie mogą zapisać się na ten kurs wyłącznie poprzez ścieżkę edukacyjną. Istniejące zapisy zostaną zachowane."
+        "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją."
       },
       "analytics": {
         "title": "Analityka"
@@ -1365,12 +1292,7 @@
           "signature_upload_hint": "Prześlij obraz podpisu (opcjonalnie)",
           "signature_dont_crop": "Nie przycinaj",
           "signature_upload_in_progress": "Przed zapisaniem poczekaj na zakończenie przesyłania podpisu.",
-          "save_failed": "Nie można zapisać projektu certyfikatu. Sprawdź formularz i spróbuj ponownie.",
-          "signatory_one": "Sygnatariusz 1",
-          "signatory_two": "Sygnatariusz 2",
-          "signatory_name": "Nazwisko sygnatariusza",
-          "signatory_role": "Rola sygnatariusza",
-          "signature_image": "Obraz podpisu"
+          "save_failed": "Nie można zapisać projektu certyfikatu. Sprawdź formularz i spróbuj ponownie."
         }
       },
       "people": {
@@ -1489,8 +1411,7 @@
             "title": "Udostępnij dostęp studentowi",
             "description": "Przyznaj {email} dostęp do tego kursu. Wyślemy zaproszenie e-mailem, aby dołączył do Twojej organizacji i zapisał się na ten kurs.",
             "cancel": "Anuluj",
-            "send_invite": "Wyślij zaproszenie",
-            "path_only_notice": "Na ten kurs można zapisać się wyłącznie w ścieżce szkoleniowej, dlatego nie można przyznać bezpośredniego dostępu. Zamiast tego przypisz zawierającą ścieżkę szkoleniową — lub wyłącz opcję „Zapisz się tylko na ścieżce szkoleniowej” w ustawieniach kursu."
+            "send_invite": "Wyślij zaproszenie"
           },
           "invite_new_students_title": "Zaproś nowych uczniów",
           "invite_new_students_description": "Zaproś nowe osoby do organizacji i wstępnie przypisz je do tego kursu. Utworzą konto, zaakceptują zaproszenie i uzyskają dostęp.",
@@ -1535,17 +1456,9 @@
             "multi_use_30d": "Wielokrotnego użytku (30 dni)",
             "custom": "Niestandardowe"
           },
-          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów.",
-          "members_added": "{count, plural, one {# członek został pomyślnie dodany} other {# członek został pomyślnie dodany}}",
-          "path_only_notice_title": "Studenci przyłączają się poprzez ścieżkę edukacyjną",
-          "path_only_notice_description": "Na ten kurs można zapisać się wyłącznie na ścieżce edukacyjnej, dlatego nie można zapraszać na niego uczniów. Nadal możesz zapraszać korepetytorów poniżej. Aby zapewnić uczniom dostęp, przypisz zawierającą ścieżkę nauczania lub wyłącz opcję „Zapisz się tylko w ścieżce edukacyjnej” w ustawieniach kursu."
+          "student_limit_reached": "Osiągnąłeś limit studentów w swoim planie. Uaktualnij, aby zaprosić więcej uczniów."
         },
-        "learner": "Student",
-        "source": "Źródło",
-        "source_learning_path": "Ścieżka edukacyjna",
-        "source_cohort": "Kohorta",
-        "source_filter_all": "Wszystkie źródła",
-        "source_filter_direct": "Bezpośrednie"
+        "learner": "Student"
       },
       "marks": {
         "title": "Znaki",
@@ -2892,11 +2805,6 @@
       "description": "Zaraz zobaczysz, co zobaczy student, który zapisze się na ten kurs",
       "copy_link": "Skopiuj link",
       "go_to_lms": "Przejdź do LMS-a"
-    },
-    "not_found": {
-      "header": "Nie znaleziono kursu",
-      "body": "Kurs, którego szukasz nie istnieje lub mógł zostać usunięty.",
-      "button": "Idź do domu"
     }
   },
   "courses": {
@@ -2915,8 +2823,7 @@
       },
       "success": {
         "course_cloned": "Kurs został pomyślnie skopiowany"
-      },
-      "title_copy_format": "{title} (Kopia)"
+      }
     },
     "new_course_modal": {
       "heading": "Utwórz kurs",
@@ -2996,8 +2903,7 @@
       "tags": "Tagi",
       "empty_tags": "Brak dostępnych tagów"
     },
-    "page_subtitle": "Gdzie lekcje stają się kursami, a kursy — zapisami.",
-    "pricing_free": "Bezpłatny"
+    "page_subtitle": "Gdzie lekcje stają się kursami, a kursy — zapisami."
   },
   "ai": {
     "help_me": "Pomóż mi pisać",
@@ -3071,24 +2977,7 @@
     "open_academy": "Otwarta Akademia",
     "explore_more_courses": "Przeglądaj więcej kursów",
     "view_more": "Zobacz więcej",
-    "upcoming_sessions_heading": "Sesje na żywo",
-    "completed": "Ukończono",
-    "completed_of": "{completed} z {total}",
-    "continue_course": "Kontynuuj kurs",
-    "course_position": "Kurs {course} z {total}",
-    "enrolled": "Zapisano",
-    "explore_courses_hours": "{count} kursów · {hours}h",
-    "explore_lessons_count": "{count} lekcji",
-    "explore_something_new": "Odkryj coś nowego",
-    "lessons_done": "{completed} z {total} lekcji wykonanych",
-    "no_recommendations": "Nic jeszcze nie polecono",
-    "no_recommendations_description": "Przejrzyj katalog, aby znaleźć kolejny kurs lub ścieżkę edukacyjną.",
-    "exercise_status_in_progress": "W toku",
-    "exercise_status_overdue": "Zaległe",
-    "exercise_status_not_submitted": "Nie przesłano",
-    "no_exercises": "Brak nadchodzących ćwiczeń",
-    "no_exercises_description": "Tutaj pojawią się ćwiczenia, które musisz przesłać.",
-    "upcoming_exercises": "Nadchodzące ćwiczenia"
+    "upcoming_sessions_heading": "Sesje na żywo"
   },
   "schedule": {
     "title": "Twój harmonogram",
@@ -3330,8 +3219,7 @@
     "back_to_app": "Powrót do aplikacji",
     "create": "Utwórz",
     "distribute": "Rozpowszechniaj",
-    "tools": "Narzędzia",
-    "learning_paths": "Ścieżki edukacyjne"
+    "tools": "Narzędzia"
   },
   "media_manager": {
     "page_title": "Menedżer mediów - ClassroomIO",
@@ -3425,7 +3313,6 @@
     },
     "filters": {
       "search_placeholder": "Wyszukaj zasoby",
-      "apply": "Zastosuj",
       "status_options": {
         "all": "Wszystkie statusy",
         "active": "Aktywny",
@@ -4263,8 +4150,7 @@
           "tags": "Tagi",
           "students": "Studenci",
           "settings": "Ustawienia",
-          "cohorts": "Kohorty",
-          "learning_paths": "Ścieżki uczenia się"
+          "cohorts": "Kohorty"
         },
         "placeholder": "Przeszukuj kursy, kohorty, ścieżki edukacyjne, widżety, uczniów, tagi, ustawienia...",
         "org_placeholder": "Przeszukuj kursy, kohorty, ścieżki edukacyjne, widżety, uczniów, tagi, ustawienia...",
@@ -5327,11 +5213,7 @@
       "pagination_status": "Strona {page} z {totalPages}",
       "published_access_callout_title": "Dostęp studencki",
       "published_access_callout_description": "Studenci mają dostęp wyłącznie do opublikowanych kursów. Kursy mogą znajdować się w tej kohorcie Twojego zespołu, gdy nie są jeszcze opublikowane, ale pozostają ukryte przed uczniami, dopóki ich nie opublikujesz.",
-      "empty_student_description": "Nie ma jeszcze opublikowanych kursów w tej kohorcie.",
-      "add_count": "Dodaj {count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}",
-      "adding": "Dodawanie kursów…",
-      "load_failed": "Nie udało się załadować kursów.",
-      "retry": "Spróbuj ponownie"
+      "empty_student_description": "Nie ma jeszcze opublikowanych kursów w tej kohorcie."
     },
     "newsfeed": {
       "post": "Nowy post",
@@ -5509,13 +5391,11 @@
       "disabled": "Ten link z zaproszeniem został wyłączony.",
       "closed": "Nowi członkowie nie są już przyjmowani.",
       "succeeded": "Dołączyłeś",
-      "failed": "Nie udało się dołączyć. Spróbuj ponownie.",
-      "learning_path_button": "Dołącz do ścieżki"
+      "failed": "Nie udało się dołączyć. Spróbuj ponownie."
     },
     "load_failed": "Nie można załadować linku z zaproszeniem",
     "generate_failed": "Nie można utworzyć linku z zaproszeniem",
-    "toggle_failed": "Nie można zaktualizować linku z zaproszeniem",
-    "learning_path_description": "Każda osoba posiadająca ten link może dołączyć do tej ścieżki edukacyjnej i wszystkich zawartych na niej kursów. Udostępnij zamiast wpisywać maile jeden po drugim."
+    "toggle_failed": "Nie można zaktualizować linku z zaproszeniem"
   },
   "lms": {
     "view_landing_page": "Strona główna"
@@ -5560,860 +5440,5 @@
     "format_json": "JSON",
     "copied": "Skopiowano do schowka",
     "copy_failed": "Nie można skopiować do schowka"
-  },
-  "learningPath": {
-    "legacy": {
-      "title": "Ścieżki edukacyjne",
-      "subtitle": "Ustrukturyzowane ścieżki, w których jesteś zapisany."
-    },
-    "settings": {
-      "heading": "Ustawienia",
-      "subtitle": "Zarządzaj wyglądem, ceną i zachowaniem tej ścieżki dla uczestników.",
-      "identity_heading": "Tożsamość",
-      "path_name": "Nazwa ścieżki",
-      "description": "Opis",
-      "pricing_heading": "Cena",
-      "pricing_description": "Cena pakietu dla tej ścieżki. Łączna wartość tych kursów osobno wynosi {total}.",
-      "path_price": "Cena ścieżki",
-      "savings_badge": "Uczestnicy oszczędzają {savings}",
-      "show_savings": "Pokaż oszczędności w porównaniu z pojedynczymi kursami",
-      "behaviour_heading": "Zachowanie",
-      "self_enrollment": "Zezwalaj na samodzielną rejestrację",
-      "sequential_unlock": "Odblokuj kursy po kolei",
-      "auto_enroll": "Automatyczna rejestracja przy zakupie",
-      "status_heading": "Status",
-      "status_description": "Kontroluje miejsce wyświetlania ścieżki.",
-      "status_visible": "Widoczne",
-      "status_hidden": "Ukryte",
-      "status_active": "Aktywne",
-      "status_active_description": "Na stronie docelowej i w systemie LMS dla zarejestrowanych uczestników.",
-      "status_draft": "Wersja robocza",
-      "status_draft_description": "Ukryte dla odwiedzających i uczestników podczas tworzenia.",
-      "status_archived": "Zarchiwizowane",
-      "status_archived_description": "Usunięte wszędzie. Postępy uczestników i dostęp do kursu są zachowane.",
-      "danger_heading": "Strefa niebezpieczna",
-      "archive_button": "Ścieżka archiwum",
-      "delete_button": "Usuń ścieżkę"
-    },
-    "certificate": {
-      "heading": "Certyfikat",
-      "subtitle": "Przyznaj certyfikat na poziomie ścieżki, gdy uczestnik ukończy każdy kurs.",
-      "award_label": "Przyznaj certyfikat ścieżki",
-      "award_description": "Wydawany automatycznie po ukończeniu i wyświetlany na stronie Certyfikaty uczestnika.",
-      "requirement_courses": "Wszystkie ukończone kursy — każda lekcja ukończona",
-      "requirement_exercises": "Wszystkie przesłane lub zaliczone ćwiczenia w każdym kursie",
-      "award_hint": "{count} przyznanych certyfikatów do tej pory.",
-      "details_heading": "Szczegóły certyfikatu",
-      "details_description": "Co znajduje się na wydanym certyfikacie.",
-      "certificate_title": "Tytuł certyfikatu",
-      "certificate_issuer": "Wydane przez",
-      "preview_recipient": "Niniejszy certyfikat potwierdza, że",
-      "preview_line": "pomyślnie ukończyłeś tę ścieżkę edukacyjną."
-    },
-    "landing_editor": {
-      "heading": "Strona docelowa",
-      "subtitle": "Kontroluj, co użytkownicy widzą na publicznej stronie ścieżki pod adresem /path/{slug}.",
-      "headline": "Nagłówek",
-      "subheadline": "Podtytuł",
-      "visitor_access": "Co widzą użytkownicy",
-      "access_teaser": "Tylko zwiastun",
-      "access_teaser_description": "Opis ścieżki, tytuły kursów i cena — brak szczegółów lekcji.",
-      "access_syllabus": "Pełny program nauczania",
-      "access_syllabus_description": "Użytkownicy widzą każdy kurs i jego konspekt lekcji, ale nie widzą treści.",
-      "access_preview": "Sylabus + lekcje podglądowe",
-      "access_preview_description": "Pełny plan, a także lekcje oznaczone jako podglądy są dostępne bezpłatnie.",
-      "show_instructors": "Pokaż instruktorów",
-      "show_testimonials": "Pokaż opinie",
-      "show_faqs": "Pokaż FAQ",
-      "preview_public_page": "Podgląd strony publicznej"
-    },
-    "analytics": {
-      "heading": "Analiza",
-      "subtitle": "Sposób, w jaki uczniowie przechodzą przez ścieżkę.",
-      "range": "Ostatnie 90 dni",
-      "enrolled": "Zapisani",
-      "enrolled_hint": "Łączna liczba uczniów",
-      "active_learners": "Aktywni uczniowie",
-      "active_hint": "pracowali w ciągu ostatnich 14 dni",
-      "completion_rate": "Wskaźnik ukończenia",
-      "completion_hint": "Ukończono ogółem",
-      "avg_time": "Średni czas ukończenia",
-      "avg_time_hint": "wśród ukończonych kursów",
-      "funnel_heading": "Lejek kursu",
-      "funnel_subtitle": "Ilu uczniów dotarło do każdego kursu i ukończyło go w kolejności.",
-      "funnel_empty": "Dodaj kursy, aby zobaczyć lejek.",
-      "stuck_heading": "Gdzie uczniowie utknęli",
-      "stuck_subtitle": "Lekcje i ćwiczenia, które blokują obecnie najwięcej uczniów.",
-      "stuck_lesson": "Lekcja",
-      "stuck_exercise": "Ćwiczenie",
-      "stuck_blocked_singular": "utknięto",
-      "stuck_blocked_plural": "utknięto"
-    },
-    "people": {
-      "heading": "Osoby",
-      "subtitle": "{count} uczniów zapisanych na tę ścieżkę.",
-      "search": "Wyszukaj według nazwy lub adresu e-mail…",
-      "learner": "Uczeń",
-      "learners": "Uczniowie",
-      "path_progress": "Postęp ścieżki",
-      "current_course": "Aktualny kurs",
-      "enrolled": "Zapisano",
-      "not_started": "Nie rozpoczęto",
-      "completed": "Ukończono",
-      "certificate_earned": "Zdobyto certyfikat",
-      "remove_member": "Usuń ucznia",
-      "empty": "Brak uczniów pasujących do tego wyszukiwania."
-    },
-    "courses_builder": {
-      "heading": "Kursy",
-      "subtitle": "Dodaj kursy i przeciągnij, aby ustawić kolejność, w jakiej uczniowie będą się po nich poruszać.",
-      "count": "{count} kursów w tej ścieżce",
-      "add_course": "Dodaj kurs",
-      "add_course_picker_label": "Wybierz kurs do dodania",
-      "no_courses_available": "Brak dostępnych kursów",
-      "empty": "Brak kursów — dodaj jeden, aby rozpocząć.",
-      "drag_hint": "Przeciągnij, aby zmienić kolejność",
-      "sequential_label": "Odblokuj kursy w kolejności",
-      "sequential_description": "Każdy kurs pozostaje zablokowany, dopóki uczeń nie ukończy lekcji i ćwiczeń poprzedniego.",
-      "course_lessons": "lekcje",
-      "course_exercises": "ćwiczenia",
-      "move_up": "Przesuń w górę",
-      "move_down": "Przesuń w dół",
-      "remove_course": "Usuń ze ścieżki"
-    },
-    "admin": {
-      "heading": "Ścieżki edukacyjne",
-      "subtitle": "Grupuj swoje kursy w ścieżki edukacyjne, które uczestnicy będą przechodzić w kolejności.",
-      "active_paths": "Aktywne ścieżki",
-      "enrolled_learners": "Zarejestrowani uczniowie",
-      "completions": "Ukończenia",
-      "completion_rate": "Wskaźnik ukończenia",
-      "completion": "Ukończenie",
-      "learners": "Uczniowie",
-      "updated": "Zaktualizowano",
-      "search": "Szukaj ścieżek…",
-      "filter_all": "Wszystkie",
-      "create_path": "Utwórz ścieżkę",
-      "create_course": "Nowy kurs",
-      "manage": "Zarządzaj",
-      "continue_setup": "Kontynuuj konfigurację",
-      "new_path_name": "Nowa ścieżka nauki",
-      "untitled_path": "Ścieżka bez tytułu"
-    },
-    "detail": {
-      "course_heading": "Kursy ścieżki",
-      "courses_complete": "Ukończone kursy",
-      "all_courses_complete": "Wszystkie kursy ukończone",
-      "sequential": "Ukończ każdy kurs, aby odblokować kolejny.",
-      "unlock_hint": "Każdy kurs odblokowuje się po ukończeniu wszystkich lekcji i ćwiczeń z poprzedniego kursu.",
-      "unlocks_after": "Odblokowuje się po",
-      "lessons": "lekcjach",
-      "exercises": "ćwiczeniach",
-      "review": "Przeglądzie",
-      "enroll": "Zapisz się",
-      "hours": "~{count} godz.",
-      "certificate_on_completion": "Zdobądź certyfikat po ukończeniu każdego kursu.",
-      "certificate_hint": "Ukończ wszystkie {count} kursy, aby odblokować i pobrać swój certyfikat.",
-      "certificate_earned": "Zdobyty certyfikat",
-      "view_certificate": "Wyświetl certyfikat"
-    },
-    "my_learning": {
-      "heading": "Moja nauka",
-      "subtitle": "Śledź ścieżki i kursy, które realizujesz.",
-      "heading_learning_paths": "Ścieżki edukacyjne",
-      "heading_courses": "Moje kursy",
-      "courses_subtitle": "Każdy rozpoczęty kurs, niezależnie od tego, gdzie się znajduje.",
-      "paths_title": "Ścieżki edukacyjne",
-      "courses_title": "Moje kursy",
-      "course_paths_title": "Ścieżki kursów",
-      "course_paths_description": "Kursy, które są częścią ścieżki edukacyjnej, pokazują, do której ścieżki należą.",
-      "currently_learning": "Aktualnie się uczysz"
-    },
-    "empty": {
-      "title": "Brak ścieżek edukacyjnych",
-      "description": "Tutaj pojawią się ścieżki strukturalne, na które jesteś zapisany. Zapisz się na ścieżkę z katalogu, aby rozpocząć naukę w kolejności.",
-      "back_to_paths": "Powrót do ścieżek edukacyjnych",
-      "path_not_found_title": "Nie znaleziono ścieżki",
-      "path_not_found_description": "Ta ścieżka edukacyjna mogła zostać wycofana z publikacji lub usunięta.",
-      "library_no_results_title": "Nic nie pasuje do Twoich filtrów",
-      "library_no_results_description": "Wypróbuj inny filtr lub wyczyść go, aby zobaczyć wszystko."
-    },
-    "explore": {
-      "title": "Odkryj więcej ścieżek",
-      "tagline": "Ścieżki stworzone, by zaprowadzić Cię dalej.",
-      "view_path": "Wyświetl ścieżkę",
-      "view_more": "Zobacz więcej"
-    },
-    "enrollment": {
-      "not_started": "Nie rozpoczęto",
-      "in_progress": "W toku",
-      "completed": "Ukończono",
-      "locked": "Zablokowano",
-      "lessons_label": "lekcje"
-    },
-    "toolbar": {
-      "search": "Szukaj",
-      "filters": "Filtry",
-      "clear_all": "Wyczyść wszystko",
-      "status": "Status",
-      "all": "Wszystkie",
-      "grid_view": "Widok siatki",
-      "list_view": "Widok listy",
-      "results": "wyniki",
-      "difficulty": "Poziom trudności",
-      "difficulty_any": "Dowolny",
-      "difficulty_beginner": "Początkujący",
-      "difficulty_intermediate": "Średniozaawansowany",
-      "difficulty_advanced": "Zaawansowany"
-    },
-    "row": {
-      "completed": "Ukończono"
-    },
-    "card": {
-      "course": "kurs",
-      "courses": "kursy",
-      "of": "z",
-      "view_certificate": "Wyświetl certyfikat",
-      "certificate_earned": "Zdobyty certyfikat",
-      "actions_menu_aria": "Działania na ścieżce",
-      "updated_at": "Zaktualizowano {date}",
-      "published": "Opublikowano",
-      "unpublished": "Niepublikowane",
-      "badge": "Ścieżka edukacyjna",
-      "lesson": "lekcja",
-      "lessons": "lekcje",
-      "exercise": "ćwiczenia",
-      "exercises": "ćwiczenia"
-    },
-    "hero": {
-      "currently_learning": "Aktualnie się uczę",
-      "continue_learning": "Kontynuuj nauka",
-      "start_learning": "Rozpocznij naukę",
-      "up_next": "Następne",
-      "view_path": "Wyświetl ścieżkę",
-      "courses_completed": "ukończonych kursów"
-    },
-    "status": {
-      "draft": "Wersja robocza",
-      "active": "Aktywne",
-      "archived": "Zarchiwizowane"
-    },
-    "ribbon": {
-      "part_of": "jest częścią",
-      "view_path": "Wyświetl ścieżkę",
-      "path_label": "Ścieżka edukacyjna",
-      "course_n_of_total": "Kurs {position} z {total}",
-      "next_in_path": "NASTĘPNY NA TWOJEJ DROGIE",
-      "next_course_position": "Kurs {position}",
-      "unlocks_after_finish": "Odblokowuje się po ukończeniu tego kursu — pozostało jeszcze {lessons} lekcji i {exercises} ćwiczeń.",
-      "locked": "Zablokowane",
-      "path_complete": "Ścieżka ukończona — ukończono wszystkie kursy. Świetna praca!"
-    },
-    "progress": {
-      "label": "postęp"
-    },
-    "badge": {
-      "learning_path": "Ścieżka nauki",
-      "course": "Kurs"
-    },
-    "course": {
-      "part_of": "Część",
-      "continue_course": "Kontynuuj kurs",
-      "review_course": "Przejrzyj kurs",
-      "completed_label": "Ukończono",
-      "view_course": "Wyświetl kurs",
-      "view_more": "Wyświetl więcej",
-      "explore_more_title": "Odkryj więcej kursów",
-      "explore_more_tagline": "Kilka kursów wybranych na podstawie tego, co aktualnie robisz.",
-      "type_self_paced": "We własnym tempie",
-      "type_live_class": "Zajęcia na żywo",
-      "type_compliance": "Zgodność",
-      "type_public": "Publiczne"
-    },
-    "modals": {
-      "add_courses": {
-        "title": "Dodaj kursy do ścieżki",
-        "search_placeholder": "Szukaj kursów…",
-        "no_courses": "Brak dostępnych kursów do dodania.",
-        "no_matches": "Brak kursów pasujących do wyszukiwania.",
-        "cancel": "Anuluj",
-        "submit": "Dodaj {count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}",
-        "submitting": "Dodawanie kursów…",
-        "select_courses": "Wybierz kursy",
-        "pagination_status": "Strona {page} z {totalPages}",
-        "load_failed": "Nie udało się załadować kursów.",
-        "retry": "Spróbuj ponownie"
-      },
-      "create": {
-        "title": "Utwórz ścieżkę edukacyjną",
-        "name_label": "Nazwa ścieżki",
-        "name_placeholder": "np. Tworzenie stron internetowych Fullstack",
-        "desc_label": "Opis",
-        "cancel": "Anuluj",
-        "submit": "Utwórz ścieżkę edukacyjną",
-        "failed": "Nie udało się utworzyć ścieżki szkoleniowej",
-        "desc_placeholder": "Krótkie podsumowanie osiągnięć uczniów..."
-      }
-    },
-    "workspace": {
-      "finish_setup": "Zakończ konfigurację · {percent}%",
-      "view_path_site": "Zobacz stronę ścieżki",
-      "coming_soon": {
-        "title": "{tab} — Wkrótce",
-        "description": "Ta karta obszaru roboczego będzie dostępna w Fazie 3. Zarządzanie kursami i ich konfiguracja są w pełni funkcjonalne w tej wersji."
-      },
-      "tabs": {
-        "courses": "Kursy",
-        "people": "Osoby",
-        "analytics": "Analityka",
-        "landing": "Strona docelowa",
-        "certificate": "Certyfikaty",
-        "settings": "Ustawienia",
-        "setup": "Konfiguracja"
-      },
-      "publish_path": "Opublikuj ścieżkę",
-      "published": "Opublikowano ścieżkę edukacyjną",
-      "copy_path_url": "Skopiuj adres URL ścieżki",
-      "preview_missing_slug": "Wygeneruj i zapisz informację o ścieżce przed podglądem.",
-      "url_copied": "Adres URL ścieżki szkoleniowej skopiowany do schowka",
-      "loading_title": "Ładowanie ścieżki szkoleniowej…",
-      "loading_description": "Poczekaj, aż załadujemy dane Twojej ścieżki szkoleniowej.",
-      "publish_failed": "Nie udało się opublikować ścieżki szkoleniowej",
-      "not_found_title": "Nie znaleziono ścieżki szkoleniowej",
-      "not_found_description": "Ścieżka szkoleniowa, której szukasz nie istnieje lub została usunięta.",
-      "back_to_paths": "Powrót do ścieżek edukacyjnych",
-      "load_failed_title": "Nie udało się wczytać tej ścieżki szkoleniowej",
-      "load_failed_description": "Sprawdź połączenie i spróbuj ponownie."
-    },
-    "setup": {
-      "title": "Skonfiguruj swoją ścieżkę",
-      "summary": "Ścieżka zostanie uruchomiona po ustaleniu kolejności kursów, wycenie i ustawieniu jej jako Aktywnej.",
-      "progress": "Ukończono {completed} z {total}",
-      "done": "Gotowe",
-      "launch_title": "Pozostało {count} {count, plural, one {krok} few {kroki} many {kroków} other {kroków}} do uruchomienia",
-      "launch_desc": "Ustal kolejność kursów, ustal cenę, dopracuj stronę docelową i aktywuj.",
-      "activate_now": "Aktywuj teraz",
-      "step_name_title": "Nazwij i opisz swoją ścieżkę",
-      "step_name_desc": "Nadaj ścieżce jasną nazwę, zorientowaną na rezultaty, i krótkie podsumowanie.",
-      "step_name_action": "Edytuj szczegóły",
-      "step_courses_title": "Dodaj kursy",
-      "step_courses_desc": "Wybierz kursy, które składają się na tę ścieżkę nauki.",
-      "step_courses_action": "Dodaj kursy",
-      "step_order_title": "Ustaw kolejność kursów",
-      "step_order_desc": "Przeciągnij kursy do kolejności, w jakiej uczniowie powinni je ukończyć.",
-      "step_order_action": "Ustaw kolejność",
-      "step_price_title": "Ustaw cenę",
-      "step_price_desc": "Wyceń ścieżkę jako pakiet — uczniowie zobaczą oszczędności w porównaniu z pojedynczymi kursami.",
-      "step_price_action": "Ustaw cenę",
-      "step_landing_title": "Dostosuj stronę docelową",
-      "step_landing_desc": "Cele, umiejętności, instruktorzy, opinie i często zadawane pytania na publicznej stronie ścieżki.",
-      "step_landing_action": "Dostosuj",
-      "step_publish_title": "Opublikuj ścieżkę",
-      "step_publish_desc": "Opublikuj ścieżkę, aby pojawiła się na Twojej stronie docelowej i LMS-ie.",
-      "step_publish_action": "Publikuj",
-      "reorder_action": "Zmień kolejność",
-      "subtitle": "Wykonaj te kroki, aby udostępnić {name} swoim uczniom."
-    },
-    "builder": {
-      "title": "Kursy",
-      "subtitle": "Dodaj kursy i przeciągnij je, aby ustawić kolejność, w jakiej uczniowie będą je przechodzić.",
-      "unlock_rule_title": "Odblokuj kursy w kolejności",
-      "unlock_rule_desc": "Każdy kurs pozostaje zablokowany, dopóki uczeń nie ukończy lekcji i ćwiczeń z poprzedniego kursu. Wyłącz, aby zezwolić na dowolną kolejność.",
-      "drag_hint": "Przeciągnij, aby zmienić kolejność",
-      "lessons_count": "{count} {count, plural, one {lekcja} few {lekcje} many {lekcji} other {lekcji}}",
-      "exercises_count": "{count} {count, plural, one {ćwiczenie} few {ćwiczenia} many {ćwiczeń} other {ćwiczeń}}",
-      "open_course": "Otwórz kurs",
-      "remove_course": "Usuń ze ścieżki",
-      "add_course_button": "Dodaj kurs do ścieżki",
-      "empty_title": "Nie ma jeszcze kursów w tej ścieżce szkoleniowej",
-      "empty_description": "Dodaj kursy, które poprowadzą uczniów przez ustrukturyzowaną sekwencję. Zacznij od kliknięcia przycisku Dodaj.",
-      "start_reorder": "Zmień kolejność",
-      "end_reorder": "Zakończ zmianę kolejności"
-    },
-    "listing": {
-      "title": "Ścieżki edukacyjne",
-      "subtitle": "Twórz i zarządzaj ustrukturyzowanymi doświadczeniami edukacyjnymi, które prowadzą uczniów przez wiele kursów.",
-      "create_path": "Utwórz ścieżkę edukacyjną",
-      "empty": {
-        "title": "Utwórz swoją pierwszą ścieżkę edukacyjną",
-        "description": "Połącz wiele kursów w uporządkowaną sekwencję ze śledzeniem kamieni milowych, bramkami i opcjonalnym certyfikatem ukończenia.",
-        "create_path": "Utwórz ścieżkę edukacyjną",
-        "no_matches_title": "Żadna ścieżka szkoleniowa nie pasuje do Twoich aktywnych filtrów",
-        "no_matches_description": "Spróbuj wyczyścić filtry lub zmienić wyszukiwane hasło."
-      },
-      "card": {
-        "courses_count": "{count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}",
-        "learners_count": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}}"
-      },
-      "filters": {
-        "title": "Filtry",
-        "clear_all": "Wyczyść wszystko",
-        "group_status": "Status",
-        "group_enrollment": "Zapisy",
-        "group_completion": "Wskaźnik ukończenia",
-        "all": "Wszystkie",
-        "published": "Opublikowano",
-        "enrollment_1_49": "1–49",
-        "enrollment_50_plus": "50+",
-        "low": "Niski (poniżej 25%)",
-        "medium": "Średni (25–75%)",
-        "high": "Wysoki (75%+)",
-        "sort_date_created": "Data utworzenia",
-        "sort_last_updated_at": "Ostatnia aktualizacja o godz",
-        "sort_published": "Opublikowano",
-        "sort_courses": "Kursy",
-        "unpublished": "Niepublikowane",
-        "no_learners": "Nie ma jeszcze uczniów"
-      },
-      "toolbar": {
-        "search_placeholder": "Wyszukaj ścieżki edukacyjne…",
-        "grid_view": "Widok siatki",
-        "list_view": "Widok listy"
-      },
-      "load_error_title": "Nie udało się wczytać ścieżek edukacyjnych",
-      "load_more": "Załaduj więcej"
-    },
-    "view_path_site": {
-      "unpublished_title": "Opublikuj swoją ścieżkę edukacyjną",
-      "unpublished_description": "Należy opublikować tę ścieżkę szkoleniową, zanim będzie można wyświetlić witrynę",
-      "cancel": "Anuluj",
-      "publish_path": "Publikuj ścieżkę"
-    },
-    "context_menu": {
-      "open": "Otwórz",
-      "share": "Udostępnij",
-      "invite": "Zaproś",
-      "delete": "Usuń",
-      "view_as_student": "Zobacz jako uczeń"
-    },
-    "snackbar": {
-      "created": "Utworzono ścieżkę edukacyjną",
-      "updated": "Zaktualizowano ścieżkę edukacyjną",
-      "deleted": "Ścieżka szkoleniowa została usunięta",
-      "reordered": "Zaktualizowano kolejność kursów",
-      "course_added": "Kurs dodany",
-      "courses_added": "Dodano kursy",
-      "course_removed": "Kurs usunięty",
-      "tutor_removed": "Usunięto tutora ze ścieżki",
-      "certificate_saved": "Ustawienia certyfikatu zostały zapisane",
-      "landing_saved": "Strona docelowa została zaktualizowana",
-      "landing_save_failed": "Nie udało się zapisać strony docelowej",
-      "link_generated": "Link z zaproszeniem wygenerowany i skopiowany do schowka",
-      "settings_saved": "Ustawienia ścieżki nauki zaktualizowane",
-      "members_add_partial": "Dodano {added}, zaproszono {invited}, nie można dodać {notAdded}",
-      "member_role_updated": "Rola członka została zaktualizowana",
-      "delete_failed": "Nie udało się usunąć ścieżki szkoleniowej",
-      "member_removed": "Uczeń usunięty ze ścieżki"
-    },
-    "analytics": {
-      "title": "Analityka",
-      "subtitle": "Jak uczniowie poruszają się po ścieżce.",
-      "empty": "Brak danych. Zarejestruj uczniów, a oni zaczną się tutaj pojawiać.",
-      "empty_desc": "Zapisz uczniów na tę ścieżkę, a ich postępy pojawią się tutaj.",
-      "stuck": {
-        "title": "Gdzie uczniowie utknęli",
-        "subtitle": "Lekcje i ćwiczenia blokujące obecnie najwięcej uczniów.",
-        "badge": "{count} utknęło",
-        "lesson_desc": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} zatrzymali się na tej lekcji.",
-        "exercise_desc": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} wykonują to ćwiczenie od ponad 2 tygodni.",
-        "empty": "Obecnie żaden z uczniów nie utknął w miejscu. Wielki postęp!",
-        "empty_desc": "Gdy uczniowie utkną, pojawią się tutaj.",
-        "lesson_prefix": "Lekcja:",
-        "exercise_prefix": "Ćwiczenie:",
-        "showing": "Wyświetlanie od {start} do {end} z {total} elementów",
-        "table": {
-          "item": "Element",
-          "course": "Kurs"
-        }
-      },
-      "funnel": {
-        "title": "Lejek kursu",
-        "subtitle": "Ilu uczniów dotarło i ukończyło każdy kurs, w kolejności.",
-        "completed": "ukończone",
-        "in_progress": "w toku",
-        "drop": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} odpadli po kursie {n}",
-        "biggest_drop": "największy spadek",
-        "certificates": "Przyznano {count} {count, plural, one {certyfikat} few {certyfikaty} many {certyfikatów} other {certyfikatów}}"
-      },
-      "stat": {
-        "learners": "Uczniowie",
-        "active": "Aktywni uczniowie",
-        "active_desc": "pracował w ciągu ostatnich 14 dni",
-        "completion_rate": "Stopień ukończenia",
-        "completion_desc": "Ukończono {completed} z {total}",
-        "avg_time": "Średni czas ukończenia",
-        "avg_time_desc": "poprzez uzupełnienia",
-        "enrolled_desc": "+{count} w tym miesiącu",
-        "pending_line": "{count} {count, plural, one {oczekujące zaproszenie} few {oczekujące zaproszenia} many {oczekujących zaproszeń} other {oczekujących zaproszeń}}",
-        "team_desc": "{count, plural, one {# tutor w zespole ścieżki} few {# tutorzy w zespole ścieżki} many {# tutorów w zespole ścieżki} other {# tutorów w zespole ścieżki}}",
-        "avg_time_weeks": "{value} tyg.",
-        "avg_time_days": "{value} dni"
-      },
-      "students": {
-        "subtitle": "Postęp ścieżki na ucznia, bieżący kurs i data rejestracji.",
-        "title": "Przegląd postępów uczniów",
-        "courses_completed": "Ukończone kursy"
-      },
-      "member": {
-        "courses_title": "Kursy na tej ścieżce",
-        "remove": "Usuń ze ścieżki",
-        "status": {
-          "not_started": "Nie rozpoczęte",
-          "in_progress": "W toku",
-          "completed": "Ukończono",
-          "locked": "Zablokowane"
-        },
-        "export": "Eksportuj plik CSV",
-        "progress_label": "Postęp ścieżki"
-      },
-      "export": {
-        "status": "Status"
-      }
-    },
-    "people": {
-      "title": "Ludzie",
-      "subtitle": "{count} {count, plural, one {uczeń} few {uczniowie} many {uczniów} other {uczniów}} zarejestrowani na tej ścieżce",
-      "info_banner": "Dodanie ucznia do tej ścieżki automatycznie rejestruje go na wszystkich {count} {count, plural, one {kurs} few {kursy} many {kursów} other {kursów}}. Usunięcie ich powoduje zachowanie dostępu do kursu i postępów.",
-      "search_placeholder": "Szukaj według nazwy lub adresu e-mail…",
-      "empty": "Nie zapisano jeszcze żadnych uczniów. Aby rozpocząć, dodaj uczniów.",
-      "no_results": "Żaden uczeń nie pasuje do Twojego wyszukiwania.",
-      "invite": {
-        "title": "Dodaj uczniów do ścieżki",
-        "bulk_title": "Zaproś e-mailem",
-        "bulk_description": "Wpisz adresy e-mail oddzielone przecinkami lub nowymi wierszami.",
-        "bulk_submit": "Dodaj uczniów"
-      },
-      "remove": {
-        "title": "Usuń ucznia",
-        "title_non_student": "Usuń członka",
-        "confirm": "Czy na pewno chcesz usunąć {name} z tej ścieżki szkoleniowej? Zachowają dostęp do kursu i postępy.",
-        "confirm_non_student": "Czy na pewno chcesz usunąć {name} z tej ścieżki? Ta osoba straci dostęp do zarządzania tą ścieżką.",
-        "cancel": "Anuluj",
-        "yes": "Usuń"
-      },
-      "badge": {
-        "certificate_earned": "Certyfikat zdobyty",
-        "not_started": "Nie rozpoczęte"
-      },
-      "table": {
-        "learner": "Uczeń",
-        "progress": "Postęp ścieżki",
-        "current_course": "Aktualny kurs",
-        "enrolled": "Zapisany",
-        "actions": "Działania"
-      },
-      "filter": {
-        "all": "Cały postęp",
-        "not_started": "Nie rozpoczęte",
-        "in_progress": "W toku",
-        "completed": "Ukończono"
-      },
-      "info_title": "Informacje o rejestracji ścieżki",
-      "add": "Dodaj",
-      "last_login_at": "Ostatnie logowanie",
-      "you": "Ty",
-      "view": "Zobacz",
-      "delete_profile": "Usuń",
-      "invite_modal": {
-        "loading": "Dodawanie…",
-        "student_limit_reached": "Osiągnięto limit uczniów. Uaktualnij plan, aby dodać więcej uczniów.",
-        "invite": "Zaproś korepetytorów",
-        "invite_students": "Zaproś uczniów",
-        "finish": "Zakończ",
-        "bulk_enroll_queued": "Rejestruję {count} członków w tle…",
-        "bulk_enroll_success": "Zarejestrowani członkowie: {enrolled} ({invited} zaproszeni)",
-        "bulk_enroll_partial": "Zarejestrowani członkowie: {enrolled} ({invited} zaproszeni, {failed} nie powiodło się)",
-        "bulk_enroll_failed": "Rejestracja w tle nie powiodła się",
-        "bulk_enroll_lost": "Utracono śledzenie rejestracji w tle",
-        "bulk_enroll_backgrounded": "Rejestracja nadal działa w tle. Odśwież Osoby, aby zobaczyć wyniki."
-      },
-      "change_role_to_tutor": "Zrób korepetytora",
-      "change_role_to_student": "Zrób studenta"
-    },
-    "certificate": {
-      "title": "Certyfikaty",
-      "awarded_count": "{count, plural, =0 {Brak przyznanych certyfikatów} =1 {Dotychczas przyznano 1 certyfikat} other {Dotychczas przyznano # certyfikatów}}",
-      "allow": "Pozwól uczniom pobrać certyfikat",
-      "email_message_label": "Wiadomość e-mail",
-      "email_message_placeholder": "np. Gratulacje z okazji ukończenia ścieżki edukacyjnej!",
-      "editor": {
-        "title": "Projekt certyfikatu"
-      }
-    },
-    "landing": {
-      "page_builder": "Kreator stron",
-      "display_section": "Pokaż sekcję",
-      "hero": {
-        "title": "Nagłówek główny",
-        "headline": "Tytuł",
-        "headline_placeholder": "np. Zostań starszym programistą Fullstack",
-        "subheadline": "Podtytuł",
-        "subheadline_placeholder": "np. Opanuj nowoczesny frontend, backend i wdrożenia poprzez projekty praktyczne."
-      },
-      "access": {
-        "title": "Dostęp dla odwiedzających",
-        "description": "Określa, ile treści niezapisani odwiedzający mogą przeglądać na publicznej stronie ścieżki.",
-        "teaser_title": "Zajawka",
-        "teaser_desc": "Pokaż tylko tytuły kursów i główne efekty kształcenia.",
-        "syllabus_title": "Program nauczania (zalecane)",
-        "syllabus_desc": "Pokaż pełny program z tytułami lekcji i oznaczeniami zablokowanych treści.",
-        "preview_title": "Podgląd",
-        "preview_desc": "Zezwól odwiedzającym na bezpłatny podgląd pierwszej lekcji każdego kursu bez zapisywania się."
-      },
-      "skills": {
-        "title": "Umiejętności",
-        "placeholder": "np. TypeScript, Docker, PostgreSQL",
-        "help": "Naciśnij Enter, aby dodać. Pojawią się jako tagi na stronie docelowej."
-      },
-      "instructors": {
-        "title": "Instruktorzy",
-        "auto_populated_note": "Instruktorzy są automatycznie pobierani z kursów wchodzących w skład tej ścieżki.",
-        "courses_note": "{count, plural, =0 {Nie dodano jeszcze kursów} =1 {Pobrane z 1 kursu w tej ścieżce} other {Pobrane ze wszystkich # kursów w tej ścieżce}}",
-        "role_placeholder": "np. Główny instruktor · Frontend",
-        "default_role": "Instruktor kursu",
-        "untitled": "Instruktor bez nazwy",
-        "add": "Dodaj instruktora",
-        "no_tutors_found": "Nie znaleziono instruktorów",
-        "min_one_required": "Wymagany jest co najmniej jeden instruktor",
-        "remove": "Usuń instruktora",
-        "upload": "Logo instruktora",
-        "name": "Imię i nazwisko instruktora",
-        "name_placeholder": "Nazwa Twojej firmy",
-        "role": "Rola instruktora",
-        "about": "O instruktorze",
-        "about_placeholder": "Krótkie informacje o instruktorze",
-        "total": "Liczba kursów"
-      },
-      "testimonials": {
-        "title": "Opinie",
-        "untitled": "Opinia bez tytułu",
-        "name": "Imię i nazwisko",
-        "role": "Rola / Stanowisko",
-        "quote": "Cytat",
-        "add": "Dodaj opinię"
-      },
-      "faqs": {
-        "title": "Często zadawane pytania",
-        "untitled": "Pytanie bez tytułu",
-        "question": "Pytanie",
-        "answer": "Odpowiedź",
-        "add": "Dodaj pytanie",
-        "question_placeholder": "Co jest wymagane do ukończenia tej ścieżki?",
-        "answer_placeholder": "Musisz ukończyć wszystkie lekcje i ćwiczenia w każdym kursie."
-      },
-      "header": {
-        "title_placeholder": "np. Fullstack Web Development",
-        "description_placeholder": "Kompleksowy przegląd tego, co osiągną uczniowie...",
-        "title": "Nagłówek",
-        "title_label": "Tytuł",
-        "description_label": "Opis"
-      },
-      "reviews": {
-        "title": "Opinie",
-        "untitled": "Opinia bez tytułu",
-        "name_placeholder": "Jane Doe",
-        "avatar_placeholder": "https://...",
-        "avatar_url": "Adres URL zdjęcia profilowego",
-        "rating_placeholder": "Opcjonalnie (1-5)",
-        "clear_rating": "Wyczyść ocenę",
-        "description_placeholder": "Ta ścieżka nauki dała mi dokładnie takie umiejętności i pewność siebie, jakich potrzebowałem.",
-        "add_reviews": "Dodaj opinie",
-        "fullname": "Imię i nazwisko",
-        "description": "Opis",
-        "rating": "Ocena"
-      },
-      "preview": "Podgląd",
-      "save": "Zapisz zmiany",
-      "requirement": {
-        "title": "Wymaganie"
-      },
-      "description": {
-        "title": "Opis"
-      },
-      "goals": {
-        "title": "Cele"
-      },
-      "certificate": {
-        "title": "Certyfikat",
-        "upload_template": "Szablon certyfikatu"
-      },
-      "pricing": {
-        "title": "Cennik",
-        "payment_required": "Link do płatności jest wymagany",
-        "payment_invalid_url": "Wprowadź prawidłowy adres URL",
-        "enable_paid": "Włącz Płatne",
-        "currency": "Waluta",
-        "cost": "Koszt",
-        "payment": "Link do płatności",
-        "payment_helper": "Stripe, Lemon Squeezy lub dowolny link do płatności",
-        "discount": "Rabat",
-        "no": "Nie",
-        "yes": "Tak",
-        "percent": "Procent rabatu",
-        "percentage_helper": "W procentach%",
-        "gift_on_completion": "Prezent po ukończeniu",
-        "gift": "O prezencie"
-      }
-    },
-    "settings": {
-      "title": "Ustawienia",
-      "general": {
-        "legend": "Informacje ogólne",
-        "desc": "Podstawowe informacje o tej ścieżce edukacyjnej.",
-        "name_label": "Nazwa ścieżki",
-        "name_placeholder": "np. Programowanie Fullstack",
-        "name_required": "Nazwa ścieżki jest wymagana",
-        "description_label": "Opis",
-        "description_placeholder": "Krótkie podsumowanie tego, co osiągną uczniowie...",
-        "description_required": "Opis jest wymagany",
-        "cover_image_legend": "Zdjęcie na okładce",
-        "cover_image_desc": "Prześlij zdjęcie na okładkę tej ścieżki. Zalecany rozmiar: 1200x630px.",
-        "replace_image": "Zmień obraz",
-        "reset_image": "Resetuj",
-        "link": "Link ścieżki",
-        "generate_link": "Generuj nowy link",
-        "open_link": "Otwórz link w nowej karcie",
-        "copy_link": "Kopiuj link",
-        "setup_landing_for_link": "Skonfiguruj stronę docelową, aby uzyskać link do ścieżki"
-      },
-      "enrollment": {
-        "legend": "Zapisy i progresja",
-        "desc": "Skonfiguruj, jak uczniowie zapisują się i przechodzą przez kursy.",
-        "self_enrollment_label": "Zezwalaj na samodzielny zapis",
-        "self_enrollment_desc": "Uczniowie mogą sami zapisać się na tę ścieżkę.",
-        "sequential_unlock_label": "Sekwencyjne odblokowywanie kursów",
-        "sequential_unlock_desc": "Uczniowie muszą ukończyć kursy w określonej kolejności."
-      },
-      "publishing": {
-        "legend": "Publikacja",
-        "desc": "Spraw, aby ta ścieżka była widoczna dla uczniów.",
-        "publish_label": "Opublikuj ścieżkę edukacyjną",
-        "publish_desc": "Spraw, aby ta ścieżka była widoczna i otwórz zapisy.",
-        "published": "Opublikowana",
-        "unpublished": "Nieopublikowana"
-      },
-      "danger": {
-        "legend": "Strefa zagrożenia",
-        "desc": "Trwale usuń tę ścieżkę edukacyjną i wszystkie powiązane z nią dane.",
-        "delete_button": "Usuń ścieżkę edukacyjną",
-        "delete_title": "Usuń ścieżkę nauki",
-        "delete_description": "Czy na pewno chcesz usunąć \"{name}\"? Tej akcji nie można cofnąć."
-      },
-      "cover_image": {
-        "legend": "Zdjęcie okładki",
-        "desc": "Jeśli dodasz okładkę, powinna mieć co najmniej 280 x 200.",
-        "replace": "Zamień",
-        "reset": "Resetuj",
-        "alt": "Osłona ścieżki"
-      },
-      "welcome_email": {
-        "legend": "E-mail powitalny",
-        "desc": "Dostosuj wiadomość, którą uczniowie otrzymują po zapisaniu. Dodaj osobistą notatkę, instrukcje lub link do sesji na żywo.",
-        "placeholder": "Napisz wiadomość powitalną, którą uczniowie otrzymają przy zapisie…"
-      },
-      "progression": {
-        "legend": "Postęp ucznia",
-        "desc": "Określ, czy uczniowie mają dostęp do wszystkich kursów, czy muszą ukończyć je po kolei.",
-        "free": "Dowolna — wszystkie kursy są dostępne",
-        "sequential": "Sekwencyjna — ukończ poprzednie kursy, aby odblokować następny"
-      },
-      "self_enrollment": {
-        "legend": "Uczniowie mogą zapisywać się samodzielnie",
-        "access": "Gdy wyłączone, uczniowie mogą dołączyć tylko przez link z zaproszeniem lub po dodaniu z {people}.",
-        "access_people": "Osoby",
-        "enabled": "Włączone",
-        "disabled": "Wyłączone"
-      }
-    },
-    "courses": {
-      "lessons": "Lekcje",
-      "exercises": "Ćwiczenia"
-    },
-    "view_as_student": {
-      "title": "Spowoduje to przekierowanie do LMS dla uczniów.",
-      "description": "Zobaczysz to, co zobaczy uczeń po zapisaniu się na tę ścieżkę nauki",
-      "copy_link": "Kopiuj link",
-      "go_to_lms": "Przejdź do LMS"
-    },
-    "hub": {
-      "placeholder_title": "Podgląd ścieżki edukacyjnej",
-      "placeholder_description": "Pełne doświadczenie edukacyjne znajduje się w LMS. Otwórz Moją naukę, aby kontynuować tę ścieżkę.",
-      "back_to_my_learning": "Powrót do Mojej nauki"
-    },
-    "not_permitted": {
-      "header": "Brak pozwolenia",
-      "body": "Niestety nie masz dostępu do tej ścieżki szkoleniowej.",
-      "button": "Idź do domu"
-    }
-  },
-  "certificate": {
-    "tab_design": "Projekt",
-    "tab_settings": "Ustawienia",
-    "allow": "Pozwól uczniom pobrać certyfikat",
-    "email_message_label": "Wiadomość e-mail",
-    "email_message_placeholder": "np. Jesteśmy dumni z Twoich postępów — ucz się dalej!",
-    "rules": "Zasady",
-    "editor": {
-      "title": "Projekt certyfikatu",
-      "back": "Wracając do certyfikatów",
-      "unsaved": "Niezapisane",
-      "free_plan": "Darmowy plan",
-      "discard": "Odrzuć",
-      "save": "Zapisz zmiany",
-      "saved": "Projekt certyfikatu został zapisany",
-      "save_failed": "Nie można zapisać projektu certyfikatu. Sprawdź formularz i spróbuj ponownie.",
-      "signature_upload_in_progress": "Przed zapisaniem poczekaj na zakończenie przesyłania podpisu.",
-      "sections": "Sekcje redaktorskie",
-      "preview": "Podgląd na żywo",
-      "panel_templates": "Szablony",
-      "panel_templates_subtitle": "Wybierz szablon, aby zakotwiczyć styl wizualny.",
-      "panel_content": "Treść",
-      "panel_content_subtitle": "Dostosuj słowa pojawiające się na certyfikacie.",
-      "panel_colors": "Kolor akcentujący",
-      "panel_colors_subtitle": "Używany do określenia linii odbiorcy, akcentów i stempla.",
-      "panel_export": "Eksportuj",
-      "panel_export_subtitle": "Wyświetl podgląd aktualnego projektu w momencie jego dostarczenia.",
-      "section_header": "Kopia nagłówka",
-      "section_signatories": "Sygnatariusze",
-      "section_reference": "Odniesienie",
-      "subtitle": "Podtytuł",
-      "subtitle_placeholder": "Odznaczony Najwyższym Wyróżnieniem",
-      "description_override": "Zastąpienie opisu",
-      "description_override_placeholder": "Domyślnie jest to opis kursu.",
-      "description_override_hint": "Pozostaw puste, aby po zapisaniu powrócić do opisu kursu.",
-      "signatory_one_name": "Imię i nazwisko sygnatariusza 1",
-      "signatory_one_role": "Sygnatariusz 1 rola",
-      "signatory_two_name": "Imię i nazwisko sygnatariusza 2",
-      "signatory_two_role": "Rola sygnatariusza 2",
-      "signatory_one_toggle": "Pokaż sygnatariusza 1",
-      "signatory_two_toggle": "Pokaż sygnatariusza 2",
-      "signature_upload": "Podpisowy obraz",
-      "signature_upload_hint": "Prześlij obraz podpisu (opcjonalnie)",
-      "signature_dont_crop": "Nie przycinaj",
-      "id_format": "Format identyfikatora certyfikatu",
-      "id_format_hint": "Użyj „{'seq'}' dla ostatnich czterech cyfr, '{'year'}' dla roku wydania, '{'month'}' dla miesiąca.",
-      "accent_hint": "Kolor akcentujący pojawia się na regule odbiorcy, znaczkach i wyróżnieniu nagłówka szablonu.",
-      "templates_hint": "Szablony są renderowane przy użyciu tego samego modułu renderującego, który jest używany w przypadku pobranych plików PDF i PNG.",
-      "download_pdf": "Pobierz PDF",
-      "download_png": "Pobierz PNG",
-      "print": "Wydrukuj",
-      "export_hint": "Eksporty używają Twojego imienia i nazwiska jako odbiorcy, dzięki czemu możesz wyświetlić podgląd ostatecznego układu.",
-      "preview_failed": "Nie można wygenerować podglądu certyfikatu",
-      "sample_recipient": "Eleanor Vance",
-      "sample_course": "Certyfikat doskonałości",
-      "sample_description": "W uznaniu wybitnych osiągnięć i wzorowego poświęcenia rzemiosłu.",
-      "sample_org": "Królewska Akademia Sztuk",
-      "summary_title": "Aktywny projekt",
-      "summary_subtitle": "Migawka przedstawiająca wygląd certyfikatu po wydaniu.",
-      "field_template": "Szablon",
-      "field_accent": "Akcent",
-      "field_signatories": "Sygnatariusze",
-      "customize_design": "Dostosuj projekt",
-      "signatory_one": "Sygnatariusz 1",
-      "signatory_two": "Sygnatariusz 2",
-      "signatory_name": "Nazwisko sygnatariusza",
-      "signatory_role": "Rola sygnatariusza",
-      "signature_image": "Obraz podpisu"
-    }
   }
 }
