@@ -5772,7 +5772,9 @@
       "description": "Les parcours structurés auxquels vous êtes inscrit s'afficheront ici. Choisissez un parcours dans le catalogue pour commencer votre apprentissage dans l'ordre.",
       "back_to_paths": "Retour aux parcours d'apprentissage",
       "path_not_found_title": "Chemin introuvable",
-      "path_not_found_description": "Ce parcours d'apprentissage a peut-être été dépublié ou supprimé."
+      "path_not_found_description": "Ce parcours d'apprentissage a peut-être été dépublié ou supprimé.",
+      "library_no_results_title": "Rien ne correspond à vos filtres",
+      "library_no_results_description": "Essayez un autre filtre ou effacez-le pour tout voir."
     },
     "explore": {
       "title": "Explorez d'autres chemins",
@@ -5816,7 +5818,11 @@
       "updated_at": "Mis à jour le {date}",
       "published": "Publié",
       "unpublished": "Inédit",
-      "badge": "Parcours d'apprentissage"
+      "badge": "Parcours d'apprentissage",
+      "lesson": "leçon",
+      "lessons": "leçons",
+      "exercise": "exercice",
+      "exercises": "exercices"
     },
     "hero": {
       "currently_learning": "Apprentissage en cours",
@@ -5857,7 +5863,11 @@
       "view_course": "Voir le cours",
       "view_more": "Voir plus",
       "explore_more_title": "Explorer d'autres cours",
-      "explore_more_tagline": "Quelques cours sélectionnés en fonction de vos cours actuels."
+      "explore_more_tagline": "Quelques cours sélectionnés en fonction de vos cours actuels.",
+      "type_self_paced": "À votre rythme",
+      "type_live_class": "Cours en direct",
+      "type_compliance": "Conformité",
+      "type_public": "Publique"
     },
     "modals": {
       "remove_course": {

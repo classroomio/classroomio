@@ -5772,7 +5772,9 @@
       "description": "Hier werden die strukturierten Lernpfade angezeigt, in denen Sie eingeschrieben sind. Melden Sie sich aus dem Katalog für einen Lernpfad an, um die Kurse der Reihe nach zu beginnen.",
       "back_to_paths": "Zurück zu den Lernpfaden",
       "path_not_found_title": "Lernpfad nicht gefunden",
-      "path_not_found_description": "Dieser Lernpfad wurde möglicherweise deaktiviert oder entfernt."
+      "path_not_found_description": "Dieser Lernpfad wurde möglicherweise deaktiviert oder entfernt.",
+      "library_no_results_title": "Nichts entspricht Ihren Filtern",
+      "library_no_results_description": "Probieren Sie einen anderen Filter aus oder löschen Sie die Filter, um alles zu sehen."
     },
     "explore": {
       "title": "Entdecke weitere Wege",
@@ -5816,7 +5818,11 @@
       "updated_at": "Aktualisiert am {date}",
       "published": "Veröffentlicht",
       "unpublished": "Unveröffentlicht",
-      "badge": "Lernpfad"
+      "badge": "Lernpfad",
+      "lesson": "Lektion",
+      "lessons": "Lektionen",
+      "exercise": "Übung",
+      "exercises": "Übungen"
     },
     "hero": {
       "currently_learning": "Aktuell im Lernprozess",
@@ -5857,7 +5863,11 @@
       "view_course": "Kurs ansehen",
       "view_more": "Mehr anzeigen",
       "explore_more_title": "Weitere Kurse entdecken",
-      "explore_more_tagline": "Einige Kurse, basierend auf Ihren aktuellen Kursen."
+      "explore_more_tagline": "Einige Kurse, basierend auf Ihren aktuellen Kursen.",
+      "type_self_paced": "Im eigenen Tempo",
+      "type_live_class": "Live-Klasse",
+      "type_compliance": "Compliance",
+      "type_public": "Öffentlich"
     },
     "modals": {
       "remove_course": {
