@@ -7,7 +7,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { getStudentCourseProgressPercent, isStudentCourseComplete } from '$features/course/utils/compliance-utils';
-  import { learningPathApi } from '../api/learning-path.svelte';
+  import { learnerPathStore } from '../api/learning-path.svelte';
   import { getMockPathById } from '../utils/mock-data';
   import type { PathDifficulty } from '../utils/types';
   import type { CourseDurationFilter, CourseLibraryItem, CourseStatus, LearningPathView } from '../components/types';
@@ -32,18 +32,18 @@
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    if (!learningPathApi.hasLoaded) {
-      learningPathApi.listEnrolled();
+    if (!learnerPathStore.hasLoaded) {
+      learnerPathStore.listEnrolled();
     }
     coursesApi.getEnrolledCourses();
     coursesApi.getRecommendedCourses({ limit: 3 });
   });
 
   const pathCourseItems = $derived.by<CourseLibraryItem[]>(() =>
-    learningPathApi.enrolledPaths.flatMap((path) => {
+    learnerPathStore.enrolledPaths.flatMap((path) => {
       const mockPath = getMockPathById(path.id);
 
-      return learningPathApi.getPathCourses(path).map((course) => ({
+      return learnerPathStore.getPathCourses(path).map((course) => ({
         id: course.courseId,
         title: course.title,
         description: mockPath?.courses.find((item) => item.id === course.courseId)?.description ?? '',
@@ -110,8 +110,8 @@
   const courseLessonsLabel = $derived.by(() => {
     if (!activeCourse) return '';
 
-    const path = learningPathApi.enrolledPaths.find((enrolled) =>
-      learningPathApi.getPathCourses(enrolled).some((c) => c.courseId === activeCourse.id)
+    const path = learnerPathStore.enrolledPaths.find((enrolled) =>
+      learnerPathStore.getPathCourses(enrolled).some((c) => c.courseId === activeCourse.id)
     );
 
     if (!path) return '';
@@ -127,7 +127,7 @@
   });
 
   const exploreCourses = $derived.by(() =>
-    learningPathApi.explorePaths.map((path) => {
+    learnerPathStore.explorePaths.map((path) => {
       const mockPath = getMockPathById(path.id);
       const course = mockPath?.courses[0];
 
@@ -143,7 +143,7 @@
   );
 </script>
 
-{#if learningPathApi.isLoading && items.length === 0}
+{#if learnerPathStore.isLoading && items.length === 0}
   <div class="flex min-h-64 items-center justify-center">
     <Spinner />
   </div>
