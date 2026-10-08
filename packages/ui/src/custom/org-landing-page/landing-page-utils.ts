@@ -57,7 +57,7 @@ export function getCourseTypeLandingMeta(
   };
 
   if (known[raw]) {
-    return known[raw];
+    return { ...known[raw], label: course.typeLabel ?? known[raw].label };
   }
 
   const label = raw

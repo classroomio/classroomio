@@ -4,9 +4,10 @@
 
   interface Props {
     id: string;
+    mode?: 'shadow' | 'iframe';
   }
 
-  let { id = '' }: Props = $props();
+  let { id = '', mode }: Props = $props();
 
   let isInitialized = $state(false);
   const noTracking = $derived(licenseApi.hasAccess('no-tracking'));
@@ -23,5 +24,5 @@
 </script>
 
 {#if !noTracking}
-  <div class="senja-embed" data-id={id} data-lazyload="false" data-spinner="false"></div>
+  <div class="senja-embed" data-id={id} data-mode={mode} data-lazyload="false" data-spinner="false"></div>
 {/if}

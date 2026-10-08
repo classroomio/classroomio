@@ -25,9 +25,10 @@
 
   interface Props {
     cohortId: string;
+    onMembersChanged?: () => void;
   }
 
-  let { cohortId }: Props = $props();
+  let { cohortId, onMembersChanged }: Props = $props();
 
   let tutors = $state<Tutor[]>([]);
   let selectedIds = $state<string[]>([]);
@@ -78,7 +79,11 @@
   }
 
   function closeModal() {
-    goto(resolve(page.url.pathname, {}));
+    const searchParams = new URLSearchParams(page.url.searchParams);
+    searchParams.delete('add');
+    const nextSearch = searchParams.toString();
+
+    void goto(resolve(`${page.url.pathname}${nextSearch ? `?${nextSearch}` : ''}`, {}));
   }
 
   function setTutors(orgId: string | undefined) {
@@ -153,16 +158,23 @@
     });
 
     if (cohortApi.success) {
+      onMembersChanged?.();
       closeModal();
     }
   }
 
   async function assignExistingStudents(profileIds: string[], sendEmail: boolean) {
     await cohortApi.assignExistingStudentsToCohort(cohortId, { profileIds, sendEmail });
+    if (cohortApi.success) {
+      onMembersChanged?.();
+    }
   }
 
   async function inviteNewStudents(recipientCsv: string, sendEmail: boolean) {
     await cohortApi.inviteStudentsToCohort(cohortId, { recipientCsv, sendEmail });
+    if (cohortApi.success) {
+      onMembersChanged?.();
+    }
   }
 
   async function generateInviteLink() {

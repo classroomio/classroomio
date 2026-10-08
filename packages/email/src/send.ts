@@ -96,7 +96,10 @@ export async function sendEmail<TEmailId extends EmailId>(
       from: config.from ?? template.from,
       replyTo: config.replyTo ?? template.replyTo,
       subject: config.subject,
-      ics: config.ics
+      ics: config.ics,
+      locale: config.locale,
+      contentOverride: config.contentOverride,
+      subjectOverride: config.subjectOverride
     });
   } catch (error) {
     if (error instanceof ZodError) {

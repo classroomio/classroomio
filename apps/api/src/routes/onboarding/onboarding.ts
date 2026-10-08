@@ -26,9 +26,9 @@ export const onboardingRouter = new Hono()
   .post('/update-metadata', authMiddleware, zValidator('json', ZOnboardingUpdateMetadata), async (c) => {
     try {
       const user = c.get('user')!;
-      const { goal, source, fullname } = c.req.valid('json');
+      const data = c.req.valid('json');
 
-      const result = await updateUserOnboarding(user.id, { goal, source, fullname });
+      const result = await updateUserOnboarding(user.id, data);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {

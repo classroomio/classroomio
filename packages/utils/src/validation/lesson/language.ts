@@ -10,7 +10,7 @@ export type TLessonLanguageGetParam = z.infer<typeof ZLessonLanguageGetParam>;
 export const ZLessonLanguageGetByLocaleParam = z.object({
   courseId: z.uuid(),
   lessonId: z.uuid(),
-  locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da'])
+  locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr'])
 });
 
 export type TLessonLanguageGetByLocaleParam = z.infer<typeof ZLessonLanguageGetByLocaleParam>;
@@ -25,7 +25,7 @@ export const ZLessonVersionIntent = z.enum(['auto', 'manual']);
 export type TLessonVersionIntentRequest = z.infer<typeof ZLessonVersionIntent>;
 
 export const ZLessonLanguageCreate = z.object({
-  locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da']),
+  locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr']),
   content: z.string().optional(),
   versionIntent: ZLessonVersionIntent.optional(),
   versionLabel: z.string().max(120).optional()

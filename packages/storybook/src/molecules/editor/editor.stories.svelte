@@ -80,3 +80,22 @@
     </div>
   {/snippet}
 </Story>
+
+<Story name="Expanded In Sheet">
+  {#snippet template()}
+    <Editor
+      content={DEFAULT_CONTENT}
+      editorClass="h-24"
+      expandable
+      expanded={true}
+      expandedTitle="Case study: Dupont SARL quote"
+      expandedDescription="Description"
+    />
+  {/snippet}
+</Story>
+
+<Story name="Without Drag Handle">
+  {#snippet template()}
+    <Editor content={DEFAULT_CONTENT} editorClass="h-32" showDragHandle={false} />
+  {/snippet}
+</Story>

@@ -14,6 +14,10 @@ When a task requires factual information (API specifications, context window siz
 
 The `prototypes/` directory holds standalone HTML/CSS design mocks for exploration. Do not treat prototype files as production code: avoid implementing features there unless explicitly asked, and do not apply production review standards (CodeRabbit/Greptile exclude this path via `.coderabbit.yaml` and `.greptile/config.json`).
 
+## Help Center screenshots
+
+**Read [`skills/add-docs-image/SKILL.md`](skills/add-docs-image/SKILL.md) before capturing, producing, or placing any screenshot under `apps/help/**`.** Every help screenshot is captured at 1350×830 with device scale 1 and framed in the ClassroomIO browser board with `pnpm --filter @cio/help frame-screenshot`. Never ship an unframed image, and do not try to fix a soft-looking screenshot by raising the capture scale.
+
 ## Translation, Formatting, and Git Workflow
 
 - If `apps/dashboard/src/lib/utils/translations/en.json` changes, update the other dashboard locale files before staging or committing.

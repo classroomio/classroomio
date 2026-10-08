@@ -51,6 +51,7 @@ Use ClassroomIO terminology consistently:
 - Say **academy**, not org site.
 - Say **student**, not learner.
 - Say **course**, **cohort**, **tutor**, and **admin** when those are the accurate product terms.
+- Say **Assistant** for the teacher and admin AI. Say **AI tutor** only for the student-facing AI.
 
 ## 3. Write the voice
 
@@ -62,7 +63,7 @@ Write like a product team explaining useful changes to customers:
 - Prefer concrete explanations over promotional claims.
 - Use active voice and present tense for the current product behavior.
 - Explain technical work only when it affects the customer.
-- Keep headings in sentence case.
+- Keep headings in sentence case, except the required `ClassroomIO Changelog #NNNN` suffix on the article title.
 - Avoid filler openings such as "It's weekly update time," "Let's dive in," or "We're excited to announce."
 - Avoid vague claims such as "a better experience" unless the copy explains what is better.
 - Do not use emojis, em dashes, or en dashes.
@@ -77,7 +78,7 @@ Keep the email brief. Summarize the most useful changes and send readers to the 
 Use this template:
 
 ```markdown
-Subject: [Plain-language summary of the week's biggest customer benefit]
+Subject: [Same as the article title, without the changelog number]
 
 Hi [customer name or team],
 
@@ -109,8 +110,12 @@ The article follows the useful pattern of a short introduction, a walkthrough ne
 
 Use this template:
 
+Number each article. The title always ends with ` - ClassroomIO Changelog #NNNN`, where `NNNN` is a four-digit issue number. Look at the latest file in `company/changelogs/` for the highest existing number and increment it by one. Never reuse a number.
+
+Start the title with the week's biggest feature as a short, plain action ("Set your academy language"). Group the rest by area in casual words instead of listing every feature, then end with "and more". Example: "Set your academy language, bunch of exercise improvements and more". Write it the way you would say it to a customer. Do not write marketing slogans ("Your academy now speaks your students' language"), long benefit sentences, or a flat list of feature names. The email subject uses the same wording as the title, without the changelog number.
+
 ```markdown
-# [Specific title for the week's biggest change] and more
+# [Biggest feature as a short action], [rest grouped by area] and more - ClassroomIO Changelog #NNNN
 
 [One short paragraph summarizing the week's most useful changes in customer terms.]
 
@@ -166,7 +171,8 @@ Before returning the two deliverables, check:
 - [ ] Empty sections and filler have been removed.
 - [ ] The terms organization, academy, and student are used consistently.
 - [ ] The copy sounds natural when read aloud and contains no em or en dashes.
-- [ ] The article title and email subject describe the actual week's work.
+- [ ] The article title and email subject start with the week's biggest feature, as a short plain action, with the rest grouped by area.
+- [ ] The article title ends with ` - ClassroomIO Changelog #NNNN`, using the next unused number.
 - [ ] Any missing video, image, link, or verification detail is clearly marked for the person publishing it.
 
 Return the email first, then the article. If a required input is missing, list it briefly after the drafts under `Publishing notes`.

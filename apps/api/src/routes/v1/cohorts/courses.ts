@@ -25,7 +25,7 @@ export const v1CohortCoursesRouter = new Hono()
     '/',
     describeRoute({
       description: `List the courses linked to a cohort. If the automation actor is a student in the cohort, only published courses are returned. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
-      tags: ['Public API Cohort Courses'],
+      tags: ['Cohort Courses'],
       responses: {
         200: jsonResponse(
           'Cohort courses returned successfully',
@@ -57,7 +57,7 @@ export const v1CohortCoursesRouter = new Hono()
     '/',
     describeRoute({
       description: `Link a course from your organization to a cohort. Existing cohort students are enrolled in the course. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Courses'],
+      tags: ['Cohort Courses'],
       responses: {
         201: jsonResponse('Course added to cohort', CohortCourseResponse),
         400: errorResponses.badRequest,
@@ -87,7 +87,7 @@ export const v1CohortCoursesRouter = new Hono()
     '/:courseId',
     describeRoute({
       description: `Unlink a course from a cohort. The course itself is not deleted. ${COHORT_TEAM_RULE}`,
-      tags: ['Public API Cohort Courses'],
+      tags: ['Cohort Courses'],
       responses: {
         200: jsonResponse('Course removed from cohort', CohortCourseResponse),
         400: errorResponses.badRequest,
