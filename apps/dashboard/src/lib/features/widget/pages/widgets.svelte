@@ -119,7 +119,7 @@
   ]);
 </script>
 
-<Page.BodyHeader align="right" class="p-2!">
+<Page.BodyHeader align="right" class="p-0!">
   <Search placeholder={$t('widgets.filters.search_placeholder')} bind:value={searchValue} />
   <WidgetFilterPopover
     mode={currentTab}

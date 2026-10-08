@@ -2,7 +2,6 @@
   import * as Popover from '@cio/ui/base/popover';
   import * as ToggleGroup from '@cio/ui/base/toggle-group';
   import { Button } from '@cio/ui/base/button';
-  import { IconButton } from '@cio/ui/custom/icon-button';
   import FilterIcon from '@lucide/svelte/icons/filter';
   import { t } from '$lib/utils/functions/translations';
   import type { TWidgetLayoutType, TWidgetListStatus, TWidgetSelectionMode } from '@cio/utils/validation/widget';
@@ -151,14 +150,16 @@
   <Popover.Trigger>
     {#snippet child({ props })}
       <div class="relative">
-        <IconButton
+        <Button
           {...props}
+          variant="outline"
+          size="sm"
           testId="widgets-filter-trigger"
           aria-label={$t('widgets.filters.filter')}
-          tooltip={$t('widgets.filters.filter')}
         >
           <FilterIcon size={16} />
-        </IconButton>
+          <span class="hidden md:inline">{$t('widgets.filters.filter')}</span>
+        </Button>
         {#if activeFilterCount > 0}
           <span
             class="ui:bg-primary absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-white"

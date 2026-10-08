@@ -37,9 +37,9 @@
   <title>{$t('widgets.heading')} - ClassroomIO</title>
 </svelte:head>
 
-<Page.Root class="w-full">
+<Page.Root class="w-full gap-0">
   <Page.Header>
-    <Page.HeaderContent class="">
+    <Page.HeaderContent>
       <Page.Title>{$t('widgets.heading')}</Page.Title>
       <Page.Subtitle>{$t('widgets.subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
@@ -48,7 +48,7 @@
     </Page.Action>
   </Page.Header>
 
-  <Page.Body>
+  <Page.Body class="gap-0">
     {#snippet child()}
       <WidgetsPage
         initialWidgets={data.initialWidgets}

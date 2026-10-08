@@ -23,7 +23,7 @@
   )}
   {...restProps}
 >
-  <div class="ui:flex ui:items-start ui:justify-between ui:gap-4 ui:flex-col ui:md:flex-row">
+  <div class="ui:flex ui:items-center ui:justify-between ui:gap-4 ui:flex-col ui:md:flex-row">
     {@render children?.()}
   </div>
 </div>
