@@ -90,7 +90,7 @@
       lessonApi.updateLessonState('videos', [newVideo as unknown as NonNullable<Lesson['videos']>[number]], {
         append: true
       });
-      lessonApi.isDirty = true;
+      lessonApi.markDirty();
     } catch (error) {
       console.error('Google Drive picker error:', error);
       errorMessage = $t('course.navItem.lessons.materials.tabs.video.add_video.google_drive_error');

@@ -3553,7 +3553,6 @@
     },
     "filters": {
       "search_placeholder": "संपत्ति खोजें",
-      "apply": "आवेदन करें",
       "status_options": {
         "all": "सभी स्थितियाँ",
         "active": "सक्रिय",

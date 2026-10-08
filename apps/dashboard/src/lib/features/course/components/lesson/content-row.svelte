@@ -57,7 +57,15 @@
 </script>
 
 {#if isEditing}
-  <InputField className={cn('w-4/6', inputClass)} bind:value={title} errorMessage={errors?.title} {autoFocus} />
+  <InputField
+    className={cn('w-4/6', inputClass)}
+    bind:value={title}
+    errorMessage={errors?.title}
+    onInput={() => {
+      if (errors) delete errors.title;
+    }}
+    {autoFocus}
+  />
 {:else}
   <div class={cn('w-4/5', containerClass)}>
     <div class={cn('flex items-center gap-2', rowClass)}>

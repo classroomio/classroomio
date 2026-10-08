@@ -1422,7 +1422,6 @@
     },
     "filters": {
       "search_placeholder": "Varlıklarda ara",
-      "apply": "Uygula",
       "refresh": "Yenile",
       "kind_options": {
         "all": "Tüm türler",
