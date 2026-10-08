@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import { sanitizeHtml, sanitizeOptionalHtml, sanitizeUnknownStrings } from '../../utils/sanitize-html';
 import {
   createCourseNewsfeed,
@@ -293,6 +294,12 @@ export async function createCourse(
   data: TCourseCreate
 ): Promise<{ course: TCourse; groupId: string; memberId: string }> {
   try {
+    await assertSpamAllowed({
+      action: 'content',
+      actor: { userId: profileId },
+      fields: { title: data.title, description: data.description }
+    });
+
     const description = sanitizeHtml(data.description);
 
     const result = await db.transaction(async (tx) => {
@@ -391,6 +398,13 @@ export async function updateCourse(
 
     if (Number(effectiveCost) > 0 && !effectivePaymentLink?.trim()) {
       throw new AppError('Paid courses require a payment link', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    if (data.title || data.description) {
+      await assertSpamAllowed({
+        action: 'content',
+        fields: { title: data.title, description: data.description }
+      });
     }
 
     const existingMetadata = existingCourse?.metadata;

@@ -512,7 +512,8 @@
       "success": "Gracias. Revisaremos este informe.",
       "error": "No se pudo enviar el informe. Inténtalo de nuevo.",
       "already_submitted": "Ya has denunciado este contenido."
-    }
+    },
+    "spam_blocked": "Esto fue bloqueado porque parece spam."
   },
   "explore": {
     "heading": "Explora nuestros cursos",

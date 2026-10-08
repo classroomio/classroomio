@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import {
   type AudienceImportResult,
   type ParsedImportRow,
@@ -488,6 +489,12 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     return buildImportResult(rows, { imported: 0, enrolled: 0, emailsSent: 0, emailsFailed: 0 });
   }
 
+  await assertSpamAllowed({
+    action: 'invite',
+    actor: { userId: invitedByProfileId },
+    fields: { orgName: organization.name, recipientCount: candidateEmails.length }
+  });
+
   const memberRows = await getOrganizationMembersByNormalizedEmails(orgId, candidateEmails);
   const memberByEmail = new Map(memberRows.map((m) => [m.normalizedEmail, m]));
 
@@ -674,6 +681,12 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
   if (!organization || !organization.siteName) {
     throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
   }
+
+  await assertSpamAllowed({
+    action: 'invite',
+    actor: { userId: invitedByProfileId },
+    fields: { orgName: organization.name, recipientCount: 1 }
+  });
 
   const member = await getStudentOrganizationMemberByOrgAndEmail(orgId, data.email);
   if (!member) {

@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from '@api/types/org';
 import type {
   TCourseReorder,
@@ -779,6 +780,13 @@ async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrgan
 
 export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
   try {
+    if (data.name || data.siteName) {
+      await assertSpamAllowed({
+        action: 'identity',
+        fields: { orgName: data.name, siteName: data.siteName }
+      });
+    }
+
     if (data.siteName) {
       const exists = await checkSiteNameExists(data.siteName, orgId); // exclude current org
       if (exists) {

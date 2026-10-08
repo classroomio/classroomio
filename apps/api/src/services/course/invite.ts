@@ -25,6 +25,7 @@ import {
 } from '@cio/db/queries/course';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
 import { ROLE } from '@cio/utils/constants';
 import { isCoursePaid } from '@cio/utils/validation/course';
@@ -533,6 +534,14 @@ export async function createStudentInvite(courseId: string, createdByProfileId: 
       400,
       'recipientEmails'
     );
+  }
+
+  if (recipients.valid.length > 0) {
+    await assertSpamAllowed({
+      action: 'invite',
+      actor: { userId: createdByProfileId },
+      fields: { orgName: courseOrgData.orgName, recipientCount: recipients.valid.length }
+    });
   }
 
   const courseTitle = course[0].title;

@@ -61,6 +61,10 @@
       "types": "./dist/errors/index.d.ts",
       "default": "./dist/errors/index.js"
     },
+    "./spam/check": {
+      "types": "./dist/spam/check.d.ts",
+      "default": "./dist/spam/check.js"
+    },
     "./config/upload-limits": {
       "types": "./dist/config/upload-limits.d.ts",
       "default": "./dist/config/upload-limits.js"
@@ -97,6 +101,7 @@
     "@cio/tsconfig": "workspace:*"
   },
   "devDependencies": {
+    "@types/node": "^20.19.0",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.7.1",
     "typescript": "^5.5.2",

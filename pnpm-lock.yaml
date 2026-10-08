@@ -623,7 +623,7 @@ importers:
     dependencies:
       '@astrojs/mdx':
         specifier: 7.0.3
-        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+        version: 7.0.3(@astrojs/markdown-satteri@0.4.1)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -715,7 +715,7 @@ importers:
     dependencies:
       '@astrojs/mdx':
         specifier: 7.0.3
-        version: 7.0.3(@astrojs/markdown-satteri@0.4.1)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
+        version: 7.0.3(@astrojs/markdown-satteri@0.3.4)(astro@7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@cio/utils':
         specifier: workspace:*
         version: link:../../packages/utils
@@ -730,7 +730,7 @@ importers:
         version: 7.0.9(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.54.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
       blume:
         specifier: 1.6.3
-        version: 1.6.3(a12b353f19541c2a4fd68e6d430aec23)
+        version: 1.6.3(2ce7c5b310d22c3049e7e054fac42a7f)
       mermaid:
         specifier: ^11.16.0
         version: 11.16.0
@@ -1707,6 +1707,9 @@ importers:
         specifier: workspace:*
         version: link:../tsconfig
     devDependencies:
+      '@types/node':
+        specifier: ^20.19.0
+        version: 20.19.27
       tsc-alias:
         specifier: ^1.8.16
         version: 1.8.16
@@ -1718,7 +1721,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^1.2.2
-        version: 1.6.1(@types/node@24.10.4)(jsdom@29.0.1(@noble/hashes@2.0.1))(lightningcss@1.32.0)(sass@1.97.1)
+        version: 1.6.1(@types/node@20.19.27)(jsdom@29.0.1(@noble/hashes@2.0.1))(lightningcss@1.32.0)(sass@1.97.1)
       zod:
         specifier: 4.2.1
         version: 4.2.1
@@ -16951,31 +16954,6 @@ snapshots:
       - vue-router
       - ws
 
-  '@astrojs/vercel@11.0.10(@aws-sdk/credential-provider-web-identity@3.958.0)(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))(encoding@0.1.13)(react@19.3.0)(rollup@4.54.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))':
-    dependencies:
-      '@astrojs/internal-helpers': 0.11.0
-      '@vercel/analytics': 2.0.1(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(react@19.3.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))
-      '@vercel/functions': 3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))
-      '@vercel/nft': 1.10.2(encoding@0.1.13)(rollup@4.54.0)
-      '@vercel/routing-utils': 6.5.0
-      astro: 7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
-      esbuild: 0.28.1
-      tinyglobby: 0.2.17
-    transitivePeerDependencies:
-      - '@aws-sdk/credential-provider-web-identity'
-      - '@remix-run/react'
-      - '@sveltejs/kit'
-      - encoding
-      - next
-      - nuxt
-      - react
-      - rollup
-      - supports-color
-      - svelte
-      - vue
-      - vue-router
-      - ws
-
   '@astrojs/yaml2ts@0.2.4':
     dependencies:
       yaml: 2.9.0
@@ -24342,13 +24320,6 @@ snapshots:
       svelte: 5.56.9(@typescript-eslint/types@8.50.1)
       vue: 3.5.26(typescript@5.9.3)
 
-  '@vercel/analytics@2.0.1(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(react@19.3.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))':
-    optionalDependencies:
-      '@sveltejs/kit': 2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
-      react: 19.3.0
-      svelte: 5.56.9(@typescript-eslint/types@8.50.1)
-      vue: 3.5.26(typescript@6.0.3)
-
   '@vercel/cli-config@0.2.0':
     dependencies:
       xdg-app-paths: 5.5.1
@@ -25370,144 +25341,6 @@ snapshots:
       '@tailwindcss/vite': 4.3.3(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
       '@types/mdast': 4.0.4
       '@vercel/analytics': 2.0.1(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(react@19.3.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@5.9.3))
-      ai: 7.0.97(zod@4.6.1)
-      astro: 7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
-      babel-plugin-react-compiler: 1.0.0
-      chokidar: 5.0.0
-      citty: 0.2.2
-      consola: 3.4.2
-      cross-spawn: 7.0.6
-      dompurify: 3.4.15
-      dotenv: 17.4.2
-      epub-gen-memory: 1.1.2(encoding@0.1.13)
-      fast-xml-parser: 5.11.1
-      github-slugger: 2.0.0
-      graphql: 17.0.2
-      gray-matter: 4.0.3
-      html-escaper: 3.0.3
-      image-size: 2.0.2
-      jiti: 2.7.0
-      js-yaml: 5.4.1
-      katex: 0.18.7
-      markdown-table: 3.0.4
-      marked: 18.0.12
-      mdast-util-from-markdown: 2.0.3
-      mdast-util-gfm: 3.1.0
-      mdast-util-to-string: 4.0.0
-      medium-zoom: 1.1.0
-      mermaid: 11.17.2
-      micromark-extension-gfm: 3.0.0
-      nanotar: 0.3.0
-      node-html-parser: 9.0.4
-      openapi-sampler: 1.7.5
-      p-limit: 7.3.2
-      p-map: 7.0.7
-      p-retry: 8.0.1
-      package-manager-detector: 1.8.0
-      pagefind: 1.5.2
-      pathe: 2.0.3
-      perfect-debounce: 2.1.0
-      picomatch: 4.0.7
-      react: 19.3.0
-      react-dom: 19.3.0(react@19.3.0)
-      robots-parser: 3.0.1
-      satteri: 0.10.5
-      semver: 7.8.5
-      sharp: 0.35.4(@types/node@24.10.4)
-      shiki: 4.4.3
-      simple-icons: 16.30.0
-      string-width: 8.2.2
-      sucrase: 3.35.1
-      tailwindcss: 4.3.3
-      takumi-js: 2.13.7(csstype@3.2.3)(preact@10.28.1)(react@19.3.0)
-      tinyglobby: 0.2.17
-      twoslash: 0.3.9(typescript@6.0.3)
-      typescript: 6.0.3
-      ufo: 1.6.4
-      undici: 8.10.2
-      write-file-atomic: 8.0.0
-      zod: 4.6.1
-    transitivePeerDependencies:
-      - '@astrojs/markdown-remark'
-      - '@aws-sdk/credential-provider-web-identity'
-      - '@azure/app-configuration'
-      - '@azure/cosmos'
-      - '@azure/data-tables'
-      - '@azure/identity'
-      - '@azure/keyvault-secrets'
-      - '@azure/storage-blob'
-      - '@capacitor/preferences'
-      - '@cfworker/json-schema'
-      - '@deno/kv'
-      - '@emnapi/core'
-      - '@emnapi/runtime'
-      - '@netlify/blobs'
-      - '@planetscale/database'
-      - '@remix-run/react'
-      - '@shikijs/themes'
-      - '@sveltejs/kit'
-      - '@types/node'
-      - '@types/react'
-      - '@types/react-dom'
-      - '@upstash/redis'
-      - '@vercel/blob'
-      - '@vercel/functions'
-      - '@vercel/kv'
-      - '@vitejs/devtools'
-      - aws4fetch
-      - csstype
-      - db0
-      - encoding
-      - esbuild
-      - idb-keyval
-      - ioredis
-      - less
-      - next
-      - nuxt
-      - preact
-      - prettier
-      - prettier-plugin-astro
-      - rollup
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - svelte
-      - terser
-      - tsx
-      - uploadthing
-      - vite
-      - vue
-      - vue-router
-      - ws
-      - yaml
-
-  blume@1.6.3(a12b353f19541c2a4fd68e6d430aec23):
-    dependencies:
-      '@astrojs/check': 0.9.10(prettier@3.8.2)(typescript@6.0.3)
-      '@astrojs/markdown-satteri': 0.4.1
-      '@astrojs/mdx': 8.0.1(@astrojs/markdown-satteri@0.4.1)(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
-      '@astrojs/node': 11.1.5(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
-      '@astrojs/react': 6.0.5(@types/node@24.10.4)(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(esbuild@0.28.1)(jiti@2.7.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
-      '@astrojs/vercel': 11.0.10(@aws-sdk/credential-provider-web-identity@3.958.0)(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))(encoding@0.1.13)(react@19.3.0)(rollup@4.54.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6))
-      '@asyncapi/converter': 2.0.2(encoding@0.1.13)
-      '@clack/prompts': 1.7.0
-      '@iconify-json/lucide': 1.2.131
-      '@iconify/types': 2.0.0
-      '@iconify/utils': 3.1.7
-      '@modelcontextprotocol/sdk': 1.30.0(zod@4.6.1)
-      '@orama/orama': 3.1.18
-      '@pierre/diffs': 1.4.1(@shikijs/themes@4.4.3)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
-      '@scalar/astro': 0.4.18(astro@7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
-      '@scalar/openapi-parser': 0.29.1
-      '@scalar/openapi-types': 0.9.5
-      '@shikijs/transformers': 4.4.3
-      '@shikijs/twoslash': 4.4.3(typescript@6.0.3)
-      '@tailwindcss/typography': 0.5.20(tailwindcss@4.3.3)
-      '@tailwindcss/vite': 4.3.3(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0))
-      '@types/mdast': 4.0.4
-      '@vercel/analytics': 2.0.1(@sveltejs/kit@2.49.2(@opentelemetry/api@1.9.1)(@sveltejs/vite-plugin-svelte@6.2.1(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vite@8.1.4(@types/node@24.10.4)(esbuild@0.28.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)))(react@19.3.0)(svelte@5.56.9(@typescript-eslint/types@8.50.1))(vue@3.5.26(typescript@6.0.3))
       ai: 7.0.97(zod@4.6.1)
       astro: 7.3.2(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@24.10.4)(@vercel/functions@3.7.5(@aws-sdk/credential-provider-web-identity@3.958.0)(ws@8.18.3(bufferutil@4.1.0)(utf-8-validate@6.0.6)))(ioredis@5.10.1)(jiti@2.7.0)(sass@1.97.1)(tsx@4.21.0)(yaml@2.9.0)
       babel-plugin-react-compiler: 1.0.0

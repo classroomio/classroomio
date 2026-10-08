@@ -15,6 +15,7 @@ import {
 
 import type { OrganizationWithMemberAndPlans } from '@cio/db/queries/organization/types';
 import { ROLE } from '@cio/utils/constants';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import type { TProfile } from '@cio/db/types';
 import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { countOrgTemplates } from '@cio/db/queries/course';
@@ -104,6 +105,14 @@ export async function getAccountData(userId: string): Promise<GetAccountDataResu
  */
 export async function updateUser(userId: string, data: TUpdateProfile) {
   try {
+    if (data.fullname || data.username) {
+      await assertSpamAllowed({
+        action: 'identity',
+        actor: { userId },
+        fields: { fullname: data.fullname, username: data.username }
+      });
+    }
+
     const updatedProfile = await updateProfile(userId, data);
 
     if (!updatedProfile) {

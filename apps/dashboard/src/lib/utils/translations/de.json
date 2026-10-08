@@ -512,7 +512,8 @@
       "success": "Danke. Wir prüfen diese Meldung.",
       "error": "Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
       "already_submitted": "Sie haben diesen Inhalt bereits gemeldet."
-    }
+    },
+    "spam_blocked": "Dies wurde blockiert, da es wie Spam aussieht."
   },
   "explore": {
     "heading": "Entdecken Sie unsere Kurse",

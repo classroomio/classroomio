@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { assertSpamAllowed } from '@cio/utils/spam/check';
 import type { TProfile } from '@cio/db/types';
 import {
   checkSiteNameExists,
@@ -31,7 +32,16 @@ export async function createOrganizationWithOwner(
     }
   }
 
-  // Business Logic: Check sitename availability
+  await assertSpamAllowed({
+    action: 'identity',
+    actor: { userId: profileId },
+    fields: {
+      fullname: input.fullname,
+      orgName: input.orgName,
+      siteName: input.siteName
+    }
+  });
+
   const exists = await checkSiteNameExists(input.siteName);
   if (exists) {
     console.error('Site name already exists:', input.siteName);
@@ -101,6 +111,14 @@ export async function createOrganizationWithOwner(
 
 export async function updateUserOnboarding(userId: string, data: Partial<TProfile>) {
   try {
+    if (data.fullname) {
+      await assertSpamAllowed({
+        action: 'identity',
+        actor: { userId },
+        fields: { fullname: data.fullname }
+      });
+    }
+
     const updatedProfile = await updateProfile(userId, data);
 
     if (!updatedProfile) {
