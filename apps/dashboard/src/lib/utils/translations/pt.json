@@ -5772,7 +5772,9 @@
       "description": "Os cursos estruturados nos quais você está matriculado aparecerão aqui. Matricule-se em um curso do catálogo para começar a aprender na ordem correta.",
       "back_to_paths": "Voltar aos percursos de aprendizagem",
       "path_not_found_title": "Caminho não encontrado",
-      "path_not_found_description": "Este percurso de aprendizagem pode ter sido despublicado ou removido."
+      "path_not_found_description": "Este percurso de aprendizagem pode ter sido despublicado ou removido.",
+      "library_no_results_title": "Nada corresponde aos seus filtros",
+      "library_no_results_description": "Experimente um filtro diferente ou limpe-os para ver tudo."
     },
     "explore": {
       "title": "Explore mais caminhos",
@@ -5816,7 +5818,11 @@
       "updated_at": "Atualizado em {date}",
       "published": "Publicado",
       "unpublished": "Não publicado",
-      "badge": "Caminho de aprendizagem"
+      "badge": "Caminho de aprendizagem",
+      "lesson": "lição",
+      "lessons": "lições",
+      "exercise": "exercício",
+      "exercises": "exercícios"
     },
     "hero": {
       "currently_learning": "Atualmente aprendendo",
@@ -5857,7 +5863,11 @@
       "view_course": "Ver curso",
       "view_more": "Ver mais",
       "explore_more_title": "Explorar mais cursos",
-      "explore_more_tagline": "Alguns cursos selecionados com base no que você está fazendo agora."
+      "explore_more_tagline": "Alguns cursos selecionados com base no que você está fazendo agora.",
+      "type_self_paced": "Individualizado",
+      "type_live_class": "Aula ao vivo",
+      "type_compliance": "Conformidade",
+      "type_public": "Público"
     },
     "modals": {
       "remove_course": {

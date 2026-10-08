@@ -5772,7 +5772,9 @@
       "description": "Aquí aparecerán las rutas estructuradas en las que estás inscrito. Inscríbete en una ruta del catálogo para comenzar a aprender en orden.",
       "back_to_paths": "Volver a las rutas de aprendizaje",
       "path_not_found_title": "Ruta no encontrada",
-      "path_not_found_description": "Es posible que esta ruta de aprendizaje se haya despublicado o eliminado."
+      "path_not_found_description": "Es posible que esta ruta de aprendizaje se haya despublicado o eliminado.",
+      "library_no_results_title": "Nada coincide con tus filtros",
+      "library_no_results_description": "Pruebe con un filtro diferente o bórrelos para verlo todo."
     },
     "explore": {
       "title": "Explora más caminos",
@@ -5816,7 +5818,11 @@
       "updated_at": "Actualizado {date}",
       "published": "Publicado",
       "unpublished": "Inédito",
-      "badge": "Ruta de aprendizaje"
+      "badge": "Ruta de aprendizaje",
+      "lesson": "lección",
+      "lessons": "lecciones",
+      "exercise": "ejercicio",
+      "exercises": "ejercicios"
     },
     "hero": {
       "currently_learning": "Actualmente aprendiendo",
@@ -5857,7 +5863,11 @@
       "view_course": "Ver curso",
       "view_more": "Ver más",
       "explore_more_title": "Explorar más cursos",
-      "explore_more_tagline": "Se han seleccionado algunos cursos en función de los que estás cursando actualmente."
+      "explore_more_tagline": "Se han seleccionado algunos cursos en función de los que estás cursando actualmente.",
+      "type_self_paced": "a su propio ritmo",
+      "type_live_class": "clase en vivo",
+      "type_compliance": "Cumplimiento",
+      "type_public": "Público"
     },
     "modals": {
       "remove_course": {

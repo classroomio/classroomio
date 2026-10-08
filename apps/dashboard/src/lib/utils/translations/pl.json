@@ -5772,7 +5772,9 @@
       "description": "Tutaj pojawią się ścieżki strukturalne, na które jesteś zapisany. Zapisz się na ścieżkę z katalogu, aby rozpocząć naukę w kolejności.",
       "back_to_paths": "Powrót do ścieżek edukacyjnych",
       "path_not_found_title": "Nie znaleziono ścieżki",
-      "path_not_found_description": "Ta ścieżka edukacyjna mogła zostać wycofana z publikacji lub usunięta."
+      "path_not_found_description": "Ta ścieżka edukacyjna mogła zostać wycofana z publikacji lub usunięta.",
+      "library_no_results_title": "Nic nie pasuje do Twoich filtrów",
+      "library_no_results_description": "Wypróbuj inny filtr lub wyczyść go, aby zobaczyć wszystko."
     },
     "explore": {
       "title": "Odkryj więcej ścieżek",
@@ -5816,7 +5818,11 @@
       "updated_at": "Zaktualizowano {date}",
       "published": "Opublikowano",
       "unpublished": "Niepublikowane",
-      "badge": "Ścieżka edukacyjna"
+      "badge": "Ścieżka edukacyjna",
+      "lesson": "lekcja",
+      "lessons": "lekcje",
+      "exercise": "ćwiczenia",
+      "exercises": "ćwiczenia"
     },
     "hero": {
       "currently_learning": "Aktualnie się uczę",
@@ -5857,7 +5863,11 @@
       "view_course": "Wyświetl kurs",
       "view_more": "Wyświetl więcej",
       "explore_more_title": "Odkryj więcej kursów",
-      "explore_more_tagline": "Kilka kursów wybranych na podstawie tego, co aktualnie robisz."
+      "explore_more_tagline": "Kilka kursów wybranych na podstawie tego, co aktualnie robisz.",
+      "type_self_paced": "We własnym tempie",
+      "type_live_class": "Zajęcia na żywo",
+      "type_compliance": "Zgodność",
+      "type_public": "Publiczne"
     },
     "modals": {
       "remove_course": {

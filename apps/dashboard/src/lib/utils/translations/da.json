@@ -5772,7 +5772,9 @@
       "description": "Strukturerede spor, du er tilmeldt, vises her. Tilmeld dig et sti fra kataloget for at starte læringen i rækkefølge.",
       "back_to_paths": "Tilbage til læringsstier",
       "path_not_found_title": "Sti ikke fundet",
-      "path_not_found_description": "Denne læringssti er muligvis blevet afpubliceret eller fjernet."
+      "path_not_found_description": "Denne læringssti er muligvis blevet afpubliceret eller fjernet.",
+      "library_no_results_title": "Intet matcher dine filtre",
+      "library_no_results_description": "Prøv et andet filter, eller ryd dem for at se alt."
     },
     "explore": {
       "title": "Udforsk flere stier",
@@ -5816,7 +5818,11 @@
       "updated_at": "Opdateret {date}",
       "published": "Udgivet",
       "unpublished": "Upubliceret",
-      "badge": "Læringsvej"
+      "badge": "Læringsvej",
+      "lesson": "lektion",
+      "lessons": "lektioner",
+      "exercise": "øvelse",
+      "exercises": "øvelser"
     },
     "hero": {
       "currently_learning": "Under uddannelse",
@@ -5857,7 +5863,11 @@
       "view_course": "Se kursus",
       "view_more": "Se mere",
       "explore_more_title": "Udforsk flere kurser",
-      "explore_more_tagline": "Et par kurser valgt baseret på, hvad du tager nu."
+      "explore_more_tagline": "Et par kurser valgt baseret på, hvad du tager nu.",
+      "type_self_paced": "Selv-tempo",
+      "type_live_class": "Live klasse",
+      "type_compliance": "Overholdelse",
+      "type_public": "Offentlig"
     },
     "modals": {
       "remove_course": {
