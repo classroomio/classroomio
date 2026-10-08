@@ -52,7 +52,7 @@ export const v1AudienceRouter = new Hono()
     '/',
     describeRoute({
       description: 'List audience members for the authenticated organization',
-      tags: ['Public API Audience'],
+      tags: ['Audience'],
       responses: {
         200: {
           description: 'Audience members returned successfully',
@@ -91,7 +91,7 @@ export const v1AudienceRouter = new Hono()
     '/',
     describeRoute({
       description: 'Create an audience member invitation for the authenticated organization',
-      tags: ['Public API Audience'],
+      tags: ['Audience'],
       responses: {
         201: {
           description: 'Audience member created successfully',
@@ -130,7 +130,7 @@ export const v1AudienceRouter = new Hono()
     '/assign-courses',
     describeRoute({
       description: 'Assign one or more audience members to one or more courses',
-      tags: ['Public API Audience'],
+      tags: ['Audience'],
       responses: {
         200: {
           description: 'Audience members assigned to courses successfully',
@@ -168,7 +168,7 @@ export const v1AudienceRouter = new Hono()
     '/:memberId',
     describeRoute({
       description: 'Get a single audience member by id',
-      tags: ['Public API Audience'],
+      tags: ['Audience'],
       responses: {
         200: {
           description: 'Audience member returned successfully',
@@ -206,7 +206,7 @@ export const v1AudienceRouter = new Hono()
     '/:memberId',
     describeRoute({
       description: 'Remove an audience member by id',
-      tags: ['Public API Audience'],
+      tags: ['Audience'],
       responses: {
         200: {
           description: 'Audience member removed successfully',
@@ -245,7 +245,7 @@ export const v1AudienceRouter = new Hono()
     '/:memberId',
     describeRoute({
       description: 'Update a pending audience member email address',
-      tags: ['Public API Audience'],
+      tags: ['Audience'],
       responses: {
         200: {
           description: 'Audience member updated successfully',

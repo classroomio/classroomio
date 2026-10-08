@@ -46,7 +46,7 @@ export const v1CourseInvitesRouter = new Hono()
     '/',
     describeRoute({
       description: `List invites for a course, of any status (active, revoked, expired, or used up). ${COURSE_TEAM_RULE}`,
-      tags: ['Public API Course Members'],
+      tags: ['Course Invites'],
       responses: {
         200: jsonResponse(
           'Course invites returned successfully',
@@ -91,7 +91,7 @@ export const v1CourseInvitesRouter = new Hono()
     '/',
     describeRoute({
       description: `Invite one or more people to a course by email or CSV. Unlike POST /members, this can onboard someone who is not yet an organization member. Set sendEmail to false to mint invite tokens without emailing recipients. Limited to 60 invite requests per hour per key creator per course, shared with the dashboard. ${COURSE_TEAM_RULE}`,
-      tags: ['Public API Course Members'],
+      tags: ['Course Invites'],
       responses: {
         201: jsonResponse('Course invite created successfully', itemResponse(ZPublicApiCreateCourseInviteResponse)),
         400: errorResponses.badRequest,
@@ -129,7 +129,7 @@ export const v1CourseInvitesRouter = new Hono()
     '/:inviteId/revoke',
     describeRoute({
       description: `Revoke a pending course invite. The invite link stops working and this cannot be undone. ${COURSE_TEAM_RULE}`,
-      tags: ['Public API Course Members'],
+      tags: ['Course Invites'],
       responses: {
         200: jsonResponse('Course invite revoked successfully', itemResponse(ZPublicApiRevokeCourseInviteResponse)),
         400: errorResponses.badRequest,
