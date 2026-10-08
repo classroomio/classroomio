@@ -43,6 +43,7 @@ vi.mock('@api/services/exercise/template', () => ({
 }));
 
 import { ROLE } from '@cio/utils/constants';
+import { QUESTION_TYPE } from '@cio/utils/validation/constants';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getOrganizationMemberRoleId } from '@cio/db/queries/organization';
@@ -391,7 +392,59 @@ describe('updateCourseExerciseService', () => {
     expect(updateExerciseService).not.toHaveBeenCalled();
   });
 
-  it('does not judge the options when an edit sends neither options nor a question type', async () => {
+  it('returns 400 when an edit would push a question past the option limit', async () => {
+    vi.mocked(getExercise).mockResolvedValue({
+      ...(exerciseDetail() as object),
+      questions: [
+        {
+          id: 10,
+          title: 'Pick one',
+          questionTypeId: 1,
+          points: 1,
+          order: 0,
+          settings: {},
+          options: Array.from({ length: 50 }, (_, index) => ({
+            id: 100 + index,
+            label: `O${index}`,
+            isCorrect: index === 0
+          }))
+        }
+      ]
+    } as never);
+
+    await expect(
+      updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+        questions: [question({ id: 10, options: [{ label: 'One more', isCorrect: false }] })]
+      })
+    ).rejects.toMatchObject({ statusCode: 400 });
+    expect(updateExerciseService).not.toHaveBeenCalled();
+  });
+
+  it('checks the question rules when an edit sends only settings', async () => {
+    vi.mocked(getExercise).mockResolvedValue({
+      ...(exerciseDetail() as object),
+      questions: [
+        {
+          id: 10,
+          title: 'Rate it',
+          questionTypeId: QUESTION_TYPE.STAR,
+          points: 1,
+          order: 0,
+          settings: { maxStars: 5, correctValue: 3 },
+          options: []
+        }
+      ]
+    } as never);
+
+    await expect(
+      updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+        questions: [{ id: 10, question: 'Rate it', points: 1, settings: { maxStars: 5, correctValue: 9 } }]
+      })
+    ).rejects.toMatchObject({ statusCode: 400 });
+    expect(updateExerciseService).not.toHaveBeenCalled();
+  });
+
+  it('does not judge the options when an edit sends neither options, settings nor a question type', async () => {
     vi.mocked(getExercise).mockResolvedValue({
       ...(exerciseDetail() as object),
       questions: [{ id: 10, title: 'Old', questionTypeId: 1, points: 1, order: 0, settings: {}, options: [] }]

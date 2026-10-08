@@ -26,7 +26,7 @@ export const ZPublicApiQuestionTypeId = z.union([
 ]);
 
 const MAX_QUESTIONS = 200;
-const MAX_OPTIONS = 50;
+export const PUBLIC_API_MAX_QUESTION_OPTIONS = 50;
 const MAX_SECTIONS = 50;
 
 const ZSettings = z.record(z.string(), z.unknown());
@@ -67,7 +67,7 @@ export const ZPublicApiCreateExerciseQuestion = z
           settings: ZSettings.optional()
         })
       )
-      .max(MAX_OPTIONS)
+      .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
       .optional()
   })
   .superRefine(validateQuestionOptions);
@@ -125,7 +125,7 @@ export const ZPublicApiUpdateExerciseQuestion = z
           settings: ZSettings.optional()
         })
       )
-      .max(MAX_OPTIONS)
+      .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
       .optional()
   })
   .superRefine((question, ctx) => {

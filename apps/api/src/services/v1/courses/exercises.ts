@@ -14,14 +14,15 @@ import { getExerciseById, getExerciseSectionOwnersByIds } from '@cio/db/queries/
 import { getLessonById } from '@cio/db/queries/lesson';
 import type { TExercise } from '@cio/db/types';
 import { getQuestionOptionIssues, type TExerciseUpdate } from '@cio/utils/validation/exercise';
-import type {
-  TPublicApiCourseExerciseNotifyParam,
-  TPublicApiCourseExerciseNotifyStatusQuery,
-  TPublicApiCourseExerciseParam,
-  TPublicApiCourseExercisesQuery,
-  TPublicApiCourseParam,
-  TPublicApiCreateCourseExercise,
-  TPublicApiUpdateCourseExercise
+import {
+  PUBLIC_API_MAX_QUESTION_OPTIONS,
+  type TPublicApiCourseExerciseNotifyParam,
+  type TPublicApiCourseExerciseNotifyStatusQuery,
+  type TPublicApiCourseExerciseParam,
+  type TPublicApiCourseExercisesQuery,
+  type TPublicApiCourseParam,
+  type TPublicApiCreateCourseExercise,
+  type TPublicApiUpdateCourseExercise
 } from '@cio/utils/validation/public-api';
 import { JOB_NAMES, QUEUE_NAMES, getQueueJobMeta } from '@cio/jobs';
 import {
@@ -197,24 +198,36 @@ async function assertUpdateIdsBelongToExercise(
   }
 }
 
-// options is a diff on an existing question, so the option rules are checked on what the question ends up with.
+// options is a diff on an existing question, so the option rules and limit are checked on what the question ends up with.
 function assertEditedQuestionOptionsValid(current: ExerciseDetail, payload: TPublicApiUpdateCourseExercise) {
   const currentById = new Map((current.questions ?? []).map((question) => [Number(question.id), question]));
 
   for (const question of payload.questions ?? []) {
     const existing = question.id ? currentById.get(question.id) : undefined;
     if (!existing || question.delete) continue;
-    if (question.options === undefined && question.questionTypeId === undefined) continue;
+    if (question.options === undefined && question.questionTypeId === undefined && question.settings === undefined) {
+      continue;
+    }
 
     const sent = question.options ?? [];
     const sentIds = new Set(sent.map((option) => option.id));
+    const merged = [
+      ...existing.options.filter((option) => !sentIds.has(Number(option.id))),
+      ...sent.filter((option) => !option.delete)
+    ];
+    if (merged.length > PUBLIC_API_MAX_QUESTION_OPTIONS) {
+      throw new AppError(
+        `Question ${question.id}: a question can have at most ${PUBLIC_API_MAX_QUESTION_OPTIONS} options`,
+        ErrorCodes.VALIDATION_ERROR,
+        400,
+        'questions'
+      );
+    }
+
     const [issue] = getQuestionOptionIssues({
       questionTypeId: question.questionTypeId ?? existing.questionTypeId ?? undefined,
       settings: question.settings ?? (existing.settings as Record<string, unknown> | null) ?? undefined,
-      options: [
-        ...existing.options.filter((option) => !sentIds.has(Number(option.id))),
-        ...sent.filter((option) => !option.delete)
-      ].map((option) => ({ isCorrect: option.isCorrect === true }))
+      options: merged.map((option) => ({ isCorrect: option.isCorrect === true }))
     });
     if (issue) {
       throw new AppError(`Question ${question.id}: ${issue}`, ErrorCodes.VALIDATION_ERROR, 400, 'questions');
