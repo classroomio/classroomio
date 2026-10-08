@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { learningPathApi } from '../api/learning-path.svelte';
+  import { learnerPathStore } from '../api/learning-path.svelte';
   import CurrentlyLearningHero from '../components/currently-learning-hero.svelte';
   import LearningPathCard from '../components/learning-path-card.svelte';
   import LearningPathRow from '../components/learning-path-row.svelte';
@@ -19,16 +19,16 @@
   let view = $state<LearningPathView>('grid');
 
   onMount(() => {
-    if (!learningPathApi.hasLoaded) {
-      learningPathApi.listEnrolled();
+    if (!learnerPathStore.hasLoaded) {
+      learnerPathStore.listEnrolled();
     }
   });
 
-  const totalHours = (path: (typeof learningPathApi.enrolledPaths)[number]) =>
+  const totalHours = (path: (typeof learnerPathStore.enrolledPaths)[number]) =>
     path.courses.reduce((acc, course) => acc + course.durationHours, 0);
 
   const filtered = $derived(
-    learningPathApi.enrolledPaths.filter((path) => {
+    learnerPathStore.enrolledPaths.filter((path) => {
       if (status !== 'ALL' && path.enrollment?.state !== status) return false;
       if (difficulty !== 'ALL' && path.difficulty !== difficulty) return false;
 
@@ -41,8 +41,8 @@
     })
   );
 
-  const activePath = $derived(learningPathApi.activePath);
-  const completionProgress = $derived((path: (typeof learningPathApi.enrolledPaths)[number]) => {
+  const activePath = $derived(learnerPathStore.activePath);
+  const completionProgress = $derived((path: (typeof learnerPathStore.enrolledPaths)[number]) => {
     const enrollment = path.enrollment;
     const done = enrollment?.coursesCompleted ?? 0;
     const total = enrollment?.totalCourses ?? 0;
@@ -55,11 +55,11 @@
   });
 </script>
 
-{#if learningPathApi.isLoading && learningPathApi.enrolledPaths.length === 0}
+{#if learnerPathStore.isLoading && learnerPathStore.enrolledPaths.length === 0}
   <div class="flex min-h-64 items-center justify-center">
     <Spinner />
   </div>
-{:else if learningPathApi.enrolledPaths.length === 0}
+{:else if learnerPathStore.enrolledPaths.length === 0}
   <Empty icon={PathIcon} title={$t('learningPath.empty.title')} description={$t('learningPath.empty.description')} />
 {:else}
   <section>
@@ -130,6 +130,6 @@
       </div>
     {/if}
 
-    <!-- <ExploreMoreStrip items={learningPathApi.explorePaths} /> -->
+    <!-- <ExploreMoreStrip items={learnerPathStore.explorePaths} /> -->
   </section>
 {/if}

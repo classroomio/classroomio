@@ -7,7 +7,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { getStudentCourseProgressPercent, isStudentCourseComplete } from '$features/course/utils/compliance-utils';
-  import { learningPathApi } from '../api/learning-path.svelte';
+  import { learnerPathStore } from '../api/learning-path.svelte';
   import { getMockPathById } from '../utils/mock-data';
   import type { LearningPathStatus, PathDifficulty } from '../utils/types';
   import type {
@@ -46,18 +46,18 @@
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    if (!learningPathApi.hasLoaded) {
-      learningPathApi.listEnrolled();
+    if (!learnerPathStore.hasLoaded) {
+      learnerPathStore.listEnrolled();
     }
     coursesApi.getEnrolledCourses();
   });
 
-  const isLoading = $derived(learningPathApi.isLoading && learningPathApi.enrolledPaths.length === 0);
+  const isLoading = $derived(learnerPathStore.isLoading && learnerPathStore.enrolledPaths.length === 0);
 
-  const totalHours = (path: (typeof learningPathApi.enrolledPaths)[number]) =>
+  const totalHours = (path: (typeof learnerPathStore.enrolledPaths)[number]) =>
     path.courses.reduce((acc, course) => acc + course.durationHours, 0);
 
-  const pathCompletionProgress = $derived((path: (typeof learningPathApi.enrolledPaths)[number]) => {
+  const pathCompletionProgress = $derived((path: (typeof learnerPathStore.enrolledPaths)[number]) => {
     const enrollment = path.enrollment;
     const done = enrollment?.coursesCompleted ?? 0;
     const total = enrollment?.totalCourses ?? 0;
@@ -70,7 +70,7 @@
   });
 
   const filteredPaths = $derived(
-    learningPathApi.enrolledPaths.filter((path) => {
+    learnerPathStore.enrolledPaths.filter((path) => {
       if (pathStatus !== 'ALL' && path.enrollment?.state !== pathStatus) return false;
       if (pathDifficulty !== 'ALL' && path.difficulty !== pathDifficulty) return false;
 
@@ -84,10 +84,10 @@
   );
 
   const pathCourseItems = $derived.by<CourseLibraryItem[]>(() =>
-    learningPathApi.enrolledPaths.flatMap((path) => {
+    learnerPathStore.enrolledPaths.flatMap((path) => {
       const mockPath = getMockPathById(path.id);
 
-      return learningPathApi.getPathCourses(path).map((course) => ({
+      return learnerPathStore.getPathCourses(path).map((course) => ({
         id: course.courseId,
         title: course.title,
         description: mockPath?.courses.find((item) => item.id === course.courseId)?.description ?? '',
@@ -143,7 +143,7 @@
     })
   );
 
-  const activePath = $derived(learningPathApi.activePath);
+  const activePath = $derived(learnerPathStore.activePath);
 
   const activeCourse = $derived(
     allCourseItems
@@ -167,8 +167,8 @@
   const courseLessonsLabel = $derived.by(() => {
     if (!activeCourse) return '';
 
-    const path = learningPathApi.enrolledPaths.find((enrolled) =>
-      learningPathApi.getPathCourses(enrolled).some((c) => c.courseId === activeCourse.id)
+    const path = learnerPathStore.enrolledPaths.find((enrolled) =>
+      learnerPathStore.getPathCourses(enrolled).some((c) => c.courseId === activeCourse.id)
     );
 
     if (!path) return '';
@@ -225,7 +225,7 @@
     </section>
   {/if}
 
-  {#if learningPathApi.enrolledPaths.length > 0}
+  {#if learnerPathStore.enrolledPaths.length > 0}
     <section class="mb-8">
       <div class="mb-3 flex items-center justify-between">
         <h2 class="text-base font-semibold">{$t('learningPath.my_learning.paths_section_title')}</h2>
@@ -341,7 +341,7 @@
     </section>
   {/if}
 
-  {#if learningPathApi.enrolledPaths.length === 0 && standaloneCourseItems.length === 0}
+  {#if learnerPathStore.enrolledPaths.length === 0 && standaloneCourseItems.length === 0}
     <Empty icon={PathIcon} title={$t('learningPath.empty.title')} description={$t('learningPath.empty.description')} />
   {/if}
 {/if}

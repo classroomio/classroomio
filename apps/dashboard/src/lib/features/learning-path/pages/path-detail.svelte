@@ -6,7 +6,7 @@
   import { Button } from '@cio/ui/base/button';
   import { PathIcon } from '@cio/ui/custom/moving-icons';
   import { t } from '$lib/utils/functions/translations';
-  import { learningPathApi } from '../api/learning-path.svelte';
+  import { learnerPathStore } from '../api/learning-path.svelte';
   import { getMockPathById, getCourseProgressList } from '../utils/mock-data';
   import LearningPathHead from '../components/learning-path-head.svelte';
   import PathStepper from '../components/path-stepper.svelte';
@@ -14,10 +14,10 @@
   const authPathId = $derived(page.params.id);
 
   onMount(() => {
-    learningPathApi.ensureSelectedPath(authPathId);
+    learnerPathStore.ensureSelectedPath(authPathId);
   });
 
-  const path = $derived(learningPathApi.getPath(authPathId) ?? getMockPathById(authPathId));
+  const path = $derived(learnerPathStore.getPath(authPathId) ?? getMockPathById(authPathId));
 
   const totalHours = $derived((path?.courses ?? []).reduce((acc, course) => acc + course.durationHours, 0));
   const courses = $derived(path ? getCourseProgressList(path) : []);
@@ -33,7 +33,7 @@
   }
 </script>
 
-{#if learningPathApi.isLoading && !path}
+{#if learnerPathStore.isLoading && !path}
   <div class="flex min-h-64 items-center justify-center">
     <Spinner />
   </div>

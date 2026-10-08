@@ -9,7 +9,7 @@
   import CourseInPathRibbon from '$features/learning-path/components/course-in-path-ribbon.svelte';
   import CourseInPathNext from '$features/learning-path/components/course-in-path-next.svelte';
   import type { CourseInPathNode, CourseInPathNextInfo } from '$features/learning-path/components';
-  import { learningPathApi } from '$features/learning-path/api/learning-path.svelte';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
   import type { Course } from '$features/course/types';
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
@@ -84,8 +84,8 @@
   });
 
   onMount(() => {
-    if (!learningPathApi.hasLoaded) {
-      learningPathApi.listEnrolled();
+    if (!learnerPathStore.hasLoaded) {
+      learnerPathStore.listEnrolled();
     }
   });
 
@@ -93,8 +93,8 @@
     const courseTitle = courseApi.course?.title;
     if (!courseTitle) return null;
 
-    for (const path of learningPathApi.enrolledPaths) {
-      const courses = learningPathApi.getPathCourses(path);
+    for (const path of learnerPathStore.enrolledPaths) {
+      const courses = learnerPathStore.getPathCourses(path);
       const courseIndex = courses.findIndex((course) => course.title.toLowerCase() === courseTitle.toLowerCase());
 
       if (courseIndex < 0) continue;
