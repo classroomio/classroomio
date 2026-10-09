@@ -2443,6 +2443,10 @@ export const organization = pgTable(
     disableGoogleAuth: boolean('disable_google_auth').default(false),
     parentOrganizationId: uuid('parent_organization_id'),
     readOnlyUntil: timestamp('read_only_until', { withTimezone: true, mode: 'string' }),
+    studentHomePath: text('student_home_path'),
+    studentHomeCourseId: uuid('student_home_course_id').references((): AnyPgColumn => course.id, {
+      onDelete: 'set null'
+    }),
     aiTutorSettings: jsonb('ai_tutor_settings')
       .default({
         enabled: true,
@@ -2492,6 +2496,10 @@ export const organization = pgTable(
       foreignColumns: [table.id],
       name: 'organization_parent_organization_id_fkey'
     }).onDelete('set null'),
+    check(
+      'organization_student_home_single_destination',
+      sql`${table.studentHomePath} IS NULL OR ${table.studentHomeCourseId} IS NULL`
+    ),
     index('idx_organization_parent_id').on(table.parentOrganizationId)
   ]
 );

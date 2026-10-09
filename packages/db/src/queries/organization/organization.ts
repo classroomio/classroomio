@@ -203,9 +203,13 @@ export async function getOrganizationMemberIdByOrgAndProfile(
   }
 }
 
-export async function getOrganizationMemberRoleId(organizationId: string, profileId: string): Promise<number | null> {
+export async function getOrganizationMemberRoleId(
+  organizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number | null> {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({ roleId: schema.organizationmember.roleId })
       .from(schema.organizationmember)
       .where(
@@ -1229,8 +1233,8 @@ export const updateOrganization = async (
  * @param orgId Organization ID
  * @returns Array of plan records
  */
-export const getOrganizationPlanStatus = async (orgId: string) => {
-  const result = await db
+export const getOrganizationPlanStatus = async (orgId: string, dbClient: DbOrTxClient = db) => {
+  const result = await dbClient
     .select({
       planName: schema.organizationPlan.planName,
       isActive: schema.organizationPlan.isActive

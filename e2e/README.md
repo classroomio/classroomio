@@ -44,6 +44,7 @@ Naming: kebab-case, feature-scoped — `{area}-{element}` or `{area}-{element}-{
 | Test id | Surface |
 |---|---|
 | `course-settings-people-link` | Self-enrollment description link to the course People page |
+| `customize-lms-student-home` | Customize LMS student-home combobox trigger |
 
 ## Helpers
 

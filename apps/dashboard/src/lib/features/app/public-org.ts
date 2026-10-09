@@ -46,6 +46,7 @@ export function toPublicOrg(org: AccountOrg): PublicOrg {
     plans: org.plans.map((plan) => ({
       planName: plan.planName,
       isActive: plan.isActive
-    }))
+    })),
+    hasStudentHome: !!(org.studentHomePath || org.studentHomeCourseId)
   };
 }

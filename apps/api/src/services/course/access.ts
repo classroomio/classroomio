@@ -1,10 +1,24 @@
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
+import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
+import { isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 const DEFAULT_CONTENT_GROUPING = true;
+
+/**
+ * Whether a profile can open a course: group member, org admin, or enrolled
+ * through a learning path. Throws when a program backfill is blocked.
+ */
+export async function canProfileOpenCourse(courseId: string, profileId: string): Promise<boolean> {
+  if (await isUserCourseMemberOrOrgAdmin(courseId, profileId)) {
+    return true;
+  }
+
+  return Boolean(await ensureProgramCourseAccess(courseId, profileId));
+}
 
 /**
  * Blocks a STUDENT-role member from reading an unpublished course at all

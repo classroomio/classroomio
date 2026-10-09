@@ -4,6 +4,7 @@ import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 import { blockedSubdomain } from '@cio/utils/constants';
 import { ZCourseType } from '../course/course-type';
 import { containsDisallowedHrefs } from '../shared';
+import { ZStudentHomeDestination } from './student-home';
 
 export const ZGetOrganizations = z.object({
   siteName: z.string().min(1).optional(),
@@ -152,6 +153,7 @@ export const ZUpdateOrganization = z.object({
   disableSignupMessage: z.string().optional(),
   disableEmailPassword: z.boolean().optional(),
   disableGoogleAuth: z.boolean().optional(),
+  studentHome: ZStudentHomeDestination.nullable().optional(),
   /** Nested settings (stored in organization.settings JSONB). signup.inviteOnly = true means invite-only signup. */
   settings: z
     .object({

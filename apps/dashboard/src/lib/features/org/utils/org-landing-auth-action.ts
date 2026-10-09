@@ -1,4 +1,4 @@
-import type { PublicOrg } from '$features/app/types';
+import type { AccountOrg, PublicOrg } from '$features/app/types';
 import { t } from '$lib/utils/functions/translations';
 import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 import { ROLE } from '@cio/utils/constants';
@@ -13,7 +13,7 @@ type OrganizationMembership = {
 interface OrgLandingAuthActionOptions {
   isLoggedIn: boolean;
   isInitialized: boolean;
-  org: PublicOrg;
+  org: AccountOrg | PublicOrg;
   organizations?: OrganizationMembership[];
   hasPendingInvite?: boolean;
 }
@@ -76,7 +76,6 @@ export interface ResolveOrgLandingAuthActionOptions {
   org?: AccountOrg | null;
   locals?: {
     user?: { id?: string; name?: string | null; email?: string | null } | null;
-    organizations?: OrganizationMembership[] | null;
   } | null;
   user: { isLoggedIn?: boolean };
   appInitApi: {
@@ -98,9 +97,7 @@ export function resolveOrgLandingAuthAction({
 
   const isLoggedIn = !!(locals?.user || user.isLoggedIn);
   const isInitialized = appInitApi.isInitializedAndReady;
-  const organizations = appInitApi.data?.success
-    ? (appInitApi.data.organizations ?? locals?.organizations ?? [])
-    : (locals?.organizations ?? []);
+  const organizations = appInitApi.data?.success ? (appInitApi.data.organizations ?? []) : [];
   const hasPendingInvite = !!appInitApi.pendingOrgInvite;
 
   return getOrgLandingAuthAction({

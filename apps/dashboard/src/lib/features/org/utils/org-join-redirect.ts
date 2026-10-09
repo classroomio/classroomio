@@ -12,3 +12,19 @@ export function resolveOrgJoinRedirect(redirectTo: string, origin: string): stri
     return DEFAULT_JOIN_REDIRECT;
   }
 }
+
+/**
+ * Picks the post-join destination: an explicit redirect wins, otherwise orgs
+ * with a student home send new students through `/` so the server redirect
+ * resolves it, and everyone else keeps `/lms`.
+ */
+export function getPostJoinRedirect(
+  org: { hasStudentHome?: boolean } | null | undefined,
+  redirectParam: string | null
+): string {
+  if (redirectParam) {
+    return redirectParam;
+  }
+
+  return org?.hasStudentHome ? '/' : DEFAULT_JOIN_REDIRECT;
+}

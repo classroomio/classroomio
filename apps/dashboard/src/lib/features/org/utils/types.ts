@@ -1,6 +1,8 @@
 import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
 import type { TLocale } from '@cio/db/types';
 import type { AccountOrg } from '$features/app/types';
+import type { LmsDestinationKey } from '@cio/utils/lms';
+import type { TStudentHomeDestination } from '@cio/utils/validation/organization';
 
 export type GetOrganizationRequest = typeof classroomio.organization.$get;
 export type GetOrganizationResponse = InferResponseType<GetOrganizationRequest> | null;
@@ -172,6 +174,7 @@ export interface TOrgUpdateForm {
   disableSignupMessage?: string;
   disableEmailPassword?: boolean;
   disableGoogleAuth?: boolean;
+  studentHome?: TStudentHomeDestination | null;
   settings?: {
     signup?: { inviteOnly?: boolean };
     language?: { locale?: TLocale; enforced?: boolean };
@@ -245,3 +248,14 @@ export type GetTokenAuthRequest = (typeof classroomio.organization)['token-auth'
 export type RotateTokenAuthRequest = (typeof classroomio.organization)['token-auth']['rotate']['$post'];
 export type DeleteTokenAuthRequest = (typeof classroomio.organization)['token-auth']['$delete'];
 export type ActivateTokenAuthRequest = (typeof classroomio.organization)['token-auth']['activate']['$put'];
+
+// Student home types
+export type ResolveStudentHomeRequest = (typeof classroomio.organization)['student-home']['resolve']['$get'];
+export type ResolveStudentHomeSuccess = Extract<InferResponseType<ResolveStudentHomeRequest>, { success: true }>;
+export type GetStudentHomeCoursesRequest = (typeof classroomio.organization)['student-home']['courses']['$get'];
+export type GetStudentHomeCoursesSuccess = Extract<InferResponseType<GetStudentHomeCoursesRequest>, { success: true }>;
+export type StudentHomeCourseOption = GetStudentHomeCoursesSuccess['data'][number];
+export type StudentHomeOption =
+  | { kind: 'default' }
+  | { kind: 'page'; key: LmsDestinationKey }
+  | { kind: 'course'; courseId: string };

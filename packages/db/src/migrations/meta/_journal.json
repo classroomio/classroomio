@@ -225,6 +225,13 @@
       "when": 1791544397388,
       "tag": "0031_lesson_session_lifecycle",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1791545527776,
+      "tag": "0032_student_home",
+      "breakpoints": true
     }
   ]
 }

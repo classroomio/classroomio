@@ -39,4 +39,5 @@ export type PublicOrg = Pick<
     };
   };
   plans: Array<Pick<AccountOrg['plans'][number], 'planName' | 'isActive'>>;
+  hasStudentHome: boolean;
 };

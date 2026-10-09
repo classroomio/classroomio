@@ -3325,7 +3325,28 @@
           "paid_plan_note": "Passez à une offre supérieure pour personnaliser l’arrière-plan de connexion.",
           "preview_alt": "Aperçu de l’arrière-plan de connexion"
         },
-        "page_subtitle": "Choisissez les onglets, bannières, outils de cours et extras que les étudiants voient."
+        "page_subtitle": "Choisissez les onglets, bannières, outils de cours et extras que les étudiants voient.",
+        "student_home": {
+          "heading": "Student home",
+          "description": "Choose where signed-in students go when they open your academy’s homepage. Visitors who aren’t signed in, and your team, still see your landing page.",
+          "label": "Authenticated student home",
+          "placeholder": "Search pages and courses",
+          "option_default": "Landing page (default)",
+          "option_default_hint": "Students see your landing page first",
+          "group_pages": "Learning portal",
+          "group_courses": "Courses",
+          "reason_disabled_toggle": "Turn it on in the Dashboard section below",
+          "reason_paid_plan": "Available on paid plans",
+          "courses_empty": "No published courses yet",
+          "search_empty": "No pages or courses match \"{query}\"",
+          "warning_unavailable": "{destination} isn’t available to students right now, so they’re sent to Dashboard instead. Choose another destination or make it available again.",
+          "warning_course_missing": "The course you chose was deleted or unpublished, so students are sent to Dashboard instead.",
+          "course_hint_open": "Enrolled students go straight to their next lesson. Students who aren’t enrolled can join in one click.",
+          "course_hint_restricted": "Enrolled students go straight to their next lesson. This course is paid or invite-only, so students who aren’t enrolled go to Dashboard.",
+          "unavailable_badge": "Unavailable",
+          "course_type_live": "Live",
+          "course_type_compliance": "Compliance"
+        }
       },
       "domains": {
         "title": "Domaine personnalisé",
@@ -3372,6 +3393,12 @@
         "ssl_pending_body": "Votre domaine pointe vers nous. Nous attendons maintenant que le certificat SSL soit émis et déployé. Cela prend généralement quelques minutes une fois que tous les enregistrements DNS ci-dessous sont en place.",
         "validation_errors_heading": "La délivrance du certificat est bloquée",
         "verified_snackbar": "Domaine personnalisé vérifié"
+      },
+      "landing_page": {
+        "student_home_notice": {
+          "notice": "Signed-in students skip this page and go to {destination}.",
+          "change": "Change"
+        }
       }
     },
     "quiz": {

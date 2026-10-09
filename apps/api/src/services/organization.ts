@@ -3,8 +3,10 @@ import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from 
 import type {
   TCourseReorder,
   TGetAudienceQuery,
-  TGetOrganizationCoursesQuery
+  TGetOrganizationCoursesQuery,
+  TStudentHomeDestination
 } from '@cio/utils/validation/organization';
+import type { LmsAvailabilityContext } from '@cio/utils/lms';
 import type { TNewOrganizationPlan, TOrganization, TOrganizationPlan } from '@db/types';
 import {
   activateOrganizationPlan,
@@ -27,6 +29,7 @@ import {
   getOrganizationTeam,
   getOrganizations,
   revokeActiveOrganizationInvitesByEmails,
+  setOrganizationStudentHome,
   updateOrganization,
   updateOrganizationPlan
 } from '@cio/db/queries/organization';
@@ -57,7 +60,9 @@ import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
+import { assertStudentHomeDestination } from './organization/student-home';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
+import { db } from '@cio/db/drizzle';
 
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
 const ORG_COURSES_PAGE_SIZE = 6;
@@ -777,7 +782,10 @@ async function assertAuthSettingsEntitlement(orgId: string, data: Partial<TOrgan
   }
 }
 
-export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
+export async function updateOrg(
+  orgId: string,
+  data: Partial<TOrganization> & { studentHome?: TStudentHomeDestination | null }
+) {
   try {
     if (data.siteName) {
       const exists = await checkSiteNameExists(data.siteName, orgId); // exclude current org
@@ -813,7 +821,22 @@ export async function updateOrg(orgId: string, data: Partial<TOrganization>) {
       }
     }
 
-    const organization = await updateOrganization(orgId, data);
+    const { studentHome, ...orgData } = data;
+
+    const organization = await db.transaction(async (tx) => {
+      if (studentHome !== undefined) {
+        const existing = await getOrganizationById(orgId, tx);
+        const home = await assertStudentHomeDestination(
+          orgId,
+          studentHome,
+          (orgData.customization ?? existing?.customization ?? null) as LmsAvailabilityContext['customization'],
+          tx
+        );
+        await setOrganizationStudentHome(orgId, home, tx);
+      }
+
+      return updateOrganization(orgId, orgData, tx);
+    });
     if (!organization) {
       throw new AppError('Organization not found', ErrorCodes.ORGANIZATION_NOT_FOUND, 404);
     }
