@@ -510,6 +510,189 @@ export async function getAssetOrganizationIdsByStorageKeys(
   }
 }
 
+export type AssetHlsStatus = 'none' | 'pending' | 'converting' | 'ready' | 'failed' | 'skipped';
+
+export async function setAssetHlsStatus(
+  assetId: string,
+  orgId: string,
+  hlsStatus: AssetHlsStatus,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  try {
+    await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus, updatedAt: new Date().toISOString() })
+      .where(and(eq(schema.asset.id, assetId), eq(schema.asset.organizationId, orgId)));
+  } catch (error) {
+    console.error('setAssetHlsStatus error:', error);
+    throw new Error(`Failed to set asset HLS status: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Claim an asset for conversion, so two dispatchers cannot encode the same one.
+ * A claim older than 30 minutes is reclaimable: the encoder is a disposable
+ * machine, so a lost claim means the machine died rather than that it is busy.
+ */
+export async function claimAssetForHlsEncode(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [claimed] = await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus: 'converting', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          sql`(${schema.asset.hlsStatus} IN ('none', 'pending', 'failed') OR (${schema.asset.hlsStatus} = 'converting' AND ${schema.asset.updatedAt} < now() - interval '30 minutes'))`,
+          sql`${schema.asset.hlsManifestKey} IS NULL`
+        )
+      )
+      .returning();
+
+    return claimed || null;
+  } catch (error) {
+    console.error('claimAssetForHlsEncode error:', error);
+    throw new Error(
+      `Failed to claim asset for HLS encode: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Refresh a converting asset's `updatedAt` so a long encode is not reclaimed by
+ * the stale-claim window, without being able to move a finished or failed asset
+ * back to `converting`. Returns false when the job no longer owns the asset.
+ */
+export async function touchConvertingAsset(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [touched] = await dbClient
+      .update(schema.asset)
+      .set({ updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return Boolean(touched);
+  } catch (error) {
+    console.error('touchConvertingAsset error:', error);
+    throw new Error(`Failed to touch converting asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Mark a conversion failed, conditional on the asset still being `converting`,
+ * so a superseded job's failure cannot un-ready an asset another job finalized.
+ */
+export async function failConvertingAsset(
+  assetId: string,
+  orgId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
+  try {
+    const [failed] = await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus: 'failed', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return Boolean(failed);
+  } catch (error) {
+    console.error('failConvertingAsset error:', error);
+    throw new Error(`Failed to fail converting asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export interface FinalizeServerHlsInput {
+  manifestKey: string;
+  audioKey: string | null;
+  metadata: Record<string, unknown>;
+}
+
+/**
+ * Record the finished ladder. Conditional on the asset still being `converting`,
+ * so a superseded or reclaimed job cannot overwrite a newer result.
+ */
+export async function finalizeServerHls(
+  assetId: string,
+  orgId: string,
+  input: FinalizeServerHlsInput,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.asset)
+      .set({
+        hlsManifestKey: input.manifestKey,
+        hlsAudioKey: input.audioKey,
+        hlsStatus: 'ready',
+        status: 'active',
+        metadata: sql`coalesce(${schema.asset.metadata}, '{}'::jsonb) || ${JSON.stringify(input.metadata)}::jsonb`,
+        updatedAt: new Date().toISOString()
+      })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          eq(schema.asset.hlsStatus, 'converting')
+        )
+      )
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('finalizeServerHls error:', error);
+    throw new Error(`Failed to finalize server HLS: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Record that an upload's bytes arrived, so the media pipeline can find them. */
+export async function markAssetUploadComplete(
+  assetId: string,
+  orgId: string,
+  storageKey: string,
+  dbClient: DbOrTxClient = db
+): Promise<TAsset | null> {
+  try {
+    const [updated] = await dbClient
+      .update(schema.asset)
+      .set({ storageKey, hlsStatus: 'pending', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.id, assetId),
+          eq(schema.asset.organizationId, orgId),
+          sql`${schema.asset.storageKey} IS NULL`
+        )
+      )
+      .returning();
+
+    return updated || null;
+  } catch (error) {
+    console.error('markAssetUploadComplete error:', error);
+    throw new Error(
+      `Failed to mark asset upload complete: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface FinalizeHls1080Input {
   byteSize: number;
   metadata: Record<string, unknown>;

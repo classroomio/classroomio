@@ -3,6 +3,7 @@ import { v1CourseAnalyticsRouter } from './analytics';
 import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from './certificates';
 import { v1CourseRouter } from './course';
 import { v1CourseInvitesRouter } from './invites';
+import { v1CourseLessonsRouter } from './lessons';
 import { v1CourseMembersRouter } from './members';
 
 export const v1CoursesRouter = new Hono()
@@ -11,4 +12,5 @@ export const v1CoursesRouter = new Hono()
   .route('/:courseId/members', v1CourseMembersRouter)
   .route('/:courseId/invites', v1CourseInvitesRouter)
   .route('/:courseId/certificate', v1CourseCertificateRouter)
-  .route('/:courseId/certificates', v1CourseCertificatesRouter);
+  .route('/:courseId/certificates', v1CourseCertificatesRouter)
+  .route('/:courseId/lessons', v1CourseLessonsRouter);
