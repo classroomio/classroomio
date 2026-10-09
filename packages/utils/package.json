@@ -65,6 +65,10 @@
       "types": "./dist/config/upload-limits.d.ts",
       "default": "./dist/config/upload-limits.js"
     },
+    "./file-upload": {
+      "types": "./dist/file-upload.d.ts",
+      "default": "./dist/file-upload.js"
+    },
     "./openapi/public-api": {
       "types": "./dist/openapi/public-api.d.ts",
       "default": "./dist/openapi/public-api.js"

@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 import { toFiniteNumber } from '../../functions/number';
-import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
+import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 import { ZCourseType } from './course-type';
 
@@ -136,8 +136,9 @@ export type TCoursePresignUrlUpload = z.infer<typeof ZCoursePresignUrlUpload>;
 
 export const ZCourseDocumentPresignUrlUpload = z.object({
   fileName: z.string().min(1),
-  fileType: z.enum(ALLOWED_DOCUMENT_TYPES),
-  fileSize: z.number().int().min(0).optional()
+  fileType: z.string(),
+  fileSize: z.number().int().min(0).optional(),
+  acceptedTypes: z.array(z.string()).optional()
 });
 export type TCourseDocumentPresignUrlUpload = z.infer<typeof ZCourseDocumentPresignUrlUpload>;
 

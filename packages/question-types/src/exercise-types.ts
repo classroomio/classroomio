@@ -238,8 +238,13 @@ export type ExerciseAnswerValue =
 
 export type ExerciseQuestionImageUploader = (file: File) => Promise<string>;
 
+export type ExerciseQuestionFileUploadContext = {
+  acceptedTypes: string[];
+};
+
 export type ExerciseQuestionFileUploader = (
-  file: File
+  file: File,
+  context: ExerciseQuestionFileUploadContext
 ) => Promise<{ fileKey: string; fileName: string; fileUrl?: string }>;
 
 export type ExerciseQuestionVideoRecordingUploader = (input: {
