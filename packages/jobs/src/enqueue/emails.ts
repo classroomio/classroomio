@@ -11,7 +11,7 @@ import type { TSendEmailPayload } from '../payloads/emails';
  * readability, so we normalize the boundary here instead of forcing every
  * caller to remember.
  */
-function toJobId(idempotencyKey: string): string {
+export function toEmailJobId(idempotencyKey: string): string {
   return `email-${idempotencyKey.replace(/:/g, '-')}`;
 }
 
@@ -28,7 +28,7 @@ export async function enqueueEmailSend(
 
   const job = await getQueue(QUEUE_NAMES.emails).add(JOB_NAMES.emails.send, payload, {
     ...QUEUE_DEFAULTS[QUEUE_NAMES.emails],
-    ...(idempotencyKey ? { jobId: toJobId(idempotencyKey) } : {}),
+    ...(idempotencyKey ? { jobId: toEmailJobId(idempotencyKey) } : {}),
     ...jobOptions
   });
 

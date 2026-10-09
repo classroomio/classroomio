@@ -2564,7 +2564,7 @@
           "join": "Join session",
           "live_indicator": "This lesson is a live session",
           "heading": "Live session",
-          "intro": "Set the join link and scheduled time for this live class. Students get reminders 24 hours and 1 hour before.",
+          "intro": "Set the join link and scheduled time for this live class. Students get email reminders before each session. Choose when in Course settings.",
           "link_label": "Join link (Zoom, Meet, etc.)",
           "datetime_label": "Date and time",
           "timezone_label": "Timezone",
@@ -4324,7 +4324,66 @@
         },
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
-        "save": "Save Changes"
+        "save": "Save Changes",
+        "live_session_reminders": {
+          "legend": "Session email reminders",
+          "description": "Choose when enrolled students get an email with the join link before each live session.",
+          "empty": "No reminders. Students won't get emails before live sessions.",
+          "add": "Add reminder",
+          "presets_label": "Quick add:",
+          "remove": "Remove reminder",
+          "unit_label": "Unit",
+          "units": {
+            "days": "Days",
+            "hours": "Hours",
+            "minutes": "Minutes"
+          },
+          "duration": {
+            "days": "{count, plural, one {# day} other {# days}}",
+            "hours": "{count, plural, one {# hour} other {# hours}}",
+            "minutes": "{count, plural, one {# minute} other {# minutes}}"
+          },
+          "preview": "{duration} before each session",
+          "offset_before": "{duration} before",
+          "max_count": "You can add up to {count} reminders.",
+          "validation": {
+            "amount": "Enter a whole number of 1 or more.",
+            "min": "Reminders must be at least 15 minutes before the session.",
+            "max": "Reminders can be at most 7 days before the session.",
+            "duplicate": "You already have a reminder at this time.",
+            "fix_errors": "Fix the session reminder errors before saving."
+          },
+          "log": {
+            "title": "Delivery log",
+            "description": "Reminder emails for sessions in the last 30 days and upcoming sessions.",
+            "view": "View logs",
+            "empty": "No reminders yet. They appear here as sessions get close.",
+            "load_error": "Could not load the reminder delivery log.",
+            "columns": {
+              "session": "Session",
+              "student": "Student",
+              "reminder": "Reminder",
+              "status": "Status",
+              "detail": "Detail"
+            }
+          },
+          "statuses": {
+            "pending": "Pending",
+            "queued": "Queued",
+            "sent": "Sent",
+            "failed": "Failed",
+            "skipped": "Skipped"
+          },
+          "skip_reasons": {
+            "preferences": "The student turned off session reminder emails.",
+            "no_email": "The student has no email address.",
+            "lesson_past": "The session had already started.",
+            "offset_removed": "This reminder was removed from the course settings.",
+            "lesson_rescheduled": "The session time or join link changed.",
+            "window_passed": "The reminder time had already passed when it was scheduled.",
+            "unenrolled": "The student is no longer enrolled."
+          }
+        }
       }
     },
     "not_permitted": {

@@ -265,3 +265,5 @@ export type TContentReportStatus = (typeof schema.contentReportStatus.enumValues
 export type TContentReportResolutionCode = (typeof schema.contentReportResolutionCode.enumValues)[number];
 export type TContentReport = typeof schema.contentReport.$inferSelect;
 export type TNewContentReport = typeof schema.contentReport.$inferInsert;
+export type TLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferSelect;
+export type TNewLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferInsert;
