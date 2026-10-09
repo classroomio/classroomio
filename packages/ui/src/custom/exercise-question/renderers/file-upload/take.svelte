@@ -99,7 +99,7 @@
     isUploading = true;
     uploadError = null;
     try {
-      const result = await onFileUpload(selectedFile);
+      const result = await onFileUpload(selectedFile, { acceptedTypes });
       onAnswerChange({
         type: 'FILE_UPLOAD',
         fileKey: result.fileKey,

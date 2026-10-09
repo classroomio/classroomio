@@ -30,7 +30,7 @@
     answer = null;
   }
 
-  async function demoFileUpload(file: File) {
+  async function demoFileUpload(file: File, _context: { acceptedTypes: string[] }) {
     await new Promise<void>((resolve) => {
       setTimeout(resolve, 350);
     });

@@ -33,6 +33,13 @@ describe('file upload types', () => {
     expect(isFileTypeAllowed({ name: 'workbook.xls', type: 'application/vnd.ms-excel' }, [])).toBe(false);
   });
 
+  it('enforces question-scoped accepted types when provided', () => {
+    const csvOnly = ['text/csv'];
+
+    expect(isFileTypeAllowed({ name: 'results.csv', type: 'text/csv' }, csvOnly)).toBe(true);
+    expect(isFileTypeAllowed({ name: 'notes.pdf', type: 'application/pdf' }, csvOnly)).toBe(false);
+  });
+
   it('includes MIME types and extensions in the browser accept value', () => {
     const value = getFileUploadAcceptAttribute(['text/csv', 'application/x-ipynb+json']);
 

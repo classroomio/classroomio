@@ -369,11 +369,15 @@
     alreadyCheckedAutoSavedData = true;
   }
 
-  async function handleFileUpload(file: File): Promise<{ fileKey: string; fileName: string; fileUrl?: string }> {
+  async function handleFileUpload(
+    file: File,
+    context: { acceptedTypes: string[] }
+  ): Promise<{ fileKey: string; fileName: string; fileUrl?: string }> {
     const uploadResult = await presignApi.getDocumentUploadUrl(
       file.name,
       file.type,
-      file.size > 0 ? file.size : undefined
+      file.size > 0 ? file.size : undefined,
+      context.acceptedTypes
     );
     if (!uploadResult) {
       throw new Error('Failed to get upload URL');

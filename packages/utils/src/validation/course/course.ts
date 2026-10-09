@@ -137,7 +137,8 @@ export type TCoursePresignUrlUpload = z.infer<typeof ZCoursePresignUrlUpload>;
 export const ZCourseDocumentPresignUrlUpload = z.object({
   fileName: z.string().min(1),
   fileType: z.string(),
-  fileSize: z.number().int().min(0).optional()
+  fileSize: z.number().int().min(0).optional(),
+  acceptedTypes: z.array(z.string()).optional()
 });
 export type TCourseDocumentPresignUrlUpload = z.infer<typeof ZCourseDocumentPresignUrlUpload>;
 
