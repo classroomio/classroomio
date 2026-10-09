@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson results · SCORM package · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <link rel="stylesheet" href="scorm.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar="course" data-active="Content"></div>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Content</span>
+          <span class="badge badge-success-soft">Published</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-assistant"><span data-icon="sparkles"></span>Assistant</button>
+          <div class="bgroup">
+            <button class="btn btn-outline btn-sm"><span data-icon="ext"></span>View Course Site</button>
+            <button class="btn btn-outline btn-sm" aria-label="More"><span data-icon="more"></span></button>
+          </div>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <div class="lesson-body wide">
+          <div class="page-hdr">
+            <div class="ttl"><input class="input" aria-label="Lesson Title" value="Protecting patient information" /></div>
+            <div class="acts">
+              <button class="icon-btn" title="Lock" aria-label="Lock"><span data-icon="unlock"></span></button>
+              <button class="icon-btn" title="Delete this lesson" aria-label="Delete this lesson"><span data-icon="trash"></span></button>
+              <span class="saved-note">Saved</span>
+              <button class="icon-btn" title="Save" aria-label="Save"><span data-icon="save"></span></button>
+              <button class="icon-btn" title="Version history" aria-label="Version history"><span data-icon="history"></span></button>
+              <button class="btn btn-outline btn-sm">EN<span data-icon="chevDown"></span></button>
+            </div>
+          </div>
+
+          <div class="utabs" role="tablist">
+            <a class="utab" role="tab" href="lesson-editor.html?state=ready"><span data-icon="scorm"></span>Package</a>
+            <a class="utab" role="tab" href="lesson-editor.html?state=instructions"><span data-icon="note"></span>Instructions</a>
+            <a class="utab active" role="tab" aria-selected="true" href="results.html"><span data-icon="chart"></span>Results<span class="chip" id="results-chip">41</span></a>
+            <a class="utab" role="tab" href="package-settings.html"><span data-icon="settings"></span>Settings</a>
+          </div>
+
+          <div class="tab-panel">
+            <section data-state-view="results sheet sheet-failed sheet-diagnostics reset-confirm export">
+              <div class="stats">
+                <div class="card stat-card"><div class="k"><span data-icon="users"></span>Enrolled</div><div class="v tnum">48</div><div class="s">in this course</div></div>
+                <div class="card stat-card"><div class="k"><span data-icon="play"></span>Started</div><div class="v tnum">41</div><div class="s">85% of enrolled</div></div>
+                <div class="card stat-card"><div class="k"><span data-icon="checkCircle"></span>Completed</div><div class="v tnum">33</div><div class="s">by this lesson’s rule</div></div>
+                <div class="card stat-card"><div class="k"><span data-icon="award"></span>Passed</div><div class="v tnum">30</div><div class="s">3 failed, can try again</div></div>
+                <div class="card stat-card"><div class="k"><span data-icon="chart"></span>Average score</div><div class="v tnum">87%</div><div class="s">pass mark 80%</div></div>
+              </div>
+
+              <div class="toolbar">
+                <div class="search"><span data-icon="search"></span><input class="input" id="search" placeholder="Search students" aria-label="Search students" /></div>
+                <div class="select-wrap">
+                  <button class="select-trigger" style="width: 170px" data-menu="status-filter"><span id="filter-label">All statuses</span><span data-icon="chevDown"></span></button>
+                  <div class="menu select-menu" data-menu-for="status-filter" hidden style="width: 200px">
+                    <button class="menu-item" data-filter="all">All statuses</button>
+                    <button class="menu-item" data-filter="passed">Passed</button>
+                    <button class="menu-item" data-filter="failed">Failed</button>
+                    <button class="menu-item" data-filter="progress">In progress</button>
+                    <button class="menu-item" data-filter="none">Not started</button>
+                  </div>
+                </div>
+                <span class="grow"></span>
+                <div class="select-wrap">
+                  <button class="btn btn-outline btn-sm" data-menu="export-menu"><span data-icon="download"></span>Export<span data-icon="chevDown"></span></button>
+                  <div class="menu export-menu" data-menu-for="export-menu" hidden>
+                    <button class="menu-item" data-export>CSV</button>
+                    <button class="menu-item" data-export>Excel</button>
+                    <button class="menu-item" data-export>PDF</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rtable" role="table" aria-label="Student results">
+                <div class="thead" role="row"><span>Student</span><span>Status</span><span>Result</span><span>Score</span><span>Best</span><span>Time</span><span>Attempts</span><span>Last launched</span></div>
+                <div id="rows"></div>
+              </div>
+              <div class="pager"><button class="btn btn-outline btn-sm" disabled>Previous</button><span>Page 1 / 4</span><button class="btn btn-outline btn-sm">Next</button></div>
+              <p class="hint">Scores are reported by the package. Use a ClassroomIO exercise as the graded final step when a score must stand up in an audit.</p>
+            </section>
+
+            <section data-state-view="empty">
+              <div class="empty">
+                <span class="e-icon"><span data-icon="chart"></span></span>
+                <h3>No one has opened this lesson yet</h3>
+                <p>Results appear here as soon as students launch the package: their status, score, time spent and every attempt.</p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div data-layer="sheet" hidden>
+      <div class="sheet-scrim"></div>
+      <aside class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-name">
+        <div class="sheet-head">
+          <div class="frow">
+            <div class="sheet-person grow">
+              <span class="avatar" id="sheet-avatar">AO</span>
+              <div><div class="nm" id="sheet-name">Amara Okafor</div><div class="em" id="sheet-email">amara.okafor@northwind-health.com</div></div>
+            </div>
+            <button class="btn btn-ghost btn-sm btn-icon" data-close aria-label="Close"><span data-icon="x"></span></button>
+          </div>
+        </div>
+        <div class="sheet-body" id="sheet-body"></div>
+        <div class="sheet-foot">
+          <a class="btn btn-ghost btn-sm" href="people-learner.html">Open student page</a>
+          <span class="grow"></span>
+          <button class="btn btn-outline btn-sm" style="color: var(--destructive)" data-open="reset-confirm"><span data-icon="rotate"></span>Reset this lesson</button>
+        </div>
+      </aside>
+    </div>
+
+    <div class="scrim" data-layer="reset-confirm" hidden style="z-index: 260">
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="reset-title">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="reset-title">Reset this lesson for <span data-reset-name>Sofia Martins</span>?</h2>
+          <p class="dialog-desc">This deletes their attempts in Protecting patient information and marks the lesson incomplete. Course progress, the certificate and the compliance record are recalculated. The next launch starts from the beginning.</p>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+          <button class="btn btn-destructive btn-sm" data-close data-reset-confirm>Reset lesson</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Results</span>
+      <button data-state="results">Table</button>
+      <button data-state="sheet">Passed student</button>
+      <button data-state="sheet-failed">Failed student</button>
+      <button data-state="sheet-diagnostics">Didn’t connect</button>
+      <button data-state="reset-confirm">Reset</button>
+      <button data-state="export">Export menu</button>
+      <button data-state="empty">Empty</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const LEARNERS = [
+        { id: 'amara', name: 'Amara Okafor', email: 'amara.okafor@northwind-health.com', status: 'completed', result: 'passed', score: 92, best: 92, time: '24m', attempts: 1, last: '2 Oct' },
+        { id: 'liam', name: 'Liam Chen', email: 'liam.chen@northwind-health.com', status: 'completed', result: 'passed', score: 88, best: 88, time: '31m', attempts: 1, last: '3 Oct' },
+        { id: 'sofia', name: 'Sofia Martins', email: 'sofia.martins@northwind-health.com', status: 'completed', result: 'failed', score: 64, best: 64, time: '18m', attempts: 1, last: '4 Oct' },
+        { id: 'daniel', name: 'Daniel Mensah', email: 'daniel.mensah@northwind-health.com', status: 'progress', result: null, score: null, best: null, time: '12m', attempts: 1, last: '6 Oct', where: 'Slide 5 of 8' },
+        { id: 'priya', name: 'Priya Nair', email: 'priya.nair@northwind-health.com', status: 'completed', result: 'passed', score: 100, best: 100, time: '22m', attempts: 1, last: '1 Oct' },
+        { id: 'kwame', name: 'Kwame Asante', email: 'kwame.asante@northwind-health.com', status: 'progress', result: null, score: null, best: null, time: '0m', attempts: 1, last: '7 Oct', where: 'Didn’t connect', warn: true },
+        { id: 'hannah', name: 'Hannah Weiss', email: 'hannah.weiss@northwind-health.com', status: 'completed', result: 'passed', score: 84, best: 84, time: '40m', attempts: 1, last: '5 Oct' },
+        { id: 'elena', name: 'Elena Popescu', email: 'elena.popescu@northwind-health.com', status: 'completed', result: 'passed', score: 96, best: 96, time: '19m', attempts: 1, last: '30 Sep' },
+        { id: 'noah', name: 'Noah Fischer', email: 'noah.fischer@northwind-health.com', status: 'progress', result: null, score: null, best: null, time: '6m', attempts: 1, last: '7 Oct', where: 'Slide 2 of 8' },
+        { id: 'zainab', name: 'Zainab Bello', email: 'zainab.bello@northwind-health.com', status: 'completed', result: 'passed', score: 80, best: 80, time: '27m', attempts: 1, last: '29 Sep' },
+        { id: 'tomas', name: 'Tomás Rivera', email: 'tomas.rivera@northwind-health.com', status: 'none', result: null, score: null, best: null, time: '-', attempts: 0, last: '-' },
+        { id: 'yuki', name: 'Yuki Tanaka', email: 'yuki.tanaka@northwind-health.com', status: 'none', result: null, score: null, best: null, time: '-', attempts: 0, last: '-' }
+      ];
+
+      const STATUS_BADGE = {
+        completed: '<span class="badge badge-success-soft">Completed</span>',
+        progress: '<span class="badge badge-primary-soft">In progress</span>',
+        none: '<span class="badge badge-muted">Not started</span>'
+      };
+
+      let filter = 'all';
+      let query = '';
+      let selected = LEARNERS[0];
+
+      const initials = (name) => name.split(' ').map((part) => part[0]).join('').slice(0, 2);
+
+      function resultCell(learner) {
+        if (learner.result === 'passed') return '<span style="color:var(--success);font-weight:500">Passed</span>';
+        if (learner.result === 'failed') return '<span style="color:var(--destructive);font-weight:500">Failed</span>';
+        if (learner.warn) return `<span style="color:var(--warning);font-size:12.5px">${learner.where}</span>`;
+        if (learner.where) return `<span class="muted" style="font-size:12.5px">${learner.where}</span>`;
+        return '<span class="muted">-</span>';
+      }
+
+      function matches(learner) {
+        const byFilter =
+          filter === 'all' ||
+          (filter === 'passed' && learner.result === 'passed') ||
+          (filter === 'failed' && learner.result === 'failed') ||
+          (filter === 'progress' && learner.status === 'progress') ||
+          (filter === 'none' && learner.status === 'none');
+        const byQuery = !query || `${learner.name} ${learner.email}`.toLowerCase().includes(query);
+        return byFilter && byQuery;
+      }
+
+      function renderRows() {
+        const rows = LEARNERS.filter(matches)
+          .map(
+            (learner) => `<div class="trow" role="row" tabindex="0" data-learner="${learner.id}">
+              <span class="who-cell"><span class="avatar">${initials(learner.name)}</span><span style="min-width:0"><span class="nm" style="display:block">${learner.name}</span><span class="em" style="display:block">${learner.email}</span></span></span>
+              <span>${STATUS_BADGE[learner.status]}</span>
+              <span>${resultCell(learner)}</span>
+              <span class="tnum">${learner.score === null ? '<span class="muted">-</span>' : `${learner.score}%`}</span>
+              <span class="tnum">${learner.best === null ? '<span class="muted">-</span>' : `${learner.best}%`}</span>
+              <span class="tnum">${learner.time}</span>
+              <span class="tnum">${learner.attempts}</span>
+              <span class="muted">${learner.last}</span>
+            </div>`
+          )
+          .join('');
+        document.getElementById('rows').innerHTML = rows || '<div class="trow" style="display:block;color:var(--muted-foreground)">No students match these filters.</div>';
+        document.querySelectorAll('[data-learner]').forEach((row) => {
+          const open = () => openSheet(row.dataset.learner);
+          row.addEventListener('click', open);
+          row.addEventListener('keydown', (event) => event.key === 'Enter' && open());
+        });
+      }
+
+      const ANSWERS = {
+        passed: [
+          ['Which of these is protected health information?', 'A patient’s appointment time next to their name', true],
+          ['When should you report a suspected breach?', 'Within 24 hours, even if unsure', true],
+          ['What does “minimum necessary” mean?', 'Share only what the task needs', true]
+        ],
+        failed: [
+          ['Which of these is protected health information?', 'A hospital’s published visiting hours', false],
+          ['When should you report a suspected breach?', 'Within 24 hours, even if unsure', true],
+          ['What does “minimum necessary” mean?', 'Share the full record so nothing is missed', false]
+        ]
+      };
+
+      const EVENTS = {
+        normal: [
+          ['09:41:02', 'Launch', 'Attempt 1 opened · version 2 · Chrome 141 on macOS'],
+          ['09:41:04', 'Initialize', 'SCORM 2004 API found by the package'],
+          ['09:49:30', 'Commit', 'Saved location slide-4 · 1,284 characters of suspend data'],
+          ['10:04:51', 'Commit', 'completion_status completed · success_status passed · score 0.92'],
+          ['10:05:07', 'Terminate', 'Final save sent by beacon · exit normal']
+        ],
+        warn: [
+          ['14:12:40', 'Launch', 'Attempt 1 opened · version 3 · Safari 18 on iOS'],
+          ['14:13:10', 'Did not connect', 'The package never called Initialize within 30 seconds', true],
+          ['14:15:52', 'Launch', 'Reloaded by the student · same attempt'],
+          ['14:16:22', 'Did not connect', 'The package never called Initialize within 30 seconds', true]
+        ]
+      };
+
+      function sheetBody(learner) {
+        const outcome =
+          learner.result === 'passed'
+            ? '<span class="badge badge-success-soft">Lesson complete</span>'
+            : learner.result === 'failed'
+              ? '<span class="badge badge-destructive-soft">Not complete yet: failed the quiz</span><p class="hint" style="margin:8px 0 0">Their attempt stays open. The next time they open the lesson, the package starts fresh.</p>'
+              : '<span class="badge badge-primary-soft">In progress</span>';
+        const attemptBadge =
+          learner.result === 'passed'
+            ? '<span class="badge badge-success-soft">Passed</span>'
+            : learner.result === 'failed'
+              ? '<span class="badge badge-primary-soft">Open · 1 failed try</span>'
+              : '<span class="badge badge-primary-soft">Open</span>';
+        const answers = learner.result ? ANSWERS[learner.result] : [];
+        const events = learner.warn ? EVENTS.warn : EVENTS.normal;
+        const answerRows = answers.length
+          ? answers
+              .map(
+                ([question, response, right]) =>
+                  `<div class="ia-row"><span class="q">${question}</span><span class="badge ${right ? 'badge-success-soft' : 'badge-destructive-soft'}">${right ? 'Correct' : 'Wrong'}</span><span class="r">${response}</span></div>`
+              )
+              .join('')
+          : '<p class="hint" style="margin:0">No answers reported yet.</p>';
+        const eventRows = events
+          .map(([time, kind, detail, warn]) => `<div class="ev-row ${warn ? 'is-warn' : ''}"><span class="t">${time}</span><span>${kind}</span><span class="d">${detail}</span></div>`)
+          .join('');
+        return `<div class="sheet-section">${outcome}</div>
+          <div class="sheet-section"><h4>Summary</h4><div class="kv">
+            <div><div class="k">Best score</div><div class="v">${learner.best === null ? '-' : `${learner.best}%`}</div></div>
+            <div><div class="k">Time spent</div><div class="v">${learner.time}</div></div>
+            <div><div class="k">Attempts</div><div class="v">${learner.attempts}</div></div>
+            <div><div class="k">Version</div><div class="v">${learner.warn ? '3' : '2'}</div></div>
+          </div></div>
+          <div class="sheet-section"><h4>Attempts</h4>
+            <div class="attempt">
+              <button class="attempt-h" type="button" aria-expanded="true"><span class="grow">Attempt 1</span>${attemptBadge}<span class="muted" style="font-weight:400;font-size:12.5px">${learner.last}</span></button>
+              <div class="attempt-body">
+                <div class="kv">
+                  <div><div class="k">Started</div><div class="v">${learner.warn ? '7 Oct · 14:12' : `${learner.last} · 09:41`}</div></div>
+                  <div><div class="k">Last saved</div><div class="v">${learner.warn ? 'Never' : `${learner.last} · 10:05`}</div></div>
+                  <div><div class="k">Exit</div><div class="v">${learner.result ? 'Normal' : learner.warn ? 'None yet' : 'Suspended'}</div></div>
+                  <div><div class="k">Bookmark</div><div class="v">${learner.warn ? '-' : learner.where || 'slide-8'}</div></div>
+                  <div><div class="k">Score</div><div class="v">${learner.score === null ? '-' : `${learner.score}% (raw ${learner.score} of 100)`}</div></div>
+                  <div><div class="k">Suspend data</div><div class="v">${learner.warn ? 'None' : '1,284 characters'}</div></div>
+                </div>
+                <div><h4 style="margin:0 0 4px;font-size:12.5px">Answers the package reported</h4>${answerRows}</div>
+              </div>
+            </div>
+          </div>
+          <div class="sheet-section"><h4>Activity</h4>${eventRows}<p class="hint">Kept for 90 days, for troubleshooting.</p></div>`;
+      }
+
+      function openSheet(id) {
+        selected = LEARNERS.find((learner) => learner.id === id) || LEARNERS[0];
+        document.getElementById('sheet-avatar').textContent = initials(selected.name);
+        document.getElementById('sheet-name').textContent = selected.name;
+        document.getElementById('sheet-email').textContent = selected.email;
+        document.getElementById('sheet-body').innerHTML = sheetBody(selected);
+        document.querySelectorAll('[data-reset-name]').forEach((node) => (node.textContent = selected.name));
+        openLayer('sheet');
+      }
+
+      document.addEventListener('statechange', ({ detail }) => {
+        closeLayers();
+        document.querySelector('[data-menu-for="export-menu"]').hidden = detail !== 'export';
+        document.getElementById('results-chip').textContent = detail === 'empty' ? '0' : '41';
+        if (detail === 'sheet') openSheet('amara');
+        if (detail === 'sheet-failed') openSheet('sofia');
+        if (detail === 'sheet-diagnostics') openSheet('kwame');
+        if (detail === 'reset-confirm') {
+          openSheet('sofia');
+          openLayer('reset-confirm');
+        }
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        renderRows();
+        document.getElementById('search').addEventListener('input', (event) => {
+          query = event.target.value.trim().toLowerCase();
+          renderRows();
+        });
+        document.querySelectorAll('[data-filter]').forEach((item) =>
+          item.addEventListener('click', () => {
+            filter = item.dataset.filter;
+            document.getElementById('filter-label').textContent = item.textContent;
+            item.closest('.menu').hidden = true;
+            renderRows();
+          })
+        );
+        document.querySelectorAll('[data-export]').forEach((item) =>
+          item.addEventListener('click', () => {
+            item.closest('.menu').hidden = true;
+            toast(`Exported 48 students as ${item.textContent}`);
+          })
+        );
+        document.querySelector('[data-reset-confirm]').addEventListener('click', () => {
+          closeLayers();
+          toast(`Reset Protecting patient information for ${selected.name}`);
+        });
+      });
+
+      bindStatePicker('results');
+    </script>
+  </body>
+</html>

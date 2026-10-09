@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Media Manager · SCORM packages · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="scorm.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-org-sidebar data-active="Media"></div>
+      <div class="main">
+        <div data-app-header="Media Manager"></div>
+        <div class="content">
+          <div class="wrap" style="max-width: 1100px">
+            <div class="page-head">
+              <div>
+                <h1 class="page-title">Media Manager</h1>
+                <p class="page-sub">Keep files, videos, and links for your courses in one library.</p>
+              </div>
+            </div>
+
+            <div class="activity-cards">
+              <div class="activity-card"><div class="k"><span data-icon="database"></span>Total Storage</div><div class="v tnum">4.9 GB</div><div class="s">across 64 assets</div></div>
+              <div class="activity-card"><div class="k"><span data-icon="upload"></span>Internal Storage</div><div class="v tnum">4.9 GB</div><div class="s">uploaded files</div></div>
+              <div class="activity-card"><div class="k"><span data-icon="link"></span>External Assets</div><div class="v tnum">6</div><div class="s">YouTube and links</div></div>
+              <div class="activity-card" style="max-width: 340px">
+                <div class="k"><span data-icon="chart"></span>Storage by Asset Type</div>
+                <div class="kind-bars">
+                  <div class="kind-bar"><span>Video</span><div class="progress"><span style="width: 65%"></span></div><span class="num">3.2 GB</span></div>
+                  <div class="kind-bar"><span>SCORM</span><div class="progress"><span style="width: 29%"></span></div><span class="num">1.4 GB</span></div>
+                  <div class="kind-bar"><span>Document</span><div class="progress"><span style="width: 5%"></span></div><span class="num">210 MB</span></div>
+                  <div class="kind-bar"><span>Image</span><div class="progress"><span style="width: 2%"></span></div><span class="num">96 MB</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="filters-bar">
+              <div class="search"><span data-icon="search"></span><input class="input" placeholder="Search assets" aria-label="Search assets" /></div>
+              <div class="select-wrap">
+                <button class="select-trigger" style="width: 170px" data-menu="kind-menu"><span id="kind-label">All types</span><span data-icon="chevDown"></span></button>
+                <div class="menu select-menu" data-menu-for="kind-menu" hidden style="width: 200px">
+                  <button class="menu-item" data-kind="all">All types</button>
+                  <button class="menu-item" data-kind="video">Video</button>
+                  <button class="menu-item" data-kind="document">Document</button>
+                  <button class="menu-item" data-kind="image">Image</button>
+                  <button class="menu-item" data-kind="audio">Audio</button>
+                  <button class="menu-item" data-kind="scorm">SCORM package</button>
+                  <button class="menu-item" data-kind="other">Other</button>
+                </div>
+              </div>
+              <button class="select-trigger" style="width: 150px">All statuses<span data-icon="chevDown"></span></button>
+              <button class="btn btn-outline btn-sm" style="height: 36px"><span data-icon="refresh"></span>Refresh</button>
+              <button class="btn btn-outline btn-sm" style="height: 36px" id="select-toggle" hidden>Select</button>
+            </div>
+
+            <div class="select-bar" id="select-bar" hidden>
+              <span class="grow" id="select-count">3 packages selected</span>
+              <button class="btn btn-ghost btn-sm" id="select-clear">Clear</button>
+              <button class="btn btn-primary btn-sm" id="bulk-open"><span data-icon="book"></span><span id="bulk-label">Create 3 courses</span></button>
+            </div>
+
+            <div class="asset-grid" id="assets"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="usage" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="usage-title">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="usage-title">Where Used</h2>
+          <p class="dialog-desc">Current usage references for <b>Protecting patient information</b></p>
+        </div>
+        <div class="dialog-body">
+          <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Protecting patient information<br /><span class="muted" style="font-size: 12.5px">HIPAA Awareness 2026 · Lesson · SCORM package</span></span><a class="btn btn-outline btn-sm" href="lesson-editor.html?state=ready">Go to lesson</a></div>
+          <p class="hint">Total usages: 1 · Versions stored: 3 (96.4 MB)</p>
+        </div>
+        <div class="dialog-foot"><button class="btn btn-outline btn-sm" data-close>Close</button></div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="delete-blocked" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="del-title">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="del-title">Delete SCORM package</h2>
+        </div>
+        <div class="dialog-body">
+          <div class="alert alert-warning">
+            <span data-icon="alert"></span>
+            <div class="alert-title">Still in use</div>
+            <div class="alert-description">This package is attached to the lessons below. Remove it from each lesson first, then delete it. Students’ results stay in each lesson’s Results until you reset them.</div>
+          </div>
+          <div style="margin-top: 12px">
+            <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Spot the phishing email<br /><span class="muted" style="font-size: 12.5px">HIPAA Awareness 2026</span></span><a class="btn btn-outline btn-sm" href="lesson-editor.html?state=ready">Go to lesson</a></div>
+            <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Phishing refresher<br /><span class="muted" style="font-size: 12.5px">SOC 2 Security Basics</span></span><a class="btn btn-outline btn-sm" href="#">Go to lesson</a></div>
+          </div>
+        </div>
+        <div class="dialog-foot"><button class="btn btn-outline btn-sm" data-close>Close</button></div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="create-course" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="cc-title" style="max-width: 520px">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="cc-title">Create a course from this package</h2>
+          <p class="dialog-desc">We’ll create a draft course with one lesson that plays the whole package. Its modules stay together in a menu inside the lesson.</p>
+        </div>
+        <div class="dialog-body">
+          <div class="field"><label class="label" for="cc-name">Course title</label><input class="input" id="cc-name" value="Workplace safety library" /></div>
+          <div class="field">
+            <span class="label" id="cc-type-label">Course type</span>
+            <div class="select-wrap">
+              <button class="select-trigger" aria-labelledby="cc-type-label" style="max-width: none" data-menu="cc-type-menu"><span data-type-current>Self-paced</span><span data-icon="chevDown"></span></button>
+              <div class="menu select-menu" data-menu-for="cc-type-menu" hidden style="width: 100%">
+                <button class="menu-item" data-course-type="Self-paced">Self-paced</button>
+                <button class="menu-item" data-course-type="Live class">Live class</button>
+                <button class="menu-item" data-course-type="Compliance">Compliance</button>
+              </div>
+            </div>
+            <p class="hint">Public isn’t offered, because SCORM lessons need students to sign in.</p>
+          </div>
+          <div class="course-preview">
+            <div class="cp-sec">1. Workplace safety library</div>
+            <div class="cp-row"><span data-icon="scorm"></span><span class="grow">Workplace safety library</span><span class="badge badge-outline">4 modules</span></div>
+          </div>
+          <p class="hint" style="margin-top: 10px">Students open the package straight away, because the course has only this lesson. Add more lessons later and they see the course outline first.</p>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+          <button class="btn btn-primary btn-sm" data-close data-create-course>Create course</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="bulk-create" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="bulk-title" style="max-width: 560px">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="bulk-title">Create 3 courses</h2>
+          <p class="dialog-desc">One draft course per package. Each gets one lesson that plays its package, and is titled from the package. You can rename them here or later.</p>
+        </div>
+        <div class="dialog-body">
+          <div class="bulk-list" id="bulk-list"></div>
+          <div class="field">
+            <span class="label" id="bulk-type-label">Course type for all</span>
+            <div class="select-wrap">
+              <button class="select-trigger" aria-labelledby="bulk-type-label" style="max-width: none" data-menu="bulk-type-menu"><span data-type-current>Compliance</span><span data-icon="chevDown"></span></button>
+              <div class="menu select-menu" data-menu-for="bulk-type-menu" hidden style="width: 100%">
+                <button class="menu-item" data-course-type="Self-paced">Self-paced</button>
+                <button class="menu-item" data-course-type="Live class">Live class</button>
+                <button class="menu-item" data-course-type="Compliance">Compliance</button>
+              </div>
+            </div>
+          </div>
+          <p class="hint" style="margin-top: 0">Each course has only its package, so students open the package straight away.</p>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+          <button class="btn btn-primary btn-sm" data-close data-bulk-create>Create 3 courses</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Media</span>
+      <button data-state="all">All types</button>
+      <button data-state="scorm">SCORM filter</button>
+      <button data-state="usage">Where used</button>
+      <button data-state="delete-blocked">Delete, in use</button>
+      <button data-state="create-course">Course from package</button>
+      <button data-state="select">Select packages</button>
+      <button data-state="bulk-create">Courses from packages</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const ASSETS = [
+        { id: 'pci', kind: 'scorm', title: 'Protecting patient information', badges: ['SCORM 2004', '1 module', 'Active'], size: '96.4 MB · 3 versions', updated: 'Today', used: 'Used in 1 lesson', usage: 'usage' },
+        { id: 'phish', kind: 'scorm', title: 'Spot the phishing email', badges: ['SCORM 1.2', '1 module', 'Active'], size: '22.7 MB', updated: '28 Sep', used: 'Used in 2 lessons', usage: 'delete-blocked' },
+        { id: 'safety', kind: 'scorm', title: 'Workplace safety library', badges: ['SCORM 2004', '4 modules', 'Active'], size: '121.6 MB', updated: '7 Oct', used: 'Not used yet', usage: 'create-course' },
+        { id: 'conduct', kind: 'scorm', title: 'Annual code of conduct', badges: ['SCORM 2004', 'Upload', 'Processing'], size: '310.2 MB', updated: 'Just now', used: 'Unpacking files · 61%', processing: true },
+        { id: 'welcome', kind: 'video', title: 'Welcome to HIPAA Awareness.mp4', badges: ['Video', 'Upload', 'Active'], size: '184.0 MB', updated: '12 Sep', used: 'Used in 1 lesson' },
+        { id: 'npp', kind: 'document', title: 'Notice of Privacy Practices.pdf', badges: ['Document', 'Upload', 'Active'], size: '1.2 MB', updated: '10 Sep', used: 'Used in 2 lessons' },
+        { id: 'breach', kind: 'video', title: 'A real breach, in three minutes', badges: ['Video', 'YouTube', 'Active'], size: 'N/A', updated: '9 Sep', used: 'Used in 1 lesson' }
+      ];
+
+      const KIND_ICON = { scorm: 'scorm', video: 'video', document: 'file', image: 'image' };
+      const KIND_LABEL = { scorm: 'SCORM package', video: 'Video', document: 'Document', image: 'Image' };
+      let kind = 'all';
+      let selecting = false;
+      const picked = new Set();
+
+      function assetCard(asset, index) {
+        const badgeClass = (label) => (label === 'Processing' ? 'badge badge-warning-soft' : 'badge badge-outline');
+        const thumb = asset.processing
+          ? `<div class="asset-thumb is-scorm"><div class="ki"><span class="spin" style="width:24px;height:24px"></span><span>Unpacking files</span></div></div>`
+          : `<div class="asset-thumb ${asset.kind === 'scorm' ? 'is-scorm' : ''}"><div class="ki">${ICONS[KIND_ICON[asset.kind]]}<span>${KIND_LABEL[asset.kind]}</span></div></div>`;
+        const scormItems =
+          asset.kind === 'scorm' && !asset.processing
+            ? `<button class="menu-item" data-open="create-course">${ICONS.book}Create course from package</button>`
+            : '';
+        const isPicked = picked.has(asset.id);
+        const pickBox = selecting
+          ? `<span class="pick-box ${isPicked ? 'on' : ''}" aria-hidden="true">${isPicked ? ICONS.check : ''}</span>`
+          : '';
+        const menu = selecting
+          ? ''
+          : `<div class="asset-more"><button class="btn btn-outline btn-sm btn-icon" aria-label="Asset actions" data-menu="asset-${index}">${ICONS.more}</button>
+            <div class="menu" data-menu-for="asset-${index}" hidden>
+              <button class="menu-item">${ICONS.pencil}Edit</button>
+              <button class="menu-item" data-open="usage">${ICONS.link}Where used</button>
+              ${scormItems}
+              <button class="menu-item">${ICONS.download}Download</button>
+              <div class="menu-sep"></div>
+              <button class="menu-item" style="color:var(--destructive)" data-open="${asset.kind === 'scorm' ? 'delete-blocked' : 'usage'}">${ICONS.trash}Delete</button>
+            </div>
+          </div>`;
+        const pickState = selecting ? (asset.processing ? 'is-disabled' : isPicked ? 'is-picked' : '') : '';
+        const pickAttrs = selecting ? `role="checkbox" aria-checked="${isPicked}" aria-disabled="${!!asset.processing}" data-pick="${asset.id}"` : '';
+        return `<div class="asset-card ${pickState}" tabindex="0" ${pickAttrs} ${asset.processing && selecting ? 'title="Still processing. You can create a course once it’s ready."' : ''}>
+          ${pickBox}${menu}
+          ${thumb}
+          <div class="asset-title" title="${asset.title}">${asset.title}</div>
+          <div class="asset-badges">${asset.badges.map((label) => `<span class="${badgeClass(label)}">${label}</span>`).join('')}</div>
+          <div class="asset-meta"><div><div class="k">Size</div><div class="v tnum">${asset.size}</div></div><div><div class="k">Updated</div><div class="v">${asset.updated}</div></div></div>
+          <div class="muted" style="font-size:12.5px">${asset.used}</div>
+        </div>`;
+      }
+
+      function renderSelection() {
+        const count = picked.size;
+        const courseLabel = `Create ${count} ${count === 1 ? 'course' : 'courses'}`;
+        document.getElementById('select-bar').hidden = !selecting;
+        document.getElementById('select-toggle').textContent = selecting ? 'Cancel' : 'Select';
+        document.getElementById('select-count').textContent = count === 0 ? 'Select the packages to turn into courses' : `${count} ${count === 1 ? 'package' : 'packages'} selected`;
+        document.getElementById('bulk-label').textContent = courseLabel;
+        document.getElementById('bulk-open').disabled = count === 0;
+        document.getElementById('bulk-title').textContent = courseLabel;
+        document.querySelector('[data-bulk-create]').textContent = courseLabel;
+        document.getElementById('bulk-list').innerHTML = ASSETS.filter((asset) => picked.has(asset.id))
+          .map((asset) => `<div class="bulk-row"><span class="br-icon">${ICONS.scorm}</span><input class="input" aria-label="Course title for ${asset.title}" value="${asset.title}" /><span class="badge badge-outline">${asset.badges[1]}</span></div>`)
+          .join('');
+      }
+
+      function renderAssets() {
+        const list = ASSETS.filter((asset) => kind === 'all' || asset.kind === kind);
+        document.getElementById('assets').innerHTML = list.map(assetCard).join('');
+        document.getElementById('select-toggle').hidden = kind !== 'scorm';
+        document.querySelectorAll('[data-pick]').forEach((card) =>
+          card.addEventListener('click', () => {
+            const asset = ASSETS.find((item) => item.id === card.dataset.pick);
+            if (asset.processing) return;
+
+            if (picked.has(asset.id)) picked.delete(asset.id);
+            else picked.add(asset.id);
+            renderAssets();
+          })
+        );
+        renderSelection();
+        bindMenus();
+        bindLayers();
+      }
+
+      function setKind(next) {
+        kind = next;
+        if (next !== 'scorm') selecting = false;
+        document.getElementById('kind-label').textContent = next === 'all' ? 'All types' : next === 'scorm' ? 'SCORM package' : KIND_LABEL[next] || next;
+        renderAssets();
+      }
+
+      function setSelecting(isOn, preselect) {
+        selecting = isOn;
+        picked.clear();
+        (preselect || []).forEach((id) => picked.add(id));
+      }
+
+      document.addEventListener('statechange', ({ detail }) => {
+        closeLayers();
+        const isSelectState = detail === 'select' || detail === 'bulk-create';
+        setSelecting(isSelectState, isSelectState ? ['pci', 'phish', 'safety'] : []);
+        if (document.readyState !== 'loading') setKind(detail === 'all' ? 'all' : 'scorm');
+        if (['usage', 'delete-blocked', 'create-course', 'bulk-create'].includes(detail)) openLayer(detail);
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const initial = new URLSearchParams(location.search).get('state') || 'scorm';
+        setKind(initial === 'all' ? 'all' : 'scorm');
+        document.querySelectorAll('[data-kind]').forEach((item) =>
+          item.addEventListener('click', () => {
+            setKind(item.dataset.kind);
+            item.closest('.menu').hidden = true;
+          })
+        );
+        document.querySelectorAll('[data-course-type]').forEach((item) =>
+          item.addEventListener('click', () => {
+            item.closest('.select-wrap').querySelector('[data-type-current]').textContent = item.dataset.courseType;
+            item.closest('.menu').hidden = true;
+          })
+        );
+        document.getElementById('select-toggle').addEventListener('click', () => {
+          setSelecting(!selecting);
+          renderAssets();
+        });
+        document.getElementById('select-clear').addEventListener('click', () => {
+          picked.clear();
+          renderAssets();
+        });
+        document.getElementById('bulk-open').addEventListener('click', () => openLayer('bulk-create'));
+        document.querySelector('[data-create-course]').addEventListener('click', () => toast('Created draft course “Workplace safety library” with 1 lesson'));
+        document.querySelector('[data-bulk-create]').addEventListener('click', () => {
+          const count = picked.size;
+          setSelecting(false);
+          renderAssets();
+          toast(`Created ${count} draft courses. Find them in Courses.`);
+        });
+      });
+
+      bindStatePicker('scorm');
+    </script>
+  </body>
+</html>

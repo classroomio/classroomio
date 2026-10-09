@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson settings · SCORM package · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <link rel="stylesheet" href="scorm.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar="course" data-active="Content"></div>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Content</span>
+          <span class="badge badge-success-soft">Published</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-assistant"><span data-icon="sparkles"></span>Assistant</button>
+          <div class="bgroup">
+            <button class="btn btn-outline btn-sm"><span data-icon="ext"></span>View Course Site</button>
+            <button class="btn btn-outline btn-sm" aria-label="More"><span data-icon="more"></span></button>
+          </div>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <div class="lesson-body wide">
+          <div class="page-hdr">
+            <div class="ttl"><input class="input" aria-label="Lesson Title" value="Protecting patient information" /></div>
+            <div class="acts">
+              <button class="icon-btn" title="Lock" aria-label="Lock"><span data-icon="unlock"></span></button>
+              <button class="icon-btn" title="Delete this lesson" aria-label="Delete this lesson"><span data-icon="trash"></span></button>
+              <span class="saved-note" id="saved-note" aria-live="polite">Saved</span>
+              <button class="icon-btn" title="Save" aria-label="Save"><span data-icon="save"></span></button>
+              <button class="icon-btn" title="Version history" aria-label="Version history"><span data-icon="history"></span></button>
+              <button class="btn btn-outline btn-sm">EN<span data-icon="chevDown"></span></button>
+            </div>
+          </div>
+
+          <div class="utabs" role="tablist">
+            <a class="utab" role="tab" href="lesson-editor.html?state=ready"><span data-icon="scorm"></span>Package</a>
+            <a class="utab" role="tab" href="lesson-editor.html?state=instructions"><span data-icon="note"></span>Instructions</a>
+            <a class="utab" role="tab" href="results.html"><span data-icon="chart"></span>Results<span class="chip">41</span></a>
+            <a class="utab active" role="tab" aria-selected="true" href="package-settings.html"><span data-icon="settings"></span>Settings</a>
+          </div>
+
+          <div class="tab-panel" style="padding: 20px 16px">
+            <div class="fgroup">
+              <div class="fset">
+                <h3 class="flegend">Progression</h3>
+                <p class="fdesc">Choose how students complete this lesson and move through the course.</p>
+                <p class="fdesc">These rules apply to students only. You can preview and navigate freely while teaching.</p>
+
+                <div class="ffield">
+                  <span class="flabel" id="rule-label">Completion rule</span>
+                  <div class="select-wrap">
+                    <button class="select-trigger" aria-labelledby="rule-label" data-menu="rule-menu"><span id="rule-current">Automatic</span><span data-icon="chevDown"></span></button>
+                    <div class="menu select-menu" data-menu-for="rule-menu" hidden>
+                      <button class="menu-item" data-rule="auto"><span class="opt-two"><span class="o-t">Automatic</span><span class="o-d">If the package has a pass mark or reports pass or fail, complete when it reports passed. Otherwise complete when it reports completed.</span></span></button>
+                      <button class="menu-item" data-rule="completed"><span class="opt-two"><span class="o-t">Completed</span><span class="o-d">Complete when the package reports completed, even if the student failed its quiz.</span></span></button>
+                      <button class="menu-item" data-rule="passed"><span class="opt-two"><span class="o-t">Passed</span><span class="o-d">Complete only when the package reports passed.</span></span></button>
+                      <button class="menu-item" data-rule="score"><span class="opt-two"><span class="o-t">Minimum score</span><span class="o-d">Complete when the student finishes the package with at least the score you set.</span></span></button>
+                    </div>
+                  </div>
+                  <p class="fdesc" id="graded-note" style="font-size: 13px">This package has a pass mark of 80% in its manifest, so students must pass it.</p>
+                  <div class="alert alert-warning" id="passed-warning" hidden style="margin-top: 4px">
+                    <span data-icon="alert"></span>
+                    <div class="alert-title">This package may never report passed</div>
+                    <div class="alert-description">It has no pass mark and hasn’t reported pass or fail for any student yet. If it never does, students can’t complete this lesson. Automatic or Completed is safer.</div>
+                  </div>
+                </div>
+
+                <div class="ffield" id="min-score-field" hidden>
+                  <label class="flabel" for="min-score">Minimum score (%)</label>
+                  <div class="numfield"><button type="button" aria-label="Decrease" data-step="-5">−</button><input id="min-score" inputmode="numeric" value="90" /><button type="button" aria-label="Increase" data-step="5">+</button></div>
+                  <p class="fdesc" style="font-size: 13px">Higher than the package’s pass mark, so some students who pass the package won’t complete the lesson.</p>
+                </div>
+              </div>
+
+              <div class="fsep"></div>
+
+              <div class="fset">
+                <h3 class="flegend">Attempts</h3>
+                <p class="fdesc">Students pick up where they left off until they complete the lesson. If they fail, they can open it again for a fresh try, as often as they need. After they complete it, the lesson opens in review mode and nothing is saved.</p>
+                <div class="ffield-h">
+                  <label class="switch"><input type="checkbox" id="retakes" /><span class="track"></span><span class="knob"></span></label>
+                  <label class="flabel" for="retakes" id="retakes-label">Retakes off</label>
+                </div>
+                <p class="fdesc" id="retakes-desc" style="font-size: 13px">Turn on to let students start a new attempt after completing the lesson. Their best score counts.</p>
+                <div class="banner"><span data-icon="shield"></span><span class="grow">This is a compliance course, so each renewal starts a new attempt either way.</span></div>
+              </div>
+
+              <div class="fsep"></div>
+
+              <div class="fset">
+                <h3 class="flegend">How the package opens</h3>
+                <div class="roc-group" role="radiogroup" aria-label="How the package opens">
+                  <button type="button" class="roc" role="radio" aria-checked="true" data-mode="embedded">
+                    <span class="roc-copy"><span class="roc-title">In the lesson</span><span class="roc-desc">Students see the package inside the lesson, with a full-screen button. Best for most packages.</span></span>
+                    <span class="radio"></span>
+                  </button>
+                  <button type="button" class="roc" role="radio" aria-checked="false" data-mode="window">
+                    <span class="roc-copy"><span class="roc-title">In a new window</span><span class="roc-desc">For packages built to run in their own window. On phones it still opens in the lesson, because phones close background windows.</span></span>
+                    <span class="radio"></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="fsep"></div>
+
+              <div class="fset">
+                <h3 class="flegend">Lesson comments</h3>
+                <p class="fdesc">Choose whether students can view and add comments on this lesson.</p>
+                <div class="ffield-h">
+                  <label class="switch"><input type="checkbox" id="comments" checked /><span class="track"></span><span class="knob"></span></label>
+                  <label class="flabel" for="comments">Comments enabled</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Settings</span>
+      <button data-state="auto">Automatic</button>
+      <button data-state="ungraded">No pass mark</button>
+      <button data-state="score">Minimum score</button>
+      <button data-state="retakes">Retakes on</button>
+      <button data-state="window">New window</button>
+      <button data-state="menu">Rule menu open</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const RULE_LABELS = { auto: 'Automatic', completed: 'Completed', passed: 'Passed', score: 'Minimum score' };
+      const GRADED_NOTES = {
+        graded: 'This package has a pass mark of 80% in its manifest, so students must pass it.',
+        ungraded: 'This package has no pass mark and hasn’t reported pass or fail, so students complete it by finishing it.'
+      };
+      let isGraded = true;
+
+      function flashSaved() {
+        const note = document.getElementById('saved-note');
+        note.textContent = 'Saving…';
+        setTimeout(() => (note.textContent = 'Saved'), 700);
+      }
+
+      function setGraded(graded) {
+        isGraded = graded;
+        document.getElementById('graded-note').textContent = graded ? GRADED_NOTES.graded : GRADED_NOTES.ungraded;
+      }
+
+      function setRule(rule) {
+        document.getElementById('rule-current').textContent = RULE_LABELS[rule];
+        document.getElementById('min-score-field').hidden = rule !== 'score';
+        document.getElementById('passed-warning').hidden = rule !== 'passed' || isGraded;
+        document.querySelectorAll('[data-rule]').forEach((item) => {
+          item.classList.toggle('is-on', item.dataset.rule === rule);
+          item.querySelector('.tick')?.remove();
+          if (item.dataset.rule === rule) item.insertAdjacentHTML('beforeend', `<span class="tick">${ICONS.check}</span>`);
+        });
+      }
+
+      function setRetakes(isOn) {
+        document.getElementById('retakes').checked = isOn;
+        document.getElementById('retakes-label').textContent = isOn ? 'Retakes on' : 'Retakes off';
+        document.getElementById('retakes-desc').textContent = isOn
+          ? 'Review mode shows a “Start a new attempt” button. Students’ best score counts, and the lesson stays complete.'
+          : 'Turn on to let students start a new attempt after completing the lesson. Their best score counts.';
+      }
+
+      function setMode(mode) {
+        document.querySelectorAll('[data-mode]').forEach((card) => card.setAttribute('aria-checked', String(card.dataset.mode === mode)));
+      }
+
+      document.addEventListener('statechange', ({ detail }) => {
+        setGraded(detail !== 'ungraded');
+        setRule(detail === 'score' ? 'score' : 'auto');
+        setRetakes(detail === 'retakes');
+        setMode(detail === 'window' ? 'window' : 'embedded');
+        document.querySelector('[data-menu-for="rule-menu"]').hidden = detail !== 'menu';
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[data-rule]').forEach((item) =>
+          item.addEventListener('click', () => {
+            setRule(item.dataset.rule);
+            item.closest('.menu').hidden = true;
+            flashSaved();
+          })
+        );
+        document.getElementById('retakes').addEventListener('change', (event) => {
+          setRetakes(event.target.checked);
+          flashSaved();
+        });
+        document.querySelectorAll('[data-mode]').forEach((card) =>
+          card.addEventListener('click', () => {
+            setMode(card.dataset.mode);
+            flashSaved();
+          })
+        );
+        document.querySelectorAll('[data-step]').forEach((button) =>
+          button.addEventListener('click', () => {
+            const input = document.getElementById('min-score');
+            const next = Math.min(100, Math.max(0, Number(input.value) + Number(button.dataset.step)));
+            input.value = String(next);
+            flashSaved();
+          })
+        );
+      });
+
+      bindStatePicker('auto');
+    </script>
+  </body>
+</html>

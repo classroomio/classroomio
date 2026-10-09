@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Add content · SCORM package · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <link rel="stylesheet" href="scorm.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar="course" data-active="Content"></div>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Content</span>
+          <span class="badge badge-success-soft">Published</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-assistant"><span data-icon="sparkles"></span>Assistant</button>
+          <div class="bgroup">
+            <button class="btn btn-outline btn-sm"><span data-icon="ext"></span>View Course Site</button>
+            <button class="btn btn-outline btn-sm" aria-label="More"><span data-icon="more"></span></button>
+          </div>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <div class="content-wrap">
+          <div class="frow" style="margin-bottom: 14px">
+            <h1 class="page-title grow" style="margin: 0">HIPAA Awareness 2026</h1>
+            <button class="btn btn-outline btn-sm">Reorder</button>
+            <button class="btn btn-primary btn-sm" data-open="add-content"><span data-icon="plus"></span>Add content</button>
+          </div>
+
+          <div class="csec">
+            <div class="csec-h">1. Why HIPAA matters <span class="n">2 lessons</span></div>
+            <div class="crow"><span data-icon="lesson"></span>Welcome and course overview <span class="meta">Note · Video</span></div>
+            <div class="crow"><span data-icon="lesson"></span>A real breach, in three minutes <span class="meta">Video</span></div>
+          </div>
+          <div class="csec">
+            <div class="csec-h">2. Privacy Rule essentials <span class="n">2 lessons</span></div>
+            <a class="crow" href="lesson-editor.html?state=ready"><span data-icon="scorm"></span>Protecting patient information <span class="meta"><span class="badge badge-primary-soft">SCORM</span></span></a>
+            <div class="crow"><span data-icon="lesson"></span>Minimum necessary, with examples <span class="meta">Note</span></div>
+            <a class="crow" href="lesson-editor.html?state=empty" data-state-view="success-open"><span data-icon="scorm"></span>Breach notification basics <span class="meta"><span class="badge badge-muted">No package yet</span></span></a>
+          </div>
+          <div class="csec">
+            <div class="csec-h">3. Security Rule in practice <span class="n">1 lesson · 1 exercise</span></div>
+            <div class="crow"><span data-icon="scorm"></span>Spot the phishing email <span class="meta"><span class="badge badge-primary-soft">SCORM</span></span></div>
+            <div class="crow"><span data-icon="exercise"></span>Quick check: safeguards <span class="meta">5 questions · 41 submissions</span></div>
+          </div>
+          <div class="csec">
+            <div class="csec-h">4. Final assessment <span class="n">2 exercises</span></div>
+            <div class="crow"><span data-icon="exercise"></span>HIPAA final assessment <span class="meta">12 questions · 30 submissions</span></div>
+            <div class="crow"><span data-icon="exercise"></span>Policy attestation <span class="meta">1 question · 33 submissions</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="add-content" hidden>
+      <div class="dialog" style="max-width: 576px" role="dialog" aria-modal="true" aria-labelledby="ac-title">
+        <div class="dialog-head frow">
+          <h2 class="dialog-title grow" id="ac-title">Add content</h2>
+          <button class="btn btn-ghost btn-sm btn-icon" data-close aria-label="Close"><span data-icon="x"></span></button>
+        </div>
+
+        <div class="dialog-body" data-step="type">
+          <p class="dialog-desc" style="margin-bottom: 12px">Select the type of content you want to add.</p>
+          <div class="roc-group cols-2" role="radiogroup" aria-label="Content type">
+            <button type="button" class="roc" role="radio" aria-checked="false" data-type="section" data-hide-public="false">
+              <span class="roc-copy"><span class="roc-title">Section</span><span class="roc-desc">Group lessons and exercises together.</span></span>
+              <span class="radio"></span>
+            </button>
+            <button type="button" class="roc" role="radio" aria-checked="false" data-type="lesson">
+              <span class="roc-copy"><span class="roc-title">Lesson</span><span class="roc-desc">Teach with notes, slides, and videos.</span></span>
+              <span class="radio"></span>
+            </button>
+            <button type="button" class="roc" role="radio" aria-checked="false" data-type="exercise">
+              <span class="roc-copy"><span class="roc-title">Exercise</span><span class="roc-desc">Assess students with quizzes and tasks.</span></span>
+              <span class="radio"></span>
+            </button>
+            <button type="button" class="roc" role="radio" aria-checked="true" data-type="scorm" data-scorm-option>
+              <span class="roc-copy"><span class="roc-title">SCORM package <span class="new-pill">New</span></span><span class="roc-desc">Upload a course exported from Storyline, Rise, Captivate or iSpring.</span></span>
+              <span class="radio"></span>
+            </button>
+          </div>
+          <p class="hint" data-public-note hidden style="margin-top: 10px">SCORM packages are not available in Public courses, because those lessons are taken without signing in.</p>
+        </div>
+
+        <div class="dialog-body" data-step="details" hidden>
+          <div class="field">
+            <label class="label" for="ac-section">Section</label>
+            <div class="select-wrap">
+              <button class="select-trigger" id="ac-section" style="max-width: none" data-menu="ac-section-menu">2. Privacy Rule essentials <span data-icon="chevDown"></span></button>
+              <div class="menu select-menu" data-menu-for="ac-section-menu" hidden style="width: 100%">
+                <button class="menu-item">1. Why HIPAA matters</button>
+                <button class="menu-item is-on">2. Privacy Rule essentials<span class="tick" data-icon="check"></span></button>
+                <button class="menu-item">3. Security Rule in practice</button>
+                <button class="menu-item">4. Final assessment</button>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" for="ac-title-input">Lesson title</label>
+            <input class="input" id="ac-title-input" value="Breach notification basics" placeholder="e.g., Getting Started with Variables" />
+            <p class="hint">You’ll upload the package on the next screen. The lesson completes when the package reports it, so learners won’t see a “Mark as complete” button.</p>
+          </div>
+        </div>
+
+        <div class="dialog-body" data-step="success" hidden>
+          <div class="alert alert-default" role="status">
+            <span data-icon="checkCircle"></span>
+            <div class="alert-title">SCORM lesson has been created successfully.</div>
+            <div class="alert-description">Breach notification basics</div>
+          </div>
+        </div>
+
+        <div class="dialog-foot" data-foot="type">
+          <button class="btn btn-primary btn-sm" data-go="details">Continue</button>
+        </div>
+        <div class="dialog-foot" data-foot="details" hidden style="justify-content: space-between">
+          <button class="btn btn-secondary btn-sm" data-go="type">Back</button>
+          <button class="btn btn-primary btn-sm" data-go="success">Create SCORM lesson</button>
+        </div>
+        <div class="dialog-foot" data-foot="success" hidden style="justify-content: space-between">
+          <button class="btn btn-secondary btn-sm" data-go="details">Create another SCORM lesson</button>
+          <div class="frow">
+            <button class="btn btn-outline btn-sm" data-close>Later</button>
+            <a class="btn btn-primary btn-sm" href="lesson-editor.html?state=empty">Open now</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">State</span>
+      <button data-state="list">Content list</button>
+      <button data-state="type">Pick a type</button>
+      <button data-state="details">Details</button>
+      <button data-state="success">Created</button>
+      <button data-state="public">Public course</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const steps = ['type', 'details', 'success'];
+
+      function showStep(step) {
+        steps.forEach((name) => {
+          document.querySelector(`[data-step="${name}"]`).hidden = name !== step;
+          document.querySelector(`[data-foot="${name}"]`).hidden = name !== step;
+        });
+        document.querySelectorAll('[data-state-view="success-open"]').forEach((row) => row.classList.toggle('shown', step === 'success'));
+      }
+
+      function setPublic(isPublic) {
+        document.querySelector('[data-scorm-option]').hidden = isPublic;
+        document.querySelector('[data-public-note]').hidden = !isPublic;
+        document.querySelector('.roc-group').classList.toggle('cols-2', true);
+        document.querySelectorAll('.roc').forEach((card) => card.setAttribute('aria-checked', String(isPublic ? card.dataset.type === 'lesson' : card.dataset.type === 'scorm')));
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.roc').forEach((card) =>
+          card.addEventListener('click', () => {
+            document.querySelectorAll('.roc').forEach((other) => other.setAttribute('aria-checked', String(other === card)));
+          })
+        );
+        document.querySelectorAll('[data-go]').forEach((button) => button.addEventListener('click', () => showStep(button.dataset.go)));
+        document.querySelectorAll('[data-open="add-content"]').forEach((button) => button.addEventListener('click', () => showStep('type')));
+      });
+
+      document.addEventListener('statechange', ({ detail }) => {
+        const layer = document.querySelector('[data-layer="add-content"]');
+        layer.hidden = detail === 'list';
+        setPublic(detail === 'public');
+        if (detail === 'list') return;
+
+        showStep(detail === 'public' ? 'type' : detail);
+      });
+
+      bindStatePicker('type');
+    </script>
+  </body>
+</html>

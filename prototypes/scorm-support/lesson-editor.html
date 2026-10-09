@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson editor · package mode · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <link rel="stylesheet" href="scorm.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar="course" data-active="Content"></div>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Content</span>
+          <span class="badge badge-success-soft">Published</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-assistant"><span data-icon="sparkles"></span>Assistant</button>
+          <div class="bgroup">
+            <button class="btn btn-outline btn-sm"><span data-icon="ext"></span>View Course Site</button>
+            <button class="btn btn-outline btn-sm" aria-label="More"><span data-icon="more"></span></button>
+          </div>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <div class="lesson-body wide">
+          <div class="page-hdr">
+            <div class="ttl"><input class="input" id="lesson-title" aria-label="Lesson Title" value="Protecting patient information" /></div>
+            <div class="acts">
+              <button class="icon-btn" title="Lock" aria-label="Lock"><span data-icon="unlock"></span></button>
+              <button class="icon-btn" title="Delete this lesson" aria-label="Delete this lesson"><span data-icon="trash"></span></button>
+              <span class="saved-note" aria-live="polite">Saved</span>
+              <button class="icon-btn" title="Save" aria-label="Save"><span data-icon="save"></span></button>
+              <button class="icon-btn" title="Version history" aria-label="Version history"><span data-icon="history"></span></button>
+              <button class="btn btn-outline btn-sm">EN<span data-icon="chevDown"></span></button>
+            </div>
+          </div>
+
+          <div class="utabs" role="tablist">
+            <a class="utab" role="tab" data-tab="package" href="lesson-editor.html?state=ready"><span data-icon="scorm"></span>Package</a>
+            <a class="utab" role="tab" data-tab="instructions" href="lesson-editor.html?state=instructions"><span data-icon="note"></span>Instructions</a>
+            <a class="utab" role="tab" href="results.html"><span data-icon="chart"></span>Results<span class="chip">41</span></a>
+            <a class="utab" role="tab" href="package-settings.html"><span data-icon="settings"></span>Settings</a>
+          </div>
+
+          <div class="tab-panel">
+            <!-- EMPTY -->
+            <section data-state-view="empty free">
+              <div class="alert alert-information" data-state-view="free" style="margin-bottom: 14px">
+                <span data-icon="info"></span>
+                <div class="alert-title">SCORM packages are on paid plans</div>
+                <div class="alert-description">Upgrade to upload SCORM packages and track learners’ progress, scores and time.</div>
+                <div class="alert-actions"><button class="btn btn-primary btn-sm">Upgrade</button></div>
+              </div>
+              <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload a SCORM ZIP">
+                <span class="dz-icon"><span data-icon="upload"></span></span>
+                <span class="dz-title">Drop your SCORM package here</span>
+                <span class="dz-sub">or click to choose a .zip file · up to 500 MB</span>
+              </div>
+              <div class="support-line">
+                <span><span data-icon="check"></span>SCORM 1.2</span>
+                <span><span data-icon="check"></span>SCORM 2004 (2nd, 3rd and 4th editions)</span>
+                <span><span data-icon="info"></span>Export from Storyline, Rise, Captivate or iSpring with an LMS option</span>
+              </div>
+            </section>
+
+            <!-- UPLOADING -->
+            <section data-state-view="uploading">
+              <div class="file-row">
+                <span class="fr-icon"><span data-icon="zip"></span></span>
+                <div class="fr-main">
+                  <div class="fr-name">hipaa-privacy-rule-storyline.zip</div>
+                  <div class="frow"><div class="progress"><span id="up-bar" style="width: 46%"></span></div><span class="fr-meta" id="up-meta" style="width: 150px; text-align: right">22.1 MB of 48.2 MB</span></div>
+                </div>
+                <button class="btn btn-outline btn-sm">Cancel</button>
+              </div>
+              <p class="hint" style="margin-top: 10px">Keep this tab open until the upload finishes. After that, processing carries on without you.</p>
+            </section>
+
+            <!-- PROCESSING -->
+            <section data-state-view="processing">
+              <div class="file-row">
+                <span class="fr-icon"><span data-icon="zip"></span></span>
+                <div class="fr-main">
+                  <div class="fr-name">hipaa-privacy-rule-storyline.zip</div>
+                  <div class="frow"><div class="progress"><span id="proc-bar" style="width: 52%"></span></div><span class="fr-meta" id="proc-pct" style="width: 150px; text-align: right">52%</span></div>
+                </div>
+              </div>
+              <div class="stages" id="stages">
+                <div class="stage done"><span class="st-icon"><span data-icon="checkCircle"></span></span>Checking the ZIP<span class="st-detail">48.2 MB · 312 files</span></div>
+                <div class="stage" data-stage="unpack"><span class="st-icon"><span class="spin"></span></span>Unpacking files<span class="st-detail" id="unpack-detail">164 of 312</span></div>
+                <div class="stage pending" data-stage="manifest"><span class="st-icon"><span data-icon="circle"></span></span>Reading the manifest</div>
+                <div class="stage pending" data-stage="save"><span class="st-icon"><span data-icon="circle"></span></span>Saving files</div>
+              </div>
+              <p class="hint" style="margin-top: 10px">You can leave this page. We’ll keep going and the lesson updates when the package is ready.</p>
+            </section>
+
+            <!-- READY (single SCO) -->
+            <section data-state-view="ready warnings version move-confirm">
+              <div class="alert alert-warning" data-state-view="warnings" style="margin-bottom: 14px">
+                <span data-icon="alert"></span>
+                <div class="alert-title">Ready, with 2 things to know</div>
+                <div class="alert-description">
+                  <ul>
+                    <li>Two file names differ only in letter case (<code class="mono">Images/Logo.PNG</code>). We matched them automatically.</li>
+                    <li>The package sets a 45-minute time limit. ClassroomIO doesn’t enforce time limits.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="notice" data-state-view="version move-confirm" style="margin-bottom: 14px">
+                <span class="pulse"></span>
+                <span class="grow">Version 3 is live for new attempts. <b>12 learners</b> are part-way through version 2 and will finish on it.</span>
+                <button class="link" data-open="move-confirm">Move everyone to version 3</button>
+              </div>
+
+              <div class="pkg-card">
+                <div class="pkg-top">
+                  <span class="pkg-tile"><span data-icon="scorm"></span></span>
+                  <div style="min-width: 0">
+                    <h2 class="pkg-title">Protecting patient information</h2>
+                    <div class="pkg-badges">
+                      <span class="badge badge-secondary">SCORM 2004 · 4th edition</span>
+                      <span class="badge badge-outline">1 module</span>
+                      <span class="badge badge-outline">Pass mark 80%</span>
+                      <span class="badge badge-primary-soft" data-state-view="version move-confirm">Version 3 · current</span>
+                    </div>
+                  </div>
+                  <div class="pkg-actions">
+                    <a class="btn btn-outline btn-sm" href="player.html?state=preview"><span data-icon="eye"></span>Preview</a>
+                    <button class="btn btn-outline btn-sm" data-replace><span data-icon="refresh"></span>Replace package</button>
+                    <div class="select-wrap">
+                      <button class="btn btn-outline btn-sm btn-icon" aria-label="More package actions" data-menu="pkg-more"><span data-icon="more"></span></button>
+                      <div class="menu" data-menu-for="pkg-more" hidden style="top: 40px; right: 0">
+                        <a class="menu-item" href="media.html"><span data-icon="image"></span>Open in Media Manager</a>
+                        <button class="menu-item"><span data-icon="download"></span>Download original ZIP</button>
+                        <div class="menu-sep"></div>
+                        <button class="menu-item" style="color: var(--destructive)"><span data-icon="trash"></span>Remove from lesson</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="pkg-meta">
+                  <div><div class="k">File</div><div class="v" title="hipaa-privacy-rule-storyline.zip">hipaa-privacy-rule-storyline.zip</div></div>
+                  <div><div class="k">Size</div><div class="v tnum">48.2 MB · 312 files</div></div>
+                  <div><div class="k">Made with</div><div class="v">Articulate Storyline 360</div></div>
+                  <div><div class="k">Uploaded</div><div class="v">7 Oct 2026 · Morgan Reyes</div></div>
+                </div>
+                <div class="sco-list">
+                  <div class="sco-h">What learners launch</div>
+                  <div class="sco-row"><span class="n">1</span><span class="grow">Protecting patient information</span><code>index_lms.html</code></div>
+                </div>
+              </div>
+
+              <div class="sec-head" data-state-view="version move-confirm" style="margin-top: 22px">
+                <h3 class="sec-title">Versions</h3><span class="count">3</span>
+              </div>
+              <div class="card" data-state-view="version move-confirm">
+                <div class="thead version-grid">
+                  <span>Version</span><span>File</span><span>Learners on it</span><span>Uploaded</span>
+                </div>
+                <div class="trow version-grid">
+                  <span class="frow"><b>3</b><span class="badge badge-primary-soft">Current</span></span><span class="mono">hipaa-privacy-rule-v3.zip</span><span>New attempts</span><span class="muted">Today</span>
+                </div>
+                <div class="trow version-grid">
+                  <span><b>2</b></span><span class="mono">hipaa-privacy-rule-v2.zip</span><span>12 in progress</span><span class="muted">22 Sep 2026</span>
+                </div>
+                <div class="trow version-grid">
+                  <span><b>1</b></span><span class="mono">hipaa-privacy-rule-storyline.zip</span><span class="muted">None · deleted in 30 days</span><span class="muted">2 Sep 2026</span>
+                </div>
+              </div>
+
+              <div class="banner" style="margin-top: 14px" data-state-view="ready warnings">
+                <span data-icon="info"></span>
+                <span class="grow">Learners complete this lesson when the package reports <b>passed</b>, because its manifest sets a pass mark of 80%. <a href="package-settings.html" style="color: var(--primary)">Change the rule in Settings</a></span>
+              </div>
+            </section>
+
+            <!-- MULTI-SCO -->
+            <section data-state-view="multi">
+              <div class="alert alert-information" style="margin-bottom: 14px">
+                <span data-icon="layers"></span>
+                <div class="alert-title">This package has 3 modules</div>
+                <div class="alert-description">They all stay in this lesson. Learners see the modules in a menu above the package and can open them in any order. The lesson completes when every module meets the completion rule.</div>
+                <div class="alert-actions">
+                  <a class="btn btn-outline btn-sm" href="player.html?state=modules"><span data-icon="eye"></span>See what learners see</a>
+                </div>
+              </div>
+              <div class="alert alert-warning" style="margin-bottom: 14px">
+                <span data-icon="alert"></span>
+                <div class="alert-title">Sequencing rules are ignored</div>
+                <div class="alert-description">This package defines its own rules for the order of modules. ClassroomIO lets learners open them in any order and uses the course’s progression settings for the lesson itself.</div>
+              </div>
+              <div class="pkg-card">
+                <div class="pkg-top">
+                  <span class="pkg-tile"><span data-icon="scorm"></span></span>
+                  <div style="min-width: 0">
+                    <h2 class="pkg-title">Protecting patient information</h2>
+                    <div class="pkg-badges"><span class="badge badge-secondary">SCORM 2004 · 3rd edition</span><span class="badge badge-outline">3 modules</span><span class="badge badge-outline">Pass mark 80% on 1 module</span></div>
+                  </div>
+                  <div class="pkg-actions">
+                    <a class="btn btn-outline btn-sm" href="player.html?state=preview"><span data-icon="eye"></span>Preview</a>
+                    <button class="btn btn-outline btn-sm"><span data-icon="refresh"></span>Replace package</button>
+                  </div>
+                </div>
+                <div class="pkg-meta">
+                  <div><div class="k">File</div><div class="v" title="hipaa-privacy-rule-modules.zip">hipaa-privacy-rule-modules.zip</div></div>
+                  <div><div class="k">Size</div><div class="v tnum">64.8 MB · 486 files</div></div>
+                  <div><div class="k">Made with</div><div class="v">iSpring Suite</div></div>
+                  <div><div class="k">Uploaded</div><div class="v">7 Oct 2026 · Morgan Reyes</div></div>
+                </div>
+                <div class="sco-list">
+                  <div class="sco-h">Modules learners pick from</div>
+                  <div class="sco-row"><span class="n">1</span><span class="grow">What counts as PHI</span><span class="badge badge-muted">Completes when finished</span><code>phi/index.html</code></div>
+                  <div class="sco-row"><span class="n">2</span><span class="grow">Minimum necessary and disclosures</span><span class="badge badge-muted">Completes when finished</span><code>disclosures/index.html</code></div>
+                  <div class="sco-row"><span class="n">3</span><span class="grow">Knowledge check</span><span class="badge badge-outline">Pass mark 80%</span><code>quiz/index.html</code></div>
+                </div>
+              </div>
+            </section>
+
+            <!-- FAILED -->
+            <section data-state-view="failed failed-xapi failed-external">
+              <div class="file-row" style="margin-bottom: 14px">
+                <span class="fr-icon" style="color: var(--destructive)"><span data-icon="zip"></span></span>
+                <div class="fr-main">
+                  <div class="fr-name" data-state-view="failed">security-awareness-web.zip</div>
+                  <div class="fr-name" data-state-view="failed-xapi">phishing-module-tincan.zip</div>
+                  <div class="fr-name" data-state-view="failed-external">phishing-refresher-remote.zip</div>
+                  <div class="fr-meta" data-state-view="failed">31.4 MB · checked in 4 seconds</div>
+                  <div class="fr-meta" data-state-view="failed-xapi">18.9 MB · checked in 3 seconds</div>
+                  <div class="fr-meta" data-state-view="failed-external">6 KB · checked in 1 second</div>
+                </div>
+              </div>
+              <div class="alert alert-destructive" data-state-view="failed-external">
+                <span data-icon="xCircle"></span>
+                <div class="alert-title">This package opens content from another website</div>
+                <div class="alert-description">Its manifest launches <code class="mono">https://learn.vendor.example/phishing/start</code> directly. Content opened straight from another website can’t save progress to ClassroomIO. Ask the vendor for an LMS export that includes its own launch file. Packages that carry a small launcher and stream the course from the vendor work fine.</div>
+                <div class="alert-actions"><button class="btn btn-outline btn-sm" data-retry><span data-icon="upload"></span>Try another file</button></div>
+              </div>
+              <div class="alert alert-destructive" data-state-view="failed">
+                <span data-icon="xCircle"></span>
+                <div class="alert-title">This ZIP isn’t a SCORM package</div>
+                <div class="alert-description">There’s no <code class="mono">imsmanifest.xml</code> at its root, so it looks like a web export. In your authoring tool, publish for an LMS and choose SCORM 1.2 or SCORM 2004, then upload the new ZIP.</div>
+                <div class="alert-actions"><button class="btn btn-outline btn-sm" data-retry><span data-icon="upload"></span>Try another file</button><a class="btn btn-ghost btn-sm" href="#">How to export for an LMS</a></div>
+              </div>
+              <div class="alert alert-destructive" data-state-view="failed-xapi">
+                <span data-icon="xCircle"></span>
+                <div class="alert-title">This is an xAPI package</div>
+                <div class="alert-description">It contains <code class="mono">tincan.xml</code> instead of <code class="mono">imsmanifest.xml</code>. ClassroomIO supports SCORM 1.2 and 2004 for now. Re-export it as SCORM from your authoring tool.</div>
+                <div class="alert-actions"><button class="btn btn-outline btn-sm" data-retry><span data-icon="upload"></span>Try another file</button></div>
+              </div>
+            </section>
+
+            <!-- INSTRUCTIONS -->
+            <section data-state-view="instructions">
+              <p class="hint" style="margin: 0 0 10px">Optional. Shown to learners above the package.</p>
+              <div class="card" style="border-radius: var(--radius-lg)">
+                <div class="frow" style="gap: 4px; padding: 6px 8px; border-bottom: 1px solid var(--border)">
+                  <button class="btn btn-ghost btn-sm" style="font-weight: 700">B</button>
+                  <button class="btn btn-ghost btn-sm" style="font-style: italic">I</button>
+                  <button class="btn btn-ghost btn-sm"><span data-icon="link"></span></button>
+                  <button class="btn btn-ghost btn-sm"><span data-icon="menu"></span></button>
+                </div>
+                <div style="padding: 14px 16px; min-height: 140px; font-size: 14.5px; line-height: 1.6" contenteditable="true">
+                  Work through all eight slides, then pass the short quiz with 80% or more. Plan for about 25 minutes. You can stop at any point and pick up where you left off.
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="move-confirm" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="mv-title">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="mv-title">Move everyone to version 3?</h2>
+          <p class="dialog-desc">12 learners are part-way through version 2. Their progress in this lesson starts again on version 3. Lessons they already completed stay complete, and their earlier attempts stay in Results.</p>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+          <button class="btn btn-destructive btn-sm" data-close>Restart 12 attempts</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Package</span>
+      <button data-state="empty">Empty</button>
+      <button data-state="uploading">Uploading</button>
+      <button data-state="processing">Processing</button>
+      <button data-state="ready">Ready</button>
+      <button data-state="warnings">Warnings</button>
+      <button data-state="multi">3 modules</button>
+      <button data-state="version">New version</button>
+      <button data-state="move-confirm">Move everyone</button>
+      <button data-state="failed">No manifest</button>
+      <button data-state="failed-xapi">xAPI package</button>
+      <button data-state="failed-external">Another website</button>
+      <button data-state="free">Free plan</button>
+      <button data-state="instructions">Instructions tab</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      let showState = () => {};
+      let timers = [];
+
+      function clearTimers() {
+        timers.forEach(clearTimeout);
+        timers = [];
+      }
+
+      function later(ms, fn) {
+        timers.push(setTimeout(fn, ms));
+      }
+
+      function setStage(name, status, detail) {
+        const stage = document.querySelector(`[data-stage="${name}"]`);
+        stage.classList.remove('pending', 'done');
+        if (status === 'done') stage.classList.add('done');
+        if (status === 'pending') stage.classList.add('pending');
+        const icon = status === 'done' ? ICONS.checkCircle : status === 'active' ? '<span class="spin"></span>' : ICONS.circle;
+        stage.querySelector('.st-icon').innerHTML = icon;
+        if (detail !== undefined) {
+          let detailNode = stage.querySelector('.st-detail');
+          if (!detailNode) {
+            detailNode = document.createElement('span');
+            detailNode.className = 'st-detail';
+            stage.appendChild(detailNode);
+          }
+          detailNode.textContent = detail;
+        }
+      }
+
+      function simulateUpload(endState = 'ready') {
+        clearTimers();
+        showState('uploading');
+        let uploaded = 0;
+        const total = 48.2;
+        const tick = () => {
+          uploaded = Math.min(total, uploaded + 6.1);
+          const percent = Math.round((uploaded / total) * 100);
+          document.getElementById('up-bar').style.width = `${percent}%`;
+          document.getElementById('up-meta').textContent = `${uploaded.toFixed(1)} MB of ${total} MB`;
+          if (uploaded < total) return later(260, tick);
+
+          later(300, () => simulateProcessing(endState));
+        };
+        tick();
+      }
+
+      function simulateProcessing(endState) {
+        showState('processing');
+        setStage('unpack', 'active', '0 of 312');
+        setStage('manifest', 'pending');
+        setStage('save', 'pending');
+        let unpacked = 0;
+        const bar = document.getElementById('proc-bar');
+        const pct = document.getElementById('proc-pct');
+        const step = () => {
+          unpacked = Math.min(312, unpacked + 39);
+          const percent = 10 + Math.round((unpacked / 312) * 45);
+          bar.style.width = `${percent}%`;
+          pct.textContent = `${percent}%`;
+          setStage('unpack', unpacked < 312 ? 'active' : 'done', `${unpacked} of 312`);
+          if (unpacked < 312) return later(220, step);
+
+          setStage('manifest', 'active');
+          later(700, () => {
+            setStage('manifest', 'done', 'SCORM 2004 · 1 module');
+            setStage('save', 'active');
+            bar.style.width = '85%';
+            pct.textContent = '85%';
+            later(900, () => {
+              setStage('save', 'done', '48.2 MB');
+              bar.style.width = '100%';
+              pct.textContent = '100%';
+              later(400, () => {
+                showState(endState);
+                toast(endState === 'version' ? 'Version 3 is ready. New attempts use it.' : 'Package ready: Protecting patient information');
+              });
+            });
+          });
+        };
+        step();
+      }
+
+      document.addEventListener('statechange', ({ detail }) => {
+        clearTimers();
+        document.querySelectorAll('.utab[data-tab]').forEach((tab) =>
+          tab.classList.toggle('active', (tab.dataset.tab === 'instructions') === (detail === 'instructions'))
+        );
+        document.getElementById('dropzone').classList.toggle('is-disabled', detail === 'free');
+        document.querySelector('[data-layer="move-confirm"]').hidden = detail !== 'move-confirm';
+        const titles = {
+          empty: 'Breach notification basics',
+          free: 'Breach notification basics',
+          failed: 'Security awareness basics',
+          'failed-xapi': 'Spot the phishing email',
+          'failed-external': 'Phishing refresher'
+        };
+        document.getElementById('lesson-title').value = titles[detail] || 'Protecting patient information';
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        const dropzone = document.getElementById('dropzone');
+        dropzone.addEventListener('click', () => !dropzone.classList.contains('is-disabled') && simulateUpload());
+        dropzone.addEventListener('keydown', (event) => event.key === 'Enter' && dropzone.click());
+        dropzone.addEventListener('dragover', (event) => {
+          event.preventDefault();
+          dropzone.classList.add('drag');
+        });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag'));
+        dropzone.addEventListener('drop', (event) => {
+          event.preventDefault();
+          dropzone.classList.remove('drag');
+          simulateUpload();
+        });
+        document.querySelectorAll('[data-retry]').forEach((button) => button.addEventListener('click', () => showState('empty')));
+        document.querySelector('[data-replace]').addEventListener('click', () => simulateUpload('version'));
+      });
+
+      showState = bindStatePicker('ready');
+    </script>
+  </body>
+</html>

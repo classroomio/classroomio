@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Learner lesson · SCORM player · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <link rel="stylesheet" href="scorm.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar="learner"></div>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Content</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-assistant"><span data-icon="sparkles"></span>Assistant</button>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <div class="lesson-body wide" data-state-view="loading running resume quiz completed failed modules not-connected review review-retake expired locked window preview single">
+          <div class="page-hdr">
+            <div class="ttl">
+              <p class="page-sub" id="lesson-section" style="font-size: 12.5px; margin-bottom: 2px">2. Privacy Rule essentials</p>
+              <h1>Protecting patient information</h1>
+            </div>
+            <div class="acts">
+              <span class="status-pill" id="status-pill"><span class="pdot"></span>In progress</span>
+              <div class="frow" id="lesson-nav" style="gap: 4px">
+                <button class="btn btn-outline btn-sm btn-icon" aria-label="Prev" title="Previous: A real breach, in three minutes"><span data-icon="chevLeft"></span></button>
+                <button class="btn btn-outline btn-sm btn-icon" aria-label="Next" id="next-lesson" title="Next: Minimum necessary, with examples"><span data-icon="chevRight"></span></button>
+              </div>
+              <button class="btn btn-outline btn-sm">EN<span data-icon="chevDown"></span></button>
+            </div>
+          </div>
+
+          <div class="banner" data-state-view="preview" style="margin-bottom: 12px; border-color: color-mix(in oklab, var(--primary) 35%, transparent)">
+            <span data-icon="eye"></span>
+            <span class="grow"><b>Preview.</b> Nothing you do here is saved, and students don’t see this banner.</span>
+            <a class="btn btn-outline btn-sm" href="lesson-editor.html?state=ready">Back to editor</a>
+          </div>
+          <div class="banner" data-state-view="review review-retake" style="margin-bottom: 12px">
+            <span data-icon="checkCircle"></span>
+            <span class="grow">You passed this lesson on 3 Oct with 90%. You’re in review mode, so nothing you do now is saved.</span>
+            <button class="btn btn-outline btn-sm" data-state-view="review-retake" id="new-attempt"><span data-icon="rotate"></span>Start a new attempt</button>
+          </div>
+
+          <p class="instructions" id="instructions" data-state-view="loading running resume quiz completed failed modules not-connected review review-retake expired window preview single">Work through all eight slides, then pass the short quiz with 80% or more. Plan for about 25 minutes. You can stop at any point and pick up where you left off.</p>
+
+          <div class="card card-pad" data-state-view="locked" style="display: grid; justify-items: center; gap: 8px; text-align: center; padding: 48px 20px">
+            <span class="item-media-icon item-media-lg" style="margin: 0; align-self: center"><span data-icon="lock"></span></span>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 600">Finish the previous lesson first</h3>
+            <p class="muted" style="margin: 0; max-width: 420px">This lesson unlocks after you complete <b>A real breach, in three minutes</b>. The package isn’t loaded until then.</p>
+            <a class="btn btn-outline btn-sm" href="#" style="margin-top: 6px"><span data-icon="chevLeft"></span>Go to the previous lesson</a>
+          </div>
+
+          <div class="player-shell" data-state-view="loading running resume quiz completed failed modules not-connected review review-retake expired window preview single">
+            <div class="module-bar" data-state-view="modules">
+              <div class="mb-head"><span class="mb-title">Modules</span><span class="muted" id="module-count">1 of 3 complete</span></div>
+              <div class="mb-chips" role="tablist" aria-label="Modules" id="module-chips"></div>
+            </div>
+
+            <div class="player-frame" id="frame" aria-label="SCORM package">
+              <div class="skel" id="skel" data-state-view="loading"></div>
+              <div class="pk" id="pk" data-state-view="running resume quiz completed failed modules review review-retake preview single"></div>
+
+              <div class="frame-panel" data-state-view="not-connected">
+                <div class="fp-box">
+                  <span class="fp-icon warn"><span data-icon="alert"></span></span>
+                  <h3>This lesson didn’t connect</h3>
+                  <p>The package loaded but never contacted ClassroomIO, so your progress can’t be saved. Reload to try again. If it keeps happening, let your course admin know.</p>
+                  <button class="btn btn-primary btn-sm" data-goto="running"><span data-icon="refresh"></span>Reload</button>
+                </div>
+              </div>
+
+              <div class="frame-panel" data-state-view="expired">
+                <div class="fp-box">
+                  <span class="fp-icon"><span data-icon="timer"></span></span>
+                  <h3>This session expired</h3>
+                  <p>The lesson has been open for more than 12 hours. Reload to keep going. Everything up to your last save is kept.</p>
+                  <button class="btn btn-primary btn-sm" data-goto="resume"><span data-icon="refresh"></span>Reload</button>
+                </div>
+              </div>
+
+              <div class="frame-panel" data-state-view="window">
+                <div class="fp-box" id="window-closed">
+                  <span class="fp-icon"><span data-icon="ext"></span></span>
+                  <h3>This lesson opens in a new window</h3>
+                  <p>Keep this tab open while you learn. Your progress saves as you go, and this page updates when you finish.</p>
+                  <button class="btn btn-primary btn-sm" id="open-window"><span data-icon="ext"></span>Open lesson</button>
+                </div>
+                <div class="fp-box" id="window-open" hidden>
+                  <span class="spin" style="width: 22px; height: 22px"></span>
+                  <h3>The lesson is open in another window</h3>
+                  <p>Progress saved · 2 minutes ago</p>
+                  <button class="btn btn-outline btn-sm">Bring it back</button>
+                </div>
+              </div>
+
+              <div class="frame-panel" id="module-done-panel" hidden>
+                <div class="fp-box">
+                  <span class="fp-icon" style="background: var(--success-soft); color: var(--success); border-color: transparent"><span data-icon="checkCircle"></span></span>
+                  <h3 id="module-done-title">Module complete</h3>
+                  <p id="module-done-text">2 of 3 modules done.</p>
+                  <button class="btn btn-primary btn-sm" id="next-module">Next module<span data-icon="chevRight"></span></button>
+                </div>
+              </div>
+
+              <div class="frame-panel" id="finished-panel" hidden>
+                <div class="fp-box">
+                  <span class="fp-icon" style="background: var(--success-soft); color: var(--success); border-color: transparent"><span data-icon="checkCircle"></span></span>
+                  <h3>You finished this lesson</h3>
+                  <p>Passed with 90%. Your course progress is updated.</p>
+                  <div class="frow" style="justify-content: center; flex-wrap: wrap">
+                    <button class="btn btn-outline btn-sm" data-goto="review">Review the package</button>
+                    <a class="btn btn-primary btn-sm" href="#" id="finished-next">Next: Minimum necessary, with examples<span data-icon="chevRight"></span></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="player-under">
+              <span class="fail-note" id="fail-note" hidden><span data-icon="info"></span>You didn’t pass this time. Open the lesson again to start the quiz fresh. Your course stays where it is until you pass.</span>
+              <span class="grow"></span>
+              <span><span class="save-dot" id="save-dot"></span><span id="save-text">Progress saved · just now</span></span>
+              <button class="btn btn-ghost btn-sm" id="fullscreen"><span data-icon="maximize"></span>Full screen</button>
+            </div>
+            <p class="hint" data-state-view="single" style="margin: 0">This course was made from one package, so students land here straight from My learning instead of on the course outline. Adding a second item to the course brings the outline back.</p>
+          </div>
+        </div>
+
+        <div class="lesson-body" data-state-view="mobile" style="padding-top: 24px">
+          <div class="phone">
+            <div class="phone-top"><span data-icon="sidebar"></span><span class="grow">Protecting patient information</span><span class="status-pill" style="height: 26px; padding: 0 8px"><span class="pdot"></span>In progress</span></div>
+            <div class="phone-body">
+              <p class="instructions" style="font-size: 13.5px; margin: 0">Work through all eight slides, then pass the short quiz with 80% or more.</p>
+              <div class="player-frame"><div class="pk" id="pk-phone"></div></div>
+              <div class="player-under"><span><span class="save-dot"></span>Progress saved · just now</span><span class="grow"></span><span data-icon="maximize"></span></div>
+            </div>
+            <div class="bnav">
+              <button class="btn btn-outline btn-sm btn-icon" aria-label="Previous"><span data-icon="chevLeft"></span></button>
+              <div class="grow"><div class="ring ring-sm" style="margin: 0 auto 2px; width: 30px; height: 30px"><svg viewBox="0 0 36 36"><circle class="track" cx="18" cy="18" r="15" fill="none" stroke-width="4"/><circle class="arc" cx="18" cy="18" r="15" fill="none" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="70.6"/></svg></div>2 / 8</div>
+              <button class="btn btn-outline btn-sm btn-icon" aria-label="Next incomplete"><span data-icon="chevRight"></span></button>
+            </div>
+          </div>
+          <p class="hint" style="text-align: center; margin-top: 12px">On phones the bottom bar keeps its progress ring and arrows, but has no “Mark as complete” toggle for SCORM lessons. The package keeps the bar’s height clear.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Learner</span>
+      <button data-state="loading">Loading</button>
+      <button data-state="running">Running</button>
+      <button data-state="resume">Resume prompt</button>
+      <button data-state="quiz">Quiz</button>
+      <button data-state="completed">Finished</button>
+      <button data-state="failed">Failed</button>
+      <button data-state="modules">3 modules</button>
+      <button data-state="not-connected">Didn’t connect</button>
+      <button data-state="review">Review mode</button>
+      <button data-state="review-retake">Review + retakes</button>
+      <button data-state="expired">Expired</button>
+      <button data-state="locked">Locked</button>
+      <button data-state="window">New window</button>
+      <button data-state="preview">Admin preview</button>
+      <button data-state="single">Single-package course</button>
+      <button data-state="mobile">Phone</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      const SLIDES = [
+        { kicker: 'HIPAA Awareness 2026', h: 'Protecting patient information', p: 'This module takes about 25 minutes. Use the arrows below to move through it. Your place is saved as you go.', start: true },
+        {
+          kicker: '1 · What counts as PHI',
+          h: 'Protected health information',
+          p: 'Any health information that can identify a patient, in any form: spoken, written or electronic.',
+          cards: [
+            ['Records', 'Charts, lab results, care plans'],
+            ['Billing', 'Claims, invoices, insurance IDs'],
+            ['Conversations', 'Calls and hallway talk about care']
+          ]
+        },
+        { kicker: '2 · The 18 identifiers', h: 'Names, dates, contact details and more', p: 'A dated appointment slot next to a patient’s initials can identify them. When identifiers travel with health information, the information is PHI.' },
+        { kicker: '3 · Minimum necessary', h: 'Share only what the task needs', p: 'Before you open, send or say anything, ask: does this person need this to do their job? If not, leave it out.' },
+        { kicker: '4 · Permitted disclosures', h: 'Treatment, payment and operations', p: 'You may share PHI for care, billing and running the practice. Anything else usually needs the patient’s written permission.' },
+        { kicker: '5 · When things go wrong', h: 'Report suspected breaches within 24 hours', p: 'Misdirected emails, lost laptops and over-the-shoulder views all count. Tell the privacy officer, even if you are not sure.' },
+        {
+          kicker: 'Knowledge check',
+          h: 'Which of these is protected health information?',
+          quiz: [
+            ['A hospital’s published visiting hours', false],
+            ['A patient’s appointment time next to their name', true],
+            ['A blank intake form template', false]
+          ]
+        },
+        { kicker: 'Results', h: 'You passed', result: true }
+      ];
+
+      const MODULES = [
+        { title: 'What counts as PHI', from: 0, to: 2 },
+        { title: 'Minimum necessary and disclosures', from: 3, to: 5 },
+        { title: 'Knowledge check', from: 6, to: 7, graded: true }
+      ];
+
+      const INSTRUCTIONS = {
+        default: 'Work through all eight slides, then pass the short quiz with 80% or more. Plan for about 25 minutes. You can stop at any point and pick up where you left off.',
+        modules: 'Work through the three modules in any order. The knowledge check needs 80% or more. You can stop at any point and pick up where you left off.',
+        single: 'Your organization asks everyone to complete this every year. Pass the short quiz at the end with 80% or more.'
+      };
+
+      const pk = { slide: 0, picked: null, done: false, failed: false, mode: 'normal', module: null, modulesDone: [false, false, false] };
+      let showState = () => {};
+      let currentState = 'running';
+      let learnerShell = null;
+
+      const isPassingPick = () => pk.picked !== null && SLIDES[6].quiz[pk.picked][1];
+
+      function slideRange() {
+        if (pk.module === null) return [0, SLIDES.length - 1];
+
+        return [MODULES[pk.module].from, MODULES[pk.module].to];
+      }
+
+      function packageMarkup(state, compact) {
+        const slide = SLIDES[state.slide];
+        const [first, last] = state.range || [0, SLIDES.length - 1];
+        let body = `<div class="pk-kicker">${slide.kicker}</div><h2 class="pk-h">${state.failed && slide.result ? 'Not passed this time' : slide.h}</h2>`;
+        if (slide.p) body += `<p class="pk-p">${slide.p}</p>`;
+        if (slide.cards && !compact) body += `<div class="pk-cards">${slide.cards.map(([title, text]) => `<div><b>${title}</b>${text}</div>`).join('')}</div>`;
+        if (slide.quiz)
+          body += `<div class="pk-q">${slide.quiz
+            .map(([label, right], index) => {
+              const cls = state.picked === null ? '' : index === state.picked ? (right ? 'right' : 'wrong') : '';
+              return `<button data-pick="${index}" class="${cls}">${String.fromCharCode(97 + index)}) ${label}</button>`;
+            })
+            .join('')}</div>`;
+        if (slide.result && state.failed)
+          body += `<div class="pk-score"><span class="big" style="color:#f87171">60%</span><p class="pk-p">Pass mark 80%. You answered 6 of 10 questions correctly across the module.</p></div>`;
+        if (slide.result && !state.failed)
+          body += `<div class="pk-score"><span class="big">90%</span><p class="pk-p">Pass mark 80%. You answered 9 of 10 questions correctly across the module.</p></div>`;
+        const isLast = state.slide === last;
+        const exitLabel = state.module === null || state.module === undefined ? 'Exit course' : 'Exit module';
+        const nextLabel = slide.start ? 'Start' : isLast ? exitLabel : 'Next';
+        const nextDisabled = slide.quiz && state.picked === null;
+        const percent = last === first ? 100 : Math.round(((state.slide - first) / (last - first)) * 100);
+        const resume = state.resumePrompt
+          ? `<div class="pk-modal"><div><h4>Resume?</h4><p>You stopped on slide 5 of 8. Would you like to resume where you left off?</p><div style="display:flex;gap:8px;justify-content:flex-end"><button class="pk-btn" data-resume="no">No</button><button class="pk-btn solid" data-resume="yes">Yes</button></div></div></div>`
+          : '';
+        return `<div class="pk-top"><span class="pk-brand">HIPAA Privacy Rule</span><span class="pk-menu">Menu · Resources</span></div>
+          <div class="pk-stage">${body}${resume}</div>
+          <div class="pk-bar"><button class="pk-btn" data-pk="prev" ${state.slide === first ? 'disabled' : ''}>Prev</button><div class="pk-prog"><span style="width:${percent}%"></span></div><span class="tnum">${state.slide - first + 1} / ${last - first + 1}</span><button class="pk-btn solid" data-pk="next" ${nextDisabled ? 'disabled' : ''}>${nextLabel}</button></div>`;
+      }
+
+      function modulesComplete() {
+        return pk.modulesDone.filter(Boolean).length;
+      }
+
+      function setStatus(kind) {
+        const pill = document.getElementById('status-pill');
+        pill.classList.toggle('is-done', kind === 'passed');
+        pill.classList.toggle('is-failed', kind === 'failed');
+        const labels = {
+          passed: `${ICONS.checkCircle}Passed · 90%`,
+          failed: `${ICONS.xCircle}Not passed yet`,
+          none: 'Not started',
+          modules: `<span class="pdot"></span>In progress · ${modulesComplete()} of 3 modules`
+        };
+        pill.innerHTML = labels[kind] || '<span class="pdot"></span>In progress';
+      }
+
+      function setSave(kind) {
+        const dot = document.getElementById('save-dot');
+        const text = document.getElementById('save-text');
+        const labels = { saving: 'Saving…', off: 'Nothing is saved in this mode', none: 'Not connected · progress can’t be saved' };
+        text.textContent = labels[kind] || 'Progress saved · just now';
+        dot.className = `save-dot ${kind === 'saving' ? 'saving' : kind === 'none' ? 'error' : ''}`;
+      }
+
+      function markCourseProgress(done) {
+        const row = document.querySelector('.tree-row.current');
+        if (row) {
+          row.querySelector('.tree-state')?.remove();
+          if (done) row.insertAdjacentHTML('beforeend', `<span class="tree-state done">${ICONS.checkCircle}</span>`);
+        }
+        const pct = document.querySelector('[data-course-pct]');
+        const count = document.querySelector('[data-course-count]');
+        const arc = document.querySelector('[data-course-ring] .arc');
+        if (!pct) return;
+
+        if (currentState === 'single') {
+          pct.textContent = done ? '100%' : '0%';
+          count.textContent = done ? '1 of 1 complete' : '0 of 1 complete';
+          arc.setAttribute('stroke-dashoffset', done ? '0' : '94.2');
+          return;
+        }
+
+        pct.textContent = done ? '38%' : '25%';
+        count.textContent = done ? '3 of 8 complete' : '2 of 8 complete';
+        arc.setAttribute('stroke-dashoffset', done ? '58.4' : '70.6');
+      }
+
+      function applyCourseShape() {
+        if (!learnerShell) return;
+
+        const isSingle = currentState === 'single';
+        document.querySelector('.learner-sidebar .tree').innerHTML = isSingle
+          ? `<div class="tree-sec"><div class="tree-sec-h">1. Protecting patient information</div><a class="tree-row current" href="#">${ICONS.scorm}<span class="tree-title">Protecting patient information</span></a></div>`
+          : learnerShell.tree;
+        document.querySelector('.learner-sidebar .course-id .nm').textContent = isSingle ? 'Protecting patient information' : learnerShell.courseName;
+        document.getElementById('lesson-section').hidden = isSingle;
+        document.getElementById('lesson-nav').hidden = isSingle;
+        document.getElementById('finished-next').hidden = isSingle;
+      }
+
+      function commit() {
+        if (pk.mode !== 'normal') return;
+
+        setSave('saving');
+        setTimeout(() => setSave('saved'), 600);
+      }
+
+      function renderModuleBar() {
+        document.getElementById('module-count').textContent = `${modulesComplete()} of 3 complete`;
+        document.getElementById('module-chips').innerHTML = MODULES.map((module, index) => {
+          const isDone = pk.modulesDone[index];
+          const isCurrent = pk.module === index;
+          const mark = isDone ? ICONS.check : index + 1;
+          return `<button class="mchip ${isDone ? 'is-done' : ''} ${isCurrent ? 'is-current' : ''}" role="tab" aria-selected="${isCurrent}" data-module="${index}"><span class="mn">${mark}</span>${module.title}</button>`;
+        }).join('');
+        document.querySelectorAll('[data-module]').forEach((chip) => chip.addEventListener('click', () => openModule(Number(chip.dataset.module))));
+      }
+
+      function openModule(index) {
+        pk.module = index;
+        pk.slide = MODULES[index].from;
+        pk.picked = null;
+        pk.failed = false;
+        document.getElementById('module-done-panel').hidden = true;
+        document.getElementById('fail-note').hidden = true;
+        renderModuleBar();
+        const skeleton = document.getElementById('skel');
+        const packageNode = document.getElementById('pk');
+        skeleton.classList.add('shown');
+        packageNode.classList.remove('shown');
+        setTimeout(() => {
+          skeleton.classList.remove('shown');
+          packageNode.classList.add('shown');
+          renderPackage();
+        }, 450);
+      }
+
+      function nextUndoneModule() {
+        return pk.modulesDone.findIndex((done, index) => !done && index !== pk.module);
+      }
+
+      function finishModule() {
+        if (pk.failed) return;
+
+        const module = MODULES[pk.module];
+        if (!module.graded) pk.modulesDone[pk.module] = true;
+        renderModuleBar();
+        setStatus(modulesComplete() === 3 ? 'passed' : 'modules');
+        if (modulesComplete() === 3) {
+          document.getElementById('finished-panel').hidden = false;
+          return;
+        }
+
+        const nextIndex = nextUndoneModule();
+        document.getElementById('module-done-title').textContent = `${module.title}: done`;
+        document.getElementById('module-done-text').textContent = `${modulesComplete()} of 3 modules done. Next up: ${MODULES[nextIndex].title}.`;
+        document.getElementById('next-module').dataset.target = String(nextIndex);
+        document.getElementById('module-done-panel').hidden = false;
+      }
+
+      function renderPackage() {
+        const node = document.getElementById('pk');
+        const range = slideRange();
+        node.innerHTML = packageMarkup({ ...pk, range }, false);
+        node.querySelectorAll('[data-pk]').forEach((button) =>
+          button.addEventListener('click', () => {
+            if (button.dataset.pk === 'prev') pk.slide = Math.max(range[0], pk.slide - 1);
+            if (button.dataset.pk === 'next') {
+              if (pk.slide === range[1]) return pk.module === null ? finish() : finishModule();
+
+              pk.slide += 1;
+              if (SLIDES[pk.slide].result && pk.mode === 'normal') gradeQuiz();
+            }
+            commit();
+            renderPackage();
+          })
+        );
+        node.querySelectorAll('[data-pick]').forEach((button) =>
+          button.addEventListener('click', () => {
+            pk.picked = Number(button.dataset.pick);
+            commit();
+            renderPackage();
+          })
+        );
+        node.querySelectorAll('[data-resume]').forEach((button) =>
+          button.addEventListener('click', () => {
+            pk.resumePrompt = false;
+            pk.slide = button.dataset.resume === 'yes' ? 4 : 0;
+            renderPackage();
+          })
+        );
+      }
+
+      function gradeQuiz() {
+        if (!isPassingPick()) return fail();
+
+        pk.failed = false;
+        if (pk.module !== null) {
+          pk.modulesDone[pk.module] = true;
+          renderModuleBar();
+          if (modulesComplete() < 3) return setStatus('modules');
+        }
+        pass();
+      }
+
+      function pass() {
+        pk.done = true;
+        setStatus('passed');
+        markCourseProgress(true);
+        const message = currentState === 'single' ? 'Course complete.' : 'Lesson complete. Next: Minimum necessary, with examples';
+        toast(`${ICONS.checkCircle.replace('<svg', '<svg style="color:var(--success)"')}${message}`);
+      }
+
+      function fail() {
+        pk.failed = true;
+        setStatus('failed');
+        document.getElementById('fail-note').hidden = false;
+      }
+
+      function finish() {
+        if (pk.failed) return;
+
+        document.getElementById('finished-panel').hidden = false;
+        setSave(pk.mode === 'normal' ? 'saved' : 'off');
+      }
+
+      document.addEventListener('statechange', ({ detail }) => {
+        currentState = detail;
+        document.getElementById('finished-panel').hidden = true;
+        document.getElementById('module-done-panel').hidden = true;
+        document.getElementById('fail-note').hidden = detail !== 'failed';
+        document.getElementById('window-closed').hidden = false;
+        document.getElementById('window-open').hidden = true;
+        document.getElementById('instructions').textContent = INSTRUCTIONS[detail] || INSTRUCTIONS.default;
+        pk.mode = detail === 'review' || detail === 'review-retake' ? 'review' : detail === 'preview' ? 'preview' : 'normal';
+        pk.module = detail === 'modules' ? 1 : null;
+        pk.modulesDone = [true, false, false];
+        pk.failed = detail === 'failed';
+        pk.picked = detail === 'completed' ? 1 : detail === 'failed' ? 0 : null;
+        pk.resumePrompt = detail === 'resume';
+        const slideByState = { quiz: 6, completed: 7, failed: 7, review: 7, 'review-retake': 7, modules: MODULES[1].from };
+        pk.slide = slideByState[detail] || 0;
+        const isPassedState = ['completed', 'review', 'review-retake'].includes(detail);
+        const statusByState = { failed: 'failed', preview: 'none', modules: 'modules' };
+        setStatus(isPassedState ? 'passed' : statusByState[detail] || 'progress');
+        applyCourseShape();
+        markCourseProgress(isPassedState);
+        setSave(pk.mode !== 'normal' ? 'off' : detail === 'not-connected' ? 'none' : 'saved');
+        if (detail === 'completed') document.getElementById('finished-panel').hidden = false;
+        if (detail === 'modules') renderModuleBar();
+        renderPackage();
+        document.getElementById('pk-phone').innerHTML = packageMarkup({ slide: 2, picked: null }, true);
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        learnerShell = {
+          tree: document.querySelector('.learner-sidebar .tree').innerHTML,
+          courseName: document.querySelector('.learner-sidebar .course-id .nm').textContent
+        };
+        document.querySelectorAll('[data-goto]').forEach((button) => button.addEventListener('click', () => showState(button.dataset.goto)));
+        document.getElementById('open-window').addEventListener('click', () => {
+          document.getElementById('window-closed').hidden = true;
+          document.getElementById('window-open').hidden = false;
+        });
+        document.getElementById('next-module').addEventListener('click', (event) => openModule(Number(event.currentTarget.dataset.target)));
+        document.getElementById('new-attempt').addEventListener('click', () => {
+          showState('running');
+          toast('Attempt 2 started. Your best score so far, 90%, still counts.');
+        });
+        document.getElementById('fullscreen').addEventListener('click', () => document.getElementById('frame').requestFullscreen?.().catch(() => {}));
+        applyCourseShape();
+        markCourseProgress(['completed', 'review', 'review-retake'].includes(currentState));
+      });
+
+      showState = bindStatePicker('running');
+    </script>
+  </body>
+</html>
