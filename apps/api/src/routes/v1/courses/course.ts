@@ -1,4 +1,5 @@
 import {
+  ZPublicApiCourseMemberListItemResponse,
   ZPublicApiCourseParam,
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
@@ -20,6 +21,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
+import { jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { PAGINATION_NOTE } from './docs';
 
 const PaginationSchema = {
@@ -53,92 +55,6 @@ const CoursesListResponse = {
     query: CoursesQuerySchema
   },
   required: ['success', 'data', 'pagination', 'query']
-};
-
-const CourseMemberStageSchema = {
-  oneOf: [
-    {
-      type: 'object' as const,
-      properties: {
-        kind: { type: 'string' as const, enum: ['not_started'] }
-      },
-      required: ['kind']
-    },
-    {
-      type: 'object' as const,
-      properties: {
-        kind: { type: 'string' as const, enum: ['certificate_earned'] }
-      },
-      required: ['kind']
-    },
-    {
-      type: 'object' as const,
-      properties: {
-        kind: { type: 'string' as const, enum: ['content'] },
-        position: { type: 'number' as const },
-        title: { type: 'string' as const },
-        contentType: { type: 'string' as const, enum: ['lesson', 'exercise'] }
-      },
-      required: ['kind', 'position', 'title', 'contentType']
-    }
-  ]
-};
-
-const CourseStudentSchema = {
-  type: 'object' as const,
-  properties: {
-    id: { type: 'string' as const },
-    groupId: { type: 'string' as const },
-    roleId: { type: 'number' as const },
-    profileId: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-    email: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-    createdAt: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-    assignedStudentId: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-    certificateEarnedAt: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-    certificationEmailSentAt: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-    profile: {
-      anyOf: [
-        {
-          type: 'object' as const,
-          properties: {
-            id: { type: 'string' as const },
-            fullname: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-            username: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-            avatarUrl: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-            email: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] }
-          },
-          required: ['id', 'fullname', 'username', 'avatarUrl', 'email']
-        },
-        { type: 'null' as const }
-      ]
-    },
-    progressPercent: { type: 'number' as const },
-    stage: CourseMemberStageSchema,
-    lastLoginAt: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] },
-    enrolledAt: { anyOf: [{ type: 'string' as const }, { type: 'null' as const }] }
-  },
-  required: [
-    'id',
-    'groupId',
-    'roleId',
-    'profileId',
-    'email',
-    'createdAt',
-    'assignedStudentId',
-    'certificateEarnedAt',
-    'certificationEmailSentAt',
-    'profile'
-  ]
-};
-
-const CourseStudentsResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: CourseStudentSchema },
-    pagination: PaginationSchema
-  },
-  required: ['success', 'data', 'pagination']
 };
 
 const NonAutoGradableQuestionOffenderSchema = {
@@ -251,14 +167,10 @@ export const v1CourseRouter = new Hono()
       description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
       tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Course students returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseStudentsResponse
-            }
-          }
-        },
+        200: jsonResponse(
+          'Course students returned successfully',
+          paginatedResponse(ZPublicApiCourseMemberListItemResponse)
+        ),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
