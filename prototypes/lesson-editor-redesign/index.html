@@ -344,7 +344,7 @@
      in from the dot's edge rather than just fading, so it reads as "attached to" that dot. */
   .dot-tip {
     position: absolute; top: 0; display: flex; align-items: center; gap: 6px;
-    padding: 5px 10px; background: var(--foreground); color: var(--background);
+    padding: 5px 10px; background: var(--primary); color: var(--primary-foreground);
     border-radius: var(--radius-md); font-size: 12px; font-weight: 500; line-height: 1.3;
     white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis;
     box-shadow: var(--shadow-md); opacity: 0; pointer-events: none;
@@ -2621,7 +2621,7 @@
   // ---- Scroll dots: one per window-scrolled screen (desktop canvas, empty lesson). The mobile
   // screen keeps the phone's own scrolling, since a device frame simulating a real phone should
   // scroll like one, not grow a second floating indicator inside its small frame. ----
-  const DOTS_INSET = 20; // distance from the canvas column's right edge to the dots' center
+  const DOTS_INSET = 20; // distance from the canvas column's left edge to the dots' center
   const DOT_TIP_MIN_ROOM = 170; // px of clear space the tooltip needs on its default (right) side
   const DOT_TYPE_ICONS = { video: ICON_VIDEO, note: ICON_NOTE, slide: ICON_SLIDE, document: ICON_DOCUMENT, image: ICON_IMAGE };
   const DOTS_IDLE_MS = 900;
@@ -2655,10 +2655,10 @@
     }
 
     // Inside the canvas, not pinned to the viewport edge: the dots sit just inside the reading
-    // column's own right padding, so they move with it as the window resizes.
+    // column's own left padding, so they move with it as the window resizes.
     function positionDots() {
       const rect = canvasWrap.getBoundingClientRect();
-      dots.style.left = Math.round(rect.right - DOTS_INSET) + 'px';
+      dots.style.left = Math.round(rect.left + DOTS_INSET) + 'px';
     }
 
     const UNTITLED_LABEL = {
@@ -2774,9 +2774,10 @@
     });
 
     // Hover/focus tooltip: one shared element (created once, above) moved to whichever dot is
-    // active, showing that block's real content-type icon and title. Flips to the dot's left
-    // when there isn't enough clear room on the right (a narrow window, the mobile-width resize
-    // breakpoint) so it never runs off the viewport edge.
+    // active, showing that block's real content-type icon and title. Defaults to the dot's left
+    // (the open margin outside the reading column, now that the rail itself sits on the left) and
+    // flips to the right only when there isn't enough clear room there (a narrow window, the
+    // mobile-width resize breakpoint) so it never runs off the viewport edge.
     function showTip(btn) {
       const block = blocks[Number(btn.dataset.i)];
       if (!block) return;
@@ -2784,9 +2785,9 @@
       tip.querySelector('.dot-tip-icon').innerHTML = DOT_TYPE_ICONS[type] || ICON_NOTE;
       tip.querySelector('.dot-tip-label').textContent = titleFor(block);
       tip.style.top = btn.offsetTop + btn.offsetHeight / 2 + 'px';
-      const roomRight = window.innerWidth - dots.getBoundingClientRect().right;
-      tip.classList.toggle('side-left', roomRight < DOT_TIP_MIN_ROOM);
-      tip.classList.toggle('side-right', roomRight >= DOT_TIP_MIN_ROOM);
+      const roomLeft = dots.getBoundingClientRect().left;
+      tip.classList.toggle('side-right', roomLeft < DOT_TIP_MIN_ROOM);
+      tip.classList.toggle('side-left', roomLeft >= DOT_TIP_MIN_ROOM);
       tip.classList.add('is-visible');
     }
     function hideTip() {
