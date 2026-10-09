@@ -2721,6 +2721,7 @@
           "recording_url_label": "रिकॉर्डिंग लिंक",
           "recording_url_helper": "सत्र समाप्त होने के बाद छात्रों को दिखाया जाता है।",
           "recording_url_invalid": "ऐसा लिंक दर्ज करें जो http:// या https:// से शुरू हो",
+          "recording_url_needs_session": "रिकॉर्डिंग जोड़ने से पहले मीटिंग लिंक और शुरू होने का समय जोड़ें",
           "past_sessions_heading": "पिछले सत्र",
           "watch_recording": "रिकॉर्डिंग देखें"
         },

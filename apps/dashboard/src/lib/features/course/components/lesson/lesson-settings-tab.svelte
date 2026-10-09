@@ -99,10 +99,20 @@
 
   function validateRecordingUrl(): boolean {
     const recordingUrl = sessionRecordingUrl.trim();
-    const isValid = !recordingUrl || ZLessonRecordingUrl.safeParse(recordingUrl).success;
-    recordingUrlError = isValid ? '' : t.get('course.navItem.lessons.session.recording_url_invalid');
+    recordingUrlError = '';
+    if (!recordingUrl) return true;
 
-    return isValid;
+    if (!ZLessonRecordingUrl.safeParse(recordingUrl).success) {
+      recordingUrlError = t.get('course.navItem.lessons.session.recording_url_invalid');
+      return false;
+    }
+
+    if (!sessionCallUrl.trim() || !computeNewInstant()) {
+      recordingUrlError = t.get('course.navItem.lessons.session.recording_url_needs_session');
+      return false;
+    }
+
+    return true;
   }
 
   async function persistSession() {
@@ -110,12 +120,17 @@
     const lessonId = lessonApi.lesson?.id;
     if (!courseId || !lessonId) return;
 
+    const savedDurationMinutes = lessonApi.lesson?.sessionDurationMinutes ?? null;
+    const durationMinutes = sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+    const isDurationUnchanged = durationMinutes === (savedDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES);
+    const durationToSave = isDurationUnchanged ? savedDurationMinutes : durationMinutes;
+
     isSavingSession = true;
     try {
       await lessonApi.update(courseId, lessonId, {
         callUrl: sessionCallUrl.trim() || null,
         lessonAt: computeNewInstant() || null,
-        sessionDurationMinutes: sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES,
+        sessionDurationMinutes: durationToSave,
         recordingUrl: sessionRecordingUrl.trim() || null
       });
 

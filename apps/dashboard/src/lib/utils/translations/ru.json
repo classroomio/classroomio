@@ -2721,6 +2721,7 @@
           "recording_url_label": "Ссылка на запись",
           "recording_url_helper": "Показывается студентам после окончания сессии.",
           "recording_url_invalid": "Введите ссылку, начинающуюся с http:// или https://",
+          "recording_url_needs_session": "Добавьте ссылку на встречу и время начала, прежде чем добавлять запись",
           "past_sessions_heading": "Прошедшие сессии",
           "watch_recording": "Смотреть запись"
         },

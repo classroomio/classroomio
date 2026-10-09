@@ -2609,6 +2609,7 @@
           "recording_url_label": "Kayıt bağlantısı",
           "recording_url_helper": "Oturum sona erdikten sonra öğrencilere gösterilir.",
           "recording_url_invalid": "http:// veya https:// ile başlayan bir bağlantı girin",
+          "recording_url_needs_session": "Kayıt eklemeden önce bir toplantı bağlantısı ve başlangıç saati ekleyin",
           "past_sessions_heading": "Geçmiş oturumlar",
           "watch_recording": "Kaydı izle"
         },

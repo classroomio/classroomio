@@ -1,7 +1,8 @@
 <script lang="ts">
   import { LiveSessionCard, type LiveSessionLabels } from '@cio/ui/custom/live-session-card';
   import { t } from '$lib/utils/functions/translations';
-  import { DEFAULT_SESSION_DURATION_MINUTES } from '@cio/utils/functions/live-session';
+  import { DEFAULT_SESSION_DURATION_MINUTES, getLiveSessionPhase } from '@cio/utils/functions/live-session';
+  import { liveSessionClock } from '$features/course/utils/live-session-phase';
 
   interface Props {
     title: string;
@@ -13,6 +14,10 @@
   }
 
   let { title, callUrl, lessonAt, timezone = null, durationMinutes = null, recordingUrl = null }: Props = $props();
+
+  const status = $derived(
+    getLiveSessionPhase({ callUrl, lessonAt, sessionDurationMinutes: durationMinutes }, $liveSessionClock) ?? undefined
+  );
 
   const labels: LiveSessionLabels = {
     liveNow: t.get('course.navItem.lessons.session.live_now'),
@@ -42,5 +47,6 @@
   {timezone}
   durationMinutes={durationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES}
   {recordingUrl}
+  {status}
   {labels}
 />

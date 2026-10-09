@@ -2721,6 +2721,7 @@
           "recording_url_label": "Link til optagelse",
           "recording_url_helper": "Vises for studerende, når sessionen er slut.",
           "recording_url_invalid": "Indtast et link, der starter med http:// eller https://",
+          "recording_url_needs_session": "Tilføj et mødelink og et starttidspunkt, før du tilføjer en optagelse",
           "past_sessions_heading": "Tidligere sessioner",
           "watch_recording": "Se optagelse"
         },

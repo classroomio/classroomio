@@ -2721,6 +2721,7 @@
           "recording_url_label": "Enlace de la grabación",
           "recording_url_helper": "Se muestra a los estudiantes cuando termina la sesión.",
           "recording_url_invalid": "Introduce un enlace que empiece por http:// o https://",
+          "recording_url_needs_session": "Añade un enlace de reunión y una hora de inicio antes de añadir una grabación",
           "past_sessions_heading": "Sesiones anteriores",
           "watch_recording": "Ver grabación"
         },

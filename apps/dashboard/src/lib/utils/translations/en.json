@@ -2599,6 +2599,7 @@
           "recording_url_label": "Recording link",
           "recording_url_helper": "Shown to students after the session ends.",
           "recording_url_invalid": "Enter a link that starts with http:// or https://",
+          "recording_url_needs_session": "Add a meeting link and start time before adding a recording",
           "past_sessions_heading": "Past sessions",
           "watch_recording": "Watch recording"
         },

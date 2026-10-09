@@ -2721,6 +2721,7 @@
           "recording_url_label": "Link do nagrania",
           "recording_url_helper": "Wyświetlany uczniom po zakończeniu sesji.",
           "recording_url_invalid": "Wpisz link zaczynający się od http:// lub https://",
+          "recording_url_needs_session": "Dodaj link do spotkania i godzinę rozpoczęcia, zanim dodasz nagranie",
           "past_sessions_heading": "Poprzednie sesje",
           "watch_recording": "Obejrzyj nagranie"
         },

@@ -2721,6 +2721,7 @@
           "recording_url_label": "Liên kết bản ghi",
           "recording_url_helper": "Hiển thị cho học viên sau khi buổi học kết thúc.",
           "recording_url_invalid": "Nhập liên kết bắt đầu bằng http:// hoặc https://",
+          "recording_url_needs_session": "Thêm liên kết cuộc họp và thời gian bắt đầu trước khi thêm bản ghi",
           "past_sessions_heading": "Các buổi học đã qua",
           "watch_recording": "Xem bản ghi"
         },
