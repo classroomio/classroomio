@@ -1262,7 +1262,8 @@
               "name": {
                 "min_char": "Nazwa jest za krótka, minimum 5 znaków"
               }
-            }
+            },
+            "validation_error": "Co najmniej jedna opinia jest nieprawidłowa. Otwórz każdą opinię i popraw jej nazwę, awatar, ocenę oraz opis przed zapisaniem."
           },
           "header_form": {
             "title": "Tytuł",

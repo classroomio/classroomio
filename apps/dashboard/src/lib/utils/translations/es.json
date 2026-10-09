@@ -1262,7 +1262,8 @@
               "name": {
                 "min_char": "El nombre es demasiado corto, mínimo de 5 caracteres."
               }
-            }
+            },
+            "validation_error": "Una o más reseñas no son válidas. Abre cada reseña y corrige su nombre, avatar, calificación y descripción antes de guardar."
           },
           "header_form": {
             "title": "Título",

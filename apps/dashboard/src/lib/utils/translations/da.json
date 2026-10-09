@@ -1262,7 +1262,8 @@
               "name": {
                 "min_char": "Navnet er for kort, minimum 5 tegn"
               }
-            }
+            },
+            "validation_error": "En eller flere anmeldelser er ugyldige. Åbn hver anmeldelse og ret navnet, avataren, bedømmelsen og beskrivelsen, før du gemmer."
           },
           "header_form": {
             "title": "Titel",

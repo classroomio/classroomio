@@ -1262,7 +1262,8 @@
               "name": {
                 "min_char": "Le nom est trop court, minimum 5 caractères"
               }
-            }
+            },
+            "validation_error": "Une ou plusieurs évaluations sont invalides. Ouvrez chaque évaluation et corrigez son nom, son avatar, sa note et sa description avant d'enregistrer."
           },
           "header_form": {
             "title": "Titre",

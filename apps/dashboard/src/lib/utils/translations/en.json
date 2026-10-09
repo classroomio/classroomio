@@ -4068,7 +4068,8 @@
               "description": {
                 "min_char": "'Description is too short, min of 5 characters"
               }
-            }
+            },
+            "validation_error": "One or more reviews are invalid. Open each review and fix its name, avatar, rating and description before saving."
           },
           "certificate_form": {
             "upload_template": "Certificate template"

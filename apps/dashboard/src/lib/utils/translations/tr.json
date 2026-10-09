@@ -4078,7 +4078,8 @@
               "description": {
                 "min_char": "'Açıklama çok kısa, en az 5 karakter"
               }
-            }
+            },
+            "validation_error": "Bir veya daha fazla yorum geçersiz. Kaydetmeden önce her yorumu açın ve adını, avatarını, puanını ve açıklamasını düzeltin."
           },
           "certificate_form": {
             "upload_template": "Sertifika şablon"

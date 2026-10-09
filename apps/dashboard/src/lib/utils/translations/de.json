@@ -1262,7 +1262,8 @@
               "name": {
                 "min_char": "Der Name ist zu kurz, mindestens 5 Zeichen"
               }
-            }
+            },
+            "validation_error": "Eine oder mehrere Bewertungen sind ungültig. Öffnen Sie jede Bewertung und korrigieren Sie Name, Avatar, Bewertung und Beschreibung, bevor Sie speichern."
           },
           "header_form": {
             "title": "Titel",
