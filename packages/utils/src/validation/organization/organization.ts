@@ -163,7 +163,7 @@ export const ZUpdateOrganization = z.object({
       internalEnrollmentOnly: z.boolean().optional(),
       language: z
         .object({
-          locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr']).optional(),
+          locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it']).optional(),
           enforced: z.boolean().optional()
         })
         .optional(),

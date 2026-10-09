@@ -140,7 +140,11 @@
       </p>
     </div>
 
-    <Search placeholder={$t('course.navItem.attendance.search_students')} bind:value={searchValue} />
+    <Search
+      placeholder={$t('course.navItem.attendance.search_students')}
+      bind:value={searchValue}
+      onValueChange={() => (currentPage = 1)}
+    />
   </div>
 </section>
 

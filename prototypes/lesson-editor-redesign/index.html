@@ -1,0 +1,2850 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson Editor Redesign</title>
+    <script>
+      (function () {
+        var saved = localStorage.getItem('lessonEditorTheme');
+        var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+<style>
+  :root {
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.145 0 0);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.145 0 0);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.145 0 0);
+    --primary: oklch(0.488 0.243 264.376);
+    --primary-foreground: oklch(0.97 0.014 254.604);
+    --secondary: oklch(0.967 0.001 286.375);
+    --secondary-foreground: oklch(0.21 0.006 285.885);
+    --muted: oklch(0.97 0 0);
+    --muted-foreground: oklch(0.556 0 0);
+    --accent: oklch(0.97 0 0);
+    --accent-foreground: oklch(0.205 0 0);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.922 0 0);
+    --input: oklch(0.922 0 0);
+    --ring: oklch(0.708 0 0);
+    --radius: 0.625rem;
+    --sidebar: oklch(0.985 0 0);
+    --sidebar-foreground: oklch(0.145 0 0);
+    --sidebar-accent: oklch(0.97 0 0);
+    --sidebar-accent-foreground: oklch(0.205 0 0);
+    --sidebar-border: oklch(0.922 0 0);
+    --success: oklch(0.596 0.145 163.225);
+    --success-foreground: #fff;
+    --success-soft: oklch(0.596 0.145 163.225 / 0.12);
+    --warning: oklch(0.666 0.179 58.318);
+    --warning-foreground: #fff;
+    --warning-soft: oklch(0.666 0.179 58.318 / 0.14);
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+    --shadow-2xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 14px 30px -10px rgb(0 0 0 / 0.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --popover: oklch(0.205 0 0);
+      --popover-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.424 0.199 265.638);
+      --primary-foreground: oklch(0.97 0.014 254.604);
+      --secondary: oklch(0.274 0.006 286.033);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.704 0.191 22.216);
+      --border: oklch(1 0 0 / 10%);
+      --input: oklch(1 0 0 / 15%);
+      --ring: oklch(0.556 0 0);
+      --sidebar: oklch(0.205 0 0);
+      --sidebar-foreground: oklch(0.985 0 0);
+      --sidebar-accent: oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border: oklch(1 0 0 / 10%);
+      --success: oklch(0.696 0.17 162.48);
+      --success-foreground: oklch(0.262 0.051 172.552);
+      --success-soft: oklch(0.696 0.17 162.48 / 0.16);
+      --warning: oklch(0.769 0.188 70.08);
+      --warning-foreground: oklch(0.279 0.077 45.635);
+      --warning-soft: oklch(0.769 0.188 70.08 / 0.16);
+    }
+  }
+  :root[data-theme='dark'] {
+    --background: oklch(0.145 0 0);
+    --foreground: oklch(0.985 0 0);
+    --card: oklch(0.205 0 0);
+    --card-foreground: oklch(0.985 0 0);
+    --popover: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.985 0 0);
+    --primary: oklch(0.424 0.199 265.638);
+    --primary-foreground: oklch(0.97 0.014 254.604);
+    --secondary: oklch(0.274 0.006 286.033);
+    --secondary-foreground: oklch(0.985 0 0);
+    --muted: oklch(0.269 0 0);
+    --muted-foreground: oklch(0.708 0 0);
+    --accent: oklch(0.269 0 0);
+    --accent-foreground: oklch(0.985 0 0);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.556 0 0);
+    --sidebar: oklch(0.205 0 0);
+    --sidebar-foreground: oklch(0.985 0 0);
+    --sidebar-accent: oklch(0.269 0 0);
+    --sidebar-accent-foreground: oklch(0.985 0 0);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --success: oklch(0.696 0.17 162.48);
+    --success-foreground: oklch(0.262 0.051 172.552);
+    --success-soft: oklch(0.696 0.17 162.48 / 0.16);
+    --warning: oklch(0.769 0.188 70.08);
+    --warning-foreground: oklch(0.279 0.077 45.635);
+    --warning-soft: oklch(0.769 0.188 70.08 / 0.16);
+  }
+
+  * { box-sizing: border-box; border-color: var(--border); }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; }
+  code { font-family: ui-monospace, monospace; }
+  [hidden] { display: none !important; }
+
+  /* ===== prototype chrome (not part of the design — wayfinding only) ===== */
+  .proto-bar {
+    position: sticky; top: 0; z-index: 500;
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    padding: 10px 16px; background: color-mix(in oklab, var(--foreground) 5%, var(--background));
+    border-bottom: 1px dashed var(--border); font-size: 12px; color: var(--muted-foreground);
+  }
+  .proto-bar b { color: var(--foreground); font-weight: 600; }
+  .screen-switch { display: inline-flex; padding: 3px; background: var(--muted); border-radius: var(--radius-lg); gap: 2px; }
+  .screen-switch button {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-md);
+    border: none; background: transparent; font-size: 12.5px; font-weight: 500; color: var(--muted-foreground); cursor: pointer;
+  }
+  .screen-switch button.on { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-2xs); }
+  .proto-bar .sp { flex: 1; }
+  .proto-note { font-size: 11.5px; }
+
+  /* ===== buttons / badges / cards (mirrors @cio/ui) ===== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: var(--radius-md);
+    font-size: 14px; font-weight: 500; white-space: nowrap; height: 36px; padding: 0 16px; border: 1px solid transparent;
+    cursor: pointer; transition: background .12s, border-color .12s, color .12s; box-shadow: var(--shadow-2xs); user-select: none;
+  }
+  .btn svg { width: 16px; height: 16px; stroke-width: 2; flex-shrink: 0; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+  .btn-primary:hover { background: color-mix(in oklab, var(--primary) 90%, transparent); }
+  .btn-outline { background: var(--background); border-color: var(--input); color: var(--foreground); }
+  .btn-outline:hover { background: var(--accent); color: var(--accent-foreground); }
+  .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; gap: 6px; }
+  .btn-sm svg { width: 15px; height: 15px; }
+  .badge { display: inline-flex; align-items: center; gap: 4px; border-radius: var(--radius-md); border: 1px solid transparent; padding: 2px 8px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+  .badge-success-soft { background: var(--success-soft); color: var(--success); }
+  .icon-btn {
+    width: 32px; height: 32px; border-radius: var(--radius-md); border: 1px solid var(--input); background: var(--background);
+    display: grid; place-items: center; color: var(--muted-foreground); cursor: pointer; box-shadow: var(--shadow-2xs); flex-shrink: 0;
+  }
+  .icon-btn:hover { color: var(--foreground); background: var(--accent); }
+  .icon-btn svg { width: 15px; height: 15px; stroke-width: 2; }
+  .seg-toggle { display: inline-flex; padding: 3px; background: var(--muted); border-radius: var(--radius-lg); gap: 2px; }
+  .seg-toggle button { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--radius-md); border: none; background: transparent; font-size: 13px; font-weight: 500; color: var(--muted-foreground); cursor: pointer; }
+  .seg-toggle button.on { background: var(--background); color: var(--foreground); box-shadow: var(--shadow-2xs); }
+  .seg-toggle svg { width: 14px; height: 14px; stroke-width: 2; }
+  .input, .textarea, .select {
+    width: 100%; font: inherit; font-size: 14px; color: var(--foreground); background: transparent; border: 1px solid var(--input);
+    border-radius: var(--radius-md); padding: 7px 12px; outline: none; box-shadow: var(--shadow-2xs); transition: border-color .12s, box-shadow .12s;
+  }
+  .input:focus, .textarea:focus { border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); }
+  .textarea { resize: vertical; min-height: 76px; line-height: 1.55; }
+  .label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .hint { font-size: 12px; color: var(--muted-foreground); margin-top: 5px; }
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+  .switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; cursor: pointer; display: inline-block; }
+  .switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; z-index: 1; }
+  .switch .track { position: absolute; inset: 0; background: var(--input); border-radius: 999px; transition: background .15s; }
+  .switch .knob { position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 999px; background: var(--background); box-shadow: var(--shadow-sm); transition: transform .15s; }
+  .switch input:checked + .track { background: var(--primary); }
+  .switch input:checked ~ .knob { transform: translateX(16px); }
+
+  /* ===== course shell ===== */
+  .shell { display: grid; grid-template-columns: 236px 1fr; min-height: calc(100vh - 49px); }
+  .course-sidebar { background: var(--sidebar); border-right: 1px solid var(--sidebar-border); padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+  .back-link { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted-foreground); padding: 6px 8px; border-radius: var(--radius-md); margin-bottom: 4px; }
+  .back-link:hover { background: var(--sidebar-accent); color: var(--foreground); }
+  .back-link svg { width: 15px; height: 15px; stroke-width: 2; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: var(--radius-md); color: var(--sidebar-foreground); font-weight: 400; font-size: 14px; }
+  .nav-item svg { width: 16px; height: 16px; stroke-width: 2; color: var(--muted-foreground); flex-shrink: 0; }
+  .nav-item:hover { background: var(--sidebar-accent); }
+  .nav-item.active { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 500; }
+  .nav-item.active svg { color: var(--sidebar-accent-foreground); }
+  .tree-section { display: flex; align-items: center; gap: 6px; padding: 6px 8px; font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted-foreground); margin-top: 6px; }
+  .tree-item { display: flex; align-items: center; gap: 8px; padding: 7px 8px 7px 22px; border-radius: var(--radius-md); font-size: 13px; color: var(--sidebar-foreground); }
+  .tree-item svg { width: 14px; height: 14px; stroke-width: 2; color: #0284c7; flex-shrink: 0; }
+  .tree-item span.t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tree-item:hover { background: var(--sidebar-accent); }
+  .tree-item.active { background: var(--sidebar-accent); color: var(--sidebar-accent-foreground); font-weight: 500; }
+  .tree-item .done { margin-left: auto; color: var(--success); flex-shrink: 0; }
+  .sidebar-foot { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 8px; border-top: 1px solid var(--sidebar-border); }
+  .avatar { width: 28px; height: 28px; border-radius: 999px; background: var(--secondary); color: var(--secondary-foreground); display: grid; place-items: center; font-weight: 600; font-size: 11px; flex-shrink: 0; }
+  .who .nm { font-size: 13px; font-weight: 500; }
+  .who .rl { font-size: 11px; color: var(--muted-foreground); }
+  .course-main { display: flex; flex-direction: column; min-width: 0; }
+  .course-topbar {
+    height: 48px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; padding: 0 16px;
+    position: sticky; top: var(--proto-bar-height, 0px); z-index: 10; background: var(--background);
+  }
+  .course-topbar .divider { width: 1px; height: 16px; background: var(--border); }
+  .course-topbar .lbl { font-size: 13.5px; font-weight: 500; }
+  .course-topbar .spacer { flex: 1; }
+
+  /* ===== lesson header ===== */
+  .lesson-header { padding: 20px 28px 0; position: sticky; top: calc(var(--proto-bar-height, 0px) + 48px); z-index: 10; background: var(--background); }
+  .lesson-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .lesson-title-col { min-width: 0; flex: 1; }
+  .lesson-title-input {
+    font-size: 21px; font-weight: 500; letter-spacing: -.02em; border: 1px solid transparent; border-radius: var(--radius-md);
+    padding: 4px 8px; margin: -4px 0 0 -8px; width: 100%; max-width: 620px; background: transparent; color: var(--foreground); font-family: inherit;
+  }
+  .lesson-title-input:hover { border-color: var(--border); }
+  .lesson-title-input:focus { outline: none; border-color: var(--ring); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 50%, transparent); background: var(--background); }
+  .lesson-meta-row { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding-left: 8px; font-size: 12px; color: var(--muted-foreground); }
+  .lesson-meta-row .slug { font-family: ui-monospace, monospace; }
+  .lesson-actions-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .save-status { font-size: 13px; color: var(--muted-foreground); min-width: 40px; text-align: right; }
+
+  /* ===== canvas ===== */
+  .canvas-wrap { padding: 22px 28px 60px; max-width: 820px; margin: 0 auto; width: 100%; flex: 1; min-width: 0; }
+  .canvas { display: flex; flex-direction: column; }
+  .content-section { padding: 18px 0 22px; }
+  /* Edit mode, any desktop editor canvas: every top-level block reads as its own large, flat,
+     framed panel on a soft canvas backdrop — separated by its border and generous spacing rather
+     than elevation, so a long lesson reads as a sequence of slides, not a form. Scoped to
+     .modern-canvas rather than one screen's id, so the empty-lesson canvas builds up exactly the
+     same way as the main one. Preview strips all of this back off below (search "Preview: written
+     on the canvas"), since a learner should see a flowing document, not an editor's card stack. */
+  .screen:not(.mode-preview) .canvas-wrap:has(> .modern-canvas) { background: var(--muted); }
+  .screen:not(.mode-preview) .modern-canvas > .content-section {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-xl);
+    padding: 26px;
+  }
+  .screen:not(.mode-preview) .modern-canvas > .block-gap { margin: 26px 0; }
+
+  /* Preview: written on the canvas, not in cards — each block keeps only the visual structure it
+     actually needs (a document reads as a file row); plain text and media that already have their
+     own frame (video/slide/image) sit directly on the page.
+     Spacing between blocks is a single density the author can choose (see "reading density"). */
+  :root { --preview-gap-compact: 24px; --preview-gap-comfortable: 40px; --preview-gap-spacious: 64px; }
+  .mode-preview .canvas > .content-section { margin-bottom: var(--preview-gap, var(--preview-gap-comfortable)); }
+  .mode-preview .canvas > .content-section:last-of-type { margin-bottom: 0; }
+  .screen.density-compact { --preview-gap: var(--preview-gap-compact); }
+  .screen.density-spacious { --preview-gap: var(--preview-gap-spacious); }
+  .density-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+  .density-swatch { display: flex; flex-direction: column; width: 34px; padding: 6px 5px; background: var(--muted); border-radius: var(--radius-md); }
+  .density-swatch span { display: block; height: 4px; border-radius: 2px; background: var(--muted-foreground); opacity: .55; }
+  .density-swatch span + span { margin-top: 7px; }
+  .density-swatch[data-density="compact"] span + span { margin-top: 4px; }
+  .density-swatch[data-density="spacious"] span + span { margin-top: 11px; }
+  .mode-preview .preview-doc-link { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; }
+
+  /* unified canvas: one block per content item, reorderable as a sequence */
+  .content-section { transition: opacity .15s; }
+  .content-section.dragging { opacity: .45; }
+
+  /* Just-added state. A block arrives with a short settle, then wears a soft primary wash and
+     ring that fades on its own — enough to answer "where did that go?" without reading as an
+     alert. The wash lives on an overlay so it never touches the block's own background, which
+     differs between Edit (card) and Preview (bare page). */
+  /* Bottom margin clears the floating add-content dock as well as the viewport edge, so an
+     auto-scrolled block never lands underneath it. */
+  .content-section { position: relative; scroll-margin-block: 104px 104px; }
+  .content-section.is-new { animation: block-enter .34s cubic-bezier(.22,.61,.36,1); }
+  .content-section.is-new::after {
+    content: ''; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; z-index: 1;
+    background: color-mix(in oklab, var(--primary) 6%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 32%, transparent);
+    animation: block-added 2.6s ease-out forwards;
+  }
+  @keyframes block-enter { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+  @keyframes block-added { 0%, 55% { opacity: 1; } 100% { opacity: 0; } }
+
+  /* The marker sits on the block's top edge, in the same key as the block-type label. */
+  .new-flag {
+    position: absolute; top: -8px; left: 22px; z-index: 2; pointer-events: none;
+    display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 999px;
+    background: var(--primary); color: var(--primary-foreground);
+    font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    animation: new-flag-life 2.6s ease-out forwards;
+  }
+  @keyframes new-flag-life {
+    0% { opacity: 0; transform: translateY(3px); }
+    12%, 62% { opacity: 1; transform: none; }
+    100% { opacity: 0; transform: translateY(-2px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .content-section.is-new, .content-section.is-new::after, .new-flag { animation-duration: .01ms; animation-iteration-count: 1; }
+    .content-section.is-new::after { opacity: 0; }
+  }
+
+  /* ===== scroll dots =====
+     One dot per top-level block, not per pixel scrolled — "block 3 of 6", not "40% down the
+     page". Positioned inside the reading column itself (just inside its right padding, computed
+     from the canvas's own box) rather than pinned to the browser's outer edge, so it reads as
+     part of the lesson rather than a page-chrome scrollbar. Quiet at rest: only the current
+     block's dot carries any color; the rest sit at low opacity until hovered or scrolled. */
+  .scroll-dots {
+    position: fixed; width: 20px; z-index: 12; display: none;
+    top: calc(var(--proto-bar-height, 0px) + 48px + var(--lesson-header-height, 0px) + 14px);
+    bottom: 20px;
+    flex-direction: column; align-items: center; justify-content: center; gap: 9px;
+  }
+  .scroll-dots.is-ready { display: flex; }
+  .scroll-dot {
+    width: 5px; height: 5px; border-radius: 999px; padding: 0; border: none; flex-shrink: 0;
+    background: var(--muted-foreground); opacity: .3; cursor: pointer;
+    transition: opacity .2s, width .2s, height .2s, border-radius .2s, background .2s;
+  }
+  .scroll-dot:hover, .scroll-dot:focus-visible { opacity: .75; outline: none; }
+  .scroll-dot.on { opacity: 1; background: var(--primary); width: 6px; height: 18px; border-radius: 3px; }
+
+  /* Preview: a learner reading, not an author navigating — dots stay reachable (jumping between
+     sections is still useful) but rest even quieter, so the rail reads as ambient, not a control
+     panel. */
+  .mode-preview .scroll-dot { opacity: .18; }
+  .mode-preview .scroll-dot:hover, .mode-preview .scroll-dot:focus-visible { opacity: .55; }
+  .mode-preview .scroll-dot.on { opacity: .85; }
+  .block-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .block-drag { display: flex; align-items: center; cursor: grab; color: var(--muted-foreground); flex-shrink: 0; margin-left: -4px; border-radius: var(--radius-sm); padding: 2px; position: relative; }
+  .block-drag:hover { background: var(--accent); color: var(--foreground); }
+  .block-drag svg { width: 15px; height: 15px; stroke-width: 2; }
+  .block-move { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex-shrink: 0; border: none; background: transparent; color: var(--muted-foreground); border-radius: var(--radius-sm); padding: 0; cursor: pointer; }
+  .block-move:hover { background: var(--accent); color: var(--foreground); }
+  .block-move svg { width: 13px; height: 13px; stroke-width: 2.4; }
+  .content-section:first-of-type .move-up { visibility: hidden; }
+  .content-section:last-of-type .move-down { visibility: hidden; }
+
+  /* lightweight hover tooltip, shown via [data-tip] */
+  [data-tip] { position: relative; }
+  [data-tip]::after {
+    content: attr(data-tip); position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%) translateY(4px);
+    background: var(--foreground); color: var(--background); font-size: 11.5px; font-weight: 500; padding: 4px 8px;
+    border-radius: var(--radius-sm); white-space: nowrap; pointer-events: none; opacity: 0; z-index: 20;
+    transition: opacity .12s, transform .12s;
+  }
+  [data-tip]:hover::after, [data-tip]:focus-visible::after { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .block-type { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); }
+  .block-type svg { width: 13px; height: 13px; stroke-width: 2.2; }
+  .block-head .sp { flex: 1; }
+  /* hover insertion line: sits between every pair of blocks, and after the last one, in place of a persistent add-content button */
+  .block-gap { display: flex; align-items: center; gap: 8px; height: 20px; margin: 10px 0; position: relative; }
+  .block-gap .gap-line { flex: 1; height: 1px; background: var(--border); }
+  .block-gap .gap-add {
+    width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; border: 1px solid var(--border); background: var(--background);
+    color: var(--muted-foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
+    transition: background .12s, border-color .12s, color .12s;
+  }
+  .block-gap .gap-add svg { width: 14px; height: 14px; stroke-width: 2; }
+  .block-gap .gap-add:hover, .block-gap .gap-add:focus-visible { border-color: var(--ring); color: var(--foreground); }
+  /* Desktop canvas: the "+" is always there, so every insertion point is discoverable without
+     hunting, but it sits muted against the backdrop and only turns primary on hover (or while its
+     popover is open). Clicking it fans the content types out in a radial arc anchored right at
+     the "+", so the insertion point is never in doubt. */
+  .modern-canvas .block-gap .gap-line { background: transparent; transition: background .12s, height .12s; }
+  .modern-canvas .block-gap .gap-add {
+    background: var(--background); border-color: var(--border); color: var(--muted-foreground);
+    transition: background .12s, border-color .12s, color .12s;
+  }
+  .modern-canvas .block-gap:hover .gap-add,
+  .modern-canvas .block-gap:focus-within .gap-add,
+  .modern-canvas .block-gap.gap-popover-open .gap-add {
+    background: var(--primary); border-color: var(--primary); color: var(--primary-foreground);
+  }
+  .modern-canvas .block-gap:hover .gap-line,
+  .modern-canvas .block-gap.gap-popover-open .gap-line { background: var(--primary); height: 2px; }
+
+  /* Anchored popover, radial: the types fan out in an arc around the "+" rather than sitting in
+     a row — every target is the same short reach from the cursor, pinned to the exact point
+     clicked. Arcs upward by default and flips to arc downward when there isn't room above in the
+     viewport. The rest of the canvas dims back so the fan (and the gap it belongs to) hold the
+     eye without a layout shift. */
+  .gap-popover {
+    position: absolute; left: 50%; top: 50%; width: 0; height: 0; z-index: 30;
+  }
+  .gap-radial-node {
+    position: absolute; left: 0; top: 0; width: 46px; height: 46px; margin: -23px 0 0 -23px;
+    border-radius: 999px; border: 1px solid var(--border); background: var(--popover); color: var(--muted-foreground);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    cursor: pointer; padding: 0; box-shadow: var(--shadow-md);
+    opacity: 0; pointer-events: none; transform: translate(0, 0) scale(.4);
+    transition: transform .26s cubic-bezier(.34,1.56,.64,1), opacity .16s, border-color .12s, color .12s;
+  }
+  .gap-radial-node svg { width: 16px; height: 16px; stroke-width: 2; }
+  .gap-radial-node .lb {
+    position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%);
+    font-size: 9.5px; font-weight: 600; white-space: nowrap; color: var(--muted-foreground);
+  }
+  .gap-popover.is-open .gap-radial-node { opacity: 1; pointer-events: auto; transform: translate(var(--x), var(--y)) scale(1); }
+  .gap-radial-node:hover, .gap-radial-node:focus-visible { border-color: var(--primary); color: var(--primary); outline: none; }
+  .gap-radial-node:hover .lb, .gap-radial-node:focus-visible .lb { color: var(--primary); }
+  .gap-radial-node.ai { color: var(--primary); border-color: color-mix(in oklab, var(--primary) 35%, var(--border)); }
+  .canvas.popover-dim > .content-section { opacity: .4; transition: opacity .16s; }
+
+
+  /* shared pill styling: the same look is used by the floating in-editor nav and by the
+     "Add content" dialog, so there is one visual language for "add content" everywhere. */
+  .nav-pill-row { display: flex; align-items: stretch; gap: 1px; flex-wrap: nowrap; justify-content: center; }
+  .nav-pill {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; border-radius: var(--radius-md);
+    border: none; background: transparent; color: var(--muted-foreground); cursor: pointer; padding: 8px 12px; font: inherit;
+    transition: background .12s, color .12s;
+  }
+  .nav-pill:hover, .nav-pill:focus-visible { background: var(--accent); color: var(--foreground); }
+  .nav-pill svg { width: 17px; height: 17px; stroke-width: 2; }
+  .nav-pill .lb { font-size: 9.5px; font-weight: 600; }
+  .nav-pill.nav-pill-ai { color: var(--primary); }
+  .nav-pill-div { width: 1px; align-self: stretch; background: var(--border); margin: 4px 1px; }
+
+  /* floating in-editor nav: centered on the editor column (not the whole viewport, so it never
+     drifts under the left course sidebar), and only shown once the lesson actually has content —
+     the empty canvas already has its own centered "Add content" prompt. */
+  .floating-nav-wrap {
+    position: fixed; bottom: 22px; left: calc(236px + (100vw - 236px) / 2); transform: translateX(-50%);
+    z-index: 15; display: none;
+  }
+  .floating-nav-wrap.is-visible { display: block; }
+  .floating-nav {
+    display: flex; align-items: stretch; gap: 1px; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 6px 8px; box-shadow: 0 10px 25px -5px rgb(0 0 0 / .15), 0 8px 10px -6px rgb(0 0 0 / .1);
+    max-width: calc(100vw - 236px - 48px); overflow-x: auto;
+  }
+
+  .preview-banner {
+    display: none; align-items: flex-start; gap: 10px; padding: 11px 14px; border-radius: var(--radius-md);
+    background: color-mix(in oklab, var(--primary) 8%, var(--background)); border: 1px solid color-mix(in oklab, var(--primary) 25%, transparent);
+    font-size: 12.8px; line-height: 1.5; color: var(--foreground); margin-bottom: 20px;
+  }
+  .preview-banner svg { width: 16px; height: 16px; stroke-width: 2; color: var(--primary); flex-shrink: 0; margin-top: 1px; }
+  .preview-banner b { font-weight: 600; }
+  .mode-preview .preview-banner { display: flex; }
+
+  .reorder-hint-banner {
+    display: flex; align-items: flex-start; gap: 10px; padding: 11px 14px; border-radius: var(--radius-md);
+    background: color-mix(in oklab, var(--primary) 8%, var(--background)); border: 1px solid color-mix(in oklab, var(--primary) 25%, transparent);
+    font-size: 12.8px; line-height: 1.5; color: var(--foreground); margin-bottom: 20px;
+  }
+  .reorder-hint-banner .ic { width: 16px; height: 16px; stroke-width: 2; color: var(--primary); flex-shrink: 0; margin-top: 1px; }
+  .reorder-hint-banner .txt { flex: 1; }
+  .reorder-hint-banner b { font-weight: 600; }
+  .reorder-hint-banner .dismiss { flex-shrink: 0; width: 22px; height: 22px; padding: 0; }
+  .reorder-hint-banner .dismiss svg { width: 13px; height: 13px; stroke-width: 2; }
+  .mode-preview .edit-only { display: none !important; }
+  .mode-preview .lesson-title-input { pointer-events: none; border-color: transparent !important; box-shadow: none !important; }
+  .screen:not(.mode-preview) .preview-only { display: none !important; }
+
+  .media-thumb { position: relative; aspect-ratio: 16/9; background: var(--muted); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 12px; }
+  .media-thumb svg.big { width: 36px; height: 36px; stroke-width: 1.5; color: var(--muted-foreground); }
+
+  /* preview-only, large learner-facing renders (video / slide / document) */
+  .preview-video-player { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-xl); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .preview-video-player .play-btn { width: 60px; height: 60px; border-radius: 999px; background: rgb(255 255 255 / .16); border: 1.5px solid rgb(255 255 255 / .55); display: grid; place-items: center; cursor: pointer; }
+  .video-poster { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: none; background: none; cursor: pointer; display: grid; place-items: center; }
+  .video-poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .video-poster .play-btn { position: relative; backdrop-filter: blur(2px); transition: background .12s, transform .12s; }
+  .video-poster:hover .play-btn { background: rgb(255 255 255 / .3); transform: scale(1.06); }
+  .preview-video-player .play-btn svg { width: 24px; height: 24px; fill: #fff; stroke: none; margin-left: 3px; }
+  .preview-video-player .real-media { width: 100%; height: 100%; border: 0; display: block; }
+  .preview-media-caption { margin-top: 12px; }
+  .preview-media-title { font-size: 15px; font-weight: 600; letter-spacing: -.01em; }
+  .preview-media-sub { font-size: 12.5px; color: var(--muted-foreground); margin-top: 2px; }
+  .preview-slide-frame { position: relative; width: 100%; aspect-ratio: 16/9; background: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-xl); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: var(--muted-foreground); overflow: hidden; }
+  .preview-slide-frame svg { width: 42px; height: 42px; stroke-width: 1.4; }
+  .preview-slide-frame .real-media { width: 100%; height: 100%; border: 0; display: block; background: #fff; }
+  .preview-doc-link { display: flex; align-items: center; gap: 12px; }
+  .preview-doc-link .info { display: flex; flex-direction: column; gap: 3px; }
+  .preview-doc-link .name { font-size: 13.5px; font-weight: 600; }
+  .preview-doc-link .open { font-size: 12.5px; font-weight: 500; color: var(--primary); display: inline-flex; align-items: center; gap: 4px; }
+  .preview-doc-link .open svg { width: 13px; height: 13px; stroke-width: 2.2; }
+
+  /* Instant realistic content: a freshly-inserted block renders a genuine example of its type
+     rather than an empty placeholder, with one subtle corner action — the same on every type —
+     to swap in the author's own. It sits over a corner, never across the content. */
+  .media-edit-corner {
+    position: absolute; top: 10px; right: 10px; opacity: 0; transition: opacity .12s;
+    display: inline-flex; align-items: center; gap: 6px; background: rgb(0 0 0 / .6); color: #fff;
+    border: none; font-size: 12px; font-weight: 500; padding: 6px 11px; border-radius: 999px; cursor: pointer;
+  }
+  .preview-video-player:hover .media-edit-corner, .preview-video-player:focus-within .media-edit-corner,
+  .preview-slide-frame:hover .media-edit-corner, .preview-slide-frame:focus-within .media-edit-corner,
+  .image-block:hover .media-edit-corner, .image-block:focus-within .media-edit-corner { opacity: 1; }
+  .media-edit-corner svg { width: 13px; height: 13px; stroke-width: 2.2; }
+
+  /* A default slide is a real slide — a split editorial composition with a headline column and a
+     data visual, the kind of thing a customer-education team would actually present. The frame is
+     a fixed 16/9 box, so every size is expressed in cqw and the whole composition scales in
+     proportion from the mobile frame up to a full-width canvas. */
+  /* A branded cover slide — the kind a design team would open a customer-education deck with, not
+     a chart slide. Deliberately opaque to the editor's own light/dark theme (same precedent as
+     the slide this replaces): a presentation asset carries its own fixed palette regardless of
+     what mode the editor happens to be in. Two radial glows over a near-black base give it the
+     same depth as an exported deck cover; everything else is a thin-stroke, high-contrast system
+     so it holds up at both full canvas width and the mobile frame. */
+  .slide-sample {
+    container-type: inline-size; width: 100%; height: 100%; box-sizing: border-box;
+    padding: 6.5% 7%; display: flex; flex-direction: column; justify-content: space-between;
+    color: #fff; text-align: left; position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 55% at 76% 0%, rgba(91,123,255,.5), transparent 60%),
+      radial-gradient(ellipse 65% 55% at 6% 100%, rgba(147,90,255,.55), transparent 62%),
+      linear-gradient(160deg, #0b0c14, #07070b 60%);
+  }
+  .slide-cover-row { display: flex; align-items: center; gap: 1.6cqw; position: relative; z-index: 1; }
+  .slide-cover-mark {
+    width: 3.4cqw; height: 3.4cqw; flex-shrink: 0; border-radius: .9cqw;
+    background: linear-gradient(135deg, #6d8dff, #9b6dff);
+  }
+  .slide-cover-brand { font-size: 1.7cqw; font-weight: 600; letter-spacing: .01em; white-space: nowrap; }
+  .slide-cover-rule { flex: 1; height: 2.9cqw; border-radius: 999px; border: 1px solid rgba(255,255,255,.22); }
+  .slide-cover-rule.short { flex: none; width: 48%; }
+  .slide-cover-headline {
+    position: relative; z-index: 1; font-size: 6.2cqw; font-weight: 700; letter-spacing: -.03em;
+    line-height: 1.08; display: flex; flex-direction: column; gap: .1em;
+  }
+  .slide-cover-headline .ln { display: inline-flex; align-items: center; gap: .18em; }
+  .slide-cover-headline svg { width: .78em; height: .78em; stroke-width: 1.8; flex-shrink: 0; }
+  .slide-cover-headline .rings { width: .9em; height: .56em; }
+  .slide-cover-bottom-row { display: flex; align-items: center; gap: 1.6cqw; position: relative; z-index: 1; }
+  .slide-cover-badge {
+    flex-shrink: 0; font-size: 1.5cqw; font-weight: 500; color: rgba(255,255,255,.82);
+    border: 1px solid rgba(255,255,255,.22); border-radius: 999px; padding: .55em 1.3em; white-space: nowrap;
+    background: rgba(255,255,255,.05);
+  }
+
+
+  .image-block { position: relative; width: 100%; aspect-ratio: 16/9; border-radius: var(--radius-xl); overflow: hidden; background: var(--muted); }
+  .image-block img { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .image-toolbar { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; opacity: 0; transition: opacity .12s; }
+  .image-block:hover .image-toolbar, .image-block:focus-within .image-toolbar { opacity: 1; }
+  .image-toolbar button { width: 34px; height: 34px; flex-shrink: 0; border-radius: 999px; border: none; background: rgb(0 0 0 / .6); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .image-toolbar button:hover { background: rgb(0 0 0 / .8); }
+  .image-toolbar button svg { width: 15px; height: 15px; stroke-width: 2.1; }
+
+
+
+
+  .ghost-add-tile {
+    margin-top: 6px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; box-sizing: border-box;
+    font-size: 12.5px; font-weight: 600; color: var(--muted-foreground); cursor: pointer; background: none;
+    transition: border-color .12s, color .12s, background .12s;
+  }
+  .ghost-add-tile:hover { border-color: var(--primary); color: var(--primary); background: color-mix(in oklab, var(--primary), transparent 95%); }
+  .ghost-add-tile svg { width: 13px; height: 13px; stroke-width: 2.4; }
+  .toolbar-group { display: flex; align-items: center; background: var(--muted); border-radius: 999px; padding: 3px; }
+  .toolbar-group .icobtn { width: 26px; height: 26px; flex-shrink: 0; border-radius: 999px; border: none; background: transparent; color: var(--foreground); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .toolbar-group .icobtn:hover { background: var(--card); }
+  .toolbar-group .icobtn svg { width: 13px; height: 13px; stroke-width: 2; }
+  .toolbar-group .tgdiv { width: 1px; height: 14px; background: var(--border); margin: 0 2px; }
+
+
+  .note-toolbar { display: flex; align-items: center; gap: 2px; padding-bottom: 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .note-toolbar .tb-btn { width: 28px; height: 28px; display: grid; place-items: center; border-radius: var(--radius-sm); color: var(--muted-foreground); border: none; background: transparent; cursor: pointer; }
+  .note-toolbar .tb-btn:hover { background: var(--accent); color: var(--foreground); }
+  .note-toolbar .tb-btn svg { width: 15px; height: 15px; stroke-width: 2.2; }
+  .note-toolbar .tb-sep { width: 1px; height: 18px; background: var(--border); margin: 0 5px; }
+  .note-content { font-size: 14.5px; line-height: 1.7; color: var(--foreground); }
+  .note-content h3 { font-size: 16.5px; font-weight: 600; margin: 0 0 8px; letter-spacing: -.01em; }
+  /* A browser wraps each new line a user presses Enter on in a plain <div>, not a <p> — give
+     it the same paragraph spacing so a real, multi-line written note reads as one in both Edit
+     and Preview, not a run-on block. */
+  .note-content p, .note-content > div { margin: 0 0 12px; }
+  .note-content ul { margin: 0 0 12px; padding-left: 20px; }
+  .note-content li { margin-bottom: 4px; }
+  .note-content code { background: var(--muted); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
+  .note-content strong { font-weight: 600; }
+  /* Empty-note cue: rendered from data-placeholder at display time, never written into the note's
+     own content — Preview shows a learner's finished page, not an editor's "start typing" prompt,
+     so an empty note renders nothing there instead of this text. Only the desktop screen ever
+     carries .mode-preview, so every other screen (empty-lesson, mobile) shows the cue as normal. */
+  .note-content:empty::before { content: attr(data-placeholder); color: var(--muted-foreground); }
+  .mode-preview .note-content:empty::before { content: none; }
+  /* The note's action state is the note itself — it edits in place, so hovering tints the text
+     area to say "click here to write" rather than covering it with an overlay the other types
+     need. Edit mode only; a learner is reading, not editing. */
+  .screen:not(.mode-preview) .note-content {
+    border-radius: var(--radius-md); margin: 0 -8px; padding: 2px 8px; transition: background .12s;
+  }
+  .screen:not(.mode-preview) .note-content:hover { background: var(--muted); }
+  .screen:not(.mode-preview) .note-content:focus { background: transparent; outline: none; }
+
+  /* Note callout styles: Info / Tip / Important / Warning / Highlight, chosen from the note
+     toolbar. Presentation lives on the wrapper's data-style attribute, never in the content. */
+  .style-dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; }
+  .note-callout-label { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 700; padding: 10px 14px 0; }
+  .note-callout-label svg { width: 15px; height: 15px; stroke-width: 2.2; }
+  .note-callout[data-style]:not([data-style=""]) { border: 1px solid; border-radius: var(--radius-lg); }
+  .note-callout[data-style]:not([data-style=""]) .note-content { padding: 6px 14px 14px; }
+  .note-callout[data-style="info"] { background: color-mix(in oklab, oklch(0.6 0.15 250), transparent 92%); border-color: color-mix(in oklab, oklch(0.6 0.15 250), transparent 60%); }
+  .note-callout[data-style="info"] .note-callout-label { color: oklch(0.5 0.17 250); }
+  .note-callout[data-style="tip"] { background: color-mix(in oklab, oklch(0.6 0.14 160), transparent 92%); border-color: color-mix(in oklab, oklch(0.6 0.14 160), transparent 60%); }
+  .note-callout[data-style="tip"] .note-callout-label { color: oklch(0.45 0.14 160); }
+  .note-callout[data-style="important"] { background: color-mix(in oklab, var(--primary), transparent 92%); border-color: color-mix(in oklab, var(--primary), transparent 60%); }
+  .note-callout[data-style="important"] .note-callout-label { color: var(--primary); }
+  .note-callout[data-style="warning"] { background: color-mix(in oklab, oklch(0.7 0.16 70), transparent 88%); border-color: color-mix(in oklab, oklch(0.7 0.16 70), transparent 55%); }
+  .note-callout[data-style="warning"] .note-callout-label { color: oklch(0.5 0.15 70); }
+  .note-callout[data-style="highlight"] { background: color-mix(in oklab, oklch(0.8 0.17 95), transparent 82%); border-color: color-mix(in oklab, oklch(0.8 0.17 95), transparent 50%); }
+  .note-callout[data-style="highlight"] .note-callout-label { color: oklch(0.45 0.13 95); }
+
+  .file-row { display: flex; align-items: center; gap: 12px; padding: 11px 4px; border-bottom: 1px solid var(--border); }
+  .file-row:last-child { border-bottom: none; }
+  .file-icon { width: 32px; height: 32px; border-radius: var(--radius-md); background: color-mix(in oklab, var(--destructive) 12%, transparent); color: var(--destructive); display: grid; place-items: center; flex-shrink: 0; }
+  .file-icon svg { width: 15px; height: 15px; stroke-width: 2; }
+  .file-info { min-width: 0; flex: 1; }
+  .file-name { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-size { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
+  .file-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .radio { width: 14px; height: 14px; border-radius: 999px; border: 1px solid var(--input); accent-color: var(--primary); flex-shrink: 0; }
+  .add-row-tile { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; margin-top: 4px; border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 11px; color: var(--muted-foreground); font-size: 13px; font-weight: 500; cursor: pointer; background: transparent; font: inherit; }
+  .add-row-tile:hover { border-color: var(--ring); color: var(--foreground); background: var(--accent); }
+  .add-row-tile svg { width: 15px; height: 15px; stroke-width: 2; }
+
+  /* slide section: production-accurate add control + card menu + picker */
+  .dd-menu { position: relative; display: inline-flex; flex-shrink: 0; }
+  .dd-menu-panel {
+    position: absolute; right: 0; top: calc(100% + 4px); min-width: 168px; background: var(--popover); color: var(--popover-foreground);
+    border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-md); padding: 4px; z-index: 60; display: none;
+  }
+  .dd-menu.open .dd-menu-panel { display: block; }
+  .dd-menu-item {
+    display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border-radius: var(--radius-sm);
+    border: none; background: transparent; font-size: 13px; text-align: left; cursor: pointer; font: inherit; color: var(--foreground);
+  }
+  .dd-menu-item:hover { background: var(--accent); }
+  .dd-menu-item.danger { color: #dc2626; }
+  .dd-menu-item svg { width: 14px; height: 14px; stroke-width: 2; flex-shrink: 0; }
+  .slide-platform-ic { display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: var(--radius-md); flex-shrink: 0; }
+  .slide-platform-ic svg { width: 100%; height: 100%; }
+  .dialog-wide { max-width: 860px; }
+  .slide-picker { display: flex; flex-direction: column; min-height: 380px; width: 100%; border: 1px dashed var(--border); border-radius: var(--radius-xl); background: var(--background); overflow: hidden; }
+  @media (min-width: 768px) { .slide-picker { flex-direction: row; } }
+  .slide-picker-side { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+  @media (min-width: 768px) { .slide-picker-side { width: 216px; border-bottom: none; border-right: 1px solid var(--border); } }
+  .slide-search { display: flex; align-items: center; gap: 8px; border: 1px solid var(--input); border-radius: var(--radius-md); padding: 0 8px; box-shadow: var(--shadow-2xs); }
+  .slide-search svg { width: 14px; height: 14px; color: var(--muted-foreground); flex-shrink: 0; }
+  .slide-search input { border: none; background: transparent; height: 32px; font: inherit; font-size: 13px; flex: 1; outline: none; color: var(--foreground); }
+  .slide-nav { display: flex; flex-direction: column; gap: 2px; overflow: auto; max-height: 220px; }
+  @media (min-width: 768px) { .slide-nav { max-height: none; flex: 1; } }
+  .slide-nav-item { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; border-radius: var(--radius-md); border: none; background: transparent; font-size: 13px; text-align: left; cursor: pointer; font: inherit; color: var(--foreground); }
+  .slide-nav-item:hover { background: color-mix(in oklab, var(--muted) 60%, transparent); }
+  .slide-nav-item.active { background: var(--secondary); color: var(--secondary-foreground); }
+  .slide-nav-item .slide-platform-ic { width: 28px; height: 28px; }
+  .slide-picker-main { flex: 1; display: flex; flex-direction: column; gap: 16px; padding: 16px; overflow: auto; min-width: 0; }
+  .slide-platform-head { display: flex; align-items: center; gap: 12px; }
+  .slide-platform-head .slide-platform-ic { width: 40px; height: 40px; }
+  .slide-platform-head .nm { font-size: 15px; font-weight: 600; }
+  .slide-platform-head .hint { font-size: 12px; color: var(--muted-foreground); margin-top: 1px; }
+  .slide-steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .slide-steps li { display: flex; gap: 10px; font-size: 13px; }
+  .slide-steps .num { width: 20px; height: 20px; border-radius: 999px; background: var(--foreground); color: var(--background); flex-shrink: 0; display: grid; place-items: center; font-size: 11px; font-weight: 600; margin-top: 1px; }
+  .slide-steps .txt { color: var(--muted-foreground); }
+  .slide-embed-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .slide-preview-label { font-size: 13px; font-weight: 500; margin: 0 0 8px; }
+  .slide-preview-box { background: var(--muted); border: 1px dashed var(--border); border-radius: var(--radius-md); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); font-size: 13px; text-align: center; padding: 12px; }
+  .slide-preview-ready { color: #059669; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+  .slide-preview-ready svg { width: 14px; height: 14px; stroke-width: 2.4; }
+  .slide-preview-frame { background: var(--muted); border-radius: var(--radius-md); aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; color: var(--muted-foreground); overflow: hidden; }
+  .slide-preview-frame svg { width: 32px; height: 32px; stroke-width: 1.5; }
+
+  .empty-page { border: 1px dashed var(--border); border-radius: var(--radius-xl); width: 100%; max-width: 560px; box-sizing: border-box; margin: 40px auto 0; padding: 48px 28px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+  .empty-page .ic { width: 40px; height: 40px; border-radius: var(--radius-lg); background: var(--muted); display: grid; place-items: center; }
+  .empty-page .ic svg { width: 20px; height: 20px; stroke-width: 1.7; }
+  .empty-page h2 { font-size: 16.5px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  .empty-page p { font-size: 13px; color: var(--muted-foreground); max-width: 360px; margin: 0; line-height: 1.55; }
+  /* The floating nav stays hidden while a canvas is empty, so the empty state carries its own
+     copy of the same pill row — one click to the first block, instead of a button into a dialog. */
+  .empty-pill-row {
+    display: flex; align-items: stretch; gap: 1px; background: var(--card); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 6px 8px; margin-top: 4px; max-width: 100%; overflow-x: auto;
+  }
+
+  /* settings slider */
+  .slider-overlay { position: fixed; inset: 0; background: rgb(0 0 0 / .5); z-index: 200; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+  .slider-panel { position: fixed; top: 0; right: 0; height: 100%; width: 75%; max-width: 360px; background: var(--background); border-left: 1px solid var(--border); box-shadow: -8px 0 24px -8px rgb(0 0 0 / .25); z-index: 201; display: flex; flex-direction: column; transform: translateX(100%); transition: transform .3s cubic-bezier(.32,.72,0,1); }
+  .settings-open .slider-overlay { opacity: 1; pointer-events: auto; }
+  .settings-open .slider-panel { transform: translateX(0); }
+  .slider-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 16px 18px 12px; border-bottom: 1px solid var(--border); }
+  .slider-head h2 { font-size: 15px; font-weight: 600; margin: 0 0 3px; letter-spacing: -.01em; }
+  .slider-head p { font-size: 12px; color: var(--muted-foreground); margin: 0; }
+  .slider-body { flex: 1; overflow-y: auto; padding: 18px; }
+  .field-set + .field-set { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .field-legend { font-size: 13.5px; font-weight: 500; margin: 0 0 4px; }
+  .field-desc { font-size: 12px; color: var(--muted-foreground); line-height: 1.5; margin: 0 0 14px; }
+  .field-stack { display: flex; flex-direction: column; gap: 14px; }
+  .field-row-h { display: flex; align-items: center; gap: 10px; }
+  .field-checklist { display: flex; flex-direction: column; gap: 10px; margin-top: 8px; padding: 12px; background: var(--muted); border-radius: var(--radius-md); }
+  .checkbox { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--input); accent-color: var(--primary); flex-shrink: 0; }
+
+  /* dialog */
+  .scrim { position: fixed; inset: 0; background: oklch(0 0 0 / .55); z-index: 300; display: none; align-items: center; justify-content: center; padding: 24px; overflow: auto; }
+  .dialog-open .scrim { display: flex; }
+  .dialog { background: var(--popover); color: var(--popover-foreground); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: 0 24px 60px -12px rgb(0 0 0 / .35); width: 100%; max-width: 440px; }
+  .dialog-head { padding: 18px 20px 0; }
+  .dialog-title { font-size: 15.5px; font-weight: 600; letter-spacing: -.01em; margin: 0 0 4px; }
+  .dialog-desc { font-size: 12px; color: var(--muted-foreground); margin: 0; line-height: 1.5; }
+  .dialog-body { padding: 16px 20px; }
+  .dialog-foot { padding: 14px 20px 18px; display: flex; gap: 8px; justify-content: flex-end; border-top: 1px solid var(--border); margin-top: 4px; }
+  .utabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); overflow-x: auto; margin: -2px -2px 14px; padding: 0 2px; }
+  .utab { padding: 8px 10px; font-size: 12px; font-weight: 500; color: var(--muted-foreground); background: none; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; cursor: pointer; white-space: nowrap; }
+  .utab:hover { color: var(--foreground); }
+  .utab.active { color: var(--foreground); border-bottom-color: var(--primary); }
+  .current-content-banner { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+  .current-content-banner .thumb { width: 72px; aspect-ratio: 16/9; background: #000; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+  .current-content-banner .thumb svg { width: 16px; height: 16px; fill: #fff; stroke: none; }
+  .current-content-banner .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .current-content-banner .thumb.icon { background: var(--muted); color: var(--muted-foreground); }
+  .current-content-banner .thumb.icon > svg { width: 22px; height: 22px; fill: none; stroke: currentColor; }
+  .current-content-banner .txt { min-width: 0; }
+  .current-content-banner .lbl { font-size: 12.5px; font-weight: 500; }
+  .current-content-banner .url { font-size: 11.5px; color: var(--muted-foreground); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .drop { border: 1.5px dashed var(--border); border-radius: var(--radius-lg); padding: 24px 16px; text-align: center; background: var(--muted); }
+  .drop svg { width: 22px; height: 22px; stroke-width: 1.7; color: var(--muted-foreground); margin-bottom: 8px; }
+  .drop .t { font-size: 13px; font-weight: 500; margin: 0 0 3px; }
+  .drop .h { font-size: 11.5px; color: var(--muted-foreground); margin: 0; }
+  button.drop { width: 100%; cursor: pointer; font: inherit; color: inherit; }
+  button.drop:hover, button.drop.drag-over { border-color: var(--ring); background: var(--accent); }
+  .platform-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
+  .platform-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 9px 4px; border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--background); cursor: pointer; font: inherit; }
+  .platform-btn:hover { border-color: var(--ring); background: var(--accent); }
+  .platform-btn.on { border-color: var(--primary); background: color-mix(in oklab, var(--primary) 8%, transparent); }
+  .platform-btn .sw { width: 24px; height: 24px; border-radius: var(--radius-sm); display: grid; place-items: center; font-size: 9.5px; font-weight: 700; color: #fff; }
+  .platform-btn .nm { font-size: 10px; color: var(--muted-foreground); line-height: 1.2; }
+
+  /* mobile mockup */
+  .phone-wrap { display: flex; justify-content: center; padding: 28px 16px 50px; }
+  .phone-frame { width: min(390px, 100%); background: var(--background); border-radius: 30px; border: 7px solid #111; box-shadow: 0 24px 50px -18px rgb(0 0 0 / .4); overflow: hidden; height: min(760px, 78vh); display: flex; flex-direction: column; }
+  :root[data-theme='dark'] .phone-frame, @media (prefers-color-scheme: dark) { }
+  .phone-screen { position: relative; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+  /* the mobile mockup scrolls inside .phone-screen, independently of the page-level prototype bar above it */
+  .phone-screen .course-topbar { top: 0; }
+  .phone-screen .lesson-header { top: 48px; }
+  .force-mobile .lesson-header { padding: 14px 16px 0; }
+  .force-mobile .lesson-header-row { flex-direction: column; align-items: stretch; }
+  .force-mobile .canvas-wrap { padding: 16px 16px 50px; }
+  .force-mobile .slider-panel { width: 100%; max-width: none; }
+
+  /* real responsive breakpoint for the desktop screen */
+  @media (max-width: 780px) {
+    .shell { grid-template-columns: 1fr; }
+    .course-sidebar { display: none; }
+    .floating-nav-wrap { display: none; }
+    .lesson-header { padding: 16px 16px 0; }
+    .lesson-header-row { flex-direction: column; align-items: stretch; }
+    .canvas-wrap { padding: 16px 16px 50px; }
+    .slider-panel { width: 100%; max-width: none; }
+    .proto-bar { padding: 8px 12px; }
+  }
+</style>
+  </head>
+  <body>
+
+<div class="proto-bar">
+  <b>Lesson Editor Redesign</b>
+  <span class="proto-note">clickable prototype · not shipped code</span>
+  <span class="sp"></span>
+  <div class="screen-switch" id="screenSwitch">
+    <button class="on" data-screen="desktop">Desktop canvas</button>
+    <button data-screen="empty">Empty lesson</button>
+    <button data-screen="mobile">Mobile</button>
+  </div>
+  <button class="icon-btn" id="theme" title="Toggle theme" aria-label="Toggle theme" style="width: 28px; height: 28px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+  </button>
+</div>
+
+<!-- ============ SCREEN: DESKTOP CANVAS ============ -->
+<section class="screen" id="screen-desktop">
+  <div class="shell">
+    <aside class="course-sidebar">
+      <a class="back-link" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>Courses</a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg>Newsfeed</a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Content</a>
+      <div class="tree-section">Lessons</div>
+      <a class="tree-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">Introduction to React</span><span class="done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span></a>
+      <a class="tree-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">Components and Props</span></a>
+      <a class="tree-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">State and Lifecycle</span></a>
+      <a class="nav-item" href="#" style="margin-top:4px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>People</a>
+      <a class="nav-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg>Analytics</a>
+      <div class="sidebar-foot"><div class="avatar">AT</div><div class="who"><div class="nm">Admin Teacher</div><div class="rl">Admin</div></div></div>
+    </aside>
+
+    <div class="course-main">
+      <header class="course-topbar">
+        <button class="icon-btn" aria-label="Toggle sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+        <div class="divider"></div>
+        <span class="lbl">Content</span>
+        <span class="badge badge-success-soft">Published</span>
+        <span class="spacer"></span>
+        <a class="btn btn-outline btn-sm" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>View course site</a>
+      </header>
+
+      <div class="lesson-header">
+        <div class="lesson-header-row">
+          <div class="lesson-title-col">
+            <input class="lesson-title-input" id="lessonTitle" value="Components and Props: Building Reusable UI Elements" />
+            <div class="lesson-meta-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:12px;height:12px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+              <span>Unlocked</span><span>·</span><span class="slug">/components-and-props</span>
+            </div>
+          </div>
+          <div class="lesson-actions-row">
+            <span class="save-status" id="saveStatus">Saved</span>
+            <button class="icon-btn" title="Lock lesson" aria-label="Lock lesson"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg></button>
+            <button class="icon-btn" title="Version history" aria-label="Version history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg></button>
+            <button class="icon-btn" title="Lesson settings" aria-label="Lesson settings" id="btnSettingsDesktop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+            <div class="seg-toggle" id="modeToggle">
+              <button class="on" data-mode="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit</button>
+              <button data-mode="preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <main class="canvas-wrap">
+        <div class="preview-banner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <div><b>In-app learner experience.</b> This is how the lesson looks to an enrolled, logged-in learner. The public course page (for visitors who haven't enrolled) currently shows less — only the video and note — so treat this as the authenticated view, not the public one.</div>
+        </div>
+
+        <div class="reorder-hint-banner edit-only" id="reorderHint">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+          <div class="txt"><b>Tip:</b> Grab the ⠿ handle on any block and drag it to reorder your lesson content.</div>
+          <button class="icon-btn dismiss" aria-label="Dismiss tip" onclick="dismissReorderHint()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+        </div>
+
+        <div class="canvas modern-canvas" id="canvas">
+          <section class="content-section" data-type="video">
+            <div class="block-head edit-only">
+              <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+              <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</span>
+              <span class="sp"></span>
+              <div class="dd-menu">
+                <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Video actions" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                <div class="dd-menu-panel">
+                  <button class="dd-menu-item" onclick="editBlock(this, 'video-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit video</button>
+                  <button class="dd-menu-item danger" onclick="removeBlock(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove block</button>
+                </div>
+              </div>
+            </div>
+            <div class="preview-video-player">
+              <button type="button" class="video-poster" data-embed-src="https://www.youtube.com/embed/cx0S8JyiVxc" aria-label="Play Learn React PropTypes In 13 Minutes" onclick="playVideoPoster(this)">
+                <img src="https://i.ytimg.com/vi/cx0S8JyiVxc/maxresdefault.jpg" alt="" loading="lazy" />
+                <span class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span>
+              </button>
+              <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'video-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Change video</button>
+            </div>
+            <div class="preview-media-caption">
+              <div class="preview-media-title">Learn React PropTypes In 13 Minutes</div>
+              <div class="preview-media-sub">Web Dev Simplified · YouTube</div>
+            </div>
+          </section>
+          <div class="block-gap edit-only">
+            <div class="gap-line"></div>
+            <button class="gap-add" aria-label="Add content here" data-tip="Add content" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.block-gap'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
+            <div class="gap-line"></div>
+          </div>
+
+          <section class="content-section" data-type="note">
+            <div class="block-head edit-only">
+              <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+              <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</span>
+              <span class="sp"></span>
+              <div class="dd-menu">
+                <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Note actions" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                <div class="dd-menu-panel">
+                  <button class="dd-menu-item danger" onclick="removeBlock(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove block</button>
+                </div>
+              </div>
+            </div>
+            <div class="note-toolbar edit-only">
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z"/></svg></button>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg></button>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg></button>
+              <div class="tb-sep"></div>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg></button>
+              <div class="tb-sep"></div>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 6.1H3M21 12.1H3M15.1 18H3"/></svg></button>
+              <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+              <div class="tb-sep"></div>
+              <div class="dd-menu">
+                <button type="button" class="tb-btn" aria-label="Callout style" data-tip="Callout style" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></button>
+                <div class="dd-menu-panel" id="seedNoteStyleMenu"></div>
+              </div>
+            </div>
+            <div class="note-callout" data-style="">
+              <div class="note-callout-label" hidden></div>
+              <div class="note-content" contenteditable="true">
+                <h3>What are Props?</h3>
+                <p>Props (short for <strong>properties</strong>) are how React components receive data from their parent. They're read-only — a component should never modify the props it receives.</p>
+                <ul>
+                  <li>Passed like HTML attributes: <code>&lt;Avatar name="Ada" /&gt;</code></li>
+                  <li>Read inside the component via <code>props.name</code>, or by destructuring</li>
+                  <li>Flow in one direction: parent → child</li>
+                </ul>
+                <p>In the next lesson we'll compare props to state — the other half of how React components hold onto data.</p>
+              </div>
+            </div>
+          </section>
+          <div class="block-gap edit-only">
+            <div class="gap-line"></div>
+            <button class="gap-add" aria-label="Add content here" data-tip="Add content" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.block-gap'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
+            <div class="gap-line"></div>
+          </div>
+
+          <section class="content-section" data-type="slide">
+            <div class="block-head edit-only">
+              <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+              <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>Slide</span>
+              <span class="sp"></span>
+              <div class="dd-menu">
+                <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Slide actions" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                <div class="dd-menu-panel">
+                  <button class="dd-menu-item" onclick="editBlock(this, 'slide-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit slide</button>
+                  <button class="dd-menu-item danger" onclick="removeBlock(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove block</button>
+                </div>
+              </div>
+            </div>
+            <div class="preview-slide-frame">
+              <div class="slide-sample" id="seedSlideSample"></div>
+              <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'slide-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Change slide</button>
+            </div>
+            <div class="preview-media-caption">
+              <div class="preview-media-title">Customer Onboarding Playbook</div>
+              <div class="preview-media-sub">Cover · Customer onboarding deck</div>
+            </div>
+          </section>
+          <div class="block-gap edit-only">
+            <div class="gap-line"></div>
+            <button class="gap-add" aria-label="Add content here" data-tip="Add content" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.block-gap'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
+            <div class="gap-line"></div>
+          </div>
+
+          <section class="content-section" data-type="document">
+            <div class="block-head edit-only">
+              <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+              <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+              <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+              <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>Document</span>
+              <span class="sp"></span>
+              <div class="dd-menu">
+                <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Document actions" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                <div class="dd-menu-panel">
+                  <button class="dd-menu-item" onclick="editBlock(this, 'document')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit document</button>
+                  <button class="dd-menu-item danger" onclick="removeBlock(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove block</button>
+                </div>
+              </div>
+            </div>
+            <div class="doc-entry">
+              <div class="file-row edit-only">
+                <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+                <div class="file-info"><div class="file-name">Product Setup Guide.pdf</div><div class="file-size">860 KB</div></div>
+                <div class="file-actions">
+                  <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="icon-btn" style="width:30px;height:30px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
+                </div>
+              </div>
+              <div class="preview-doc-link preview-only">
+                <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+                <div class="info">
+                  <span class="name">Product Setup Guide.pdf</span>
+                  <span class="open">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+                </div>
+              </div>
+            </div>
+          </section>
+          <div class="block-gap edit-only">
+            <div class="gap-line"></div>
+            <button class="gap-add" aria-label="Add content here" data-tip="Add content" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.block-gap'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
+            <div class="gap-line"></div>
+          </div>
+
+          <div class="empty-page edit-only" id="canvasEmptyState" hidden>
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></span>
+            <h2>This lesson doesn't have any content yet</h2>
+            <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
+            <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-canvas"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="floating-nav-wrap edit-only" id="floatingNav-canvas">
+    <div class="floating-nav" role="toolbar" aria-label="Add content" id="floatingNavBar-canvas"></div>
+  </div>
+
+  <div class="slider-overlay" onclick="closeSettings('Desktop')"></div>
+  <aside class="slider-panel" role="dialog" aria-label="Lesson settings">
+    <div class="slider-head">
+      <div><h2>Lesson settings</h2><p>Applies to this lesson only.</p></div>
+      <button class="icon-btn" onclick="closeSettings('Desktop')" aria-label="Close settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="slider-body">
+      <div class="field-set">
+        <p class="field-legend">Progression</p>
+        <p class="field-desc">Choose how students complete this lesson and move through the course.</p>
+        <p class="field-desc">These rules apply to students only. You can preview and navigate freely while teaching.</p>
+        <div class="field-stack">
+          <div class="field"><label class="label" for="completionPolicy">Completion rule</label>
+            <select class="select" id="completionPolicy" onchange="onPolicyChange()">
+              <option value="manual" selected>Manual — student marks it complete</option>
+              <option value="video_watch">Video watch — must watch required videos</option>
+              <option value="none">None — always counts as complete</option>
+            </select>
+          </div>
+          <div class="field" id="watchThresholdField" style="display:none"><label class="label" for="watchThreshold">Video-watch threshold</label><input class="input" id="watchThreshold" type="number" value="95" style="max-width:110px" /><p class="hint">Percentage of the video's duration a student must watch.</p></div>
+          <div class="field" id="watchEnforceField" style="display:none"><label class="label">Videos that must be watched</label><p class="hint" style="margin-top:0">Only uploaded videos can be enforced — embedded/linked videos can't be tracked.</p>
+            <div class="field-checklist"><label class="field-row-h"><input type="checkbox" class="checkbox" id="wv1" checked /><span class="label" style="margin:0">React Props Explained in 10 Minutes</span></label></div>
+          </div>
+        </div>
+      </div>
+      <div class="field-set">
+        <p class="field-legend">Lesson comments</p>
+        <p class="field-desc">Choose whether students can view and add comments on this lesson.</p>
+        <div class="field-row-h"><label class="switch"><input type="checkbox" id="commentsToggle" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Comments enabled</span></div>
+      </div>
+      <div class="field-set">
+        <p class="field-legend">Reading density</p>
+        <p class="field-desc">How much room shows between blocks when students view this lesson in Preview.</p>
+        <div class="density-row">
+          <div class="seg-toggle" id="densityToggle">
+            <button type="button" data-density="compact">Compact</button>
+            <button type="button" class="on" data-density="comfortable">Comfortable</button>
+            <button type="button" data-density="spacious">Spacious</button>
+          </div>
+          <div class="density-swatch" id="densitySwatch-Desktop" aria-hidden="true"><span></span><span></span><span></span></div>
+        </div>
+      </div>
+    </div>
+  </aside>
+</section>
+
+<!-- ============ SCREEN: EMPTY LESSON ============ -->
+<section class="screen" id="screen-empty" hidden>
+  <div class="shell">
+    <aside class="course-sidebar">
+      <a class="back-link" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m15 18-6-6 6-6"/></svg>Courses</a>
+      <a class="nav-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Content</a>
+      <div class="tree-section">Lessons</div>
+      <a class="tree-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">Introduction to React</span><span class="done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:13px;height:13px"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></span></a>
+      <a class="tree-item" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">Components and Props</span></a>
+      <a class="tree-item active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg><span class="t">State and Lifecycle</span></a>
+      <div class="sidebar-foot"><div class="avatar">AT</div><div class="who"><div class="nm">Admin Teacher</div><div class="rl">Admin</div></div></div>
+    </aside>
+    <div class="course-main">
+      <header class="course-topbar">
+        <button class="icon-btn" aria-label="Toggle sidebar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+        <div class="divider"></div><span class="lbl">Content</span><span class="badge badge-success-soft">Published</span><span class="spacer"></span>
+        <a class="btn btn-outline btn-sm" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>View course site</a>
+      </header>
+      <div class="lesson-header">
+        <div class="lesson-header-row">
+          <div class="lesson-title-col">
+            <input class="lesson-title-input" value="State and Lifecycle: Managing Data in React Applications" />
+            <div class="lesson-meta-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:12px;height:12px"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg><span>Unlocked</span><span>·</span><span class="slug">/state-and-lifecycle</span></div>
+          </div>
+          <div class="lesson-actions-row"><span class="save-status">Saved</span>
+            <button class="icon-btn" title="Lesson settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+            <div class="seg-toggle" id="modeToggleEmpty"><button class="on" data-mode="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit</button><button data-mode="preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>Preview</button></div>
+          </div>
+        </div>
+      </div>
+      <main class="canvas-wrap">
+        <div class="canvas modern-canvas" id="emptyCanvas">
+          <div class="empty-page edit-only" id="emptyState">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg></span>
+            <h2>This lesson doesn't have any content yet</h2>
+            <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
+            <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-emptyCanvas"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="floating-nav-wrap edit-only" id="floatingNav-emptyCanvas">
+    <div class="floating-nav" role="toolbar" aria-label="Add content" id="floatingNavBar-emptyCanvas"></div>
+  </div>
+</section>
+
+<!-- ============ SCREEN: MOBILE ============ -->
+<section class="screen" id="screen-mobile" hidden>
+  <div class="phone-wrap">
+    <div class="phone-frame">
+      <div class="phone-screen force-mobile" id="mobileScreen">
+        <header class="course-topbar">
+          <button class="icon-btn" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg></button>
+          <span class="lbl">Content</span><span class="spacer"></span><span class="badge badge-success-soft">Published</span>
+        </header>
+        <div class="lesson-header">
+          <div class="lesson-header-row">
+            <div class="lesson-title-col">
+              <input class="lesson-title-input" style="font-size:17px" value="Components and Props: Building Reusable UI Elements" />
+              <div class="lesson-meta-row"><span class="slug">/components-and-props</span></div>
+            </div>
+            <div class="lesson-actions-row">
+              <span class="save-status">Saved</span>
+              <button class="icon-btn" id="btnSettingsMobile" title="Lesson settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+              <div class="seg-toggle" id="modeToggleMobile"><button class="on" data-mode="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg></button><button data-mode="preview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+            </div>
+          </div>
+        </div>
+        <main class="canvas-wrap">
+          <div class="canvas" id="mobileCanvas">
+            <section class="content-section" data-type="video">
+              <div class="block-head edit-only">
+                <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+                <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+                <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+                <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>Video</span>
+                <span class="sp"></span>
+                <div class="dd-menu">
+                  <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Video actions" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  <div class="dd-menu-panel">
+                    <button class="dd-menu-item" onclick="editBlock(this, 'video-more')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>Edit video</button>
+                    <button class="dd-menu-item danger" onclick="removeBlock(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove block</button>
+                  </div>
+                </div>
+              </div>
+              <div class="preview-video-player">
+                <button class="play-btn" aria-label="Play video"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></button>
+              </div>
+              <div class="preview-media-caption">
+                <div class="preview-media-title">React Props Explained in 10 Minutes</div>
+                <div class="preview-media-sub">Web Dev Simplified · 10:24</div>
+              </div>
+            </section>
+            <div class="block-gap edit-only">
+              <div class="gap-line"></div>
+              <button class="gap-add" aria-label="Add content here" data-tip="Add content" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.block-gap'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
+              <div class="gap-line"></div>
+            </div>
+            <section class="content-section" data-type="note">
+              <div class="block-head edit-only">
+                <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg></span>
+                <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg></button>
+                <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg></button>
+                <span class="block-type"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>Note</span>
+                <span class="sp"></span>
+                <div class="dd-menu">
+                  <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="Note actions" onclick="toggleBlockMenu(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  <div class="dd-menu-panel">
+                    <button class="dd-menu-item danger" onclick="removeBlock(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Remove block</button>
+                  </div>
+                </div>
+              </div>
+              <div class="note-toolbar edit-only">
+                <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z"/></svg></button>
+                <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg></button>
+                <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="3" x2="3.01" y1="6" y2="6"/></svg></button>
+              </div>
+              <div class="note-content" contenteditable="true"><h3>What are Props?</h3><p>Props (short for <strong>properties</strong>) are how React components receive data from their parent — read-only, one direction, parent to child.</p></div>
+            </section>
+            <div class="block-gap edit-only">
+              <div class="gap-line"></div>
+              <button class="gap-add" aria-label="Add content here" data-tip="Add content" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.block-gap'))"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></button>
+              <div class="gap-line"></div>
+            </div>
+
+            <div class="empty-page edit-only" id="mobileCanvasEmptyState" hidden>
+              <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg></span>
+              <h2>This lesson doesn't have any content yet</h2>
+              <p>Add a video, note, slide deck, or document to start building what your learners will see.</p>
+              <div class="empty-pill-row" role="toolbar" aria-label="Add content" id="emptyPills-mobileCanvas"></div>
+            </div>
+          </div>
+        </main>
+        <div class="slider-overlay" style="position:absolute" onclick="closeSettings('Mobile')"></div>
+        <aside class="slider-panel" style="position:absolute" role="dialog" aria-label="Lesson settings">
+          <div class="slider-head"><div><h2>Lesson settings</h2><p>Applies to this lesson only.</p></div><button class="icon-btn" onclick="closeSettings('Mobile')" aria-label="Close settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+          <div class="slider-body">
+            <div class="field-set"><p class="field-legend">Progression</p><p class="field-desc">Choose how students complete this lesson and move through the course.</p><p class="field-desc">These rules apply to students only. You can preview and navigate freely while teaching.</p>
+              <div class="field-stack">
+                <div class="field"><label class="label">Completion rule</label><select class="select"><option selected>Manual — student marks it complete</option><option>Video watch — must watch required videos</option><option>None — always counts as complete</option></select></div>
+              </div>
+            </div>
+            <div class="field-set"><p class="field-legend">Lesson comments</p><p class="field-desc">Choose whether students can view and add comments on this lesson.</p><div class="field-row-h"><label class="switch"><input type="checkbox" checked /><span class="track"></span><span class="knob"></span></label><span class="label" style="margin:0">Comments enabled</span></div></div>
+            <div class="field-set">
+              <p class="field-legend">Reading density</p>
+              <p class="field-desc">How much room shows between blocks when students view this lesson in Preview.</p>
+              <div class="density-row">
+                <div class="seg-toggle" id="densityToggle-Mobile">
+                  <button type="button" data-density="compact">Compact</button>
+                  <button type="button" class="on" data-density="comfortable">Comfortable</button>
+                  <button type="button" data-density="spacious">Spacious</button>
+                </div>
+                <div class="density-swatch" id="densitySwatch-Mobile" aria-hidden="true"><span></span><span></span><span></span></div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="scrim" id="scrim" onclick="if (event.target === this) closeDialog()"><div class="dialog dialog-lg" id="dialogBox" style="max-width:480px"></div></div>
+
+<script>
+  // ---- sticky offset: measure the prototype wayfinding bar so real sticky headers can dock below it ----
+  function setProtoBarHeightVar() {
+    const bar = document.querySelector('.proto-bar');
+    if (!bar) return;
+    document.documentElement.style.setProperty('--proto-bar-height', bar.offsetHeight + 'px');
+  }
+  setProtoBarHeightVar();
+  window.addEventListener('resize', setProtoBarHeightVar);
+
+  // Same idea, scoped to the desktop screen's lesson header, so the scroll-dots rail docks right
+  // below it instead of guessing a fixed pixel offset.
+  function setLessonHeaderHeightVar() {
+    const header = document.querySelector('#screen-desktop .lesson-header');
+    if (!header) return;
+    document.documentElement.style.setProperty('--lesson-header-height', header.offsetHeight + 'px');
+  }
+  setLessonHeaderHeightVar();
+  window.addEventListener('resize', setLessonHeaderHeightVar);
+
+  // ---- reorder hint banner (dismissible for this view; reappears on reload) ----
+  function dismissReorderHint() {
+    document.querySelectorAll('.reorder-hint-banner').forEach((el) => (el.hidden = true));
+  }
+
+  // ---- theme toggle ----
+  const themeBtn = document.getElementById('theme');
+  const sunIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>';
+  const moonIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>';
+  function applyThemeIcon() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    themeBtn.innerHTML = isDark ? moonIcon : sunIcon;
+  }
+  themeBtn.onclick = () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('lessonEditorTheme', next);
+    applyThemeIcon();
+  };
+  applyThemeIcon();
+
+  // ---- screen switching ----
+  const screenSwitch = document.getElementById('screenSwitch');
+  screenSwitch.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    document.querySelectorAll('.screen-switch button').forEach((b) => b.classList.toggle('on', b === btn));
+    document.querySelectorAll('.screen').forEach((s) => (s.hidden = s.id !== 'screen-' + btn.dataset.screen));
+  });
+
+  // ---- Edit / Preview toggle: every screen has its own seg-toggle in the markup, but only the
+  // desktop screen's used to be wired up — the empty-lesson and mobile screens' Preview buttons
+  // were dead, so content typed in Edit there had no way to ever be seen rendered as Preview.
+  // Wired identically for all three. ----
+  function wireModeToggle(toggleId, screenId) {
+    const toggle = document.getElementById(toggleId);
+    const screenEl = document.getElementById(screenId);
+    if (!toggle || !screenEl) return;
+
+    toggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      toggle.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+      btn.classList.add('on');
+      const isPreview = btn.dataset.mode === 'preview';
+      screenEl.classList.toggle('mode-preview', isPreview);
+      if (isPreview && screenId === 'screen-desktop') setLessonHeaderHeightVar();
+    });
+  }
+  wireModeToggle('modeToggle', 'screen-desktop');
+  wireModeToggle('modeToggleEmpty', 'screen-empty');
+  wireModeToggle('modeToggleMobile', 'screen-mobile');
+
+  // ---- Settings slider (desktop + mobile, each scoped to their own screen) ----
+  function openSettings(which) {
+    document.getElementById('screen-' + which.toLowerCase()).classList.add('settings-open');
+  }
+  function closeSettings(which) {
+    document.getElementById('screen-' + which.toLowerCase()).classList.remove('settings-open');
+  }
+  document.getElementById('btnSettingsDesktop').onclick = () => openSettings('Desktop');
+  document.getElementById('btnSettingsMobile').onclick = () => openSettings('Mobile');
+
+  // ---- Preview reading density (how much space shows between blocks in Preview) ----
+  // The swatch updates immediately regardless of Edit/Preview mode, so choosing a density is
+  // never silent — its real effect (block spacing in Preview) only shows once in Preview mode.
+  function wireDensityToggle(toggleId, screenId, swatchId) {
+    const toggle = document.getElementById(toggleId);
+    const screenEl = document.getElementById(screenId);
+    const swatch = document.getElementById(swatchId);
+    if (!toggle || !screenEl) return;
+
+    toggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      toggle.querySelectorAll('button').forEach((b) => b.classList.remove('on'));
+      btn.classList.add('on');
+      screenEl.classList.remove('density-compact', 'density-spacious');
+      if (btn.dataset.density !== 'comfortable') screenEl.classList.add('density-' + btn.dataset.density);
+      if (swatch) swatch.dataset.density = btn.dataset.density;
+    });
+  }
+  wireDensityToggle('densityToggle', 'screen-desktop', 'densitySwatch-Desktop');
+  wireDensityToggle('densityToggle-Mobile', 'screen-mobile', 'densitySwatch-Mobile');
+
+  function onPolicyChange() {
+    const isWatch = document.getElementById('completionPolicy').value === 'video_watch';
+    document.getElementById('watchThresholdField').style.display = isWatch ? '' : 'none';
+    document.getElementById('watchEnforceField').style.display = isWatch ? '' : 'none';
+  }
+
+  // ---- Add-content dialogs (desktop screen: video / document) ----
+  const dialogTemplates = {
+    document: `
+      <div class="dialog-head"><h2 class="dialog-title">Add document</h2></div>
+      <div class="dialog-body">
+        <input type="file" id="docFileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" hidden onchange="onDocFileInputChange(this)" />
+        <div id="docFileArea">
+          <button type="button" class="drop" onclick="document.getElementById('docFileInput').click()"
+            ondragover="event.preventDefault(); this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="onDocFileDrop(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg>
+            <p class="t">Drag and drop, or click to upload</p>
+            <p class="h">PDF, DOCX, PPTX up to 50MB</p>
+          </button>
+        </div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="docAddBtn" disabled onclick="confirmAdd('document')">Add document</button></div>`,
+    image: `
+      <div class="dialog-head"><h2 class="dialog-title">Add image</h2></div>
+      <div class="dialog-body">
+        <input type="file" id="imageFileInput" accept="image/*" hidden onchange="onImageFileInputChange(this)" />
+        <div id="imageFileArea">
+          <button type="button" class="drop" onclick="document.getElementById('imageFileInput').click()"
+            ondragover="event.preventDefault(); this.classList.add('drag-over')"
+            ondragleave="this.classList.remove('drag-over')"
+            ondrop="onImageFileDrop(event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg>
+            <p class="t">Drag and drop, or click to upload</p>
+            <p class="h">PNG, JPG, GIF up to 10MB</p>
+          </button>
+        </div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="imageAddBtn" disabled onclick="confirmAdd('image')">Add image</button></div>`,
+    'video-more': `
+      <div class="dialog-head"><h2 class="dialog-title">Add video</h2><p class="dialog-desc">Paste a real link or choose a file — the actual video plays in the lesson.</p></div>
+      <div class="dialog-body">
+        <div class="utabs" id="videoTabs">
+          <button class="utab active" data-tab="yt">YouTube</button><button class="utab" data-tab="vm">Vimeo</button><button class="utab" data-tab="em">Embed link</button>
+          <button class="utab" data-tab="up">Upload</button><button class="utab" data-tab="lib">Library</button><button class="utab" data-tab="gd">Google Drive</button>
+        </div>
+        <div id="videoTabPane"><div class="field"><label class="label">YouTube URL</label><input class="input" id="videoYoutubeInput" placeholder="https://www.youtube.com/watch?v=..." oninput="onVideoSourceInput()" /></div></div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="videoAddBtn" disabled onclick="confirmAdd('video-more')">Add video</button></div>`
+  };
+  const videoTabPanes = {
+    yt: '<div class="field"><label class="label">YouTube URL</label><input class="input" id="videoYoutubeInput" placeholder="https://www.youtube.com/watch?v=..." oninput="onVideoSourceInput()" /></div>',
+    vm: '<div class="field"><label class="label">Vimeo URL</label><input class="input" id="videoVimeoInput" placeholder="https://vimeo.com/..." oninput="onVideoSourceInput()" /></div>',
+    em: '<div class="field"><label class="label">Embed code</label><textarea class="textarea" id="videoEmbedInput" placeholder="&lt;iframe ...&gt;" oninput="onVideoSourceInput()"></textarea></div>',
+    up: `<input type="file" id="videoFileInput" accept="video/*" hidden onchange="onVideoFileInputChange(this)" />
+      <div id="videoFileArea">
+        <button type="button" class="drop" onclick="document.getElementById('videoFileInput').click()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20.4 18.9A5 5 0 0 0 18 9h-1.3A7 7 0 1 0 4 15.3"/></svg>
+          <p class="t">Click to choose a video file</p>
+          <p class="h">Plays directly from your device in this lesson</p>
+        </button>
+      </div>`,
+    lib: '<p class="hint" style="margin:0 0 8px">Previously uploaded to this workspace:</p><div class="media-thumb" style="width:100px;aspect-ratio:16/9;border-radius:6px"><svg class="big" style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg></div><p class="hint" style="margin:8px 0 0">Not available in this prototype — no media library is connected.</p>',
+    gd: '<button class="btn btn-outline btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:15px;height:15px"><path d="M12 2v20M2 12h20"/></svg>Connect Google Drive</button><p class="hint" style="margin:8px 0 0">Not available in this prototype — no Google Drive connection.</p>'
+  };
+
+  // ---- Slide platforms (matches @cio/ui SlideEmbedPicker / SlidePlatformIcon exactly) ----
+  const SLIDE_PLATFORMS = [
+    { id: 'google-slides', name: 'Google Slides' },
+    { id: 'canva', name: 'Canva' },
+    { id: 'powerpoint', name: 'PowerPoint' },
+    { id: 'keynote', name: 'Keynote' },
+    { id: 'figma', name: 'Figma Slides' },
+    { id: 'prezi', name: 'Prezi' },
+    { id: 'pitch', name: 'Pitch' },
+    { id: 'gamma', name: 'Gamma' },
+    { id: 'slideshare', name: 'SlideShare' },
+    { id: 'beautiful', name: 'Beautiful.ai' }
+  ];
+  const SLIDE_PLATFORM_ICONS = {
+    'google-slides': '<svg viewBox="0 0 24 24" fill="none"><path fill="#FBBC04" d="M16.09 15.273H7.91v-4.637h8.18v4.637zm1.728-8.523h2.91v15.614c0 .904-.733 1.636-1.637 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.068v6.75h3.841zm-.363 2.523H6.545v7.363h10.91V9.273zm-2.728-5.979V6h6.001l-6-6v3.294z"/></svg>',
+    canva:
+      '<svg viewBox="0 0 24 24" fill="none"><defs><linearGradient id="canva-g" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#00C4CC"/><stop offset="1" stop-color="#7D2AE8"/></linearGradient></defs><circle cx="12" cy="12" r="12" fill="url(#canva-g)"/><path d="M16.7 7.55c-1.15-1.45-3.05-2.25-5.05-2.05-2.85.3-4.85 2.7-4.85 5.55 0 2.95 2.2 5.4 5.15 5.55 1.85.1 3.55-.7 4.65-2.1" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/><path d="M16.15 6.85c.35-.45.15-.85-.25-.75-1.15.3-1.85.15-2.55.1" fill="none" stroke="#fff" stroke-width="1.15" stroke-linecap="round"/></svg>',
+    powerpoint:
+      '<svg viewBox="0 0 24 24" fill="none"><defs><linearGradient id="ppt-g" x1="4" y1="3" x2="20" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#DE5A2C"/><stop offset="1" stop-color="#C43E1C"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#ppt-g)"/><path fill="#fff" d="M8.15 6.4h4.15c2.42 0 3.95 1.38 3.95 3.48 0 2.14-1.56 3.52-3.98 3.52H9.85v4.2H8.15V6.4zm1.7 1.55v3.9h2.28c1.42 0 2.28-.72 2.28-1.96 0-1.22-.86-1.94-2.28-1.94H9.85z"/></svg>',
+    keynote:
+      '<svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#F4F4F6"/><defs><linearGradient id="kn-g" x1="8" y1="5" x2="16" y2="19" gradientUnits="userSpaceOnUse"><stop stop-color="#FF8A3D"/><stop offset="1" stop-color="#FF3B30"/></linearGradient></defs><path fill="url(#kn-g)" d="M12 4.4 18.2 12 12 19.6 5.8 12 12 4.4Z"/></svg>',
+    figma:
+      '<svg viewBox="0 0 38 57" fill="none"><path fill="#1ABCFE" d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0Z"/><path fill="#0ACF83" d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0Z"/><path fill="#FF7262" d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19Z"/><path fill="#F24E1E" d="M0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5Z"/><path fill="#A259FF" d="M0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5Z"/></svg>',
+    prezi:
+      '<svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#1A1A2E"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#3181FF" stroke-width="1.6"/><circle cx="12" cy="12" r="2.1" fill="#3181FF"/></svg>',
+    pitch:
+      '<svg viewBox="0 0 24 24" fill="none"><defs><linearGradient id="pitch-g" x1="20" y1="3" x2="4" y2="21" gradientUnits="userSpaceOnUse"><stop stop-color="#6B4DE6"/><stop offset="1" stop-color="#4F2CC8"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#pitch-g)"/><rect x="6.4" y="13.35" width="4.15" height="4.15" rx="1.35" fill="#fff"/><rect x="6.4" y="8.55" width="6.35" height="4.15" rx="1.35" fill="#fff"/><path fill="#fff" d="M6.4 3.75h9.35c.9 0 1.85.72 1.85 1.85v.45c0 1.13-.95 2.05-1.85 2.05H7.75A1.35 1.35 0 0 1 6.4 6.75V3.75Z"/></svg>',
+    gamma:
+      '<svg viewBox="0 0 24 24" fill="none"><defs><linearGradient id="gamma-g" x1="12" y1="2" x2="12" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#1B1F3B"/><stop offset="1" stop-color="#3B5BDB"/></linearGradient></defs><rect width="24" height="24" rx="5" fill="url(#gamma-g)"/><path fill="#fff" d="M15.9 7.15 12 4.85 8.1 7.15 12 9.45l3.9-2.3Zm.95 1.65-3.9 2.3v4.6l3.9-2.3v-4.6Zm-8.8 0v4.6l3.9 2.3v-4.6l-3.9-2.3ZM12 19.15l3.9-2.3-3.9-2.3-3.9 2.3 3.9 2.3Z"/></svg>',
+    slideshare:
+      '<svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#fff"/><circle cx="9" cy="12" r="4" fill="#008ED2"/><circle cx="16" cy="12" r="4" fill="#008ED2"/></svg>',
+    beautiful:
+      '<svg viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="5" fill="#152238"/><path fill="#fff" d="M8.2 5.9h2.25v4.15c.5-.6 1.25-.95 2.15-.95 2.15 0 3.6 1.6 3.6 3.85s-1.5 3.9-3.65 3.9c-1.05 0-1.9-.4-2.4-1.1v.9H8.2V5.9zm2.25 6.55c0 1.3.8 2.2 2 2.2 1.2 0 1.95-.9 1.95-2.2s-.75-2.2-1.95-2.2-2 .9-2 2.2z"/><circle cx="16.05" cy="16.35" r="1.45" fill="#3DDCFF"/></svg>'
+  };
+  const SLIDE_PLATFORM_COPY = {
+    'google-slides': { hint: 'File → Share → Publish to web → Embed', steps: ['Open your deck and choose File → Share → Publish to web.', 'Switch to the Embed tab and click Publish.', 'Copy the iframe embed code and paste it here.'] },
+    canva: { hint: 'Share → More → Embed', steps: ['Above the editor, click Share → More.', 'Choose Embed and confirm (this makes the design public).', 'Copy the HTML embed code and paste it here.'] },
+    powerpoint: { hint: 'PowerPoint for the web → File → Share → Embed', steps: ['Save the deck to OneDrive, then open it in PowerPoint for the web.', 'Choose File → Share → Embed and pick your dimensions.', 'Copy the iframe embed code and paste it here. We size the player ourselves.'] },
+    keynote: { hint: 'Collaborate → Copy Link, then embed', steps: ['Click Collaborate and set access to Anyone with the link · View only.', 'Copy the iCloud link, then get the embed code for your website.', 'Paste the iframe embed code here.'] },
+    figma: { hint: 'Share a Figma Slides file and copy the embed', steps: ['Open your Figma Slides file and enable link sharing.', 'Copy the embed code for the /slides or /deck file.', 'Paste the iframe embed code here.'] },
+    prezi: { hint: 'Share → Embed', steps: ['From the dashboard, open Share on your presentation.', 'Click Embed and copy the code.', 'Paste the iframe embed code here.'] },
+    pitch: { hint: 'Share externally → Copy embed code', steps: ['Click Share → Share externally and create a public link.', 'Open the link Options (⋯) and choose Copy embed code.', 'Paste the iframe embed code here.'] },
+    gamma: { hint: 'Share → enable public access → copy iframe', steps: ['Open Share and toggle Allow public access.', 'Copy the generated iframe embed code.', 'Paste the iframe embed code here.'] },
+    slideshare: { hint: 'Share → Embed under the deck', steps: ['Open the public deck on slideshare.net.', 'Click Share under the viewer and open the Embed tab.', 'Copy the iframe embed code and paste it here.'] },
+    beautiful: { hint: 'Sharing Settings → Public → Get Embed Code', steps: ['Open Sharing Settings and switch the deck to Public.', 'Click Get Embed Code.', 'Paste the iframe embed code here.'] }
+  };
+  let slideSelectedId = SLIDE_PLATFORMS[0].id;
+
+  function buildSlidePickerDialog() {
+    const platform = SLIDE_PLATFORMS.find((p) => p.id === slideSelectedId);
+    const copy = SLIDE_PLATFORM_COPY[slideSelectedId];
+    const navHtml = SLIDE_PLATFORMS.map(
+      (p) => `<button type="button" class="slide-nav-item ${p.id === slideSelectedId ? 'active' : ''}" data-platform="${p.id}" onclick="selectSlidePlatform('${p.id}')"><span class="slide-platform-ic">${SLIDE_PLATFORM_ICONS[p.id]}</span><span>${p.name}</span></button>`
+    ).join('');
+    const stepsHtml = copy.steps
+      .map((step, i) => `<li><span class="num">${i + 1}</span><span class="txt">${step}</span></li>`)
+      .join('');
+
+    return `
+      <div class="dialog-head"><h2 class="dialog-title">Add a slide</h2></div>
+      <div class="dialog-body">
+        <div class="slide-picker">
+          <div class="slide-picker-side">
+            <div class="slide-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input type="search" id="slideSearch" placeholder="Search platforms" autocomplete="off" oninput="filterSlidePlatforms(this.value)" /></div>
+            <nav class="slide-nav" id="slideNav">${navHtml}</nav>
+          </div>
+          <div class="slide-picker-main">
+            <div class="slide-platform-head">
+              <span class="slide-platform-ic">${SLIDE_PLATFORM_ICONS[slideSelectedId]}</span>
+              <div><p class="nm">${platform.name}</p><p class="hint">${copy.hint}</p></div>
+            </div>
+            <ol class="slide-steps">${stepsHtml}</ol>
+            <div class="field"><label class="label">Paste embed code</label><textarea class="textarea" id="slideEmbedInput" rows="4" placeholder="Paste the full iframe embed code here" oninput="onSlideEmbedInput()"></textarea></div>
+            <div class="slide-embed-actions">
+              <a class="btn btn-outline btn-sm" href="https://classroomio.com/help/build-courses/add-slides-and-presentations#${slideSelectedId}" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>How to embed ${platform.name}</a>
+            </div>
+            <div>
+              <p class="slide-preview-label">Preview</p>
+              <div id="slidePreviewArea"><div class="slide-preview-box">Paste the full iframe embed code here</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="slideAddBtn" disabled onclick="confirmAdd('slide-more')">Add slide</button></div>`;
+  }
+
+  function selectSlidePlatform(id) {
+    slideSelectedId = id;
+    document.getElementById('dialogBox').innerHTML = buildSlidePickerDialog();
+    applyEditDialogLabels();
+    if (activeEditBlockEl) {
+      const dialogBody = document.querySelector('.dialog-body');
+      if (dialogBody) {
+        dialogBody.insertAdjacentHTML(
+          'afterbegin',
+          buildCurrentSlideBanner(activeEditBlockEl.dataset.platform, activeEditBlockEl.dataset.sourceUrl || '')
+        );
+      }
+    }
+  }
+
+  function filterSlidePlatforms(query) {
+    const q = query.trim().toLowerCase();
+    document.querySelectorAll('#slideNav .slide-nav-item').forEach((btn) => {
+      const name = btn.textContent.trim().toLowerCase();
+      btn.hidden = !name.includes(q);
+    });
+  }
+
+  function onSlideEmbedInput() {
+    const hasText = document.getElementById('slideEmbedInput').value.trim().length > 0;
+    document.getElementById('slideAddBtn').disabled = !hasText;
+    const platform = SLIDE_PLATFORMS.find((p) => p.id === slideSelectedId);
+    document.getElementById('slidePreviewArea').innerHTML = hasText
+      ? `<p class="slide-preview-ready"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6 9 17l-5-5"/></svg>Embed ready</p><div class="slide-preview-frame"><span class="slide-platform-ic" style="width:40px;height:40px">${SLIDE_PLATFORM_ICONS[slideSelectedId]}</span></div>`
+      : '<div class="slide-preview-box">Paste the full iframe embed code here</div>';
+  }
+
+  function toggleBlockMenu(btn) {
+    const menu = btn.closest('.dd-menu');
+    const wasOpen = menu.classList.contains('open');
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+    if (!wasOpen) menu.classList.add('open');
+  }
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.dd-menu')) document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+  });
+
+  function removeBlock(btn) {
+    const section = btn.closest('.content-section');
+    const canvas = section.closest('.canvas');
+    const gap = section.nextElementSibling;
+    if (gap && gap.classList.contains('block-gap')) gap.remove();
+    section.remove();
+    updateEmptyState(canvas.id);
+    simulateSave();
+  }
+
+  function moveBlock(btn, direction) {
+    const section = btn.closest('.content-section');
+    const canvas = section.closest('.canvas');
+    const gap = section.nextElementSibling && section.nextElementSibling.classList.contains('block-gap') ? section.nextElementSibling : null;
+    if (direction < 0) {
+      const prevGap = section.previousElementSibling;
+      if (!prevGap || !prevGap.classList.contains('block-gap')) return;
+      const prevSection = prevGap.previousElementSibling;
+      if (!prevSection || !prevSection.classList.contains('content-section')) return;
+      canvas.insertBefore(section, prevSection);
+      if (gap) canvas.insertBefore(gap, prevSection);
+    } else {
+      if (!gap) return;
+      const nextSection = gap.nextElementSibling;
+      if (!nextSection || !nextSection.classList.contains('content-section')) return;
+      const nextGap = nextSection.nextElementSibling && nextSection.nextElementSibling.classList.contains('block-gap') ? nextSection.nextElementSibling : null;
+      canvas.insertBefore(nextSection, section);
+      if (nextGap) canvas.insertBefore(nextGap, section);
+    }
+    simulateSave();
+  }
+
+  function updateEmptyState(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    const hasBlocks = canvas.querySelectorAll('.content-section').length > 0;
+    const empty = canvas.querySelector('.empty-page');
+    if (empty) empty.hidden = hasBlocks;
+    // The floating nav only shows once there's content — the empty canvas already has its own
+    // centered prompt.
+    const floatingNav = document.getElementById('floatingNav-' + canvasId);
+    if (floatingNav) floatingNav.classList.toggle('is-visible', hasBlocks);
+  }
+
+  // ---- Unified canvas: block markup generators (one independent block per add) ----
+  const ICON_DRAG =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>';
+  const ICON_DOTS =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>';
+  const ICON_TRASH =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+  const ICON_VIDEO =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></svg>';
+  const ICON_NOTE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>';
+  const ICON_SLIDE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>';
+  const ICON_DOCUMENT =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>';
+  const ICON_IMAGE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+  const ICON_SETTINGS =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="4" x2="20" y1="6" y2="6"/><circle cx="9" cy="6" r="2"/><line x1="4" x2="20" y1="12" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" x2="20" y1="18" y2="18"/><circle cx="7" cy="18" r="2"/></svg>';
+  const ICON_CHEVRON_DOWN_SMALL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
+  const ICON_PLUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>';
+  const ICON_EDIT =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>';
+  const ICON_CHEVRON_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m18 15-6-6-6 6"/></svg>';
+  const ICON_CHEVRON_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m6 9 6 6 6-6"/></svg>';
+  const ICON_STYLE =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>';
+  const ICON_AI =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.8 1.9a2 2 0 0 1 1.288 1.287L12 21l1.9-5.8a2 2 0 0 1 1.287-1.288L21 12l-5.8-1.9a2 2 0 0 1-1.288-1.287Z"/></svg>';
+
+  const NOTE_STYLES = {
+    info: {
+      label: 'Info',
+      color: 'oklch(0.5 0.17 250)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>'
+    },
+    tip: {
+      label: 'Tip',
+      color: 'oklch(0.45 0.14 160)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 14c.2-1 .7-1.7 1.5-2.5a5.5 5.5 0 1 0-9 0c.8.8 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>'
+    },
+    important: {
+      label: 'Important',
+      color: 'var(--primary)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>'
+    },
+    warning: {
+      label: 'Warning',
+      color: 'oklch(0.5 0.15 70)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>'
+    },
+    highlight: {
+      label: 'Highlight',
+      color: 'oklch(0.45 0.13 95)',
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="12 2 15 8.5 22 9.3 17 14.1 18.2 21 12 17.8 5.8 21 7 14.1 2 9.3 9 8.5 12 2"/></svg>'
+    }
+  };
+
+  function buildNoteStyleMenu() {
+    const defaultItem = `<button type="button" class="dd-menu-item" onclick="setNoteStyle(this, '')"><span class="style-dot" style="background:var(--muted-foreground)"></span>Default</button>`;
+    const items = Object.entries(NOTE_STYLES)
+      .map(
+        ([key, meta]) =>
+          `<button type="button" class="dd-menu-item" onclick="setNoteStyle(this, '${key}')"><span class="style-dot" style="background:${meta.color}"></span>${meta.label}</button>`
+      )
+      .join('');
+    return defaultItem + items;
+  }
+
+  function setNoteStyle(btn, style) {
+    const section = btn.closest('.content-section');
+    const callout = section.querySelector('.note-callout');
+    const labelEl = section.querySelector('.note-callout-label');
+    callout.dataset.style = style;
+    const meta = NOTE_STYLES[style];
+    if (meta) {
+      labelEl.hidden = false;
+      labelEl.innerHTML = `${meta.icon}<span class="lbl">${meta.label}</span>`;
+    } else {
+      labelEl.hidden = true;
+      labelEl.innerHTML = '';
+    }
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+    simulateSave();
+  }
+
+  function blockHead(label, iconSvg, editKind) {
+    const editItem = editKind
+      ? `<button class="dd-menu-item" onclick="editBlock(this, '${editKind}')">${ICON_EDIT}Edit ${label.toLowerCase()}</button>`
+      : '';
+    return `
+      <div class="block-head edit-only">
+        <span class="block-drag" aria-label="Drag to reorder" data-tip="Drag to reorder">${ICON_DRAG}</span>
+        <button class="block-move move-up" data-tip="Move up" aria-label="Move block up" onclick="moveBlock(this, -1)">${ICON_CHEVRON_UP}</button>
+        <button class="block-move move-down" data-tip="Move down" aria-label="Move block down" onclick="moveBlock(this, 1)">${ICON_CHEVRON_DOWN}</button>
+        <span class="block-type">${iconSvg}${label}</span>
+        <span class="sp"></span>
+        <div class="dd-menu">
+          <button class="icon-btn dd-trigger" style="width:26px;height:26px" aria-label="${label} actions" onclick="toggleBlockMenu(this)">${ICON_DOTS}</button>
+          <div class="dd-menu-panel">
+            ${editItem}
+            <button class="dd-menu-item danger" onclick="removeBlock(this)">${ICON_TRASH}Remove block</button>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function blockGap() {
+    return `<div class="block-gap edit-only">
+      <div class="gap-line"></div>
+      <button class="gap-add" aria-label="Add content here" data-tip="Add content" onclick="openAddContentMenu(this.closest('.canvas').id, this.closest('.block-gap'))">${ICON_PLUS}</button>
+      <div class="gap-line"></div>
+    </div>`;
+  }
+
+  // Realistic starting content. A freshly inserted block shows a genuine, viewable example of
+  // its own type instead of an empty frame, so the canvas reads as a built lesson from the first
+  // click. Each default stays flagged data-sample="true": it is a starting state the author did
+  // not choose, so its "Change …" action opens a clean picker rather than priming the dialog
+  // with the demo's own source.
+  const DEFAULT_VIDEO = {
+    platform: 'youtube',
+    src: 'https://www.youtube.com/embed/cx0S8JyiVxc',
+    originalUrl: 'https://www.youtube.com/watch?v=cx0S8JyiVxc',
+    thumbnailUrl: 'https://i.ytimg.com/vi/cx0S8JyiVxc/maxresdefault.jpg',
+    title: 'Learn React PropTypes In 13 Minutes',
+    sub: 'Web Dev Simplified · YouTube'
+  };
+  const DEFAULT_IMAGE_SRC = 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600&q=80';
+  const DEFAULT_IMAGE_ALT = 'A laptop on a desk showing source code in an editor';
+  const DEFAULT_NOTE_BODY = `
+    <h3>What makes a component reusable</h3>
+    <p>A component becomes reusable the moment its content comes from the outside. Instead of hard-coding a name inside <code>Avatar</code>, pass it in as a prop — and the same component now renders every user in your app.</p>
+    <ul>
+      <li>Props are <strong>read-only</strong> — a component never edits what it receives</li>
+      <li>Data flows in one direction, parent to child</li>
+      <li>Default values keep a component safe when a prop is missing</li>
+    </ul>
+    <p>Before the next lesson, refactor one hard-coded component in your own project to take a prop instead.</p>`;
+
+  // A thumbnail poster stands in for the player until it is clicked. It keeps the block looking
+  // like the real video (its own frame and title) without paying for an embed per block, and it
+  // still renders when the prototype is opened over file://, where YouTube refuses to embed at
+  // all for want of an origin. Clicking swaps in the actual player.
+  function playVideoPoster(poster) {
+    const player = poster.closest('.preview-video-player');
+    const src = poster.dataset.embedSrc;
+    if (!src) return;
+
+    poster.remove();
+    player.insertAdjacentHTML(
+      'afterbegin',
+      `<iframe class="real-media" src="${escapeHtml(src)}?autoplay=1" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+    );
+  }
+
+  function buildVideoBlock(source, isDefault) {
+    const poster = source.thumbnailUrl
+      ? `<button type="button" class="video-poster" data-embed-src="${escapeHtml(source.src)}" aria-label="Play ${escapeHtml(source.title)}" onclick="playVideoPoster(this)">
+           <img src="${escapeHtml(source.thumbnailUrl)}" alt="" loading="lazy" />
+           <span class="play-btn"><svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg></span>
+         </button>`
+      : '';
+    const media =
+      source.kind === 'file'
+        ? `<video class="real-media" src="${escapeHtml(source.src)}" controls preload="metadata"></video>`
+        : poster ||
+          `<iframe class="real-media" src="${escapeHtml(source.src)}" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    return `
+      <section class="content-section" data-type="video"${isDefault ? ' data-sample="true"' : ''} data-platform="${escapeHtml(source.platform)}" data-source-url="${escapeHtml(source.originalUrl || '')}" data-thumb-url="${escapeHtml(source.thumbnailUrl || '')}">
+        ${blockHead('Video', ICON_VIDEO, 'video-more')}
+        <div class="preview-video-player">
+          ${media}
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'video-more')">${ICON_EDIT}Change video</button>
+        </div>
+        <div class="preview-media-caption">
+          <div class="preview-media-title">${escapeHtml(source.title)}</div>
+          <div class="preview-media-sub">${escapeHtml(source.sub)}</div>
+        </div>
+      </section>`;
+  }
+
+  function buildVideoBlockSample() {
+    return buildVideoBlock(DEFAULT_VIDEO, true);
+  }
+
+  function buildNoteBlock(bodyHtml) {
+    return `
+      <section class="content-section" data-type="note">
+        ${blockHead('Note', ICON_NOTE)}
+        <div class="note-toolbar edit-only">
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4h8a4 4 0 0 1 0 8H6zM6 12h9a4 4 0 0 1 0 8H6z"/></svg></button>
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg></button>
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg></button>
+          <div class="tb-sep"></div>
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 6.1H3M21 12.1H3M15.1 18H3"/></svg></button>
+          <button class="tb-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+          <div class="tb-sep"></div>
+          <div class="dd-menu">
+            <button type="button" class="tb-btn" aria-label="Callout style" data-tip="Callout style" onclick="toggleBlockMenu(this)">${ICON_STYLE}</button>
+            <div class="dd-menu-panel">${buildNoteStyleMenu()}</div>
+          </div>
+        </div>
+        <div class="note-callout" data-style="">
+          <div class="note-callout-label" hidden></div>
+          <div class="note-content" contenteditable="true" data-placeholder="Start writing…">${bodyHtml || ''}</div>
+        </div>
+      </section>`;
+  }
+
+  function buildSlideBlock(platformId, embedSrc) {
+    const platform = SLIDE_PLATFORMS.find((p) => p.id === platformId);
+    let hostname = 'example.com';
+    if (embedSrc) {
+      try {
+        hostname = new URL(embedSrc, location.href).hostname;
+      } catch (err) {
+        hostname = platform.name;
+      }
+    }
+    const frame = embedSrc
+      ? `<iframe class="real-media" src="${escapeHtml(embedSrc)}" loading="lazy" allowfullscreen></iframe>`
+      : ICON_SLIDE;
+    return `
+      <section class="content-section" data-type="slide" data-platform="${escapeHtml(platformId)}" data-source-url="${escapeHtml(embedSrc || '')}">
+        ${blockHead('Slide', ICON_SLIDE, 'slide-more')}
+        <div class="preview-slide-frame">
+          ${frame}
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'slide-more')">${ICON_EDIT}Change slide</button>
+        </div>
+        <div class="preview-media-caption">
+          <div class="preview-media-title">${platform.name}</div>
+          <div class="preview-media-sub">${escapeHtml(hostname)}</div>
+        </div>
+      </section>`;
+  }
+
+  // The slide's two decorative marks: a simple up-right arrow before the headline's first line,
+  // and a pair of interlocking rings closing the second — the same thin-stroke language as the
+  // rest of the editor's icons, just inline with the headline's own text size (em-sized, so they
+  // scale with it instead of needing their own cqw value).
+  const ICON_SLIDE_ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>';
+  const ICON_SLIDE_RINGS = '<svg class="rings" viewBox="0 0 48 30" fill="none" stroke="currentColor" stroke-linecap="round"><ellipse cx="18" cy="15" rx="11" ry="13" stroke-width="2.4"/><ellipse cx="32" cy="15" rx="11" ry="13" stroke-width="2.4"/></svg>';
+
+  function buildSlideSampleInner() {
+    const updated = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    return `
+      <div class="slide-cover-row">
+        <span class="slide-cover-mark"></span>
+        <span class="slide-cover-brand">ClassroomIO</span>
+        <span class="slide-cover-rule"></span>
+      </div>
+      <div class="slide-cover-headline">
+        <span class="ln">${ICON_SLIDE_ARROW} Customer Onboarding</span>
+        <span class="ln">Playbook ${ICON_SLIDE_RINGS}</span>
+      </div>
+      <div class="slide-cover-bottom-row">
+        <span class="slide-cover-rule short"></span>
+        <span class="slide-cover-badge">Updated ${updated}</span>
+      </div>`;
+  }
+
+  function buildSlideBlockSample() {
+    return `
+      <section class="content-section" data-type="slide" data-sample="true">
+        ${blockHead('Slide', ICON_SLIDE, 'slide-more')}
+        <div class="preview-slide-frame">
+          <div class="slide-sample">${buildSlideSampleInner()}</div>
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'slide-more')">${ICON_EDIT}Change slide</button>
+        </div>
+        <div class="preview-media-caption">
+          <div class="preview-media-title">Customer Onboarding Playbook</div>
+          <div class="preview-media-sub">Cover · Customer onboarding deck</div>
+        </div>
+      </section>`;
+  }
+
+  function escapeHtml(str) {
+    const chars = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return String(str).replace(/[&<>"']/g, (c) => chars[c]);
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  async function buildDocumentBlock(file) {
+    const fileName = escapeHtml(file.name);
+    const fileSize = escapeHtml(formatFileSize(file.size));
+    const objectUrl = URL.createObjectURL(file);
+    return `
+      <section class="content-section" data-type="document">
+        ${blockHead('Document', ICON_DOCUMENT, 'document')}
+        <div class="doc-entry">
+          <div class="file-row edit-only">
+            <div class="file-icon">${ICON_DOCUMENT}</div>
+            <div class="file-info"><div class="file-name">${fileName}</div><div class="file-size">${fileSize}</div></div>
+            <div class="file-actions">
+              <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Preview file" onclick="window.open('${objectUrl}', '_blank')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <a class="icon-btn" style="width:30px;height:30px" aria-label="Download file" href="${objectUrl}" download="${fileName}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></a>
+            </div>
+          </div>
+          <div class="preview-doc-link preview-only">
+            <div class="file-icon">${ICON_DOCUMENT}</div>
+            <div class="info">
+              <span class="name">${fileName}</span>
+              <a class="open" href="${objectUrl}" download="${fileName}">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            </div>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function buildDocumentBlockSample() {
+    const fileName = 'Component Patterns Handbook.pdf';
+    return `
+      <section class="content-section" data-type="document" data-sample="true">
+        ${blockHead('Document', ICON_DOCUMENT, 'document')}
+        <div class="doc-entry">
+          <div class="file-row edit-only">
+            <div class="file-icon">${ICON_DOCUMENT}</div>
+            <div class="file-info"><div class="file-name">${fileName}</div><div class="file-size">1.4 MB</div></div>
+            <div class="file-actions">
+              <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Preview file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
+              <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Download file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></button>
+            </div>
+          </div>
+          <div class="preview-doc-link preview-only">
+            <div class="file-icon">${ICON_DOCUMENT}</div>
+            <div class="info">
+              <span class="name">${fileName}</span>
+              <span class="open">Download document <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            </div>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  function buildImageBlockSample() {
+    return `
+      <section class="content-section" data-type="image" data-sample="true">
+        ${blockHead('Image', ICON_IMAGE, 'image')}
+        <div class="image-block">
+          <img src="${DEFAULT_IMAGE_SRC}" alt="${DEFAULT_IMAGE_ALT}" loading="lazy" />
+          <button type="button" class="media-edit-corner edit-only" onclick="editBlock(this, 'image')">${ICON_EDIT}Change image</button>
+        </div>
+      </section>`;
+  }
+
+  function buildImageBlock(file) {
+    const objectUrl = URL.createObjectURL(file);
+    const altText = escapeHtml(file.name.replace(/\.[^./]+$/, ''));
+    return `
+      <section class="content-section" data-type="image">
+        ${blockHead('Image', ICON_IMAGE, 'image')}
+        <div class="image-block">
+          <img src="${objectUrl}" alt="${altText}" />
+          <div class="image-toolbar edit-only">
+            <button type="button" onclick="editBlock(this, 'image')" aria-label="Replace image">${ICON_IMAGE}</button>
+            <button type="button" onclick="openImageSettings(this)" aria-label="Image settings">${ICON_SETTINGS}</button>
+            <button type="button" onclick="removeBlock(this)" aria-label="Delete image">${ICON_TRASH}</button>
+          </div>
+        </div>
+      </section>`;
+  }
+
+  let activeImageSettingsEl = null;
+
+  function openImageSettings(btn) {
+    activeImageSettingsEl = btn.closest('.content-section');
+    const img = activeImageSettingsEl.querySelector('.image-block img');
+    document.getElementById('dialogBox').style.maxWidth = '420px';
+    document.getElementById('dialogBox').innerHTML = `
+      <div class="dialog-head"><h2 class="dialog-title">Image settings</h2></div>
+      <div class="dialog-body">
+        <div class="field"><label class="label" for="imgAltInput">Alt text</label><input class="input" id="imgAltInput" value="${escapeHtml(img.alt || '')}" placeholder="Describe this image for screen readers" /></div>
+        <div class="field" style="margin-top:12px"><label class="label" for="imgFitSelect">Fit</label><select class="select" id="imgFitSelect"><option value="cover">Fill (crop to fit)</option><option value="contain">Fit (show whole image)</option></select></div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" onclick="confirmImageSettings()">Save</button></div>`;
+    document.getElementById('imgFitSelect').value = img.style.objectFit || 'cover';
+    document.body.classList.add('dialog-open');
+  }
+
+  function confirmImageSettings() {
+    if (!activeImageSettingsEl) return;
+    const img = activeImageSettingsEl.querySelector('.image-block img');
+    img.alt = document.getElementById('imgAltInput').value;
+    img.style.objectFit = document.getElementById('imgFitSelect').value;
+    closeDialog();
+    activeImageSettingsEl = null;
+    simulateSave();
+  }
+
+  let activeCanvasId = 'canvas';
+  let activeGapEl = null;
+
+  function setActiveGapEl(gapEl) {
+    if (!gapEl) return;
+    document.querySelectorAll('.block-gap.gap-active').forEach((g) => g.classList.remove('gap-active'));
+    gapEl.classList.add('gap-active');
+  }
+
+  function openAiAssistant() {
+    document.getElementById('dialogBox').style.maxWidth = '480px';
+    document.getElementById('dialogBox').innerHTML = `
+      <div class="dialog-head"><h2 class="dialog-title">Ask AI assistant</h2><p class="dialog-desc">Describe what this part of the lesson should cover — a draft note is added for you to edit.</p></div>
+      <div class="dialog-body">
+        <div class="field"><label class="label" for="aiPrompt">Prompt</label><textarea class="textarea" id="aiPrompt" placeholder="e.g. Summarize the difference between props and state" oninput="onAiPromptInput()"></textarea></div>
+      </div>
+      <div class="dialog-foot"><button class="btn btn-outline btn-sm" onclick="closeDialog()">Cancel</button><button class="btn btn-primary btn-sm" id="aiGenerateBtn" disabled onclick="confirmAiGenerate()">Generate</button></div>`;
+    document.body.classList.add('dialog-open');
+  }
+
+  function onAiPromptInput() {
+    const btn = document.getElementById('aiGenerateBtn');
+    const input = document.getElementById('aiPrompt');
+    if (btn && input) btn.disabled = input.value.trim().length === 0;
+  }
+
+  function buildAiNoteBody(prompt) {
+    const topic = escapeHtml(prompt.trim());
+    return `
+      <h3>${topic}</h3>
+      <p>Here's a draft to get you started — read it over, adjust the wording, and add an example specific to your course before publishing.</p>
+      <p>Explain the core idea first in plain language, then walk through one concrete example students have already seen earlier in this course. Close with a short question they can answer in their own words to check the idea landed.</p>`;
+  }
+
+  function confirmAiGenerate() {
+    const promptEl = document.getElementById('aiPrompt');
+    const prompt = promptEl ? promptEl.value : '';
+    if (!prompt.trim()) return;
+    closeDialog();
+    insertBlock(activeCanvasId, buildNoteBlock(buildAiNoteBody(prompt)));
+    simulateSave();
+  }
+
+  function insertBlock(canvasId, html) {
+    const canvas = document.getElementById(canvasId);
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html.trim();
+    const block = wrapper.firstElementChild;
+    const referenceGap =
+      activeGapEl && activeGapEl.isConnected && activeGapEl.closest('.canvas') === canvas ? activeGapEl : null;
+    if (referenceGap) referenceGap.insertAdjacentElement('afterend', block);
+    else canvas.querySelector('.empty-page').insertAdjacentElement('beforebegin', block);
+    const gapWrapper = document.createElement('div');
+    gapWrapper.innerHTML = blockGap().trim();
+    const newGap = gapWrapper.firstElementChild;
+    block.insertAdjacentElement('afterend', newGap);
+    // Advance the insertion point past what was just added, so the next add (without
+    // re-clicking) lands below it instead of repeatedly at the same old spot.
+    setActiveGapEl(newGap);
+    updateEmptyState(canvasId);
+    flagNewBlock(block);
+  }
+
+  const NEW_BLOCK_MS = 2600;
+
+  function prefersReducedMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  // Answers "where did that go?" and then gets out of the way: the block settles in, wears a soft
+  // wash and a dated marker for a couple of seconds, and the canvas scrolls the smallest distance
+  // that brings it fully into view (scroll-margin keeps it clear of the sticky header).
+  function flagNewBlock(block) {
+    block.classList.add('is-new');
+    const flag = document.createElement('span');
+    flag.className = 'new-flag edit-only';
+    flag.textContent = 'Added just now';
+    block.appendChild(flag);
+    window.setTimeout(() => {
+      block.classList.remove('is-new');
+      flag.remove();
+    }, NEW_BLOCK_MS);
+
+    // Deferred a frame: the trailing gap and the empty-state toggle both change the page's height,
+    // and measuring before that settles aims the scroll at a stale position.
+    requestAnimationFrame(() => revealBlock(block));
+  }
+
+  // scrollIntoView's own heuristics land inconsistently here, because the page is still growing
+  // as media lays out, so the travel is worked out directly instead: move the least distance that
+  // puts the block inside the band between the sticky header and the floating dock, and nothing
+  // at all when it already sits there.
+  function revealBlock(block) {
+    const phoneScreen = block.closest('.phone-screen');
+    const screenEl = block.closest('.screen');
+    const rect = block.getBoundingClientRect();
+    const behavior = prefersReducedMotion() ? 'auto' : 'smooth';
+    const GUTTER = 16;
+
+    let topLimit;
+    let bottomLimit;
+    if (phoneScreen) {
+      const frame = phoneScreen.getBoundingClientRect();
+      topLimit = frame.top + GUTTER;
+      bottomLimit = frame.bottom - GUTTER;
+    } else {
+      const header = screenEl && screenEl.querySelector('.lesson-header');
+      const dock = screenEl && screenEl.querySelector('.floating-nav');
+      const dockVisible = dock && dock.offsetParent !== null;
+      topLimit = (header ? header.getBoundingClientRect().bottom : 0) + GUTTER;
+      bottomLimit = (dockVisible ? dock.getBoundingClientRect().top : window.innerHeight) - GUTTER;
+    }
+
+    const band = bottomLimit - topLimit;
+    let delta = 0;
+    if (rect.height > band || rect.top < topLimit) {
+      // Taller than the band, or hanging off the top: align the top and let the rest run on.
+      delta = rect.top - topLimit;
+    } else if (rect.bottom > bottomLimit) {
+      delta = rect.bottom - bottomLimit;
+    }
+    if (Math.abs(delta) < 2) return;
+
+    // Gliding thousands of pixels is neither smooth nor intentional — it is a long disorienting
+    // ride. Past a couple of screens the jump is instant, and the just-added highlight is what
+    // orients the author on arrival.
+    const viewportHeight = phoneScreen ? phoneScreen.clientHeight : window.innerHeight;
+    const travel = Math.abs(delta) > viewportHeight * 2.5 ? 'auto' : behavior;
+
+    if (phoneScreen) phoneScreen.scrollBy({ top: delta, behavior: travel });
+    else window.scrollBy({ top: delta, behavior: travel });
+  }
+
+  let activePopoverGapEl = null;
+
+  function closeGapPopover() {
+    if (!activePopoverGapEl) return;
+
+    const canvasEl = activePopoverGapEl.closest('.canvas');
+    if (canvasEl) canvasEl.classList.remove('popover-dim');
+    activePopoverGapEl.classList.remove('gap-popover-open');
+    const popover = activePopoverGapEl.querySelector('.gap-popover');
+    if (popover) popover.remove();
+    activePopoverGapEl = null;
+  }
+
+  // Radius and node size match the concept exactly; RADIAL_RADIUS is the full-size target and
+  // only shrinks (see openAddContentMenu) when the canvas column it opens in is too narrow to
+  // fit it at full size — a mobile frame, a resized window, a nested Tabs pane.
+  const RADIAL_RADIUS = 118;
+  const RADIAL_MIN_RADIUS = 64;
+  const RADIAL_NODE_SIZE = 46;
+  const RADIAL_START_DEG = -175;
+  const RADIAL_END_DEG = -5;
+
+  // Reach needed from the gap's center to clear the fan's arc + node radius + its label, used to
+  // decide whether there's room to fan upward before falling back to downward.
+  function radialReach(radius) {
+    return radius + RADIAL_NODE_SIZE / 2 + 24;
+  }
+
+  function buildGapRadialHtml(direction, radius) {
+    const items = [['ai', 'AI', ICON_AI, true], ...NAV_PILL_TYPES.map(([type, label, icon]) => [type, label, icon, false])];
+    const step = (RADIAL_END_DEG - RADIAL_START_DEG) / (items.length - 1);
+    const nodes = items
+      .map(([type, label, icon, isAi], i) => {
+        const angle = ((RADIAL_START_DEG + step * i) * Math.PI) / 180;
+        const x = Math.round(Math.cos(angle) * radius);
+        const yUp = Math.round(Math.sin(angle) * radius);
+        const y = direction === 'down' ? -yUp : yUp;
+        const onclick = isAi ? 'closeGapPopover(); openAiAssistant()' : `chooseContentType('${type}')`;
+        const label2 = isAi ? 'Ask AI assistant' : `Add ${label.toLowerCase()}`;
+        return `<button type="button" class="gap-radial-node${isAi ? ' ai' : ''}" style="--x:${x}px;--y:${y}px;transition-delay:${i * 18}ms" aria-label="${label2}" onclick="${onclick}">${icon}<span class="lb">${label}</span></button>`;
+      })
+      .join('');
+    return `<div class="gap-popover">${nodes}</div>`;
+  }
+
+  // Anchored to one gap at a time: opening another, pressing Escape, or clicking outside closes it.
+  function openAddContentMenu(canvasId, gapEl) {
+    if (!gapEl) return;
+
+    if (activePopoverGapEl === gapEl) {
+      closeGapPopover();
+      return;
+    }
+    closeGapPopover();
+    activeCanvasId = canvasId;
+    activeGapEl = gapEl;
+    activePopoverGapEl = gapEl;
+    gapEl.classList.add('gap-popover-open');
+
+    // Responsive radius: full size by default, shrinking only as far as it needs to so the arc's
+    // widest points (the AI and Image nodes, at the ends of the sweep) stay inside the column it
+    // opened in — the mobile frame, a narrowed desktop window, a nested Tabs pane.
+    const canvasEl = gapEl.closest('.canvas');
+    const columnWidth = canvasEl ? canvasEl.clientWidth : window.innerWidth;
+    const radiusForWidth = columnWidth / 2 - RADIAL_NODE_SIZE / 2 - 16;
+    const radius = Math.max(RADIAL_MIN_RADIUS, Math.min(RADIAL_RADIUS, radiusForWidth));
+
+    // Fan upward by default; fall back to downward when the viewport doesn't have room above
+    // the gap for the arc.
+    const gapRect = gapEl.getBoundingClientRect();
+    const direction = gapRect.top < radialReach(radius) ? 'down' : 'up';
+    gapEl.insertAdjacentHTML('beforeend', buildGapRadialHtml(direction, radius));
+
+    if (canvasEl) canvasEl.classList.add('popover-dim');
+
+    // Inserted closed (opacity 0, scaled down) so this class toggle is what the fan transitions from.
+    const popover = gapEl.querySelector('.gap-popover');
+    requestAnimationFrame(() => popover.classList.add('is-open'));
+  }
+
+  document.addEventListener('click', (e) => {
+    if (activePopoverGapEl && !e.target.closest('.block-gap')) closeGapPopover();
+  });
+
+  const SAMPLE_BUILDERS = {
+    video: buildVideoBlockSample,
+    slide: buildSlideBlockSample,
+    document: buildDocumentBlockSample,
+    image: buildImageBlockSample
+  };
+
+  function chooseContentType(type) {
+    if (type === 'note') {
+      closeGapPopover();
+      insertBlock(activeCanvasId, buildNoteBlock(DEFAULT_NOTE_BODY));
+      simulateSave();
+      return;
+    }
+    const sampleBuilder = SAMPLE_BUILDERS[type];
+    if (sampleBuilder) {
+      closeGapPopover();
+      insertBlock(activeCanvasId, sampleBuilder());
+      simulateSave();
+    }
+  }
+
+  const NAV_PILL_TYPES = [
+    ['note', 'Note', ICON_NOTE],
+    ['video', 'Video', ICON_VIDEO],
+    ['slide', 'Slides', ICON_SLIDE],
+    ['document', 'Document', ICON_DOCUMENT],
+    ['image', 'Image', ICON_IMAGE]
+  ];
+
+  // Used by the floating in-editor nav and each empty state's pill row — the one-click row for
+  // adding at the end of a canvas. Precise mid-lesson insertion lives in the per-gap radial fan.
+  function buildNavPillsHtml(mode, canvasId) {
+    const aiOnclick = `openAiAssistantFromDock('${canvasId}')`;
+    const typeOnclick = (type) => `addContentFromDock('${canvasId}','${type}')`;
+    const aiPill = `<button type="button" class="nav-pill nav-pill-ai" aria-label="Ask AI assistant" onclick="${aiOnclick}">${ICON_AI}<span class="lb">AI</span></button>`;
+    const divider = '<span class="nav-pill-div"></span>';
+    const typePills = NAV_PILL_TYPES.map(
+      ([type, label, icon]) =>
+        `<button type="button" class="nav-pill" aria-label="Add ${label.toLowerCase()}" onclick="${typeOnclick(type)}">${icon}<span class="lb">${label}</span></button>`
+    ).join('');
+    return aiPill + divider + typePills;
+  }
+
+  // Floating in-editor nav: always appends to the end of the lesson, regardless of where the
+  // user last clicked in the canvas — precise mid-lesson insertion still lives in the "Add
+  // content" dialog opened from a gap's "+".
+  function addContentFromDock(canvasId, type) {
+    activeCanvasId = canvasId;
+    activeGapEl = null;
+    chooseContentType(type);
+  }
+
+  function openAiAssistantFromDock(canvasId) {
+    activeCanvasId = canvasId;
+    activeGapEl = null;
+    openAiAssistant();
+  }
+
+  function applyEditDialogLabels() {
+    if (!activeEditBlockEl) return;
+    if (activeEditBlockEl.dataset.sample === 'true') return;
+    const titleMap = { 'Add video': 'Edit video', 'Add a slide': 'Edit slide', 'Add document': 'Edit document', 'Add image': 'Edit image' };
+    const title = document.querySelector('.dialog-title');
+    if (title && titleMap[title.textContent]) title.textContent = titleMap[title.textContent];
+    const confirmBtn = document.querySelector('.dialog-foot .btn-primary');
+    if (confirmBtn) confirmBtn.textContent = 'Save changes';
+  }
+
+  function openAddDialog(kind) {
+    const dialogBox = document.getElementById('dialogBox');
+    const editingConfigured = activeEditBlockEl && activeEditBlockEl.dataset.sample !== 'true';
+    if (kind === 'slide-more') {
+      const currentPlatform = activeEditBlockEl && activeEditBlockEl.dataset.platform;
+      slideSelectedId = (currentPlatform && SLIDE_PLATFORMS.some((p) => p.id === currentPlatform)) ? currentPlatform : SLIDE_PLATFORMS[0].id;
+      dialogBox.style.maxWidth = '860px';
+      dialogBox.innerHTML = buildSlidePickerDialog();
+      document.body.classList.add('dialog-open');
+      applyEditDialogLabels();
+      if (editingConfigured) primeSlideEditDialog(activeEditBlockEl);
+      return;
+    }
+    if (kind === 'document') selectedDocFile = null;
+    if (kind === 'image') selectedImageFile = null;
+    if (kind === 'video-more') {
+      activeVideoTab = 'yt';
+      selectedVideoFile = null;
+    }
+    dialogBox.style.maxWidth = '480px';
+    dialogBox.innerHTML = dialogTemplates[kind];
+    document.body.classList.add('dialog-open');
+    applyEditDialogLabels();
+    if (kind === 'document' && editingConfigured) primeDocumentEditDialog(activeEditBlockEl);
+    if (kind === 'image' && editingConfigured) primeImageEditDialog(activeEditBlockEl);
+    const tabs = document.getElementById('videoTabs');
+    if (tabs) {
+      tabs.addEventListener('click', (e) => {
+        const btn = e.target.closest('.utab');
+        if (!btn) return;
+        tabs.querySelectorAll('.utab').forEach((t) => t.classList.remove('active'));
+        btn.classList.add('active');
+        activeVideoTab = btn.dataset.tab;
+        document.getElementById('videoTabPane').innerHTML = videoTabPanes[btn.dataset.tab];
+        onVideoSourceInput();
+      });
+    }
+    if (kind === 'video-more' && editingConfigured) primeVideoEditDialog(activeEditBlockEl);
+  }
+
+  function buildCurrentVideoBanner(section) {
+    const platform = section.dataset.platform || '';
+    const sourceUrl = section.dataset.sourceUrl || '';
+    const thumbUrl = section.dataset.thumbUrl || '';
+    const label =
+      platform === 'youtube' ? 'YouTube' : platform === 'vimeo' ? 'Vimeo' : platform === 'file' ? 'Uploaded file' : 'Embedded video';
+    const thumb = thumbUrl
+      ? `<img src="${escapeHtml(thumbUrl)}" alt="" />`
+      : '<svg viewBox="0 0 24 24"><polygon points="6 4 20 12 6 20 6 4"/></svg>';
+    return `
+      <div class="current-content-banner">
+        <div class="thumb">${thumb}</div>
+        <div class="txt"><div class="lbl">Current video</div><div class="url">${escapeHtml(sourceUrl || label)}</div></div>
+      </div>`;
+  }
+
+  function buildCurrentSlideBanner(platformId, sourceUrl) {
+    const platform = SLIDE_PLATFORMS.find((p) => p.id === platformId);
+    let hostname = sourceUrl;
+    try {
+      hostname = new URL(sourceUrl, location.href).hostname;
+    } catch (err) {
+      // keep the raw value if it isn't a full URL
+    }
+    return `
+      <div class="current-content-banner">
+        <div class="thumb icon"><span class="slide-platform-ic" style="width:26px;height:26px">${SLIDE_PLATFORM_ICONS[platformId]}</span></div>
+        <div class="txt"><div class="lbl">Current slide</div><div class="url">${escapeHtml(hostname)}${platform ? ' · ' + escapeHtml(platform.name) : ''}</div></div>
+      </div>`;
+  }
+
+  function buildCurrentDocumentBanner(name, size) {
+    return `
+      <div class="current-content-banner">
+        <div class="thumb icon">${ICON_DOCUMENT}</div>
+        <div class="txt"><div class="lbl">Current document</div><div class="url">${escapeHtml(name)} · ${escapeHtml(size)}</div></div>
+      </div>`;
+  }
+
+  function primeVideoEditDialog(section) {
+    const platform = section.dataset.platform || '';
+    const sourceUrl = section.dataset.sourceUrl || '';
+    const dialogBody = document.querySelector('.dialog-body');
+    if (dialogBody) dialogBody.insertAdjacentHTML('afterbegin', buildCurrentVideoBanner(section));
+    const tabForPlatform = { youtube: 'yt', vimeo: 'vm', embed: 'em', file: 'up' }[platform];
+    if (tabForPlatform && tabForPlatform !== 'yt') {
+      const tabBtn = document.querySelector(`.utab[data-tab="${tabForPlatform}"]`);
+      if (tabBtn) tabBtn.click();
+    }
+    if (platform === 'youtube') {
+      const input = document.getElementById('videoYoutubeInput');
+      if (input) input.value = sourceUrl;
+    } else if (platform === 'vimeo') {
+      const input = document.getElementById('videoVimeoInput');
+      if (input) input.value = sourceUrl;
+    } else if (platform === 'embed') {
+      const input = document.getElementById('videoEmbedInput');
+      if (input) input.value = sourceUrl;
+    }
+    onVideoSourceInput();
+  }
+
+  function primeSlideEditDialog(section) {
+    const platformId = section.dataset.platform || slideSelectedId;
+    const sourceUrl = section.dataset.sourceUrl || '';
+    const dialogBody = document.querySelector('.dialog-body');
+    if (dialogBody) dialogBody.insertAdjacentHTML('afterbegin', buildCurrentSlideBanner(platformId, sourceUrl));
+    const embedInput = document.getElementById('slideEmbedInput');
+    if (embedInput && sourceUrl) embedInput.value = sourceUrl;
+    onSlideEmbedInput();
+  }
+
+  function primeDocumentEditDialog(section) {
+    const nameEl = section.querySelector('.file-name');
+    const sizeEl = section.querySelector('.file-size');
+    if (!nameEl) return;
+    const dialogBody = document.querySelector('.dialog-body');
+    if (dialogBody) {
+      dialogBody.insertAdjacentHTML(
+        'afterbegin',
+        buildCurrentDocumentBanner(nameEl.textContent, sizeEl ? sizeEl.textContent : '')
+      );
+    }
+  }
+
+  function buildCurrentImageBanner(src) {
+    return `
+      <div class="current-content-banner">
+        <div class="thumb"><img src="${escapeHtml(src)}" alt="" /></div>
+        <div class="txt"><div class="lbl">Current image</div><div class="url">Choose a new file below to replace it</div></div>
+      </div>`;
+  }
+
+  function primeImageEditDialog(section) {
+    const img = section.querySelector('.image-block img');
+    if (!img) return;
+    const dialogBody = document.querySelector('.dialog-body');
+    if (dialogBody) dialogBody.insertAdjacentHTML('afterbegin', buildCurrentImageBanner(img.src));
+  }
+
+  function closeDialog() {
+    document.body.classList.remove('dialog-open');
+    activeEditBlockEl = null;
+  }
+
+  let activeEditBlockEl = null;
+
+  function editBlock(btn, kind) {
+    activeEditBlockEl = btn.closest('.content-section');
+    document.querySelectorAll('.dd-menu.open').forEach((m) => m.classList.remove('open'));
+    openAddDialog(kind);
+  }
+
+  function replaceBlock(oldEl, html) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html.trim();
+    oldEl.replaceWith(wrapper.firstElementChild);
+  }
+
+  let selectedDocFile = null;
+
+  function onDocFileChosen(file) {
+    if (!file) return;
+    selectedDocFile = file;
+    document.getElementById('docFileArea').innerHTML = `
+      <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
+        <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></div>
+        <div class="file-info"><div class="file-name">${escapeHtml(file.name)}</div><div class="file-size">${escapeHtml(formatFileSize(file.size))}</div></div>
+        <div class="file-actions">
+          <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Replace file" onclick="document.getElementById('docFileInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        </div>
+      </div>`;
+    document.getElementById('docAddBtn').disabled = false;
+  }
+
+  function onDocFileInputChange(input) {
+    onDocFileChosen(input.files && input.files[0]);
+  }
+
+  function onDocFileDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    onDocFileChosen(e.dataTransfer.files && e.dataTransfer.files[0]);
+  }
+
+  let selectedImageFile = null;
+
+  function onImageFileChosen(file) {
+    if (!file) return;
+    selectedImageFile = file;
+    const objectUrl = URL.createObjectURL(file);
+    document.getElementById('imageFileArea').innerHTML = `
+      <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
+        <div class="file-icon" style="overflow:hidden;padding:0"><img src="${objectUrl}" alt="" style="width:100%;height:100%;object-fit:cover" /></div>
+        <div class="file-info"><div class="file-name">${escapeHtml(file.name)}</div><div class="file-size">${escapeHtml(formatFileSize(file.size))}</div></div>
+        <div class="file-actions">
+          <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Replace file" onclick="document.getElementById('imageFileInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        </div>
+      </div>`;
+    document.getElementById('imageAddBtn').disabled = false;
+  }
+
+  function onImageFileInputChange(input) {
+    onImageFileChosen(input.files && input.files[0]);
+  }
+
+  function onImageFileDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    onImageFileChosen(e.dataTransfer.files && e.dataTransfer.files[0]);
+  }
+
+  // ---- Video sources: real embeds/playback, no canned demo output ----
+  let activeVideoTab = 'yt';
+  let selectedVideoFile = null;
+
+  function extractYouTubeId(url) {
+    const m = String(url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([\w-]{11})/);
+    return m ? m[1] : null;
+  }
+
+  function extractVimeoId(url) {
+    const m = String(url).match(/vimeo\.com\/(?:video\/)?(\d+)/);
+    return m ? m[1] : null;
+  }
+
+  function extractIframeSrc(code) {
+    const m = String(code).match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+    return m ? m[1] : null;
+  }
+
+  function extractEmbedSrc(code) {
+    const trimmed = String(code).trim();
+    if (!trimmed) return null;
+    return extractIframeSrc(trimmed) || (/^https?:\/\//i.test(trimmed) ? trimmed : null);
+  }
+
+  function getVideoSource() {
+    if (activeVideoTab === 'yt') {
+      const input = document.getElementById('videoYoutubeInput');
+      const id = input && extractYouTubeId(input.value);
+      return id ? { platform: 'youtube', src: 'https://www.youtube.com/embed/' + id, url: input.value.trim() } : null;
+    }
+    if (activeVideoTab === 'vm') {
+      const input = document.getElementById('videoVimeoInput');
+      const id = input && extractVimeoId(input.value);
+      return id ? { platform: 'vimeo', src: 'https://player.vimeo.com/video/' + id, url: input.value.trim() } : null;
+    }
+    if (activeVideoTab === 'em') {
+      const input = document.getElementById('videoEmbedInput');
+      const src = input && extractEmbedSrc(input.value);
+      return src ? { platform: 'embed', src } : null;
+    }
+    if (activeVideoTab === 'up') {
+      return selectedVideoFile ? { platform: 'file', file: selectedVideoFile } : null;
+    }
+    return null;
+  }
+
+  function onVideoSourceInput() {
+    const btn = document.getElementById('videoAddBtn');
+    if (btn) btn.disabled = !getVideoSource();
+  }
+
+  function onVideoFileInputChange(input) {
+    const file = input.files && input.files[0];
+    if (!file) return;
+    selectedVideoFile = file;
+    document.getElementById('videoFileArea').innerHTML = `
+      <div class="file-row" style="border:1px solid var(--border);border-radius:var(--radius-lg)">
+        <div class="file-icon">${ICON_VIDEO}</div>
+        <div class="file-info"><div class="file-name">${escapeHtml(file.name)}</div><div class="file-size">${escapeHtml(formatFileSize(file.size))}</div></div>
+        <div class="file-actions">
+          <button type="button" class="icon-btn" style="width:30px;height:30px" aria-label="Replace file" onclick="document.getElementById('videoFileInput').click()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" style="width:14px;height:14px"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg></button>
+        </div>
+      </div>`;
+    onVideoSourceInput();
+  }
+
+  async function fetchOEmbedTitle(platform, url) {
+    try {
+      const endpoint =
+        platform === 'youtube'
+          ? 'https://www.youtube.com/oembed?url=' + encodeURIComponent(url) + '&format=json'
+          : 'https://vimeo.com/api/oembed.json?url=' + encodeURIComponent(url);
+      const res = await fetch(endpoint);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return { title: data.title, author: data.author_name, thumbnailUrl: data.thumbnail_url };
+    } catch (err) {
+      return null;
+    }
+  }
+
+  async function buildVideoSource() {
+    const raw = getVideoSource();
+    if (!raw) return null;
+    if (raw.platform === 'file') {
+      return {
+        kind: 'file',
+        src: URL.createObjectURL(raw.file),
+        title: raw.file.name.replace(/\.[^./]+$/, ''),
+        sub: 'Uploaded video',
+        platform: 'file',
+        originalUrl: raw.file.name,
+        thumbnailUrl: null
+      };
+    }
+    if (raw.platform === 'youtube' || raw.platform === 'vimeo') {
+      const label = raw.platform === 'youtube' ? 'YouTube' : 'Vimeo';
+      const meta = await fetchOEmbedTitle(raw.platform, raw.url);
+      const id = raw.platform === 'youtube' ? extractYouTubeId(raw.url) : null;
+      const thumbnailUrl = (meta && meta.thumbnailUrl) || (id ? 'https://img.youtube.com/vi/' + id + '/mqdefault.jpg' : null);
+      return {
+        kind: 'iframe',
+        src: raw.src,
+        title: meta && meta.title ? meta.title : label + ' video',
+        sub: meta && meta.author ? meta.author + ' · ' + label : label,
+        platform: raw.platform,
+        originalUrl: raw.url,
+        thumbnailUrl
+      };
+    }
+    return {
+      kind: 'iframe',
+      src: raw.src,
+      title: 'Embedded video',
+      sub: 'Custom embed',
+      platform: 'embed',
+      originalUrl: raw.src,
+      thumbnailUrl: null
+    };
+  }
+
+  function simulateSave() {
+    const el = document.getElementById('saveStatus');
+    el.textContent = 'Saving…';
+    clearTimeout(simulateSave._t);
+    simulateSave._t = setTimeout(() => (el.textContent = 'Saved'), 900);
+  }
+  document.getElementById('lessonTitle').addEventListener('input', simulateSave);
+  document.addEventListener('input', (e) => {
+    const noteContent = e.target.closest('.note-content');
+    if (!noteContent) return;
+
+    if (noteContent.innerHTML === '<br>') noteContent.innerHTML = '';
+    simulateSave();
+  });
+  document.querySelectorAll('.canvas').forEach((canvas) => updateEmptyState(canvas.id));
+  // ---- Scroll dots: one per window-scrolled screen (desktop canvas, empty lesson). The mobile
+  // screen keeps the phone's own scrolling, since a device frame simulating a real phone should
+  // scroll like one, not grow a second floating indicator inside its small frame. ----
+  const DOTS_INSET = 20; // distance from the canvas column's right edge to the dots' center
+  const DOTS_IDLE_MS = 900;
+
+  function initScrollDots(canvasId, screenId) {
+    const screenEl = document.getElementById(screenId);
+    const canvasWrap = screenEl && screenEl.querySelector('.canvas-wrap');
+    if (!screenEl || !canvasWrap) return;
+
+    const dots = document.createElement('div');
+    dots.className = 'scroll-dots';
+    dots.setAttribute('role', 'tablist');
+    dots.setAttribute('aria-label', 'Lesson sections');
+    screenEl.appendChild(dots);
+    let idleTimer = 0;
+    let blocks = [];
+    let suppressAutoActiveUntil = 0;
+
+    function markActive() {
+      dots.classList.add('is-active');
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => dots.classList.remove('is-active'), DOTS_IDLE_MS);
+    }
+
+    // Inside the canvas, not pinned to the viewport edge: the dots sit just inside the reading
+    // column's own right padding, so they move with it as the window resizes.
+    function positionDots() {
+      const rect = canvasWrap.getBoundingClientRect();
+      dots.style.left = Math.round(rect.right - DOTS_INSET) + 'px';
+    }
+
+    function labelFor(section) {
+      const type = section.dataset.type;
+      return type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Block';
+    }
+
+    // Rebuilt whenever the canvas's own children change — added, removed, reordered — rather than
+    // threading an update call through every one of those code paths.
+    function rebuild() {
+      const canvasEl = document.getElementById(canvasId);
+      blocks = canvasEl ? [...canvasEl.querySelectorAll(':scope > .content-section')] : [];
+      if (blocks.length < 2) {
+        dots.classList.remove('is-ready');
+        dots.innerHTML = '';
+        return;
+      }
+      dots.classList.add('is-ready');
+      dots.innerHTML = blocks
+        .map((b, i) => `<button type="button" class="scroll-dot" role="tab" aria-label="Jump to ${escapeHtml(labelFor(b))} section" data-i="${i}"></button>`)
+        .join('');
+      positionDots();
+      updateActive();
+    }
+
+    // Whichever block overlaps the focus band most is "active" — the same band revealBlock
+    // aligns to, so a block it just bottom-aligned (the last block in the lesson, with nothing
+    // below to push it to the top) is correctly picked, not whatever happens to cross a fixed
+    // fraction of the viewport.
+    function updateActive() {
+      if (!blocks.length || Date.now() < suppressAutoActiveUntil) return;
+
+      // Scrolled to (or within a few px of) the bottom of the page: the last block wins outright.
+      // A short final block — nothing below it to push it to the top of the band — can otherwise
+      // overlap the focus band less than the taller block still sitting above it, so the overlap
+      // rule below would hand activity back to its neighbor right as the reader reaches the end.
+      const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      if (atBottom) {
+        dots.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('on', i === blocks.length - 1));
+        return;
+      }
+
+      const header = screenEl.querySelector('.lesson-header');
+      const dock = screenEl.querySelector('.floating-nav');
+      const dockVisible = dock && dock.offsetParent !== null;
+      const topLimit = (header ? header.getBoundingClientRect().bottom : 0);
+      const bottomLimit = (dockVisible ? dock.getBoundingClientRect().top : window.innerHeight);
+
+      let activeIndex = 0;
+      let bestOverlap = -1;
+      blocks.forEach((b, i) => {
+        const rect = b.getBoundingClientRect();
+        const overlap = Math.min(rect.bottom, bottomLimit) - Math.max(rect.top, topLimit);
+        if (overlap > bestOverlap) {
+          bestOverlap = overlap;
+          activeIndex = i;
+        }
+      });
+      dots.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('on', i === activeIndex));
+    }
+
+    dots.addEventListener('click', (e) => {
+      const btn = e.target.closest('.scroll-dot');
+      if (!btn) return;
+
+      const index = Number(btn.dataset.i);
+      const block = blocks[index];
+      if (!block) return;
+
+      revealBlock(block);
+      // Marked active immediately rather than waiting on a scroll event to confirm it — the
+      // click itself is the clearest signal of intent, and it keeps the dot from lagging behind
+      // a scroll that may be instant, smooth, or (for an already-visible block) not move at all.
+      // Auto-detection is then held off for a beat: a short block revealed at the bottom of the
+      // band (nothing below it to push it higher, usually the last one) can occupy less of the
+      // screen than its taller neighbor above, which would otherwise win the clicked dot right
+      // back by the overlap rule below the moment the triggered scroll's own event fires.
+      dots.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('on', i === index));
+      suppressAutoActiveUntil = Date.now() + 700;
+    });
+
+    // A real scroll gesture always wins over the suppression window above — only a click's own
+    // triggered scroll should be held off, never the user actually scrolling right after.
+    const clearSuppression = () => { suppressAutoActiveUntil = 0; };
+    window.addEventListener('wheel', clearSuppression, { passive: true });
+    window.addEventListener('touchstart', clearSuppression, { passive: true });
+
+    window.addEventListener('scroll', () => {
+      updateActive();
+      markActive();
+    }, { passive: true });
+    window.addEventListener('resize', positionDots);
+    new ResizeObserver(positionDots).observe(canvasWrap);
+    new MutationObserver(rebuild).observe(document.getElementById(canvasId), { childList: true });
+
+    rebuild();
+  }
+
+  initScrollDots('canvas', 'screen-desktop');
+  initScrollDots('emptyCanvas', 'screen-empty');
+
+  const seedNoteStyleMenu = document.getElementById('seedNoteStyleMenu');
+  if (seedNoteStyleMenu) seedNoteStyleMenu.innerHTML = buildNoteStyleMenu();
+  const seedSlideSample = document.getElementById('seedSlideSample');
+  if (seedSlideSample) seedSlideSample.innerHTML = buildSlideSampleInner();
+
+  async function confirmAdd(kind) {
+    let html = null;
+    const confirmBtn = document.querySelector('.dialog-foot .btn-primary');
+    if (kind === 'document') {
+      if (!selectedDocFile) return;
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Adding…';
+      }
+      html = await buildDocumentBlock(selectedDocFile);
+      selectedDocFile = null;
+    }
+    if (kind === 'image') {
+      if (!selectedImageFile) return;
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Adding…';
+      }
+      html = buildImageBlock(selectedImageFile);
+      selectedImageFile = null;
+    }
+    if (kind === 'video-more') {
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Adding…';
+      }
+      const source = await buildVideoSource();
+      if (!source) {
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = 'Add video';
+        }
+        return;
+      }
+      html = buildVideoBlock(source);
+      selectedVideoFile = null;
+    }
+    if (kind === 'slide-more') {
+      const embedSrc = extractEmbedSrc(document.getElementById('slideEmbedInput').value);
+      html = buildSlideBlock(slideSelectedId, embedSrc);
+    }
+    if (activeEditBlockEl) replaceBlock(activeEditBlockEl, html);
+    else insertBlock(activeCanvasId, html);
+    closeDialog();
+    simulateSave();
+  }
+
+  // ---- Drag-and-drop reordering (delegated so it works for dynamically added blocks on either canvas) ----
+  function getDragAfterElement(container, y) {
+    const candidates = [...container.querySelectorAll('.content-section:not(.dragging)')];
+    return candidates.reduce(
+      (closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) return { offset, element: child };
+        return closest;
+      },
+      { offset: Number.NEGATIVE_INFINITY, element: null }
+    ).element;
+  }
+
+  document.addEventListener('mousedown', (e) => {
+    const handle = e.target.closest('.block-drag');
+    if (!handle) return;
+    const section = handle.closest('.content-section');
+    if (section) section.draggable = true;
+  });
+  document.addEventListener('mouseup', () => {
+    document.querySelectorAll('.content-section[draggable="true"]').forEach((s) => (s.draggable = false));
+  });
+  document.addEventListener('dragstart', (e) => {
+    const section = e.target.closest('.content-section');
+    if (!section) return;
+    section.classList.add('dragging');
+  });
+  document.addEventListener('dragend', (e) => {
+    const section = e.target.closest('.content-section');
+    if (!section) return;
+    section.classList.remove('dragging');
+    section.draggable = false;
+    simulateSave();
+  });
+  document.addEventListener('dragover', (e) => {
+    const canvas = e.target.closest('.canvas');
+    const dragging = document.querySelector('.content-section.dragging');
+    if (!canvas || !dragging) return;
+    e.preventDefault();
+    const gap = dragging.nextElementSibling && dragging.nextElementSibling.classList.contains('block-gap') ? dragging.nextElementSibling : null;
+    const after = getDragAfterElement(canvas, e.clientY);
+    canvas.insertBefore(dragging, after || canvas.querySelector('.empty-page'));
+    if (gap) dragging.insertAdjacentElement('afterend', gap);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (document.body.classList.contains('dialog-open')) closeDialog();
+    else if (activePopoverGapEl) closeGapPopover();
+    else document.querySelectorAll('.settings-open').forEach((el) => el.classList.remove('settings-open'));
+  });
+
+  document.getElementById('floatingNavBar-canvas').innerHTML = buildNavPillsHtml('dock', 'canvas');
+  document.getElementById('floatingNavBar-emptyCanvas').innerHTML = buildNavPillsHtml('dock', 'emptyCanvas');
+  ['canvas', 'emptyCanvas', 'mobileCanvas'].forEach((id) => {
+    document.getElementById('emptyPills-' + id).innerHTML = buildNavPillsHtml('dock', id);
+  });
+</script>
+  </body>
+</html>

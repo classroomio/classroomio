@@ -536,15 +536,21 @@
     }));
   }
 
-  function onSectionQuestionAnswerChange(question: Question, answerValue: AnswerData) {
+  function onSectionQuestionAnswerChange(question: Question, answerValue: AnswerData | null) {
     const questionKey = getExerciseQuestionContractKey(toExerciseQuestionModel(question));
-    questionnaireMetaData.update((metaData) => ({
-      ...metaData,
-      answers: {
-        ...metaData.answers,
-        [questionKey]: answerValue
+    questionnaireMetaData.update((metaData) => {
+      const answers = { ...metaData.answers };
+      if (answerValue === null) {
+        delete answers[questionKey];
+      } else {
+        answers[questionKey] = answerValue;
       }
-    }));
+
+      return {
+        ...metaData,
+        answers
+      };
+    });
   }
 
   function completeAllQuestionsSection() {
@@ -571,22 +577,7 @@
 
     e.preventDefault();
 
-    let valueToUse: AnswerData | undefined = sharedCurrentAnswer as AnswerData | undefined;
-
-    if (target instanceof HTMLInputElement && sharedQuestionModel) {
-      const questionTypeKey = sharedQuestionModel.questionType;
-      const trimmed = target.value?.trim() ?? '';
-
-      if (questionTypeKey === 'SHORT_ANSWER' && trimmed) {
-        valueToUse = { type: 'SHORT_ANSWER', text: trimmed };
-        onSharedAnswerChange(valueToUse);
-      } else if (questionTypeKey === 'NUMERIC' && trimmed) {
-        const num = Number(trimmed);
-        valueToUse = !Number.isNaN(num) ? { type: 'NUMERIC', value: num } : undefined;
-
-        if (valueToUse) onSharedAnswerChange(valueToUse);
-      }
-    }
+    const valueToUse: AnswerData | undefined = sharedCurrentAnswer as AnswerData | undefined;
     if (!hasAnswerValue(valueToUse)) {
       snackbar.error($t('course.navItem.lessons.exercises.all_exercises.view_mode.answer_required'));
       return;

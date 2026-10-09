@@ -3568,7 +3568,6 @@
     },
     "filters": {
       "search_placeholder": "Wyszukaj zasoby",
-      "apply": "Zastosuj",
       "status_options": {
         "all": "Wszystkie statusy",
         "active": "Aktywny",

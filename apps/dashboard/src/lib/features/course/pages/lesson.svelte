@@ -92,9 +92,10 @@
   const isVersionDrawerOpen = $derived($page.url.searchParams.get(HISTORY_PARAM) === 'open');
   // eslint-disable-next-line svelte/prefer-writable-derived -- must be writable: cleared before intentional navigations and bound to UnsavedChanges
   let hasUnsavedChanges = $state(false);
+  let sessionHasUnsavedChanges = $state(false);
 
   $effect(() => {
-    hasUnsavedChanges = lessonApi.isDirty && mode === MODES.edit;
+    hasUnsavedChanges = (lessonApi.isDirty || sessionHasUnsavedChanges) && mode === MODES.edit;
   });
 
   const currentLessonContentItem = $derived(
@@ -168,7 +169,7 @@
       timeoutId = undefined;
       queueSave('manual');
     }
-    hasUnsavedChanges = false;
+    if (!sessionHasUnsavedChanges) hasUnsavedChanges = false;
     setModeQueryParam(mode === MODES.edit ? MODES.view : MODES.edit);
   }
 
@@ -282,8 +283,9 @@
   function patchLessonListItemLocally() {
     if (!lessonApi.lesson) return;
 
+    const title = lessonApi.lesson.title;
     courseApi.updateContentItem(lessonApi.lesson.id, ContentType.Lesson, {
-      title: lessonApi.lesson.title ?? '',
+      ...(title ? { title } : {}),
       isUnlocked: lessonApi.lesson.isUnlocked ?? null,
       hasNoteContent: hasLessonNoteContent(lessonApi.lesson.id),
       hasSlideContent: resolveLessonSlides(lessonApi.lesson.slides, lessonApi.lesson.slideUrl).length > 0,
@@ -295,6 +297,7 @@
   async function saveLesson(versionIntent: TLessonVersionIntentRequest = 'auto') {
     if (!lessonApi.lesson) return false;
 
+    const revisionAtSave = lessonApi.revision;
     const [isLessonUpdated] = await Promise.all([
       lessonApi.update(courseApi.course?.id || '', lessonId, {
         title: lessonApi.lesson.title || undefined,
@@ -311,10 +314,12 @@
       saveOrUpdateTranslation(lessonApi.currentLocale, lessonId, versionIntent)
     ]);
 
-    if (isLessonUpdated) {
+    if (isLessonUpdated && revisionAtSave === lessonApi.revision) {
       patchLessonListItemLocally();
       clearDraft(lessonId, lessonApi.currentLocale);
       lessonApi.isDirty = false;
+    } else if (revisionAtSave !== lessonApi.revision) {
+      autoSave();
     }
   }
 
@@ -397,7 +402,7 @@
         lessonApi.translations[lessonId] = {} as Record<TLocale, string>;
       }
       lessonApi.translations[lessonId][lessonApi.currentLocale] = draft.content;
-      lessonApi.isDirty = true;
+      lessonApi.markDirty();
     } else {
       clearDraft(lessonId, lessonApi.currentLocale);
     }
@@ -463,7 +468,7 @@
   <Page.HeaderContent>
     <LessonPageEditHeader
       {mode}
-      title={lessonTitle}
+      title={mode === MODES.edit ? (lessonApi.lesson?.title ?? '') : lessonTitle}
       isUnlocked={lessonApi.lesson?.isUnlocked ?? false}
       {isDeletingLesson}
       onTitleChange={handleLessonTitleChange}
@@ -619,7 +624,7 @@
 
           <!-- Settings Tab (fixed, not part of lessonTabsOrder) -->
           <UnderlineTabs.Content value={SETTINGS_TAB_VALUE}>
-            <LessonSettingsTab />
+            <LessonSettingsTab bind:hasUnsavedSessionChanges={sessionHasUnsavedChanges} />
           </UnderlineTabs.Content>
           <!-- End Settings Tab -->
         </UnderlineTabs.Root>

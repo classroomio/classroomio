@@ -3568,7 +3568,6 @@
     },
     "filters": {
       "search_placeholder": "Rechercher des ressources",
-      "apply": "Postuler",
       "status_options": {
         "all": "Tous les statuts",
         "active": "Actif",

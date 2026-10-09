@@ -3568,7 +3568,6 @@
     },
     "filters": {
       "search_placeholder": "Søg efter aktiver",
-      "apply": "Ansøg",
       "status_options": {
         "all": "Alle statusser",
         "active": "Aktiv",

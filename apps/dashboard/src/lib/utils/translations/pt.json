@@ -3568,7 +3568,6 @@
     },
     "filters": {
       "search_placeholder": "Pesquisar ativos",
-      "apply": "Aplicar",
       "status_options": {
         "all": "Todos os status",
         "active": "Ativo",

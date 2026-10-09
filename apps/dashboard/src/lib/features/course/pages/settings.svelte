@@ -20,6 +20,7 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
+  import { NumberField } from '@cio/ui/custom/number-field';
   import { Input } from '@cio/ui/base/input';
   import * as Field from '@cio/ui/base/field';
   import {
@@ -49,12 +50,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isObject } from '$lib/utils/functions/isObject';
   import { snackbar } from '$features/ui/snackbar/store';
-  import {
-    generateSlug,
-    isPublishedComplianceMissingDeadline,
-    isSelfEnrollmentAllowed,
-    parseBoundedInteger
-  } from '@cio/utils/functions';
+  import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
@@ -303,17 +299,31 @@
         ...(hasTagChanges ? { tagIds: normalizedSelectedTagIds } : {})
       };
 
+      const draftAtSave = JSON.stringify({
+        settings: $settings,
+        tagIds: [...selectedTagIds].sort(),
+        avatar
+      });
+
       const response = await courseApi.update(courseApi.course.id, updatePayload, {
         showSuccessToast: !hasTagChanges
       });
 
       if (courseApi.success && response) {
+        const draftUnchanged =
+          JSON.stringify({ settings: $settings, tagIds: [...selectedTagIds].sort(), avatar }) === draftAtSave;
+
         if (hasTagChanges) {
+          // The server stored the submitted tags; keep the user's newer toggles selected.
           initialTagIds = normalizedSelectedTagIds;
-          selectedTagIds = normalizedSelectedTagIds;
+          if (draftUnchanged) {
+            selectedTagIds = normalizedSelectedTagIds;
+          }
         }
 
-        hasUnsavedChanges = false;
+        if (draftUnchanged) {
+          hasUnsavedChanges = false;
+        }
       }
     } catch (error) {
       console.error(error);
@@ -556,29 +566,6 @@
     hasUnsavedChanges = true;
   }
 
-  function onThresholdInput(e: Event & { currentTarget: HTMLInputElement }) {
-    const raw = e.currentTarget.value;
-    if (raw.trim() === '') return;
-    const next = Number(raw);
-    if (!Number.isInteger(next) || next < 0 || next > 100) return;
-    if (next === $settings.certificate.threshold) return;
-
-    $settings.certificate.threshold = next;
-    delete courseApi.errors['certificate.threshold'];
-    hasUnsavedChanges = true;
-  }
-
-  function onThresholdChange(e: Event & { currentTarget: HTMLInputElement }) {
-    const committed = courseApi.course?.certificate?.threshold ?? 100;
-    const next = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? committed;
-    e.currentTarget.value = String(next);
-    if (next === $settings.certificate.threshold) return;
-
-    $settings.certificate.threshold = next;
-    delete courseApi.errors['certificate.threshold'];
-    hasUnsavedChanges = true;
-  }
-
   // Default for the type being saved, not the stored one, using the compliance settings handleSave will send.
   function getPendingExerciseMinScoreDefault() {
     const pendingCompliance = courseApi.course?.compliance ?? DEFAULT_COMPLIANCE_SETTINGS;
@@ -596,32 +583,6 @@
     }
 
     delete courseApi.errors['certificate.requiredExerciseId'];
-    delete courseApi.errors['certificate.exerciseMinScorePercent'];
-    hasUnsavedChanges = true;
-  }
-
-  function onMinExerciseScoreInput(e: Event & { currentTarget: HTMLInputElement }) {
-    const raw = e.currentTarget.value;
-    if (raw.trim() === '') return;
-    const next = Number(raw);
-    if (!Number.isInteger(next) || next < 0 || next > 100) return;
-    if (next === ($settings.certificate.exerciseMinScorePercent ?? 100)) return;
-
-    $settings.certificate.exerciseMinScorePercent = next;
-    delete courseApi.errors['certificate.exerciseMinScorePercent'];
-    hasUnsavedChanges = true;
-  }
-
-  function onMinExerciseScoreChange(e: Event & { currentTarget: HTMLInputElement }) {
-    const committed =
-      courseApi.course?.certificate?.exerciseMinScorePercent ??
-      (courseApi.course?.certificate?.requiredExerciseId ? 100 : null);
-    const fallback = committed ?? 100;
-    const next = parseBoundedInteger(e.currentTarget.value, { min: 0, max: 100 }) ?? fallback;
-    e.currentTarget.value = String(next);
-    if (next === $settings.certificate.exerciseMinScorePercent) return;
-
-    $settings.certificate.exerciseMinScorePercent = next;
     delete courseApi.errors['certificate.exerciseMinScorePercent'];
     hasUnsavedChanges = true;
   }
@@ -949,16 +910,19 @@
           <Field.Label for="course-completion-threshold">
             <a href="#completion-threshold" class="hover:underline">{$t('course.certification.threshold_label')}</a>
           </Field.Label>
-          <Input
-            id="course-completion-threshold"
-            type="number"
+          <NumberField
+            name="course-completion-threshold"
+            integer
             min={0}
             max={100}
-            class="w-full"
-            value={String($settings.certificate.threshold)}
-            oninput={onThresholdInput}
-            onchange={onThresholdChange}
-            disabled={areCompletionRulesLocked}
+            className="w-full"
+            value={$settings.certificate.threshold ?? 100}
+            onValueChange={(next) => {
+              $settings.certificate.threshold = next ?? 100;
+              courseApi.clearError('certificate.threshold');
+              hasUnsavedChanges = true;
+            }}
+            isDisabled={areCompletionRulesLocked}
           />
           <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
           {#if courseApi.errors['certificate.threshold']}
@@ -1006,16 +970,19 @@
                 >{$t('course.certification.min_exercise_score_label')}</a
               >
             </Field.Label>
-            <Input
-              id="course-min-exercise-score"
-              type="number"
+            <NumberField
+              name="course-min-exercise-score"
+              integer
               min={0}
               max={100}
-              class="w-full"
-              value={String($settings.certificate.exerciseMinScorePercent ?? 100)}
-              oninput={onMinExerciseScoreInput}
-              onchange={onMinExerciseScoreChange}
-              disabled={areCompletionRulesLocked}
+              className="w-full"
+              value={$settings.certificate.exerciseMinScorePercent ?? 100}
+              onValueChange={(next) => {
+                $settings.certificate.exerciseMinScorePercent = next ?? 100;
+                courseApi.clearError('certificate.exerciseMinScorePercent');
+                hasUnsavedChanges = true;
+              }}
+              isDisabled={areCompletionRulesLocked}
             />
             <Field.Description>{$t('course.certification.min_exercise_score_helper')}</Field.Description>
             {#if courseApi.errors['certificate.exerciseMinScorePercent']}

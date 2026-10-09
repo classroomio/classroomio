@@ -14,7 +14,7 @@ flowchart LR
   D -->|Bearer PRIVATE_SERVER_KEY| A[api :3081]
   A --> P[(postgres)]
   A --> R[(redis)]
-  A --> M[(minio / S3)]
+  A --> M[(storage / S3)]
   J[jobs worker] --> R
   J --> P
   J --> M
@@ -27,8 +27,8 @@ flowchart LR
 | `jobs` | `classroomio/jobs` | — | Background worker (BullMQ). Drains the Redis queues: video processing, transcription, AI course generation, emails, notifications, maintenance. Ships with ffmpeg. |
 | `postgres` | `postgres:16-alpine` | internal | The database. All state lives here (volume `postgres-data`). |
 | `redis` | `redis:7-alpine` | internal | Job queues and caching, persisted with AOF (volume `redis-data`). |
-| `minio` | `minio/minio` | 9000/9001 | S3-compatible object storage for uploads (volume `minio-data`). Swappable for AWS S3 / Cloudflare R2. |
-| `minio-init` | `minio/mc` | — | One-shot: creates the `videos`, `documents`, and `media` buckets, makes `media` publicly downloadable, then exits. |
+| `storage` | `chrislusf/seaweedfs` | 9000 | S3-compatible object storage (SeaweedFS) for uploads (volume `storage-data`). Swappable for AWS S3 / Cloudflare R2. |
+| `storage-init` | `chrislusf/seaweedfs` | — | One-shot: creates the `videos`, `documents`, and `media` buckets, then exits. `media` is public-read. |
 
 The app services are pinned by one variable, `CIO_VERSION`. See
 [Versions & upgrades](/self-hosted/configuration/versions).

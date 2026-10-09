@@ -3568,7 +3568,6 @@
     },
     "filters": {
       "search_placeholder": "Buscar activos",
-      "apply": "Aplicar",
       "status_options": {
         "all": "Todos los estados",
         "active": "Activo",

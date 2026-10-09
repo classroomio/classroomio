@@ -1412,7 +1412,6 @@
     },
     "filters": {
       "search_placeholder": "Search assets",
-      "apply": "Apply",
       "refresh": "Refresh",
       "kind_options": {
         "all": "All types",

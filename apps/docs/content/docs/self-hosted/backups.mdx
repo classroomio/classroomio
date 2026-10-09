@@ -15,9 +15,9 @@ Two things hold all of your data: the **Postgres database** (courses, users, org
 This writes two timestamped files into `./backups/`:
 
 - `classroomio-db-<timestamp>.sql.gz`: a full `pg_dump` of the database.
-- `classroomio-minio-<timestamp>.tar.gz`: an archive of the bundled MinIO volume.
+- `classroomio-storage-<timestamp>.tar.gz`: an archive of the bundled object-storage volume.
 
-If you use external S3/R2 instead of the bundled MinIO, the second step is skipped. Use your
+If you use external S3/R2 instead of the bundled store, the second step is skipped. Use your
 provider's backup or replication tools for the buckets.
 
 `./classroomio.sh upgrade` runs this backup automatically before pulling new images, so every
@@ -41,9 +41,9 @@ The script runs the equivalent of:
 docker compose --env-file .env -p classroomio -f docker-compose.images.yaml \
   exec -T postgres pg_dump -U postgres classroomio | gzip > backups/db.sql.gz
 
-# MinIO volume
-docker run --rm -v classroomio_minio-data:/data:ro -v "$PWD/backups":/backup \
-  alpine tar czf /backup/minio.tar.gz -C /data .
+# Object-storage volume
+docker run --rm -v classroomio_storage-data:/data:ro -v "$PWD/backups":/backup \
+  alpine tar czf /backup/storage.tar.gz -C /data .
 ```
 
 ## Restoring
@@ -71,8 +71,8 @@ command above.
 ### 3. Restore object storage
 
 ```zsh title="Terminal"
-docker run --rm -v classroomio_minio-data:/data -v "$PWD/backups":/backup \
-  alpine sh -c "cd /data && tar xzf /backup/classroomio-minio-<timestamp>.tar.gz"
+docker run --rm -v classroomio_storage-data:/data -v "$PWD/backups":/backup \
+  alpine sh -c "cd /data && tar xzf /backup/classroomio-storage-<timestamp>.tar.gz"
 ```
 
 ### 4. Start everything again
@@ -83,7 +83,7 @@ docker run --rm -v classroomio_minio-data:/data -v "$PWD/backups":/backup \
 
 :::danger[The fastest way to lose data is a cleanup command]
 `docker compose down -v` and `docker volume prune` **delete** the `postgres-data`, `redis-data`,
-and `minio-data` volumes. Never run them on a production host. See
+and `storage-data` volumes. Never run them on a production host. See
 [Troubleshooting → disk space](/self-hosted/troubleshooting#no-space-left-on-device) for safe
 alternatives.
 :::

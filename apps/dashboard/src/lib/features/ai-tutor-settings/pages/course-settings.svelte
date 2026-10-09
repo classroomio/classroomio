@@ -9,7 +9,7 @@
   import { Switch } from '@cio/ui/base/switch';
   import { Label } from '@cio/ui/base/label';
   import { t } from '$lib/utils/functions/translations';
-  import { AttentionHighlight } from '$features/ui';
+  import { AttentionHighlight, UnsavedChanges } from '$features/ui';
   import { aiTutorApi } from '../api/ai-tutor.svelte';
   import TutorSettingsForm from '../components/tutor-settings-form.svelte';
 
@@ -79,6 +79,7 @@
 </script>
 
 <Page.Root class="mx-auto flex w-[90%] px-4 md:max-w-2xl lg:max-w-3xl">
+  <UnsavedChanges {hasUnsavedChanges} />
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>{$t('aiTutor.page.course.title')}</Page.Title>

@@ -116,6 +116,12 @@ describe('v1McpUsageMiddleware', () => {
     expect(mocks.complete).toHaveBeenCalledWith('reservation-id', 'GET /public-api/v1/courses', 0);
   });
 
+  it('reserves HEAD as a read, matching publicApiScopesMiddleware', async () => {
+    await buildApp().request('/public-api/v1/courses', { method: 'HEAD' });
+
+    expect(mocks.reserve).toHaveBeenCalledWith(expect.objectContaining({ id: 'key-id' }), 'read', 'pending HEAD');
+  });
+
   it('reserves under the same category every mapped tool is billed as (GET is read, everything else write)', () => {
     for (const methods of Object.values(MCP_V1_ROUTE_TOOL_MAP)) {
       for (const [method, toolName] of Object.entries(methods)) {
