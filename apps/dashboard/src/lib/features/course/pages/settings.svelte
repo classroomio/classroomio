@@ -15,6 +15,14 @@
   import CertificateDeadlineRequiredDialog from '$features/course/components/certificate-deadline-required-dialog.svelte';
   import { CourseTagPicker, PublicConversionSettingsCard } from '$features/course/components';
   import TemplateSettingsSection from '$features/course/components/template-settings-section.svelte';
+  import ReminderPicker from '$features/course/components/live-session-reminders/reminder-picker.svelte';
+  import DeliveryLog from '$features/course/components/live-session-reminders/delivery-log.svelte';
+  import {
+    createReminderRow,
+    getReminderRowErrors,
+    reminderRowsToOffsets
+  } from '$features/course/utils/live-session-reminder-utils';
+  import { resolveLiveSessionReminderOffsets } from '@cio/utils/constants/live-session-reminder';
   import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
@@ -220,6 +228,14 @@
       return;
     }
 
+    if (
+      $settings.type === 'LIVE_CLASS' &&
+      Object.keys(getReminderRowErrors($settings.liveSessionReminders)).length > 0
+    ) {
+      snackbar.error('course.navItem.settings.live_session_reminders.validation.fix_errors');
+      return;
+    }
+
     if (Number(courseApi.course?.cost) > 0 && !(courseApi.course?.metadata?.paymentLink ?? '').trim()) {
       snackbar.error('course.navItem.landing_page.editor.pricing_form.payment_required');
       return;
@@ -250,8 +266,10 @@
         courseApi.course.slug = generateSlug($settings.courseTitle, { appendTimestamp: true });
       }
 
+      const reminderOffsetsPayload = getReminderOffsetsPayload(courseApi.course);
       const metadataPayload = {
         ...(isObject(courseApi.course.metadata) ? courseApi.course.metadata : {}),
+        ...reminderOffsetsPayload,
         lessonTabsOrder: $settings.tabs,
         grading: $settings.grading,
         lessonDownload: $settings.lessonDownload,
@@ -369,6 +387,9 @@
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
         callout: normalizeCallout(course.callout),
         welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
+        liveSessionReminders: resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes).map(
+          createReminderRow
+        ),
         certificate: {
           deadline: course.certificate?.deadline ?? null,
           threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
@@ -382,6 +403,19 @@
         }
       });
     });
+  }
+
+  function getReminderOffsetsPayload(course: Course) {
+    if ($settings.type !== 'LIVE_CLASS') return {};
+
+    const nextOffsets = reminderRowsToOffsets($settings.liveSessionReminders);
+    const currentOffsets = resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes);
+    const isUnchanged =
+      nextOffsets.length === currentOffsets.length &&
+      nextOffsets.every((offsetMinutes) => currentOffsets.includes(offsetMinutes));
+    if (isUnchanged) return {};
+
+    return { liveSessionReminderOffsetsMinutes: nextOffsets };
   }
 
   export function handleDiscard() {
@@ -930,6 +964,27 @@
       </Field.Group>
     </SettingsCard>
   </AttentionHighlight>
+
+  {#if $settings.type === 'LIVE_CLASS' && courseApi.course?.id}
+    <SettingsCard
+      id="live-session-reminders"
+      title={$t('course.navItem.settings.live_session_reminders.legend')}
+      description={$t('course.navItem.settings.live_session_reminders.description')}
+    >
+      <Field.Group>
+        <ReminderPicker
+          bind:rows={$settings.liveSessionReminders}
+          onchange={() => {
+            hasUnsavedChanges = true;
+          }}
+        />
+
+        <SettingsSeparator />
+
+        <DeliveryLog courseId={courseApi.course.id} timezone={courseApi.course.metadata?.sessionTimezone} />
+      </Field.Group>
+    </SettingsCard>
+  {/if}
 
   <SettingsCard id="content" title={$t('course.navItem.settings.content_card_title')}>
     <Field.Group>

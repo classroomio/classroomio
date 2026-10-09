@@ -1136,7 +1136,65 @@
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo.",
         "progression_mode_description": "Controle si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden. La finalización de la visualización del video solo rastrea los videos subidos.",
         "allow_markdown_export": "Permitir a los alumnos copiar las páginas de las lecciones como Markdown",
-        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección desbloqueada."
+        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección desbloqueada.",
+        "live_session_reminders": {
+          "legend": "Recordatorios de sesión por correo",
+          "description": "Elija cuándo reciben los estudiantes inscritos un correo con el enlace para unirse antes de cada sesión en vivo.",
+          "empty": "No hay recordatorios. Los estudiantes no recibirán correos antes de las sesiones en vivo.",
+          "add": "Agregar recordatorio",
+          "presets_label": "Agregar rápido:",
+          "remove": "Quitar recordatorio",
+          "unit_label": "Unidad",
+          "units": {
+            "days": "Días",
+            "hours": "Horas",
+            "minutes": "Minutos"
+          },
+          "duration": {
+            "days": "{count, plural, one {# día} other {# días}}",
+            "hours": "{count, plural, one {# hora} other {# horas}}",
+            "minutes": "{count, plural, one {# minuto} other {# minutos}}"
+          },
+          "preview": "{duration} antes de cada sesión",
+          "offset_before": "{duration} antes",
+          "max_count": "Puede agregar hasta {count} recordatorios.",
+          "validation": {
+            "amount": "Introduzca un número entero de 1 o más.",
+            "min": "Los recordatorios deben ser al menos 15 minutos antes de la sesión.",
+            "max": "Los recordatorios pueden ser como máximo 7 días antes de la sesión.",
+            "duplicate": "Ya tiene un recordatorio a esta hora.",
+            "fix_errors": "Corrija los errores de los recordatorios de sesión antes de guardar."
+          },
+          "log": {
+            "title": "Registro de envíos",
+            "description": "Correos de recordatorio de las sesiones de los últimos 30 días y de las próximas sesiones.",
+            "empty": "Aún no hay recordatorios. Aparecerán aquí a medida que se acerquen las sesiones.",
+            "load_error": "No se pudo cargar el registro de envíos de recordatorios.",
+            "columns": {
+              "session": "Sesión",
+              "student": "Estudiante",
+              "reminder": "Recordatorio",
+              "status": "Estado",
+              "detail": "Detalle"
+            }
+          },
+          "statuses": {
+            "pending": "Pendiente",
+            "queued": "En cola",
+            "sent": "Enviado",
+            "failed": "Fallido",
+            "skipped": "Omitido"
+          },
+          "skip_reasons": {
+            "preferences": "El estudiante desactivó los correos de recordatorio de sesiones.",
+            "no_email": "El estudiante no tiene dirección de correo electrónico.",
+            "lesson_past": "La sesión ya había comenzado.",
+            "offset_removed": "Este recordatorio se eliminó de la configuración del curso.",
+            "lesson_rescheduled": "Cambió la hora de la sesión o el enlace para unirse.",
+            "window_passed": "La hora del recordatorio ya había pasado cuando se programó.",
+            "unenrolled": "El estudiante ya no está inscrito."
+          }
+        }
       },
       "analytics": {
         "title": "Analíticas"
@@ -2685,7 +2743,7 @@
         "session": {
           "join": "Unirse a la sesión",
           "heading": "Sesión en vivo",
-          "intro": "Configure el enlace para unirse y la hora programada para esta clase en vivo. Los estudiantes reciben recordatorios 24 horas y 1 hora antes.",
+          "intro": "Configure el enlace para unirse y la hora programada para esta clase en vivo. Los estudiantes reciben recordatorios por correo antes de cada sesión. Elija cuándo en la configuración del curso.",
           "link_label": "Enlace para unirse (Zoom, Meet, etc.)",
           "datetime_label": "Fecha y hora",
           "timezone_label": "Zona horaria",

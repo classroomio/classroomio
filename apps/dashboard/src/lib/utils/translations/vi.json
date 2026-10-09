@@ -1136,7 +1136,65 @@
         "certificate_deadline_required_description": "Các khóa học tuân thủ yêu cầu thời hạn cấp chứng chỉ trước khi học viên có thể đăng ký. Vui lòng đặt thời hạn trong cài đặt khóa học trước khi xuất bản.",
         "progression_mode_description": "Kiểm soát xem học sinh có thể truy cập tất cả nội dung đã mở khóa hay phải hoàn thành các mục theo thứ tự. Việc xem xong video chỉ theo dõi các video đã tải lên.",
         "allow_markdown_export": "Cho phép học viên sao chép trang bài học dưới dạng Markdown",
-        "allow_markdown_export_description": "Khi bật, các trang bài học công khai sẽ hiện nút Sao chép trang để xuất nội dung bài học (không gồm video) dưới dạng Markdown. Thao tác này cũng công khai một URL Markdown cho mỗi bài học đã mở khóa."
+        "allow_markdown_export_description": "Khi bật, các trang bài học công khai sẽ hiện nút Sao chép trang để xuất nội dung bài học (không gồm video) dưới dạng Markdown. Thao tác này cũng công khai một URL Markdown cho mỗi bài học đã mở khóa.",
+        "live_session_reminders": {
+          "legend": "Email nhắc phiên học",
+          "description": "Chọn thời điểm học viên đã đăng ký nhận email kèm liên kết tham gia trước mỗi phiên trực tiếp.",
+          "empty": "Không có lời nhắc. Học viên sẽ không nhận email trước các phiên trực tiếp.",
+          "add": "Thêm lời nhắc",
+          "presets_label": "Thêm nhanh:",
+          "remove": "Xóa lời nhắc",
+          "unit_label": "Đơn vị",
+          "units": {
+            "days": "Ngày",
+            "hours": "Giờ",
+            "minutes": "Phút"
+          },
+          "duration": {
+            "days": "{count, plural, other {# ngày}}",
+            "hours": "{count, plural, other {# giờ}}",
+            "minutes": "{count, plural, other {# phút}}"
+          },
+          "preview": "{duration} trước mỗi phiên",
+          "offset_before": "{duration} trước",
+          "max_count": "Bạn có thể thêm tối đa {count} lời nhắc.",
+          "validation": {
+            "amount": "Nhập một số nguyên từ 1 trở lên.",
+            "min": "Lời nhắc phải trước phiên ít nhất 15 phút.",
+            "max": "Lời nhắc chỉ có thể trước phiên tối đa 7 ngày.",
+            "duplicate": "Bạn đã có một lời nhắc vào thời điểm này.",
+            "fix_errors": "Hãy sửa lỗi của lời nhắc phiên trước khi lưu."
+          },
+          "log": {
+            "title": "Nhật ký gửi",
+            "description": "Email nhắc cho các phiên trong 30 ngày qua và các phiên sắp tới.",
+            "empty": "Chưa có lời nhắc nào. Chúng sẽ xuất hiện ở đây khi các phiên đến gần.",
+            "load_error": "Không thể tải nhật ký gửi lời nhắc.",
+            "columns": {
+              "session": "Phiên",
+              "student": "Học viên",
+              "reminder": "Lời nhắc",
+              "status": "Trạng thái",
+              "detail": "Chi tiết"
+            }
+          },
+          "statuses": {
+            "pending": "Đang chờ",
+            "queued": "Trong hàng đợi",
+            "sent": "Đã gửi",
+            "failed": "Thất bại",
+            "skipped": "Đã bỏ qua"
+          },
+          "skip_reasons": {
+            "preferences": "Học viên đã tắt email nhắc phiên.",
+            "no_email": "Học viên không có địa chỉ email.",
+            "lesson_past": "Phiên đã bắt đầu.",
+            "offset_removed": "Lời nhắc này đã bị xóa khỏi cài đặt khóa học.",
+            "lesson_rescheduled": "Thời gian hoặc liên kết tham gia của phiên đã thay đổi.",
+            "window_passed": "Thời điểm nhắc đã qua khi lời nhắc được lên lịch.",
+            "unenrolled": "Học viên không còn đăng ký khóa học."
+          }
+        }
       },
       "analytics": {
         "title": "Phân tích"
@@ -2685,7 +2743,7 @@
         "session": {
           "join": "Tham gia phiên",
           "heading": "Phiên trực tiếp",
-          "intro": "Đặt liên kết tham gia và thời gian dự kiến cho lớp học trực tiếp này. Học sinh nhận được lời nhắc 24 giờ và 1 giờ trước.",
+          "intro": "Đặt liên kết tham gia và thời gian dự kiến cho lớp học trực tiếp này. Học viên nhận email nhắc trước mỗi phiên. Chọn thời điểm trong cài đặt khóa học.",
           "link_label": "Liên kết tham gia (Zoom, Meet, v.v.)",
           "datetime_label": "Ngày và giờ",
           "timezone_label": "Múi giờ",

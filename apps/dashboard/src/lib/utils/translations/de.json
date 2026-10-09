@@ -1136,7 +1136,65 @@
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
         "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen. Beim Abschluss der Videowiedergabe werden nur hochgeladene Videos erfasst.",
         "allow_markdown_export": "Lernenden erlauben, Lektionsseiten als Markdown zu kopieren",
-        "allow_markdown_export_description": "Wenn aktiviert, zeigen öffentliche Lektionsseiten eine „Seite kopieren“-Schaltfläche, die den Lektionsinhalt (ohne Videos) als Markdown exportiert. Dadurch wird außerdem eine öffentliche Markdown-URL für jede entsperrte Lektion veröffentlicht."
+        "allow_markdown_export_description": "Wenn aktiviert, zeigen öffentliche Lektionsseiten eine „Seite kopieren“-Schaltfläche, die den Lektionsinhalt (ohne Videos) als Markdown exportiert. Dadurch wird außerdem eine öffentliche Markdown-URL für jede entsperrte Lektion veröffentlicht.",
+        "live_session_reminders": {
+          "legend": "E-Mail-Erinnerungen für Sitzungen",
+          "description": "Legen Sie fest, wann eingeschriebene Studierende vor jeder Live-Sitzung eine E-Mail mit dem Beitrittslink erhalten.",
+          "empty": "Keine Erinnerungen. Studierende erhalten vor Live-Sitzungen keine E-Mails.",
+          "add": "Erinnerung hinzufügen",
+          "presets_label": "Schnell hinzufügen:",
+          "remove": "Erinnerung entfernen",
+          "unit_label": "Einheit",
+          "units": {
+            "days": "Tage",
+            "hours": "Stunden",
+            "minutes": "Minuten"
+          },
+          "duration": {
+            "days": "{count, plural, one {# Tag} other {# Tage}}",
+            "hours": "{count, plural, one {# Stunde} other {# Stunden}}",
+            "minutes": "{count, plural, one {# Minute} other {# Minuten}}"
+          },
+          "preview": "{duration} vor jeder Sitzung",
+          "offset_before": "{duration} vorher",
+          "max_count": "Sie können bis zu {count} Erinnerungen hinzufügen.",
+          "validation": {
+            "amount": "Geben Sie eine ganze Zahl von 1 oder größer ein.",
+            "min": "Erinnerungen müssen mindestens 15 Minuten vor der Sitzung liegen.",
+            "max": "Erinnerungen dürfen höchstens 7 Tage vor der Sitzung liegen.",
+            "duplicate": "Sie haben bereits eine Erinnerung zu diesem Zeitpunkt.",
+            "fix_errors": "Beheben Sie die Fehler bei den Sitzungserinnerungen, bevor Sie speichern."
+          },
+          "log": {
+            "title": "Zustellprotokoll",
+            "description": "Erinnerungs-E-Mails für Sitzungen der letzten 30 Tage und für bevorstehende Sitzungen.",
+            "empty": "Noch keine Erinnerungen. Sie erscheinen hier, sobald Sitzungen näher rücken.",
+            "load_error": "Das Zustellprotokoll der Erinnerungen konnte nicht geladen werden.",
+            "columns": {
+              "session": "Sitzung",
+              "student": "Studierende/r",
+              "reminder": "Erinnerung",
+              "status": "Status",
+              "detail": "Details"
+            }
+          },
+          "statuses": {
+            "pending": "Ausstehend",
+            "queued": "In der Warteschlange",
+            "sent": "Gesendet",
+            "failed": "Fehlgeschlagen",
+            "skipped": "Übersprungen"
+          },
+          "skip_reasons": {
+            "preferences": "Die/der Studierende hat E-Mail-Erinnerungen für Sitzungen deaktiviert.",
+            "no_email": "Die/der Studierende hat keine E-Mail-Adresse.",
+            "lesson_past": "Die Sitzung hatte bereits begonnen.",
+            "offset_removed": "Diese Erinnerung wurde aus den Kurseinstellungen entfernt.",
+            "lesson_rescheduled": "Die Sitzungszeit oder der Beitrittslink wurde geändert.",
+            "window_passed": "Der Erinnerungszeitpunkt war bei der Planung bereits vorbei.",
+            "unenrolled": "Die/der Studierende ist nicht mehr eingeschrieben."
+          }
+        }
       },
       "analytics": {
         "title": "Analysen"
@@ -2685,7 +2743,7 @@
         "session": {
           "join": "Nehmen Sie an der Sitzung teil",
           "heading": "Live-Sitzung",
-          "intro": "Legen Sie den Beitrittslink und die geplante Zeit für diesen Live-Kurs fest. Schüler erhalten 24 Stunden und 1 Stunde vorher Erinnerungen.",
+          "intro": "Legen Sie den Beitrittslink und die geplante Zeit für diesen Live-Kurs fest. Studierende erhalten vor jeder Sitzung E-Mail-Erinnerungen. Den Zeitpunkt wählen Sie in den Kurseinstellungen.",
           "link_label": "Beitrittslink (Zoom, Meet usw.)",
           "datetime_label": "Datum und Uhrzeit",
           "timezone_label": "Zeitzone",

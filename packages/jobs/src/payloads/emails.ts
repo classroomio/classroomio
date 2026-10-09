@@ -18,7 +18,9 @@ export const ZSendTemplateEmailPayload = z.object({
   organizationId: z.string().uuid().optional(),
   /** Optional iCalendar (.ics) body attached as a text/calendar part. */
   ics: z.string().optional(),
-  locale: z.enum(EMAIL_LOCALES).optional()
+  locale: z.enum(EMAIL_LOCALES).optional(),
+  /** `live_session_reminder_delivery.id` the worker reports send status to. */
+  reminderDeliveryId: z.uuid().optional()
 });
 export type TSendTemplateEmailPayload = z.infer<typeof ZSendTemplateEmailPayload>;
 

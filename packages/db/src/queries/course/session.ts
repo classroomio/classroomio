@@ -24,15 +24,68 @@ export type UpcomingSessionReminderRow = {
   organizationTheme: string | null;
 };
 
+export type UpcomingLiveSessionLesson = {
+  lessonId: string;
+  courseId: string;
+  lessonAt: string;
+  reminderOffsetsMinutes: number[] | null;
+};
+
+function upcomingLiveSessionFilters(now: Date) {
+  return [
+    eq(schema.course.type, 'LIVE_CLASS'),
+    eq(schema.course.status, 'ACTIVE'),
+    eq(schema.course.isPublished, true),
+    isNotNull(schema.lesson.callUrl),
+    isNotNull(schema.lesson.lessonAt),
+    gt(schema.lesson.lessonAt, now.toISOString())
+  ];
+}
+
 /**
- * Lessons that are live sessions (have a `callUrl`) starting within the next
- * ~25h, on a published/active LIVE_CLASS course, joined to each enrolled
- * student + org branding. One row per (session × student) for the reminder scan.
+ * Live sessions (lessons with a `callUrl`) on published, active LIVE_CLASS courses starting before `until`, with each
+ * course's configured reminder offsets (null when the course never configured any).
  */
-export async function listUpcomingSessionsForReminderScan(): Promise<UpcomingSessionReminderRow[]> {
+export async function listUpcomingLiveSessionLessons(until: Date): Promise<UpcomingLiveSessionLesson[]> {
   try {
     const now = new Date();
-    const horizon = new Date(now.getTime() + 25 * 60 * 60 * 1000);
+
+    const rows = await db
+      .select({
+        lessonId: schema.lesson.id,
+        courseId: schema.course.id,
+        lessonAt: schema.lesson.lessonAt,
+        courseMetadata: schema.course.metadata
+      })
+      .from(schema.lesson)
+      .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+      .where(and(...upcomingLiveSessionFilters(now), lt(schema.lesson.lessonAt, until.toISOString())));
+
+    return rows
+      .filter((row) => row.lessonAt)
+      .map((row) => ({
+        lessonId: row.lessonId,
+        courseId: row.courseId,
+        lessonAt: row.lessonAt!,
+        reminderOffsetsMinutes: row.courseMetadata?.liveSessionReminderOffsetsMinutes ?? null
+      }));
+  } catch (error) {
+    console.error('listUpcomingLiveSessionLessons error:', error);
+    throw new Error(
+      `Failed to list upcoming live session lessons: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * The given upcoming live sessions joined to each enrolled student + org branding. One row per (session × student)
+ * for the reminder scan.
+ */
+export async function listUpcomingSessionsForReminderScan(lessonIds: string[]): Promise<UpcomingSessionReminderRow[]> {
+  try {
+    if (lessonIds.length === 0) return [];
+
+    const now = new Date();
 
     const result = await db
       .select({
@@ -61,14 +114,9 @@ export async function listUpcomingSessionsForReminderScan(): Promise<UpcomingSes
       .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
       .where(
         and(
-          eq(schema.course.type, 'LIVE_CLASS'),
-          eq(schema.course.status, 'ACTIVE'),
-          eq(schema.course.isPublished, true),
-          eq(schema.groupmember.roleId, ROLE.STUDENT),
-          isNotNull(schema.lesson.callUrl),
-          isNotNull(schema.lesson.lessonAt),
-          gt(schema.lesson.lessonAt, now.toISOString()),
-          lt(schema.lesson.lessonAt, horizon.toISOString())
+          ...upcomingLiveSessionFilters(now),
+          inArray(schema.lesson.id, lessonIds),
+          eq(schema.groupmember.roleId, ROLE.STUDENT)
         )
       );
 

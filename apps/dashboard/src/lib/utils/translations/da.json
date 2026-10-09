@@ -1136,7 +1136,65 @@
         "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
         "progression_mode_description": "Kontroller, om eleverne kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge. Afslutning af videoafspilning sporer kun uploadede videoer.",
         "allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
-        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion."
+        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion.",
+        "live_session_reminders": {
+          "legend": "E-mailpåmindelser om sessioner",
+          "description": "Vælg, hvornår tilmeldte elever får en e-mail med deltagelseslinket før hver livesession.",
+          "empty": "Ingen påmindelser. Eleverne får ikke e-mails før livesessioner.",
+          "add": "Tilføj påmindelse",
+          "presets_label": "Tilføj hurtigt:",
+          "remove": "Fjern påmindelse",
+          "unit_label": "Enhed",
+          "units": {
+            "days": "Dage",
+            "hours": "Timer",
+            "minutes": "Minutter"
+          },
+          "duration": {
+            "days": "{count, plural, one {# dag} other {# dage}}",
+            "hours": "{count, plural, one {# time} other {# timer}}",
+            "minutes": "{count, plural, one {# minut} other {# minutter}}"
+          },
+          "preview": "{duration} før hver session",
+          "offset_before": "{duration} før",
+          "max_count": "Du kan tilføje op til {count} påmindelser.",
+          "validation": {
+            "amount": "Indtast et helt tal på 1 eller mere.",
+            "min": "Påmindelser skal være mindst 15 minutter før sessionen.",
+            "max": "Påmindelser kan højst være 7 dage før sessionen.",
+            "duplicate": "Du har allerede en påmindelse på dette tidspunkt.",
+            "fix_errors": "Ret fejlene i sessionspåmindelserne, før du gemmer."
+          },
+          "log": {
+            "title": "Leveringslog",
+            "description": "Påmindelsesmails for sessioner i de sidste 30 dage og kommende sessioner.",
+            "empty": "Ingen påmindelser endnu. De vises her, når sessionerne nærmer sig.",
+            "load_error": "Leveringsloggen for påmindelser kunne ikke indlæses.",
+            "columns": {
+              "session": "Session",
+              "student": "Elev",
+              "reminder": "Påmindelse",
+              "status": "Status",
+              "detail": "Detaljer"
+            }
+          },
+          "statuses": {
+            "pending": "Afventer",
+            "queued": "I kø",
+            "sent": "Sendt",
+            "failed": "Mislykkedes",
+            "skipped": "Sprunget over"
+          },
+          "skip_reasons": {
+            "preferences": "Eleven har slået e-mailpåmindelser om sessioner fra.",
+            "no_email": "Eleven har ingen e-mailadresse.",
+            "lesson_past": "Sessionen var allerede startet.",
+            "offset_removed": "Denne påmindelse blev fjernet fra kursusindstillingerne.",
+            "lesson_rescheduled": "Sessionens tidspunkt eller deltagelseslink blev ændret.",
+            "window_passed": "Påmindelsestidspunktet var allerede passeret, da den blev planlagt.",
+            "unenrolled": "Eleven er ikke længere tilmeldt."
+          }
+        }
       },
       "analytics": {
         "title": "Analyse"
@@ -2685,7 +2743,7 @@
         "session": {
           "join": "Deltag i session",
           "heading": "Live-session",
-          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for dette livehold. Eleverne får rykker 24 timer og 1 time før.",
+          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for denne liveklasse. Eleverne får e-mailpåmindelser før hver session. Vælg hvornår i kursusindstillingerne.",
           "link_label": "Tilmeld dig link (Zoom, Mød osv.)",
           "datetime_label": "Dato og tid",
           "timezone_label": "Tidszone",
