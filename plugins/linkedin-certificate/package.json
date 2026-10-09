@@ -1,0 +1,9 @@
+{
+  "name": "@classroomio/plugin-linkedin-certificate",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ClassroomIO LinkedIn Certificate Share Plugin",
+  "scripts": {
+    "test": "echo \"Plugin validated\""
+  }
+}

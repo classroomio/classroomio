@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reading Time Settings</title>
+  <style>
+    :root {
+      --bg-color: var(--cio-background, #ffffff);
+      --card-bg: var(--cio-surface, #ffffff);
+      --text-main: var(--cio-foreground, #0f172a);
+      --text-muted: var(--cio-foreground-muted, #64748b);
+      --primary: var(--cio-accent, #3b82f6);
+      --primary-hover: var(--cio-accent, #2563eb);
+      --border-color: var(--cio-border, #e2e8f0);
+      --input-bg: var(--cio-surface-muted, #f8fafc);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg-color);
+      color: var(--text-main);
+      padding: 24px;
+      line-height: 1.5;
+    }
+
+    .card {
+      max-width: 480px;
+      margin: 0 auto;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="number"]:focus {
+      border-color: var(--primary);
+    }
+
+    .help-text {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Reading Time Settings</h2>
+    <p>Configure how reading durations are calculated for your students.</p>
+
+    <div class="form-group">
+      <label for="wpm">Words Per Minute (WPM)</label>
+      <input type="number" id="wpm" value="200" min="50" max="600" step="10">
+      <div class="help-text">Standard average adult reading speed is between 180 and 230 WPM.</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-primary" id="save-btn">Save Settings</button>
+    </div>
+  </div>
+
+  <script type="module">
+    let hostPort = null;
+
+    function applyTheme(theme) {
+      if (!theme?.tokens) return;
+      const root = document.documentElement;
+      for (const [key, value] of Object.entries(theme.tokens)) {
+        root.style.setProperty(`--cio-${key}`, value);
+      }
+    }
+
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'CIO_BRIDGE_HANDSHAKE_INIT') {
+        hostPort = event.ports[0];
+        if (!hostPort) return;
+
+        hostPort.onmessage = (e) => {
+          if (e.data?.type === 'CIO_BRIDGE_CONTEXT_INIT') {
+            if (e.data.theme) {
+              applyTheme(e.data.theme);
+            }
+          } else if (e.data?.type === 'CIO_THEME_CHANGE') {
+            if (e.data.theme) {
+              applyTheme(e.data.theme);
+            }
+          }
+        };
+
+        hostPort.postMessage({
+          type: 'CIO_BRIDGE_HANDSHAKE_ACK',
+          protocolVersion: '1.0',
+          nonce: event.data.nonce,
+          context: {}
+        });
+      }
+    });
+
+    document.getElementById('save-btn').addEventListener('click', () => {
+      const wpmValue = parseInt(document.getElementById('wpm').value, 10);
+      if (hostPort) {
+        hostPort.postMessage({
+          type: 'CIO_RPC_REQUEST',
+          id: `${Date.now()}`,
+          action: 'storage:set',
+          payload: { namespace: 'settings', key: 'wpm', value: wpmValue }
+        });
+
+        hostPort.postMessage({
+          type: 'CIO_RPC_REQUEST',
+          id: `${Date.now() + 1}`,
+          action: 'toast',
+          payload: { message: 'Reading speed preference saved!', variant: 'success' }
+        });
+      } else {
+        alert('Saved reading speed: ' + wpmValue + ' WPM');
+      }
+    });
+  </script>
+</body>
+</html>

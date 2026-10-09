@@ -1,0 +1,53 @@
+{
+  "$schema": "https://classroomio.com/schemas/plugin.v1.json",
+  "manifestVersion": 1,
+  "id": "com.classroomio.reading-time",
+  "name": "Reading Time Estimator",
+  "version": "1.0.0",
+  "description": "Calculates and displays estimated reading time for lesson articles.",
+  "publisher": "classroomio",
+  "license": "MIT",
+  "engines": {
+    "classroomio": ">=2.0.0",
+    "pluginApi": "2026-10-08"
+  },
+  "runtime": {
+    "ui": {
+      "entrypoints": {
+        "sidebarWidget": {
+          "renderMode": "custom",
+          "resource": "ui/widget.html"
+        },
+        "settings": {
+          "renderMode": "custom",
+          "resource": "ui/settings.html"
+        }
+      }
+    }
+  },
+  "permissions": {
+    "required": ["lessons.metadata:read"],
+    "optional": ["plugin.storage:read", "plugin.storage:write"]
+  },
+  "contributes": {
+    "slots": [
+      {
+        "id": "reading-time-sidebar",
+        "target": "lesson.after",
+        "renderMode": "custom",
+        "entrypoint": "sidebarWidget"
+      }
+    ],
+    "pages": [
+      {
+        "id": "reading-time-settings",
+        "entrypoint": "settings",
+        "title": "Reading Time Settings"
+      }
+    ]
+  },
+  "dataPolicy": {
+    "storesCustomerData": false,
+    "retentionAfterUninstallDays": 30
+  }
+}

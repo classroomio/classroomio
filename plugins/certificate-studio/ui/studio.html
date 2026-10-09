@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Certificate Studio</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --sidebar-bg: #111827;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 320px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .canvas {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+    }
+
+    .cert-preview {
+      width: 680px;
+      aspect-ratio: 1.414;
+      background: #ffffff;
+      color: #0f172a;
+      border-radius: 8px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      text-align: center;
+      border: 4px solid var(--accent, #3b82f6);
+      transition: all 0.3s ease;
+    }
+
+    .cert-header {
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent, #3b82f6);
+      font-weight: 700;
+    }
+
+    .cert-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin: 12px 0 6px;
+    }
+
+    .cert-presented {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .cert-recipient {
+      font-size: 32px;
+      font-weight: 700;
+      font-family: Georgia, serif;
+      margin: 12px 0;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+      width: 80%;
+    }
+
+    .cert-desc {
+      font-size: 13px;
+      color: #475569;
+      max-width: 80%;
+      line-height: 1.5;
+    }
+
+    .cert-footer {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 24px;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .template-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .tpl-btn {
+      padding: 10px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .tpl-btn.active {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .action-btn {
+      padding: 10px 16px;
+      background: var(--primary);
+      color: white;
+      border: 0;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .action-btn:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h3 style="font-size: 16px;">Certificate Studio</h3>
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span class="field-label">Template Style</span>
+      <div class="template-selector">
+        <button class="tpl-btn active" onclick="setTemplate('classique')">Classique</button>
+        <button class="tpl-btn" onclick="setTemplate('noir')">Noir</button>
+        <button class="tpl-btn" onclick="setTemplate('brutalist')">Brutalist</button>
+        <button class="tpl-btn" onclick="setTemplate('minimal')">Minimal</button>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span class="field-label">Accent Color</span>
+      <input type="color" id="accent-picker" value="#3b82f6" class="field-input" style="height: 40px; padding: 2px;">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span class="field-label">Certificate Title</span>
+      <input type="text" id="cert-title-input" class="field-input" value="Certificate of Completion">
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <span class="field-label">Signatory Name</span>
+      <input type="text" id="signatory-name" class="field-input" value="Academy Director">
+    </div>
+
+    <div style="margin-top: auto;">
+      <button class="action-btn" id="save-design-btn" style="width: 100%;">Save Certificate Design</button>
+    </div>
+  </div>
+
+  <div class="canvas">
+    <div id="preview-card" class="cert-preview">
+      <div class="cert-header">ClassroomIO Academy</div>
+      <div>
+        <div id="preview-title" class="cert-title">Certificate of Completion</div>
+        <div class="cert-presented">Is Proudly Presented To</div>
+        <div class="cert-recipient">Jane Doe</div>
+        <div class="cert-desc">For successfully completing all requirements, projects, and assessments of the course curriculum.</div>
+      </div>
+      <div class="cert-footer">
+        <div>
+          <div>Date Issued: October 2026</div>
+          <div>ID: CIO-2026-0247</div>
+        </div>
+        <div style="text-align: right;">
+          <div style="border-top: 1px solid #cbd5e1; padding-top: 4px; font-weight: 600;" id="preview-signatory">Academy Director</div>
+          <div>Verified Authority</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const previewCard = document.getElementById('preview-card');
+    const previewTitle = document.getElementById('preview-title');
+    const previewSignatory = document.getElementById('preview-signatory');
+    const accentPicker = document.getElementById('accent-picker');
+    const titleInput = document.getElementById('cert-title-input');
+    const signatoryInput = document.getElementById('signatory-name');
+    const saveBtn = document.getElementById('save-design-btn');
+
+    let currentTemplate = 'classique';
+
+    function setTemplate(tpl) {
+      currentTemplate = tpl;
+      document.querySelectorAll('.tpl-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      if (tpl === 'noir') {
+        previewCard.style.background = '#0f172a';
+        previewCard.style.color = '#f8fafc';
+      } else if (tpl === 'brutalist') {
+        previewCard.style.background = '#fef08a';
+        previewCard.style.color = '#000000';
+      } else {
+        previewCard.style.background = '#ffffff';
+        previewCard.style.color = '#0f172a';
+      }
+    }
+
+    accentPicker.addEventListener('input', (e) => {
+      previewCard.style.setProperty('--accent', e.target.value);
+    });
+
+    titleInput.addEventListener('input', (e) => {
+      previewTitle.textContent = e.target.value || 'Certificate of Completion';
+    });
+
+    signatoryInput.addEventListener('input', (e) => {
+      previewSignatory.textContent = e.target.value || 'Authorized Signatory';
+    });
+
+    let rpcPort = null;
+    const pendingCallbacks = new Map();
+
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'CIO_BRIDGE_HANDSHAKE_INIT') {
+        rpcPort = event.ports[0];
+        if (!rpcPort) return;
+
+        rpcPort.onmessage = (e) => {
+          if (e.data?.type === 'CIO_BRIDGE_CONTEXT_INIT') {
+            const reqId = crypto.randomUUID();
+            pendingCallbacks.set(reqId, (d) => {
+              if (d) {
+                if (d.templateId) setTemplate(d.templateId);
+                if (d.accentColor) {
+                  accentPicker.value = d.accentColor;
+                  previewCard.style.setProperty('--accent', d.accentColor);
+                }
+                if (d.title) {
+                  titleInput.value = d.title;
+                  previewTitle.textContent = d.title;
+                }
+                if (d.signatory) {
+                  signatoryInput.value = d.signatory;
+                  previewSignatory.textContent = d.signatory;
+                }
+              }
+            });
+            rpcPort.postMessage({
+              type: 'CIO_RPC_REQUEST',
+              id: reqId,
+              action: 'storage:get',
+              payload: { namespace: 'certificate_studio', key: 'active_design' }
+            });
+          } else if (e.data?.type === 'CIO_RPC_RESPONSE') {
+            const cb = pendingCallbacks.get(e.data.id);
+            if (cb) {
+              pendingCallbacks.delete(e.data.id);
+              if (e.data.success) cb(e.data.data);
+            }
+          }
+        };
+
+        rpcPort.postMessage({
+          type: 'CIO_BRIDGE_HANDSHAKE_ACK',
+          protocolVersion: '1.0',
+          nonce: event.data.nonce,
+          context: {}
+        });
+      }
+    });
+
+    saveBtn.addEventListener('click', () => {
+      if (!rpcPort) return;
+
+      const design = {
+        templateId: currentTemplate,
+        accentColor: accentPicker.value,
+        title: titleInput.value,
+        signatory: signatoryInput.value
+      };
+
+      rpcPort.postMessage({
+        type: 'CIO_RPC_REQUEST',
+        id: crypto.randomUUID(),
+        action: 'storage:set',
+        payload: { namespace: 'certificate_studio', key: 'active_design', value: design }
+      });
+
+      rpcPort.postMessage({
+        type: 'CIO_RPC_REQUEST',
+        id: crypto.randomUUID(),
+        action: 'toast',
+        payload: { message: 'Certificate template design saved', variant: 'success' }
+      });
+    });
+  </script>
+</body>
+</html>

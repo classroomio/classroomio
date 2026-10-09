@@ -47,6 +47,7 @@ import { signupGuard } from '@api/middlewares/signup-guard';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
+import { pluginsRouter } from '@api/routes/plugins';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
@@ -258,6 +259,7 @@ export const app = new Hono()
   .route('/report', reportRouter)
   .route('/internal', internalRouter)
   .route('/agent', agentRouter)
+  .route('/plugins', pluginsRouter)
 
   // Error handling
   .onError((err, c) => {

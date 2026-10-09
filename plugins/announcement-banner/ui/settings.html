@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Announcement Settings</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #0f172a;
+      --border: #e2e8f0;
+      --input-bg: #f8fafc;
+      --primary: #2563eb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --text: #f8fafc;
+        --border: #334155;
+        --input-bg: #1e293b;
+        --primary: #3b82f6;
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+      margin: 0;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--input-bg);
+      color: inherit;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: white;
+      border: 0;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <h2>Announcement Banner Settings</h2>
+  <div class="form-group" style="margin-top: 16px;">
+    <label>
+      <input type="checkbox" id="enabled-toggle">
+      Enable Announcement Banner
+    </label>
+  </div>
+  <div class="form-group">
+    <label for="banner-message">Banner Message</label>
+    <textarea id="banner-message" rows="3" placeholder="Enter message for learners..."></textarea>
+  </div>
+  <div class="form-group">
+    <label for="banner-level">Severity / Style</label>
+    <select id="banner-level">
+      <option value="info">Info (Blue)</option>
+      <option value="warning">Warning (Amber)</option>
+      <option value="critical">Critical (Red)</option>
+    </select>
+  </div>
+  <button id="save-btn">Save Changes</button>
+
+  <script>
+    const enabledToggle = document.getElementById('enabled-toggle');
+    const messageInput = document.getElementById('banner-message');
+    const levelSelect = document.getElementById('banner-level');
+    const saveBtn = document.getElementById('save-btn');
+
+    let rpcPort = null;
+    const pendingCallbacks = new Map();
+
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'CIO_BRIDGE_HANDSHAKE_INIT') {
+        rpcPort = event.ports[0];
+        if (!rpcPort) return;
+
+        rpcPort.onmessage = (e) => {
+          if (e.data?.type === 'CIO_BRIDGE_CONTEXT_INIT') {
+            const reqId = crypto.randomUUID();
+            pendingCallbacks.set(reqId, (data) => {
+              if (data) {
+                enabledToggle.checked = Boolean(data.enabled);
+                messageInput.value = data.text || '';
+                levelSelect.value = data.level || 'info';
+              }
+            });
+            rpcPort.postMessage({
+              type: 'CIO_RPC_REQUEST',
+              id: reqId,
+              action: 'storage:get',
+              payload: { namespace: 'settings', key: 'banner' }
+            });
+          } else if (e.data?.type === 'CIO_RPC_RESPONSE') {
+            const cb = pendingCallbacks.get(e.data.id);
+            if (cb) {
+              pendingCallbacks.delete(e.data.id);
+              if (e.data.success) cb(e.data.data);
+            }
+          }
+        };
+
+        rpcPort.postMessage({
+          type: 'CIO_BRIDGE_HANDSHAKE_ACK',
+          protocolVersion: '1.0',
+          nonce: event.data.nonce,
+          context: {}
+        });
+      }
+    });
+
+    saveBtn.addEventListener('click', () => {
+      if (!rpcPort) return;
+
+      const payload = {
+        enabled: enabledToggle.checked,
+        text: messageInput.value.trim(),
+        level: levelSelect.value
+      };
+
+      rpcPort.postMessage({
+        type: 'CIO_RPC_REQUEST',
+        id: crypto.randomUUID(),
+        action: 'storage:set',
+        payload: { namespace: 'settings', key: 'banner', value: payload }
+      });
+
+      rpcPort.postMessage({
+        type: 'CIO_RPC_REQUEST',
+        id: crypto.randomUUID(),
+        action: 'toast',
+        payload: { message: 'Banner settings saved', variant: 'success' }
+      });
+    });
+  </script>
+</body>
+</html>

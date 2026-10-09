@@ -4,12 +4,14 @@
   import ImageIcon from '@lucide/svelte/icons/image';
 
   import { profile } from '$lib/utils/store/user';
+  import { currentOrg } from '$lib/utils/store/org';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { t } from '$lib/utils/functions/translations';
   import { courseApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import { classroomio } from '$lib/utils/services/api';
+  import { PluginActionRenderer } from '$features/plugins/components';
   import type { CertificationEvaluationData } from '$features/course/utils/types';
   import { normalizeCertificateIssuedAt, formatBlockerMessage } from '$features/course/utils/certificate-utils';
   import { updateCourseCompletionModal } from '$features/course/store/course-completion-modal';
@@ -130,6 +132,16 @@
       })
     ];
   });
+
+  let actionContext = $derived({
+    courseId: courseApi.course?.id,
+    courseTitle: courseApi.course?.title,
+    orgId: $currentOrg.id,
+    orgName: $currentOrg.name,
+    orgSlug: $currentOrg.siteName,
+    studentName: $profile.fullname,
+    certUrl: typeof window !== 'undefined' ? window.location.href : ''
+  });
 </script>
 
 <div class="flex-1">
@@ -152,6 +164,9 @@
         <ImageIcon size={16} />
         {$t('course.navItem.certificates.download_image')}
       </Button>
+      {#if isCourseComplete}
+        <PluginActionRenderer target="certificate.actions" context={actionContext} />
+      {/if}
     </div>
   </Empty>
 </div>

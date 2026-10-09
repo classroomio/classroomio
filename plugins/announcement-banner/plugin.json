@@ -1,0 +1,53 @@
+{
+  "$schema": "https://classroomio.com/schemas/plugin.v1.json",
+  "manifestVersion": 1,
+  "id": "com.classroomio.announcement-banner",
+  "name": "Announcement Banner",
+  "version": "1.0.0",
+  "description": "Displays configurable announcement banners and operational alerts across the academy.",
+  "publisher": "classroomio",
+  "license": "MIT",
+  "engines": {
+    "classroomio": ">=2.0.0",
+    "pluginApi": "2026-10-08"
+  },
+  "runtime": {
+    "ui": {
+      "entrypoints": {
+        "bannerWidget": {
+          "renderMode": "custom",
+          "resource": "ui/banner.html"
+        },
+        "settingsPage": {
+          "renderMode": "custom",
+          "resource": "ui/settings.html"
+        }
+      }
+    }
+  },
+  "permissions": {
+    "required": ["plugin.storage:read"],
+    "optional": ["plugin.storage:write"]
+  },
+  "contributes": {
+    "slots": [
+      {
+        "id": "lms-announcement-banner",
+        "target": "lms.banner",
+        "renderMode": "custom",
+        "entrypoint": "bannerWidget"
+      }
+    ],
+    "pages": [
+      {
+        "id": "announcement-settings",
+        "entrypoint": "settingsPage",
+        "title": "Announcement Banner Settings"
+      }
+    ]
+  },
+  "dataPolicy": {
+    "storesCustomerData": false,
+    "retentionAfterUninstallDays": 30
+  }
+}

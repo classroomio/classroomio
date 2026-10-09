@@ -1,0 +1,10 @@
+{
+  "name": "@classroomio/plugin-reading-time",
+  "version": "1.0.0",
+  "description": "Reference plugin: Reading Time Estimator for ClassroomIO",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@classroomio/plugin-sdk": "workspace:*"
+  }
+}

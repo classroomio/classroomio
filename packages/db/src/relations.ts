@@ -41,7 +41,19 @@ import {
   tag,
   tagAssignment,
   tagGroup,
-  user
+  user,
+  pluginPublisher,
+  plugin,
+  pluginVersion,
+  pluginInstallation,
+  pluginGrant,
+  pluginCredential,
+  pluginStorage,
+  pluginAuditEvent,
+  pluginLaunchCode,
+  pluginEventSubscription,
+  pluginEventOutbox,
+  pluginEventDelivery
 } from './schema';
 
 import { relations } from 'drizzle-orm/relations';
@@ -534,5 +546,139 @@ export const questionAnswerRelations = relations(questionAnswer, ({ one }) => ({
   submission: one(submission, {
     fields: [questionAnswer.submissionId],
     references: [submission.id]
+  })
+}));
+
+// ─── Plugin Platform (v2 Architecture) ────────────────────────────────────────
+
+export const pluginPublisherRelations = relations(pluginPublisher, ({ many }) => ({
+  plugins: many(plugin)
+}));
+
+export const pluginRelations = relations(plugin, ({ one, many }) => ({
+  publisherEntity: one(pluginPublisher, {
+    fields: [plugin.publisherId],
+    references: [pluginPublisher.id]
+  }),
+  versions: many(pluginVersion),
+  installations: many(pluginInstallation)
+}));
+
+export const pluginVersionRelations = relations(pluginVersion, ({ one, many }) => ({
+  plugin: one(plugin, {
+    fields: [pluginVersion.pluginId],
+    references: [plugin.id]
+  }),
+  installations: many(pluginInstallation)
+}));
+
+export const pluginInstallationRelations = relations(pluginInstallation, ({ one, many }) => ({
+  plugin: one(plugin, {
+    fields: [pluginInstallation.pluginId],
+    references: [plugin.id]
+  }),
+  version: one(pluginVersion, {
+    fields: [pluginInstallation.pluginVersionId],
+    references: [pluginVersion.id]
+  }),
+  organization: one(organization, {
+    fields: [pluginInstallation.organizationId],
+    references: [organization.id]
+  }),
+  user: one(profile, {
+    fields: [pluginInstallation.userId],
+    references: [profile.id]
+  }),
+  installedBy: one(profile, {
+    fields: [pluginInstallation.installedByProfileId],
+    references: [profile.id]
+  }),
+  grants: many(pluginGrant),
+  credentials: many(pluginCredential),
+  storage: many(pluginStorage),
+  auditEvents: many(pluginAuditEvent),
+  launchCodes: many(pluginLaunchCode),
+  eventSubscriptions: many(pluginEventSubscription)
+}));
+
+export const pluginGrantRelations = relations(pluginGrant, ({ one }) => ({
+  installation: one(pluginInstallation, {
+    fields: [pluginGrant.installationId],
+    references: [pluginInstallation.id]
+  }),
+  grantedBy: one(profile, {
+    fields: [pluginGrant.grantedByProfileId],
+    references: [profile.id]
+  })
+}));
+
+export const pluginCredentialRelations = relations(pluginCredential, ({ one }) => ({
+  installation: one(pluginInstallation, {
+    fields: [pluginCredential.installationId],
+    references: [pluginInstallation.id]
+  })
+}));
+
+export const pluginStorageRelations = relations(pluginStorage, ({ one }) => ({
+  installation: one(pluginInstallation, {
+    fields: [pluginStorage.installationId],
+    references: [pluginInstallation.id]
+  })
+}));
+
+export const pluginAuditEventRelations = relations(pluginAuditEvent, ({ one }) => ({
+  installation: one(pluginInstallation, {
+    fields: [pluginAuditEvent.installationId],
+    references: [pluginInstallation.id]
+  }),
+  organization: one(organization, {
+    fields: [pluginAuditEvent.organizationId],
+    references: [organization.id]
+  }),
+  actor: one(profile, {
+    fields: [pluginAuditEvent.actorProfileId],
+    references: [profile.id]
+  })
+}));
+
+export const pluginLaunchCodeRelations = relations(pluginLaunchCode, ({ one }) => ({
+  installation: one(pluginInstallation, {
+    fields: [pluginLaunchCode.installationId],
+    references: [pluginInstallation.id]
+  }),
+  user: one(profile, {
+    fields: [pluginLaunchCode.userId],
+    references: [profile.id]
+  }),
+  organization: one(organization, {
+    fields: [pluginLaunchCode.organizationId],
+    references: [organization.id]
+  })
+}));
+
+export const pluginEventSubscriptionRelations = relations(pluginEventSubscription, ({ one, many }) => ({
+  installation: one(pluginInstallation, {
+    fields: [pluginEventSubscription.installationId],
+    references: [pluginInstallation.id]
+  }),
+  deliveries: many(pluginEventDelivery)
+}));
+
+export const pluginEventOutboxRelations = relations(pluginEventOutbox, ({ one, many }) => ({
+  organization: one(organization, {
+    fields: [pluginEventOutbox.organizationId],
+    references: [organization.id]
+  }),
+  deliveries: many(pluginEventDelivery)
+}));
+
+export const pluginEventDeliveryRelations = relations(pluginEventDelivery, ({ one }) => ({
+  outboxEvent: one(pluginEventOutbox, {
+    fields: [pluginEventDelivery.outboxEventId],
+    references: [pluginEventOutbox.id]
+  }),
+  subscription: one(pluginEventSubscription, {
+    fields: [pluginEventDelivery.subscriptionId],
+    references: [pluginEventSubscription.id]
   })
 }));

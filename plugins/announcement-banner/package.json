@@ -1,0 +1,9 @@
+{
+  "name": "@classroomio/plugin-announcement-banner",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ClassroomIO Announcement Banner Plugin",
+  "scripts": {
+    "test": "echo \"Plugin validated\""
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@classroomio/plugin-certificate-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ClassroomIO Certificate Studio Plugin",
+  "scripts": {
+    "test": "echo \"Plugin validated\""
+  }
+}

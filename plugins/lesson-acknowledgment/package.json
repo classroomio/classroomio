@@ -1,0 +1,9 @@
+{
+  "name": "@classroomio/plugin-lesson-acknowledgment",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ClassroomIO Lesson Policy Acknowledgment Plugin",
+  "scripts": {
+    "test": "echo \"Plugin validated\""
+  }
+}

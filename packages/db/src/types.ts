@@ -265,3 +265,51 @@ export type TContentReportStatus = (typeof schema.contentReportStatus.enumValues
 export type TContentReportResolutionCode = (typeof schema.contentReportResolutionCode.enumValues)[number];
 export type TContentReport = typeof schema.contentReport.$inferSelect;
 export type TNewContentReport = typeof schema.contentReport.$inferInsert;
+
+// ─── Plugin Platform (v2 Architecture) ────────────────────────────────────────
+
+export type TPluginPublisherClass = (typeof schema.pluginPublisherClass.enumValues)[number];
+export type TPluginOrgApprovalStatus = (typeof schema.pluginOrgApprovalStatus.enumValues)[number];
+export type TPluginStatus = (typeof schema.pluginStatus.enumValues)[number];
+export type TPluginDistribution = (typeof schema.pluginDistribution.enumValues)[number];
+export type TPluginReviewStatus = (typeof schema.pluginReviewStatus.enumValues)[number];
+export type TPluginOwnerType = (typeof schema.pluginOwnerType.enumValues)[number];
+export type TPluginInstallationStatus = (typeof schema.pluginInstallationStatus.enumValues)[number];
+export type TPluginStorageScopeType = (typeof schema.pluginStorageScopeType.enumValues)[number];
+export type TPluginAuditOutcome = (typeof schema.pluginAuditOutcome.enumValues)[number];
+
+export type TPluginPublisher = typeof schema.pluginPublisher.$inferSelect;
+export type TNewPluginPublisher = typeof schema.pluginPublisher.$inferInsert;
+
+export type TPlugin = typeof schema.plugin.$inferSelect;
+export type TNewPlugin = typeof schema.plugin.$inferInsert;
+
+export type TPluginVersion = typeof schema.pluginVersion.$inferSelect;
+export type TNewPluginVersion = typeof schema.pluginVersion.$inferInsert;
+
+export type TPluginInstallation = typeof schema.pluginInstallation.$inferSelect;
+export type TNewPluginInstallation = typeof schema.pluginInstallation.$inferInsert;
+
+export type TPluginGrant = typeof schema.pluginGrant.$inferSelect;
+export type TNewPluginGrant = typeof schema.pluginGrant.$inferInsert;
+
+export type TPluginCredential = typeof schema.pluginCredential.$inferSelect;
+export type TNewPluginCredential = typeof schema.pluginCredential.$inferInsert;
+
+export type TPluginStorage = typeof schema.pluginStorage.$inferSelect;
+export type TNewPluginStorage = typeof schema.pluginStorage.$inferInsert;
+
+export type TPluginAuditEvent = typeof schema.pluginAuditEvent.$inferSelect;
+export type TNewPluginAuditEvent = typeof schema.pluginAuditEvent.$inferInsert;
+
+export type TPluginLaunchCode = typeof schema.pluginLaunchCode.$inferSelect;
+export type TNewPluginLaunchCode = typeof schema.pluginLaunchCode.$inferInsert;
+
+export type TPluginEventSubscription = typeof schema.pluginEventSubscription.$inferSelect;
+export type TNewPluginEventSubscription = typeof schema.pluginEventSubscription.$inferInsert;
+
+export type TPluginEventOutbox = typeof schema.pluginEventOutbox.$inferSelect;
+export type TNewPluginEventOutbox = typeof schema.pluginEventOutbox.$inferInsert;
+
+export type TPluginEventDelivery = typeof schema.pluginEventDelivery.$inferSelect;
+export type TNewPluginEventDelivery = typeof schema.pluginEventDelivery.$inferInsert;
