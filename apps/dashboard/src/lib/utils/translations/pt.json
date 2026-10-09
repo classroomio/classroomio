@@ -1168,6 +1168,7 @@
           "log": {
             "title": "Registro de envios",
             "description": "E-mails de lembrete das sessões dos últimos 30 dias e das próximas sessões.",
+            "view": "Ver registros",
             "empty": "Nenhum lembrete ainda. Eles aparecem aqui à medida que as sessões se aproximam.",
             "load_error": "Não foi possível carregar o registro de envios de lembretes.",
             "columns": {

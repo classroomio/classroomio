@@ -1168,6 +1168,7 @@
           "log": {
             "title": "Registro de envíos",
             "description": "Correos de recordatorio de las sesiones de los últimos 30 días y de las próximas sesiones.",
+            "view": "Ver registros",
             "empty": "Aún no hay recordatorios. Aparecerán aquí a medida que se acerquen las sesiones.",
             "load_error": "No se pudo cargar el registro de envíos de recordatorios.",
             "columns": {

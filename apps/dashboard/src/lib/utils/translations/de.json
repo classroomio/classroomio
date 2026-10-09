@@ -1168,6 +1168,7 @@
           "log": {
             "title": "Zustellprotokoll",
             "description": "Erinnerungs-E-Mails für Sitzungen der letzten 30 Tage und für bevorstehende Sitzungen.",
+            "view": "Protokoll anzeigen",
             "empty": "Noch keine Erinnerungen. Sie erscheinen hier, sobald Sitzungen näher rücken.",
             "load_error": "Das Zustellprotokoll der Erinnerungen konnte nicht geladen werden.",
             "columns": {

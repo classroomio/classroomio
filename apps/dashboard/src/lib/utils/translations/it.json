@@ -4356,6 +4356,7 @@
           "log": {
             "title": "Registro di invio",
             "description": "E-mail di promemoria per le sessioni degli ultimi 30 giorni e per le sessioni in programma.",
+            "view": "Visualizza log",
             "empty": "Ancora nessun promemoria. Compariranno qui man mano che le sessioni si avvicinano.",
             "load_error": "Impossibile caricare il registro di invio dei promemoria.",
             "columns": {

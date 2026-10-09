@@ -1168,6 +1168,7 @@
           "log": {
             "title": "Journal d'envoi",
             "description": "E-mails de rappel pour les sessions des 30 derniers jours et les sessions à venir.",
+            "view": "Voir les journaux",
             "empty": "Aucun rappel pour l'instant. Ils apparaîtront ici à l'approche des sessions.",
             "load_error": "Impossible de charger le journal d'envoi des rappels.",
             "columns": {

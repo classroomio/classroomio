@@ -1168,6 +1168,7 @@
           "log": {
             "title": "Leveringslog",
             "description": "Påmindelsesmails for sessioner i de sidste 30 dage og kommende sessioner.",
+            "view": "Vis log",
             "empty": "Ingen påmindelser endnu. De vises her, når sessionerne nærmer sig.",
             "load_error": "Leveringsloggen for påmindelser kunne ikke indlæses.",
             "columns": {

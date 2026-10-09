@@ -4366,6 +4366,7 @@
           "log": {
             "title": "Gönderim günlüğü",
             "description": "Son 30 gündeki ve yaklaşan oturumlar için hatırlatma e-postaları.",
+            "view": "Kayıtları görüntüle",
             "empty": "Henüz hatırlatıcı yok. Oturumlar yaklaştıkça burada görünürler.",
             "load_error": "Hatırlatıcı gönderim günlüğü yüklenemedi.",
             "columns": {

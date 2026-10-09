@@ -16,7 +16,7 @@
   import { CourseTagPicker, PublicConversionSettingsCard } from '$features/course/components';
   import TemplateSettingsSection from '$features/course/components/template-settings-section.svelte';
   import ReminderPicker from '$features/course/components/live-session-reminders/reminder-picker.svelte';
-  import DeliveryLog from '$features/course/components/live-session-reminders/delivery-log.svelte';
+  import DeliveryLogSheet from '$features/course/components/live-session-reminders/delivery-log-sheet.svelte';
   import {
     createReminderRow,
     getReminderRowErrors,
@@ -981,7 +981,7 @@
 
         <SettingsSeparator />
 
-        <DeliveryLog courseId={courseApi.course.id} timezone={courseApi.course.metadata?.sessionTimezone} />
+        <DeliveryLogSheet courseId={courseApi.course.id} timezone={courseApi.course.metadata?.sessionTimezone} />
       </Field.Group>
     </SettingsCard>
   {/if}

@@ -4356,6 +4356,7 @@
           "log": {
             "title": "Delivery log",
             "description": "Reminder emails for sessions in the last 30 days and upcoming sessions.",
+            "view": "View logs",
             "empty": "No reminders yet. They appear here as sessions get close.",
             "load_error": "Could not load the reminder delivery log.",
             "columns": {

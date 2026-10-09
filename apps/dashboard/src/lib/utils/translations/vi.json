@@ -1168,6 +1168,7 @@
           "log": {
             "title": "Nhật ký gửi",
             "description": "Email nhắc cho các phiên trong 30 ngày qua và các phiên sắp tới.",
+            "view": "Xem nhật ký",
             "empty": "Chưa có lời nhắc nào. Chúng sẽ xuất hiện ở đây khi các phiên đến gần.",
             "load_error": "Không thể tải nhật ký gửi lời nhắc.",
             "columns": {

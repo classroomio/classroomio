@@ -1168,6 +1168,7 @@
           "log": {
             "title": "Dziennik wysyłki",
             "description": "E-maile z przypomnieniami dla sesji z ostatnich 30 dni i nadchodzących sesji.",
+            "view": "Zobacz dziennik",
             "empty": "Brak przypomnień. Pojawią się tutaj, gdy sesje będą się zbliżać.",
             "load_error": "Nie udało się wczytać dziennika wysyłki przypomnień.",
             "columns": {
