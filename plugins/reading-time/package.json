@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@classroomio/plugin-design": "workspace:*",
     "@classroomio/plugin-sdk": "workspace:*"
   }
 }

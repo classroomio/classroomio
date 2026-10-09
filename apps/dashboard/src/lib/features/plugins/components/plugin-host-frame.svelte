@@ -43,14 +43,24 @@
     }
   }
 
+  function resolveTargetOrigin(url?: string): string {
+    if (!url) return '*';
+    try {
+      return new URL(url, window.location.origin).origin;
+    } catch {
+      return '*';
+    }
+  }
+
   onMount(() => {
     if (!iframeElement) return;
 
     const currentTheme = resolveCurrentHostTheme();
+    const targetOrigin = resolveTargetOrigin(srcUrl);
 
     bridgeHost = new PluginBridgeHost({
       iframe: iframeElement,
-      targetOrigin: '*',
+      targetOrigin,
       theme: currentTheme,
       context: {
         installationId,
@@ -123,5 +133,9 @@
   srcdoc={srcDoc}
   {title}
   class={className}
-  sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
+  sandbox={srcUrl
+    ? 'allow-scripts allow-forms allow-same-origin allow-popups'
+    : 'allow-scripts allow-forms allow-popups'}
+  referrerpolicy="no-referrer"
+  allow="clipboard-write 'none'; camera 'none'; microphone 'none'; geolocation 'none'"
 ></iframe>

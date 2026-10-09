@@ -1,0 +1,23 @@
+{
+  "name": "@classroomio/plugin-design",
+  "version": "1.0.0",
+  "description": "Framework-neutral semantic design system and CSS tokens for ClassroomIO plugins",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "style": "css/tokens.css",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./tokens.css": "./css/tokens.css",
+    "./components.css": "./css/components.css"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.2"
+  }
+}

@@ -60,6 +60,20 @@ export async function setStorageValue(
     throw new AppError('Plugin installation is not active', 'INSTALLATION_NOT_ACTIVE', 403);
   }
 
+  if (!namespace || namespace.length > 64) {
+    throw new AppError('Storage namespace must be between 1 and 64 characters', 'INVALID_STORAGE_NAMESPACE', 400);
+  }
+
+  if (!key || key.length > 128) {
+    throw new AppError('Storage key must be between 1 and 128 characters', 'INVALID_STORAGE_KEY', 400);
+  }
+
+  const payloadString = JSON.stringify(value);
+  const MAX_ITEM_BYTES = 256 * 1024;
+  if (payloadString.length > MAX_ITEM_BYTES) {
+    throw new AppError('Storage item exceeds maximum limit of 256 KiB', 'PAYLOAD_TOO_LARGE', 413);
+  }
+
   const { scopeType, scopeId } = resolveStorageScope(installation);
 
   await setPluginStorageItem({

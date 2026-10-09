@@ -1,3 +1,4 @@
+import { API_SERVER_URL } from '@api/constants';
 import { AppError } from '@api/utils/errors';
 import {
   createInstallation,
@@ -274,7 +275,7 @@ export async function resolveOrgContributions(
           const rawEntry = manifest.runtime.ui.entrypoints[slot.entrypoint];
           const entrypointPath = typeof rawEntry === 'string' ? rawEntry : rawEntry?.resource;
           if (entrypointPath) {
-            artifactUrl = `/plugins/${inst.pluginId}/${entrypointPath}`;
+            artifactUrl = `${API_SERVER_URL}/plugins/assets/${inst.pluginId}/${entrypointPath}`;
           }
         }
 
@@ -302,7 +303,7 @@ export async function resolveOrgContributions(
           const rawEntry = manifest.runtime.ui.entrypoints[action.entrypoint];
           const entrypointPath = typeof rawEntry === 'string' ? rawEntry : rawEntry?.resource;
           if (entrypointPath) {
-            artifactUrl = `/plugins/${inst.pluginId}/${entrypointPath}`;
+            artifactUrl = `${API_SERVER_URL}/plugins/assets/${inst.pluginId}/${entrypointPath}`;
           }
         }
 
