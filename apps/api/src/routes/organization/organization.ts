@@ -18,6 +18,7 @@ import {
   ZInviteTeamMembers,
   ZLMSExercisesParam,
   ZRemoveTeamMember,
+  ZUpdateTeamMemberRole,
   ZToggleLinkInvite,
   ZUndoBulkAudienceAction,
   ZUpdateOrgPlan,
@@ -56,6 +57,7 @@ import {
   removeAudienceMember,
   removeTeamMember,
   reorderOrgCourses,
+  updateTeamMemberRole,
   updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
@@ -269,6 +271,26 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to remove team member');
     }
   })
+  .patch(
+    '/team/:memberId',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZRemoveTeamMember),
+    zValidator('json', ZUpdateTeamMemberRole),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const { memberId } = c.req.valid('param');
+        const { roleId } = c.req.valid('json');
+        const member = await updateTeamMemberRole(orgId, memberId, roleId, user.id);
+
+        return c.json({ success: true, data: member }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update team member role');
+      }
+    }
+  )
   /**
    * GET /organization/audience
    * Gets organization audience (students)

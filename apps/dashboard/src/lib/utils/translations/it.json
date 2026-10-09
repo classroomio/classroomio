@@ -3901,6 +3901,13 @@
             "toggle_label": "Invito al collegamento attivo",
             "disabled_notice": "Questo collegamento è disabilitato. Abilitalo per consentire ai nuovi membri di iscriversi tramite collegamento.",
             "select_role": "Seleziona un ruolo"
+          },
+          "change_role": {
+            "label": "Ruolo di {email}",
+            "title": "Cambia ruolo",
+            "description": "Cambiare {email} da {currentRole} a {nextRole}?",
+            "cancel": "Annulla",
+            "approve": "Approva"
           }
         },
         "filter": {
@@ -5165,7 +5172,10 @@
       "user_exists": "L'utente esiste già",
       "invite_fail": "Impossibile inviare l'invito, riprova",
       "remove_fail": "Impossibile rimuovere l'utente, riprova",
-      "remove_success": "Membro rimosso con successo"
+      "remove_success": "Membro rimosso con successo",
+      "role_updated": "Ruolo aggiornato",
+      "role_update_failed": "Impossibile aggiornare il ruolo",
+      "last_admin": "Questa organizzazione deve avere almeno un amministratore"
     },
     "link_invite": {
       "generated": "Invito al collegamento generato",

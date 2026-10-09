@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 
-import { blockedSubdomain } from '@cio/utils/constants';
+import { ROLE, blockedSubdomain } from '@cio/utils/constants';
 import { ZCourseType } from '../course/course-type';
 import { containsDisallowedHrefs } from '../shared';
 
@@ -216,6 +216,12 @@ export const ZRemoveTeamMember = z.object({
 });
 
 export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;
+
+export const ZUpdateTeamMemberRole = z.object({
+  roleId: z.union([z.literal(ROLE.ADMIN), z.literal(ROLE.TUTOR)])
+});
+
+export type TUpdateTeamMemberRole = z.infer<typeof ZUpdateTeamMemberRole>;
 
 export const ZCreateLinkInvite = z.object({
   roleId: z.number().int().positive()

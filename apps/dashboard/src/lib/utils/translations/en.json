@@ -3891,6 +3891,13 @@
           "invite_sent": "Invite Sent",
           "you": "You",
           "remove": "Remove",
+          "change_role": {
+            "label": "Role for {email}",
+            "title": "Change role",
+            "description": "Change {email} from {currentRole} to {nextRole}?",
+            "cancel": "Cancel",
+            "approve": "Approve"
+          },
           "link_invite": {
             "heading": "Link Invite",
             "description": "Anyone with this link can join your organization.",
@@ -5165,7 +5172,10 @@
       "user_exists": "User Already Exists",
       "invite_fail": "Failed to send invite, please try again",
       "remove_fail": "Failed to remove user, please try again",
-      "remove_success": "Member removed successfully"
+      "remove_success": "Member removed successfully",
+      "role_updated": "Role updated",
+      "role_update_failed": "Failed to update role",
+      "last_admin": "This organization needs at least one admin"
     },
     "link_invite": {
       "generated": "Link invite generated",

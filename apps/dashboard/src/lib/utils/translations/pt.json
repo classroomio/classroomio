@@ -313,7 +313,10 @@
       "user_exists": "O usuário já existe",
       "invite_fail": "Falha ao enviar o convite. Tente novamente",
       "remove_fail": "Falha ao remover usuário. Tente novamente",
-      "remove_success": "Membro removido com sucesso"
+      "remove_success": "Membro removido com sucesso",
+      "role_updated": "Função atualizada",
+      "role_update_failed": "Falha ao atualizar a função",
+      "last_admin": "Esta organização precisa de pelo menos um administrador"
     },
     "lms": {
       "error": {
@@ -1483,6 +1486,13 @@
             "toggle_label": "Link de convite ativo",
             "disabled_notice": "Este link está desativado. Habilite-o para permitir que novos membros participem via link.",
             "select_role": "Selecione uma função"
+          },
+          "change_role": {
+            "label": "Função de {email}",
+            "title": "Alterar função",
+            "description": "Alterar {email} de {currentRole} para {nextRole}?",
+            "cancel": "Cancelar",
+            "approve": "Aprovar"
           }
         },
         "roles": {

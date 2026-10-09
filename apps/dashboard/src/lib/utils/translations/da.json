@@ -313,7 +313,10 @@
       "user_exists": "Brugeren findes allerede",
       "invite_fail": "Kunne ikke sende invitationen. Prøv venligst igen",
       "remove_fail": "Kunne ikke fjerne bruger. Prøv venligst igen",
-      "remove_success": "Medlem fjernet"
+      "remove_success": "Medlem fjernet",
+      "role_updated": "Rollen er opdateret",
+      "role_update_failed": "Rollen kunne ikke opdateres",
+      "last_admin": "Denne organisation skal have mindst én administrator"
     },
     "lms": {
       "error": {
@@ -1483,6 +1486,13 @@
             "toggle_label": "Linkinvitation aktiv",
             "disabled_notice": "Dette link er deaktiveret. Aktiver det for at tillade nye medlemmer at deltage via link.",
             "select_role": "Vælg en rolle"
+          },
+          "change_role": {
+            "label": "Rolle for {email}",
+            "title": "Skift rolle",
+            "description": "Skift {email} fra {currentRole} til {nextRole}?",
+            "cancel": "Annuller",
+            "approve": "Godkend"
           }
         },
         "roles": {

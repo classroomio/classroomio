@@ -116,6 +116,41 @@ export async function revokeActiveOrganizationInvitesByEmails(
   }
 }
 
+/**
+ * Updates every unaccepted invite for this email to the given role.
+ */
+export async function updateActiveOrganizationInviteRoleByEmail(
+  organizationId: string,
+  email: string,
+  roleId: number,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  const normalizedEmail = email.trim().toLowerCase();
+  if (!normalizedEmail) {
+    return;
+  }
+
+  try {
+    await dbClient
+      .update(schema.organizationInvite)
+      .set({
+        roleId,
+        updatedAt: new Date().toISOString()
+      })
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          sql`lower(${schema.organizationInvite.email}) = ${normalizedEmail}`,
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt)
+        )
+      );
+  } catch (error) {
+    console.error('updateActiveOrganizationInviteRoleByEmail error:', error);
+    throw new Error('Failed to update organization invite role');
+  }
+}
+
 export type TOrganizationInviteTokenData = {
   invite: TOrganizationInvite;
   organization: {

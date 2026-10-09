@@ -59,6 +59,8 @@ import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
+export { updateTeamMemberRole } from './organization/team-role';
+
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
 const ORG_COURSES_PAGE_SIZE = 6;
 
