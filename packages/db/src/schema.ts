@@ -3386,57 +3386,6 @@ export const cohortMember = pgTable(
   ]
 );
 
-export const cohortCourseStaffGrant = pgTable(
-  'cohort_course_staff_grant',
-  {
-    cohortId: uuid('cohort_id').notNull(),
-    courseId: uuid('course_id').notNull(),
-    profileId: uuid('profile_id').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
-  },
-  (table) => [
-    primaryKey({ columns: [table.cohortId, table.courseId, table.profileId] }),
-    foreignKey({
-      columns: [table.cohortId],
-      foreignColumns: [cohort.id],
-      name: 'cohort_course_staff_grant_cohort_id_fkey'
-    }).onDelete('cascade'),
-    foreignKey({
-      columns: [table.courseId],
-      foreignColumns: [course.id],
-      name: 'cohort_course_staff_grant_course_id_fkey'
-    }).onDelete('cascade'),
-    foreignKey({
-      columns: [table.profileId],
-      foreignColumns: [profile.id],
-      name: 'cohort_course_staff_grant_profile_id_fkey'
-    }).onDelete('cascade'),
-    index('idx_cohort_course_staff_grant_course_profile').on(table.courseId, table.profileId)
-  ]
-);
-
-export const cohortGrantedGroupMember = pgTable(
-  'cohort_granted_group_member',
-  {
-    groupId: uuid('group_id').notNull(),
-    profileId: uuid('profile_id').notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
-  },
-  (table) => [
-    primaryKey({ columns: [table.groupId, table.profileId] }),
-    foreignKey({
-      columns: [table.groupId],
-      foreignColumns: [group.id],
-      name: 'cohort_granted_group_member_group_id_fkey'
-    }).onDelete('cascade'),
-    foreignKey({
-      columns: [table.profileId],
-      foreignColumns: [profile.id],
-      name: 'cohort_granted_group_member_profile_id_fkey'
-    }).onDelete('cascade')
-  ]
-);
-
 export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
 
 /**

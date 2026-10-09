@@ -386,7 +386,7 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     expect(Number(learnerMembership[0].roleId)).toBe(ROLE.STUDENT);
   });
 
-  it('revokes cohort-granted course access and keeps an independent tutor', async () => {
+  it('leaves the enrolled course tutor in place when the cohort link ends', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
     const { createOrganizationMember } = await import('@db/queries/organization');
@@ -424,36 +424,10 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
       email: independentEmail
     });
 
-    const [secondCohort] = await db
-      .insert(schema.cohort)
-      .values({
-        organizationId,
-        name: `Second cohort ${suffix}`,
-        description: 'Overlapping staff grant'
-      })
-      .returning();
-    extraCohortIds.push(secondCohort.id);
-    await db.insert(schema.cohortMember).values({
-      cohortId: secondCohort.id,
-      profileId: mentorId,
-      roleId: ROLE.TUTOR,
-      email: `mentor-${suffix}@submission-access.test`
-    });
-    await addCourseToCohortService(secondCohort.id, { courseId: addedCourseId });
-
     await removeCourseFromCohortService(cohortId, addedCourseId);
 
-    const afterFirstUnlink = await db
+    const afterUnlink = await db
       .select({ roleId: schema.groupmember.roleId })
-      .from(schema.groupmember)
-      .where(and(eq(schema.groupmember.groupId, addedGroupId), eq(schema.groupmember.profileId, mentorId)));
-    expect(afterFirstUnlink).toHaveLength(1);
-    expect(Number(afterFirstUnlink[0].roleId)).toBe(ROLE.TUTOR);
-
-    await removeCourseFromCohortService(secondCohort.id, addedCourseId);
-
-    const afterLastUnlink = await db
-      .select({ id: schema.groupmember.id })
       .from(schema.groupmember)
       .where(and(eq(schema.groupmember.groupId, addedGroupId), eq(schema.groupmember.profileId, mentorId)));
     const independentMembership = await db
@@ -461,12 +435,10 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
       .from(schema.groupmember)
       .where(and(eq(schema.groupmember.groupId, addedGroupId), eq(schema.groupmember.profileId, independentUser.id)));
 
-    expect(afterLastUnlink).toHaveLength(0);
+    expect(afterUnlink).toHaveLength(1);
+    expect(Number(afterUnlink[0].roleId)).toBe(ROLE.TUTOR);
     expect(independentMembership).toHaveLength(1);
     expect(Number(independentMembership[0].roleId)).toBe(ROLE.TUTOR);
-
-    const stillGrading = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
-    expect(stillGrading.status).toBe(200);
 
     const [demoteGroup] = await db
       .insert(schema.group)
@@ -493,17 +465,21 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     await updateCohortMemberService(cohortId, mentorMember.id, { roleId: ROLE.STUDENT });
 
     const afterDemote = await db
-      .select({ id: schema.groupmember.id })
+      .select({ roleId: schema.groupmember.roleId })
       .from(schema.groupmember)
       .where(and(eq(schema.groupmember.groupId, demoteGroup.id), eq(schema.groupmember.profileId, mentorId)));
-    expect(afterDemote).toHaveLength(0);
+    expect(afterDemote).toHaveLength(1);
+    expect(Number(afterDemote[0].roleId)).toBe(ROLE.TUTOR);
 
-    const deniedAfterDemote = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
-    expect(deniedAfterDemote.status).toBe(403);
+    const demoteCourseGrading = await appAs(mentorId).request(`/course/${demoteCourse.id}/submission/for-grading`);
+    expect(demoteCourseGrading.status).toBe(200);
+
+    const deniedOnUnenrolledCourse = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
+    expect(deniedOnUnenrolledCourse.status).toBe(403);
 
     await removeCohortMemberService(cohortId, mentorMember.id);
 
-    const deniedAfterRemove = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
-    expect(deniedAfterRemove.status).toBe(403);
+    const stillOnDemoteCourse = await appAs(mentorId).request(`/course/${demoteCourse.id}/submission/for-grading`);
+    expect(stillOnDemoteCourse.status).toBe(200);
   });
 });
