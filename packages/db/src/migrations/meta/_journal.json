@@ -218,6 +218,13 @@
       "when": 1791535045963,
       "tag": "0030_live_session_reminder_delivery",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1791544397388,
+      "tag": "0031_lesson_session_lifecycle",
+      "breakpoints": true
     }
   ]
 }

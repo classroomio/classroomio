@@ -18,6 +18,12 @@
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { getBrowserTimezone, instantToZonedWallClock, zonedWallClockToInstant } from '$lib/utils/functions/date';
   import { NumberField } from '@cio/ui/custom/number-field';
+  import {
+    DEFAULT_SESSION_DURATION_MINUTES,
+    MAX_SESSION_DURATION_MINUTES,
+    MIN_SESSION_DURATION_MINUTES
+  } from '@cio/utils/functions/live-session';
+  import { ZLessonRecordingUrl } from '@cio/utils/validation/lesson';
   import { getVideoTitle, type LessonVideo } from './video/video-card-utils';
 
   interface Props {
@@ -41,6 +47,9 @@
   let sessionCallUrl = $state('');
   let sessionWallClock = $state('');
   let sessionTimezone = $state(getBrowserTimezone());
+  let sessionDurationMinutes = $state<number | null>(DEFAULT_SESSION_DURATION_MINUTES);
+  let sessionRecordingUrl = $state('');
+  let recordingUrlError = $state('');
   let sessionInitializedFor = $state<string | null>(null);
   let isSavingSession = $state(false);
   let confirmOpen = $state(false);
@@ -53,6 +62,9 @@
     sessionTimezone = tz;
     sessionCallUrl = lesson.callUrl ?? '';
     sessionWallClock = instantToZonedWallClock(lesson.lessonAt, tz);
+    sessionDurationMinutes = lesson.sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+    sessionRecordingUrl = lesson.recordingUrl ?? '';
+    recordingUrlError = '';
     sessionInitializedFor = lesson.id;
   });
 
@@ -62,7 +74,7 @@
     return sessionWallClock ? zonedWallClockToInstant(sessionWallClock, sessionTimezone) : '';
   }
 
-  function sessionChanged(): boolean {
+  function scheduleChanged(): boolean {
     const currentTz = courseApi.course?.metadata?.sessionTimezone || getBrowserTimezone();
 
     return (
@@ -72,16 +84,54 @@
     );
   }
 
+  function sessionDetailsChanged(): boolean {
+    const savedDuration = lessonApi.lesson?.sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+
+    return (
+      (sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES) !== savedDuration ||
+      sessionRecordingUrl.trim() !== (lessonApi.lesson?.recordingUrl ?? '')
+    );
+  }
+
+  function sessionChanged(): boolean {
+    return scheduleChanged() || sessionDetailsChanged();
+  }
+
+  function validateRecordingUrl(): boolean {
+    const recordingUrl = sessionRecordingUrl.trim();
+    recordingUrlError = '';
+    if (!recordingUrl) return true;
+
+    if (!ZLessonRecordingUrl.safeParse(recordingUrl).success) {
+      recordingUrlError = t.get('course.navItem.lessons.session.recording_url_invalid');
+      return false;
+    }
+
+    if (!sessionCallUrl.trim() || !computeNewInstant()) {
+      recordingUrlError = t.get('course.navItem.lessons.session.recording_url_needs_session');
+      return false;
+    }
+
+    return true;
+  }
+
   async function persistSession() {
     const courseId = courseApi.course?.id;
     const lessonId = lessonApi.lesson?.id;
     if (!courseId || !lessonId) return;
 
+    const savedDurationMinutes = lessonApi.lesson?.sessionDurationMinutes ?? null;
+    const durationMinutes = sessionDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES;
+    const isDurationUnchanged = durationMinutes === (savedDurationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES);
+    const durationToSave = isDurationUnchanged ? savedDurationMinutes : durationMinutes;
+
     isSavingSession = true;
     try {
       await lessonApi.update(courseId, lessonId, {
         callUrl: sessionCallUrl.trim() || null,
-        lessonAt: computeNewInstant() || null
+        lessonAt: computeNewInstant() || null,
+        sessionDurationMinutes: durationToSave,
+        recordingUrl: sessionRecordingUrl.trim() || null
       });
 
       const currentTz = courseApi.course?.metadata?.sessionTimezone || '';
@@ -113,9 +163,9 @@
   }
 
   async function handleSaveSession() {
-    if (!sessionChanged()) return;
+    if (!sessionChanged() || !validateRecordingUrl()) return;
 
-    if (hadPriorSession) {
+    if (hadPriorSession && scheduleChanged()) {
       confirmOpen = true;
       return;
     }
@@ -240,6 +290,31 @@
             <Field.Description>{$t('course.navItem.lessons.session.timezone_helper')}</Field.Description>
           </Field.Field>
         </div>
+
+        <Field.Field>
+          <NumberField
+            integer
+            min={MIN_SESSION_DURATION_MINUTES}
+            max={MAX_SESSION_DURATION_MINUTES}
+            label={$t('course.navItem.lessons.session.duration_label')}
+            helperMessage={$t('course.navItem.lessons.session.duration_helper')}
+            bind:value={sessionDurationMinutes}
+            testId="lesson-session-duration"
+          />
+        </Field.Field>
+
+        <Field.Field>
+          <InputField
+            type="url"
+            label={$t('course.navItem.lessons.session.recording_url_label')}
+            helperMessage={$t('course.navItem.lessons.session.recording_url_helper')}
+            placeholder="https://zoom.us/rec/share/..."
+            value={sessionRecordingUrl}
+            errorMessage={recordingUrlError}
+            onInput={(e) => (sessionRecordingUrl = e.currentTarget.value)}
+            testId="lesson-session-recording-url"
+          />
+        </Field.Field>
 
         <div>
           <Button size="sm" onclick={handleSaveSession} loading={isSavingSession}>

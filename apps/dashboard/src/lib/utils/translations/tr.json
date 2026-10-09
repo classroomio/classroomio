@@ -2603,7 +2603,15 @@
           "add_apple": "Apple Takvim (.ics)",
           "starts_in": "Başlangıç tarihi",
           "session_ended": "Oturum sona erdi",
-          "link_copied": "Bağlantı kopyalandı"
+          "link_copied": "Bağlantı kopyalandı",
+          "duration_label": "Beklenen oturum süresi (dakika)",
+          "duration_helper": "Oturumun ne zaman canlı olduğunu ve ne zaman sona erdiğini göstermek için kullanılır.",
+          "recording_url_label": "Kayıt bağlantısı",
+          "recording_url_helper": "Oturum sona erdikten sonra öğrencilere gösterilir.",
+          "recording_url_invalid": "http:// veya https:// ile başlayan bir bağlantı girin",
+          "recording_url_needs_session": "Kayıt eklemeden önce bir toplantı bağlantısı ve başlangıç saati ekleyin",
+          "past_sessions_heading": "Geçmiş oturumlar",
+          "watch_recording": "Kaydı izle"
         },
         "share_your_knowledge": "İlgi çekici dersler oluşturarak bilginizi dünyayla paylaşın. Ekle düğmesine tıklayarak başlayın.",
         "student_share_your_knowledge": "Bu kursa henüz ders eklenmedi. Lütfen daha sonra tekrar kontrol edin.",

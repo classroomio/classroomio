@@ -2774,7 +2774,15 @@
           "add_apple": "Lịch Apple (.ics)",
           "starts_in": "Bắt đầu vào",
           "session_ended": "Phiên kết thúc",
-          "link_copied": "Đã sao chép liên kết"
+          "link_copied": "Đã sao chép liên kết",
+          "duration_label": "Thời lượng dự kiến của buổi học (phút)",
+          "duration_helper": "Dùng để hiển thị khi nào buổi học đang diễn ra và khi nào đã kết thúc.",
+          "recording_url_label": "Liên kết bản ghi",
+          "recording_url_helper": "Hiển thị cho học viên sau khi buổi học kết thúc.",
+          "recording_url_invalid": "Nhập liên kết bắt đầu bằng http:// hoặc https://",
+          "recording_url_needs_session": "Thêm liên kết cuộc họp và thời gian bắt đầu trước khi thêm bản ghi",
+          "past_sessions_heading": "Các buổi học đã qua",
+          "watch_recording": "Xem bản ghi"
         },
         "student_share_your_knowledge": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",
         "student_body_content": "Chưa có bài học nào được thêm vào khóa học này. Vui lòng kiểm tra lại sau.",

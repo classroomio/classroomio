@@ -2593,7 +2593,15 @@
           "add_apple": "Calendario Apple (.ics)",
           "starts_in": "Inizia tra",
           "session_ended": "La sessione è terminata",
-          "link_copied": "Collegamento copiato"
+          "link_copied": "Collegamento copiato",
+          "duration_label": "Durata prevista della sessione (minuti)",
+          "duration_helper": "Serve a mostrare quando la sessione è in diretta e quando è terminata.",
+          "recording_url_label": "Link della registrazione",
+          "recording_url_helper": "Mostrato agli studenti al termine della sessione.",
+          "recording_url_invalid": "Inserisci un link che inizi con http:// o https://",
+          "recording_url_needs_session": "Aggiungi un link alla riunione e un orario di inizio prima di aggiungere una registrazione",
+          "past_sessions_heading": "Sessioni passate",
+          "watch_recording": "Guarda la registrazione"
         },
         "share_your_knowledge": "Condividi le tue conoscenze con il mondo creando lezioni coinvolgenti. Inizia facendo clic sul pulsante Aggiungi.",
         "student_share_your_knowledge": "Nessuna lezione è stata ancora aggiunta a questo corso. Ricontrolla più tardi.",

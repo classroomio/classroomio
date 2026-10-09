@@ -16,6 +16,7 @@
     addApple: string;
     startsIn: string;
     sessionEnded: string;
+    watchRecording: string;
   }
 </script>
 
@@ -31,6 +32,7 @@
   import ClockIcon from '@lucide/svelte/icons/clock';
   import HourglassIcon from '@lucide/svelte/icons/hourglass';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import PlayCircleIcon from '@lucide/svelte/icons/circle-play';
 
   interface Props {
     title: string;
@@ -39,6 +41,7 @@
     labels: LiveSessionLabels;
     timezone?: string | null;
     durationMinutes?: number;
+    recordingUrl?: string | null;
     status?: 'live' | 'upcoming' | 'ended';
   }
 
@@ -49,6 +52,7 @@
     labels,
     timezone = null,
     durationMinutes = 60,
+    recordingUrl = null,
     status: statusOverride = undefined
   }: Props = $props();
 
@@ -289,5 +293,13 @@
       <ClockIcon size={12} />
       {dateLabel}
     </div>
+
+    {#if recordingUrl}
+      <div class="ui:mt-3">
+        <a href={recordingUrl} target="_blank" rel="noreferrer">
+          <Button size="xs"><PlayCircleIcon size={13} />{labels.watchRecording}</Button>
+        </a>
+      </div>
+    {/if}
   {/if}
 </div>
