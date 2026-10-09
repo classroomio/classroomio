@@ -10,6 +10,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
+  import { isLiveSessionLive, liveSessionClock } from '$features/course/utils/live-session-phase';
 
   interface Props {
     item: CourseContentItem;
@@ -73,7 +74,7 @@
         <CourseContentIcon type={item.type} size={iconSize} />
       {/if}
 
-      {#if item.type === ContentType.Lesson && item.callUrl}
+      {#if item.type === ContentType.Lesson && isLiveSessionLive(item, $liveSessionClock)}
         <span
           class="shrink-0"
           title={$t('course.navItem.lessons.session.live_indicator')}

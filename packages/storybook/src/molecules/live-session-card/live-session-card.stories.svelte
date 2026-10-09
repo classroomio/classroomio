@@ -29,10 +29,12 @@
     addYahoo: 'Yahoo Calendar',
     addApple: 'Apple Calendar (.ics)',
     startsIn: 'Starts in',
-    sessionEnded: 'Session ended'
+    sessionEnded: 'Session ended',
+    watchRecording: 'Watch recording'
   };
 
   const callUrl = 'https://zoom.us/j/1234567890';
+  const recordingUrl = 'https://zoom.us/rec/share/example';
   const day = 24 * 60 * 60 * 1000;
   const minute = 60 * 1000;
 
@@ -79,6 +81,22 @@
         {callUrl}
         lessonAt={endedAt}
         timezone="America/New_York"
+        {labels}
+        status="ended"
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Ended with recording">
+  {#snippet template()}
+    <div class="w-[440px] p-8">
+      <LiveSessionCard
+        title="Compliance Essentials Webinar"
+        {callUrl}
+        lessonAt={endedAt}
+        timezone="America/New_York"
+        {recordingUrl}
         {labels}
         status="ended"
       />

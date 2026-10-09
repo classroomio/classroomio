@@ -22,6 +22,7 @@
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { SvelteSet } from 'svelte/reactivity';
+  import { isLiveSessionLive, liveSessionClock } from '$features/course/utils/live-session-phase';
 
   interface Props {
     path: string;
@@ -121,7 +122,7 @@
                 <CircleCheckIcon size={16} filled />
               </span>
             {/if}
-            {#if contentItem.type === ContentType.Lesson && contentItem.callUrl}
+            {#if contentItem.type === ContentType.Lesson && isLiveSessionLive(contentItem, $liveSessionClock)}
               {@render liveSessionDot()}
             {:else if isContentLocked || isLockedForStudent}
               <span

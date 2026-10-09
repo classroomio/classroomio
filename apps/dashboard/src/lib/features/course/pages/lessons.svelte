@@ -7,6 +7,7 @@
   import TemplateUpdateAlert from '$features/course/components/template-update-alert.svelte';
   import ContentList from '$features/course/components/lesson/content-list.svelte';
   import ContentSectionList from '$features/course/components/lesson/content-section-list.svelte';
+  import PastSessionsSection from '$features/course/components/lesson/past-sessions-section.svelte';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
@@ -34,6 +35,7 @@
   const sectionsTotal = $derived(
     contentData.grouped ? contentData.sections.filter((section) => section.id !== 'ungrouped').length : 0
   );
+  const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
   const lessonsTotal = $derived(contentItems.filter((item) => item.type === ContentType.Lesson).length);
   const exercisesTotal = $derived(contentItems.filter((item) => item.type === ContentType.Exercise).length);
 
@@ -97,6 +99,10 @@
       <p class="text-2xl font-semibold tabular-nums">{exercisesTotal}</p>
     </div>
   </div>
+
+  {#if isLiveCourse && !reorder}
+    <PastSessionsSection {courseId} items={contentItems} />
+  {/if}
 
   {#if reorder}
     <p class="text-center text-xs text-gray-400 italic dark:text-white">

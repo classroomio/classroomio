@@ -1,4 +1,5 @@
 import { ContentType } from '@cio/utils/constants';
+import { getReleasedRecordingUrl } from '@cio/utils/functions/live-session';
 import type { CourseContentItemRow } from '@cio/db/queries/course';
 
 export type CourseContentItem = {
@@ -12,6 +13,8 @@ export type CourseContentItem = {
   isComplete: boolean | null;
   lessonAt: string | null;
   callUrl: string | null;
+  sessionDurationMinutes: number | null;
+  recordingUrl: string | null;
   hasNoteContent: boolean | null;
   hasSlideContent: boolean | null;
   videosCount: number | null;
@@ -77,6 +80,8 @@ function mapCourseContentItems(rows: CourseContentItemRow[]): CourseContentItem[
     isComplete: row.isComplete ?? null,
     lessonAt: row.lessonAt ?? null,
     callUrl: row.callUrl ?? null,
+    sessionDurationMinutes: row.sessionDurationMinutes ?? null,
+    recordingUrl: getReleasedRecordingUrl(row),
     hasNoteContent: row.hasNoteContent ?? null,
     hasSlideContent: row.hasSlideContent ?? null,
     videosCount: row.videosCount ?? null,

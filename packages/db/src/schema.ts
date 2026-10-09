@@ -1093,6 +1093,8 @@ export const lesson = pgTable(
     teacherId: uuid('teacher_id'),
     isComplete: boolean('is_complete').default(false),
     callUrl: text('call_url'),
+    sessionDurationMinutes: integer('session_duration_minutes'),
+    recordingUrl: text('recording_url'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     order: bigint({ mode: 'number' }).notNull(),
     isUnlocked: boolean('is_unlocked').default(true),

@@ -2715,7 +2715,14 @@
           "add_apple": "Apple Kalender (.ics)",
           "starts_in": "Beginnt in",
           "session_ended": "Sitzung beendet",
-          "link_copied": "Link kopiert"
+          "link_copied": "Link kopiert",
+          "duration_label": "Erwartete Sitzungsdauer (Minuten)",
+          "duration_helper": "Wird verwendet, um anzuzeigen, wann die Sitzung live ist und wann sie beendet ist.",
+          "recording_url_label": "Aufzeichnungslink",
+          "recording_url_helper": "Wird den Teilnehmenden nach dem Ende der Sitzung angezeigt.",
+          "recording_url_invalid": "Gib einen Link ein, der mit http:// oder https:// beginnt",
+          "past_sessions_heading": "Vergangene Sitzungen",
+          "watch_recording": "Aufzeichnung ansehen"
         },
         "student_share_your_knowledge": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
         "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",

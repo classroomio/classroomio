@@ -23,6 +23,7 @@ import {
   getLessonHistoryService,
   getLessonWatchProgressService,
   listLessons,
+  releaseLessonRecordingsForViewer,
   updateLessonCommentService,
   updateLessonService,
   updateLessonWatchProgressService,
@@ -53,7 +54,8 @@ export const lessonRouter = new Hono()
 
       await assertEnrolledStudentCourseAccess({ courseId, profileId: user.id });
 
-      const lessons = await listLessons(courseId, sectionId);
+      const storedLessons = await listLessons(courseId, sectionId);
+      const lessons = await releaseLessonRecordingsForViewer(courseId, user.id, storedLessons);
 
       return c.json({ success: true, data: lessons }, 200);
     } catch (error) {
@@ -73,10 +75,11 @@ export const lessonRouter = new Hono()
         type: ContentType.Lesson
       });
 
-      const [lesson, watchProgress] = await Promise.all([
+      const [storedLesson, watchProgress] = await Promise.all([
         getLesson(lessonId),
         getLessonWatchProgressService(lessonId, user.id)
       ]);
+      const [lesson] = await releaseLessonRecordingsForViewer(courseId, user.id, [storedLesson]);
 
       return c.json({ success: true, data: { ...lesson, watchProgress } }, 200);
     } catch (error) {

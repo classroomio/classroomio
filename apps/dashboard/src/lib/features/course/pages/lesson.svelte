@@ -534,6 +534,8 @@
             callUrl={lessonApi.lesson?.callUrl ?? ''}
             lessonAt={lessonApi.lesson?.lessonAt ?? ''}
             timezone={courseApi.course?.metadata?.sessionTimezone}
+            durationMinutes={lessonApi.lesson?.sessionDurationMinutes}
+            recordingUrl={lessonApi.lesson?.recordingUrl}
           />
         </div>
       {/if}
