@@ -32,8 +32,8 @@ function scopesInFirstJsonbArray(sql: string, afterOperator: string): string[] {
   return JSON.parse(sql.slice(open, close + 1)) as string[];
 }
 
-describe('0029_media_upload_pipeline', () => {
-  const sql = readMigration('0029_media_upload_pipeline');
+describe('0030_media_upload_pipeline', () => {
+  const sql = readMigration('0030_media_upload_pipeline');
 
   it('requires exactly the MCP default set as it stood before media:write', () => {
     const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');
