@@ -1622,7 +1622,7 @@
   },
   "org_navigation": {
     "platform": "Piattaforma",
-    "home": "Casa",
+    "home": "Home",
     "content": "Contenuto",
     "people": "Persone",
     "back_to_app": "Torna all'app",
@@ -2564,7 +2564,7 @@
           "join": "Partecipa alla sessione",
           "live_indicator": "Questa lezione è una sessione dal vivo",
           "heading": "Sessione dal vivo",
-          "intro": "Imposta il link di partecipazione e l'orario programmato per questa lezione dal vivo. Gli studenti ricevono promemoria 24 ore e 1 ora prima.",
+          "intro": "Imposta il link di partecipazione e l'orario programmato per questa lezione dal vivo. Gli studenti ricevono promemoria via e-mail prima di ogni sessione. Scegli quando nelle impostazioni del corso.",
           "link_label": "Collegamento di partecipazione (Zoom, Meet, ecc.)",
           "datetime_label": "Data e ora",
           "timezone_label": "Fuso orario",
@@ -2593,7 +2593,15 @@
           "add_apple": "Calendario Apple (.ics)",
           "starts_in": "Inizia tra",
           "session_ended": "La sessione è terminata",
-          "link_copied": "Collegamento copiato"
+          "link_copied": "Collegamento copiato",
+          "duration_label": "Durata prevista della sessione (minuti)",
+          "duration_helper": "Serve a mostrare quando la sessione è in diretta e quando è terminata.",
+          "recording_url_label": "Link della registrazione",
+          "recording_url_helper": "Mostrato agli studenti al termine della sessione.",
+          "recording_url_invalid": "Inserisci un link che inizi con http:// o https://",
+          "recording_url_needs_session": "Aggiungi un link alla riunione e un orario di inizio prima di aggiungere una registrazione",
+          "past_sessions_heading": "Sessioni passate",
+          "watch_recording": "Guarda la registrazione"
         },
         "share_your_knowledge": "Condividi le tue conoscenze con il mondo creando lezioni coinvolgenti. Inizia facendo clic sul pulsante Aggiungi.",
         "student_share_your_knowledge": "Nessuna lezione è stata ancora aggiunta a questo corso. Ricontrolla più tardi.",
@@ -4343,7 +4351,66 @@
         },
         "delete": "Elimina corso",
         "delete_text": "Elimina questo corso, questa azione non può essere annullata",
-        "save": "Salva modifiche"
+        "save": "Salva modifiche",
+        "live_session_reminders": {
+          "legend": "Promemoria via e-mail delle sessioni",
+          "description": "Scegli quando gli studenti iscritti ricevono un'e-mail con il link di partecipazione prima di ogni sessione dal vivo.",
+          "empty": "Nessun promemoria. Gli studenti non riceveranno e-mail prima delle sessioni dal vivo.",
+          "add": "Aggiungi promemoria",
+          "presets_label": "Aggiunta rapida:",
+          "remove": "Rimuovi promemoria",
+          "unit_label": "Unità",
+          "units": {
+            "days": "Giorni",
+            "hours": "Ore",
+            "minutes": "Minuti"
+          },
+          "duration": {
+            "days": "{count, plural, one {# giorno} other {# giorni}}",
+            "hours": "{count, plural, one {# ora} other {# ore}}",
+            "minutes": "{count, plural, one {# minuto} other {# minuti}}"
+          },
+          "preview": "{duration} prima di ogni sessione",
+          "offset_before": "{duration} prima",
+          "max_count": "Puoi aggiungere fino a {count} promemoria.",
+          "validation": {
+            "amount": "Inserisci un numero intero pari o superiore a 1.",
+            "min": "I promemoria devono essere almeno 15 minuti prima della sessione.",
+            "max": "I promemoria possono essere al massimo 7 giorni prima della sessione.",
+            "duplicate": "Hai già un promemoria a quest'ora.",
+            "fix_errors": "Correggi gli errori dei promemoria delle sessioni prima di salvare."
+          },
+          "log": {
+            "title": "Registro di invio",
+            "description": "E-mail di promemoria per le sessioni degli ultimi 30 giorni e per le sessioni in programma.",
+            "view": "Visualizza log",
+            "empty": "Ancora nessun promemoria. Compariranno qui man mano che le sessioni si avvicinano.",
+            "load_error": "Impossibile caricare il registro di invio dei promemoria.",
+            "columns": {
+              "session": "Sessione",
+              "student": "Studente",
+              "reminder": "Promemoria",
+              "status": "Stato",
+              "detail": "Dettaglio"
+            }
+          },
+          "statuses": {
+            "pending": "In attesa",
+            "queued": "In coda",
+            "sent": "Inviato",
+            "failed": "Non riuscito",
+            "skipped": "Saltato"
+          },
+          "skip_reasons": {
+            "preferences": "Lo studente ha disattivato le e-mail di promemoria delle sessioni.",
+            "no_email": "Lo studente non ha un indirizzo e-mail.",
+            "lesson_past": "La sessione era già iniziata.",
+            "offset_removed": "Questo promemoria è stato rimosso dalle impostazioni del corso.",
+            "lesson_rescheduled": "L'orario della sessione o il link di partecipazione è cambiato.",
+            "window_passed": "L'orario del promemoria era già passato al momento della programmazione.",
+            "unenrolled": "Lo studente non è più iscritto."
+          }
+        }
       }
     },
     "not_permitted": {

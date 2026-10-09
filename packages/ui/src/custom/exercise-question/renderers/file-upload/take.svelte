@@ -6,6 +6,7 @@
   import { Spinner } from '../../../../base/spinner';
   import {
     formatUploadedFileSubtitle,
+    getFileUploadAcceptAttribute,
     isFileSizeAllowed,
     isFileTypeAllowed,
     normalizeAcceptedFileTypes
@@ -29,7 +30,7 @@
   let uploadError = $state<string | null>(null);
 
   const acceptedTypes = $derived(normalizeAcceptedFileTypes(question.settings?.acceptedTypes));
-  const acceptAttribute = $derived(acceptedTypes.join(','));
+  const acceptAttribute = $derived(getFileUploadAcceptAttribute(acceptedTypes));
   const maxSizeMb = $derived(question.settings?.maxSizeMb as number | undefined);
 
   const uploadedFile = $derived.by(
@@ -75,7 +76,7 @@
     isUploading = true;
     uploadError = null;
     try {
-      const result = await onFileUpload(selectedFile);
+      const result = await onFileUpload(selectedFile, { acceptedTypes });
       onAnswerChange({
         type: 'FILE_UPLOAD',
         fileKey: result.fileKey,

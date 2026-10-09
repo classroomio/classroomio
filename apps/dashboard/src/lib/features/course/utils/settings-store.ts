@@ -2,6 +2,8 @@ import type { TCourseType } from '@cio/db/types';
 import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
 
+import type { LiveSessionReminderRow } from './types';
+
 type CourseSettings = {
   bannerImage: string;
   courseTitle: string;
@@ -18,6 +20,7 @@ type CourseSettings = {
   commentsEnabled: boolean;
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;
+  liveSessionReminders: LiveSessionReminderRow[];
   certificate: {
     deadline: string | null;
     threshold: number;
@@ -47,6 +50,7 @@ export const settings = writable<CourseSettings>({
   commentsEnabled: true,
   callout: null,
   welcomeEmailMessage: '',
+  liveSessionReminders: [],
   certificate: {
     deadline: null,
     threshold: 100,

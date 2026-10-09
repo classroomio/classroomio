@@ -1136,7 +1136,66 @@
         "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
         "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów.",
         "allow_markdown_export": "Pozwól uczniom kopiować strony lekcji jako Markdown",
-        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej odblokowanej lekcji."
+        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej odblokowanej lekcji.",
+        "live_session_reminders": {
+          "legend": "Przypomnienia e-mail o sesjach",
+          "description": "Wybierz, kiedy zapisani uczniowie otrzymają e-mail z linkiem dołączenia przed każdą sesją na żywo.",
+          "empty": "Brak przypomnień. Uczniowie nie otrzymają e-maili przed sesjami na żywo.",
+          "add": "Dodaj przypomnienie",
+          "presets_label": "Szybkie dodawanie:",
+          "remove": "Usuń przypomnienie",
+          "unit_label": "Jednostka",
+          "units": {
+            "days": "Dni",
+            "hours": "Godziny",
+            "minutes": "Minuty"
+          },
+          "duration": {
+            "days": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}",
+            "hours": "{count, plural, one {# godzinę} few {# godziny} many {# godzin} other {# godziny}}",
+            "minutes": "{count, plural, one {# minutę} few {# minuty} many {# minut} other {# minuty}}"
+          },
+          "preview": "{duration} przed każdą sesją",
+          "offset_before": "{duration} wcześniej",
+          "max_count": "Możesz dodać maksymalnie {count} przypomnień.",
+          "validation": {
+            "amount": "Wpisz liczbę całkowitą równą 1 lub większą.",
+            "min": "Przypomnienia muszą być wysyłane co najmniej 15 minut przed sesją.",
+            "max": "Przypomnienia mogą być wysyłane najwyżej 7 dni przed sesją.",
+            "duplicate": "Masz już przypomnienie o tej porze.",
+            "fix_errors": "Popraw błędy w przypomnieniach o sesjach przed zapisaniem."
+          },
+          "log": {
+            "title": "Dziennik wysyłki",
+            "description": "E-maile z przypomnieniami dla sesji z ostatnich 30 dni i nadchodzących sesji.",
+            "view": "Zobacz dziennik",
+            "empty": "Brak przypomnień. Pojawią się tutaj, gdy sesje będą się zbliżać.",
+            "load_error": "Nie udało się wczytać dziennika wysyłki przypomnień.",
+            "columns": {
+              "session": "Sesja",
+              "student": "Uczeń",
+              "reminder": "Przypomnienie",
+              "status": "Status",
+              "detail": "Szczegóły"
+            }
+          },
+          "statuses": {
+            "pending": "Oczekujące",
+            "queued": "W kolejce",
+            "sent": "Wysłane",
+            "failed": "Niepowodzenie",
+            "skipped": "Pominięte"
+          },
+          "skip_reasons": {
+            "preferences": "Uczeń wyłączył e-mailowe przypomnienia o sesjach.",
+            "no_email": "Uczeń nie ma adresu e-mail.",
+            "lesson_past": "Sesja już się rozpoczęła.",
+            "offset_removed": "To przypomnienie zostało usunięte z ustawień kursu.",
+            "lesson_rescheduled": "Zmieniono godzinę sesji lub link dołączenia.",
+            "window_passed": "Czas przypomnienia już minął w chwili planowania.",
+            "unenrolled": "Uczeń nie jest już zapisany."
+          }
+        }
       },
       "analytics": {
         "title": "Analityka"
@@ -2704,7 +2763,7 @@
         "session": {
           "join": "Dołącz do sesji",
           "heading": "Sesja na żywo",
-          "intro": "Ustaw link dołączenia i zaplanowany czas dla tych zajęć na żywo. Uczniowie otrzymują przypomnienia 24 godziny i 1 godzinę wcześniej.",
+          "intro": "Ustaw link dołączenia i zaplanowany czas dla tych zajęć na żywo. Uczniowie otrzymują przypomnienia e-mail przed każdą sesją. Termin wybierzesz w ustawieniach kursu.",
           "link_label": "Dołącz link (Zoom, Meet itp.)",
           "datetime_label": "Data i godzina",
           "timezone_label": "Strefa czasowa",
@@ -2734,7 +2793,15 @@
           "add_apple": "Kalendarz Apple (.ics)",
           "starts_in": "Zaczyna się w",
           "session_ended": "Sesja zakończona",
-          "link_copied": "Link skopiowany"
+          "link_copied": "Link skopiowany",
+          "duration_label": "Przewidywany czas trwania sesji (minuty)",
+          "duration_helper": "Służy do pokazania, kiedy sesja trwa na żywo, a kiedy się zakończyła.",
+          "recording_url_label": "Link do nagrania",
+          "recording_url_helper": "Wyświetlany uczniom po zakończeniu sesji.",
+          "recording_url_invalid": "Wpisz link zaczynający się od http:// lub https://",
+          "recording_url_needs_session": "Dodaj link do spotkania i godzinę rozpoczęcia, zanim dodasz nagranie",
+          "past_sessions_heading": "Poprzednie sesje",
+          "watch_recording": "Obejrzyj nagranie"
         },
         "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
         "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
