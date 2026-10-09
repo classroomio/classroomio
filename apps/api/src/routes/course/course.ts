@@ -254,8 +254,8 @@ export const courseRouter = new Hono()
   )
   /**
    * GET /course/:courseId
-   * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)
-   * Query param: slug (optional) - if provided, courseId is ignored and course is fetched by slug
+   * Gets a course with its group, members, lessons, sections, and attendance.
+   * An optional slug must resolve to this course id.
    * Requires authentication. Course members and submission graders may read it.
    */
   .get(
@@ -269,7 +269,11 @@ export const courseRouter = new Hono()
         const { slug } = c.req.valid('query');
         const user = c.get('user')!;
         const course = await getCourse(slug ? undefined : courseId, slug, user.id);
-        const canGrade = await canAccessCourseSubmissions(course.id, user.id);
+        if (course.id !== courseId) {
+          throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+        }
+
+        const canGrade = await canAccessCourseSubmissions(courseId, user.id);
 
         return c.json(
           {

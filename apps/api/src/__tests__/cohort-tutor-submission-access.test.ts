@@ -241,13 +241,21 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
   });
 
   it('lets a cohort tutor open the course shell without a course group row', async () => {
-    const response = await appAs(mentorId).request(`/course/${linkedCourseId}`);
+    const response = await appAs(mentorId).request(`/course/${linkedCourseId}?slug=linked-${suffix}`);
 
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.success).toBe(true);
     expect(body.data.id).toBe(linkedCourseId);
     expect(body.data.canGrade).toBe(true);
+  });
+
+  it('rejects a slug that resolves to a different course', async () => {
+    const response = await appAs(mentorId).request(`/course/${linkedCourseId}?slug=added-${suffix}`);
+
+    expect(response.status).toBe(404);
+    const body = await response.json();
+    expect(body.code).toBe('COURSE_NOT_FOUND');
   });
 
   it('tells a course student they cannot grade', async () => {
