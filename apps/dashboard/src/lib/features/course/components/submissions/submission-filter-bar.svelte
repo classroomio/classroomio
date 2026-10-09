@@ -45,6 +45,7 @@
       options={studentOptions}
       selectedIds={selectedStudentIds}
       testId="submissions-filter-students"
+      showFilterIcon
       onSelectedIdsChange={onStudentIdsChange}
     />
     <SubmissionMultiSelect
@@ -61,7 +62,7 @@
     />
     <Button
       type="button"
-      variant="outline"
+      variant="ghost"
       size="sm"
       testId="submissions-filter-reset"
       disabled={!hasFilters}

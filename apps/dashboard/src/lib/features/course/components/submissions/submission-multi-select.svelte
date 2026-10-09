@@ -4,6 +4,7 @@
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Input } from '@cio/ui/base/input';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
+  import FilterIcon from '@lucide/svelte/icons/filter';
   import type { SubmissionFilterOption } from '$features/course/utils/submission-board-filters';
 
   interface Props {
@@ -16,6 +17,7 @@
     options: SubmissionFilterOption[];
     selectedIds: string[];
     testId: string;
+    showFilterIcon?: boolean;
     onSelectedIdsChange: (ids: string[]) => void;
   }
 
@@ -29,6 +31,7 @@
     options,
     selectedIds,
     testId,
+    showFilterIcon = false,
     onSelectedIdsChange
   }: Props = $props();
 
@@ -71,6 +74,9 @@
   <Popover.Trigger>
     {#snippet child({ props })}
       <Button {...props} type="button" variant="outline" size="sm" {testId}>
+        {#if showFilterIcon}
+          <FilterIcon class="size-3.5" />
+        {/if}
         {label}
         {#if selectedIds.length > 0}
           <span
