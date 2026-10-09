@@ -15,3 +15,9 @@ pre-commit:
       fail_text: |
         ❌ packages/ui Tailwind classes must use the ui: prefix.
         Run 'pnpm --filter @cio/ui prefix' to fix staged UI files, then commit again.
+    plugin-isolation:
+      glob: '{official-plugins,plugin-examples}/**/*.{svelte,ts,tsx,js,jsx,json,html}'
+      run: pnpm plugins:verify-isolation
+      fail_text: |
+        ❌ Plugin isolation check failed!
+        Plugins in official-plugins/ and plugin-examples/ must not import @cio/*, $lib/*, or escape their root directory.

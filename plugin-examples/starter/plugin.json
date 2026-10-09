@@ -1,0 +1,41 @@
+{
+  "$schema": "https://classroomio.com/schemas/plugin.v1.json",
+  "manifestVersion": 1,
+  "id": "com.classroomio.starter",
+  "name": "Starter Reference Plugin",
+  "version": "1.0.0",
+  "description": "A minimal, standalone reference plugin demonstrating the ClassroomIO public SDK and UI contracts.",
+  "publisher": "classroomio",
+  "license": "MIT",
+  "engines": {
+    "classroomio": ">=2.0.0",
+    "pluginApi": "2026-10-08"
+  },
+  "runtime": {
+    "ui": {
+      "entrypoints": {
+        "starterPage": {
+          "renderMode": "custom",
+          "resource": "dist/index.html"
+        }
+      }
+    }
+  },
+  "permissions": {
+    "required": ["plugin.storage:read", "plugin.storage:write"],
+    "optional": []
+  },
+  "contributes": {
+    "pages": [
+      {
+        "id": "starter-page",
+        "entrypoint": "starterPage",
+        "title": "Starter Example"
+      }
+    ]
+  },
+  "dataPolicy": {
+    "storesCustomerData": false,
+    "retentionAfterUninstallDays": 30
+  }
+}
