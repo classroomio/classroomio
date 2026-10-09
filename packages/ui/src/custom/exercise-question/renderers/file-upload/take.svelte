@@ -4,7 +4,12 @@
   import { DocumentCard } from '../../../document-card';
   import { Button } from '../../../../base/button';
   import { Spinner } from '../../../../base/spinner';
-  import { isFileSizeAllowed, isFileTypeAllowed, normalizeAcceptedFileTypes } from '../file-upload-types';
+  import {
+    getFileUploadAcceptAttribute,
+    isFileSizeAllowed,
+    isFileTypeAllowed,
+    normalizeAcceptedFileTypes
+  } from '../file-upload-types';
 
   let {
     question,
@@ -24,7 +29,7 @@
   let uploadError = $state<string | null>(null);
 
   const acceptedTypes = $derived(normalizeAcceptedFileTypes(question.settings?.acceptedTypes));
-  const acceptAttribute = $derived(acceptedTypes.join(','));
+  const acceptAttribute = $derived(getFileUploadAcceptAttribute(acceptedTypes));
   const maxSizeMb = $derived(question.settings?.maxSizeMb as number | undefined);
 
   const uploadedFile = $derived.by(

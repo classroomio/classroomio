@@ -372,10 +372,7 @@
   async function handleFileUpload(file: File): Promise<{ fileKey: string; fileName: string; fileUrl?: string }> {
     const uploadResult = await presignApi.getDocumentUploadUrl(
       file.name,
-      file.type as
-        | 'application/pdf'
-        | 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        | 'application/msword',
+      file.type,
       file.size > 0 ? file.size : undefined
     );
     if (!uploadResult) {
