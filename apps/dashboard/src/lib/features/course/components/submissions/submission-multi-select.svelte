@@ -4,7 +4,6 @@
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Input } from '@cio/ui/base/input';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
-  import FilterIcon from '@lucide/svelte/icons/filter';
   import type { SubmissionFilterOption } from '$features/course/utils/submission-board-filters';
 
   interface Props {
@@ -17,7 +16,7 @@
     options: SubmissionFilterOption[];
     selectedIds: string[];
     testId: string;
-    showFilterIcon?: boolean;
+    formatSelection: (name: string) => string;
     onSelectedIdsChange: (ids: string[]) => void;
   }
 
@@ -31,7 +30,7 @@
     options,
     selectedIds,
     testId,
-    showFilterIcon = false,
+    formatSelection,
     onSelectedIdsChange
   }: Props = $props();
 
@@ -41,6 +40,16 @@
   const visibleOptions = $derived(
     options.filter((option) => option.label.toLowerCase().includes(search.trim().toLowerCase()))
   );
+  const selectedOptions = $derived(options.filter((option) => selectedIds.includes(option.id)));
+  const hasSelection = $derived(selectedOptions.length > 0);
+  const extraCount = $derived(Math.max(selectedOptions.length - 1, 0));
+  const triggerLabel = $derived.by(() => {
+    if (!hasSelection) return label;
+
+    const selectedName = selectedOptions[0]?.label ?? label;
+
+    return formatSelection(selectedName);
+  });
 
   function handleOpenChange(isOpen: boolean) {
     open = isOpen;
@@ -73,17 +82,17 @@
 <Popover.Root {open} onOpenChange={handleOpenChange}>
   <Popover.Trigger>
     {#snippet child({ props })}
-      <Button {...props} type="button" variant="outline" size="sm" {testId}>
-        {#if showFilterIcon}
-          <FilterIcon class="size-3.5" />
-        {/if}
-        {label}
-        {#if selectedIds.length > 0}
-          <span
-            class="ui:bg-foreground ui:text-background inline-flex min-w-5 items-center justify-center rounded-full px-1 text-[10px] leading-4 font-semibold"
-          >
-            {selectedIds.length}
-          </span>
+      <Button
+        {...props}
+        type="button"
+        variant="outline"
+        size="sm"
+        {testId}
+        class={hasSelection ? 'ui:border-primary ui:text-primary' : undefined}
+      >
+        <span class="max-w-56 truncate">{triggerLabel}</span>
+        {#if extraCount > 0}
+          <span class="shrink-0">+{extraCount}</span>
         {/if}
         <ChevronDownIcon class="size-3.5" />
       </Button>

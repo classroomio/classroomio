@@ -3664,8 +3664,11 @@
           "delete_success": "Gönderim başarıyla silindi"
         },
         "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
           "students": "Students",
           "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
           "search_students": "Search students",
           "search_exercises": "Search exercises",
           "select_all": "Select all",

@@ -1690,8 +1690,11 @@
           "invalid_transition": "Việc di chuyển trạng thái này không được phép bởi quy trình chấm điểm"
         },
         "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
           "students": "Students",
           "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
           "search_students": "Search students",
           "search_exercises": "Search exercises",
           "select_all": "Select all",
