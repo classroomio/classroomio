@@ -5,6 +5,7 @@ import { getLiveSessionPhase, type LiveSessionTiming } from '@cio/utils/function
 const CLOCK_TICK_MS = 30_000;
 
 export const liveSessionClock = readable(Date.now(), (set) => {
+  set(Date.now());
   const ticker = setInterval(() => set(Date.now()), CLOCK_TICK_MS);
 
   return () => clearInterval(ticker);
@@ -14,10 +15,13 @@ export function isLiveSessionLive(session: LiveSessionTiming, now: number): bool
   return getLiveSessionPhase(session, now) === 'live';
 }
 
+/**
+ * A meeting link stays joinable until its scheduled session ends. Links without a start time are always joinable.
+ */
 export function isLiveSessionJoinable(session: LiveSessionTiming, now: number): boolean {
-  const phase = getLiveSessionPhase(session, now);
+  if (!session.callUrl) return false;
 
-  return phase === 'upcoming' || phase === 'live';
+  return getLiveSessionPhase(session, now) !== 'ended';
 }
 
 /**

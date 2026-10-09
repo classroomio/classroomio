@@ -12,6 +12,8 @@
   import { courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgStudent } from '$lib/utils/store/app';
+  import { profile } from '$lib/utils/store/user';
+  import { getPastLiveSessions, liveSessionClock } from '$features/course/utils/live-session-phase';
   import { getCourseContent } from '$features/course/utils/content';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
@@ -47,6 +49,20 @@
   const isNextRequested = $derived(page.url.searchParams.get('next') === 'true');
   const hasNoNavigableContent = $derived(isCourseLoadedForThisPage && navigableContentItems.length === 0);
   const isResolvingNext = $derived(isNextRequested && !hasNoNavigableContent);
+
+  let observedEndedSessions: { courseId: string; count: number } | null = null;
+
+  $effect(() => {
+    if (!isCourseLoadedForThisPage || !isLiveCourse) return;
+
+    const count = getPastLiveSessions(contentItems, $liveSessionClock).length;
+    const previous = observedEndedSessions;
+    observedEndedSessions = { courseId, count };
+    const sessionJustEnded = previous?.courseId === courseId && count > previous.count;
+    if (!sessionJustEnded || !$profile.id) return;
+
+    void courseApi.refreshCourse(courseId, $profile.id);
+  });
 
   $effect(() => {
     if (!canResolveNext || isFetching || !isNextRequested) return;

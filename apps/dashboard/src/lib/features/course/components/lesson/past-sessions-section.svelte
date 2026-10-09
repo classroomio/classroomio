@@ -9,6 +9,7 @@
   import { getContentRoute } from '$features/course/utils/content';
   import { getPastLiveSessions, liveSessionClock } from '$features/course/utils/live-session-phase';
   import formatDate from '$lib/utils/functions/formatDate';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { t } from '$lib/utils/functions/translations';
 
   interface Props {
@@ -21,6 +22,13 @@
   let open = $state(false);
 
   const pastSessions = $derived(getPastLiveSessions(items, $liveSessionClock));
+
+  function isLockedForStudent(session: CourseContentItem) {
+    if ($isOrgStudent !== true) return false;
+    if ((session.isUnlocked ?? true) === false) return true;
+
+    return session.accessible === false;
+  }
 </script>
 
 {#if pastSessions.length > 0}
@@ -34,14 +42,22 @@
     <Collapsible.Content>
       <ul class="ui:border-border divide-y border-t">
         {#each pastSessions as session (session.id)}
+          {@const isLocked = isLockedForStudent(session)}
           <li class="flex items-center gap-3 px-4 py-2.5">
             <div class="min-w-0 flex-1">
-              <a href={resolve(getContentRoute(courseId, session), {})} class="block truncate text-sm hover:underline">
-                {session.title}
-              </a>
+              {#if isLocked}
+                <p class="ui:text-muted-foreground truncate text-sm">{session.title}</p>
+              {:else}
+                <a
+                  href={resolve(getContentRoute(courseId, session), {})}
+                  class="block truncate text-sm hover:underline"
+                >
+                  {session.title}
+                </a>
+              {/if}
               <p class="ui:text-muted-foreground text-xs">{formatDate(session.lessonAt!)}</p>
             </div>
-            {#if session.recordingUrl}
+            {#if session.recordingUrl && !isLocked}
               <a href={session.recordingUrl} target="_blank" rel="noreferrer">
                 <Button size="sm" variant="outline">
                   <PlayCircleIcon size={14} />

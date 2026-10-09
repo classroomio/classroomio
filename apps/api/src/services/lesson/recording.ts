@@ -21,3 +21,18 @@ export async function releaseLessonRecordingsForViewer<T extends LessonWithRecor
 
   return lessons.map((lesson) => ({ ...lesson, recordingUrl: getReleasedRecordingUrl(lesson) }));
 }
+
+/**
+ * Returns the lessons with `recordingUrl` cleared for everyone but course staff. Use it on responses that do not check
+ * the learner's lesson access; learners get released recordings from the lesson detail and course content instead.
+ */
+export async function hideLessonRecordingsFromLearners<T extends { recordingUrl: string | null }>(
+  courseId: string,
+  profileId: string,
+  lessons: T[]
+): Promise<T[]> {
+  const isCourseStaff = await isCourseTeamMemberOrOrgAdmin(courseId, profileId);
+  if (isCourseStaff) return lessons;
+
+  return lessons.map((lesson) => ({ ...lesson, recordingUrl: null }));
+}
