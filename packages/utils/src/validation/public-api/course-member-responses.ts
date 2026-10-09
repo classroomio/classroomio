@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { CoursePeopleProgress } from '../course';
+
 // Response shapes for OpenAPI docs only; handlers don't validate against them. Timestamps are Postgres text, not strict ISO.
 const timestamp = z.string();
 const nullableTimestamp = z.string().nullable();
@@ -32,6 +34,7 @@ export const ZPublicApiCourseMemberDetailResponse = ZPublicApiCourseMemberRespon
 
 export const ZPublicApiCourseMemberListItemResponse = ZPublicApiCourseMemberDetailResponse.extend({
   progressPercent: z.number().optional().describe('Students only'),
+  progressBucket: CoursePeopleProgress.nullable(),
   stage: z
     .discriminatedUnion('kind', [
       z.object({ kind: z.literal('not_started') }),

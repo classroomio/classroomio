@@ -57,6 +57,9 @@ const CoursesListResponse = {
   required: ['success', 'data', 'pagination', 'query']
 };
 
+const CourseStudentsDataResponse = paginatedResponse(ZPublicApiCourseMemberListItemResponse);
+const CourseStudentsResponse = jsonResponse('Course students returned successfully', CourseStudentsDataResponse);
+
 const NonAutoGradableQuestionOffenderSchema = {
   type: 'object' as const,
   properties: {
@@ -167,10 +170,7 @@ export const v1CourseRouter = new Hono()
       description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
       tags: ['Courses'],
       responses: {
-        200: jsonResponse(
-          'Course students returned successfully',
-          paginatedResponse(ZPublicApiCourseMemberListItemResponse)
-        ),
+        200: CourseStudentsResponse,
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
