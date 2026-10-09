@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Student progress · SCORM rows · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <link rel="stylesheet" href="scorm.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div data-course-sidebar="course" data-active="People"></div>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">People</span>
+          <span class="badge badge-success-soft">Published</span>
+          <span class="spacer"></span>
+          <button class="btn btn-sm btn-assistant"><span data-icon="sparkles"></span>Assistant</button>
+          <div class="bgroup">
+            <button class="btn btn-outline btn-sm"><span data-icon="ext"></span>View Course Site</button>
+            <button class="btn btn-outline btn-sm" aria-label="More"><span data-icon="more"></span></button>
+          </div>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+
+        <div class="content">
+          <div class="wrap" style="max-width: 1100px">
+            <div class="frow" style="margin-bottom: 18px">
+              <a class="btn btn-ghost btn-sm" href="#"><span data-icon="chevLeft"></span>Back</a>
+              <span class="grow"></span>
+              <div class="select-wrap">
+                <button class="btn btn-outline btn-sm" data-menu="student-actions"><span data-icon="more"></span>Actions</button>
+                <div class="menu" data-menu-for="student-actions" hidden style="top: 40px; right: 0">
+                  <button class="menu-item"><span data-icon="award"></span>View certificate</button>
+                  <div class="menu-sep"></div>
+                  <button class="menu-item" style="color: var(--destructive)" data-open="reset-progress"><span data-icon="rotate"></span>Reset progress</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="learner-grid">
+              <div class="card rail-card">
+                <div class="rail-who">
+                  <span class="avatar">SM</span>
+                  <div style="min-width: 0">
+                    <div style="font-weight: 600">Sofia Martins</div>
+                    <div class="muted" style="font-size: 12.5px">sofia.martins@northwind-health.com</div>
+                  </div>
+                </div>
+                <div class="frow" style="gap: 14px">
+                  <div class="ring"><svg viewBox="0 0 36 36"><circle class="track" cx="18" cy="18" r="15" fill="none" stroke-width="4" /><circle class="arc" cx="18" cy="18" r="15" fill="none" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="58.9" /></svg><span class="lbl">38%</span></div>
+                  <div><div style="font-weight: 500">Course progress</div><div class="muted" style="font-size: 12.5px">3 of 8 complete</div></div>
+                </div>
+                <div class="rail-stats">
+                  <div><span class="k">Last seen</span><span>2 hours ago</span></div>
+                  <div><span class="k">Lessons</span><span class="tnum">2 of 5</span></div>
+                  <div><span class="k">Exercises</span><span class="tnum">1 of 3</span></div>
+                  <div><span class="k">Average grade</span><span class="tnum">80%</span></div>
+                  <div><span class="k">Compliance</span><span class="badge badge-warning-soft">In progress · due 31 Oct</span></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="card list-card">
+                  <div class="list-h"><span data-icon="scorm"></span>SCORM lessons<span class="grow"></span><span class="muted" style="font-weight: 400; font-size: 12.5px">Scores reported by the package</span></div>
+                  <a class="list-row" href="results.html?state=sheet-failed">
+                    <span class="t"><span data-icon="scorm"></span><span>Protecting patient information</span></span>
+                    <span><span class="badge badge-destructive-soft">Failed · 64%</span></span>
+                    <span class="muted tnum">18m</span>
+                    <span class="muted">1 attempt</span>
+                  </a>
+                  <div class="list-row">
+                    <span class="t"><span data-icon="scorm"></span><span>Spot the phishing email</span></span>
+                    <span><span class="badge badge-muted">Not started</span></span>
+                    <span class="muted">-</span>
+                    <span class="muted">-</span>
+                  </div>
+                  <div class="banner" style="margin: 10px 16px 14px">
+                    <span data-icon="info"></span>
+                    <span class="grow">The lesson rule needs <b>passed</b>, so Protecting patient information isn’t complete. Retakes are off for this lesson. <a href="package-settings.html?state=retakes" style="color: var(--primary)">Turn on retakes</a> or reset the lesson for Sofia.</span>
+                  </div>
+                </div>
+
+                <div class="card list-card">
+                  <div class="list-h"><span data-icon="exercise"></span>Exercises</div>
+                  <div class="list-row"><span class="t"><span data-icon="exercise"></span><span>Quick check: safeguards</span></span><span><span class="badge badge-success-soft">Graded</span></span><span class="tnum">4 / 5</span><span class="muted">80%</span></div>
+                  <div class="list-row"><span class="t"><span data-icon="exercise"></span><span>HIPAA final assessment</span></span><span><span class="badge badge-muted">Not submitted</span></span><span class="muted">-</span><span class="muted">-</span></div>
+                  <div class="list-row"><span class="t"><span data-icon="exercise"></span><span>Policy attestation</span></span><span><span class="badge badge-muted">Not submitted</span></span><span class="muted">-</span><span class="muted">-</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="reset-progress" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="rp-title">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="rp-title">Reset Sofia Martins’s progress?</h2>
+          <p class="dialog-desc">This clears their progress in HIPAA Awareness 2026 so they can start over. It can’t be undone.</p>
+        </div>
+        <div class="dialog-body">
+          <div class="card" style="border-radius: var(--radius-md); box-shadow: none">
+            <div class="usage-row" style="padding: 9px 12px"><span data-icon="lesson"></span><span class="grow">Lesson completions</span><b class="tnum">2</b></div>
+            <div class="usage-row" style="padding: 9px 12px"><span data-icon="scorm"></span><span class="grow">SCORM attempts</span><b class="tnum">1</b></div>
+            <div class="usage-row" style="padding: 9px 12px"><span data-icon="exercise"></span><span class="grow">Exercise submissions</span><b class="tnum">1</b></div>
+            <div class="usage-row" style="padding: 9px 12px"><span data-icon="shield"></span><span class="grow">Compliance record</span><b class="tnum">1</b></div>
+          </div>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+          <button class="btn btn-destructive btn-sm" data-close>Reset progress</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">Student</span>
+      <button data-state="default">Progress</button>
+      <button data-state="reset">Reset progress</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      document.addEventListener('statechange', ({ detail }) => {
+        closeLayers();
+        if (detail === 'reset') openLayer('reset-progress');
+      });
+      bindStatePicker('default');
+    </script>
+  </body>
+</html>
