@@ -339,9 +339,9 @@ export async function updateCohort(cohortId: string, data: Partial<TNewCohort>):
   }
 }
 
-export async function deleteCohort(cohortId: string): Promise<TCohort | null> {
+export async function deleteCohort(cohortId: string, dbClient: DbOrTxClient = db): Promise<TCohort | null> {
   try {
-    const [deleted] = await db.delete(schema.cohort).where(eq(schema.cohort.id, cohortId)).returning();
+    const [deleted] = await dbClient.delete(schema.cohort).where(eq(schema.cohort.id, cohortId)).returning();
     return deleted || null;
   } catch (error) {
     console.error('deleteCohort error:', error);
@@ -352,6 +352,24 @@ export async function deleteCohort(cohortId: string): Promise<TCohort | null> {
 }
 
 // ─── Program Membership ──────────────────────────────────────────────────────
+
+export async function getCohortMemberById(
+  cohortId: string,
+  memberId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember | null> {
+  try {
+    const [member] = await dbClient
+      .select()
+      .from(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.cohortId, cohortId), eq(schema.cohortMember.id, memberId)))
+      .limit(1);
+    return member || null;
+  } catch (error) {
+    console.error('getCohortMemberById error:', error);
+    throw new Error(`Failed to get cohort member: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
 
 export async function getCohortMemberByProfileId(cohortId: string, profileId: string): Promise<TCohortMember | null> {
   try {
@@ -481,9 +499,13 @@ export async function lockCohortStatusForAccept(
   }
 }
 
-export async function removeCohortMember(cohortId: string, memberId: string): Promise<TCohortMember | null> {
+export async function removeCohortMember(
+  cohortId: string,
+  memberId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortMember | null> {
   try {
-    const [deleted] = await db
+    const [deleted] = await dbClient
       .delete(schema.cohortMember)
       .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
       .returning();
@@ -499,10 +521,11 @@ export async function removeCohortMember(cohortId: string, memberId: string): Pr
 export async function updateCohortMember(
   cohortId: string,
   memberId: string,
-  data: Partial<TNewCohortMember>
+  data: Partial<TNewCohortMember>,
+  dbClient: DbOrTxClient = db
 ): Promise<TCohortMember | null> {
   try {
-    const [updated] = await db
+    const [updated] = await dbClient
       .update(schema.cohortMember)
       .set(data)
       .where(and(eq(schema.cohortMember.id, memberId), eq(schema.cohortMember.cohortId, cohortId)))
@@ -811,9 +834,13 @@ export async function listCohortEnrollmentMembers(cohortId: string, dbClient: Db
   }
 }
 
-export async function removeCourseFromCohort(cohortId: string, courseId: string): Promise<TCohortCourse | null> {
+export async function removeCourseFromCohort(
+  cohortId: string,
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortCourse | null> {
   try {
-    const [deleted] = await db
+    const [deleted] = await dbClient
       .delete(schema.cohortCourse)
       .where(and(eq(schema.cohortCourse.cohortId, cohortId), eq(schema.cohortCourse.courseId, courseId)))
       .returning();

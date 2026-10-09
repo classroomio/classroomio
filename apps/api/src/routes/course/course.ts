@@ -45,6 +45,7 @@ import { complianceRouter } from '@api/routes/course/compliance';
 import { contentRouter } from '@api/routes/course/content';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseMemberOrGraderMiddleware } from '@api/middlewares/course-grader';
+import { canAccessCourseSubmissions } from '@cio/db/queries/group';
 import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
@@ -267,11 +268,12 @@ export const courseRouter = new Hono()
         const { slug } = c.req.valid('query');
         const user = c.get('user')!;
         const course = await getCourse(slug ? undefined : courseId, slug, user.id);
+        const canGrade = await canAccessCourseSubmissions(course.id, user.id);
 
         return c.json(
           {
             success: true,
-            data: course
+            data: { ...course, canGrade }
           },
           200
         );

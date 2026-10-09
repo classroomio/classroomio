@@ -5,12 +5,14 @@ vi.mock('@cio/db/queries/cohort', () => ({
   getCohortById: vi.fn(),
   getCohortMemberByEmail: vi.fn(),
   getCohortMemberByProfileId: vi.fn(),
-  getCoursesByCohort: vi.fn()
+  getCoursesByCohort: vi.fn(),
+  insertCohortCourseStaffGrants: vi.fn(),
+  insertCohortGrantedGroupMembers: vi.fn()
 }));
 vi.mock('@cio/db/queries/course', () => ({ getCourseGroupIds: vi.fn() }));
 vi.mock('@cio/db/queries/group', () => ({
   insertGroupMembersOnConflictDoNothing: vi.fn(),
-  enrollUsersInCourseGroups: vi.fn()
+  insertGroupMembersOnConflictReturning: vi.fn()
 }));
 vi.mock('@cio/db/queries/auth', () => ({ getProfileByEmail: vi.fn() }));
 vi.mock('@cio/db/queries/organization', () => ({
@@ -33,8 +35,9 @@ import {
   getCohortMemberByProfileId,
   getCoursesByCohort
 } from '@cio/db/queries/cohort';
+import { insertCohortCourseStaffGrants, insertCohortGrantedGroupMembers } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
-import { enrollUsersInCourseGroups } from '@cio/db/queries/group';
+import { insertGroupMembersOnConflictReturning } from '@cio/db/queries/group';
 import { getProfileByEmail } from '@cio/db/queries/auth';
 import { ROLE } from '@cio/utils/constants';
 import { addCohortMembersSettled } from '@api/services/cohort/cohort';
@@ -49,6 +52,7 @@ describe('addCohortMembersSettled', () => {
     >);
     vi.mocked(getCoursesByCohort).mockResolvedValue([]);
     vi.mocked(getCourseGroupIds).mockResolvedValue([]);
+    vi.mocked(insertGroupMembersOnConflictReturning).mockResolvedValue([]);
     vi.mocked(getProfileByEmail).mockResolvedValue(null as never);
     vi.mocked(addCohortMember).mockResolvedValue({ id: 'new-member' } as Awaited<ReturnType<typeof addCohortMember>>);
   });
@@ -109,16 +113,32 @@ describe('addCohortMembersSettled', () => {
       profileId: 'profile-1',
       roleId: ROLE.TUTOR
     } as Awaited<ReturnType<typeof addCohortMember>>);
+    vi.mocked(insertGroupMembersOnConflictReturning).mockResolvedValue([
+      { groupId: 'group-1', profileId: 'profile-1' }
+    ]);
 
     const [result] = await addCohortMembersSettled(COHORT_ID, {
       members: [{ profileId: 'profile-1', email: 'tutor@example.com', roleId: ROLE.TUTOR }]
     });
 
     expect(result.status).toBe('fulfilled');
-    expect(enrollUsersInCourseGroups).toHaveBeenCalledWith(
-      ['group-1'],
-      [{ profileId: 'profile-1', email: 'tutor@example.com' }],
-      ROLE.TUTOR,
+    expect(insertGroupMembersOnConflictReturning).toHaveBeenCalledWith(
+      [
+        {
+          groupId: 'group-1',
+          roleId: ROLE.TUTOR,
+          profileId: 'profile-1',
+          email: 'tutor@example.com'
+        }
+      ],
+      expect.anything()
+    );
+    expect(insertCohortCourseStaffGrants).toHaveBeenCalledWith(
+      [{ cohortId: COHORT_ID, courseId: 'course-1', profileId: 'profile-1' }],
+      expect.anything()
+    );
+    expect(insertCohortGrantedGroupMembers).toHaveBeenCalledWith(
+      [{ groupId: 'group-1', profileId: 'profile-1' }],
       expect.anything()
     );
   });

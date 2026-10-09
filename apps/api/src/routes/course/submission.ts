@@ -36,9 +36,10 @@ export const submissionRouter = new Hono()
     async (c) => {
       try {
         const { submissionId } = c.req.valid('param');
+        const courseId = c.req.param('courseId')!;
         const data = c.req.valid('json');
 
-        const submission = await updateSubmissionService(submissionId, data);
+        const submission = await updateSubmissionService(submissionId, courseId, data);
 
         return c.json({ success: true, data: submission }, 200);
       } catch (error) {
@@ -49,7 +50,8 @@ export const submissionRouter = new Hono()
   .delete('/:submissionId', courseGraderMiddleware, zValidator('param', ZSubmissionGetParam), async (c) => {
     try {
       const { submissionId } = c.req.valid('param');
-      const submission = await deleteSubmissionService(submissionId);
+      const courseId = c.req.param('courseId')!;
+      const submission = await deleteSubmissionService(submissionId, courseId);
 
       return c.json({ success: true, data: submission }, 200);
     } catch (error) {
@@ -64,9 +66,10 @@ export const submissionRouter = new Hono()
     async (c) => {
       try {
         const { submissionId } = c.req.valid('param');
+        const courseId = c.req.param('courseId')!;
         const { questionId, ...data } = c.req.valid('json');
 
-        const answer = await updateSubmissionAnswer(submissionId, questionId, { questionId, ...data });
+        const answer = await updateSubmissionAnswer(submissionId, courseId, questionId, { questionId, ...data });
 
         return c.json({ success: true, data: answer }, 200);
       } catch (error) {
@@ -82,9 +85,10 @@ export const submissionRouter = new Hono()
     async (c) => {
       try {
         const { submissionId } = c.req.valid('param');
+        const courseId = c.req.param('courseId')!;
         const data = c.req.valid('json');
 
-        const submission = await updateSubmissionGradesBatch(submissionId, data);
+        const submission = await updateSubmissionGradesBatch(submissionId, courseId, data);
 
         return c.json({ success: true, data: submission }, 200);
       } catch (error) {

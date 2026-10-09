@@ -746,18 +746,31 @@ export async function createSubmissionService(
   }
 }
 
+function assertSubmissionBelongsToCourse(submission: { courseId: string | null }, courseId: string) {
+  if (submission.courseId !== courseId) {
+    throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
+  }
+}
+
 /**
- * Updates a submission
+ * Updates a submission in the given course.
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @param data Partial submission update data
  * @returns Updated submission
  */
-export async function updateSubmissionService(submissionId: string, data: TSubmissionUpdate): Promise<TSubmission> {
+export async function updateSubmissionService(
+  submissionId: string,
+  courseId: string,
+  data: TSubmissionUpdate
+): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const currentGradingState = resolveSubmissionGradingState(submission);
     const requestedGradingState = resolveRequestedGradingState(data);
@@ -807,12 +820,14 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
 /**
  * Updates a question answer in a submission
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @param questionId Question ID
  * @param data Question answer update data
  * @returns Updated question answer
  */
 export async function updateSubmissionAnswer(
   submissionId: string,
+  courseId: string,
   questionId: number,
   data: TSubmissionAnswerUpdate
 ): Promise<any> {
@@ -821,6 +836,8 @@ export async function updateSubmissionAnswer(
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const updateData: { point?: number } = {};
     if (data.points !== undefined) updateData.point = data.points;
@@ -851,6 +868,7 @@ export async function updateSubmissionAnswer(
  */
 export async function updateSubmissionGradesBatch(
   submissionId: string,
+  courseId: string,
   data: TSubmissionGradesUpdate
 ): Promise<TSubmission> {
   try {
@@ -858,6 +876,8 @@ export async function updateSubmissionGradesBatch(
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const currentGradingState = resolveSubmissionGradingState(submission);
     const targetGradingState: SubmissionGradingState = 'completed';
@@ -908,14 +928,17 @@ export async function updateSubmissionGradesBatch(
 /**
  * Deletes a submission
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @returns Deleted submission
  */
-export async function deleteSubmissionService(submissionId: string): Promise<TSubmission> {
+export async function deleteSubmissionService(submissionId: string, courseId: string): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const deleted = await deleteSubmission(submissionId);
     if (!deleted) {

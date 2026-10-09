@@ -54,8 +54,8 @@ export const courseGraderMiddleware = async (c: Context, next: Next) => {
     return c.json(
       {
         success: false,
-        error: 'Unauthorized',
-        code: ErrorCodes.UNAUTHORIZED
+        error: 'Failed to verify grading access',
+        code: 'COURSE_GRADER_CHECK_FAILED'
       },
       500
     );

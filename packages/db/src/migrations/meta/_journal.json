@@ -211,6 +211,13 @@
       "when": 1791460509638,
       "tag": "0029_add_italian_locale",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1791545392019,
+      "tag": "0032_cohort_course_staff_grant",
+      "breakpoints": true
     }
   ]
 }

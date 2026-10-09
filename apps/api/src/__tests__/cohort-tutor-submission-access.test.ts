@@ -41,6 +41,12 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
   let mentorId = '';
   let studentId = '';
   let cohortLearnerId = '';
+  let exerciseId = '';
+  let submissionId = '';
+  let otherCourseSubmissionId = '';
+  const extraCohortIds: string[] = [];
+  const extraCourseIds: string[] = [];
+  const extraGroupIds: string[] = [];
 
   beforeAll(async () => {
     const { db } = await import('@db/drizzle');
@@ -97,7 +103,8 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
         title: 'Linked course',
         description: 'Already on the cohort',
         groupId: linkedGroupId,
-        slug: `linked-${suffix}`
+        slug: `linked-${suffix}`,
+        isPublished: true
       })
       .returning();
     const [addedCourse] = await db
@@ -132,6 +139,53 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     cohortId = cohort.id;
 
     await db.insert(schema.cohortCourse).values({ cohortId, courseId: linkedCourseId });
+    const [linkedExercise] = await db
+      .insert(schema.exercise)
+      .values({ title: 'Linked quiz', order: 1, courseId: linkedCourseId })
+      .returning();
+    const [addedExercise] = await db
+      .insert(schema.exercise)
+      .values({ title: 'Added quiz', order: 1, courseId: addedCourseId })
+      .returning();
+    exerciseId = linkedExercise.id;
+
+    const [studentMembership] = await db
+      .select({ id: schema.groupmember.id })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, linkedGroupId), eq(schema.groupmember.profileId, studentId)));
+
+    await db
+      .insert(schema.submissionstatus)
+      .values([
+        { id: 1, label: 'Submitted' },
+        { id: 2, label: 'In Progress' },
+        { id: 3, label: 'Graded' }
+      ])
+      .onConflictDoNothing();
+
+    const [linkedSubmission] = await db
+      .insert(schema.submission)
+      .values({
+        exerciseId: linkedExercise.id,
+        courseId: linkedCourseId,
+        submittedBy: studentMembership.id,
+        gradingState: 'awaiting_manual',
+        statusId: 1
+      })
+      .returning();
+    const [addedSubmission] = await db
+      .insert(schema.submission)
+      .values({
+        exerciseId: addedExercise.id,
+        courseId: addedCourseId,
+        gradingState: 'awaiting_manual',
+        statusId: 1
+      })
+      .returning();
+
+    submissionId = linkedSubmission.id;
+    otherCourseSubmissionId = addedSubmission.id;
+
     await db.insert(schema.cohortMember).values([
       {
         cohortId,
@@ -158,11 +212,17 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
 
-    if (cohortId) {
-      await db.delete(schema.cohort).where(eq(schema.cohort.id, cohortId));
+    const cohortIds = [cohortId, ...extraCohortIds].filter(Boolean);
+    for (const id of cohortIds) {
+      await db.delete(schema.cohort).where(eq(schema.cohort.id, id));
     }
 
-    const groupIds = [linkedGroupId, addedGroupId].filter(Boolean);
+    const courseIds = [linkedCourseId, addedCourseId, ...extraCourseIds].filter(Boolean);
+    for (const id of courseIds) {
+      await db.delete(schema.exercise).where(eq(schema.exercise.courseId, id));
+    }
+
+    const groupIds = [linkedGroupId, addedGroupId, ...extraGroupIds].filter(Boolean);
     for (const groupId of groupIds) {
       await db.delete(schema.groupmember).where(eq(schema.groupmember.groupId, groupId));
       await db.delete(schema.course).where(eq(schema.course.groupId, groupId));
@@ -187,6 +247,15 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     const body = await response.json();
     expect(body.success).toBe(true);
     expect(body.data.id).toBe(linkedCourseId);
+    expect(body.data.canGrade).toBe(true);
+  });
+
+  it('tells a course student they cannot grade', async () => {
+    const response = await appAs(studentId).request(`/course/${linkedCourseId}`);
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.data.canGrade).toBe(false);
   });
 
   it('hides the course shell from an org tutor who is only a cohort learner', async () => {
@@ -196,18 +265,76 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
   });
 
   it('lets a cohort tutor grade without a course group row or org admin', async () => {
-    const response = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
+    const listResponse = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
 
-    expect(response.status).toBe(200);
+    expect(listResponse.status).toBe(200);
+    const listBody = await listResponse.json();
+    expect(listBody.success).toBe(true);
+    expect(listBody.data.sections).toHaveLength(3);
+
+    const gradeResponse = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/${submissionId}`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ feedback: 'Reviewed by mentor', gradingState: 'completed' })
+    });
+
+    expect(gradeResponse.status).toBe(200);
+    const gradeBody = await gradeResponse.json();
+    expect(gradeBody.success).toBe(true);
+    expect(gradeBody.data.gradingState).toBe('completed');
+    expect(gradeBody.data.feedback).toBe('Reviewed by mentor');
+  });
+
+  it('rejects a grade for a submission from another course', async () => {
+    const response = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/${otherCourseSubmissionId}`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ feedback: 'Wrong course', gradingState: 'completed' })
+    });
+
+    expect(response.status).toBe(404);
     const body = await response.json();
-    expect(body.success).toBe(true);
-    expect(body.data.sections).toHaveLength(3);
+    expect(body.code).toBe('SUBMISSION_NOT_FOUND');
+
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    const [submission] = await db
+      .select({ gradingState: schema.submission.gradingState })
+      .from(schema.submission)
+      .where(eq(schema.submission.id, otherCourseSubmissionId));
+
+    expect(submission.gradingState).toBe('awaiting_manual');
+  });
+
+  it('reports grading permission on the exercise submissions overview', async () => {
+    const mentorResponse = await appAs(mentorId).request(
+      `/course/${linkedCourseId}/exercise/${exerciseId}/submissions`
+    );
+    expect(mentorResponse.status).toBe(200);
+    const mentorBody = await mentorResponse.json();
+    expect(mentorBody.data.canGrade).toBe(true);
+
+    const studentResponse = await appAs(studentId).request(
+      `/course/${linkedCourseId}/exercise/${exerciseId}/submissions`
+    );
+    expect(studentResponse.status).toBe(200);
+    const studentBody = await studentResponse.json();
+    expect(studentBody.data.canGrade).toBe(false);
+    expect(studentBody.data.allSubmissions).toEqual([]);
   });
 
   it('rejects a course student', async () => {
     const response = await appAs(studentId).request(`/course/${linkedCourseId}/submission/for-grading`);
 
     expect(response.status).toBe(403);
+
+    const gradeResponse = await appAs(studentId).request(`/course/${linkedCourseId}/submission/${submissionId}`, {
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ feedback: 'Student should not grade', gradingState: 'completed' })
+    });
+
+    expect(gradeResponse.status).toBe(403);
   });
 
   it('rejects an org tutor who is only a learner in the cohort', async () => {
@@ -249,5 +376,126 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     expect(Number(studentMembership[0].roleId)).toBe(ROLE.STUDENT);
     expect(learnerMembership).toHaveLength(1);
     expect(Number(learnerMembership[0].roleId)).toBe(ROLE.STUDENT);
+  });
+
+  it('revokes cohort-granted course access and keeps an independent tutor', async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    const { createOrganizationMember } = await import('@db/queries/organization');
+    const {
+      addCourseToCohortService,
+      removeCohortMemberService,
+      removeCourseFromCohortService,
+      updateCohortMemberService
+    } = await import('@api/services/cohort/cohort');
+
+    const independentEmail = `independent-${suffix}@submission-access.test`;
+    const [independentUser] = await db
+      .insert(schema.user)
+      .values({ name: 'independent', email: independentEmail, emailVerified: true })
+      .returning();
+    await db.insert(schema.profile).values({
+      id: independentUser.id,
+      fullname: 'independent',
+      username: `independent-${suffix}`,
+      email: independentEmail
+    });
+    await createOrganizationMember({
+      organizationId,
+      roleId: ROLE.TUTOR,
+      profileId: independentUser.id,
+      email: independentEmail,
+      verified: true,
+      status: 'ACTIVE'
+    });
+    people.push({ userId: independentUser.id, email: independentEmail });
+    await db.insert(schema.groupmember).values({
+      groupId: addedGroupId,
+      roleId: ROLE.TUTOR,
+      profileId: independentUser.id,
+      email: independentEmail
+    });
+
+    const [secondCohort] = await db
+      .insert(schema.cohort)
+      .values({
+        organizationId,
+        name: `Second cohort ${suffix}`,
+        description: 'Overlapping staff grant'
+      })
+      .returning();
+    extraCohortIds.push(secondCohort.id);
+    await db.insert(schema.cohortMember).values({
+      cohortId: secondCohort.id,
+      profileId: mentorId,
+      roleId: ROLE.TUTOR,
+      email: `mentor-${suffix}@submission-access.test`
+    });
+    await addCourseToCohortService(secondCohort.id, { courseId: addedCourseId });
+
+    await removeCourseFromCohortService(cohortId, addedCourseId);
+
+    const afterFirstUnlink = await db
+      .select({ roleId: schema.groupmember.roleId })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, addedGroupId), eq(schema.groupmember.profileId, mentorId)));
+    expect(afterFirstUnlink).toHaveLength(1);
+    expect(Number(afterFirstUnlink[0].roleId)).toBe(ROLE.TUTOR);
+
+    await removeCourseFromCohortService(secondCohort.id, addedCourseId);
+
+    const afterLastUnlink = await db
+      .select({ id: schema.groupmember.id })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, addedGroupId), eq(schema.groupmember.profileId, mentorId)));
+    const independentMembership = await db
+      .select({ roleId: schema.groupmember.roleId })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, addedGroupId), eq(schema.groupmember.profileId, independentUser.id)));
+
+    expect(afterLastUnlink).toHaveLength(0);
+    expect(independentMembership).toHaveLength(1);
+    expect(Number(independentMembership[0].roleId)).toBe(ROLE.TUTOR);
+
+    const stillGrading = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
+    expect(stillGrading.status).toBe(200);
+
+    const [demoteGroup] = await db
+      .insert(schema.group)
+      .values({ name: `demote-${suffix}`, organizationId })
+      .returning();
+    extraGroupIds.push(demoteGroup.id);
+    const [demoteCourse] = await db
+      .insert(schema.course)
+      .values({
+        title: 'Demote course',
+        description: 'Used to check role changes',
+        groupId: demoteGroup.id,
+        slug: `demote-${suffix}`
+      })
+      .returning();
+    extraCourseIds.push(demoteCourse.id);
+    await addCourseToCohortService(cohortId, { courseId: demoteCourse.id });
+
+    const [mentorMember] = await db
+      .select({ id: schema.cohortMember.id })
+      .from(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.cohortId, cohortId), eq(schema.cohortMember.profileId, mentorId)));
+
+    await updateCohortMemberService(cohortId, mentorMember.id, { roleId: ROLE.STUDENT });
+
+    const afterDemote = await db
+      .select({ id: schema.groupmember.id })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, demoteGroup.id), eq(schema.groupmember.profileId, mentorId)));
+    expect(afterDemote).toHaveLength(0);
+
+    const deniedAfterDemote = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
+    expect(deniedAfterDemote.status).toBe(403);
+
+    await removeCohortMemberService(cohortId, mentorMember.id);
+
+    const deniedAfterRemove = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
+    expect(deniedAfterRemove.status).toBe(403);
   });
 });
