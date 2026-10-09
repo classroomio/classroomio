@@ -1,10 +1,14 @@
 import {
   listPendingReminderDeliveries,
+  listStaleQueuedReminderDeliveries,
   listUpcomingLiveSessionLessons,
   listUpcomingSessionsForReminderScan,
   markReminderDeliveriesSkipped,
   markReminderDeliveryQueued,
+  markReminderDeliverySent,
+  recordReminderDeliveryFailure,
   releaseReminderDeliveryClaim,
+  settlePendingReminderDelivery,
   skipPastPendingReminderDeliveries,
   upsertPendingReminderDeliveries,
   type PendingReminderDeliveryInput,
@@ -13,7 +17,7 @@ import {
 } from '@cio/db/queries/course';
 import { EmailPreferenceLookupCache } from '@cio/db/queries/notifications';
 import { buildEmailBranding, buildEmailFromName, buildSessionIcs } from '@cio/email';
-import { enqueueEmailSend, toEmailJobId } from '@cio/jobs';
+import { QUEUE_NAMES, enqueueEmailSend, getQueueJobEnvelope, toEmailJobId } from '@cio/jobs';
 import {
   LIVE_SESSION_REMINDER_MAX_OFFSET_MINUTES,
   resolveLiveSessionReminderOffsets,
@@ -28,6 +32,7 @@ interface ScanResult {
   scanned: number;
   remindersEnqueued: number;
   remindersSkipped: number;
+  staleClaimsReconciled: number;
 }
 
 type PendingDelivery = Awaited<ReturnType<typeof listPendingReminderDeliveries>>[number];
@@ -37,6 +42,10 @@ const MINUTE_MS = 60_000;
 const HORIZON_BUFFER_MINUTES = 60;
 
 const SEND_WINDOW_GRACE_MINUTES = 45;
+
+const STALE_CLAIM_MINUTES = 15;
+
+const STALE_CLAIM_BATCH_SIZE = 200;
 
 function formatSessionTime(lessonAt: string, timezone: string | null, locale: EmailLocale): string {
   try {
@@ -129,6 +138,73 @@ function resolveDueDelivery(params: {
   return { delivery, recipient: { ...recipient, email: recipient.email }, offsets };
 }
 
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+async function getEmailJobOutcome(bullmqJobId: string) {
+  const envelope = await getQueueJobEnvelope(QUEUE_NAMES.emails, bullmqJobId, 'emails');
+  if (!envelope) return null;
+
+  const providerId = typeof envelope.job.result?.providerId === 'string' ? envelope.job.result.providerId : null;
+
+  return { status: envelope.job.status, providerId, error: envelope.job.error?.message ?? null };
+}
+
+/**
+ * Settles queued rows whose email job finished without updating the ledger, and returns rows whose job never
+ * reached the queue to pending. Returns how many rows changed.
+ */
+async function reconcileStaleClaims(now: number): Promise<number> {
+  const queuedBefore = new Date(now - STALE_CLAIM_MINUTES * MINUTE_MS).toISOString();
+  const staleDeliveries = await listStaleQueuedReminderDeliveries(queuedBefore, STALE_CLAIM_BATCH_SIZE);
+  let reconciled = 0;
+
+  for (const delivery of staleDeliveries) {
+    if (!delivery.bullmqJobId) continue;
+
+    const claim = { deliveryId: delivery.id, bullmqJobId: delivery.bullmqJobId };
+    const outcome = await getEmailJobOutcome(delivery.bullmqJobId);
+
+    if (!outcome) {
+      await releaseReminderDeliveryClaim({ ...claim, lastError: 'Email job was not found in the queue' });
+    } else if (outcome.status === 'completed') {
+      await markReminderDeliverySent(claim.deliveryId, claim.bullmqJobId, outcome.providerId ?? '');
+    } else if (outcome.status === 'failed') {
+      const lastError = outcome.error ?? 'Email job failed';
+      await recordReminderDeliveryFailure({ ...claim, lastError, isFinalAttempt: true });
+    } else {
+      continue;
+    }
+
+    reconciled += 1;
+  }
+
+  return reconciled;
+}
+
+/**
+ * Reminder emails enqueued before the delivery ledger existed used a job id per (lesson, student, offset). When such
+ * a job exists, records its outcome on the pending row instead of sending again. Returns true when it did.
+ */
+async function settleFromLegacyJob(delivery: PendingDelivery): Promise<boolean> {
+  const legacyJobId = toEmailJobId(
+    `session-reminder:${delivery.lessonId}:${delivery.profileId}:${delivery.offsetMinutes}`
+  );
+  const outcome = await getEmailJobOutcome(legacyJobId);
+  if (!outcome) return false;
+
+  const isFailed = outcome.status === 'failed';
+  await settlePendingReminderDelivery({
+    deliveryId: delivery.id,
+    outcome: isFailed ? 'failed' : 'sent',
+    providerId: outcome.providerId,
+    lastError: isFailed ? outcome.error : null
+  });
+
+  return true;
+}
+
 function isDue(delivery: PendingDelivery, now: number): boolean {
   const dueAtMs = new Date(delivery.lessonAt).getTime() - delivery.offsetMinutes * MINUTE_MS;
 
@@ -143,6 +219,7 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
   const now = Date.now();
 
   await skipPastPendingReminderDeliveries(new Date(now).toISOString());
+  const staleClaimsReconciled = await reconcileStaleClaims(now);
 
   const until = new Date(now + (LIVE_SESSION_REMINDER_MAX_OFFSET_MINUTES + HORIZON_BUFFER_MINUTES) * MINUTE_MS);
   const lessons = await listUpcomingLiveSessionLessons(until);
@@ -161,33 +238,37 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
   let remindersEnqueued = 0;
   const skippedByReason = new Map<TLiveSessionReminderSkipReason, string[]>();
   const skip = (reason: TLiveSessionReminderSkipReason, deliveryId: string) => {
-    skippedByReason.set(reason, [...(skippedByReason.get(reason) ?? []), deliveryId]);
+    const deliveryIds = skippedByReason.get(reason);
+    if (deliveryIds) {
+      deliveryIds.push(deliveryId);
+    } else {
+      skippedByReason.set(reason, [deliveryId]);
+    }
   };
 
   const preferenceCache = new EmailPreferenceLookupCache();
   const deliveryLocales = new Map<string, EmailLocale>();
 
   for (const delivery of dueDeliveries) {
-    const dueDelivery = resolveDueDelivery({
-      delivery,
-      recipient: recipientByKey.get(deliveryKey(delivery.lessonId, delivery.profileId)),
-      offsets: offsetsByLesson.get(delivery.lessonId),
-      now
-    });
+    const recipient = recipientByKey.get(deliveryKey(delivery.lessonId, delivery.profileId));
+    const offsets = offsetsByLesson.get(delivery.lessonId);
+    const dueDelivery = resolveDueDelivery({ delivery, recipient, offsets, now });
 
     if ('skipReason' in dueDelivery) {
       skip(dueDelivery.skipReason, delivery.id);
       continue;
     }
 
-    const { recipient } = dueDelivery;
+    const sendable = dueDelivery.recipient;
 
     try {
+      if (await settleFromLegacyJob(delivery)) continue;
+
       const allowed = await preferenceCache.shouldSend({
         emailId: 'sessionReminder',
-        organizationId: recipient.organizationId,
-        recipientEmail: recipient.email,
-        recipientProfileId: recipient.profileId
+        organizationId: sendable.organizationId,
+        recipientEmail: sendable.email,
+        recipientProfileId: sendable.profileId
       });
 
       if (!allowed) {
@@ -195,10 +276,10 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
         continue;
       }
 
-      let locale = deliveryLocales.get(recipient.organizationId);
+      let locale = deliveryLocales.get(sendable.organizationId);
       if (!locale) {
-        locale = await getStudentEmailDeliveryLocale(recipient.organizationId, 'sessionReminder');
-        deliveryLocales.set(recipient.organizationId, locale);
+        locale = await getStudentEmailDeliveryLocale(sendable.organizationId, 'sessionReminder');
+        deliveryLocales.set(sendable.organizationId, locale);
       }
 
       const enqueued = await enqueueReminder({ ...dueDelivery, locale, now });
@@ -208,7 +289,7 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
         reminderDeliveryId: delivery.id,
         lessonId: delivery.lessonId,
         offset: delivery.offsetMinutes,
-        error: error instanceof Error ? error.message : String(error)
+        error: errorText(error)
       });
     }
   }
@@ -219,24 +300,27 @@ export async function processSessionReminderScan(): Promise<ScanResult> {
     remindersSkipped += deliveryIds.length;
   }
 
-  log.info('session-reminder-scan-done', {
-    scanned: recipients.length,
-    remindersEnqueued,
-    remindersSkipped
-  });
+  const result = { scanned: recipients.length, remindersEnqueued, remindersSkipped, staleClaimsReconciled };
+  log.info('session-reminder-scan-done', result);
 
-  return { scanned: recipients.length, remindersEnqueued, remindersSkipped };
+  return result;
 }
 
 /**
- * Claims the delivery row, then enqueues its email. Returns false when another scan already claimed the row.
+ * Claims the delivery row for this session snapshot, then enqueues its email. Returns false when the row was already
+ * claimed or the session changed since the scan read it.
  */
 async function enqueueReminder(params: SendableDelivery & { locale: EmailLocale; now: number }): Promise<boolean> {
   const { delivery, recipient, offsets, locale, now } = params;
   const idempotencyKey = `session-reminder:${delivery.id}:${now}`;
   const bullmqJobId = toEmailJobId(idempotencyKey);
 
-  const claimed = await markReminderDeliveryQueued(delivery.id, bullmqJobId);
+  const claim = { deliveryId: delivery.id, bullmqJobId };
+  const claimed = await markReminderDeliveryQueued({
+    ...claim,
+    lessonAt: recipient.lessonAt,
+    callUrl: recipient.callUrl
+  });
   if (!claimed) return false;
 
   const branding = buildEmailBranding({
@@ -259,6 +343,7 @@ async function enqueueReminder(params: SendableDelivery & { locale: EmailLocale;
         alarmsBeforeMinutes: offsets
       })
     : undefined;
+  const from = buildEmailFromName(`${recipient.organizationName} (via ClassroomIO.com)`);
 
   try {
     await enqueueEmailSend(
@@ -275,7 +360,7 @@ async function enqueueReminder(params: SendableDelivery & { locale: EmailLocale;
           joinUrl: recipient.callUrl,
           branding
         },
-        from: buildEmailFromName(`${recipient.organizationName} (via ClassroomIO.com)`),
+        from,
         organizationId: recipient.organizationId,
         locale,
         reminderDeliveryId: delivery.id,
@@ -284,7 +369,7 @@ async function enqueueReminder(params: SendableDelivery & { locale: EmailLocale;
       { idempotencyKey }
     );
   } catch (error) {
-    await releaseReminderDeliveryClaim(delivery.id, error instanceof Error ? error.message : String(error));
+    await releaseReminderDeliveryClaim({ ...claim, lastError: errorText(error) });
     throw error;
   }
 

@@ -88,20 +88,30 @@ export async function listPendingReminderDeliveries(lessonIds: string[]) {
 }
 
 /**
- * Claims a pending row for sending. Returns false when another scan already claimed it or it is no longer pending.
+ * Claims a pending row for sending the given session snapshot. Returns false when another scan already claimed it,
+ * it is no longer pending, or the lesson's time or join link no longer match the snapshot.
  */
-export async function markReminderDeliveryQueued(deliveryId: string, bullmqJobId: string): Promise<boolean> {
+export async function markReminderDeliveryQueued(params: {
+  deliveryId: string;
+  bullmqJobId: string;
+  lessonAt: string;
+  callUrl: string;
+}): Promise<boolean> {
   try {
+    const delivery = schema.liveSessionReminderDelivery;
+    const lessonMatchesSnapshot = sql`exists (
+      select 1 from ${schema.lesson}
+      where ${schema.lesson.id} = ${delivery.lessonId}
+        and ${schema.lesson.lessonAt} = ${delivery.lessonAt}
+        and ${schema.lesson.lessonAt} = ${params.lessonAt}::timestamptz
+        and ${schema.lesson.callUrl} = ${params.callUrl}
+    )`;
+
     const claimed = await db
-      .update(schema.liveSessionReminderDelivery)
-      .set({ status: 'queued', bullmqJobId, queuedAt: sql`now()`, updatedAt: sql`now()` })
-      .where(
-        and(
-          eq(schema.liveSessionReminderDelivery.id, deliveryId),
-          eq(schema.liveSessionReminderDelivery.status, 'pending')
-        )
-      )
-      .returning({ id: schema.liveSessionReminderDelivery.id });
+      .update(delivery)
+      .set({ status: 'queued', bullmqJobId: params.bullmqJobId, queuedAt: sql`now()`, updatedAt: sql`now()` })
+      .where(and(eq(delivery.id, params.deliveryId), eq(delivery.status, 'pending'), lessonMatchesSnapshot))
+      .returning({ id: delivery.id });
 
     return claimed.length > 0;
   } catch (error) {
@@ -111,22 +121,85 @@ export async function markReminderDeliveryQueued(deliveryId: string, bullmqJobId
 }
 
 /**
- * Returns a queued row to pending after its email job could not be enqueued.
+ * Returns a row claimed by `bullmqJobId` to pending, e.g. after its email job could not be enqueued.
  */
-export async function releaseReminderDeliveryClaim(deliveryId: string, lastError: string): Promise<void> {
+export async function releaseReminderDeliveryClaim(params: {
+  deliveryId: string;
+  bullmqJobId: string;
+  lastError: string;
+}): Promise<void> {
   try {
     await db
       .update(schema.liveSessionReminderDelivery)
-      .set({ status: 'pending', bullmqJobId: null, queuedAt: null, lastError, updatedAt: sql`now()` })
+      .set({ status: 'pending', bullmqJobId: null, queuedAt: null, lastError: params.lastError, updatedAt: sql`now()` })
       .where(
         and(
-          eq(schema.liveSessionReminderDelivery.id, deliveryId),
+          eq(schema.liveSessionReminderDelivery.id, params.deliveryId),
+          eq(schema.liveSessionReminderDelivery.bullmqJobId, params.bullmqJobId),
           eq(schema.liveSessionReminderDelivery.status, 'queued')
         )
       );
   } catch (error) {
     console.error('releaseReminderDeliveryClaim error:', error);
     throw new Error('Failed to release live session reminder delivery claim');
+  }
+}
+
+/**
+ * Queued rows claimed before `queuedBeforeIso`, oldest first.
+ */
+export async function listStaleQueuedReminderDeliveries(queuedBeforeIso: string, limit: number) {
+  try {
+    return await db
+      .select({
+        id: schema.liveSessionReminderDelivery.id,
+        bullmqJobId: schema.liveSessionReminderDelivery.bullmqJobId
+      })
+      .from(schema.liveSessionReminderDelivery)
+      .where(
+        and(
+          eq(schema.liveSessionReminderDelivery.status, 'queued'),
+          lte(schema.liveSessionReminderDelivery.queuedAt, queuedBeforeIso)
+        )
+      )
+      .orderBy(schema.liveSessionReminderDelivery.queuedAt)
+      .limit(limit);
+  } catch (error) {
+    console.error('listStaleQueuedReminderDeliveries error:', error);
+    throw new Error('Failed to list stale queued live session reminder deliveries');
+  }
+}
+
+/**
+ * Records the outcome of an email that was sent outside a ledger claim, for a row that is still pending.
+ */
+export async function settlePendingReminderDelivery(params: {
+  deliveryId: string;
+  outcome: 'sent' | 'failed';
+  providerId?: string | null;
+  lastError?: string | null;
+}): Promise<void> {
+  try {
+    const sentAt = params.outcome === 'sent' ? sql`now()` : null;
+
+    await db
+      .update(schema.liveSessionReminderDelivery)
+      .set({
+        status: params.outcome,
+        providerId: params.providerId || null,
+        lastError: params.lastError ?? null,
+        sentAt,
+        updatedAt: sql`now()`
+      })
+      .where(
+        and(
+          eq(schema.liveSessionReminderDelivery.id, params.deliveryId),
+          eq(schema.liveSessionReminderDelivery.status, 'pending')
+        )
+      );
+  } catch (error) {
+    console.error('settlePendingReminderDelivery error:', error);
+    throw new Error('Failed to settle live session reminder delivery');
   }
 }
 
@@ -352,7 +425,8 @@ export async function listReminderDeliveriesByCourse(params: {
         .orderBy(
           desc(schema.liveSessionReminderDelivery.lessonAt),
           desc(schema.liveSessionReminderDelivery.offsetMinutes),
-          schema.profile.fullname
+          schema.profile.fullname,
+          schema.liveSessionReminderDelivery.id
         )
         .limit(params.limit)
         .offset(offset),

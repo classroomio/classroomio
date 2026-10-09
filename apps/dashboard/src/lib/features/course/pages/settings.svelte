@@ -367,6 +367,8 @@
     if (!course || !Object.keys(course).length) return;
 
     const isConversionFlowActive = publicConversionFlow.isActive && publicConversionFlow.courseId === course.id;
+    const reminderOffsets = resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes);
+    const liveSessionReminders = reminderOffsets.map(createReminderRow);
 
     untrack(() => {
       settings.set({
@@ -387,9 +389,7 @@
         commentsEnabled: course.metadata?.commentsEnabled ?? true,
         callout: normalizeCallout(course.callout),
         welcomeEmailMessage: course.metadata?.welcomeEmailMessage ?? '',
-        liveSessionReminders: resolveLiveSessionReminderOffsets(course.metadata?.liveSessionReminderOffsetsMinutes).map(
-          createReminderRow
-        ),
+        liveSessionReminders,
         certificate: {
           deadline: course.certificate?.deadline ?? null,
           threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,

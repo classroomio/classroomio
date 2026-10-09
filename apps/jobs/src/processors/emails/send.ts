@@ -51,7 +51,7 @@ export async function processSendEmail(rawPayload: unknown, bullmqJobId?: string
     });
 
     if (reminderClaim) {
-      await markReminderDeliverySent(reminderClaim.deliveryId, reminderClaim.bullmqJobId, result.providerId);
+      await recordReminderSent(reminderClaim, result.providerId);
     }
 
     return result;
@@ -69,6 +69,30 @@ export async function processSendEmail(rawPayload: unknown, bullmqJobId?: string
   const result = extractProviderId(responses);
   log.info('email-sent', { kind: 'raw', recipient: payload.to, providerId: result.providerId });
   return result;
+}
+
+const RECORD_SENT_ATTEMPTS = 3;
+
+const RECORD_SENT_RETRY_DELAY_MS = 500;
+
+/**
+ * Marks a reminder delivery sent, retrying briefly. Never throws: the email already left, so failing the job would
+ * make BullMQ send it again. A row left queued is settled later by the reminder scan.
+ */
+async function recordReminderSent(claim: { deliveryId: string; bullmqJobId: string }, providerId: string) {
+  for (let attempt = 1; attempt <= RECORD_SENT_ATTEMPTS; attempt += 1) {
+    try {
+      await markReminderDeliverySent(claim.deliveryId, claim.bullmqJobId, providerId);
+      return;
+    } catch (error) {
+      log.error('email-reminder-sent-record-failed', {
+        ...claim,
+        attempt,
+        error: error instanceof Error ? error.message : String(error)
+      });
+      await new Promise((resolve) => setTimeout(resolve, RECORD_SENT_RETRY_DELAY_MS * attempt));
+    }
+  }
 }
 
 function extractProviderId(
