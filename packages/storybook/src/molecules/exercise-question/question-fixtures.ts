@@ -218,7 +218,14 @@ export const FILE_UPLOAD_FIXTURE: QuestionStoryFixture = {
       maxSizeMb: 2
     }
   },
-  answer: 'lesson-plan-week-03.pdf'
+  answer: {
+    type: 'FILE_UPLOAD',
+    fileKey: 'uploads/lesson-plan-week-03.pdf',
+    fileName: 'lesson-plan-week-03.pdf',
+    mimeType: 'application/pdf',
+    size: 248320,
+    fileUrl: 'https://example.com/lesson-plan-week-03.pdf'
+  }
 };
 
 export const VIDEO_RECORDING_FIXTURE: QuestionStoryFixture = {

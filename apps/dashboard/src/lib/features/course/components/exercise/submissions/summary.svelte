@@ -1,5 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment';
+  import { page } from '$app/state';
   import { Spinner } from '@cio/ui/base/spinner';
   import { ExerciseQuestion } from '@cio/ui';
 
@@ -24,11 +25,24 @@
     return answerData as AnswerData;
   }
 
+  function studentReviewHref(profileId: string): string {
+    const url = new URL(page.url);
+    url.searchParams.set('tab', 'submissions');
+    url.searchParams.set('submission', 'individual');
+    url.searchParams.set('student', profileId);
+    return `${url.pathname}${url.search}`;
+  }
+
   function toSubmissionModel(submission: ExerciseSubmissions): ExerciseSubmissionModel {
+    const profileId = submission.groupmember?.profile.id ?? '';
+
     return {
       id: submission.id,
       studentName: submission.groupmember?.profile.fullname,
       studentAvatarUrl: submission.groupmember?.profile.avatarUrl,
+      studentProfileId: profileId || undefined,
+      submittedAt: submission.createdAt,
+      studentHref: profileId ? studentReviewHref(profileId) : undefined,
       answers: submission.answers.map((answer) => ({
         questionId: answer.questionId,
         answerData: toAnswerData(answer.answerData)
@@ -45,7 +59,11 @@
       'submission.list.responses': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.attempts'),
       'submission.list.no_responses': $t(
         'course.navItem.lessons.exercises.all_exercises.analytics.summary.no_responses'
-      )
+      ),
+      'submission.list.unknown_student': $t(
+        'course.navItem.lessons.exercises.all_exercises.analytics.summary.unknown_student'
+      ),
+      'submission.list.no_file': $t('course.navItem.lessons.exercises.all_exercises.analytics.summary.no_file')
     })
   );
 

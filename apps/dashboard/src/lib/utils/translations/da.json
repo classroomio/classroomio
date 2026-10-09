@@ -1629,6 +1629,19 @@
           "awaiting_manual_hint": "Trænger til manuel gennemgang",
           "failed_hint": "Automatisk bedømmelse mislykkedes. Flyt denne indsendelse tilbage til Indsendt for at prøve igen.",
           "invalid_transition": "Denne statusflytning er ikke tilladt af bedømmelsesarbejdsgangen"
+        },
+        "filter": {
+          "students": "Students",
+          "exercises": "Exercises",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1806,7 +1819,9 @@
                 "responses": "Svar",
                 "no_responses": "Ingen svar endnu",
                 "other": "Andet",
-                "attempts": "Forsøg"
+                "attempts": "Forsøg",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Indlæser indsendelser...",
               "empty_title": "Ingen indlæg endnu",
@@ -1994,6 +2009,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Accepterede typer (f.eks. pdf, docx)",
                   "max_size_placeholder": "Maksimal størrelse (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {

@@ -175,7 +175,17 @@
   {/snippet}
 </Story>
 
-<Story name="FileUpload">
+<Story
+  name="FileUpload"
+  parameters={{
+    docs: {
+      description: {
+        story:
+          'Review mode shows the submitted project file with View and Download when a presigned URL is present. Submission mode lists each student.'
+      }
+    }
+  }}
+>
   {#snippet template()}
     <QuestionTypeModes
       question={FILE_UPLOAD_FIXTURE.question}

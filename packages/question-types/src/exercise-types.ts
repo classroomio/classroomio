@@ -117,6 +117,8 @@ export type ExerciseQuestionLabelKey =
   | 'file_upload.take.view'
   | 'file_upload.preview.accepted_types_label'
   | 'file_upload.preview.max_size_label'
+  | 'file_upload.review.empty'
+  | 'file_upload.review.unavailable'
   | 'video_recording.edit.max_duration_label'
   | 'video_recording.edit.max_duration_helper'
   | 'video_recording.edit.max_duration_placeholder'
@@ -191,7 +193,9 @@ export type ExerciseQuestionLabelKey =
   | 'submission.chart.responses'
   | 'submission.chart.no_data'
   | 'submission.list.responses'
-  | 'submission.list.no_responses';
+  | 'submission.list.no_responses'
+  | 'submission.list.unknown_student'
+  | 'submission.list.no_file';
 
 export type ExerciseQuestionLabels = Partial<Record<ExerciseQuestionLabelKey, string>>;
 
@@ -223,6 +227,9 @@ export interface ExerciseSubmissionModel {
   id?: string;
   studentName?: string;
   studentAvatarUrl?: string;
+  studentProfileId?: string;
+  submittedAt?: string | null;
+  studentHref?: string;
   answers: ExerciseSubmissionAnswer[];
 }
 

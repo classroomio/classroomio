@@ -16,6 +16,7 @@ type ExerciseSubmissionAnswer = {
 export type ExerciseSubmissions = {
   id: SubmissionListItem['id'];
   statusId: NonNullable<SubmissionListItem['statusId']>;
+  createdAt: string | null;
   groupmember: { profile: ExerciseSubmissionProfile } | null;
   answers: ExerciseSubmissionAnswer[];
 };

@@ -3197,7 +3197,9 @@
                 "responses": "Yanıtlar",
                 "attempts": "Girişimler",
                 "no_responses": "Henüz yanıt yok",
-                "other": "Diğer"
+                "other": "Diğer",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "individual": {
                 "heading": "Bireysel",
@@ -3418,6 +3420,10 @@
                 "preview": {
                   "accepted_types_label": "Kabul edilen türler",
                   "max_size_label": "Maksimum boyut (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "video_recording": {
@@ -3648,6 +3654,19 @@
           "delete_prompt": "Delete",
           "delete_error": "Gönderim silinemedi",
           "delete_success": "Gönderim başarıyla silindi"
+        },
+        "filter": {
+          "students": "Students",
+          "exercises": "Exercises",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "marks": {

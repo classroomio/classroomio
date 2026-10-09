@@ -61,6 +61,7 @@
       (submission): ExerciseSubmissions => ({
         id: submission.id,
         statusId: submission.statusId ?? 1,
+        createdAt: typeof submission.createdAt === 'string' ? submission.createdAt : null,
         groupmember: submission.groupmember?.profile
           ? {
               profile: {

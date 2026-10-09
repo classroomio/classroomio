@@ -1629,6 +1629,19 @@
           "awaiting_manual_hint": "Precisa de revisão manual",
           "failed_hint": "Falha na avaliação automática. Mova este envio de volta para Enviado para tentar novamente.",
           "invalid_transition": "Esta mudança de status não é permitida pelo fluxo de trabalho de avaliação"
+        },
+        "filter": {
+          "students": "Students",
+          "exercises": "Exercises",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1806,7 +1819,9 @@
                 "responses": "Respostas",
                 "no_responses": "Ainda não há respostas",
                 "other": "Outro",
-                "attempts": "Tentativas"
+                "attempts": "Tentativas",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Carregando envios...",
               "empty_title": "Ainda não há envios",
@@ -1994,6 +2009,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Tipos aceitos (por exemplo, pdf,docx)",
                   "max_size_placeholder": "Tamanho máximo (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {

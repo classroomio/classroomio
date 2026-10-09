@@ -1,19 +1,30 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { page } from '$app/state';
   import { flip } from 'svelte/animate';
   import { goto } from '$app/navigation';
   import { dndzone } from 'svelte-dnd-action';
+  import { SvelteSet } from 'svelte/reactivity';
+  import { onMount, untrack } from 'svelte';
 
-  import { submissionApi, courseApi } from '$features/course/api';
+  import { submissionApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { SubmissionIdData, SubmissionItem, SubmissionSection } from '$features/course/utils/types';
+  import {
+    formatIdParam,
+    matchesBoardFilters,
+    mergeColumnItems,
+    parseIdParam,
+    sameIdSelection,
+    type SubmissionFilterOption
+  } from '$features/course/utils/submission-board-filters';
   import { t } from '$lib/utils/functions/translations';
 
   import { Chip } from '@cio/ui/custom/chip';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import MarkExerciseModal from '$features/course/components/exercise/mark-exercise-modal.svelte';
+  import SubmissionFilterBar from '$features/course/components/submissions/submission-filter-bar.svelte';
   import { STATUS } from '$features/course/components/exercise/constants';
-  import { onMount } from 'svelte';
 
   interface Props {
     courseId: string;
@@ -28,6 +39,8 @@
   let submissionIdData = $state<Record<string, SubmissionIdData>>({});
   let isGradeWithAI = $state(false);
   let isSaving = $state(false);
+  let selectedStudentIds = new SvelteSet<string>(parseIdParam(page.url.searchParams.get('students')));
+  let selectedExerciseIds = new SvelteSet<string>(parseIdParam(page.url.searchParams.get('exercises')));
 
   onMount(() => {
     sections = initialSections;
@@ -57,32 +70,26 @@
     return '';
   }
 
-  async function handleItemFinalize(
-    columnIdx: number,
-    newItems: { map: (arg0: (item: SubmissionItem) => SubmissionItem) => SubmissionItem[] }
-  ) {
+  async function handleItemFinalize(columnIdx: number, nextVisibleItems: SubmissionItem[]) {
     let itemToWithNewStatus: SubmissionItem | undefined;
 
     const { id } = sections[columnIdx];
+    const mergedItems = mergeColumnItems(sections[columnIdx].items, nextVisibleItems, matchesBoardItem);
 
-    // Set column in the UI (immutable update for reactivity)
-    const mappedItems = newItems.map((item) => {
-      if (item.statusId !== id) {
-        if (!canTransitionBoardStatus(item.statusId, id)) {
-          snackbar.error('course.navItem.submissions.workflow.invalid_transition');
-          return item;
-        }
+    const mappedItems = mergedItems.map((item) => {
+      if (item.statusId === id) return item;
 
-        itemToWithNewStatus = item;
-        return { ...item, statusId: id };
+      if (!canTransitionBoardStatus(item.statusId, id)) {
+        snackbar.error('course.navItem.submissions.workflow.invalid_transition');
+        return item;
       }
 
-      return item;
+      itemToWithNewStatus = item;
+      return { ...item, statusId: id };
     });
 
-    sections = sections.map((section, i) => (i === columnIdx ? { ...section, items: mappedItems } : section));
+    sections = sections.map((section, index) => (index === columnIdx ? { ...section, items: mappedItems } : section));
 
-    // Update backend
     if (itemToWithNewStatus) {
       const newStatusId = id;
       submissionIdData = {
@@ -100,18 +107,137 @@
   }
 
   function handleDndConsiderCards(columnIdx: number) {
-    return function (e) {
-      sections = sections.map((section, i) => (i === columnIdx ? { ...section, items: e.detail.items } : section));
+    return function (event: { detail: { items: SubmissionItem[] } }) {
+      const nextVisibleItems = event.detail.items;
+      sections = sections.map((section, index) =>
+        index === columnIdx
+          ? { ...section, items: mergeColumnItems(section.items, nextVisibleItems, matchesBoardItem) }
+          : section
+      );
     };
   }
 
   function handleDndFinalizeCards(columnIdx: number) {
-    return (e) => handleItemFinalize(columnIdx, e.detail.items);
+    return (event: { detail: { items: SubmissionItem[] } }) => handleItemFinalize(columnIdx, event.detail.items);
   }
+
+  function studentDisplayName(student: SubmissionItem['student']): string {
+    if (!student) return '';
+
+    const fullname = typeof student.fullname === 'string' ? student.fullname.trim() : '';
+    const username = typeof student.username === 'string' ? student.username.trim() : '';
+    return fullname || username;
+  }
+
+  function matchesBoardItem(item: SubmissionItem): boolean {
+    const studentId = item.student?.id ? String(item.student.id) : '';
+    const exerciseId = item.exercise?.id ? String(item.exercise.id) : '';
+    return matchesBoardFilters({ studentId, exerciseId }, selectedStudentIds, selectedExerciseIds);
+  }
+
+  function countOptions(
+    readOption: (item: SubmissionItem) => { id: string; label: string } | null
+  ): SubmissionFilterOption[] {
+    const counts: Record<string, { label: string; count: number }> = {};
+
+    for (const section of sections) {
+      for (const item of section.items) {
+        const option = readOption(item);
+        if (!option) continue;
+
+        const current = counts[option.id];
+        if (current) {
+          current.count += 1;
+          continue;
+        }
+
+        counts[option.id] = { label: option.label, count: 1 };
+      }
+    }
+
+    return Object.entries(counts)
+      .map(([id, value]) => ({ id, label: value.label, count: value.count }))
+      .sort((left, right) => left.label.localeCompare(right.label));
+  }
+
+  const visibleSections = $derived(
+    sections.map((section) => ({
+      ...section,
+      items: section.items.filter((item) => matchesBoardItem(item))
+    }))
+  );
+  const totalCount = $derived(sections.reduce((sum, section) => sum + section.items.length, 0));
+  const visibleCount = $derived(visibleSections.reduce((sum, section) => sum + section.items.length, 0));
+  const selectedStudentIdList = $derived([...selectedStudentIds]);
+  const selectedExerciseIdList = $derived([...selectedExerciseIds]);
+  const firstVisibleCardId = $derived(visibleSections.find((section) => section.items.length > 0)?.items[0]?.id ?? '');
+  const studentOptions = $derived(
+    countOptions((item) => {
+      const studentId = item.student?.id ? String(item.student.id) : '';
+      if (!studentId) return null;
+
+      return {
+        id: studentId,
+        label: studentDisplayName(item.student) || $t('course.navItem.submissions.filter.unknown_student')
+      };
+    })
+  );
+  const exerciseOptions = $derived(
+    countOptions((item) => {
+      const exerciseId = item.exercise?.id ? String(item.exercise.id) : '';
+      if (!exerciseId) return null;
+
+      return { id: exerciseId, label: item.exercise.title };
+    })
+  );
+
+  function replaceSelectedIds(target: SvelteSet<string>, ids: string[]) {
+    target.clear();
+    for (const id of ids) target.add(id);
+  }
+
+  function resetFilters() {
+    selectedStudentIds.clear();
+    selectedExerciseIds.clear();
+  }
+
+  function gradingHref(submissionItemId: string): string {
+    const url = new URL(page.url);
+    url.searchParams.set('submissionId', submissionItemId);
+    return `${url.pathname}${url.search}`;
+  }
+
+  $effect(() => {
+    if (!browser) return;
+
+    const studentsMatch = sameIdSelection(selectedStudentIds, page.url.searchParams.get('students'));
+    const exercisesMatch = sameIdSelection(selectedExerciseIds, page.url.searchParams.get('exercises'));
+    if (studentsMatch && exercisesMatch) return;
+
+    untrack(() => {
+      const url = new URL(page.url);
+      const students = formatIdParam(selectedStudentIds);
+      const exercises = formatIdParam(selectedExerciseIds);
+
+      if (students) url.searchParams.set('students', students);
+      else url.searchParams.delete('students');
+
+      if (exercises) url.searchParams.set('exercises', exercises);
+      else url.searchParams.delete('exercises');
+
+      goto(`${url.pathname}${url.search}`, {
+        replaceState: true,
+        keepFocus: true,
+        noScroll: true
+      });
+    });
+  });
 
   function handleModalClose() {
     isGradeWithAI = false;
-    goto(page.url.pathname);
+    const url = new URL(page.url);
+    url.searchParams.delete('submissionId');
+    goto(`${url.pathname}${url.search}`);
   }
 
   async function handleDeleteSubmission(id: string, statusId: number) {
@@ -212,8 +338,20 @@
   {isSaving}
 />
 
+<SubmissionFilterBar
+  {studentOptions}
+  {exerciseOptions}
+  selectedStudentIds={selectedStudentIdList}
+  selectedExerciseIds={selectedExerciseIdList}
+  {visibleCount}
+  {totalCount}
+  onStudentIdsChange={(ids) => replaceSelectedIds(selectedStudentIds, ids)}
+  onExerciseIdsChange={(ids) => replaceSelectedIds(selectedExerciseIds, ids)}
+  onReset={resetFilters}
+/>
+
 <div class="flex items-center overflow-x-scroll">
-  {#each sections as { id, title, items }, idx (id)}
+  {#each visibleSections as { id, title, items }, idx (id)}
     <div
       class="section ui:bg-muted ui:border-border mr-3 h-80 overflow-hidden rounded-md border p-3"
       animate:flip={{ duration: flipDurationMs }}
@@ -238,27 +376,23 @@
               ? 'ui:border-border'
               : 'border-red-700'} ui:bg-card mx-0 my-2 w-full rounded-md border px-3 py-3 shadow-sm"
             animate:flip={{ duration: flipDurationMs }}
+            data-testid={item.id === firstVisibleCardId ? 'submissions-board-card' : undefined}
           >
-            <a
-              class="mb-2 flex w-full cursor-pointer items-center text-black"
-              href={`${page.url.pathname}?submissionId=${item.id}`}
-            >
-              <UserAvatar src={item.student.avatarUrl} alt="Student avatar" class="h-6 w-6" />
+            <div class="mb-2 flex w-full items-center">
+              <UserAvatar
+                src={item.student?.avatarUrl}
+                alt={$t('course.navItem.submissions.grading_modal.student_avatar')}
+                class="h-6 w-6"
+              />
               <p class="ml-2 text-sm dark:text-white">
-                {item.student.username}
+                {studentDisplayName(item.student)}
               </p>
-            </a>
-            <a class="ui:text-primary text-md" href="{page.url.pathname}?submissionId={item.id}">
+            </div>
+            <a class="ui:text-primary text-md" href={gradingHref(item.id)}>
               {item.exercise.title}
             </a>
-            <a
-              class="my-2 flex items-center text-black no-underline hover:underline"
-              href={`/courses/${courseApi.course?.id}/exercises/${item.exercise.id}`}
-            >
-              <p class="text-grey text-sm dark:text-white">{item.exercise.title}</p>
-            </a>
             {#if item.lesson}
-              <p class="text-grey text-sm dark:text-white">#{item.lesson.title}</p>
+              <p class="ui:text-muted-foreground my-2 text-sm">#{item.lesson.title}</p>
             {/if}
             {#if getWorkflowHintKey(item)}
               <p class="ui:text-muted-foreground text-xs">

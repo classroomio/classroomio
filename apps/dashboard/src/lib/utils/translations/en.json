@@ -3189,7 +3189,9 @@
                 "responses": "Responses",
                 "attempts": "Attempts",
                 "no_responses": "No responses yet",
-                "other": "Other"
+                "other": "Other",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "individual": {
                 "heading": "Individual",
@@ -3410,6 +3412,10 @@
                 "preview": {
                   "accepted_types_label": "Accepted types",
                   "max_size_label": "Max size (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "video_recording": {
@@ -3638,6 +3644,19 @@
           "delete_prompt": "Delete",
           "delete_error": "Failed to delete submission",
           "delete_success": "Successfully deleted submission"
+        },
+        "filter": {
+          "students": "Students",
+          "exercises": "Exercises",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "marks": {
