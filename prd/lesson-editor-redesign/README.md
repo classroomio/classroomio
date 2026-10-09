@@ -12,7 +12,7 @@ A clickable, high-fidelity prototype lives at [`prototypes/lesson-editor-redesig
 * Notes support callout styles (Info, Tip, Important, Warning, Highlight) in addition to plain text.
 * **Preview renders Video and Slides large and prominent** (a full-width player/viewer, not a compact edit-mode card), and hides every block's type label, so Preview reads as one continuous learner page rather than a labeled form.
 * The Settings slider offers a persisted, per-lesson reading-density setting (Compact / Comfortable / Spacious) that adjusts block spacing wherever the lesson is rendered for viewing (see [Confirmed Decision 7](#7-preview-represents-the-in-app-learner-experience)).
-* A scroll-position indicator — one dot per block, inside the canvas column — shows where the admin is in a long lesson and jumps to any block on click; Preview shows the equivalent as a continuous progress fill.
+* A scroll-position indicator — one dot per block, inside the canvas column — shows where the admin is in a long lesson and jumps to any block on click; Preview shows the equivalent as a continuous progress fill. Hovering (or focusing) a dot shows a small tooltip with that block's own content-type icon and title, read live from the block itself.
 
 When this document and the prototype disagree on a UI detail, the prototype wins.
 
@@ -558,6 +558,7 @@ Add:
 * A drag handle and move up/down controls on every block for reordering
 * A newly inserted block is briefly highlighted and auto-scrolled into view
 * A scroll-position indicator — one dot per block, inside the canvas column, not pinned to the viewport edge — highlights the block currently in view and jumps to a block on click. Present on the desktop and empty-lesson screens; the mobile frame keeps native scrolling with no dot rail.
+* Hovering or keyboard-focusing a dot shows a small tooltip naming that block: its content-type icon plus its title, read directly from the block's own rendered content (a video/slide's displayed title, a document's filename, an image's alt text, a note's own heading/opening text) — never hardcoded. A block with no real title falls back to a generic label ("Untitled note", "Untitled image", etc.). The tooltip fades/slides in next to its dot and disappears when the pointer or focus moves away; it defaults to the dot's outer side and flips to the inner side if there isn't room, so it never covers the dot rail itself or runs off the viewport. This is purely a read of existing, already-rendered content — no new data is stored for it.
 
 ## Add Content
 
@@ -825,6 +826,7 @@ Manually verify:
 28. Reading density is a persisted, per-lesson setting: set once from the Settings slider, it determines block spacing in both Preview and the real in-app learner view, with no effect on the Edit canvas.
 29. The Settings slider's visibility rules match production exactly: Live class fields only for live-class-type courses; video-watch threshold and per-video enforcement only when the completion rule is "Video watch".
 30. The scroll-position indicator (dots in Edit, progress fill in Preview) reflects the block currently in view and can jump to any block on click; it does not appear on the mobile frame.
+31. Hovering or focusing a scroll-position dot shows a tooltip with that block's real content-type icon and title (reading it from the block's own content, not a hardcoded value, with an "Untitled …" fallback when the block has no title); it disappears when the pointer or focus moves away, and this works identically for the admin's Edit/Preview canvas and the real in-app learner view.
 
 ---
 

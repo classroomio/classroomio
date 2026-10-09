@@ -339,6 +339,21 @@
   .mode-preview .scroll-dot { opacity: .18; }
   .mode-preview .scroll-dot:hover, .mode-preview .scroll-dot:focus-visible { opacity: .55; }
   .mode-preview .scroll-dot.on { opacity: .85; }
+
+  /* Dot tooltip: one shared element per rail, moved to whichever dot is hovered/focused. Slides
+     in from the dot's edge rather than just fading, so it reads as "attached to" that dot. */
+  .dot-tip {
+    position: absolute; top: 0; display: flex; align-items: center; gap: 6px;
+    padding: 5px 10px; background: var(--foreground); color: var(--background);
+    border-radius: var(--radius-md); font-size: 12px; font-weight: 500; line-height: 1.3;
+    white-space: nowrap; max-width: 240px; overflow: hidden; text-overflow: ellipsis;
+    box-shadow: var(--shadow-md); opacity: 0; pointer-events: none;
+    transition: opacity .12s ease, transform .12s ease;
+  }
+  .dot-tip svg { width: 13px; height: 13px; flex-shrink: 0; stroke-width: 2; }
+  .dot-tip.side-right { left: calc(100% + 10px); transform: translateY(-50%) translateX(-4px); }
+  .dot-tip.side-left { right: calc(100% + 10px); transform: translateY(-50%) translateX(4px); }
+  .dot-tip.is-visible { opacity: 1; transform: translateY(-50%) translateX(0); }
   .block-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
   .block-drag { display: flex; align-items: center; cursor: grab; color: var(--muted-foreground); flex-shrink: 0; margin-left: -4px; border-radius: var(--radius-sm); padding: 2px; position: relative; }
   .block-drag:hover { background: var(--accent); color: var(--foreground); }
@@ -2607,6 +2622,8 @@
   // screen keeps the phone's own scrolling, since a device frame simulating a real phone should
   // scroll like one, not grow a second floating indicator inside its small frame. ----
   const DOTS_INSET = 20; // distance from the canvas column's right edge to the dots' center
+  const DOT_TIP_MIN_ROOM = 170; // px of clear space the tooltip needs on its default (right) side
+  const DOT_TYPE_ICONS = { video: ICON_VIDEO, note: ICON_NOTE, slide: ICON_SLIDE, document: ICON_DOCUMENT, image: ICON_IMAGE };
   const DOTS_IDLE_MS = 900;
 
   function initScrollDots(canvasId, screenId) {
@@ -2619,6 +2636,14 @@
     dots.setAttribute('role', 'tablist');
     dots.setAttribute('aria-label', 'Lesson sections');
     screenEl.appendChild(dots);
+
+    // One shared tooltip per rail, moved to whichever dot is hovered/focused — appended once and
+    // never touched by rebuild()'s innerHTML reset of the dot buttons (see rebuild() below).
+    const tip = document.createElement('div');
+    tip.className = 'dot-tip';
+    tip.innerHTML = '<span class="dot-tip-icon"></span><span class="dot-tip-label"></span>';
+    dots.appendChild(tip);
+
     let idleTimer = 0;
     let blocks = [];
     let suppressAutoActiveUntil = 0;
@@ -2636,25 +2661,58 @@
       dots.style.left = Math.round(rect.right - DOTS_INSET) + 'px';
     }
 
-    function labelFor(section) {
+    const UNTITLED_LABEL = {
+      video: 'Untitled video',
+      note: 'Untitled note',
+      slide: 'Untitled slide',
+      document: 'Untitled document',
+      image: 'Untitled image'
+    };
+
+    // Reads each block's own displayed title straight from its rendered content — never
+    // hardcoded — so the tooltip always matches what's actually in the lesson.
+    function titleFor(section) {
       const type = section.dataset.type;
-      return type ? type.charAt(0).toUpperCase() + type.slice(1) : 'Block';
+      const fallback = UNTITLED_LABEL[type] || 'Untitled block';
+      if (type === 'video' || type === 'slide') {
+        const text = section.querySelector('.preview-media-title');
+        return (text && text.textContent.trim()) || fallback;
+      }
+      if (type === 'document') {
+        const text = section.querySelector('.file-name');
+        return (text && text.textContent.trim()) || fallback;
+      }
+      if (type === 'image') {
+        const img = section.querySelector('.image-block img');
+        return (img && img.alt && img.alt.trim()) || fallback;
+      }
+      if (type === 'note') {
+        const body = section.querySelector('.note-content');
+        const text = body && body.textContent.replace(/\s+/g, ' ').trim();
+        return text ? (text.length > 60 ? text.slice(0, 60).trim() + '…' : text) : fallback;
+      }
+      return fallback;
     }
 
     // Rebuilt whenever the canvas's own children change — added, removed, reordered — rather than
-    // threading an update call through every one of those code paths.
+    // threading an update call through every one of those code paths. Only the dot buttons are
+    // replaced each time; the shared tooltip (appended once, above) is left alone.
     function rebuild() {
       const canvasEl = document.getElementById(canvasId);
       blocks = canvasEl ? [...canvasEl.querySelectorAll(':scope > .content-section')] : [];
+      dots.querySelectorAll('.scroll-dot').forEach((d) => d.remove());
+      hideTip(); // the dot the pointer was over may no longer exist, or may now mean something else
       if (blocks.length < 2) {
         dots.classList.remove('is-ready');
-        dots.innerHTML = '';
         return;
       }
       dots.classList.add('is-ready');
-      dots.innerHTML = blocks
-        .map((b, i) => `<button type="button" class="scroll-dot" role="tab" aria-label="Jump to ${escapeHtml(labelFor(b))} section" data-i="${i}"></button>`)
-        .join('');
+      dots.insertAdjacentHTML(
+        'afterbegin',
+        blocks
+          .map((b, i) => `<button type="button" class="scroll-dot" role="tab" aria-label="Jump to ${escapeHtml(titleFor(b))}" data-i="${i}"></button>`)
+          .join('')
+      );
       positionDots();
       updateActive();
     }
@@ -2713,6 +2771,40 @@
       // back by the overlap rule below the moment the triggered scroll's own event fires.
       dots.querySelectorAll('.scroll-dot').forEach((d, i) => d.classList.toggle('on', i === index));
       suppressAutoActiveUntil = Date.now() + 700;
+    });
+
+    // Hover/focus tooltip: one shared element (created once, above) moved to whichever dot is
+    // active, showing that block's real content-type icon and title. Flips to the dot's left
+    // when there isn't enough clear room on the right (a narrow window, the mobile-width resize
+    // breakpoint) so it never runs off the viewport edge.
+    function showTip(btn) {
+      const block = blocks[Number(btn.dataset.i)];
+      if (!block) return;
+      const type = block.dataset.type;
+      tip.querySelector('.dot-tip-icon').innerHTML = DOT_TYPE_ICONS[type] || ICON_NOTE;
+      tip.querySelector('.dot-tip-label').textContent = titleFor(block);
+      tip.style.top = btn.offsetTop + btn.offsetHeight / 2 + 'px';
+      const roomRight = window.innerWidth - dots.getBoundingClientRect().right;
+      tip.classList.toggle('side-left', roomRight < DOT_TIP_MIN_ROOM);
+      tip.classList.toggle('side-right', roomRight >= DOT_TIP_MIN_ROOM);
+      tip.classList.add('is-visible');
+    }
+    function hideTip() {
+      tip.classList.remove('is-visible');
+    }
+    dots.addEventListener('mouseover', (e) => {
+      const btn = e.target.closest('.scroll-dot');
+      if (btn) showTip(btn);
+    });
+    dots.addEventListener('mouseout', (e) => {
+      if (e.target.closest('.scroll-dot') && !dots.contains(e.relatedTarget)) hideTip();
+    });
+    dots.addEventListener('focusin', (e) => {
+      const btn = e.target.closest('.scroll-dot');
+      if (btn) showTip(btn);
+    });
+    dots.addEventListener('focusout', (e) => {
+      if (e.target.closest('.scroll-dot')) hideTip();
     });
 
     // A real scroll gesture always wins over the suppression window above — only a click's own
