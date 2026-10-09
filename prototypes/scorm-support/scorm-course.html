@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SCORM course · format · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="proto.css" />
+    <link rel="stylesheet" href="course-shell.css" />
+    <link rel="stylesheet" href="scorm.css" />
+    <script src="proto.js"></script>
+  </head>
+  <body>
+    <!-- NEW COURSE STATES -->
+    <div data-state-view="new-course new-course-free new-course-nolicense">
+      <div class="app">
+        <div data-org-sidebar data-active="Courses"></div>
+        <div class="main">
+          <div data-app-header="Courses"></div>
+          <div class="content">
+            <div class="wrap" style="max-width: 1100px; opacity: 0.45; pointer-events: none">
+              <div class="page-head"><div><h1 class="page-title">Courses</h1><p class="page-sub">Drafts, live courses and templates.</p></div></div>
+              <div class="asset-grid">
+                <div class="asset-card"><div class="asset-thumb"><div class="ki"><span data-icon="book"></span><span>Course</span></div></div><div class="asset-title">HIPAA Awareness 2026</div><div class="asset-meta"><div><div class="k">Items</div><div class="v tnum">5 lessons · 3 exercises</div></div><div><div class="k">Learners</div><div class="v">48</div></div></div></div>
+                <div class="asset-card"><div class="asset-thumb"><div class="ki"><span data-icon="book"></span><span>Course</span></div></div><div class="asset-title">SOC 2 Security Basics</div><div class="asset-meta"><div><div class="k">Items</div><div class="v tnum">4 lessons · 2 exercises</div></div><div><div class="k">Learners</div><div class="v">31</div></div></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="scrim" data-layer="new-course">
+        <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="nc-title" style="max-width: 560px">
+          <div class="dialog-head frow">
+            <h2 class="dialog-title grow" id="nc-title">New course</h2>
+            <button class="btn btn-ghost btn-sm btn-icon" data-close aria-label="Close"><span data-icon="x"></span></button>
+          </div>
+          <div class="dialog-body" data-nc="choice">
+            <div class="roc-group cols-2" role="radiogroup" aria-label="Course start">
+              <button type="button" class="roc" role="radio" aria-checked="false" data-nc-pick="build">
+                <span class="roc-copy"><span class="roc-title">Build a course</span><span class="roc-desc">Sections, lessons and exercises, as today.</span></span>
+                <span class="radio"></span>
+              </button>
+              <button type="button" class="roc" role="radio" aria-checked="true" data-nc-pick="scorm">
+                <span class="roc-copy"><span class="roc-title">Upload a SCORM package <span class="new-pill">New</span> <span class="badge badge-primary-soft" data-state-view="new-course-free" style="margin-left: 4px">Paid plans</span><span class="badge badge-warning-soft" data-state-view="new-course-nolicense" style="margin-left: 4px">Needs a license</span></span><span class="roc-desc">One package, its own course. Certificates, compliance, landing page and People work as usual.</span></span>
+                <span class="radio"></span>
+              </button>
+            </div>
+            <div class="alert alert-information" data-state-view="new-course-nolicense" style="margin-top: 10px">
+              <span data-icon="info"></span>
+              <div class="alert-title">SCORM needs an enterprise license on this server</div>
+              <div class="alert-description">Learners keep taking the packages you already have. <a href="#" style="color: var(--primary)">Read the licensing docs</a></div>
+            </div>
+          </div>
+          <div class="dialog-body" data-nc="scorm-form">
+            <div class="field">
+              <span class="label">Course type</span>
+              <div class="roc-group cols-2" role="radiogroup" aria-label="Course type">
+                <button type="button" class="roc" role="radio" aria-checked="true"><span class="roc-copy"><span class="roc-title">Self-paced</span></span><span class="radio"></span></button>
+                <button type="button" class="roc" role="radio" aria-checked="false"><span class="roc-copy"><span class="roc-title">Compliance</span></span><span class="radio"></span></button>
+              </div>
+              <p class="hint">Live class and Public don’t apply to a single package.</p>
+            </div>
+            <div class="field"><label class="label" for="nc-name">Course title</label><input class="input" id="nc-name" value="Protecting patient information" /></div>
+            <div class="field"><label class="label" for="nc-desc">Description</label><input class="input" id="nc-desc" value="Annual privacy training, straight from the vendor package." /></div>
+            <p class="hint">Creating it makes the course and its one empty package in one step, then lands on the Package page where the upload starts.</p>
+          </div>
+          <div class="dialog-foot" data-nc-foot="choice">
+            <button class="btn btn-primary btn-sm" data-nc-go="scorm-form">Continue</button>
+          </div>
+          <div class="dialog-foot" data-nc-foot="scorm-form" hidden style="justify-content: space-between">
+            <button class="btn btn-secondary btn-sm" data-nc-go="choice">Back</button>
+            <button class="btn btn-primary btn-sm" data-nc-create>Create SCORM course</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="scrim" data-layer="nc-upgrade" hidden>
+        <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="nc-up-title" style="max-width: 440px">
+          <div class="dialog-head">
+            <h2 class="dialog-title" id="nc-up-title">SCORM courses are on paid plans</h2>
+            <p class="dialog-desc">Upgrade to turn packages into courses. Learners keep taking what you already have either way.</p>
+          </div>
+          <div class="dialog-foot">
+            <button class="btn btn-outline btn-sm" data-close>Not now</button>
+            <button class="btn btn-primary btn-sm" data-close>See plans</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN PACKAGE STATES -->
+    <div class="app" data-state-view="admin-package">
+      <aside class="sidebar">
+        <a class="nav-item" href="#" style="margin-bottom: 10px"><span data-icon="chevLeft"></span>Courses</a>
+        <a class="nav-item" href="#"><span data-icon="note"></span>News Feed</a>
+        <a class="nav-item active" href="#"><span data-icon="scorm"></span>Package</a>
+        <a class="nav-item" href="#"><span data-icon="award"></span>Certificates</a>
+        <a class="nav-item" href="#"><span data-icon="chart"></span>Analytics</a>
+        <a class="nav-item" href="#"><span data-icon="shield"></span>Compliance</a>
+        <a class="nav-item" href="#"><span data-icon="link"></span>Landing Page</a>
+        <a class="nav-item" href="people-learner.html"><span data-icon="users"></span>People</a>
+        <a class="nav-item" href="#"><span data-icon="sparkles"></span>AI Tutor</a>
+        <a class="nav-item" href="#"><span data-icon="settings"></span>Settings</a>
+        <p class="hint" style="margin: 14px 4px 0">Submissions, Marks and Attendance are hidden in a SCORM course.</p>
+      </aside>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Package</span>
+          <span class="badge badge-secondary">SCORM course</span>
+          <span class="spacer"></span>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+        <div class="lesson-body wide">
+          <div class="page-hdr">
+            <div class="ttl"><input class="input" aria-label="Package title" value="Protecting patient information" /></div>
+            <div class="acts">
+              <button class="icon-btn" title="Lock" aria-label="Lock"><span data-icon="unlock"></span></button>
+              <span class="saved-note" aria-live="polite">Saved</span>
+              <button class="icon-btn" title="Save" aria-label="Save"><span data-icon="save"></span></button>
+            </div>
+          </div>
+          <div class="utabs" role="tablist">
+            <span class="utab active"><span data-icon="scorm"></span>Package</span>
+            <span class="utab"><span data-icon="note"></span>Instructions</span>
+            <span class="utab"><span data-icon="chart"></span>Results<span class="chip">0</span></span>
+            <span class="utab"><span data-icon="settings"></span>Settings</span>
+          </div>
+          <div class="tab-panel">
+            <div class="banner" style="margin-bottom: 12px">
+              <span data-icon="info"></span>
+              <span class="grow">This is the course’s only item, at <code class="mono">/courses/[id]/activities/[activityId]</code>. It can’t be deleted — use <b>Replace package</b> — and the course is deleted as usual.</span>
+              <a class="btn btn-outline btn-sm" href="activity-editor.html?state=ready">Open the full editor</a>
+            </div>
+            <div class="pkg-card">
+              <div class="pkg-top">
+                <span class="pkg-tile"><span data-icon="scorm"></span></span>
+                <div style="min-width: 0">
+                  <h2 class="pkg-title">Protecting patient information</h2>
+                  <div class="pkg-badges"><span class="badge badge-secondary">SCORM 2004 · 4th edition</span><span class="badge badge-outline">1 module</span><span class="badge badge-outline">Pass mark 80%</span></div>
+                </div>
+                <div class="pkg-actions">
+                  <a class="btn btn-outline btn-sm" href="player.html?state=preview"><span data-icon="eye"></span>Preview</a>
+                  <button class="btn btn-outline btn-sm"><span data-icon="refresh"></span>Replace package</button>
+                </div>
+              </div>
+              <div class="pkg-meta">
+                <div><div class="k">File</div><div class="v">hipaa-privacy-rule-storyline.zip</div></div>
+                <div><div class="k">Size</div><div class="v tnum">48.2 MB · 312 files</div></div>
+                <div><div class="k">Course</div><div class="v">Self-paced · SCORM</div></div>
+                <div><div class="k">Uploaded</div><div class="v">7 Oct 2026 · Morgan Reyes</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEARNER PACKAGE STATE -->
+    <div class="app" data-state-view="learner-package">
+      <aside class="sidebar learner-sidebar">
+        <a class="nav-item" href="#" style="margin-bottom: 6px"><span data-icon="chevLeft"></span>My learning</a>
+        <div class="course-id"><div class="nm">Protecting patient information</div><div class="st"><span data-icon="shield"></span>Self-paced · SCORM</div></div>
+        <a class="nav-item" href="#"><span data-icon="note"></span>News Feed</a>
+        <a class="nav-item active" href="#"><span data-icon="scorm"></span>Package</a>
+        <a class="nav-item" href="#"><span data-icon="award"></span>Certificates</a>
+        <div class="learner-foot">
+          <div class="frow" style="gap: 10px"><div class="ring ring-sm"><svg viewBox="0 0 36 36"><circle class="track" cx="18" cy="18" r="15" fill="none" stroke-width="4" /><circle class="arc" cx="18" cy="18" r="15" fill="none" stroke-width="4" stroke-dasharray="94.2" stroke-dashoffset="94.2" /></svg><span class="lbl">0%</span></div><div><div style="font-size: 13px; font-weight: 500">Course progress</div><div class="muted" style="font-size: 12px">0 of 1 complete</div></div></div>
+          <p class="hint" style="margin: 10px 0 0">Previous and Next are hidden here. The progress ring stays. Package is one click, nothing to expand.</p>
+        </div>
+      </aside>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Package</span>
+          <span class="spacer"></span>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+        <div class="lesson-body wide">
+          <div class="page-hdr">
+            <div class="ttl"><h1>Protecting patient information</h1></div>
+            <div class="acts"><span class="status-pill"><span class="pdot"></span>Not started</span></div>
+          </div>
+          <p class="instructions">Work through all eight slides, then pass the short quiz with 80% or more. <code class="mono">/lessons</code>, <code class="mono">?next=true</code> and Continue all land here.</p>
+          <div class="player-shell">
+            <div class="module-bar">
+              <div class="mb-head"><span class="mb-title">Modules</span><span class="muted">0 of 3 complete</span></div>
+              <div class="mb-chips"><span class="mchip is-current"><span class="mn">1</span>What counts as PHI</span><span class="mchip"><span class="mn">2</span>Minimum necessary</span><span class="mchip"><span class="mn">3</span>Knowledge check</span></div>
+            </div>
+            <div class="player-frame"><div class="pk shown"><div class="pk-top"><span class="pk-brand">HIPAA Privacy Rule</span><span class="pk-menu">Menu · Resources</span></div><div class="pk-stage"><div class="pk-kicker">HIPAA Awareness 2026</div><h2 class="pk-h">Protecting patient information</h2><p class="pk-p">This is the learner’s Package page in a SCORM course. The full player lives in <a href="player.html?state=running" style="color: var(--primary)">player.html</a>.</p></div></div></div>
+            <div class="player-under"><span class="grow"></span><span><span class="save-dot"></span>Progress saved · just now</span><button class="btn btn-ghost btn-sm"><span data-icon="maximize"></span>Full screen</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CARDS + LANDING STATES -->
+    <div class="app" data-state-view="cards landing">
+      <div data-org-sidebar data-active="Courses"></div>
+      <div class="main">
+        <div data-app-header="Courses"></div>
+        <div class="content">
+          <div class="wrap" style="max-width: 1100px">
+            <section data-state-view="cards">
+              <div class="page-head"><div><h1 class="page-title">Courses</h1><p class="page-sub">SCORM courses show their module count, not lesson and exercise counts.</p></div></div>
+              <div class="asset-grid">
+                <div class="asset-card"><div class="asset-thumb is-scorm"><div class="ki"><span data-icon="scorm"></span><span>SCORM course</span></div></div><div class="asset-title">Protecting patient information</div><div class="asset-badges"><span class="badge badge-outline">SCORM · 3 modules</span><span class="badge badge-outline">Self-paced</span></div><div class="asset-meta"><div><div class="k">Progress</div><div class="v tnum">0 of 1 complete</div></div><div><div class="k">Learners</div><div class="v">12</div></div></div></div>
+                <div class="asset-card"><div class="asset-thumb"><div class="ki"><span data-icon="book"></span><span>Course</span></div></div><div class="asset-title">HIPAA Awareness 2026</div><div class="asset-badges"><span class="badge badge-outline">5 lessons · 3 exercises</span></div><div class="asset-meta"><div><div class="k">Progress</div><div class="v tnum">3 of 8 complete</div></div><div><div class="k">Learners</div><div class="v">48</div></div></div></div>
+              </div>
+            </section>
+            <section data-state-view="landing">
+              <div class="page-head"><div><h1 class="page-title">Protecting patient information</h1><p class="page-sub">Course landing page. The package is the curriculum.</p></div><span class="badge badge-outline">SCORM · 3 modules</span></div>
+              <div class="card card-pad">
+                <div class="sco-h">What you’ll take</div>
+                <div class="sco-row"><span class="n">1</span><span class="grow">What counts as PHI</span><code>12 min</code></div>
+                <div class="sco-row"><span class="n">2</span><span class="grow">Minimum necessary and disclosures</span><code>18 min</code></div>
+                <div class="sco-row"><span class="n">3</span><span class="grow">Knowledge check · pass mark 80%</span><code>10 min</code></div>
+              </div>
+              <p class="hint" style="margin-top: 10px">Certificates, compliance tracking, landing page and People work as in any course.</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS STATES -->
+    <div class="app" data-state-view="settings convert-confirm">
+      <aside class="sidebar">
+        <a class="nav-item" href="#" style="margin-bottom: 10px"><span data-icon="chevLeft"></span>Courses</a>
+        <a class="nav-item" href="#"><span data-icon="note"></span>News Feed</a>
+        <a class="nav-item" href="#"><span data-icon="scorm"></span>Package</a>
+        <a class="nav-item" href="#"><span data-icon="award"></span>Certificates</a>
+        <a class="nav-item" href="#"><span data-icon="chart"></span>Analytics</a>
+        <a class="nav-item" href="#"><span data-icon="shield"></span>Compliance</a>
+        <a class="nav-item" href="#"><span data-icon="link"></span>Landing Page</a>
+        <a class="nav-item" href="people-learner.html"><span data-icon="users"></span>People</a>
+        <a class="nav-item" href="#"><span data-icon="sparkles"></span>AI Tutor</a>
+        <a class="nav-item active" href="#"><span data-icon="settings"></span>Settings</a>
+      </aside>
+      <div class="main">
+        <header class="chead">
+          <button class="btn btn-ghost btn-sm" aria-label="Toggle sidebar" style="padding: 0 6px"><span data-icon="sidebar"></span></button>
+          <span class="vsep"></span>
+          <span class="label-here">Settings</span>
+          <span class="badge badge-secondary">SCORM course</span>
+          <span class="spacer"></span>
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
+        </header>
+        <div class="lesson-body" style="max-width: 720px">
+          <div class="tab-panel" style="padding: 20px 16px">
+            <div class="fgroup">
+              <div class="fset">
+                <h3 class="flegend">Course type</h3>
+                <p class="fdesc">A SCORM course is Self-paced or Compliance.</p>
+                <div class="roc-group cols-2" role="radiogroup" aria-label="Course type">
+                  <button type="button" class="roc" role="radio" aria-checked="true"><span class="roc-copy"><span class="roc-title">Self-paced</span></span><span class="radio"></span></button>
+                  <button type="button" class="roc" role="radio" aria-checked="false"><span class="roc-copy"><span class="roc-title">Compliance</span></span><span class="radio"></span></button>
+                </div>
+                <p class="hint">Grouping and progression settings are hidden: there is one item, and it is the package.</p>
+              </div>
+              <div class="fsep"></div>
+              <div class="fset">
+                <h3 class="flegend">Convert to a standard course</h3>
+                <p class="fdesc">Brings Content back with the package as the first item, so you can add lessons or exercises. This can’t be undone.</p>
+                <button class="btn btn-outline btn-sm" data-open="convert-confirm"><span data-icon="refresh"></span>Convert to standard</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="convert-confirm" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="cc-title">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="cc-title">Convert to a standard course?</h2>
+          <p class="dialog-desc">Content comes back with Protecting patient information as the first item. This can’t be undone.</p>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+          <button class="btn btn-destructive btn-sm" data-close>Convert</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state-bar">
+      <span class="lbl">SCORM course</span>
+      <button data-state="new-course">New course</button>
+      <button data-state="new-course-free">Free plan</button>
+      <button data-state="new-course-nolicense">No license</button>
+      <button data-state="admin-package">Admin Package</button>
+      <button data-state="learner-package">Learner Package</button>
+      <button data-state="cards">Course cards</button>
+      <button data-state="landing">Landing page</button>
+      <button data-state="settings">Settings</button>
+      <button data-state="convert-confirm">Convert</button>
+      <a href="index.html">← Map</a>
+    </div>
+
+    <script>
+      document.addEventListener('statechange', ({ detail }) => {
+        closeLayers();
+        document.querySelector('[data-layer="new-course"]').hidden = !detail.startsWith('new-course');
+        const isFree = detail === 'new-course-free';
+        document.querySelector('[data-layer="nc-upgrade"]').hidden = true;
+        document.querySelector('[data-layer="convert-confirm"]').hidden = detail !== 'convert-confirm';
+        if (detail.startsWith('new-course')) {
+          document.querySelector('[data-nc="choice"]').hidden = false;
+          document.querySelector('[data-nc="scorm-form"]').hidden = true;
+          document.querySelector('[data-nc-foot="choice"]').hidden = false;
+          document.querySelector('[data-nc-foot="scorm-form"]').hidden = true;
+        }
+      });
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('[data-nc-pick]').forEach((card) =>
+          card.addEventListener('click', () => {
+            if (card.dataset.ncPick === 'scorm' && new URLSearchParams(location.search).get('state') === 'new-course-free') {
+              document.querySelector('[data-layer="nc-upgrade"]').hidden = false;
+              return;
+            }
+            document.querySelectorAll('[data-nc-pick]').forEach((other) => other.setAttribute('aria-checked', String(other === card)));
+          })
+        );
+        document.querySelectorAll('[data-nc-go]').forEach((button) =>
+          button.addEventListener('click', () => {
+            const toForm = button.dataset.ncGo === 'scorm-form';
+            document.querySelector('[data-nc="choice"]').hidden = toForm;
+            document.querySelector('[data-nc="scorm-form"]').hidden = !toForm;
+            document.querySelector('[data-nc-foot="choice"]').hidden = toForm;
+            document.querySelector('[data-nc-foot="scorm-form"]').hidden = !toForm;
+          })
+        );
+        document.querySelector('[data-nc-create]').addEventListener('click', () => {
+          document.querySelector('[data-layer="new-course"]').hidden = true;
+          toast('Created SCORM course “Protecting patient information” with 1 package');
+        });
+      });
+
+      bindStatePicker('new-course');
+    </script>
+  </body>
+</html>

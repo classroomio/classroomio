@@ -1,5 +1,6 @@
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
+import { assertNever } from '@cio/utils/functions/assert-never';
 import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
 import { getCourseById } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
@@ -10,7 +11,7 @@ import {
   getCourseTrackableContentCounts
 } from '@cio/db/queries/course/member-progress';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
-import { buildCourseContent, type CourseContentItem } from './utils';
+import { buildCourseContent, type CourseContentItem } from '@cio/core/services/course/utils';
 
 export type CourseMemberStage =
   | { kind: 'not_started' }
@@ -40,16 +41,21 @@ function toTrackableContentItems(contentItems: CourseContentItem[]): TrackableCo
   const trackableItems: TrackableContentItem[] = [];
 
   for (const item of contentItems) {
-    if (item.type !== ContentType.Lesson && item.type !== ContentType.Exercise) {
-      continue;
+    switch (item.type) {
+      case ContentType.Lesson:
+      case ContentType.Exercise:
+        trackableItems.push({
+          id: item.id,
+          type: item.type,
+          title: item.title,
+          isComplete: item.isComplete ?? false
+        });
+        break;
+      case ContentType.Section:
+        break;
+      default:
+        assertNever(item.type);
     }
-
-    trackableItems.push({
-      id: item.id,
-      type: item.type,
-      title: item.title,
-      isComplete: item.isComplete ?? false
-    });
   }
 
   return trackableItems;
@@ -75,14 +81,32 @@ function buildStudentTrackableItems(
   completedExerciseIds: Set<string>
 ): TrackableContentItem[] {
   return skeleton.map((item) => {
-    const isLesson = item.type === ContentType.Lesson;
-    const isComplete = isLesson ? completedLessonIds.has(item.id) : completedExerciseIds.has(item.id);
-
-    return {
-      ...item,
-      isComplete
-    };
+    switch (item.type) {
+      case ContentType.Lesson:
+        return {
+          ...item,
+          isComplete: completedLessonIds.has(item.id)
+        };
+      case ContentType.Exercise:
+        return {
+          ...item,
+          isComplete: completedExerciseIds.has(item.id)
+        };
+      default:
+        return assertNever(item.type);
+    }
   });
+}
+
+function contentTypeLabel(type: TrackableContentItem['type']): 'lesson' | 'exercise' {
+  switch (type) {
+    case ContentType.Lesson:
+      return 'lesson';
+    case ContentType.Exercise:
+      return 'exercise';
+    default:
+      return assertNever(type);
+  }
 }
 
 export function deriveCourseMemberStage(params: {
@@ -109,7 +133,7 @@ export function deriveCourseMemberStage(params: {
     kind: 'content',
     position,
     title: firstIncomplete.title,
-    contentType: firstIncomplete.type === ContentType.Exercise ? 'exercise' : 'lesson'
+    contentType: contentTypeLabel(firstIncomplete.type)
   };
 }
 

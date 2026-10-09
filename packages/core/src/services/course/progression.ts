@@ -1,5 +1,6 @@
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
+import { assertNever } from '@cio/utils/functions/assert-never';
 import {
   computeProgressionAccess,
   flattenNavigableItems,
@@ -37,7 +38,7 @@ export type AnnotatedCourseContent = {
   items: AnnotatedCourseContentItem[];
 };
 
-function annotateNavigableAccess(params: {
+export function annotateNavigableAccess(params: {
   navigableItems: CourseContentItem[];
   lessonPolicyById: Map<string, LessonProgressionPolicy>;
   progressionMode: 'free' | 'sequential';
@@ -48,15 +49,16 @@ function annotateNavigableAccess(params: {
     navigableItems: params.navigableItems,
     progressionMode: params.progressionMode,
     isComplete: (item) => {
-      if (item.type === ContentType.Lesson) {
-        return params.completedLessonIds.has(item.id);
+      switch (item.type) {
+        case ContentType.Lesson:
+          return params.completedLessonIds.has(item.id);
+        case ContentType.Exercise:
+          return params.completedExerciseIds.has(item.id) || Boolean(item.isComplete);
+        case ContentType.Section:
+          return true;
+        default:
+          return assertNever(item.type);
       }
-
-      if (item.type === ContentType.Exercise) {
-        return params.completedExerciseIds.has(item.id) || Boolean(item.isComplete);
-      }
-
-      return true;
     },
     getCompletionPolicy: (item) => {
       const lessonPolicy = params.lessonPolicyById.get(item.id);

@@ -29,8 +29,10 @@ import {
   getStudentSubmissionsForExercise
 } from '@cio/db/queries/course/certification-exercise';
 import { getProfileByGroupMemberId } from '@cio/db/queries/course/people';
-import { getUserCourseRole } from '@cio/db/queries/group/group';
+import { getGroupMemberIdByCourseAndProfile, getUserCourseRole } from '@cio/db/queries/group/group';
 import { evaluateCourseCertification } from './completion';
+
+export type ComplianceSyncSource = 'submission' | 'lesson' | 'activity';
 
 type ComplianceStatus =
   | 'not_started'
@@ -291,19 +293,31 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(
   };
 }
 
-export async function syncComplianceProgressFromSubmission(courseId: string, groupMemberId: string) {
+/**
+ * Syncs a learner's compliance record from course completion state.
+ * Lessons call this after completion; submissions and activities do the same.
+ * A supplied time is the caller's authoritative value and is stored as given;
+ * when omitted the stored value is kept.
+ */
+export async function syncComplianceProgressForMember(
+  courseId: string,
+  profileId: string,
+  source: ComplianceSyncSource = 'submission',
+  timeSpentMinutes?: number
+) {
   const [course] = await getCourseById(courseId);
 
   if (!course || course.type !== 'COMPLIANCE') {
     return null;
   }
 
-  const profile = await getProfileByGroupMemberId(groupMemberId);
-  if (!profile) {
+  const groupMemberId = await getGroupMemberIdByCourseAndProfile(courseId, profileId);
+
+  if (!groupMemberId) {
     return null;
   }
 
-  const activeRecord = await ensureComplianceEnrollmentRecordForLearner(courseId, groupMemberId, profile.id);
+  const activeRecord = await ensureComplianceEnrollmentRecordForLearner(courseId, groupMemberId, profileId);
 
   if (!activeRecord) {
     return {
@@ -312,14 +326,31 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
     };
   }
 
+  const suppliedMinutes =
+    typeof timeSpentMinutes === 'number' && Number.isFinite(timeSpentMinutes) && timeSpentMinutes >= 0
+      ? Math.floor(timeSpentMinutes)
+      : null;
+  const activeMinutes = activeRecord.timeSpentMinutes ?? 0;
+  const progressStartedAt = activeRecord.startedAt ?? new Date().toISOString();
+
   if (!activeRecord.completedAt && activeRecord.status === 'not_started') {
-    await updateCourseCompletionRecord(activeRecord.id, {
+    const progressUpdate: { status: string; startedAt: string; timeSpentMinutes?: number } = {
       status: 'in_progress',
-      startedAt: activeRecord.startedAt ?? new Date().toISOString()
+      startedAt: progressStartedAt
+    };
+
+    if (suppliedMinutes !== null) {
+      progressUpdate.timeSpentMinutes = suppliedMinutes;
+    }
+
+    await updateCourseCompletionRecord(activeRecord.id, progressUpdate);
+  } else if (suppliedMinutes !== null && suppliedMinutes !== activeMinutes) {
+    await updateCourseCompletionRecord(activeRecord.id, {
+      timeSpentMinutes: suppliedMinutes
     });
   }
 
-  const evaluation = await evaluateCourseCertification(courseId, profile.id);
+  const evaluation = await evaluateCourseCertification(courseId, profileId);
   if (!evaluation.eligibleForCertificate) {
     return {
       status: 'in_progress',
@@ -327,7 +358,7 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
     };
   }
 
-  const latestRecord = await ensureComplianceEnrollmentRecordForLearner(courseId, groupMemberId, profile.id);
+  const latestRecord = await ensureComplianceEnrollmentRecordForLearner(courseId, groupMemberId, profileId);
 
   if (!latestRecord) {
     return {
@@ -349,33 +380,46 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
     groupMemberId,
     requiredExerciseId: course.certificate?.requiredExerciseId ?? null
   });
+  const finalMinutes = suppliedMinutes ?? latestRecord.timeSpentMinutes;
+  const finalScore = completionSnapshot.score ?? latestRecord.score;
+  const finalAttempts = completionSnapshot.attempts ?? latestRecord.attempts;
+  const finalStartedAt = latestRecord.startedAt ?? completedAt;
 
   await db.transaction(async (tx) => {
-    await updateCourseCompletionRecord(
-      latestRecord.id,
-      {
-        status: 'compliant',
-        startedAt: latestRecord.startedAt ?? completedAt,
-        completedAt,
-        validUntil,
-        score: completionSnapshot.score ?? latestRecord.score,
-        attempts: completionSnapshot.attempts ?? latestRecord.attempts
-      },
-      tx
-    );
+    const compliantUpdate: {
+      status: string;
+      startedAt: string;
+      completedAt: string;
+      validUntil: string;
+      score: number | null;
+      attempts: number | null;
+      timeSpentMinutes?: number | null;
+    } = {
+      status: 'compliant',
+      startedAt: finalStartedAt,
+      completedAt,
+      validUntil,
+      score: finalScore,
+      attempts: finalAttempts
+    };
+
+    if (finalMinutes !== null && finalMinutes !== undefined) {
+      compliantUpdate.timeSpentMinutes = finalMinutes;
+    }
+
+    await updateCourseCompletionRecord(latestRecord.id, compliantUpdate, tx);
 
     if (course.certificate?.isDownloadable) {
-      await createCourseCertificateIssue(
-        {
-          courseId,
-          profileId: profile.id,
-          courseCompletionRecordId: latestRecord.id,
-          cycleNumber: latestRecord.cycleNumber,
-          expiresAt: validUntil,
-          status: 'valid'
-        },
-        tx
-      );
+      const certificateIssue = {
+        courseId,
+        profileId,
+        courseCompletionRecordId: latestRecord.id,
+        cycleNumber: latestRecord.cycleNumber,
+        expiresAt: validUntil,
+        status: 'valid'
+      };
+
+      await createCourseCertificateIssue(certificateIssue, tx);
     }
   });
 
@@ -384,6 +428,16 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
     completed: true,
     validUntil
   };
+}
+
+export async function syncComplianceProgressFromSubmission(courseId: string, groupMemberId: string) {
+  const profile = await getProfileByGroupMemberId(groupMemberId);
+
+  if (!profile) {
+    return null;
+  }
+
+  return syncComplianceProgressForMember(courseId, profile.id, 'submission');
 }
 
 export async function getCourseComplianceOverview(courseId: string) {

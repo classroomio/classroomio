@@ -10,6 +10,8 @@ import {
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
+import { ContentType } from '@cio/utils/constants/content';
+import { assertNever } from '@cio/utils/functions/assert-never';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
   createAgentRunEvent,
@@ -966,10 +968,15 @@ export function buildAgentTools(
 
           if (args.items) {
             for (const item of args.items) {
-              if (item.type === 'LESSON') {
-                await verifyLessonBelongsToCourse(item.id, courseId);
-              } else {
-                await verifyExerciseBelongsToCourse(item.id, courseId);
+              switch (item.type) {
+                case ContentType.Lesson:
+                  await verifyLessonBelongsToCourse(item.id, courseId);
+                  break;
+                case ContentType.Exercise:
+                  await verifyExerciseBelongsToCourse(item.id, courseId);
+                  break;
+                default:
+                  assertNever(item.type);
               }
 
               if (item.sectionId) {

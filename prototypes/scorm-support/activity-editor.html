@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lesson editor · package mode · ClassroomIO</title>
+    <title>Package editor · SCORM activity · ClassroomIO</title>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="app-theme.css" />
     <link rel="stylesheet" href="proto.css" />
@@ -31,32 +31,35 @@
 
         <div class="lesson-body wide">
           <div class="page-hdr">
-            <div class="ttl"><input class="input" id="lesson-title" aria-label="Lesson Title" value="Protecting patient information" /></div>
+            <div class="ttl"><input class="input" id="lesson-title" aria-label="Package title" value="Protecting patient information" /></div>
             <div class="acts">
               <button class="icon-btn" title="Lock" aria-label="Lock"><span data-icon="unlock"></span></button>
-              <button class="icon-btn" title="Delete this lesson" aria-label="Delete this lesson"><span data-icon="trash"></span></button>
+              <button class="icon-btn" title="Delete this package" aria-label="Delete this package"><span data-icon="trash"></span></button>
               <span class="saved-note" aria-live="polite">Saved</span>
               <button class="icon-btn" title="Save" aria-label="Save"><span data-icon="save"></span></button>
-              <button class="icon-btn" title="Version history" aria-label="Version history"><span data-icon="history"></span></button>
-              <button class="btn btn-outline btn-sm">EN<span data-icon="chevDown"></span></button>
             </div>
           </div>
 
           <div class="utabs" role="tablist">
-            <a class="utab" role="tab" data-tab="package" href="lesson-editor.html?state=ready"><span data-icon="scorm"></span>Package</a>
-            <a class="utab" role="tab" data-tab="instructions" href="lesson-editor.html?state=instructions"><span data-icon="note"></span>Instructions</a>
+            <a class="utab" role="tab" data-tab="package" href="activity-editor.html?state=ready"><span data-icon="scorm"></span>Package</a>
+            <a class="utab" role="tab" data-tab="instructions" href="activity-editor.html?state=instructions"><span data-icon="note"></span>Instructions</a>
             <a class="utab" role="tab" href="results.html"><span data-icon="chart"></span>Results<span class="chip">41</span></a>
             <a class="utab" role="tab" href="package-settings.html"><span data-icon="settings"></span>Settings</a>
           </div>
 
           <div class="tab-panel">
             <!-- EMPTY -->
-            <section data-state-view="empty free">
-              <div class="alert alert-information" data-state-view="free" style="margin-bottom: 14px">
+            <section data-state-view="empty plan-lapsed nolicense">
+              <div class="alert alert-warning" data-state-view="plan-lapsed" style="margin-bottom: 14px">
+                <span data-icon="alert"></span>
+                <div class="alert-title">Your plan lapsed, so package changes are paused</div>
+                <div class="alert-description">Learners keep taking this package, and results stay available. Renew to upload, replace or change settings.</div>
+                <div class="alert-actions"><button class="btn btn-primary btn-sm">See plans</button></div>
+              </div>
+              <div class="alert alert-warning" data-state-view="nolicense" style="margin-bottom: 14px">
                 <span data-icon="info"></span>
-                <div class="alert-title">SCORM packages are on paid plans</div>
-                <div class="alert-description">Upgrade to upload SCORM packages and track learners’ progress, scores and time.</div>
-                <div class="alert-actions"><button class="btn btn-primary btn-sm">Upgrade</button></div>
+                <div class="alert-title">This server needs an enterprise license for SCORM</div>
+                <div class="alert-description">Learners keep taking this package, and results stay available. <a href="#" style="color: var(--primary)">Read the licensing docs</a></div>
               </div>
               <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload a SCORM ZIP">
                 <span class="dz-icon"><span data-icon="upload"></span></span>
@@ -98,7 +101,7 @@
                 <div class="stage pending" data-stage="manifest"><span class="st-icon"><span data-icon="circle"></span></span>Reading the manifest</div>
                 <div class="stage pending" data-stage="save"><span class="st-icon"><span data-icon="circle"></span></span>Saving files</div>
               </div>
-              <p class="hint" style="margin-top: 10px">You can leave this page. We’ll keep going and the lesson updates when the package is ready.</p>
+              <p class="hint" style="margin-top: 10px">You can leave this page. We’ll keep going and the item updates when the package is ready.</p>
             </section>
 
             <!-- READY (single SCO) -->
@@ -141,7 +144,7 @@
                         <a class="menu-item" href="media.html"><span data-icon="image"></span>Open in Media Manager</a>
                         <button class="menu-item"><span data-icon="download"></span>Download original ZIP</button>
                         <div class="menu-sep"></div>
-                        <button class="menu-item" style="color: var(--destructive)"><span data-icon="trash"></span>Remove from lesson</button>
+                        <button class="menu-item" style="color: var(--destructive)"><span data-icon="trash"></span>Delete this package</button>
                       </div>
                     </div>
                   </div>
@@ -178,7 +181,7 @@
 
               <div class="banner" style="margin-top: 14px" data-state-view="ready warnings">
                 <span data-icon="info"></span>
-                <span class="grow">Learners complete this lesson when the package reports <b>passed</b>, because its manifest sets a pass mark of 80%. <a href="package-settings.html" style="color: var(--primary)">Change the rule in Settings</a></span>
+                <span class="grow">Learners complete this item when the package reports <b>passed</b>, because its manifest sets a pass mark of 80%. <a href="package-settings.html" style="color: var(--primary)">Change the rule in Settings</a></span>
               </div>
             </section>
 
@@ -187,7 +190,7 @@
               <div class="alert alert-information" style="margin-bottom: 14px">
                 <span data-icon="layers"></span>
                 <div class="alert-title">This package has 3 modules</div>
-                <div class="alert-description">They all stay in this lesson. Learners see the modules in a menu above the package and can open them in any order. The lesson completes when every module meets the completion rule.</div>
+                <div class="alert-description">They all stay in this item. Learners see the modules in a menu above the package and can open them in any order. The item completes when every module meets the completion rule.</div>
                 <div class="alert-actions">
                   <a class="btn btn-outline btn-sm" href="player.html?state=modules"><span data-icon="eye"></span>See what learners see</a>
                 </div>
@@ -195,7 +198,7 @@
               <div class="alert alert-warning" style="margin-bottom: 14px">
                 <span data-icon="alert"></span>
                 <div class="alert-title">Sequencing rules are ignored</div>
-                <div class="alert-description">This package defines its own rules for the order of modules. ClassroomIO lets learners open them in any order and uses the course’s progression settings for the lesson itself.</div>
+                <div class="alert-description">This package defines its own rules for the order of modules. ClassroomIO lets learners open them in any order and uses the course’s progression settings for the item itself.</div>
               </div>
               <div class="pkg-card">
                 <div class="pkg-top">
@@ -225,16 +228,20 @@
             </section>
 
             <!-- FAILED -->
-            <section data-state-view="failed failed-xapi failed-external">
+            <section data-state-view="failed failed-xapi failed-external failed-assets failed-size">
               <div class="file-row" style="margin-bottom: 14px">
                 <span class="fr-icon" style="color: var(--destructive)"><span data-icon="zip"></span></span>
                 <div class="fr-main">
                   <div class="fr-name" data-state-view="failed">security-awareness-web.zip</div>
                   <div class="fr-name" data-state-view="failed-xapi">phishing-module-tincan.zip</div>
                   <div class="fr-name" data-state-view="failed-external">phishing-refresher-remote.zip</div>
+                  <div class="fr-name" data-state-view="failed-assets">course-handouts-assets.zip</div>
+                  <div class="fr-name" data-state-view="failed-size">full-video-library-840mb.zip</div>
                   <div class="fr-meta" data-state-view="failed">31.4 MB · checked in 4 seconds</div>
                   <div class="fr-meta" data-state-view="failed-xapi">18.9 MB · checked in 3 seconds</div>
                   <div class="fr-meta" data-state-view="failed-external">6 KB · checked in 1 second</div>
+                  <div class="fr-meta" data-state-view="failed-assets">12.6 MB · checked in 2 seconds</div>
+                  <div class="fr-meta" data-state-view="failed-size">840 MB · larger than the 500 MB limit</div>
                 </div>
               </div>
               <div class="alert alert-destructive" data-state-view="failed-external">
@@ -251,8 +258,20 @@
               </div>
               <div class="alert alert-destructive" data-state-view="failed-xapi">
                 <span data-icon="xCircle"></span>
-                <div class="alert-title">This is an xAPI package</div>
-                <div class="alert-description">It contains <code class="mono">tincan.xml</code> instead of <code class="mono">imsmanifest.xml</code>. ClassroomIO supports SCORM 1.2 and 2004 for now. Re-export it as SCORM from your authoring tool.</div>
+                <div class="alert-title">This is an xAPI or cmi5 package</div>
+                <div class="alert-description">It contains <code class="mono">tincan.xml</code> or <code class="mono">cmi5.xml</code> instead of <code class="mono">imsmanifest.xml</code>. ClassroomIO supports SCORM 1.2 and 2004 for now. Re-export it as SCORM from your authoring tool.</div>
+                <div class="alert-actions"><button class="btn btn-outline btn-sm" data-retry><span data-icon="upload"></span>Try another file</button></div>
+              </div>
+              <div class="alert alert-destructive" data-state-view="failed-assets">
+                <span data-icon="xCircle"></span>
+                <div class="alert-title">Nothing in this package reports progress</div>
+                <div class="alert-description">Every resource in the manifest is an asset, so no module ever talks to the API. Add a scored or trackable SCO in your authoring tool and re-export.</div>
+                <div class="alert-actions"><button class="btn btn-outline btn-sm" data-retry><span data-icon="upload"></span>Try another file</button></div>
+              </div>
+              <div class="alert alert-destructive" data-state-view="failed-size">
+                <span data-icon="xCircle"></span>
+                <div class="alert-title">This package is larger than 500 MB</div>
+                <div class="alert-description">Split the course or compress its videos, then upload again. The size is checked from the stored file, not the browser’s figure.</div>
                 <div class="alert-actions"><button class="btn btn-outline btn-sm" data-retry><span data-icon="upload"></span>Try another file</button></div>
               </div>
             </section>
@@ -281,11 +300,24 @@
       <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="mv-title">
         <div class="dialog-head">
           <h2 class="dialog-title" id="mv-title">Move everyone to version 3?</h2>
-          <p class="dialog-desc">12 learners are part-way through version 2. Their progress in this lesson starts again on version 3. Lessons they already completed stay complete, and their earlier attempts stay in Results.</p>
+          <p class="dialog-desc">12 learners are part-way through version 2. Their progress in this item starts again on version 3. Items they already completed stay complete, and their earlier attempts stay in Results.</p>
         </div>
         <div class="dialog-foot">
           <button class="btn btn-outline btn-sm" data-close>Cancel</button>
           <button class="btn btn-destructive btn-sm" data-close>Restart 12 attempts</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="delete-package" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="del-title">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="del-title">Delete “Protecting patient information”?</h2>
+          <p class="dialog-desc">This removes the item and its 41 learners’ results for it. The package itself stays in the Media Manager, so you can attach it elsewhere.</p>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline btn-sm" data-close>Cancel</button>
+          <button class="btn btn-destructive btn-sm" data-close>Delete package</button>
         </div>
       </div>
     </div>
@@ -303,7 +335,10 @@
       <button data-state="failed">No manifest</button>
       <button data-state="failed-xapi">xAPI package</button>
       <button data-state="failed-external">Another website</button>
-      <button data-state="free">Free plan</button>
+      <button data-state="failed-assets">Assets only</button>
+      <button data-state="failed-size">Too large</button>
+      <button data-state="plan-lapsed">Plan lapsed</button>
+      <button data-state="nolicense">No license</button>
       <button data-state="instructions">Instructions tab</button>
       <a href="index.html">← Map</a>
     </div>
@@ -397,14 +432,17 @@
         document.querySelectorAll('.utab[data-tab]').forEach((tab) =>
           tab.classList.toggle('active', (tab.dataset.tab === 'instructions') === (detail === 'instructions'))
         );
-        document.getElementById('dropzone').classList.toggle('is-disabled', detail === 'free');
+        document.getElementById('dropzone').classList.toggle('is-disabled', detail === 'plan-lapsed' || detail === 'nolicense');
         document.querySelector('[data-layer="move-confirm"]').hidden = detail !== 'move-confirm';
         const titles = {
           empty: 'Breach notification basics',
-          free: 'Breach notification basics',
+          'plan-lapsed': 'Breach notification basics',
+          nolicense: 'Breach notification basics',
           failed: 'Security awareness basics',
           'failed-xapi': 'Spot the phishing email',
-          'failed-external': 'Phishing refresher'
+          'failed-external': 'Phishing refresher',
+          'failed-assets': 'Course handouts',
+          'failed-size': 'Full video library'
         };
         document.getElementById('lesson-title').value = titles[detail] || 'Protecting patient information';
       });

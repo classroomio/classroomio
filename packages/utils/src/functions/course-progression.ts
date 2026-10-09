@@ -1,4 +1,5 @@
 import { ContentType } from '../constants/content';
+import { assertNever } from './assert-never';
 
 export type ProgressionLockReason = 'teacher_locked' | 'progression_blocked';
 
@@ -47,16 +48,18 @@ function exerciseBlocksProgression(): boolean {
 /**
  * Determines whether a course content item blocks sequential progression.
  */
-function itemBlocksProgression(type?: ContentType, completionPolicy?: string | null): boolean {
-  if (type === ContentType.Lesson) {
-    return lessonBlocksProgression(completionPolicy ?? 'manual');
+export function itemBlocksProgression(type?: ContentType, completionPolicy?: string | null): boolean {
+  switch (type) {
+    case ContentType.Lesson:
+      return lessonBlocksProgression(completionPolicy ?? 'manual');
+    case ContentType.Exercise:
+      return exerciseBlocksProgression();
+    case ContentType.Section:
+    case undefined:
+      return false;
+    default:
+      return assertNever(type);
   }
-
-  if (type === ContentType.Exercise) {
-    return exerciseBlocksProgression();
-  }
-
-  return false;
 }
 
 type CourseProgressionItem = {

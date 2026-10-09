@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Final quiz</title>
+  </head>
+  <body>
+    <h1>Final quiz</h1>
+    <p>Graded module. The manifest sets a passing score of 0.8 on its primary objective.</p>
+    <button id="pass" type="button">Submit passing score 0.9</button>
+    <button id="fail" type="button">Submit failing score 0.5</button>
+    <div id="log" aria-live="polite"></div>
+    <script>
+      function findApi(win) {
+        while (win) {
+          if (win.API_1484_11 && win.API_1484_11.Initialize) return win.API_1484_11;
+          if (win.parent === win) return null;
+          win = win.parent;
+        }
+        return null;
+      }
+      var api = findApi(window);
+      var logEl = document.getElementById('log');
+      if (api) api.Initialize('');
+      function submit(score) {
+        api.SetValue('cmi.score.scaled', String(score));
+        api.SetValue('cmi.completion_status', 'completed');
+        api.SetValue('cmi.success_status', score >= 0.8 ? 'passed' : 'failed');
+        api.SetValue('cmi.exit', 'normal');
+        api.Commit('');
+        api.Terminate('');
+        logEl.textContent = 'submitted ' + score + ', terminated with exit=normal';
+      }
+      document.getElementById('pass').onclick = function () {
+        submit(0.9);
+      };
+      document.getElementById('fail').onclick = function () {
+        submit(0.5);
+      };
+    </script>
+  </body>
+</html>

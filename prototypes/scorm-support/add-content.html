@@ -42,13 +42,13 @@
             <div class="crow"><span data-icon="lesson"></span>A real breach, in three minutes <span class="meta">Video</span></div>
           </div>
           <div class="csec">
-            <div class="csec-h">2. Privacy Rule essentials <span class="n">2 lessons</span></div>
-            <a class="crow" href="lesson-editor.html?state=ready"><span data-icon="scorm"></span>Protecting patient information <span class="meta"><span class="badge badge-primary-soft">SCORM</span></span></a>
+            <div class="csec-h">2. Privacy Rule essentials <span class="n">1 lesson · 1 package</span></div>
+            <a class="crow" href="activity-editor.html?state=ready"><span data-icon="scorm"></span>Protecting patient information <span class="meta"><span class="badge badge-primary-soft">SCORM</span></span></a>
             <div class="crow"><span data-icon="lesson"></span>Minimum necessary, with examples <span class="meta">Note</span></div>
-            <a class="crow" href="lesson-editor.html?state=empty" data-state-view="success-open"><span data-icon="scorm"></span>Breach notification basics <span class="meta"><span class="badge badge-muted">No package yet</span></span></a>
+            <a class="crow" href="activity-editor.html?state=empty" data-state-view="success-open"><span data-icon="scorm"></span>Breach notification basics <span class="meta"><span class="badge badge-muted">No package yet</span></span></a>
           </div>
           <div class="csec">
-            <div class="csec-h">3. Security Rule in practice <span class="n">1 lesson · 1 exercise</span></div>
+            <div class="csec-h">3. Security Rule in practice <span class="n">1 package · 1 exercise</span></div>
             <div class="crow"><span data-icon="scorm"></span>Spot the phishing email <span class="meta"><span class="badge badge-primary-soft">SCORM</span></span></div>
             <div class="crow"><span data-icon="exercise"></span>Quick check: safeguards <span class="meta">5 questions · 41 submissions</span></div>
           </div>
@@ -72,7 +72,7 @@
           <p class="dialog-desc" style="margin-bottom: 12px">Select the type of content you want to add.</p>
           <div class="roc-group cols-2" role="radiogroup" aria-label="Content type">
             <button type="button" class="roc" role="radio" aria-checked="false" data-type="section" data-hide-public="false">
-              <span class="roc-copy"><span class="roc-title">Section</span><span class="roc-desc">Group lessons and exercises together.</span></span>
+              <span class="roc-copy"><span class="roc-title">Section</span><span class="roc-desc">Group lessons, exercises and packages together.</span></span>
               <span class="radio"></span>
             </button>
             <button type="button" class="roc" role="radio" aria-checked="false" data-type="lesson">
@@ -84,11 +84,17 @@
               <span class="radio"></span>
             </button>
             <button type="button" class="roc" role="radio" aria-checked="true" data-type="scorm" data-scorm-option>
-              <span class="roc-copy"><span class="roc-title">SCORM package <span class="new-pill">New</span></span><span class="roc-desc">Upload a course exported from Storyline, Rise, Captivate or iSpring.</span></span>
+              <span class="roc-copy"><span class="roc-title">SCORM package <span class="new-pill">New</span> <span class="badge badge-primary-soft" data-plan-pill hidden style="margin-left: 4px">Paid plans</span><span class="badge badge-warning-soft" data-license-pill hidden style="margin-left: 4px">Needs a license</span></span><span class="roc-desc">Run a package from Storyline, Rise, Captivate or iSpring as its own item, next to lessons and exercises.</span></span>
               <span class="radio"></span>
             </button>
           </div>
-          <p class="hint" data-public-note hidden style="margin-top: 10px">SCORM packages are not available in Public courses, because those lessons are taken without signing in.</p>
+          <p class="hint" data-public-note hidden style="margin-top: 10px">Packages are not available in Public courses, because those are taken without signing in.</p>
+          <p class="hint" data-scorm-course-note hidden style="margin-top: 10px">This SCORM course already holds its one package. Convert it to a standard course to add more items.</p>
+          <div class="alert alert-information" data-license-note hidden style="margin-top: 10px">
+            <span data-icon="info"></span>
+            <div class="alert-title">SCORM needs an enterprise license on this server</div>
+            <div class="alert-description">Learners keep taking the packages you already have, and results stay available. <a href="#" style="color: var(--primary)">Read the licensing docs</a></div>
+          </div>
         </div>
 
         <div class="dialog-body" data-step="details" hidden>
@@ -105,17 +111,17 @@
             </div>
           </div>
           <div class="field">
-            <label class="label" for="ac-title-input">Lesson title</label>
-            <input class="input" id="ac-title-input" value="Breach notification basics" placeholder="e.g., Getting Started with Variables" />
-            <p class="hint">You’ll upload the package on the next screen. The lesson completes when the package reports it, so learners won’t see a “Mark as complete” button.</p>
+            <label class="label" for="ac-title-input">Title</label>
+            <input class="input" id="ac-title-input" value="Breach notification basics" placeholder="e.g., Breach notification basics" />
+            <p class="hint">You’ll upload the package on the next screen. It moves, locks and reorders like a lesson, follows sequential progression, and counts toward progress, certificates and compliance. Learners won’t see a “Mark as complete” button.</p>
           </div>
         </div>
 
         <div class="dialog-body" data-step="success" hidden>
           <div class="alert alert-default" role="status">
             <span data-icon="checkCircle"></span>
-            <div class="alert-title">SCORM lesson has been created successfully.</div>
-            <div class="alert-description">Breach notification basics</div>
+            <div class="alert-title">SCORM package has been created successfully.</div>
+            <div class="alert-description">Breach notification basics · opens in the package editor at <code class="mono">/courses/[id]/activities/[activityId]</code></div>
           </div>
         </div>
 
@@ -124,14 +130,27 @@
         </div>
         <div class="dialog-foot" data-foot="details" hidden style="justify-content: space-between">
           <button class="btn btn-secondary btn-sm" data-go="type">Back</button>
-          <button class="btn btn-primary btn-sm" data-go="success">Create SCORM lesson</button>
+          <button class="btn btn-primary btn-sm" data-go="success">Create SCORM package</button>
         </div>
         <div class="dialog-foot" data-foot="success" hidden style="justify-content: space-between">
-          <button class="btn btn-secondary btn-sm" data-go="details">Create another SCORM lesson</button>
+          <button class="btn btn-secondary btn-sm" data-go="details">Create another package</button>
           <div class="frow">
             <button class="btn btn-outline btn-sm" data-close>Later</button>
-            <a class="btn btn-primary btn-sm" href="lesson-editor.html?state=empty">Open now</a>
+            <a class="btn btn-primary btn-sm" href="activity-editor.html?state=empty">Open now</a>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scrim" data-layer="upgrade" hidden>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="up-title" style="max-width: 440px">
+        <div class="dialog-head">
+          <h2 class="dialog-title" id="up-title">SCORM packages are on paid plans</h2>
+          <p class="dialog-desc">Upgrade to add packages, upload new versions and change package settings. Learners keep taking the packages you already have either way.</p>
+        </div>
+        <div class="dialog-foot">
+          <button class="btn btn-outline btn-sm" data-close>Not now</button>
+          <button class="btn btn-primary btn-sm" data-close>See plans</button>
         </div>
       </div>
     </div>
@@ -142,7 +161,10 @@
       <button data-state="type">Pick a type</button>
       <button data-state="details">Details</button>
       <button data-state="success">Created</button>
+      <button data-state="free">Free plan</button>
+      <button data-state="nolicense">No license</button>
       <button data-state="public">Public course</button>
+      <button data-state="scorm-course">SCORM course</button>
       <a href="index.html">← Map</a>
     </div>
 
@@ -157,16 +179,32 @@
         document.querySelectorAll('[data-state-view="success-open"]').forEach((row) => row.classList.toggle('shown', step === 'success'));
       }
 
-      function setPublic(isPublic) {
-        document.querySelector('[data-scorm-option]').hidden = isPublic;
+      function setCourseState(state) {
+        const isPublic = state === 'public';
+        const isScormCourse = state === 'scorm-course';
+        const isFree = state === 'free';
+        const isNoLicense = state === 'nolicense';
+        document.querySelector('[data-scorm-option]').hidden = isPublic || isScormCourse;
         document.querySelector('[data-public-note]').hidden = !isPublic;
+        document.querySelector('[data-scorm-course-note]').hidden = !isScormCourse;
+        document.querySelector('[data-license-note]').hidden = !isNoLicense;
+        document.querySelector('[data-plan-pill]').hidden = !isFree;
+        document.querySelector('[data-license-pill]').hidden = !isNoLicense;
         document.querySelector('.roc-group').classList.toggle('cols-2', true);
-        document.querySelectorAll('.roc').forEach((card) => card.setAttribute('aria-checked', String(isPublic ? card.dataset.type === 'lesson' : card.dataset.type === 'scorm')));
+        document.querySelectorAll('.roc').forEach((card) => card.setAttribute('aria-checked', String(isPublic || isScormCourse ? card.dataset.type === 'lesson' : card.dataset.type === 'scorm')));
+        document.querySelector('[data-layer="upgrade"]').hidden = state !== 'free';
       }
 
       document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.roc').forEach((card) =>
           card.addEventListener('click', () => {
+            if (card.hasAttribute('data-scorm-option')) {
+              const pill = card.querySelector('[data-plan-pill]');
+              if (pill && !pill.hidden) {
+                document.querySelector('[data-layer="upgrade"]').hidden = false;
+                return;
+              }
+            }
             document.querySelectorAll('.roc').forEach((other) => other.setAttribute('aria-checked', String(other === card)));
           })
         );
@@ -177,10 +215,11 @@
       document.addEventListener('statechange', ({ detail }) => {
         const layer = document.querySelector('[data-layer="add-content"]');
         layer.hidden = detail === 'list';
-        setPublic(detail === 'public');
+        if (detail !== 'free') document.querySelector('[data-layer="upgrade"]').hidden = true;
+        setCourseState(detail);
         if (detail === 'list') return;
 
-        showStep(detail === 'public' ? 'type' : detail);
+        showStep(detail === 'public' || detail === 'scorm-course' ? 'type' : detail);
       });
 
       bindStatePicker('type');

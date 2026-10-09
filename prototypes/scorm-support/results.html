@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lesson results · SCORM package · ClassroomIO</title>
+    <title>Package results · SCORM activity · ClassroomIO</title>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="app-theme.css" />
     <link rel="stylesheet" href="proto.css" />
@@ -31,20 +31,18 @@
 
         <div class="lesson-body wide">
           <div class="page-hdr">
-            <div class="ttl"><input class="input" aria-label="Lesson Title" value="Protecting patient information" /></div>
+            <div class="ttl"><input class="input" aria-label="Package title" value="Protecting patient information" /></div>
             <div class="acts">
               <button class="icon-btn" title="Lock" aria-label="Lock"><span data-icon="unlock"></span></button>
-              <button class="icon-btn" title="Delete this lesson" aria-label="Delete this lesson"><span data-icon="trash"></span></button>
+              <button class="icon-btn" title="Delete this package" aria-label="Delete this package"><span data-icon="trash"></span></button>
               <span class="saved-note">Saved</span>
               <button class="icon-btn" title="Save" aria-label="Save"><span data-icon="save"></span></button>
-              <button class="icon-btn" title="Version history" aria-label="Version history"><span data-icon="history"></span></button>
-              <button class="btn btn-outline btn-sm">EN<span data-icon="chevDown"></span></button>
             </div>
           </div>
 
           <div class="utabs" role="tablist">
-            <a class="utab" role="tab" href="lesson-editor.html?state=ready"><span data-icon="scorm"></span>Package</a>
-            <a class="utab" role="tab" href="lesson-editor.html?state=instructions"><span data-icon="note"></span>Instructions</a>
+            <a class="utab" role="tab" href="activity-editor.html?state=ready"><span data-icon="scorm"></span>Package</a>
+            <a class="utab" role="tab" href="activity-editor.html?state=instructions"><span data-icon="note"></span>Instructions</a>
             <a class="utab active" role="tab" aria-selected="true" href="results.html"><span data-icon="chart"></span>Results<span class="chip" id="results-chip">41</span></a>
             <a class="utab" role="tab" href="package-settings.html"><span data-icon="settings"></span>Settings</a>
           </div>
@@ -54,7 +52,7 @@
               <div class="stats">
                 <div class="card stat-card"><div class="k"><span data-icon="users"></span>Enrolled</div><div class="v tnum">48</div><div class="s">in this course</div></div>
                 <div class="card stat-card"><div class="k"><span data-icon="play"></span>Started</div><div class="v tnum">41</div><div class="s">85% of enrolled</div></div>
-                <div class="card stat-card"><div class="k"><span data-icon="checkCircle"></span>Completed</div><div class="v tnum">33</div><div class="s">by this lesson’s rule</div></div>
+                <div class="card stat-card"><div class="k"><span data-icon="checkCircle"></span>Completed</div><div class="v tnum">33</div><div class="s">by this item’s rule</div></div>
                 <div class="card stat-card"><div class="k"><span data-icon="award"></span>Passed</div><div class="v tnum">30</div><div class="s">3 failed, can try again</div></div>
                 <div class="card stat-card"><div class="k"><span data-icon="chart"></span>Average score</div><div class="v tnum">87%</div><div class="s">pass mark 80%</div></div>
               </div>
@@ -93,7 +91,7 @@
             <section data-state-view="empty">
               <div class="empty">
                 <span class="e-icon"><span data-icon="chart"></span></span>
-                <h3>No one has opened this lesson yet</h3>
+                <h3>No one has opened this package yet</h3>
                 <p>Results appear here as soon as students launch the package: their status, score, time spent and every attempt.</p>
               </div>
             </section>
@@ -118,7 +116,7 @@
         <div class="sheet-foot">
           <a class="btn btn-ghost btn-sm" href="people-learner.html">Open student page</a>
           <span class="grow"></span>
-          <button class="btn btn-outline btn-sm" style="color: var(--destructive)" data-open="reset-confirm"><span data-icon="rotate"></span>Reset this lesson</button>
+          <button class="btn btn-outline btn-sm" style="color: var(--destructive)" data-open="reset-confirm"><span data-icon="rotate"></span>Reset for this student</button>
         </div>
       </aside>
     </div>
@@ -126,12 +124,12 @@
     <div class="scrim" data-layer="reset-confirm" hidden style="z-index: 260">
       <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="reset-title">
         <div class="dialog-head">
-          <h2 class="dialog-title" id="reset-title">Reset this lesson for <span data-reset-name>Sofia Martins</span>?</h2>
-          <p class="dialog-desc">This deletes their attempts in Protecting patient information and marks the lesson incomplete. Course progress, the certificate and the compliance record are recalculated. The next launch starts from the beginning.</p>
+          <h2 class="dialog-title" id="reset-title">Reset this package for <span data-reset-name>Sofia Martins</span>?</h2>
+          <p class="dialog-desc">This deletes their attempts in Protecting patient information and marks the item incomplete. Course progress, the certificate and the compliance record are recalculated. The next launch starts from the beginning.</p>
         </div>
         <div class="dialog-foot">
           <button class="btn btn-outline btn-sm" data-close>Cancel</button>
-          <button class="btn btn-destructive btn-sm" data-close data-reset-confirm>Reset lesson</button>
+          <button class="btn btn-destructive btn-sm" data-close data-reset-confirm>Reset package</button>
         </div>
       </div>
     </div>
@@ -250,9 +248,9 @@
       function sheetBody(learner) {
         const outcome =
           learner.result === 'passed'
-            ? '<span class="badge badge-success-soft">Lesson complete</span>'
+            ? '<span class="badge badge-success-soft">Package complete</span>'
             : learner.result === 'failed'
-              ? '<span class="badge badge-destructive-soft">Not complete yet: failed the quiz</span><p class="hint" style="margin:8px 0 0">Their attempt stays open. The next time they open the lesson, the package starts fresh.</p>'
+              ? '<span class="badge badge-destructive-soft">Not complete yet: failed the quiz</span><p class="hint" style="margin:8px 0 0">Their attempt stays open. The next time they open the package, the failed module starts fresh.</p>'
               : '<span class="badge badge-primary-soft">In progress</span>';
         const attemptBadge =
           learner.result === 'passed'

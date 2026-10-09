@@ -2,7 +2,7 @@ import { ContentType, ROLE } from '@cio/utils/constants';
 import { getMarksByCourseId, type Mark } from '@cio/db/queries/mark';
 import { getCourseMember, getCourseMembers, type CourseMemberWithProfile } from '@cio/db/queries/course/people';
 import { getCourseWithRelations } from '@cio/db/queries/course';
-import { buildCourseContent, type CourseContentItem } from '@api/services/course/utils';
+import { buildCourseContent, type CourseContentItem } from '@cio/core/services/course/utils';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { resolveMarksViewerScope } from './mark';
 

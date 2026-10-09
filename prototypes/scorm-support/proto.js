@@ -119,7 +119,7 @@ const COURSE = {
           title: 'Protecting patient information',
           learner: 'current',
           href: 'player.html',
-          editHref: 'lesson-editor.html?state=ready'
+          editHref: 'activity-editor.html?state=ready'
         },
         { kind: 'lesson', title: 'Minimum necessary, with examples', learner: 'todo' }
       ]

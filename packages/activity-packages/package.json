@@ -1,0 +1,15 @@
+{
+  "name": "@cio/activity-packages",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared SCORM and packaged-content helpers. Phase 0 holds test fixtures and the throwaway spike player only; the parser and runtime library land in PR 5.",
+  "scripts": {
+    "build:fixtures": "node test/fixtures/build-fixtures.mjs",
+    "spike:player": "node spike/player/server.mjs",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "typescript": "^5.5.2"
+  }
+}
