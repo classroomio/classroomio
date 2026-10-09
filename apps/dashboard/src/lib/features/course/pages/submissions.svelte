@@ -54,8 +54,11 @@
   };
 
   const submissionId = $derived(new URLSearchParams(page.url.search).get('submissionId') ?? '');
-  let openExercise = $derived.by(() => {
-    return !!submissionId && !!submissionIdData[submissionId];
+  let openExercise = $state(false);
+
+  $effect(() => {
+    const id = submissionId;
+    openExercise = Boolean(id && submissionIdData[id]);
   });
 
   function canTransitionBoardStatus(previousStatusId: number, nextStatusId: number): boolean {
@@ -109,11 +112,12 @@
   function handleDndConsiderCards(columnIdx: number) {
     return function (event: { detail: { items: SubmissionItem[] } }) {
       const nextVisibleItems = event.detail.items;
-      sections = sections.map((section, index) =>
-        index === columnIdx
-          ? { ...section, items: mergeColumnItems(section.items, nextVisibleItems, matchesBoardItem) }
-          : section
-      );
+      sections = sections.map((section, index) => {
+        if (index !== columnIdx) return section;
+
+        const items = mergeColumnItems(section.items, nextVisibleItems, matchesBoardItem);
+        return { ...section, items };
+      });
     };
   }
 
@@ -176,10 +180,11 @@
       const studentId = item.student?.id ? String(item.student.id) : '';
       if (!studentId) return null;
 
-      return {
-        id: studentId,
-        label: studentDisplayName(item.student) || $t('course.navItem.submissions.filter.unknown_student')
-      };
+      const displayName = studentDisplayName(item.student);
+      const unknownStudentLabel = $t('course.navItem.submissions.filter.unknown_student');
+      const label = displayName || unknownStudentLabel;
+
+      return { id: studentId, label };
     })
   );
   const exerciseOptions = $derived(
@@ -206,6 +211,23 @@
     url.searchParams.set('submissionId', submissionItemId);
     return `${url.pathname}${url.search}`;
   }
+
+  $effect(() => {
+    if (!browser) return;
+
+    const studentsParam = page.url.searchParams.get('students');
+    const exercisesParam = page.url.searchParams.get('exercises');
+
+    untrack(() => {
+      if (!sameIdSelection(selectedStudentIds, studentsParam)) {
+        replaceSelectedIds(selectedStudentIds, parseIdParam(studentsParam));
+      }
+
+      if (!sameIdSelection(selectedExerciseIds, exercisesParam)) {
+        replaceSelectedIds(selectedExerciseIds, parseIdParam(exercisesParam));
+      }
+    });
+  });
 
   $effect(() => {
     if (!browser) return;

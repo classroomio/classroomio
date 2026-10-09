@@ -25,28 +25,35 @@
     return answerData as AnswerData;
   }
 
-  function studentReviewHref(profileId: string): string {
+  function studentReviewHref(profileId: string, submissionId: string): string {
     const url = new URL(page.url);
     url.searchParams.set('tab', 'submissions');
     url.searchParams.set('submission', 'individual');
     url.searchParams.set('student', profileId);
+    if (submissionId) url.searchParams.set('attempt', submissionId);
+
     return `${url.pathname}${url.search}`;
   }
 
   function toSubmissionModel(submission: ExerciseSubmissions): ExerciseSubmissionModel {
     const profileId = submission.groupmember?.profile.id ?? '';
+    const submissionId = submission.id ?? '';
+    const studentName = submission.groupmember?.profile.fullname;
+    const studentAvatarUrl = submission.groupmember?.profile.avatarUrl;
+    const studentHref = profileId ? studentReviewHref(profileId, submissionId) : undefined;
+    const answers = submission.answers.map((answer) => ({
+      questionId: answer.questionId,
+      answerData: toAnswerData(answer.answerData)
+    }));
 
     return {
       id: submission.id,
-      studentName: submission.groupmember?.profile.fullname,
-      studentAvatarUrl: submission.groupmember?.profile.avatarUrl,
+      studentName,
+      studentAvatarUrl,
       studentProfileId: profileId || undefined,
       submittedAt: submission.createdAt,
-      studentHref: profileId ? studentReviewHref(profileId) : undefined,
-      answers: submission.answers.map((answer) => ({
-        questionId: answer.questionId,
-        answerData: toAnswerData(answer.answerData)
-      }))
+      studentHref,
+      answers
     };
   }
 

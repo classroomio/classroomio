@@ -5,10 +5,16 @@
   interface Props {
     gradeMax?: number;
     disableGrading?: boolean;
-    grade?: number | undefined;
+    grade?: number | null;
   }
 
-  let { gradeMax = 0, disableGrading = false, grade = $bindable(0) }: Props = $props();
+  let { gradeMax = 0, disableGrading = false, grade = $bindable() }: Props = $props();
+
+  const score = $derived(typeof grade === 'number' ? grade : 0);
+
+  function updateScore(next: number | null) {
+    grade = next ?? 0;
+  }
 </script>
 
 <div class="flex items-center">
@@ -17,7 +23,8 @@
     integer
     min={0}
     max={gradeMax}
-    bind:value={grade}
+    value={score}
+    onValueChange={updateScore}
     isDisabled={disableGrading}
     inputClassName="!w-16"
   />

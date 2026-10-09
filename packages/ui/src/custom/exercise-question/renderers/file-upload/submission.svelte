@@ -28,9 +28,10 @@
       const answer = getAnswerForQuestion(submission, question);
       const fileName = answer?.type === 'FILE_UPLOAD' ? answer.fileName?.trim() || answer.fileKey?.trim() || '' : '';
       const studentName = submission.studentName?.trim() || label('submission.list.unknown_student', 'Unknown student');
+      const submissionKey = submission.id ?? submission.studentProfileId ?? studentName;
 
       return {
-        key: submission.id || submission.studentProfileId || `${studentName}-${index}`,
+        key: `${submissionKey}-${index}`,
         studentName,
         avatarUrl: submission.studentAvatarUrl,
         href: submission.studentHref,

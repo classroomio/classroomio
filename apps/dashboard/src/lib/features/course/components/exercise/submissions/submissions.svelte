@@ -46,6 +46,7 @@
 
       if (currentTab !== 'individual') {
         url.searchParams.delete('student');
+        url.searchParams.delete('attempt');
       }
 
       goto(`${url.pathname}${url.search}`, {

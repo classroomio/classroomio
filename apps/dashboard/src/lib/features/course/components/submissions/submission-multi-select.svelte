@@ -107,6 +107,7 @@
         {#each visibleOptions as option (option.id)}
           <div class="ui:hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1.5">
             <Checkbox
+              aria-label={option.label}
               checked={selectedIds.includes(option.id)}
               onCheckedChange={(checked) => toggle(option.id, checked === true)}
             />
@@ -115,6 +116,7 @@
             <button
               type="button"
               class="ui:text-primary text-xs font-medium"
+              aria-label={`${onlyLabel} ${option.label}`}
               onclick={() => onSelectedIdsChange([option.id])}
             >
               {onlyLabel}
