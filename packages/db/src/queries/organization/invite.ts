@@ -130,12 +130,14 @@ export async function updateActiveOrganizationInviteRoleByEmail(
     return;
   }
 
+  const updatedAt = new Date().toISOString();
+
   try {
     await dbClient
       .update(schema.organizationInvite)
       .set({
         roleId,
-        updatedAt: new Date().toISOString()
+        updatedAt
       })
       .where(
         and(

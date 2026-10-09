@@ -10,6 +10,7 @@ import {
   getActivePendingOrgInviteForEmail,
   getOrganizationById,
   getOrganizationInviteByTokenHash,
+  lockOrganizationForUpdate,
   getOrgLinkInvite,
   getOrgLinkInviteWithOrg,
   revokeActiveOrganizationInvitesByEmails,
@@ -102,6 +103,29 @@ function getExpiryLabel(expiresAtIso: string): string {
     timeStyle: 'short',
     timeZone: 'UTC'
   });
+}
+
+/**
+ * Returns the invite after locking its organization.
+ */
+async function readInviteAfterOrganizationLock<T extends { invite: { organizationId: string } }>(
+  tx: DbOrTxClient,
+  loadInvite: (client: DbOrTxClient) => Promise<T | null>,
+  missingMessage: string
+): Promise<T> {
+  const preview = await loadInvite(tx);
+  if (!preview) {
+    throw new AppError(missingMessage, ErrorCodes.NOT_FOUND, 404);
+  }
+
+  await lockOrganizationForUpdate(preview.invite.organizationId, tx);
+
+  const lockedInvite = await loadInvite(tx);
+  if (!lockedInvite) {
+    throw new AppError(missingMessage, ErrorCodes.NOT_FOUND, 404);
+  }
+
+  return lockedInvite;
 }
 
 async function syncOrgMemberForOrgInvite(
@@ -414,11 +438,11 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
   const tokenHash = hashToken(token);
 
   const result = await db.transaction(async (tx) => {
-    const row = await selectOrganizationInviteWithOrgByTokenHash(tx, tokenHash);
-
-    if (!row) {
-      throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
-    }
+    const row = await readInviteAfterOrganizationLock(
+      tx,
+      (client) => selectOrganizationInviteWithOrgByTokenHash(client, tokenHash),
+      'Invalid invite link'
+    );
 
     const status = getInviteStatus(row.invite);
     if (status === 'REVOKED') {
@@ -615,11 +639,11 @@ export async function acceptLinkInvite(token: string, user: TAuthUser, context: 
   const tokenHash = hashToken(token);
 
   const result = await db.transaction(async (tx) => {
-    const row = await getOrgLinkInviteWithOrg(tx, tokenHash);
-
-    if (!row) {
-      throw new AppError('Invalid invite link', ErrorCodes.NOT_FOUND, 404);
-    }
+    const row = await readInviteAfterOrganizationLock(
+      tx,
+      (client) => getOrgLinkInviteWithOrg(client, tokenHash),
+      'Invalid invite link'
+    );
 
     if (row.invite.isRevoked) {
       throw new AppError('This invite link has been disabled', ErrorCodes.UNAUTHORIZED, 403);
@@ -697,11 +721,11 @@ export async function acceptOrganizationInviteById(
   const normalizedEmail = user.email.toLowerCase().trim();
 
   const result = await db.transaction(async (tx) => {
-    const row = await selectOrganizationInviteWithOrgByInviteId(tx, inviteId);
-
-    if (!row) {
-      throw new AppError('Invalid invite', ErrorCodes.NOT_FOUND, 404);
-    }
+    const row = await readInviteAfterOrganizationLock(
+      tx,
+      (client) => selectOrganizationInviteWithOrgByInviteId(client, inviteId),
+      'Invalid invite'
+    );
 
     const status = getInviteStatus(row.invite);
     if (status === 'REVOKED') {
