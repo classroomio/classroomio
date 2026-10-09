@@ -1,6 +1,7 @@
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import type {
   TCreateWidget,
+  TListWidgetsQuery,
   TUpdateWidget,
   TWidgetConfig,
   TWidgetDetail,
@@ -20,8 +21,10 @@ export type DeleteWidgetRequest = (typeof classroomio.organization)['widgets']['
 
 export type GetWidgetsSuccess = Extract<InferResponseType<GetWidgetsRequest>, { success: true }>;
 export type WidgetListItem = GetWidgetsSuccess['data'][number];
+export type WidgetListPagination = GetWidgetsSuccess['pagination'];
 
 export type GetArchivedWidgetsSuccess = Extract<InferResponseType<GetArchivedWidgetsRequest>, { success: true }>;
+export type ArchivedWidgetListPagination = GetArchivedWidgetsSuccess['pagination'];
 export type RestoreWidgetSuccess = Extract<InferResponseType<RestoreWidgetRequest>, { success: true }>;
 
 export type GetWidgetDetailSuccess = Extract<InferResponseType<GetWidgetDetailRequest>, { success: true }>;
@@ -35,3 +38,4 @@ export type WidgetConfig = TWidgetConfig;
 export type WidgetPayload = TWidgetPayload;
 export type CreateWidgetInput = TCreateWidget;
 export type UpdateWidgetInput = TUpdateWidget;
+export type ListWidgetsQuery = TListWidgetsQuery;

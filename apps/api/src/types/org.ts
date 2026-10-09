@@ -34,6 +34,13 @@ export type OrgAudiencePagination = {
   totalPages: number;
 };
 
+export type OrgWidgetPagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
+
 export type OrgAudienceQuery = {
   page: number;
   limit: number;

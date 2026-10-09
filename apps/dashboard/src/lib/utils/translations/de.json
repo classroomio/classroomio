@@ -5364,6 +5364,20 @@
     "delete_modal": {
       "title": "Widget endgültig löschen",
       "description": "Möchten Sie \"{name}\" wirklich endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "filters": {
+      "filter": "Filtern",
+      "popover_title": "Filter",
+      "clear_all": "Alles löschen",
+      "search_placeholder": "Suchen Sie Widgets nach Namen",
+      "status": "Status",
+      "layout_type": "Layouttyp",
+      "selection_mode": "Auswahlmodus",
+      "no_results_title": "Keine Widgets entsprechen Ihren Filtern",
+      "no_results_description": "Versuchen Sie es mit einem anderen Suchbegriff oder löschen Sie Ihre Filter, um alles wieder anzuzeigen.",
+      "no_results_page_title": "Nichts auf dieser Seite",
+      "no_results_page_description": "Diese Filter stimmen mit weniger Widgets überein, als diese Seite beginnt.",
+      "back_to_first_page": "Zurück zur ersten Seite"
     }
   },
   "side_panel": {

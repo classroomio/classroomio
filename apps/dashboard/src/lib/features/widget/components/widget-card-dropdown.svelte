@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Dialog from '@cio/ui/base/dialog';
+  import { invalidateAll } from '$app/navigation';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import PencilIcon from '@lucide/svelte/icons/pencil';
   import ArchiveIcon from '@lucide/svelte/icons/archive';
@@ -42,16 +43,35 @@
       return;
     }
 
-    await widgetApi.updateWidget(id, { name: trimmedDraftName });
+    const renamed = await widgetApi.updateWidget(id, { name: trimmedDraftName });
+    if (renamed) {
+      try {
+        await invalidateAll();
+      } catch (error) {
+        console.error('Failed to refresh widgets after rename:', error);
+      }
+    }
+
     renameOpen = false;
   }
 
   async function handleArchive() {
-    await widgetApi.archiveWidget(id);
+    const archived = await widgetApi.archiveWidget(id);
+    if (archived) {
+      await invalidateAll();
+    }
   }
 
   async function handlePermanentDelete() {
-    await widgetApi.deleteWidget(id);
+    const deleted = await widgetApi.deleteWidget(id);
+    if (deleted) {
+      try {
+        await invalidateAll();
+      } catch (error) {
+        console.error('Failed to refresh widgets after delete:', error);
+      }
+    }
+
     deleteOpen = false;
   }
 

@@ -1908,6 +1908,20 @@
       "all": "All",
       "unpublished": "Unpublished",
       "course_type": "Course Type"
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filters",
+      "clear_all": "Clear all",
+      "search_placeholder": "Search by name",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Selection mode",
+      "no_results_title": "No widgets match your filters",
+      "no_results_description": "Try a different search term or clear your filters to see everything again.",
+      "no_results_page_title": "Nothing on this page",
+      "no_results_page_description": "These filters match fewer widgets than this page starts at.",
+      "back_to_first_page": "Back to first page"
     }
   },
   "setup": {

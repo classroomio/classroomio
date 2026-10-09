@@ -5364,6 +5364,20 @@
     "delete_modal": {
       "title": "Excluir widget permanentemente",
       "description": "Tem certeza de que deseja excluir permanentemente \"{name}\"? Esta ação não pode ser desfeita."
+    },
+    "filters": {
+      "filter": "Filtro",
+      "popover_title": "Filtros",
+      "clear_all": "Limpar tudo",
+      "search_placeholder": "Pesquise widgets por nome",
+      "status": "Estado",
+      "layout_type": "Tipo de layout",
+      "selection_mode": "Modo de seleção",
+      "no_results_title": "Nenhum widget corresponde aos seus filtros",
+      "no_results_description": "Experimente um termo de pesquisa diferente ou limpe os filtros para ver tudo novamente.",
+      "no_results_page_title": "Nada nesta página",
+      "no_results_page_description": "Esses filtros correspondem a menos widgets do que o início desta página.",
+      "back_to_first_page": "Voltar para a primeira página"
     }
   },
   "side_panel": {

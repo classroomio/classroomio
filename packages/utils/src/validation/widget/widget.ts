@@ -500,6 +500,31 @@ export const ZUpdateWidget = z
   })
   .superRefine((data, ctx) => applyLayoutRefinements(data, ctx));
 
+export const WIDGET_LIST_STATUS_VALUES = ['DRAFT', 'PUBLISHED'] as const;
+
+export const ZWidgetListStatus = z.enum(WIDGET_LIST_STATUS_VALUES);
+
+function csvEnum<T extends readonly [string, ...string[]]>(values: T) {
+  return z
+    .string()
+    .transform((value) =>
+      value
+        .split(',')
+        .map((part) => part.trim())
+        .filter(Boolean)
+    )
+    .pipe(z.array(z.enum(values)));
+}
+
+export const ZListWidgetsQuery = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  search: z.string().trim().max(120).optional(),
+  status: csvEnum(WIDGET_LIST_STATUS_VALUES).optional(),
+  layoutType: csvEnum(WIDGET_LAYOUT_TYPE_VALUES).optional(),
+  selectionMode: csvEnum(WIDGET_SELECTION_MODE_VALUES).optional()
+});
+
 export const ZRollbackWidget = z.object({
   versionId: z.uuid()
 });
@@ -537,6 +562,8 @@ export type TWidgetDetail = z.infer<typeof ZWidgetDetail>;
 export type TCreateWidget = z.infer<typeof ZCreateWidget>;
 export type TUpdateWidget = z.infer<typeof ZUpdateWidget>;
 export type TRollbackWidget = z.infer<typeof ZRollbackWidget>;
+export type TWidgetListStatus = z.infer<typeof ZWidgetListStatus>;
+export type TListWidgetsQuery = z.infer<typeof ZListWidgetsQuery>;
 
 export function getDefaultWidgetConfig(): TWidgetConfig {
   return ZWidgetConfig.parse(DEFAULT_WIDGET_CONFIG);
