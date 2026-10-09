@@ -23,15 +23,16 @@
     <div class="map-hero">
       <span class="badge badge-primary-soft">Draft · October 2026</span>
       <h1>Bring SCORM packages into ClassroomIO</h1>
-      <p>Clickable prototypes for every SCORM surface in <code class="mono">prd/scorm-support/v2</code>. They use the app’s real tokens, course shell and copy, and the seeded <b>Coursera Test</b> organization’s compliance course, <b>HIPAA Awareness 2026</b>. Each page has a state bar at the bottom left. Where the PRD and a prototype disagree on a UI detail, the prototype wins.</p>
+      <p>Clickable prototypes for every SCORM surface in <code class="mono">prd/scorm-support/v2</code>. They use the app’s real tokens, course shell and copy, and the seeded <b>Coursera Test</b> organization’s compliance course, <b>HIPAA Awareness 2026</b>. Each page has a state bar at the bottom left. SCORM is a separate <b>activity</b> content type with its own routes and pages, and a <b>SCORM course</b> format holds exactly one package. Where the PRD and a prototype disagree, the PRD wins.</p>
       <div class="flow" aria-label="Main journey">
         <span class="muted">Walk the main journey:</span>
         <a href="add-content.html?state=type">Add content</a><span class="arrow">→</span>
-        <a href="lesson-editor.html?state=empty">Upload</a><span class="arrow">→</span>
+        <a href="activity-editor.html?state=empty">Upload</a><span class="arrow">→</span>
         <a href="package-settings.html">Completion rule</a><span class="arrow">→</span>
         <a href="player.html?state=running">Student takes it</a><span class="arrow">→</span>
         <a href="results.html">Results</a><span class="arrow">→</span>
-        <a href="people-learner.html">Student page</a>
+        <a href="people-learner.html">Student page</a><span class="arrow">→</span>
+        <a href="scorm-course.html">SCORM course</a>
       </div>
     </div>
 
@@ -42,43 +43,49 @@
           <div class="sc-top">
             <span class="sc-file">add-content.html</span>
             <h3><a href="add-content.html?state=type">Add content: SCORM package</a></h3>
-            <p>A fourth option in the existing Add content modal. It creates a lesson in package mode. Hidden in Public courses.</p>
+            <p>A fourth option in the existing Add content modal. It creates a <code class="mono">course_activity</code> of kind <code class="mono">scorm</code> in the chosen section. Hidden in Public and SCORM-format courses, with Free-plan and no-license states.</p>
           </div>
           <div class="sc-states">
             <a class="state-link" href="add-content.html?state=list">Content list</a>
             <a class="state-link" href="add-content.html?state=type">Pick a type</a>
             <a class="state-link" href="add-content.html?state=details">Details</a>
             <a class="state-link" href="add-content.html?state=success">Created</a>
+            <a class="state-link" href="add-content.html?state=free">Free plan</a>
+            <a class="state-link" href="add-content.html?state=nolicense">No license</a>
             <a class="state-link" href="add-content.html?state=public">Public course</a>
+            <a class="state-link" href="add-content.html?state=scorm-course">SCORM course</a>
           </div>
         </div>
         <div class="screen-card">
           <div class="sc-top">
-            <span class="sc-file">lesson-editor.html</span>
-            <h3><a href="lesson-editor.html?state=empty">Lesson editor in package mode</a></h3>
-            <p>Package, Instructions, Results and Settings tabs replace the material tabs. Click the drop zone to watch an upload run end to end.</p>
+            <span class="sc-file">activity-editor.html</span>
+            <h3><a href="activity-editor.html?state=empty">Package editor (activity)</a></h3>
+            <p>Its own page at <code class="mono">/courses/[id]/activities/[activityId]</code>, separate from the lesson editor. Package, Instructions, Results and Settings tabs; no language picker or version history. Click the drop zone to watch an upload run end to end.</p>
           </div>
           <div class="sc-states">
-            <a class="state-link" href="lesson-editor.html?state=empty">Empty</a>
-            <a class="state-link" href="lesson-editor.html?state=uploading">Uploading</a>
-            <a class="state-link" href="lesson-editor.html?state=processing">Processing</a>
-            <a class="state-link" href="lesson-editor.html?state=ready">Ready</a>
-            <a class="state-link" href="lesson-editor.html?state=warnings">Warnings</a>
-            <a class="state-link" href="lesson-editor.html?state=multi">3 modules</a>
-            <a class="state-link" href="lesson-editor.html?state=version">New version</a>
-            <a class="state-link" href="lesson-editor.html?state=move-confirm">Move everyone</a>
-            <a class="state-link" href="lesson-editor.html?state=failed">No manifest</a>
-            <a class="state-link" href="lesson-editor.html?state=failed-xapi">xAPI package</a>
-            <a class="state-link" href="lesson-editor.html?state=failed-external">Another website</a>
-            <a class="state-link" href="lesson-editor.html?state=free">Free plan</a>
-            <a class="state-link" href="lesson-editor.html?state=instructions">Instructions</a>
+            <a class="state-link" href="activity-editor.html?state=empty">Empty</a>
+            <a class="state-link" href="activity-editor.html?state=uploading">Uploading</a>
+            <a class="state-link" href="activity-editor.html?state=processing">Processing</a>
+            <a class="state-link" href="activity-editor.html?state=ready">Ready</a>
+            <a class="state-link" href="activity-editor.html?state=warnings">Warnings</a>
+            <a class="state-link" href="activity-editor.html?state=multi">3 modules</a>
+            <a class="state-link" href="activity-editor.html?state=version">New version</a>
+            <a class="state-link" href="activity-editor.html?state=move-confirm">Move everyone</a>
+            <a class="state-link" href="activity-editor.html?state=failed">No manifest</a>
+            <a class="state-link" href="activity-editor.html?state=failed-xapi">xAPI package</a>
+            <a class="state-link" href="activity-editor.html?state=failed-external">Another website</a>
+            <a class="state-link" href="activity-editor.html?state=failed-assets">Assets only</a>
+            <a class="state-link" href="activity-editor.html?state=failed-size">Too large</a>
+            <a class="state-link" href="activity-editor.html?state=plan-lapsed">Plan lapsed</a>
+            <a class="state-link" href="activity-editor.html?state=nolicense">No license</a>
+            <a class="state-link" href="activity-editor.html?state=instructions">Instructions</a>
           </div>
         </div>
         <div class="screen-card">
           <div class="sc-top">
             <span class="sc-file">package-settings.html</span>
-            <h3><a href="package-settings.html">Lesson settings for a package</a></h3>
-            <p>The completion rule, with a line saying whether the package is graded, a minimum score, retakes, and whether the package opens in the lesson or a new window. Saves on change.</p>
+            <h3><a href="package-settings.html">Package settings</a></h3>
+            <p>The completion rule, with a line saying whether the package is graded, a minimum score, retakes, and whether the package opens in the course or a new window. No comments. Saves on change.</p>
           </div>
           <div class="sc-states">
             <a class="state-link" href="package-settings.html?state=auto">Automatic</a>
@@ -93,7 +100,7 @@
           <div class="sc-top">
             <span class="sc-file">media.html</span>
             <h3><a href="media.html">Media Manager</a></h3>
-            <p>SCORM packages as a new asset type: storage, a type filter, where they’re used, delete protection, and courses made from one package or several at once.</p>
+            <p>SCORM packages as a new asset type: storage, a type filter, where they’re used, delete protection, and draft SCORM courses made from one package or several at once.</p>
           </div>
           <div class="sc-states">
             <a class="state-link" href="media.html?state=all">All types</a>
@@ -112,10 +119,11 @@
         <div class="screen-card">
           <div class="sc-top">
             <span class="sc-file">player.html</span>
-            <h3><a href="player.html?state=running">SCORM lesson player</a></h3>
-            <p>A simulated Storyline package you can click through. Passing it ticks the lesson in the sidebar and moves course progress, with no “Mark as complete” button. Pick a wrong answer to fail, or open the 3-module version to use the module menu.</p>
+            <h3><a href="player.html?state=running">SCORM package player</a></h3>
+            <p>A simulated Storyline package you can click through. Passing it ticks the item in the sidebar and moves course progress, with no “Mark as complete” button. Pick a wrong answer to fail, or open the 3-module version to use the module menu.</p>
           </div>
           <div class="sc-states">
+            <a class="state-link" href="player.html?state=not-available">Not available</a>
             <a class="state-link" href="player.html?state=loading">Loading</a>
             <a class="state-link" href="player.html?state=running">Running</a>
             <a class="state-link" href="player.html?state=resume">Resume prompt</a>
@@ -123,6 +131,7 @@
             <a class="state-link" href="player.html?state=completed">Finished</a>
             <a class="state-link" href="player.html?state=failed">Failed</a>
             <a class="state-link" href="player.html?state=modules">3 modules</a>
+            <a class="state-link" href="player.html?state=module-done">Module done</a>
             <a class="state-link" href="player.html?state=not-connected">Didn’t connect</a>
             <a class="state-link" href="player.html?state=review">Review mode</a>
             <a class="state-link" href="player.html?state=review-retake">Review + retakes</a>
@@ -130,8 +139,25 @@
             <a class="state-link" href="player.html?state=locked">Locked</a>
             <a class="state-link" href="player.html?state=window">New window</a>
             <a class="state-link" href="player.html?state=preview">Admin preview</a>
-            <a class="state-link" href="player.html?state=single">Single-package course</a>
             <a class="state-link" href="player.html?state=mobile">Phone</a>
+          </div>
+        </div>
+        <div class="screen-card">
+          <div class="sc-top">
+            <span class="sc-file">scorm-course.html</span>
+            <h3><a href="scorm-course.html">SCORM course format</a></h3>
+            <p>A course that is one package: New course → Upload a SCORM package, Package in place of Content for admins and learners, SCORM cards, landing-page curriculum, and Convert to a standard course.</p>
+          </div>
+          <div class="sc-states">
+            <a class="state-link" href="scorm-course.html?state=new-course">New course</a>
+            <a class="state-link" href="scorm-course.html?state=new-course-free">Free plan</a>
+            <a class="state-link" href="scorm-course.html?state=new-course-nolicense">No license</a>
+            <a class="state-link" href="scorm-course.html?state=admin-package">Admin Package</a>
+            <a class="state-link" href="scorm-course.html?state=learner-package">Learner Package</a>
+            <a class="state-link" href="scorm-course.html?state=cards">Course cards</a>
+            <a class="state-link" href="scorm-course.html?state=landing">Landing page</a>
+            <a class="state-link" href="scorm-course.html?state=settings">Settings</a>
+            <a class="state-link" href="scorm-course.html?state=convert-confirm">Convert</a>
           </div>
         </div>
       </div>
@@ -141,7 +167,7 @@
         <div class="screen-card">
           <div class="sc-top">
             <span class="sc-file">results.html</span>
-            <h3><a href="results.html">Lesson results and attempts</a></h3>
+            <h3><a href="results.html">Package results and attempts</a></h3>
             <p>Summary, a searchable table with CSV export, and a student sheet with attempts, reported answers and diagnostic activity.</p>
           </div>
           <div class="sc-states">
@@ -158,7 +184,7 @@
           <div class="sc-top">
             <span class="sc-file">people-learner.html</span>
             <h3><a href="people-learner.html">Student page in a course</a></h3>
-            <p>SCORM lessons listed next to exercises, and course progress reset that counts SCORM attempts.</p>
+            <p>SCORM packages listed next to exercises, failed learners able to try again without a reset, and course progress reset that counts SCORM attempts.</p>
           </div>
           <div class="sc-states">
             <a class="state-link" href="people-learner.html?state=default">Progress</a>
@@ -170,13 +196,14 @@
       <div class="journey-h"><h2>Calls made in the prototypes</h2><span class="who">For the reviewer to confirm or veto</span></div>
       <div class="card card-pad">
         <ul style="margin: 0; padding-left: 18px; line-height: 1.8; font-size: 14px">
-          <li>Package lessons get four tabs (Package, Instructions, Results, Settings) instead of a fifth material tab.</li>
-          <li>Results live on the lesson, not on the course Analytics page.</li>
+          <li>SCORM items get four tabs (Package, Instructions, Results, Settings) instead of a fifth material tab, on their own activity page.</li>
+          <li>Results live on the item, not on the course Analytics page.</li>
           <li>Students see a status pill and a save indicator under the package. Neither is in the shipped lesson page today.</li>
           <li>An xAPI or cmi5 ZIP gets its own error, so authors know to re-export as SCORM.</li>
-          <li>A package with several modules stays one lesson. The module menu is a row of chips above the player, not extra rows in the course sidebar.</li>
+          <li>A package with several modules stays one item. The module menu is a row of chips above the player, not extra rows in the course sidebar.</li>
           <li>A retake starts from a “Start a new attempt” button in the review banner, never automatically, so students can still review after finishing.</li>
           <li>Several courses are created at once from the Media Manager’s SCORM filter, behind a Select button.</li>
+          <li>In a SCORM course the Package nav item sits where Content sits today and behaves like every other nav item: click to enter, nothing to expand.</li>
         </ul>
       </div>
     </div>

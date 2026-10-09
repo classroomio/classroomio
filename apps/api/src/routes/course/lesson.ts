@@ -29,6 +29,7 @@ import {
   upsertLessonCompletionService
 } from '@api/services/lesson';
 import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
+import { syncComplianceProgressForMember } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
 import { ContentType } from '@cio/utils/constants';
 
@@ -40,7 +41,9 @@ import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member'
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import { generateLessonPdf } from '@api/utils/lesson';
 import { ensureCourseGroupMemberId } from '@cio/core/services/course/course';
-import { handleError } from '@api/utils/errors';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
+import { getLessonById } from '@cio/db/queries/lesson';
+import { getCourseSectionById } from '@cio/db/queries/course';
 import { lessonLanguageRouter } from '@api/routes/course/lesson-language';
 import { zValidator } from '@hono/zod-validator';
 
@@ -83,10 +86,17 @@ export const lessonRouter = new Hono()
       return handleError(c, error, 'Failed to fetch lesson');
     }
   })
-  .post('/', authMiddleware, courseMemberMiddleware, zValidator('json', ZLessonCreate), async (c) => {
+  .post('/', authMiddleware, courseTeamMemberMiddleware, zValidator('json', ZLessonCreate), async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
       const data = c.req.valid('json');
+
+      if (data.sectionId) {
+        const section = await getCourseSectionById(data.sectionId);
+        if (!section || section.courseId !== courseId) {
+          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+        }
+      }
 
       const lesson = await createLesson(courseId, { ...data, courseId });
 
@@ -98,13 +108,26 @@ export const lessonRouter = new Hono()
   .put(
     '/:lessonId',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZLessonGetParam),
     zValidator('json', ZLessonUpdate),
     async (c) => {
       try {
+        const courseId = c.req.param('courseId')!;
         const { lessonId } = c.req.valid('param');
         const data = c.req.valid('json');
+
+        const existing = await getLessonById(lessonId);
+        if (!existing || existing.courseId !== courseId) {
+          throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+        }
+
+        if (data.sectionId) {
+          const section = await getCourseSectionById(data.sectionId);
+          if (!section || section.courseId !== courseId) {
+            throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+          }
+        }
 
         const lesson = await updateLessonService(lessonId, data);
 
@@ -124,6 +147,11 @@ export const lessonRouter = new Hono()
         const courseId = c.req.param('courseId')!;
         const { lessonId } = c.req.valid('param');
 
+        const existing = await getLessonById(lessonId);
+        if (!existing || existing.courseId !== courseId) {
+          throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+        }
+
         const result = await notifyCourseSessionUpdateService(courseId, lessonId);
         return c.json({ success: true, data: result }, 202);
       } catch (error) {
@@ -131,9 +159,16 @@ export const lessonRouter = new Hono()
       }
     }
   )
-  .delete('/:lessonId', authMiddleware, courseMemberMiddleware, zValidator('param', ZLessonGetParam), async (c) => {
+  .delete('/:lessonId', authMiddleware, courseTeamMemberMiddleware, zValidator('param', ZLessonGetParam), async (c) => {
     try {
+      const courseId = c.req.param('courseId')!;
       const { lessonId } = c.req.valid('param');
+
+      const existing = await getLessonById(lessonId);
+      if (!existing || existing.courseId !== courseId) {
+        throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+      }
+
       const lesson = await deleteLessonService(lessonId);
 
       return c.json({ success: true, data: lesson }, 200);
@@ -266,6 +301,9 @@ export const lessonRouter = new Hono()
           void evaluateCourseCertification(courseId, user.id).catch((certError) => {
             console.error('Failed to evaluate course certification after lesson completion:', certError);
           });
+          void syncComplianceProgressForMember(courseId, user.id, 'lesson').catch((complianceError) => {
+            console.error('Failed to sync compliance progress after lesson completion:', complianceError);
+          });
         }
 
         return c.json({ success: true, data: completion }, 200);
@@ -325,6 +363,9 @@ export const lessonRouter = new Hono()
         if (watchProgress.didJustComplete) {
           void evaluateCourseCertification(courseId, user.id).catch((certError) => {
             console.error('Failed to evaluate course certification after video watch:', certError);
+          });
+          void syncComplianceProgressForMember(courseId, user.id, 'lesson').catch((complianceError) => {
+            console.error('Failed to sync compliance progress after video watch:', complianceError);
           });
         }
 

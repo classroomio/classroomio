@@ -73,4 +73,14 @@ describe('deriveCourseMemberStage', () => {
 
     expect(stage).toEqual({ kind: 'certificate_earned' });
   });
+
+  it('throws on an unknown content type instead of falling back to lesson', () => {
+    expect(() =>
+      deriveCourseMemberStage({
+        progressPercent: 33,
+        certificateEarnedAt: null,
+        contentItems: [{ id: 'item-1', type: 'ACTIVITY', title: 'Package', isComplete: false }] as never
+      })
+    ).toThrow();
+  });
 });

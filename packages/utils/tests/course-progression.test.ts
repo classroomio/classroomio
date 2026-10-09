@@ -5,6 +5,7 @@ import {
   annotateContentItem,
   computeProgressionAccess,
   flattenNavigableItems,
+  itemBlocksProgression,
   type ProgressionLockReason
 } from '../src/functions/course-progression';
 
@@ -183,6 +184,20 @@ describe('computeProgressionAccess', () => {
       accessible: false,
       lockReason: 'progression_blocked'
     });
+  });
+});
+
+describe('itemBlocksProgression', () => {
+  it('keeps lesson, exercise, section and missing-type behaviour', () => {
+    expect(itemBlocksProgression(ContentType.Lesson, 'manual')).toBe(true);
+    expect(itemBlocksProgression(ContentType.Lesson, 'none')).toBe(false);
+    expect(itemBlocksProgression(ContentType.Exercise)).toBe(true);
+    expect(itemBlocksProgression(ContentType.Section)).toBe(false);
+    expect(itemBlocksProgression(undefined)).toBe(false);
+  });
+
+  it('throws on unknown content types', () => {
+    expect(() => itemBlocksProgression('ACTIVITY' as never)).toThrow();
   });
 });
 

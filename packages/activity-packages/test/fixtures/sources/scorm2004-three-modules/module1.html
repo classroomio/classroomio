@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Welcome</title>
+  </head>
+  <body>
+    <h1>Welcome</h1>
+    <p>Ungraded module. Completing it reports completion only.</p>
+    <button id="complete" type="button">Mark welcome complete</button>
+    <div id="log" aria-live="polite"></div>
+    <script>
+      function findApi(win) {
+        while (win) {
+          if (win.API_1484_11 && win.API_1484_11.Initialize) return win.API_1484_11;
+          if (win.parent === win) return null;
+          win = win.parent;
+        }
+        return null;
+      }
+      var api = findApi(window);
+      var logEl = document.getElementById('log');
+      if (api) api.Initialize('');
+      document.getElementById('complete').onclick = function () {
+        api.SetValue('cmi.completion_status', 'completed');
+        api.SetValue('cmi.exit', 'normal');
+        api.Commit('');
+        api.Terminate('');
+        logEl.textContent = 'completed, terminated with exit=normal';
+      };
+    </script>
+  </body>
+</html>

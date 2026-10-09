@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Learner lesson · SCORM player · ClassroomIO</title>
+    <title>Learner package · SCORM player · ClassroomIO</title>
     <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="app-theme.css" />
     <link rel="stylesheet" href="proto.css" />
@@ -24,7 +24,7 @@
           <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"></button>
         </header>
 
-        <div class="lesson-body wide" data-state-view="loading running resume quiz completed failed modules not-connected review review-retake expired locked window preview single">
+        <div class="lesson-body wide" data-state-view="loading running resume quiz completed failed modules module-done not-connected review review-retake expired locked not-available window preview">
           <div class="page-hdr">
             <div class="ttl">
               <p class="page-sub" id="lesson-section" style="font-size: 12.5px; margin-bottom: 2px">2. Privacy Rule essentials</p>
@@ -36,44 +36,49 @@
                 <button class="btn btn-outline btn-sm btn-icon" aria-label="Prev" title="Previous: A real breach, in three minutes"><span data-icon="chevLeft"></span></button>
                 <button class="btn btn-outline btn-sm btn-icon" aria-label="Next" id="next-lesson" title="Next: Minimum necessary, with examples"><span data-icon="chevRight"></span></button>
               </div>
-              <button class="btn btn-outline btn-sm">EN<span data-icon="chevDown"></span></button>
             </div>
           </div>
 
           <div class="banner" data-state-view="preview" style="margin-bottom: 12px; border-color: color-mix(in oklab, var(--primary) 35%, transparent)">
             <span data-icon="eye"></span>
             <span class="grow"><b>Preview.</b> Nothing you do here is saved, and students don’t see this banner.</span>
-            <a class="btn btn-outline btn-sm" href="lesson-editor.html?state=ready">Back to editor</a>
+            <a class="btn btn-outline btn-sm" href="activity-editor.html?state=ready">Back to editor</a>
           </div>
           <div class="banner" data-state-view="review review-retake" style="margin-bottom: 12px">
             <span data-icon="checkCircle"></span>
-            <span class="grow">You passed this lesson on 3 Oct with 90%. You’re in review mode, so nothing you do now is saved.</span>
+            <span class="grow">You passed this package on 3 Oct with 90%. You’re in review mode, so nothing you do now is saved.</span>
             <button class="btn btn-outline btn-sm" data-state-view="review-retake" id="new-attempt"><span data-icon="rotate"></span>Start a new attempt</button>
           </div>
 
-          <p class="instructions" id="instructions" data-state-view="loading running resume quiz completed failed modules not-connected review review-retake expired window preview single">Work through all eight slides, then pass the short quiz with 80% or more. Plan for about 25 minutes. You can stop at any point and pick up where you left off.</p>
+          <p class="instructions" id="instructions" data-state-view="loading running resume quiz completed failed modules module-done not-connected review review-retake expired window preview">Work through all eight slides, then pass the short quiz with 80% or more. Plan for about 25 minutes. You can stop at any point and pick up where you left off.</p>
 
           <div class="card card-pad" data-state-view="locked" style="display: grid; justify-items: center; gap: 8px; text-align: center; padding: 48px 20px">
             <span class="item-media-icon item-media-lg" style="margin: 0; align-self: center"><span data-icon="lock"></span></span>
             <h3 style="margin: 0; font-size: 16px; font-weight: 600">Finish the previous lesson first</h3>
-            <p class="muted" style="margin: 0; max-width: 420px">This lesson unlocks after you complete <b>A real breach, in three minutes</b>. The package isn’t loaded until then.</p>
+            <p class="muted" style="margin: 0; max-width: 420px">This package unlocks after you complete <b>A real breach, in three minutes</b>. The package isn’t loaded until then.</p>
             <a class="btn btn-outline btn-sm" href="#" style="margin-top: 6px"><span data-icon="chevLeft"></span>Go to the previous lesson</a>
           </div>
 
-          <div class="player-shell" data-state-view="loading running resume quiz completed failed modules not-connected review review-retake expired window preview single">
-            <div class="module-bar" data-state-view="modules">
+          <div class="card card-pad" data-state-view="not-available" style="display: grid; justify-items: center; gap: 8px; text-align: center; padding: 48px 20px">
+            <span class="item-media-icon item-media-lg" style="margin: 0; align-self: center"><span data-icon="scorm"></span></span>
+            <h3 style="margin: 0; font-size: 16px; font-weight: 600">This package isn’t available yet</h3>
+            <p class="muted" style="margin: 0; max-width: 420px">Your course team hasn’t uploaded a ready package here. Check back soon.</p>
+          </div>
+
+          <div class="player-shell" data-state-view="loading running resume quiz completed failed modules module-done not-connected review review-retake expired window preview">
+            <div class="module-bar" data-state-view="modules module-done">
               <div class="mb-head"><span class="mb-title">Modules</span><span class="muted" id="module-count">1 of 3 complete</span></div>
               <div class="mb-chips" role="tablist" aria-label="Modules" id="module-chips"></div>
             </div>
 
             <div class="player-frame" id="frame" aria-label="SCORM package">
               <div class="skel" id="skel" data-state-view="loading"></div>
-              <div class="pk" id="pk" data-state-view="running resume quiz completed failed modules review review-retake preview single"></div>
+              <div class="pk" id="pk" data-state-view="running resume quiz completed failed modules module-done review review-retake preview"></div>
 
               <div class="frame-panel" data-state-view="not-connected">
                 <div class="fp-box">
                   <span class="fp-icon warn"><span data-icon="alert"></span></span>
-                  <h3>This lesson didn’t connect</h3>
+                  <h3>This package didn’t connect</h3>
                   <p>The package loaded but never contacted ClassroomIO, so your progress can’t be saved. Reload to try again. If it keeps happening, let your course admin know.</p>
                   <button class="btn btn-primary btn-sm" data-goto="running"><span data-icon="refresh"></span>Reload</button>
                 </div>
@@ -83,7 +88,7 @@
                 <div class="fp-box">
                   <span class="fp-icon"><span data-icon="timer"></span></span>
                   <h3>This session expired</h3>
-                  <p>The lesson has been open for more than 12 hours. Reload to keep going. Everything up to your last save is kept.</p>
+                  <p>The package has been open for more than 12 hours. Reload to keep going. Everything up to your last save is kept.</p>
                   <button class="btn btn-primary btn-sm" data-goto="resume"><span data-icon="refresh"></span>Reload</button>
                 </div>
               </div>
@@ -91,13 +96,13 @@
               <div class="frame-panel" data-state-view="window">
                 <div class="fp-box" id="window-closed">
                   <span class="fp-icon"><span data-icon="ext"></span></span>
-                  <h3>This lesson opens in a new window</h3>
+                  <h3>This package opens in a new window</h3>
                   <p>Keep this tab open while you learn. Your progress saves as you go, and this page updates when you finish.</p>
-                  <button class="btn btn-primary btn-sm" id="open-window"><span data-icon="ext"></span>Open lesson</button>
+                  <button class="btn btn-primary btn-sm" id="open-window"><span data-icon="ext"></span>Open package</button>
                 </div>
                 <div class="fp-box" id="window-open" hidden>
                   <span class="spin" style="width: 22px; height: 22px"></span>
-                  <h3>The lesson is open in another window</h3>
+                  <h3>The package is open in another window</h3>
                   <p>Progress saved · 2 minutes ago</p>
                   <button class="btn btn-outline btn-sm">Bring it back</button>
                 </div>
@@ -115,7 +120,7 @@
               <div class="frame-panel" id="finished-panel" hidden>
                 <div class="fp-box">
                   <span class="fp-icon" style="background: var(--success-soft); color: var(--success); border-color: transparent"><span data-icon="checkCircle"></span></span>
-                  <h3>You finished this lesson</h3>
+                  <h3>You finished this package</h3>
                   <p>Passed with 90%. Your course progress is updated.</p>
                   <div class="frow" style="justify-content: center; flex-wrap: wrap">
                     <button class="btn btn-outline btn-sm" data-goto="review">Review the package</button>
@@ -125,12 +130,11 @@
               </div>
             </div>
             <div class="player-under">
-              <span class="fail-note" id="fail-note" hidden><span data-icon="info"></span>You didn’t pass this time. Open the lesson again to start the quiz fresh. Your course stays where it is until you pass.</span>
+              <span class="fail-note" id="fail-note" hidden><span data-icon="info"></span>You didn’t pass this time. Open the package again to start the quiz fresh. Your course stays where it is until you pass.</span>
               <span class="grow"></span>
               <span><span class="save-dot" id="save-dot"></span><span id="save-text">Progress saved · just now</span></span>
               <button class="btn btn-ghost btn-sm" id="fullscreen"><span data-icon="maximize"></span>Full screen</button>
             </div>
-            <p class="hint" data-state-view="single" style="margin: 0">This course was made from one package, so students land here straight from My learning instead of on the course outline. Adding a second item to the course brings the outline back.</p>
           </div>
         </div>
 
@@ -148,13 +152,14 @@
               <button class="btn btn-outline btn-sm btn-icon" aria-label="Next incomplete"><span data-icon="chevRight"></span></button>
             </div>
           </div>
-          <p class="hint" style="text-align: center; margin-top: 12px">On phones the bottom bar keeps its progress ring and arrows, but has no “Mark as complete” toggle for SCORM lessons. The package keeps the bar’s height clear.</p>
+          <p class="hint" style="text-align: center; margin-top: 12px">On phones the bottom bar keeps its progress ring and arrows, but has no “Mark as complete” toggle for SCORM packages. The package keeps the bar’s height clear.</p>
         </div>
       </div>
     </div>
 
     <div class="state-bar">
       <span class="lbl">Learner</span>
+      <button data-state="not-available">Not available</button>
       <button data-state="loading">Loading</button>
       <button data-state="running">Running</button>
       <button data-state="resume">Resume prompt</button>
@@ -162,6 +167,7 @@
       <button data-state="completed">Finished</button>
       <button data-state="failed">Failed</button>
       <button data-state="modules">3 modules</button>
+      <button data-state="module-done">Module done</button>
       <button data-state="not-connected">Didn’t connect</button>
       <button data-state="review">Review mode</button>
       <button data-state="review-retake">Review + retakes</button>
@@ -169,7 +175,6 @@
       <button data-state="locked">Locked</button>
       <button data-state="window">New window</button>
       <button data-state="preview">Admin preview</button>
-      <button data-state="single">Single-package course</button>
       <button data-state="mobile">Phone</button>
       <a href="index.html">← Map</a>
     </div>
@@ -212,7 +217,7 @@
       const INSTRUCTIONS = {
         default: 'Work through all eight slides, then pass the short quiz with 80% or more. Plan for about 25 minutes. You can stop at any point and pick up where you left off.',
         modules: 'Work through the three modules in any order. The knowledge check needs 80% or more. You can stop at any point and pick up where you left off.',
-        single: 'Your organization asks everyone to complete this every year. Pass the short quiz at the end with 80% or more.'
+        'module-done': 'Work through the three modules in any order. The knowledge check needs 80% or more. You can stop at any point and pick up where you left off.'
       };
 
       const pk = { slide: 0, picked: null, done: false, failed: false, mode: 'normal', module: null, modulesDone: [false, false, false] };
@@ -294,13 +299,6 @@
         const arc = document.querySelector('[data-course-ring] .arc');
         if (!pct) return;
 
-        if (currentState === 'single') {
-          pct.textContent = done ? '100%' : '0%';
-          count.textContent = done ? '1 of 1 complete' : '0 of 1 complete';
-          arc.setAttribute('stroke-dashoffset', done ? '0' : '94.2');
-          return;
-        }
-
         pct.textContent = done ? '38%' : '25%';
         count.textContent = done ? '3 of 8 complete' : '2 of 8 complete';
         arc.setAttribute('stroke-dashoffset', done ? '58.4' : '70.6');
@@ -309,14 +307,8 @@
       function applyCourseShape() {
         if (!learnerShell) return;
 
-        const isSingle = currentState === 'single';
-        document.querySelector('.learner-sidebar .tree').innerHTML = isSingle
-          ? `<div class="tree-sec"><div class="tree-sec-h">1. Protecting patient information</div><a class="tree-row current" href="#">${ICONS.scorm}<span class="tree-title">Protecting patient information</span></a></div>`
-          : learnerShell.tree;
-        document.querySelector('.learner-sidebar .course-id .nm').textContent = isSingle ? 'Protecting patient information' : learnerShell.courseName;
-        document.getElementById('lesson-section').hidden = isSingle;
-        document.getElementById('lesson-nav').hidden = isSingle;
-        document.getElementById('finished-next').hidden = isSingle;
+        document.querySelector('.learner-sidebar .tree').innerHTML = learnerShell.tree;
+        document.querySelector('.learner-sidebar .course-id .nm').textContent = learnerShell.courseName;
       }
 
       function commit() {
@@ -428,8 +420,7 @@
         pk.done = true;
         setStatus('passed');
         markCourseProgress(true);
-        const message = currentState === 'single' ? 'Course complete.' : 'Lesson complete. Next: Minimum necessary, with examples';
-        toast(`${ICONS.checkCircle.replace('<svg', '<svg style="color:var(--success)"')}${message}`);
+        toast(`${ICONS.checkCircle.replace('<svg', '<svg style="color:var(--success)"')}Package complete. Next: Minimum necessary, with examples`);
       }
 
       function fail() {
@@ -454,21 +445,27 @@
         document.getElementById('window-open').hidden = true;
         document.getElementById('instructions').textContent = INSTRUCTIONS[detail] || INSTRUCTIONS.default;
         pk.mode = detail === 'review' || detail === 'review-retake' ? 'review' : detail === 'preview' ? 'preview' : 'normal';
-        pk.module = detail === 'modules' ? 1 : null;
+        pk.module = detail === 'modules' || detail === 'module-done' ? 1 : null;
         pk.modulesDone = [true, false, false];
         pk.failed = detail === 'failed';
         pk.picked = detail === 'completed' ? 1 : detail === 'failed' ? 0 : null;
         pk.resumePrompt = detail === 'resume';
-        const slideByState = { quiz: 6, completed: 7, failed: 7, review: 7, 'review-retake': 7, modules: MODULES[1].from };
+        const slideByState = { quiz: 6, completed: 7, failed: 7, review: 7, 'review-retake': 7, modules: MODULES[1].from, 'module-done': MODULES[1].from };
         pk.slide = slideByState[detail] || 0;
         const isPassedState = ['completed', 'review', 'review-retake'].includes(detail);
-        const statusByState = { failed: 'failed', preview: 'none', modules: 'modules' };
+        const statusByState = { failed: 'failed', preview: 'none', modules: 'modules', 'module-done': 'modules' };
         setStatus(isPassedState ? 'passed' : statusByState[detail] || 'progress');
         applyCourseShape();
         markCourseProgress(isPassedState);
         setSave(pk.mode !== 'normal' ? 'off' : detail === 'not-connected' ? 'none' : 'saved');
         if (detail === 'completed') document.getElementById('finished-panel').hidden = false;
-        if (detail === 'modules') renderModuleBar();
+        if (detail === 'modules' || detail === 'module-done') renderModuleBar();
+        if (detail === 'module-done') {
+          document.getElementById('module-done-title').textContent = 'What counts as PHI: done';
+          document.getElementById('module-done-text').textContent = '1 of 3 modules done. Next up: Minimum necessary and disclosures.';
+          document.getElementById('next-module').dataset.target = '1';
+          document.getElementById('module-done-panel').hidden = false;
+        }
         renderPackage();
         document.getElementById('pk-phone').innerHTML = packageMarkup({ slide: 2, picked: null }, true);
       });

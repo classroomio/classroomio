@@ -1,5 +1,6 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { ContentType } from '@cio/utils/constants';
+import { assertNever } from '@cio/utils/functions/assert-never';
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import { db } from '@cio/db/drizzle';
 import { applyCourseContentBulkUpdates, applyCourseSectionOrderUpdates } from '@cio/db/queries/course/content-batch';
@@ -24,7 +25,7 @@ function buildContentKey(item: { id: string; type: string }) {
   return `${item.type}-${item.id}`;
 }
 
-function normalizeDeleteItems<TItem extends { id: string; type: string }>(items: TItem[]): TItem[] {
+export function normalizeDeleteItems<TItem extends { id: string; type: string }>(items: TItem[]): TItem[] {
   const seenKeys = new Set<string>();
   const uniqueItems: TItem[] = [];
 
@@ -38,6 +39,16 @@ function normalizeDeleteItems<TItem extends { id: string; type: string }>(items:
     uniqueItems.push(item);
   }
 
+  for (const item of uniqueItems) {
+    switch (item.type) {
+      case ContentType.Lesson:
+      case ContentType.Exercise:
+        break;
+      default:
+        throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+  }
+
   const exercises = uniqueItems.filter((item) => item.type === ContentType.Exercise);
   const lessons = uniqueItems.filter((item) => item.type === ContentType.Lesson);
 
@@ -49,8 +60,15 @@ async function getCourseContentMap(courseId: string) {
   const contentMap = new Map<string, CourseContentItemRow>();
 
   contentItems.forEach((item) => {
-    if (item.type === ContentType.Lesson || item.type === ContentType.Exercise) {
-      contentMap.set(buildContentKey(item), item);
+    switch (item.type) {
+      case ContentType.Lesson:
+      case ContentType.Exercise:
+        contentMap.set(buildContentKey(item), item);
+        break;
+      case ContentType.Section:
+        break;
+      default:
+        assertNever(item.type);
     }
   });
 
@@ -64,15 +82,16 @@ async function assertCourseContentItems(courseId: string, items: TCourseContentU
     const key = buildContentKey({ id: item.id, type: item.type });
 
     if (!contentMap.has(key)) {
-      if (item.type === ContentType.Lesson) {
-        throw new AppError('Lesson does not belong to this course', ErrorCodes.LESSON_NOT_FOUND, 404);
+      switch (item.type) {
+        case ContentType.Lesson:
+          throw new AppError('Lesson does not belong to this course', ErrorCodes.LESSON_NOT_FOUND, 404);
+        case ContentType.Exercise:
+          throw new AppError('Exercise does not belong to this course', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+        default: {
+          const exhaustive: never = item.type;
+          throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
+        }
       }
-
-      if (item.type === ContentType.Exercise) {
-        throw new AppError('Exercise does not belong to this course', ErrorCodes.EXERCISE_NOT_FOUND, 404);
-      }
-
-      throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
     }
   });
 }
@@ -201,20 +220,28 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
       console.log('Items to delete:', itemsToDelete);
       await db.transaction(async (tx) => {
         for (const item of itemsToDelete) {
-          if (item.type === ContentType.Lesson) {
-            const deleted = await deleteLesson(item.id, tx);
-            if (!deleted) {
-              throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+          switch (item.type) {
+            case ContentType.Lesson: {
+              const deleted = await deleteLesson(item.id, tx);
+              if (!deleted) {
+                throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+              }
+
+              await deleteAssetUsagesByTarget('lesson', item.id, tx);
+              continue;
             }
-
-            await deleteAssetUsagesByTarget('lesson', item.id, tx);
-            continue;
-          }
-
-          const deleted = await deleteExercise(item.id, tx);
-          if (!deleted) {
-            console.log('delete exercise failed for id:', item.id);
-            throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+            case ContentType.Exercise: {
+              const deleted = await deleteExercise(item.id, tx);
+              if (!deleted) {
+                console.log('delete exercise failed for id:', item.id);
+                throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+              }
+              continue;
+            }
+            case ContentType.Section:
+              throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
+            default:
+              return assertNever(item.type);
           }
         }
 
@@ -237,19 +264,27 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
 
     await db.transaction(async (tx) => {
       for (const item of normalizedItems) {
-        if (item.type === ContentType.Lesson) {
-          const deleted = await deleteLesson(item.id, tx);
-          if (!deleted) {
-            throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+        switch (item.type) {
+          case ContentType.Lesson: {
+            const deleted = await deleteLesson(item.id, tx);
+            if (!deleted) {
+              throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+            }
+
+            await deleteAssetUsagesByTarget('lesson', item.id, tx);
+            continue;
           }
-
-          await deleteAssetUsagesByTarget('lesson', item.id, tx);
-          continue;
-        }
-
-        const deleted = await deleteExercise(item.id, tx);
-        if (!deleted) {
-          throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+          case ContentType.Exercise: {
+            const deleted = await deleteExercise(item.id, tx);
+            if (!deleted) {
+              throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+            }
+            continue;
+          }
+          default: {
+            const exhaustive: never = item.type;
+            throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
+          }
         }
       }
     });

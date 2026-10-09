@@ -12,6 +12,7 @@ import {
   UPDATE_QUESTIONS_BINARY_TYPES_HINT
 } from '@cio/question-types';
 import { ZExerciseSectionAfterBehavior } from '@cio/utils/validation/exercise';
+import { ContentType } from '@cio/utils/constants/content';
 import { ZCourseLandingPageUpdate, ZCourseLandingPageMetadataUpdateFields } from '@cio/utils/validation/course';
 
 // courseId is NOT a parameter — it's injected from the authenticated request context.
@@ -362,7 +363,7 @@ export const reorderContentParam = z.object({
     .array(
       z.object({
         id: z.string().min(1),
-        type: z.enum(['LESSON', 'EXERCISE']),
+        type: z.enum([ContentType.Lesson, ContentType.Exercise]),
         order: z.number().int().min(1).optional().describe('New order within the section'),
         sectionId: z.string().nullable().optional().describe('Move item to a different section')
       })

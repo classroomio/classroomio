@@ -77,7 +77,7 @@
           <p class="dialog-desc">Current usage references for <b>Protecting patient information</b></p>
         </div>
         <div class="dialog-body">
-          <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Protecting patient information<br /><span class="muted" style="font-size: 12.5px">HIPAA Awareness 2026 · Lesson · SCORM package</span></span><a class="btn btn-outline btn-sm" href="lesson-editor.html?state=ready">Go to lesson</a></div>
+          <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Protecting patient information<br /><span class="muted" style="font-size: 12.5px">HIPAA Awareness 2026 · Package · SCORM</span></span><a class="btn btn-outline btn-sm" href="activity-editor.html?state=ready">Go to package</a></div>
           <p class="hint">Total usages: 1 · Versions stored: 3 (96.4 MB)</p>
         </div>
         <div class="dialog-foot"><button class="btn btn-outline btn-sm" data-close>Close</button></div>
@@ -93,11 +93,11 @@
           <div class="alert alert-warning">
             <span data-icon="alert"></span>
             <div class="alert-title">Still in use</div>
-            <div class="alert-description">This package is attached to the lessons below. Remove it from each lesson first, then delete it. Students’ results stay in each lesson’s Results until you reset them.</div>
+            <div class="alert-description">This package is attached to the items below. Remove it from each item first, then delete it. Students’ results stay in each item’s Results until you reset them.</div>
           </div>
           <div style="margin-top: 12px">
-            <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Spot the phishing email<br /><span class="muted" style="font-size: 12.5px">HIPAA Awareness 2026</span></span><a class="btn btn-outline btn-sm" href="lesson-editor.html?state=ready">Go to lesson</a></div>
-            <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Phishing refresher<br /><span class="muted" style="font-size: 12.5px">SOC 2 Security Basics</span></span><a class="btn btn-outline btn-sm" href="#">Go to lesson</a></div>
+            <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Spot the phishing email<br /><span class="muted" style="font-size: 12.5px">HIPAA Awareness 2026</span></span><a class="btn btn-outline btn-sm" href="activity-editor.html?state=ready">Go to package</a></div>
+            <div class="usage-row"><span data-icon="scorm"></span><span class="grow">Phishing refresher<br /><span class="muted" style="font-size: 12.5px">SOC 2 Security Basics</span></span><a class="btn btn-outline btn-sm" href="#">Go to package</a></div>
           </div>
         </div>
         <div class="dialog-foot"><button class="btn btn-outline btn-sm" data-close>Close</button></div>
@@ -107,8 +107,8 @@
     <div class="scrim" data-layer="create-course" hidden>
       <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="cc-title" style="max-width: 520px">
         <div class="dialog-head">
-          <h2 class="dialog-title" id="cc-title">Create a course from this package</h2>
-          <p class="dialog-desc">We’ll create a draft course with one lesson that plays the whole package. Its modules stay together in a menu inside the lesson.</p>
+          <h2 class="dialog-title" id="cc-title">Create a SCORM course from this package</h2>
+          <p class="dialog-desc">We’ll create a draft SCORM course with this one package. Its modules stay together in a menu above the package.</p>
         </div>
         <div class="dialog-body">
           <div class="field"><label class="label" for="cc-name">Course title</label><input class="input" id="cc-name" value="Workplace safety library" /></div>
@@ -118,17 +118,16 @@
               <button class="select-trigger" aria-labelledby="cc-type-label" style="max-width: none" data-menu="cc-type-menu"><span data-type-current>Self-paced</span><span data-icon="chevDown"></span></button>
               <div class="menu select-menu" data-menu-for="cc-type-menu" hidden style="width: 100%">
                 <button class="menu-item" data-course-type="Self-paced">Self-paced</button>
-                <button class="menu-item" data-course-type="Live class">Live class</button>
                 <button class="menu-item" data-course-type="Compliance">Compliance</button>
               </div>
             </div>
-            <p class="hint">Public isn’t offered, because SCORM lessons need students to sign in.</p>
+            <p class="hint">Live class and Public aren’t offered. A SCORM course is Self-paced or Compliance, and learners sign in.</p>
           </div>
           <div class="course-preview">
-            <div class="cp-sec">1. Workplace safety library</div>
+            <div class="cp-sec">Package</div>
             <div class="cp-row"><span data-icon="scorm"></span><span class="grow">Workplace safety library</span><span class="badge badge-outline">4 modules</span></div>
           </div>
-          <p class="hint" style="margin-top: 10px">Students open the package straight away, because the course has only this lesson. Add more lessons later and they see the course outline first.</p>
+          <p class="hint" style="margin-top: 10px">Students open the package straight away, because the course holds only this package. To add lessons or exercises later, convert it to a standard course in Settings. This can’t be undone.</p>
         </div>
         <div class="dialog-foot">
           <button class="btn btn-outline btn-sm" data-close>Cancel</button>
@@ -140,8 +139,8 @@
     <div class="scrim" data-layer="bulk-create" hidden>
       <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="bulk-title" style="max-width: 560px">
         <div class="dialog-head">
-          <h2 class="dialog-title" id="bulk-title">Create 3 courses</h2>
-          <p class="dialog-desc">One draft course per package. Each gets one lesson that plays its package, and is titled from the package. You can rename them here or later.</p>
+          <h2 class="dialog-title" id="bulk-title">Create 3 SCORM courses</h2>
+          <p class="dialog-desc">One draft SCORM course per package. Each holds its one package, and is titled from the package. You can rename them here or later.</p>
         </div>
         <div class="dialog-body">
           <div class="bulk-list" id="bulk-list"></div>
@@ -151,12 +150,11 @@
               <button class="select-trigger" aria-labelledby="bulk-type-label" style="max-width: none" data-menu="bulk-type-menu"><span data-type-current>Compliance</span><span data-icon="chevDown"></span></button>
               <div class="menu select-menu" data-menu-for="bulk-type-menu" hidden style="width: 100%">
                 <button class="menu-item" data-course-type="Self-paced">Self-paced</button>
-                <button class="menu-item" data-course-type="Live class">Live class</button>
                 <button class="menu-item" data-course-type="Compliance">Compliance</button>
               </div>
             </div>
           </div>
-          <p class="hint" style="margin-top: 0">Each course has only its package, so students open the package straight away.</p>
+          <p class="hint" style="margin-top: 0">Each course holds only its package, so students open the package straight away.</p>
         </div>
         <div class="dialog-foot">
           <button class="btn btn-outline btn-sm" data-close>Cancel</button>
@@ -179,8 +177,8 @@
 
     <script>
       const ASSETS = [
-        { id: 'pci', kind: 'scorm', title: 'Protecting patient information', badges: ['SCORM 2004', '1 module', 'Active'], size: '96.4 MB · 3 versions', updated: 'Today', used: 'Used in 1 lesson', usage: 'usage' },
-        { id: 'phish', kind: 'scorm', title: 'Spot the phishing email', badges: ['SCORM 1.2', '1 module', 'Active'], size: '22.7 MB', updated: '28 Sep', used: 'Used in 2 lessons', usage: 'delete-blocked' },
+        { id: 'pci', kind: 'scorm', title: 'Protecting patient information', badges: ['SCORM 2004', '1 module', 'Active'], size: '96.4 MB · 3 versions', updated: 'Today', used: 'Used in 1 package', usage: 'usage' },
+        { id: 'phish', kind: 'scorm', title: 'Spot the phishing email', badges: ['SCORM 1.2', '1 module', 'Active'], size: '22.7 MB', updated: '28 Sep', used: 'Used in 2 packages', usage: 'delete-blocked' },
         { id: 'safety', kind: 'scorm', title: 'Workplace safety library', badges: ['SCORM 2004', '4 modules', 'Active'], size: '121.6 MB', updated: '7 Oct', used: 'Not used yet', usage: 'create-course' },
         { id: 'conduct', kind: 'scorm', title: 'Annual code of conduct', badges: ['SCORM 2004', 'Upload', 'Processing'], size: '310.2 MB', updated: 'Just now', used: 'Unpacking files · 61%', processing: true },
         { id: 'welcome', kind: 'video', title: 'Welcome to HIPAA Awareness.mp4', badges: ['Video', 'Upload', 'Active'], size: '184.0 MB', updated: '12 Sep', used: 'Used in 1 lesson' },
@@ -310,12 +308,12 @@
           renderAssets();
         });
         document.getElementById('bulk-open').addEventListener('click', () => openLayer('bulk-create'));
-        document.querySelector('[data-create-course]').addEventListener('click', () => toast('Created draft course “Workplace safety library” with 1 lesson'));
+        document.querySelector('[data-create-course]').addEventListener('click', () => toast('Created draft SCORM course “Workplace safety library” with 1 package'));
         document.querySelector('[data-bulk-create]').addEventListener('click', () => {
           const count = picked.size;
           setSelecting(false);
           renderAssets();
-          toast(`Created ${count} draft courses. Find them in Courses.`);
+          toast(`Created ${count} draft SCORM courses. Find them in Courses.`);
         });
       });
 

@@ -1,5 +1,6 @@
 import type { TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
 import { ContentType, ErrorCodes } from '@cio/utils/constants';
+import { assertNever } from '@cio/utils/functions/assert-never';
 
 import * as schema from '@db/schema';
 import { inArray, sql } from 'drizzle-orm';
@@ -48,6 +49,16 @@ export async function applyCourseContentBulkUpdates(
   }
 
   const updatedAt = new Date().toISOString();
+
+  for (const { item } of updates) {
+    switch (item.type) {
+      case ContentType.Lesson:
+      case ContentType.Exercise:
+        break;
+      default:
+        assertNever(item.type);
+    }
+  }
 
   const lessonUpdates = updates.filter(({ item }) => item.type === ContentType.Lesson);
   const exerciseUpdates = updates.filter(({ item }) => item.type === ContentType.Exercise);

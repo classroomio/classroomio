@@ -88,6 +88,10 @@ Run `cd apps/dashboard && pnpm translate` whenever `en.json` changes, then check
   8. When the activity page swaps the iframe to another module, does the outgoing module’s final commit land before the next launch reads state?
   9. Does a Worker `cache.put` of R2 responses with `Cache-Control: immutable` give `cf-cache-status: HIT` on the second request on our Cloudflare plan, and what file size limit applies?
 - Record a baseline per fixture: version, SCO count, whether it sets `exit`, suspend data size, file count, total size, sequencing in the manifest, pass mark in the manifest.
+- Spike answers, benchmarks and findings are documented in [`packages/activity-packages/spike/SPIKE-FINDINGS.md`](../../packages/activity-packages/spike/SPIKE-FINDINGS.md). Three items verifiable only in later infrastructure/device environments are explicitly tracked and deferred to downstream PR tasks:
+  - **Q3 (client suspend-data limit)** -> PR 10 (browser test with 10 KB suspend value through `scorm-again`).
+  - **Q5 (device-farm confirmation)** -> PR 15 (iOS Safari and Android Chrome compatibility matrix).
+  - **Q9 (live edge cache HIT)** -> PR 9 (Worker test against deployed zone).
 
 ## Foundations (no behaviour change)
 
@@ -245,7 +249,7 @@ Nothing in this phase lets a production user create an activity. Tests insert `c
 | Handler | `apps/tenant-router/src/activity-content.ts`, `apps/tenant-router/src/index.ts` | Serve `/activity/content/*` from R2, mirroring `handleHlsRequest`: content-token check, prefix check, Range, content types, `frame-ancestors`. `caches.default` lookup keyed by storage path plus an `anc` hash; `cache.put` on a miss for full (non-Range) responses. Forward `/activity/player*` and `/activity/scorm/runtime/*` to the API upstream as `/proxy` is forwarded |
 | Config | `apps/tenant-router/wrangler.toml` | Route `*.{content domain}/*`; R2 binding for the `scorm` bucket; secret `ACTIVITY_SIGNING_SECRET` |
 | Release | release checklist | The tenant-router is deployed by hand with `wrangler deploy`; this must ship before the cloud beta |
-| Tests | Worker unit tests | Token rejected before any cache read; second request served from cache; different `anc` does not share a cache entry |
+| Tests | Worker unit tests | Token rejected before any cache read; second request served from cache; different `anc` does not share a cache entry. **Spike Q9 verification**: verify live `cf-cache-status: HIT` on repeat requests once the Worker route and test token are deployed (Acceptance Criterion 27). |
 
 ### PR 10 · Launch, player, saving and the module menu
 
@@ -256,7 +260,7 @@ Nothing in this phase lets a production user create an activity. Tests insert `c
 | Player | `apps/activity-player/src/main.ts`, `scorm/adapter.ts`, `bridge.ts` | Bootstrap from `README.md`; flush on `pagehide`; parent messages with exact origins, including `terminated` with any `adl.nav.request`; “did not connect” after 30 seconds; new-window mode |
 | Activity page | `features/activity/components/activity-player.svelte`, `module-menu.svelte`, `features/activity/pages/activity.svelte` | States from `README.md`, including not available yet, module complete, failed and review with **Start a new attempt**; module menu that relaunches on click; wide layout; full screen; accepts messages only from the content origin; completion through the shared `openCourseCompletionIfDone` |
 | Compliance | SCORM provider `complianceSnapshot` | Best attempt score, attempt count, minutes from session times |
-| Tests | `apps/api/src/__tests__/activity-runtime-db.test.ts`, player unit tests | Database-backed: one open attempt per learner even with two launches; resume; stale sequence ignored; passing commit writes `activity_completion` and claims the certificate; compliance record becomes compliant with score and minutes; a three-module item completes only after the last module, in any order; a failed module starts fresh on the next launch without retakes; 1.2 unfinished exit resumes and 2004 `normal` exit starts fresh; `newAttempt` is refused with retakes off and opens attempt 2 with them on; “move everyone” closes old-version attempts; launch works on the Free plan for an existing item. Unit: bridge drops messages from other origins |
+| Tests | `apps/api/src/__tests__/activity-runtime-db.test.ts`, player unit tests | **Spike Q3 probe**: before completing runtime tests, run the spike's Q3 probe by feeding a 10 KB suspend value through `scorm-again` in a browser session to verify whether the client accepts it or returns error 351/405 before the server change lands. Database-backed: one open attempt per learner even with two launches; resume; stale sequence ignored; passing commit writes `activity_completion` and claims the certificate; compliance record becomes compliant with score and minutes; a three-module item completes only after the last module, in any order; a failed module starts fresh on the next launch without retakes; 1.2 unfinished exit resumes and 2004 `normal` exit starts fresh; `newAttempt` is refused with retakes off and opens attempt 2 with them on; “move everyone” closes old-version attempts; launch works on the Free plan for an existing item. Unit: bridge drops messages from other origins |
 
 ## Phase 4 · Results, SCORM Courses and Copying
 
@@ -314,7 +318,7 @@ Nothing in this phase lets a production user create an activity. Tests insert `c
 - Licensing: `apps/docs/content/docs/self-hosted/101.mdx` and `enterprise.mdx` add SCORM to the enterprise list; the 101 wording is approved by the product owner.
 - OpenAPI: `apps/docs/openapi/public-api.json` gains the activity fields.
 - Playwright demo: `e2e/demos/scorm-package.spec.ts`, using the hand-written fixture.
-- Release checklist: license server returns `scorm`; tenant-router deployed; content domain live; organization flag on for design partners.
+- Release checklist: license server returns `scorm`; tenant-router deployed; content domain live; organization flag on for design partners; **Spike Q5 verification**: confirm playback on physical device farm (iOS Safari and Android Chrome in embedded and new-window modes, per Acceptance Criterion 15).
 
 ### Compatibility Matrix
 

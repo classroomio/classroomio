@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Streamed lesson launcher</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 1rem;
+      }
+      iframe {
+        width: 100%;
+        height: 320px;
+        border: 1px solid #999;
+      }
+      #log {
+        white-space: pre-wrap;
+        border: 1px solid #999;
+        padding: 0.5rem;
+        min-height: 4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Streamed lesson launcher</h1>
+    <p>
+      Finds the SCORM API on the content origin and frames vendor content from a second origin. Vendor messages are
+      relayed by postMessage; only the vendor origin is accepted.
+    </p>
+    <iframe id="vendor" title="Vendor content"></iframe>
+    <div id="log" aria-live="polite"></div>
+    <script>
+      function findApi(win) {
+        while (win) {
+          if (win.API_1484_11 && win.API_1484_11.Initialize) return win.API_1484_11;
+          if (win.parent === win) return null;
+          win = win.parent;
+        }
+        return null;
+      }
+      var api = findApi(window);
+      var logEl = document.getElementById('log');
+      var vendorOrigin = '';
+      function log(msg) {
+        logEl.textContent += msg + '\n';
+      }
+      function vendorUrl() {
+        var override = new URLSearchParams(location.search).get('vendor');
+        if (override) return override;
+        return 'http://127.0.0.1:3003/vendor-page.html';
+      }
+      if (api) {
+        api.Initialize('');
+        log('initialized');
+      }
+      var frame = document.getElementById('vendor');
+      frame.src = vendorUrl();
+      try {
+        vendorOrigin = new URL(frame.src).origin;
+      } catch (e) {
+        vendorOrigin = '';
+      }
+      window.addEventListener('message', function (event) {
+        if (event.origin !== vendorOrigin) return;
+        var data = event.data || {};
+        if (!api) return;
+        if (data.type === 'scorm-set') {
+          var ok = api.SetValue(data.element, data.value);
+          log('set ' + data.element + ' -> ' + ok);
+        }
+        if (data.type === 'scorm-commit') {
+          var committed = api.Commit('');
+          log('commit -> ' + committed);
+        }
+        if (data.type === 'scorm-finish') {
+          api.SetValue('cmi.exit', data.exit || 'normal');
+          api.Commit('');
+          api.Terminate('');
+          log('terminated with exit=' + (data.exit || 'normal'));
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,4 +1,5 @@
 import { ContentType } from '@cio/utils/constants/content';
+import { assertNever } from '@cio/utils/functions/assert-never';
 
 export type ContentActionItem = {
   type: ContentType;
@@ -57,13 +58,18 @@ export async function toggleLock({
   item.isUnlocked = !(item.isUnlocked ?? false);
   const payload = buildContentPayload(item, { order: undefined });
 
-  if (item.type === ContentType.Exercise) {
-    await exerciseApi.update(courseId, item.contentId, payload);
-    return normalizeErrors(exerciseApi.errors);
+  switch (item.type) {
+    case ContentType.Exercise:
+      await exerciseApi.update(courseId, item.contentId, payload);
+      return normalizeErrors(exerciseApi.errors);
+    case ContentType.Lesson:
+      await lessonApi.update(courseId, item.contentId, payload);
+      return normalizeErrors(lessonApi.errors);
+    case ContentType.Section:
+      throw new Error(`Unexpected content type: ${item.type}`);
+    default:
+      return assertNever(item.type);
   }
-
-  await lessonApi.update(courseId, item.contentId, payload);
-  return normalizeErrors(lessonApi.errors);
 }
 
 export async function saveContent({
@@ -79,13 +85,18 @@ export async function saveContent({
 }) {
   const payload = buildContentPayload(item);
 
-  if (item.type === ContentType.Exercise) {
-    await exerciseApi.update(courseId, item.contentId, payload);
-    return normalizeErrors(exerciseApi.errors);
+  switch (item.type) {
+    case ContentType.Exercise:
+      await exerciseApi.update(courseId, item.contentId, payload);
+      return normalizeErrors(exerciseApi.errors);
+    case ContentType.Lesson:
+      await lessonApi.update(courseId, item.contentId, payload);
+      return normalizeErrors(lessonApi.errors);
+    case ContentType.Section:
+      throw new Error(`Unexpected content type: ${item.type}`);
+    default:
+      return assertNever(item.type);
   }
-
-  await lessonApi.update(courseId, item.contentId, payload);
-  return normalizeErrors(lessonApi.errors);
 }
 
 export async function deleteContent({
@@ -99,11 +110,16 @@ export async function deleteContent({
   lessonApi: LessonApi;
   exerciseApi: ExerciseApi;
 }) {
-  if (item.type === ContentType.Exercise) {
-    await exerciseApi.delete(courseId, item.contentId);
-    return Boolean(exerciseApi.success);
+  switch (item.type) {
+    case ContentType.Exercise:
+      await exerciseApi.delete(courseId, item.contentId);
+      return Boolean(exerciseApi.success);
+    case ContentType.Lesson:
+      await lessonApi.delete(courseId, item.contentId);
+      return Boolean(lessonApi.success);
+    case ContentType.Section:
+      throw new Error(`Unexpected content type: ${item.type}`);
+    default:
+      return assertNever(item.type);
   }
-
-  await lessonApi.delete(courseId, item.contentId);
-  return Boolean(lessonApi.success);
 }

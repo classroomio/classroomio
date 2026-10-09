@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SCORM 2004 minimal SCO</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 1.5rem;
+        line-height: 1.5;
+      }
+      .row {
+        margin: 0.5rem 0;
+      }
+      button {
+        margin: 0.15rem;
+      }
+      #log {
+        white-space: pre-wrap;
+        border: 1px solid #999;
+        padding: 0.5rem;
+        min-height: 8rem;
+      }
+      label {
+        display: inline-block;
+        min-width: 12rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SCORM 2004 minimal SCO</h1>
+    <p>
+      Exercises every 2004 API call and every exit value. Statuses start unset so the threshold and passing-score rules
+      can be observed.
+    </p>
+    <div class="row">
+      <button id="btn-init">Initialize</button>
+      <button id="btn-term">Terminate</button>
+      <button id="btn-commit">Commit</button>
+      <button id="btn-status">Get statuses</button>
+    </div>
+    <div class="row">
+      <label for="sel-completion">Set completion_status</label>
+      <select id="sel-completion">
+        <option value="incomplete">incomplete</option>
+        <option value="completed">completed</option>
+        <option value="not attempted">not attempted</option>
+        <option value="unknown">unknown</option>
+      </select>
+      <button id="btn-set-completion">Set</button>
+    </div>
+    <div class="row">
+      <label for="sel-success">Set success_status</label>
+      <select id="sel-success">
+        <option value="unknown">unknown</option>
+        <option value="passed">passed</option>
+        <option value="failed">failed</option>
+      </select>
+      <button id="btn-set-success">Set</button>
+    </div>
+    <div class="row">
+      <label for="sel-exit">Set cmi.exit</label>
+      <select id="sel-exit">
+        <option value="">(empty)</option>
+        <option value="suspend">suspend</option>
+        <option value="normal">normal</option>
+        <option value="logout">logout</option>
+        <option value="time-out">time-out</option>
+      </select>
+      <button id="btn-set-exit">Set</button>
+    </div>
+    <div class="row">
+      <label for="inp-scaled">Scaled score -1 to 1</label>
+      <input id="inp-scaled" value="0.85" size="6" />
+      <button id="btn-set-scaled">Set</button>
+    </div>
+    <div class="row">
+      <label for="inp-measure">Progress measure 0-1</label>
+      <input id="inp-measure" value="1" size="6" />
+      <button id="btn-set-measure">Set</button>
+    </div>
+    <div class="row">
+      <label for="inp-location">Location</label>
+      <input id="inp-location" value="slide-4" size="12" />
+      <button id="btn-set-location">Set</button>
+    </div>
+    <div class="row">
+      <label for="inp-suspend">Suspend data</label>
+      <input id="inp-suspend" value="slide=4" size="24" />
+      <button id="btn-set-suspend">Set</button>
+    </div>
+    <div class="row">
+      <button id="btn-nav">Set adl.nav.request=continue</button>
+    </div>
+    <h2>Log</h2>
+    <div id="log" aria-live="polite"></div>
+    <script>
+      function findApi(win) {
+        while (win) {
+          if (win.API_1484_11 && win.API_1484_11.Initialize) return win.API_1484_11;
+          if (win.parent === win) return null;
+          win = win.parent;
+        }
+        return null;
+      }
+      var api = null;
+      var logEl = document.getElementById('log');
+      function log(msg) {
+        logEl.textContent += msg + '\n';
+      }
+      function call(name, fn) {
+        try {
+          var result = fn();
+          var err = api ? api.GetLastError() : '?';
+          log(name + ' -> ' + result + ' (error ' + err + ')');
+        } catch (e) {
+          log(name + ' threw: ' + (e && e.message));
+        }
+      }
+      document.getElementById('btn-init').onclick = function () {
+        api = findApi(window);
+        if (!api) {
+          log('no API found');
+          return;
+        }
+        call('Initialize', function () {
+          return api.Initialize('');
+        });
+      };
+      document.getElementById('btn-term').onclick = function () {
+        call('Terminate', function () {
+          return api.Terminate('');
+        });
+      };
+      document.getElementById('btn-commit').onclick = function () {
+        call('Commit', function () {
+          return api.Commit('');
+        });
+      };
+      document.getElementById('btn-status').onclick = function () {
+        call('GetValue completion_status', function () {
+          return api.GetValue('cmi.completion_status');
+        });
+        call('GetValue success_status', function () {
+          return api.GetValue('cmi.success_status');
+        });
+      };
+      document.getElementById('btn-set-completion').onclick = function () {
+        var v = document.getElementById('sel-completion').value;
+        call('SetValue completion_status=' + v, function () {
+          return api.SetValue('cmi.completion_status', v);
+        });
+      };
+      document.getElementById('btn-set-success').onclick = function () {
+        var v = document.getElementById('sel-success').value;
+        call('SetValue success_status=' + v, function () {
+          return api.SetValue('cmi.success_status', v);
+        });
+      };
+      document.getElementById('btn-set-exit').onclick = function () {
+        var v = document.getElementById('sel-exit').value;
+        call('SetValue exit=' + JSON.stringify(v), function () {
+          return api.SetValue('cmi.exit', v);
+        });
+      };
+      document.getElementById('btn-set-scaled').onclick = function () {
+        var v = document.getElementById('inp-scaled').value;
+        call('SetValue score.scaled=' + v, function () {
+          return api.SetValue('cmi.score.scaled', v);
+        });
+      };
+      document.getElementById('btn-set-measure').onclick = function () {
+        var v = document.getElementById('inp-measure').value;
+        call('SetValue progress_measure=' + v, function () {
+          return api.SetValue('cmi.progress_measure', v);
+        });
+      };
+      document.getElementById('btn-set-location').onclick = function () {
+        var v = document.getElementById('inp-location').value;
+        call('SetValue location=' + v, function () {
+          return api.SetValue('cmi.location', v);
+        });
+      };
+      document.getElementById('btn-set-suspend').onclick = function () {
+        var v = document.getElementById('inp-suspend').value;
+        call('SetValue suspend_data len=' + v.length, function () {
+          return api.SetValue('cmi.suspend_data', v);
+        });
+      };
+      document.getElementById('btn-nav').onclick = function () {
+        call('SetValue adl.nav.request=continue', function () {
+          return api.SetValue('adl.nav.request', 'continue');
+        });
+      };
+    </script>
+  </body>
+</html>

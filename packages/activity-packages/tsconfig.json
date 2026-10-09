@@ -1,0 +1,15 @@
+{
+  "extends": "@cio/tsconfig/base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": ".",
+    "module": "ES2022",
+    "target": "ES2020",
+    "moduleResolution": "bundler",
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["test/fixtures/build-fixtures.mjs", "spike/player/server.mjs"],
+  "exclude": ["node_modules", "dist", "test/fixtures/sources", "test/fixtures/vendor"]
+}
