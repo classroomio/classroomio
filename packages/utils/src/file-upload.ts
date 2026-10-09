@@ -6,7 +6,11 @@ export const FILE_UPLOAD_SUPPORTED_TYPES = [
     aliases: ['docx', '.docx']
   },
   { value: 'application/msword', label: 'DOC (.doc)', aliases: ['doc', '.doc'] },
-  { value: 'text/csv', label: 'CSV (.csv)', aliases: ['csv', '.csv', 'application/csv'] },
+  {
+    value: 'text/csv',
+    label: 'CSV (.csv)',
+    aliases: ['csv', '.csv', 'application/csv', 'application/vnd.ms-excel']
+  },
   {
     value: 'application/x-ipynb+json',
     label: 'Jupyter Notebook (.ipynb)',
@@ -23,10 +27,10 @@ export const FILE_UPLOAD_SUPPORTED_TYPES = [
 ] as const;
 
 export const FILE_UPLOAD_ALLOWED_MIME_TYPES = [
-  ...FILE_UPLOAD_SUPPORTED_TYPES.map((fileType) => fileType.value),
-  'application/csv',
-  'application/json',
-  'image/jpg'
+  ...FILE_UPLOAD_SUPPORTED_TYPES.flatMap((fileType) => [
+    fileType.value,
+    ...fileType.aliases.filter((alias) => alias.includes('/'))
+  ])
 ] as const;
 
 type SupportedType = (typeof FILE_UPLOAD_SUPPORTED_TYPES)[number];
@@ -36,6 +40,7 @@ const SUPPORTED_TYPE_BY_VALUE = new Map<string, SupportedType>(
   FILE_UPLOAD_SUPPORTED_TYPES.map((entry) => [entry.value, entry])
 );
 const GENERIC_MIME_TYPES = new Set(['', 'application/octet-stream']);
+const EXTENSION_BOUND_MIME_TYPES = new Set(['application/json', 'application/vnd.ms-excel']);
 
 function normalizeToken(value: string): string {
   return value.trim().toLowerCase();
@@ -113,7 +118,9 @@ export function getFileUploadAcceptAttribute(acceptedTypes: string[]): string {
       const supportedType = SUPPORTED_TYPE_BY_VALUE.get(acceptedType);
       if (!supportedType) return [];
 
-      const acceptAliases = supportedType.aliases.filter((alias) => alias.startsWith('.') || alias.includes('/'));
+      const acceptAliases = supportedType.aliases.filter(
+        (alias) => alias.startsWith('.') || (alias.includes('/') && !EXTENSION_BOUND_MIME_TYPES.has(alias))
+      );
       return [supportedType.value, ...acceptAliases];
     })
     .join(',');
@@ -122,18 +129,25 @@ export function getFileUploadAcceptAttribute(acceptedTypes: string[]): string {
 export function isFileTypeAllowed(file: FileTypeCandidate, acceptedTypes: string[]): boolean {
   const allowedTypes = acceptedTypes.length > 0 ? acceptedTypes : [...SUPPORTED_TYPE_BY_VALUE.keys()];
   const mimeType = normalizeToken(file.type);
+  const fileExtension = getFileExtension(file.name);
 
   for (const acceptedType of allowedTypes) {
     const supportedType = SUPPORTED_TYPE_BY_VALUE.get(acceptedType);
     if (!supportedType) continue;
 
     const extensionMatches = hasMatchingExtension(file.name, supportedType);
-    if (mimeType === 'application/json') {
-      if (supportedType.value === 'application/x-ipynb+json' && extensionMatches) return true;
+    if (hasMatchingMimeType(mimeType, supportedType)) {
+      if (EXTENSION_BOUND_MIME_TYPES.has(mimeType)) {
+        if (extensionMatches) return true;
+
+        continue;
+      }
+
+      if (!fileExtension || extensionMatches) return true;
+
       continue;
     }
 
-    if (hasMatchingMimeType(mimeType, supportedType)) return true;
     if (GENERIC_MIME_TYPES.has(mimeType) && extensionMatches) return true;
   }
 
