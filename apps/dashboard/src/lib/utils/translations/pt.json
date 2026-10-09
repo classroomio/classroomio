@@ -1136,7 +1136,66 @@
         "certificate_deadline_required_description": "Os cursos de conformidade exigem um prazo para a emissão do certificado antes que os alunos possam ser matriculados. Defina um prazo nas configurações do curso antes de publicar.",
         "progression_mode_description": "Controle se os alunos podem acessar todo o conteúdo desbloqueado ou se devem completar os itens em ordem. A conclusão da exibição do vídeo rastreia apenas os vídeos enviados.",
         "allow_markdown_export": "Permitir que os alunos copiem as páginas das lições como Markdown",
-        "allow_markdown_export_description": "Quando ativado, as páginas públicas das lições mostram um botão Copiar página que exporta o conteúdo da lição (excluindo vídeos) como Markdown. Isso também publica um URL público de Markdown para cada lição desbloqueada."
+        "allow_markdown_export_description": "Quando ativado, as páginas públicas das lições mostram um botão Copiar página que exporta o conteúdo da lição (excluindo vídeos) como Markdown. Isso também publica um URL público de Markdown para cada lição desbloqueada.",
+        "live_session_reminders": {
+          "legend": "Lembretes de sessão por e-mail",
+          "description": "Escolha quando os alunos inscritos recebem um e-mail com o link de participação antes de cada sessão ao vivo.",
+          "empty": "Nenhum lembrete. Os alunos não receberão e-mails antes das sessões ao vivo.",
+          "add": "Adicionar lembrete",
+          "presets_label": "Adição rápida:",
+          "remove": "Remover lembrete",
+          "unit_label": "Unidade",
+          "units": {
+            "days": "Dias",
+            "hours": "Horas",
+            "minutes": "Minutos"
+          },
+          "duration": {
+            "days": "{count, plural, one {# dia} other {# dias}}",
+            "hours": "{count, plural, one {# hora} other {# horas}}",
+            "minutes": "{count, plural, one {# minuto} other {# minutos}}"
+          },
+          "preview": "{duration} antes de cada sessão",
+          "offset_before": "{duration} antes",
+          "max_count": "Você pode adicionar até {count} lembretes.",
+          "validation": {
+            "amount": "Insira um número inteiro igual ou maior que 1.",
+            "min": "Os lembretes devem ser pelo menos 15 minutos antes da sessão.",
+            "max": "Os lembretes podem ser no máximo 7 dias antes da sessão.",
+            "duplicate": "Você já tem um lembrete neste horário.",
+            "fix_errors": "Corrija os erros dos lembretes de sessão antes de salvar."
+          },
+          "log": {
+            "title": "Registro de envios",
+            "description": "E-mails de lembrete das sessões dos últimos 30 dias e das próximas sessões.",
+            "view": "Ver registros",
+            "empty": "Nenhum lembrete ainda. Eles aparecem aqui à medida que as sessões se aproximam.",
+            "load_error": "Não foi possível carregar o registro de envios de lembretes.",
+            "columns": {
+              "session": "Sessão",
+              "student": "Aluno",
+              "reminder": "Lembrete",
+              "status": "Status",
+              "detail": "Detalhe"
+            }
+          },
+          "statuses": {
+            "pending": "Pendente",
+            "queued": "Na fila",
+            "sent": "Enviado",
+            "failed": "Falhou",
+            "skipped": "Ignorado"
+          },
+          "skip_reasons": {
+            "preferences": "O aluno desativou os e-mails de lembrete de sessão.",
+            "no_email": "O aluno não tem endereço de e-mail.",
+            "lesson_past": "A sessão já havia começado.",
+            "offset_removed": "Este lembrete foi removido das configurações do curso.",
+            "lesson_rescheduled": "O horário da sessão ou o link de participação mudou.",
+            "window_passed": "O horário do lembrete já havia passado quando ele foi agendado.",
+            "unenrolled": "O aluno não está mais inscrito."
+          }
+        }
       },
       "analytics": {
         "title": "Análises"
@@ -2689,7 +2748,7 @@
         "session": {
           "join": "Entrar na sessão",
           "heading": "Sessão ao vivo",
-          "intro": "Defina o link de participação e o horário agendado para esta aula ao vivo. Os alunos recebem lembretes 24 horas e 1 hora antes.",
+          "intro": "Defina o link de participação e o horário agendado para esta aula ao vivo. Os alunos recebem lembretes por e-mail antes de cada sessão. Escolha quando nas configurações do curso.",
           "link_label": "Link de adesão (Zoom, Meet, etc.)",
           "datetime_label": "Data e hora",
           "timezone_label": "Fuso horário",
@@ -2719,7 +2778,15 @@
           "add_apple": "Calendário Apple (.ics)",
           "starts_in": "Começa em",
           "session_ended": "Sessão encerrada",
-          "link_copied": "Link copiado"
+          "link_copied": "Link copiado",
+          "duration_label": "Duração prevista da sessão (minutos)",
+          "duration_helper": "Usado para mostrar quando a sessão está ao vivo e quando terminou.",
+          "recording_url_label": "Link da gravação",
+          "recording_url_helper": "Exibido aos alunos após o término da sessão.",
+          "recording_url_invalid": "Insira um link que comece com http:// ou https://",
+          "recording_url_needs_session": "Adicione um link de reunião e um horário de início antes de adicionar uma gravação",
+          "past_sessions_heading": "Sessões anteriores",
+          "watch_recording": "Assistir à gravação"
         },
         "student_share_your_knowledge": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",
         "student_body_content": "Nenhuma lição foi adicionada a este curso ainda. Volte mais tarde.",

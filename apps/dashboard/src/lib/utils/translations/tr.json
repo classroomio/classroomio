@@ -2574,7 +2574,7 @@
           "join": "Oturuma katılın",
           "live_indicator": "Bu ders canlı bir oturumdur",
           "heading": "Lcanlı oturum",
-          "intro": "Bu canlı ders için katılma bağlantısını ve planlanan zamanı ayarlayın. Öğrenciler 24 saat ve 1 saat önce hatırlatıcı alır.",
+          "intro": "Bu canlı ders için katılma bağlantısını ve planlanan zamanı ayarlayın. Öğrenciler her oturumdan önce e-posta hatırlatıcısı alır. Ne zaman gönderileceğini kurs ayarlarından seçin.",
           "link_label": "Katılım bağlantısı (Yakınlaştırma, Toplantı vb.)",
           "datetime_label": "Tarih ve saat",
           "timezone_label": "Timezone",
@@ -2603,7 +2603,15 @@
           "add_apple": "Apple Takvim (.ics)",
           "starts_in": "Başlangıç tarihi",
           "session_ended": "Oturum sona erdi",
-          "link_copied": "Bağlantı kopyalandı"
+          "link_copied": "Bağlantı kopyalandı",
+          "duration_label": "Beklenen oturum süresi (dakika)",
+          "duration_helper": "Oturumun ne zaman canlı olduğunu ve ne zaman sona erdiğini göstermek için kullanılır.",
+          "recording_url_label": "Kayıt bağlantısı",
+          "recording_url_helper": "Oturum sona erdikten sonra öğrencilere gösterilir.",
+          "recording_url_invalid": "http:// veya https:// ile başlayan bir bağlantı girin",
+          "recording_url_needs_session": "Kayıt eklemeden önce bir toplantı bağlantısı ve başlangıç saati ekleyin",
+          "past_sessions_heading": "Geçmiş oturumlar",
+          "watch_recording": "Kaydı izle"
         },
         "share_your_knowledge": "İlgi çekici dersler oluşturarak bilginizi dünyayla paylaşın. Ekle düğmesine tıklayarak başlayın.",
         "student_share_your_knowledge": "Bu kursa henüz ders eklenmedi. Lütfen daha sonra tekrar kontrol edin.",
@@ -4338,7 +4346,66 @@
         },
         "delete": "Kursu Sil",
         "delete_text": "Bu kursu silin, bu işlem geri alınamaz",
-        "save": "Değişiklikleri Kaydet"
+        "save": "Değişiklikleri Kaydet",
+        "live_session_reminders": {
+          "legend": "Oturum e-posta hatırlatıcıları",
+          "description": "Kayıtlı öğrencilerin her canlı oturumdan önce katılma bağlantısını içeren e-postayı ne zaman alacağını seçin.",
+          "empty": "Hatırlatıcı yok. Öğrenciler canlı oturumlardan önce e-posta almayacak.",
+          "add": "Hatırlatıcı ekle",
+          "presets_label": "Hızlı ekle:",
+          "remove": "Hatırlatıcıyı kaldır",
+          "unit_label": "Birim",
+          "units": {
+            "days": "Gün",
+            "hours": "Saat",
+            "minutes": "Dakika"
+          },
+          "duration": {
+            "days": "{count, plural, one {# gün} other {# gün}}",
+            "hours": "{count, plural, one {# saat} other {# saat}}",
+            "minutes": "{count, plural, one {# dakika} other {# dakika}}"
+          },
+          "preview": "Her oturumdan {duration} önce",
+          "offset_before": "{duration} önce",
+          "max_count": "En fazla {count} hatırlatıcı ekleyebilirsiniz.",
+          "validation": {
+            "amount": "1 veya daha büyük bir tam sayı girin.",
+            "min": "Hatırlatıcılar oturumdan en az 15 dakika önce olmalıdır.",
+            "max": "Hatırlatıcılar oturumdan en fazla 7 gün önce olabilir.",
+            "duplicate": "Bu zamanda zaten bir hatırlatıcınız var.",
+            "fix_errors": "Kaydetmeden önce oturum hatırlatıcısı hatalarını düzeltin."
+          },
+          "log": {
+            "title": "Gönderim günlüğü",
+            "description": "Son 30 gündeki ve yaklaşan oturumlar için hatırlatma e-postaları.",
+            "view": "Kayıtları görüntüle",
+            "empty": "Henüz hatırlatıcı yok. Oturumlar yaklaştıkça burada görünürler.",
+            "load_error": "Hatırlatıcı gönderim günlüğü yüklenemedi.",
+            "columns": {
+              "session": "Oturum",
+              "student": "Öğrenci",
+              "reminder": "Hatırlatıcı",
+              "status": "Durum",
+              "detail": "Ayrıntı"
+            }
+          },
+          "statuses": {
+            "pending": "Beklemede",
+            "queued": "Sırada",
+            "sent": "Gönderildi",
+            "failed": "Başarısız",
+            "skipped": "Atlandı"
+          },
+          "skip_reasons": {
+            "preferences": "Öğrenci oturum hatırlatma e-postalarını kapattı.",
+            "no_email": "Öğrencinin e-posta adresi yok.",
+            "lesson_past": "Oturum zaten başlamıştı.",
+            "offset_removed": "Bu hatırlatıcı kurs ayarlarından kaldırıldı.",
+            "lesson_rescheduled": "Oturum saati veya katılma bağlantısı değişti.",
+            "window_passed": "Planlandığında hatırlatma zamanı zaten geçmişti.",
+            "unenrolled": "Öğrenci artık kayıtlı değil."
+          }
+        }
       }
     },
     "not_permitted": {

@@ -359,6 +359,8 @@ async function cloneCourseWithClient(
             teacherId: crossOrg ? null : lesson.teacherId,
             isComplete: false,
             callUrl: crossOrg ? null : lesson.callUrl,
+            sessionDurationMinutes: lesson.sessionDurationMinutes,
+            recordingUrl: crossOrg ? null : lesson.recordingUrl,
             order: lesson.order,
             isUnlocked: lesson.isUnlocked,
             completionPolicy: lesson.completionPolicy,

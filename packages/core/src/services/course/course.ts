@@ -31,7 +31,7 @@ import {
 import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/reset-progress';
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
-import { ContentType, ROLE } from '@cio/utils/constants';
+import { ContentType, ROLE, resolveLiveSessionReminderOffsets } from '@cio/utils/constants';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
@@ -44,6 +44,7 @@ import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
+import { skipRemovedOffsetReminderDeliveries } from '@cio/db/queries/course/live-session-reminder';
 import { updateExercise, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import {
@@ -474,6 +475,11 @@ export async function updateCourse(
     const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData), dbClient);
     if (!updated) {
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    }
+
+    if (data.metadata?.liveSessionReminderOffsetsMinutes !== undefined) {
+      const keptOffsets = resolveLiveSessionReminderOffsets(updated.metadata?.liveSessionReminderOffsetsMinutes);
+      await skipRemovedOffsetReminderDeliveries(courseId, keptOffsets, dbClient);
     }
 
     const isContentGroupingEnabled = (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) === true;

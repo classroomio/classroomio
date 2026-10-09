@@ -6,6 +6,7 @@ import {
   validateTextareaAnswer
 } from '@cio/question-types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { isFileTypeAllowed, normalizeAcceptedFileTypes } from '@cio/utils/file-upload';
 import type { TNewQuestionAnswer, TNewSubmission, TSubmission } from '@cio/db/types';
 import type {
   TSubmissionAnswerUpdate,
@@ -644,6 +645,15 @@ export async function createSubmissionService(
         const maxDurationSeconds = getVideoRecordingMaxDurationSeconds(question.settings);
         if (answerData.durationSeconds > maxDurationSeconds + 2) {
           throw new AppError('Recording exceeds the configured duration', ErrorCodes.VALIDATION_ERROR, 400);
+        }
+      }
+
+      if (answerData.type === 'FILE_UPLOAD') {
+        const acceptedTypes = normalizeAcceptedFileTypes(question.settings.acceptedTypes);
+        const mimeType = answerData.mimeType ?? '';
+
+        if (!isFileTypeAllowed({ name: answerData.fileName, type: mimeType }, acceptedTypes)) {
+          throw new AppError('File type is not allowed for this question', ErrorCodes.FILE_TYPE_NOT_ALLOWED, 400);
         }
       }
 
