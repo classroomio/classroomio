@@ -1,8 +1,10 @@
 import { Context, Next } from 'hono';
+import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
 import { ErrorCodes } from '@api/utils/errors';
 import { canAccessCourseSubmissions, isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
+import { courseMemberOrAutomationKeyMiddleware } from './course-member-or-automation-key';
 
 /**
  * Course group admin/tutor, org admin, or an active org tutor mentoring a cohort
@@ -125,3 +127,15 @@ export const courseMemberOrGraderMiddleware = async (c: Context, next: Next) => 
     );
   }
 };
+
+/**
+ * Course members, submission graders, or an automation key with the given scopes.
+ */
+export const courseMemberGraderOrAutomationKeyMiddleware =
+  (requiredScopes: readonly TOrganizationApiKeyScope[]) => async (c: Context, next: Next) => {
+    if (c.get('automationKey')) {
+      return courseMemberOrAutomationKeyMiddleware(requiredScopes)(c, next);
+    }
+
+    return courseMemberOrGraderMiddleware(c, next);
+  };

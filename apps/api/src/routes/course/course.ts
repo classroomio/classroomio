@@ -44,6 +44,7 @@ import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { complianceRouter } from '@api/routes/course/compliance';
 import { contentRouter } from '@api/routes/course/content';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseMemberOrGraderMiddleware } from '@api/middlewares/course-grader';
 import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
@@ -253,11 +254,11 @@ export const courseRouter = new Hono()
    * GET /course/:courseId
    * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)
    * Query param: slug (optional) - if provided, courseId is ignored and course is fetched by slug
-   * Requires authentication and course membership
+   * Requires authentication. Course members and submission graders may read it.
    */
   .get(
     '/:courseId',
-    courseMemberMiddleware,
+    courseMemberOrGraderMiddleware,
     zValidator('param', ZCourseGetParam),
     zValidator('query', ZCourseGetQuery),
     async (c) => {

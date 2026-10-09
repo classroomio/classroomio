@@ -37,7 +37,10 @@ import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
-import { courseMemberOrGraderMiddleware } from '@api/middlewares/course-grader';
+import {
+  courseMemberGraderOrAutomationKeyMiddleware,
+  courseMemberOrGraderMiddleware
+} from '@api/middlewares/course-grader';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-member-or-automation-key';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
@@ -118,7 +121,7 @@ export const exerciseRouter = new Hono()
   .get(
     '/:exerciseId',
     authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:read']),
+    courseMemberGraderOrAutomationKeyMiddleware(['course:exercise:read']),
     zValidator('param', ZExerciseGetParam),
     async (c) => {
       try {

@@ -180,6 +180,21 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     }
   });
 
+  it('lets a cohort tutor open the course shell without a course group row', async () => {
+    const response = await appAs(mentorId).request(`/course/${linkedCourseId}`);
+
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.success).toBe(true);
+    expect(body.data.id).toBe(linkedCourseId);
+  });
+
+  it('hides the course shell from an org tutor who is only a cohort learner', async () => {
+    const response = await appAs(cohortLearnerId).request(`/course/${linkedCourseId}`);
+
+    expect(response.status).toBe(403);
+  });
+
   it('lets a cohort tutor grade without a course group row or org admin', async () => {
     const response = await appAs(mentorId).request(`/course/${linkedCourseId}/submission/for-grading`);
 
