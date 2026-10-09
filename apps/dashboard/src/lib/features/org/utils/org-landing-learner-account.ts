@@ -99,8 +99,6 @@ export interface ResolveOrgLandingLearnerAccountOptions {
   org?: AccountOrg | null;
   locals?: {
     user?: { id?: string; name?: string | null; email?: string | null } | null;
-    profile?: { fullname?: string | null; email?: string | null; avatarUrl?: string | null } | null;
-    organizations?: OrganizationMembership[] | null;
   } | null;
   user: { isLoggedIn?: boolean };
   profile: { fullname: string; email: string | null; avatarUrl: string | null };
@@ -130,14 +128,12 @@ export function resolveOrgLandingLearnerAccount({
   const resolvedProfile = isInitialized
     ? profile
     : {
-        fullname: locals?.profile?.fullname || locals?.user?.name || '',
-        email: locals?.profile?.email || locals?.user?.email || null,
-        avatarUrl: locals?.profile?.avatarUrl || null
+        fullname: locals?.user?.name || '',
+        email: locals?.user?.email || null,
+        avatarUrl: null
       };
 
-  const organizations = appInitApi.data?.success
-    ? (appInitApi.data.organizations ?? locals?.organizations ?? [])
-    : (locals?.organizations ?? []);
+  const organizations = appInitApi.data?.success ? (appInitApi.data.organizations ?? []) : [];
 
   const hasPendingInvite = !!appInitApi.pendingOrgInvite;
 

@@ -3,6 +3,7 @@
   import { onMount } from 'svelte';
 
   import { orgApi } from '$features/org/api/org.svelte';
+  import { getPostJoinRedirect } from '$features/org/utils/org-join-redirect';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import { Avatar, AvatarFallback, AvatarImage } from '@cio/ui/base/avatar';
@@ -27,7 +28,7 @@
     }
 
     hasFailed = false;
-    const redirectTo = page.url.searchParams.get('redirect') || '/lms';
+    const redirectTo = getPostJoinRedirect(data.org, page.url.searchParams.get('redirect'));
     const result = await orgApi.joinAcademy(orgId, redirectTo);
     if (!result) {
       hasFailed = true;

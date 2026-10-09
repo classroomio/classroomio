@@ -1479,8 +1479,8 @@ export const updateOrganization = async (
  * @param orgId Organization ID
  * @returns Array of plan records
  */
-export const getOrganizationPlanStatus = async (orgId: string) => {
-  const result = await db
+export const getOrganizationPlanStatus = async (orgId: string, dbClient: DbOrTxClient = db) => {
+  const result = await dbClient
     .select({
       planName: schema.organizationPlan.planName,
       isActive: schema.organizationPlan.isActive

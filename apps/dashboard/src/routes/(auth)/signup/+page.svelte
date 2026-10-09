@@ -21,6 +21,7 @@
   import { buildSsoRedirectUrl, createSsoEmailChecker, type SsoAuthState } from '$features/auth/utils/auth-sso';
   import { authSsoStore, ensureSsoInfoLoaded } from '$features/auth/utils/auth-sso-store';
   import { orgApi } from '$features/org/api/org.svelte';
+  import { getPostJoinRedirect } from '$features/org/utils/org-join-redirect';
   import { onboardingApi } from '$features/onboarding/api/onboarding.svelte';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
@@ -180,7 +181,7 @@
       }
 
       if (isNormalOrgSiteSignup) {
-        const joinResult = await orgApi.joinAcademy(org.id, redirectUrl || '/lms');
+        const joinResult = await orgApi.joinAcademy(org.id, getPostJoinRedirect(data.org, redirectUrl));
         const joinRetryPathname = newUserCallbackPathname;
 
         if (!joinResult && joinRetryPathname) {

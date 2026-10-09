@@ -119,7 +119,7 @@ class AppInitApi extends BaseApi {
    * that RBAC middlewares also use, so a present key means the user is a member.
    */
   private isMemberOfOrg(locals: App.Locals, orgId: string): boolean {
-    const orgRoles = (locals as { orgRoles?: Record<string, number> }).orgRoles;
+    const orgRoles = locals.orgRoles;
 
     return !!orgRoles && orgId in orgRoles;
   }
