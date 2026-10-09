@@ -3604,6 +3604,10 @@
       },
       "submissions": {
         "title": "Submitted Exercises",
+        "access": {
+          "denied_title": "You can't grade submissions for this course",
+          "denied_description": "Ask an admin to add you as a course tutor, or as a mentor on a cohort that includes this course."
+        },
         "submission_status": {
           "submitted": "Submitted",
           "in_progress": "In Progress",

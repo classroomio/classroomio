@@ -1595,6 +1595,10 @@
       },
       "submissions": {
         "title": "Ejercicios enviados",
+        "access": {
+          "denied_title": "No puedes calificar las entregas de este curso",
+          "denied_description": "Pide a un administrador que te añada como tutor del curso o como mentor de una cohorte que incluya este curso."
+        },
         "grading_modal": {
           "details": "Detalles",
           "early": "Temprano",

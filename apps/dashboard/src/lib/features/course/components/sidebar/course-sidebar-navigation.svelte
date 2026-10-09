@@ -35,7 +35,8 @@
   import { complianceApi, courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
-  import { currentOrg, isFreePlan, isStudentLimitReached, currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg, isFreePlan, isOrgAdmin, isStudentLimitReached, currentOrgPath } from '$lib/utils/store/org';
+  import { ROLE } from '@cio/utils/constants';
   import { isStudentExperience } from '$lib/utils/store/app';
   import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
   import { useSidebar } from '@cio/ui/base/sidebar';
@@ -147,6 +148,13 @@
         show() {
           if (courseApi.course?.isTemplate) return false;
           if (isStudent) return false;
+
+          const courseRoleId = Number(
+            courseApi.group.people.find((person) => person.profileId === $profile.id)?.roleId
+          );
+
+          if (courseRoleId === ROLE.STUDENT && !$isOrgAdmin) return false;
+
           return true;
         },
         icon: getNavIcon(NAV_IDS.SUBMISSIONS)

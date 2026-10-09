@@ -1595,6 +1595,10 @@
       },
       "submissions": {
         "title": "Indsendte øvelser",
+        "access": {
+          "denied_title": "Du kan ikke bedømme afleveringer for dette kursus",
+          "denied_description": "Bed en administrator om at tilføje dig som kursustutor eller som mentor for et hold, der inkluderer dette kursus."
+        },
         "grading_modal": {
           "details": "Detaljer",
           "early": "Tidligt",

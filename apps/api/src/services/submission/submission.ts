@@ -37,7 +37,7 @@ import {
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
-import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { canAccessCourseSubmissions, getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
@@ -335,12 +335,11 @@ export async function listSubmissionsByExercise(
 export type ExerciseSubmissionsOverview = {
   mySubmission: Awaited<ReturnType<typeof listSubmissionsByExercise>>;
   allSubmissions: Awaited<ReturnType<typeof listSubmissionsByExercise>>;
+  canGrade: boolean;
 };
 
 /**
- * Returns submission overview for an exercise based on user role.
- * - Students: mySubmission = their submission(s), allSubmissions = []
- * - Instructors: mySubmission = [], allSubmissions = all submissions in exercise
+ * Students receive only their own submissions. Graders also receive every submission in the exercise.
  */
 export async function listExerciseSubmissionsOverview(
   courseId: string,
@@ -348,20 +347,20 @@ export async function listExerciseSubmissionsOverview(
   profileId: string
 ): Promise<ExerciseSubmissionsOverview> {
   try {
-    const [groupMemberId, isInstructor] = await Promise.all([
+    const [groupMemberId, canGrade] = await Promise.all([
       getGroupMemberIdByCourseAndProfile(courseId, profileId),
-      isCourseTeamMemberOrOrgAdmin(courseId, profileId)
+      canAccessCourseSubmissions(courseId, profileId)
     ]);
 
     const mySubmission = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
 
-    if (!isInstructor) {
-      return { mySubmission, allSubmissions: [] };
+    if (!canGrade) {
+      return { mySubmission, allSubmissions: [], canGrade: false };
     }
 
     const allSubmissions = await listSubmissionsByExercise(courseId, exerciseId);
 
-    return { mySubmission, allSubmissions };
+    return { mySubmission, allSubmissions, canGrade: true };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list exercise submissions overview',

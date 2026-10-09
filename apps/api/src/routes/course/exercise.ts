@@ -37,6 +37,7 @@ import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
+import { courseMemberOrGraderMiddleware } from '@api/middlewares/course-grader';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-member-or-automation-key';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
@@ -79,7 +80,7 @@ export const exerciseRouter = new Hono()
       }
     }
   )
-  .get('/:exerciseId/submissions', authMiddleware, courseMemberMiddleware, async (c) => {
+  .get('/:exerciseId/submissions', authMiddleware, courseMemberOrGraderMiddleware, async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
       const exerciseId = c.req.param('exerciseId')!;
@@ -363,7 +364,7 @@ export const exerciseRouter = new Hono()
   .get(
     '/:exerciseId/submission/:submissionId/question/:questionId/video-recording/playback',
     authMiddleware,
-    courseMemberMiddleware,
+    courseMemberOrGraderMiddleware,
     zValidator('param', ZExerciseVideoRecordingPlaybackParam),
     async (c) => {
       try {

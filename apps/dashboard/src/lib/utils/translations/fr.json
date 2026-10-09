@@ -1595,6 +1595,10 @@
       },
       "submissions": {
         "title": "Exercices soumis",
+        "access": {
+          "denied_title": "Vous ne pouvez pas noter les rendus de ce cours",
+          "denied_description": "Demandez à un administrateur de vous ajouter comme tuteur du cours, ou comme mentor d'une cohorte qui inclut ce cours."
+        },
         "grading_modal": {
           "details": "Détails",
           "early": "Tôt",

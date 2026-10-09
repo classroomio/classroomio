@@ -38,6 +38,7 @@ import {
   getCohortMemberRole,
   isCohortCourse,
   isCohortMember,
+  listCohortEnrollmentMembers,
   removeCourseFromCohort,
   removeCohortMember,
   updateCohort as updateCohortQuery,
@@ -49,7 +50,7 @@ import {
   type TCohortListPage
 } from '@cio/db/queries/cohort';
 import { getCourseGroupIds } from '@cio/db/queries/course';
-import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
+import { enrollUsersInCourseGroups, insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
 import { getProfileByEmail } from '@cio/db/queries/auth';
 import {
   getOrgMembersByProfileIds,
@@ -57,7 +58,7 @@ import {
   insertOrganizationMembersOnConflictDoNothing
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { assertStudentCapacityOrThrow, notifyStudentMilestone } from '../organization/student-limit';
 import type { StudentMilestoneNotification } from '../organization/student-limit';
 
@@ -122,6 +123,34 @@ async function enrollCohortStudentsInGroups(
   }
 
   return groupMemberRows.length;
+}
+
+async function enrollCohortStaffInCourseGroups(
+  groupIds: string[],
+  members: CohortMemberEnrollment[],
+  dbClient: DbOrTxClient
+): Promise<number> {
+  const uniqueGroupIds = [...new Set(groupIds)];
+  const tutors = members.filter((member) => member.roleId === ROLE.TUTOR);
+  const admins = members.filter((member) => member.roleId === ROLE.ADMIN);
+
+  if (uniqueGroupIds.length === 0 || (tutors.length === 0 && admins.length === 0)) {
+    return 0;
+  }
+
+  const tutorUsers = tutors.map((member) => ({
+    profileId: member.profileId,
+    email: member.email ?? undefined
+  }));
+  const adminUsers = admins.map((member) => ({
+    profileId: member.profileId,
+    email: member.email ?? undefined
+  }));
+
+  const tutorEnrollments = await enrollUsersInCourseGroups(uniqueGroupIds, tutorUsers, ROLE.TUTOR, dbClient);
+  const adminEnrollments = await enrollUsersInCourseGroups(uniqueGroupIds, adminUsers, ROLE.ADMIN, dbClient);
+
+  return tutorEnrollments + adminEnrollments;
 }
 
 // ─── Cohort CRUD ─────────────────────────────────────────────────────────────
@@ -370,6 +399,22 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
             );
           }
 
+          if (member?.profileId && (member.roleId === ROLE.ADMIN || member.roleId === ROLE.TUTOR)) {
+            const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
+
+            await enrollCohortStaffInCourseGroups(
+              validCourseGroupIds,
+              [
+                {
+                  profileId: member.profileId,
+                  email: normalizedEmail,
+                  roleId: member.roleId
+                }
+              ],
+              tx
+            );
+          }
+
           return { member, studentMilestoneNotification };
         });
 
@@ -484,18 +529,44 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
       throw new AppError('Course is already in this cohort', ErrorCodes.COURSE_ALREADY_IN_COHORT, 409);
     }
 
-    const result = await addCourseToCohort(cohortId, data.courseId);
-    const students = (await getCohortMembers(cohortId))
-      .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)
-      .map((member) => ({
-        profileId: member.profileId!,
-        email: member.email ?? null,
-        roleId: member.roleId
-      }));
-
     const courseGroupIds = (await getCourseGroupIds([data.courseId]))
       .map((courseGroup) => courseGroup.groupId)
       .filter((groupId): groupId is string => Boolean(groupId));
+
+    const { result, students } = await db.transaction(async (tx) => {
+      const linked = await addCourseToCohort(cohortId, data.courseId, tx);
+      const members = await listCohortEnrollmentMembers(cohortId, tx);
+      const staff = members.flatMap((member) => {
+        if (!member.profileId || (member.roleId !== ROLE.ADMIN && member.roleId !== ROLE.TUTOR)) {
+          return [];
+        }
+
+        return [
+          {
+            profileId: member.profileId,
+            email: member.email,
+            roleId: member.roleId
+          }
+        ];
+      });
+      const enrolledStudents = members.flatMap((member) => {
+        if (!member.profileId || member.roleId !== ROLE.STUDENT) {
+          return [];
+        }
+
+        return [
+          {
+            profileId: member.profileId,
+            email: member.email,
+            roleId: member.roleId
+          }
+        ];
+      });
+
+      await enrollCohortStaffInCourseGroups(courseGroupIds, staff, tx);
+
+      return { result: linked, students: enrolledStudents };
+    });
 
     if (students.length > 0 && courseGroupIds.length > 0) {
       await enrollCohortStudentsInGroups(cohort.organizationId, courseGroupIds, students);

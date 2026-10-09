@@ -3604,6 +3604,10 @@
       },
       "submissions": {
         "title": "Esercizi inviati",
+        "access": {
+          "denied_title": "Non puoi valutare le consegne di questo corso",
+          "denied_description": "Chiedi a un amministratore di aggiungerti come tutor del corso o come mentor di una coorte che include questo corso."
+        },
         "submission_status": {
           "submitted": "Inviato",
           "in_progress": "In corso",

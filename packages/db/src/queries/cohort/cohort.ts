@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, desc, eq, ilike, inArray, or, sql, type SQL, type SQLWrapper } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, isNotNull, or, sql, type SQL, type SQLWrapper } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import {
@@ -777,14 +777,37 @@ export async function getEnrolledCohortsByProfile(
 
 // ─── Program Courses ─────────────────────────────────────────────────────────
 
-export async function addCourseToCohort(cohortId: string, courseId: string): Promise<TCohortCourse> {
+export async function addCourseToCohort(
+  cohortId: string,
+  courseId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TCohortCourse> {
   try {
-    const [row] = await db.insert(schema.cohortCourse).values({ cohortId, courseId }).returning();
+    const [row] = await dbClient.insert(schema.cohortCourse).values({ cohortId, courseId }).returning();
     if (!row) throw new Error('Failed to add course to cohort');
     return row;
   } catch (error) {
     console.error('addCourseToCohort error:', error);
     throw new Error(`Failed to add course to cohort: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Cohort members that already have a profile, including their cohort role. */
+export async function listCohortEnrollmentMembers(cohortId: string, dbClient: DbOrTxClient = db) {
+  try {
+    return await dbClient
+      .select({
+        profileId: schema.cohortMember.profileId,
+        email: schema.cohortMember.email,
+        roleId: schema.cohortMember.roleId
+      })
+      .from(schema.cohortMember)
+      .where(and(eq(schema.cohortMember.cohortId, cohortId), isNotNull(schema.cohortMember.profileId)));
+  } catch (error) {
+    console.error('listCohortEnrollmentMembers error:', error);
+    throw new Error(
+      `Failed to list cohort enrollment members: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

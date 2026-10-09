@@ -1595,6 +1595,10 @@
       },
       "submissions": {
         "title": "Exercícios enviados",
+        "access": {
+          "denied_title": "Você não pode corrigir as entregas deste curso",
+          "denied_description": "Peça a um administrador para adicioná-lo como tutor do curso ou como mentor de uma turma que inclua este curso."
+        },
         "grading_modal": {
           "details": "Detalhes",
           "early": "Cedo",
