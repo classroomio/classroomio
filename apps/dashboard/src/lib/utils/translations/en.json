@@ -1672,7 +1672,16 @@
       "monthly": "Monthly",
       "annually": "Annually",
       "popular": "Popular",
-      "per_org": "Per Organization"
+      "per_org": "Per Organization",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter rate · {days, plural, one {# day left} other {# days left}}",
+        "eyebrow_closing": "Early Adopter rate · Last {days} days",
+        "eyebrow_today": "Early Adopter rate · Ends today",
+        "title": "Priced low on purpose. Not for long.",
+        "title_closing": "Priced low on purpose. Closing soon.",
+        "body": "We keep ClassroomIO affordable because we build it with our customers, not for them. Lock in today’s rate before {date}. After that, the Early Adopter plan closes and new pricing applies.",
+        "link": "Read why we do it"
+      }
     }
   },
   "widgets": {
@@ -6213,5 +6222,30 @@
       "description": "A complete course with lessons, exercises and settings. Copy it, then make it yours.",
       "browse": "Browse all templates"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Payment received. One step left.",
+      "body": "Create your account, or log in, and we connect your Early Adopter plan to your academy automatically.",
+      "sign_up": "Create my account",
+      "log_in": "Log in",
+      "continue": "Continue to my academy"
+    },
+    "success": {
+      "title": "Your Early Adopter plan is active",
+      "body": "Your rate is locked in and every Early Adopter feature is now unlocked for your academy.",
+      "continue": "Start building"
+    },
+    "errors": {
+      "invalid": "This link is not valid. Check the email we sent you, or contact support.",
+      "expired": "This link has expired. Contact support and we will help you connect your plan.",
+      "unavailable": "This plan link has already been used or is no longer active. Contact support if this is a mistake.",
+      "conflict": "This academy already has a paid plan, so we could not connect this one. Contact support and we will help."
+    }
+  },
+  "whats_new": {
+    "new_badge": "New",
+    "read_full": "Read the full changelog",
+    "close": "Close"
   }
 }

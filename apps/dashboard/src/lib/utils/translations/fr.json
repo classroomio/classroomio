@@ -3522,7 +3522,16 @@
       "monthly": "Mensuel",
       "annually": "Annuellement",
       "popular": "Populaire",
-      "per_org": "Par organisation"
+      "per_org": "Par organisation",
+      "priced_low": {
+        "eyebrow_open": "Tarif Early Adopter · {days, plural, one {# jour restant} other {# jours restants}}",
+        "eyebrow_closing": "Tarif Early Adopter · Derniers {days} jours",
+        "eyebrow_today": "Tarif Early Adopter · Se termine aujourd’hui",
+        "title": "Un prix bas, volontairement. Pas pour longtemps.",
+        "title_closing": "Un prix bas, volontairement. Bientôt terminé.",
+        "body": "Nous gardons ClassroomIO abordable parce que nous le construisons avec nos clients, pas seulement pour eux. Verrouillez le tarif d’aujourd’hui avant le {date}. Après cette date, le plan Early Adopter ferme et de nouveaux prix s’appliquent.",
+        "link": "Découvrez pourquoi nous le faisons"
+      }
     },
     "plan_names": {
       "free": "Gratuit",
@@ -6243,5 +6252,30 @@
       "description": "Un cours complet avec leçons, exercices et paramètres. Copiez-le, puis personnalisez-le.",
       "browse": "Parcourez tous les modèles"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Paiement reçu. Plus qu’une étape.",
+      "body": "Créez votre compte ou connectez-vous, et nous relions automatiquement votre plan Early Adopter à votre académie.",
+      "sign_up": "Créer mon compte",
+      "log_in": "Se connecter",
+      "continue": "Continuer vers mon académie"
+    },
+    "success": {
+      "title": "Votre plan Early Adopter est actif",
+      "body": "Votre tarif est verrouillé et toutes les fonctionnalités Early Adopter sont désormais débloquées pour votre académie.",
+      "continue": "Commencer à créer"
+    },
+    "errors": {
+      "invalid": "Ce lien n’est pas valide. Vérifiez l’e-mail que nous vous avons envoyé ou contactez le support.",
+      "expired": "Ce lien a expiré. Contactez le support et nous vous aiderons à connecter votre plan.",
+      "unavailable": "Ce lien de plan a déjà été utilisé ou n’est plus actif. Contactez le support s’il s’agit d’une erreur.",
+      "conflict": "Cette académie a déjà un plan payant, nous n’avons donc pas pu connecter celui-ci. Contactez le support et nous vous aiderons."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Nouveau",
+    "read_full": "Lire le journal des modifications complet",
+    "close": "Fermer"
   }
 }

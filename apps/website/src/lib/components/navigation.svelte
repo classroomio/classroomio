@@ -1,17 +1,13 @@
 <script lang="ts">
   import BookOpen from '@lucide/svelte/icons/book-open';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
-  import Gamepad from '@lucide/svelte/icons/gamepad';
+  import Component from '@lucide/svelte/icons/component';
   import Github from '@lucide/svelte/icons/github';
-  import Hourglass from '@lucide/svelte/icons/hourglass';
-  import LoaderCircle from '@lucide/svelte/icons/loader-circle';
   import LocateFixed from '@lucide/svelte/icons/locate-fixed';
   import Menu from '@lucide/svelte/icons/menu';
   import MessagesSquare from '@lucide/svelte/icons/messages-square';
-  import MousePointerClick from '@lucide/svelte/icons/mouse-pointer-click';
   import Server from '@lucide/svelte/icons/server';
   import Sparkles from '@lucide/svelte/icons/sparkles';
-  import Timer from '@lucide/svelte/icons/timer';
   import Webhook from '@lucide/svelte/icons/webhook';
   import X from '@lucide/svelte/icons/x';
   import { page } from '$app/state';
@@ -20,6 +16,7 @@
   import * as NavigationMenu from '@cio/ui/base/navigation-menu';
   import LibraryBigIcon from '@lucide/svelte/icons/library-big';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+  import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import { Waves } from '@cio/ui/custom/animation';
   import { cn } from '@cio/ui/tools';
@@ -44,6 +41,7 @@
     key: string;
     title: string;
     href?: string;
+    badge?: string;
     items?: NavCollectionItem[];
   };
 
@@ -122,39 +120,6 @@
     }
   ];
 
-  const freeTools: NavCollectionItem[] = [
-    {
-      key: 'progress',
-      title: 'Progress Tracker',
-      subtitle: 'Monitor learning journeys.',
-      href: '/tools/progress'
-    },
-    {
-      key: 'pomodoro',
-      title: 'Pomodoro Timer',
-      subtitle: 'Boost focus and productivity.',
-      href: '/tools/pomodoro'
-    },
-    {
-      key: 'name-picker',
-      title: 'Name Picker',
-      subtitle: 'Randomly select names.',
-      href: '/tools/name-picker'
-    },
-    {
-      key: 'stopwatch',
-      title: 'Activity Stopwatch',
-      subtitle: 'Track time accurately.',
-      href: '/tools/stopwatch'
-    },
-    {
-      key: 'tic-tac-toe',
-      title: 'Tic Tac Toe',
-      subtitle: 'Play the classic game.',
-      href: '/tools/tic-tac-toe'
-    }
-  ];
-
   const navItems: NavItem[] = [
     {
       key: 'solutions',
@@ -164,15 +129,15 @@
     },
     {
       key: 'developers',
-      title: 'Developers',
+      title: 'Resources',
       href: '/automation',
       items: developers
     },
     {
-      key: 'free-tools',
-      title: 'Free Tools',
-      href: '/tools',
-      items: freeTools
+      key: 'changelog',
+      title: "What's new",
+      href: '/changelog',
+      badge: 'New'
     },
     {
       key: 'blog',
@@ -188,7 +153,6 @@
 
   let isSolutionsActive = $derived(!!solutions.some((s) => activeLink.includes(s.key)));
   let isDevelopersActive = $derived(!!developers.some((d) => activeLink.includes(d.key)));
-  let isFreeToolsActive = $derived(activeLink.startsWith('/tools'));
 
   function isNavItemActive(navItem: NavItem) {
     if (navItem.key === 'solutions') {
@@ -199,13 +163,22 @@
       return isDevelopersActive;
     }
 
-    if (navItem.key === 'free-tools') {
-      return isFreeToolsActive;
-    }
-
     return navItem.href ? activeLink.startsWith(navItem.href) : false;
   }
 </script>
+
+{#snippet nav_badge(label: string, positionClass: string)}
+  <Badge
+    variant="default"
+    class={cn(
+      'pointer-events-none rotate-5 bg-linear-to-r from-pink-500 to-orange-500 px-1.5 py-0 shadow-md',
+      positionClass
+    )}
+  >
+    <Sparkles size={8} class="mr-0.5 text-white" />
+    <span class="text-[10px] font-bold text-white">{label}</span>
+  </Badge>
+{/snippet}
 
 {#snippet list_item({ title, subtitle, href, key, class: className, ...restProps }: ListItemProps)}
   <li>
@@ -235,16 +208,8 @@
               <Sparkles size={24} />
             {:else if key === 'github'}
               <Github size={24} />
-            {:else if key === 'progress'}
-              <LoaderCircle size={24} />
-            {:else if key === 'pomodoro'}
-              <Hourglass size={24} />
-            {:else if key === 'name-picker'}
-              <MousePointerClick size={24} />
-            {:else if key === 'stopwatch'}
-              <Timer size={24} />
-            {:else if key === 'tic-tac-toe'}
-              <Gamepad size={24} />
+            {:else if key === 'storybook'}
+              <Component size={24} />
             {/if}
           </div>
           <div class="text-start">
@@ -304,11 +269,14 @@
                     <a
                       href={navItem.href}
                       class={cn(
-                        'cursor-pointer rounded-sm px-3 py-1.5 text-sm font-medium text-gray-800 no-underline transition-colors hover:bg-gray-100',
+                        'relative cursor-pointer rounded-sm px-3 py-1.5 text-sm font-medium text-gray-800 no-underline transition-colors hover:bg-gray-100',
                         isNavItemActive(navItem) && 'bg-gray-100'
                       )}
                     >
                       {navItem.title}
+                      {#if navItem.badge}
+                        {@render nav_badge(navItem.badge, 'absolute -top-2.5 -right-1 z-10')}
+                      {/if}
                     </a>
                   {/snippet}
                 </NavigationMenu.Link>
@@ -421,7 +389,12 @@
                     onclick={closeMobileMenu}
                     href={navItem.href}
                   >
-                    {navItem.title}
+                    <span class="inline-flex items-center gap-2">
+                      {navItem.title}
+                      {#if navItem.badge}
+                        {@render nav_badge(navItem.badge, 'relative')}
+                      {/if}
+                    </span>
                   </a>
                 {/if}
               </li>

@@ -194,6 +194,14 @@ Full-screen image viewer for screenshots and other detailed images. `ZoomableIma
 <ImageLightbox images={[{ src, alt }]} {labels} bind:open />
 ```
 
+### Board frame (`src/custom/board-frame/`)
+
+`BoardFrame` wraps one image in the ClassroomIO browser board used for help screenshots: browser chrome with three dots and a URL pill, the paper-colored board, a shelf and two feet. It mirrors the geometry in `apps/help/scripts/frame-screenshot.mjs`, so a framed image looks the same whether it is composited at build time or loaded at runtime. Pass `src`, `alt`, and optionally `url` (the text in the address pill, truncated with an ellipsis). The frame scales with its container width, and the image keeps its aspect ratio uncropped. See `Molecules/BoardFrame` in Storybook.
+
+```svelte
+<BoardFrame src={coverUrl} alt={title} url="feedback.classroomio.com/updates" />
+```
+
 ### Question type picker (`src/custom/question-type-picker/`)
 
 Marketing / demo widget: left-hand list of question types and a live **take**-mode preview using `ExerciseQuestion.QuestionRenderer`. Copy is English-only (no dashboard i18n). Also consumed by the **`@cio/embeds`** app as a CDN bundle (`apps/embeds`).

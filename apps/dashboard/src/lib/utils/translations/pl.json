@@ -3522,7 +3522,16 @@
       "monthly": "Miesięcznie",
       "annually": "Rocznie",
       "popular": "Popularne",
-      "per_org": "Na organizację"
+      "per_org": "Na organizację",
+      "priced_low": {
+        "eyebrow_open": "Cena Early Adopter · {days, plural, one {został # dzień} few {zostały # dni} many {zostało # dni} other {zostało # dni}}",
+        "eyebrow_closing": "Cena Early Adopter · Ostatnie {days} dni",
+        "eyebrow_today": "Cena Early Adopter · Kończy się dziś",
+        "title": "Niska cena celowo. Nie na długo.",
+        "title_closing": "Niska cena celowo. Wkrótce koniec.",
+        "body": "Utrzymujemy ClassroomIO w przystępnej cenie, bo budujemy go razem z naszymi klientami, a nie tylko dla nich. Zablokuj dzisiejszą cenę przed {date}. Potem plan Early Adopter zostanie zamknięty i zaczną obowiązywać nowe ceny.",
+        "link": "Przeczytaj, dlaczego tak robimy"
+      }
     },
     "plan_names": {
       "free": "Bezpłatny",
@@ -6243,5 +6252,30 @@
       "description": "Kompletny kurs z lekcjami, ćwiczeniami i ustawieniami. Skopiuj go, a następnie uczyń go swoim.",
       "browse": "Przeglądaj wszystkie szablony"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Płatność otrzymana. Został jeden krok.",
+      "body": "Utwórz konto lub zaloguj się, a automatycznie połączymy Twój plan Early Adopter z Twoją akademią.",
+      "sign_up": "Utwórz konto",
+      "log_in": "Zaloguj się",
+      "continue": "Przejdź do mojej akademii"
+    },
+    "success": {
+      "title": "Twój plan Early Adopter jest aktywny",
+      "body": "Twoja cena jest zablokowana, a wszystkie funkcje Early Adopter są teraz odblokowane dla Twojej akademii.",
+      "continue": "Zacznij tworzyć"
+    },
+    "errors": {
+      "invalid": "Ten link jest nieprawidłowy. Sprawdź e-mail, który wysłaliśmy, lub skontaktuj się z pomocą.",
+      "expired": "Ten link wygasł. Skontaktuj się z pomocą, a pomożemy połączyć Twój plan.",
+      "unavailable": "Ten link do planu został już użyty lub nie jest już aktywny. Skontaktuj się z pomocą, jeśli to pomyłka.",
+      "conflict": "Ta akademia ma już płatny plan, więc nie mogliśmy połączyć tego. Skontaktuj się z pomocą, a pomożemy."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Nowość",
+    "read_full": "Przeczytaj pełny dziennik zmian",
+    "close": "Zamknij"
   }
 }

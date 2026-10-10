@@ -6,6 +6,7 @@
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import ReceiptIcon from '@lucide/svelte/icons/receipt';
   import { Button } from '@cio/ui/base/button';
+  import EarlyAdopterCallout from '$features/ui/early-adopter-callout.svelte';
   import * as Item from '@cio/ui/base/item';
   import { ExternalLinkIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
 
@@ -71,6 +72,8 @@
         <Button size="sm" variant="outline" onclick={openUpgradeModal}>Upgrade</Button>
       </Item.Actions>
     </Item.Root>
+
+    <EarlyAdopterCallout />
   {:else}
     <Item.Root variant="outline">
       <Item.Media variant="icon">

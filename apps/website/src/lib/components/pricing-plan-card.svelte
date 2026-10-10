@@ -6,6 +6,7 @@
 
   interface Props {
     plan: PlanData;
+    ctaHref?: string;
     isPopular?: boolean;
     isYearlyPlan?: boolean;
     perOrgLabel: string;
@@ -15,6 +16,7 @@
 
   let {
     plan,
+    ctaHref,
     isPopular = false,
     isYearlyPlan = false,
     perOrgLabel,
@@ -45,7 +47,7 @@
   <p class="mt-1 text-sm text-gray-500">{perOrgLabel}</p>
 
   <Button
-    href={plan.CTA.LINK}
+    href={ctaHref ?? plan.CTA.LINK}
     target="_blank"
     rel="noopener"
     variant={isPopular ? 'default' : 'outline'}
