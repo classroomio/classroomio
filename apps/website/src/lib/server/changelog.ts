@@ -208,8 +208,48 @@ async function resolveChangelog(
 }
 
 /**
- * Returns published UserJot changelog entries, newest first, with markdown rendered to sanitized HTML.
- * Uses isolate memory as L1 and Cloudflare KV as L2; returns stale or empty data instead of throwing.
+ * Returns the published changelog entries, newest first, ready for the website and the dashboard sidebar.
+ * Never throws: it returns stale cached entries when a refresh fails, and an empty list when there is no
+ * API key or nothing cached.
+ *
+ * Each entry is `{ id, title, summary, url, videoId, coverUrl, publishedAt, tags }`:
+ * - `summary` is UserJot's `short` text, or the first paragraph of the entry when `short` is empty, with any
+ *   line that carries a YouTube link removed so the video link never becomes the summary.
+ * - `url` is the public entry page on feedback.classroomio.com. UserJot's API does not return slugs, so it is
+ *   found by matching the entry's publish date (YYYY-MM-DD) to the `lastmod` dates in UserJot's public
+ *   sitemap. A date shared by two entries is left out of the lookup so a link never points at the wrong entry,
+ *   and an entry with no match falls back to the updates list page.
+ * - `videoId` is a YouTube video id or null, resolved as described below.
+ *
+ * How a refresh works: UserJot's changelogs API (bearer token, 30 published entries), UserJot's sitemap and
+ * the changelog YouTube playlist's RSS feed are fetched in parallel. Entries scheduled for the future are
+ * dropped and the rest are sorted newest first. A failing sitemap or feed only loses links or videos, while a
+ * failing UserJot call fails the whole refresh.
+ *
+ * How videos are matched: UserJot's API does not return an entry's embedded video, so the videos come from the
+ * public "Changelogs" playlist (`CHANGELOG_PLAYLIST_ID`, RSS feed at
+ * `youtube.com/feeds/videos.xml?playlist_id=<id>`, no API key, latest 15 videos). Every entry is compared with
+ * every video and the pairs published within 24 hours of each other are kept. They are assigned from the
+ * smallest time gap upward, skipping an entry or video that is already paired, so each video goes to at most
+ * one entry. The team publishes the video and the entry on the same day, so gaps are normally under a few
+ * hours. The video for an entry is then the first of: an override in `CHANGELOG_VIDEO_OVERRIDES` (for a wrong
+ * pairing or a video outside the playlist), the playlist pair, a YouTube link written in the entry text, or
+ * null. Entries older than the playlist's latest 15 videos, or more than 24 hours from any video, get no video.
+ *
+ * Caching: isolate memory (L1) and Cloudflare KV (L2, key `KV_KEY`) both hold the result for 10 minutes, and
+ * simultaneous callers share one in-flight refresh. The key carries a version suffix, so change it whenever the
+ * shape of an entry changes. A new video or entry therefore shows up within about 10 minutes.
+ *
+ * Who calls it: `routes/changelog/+page.server.ts` for the changelog page and `routes/api/changelog/+server.ts`
+ * (`?limit=1..30`) for the home page section and for the dashboard. The dashboard never calls this endpoint from
+ * the browser: its server route `/api/whats-new` fetches `/api/changelog?limit=5` (localhost:5174 in dev,
+ * classroomio.com in production) and returns the entries to the sidebar card, which the browser may reuse for 5
+ * minutes. The sidebar card shows the newest entry the user has not opened (opened ids are kept in localStorage)
+ * and its modal embeds `youtube-nocookie.com/embed/<videoId>` when `videoId` is set, or the cover image when not.
+ * If the website is unreachable the dashboard route returns an empty list and the card hides itself.
+ *
+ * @param apiKey UserJot API token (`USERJOT_API_KEY`); without it the result is always empty.
+ * @param kv Cloudflare KV namespace for the shared cache; omit it to cache in memory only.
  */
 export async function getChangelog(
   apiKey: string | undefined,
