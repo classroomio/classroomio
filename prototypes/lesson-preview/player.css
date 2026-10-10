@@ -1,0 +1,387 @@
+.pv-player {
+  --pv-bg: var(--landing-card, var(--card));
+  --pv-fg: var(--landing-fg, var(--foreground));
+  --pv-muted: var(--landing-fg-muted, var(--muted-foreground));
+  --pv-accent: var(--landing-accent, var(--primary));
+  --pv-accent-fg: var(--landing-button-primary-fg, var(--primary-foreground));
+  --pv-border: var(--landing-border, var(--border));
+  --pv-soft: var(--landing-card-soft, var(--muted));
+  --pv-radius: var(--landing-radius-card, var(--radius-lg, 12px));
+  color: var(--pv-fg);
+  background: var(--pv-bg);
+  border: 1px solid var(--pv-border);
+  border-radius: var(--pv-radius);
+  overflow: hidden;
+}
+
+.pv-stage {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #0b1220;
+  color: #fff;
+  overflow: hidden;
+}
+
+.pv-stage.is-doc {
+  aspect-ratio: auto;
+  min-height: 280px;
+  background: var(--pv-soft);
+  color: var(--pv-fg);
+}
+
+.pv-poster {
+  position: absolute;
+  inset: 0;
+  opacity: 0.92;
+}
+
+.pv-stage.is-playing .pv-poster {
+  filter: brightness(0.55);
+}
+
+.pv-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0.05) 30%, rgb(0 0 0 / 0.72) 100%);
+  pointer-events: none;
+}
+
+.pv-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  color: #fff;
+  cursor: pointer;
+}
+
+.pv-play-disk {
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.94);
+  color: #0b1220;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 12px 40px rgb(0 0 0 / 0.28);
+  transition: transform 0.15s;
+}
+
+.pv-play:hover .pv-play-disk,
+.pv-play:focus-visible .pv-play-disk {
+  transform: scale(1.06);
+}
+
+.pv-play-disk svg {
+  width: 28px;
+  height: 28px;
+  margin-left: 3px;
+}
+
+.pv-chrome {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 16px 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.pv-progress {
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.22);
+  overflow: hidden;
+}
+
+.pv-progress > span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: #fff;
+  border-radius: inherit;
+}
+
+.pv-stage.is-playing .pv-progress > span {
+  animation: pv-fill 18s linear forwards;
+}
+
+@keyframes pv-fill {
+  from {
+    width: 0;
+  }
+  to {
+    width: 72%;
+  }
+}
+
+.pv-chrome-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pv-icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 0;
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.pv-icon-btn:hover,
+.pv-icon-btn:focus-visible {
+  background: rgb(255 255 255 / 0.22);
+}
+
+.pv-icon-btn[disabled] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.pv-icon-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+.pv-now {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+.pv-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.pv-meta {
+  margin-left: auto;
+  font-size: 12px;
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+
+.pv-doc {
+  padding: 28px 28px 32px;
+  max-width: 62ch;
+}
+
+.pv-doc .eyebrow {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pv-muted);
+}
+
+.pv-doc h3 {
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  margin: 8px 0 14px;
+}
+
+.pv-doc p {
+  color: var(--pv-muted);
+  font-size: 15px;
+  line-height: 1.65;
+  margin: 0 0 12px;
+}
+
+.pv-figures {
+  display: grid;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.pv-figure {
+  border: 1px solid var(--pv-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--pv-bg);
+}
+
+.pv-figure .art {
+  height: 92px;
+}
+
+.pv-figure .cap {
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.pv-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgb(8 12 24 / 0.72);
+  color: #fff;
+  display: none;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+}
+
+.pv-overlay.open {
+  display: grid;
+}
+
+.pv-overlay .box {
+  max-width: 360px;
+}
+
+.pv-overlay h4 {
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+}
+
+.pv-overlay p {
+  font-size: 14px;
+  opacity: 0.88;
+  margin: 0 0 18px;
+  line-height: 1.5;
+}
+
+.pv-overlay .actions {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pv-rail {
+  border-top: 1px solid var(--pv-border);
+  padding: 12px;
+  background: var(--pv-soft);
+}
+
+.pv-rail-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 2px 4px 10px;
+}
+
+.pv-rail-head .h {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.pv-rail-head .c {
+  font-size: 12.5px;
+  color: var(--pv-muted);
+}
+
+.pv-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 8px;
+}
+
+.pv-card {
+  text-align: left;
+  border: 1px solid var(--pv-border);
+  background: var(--pv-bg);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  font: inherit;
+}
+
+.pv-card:hover,
+.pv-card:focus-visible {
+  border-color: color-mix(in oklab, var(--pv-accent) 45%, var(--pv-border));
+}
+
+.pv-card.on {
+  border-color: var(--pv-accent);
+  box-shadow: 0 0 0 1px var(--pv-accent);
+}
+
+.pv-card .thumb {
+  height: 78px;
+  position: relative;
+}
+
+.pv-card .kind {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgb(255 255 255 / 0.92);
+  color: #111;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.pv-card .body {
+  padding: 8px 10px 10px;
+}
+
+.pv-card .nm {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.5em;
+}
+
+.pv-card .dur {
+  font-size: 11.5px;
+  color: var(--pv-muted);
+  margin-top: 2px;
+}
+
+.pv-cta-strip {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--pv-bg);
+  border: 1px dashed var(--pv-border);
+}
+
+.pv-cta-strip .msg {
+  font-size: 13px;
+  color: var(--pv-muted);
+}
+
+@media (max-width: 720px) {
+  .pv-cards {
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .pv-card {
+    min-width: 176px;
+  }
+  .pv-cta-strip {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
