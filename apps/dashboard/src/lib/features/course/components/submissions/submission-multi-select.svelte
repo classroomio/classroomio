@@ -113,7 +113,7 @@
         <p class="ui:text-muted-foreground px-2 py-3 text-sm">{emptyLabel}</p>
       {:else}
         {#each visibleOptions as option (option.id)}
-          <div class="ui:hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1.5">
+          <div class="group ui:hover:bg-muted flex items-center gap-2 rounded-md px-2 py-1.5">
             <Checkbox
               aria-label={option.label}
               checked={selectedIds.includes(option.id)}
@@ -123,7 +123,7 @@
             <span class="ui:text-muted-foreground text-xs">{option.count}</span>
             <button
               type="button"
-              class="ui:text-primary text-xs font-medium"
+              class="ui:text-primary pointer-events-none text-xs font-medium opacity-0 group-focus-within:pointer-events-auto group-focus-within:opacity-100 group-hover:pointer-events-auto group-hover:opacity-100 focus-visible:pointer-events-auto focus-visible:opacity-100"
               aria-label={`${onlyLabel} ${option.label}`}
               onclick={() => onSelectedIdsChange([option.id])}
             >
