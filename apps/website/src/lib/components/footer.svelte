@@ -60,6 +60,11 @@
               >Pricing</a
             >
           </li>
+          <li>
+            <a href="/changelog" class="ui:text-muted-foreground ui:hover:text-foreground text-sm transition-colors"
+              >Changelog</a
+            >
+          </li>
         </ul>
       </div>
 

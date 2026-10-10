@@ -1,6 +1,6 @@
 ---
 name: write-changelog
-description: Write ClassroomIO's weekly customer changelog from the previous week's shipped work. Produce a concise customer email and a separate changelog-site article with a walkthrough video slot and image placeholders. Use every Monday when preparing the previous week's release update.
+description: Write ClassroomIO's weekly customer changelog from the previous week's shipped work. Produce a concise customer email and a separate changelog-site article, capture framed PNG screenshots, and draft the Resend broadcast. Use every Monday when preparing the previous week's release update.
 ---
 
 # Write weekly changelogs
@@ -14,7 +14,7 @@ The article should explain what changed and why it matters. It should not read l
 
 ## 1. Set the scope
 
-The normal publishing day is Monday. Cover the previous Monday through Sunday, inclusive.
+The normal publishing day is Monday. Cover the previous Monday through Sunday, inclusive, plus anything merged on the publishing day itself. Run `git fetch origin main` and list merged PRs up to the moment you write, so nothing merged that morning is missed. Leave out anything the previous changelog in `company/changelogs/` already covered, and say so in the notes.
 
 Ask for the dates if the range is unclear. Represent dates as `YYYY-MM-DD` while researching. Do not pass unvalidated dates into shell or GitHub commands. A valid date matches exactly `^\d{4}-\d{2}-\d{2}$`.
 
@@ -37,6 +37,12 @@ For each candidate item, record:
 - A short, descriptive feature name.
 
 Do not infer details from a title alone. If a detail cannot be verified, leave it out or mark it for human review. Never invent metrics, dates, customer quotes, availability, or behavior.
+
+Pick the week's biggest feature deliberately and lead with it everywhere: title, subject, intro and first section. Re-check this whenever new PRs are added to the scope.
+
+Group features that serve the same customer goal into one highlight, named after that goal in a few words (for example, the language setting and the student email editor both serve "Academy language", so they share one section with the email editor as a `###` subsection).
+
+Keep the highlights to the features customers will notice. Smaller improvements, such as a clearer error message or extra filters and sorting on a list, go in `## Fixes and improvements` as a single bullet each, not as their own sections or email bullets.
 
 Order the article roughly by customer impact:
 
@@ -73,35 +79,45 @@ The email can use first-person plural for the team ("we fixed", "we added"). The
 
 ## 4. Produce the customer email
 
-Keep the email brief. Summarize the most useful changes and send readers to the full article rather than repeating every detail.
+The email is sent as a Resend broadcast and follows the layout of the previous broadcasts. Summarize the most useful changes and send readers to the full article rather than repeating every detail.
 
 Use this template:
 
 ```markdown
 Subject: [Same as the article title, without the changelog number]
 
-Hi [customer name or team],
+Hi {{{contact.fullname|there}}},
 
 Here are the updates we shipped last week.
 
-[One or two sentences naming the biggest change or theme and why it matters.]
+The big one is [biggest feature]. [One or two sentences on what customers can do now.]
+
+[IMAGE: biggest-feature.png | what it shows]
+
+[One short paragraph on how to use it.]
 
 This week:
 
-- **[Feature or fix]:** [What you can do now and the problem it solves.]
-- **[Feature or fix]:** [What you can do now and the problem it solves.]
-- **[Feature or fix]:** [What you can do now and the problem it solves.]
+**[Feature]:** [What you can do now and the problem it solves.]
+[IMAGE: feature.png | what it shows]
 
-Read the full changelog: [CHANGELOG_URL]
+**[Feature]:** [What you can do now and the problem it solves.]
+[IMAGE: feature.png | what it shows]
 
-[Optional, specific closing sentence only if there is a useful action or detail.]
+**[Optional heads up]:** [A change that needs customer action, such as an API change.]
+
+## Video walkthrough
+
+We made a video showing you all these features at a glance. Grab a cup of your favourite beverage and get ready to enjoy. [Watch the walkthrough](VIDEO_URL)
+
+[Read the changelog](CHANGELOG_URL)
 ```
 
 Rules for the email:
 
-- Include only the strongest customer-facing items. Usually use three to five bullets.
-- Mention the video only if the link is available and useful: `Watch the walkthrough: [VIDEO_URL]`.
-- Do not include image placeholders in the email unless the email template explicitly supports them.
+- Include only the strongest customer-facing items. Usually use three to five items.
+- Each item can carry the same image as its article section.
+- Keep `{{{contact.fullname|there}}}` exactly as written. Resend fills it in.
 - If there is no meaningful release, say so plainly rather than padding the email.
 
 ## 5. Produce the changelog-site article
@@ -156,18 +172,47 @@ Article rules:
 - Keep internal PR numbers, author handles, and engineering-only details out of the article.
 - Use links only when they help the customer take action or learn more.
 
-## 6. Final review
+## 6. Prepare the media
+
+Write every image placeholder as `[IMAGE: file-name.png | what the screenshot shows]`, so the person publishing knows both the file and the shot.
+
+- **Format:** PNG or JPG only, never webp. Convert a webp source with `sips -s format png in.webp --out out.png`.
+- **Location:** save the files in `company/changelogs/assets/<range>/`, for example `assets/28-sept-05-oct/`. Folder and file names are lowercase words separated by hyphens.
+- **Framing:** capture at 1350×830, device scale 1, and frame it in the ClassroomIO browser board, exactly as [`../add-docs-image/SKILL.md`](../add-docs-image/SKILL.md) describes. Write the framed output straight to `.png`.
+- **Reuse:** if the Help Center already has a screenshot of the feature (under `apps/help/content/help/**/images/`), copy it and convert it to PNG instead of capturing a new one.
+- **Demo data:** when a feature needs content to look real, add an idempotent seed script under `packages/db/src/scripts/` with a fictional product and fictional names. Re-run it before capturing so earlier test edits are reset.
+- **Student view locally:** open `http://localhost:5173/?org=<siteName>` once before the student page, or every login opens the admin editor. Sign in through the API on port 3002, as the add-docs-image skill describes. Start the API with `pnpm api:dev` if it is not running, and stop it when you finish.
+- **Check each shot** before framing: no tooltips covering text, no stray test content, images loaded.
+
+The person publishing uploads the files flat to `https://assets.cdn.clsrio.com/changelog/{filename}`, with no date folder. When they confirm, replace each placeholder with `![what it shows](https://assets.cdn.clsrio.com/changelog/{filename})` and check every URL returns 200.
+
+The walkthrough video is a YouTube link they supply. Replace `[VIDEO: Weekly walkthrough]` with the bare link.
+
+## 7. Publish
+
+Save the drafts as `company/changelogs/<range>.md` with `## Customer email`, `## Changelog article` and `## Publishing notes` sections.
+
+- **Article:** the person publishing posts it in UserJot themselves. Its public URL looks like `https://feedback.classroomio.com/updates/p/<slug>`. Ask for it before finishing the email.
+- **Email:** draft it as a Resend broadcast in the browser, matching the previous broadcasts. Open one of them first to check the layout.
+  - Reuse an existing `Untitled` draft instead of creating a second one.
+  - Name: the article title without the changelog number. From: `ClassroomIO Updates <hello@updates.classroomio.com>`. To: All Contacts. Topic: Changelogs. Subject: the title without the number.
+  - Paste the body as HTML into the editor, with the CDN image URLs, then add the unsubscribe footer: "You are receiving this email because you opted in via our site. Want to change how you receive these emails? You can unsubscribe from this list." linked to `{{{RESEND_UNSUBSCRIBE_URL}}}`, then "ClassroomIO".
+  - Resend only renders and accepts clicks in a tab that is in front. If the editor stays on "Loading..." or a selector will not save, ask the person to bring the tab forward, or leave that field for them.
+  - Never send or schedule the broadcast. Hand back the draft link and list anything left to set.
+
+## 8. Final review
 
 Before returning the two deliverables, check:
 
-- [ ] The date range is the previous Monday through Sunday and is stated clearly.
+- [ ] The date range is the previous Monday through the publishing day, checked against the latest `origin/main`, and is stated clearly.
 - [ ] Every listed item shipped during that range.
 - [ ] No in-progress or internal-only work is presented as shipped.
 - [ ] Every claim is supported by the available source material.
 - [ ] The email and article are separate outputs, not one document with duplicated sections.
 - [ ] The email is scannable and includes the changelog link.
-- [ ] The article has a video placeholder near the top.
-- [ ] Every article feature has a specific image placeholder.
+- [ ] The biggest feature leads, related features are grouped under one customer goal, and small improvements sit in Fixes and improvements.
+- [ ] The article has a video placeholder or YouTube link near the top.
+- [ ] Every article feature has a framed PNG or JPG with a lowercase, hyphenated name in `company/changelogs/assets/<range>/`.
 - [ ] Empty sections and filler have been removed.
 - [ ] The terms organization, academy, and student are used consistently.
 - [ ] The copy sounds natural when read aloud and contains no em or en dashes.
