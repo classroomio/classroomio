@@ -6254,8 +6254,6 @@
     }
   },
   "whats_new": {
-    "heading": "Yenilikler",
-    "new_count": "{count} yeni",
     "new_badge": "Yeni",
     "read_full": "Tüm değişiklik günlüğünü oku",
     "close": "Kapat"

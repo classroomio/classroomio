@@ -5,7 +5,7 @@
   import { whatsNewApi } from '../api/whats-new.svelte';
   import { getYoutubeEmbedUrl } from '../utils/whats-new-utils';
 
-  const entry = $derived(whatsNewApi.latestEntry);
+  const entry = $derived(whatsNewApi.activeEntry);
   const publishedDate = $derived(
     entry
       ? new Date(entry.publishedAt).toLocaleDateString($locale || 'en', {

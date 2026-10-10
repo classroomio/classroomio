@@ -1,22 +1,29 @@
-import { WHATS_NEW_ENDPOINT, WHATS_NEW_LAST_SEEN_KEY, countNewEntries } from '../utils/whats-new-utils';
+import {
+  WHATS_NEW_ENDPOINT,
+  WHATS_NEW_SEEN_KEY,
+  addSeenId,
+  getUnseenEntries,
+  parseSeenIds
+} from '../utils/whats-new-utils';
 import type { WhatsNewEntry, WhatsNewResponse } from '../utils/types';
 
 class WhatsNewApi {
   entries = $state<WhatsNewEntry[] | null>(null);
-  lastSeenAt = $state<string | null>(null);
+  seenIds = $state<string[]>([]);
+  activeEntry = $state<WhatsNewEntry | null>(null);
   isLoading = $state(false);
   isOpen = $state(false);
   private hasRequested = false;
 
-  latestEntry = $derived(this.entries?.[0] ?? null);
-  newCount = $derived(this.entries ? countNewEntries(this.entries, this.lastSeenAt) : 0);
+  unseenEntries = $derived(this.entries ? getUnseenEntries(this.entries, this.seenIds) : []);
+  nextEntry = $derived(this.unseenEntries[0] ?? null);
 
   async load() {
     if (this.hasRequested) return;
 
     this.hasRequested = true;
     this.isLoading = true;
-    this.lastSeenAt = this.readLastSeen() ?? this.rememberNow();
+    this.seenIds = parseSeenIds(this.readStored());
 
     try {
       const response = await fetch(WHATS_NEW_ENDPOINT);
@@ -36,45 +43,37 @@ class WhatsNewApi {
     }
   }
 
+  /**
+   * Opens the entry the card is showing and marks it seen, so the card moves on to the next unseen entry.
+   */
   open() {
+    const entry = this.nextEntry;
+
+    if (!entry) return;
+
+    this.activeEntry = entry;
     this.isOpen = true;
-    this.markSeen();
+    this.seenIds = addSeenId(this.seenIds, entry.id);
+    this.writeStored(this.seenIds);
   }
 
   close() {
     this.isOpen = false;
   }
 
-  private markSeen() {
-    const newest = this.latestEntry;
-
-    if (!newest) return;
-
-    this.lastSeenAt = newest.publishedAt;
-    this.writeLastSeen(newest.publishedAt);
-  }
-
-  private rememberNow(): string {
-    const now = new Date().toISOString();
-
-    this.writeLastSeen(now);
-
-    return now;
-  }
-
-  private readLastSeen(): string | null {
+  private readStored(): string | null {
     try {
-      return localStorage.getItem(WHATS_NEW_LAST_SEEN_KEY);
+      return localStorage.getItem(WHATS_NEW_SEEN_KEY);
     } catch {
       return null;
     }
   }
 
-  private writeLastSeen(value: string) {
+  private writeStored(ids: string[]) {
     try {
-      localStorage.setItem(WHATS_NEW_LAST_SEEN_KEY, value);
+      localStorage.setItem(WHATS_NEW_SEEN_KEY, JSON.stringify(ids));
     } catch (error) {
-      console.error('saving whats new last seen error:', error);
+      console.error('saving whats new seen entries error:', error);
     }
   }
 }

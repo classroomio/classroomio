@@ -6274,8 +6274,6 @@
     }
   },
   "whats_new": {
-    "heading": "Novedades",
-    "new_count": "{count} nuevas",
     "new_badge": "Nuevo",
     "read_full": "Leer el registro de cambios completo",
     "close": "Cerrar"

@@ -6274,8 +6274,6 @@
     }
   },
   "whats_new": {
-    "heading": "नया क्या है",
-    "new_count": "{count} नए",
     "new_badge": "नया",
     "read_full": "पूरा चेंजलॉग पढ़ें",
     "close": "बंद करें"
