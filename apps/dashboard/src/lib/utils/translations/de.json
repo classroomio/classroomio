@@ -2682,6 +2682,15 @@
                 "outline": "Erstellen Sie eine Unterrichtsübersicht",
                 "note": "Unterrichtsnotiz erstellen",
                 "activities": "Unterrichtsaktivitäten erstellen"
+              },
+              "callout": {
+                "button": "Callout-Stil",
+                "default": "Standard",
+                "info": "Info",
+                "tip": "Tipp",
+                "important": "Wichtig",
+                "warning": "Warnung",
+                "highlight": "Hervorhebung"
               }
             }
           }

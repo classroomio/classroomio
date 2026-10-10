@@ -2726,6 +2726,15 @@
                 "outline": "Ders Taslağını Oluşturun",
                 "note": "Ders Notu Oluşturun",
                 "activities": "Ders Aktiviteleri Oluşturun"
+              },
+              "callout": {
+                "button": "Vurgu stili",
+                "default": "Varsayılan",
+                "info": "Bilgi",
+                "tip": "İpucu",
+                "important": "Önemli",
+                "warning": "Uyarı",
+                "highlight": "Vurgu"
               }
             },
             "slide": {

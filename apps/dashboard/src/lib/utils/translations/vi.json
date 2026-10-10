@@ -2682,6 +2682,15 @@
                 "outline": "Tạo dàn ý bài học",
                 "note": "Tạo ghi chú bài học",
                 "activities": "Tạo hoạt động bài học"
+              },
+              "callout": {
+                "button": "Kiểu chú thích",
+                "default": "Mặc định",
+                "info": "Thông tin",
+                "tip": "Mẹo",
+                "important": "Quan trọng",
+                "warning": "Cảnh báo",
+                "highlight": "Nhấn mạnh"
               }
             }
           }
