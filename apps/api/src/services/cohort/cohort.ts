@@ -56,7 +56,8 @@ import { getProfileByEmail } from '@cio/db/queries/auth';
 import {
   getOrgMembersByProfileIds,
   getOrganizationMemberIdByOrgAndProfile,
-  insertOrganizationMembersOnConflictDoNothing
+  insertOrganizationMembersOnConflictDoNothing,
+  listActiveOrganizationRoles
 } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
@@ -144,14 +145,26 @@ async function enrollCohortStudentsInGroups(
 }
 
 async function enrollCohortStaffInCourseGroups(
+  organizationId: string,
   groupIds: string[],
   members: CohortMemberEnrollment[],
   dbClient: DbOrTxClient
 ) {
-  const staff = members.filter((member) => member.profileId && isCohortStaffRole(member.roleId));
+  const cohortStaff = members.filter((member) => member.profileId && isCohortStaffRole(member.roleId));
   const uniqueGroupIds = [...new Set(groupIds)];
 
-  if (uniqueGroupIds.length === 0 || staff.length === 0) {
+  if (uniqueGroupIds.length === 0 || cohortStaff.length === 0) {
+    return;
+  }
+
+  const profileIds = cohortStaff.map((member) => member.profileId);
+  const organizationRoles = await listActiveOrganizationRoles(organizationId, profileIds, dbClient);
+  const organizationStaffIds = new Set(
+    organizationRoles.filter((member) => isCohortStaffRole(member.roleId)).map((member) => member.profileId)
+  );
+  const staff = cohortStaff.filter((member) => organizationStaffIds.has(member.profileId));
+
+  if (staff.length === 0) {
     return;
   }
 
@@ -416,6 +429,7 @@ export async function addCohortMembersSettled(cohortId: string, data: TAddCohort
             const validCourseGroupIds = courseGroupIds.filter((groupId): groupId is string => Boolean(groupId));
 
             await enrollCohortStaffInCourseGroups(
+              cohort.organizationId,
               validCourseGroupIds,
               [
                 {
@@ -477,7 +491,13 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
 
     const wasStaff = isCohortStaffRole(existing.roleId);
     const willBeStaff = isCohortStaffRole(data.roleId);
-    const courseGroups = existing.profileId && !wasStaff && willBeStaff ? await listCohortCourseGroups(cohortId) : [];
+    const promotingToStaff = Boolean(existing.profileId) && !wasStaff && willBeStaff;
+    const cohort = promotingToStaff ? await getCohortById(cohortId) : null;
+    if (promotingToStaff && !cohort) {
+      throw new AppError('Cohort not found', ErrorCodes.COHORT_NOT_FOUND, 404);
+    }
+
+    const courseGroups = promotingToStaff ? await listCohortCourseGroups(cohortId) : [];
 
     const updated = await db.transaction(async (tx) => {
       const member = await updateCohortMemberQuery(cohortId, memberId, { roleId: data.roleId }, tx);
@@ -485,8 +505,9 @@ export async function updateCohortMemberService(cohortId: string, memberId: stri
         throw new AppError('Cohort member not found', ErrorCodes.COHORT_MEMBER_NOT_FOUND, 404);
       }
 
-      if (existing.profileId && !wasStaff && willBeStaff) {
+      if (cohort && existing.profileId && !wasStaff && willBeStaff) {
         await enrollCohortStaffInCourseGroups(
+          cohort.organizationId,
           courseGroups.map((group) => group.groupId),
           [
             {
@@ -605,7 +626,7 @@ export async function addCourseToCohortService(cohortId: string, data: TAddCours
         ];
       });
 
-      await enrollCohortStaffInCourseGroups(courseGroupIds, staff, tx);
+      await enrollCohortStaffInCourseGroups(cohort.organizationId, courseGroupIds, staff, tx);
 
       return { result: linked, students: enrolledStudents };
     });

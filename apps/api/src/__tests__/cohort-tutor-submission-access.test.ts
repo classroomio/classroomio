@@ -386,6 +386,50 @@ describe.skipIf(!hasDatabase)('cohort tutor submission access', () => {
     expect(Number(learnerMembership[0].roleId)).toBe(ROLE.STUDENT);
   });
 
+  it('does not give an organization student a course tutor row', async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    const { createOrganizationMember } = await import('@db/queries/organization');
+    const { addCohortMembersSettled } = await import('@api/services/cohort/cohort');
+
+    const email = `org-student-${suffix}@submission-access.test`;
+    const [userRow] = await db
+      .insert(schema.user)
+      .values({ name: 'org-student', email, emailVerified: true })
+      .returning();
+    await db.insert(schema.profile).values({
+      id: userRow.id,
+      fullname: 'org-student',
+      username: `org-student-${suffix}`,
+      email
+    });
+    await createOrganizationMember({
+      organizationId,
+      roleId: ROLE.STUDENT,
+      profileId: userRow.id,
+      email,
+      verified: true,
+      status: 'ACTIVE'
+    });
+    people.push({ userId: userRow.id, email });
+
+    const [result] = await addCohortMembersSettled(cohortId, {
+      members: [{ profileId: userRow.id, email, roleId: ROLE.TUTOR }]
+    });
+
+    expect(result.status).toBe('fulfilled');
+
+    const memberships = await db
+      .select({ roleId: schema.groupmember.roleId })
+      .from(schema.groupmember)
+      .where(eq(schema.groupmember.profileId, userRow.id));
+
+    expect(memberships).toHaveLength(0);
+
+    const response = await appAs(userRow.id).request(`/course/${linkedCourseId}/submission/for-grading`);
+    expect(response.status).toBe(403);
+  });
+
   it('leaves the enrolled course tutor in place when the cohort link ends', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');

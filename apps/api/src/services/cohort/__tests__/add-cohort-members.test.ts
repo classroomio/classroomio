@@ -15,7 +15,8 @@ vi.mock('@cio/db/queries/auth', () => ({ getProfileByEmail: vi.fn() }));
 vi.mock('@cio/db/queries/organization', () => ({
   getOrgMembersByProfileIds: vi.fn(),
   getOrganizationMemberIdByOrgAndProfile: vi.fn(),
-  insertOrganizationMembersOnConflictDoNothing: vi.fn()
+  insertOrganizationMembersOnConflictDoNothing: vi.fn(),
+  listActiveOrganizationRoles: vi.fn()
 }));
 vi.mock('@cio/db/drizzle', () => ({
   db: { transaction: vi.fn((callback: (tx: unknown) => unknown) => callback({})) }
@@ -35,6 +36,7 @@ import {
 import { getCourseGroupIds } from '@cio/db/queries/course';
 import { insertGroupMembersOnConflictDoNothing } from '@cio/db/queries/group';
 import { getProfileByEmail } from '@cio/db/queries/auth';
+import { listActiveOrganizationRoles } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import { addCohortMembersSettled } from '@api/services/cohort/cohort';
 
@@ -49,6 +51,7 @@ describe('addCohortMembersSettled', () => {
     vi.mocked(getCoursesByCohort).mockResolvedValue([]);
     vi.mocked(getCourseGroupIds).mockResolvedValue([]);
     vi.mocked(insertGroupMembersOnConflictDoNothing).mockResolvedValue();
+    vi.mocked(listActiveOrganizationRoles).mockResolvedValue([]);
     vi.mocked(getProfileByEmail).mockResolvedValue(null as never);
     vi.mocked(addCohortMember).mockResolvedValue({ id: 'new-member' } as Awaited<ReturnType<typeof addCohortMember>>);
   });
@@ -109,6 +112,7 @@ describe('addCohortMembersSettled', () => {
       profileId: 'profile-1',
       roleId: ROLE.TUTOR
     } as Awaited<ReturnType<typeof addCohortMember>>);
+    vi.mocked(listActiveOrganizationRoles).mockResolvedValue([{ profileId: 'profile-1', roleId: ROLE.TUTOR }]);
     const [result] = await addCohortMembersSettled(COHORT_ID, {
       members: [{ profileId: 'profile-1', email: 'tutor@example.com', roleId: ROLE.TUTOR }]
     });
@@ -125,5 +129,26 @@ describe('addCohortMembersSettled', () => {
       ],
       expect.anything()
     );
+  });
+
+  it('does not enroll an organization student who is only a cohort tutor', async () => {
+    vi.mocked(getCohortMemberByProfileId).mockResolvedValue(null);
+    vi.mocked(getCoursesByCohort).mockResolvedValue([{ course: { id: 'course-1' } }] as Awaited<
+      ReturnType<typeof getCoursesByCohort>
+    >);
+    vi.mocked(getCourseGroupIds).mockResolvedValue([{ courseId: 'course-1', groupId: 'group-1' }]);
+    vi.mocked(addCohortMember).mockResolvedValue({
+      id: 'member-1',
+      profileId: 'profile-1',
+      roleId: ROLE.TUTOR
+    } as Awaited<ReturnType<typeof addCohortMember>>);
+    vi.mocked(listActiveOrganizationRoles).mockResolvedValue([{ profileId: 'profile-1', roleId: ROLE.STUDENT }]);
+
+    const [result] = await addCohortMembersSettled(COHORT_ID, {
+      members: [{ profileId: 'profile-1', email: 'student@example.com', roleId: ROLE.TUTOR }]
+    });
+
+    expect(result.status).toBe('fulfilled');
+    expect(insertGroupMembersOnConflictDoNothing).not.toHaveBeenCalled();
   });
 });

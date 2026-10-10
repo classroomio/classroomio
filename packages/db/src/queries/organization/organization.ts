@@ -224,6 +224,37 @@ export async function getOrganizationMemberRoleId(organizationId: string, profil
   }
 }
 
+export async function listActiveOrganizationRoles(
+  organizationId: string,
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+) {
+  if (profileIds.length === 0) return [];
+
+  try {
+    const rows = await dbClient
+      .select({
+        profileId: schema.organizationmember.profileId,
+        roleId: schema.organizationmember.roleId
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, organizationId),
+          inArray(schema.organizationmember.profileId, profileIds),
+          eq(schema.organizationmember.status, 'ACTIVE')
+        )
+      );
+
+    return rows.flatMap((row) => (row.profileId ? [{ profileId: row.profileId, roleId: row.roleId }] : []));
+  } catch (error) {
+    console.error('listActiveOrganizationRoles error:', error);
+    throw new Error(
+      `Failed to list active organization roles: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 /**
  * Creates multiple organization members in a single query
  * @param data Array of organization member creation data
