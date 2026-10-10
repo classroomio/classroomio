@@ -2682,6 +2682,15 @@
                 "outline": "Generar esquema de lección",
                 "note": "Generar nota de lección",
                 "activities": "Generar actividades lectivas"
+              },
+              "callout": {
+                "button": "Estilo de aviso",
+                "default": "Predeterminado",
+                "info": "Info",
+                "tip": "Consejo",
+                "important": "Importante",
+                "warning": "Advertencia",
+                "highlight": "Destacado"
               }
             }
           }

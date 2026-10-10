@@ -16,6 +16,8 @@
     showToolBar?: boolean;
     toolbarPreset?: 'default' | 'email';
     toolbarTrailing?: Snippet<[]>;
+    contentLeading?: Snippet<[]>;
+    contentFrameClass?: string;
     // Whether the editor is editable
     editable?: boolean;
     // Whether to enable localStorage persistence
@@ -49,6 +51,8 @@
     showToolBar = true,
     toolbarPreset = 'default',
     toolbarTrailing,
+    contentLeading,
+    contentFrameClass = '',
     editable = true,
     enablePersistence = false,
     contentStorageKey = 'edra-content',
@@ -176,17 +180,22 @@
         <EdraDragHandleExtended {editor} />
       {/if}
     {/if}
-    <EdraEditor
-      class={cn('ui:relative ui:h-full ui:overflow-auto ui:p-4', editorClass)}
-      bind:editor
-      {editable}
-      emailSafe={toolbarPreset === 'email'}
-      {content}
-      {onUpdate}
-      {placeholder}
-      {onImageUpload}
-      {onSearchUnsplash}
-    />
+    <div class={cn('ui:flex ui:min-h-0 ui:flex-1 ui:flex-col', contentFrameClass)}>
+      {#if contentLeading}
+        {@render contentLeading()}
+      {/if}
+      <EdraEditor
+        class={cn('ui:relative ui:min-h-0 ui:flex-1 ui:overflow-auto ui:p-4', editorClass)}
+        bind:editor
+        {editable}
+        emailSafe={toolbarPreset === 'email'}
+        {content}
+        {onUpdate}
+        {placeholder}
+        {onImageUpload}
+        {onSearchUnsplash}
+      />
+    </div>
   </div>
 
   {#if expandable}
@@ -205,6 +214,8 @@
               {editable}
               {toolbarPreset}
               {toolbarTrailing}
+              {contentLeading}
+              {contentFrameClass}
               {placeholder}
               {onImageUpload}
               {onSearchUnsplash}

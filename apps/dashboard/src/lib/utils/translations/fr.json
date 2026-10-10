@@ -2682,6 +2682,15 @@
                 "outline": "Générer un plan de leçon",
                 "note": "Générer une note de cours",
                 "activities": "Générer des activités de cours"
+              },
+              "callout": {
+                "button": "Style d'encadré",
+                "default": "Par défaut",
+                "info": "Info",
+                "tip": "Astuce",
+                "important": "Important",
+                "warning": "Avertissement",
+                "highlight": "Surlignage"
               }
             }
           }

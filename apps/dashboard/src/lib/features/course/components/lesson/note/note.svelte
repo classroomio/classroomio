@@ -9,6 +9,12 @@
   import type { TLocale } from '@cio/db/types';
   import AIButton from '$features/course/components/lesson/ai-button.svelte';
   import QuoteSelection from '$features/course/components/lesson/note/quote-selection.svelte';
+  import NoteCalloutPicker from '$features/course/components/lesson/note/note-callout-picker.svelte';
+  import {
+    noteCalloutFrameClass,
+    noteCalloutMeta,
+    type NoteCalloutStyle
+  } from '$features/course/components/lesson/note/note-callout';
   import type { Writable } from 'svelte/store';
   import { saveDraft } from '$features/course/utils/lesson-draft';
 
@@ -23,6 +29,15 @@
 
   let noteRoot: HTMLElement | undefined = $state();
   let editRoot: HTMLElement | undefined = $state();
+  let calloutByLesson = $state<Record<string, NoteCalloutStyle>>({});
+
+  const calloutStyle = $derived<NoteCalloutStyle>(calloutByLesson[lessonId] ?? '');
+  const activeCallout = $derived(noteCalloutMeta(calloutStyle));
+  const calloutFrameClass = $derived(noteCalloutFrameClass(calloutStyle));
+
+  function setCalloutStyle(style: NoteCalloutStyle) {
+    calloutByLesson[lessonId] = style;
+  }
 
   $effect(() => {
     if (mode !== MODES.edit) {
@@ -55,6 +70,22 @@
   const content = $derived(lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '');
 </script>
 
+{#snippet calloutToolbar()}
+  <div class="ui:bg-border mx-1 h-4 w-px shrink-0" aria-hidden="true"></div>
+  <NoteCalloutPicker value={calloutStyle} onChange={setCalloutStyle} />
+{/snippet}
+
+{#snippet calloutLabel()}
+  {#if activeCallout}
+    <div
+      class="note-callout-label flex items-center gap-1.5 px-3.5 pt-2.5 text-[12.5px] font-bold {activeCallout.labelClass}"
+    >
+      <activeCallout.icon class="size-3.5" />
+      <span>{$t(activeCallout.labelKey)}</span>
+    </div>
+  {/if}
+{/snippet}
+
 {#if mode === MODES.edit}
   <!-- AI Button -->
   <div class="flex justify-end gap-1">
@@ -68,6 +99,9 @@
       onChange={(content) => onEditorChange(content)}
       onReady={bindEditorRoot}
       placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
+      toolbarTrailing={calloutToolbar}
+      contentLeading={calloutLabel}
+      contentFrameClass={calloutFrameClass}
     />
   </div>
   <QuoteSelection root={editRoot} enabled />
@@ -86,3 +120,55 @@
     </p>
   {/if}
 {/if}
+
+<style>
+  :global(.note-callout.note-callout-info) {
+    background: color-mix(in oklab, oklch(0.6 0.15 250), transparent 92%);
+    border-color: color-mix(in oklab, oklch(0.6 0.15 250), transparent 60%);
+  }
+
+  :global(.dark .note-callout.note-callout-info) {
+    background: color-mix(in oklab, oklch(0.7 0.12 250), transparent 82%);
+    border-color: color-mix(in oklab, oklch(0.7 0.12 250), transparent 55%);
+  }
+
+  :global(.note-callout.note-callout-tip) {
+    background: color-mix(in oklab, oklch(0.6 0.14 160), transparent 92%);
+    border-color: color-mix(in oklab, oklch(0.6 0.14 160), transparent 60%);
+  }
+
+  :global(.dark .note-callout.note-callout-tip) {
+    background: color-mix(in oklab, oklch(0.72 0.12 160), transparent 82%);
+    border-color: color-mix(in oklab, oklch(0.72 0.12 160), transparent 55%);
+  }
+
+  :global(.note-callout.note-callout-important) {
+    background: color-mix(in oklab, var(--primary), transparent 92%);
+    border-color: color-mix(in oklab, var(--primary), transparent 60%);
+  }
+
+  :global(.dark .note-callout.note-callout-important) {
+    background: color-mix(in oklab, var(--primary), transparent 84%);
+    border-color: color-mix(in oklab, var(--primary), transparent 55%);
+  }
+
+  :global(.note-callout.note-callout-warning) {
+    background: color-mix(in oklab, oklch(0.7 0.16 70), transparent 88%);
+    border-color: color-mix(in oklab, oklch(0.7 0.16 70), transparent 55%);
+  }
+
+  :global(.dark .note-callout.note-callout-warning) {
+    background: color-mix(in oklab, oklch(0.75 0.14 70), transparent 80%);
+    border-color: color-mix(in oklab, oklch(0.75 0.14 70), transparent 50%);
+  }
+
+  :global(.note-callout.note-callout-highlight) {
+    background: color-mix(in oklab, oklch(0.8 0.17 95), transparent 82%);
+    border-color: color-mix(in oklab, oklch(0.8 0.17 95), transparent 50%);
+  }
+
+  :global(.dark .note-callout.note-callout-highlight) {
+    background: color-mix(in oklab, oklch(0.8 0.14 95), transparent 78%);
+    border-color: color-mix(in oklab, oklch(0.8 0.14 95), transparent 48%);
+  }
+</style>

@@ -2682,6 +2682,15 @@
                 "outline": "Generer lektionsoversigt",
                 "note": "Generer lektionsnotat",
                 "activities": "Generer lektionsaktiviteter"
+              },
+              "callout": {
+                "button": "Callout-stil",
+                "default": "Standard",
+                "info": "Info",
+                "tip": "Tip",
+                "important": "Vigtigt",
+                "warning": "Advarsel",
+                "highlight": "Fremhævning"
               }
             }
           }

@@ -2682,6 +2682,15 @@
                 "outline": "Wygeneruj konspekt lekcji",
                 "note": "Wygeneruj notatkę z lekcji",
                 "activities": "Generuj zajęcia lekcyjne"
+              },
+              "callout": {
+                "button": "Styl wyróżnienia",
+                "default": "Domyślny",
+                "info": "Informacja",
+                "tip": "Wskazówka",
+                "important": "Ważne",
+                "warning": "Ostrzeżenie",
+                "highlight": "Wyróżnienie"
               }
             }
           }

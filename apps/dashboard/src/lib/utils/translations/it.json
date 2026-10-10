@@ -2718,6 +2718,15 @@
                 "outline": "Genera lo schema della lezione",
                 "note": "Genera nota di lezione",
                 "activities": "Genera attività di lezione"
+              },
+              "callout": {
+                "button": "Stile di evidenziazione",
+                "default": "Predefinito",
+                "info": "Info",
+                "tip": "Suggerimento",
+                "important": "Importante",
+                "warning": "Avviso",
+                "highlight": "Evidenziazione"
               }
             },
             "slide": {

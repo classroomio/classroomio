@@ -26,6 +26,8 @@ export interface EditorProps {
   showToolBar?: boolean;
   toolbarPreset?: EditorToolbarPreset;
   toolbarTrailing?: Snippet<[]>;
+  contentLeading?: Snippet<[]>;
+  contentFrameClass?: string;
   // Whether the editor is editable
   editable?: boolean;
   // Whether to enable localStorage persistence

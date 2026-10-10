@@ -2718,6 +2718,15 @@
                 "outline": "Generate Lesson Outline",
                 "note": "Generate Lesson Note",
                 "activities": "Generate Lesson Activities"
+              },
+              "callout": {
+                "button": "Callout style",
+                "default": "Default",
+                "info": "Info",
+                "tip": "Tip",
+                "important": "Important",
+                "warning": "Warning",
+                "highlight": "Highlight"
               }
             },
             "slide": {

@@ -58,5 +58,6 @@
     <FontSize {editor} />
     <QuickColors {editor} />
     <SearchAndReplace {editor} />
+    {@render trailingContent?.()}
   {/if}
 </div>
