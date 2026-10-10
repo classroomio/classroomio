@@ -2,7 +2,6 @@
   import { BoardFrame } from '@cio/ui/custom/board-frame';
   import { formatDate } from '$lib/utils/format-date';
   import type { ChangelogEntry } from '$lib/utils/types';
-  import CtaButton from './ui/cta-button.svelte';
   import NotchCard from './ui/notch-card.svelte';
 
   interface Props {
@@ -38,7 +37,12 @@
       {/if}
 
       <div>
-        <CtaButton href={entry.url} target="_blank" rel="noopener noreferrer" arrow>Read the full update</CtaButton>
+        <a
+          href={entry.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-sm font-medium text-blue-700 no-underline hover:underline">Read the full update →</a
+        >
       </div>
     </div>
   </article>

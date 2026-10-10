@@ -1,17 +1,13 @@
 <script lang="ts">
   import BookOpen from '@lucide/svelte/icons/book-open';
   import ChevronDown from '@lucide/svelte/icons/chevron-down';
-  import Gamepad from '@lucide/svelte/icons/gamepad';
+  import Component from '@lucide/svelte/icons/component';
   import Github from '@lucide/svelte/icons/github';
-  import Hourglass from '@lucide/svelte/icons/hourglass';
-  import LoaderCircle from '@lucide/svelte/icons/loader-circle';
   import LocateFixed from '@lucide/svelte/icons/locate-fixed';
   import Menu from '@lucide/svelte/icons/menu';
   import MessagesSquare from '@lucide/svelte/icons/messages-square';
-  import MousePointerClick from '@lucide/svelte/icons/mouse-pointer-click';
   import Server from '@lucide/svelte/icons/server';
   import Sparkles from '@lucide/svelte/icons/sparkles';
-  import Timer from '@lucide/svelte/icons/timer';
   import Webhook from '@lucide/svelte/icons/webhook';
   import X from '@lucide/svelte/icons/x';
   import { page } from '$app/state';
@@ -212,16 +208,8 @@
               <Sparkles size={24} />
             {:else if key === 'github'}
               <Github size={24} />
-            {:else if key === 'progress'}
-              <LoaderCircle size={24} />
-            {:else if key === 'pomodoro'}
-              <Hourglass size={24} />
-            {:else if key === 'name-picker'}
-              <MousePointerClick size={24} />
-            {:else if key === 'stopwatch'}
-              <Timer size={24} />
-            {:else if key === 'tic-tac-toe'}
-              <Gamepad size={24} />
+            {:else if key === 'storybook'}
+              <Component size={24} />
             {/if}
           </div>
           <div class="text-start">
