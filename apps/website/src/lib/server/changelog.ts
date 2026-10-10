@@ -238,8 +238,9 @@ async function resolveChangelog(
  *
  * Caching: isolate memory (L1) and Cloudflare KV (L2, key `KV_KEY`) both hold the result for 3 hours, and
  * simultaneous callers share one in-flight refresh. The key carries a version suffix, so change it whenever the
- * shape of an entry changes. A new entry or video therefore shows up within about 3 hours, or sooner if the KV key is deleted.
- * An entry cached before its video was uploaded keeps showing no video until the next refresh.
+ * shape of an entry changes. A new entry or video therefore shows up within about 3 hours. Deleting the KV key
+ * helps only Workers whose in-memory copy has already expired, so it is not an instant refresh. An entry cached
+ * before its video was uploaded keeps showing no video until the next refresh.
  *
  * Who calls it: `routes/changelog/+page.server.ts` for the changelog page and `routes/api/changelog/+server.ts`
  * (`?limit=1..30`) for the home page section and for the dashboard. The dashboard never calls this endpoint from
