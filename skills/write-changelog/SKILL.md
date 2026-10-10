@@ -193,7 +193,7 @@ The walkthrough video is a YouTube link they supply. Replace `[VIDEO: Weekly wal
 Save the drafts as `company/changelogs/<range>.md` with `## Customer email`, `## Changelog article` and `## Publishing notes` sections.
 
 - **Article:** the person publishing posts it in UserJot themselves. Its public URL looks like `https://feedback.classroomio.com/updates/p/<slug>`. Ask for it before finishing the email.
-- **Walkthrough video:** UserJot's API does not return an entry's embedded video, so the dashboard "What's new" modal reads it from `apps/website/src/lib/data/changelog-videos.ts`. When the entry has a walkthrough, add one line there mapping the UserJot entry id (`id` from `GET https://api.userjot.com/v1/changelogs`) to the YouTube id, and include that file in the change.
+- **Walkthrough video:** publish the video to the public "Changelogs" YouTube playlist on the same day as the UserJot entry. The website reads that playlist's RSS feed and pairs each video with the entry published within 24 hours, so the dashboard "What's new" modal shows it with no code change. Only when a pairing is wrong, or the video lives outside the playlist, map the UserJot entry id (`id` from `GET https://api.userjot.com/v1/changelogs`) to the YouTube id in `CHANGELOG_VIDEO_OVERRIDES` in `apps/website/src/lib/data/changelog-videos.ts`.
 - **Email:** draft it as a Resend broadcast in the browser, matching the previous broadcasts. Open one of them first to check the layout.
   - Reuse an existing `Untitled` draft instead of creating a second one.
   - Name: the article title without the changelog number. From: `ClassroomIO Updates <hello@updates.classroomio.com>`. To: All Contacts. Topic: Changelogs. Subject: the title without the number.

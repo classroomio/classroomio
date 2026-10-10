@@ -1,8 +1,11 @@
 /**
- * YouTube video id for each UserJot changelog entry that has a walkthrough, keyed by the UserJot entry id
- * (`id` in `GET /v1/changelogs`). UserJot's API does not return an entry's embedded video, so add a line here
- * when you publish an entry that has one.
+ * The public YouTube playlist the weekly changelog walkthrough videos are published to. Each video is matched to
+ * the changelog entry published the same day.
  */
-export const CHANGELOG_VIDEOS: Record<string, string> = {
-  cmuv432gi15ft0kpenhk8015o: 'HojcpzwQqv4'
-};
+export const CHANGELOG_PLAYLIST_ID = 'PLMEG4cJ-nGcA';
+
+/**
+ * Manual overrides, keyed by UserJot entry id (`id` in `GET /v1/changelogs`) with a YouTube video id as the value.
+ * Use it when the playlist match is wrong or a video lives outside the playlist. Wins over the playlist match.
+ */
+export const CHANGELOG_VIDEO_OVERRIDES: Record<string, string> = {};

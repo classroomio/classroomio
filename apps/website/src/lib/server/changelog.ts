@@ -1,15 +1,22 @@
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import type { ChangelogEntry } from '$lib/utils/types';
-import { CHANGELOG_VIDEOS } from '$lib/data/changelog-videos';
-import { resolveVideoId, stripYoutubeLines } from './changelog-video';
+import { CHANGELOG_PLAYLIST_ID, CHANGELOG_VIDEO_OVERRIDES } from '$lib/data/changelog-videos';
+import {
+  matchVideosToEntries,
+  parsePlaylistFeed,
+  resolveVideoId,
+  stripYoutubeLines,
+  type PlaylistVideo
+} from './changelog-video';
 
 const USERJOT_CHANGELOG_URL = 'https://api.userjot.com/v1/changelogs';
 const UPDATES_BASE_URL = 'https://feedback.classroomio.com/updates';
 const UPDATES_SITEMAP_URL = 'https://feedback.classroomio.com/sitemap.xml';
+const PLAYLIST_FEED_URL = `https://www.youtube.com/feeds/videos.xml?playlist_id=${CHANGELOG_PLAYLIST_ID}`;
 const FETCH_LIMIT = 30;
 const CACHE_TTL_MS = 1000 * 60 * 10;
-const KV_KEY = 'userjot:changelog:v4';
+const KV_KEY = 'userjot:changelog:v5';
 
 type ChangelogCacheEntry = {
   entries: ChangelogEntry[];
@@ -79,12 +86,35 @@ async function fetchEntryUrlsByDate(): Promise<Map<string, string>> {
   return urlsByDate;
 }
 
-function toChangelogEntry(changelog: UserJotChangelog, urlsByDate: Map<string, string>): ChangelogEntry {
+/**
+ * Reads the changelog playlist's public RSS feed. Returns no videos when it cannot be reached.
+ */
+async function fetchPlaylistVideos(): Promise<PlaylistVideo[]> {
+  try {
+    const response = await fetch(PLAYLIST_FEED_URL);
+
+    if (!response.ok) {
+      throw new Error(`YouTube playlist feed returned ${response.status}`);
+    }
+
+    return parsePlaylistFeed(await response.text());
+  } catch (error) {
+    console.error('getChangelog error: failed to read playlist videos', error);
+
+    return [];
+  }
+}
+
+function toChangelogEntry(
+  changelog: UserJotChangelog,
+  urlsByDate: Map<string, string>,
+  videoMatches: Map<string, string>
+): ChangelogEntry {
   return {
     id: changelog.id,
     title: changelog.title,
     summary: changelog.short?.trim() || extractFirstParagraph(stripYoutubeLines(changelog.markdown)),
-    videoId: resolveVideoId(changelog.id, changelog.markdown, CHANGELOG_VIDEOS),
+    videoId: resolveVideoId(changelog.id, changelog.markdown, CHANGELOG_VIDEO_OVERRIDES, videoMatches),
     url: urlsByDate.get(changelog.publish_at.slice(0, 10)) ?? UPDATES_BASE_URL,
     coverUrl: changelog.cover?.url ?? null,
     publishedAt: changelog.publish_at,
@@ -94,9 +124,10 @@ function toChangelogEntry(changelog: UserJotChangelog, urlsByDate: Map<string, s
 
 async function fetchFromUserJot(apiKey: string): Promise<ChangelogEntry[]> {
   const url = `${USERJOT_CHANGELOG_URL}?status=published&limit=${FETCH_LIMIT}`;
-  const [response, urlsByDate] = await Promise.all([
+  const [response, urlsByDate, playlistVideos] = await Promise.all([
     fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } }),
-    fetchEntryUrlsByDate()
+    fetchEntryUrlsByDate(),
+    fetchPlaylistVideos()
   ]);
 
   if (!response.ok) {
@@ -106,10 +137,15 @@ async function fetchFromUserJot(apiKey: string): Promise<ChangelogEntry[]> {
   const payload = (await response.json()) as { changelogs?: UserJotChangelog[] };
   const now = Date.now();
 
-  return (payload.changelogs ?? [])
+  const published = (payload.changelogs ?? [])
     .filter((changelog) => new Date(changelog.publish_at).getTime() <= now)
-    .sort((a, b) => new Date(b.publish_at).getTime() - new Date(a.publish_at).getTime())
-    .map((changelog) => toChangelogEntry(changelog, urlsByDate));
+    .sort((a, b) => new Date(b.publish_at).getTime() - new Date(a.publish_at).getTime());
+  const videoMatches = matchVideosToEntries(
+    published.map((changelog) => ({ id: changelog.id, publishedAt: changelog.publish_at })),
+    playlistVideos
+  );
+
+  return published.map((changelog) => toChangelogEntry(changelog, urlsByDate, videoMatches));
 }
 
 async function readKv(kv: ChangelogKvNamespace | null | undefined): Promise<ChangelogCacheEntry | null> {
