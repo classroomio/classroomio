@@ -82,14 +82,7 @@
 <Popover.Root {open} onOpenChange={handleOpenChange}>
   <Popover.Trigger>
     {#snippet child({ props })}
-      <Button
-        {...props}
-        type="button"
-        variant="outline"
-        size="sm"
-        {testId}
-        class={hasSelection ? 'ui:border-primary ui:text-primary' : undefined}
-      >
+      <Button {...props} type="button" variant="outline" size="sm" {testId}>
         <span class="max-w-56 truncate">{triggerLabel}</span>
         {#if extraCount > 0}
           <span class="shrink-0">+{extraCount}</span>
