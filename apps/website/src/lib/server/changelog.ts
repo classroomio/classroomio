@@ -1,14 +1,15 @@
 import { marked } from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import type { ChangelogEntry } from '$lib/utils/types';
-import { extractYoutubeId, stripYoutubeLines } from './changelog-video';
+import { CHANGELOG_VIDEOS } from '$lib/data/changelog-videos';
+import { resolveVideoId, stripYoutubeLines } from './changelog-video';
 
 const USERJOT_CHANGELOG_URL = 'https://api.userjot.com/v1/changelogs';
 const UPDATES_BASE_URL = 'https://feedback.classroomio.com/updates';
 const UPDATES_SITEMAP_URL = 'https://feedback.classroomio.com/sitemap.xml';
 const FETCH_LIMIT = 30;
 const CACHE_TTL_MS = 1000 * 60 * 10;
-const KV_KEY = 'userjot:changelog:v3';
+const KV_KEY = 'userjot:changelog:v4';
 
 type ChangelogCacheEntry = {
   entries: ChangelogEntry[];
@@ -83,7 +84,7 @@ function toChangelogEntry(changelog: UserJotChangelog, urlsByDate: Map<string, s
     id: changelog.id,
     title: changelog.title,
     summary: changelog.short?.trim() || extractFirstParagraph(stripYoutubeLines(changelog.markdown)),
-    videoId: extractYoutubeId(changelog.markdown),
+    videoId: resolveVideoId(changelog.id, changelog.markdown, CHANGELOG_VIDEOS),
     url: urlsByDate.get(changelog.publish_at.slice(0, 10)) ?? UPDATES_BASE_URL,
     coverUrl: changelog.cover?.url ?? null,
     publishedAt: changelog.publish_at,

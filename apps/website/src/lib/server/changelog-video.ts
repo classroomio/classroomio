@@ -17,3 +17,10 @@ export function stripYoutubeLines(markdown: string): string {
     .filter((line) => !YOUTUBE_URL_PATTERN.test(line))
     .join('\n');
 }
+
+/**
+ * Picks the video for a changelog entry: the registry wins, then the first YouTube link in the entry text.
+ */
+export function resolveVideoId(entryId: string, markdown: string, registry: Record<string, string>): string | null {
+  return registry[entryId] ?? extractYoutubeId(markdown);
+}
