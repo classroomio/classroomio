@@ -30,8 +30,9 @@ CSP_MEDIA_SRC_DOMAINS=https://storage.yourdomain.com
 ```
 
 :::note[Runtime: no rebuild needed]
-CSP domain variables are read at **container startup**. Change them and restart the container. You do
-not need to rebuild any image.
+CSP domain variables are read at **container startup**. You do not need to rebuild any image. On
+Compose, recreate the `dashboard` service after editing `.env` (`./classroomio.sh restart` does this).
+Restarting an existing container does not reload Compose environment values.
 :::
 
 :::warning[You don't need to add the API]
@@ -43,3 +44,43 @@ the CSP. Add external hosts only: your CDN, video provider, font host, and objec
 :::note[Cloud defaults]
 Cloud (`PUBLIC_IS_SELFHOSTED=false`) already allows YouTube, Google Drive/Docs, and the slide-embed hosts (Canva, OneDrive/SharePoint, iCloud Keynote, Figma, Prezi, Pitch, Gamma, SlideShare, Beautiful.ai) in `frame-src`. Self-hosted images start empty — add only the hosts you actually embed.
 :::
+
+## Launch templates and theme previews
+
+Self-hosted images start with an empty allowlist. Seeded launch templates and landing-page theme
+previews load external images and frames, so these surfaces stay blocked until you allow their hosts:
+
+- Home and Courses banners (`assets.cdn.clsrio.com`)
+- Popular themes previews (`assets.cdn.clsrio.com`)
+- Lesson images inside the templates (`images.unsplash.com`)
+- YouTube thumbnails (`i.ytimg.com`)
+- Template video frames (`www.youtube.com` and `www.youtube-nocookie.com`)
+
+The same assignments are commented beside `PLATFORM_TEMPLATES_ORG_ID` in `.env.example`. Uncomment
+them to opt in. Leaving them commented keeps the restrictive default.
+
+```zsh title=".env"
+CSP_MEDIA_SRC_DOMAINS=assets.cdn.clsrio.com,images.unsplash.com,i.ytimg.com
+CSP_FRAME_SRC_DOMAINS=www.youtube.com,www.youtube-nocookie.com
+```
+
+Merge these hosts into the per-directive lists you already set, including your storage and CDN hosts.
+Replacing `CSP_MEDIA_SRC_DOMAINS` removes that storage host, and uploaded media stops displaying.
+
+A nonempty `ALLOWED_EXTERNAL_DOMAINS` takes precedence over every per-directive variable. Per-directive
+additions alone do not take effect while it is set. Include every required host there (storage, CDN,
+and the template hosts above), or leave `ALLOWED_EXTERNAL_DOMAINS` empty and use
+`CSP_MEDIA_SRC_DOMAINS` and `CSP_FRAME_SRC_DOMAINS`.
+
+Launch templates are the courses seeded into the organization named by `PLATFORM_TEMPLATES_ORG_ID`.
+Unset uses the local seed org. Set the variable empty to hide global templates. Insert the templates
+once with:
+
+```zsh
+pnpm --filter @cio/db db:seed:platform-templates <org-id>
+```
+
+The values have to be present in the **dashboard** container environment. On Compose, recreate the
+dashboard service after editing `.env`. `./classroomio.sh restart` recreates it and reloads the file.
+Restarting an existing container (`docker compose restart dashboard`) does not reload Compose
+environment values, so the new hosts never reach either CSP header. No image rebuild is required.
