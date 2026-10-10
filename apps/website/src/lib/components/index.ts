@@ -9,7 +9,6 @@ export { default as BoxedGrid } from './boxed-grid.svelte';
 export { default as CertificateMock } from './certificate-mock.svelte';
 export { default as CertEditorSection } from './cert-editor-section.svelte';
 export { default as CertSection } from './cert-section.svelte';
-export { default as ChangelogEntryCard } from './changelog-entry-card.svelte';
 export { default as ChangelogFeatured } from './changelog-featured.svelte';
 export { default as ChangelogSection } from './changelog-section.svelte';
 export { default as ChangelogTimeline } from './changelog-timeline.svelte';

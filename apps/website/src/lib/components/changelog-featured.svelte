@@ -34,7 +34,7 @@
       <h2 class="text-h3 font-medium text-balance text-gray-950">{entry.title}</h2>
 
       {#if entry.summary}
-        <p class="text-lead line-clamp-6 text-pretty text-gray-500">{entry.summary}</p>
+        <p class="line-clamp-6 text-base leading-relaxed text-pretty text-gray-500">{entry.summary}</p>
       {/if}
 
       <div>

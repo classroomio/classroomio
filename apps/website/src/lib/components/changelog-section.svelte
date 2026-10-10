@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import type { ChangelogEntry } from '$lib/utils/types';
-  import ChangelogEntryCard from './changelog-entry-card.svelte';
+  import ChangelogFeatured from './changelog-featured.svelte';
   import CtaButton from './ui/cta-button.svelte';
   import NotchCard from './ui/notch-card.svelte';
   import Section from './ui/section.svelte';
@@ -37,18 +37,22 @@
       {#snippet title()}We're shipping new features every week{/snippet}
     </SectionHeader>
 
-    <div class="mx-auto mt-12 max-w-[720px]">
-      <NotchCard class="bg-white" notchClass="bg-gray-50">
-        {#if latestEntry}
-          <ChangelogEntryCard entry={latestEntry} />
-        {:else}
-          <div class="flex flex-col gap-4">
-            <Skeleton class="h-4 w-32" />
-            <Skeleton class="h-7 w-3/4" />
-            <Skeleton class="h-4 w-full" />
+    <div class="mt-12">
+      {#if latestEntry}
+        <ChangelogFeatured entry={latestEntry} />
+      {:else}
+        <NotchCard class="bg-white" notchClass="bg-gray-50">
+          <div class="grid items-center gap-8 lg:grid-cols-[2.4fr_1fr] lg:gap-12">
+            <Skeleton class="aspect-video w-full" />
+            <div class="flex flex-col gap-4">
+              <Skeleton class="h-4 w-40" />
+              <Skeleton class="h-8 w-3/4" />
+              <Skeleton class="h-4 w-full" />
+              <Skeleton class="h-4 w-5/6" />
+            </div>
           </div>
-        {/if}
-      </NotchCard>
+        </NotchCard>
+      {/if}
     </div>
 
     <div class="mt-8 flex justify-center">
