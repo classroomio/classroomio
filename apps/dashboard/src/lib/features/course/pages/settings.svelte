@@ -9,6 +9,7 @@
   import * as Select from '@cio/ui/base/select';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import XIcon from '@lucide/svelte/icons/x';
 
   import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
@@ -42,7 +43,12 @@
   import { Button } from '@cio/ui/base/button';
 
   import { settings } from '$features/course/utils/settings-store';
-  import { getOrderedNavigableContent } from '$features/course/utils/content';
+  import {
+    getCourseExercises,
+    getDefaultExerciseMinScorePercent,
+    getEffectiveExerciseMinScorePercent,
+    resolveFinalExercise
+  } from '$features/course/utils/completion-rules-utils';
   import { getNavItemRoute } from '$features/course/utils/functions';
   import Copy from '@lucide/svelte/icons/copy';
   import * as Alert from '@cio/ui/base/alert';
@@ -54,7 +60,6 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { generateSlug, isPublishedComplianceMissingDeadline, isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
-  import { ContentType } from '@cio/utils/constants/content';
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
   import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
@@ -64,7 +69,8 @@
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { currentOrgDomain, currentOrgPath, isFreePlan } from '$lib/utils/store/org';
   import { page } from '$app/stores';
-  import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
+  import { NAVIGATION_SOURCE, NAVIGATION_SOURCE_PARAM, ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
+  import { buildRoutePath } from '$lib/routing/route-path';
 
   interface Props {
     hasUnsavedChanges?: boolean;
@@ -394,12 +400,7 @@
           deadline: course.certificate?.deadline ?? null,
           threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
           requiredExerciseId: course.certificate?.requiredExerciseId ?? null,
-          exerciseMinScorePercent:
-            typeof course.certificate?.exerciseMinScorePercent === 'number'
-              ? course.certificate.exerciseMinScorePercent
-              : course.certificate?.requiredExerciseId
-                ? 100
-                : null
+          exerciseMinScorePercent: getEffectiveExerciseMinScorePercent(course)
         }
       });
     });
@@ -558,12 +559,28 @@
     return { before, after };
   });
 
-  const certExercises = $derived(
-    getOrderedNavigableContent(courseApi.course).filter((item) => item.type === ContentType.Exercise)
+  const certExercises = $derived(getCourseExercises(courseApi.course));
+
+  const finalExercise = $derived(resolveFinalExercise(certExercises, $settings.certificate.requiredExerciseId));
+
+  const finalExerciseLabel = $derived.by(() => {
+    if (finalExercise.kind === 'found') return finalExercise.title;
+    if (finalExercise.kind === 'missing') return $t('course.certification.final_exercise_deleted');
+
+    return $t('course.certification.final_exercise_none');
+  });
+
+  // Completion rules change the certificate settings, which the API only accepts on plans with certificates.
+  const areCompletionRulesLocked = $derived($isFreePlan);
+
+  const cameFromCertificateSettings = $derived(
+    $page.url.searchParams.get(NAVIGATION_SOURCE_PARAM) === NAVIGATION_SOURCE.CERTIFICATE_SETTINGS
   );
 
-  const finalExerciseTitle = $derived(
-    certExercises.find((item) => item.id === $settings.certificate.requiredExerciseId)?.title
+  const certificateSettingsHref = $derived(
+    courseApi.course?.id
+      ? resolve(buildRoutePath(ROUTE_NAME.COURSE_CERTIFICATE, { id: courseApi.course.id, tab: 'settings' }), {})
+      : undefined
   );
 
   function isoToDatetimeLocal(iso: string | null | undefined): string {
@@ -583,13 +600,20 @@
     hasUnsavedChanges = true;
   }
 
+  // Default for the type being saved, not the stored one, using the compliance settings handleSave will send.
+  function getPendingExerciseMinScoreDefault() {
+    const pendingCompliance = courseApi.course?.compliance ?? DEFAULT_COMPLIANCE_SETTINGS;
+
+    return getDefaultExerciseMinScorePercent({ type: $settings.type, compliance: pendingCompliance });
+  }
+
   function onFinalExerciseChange(value: string) {
     $settings.certificate.requiredExerciseId = value && value !== 'none' ? value : null;
 
     if (!$settings.certificate.requiredExerciseId) {
       $settings.certificate.exerciseMinScorePercent = null;
     } else if (typeof $settings.certificate.exerciseMinScorePercent !== 'number') {
-      $settings.certificate.exerciseMinScorePercent = 100;
+      $settings.certificate.exerciseMinScorePercent = getPendingExerciseMinScoreDefault();
     }
 
     delete courseApi.errors['certificate.requiredExerciseId'];
@@ -857,6 +881,38 @@
         {:else if courseApi.errors.type}
           <p class="ui:text-destructive/90 mt-2 text-sm">{courseApi.errors.type}</p>
         {/if}
+      </Field.Group>
+    </SettingsCard>
+  </AttentionHighlight>
+
+  <AttentionHighlight
+    id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES}
+    scrollBlock="start"
+    class="scroll-mt-24"
+  >
+    <SettingsCard
+      hash={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_RULES}
+      title={$t('course.navItem.settings.completion_rules_card_title')}
+      description={$t('course.navItem.settings.completion_rules_card_desc')}
+    >
+      <Field.Group>
+        {#if cameFromCertificateSettings && certificateSettingsHref}
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              href={certificateSettingsHref}
+              testId="course-settings-back-to-certificate-settings"
+            >
+              <ArrowLeftIcon />
+              {$t('course.navItem.settings.back_to_certificate_settings')}
+            </Button>
+          </div>
+        {/if}
+
+        {#if areCompletionRulesLocked}
+          <UpgradeBanner>{$t('course.certification.completion_rules_upgrade')}</UpgradeBanner>
+        {/if}
 
         <AttentionHighlight
           id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}
@@ -875,6 +931,7 @@
               class="w-full"
               value={isoToDatetimeLocal($settings.certificate.deadline)}
               onchange={onCompletionDeadlineChange}
+              disabled={areCompletionRulesLocked}
             />
             <Field.Description>{$t('course.navItem.settings.completion_deadline_helper')}</Field.Description>
             {#if courseApi.errors['certificate.deadline']}
@@ -899,6 +956,7 @@
               courseApi.clearError('certificate.threshold');
               hasUnsavedChanges = true;
             }}
+            isDisabled={areCompletionRulesLocked}
           />
           <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
           {#if courseApi.errors['certificate.threshold']}
@@ -914,9 +972,10 @@
             type="single"
             value={$settings.certificate.requiredExerciseId ?? 'none'}
             onValueChange={onFinalExerciseChange}
+            disabled={areCompletionRulesLocked}
           >
             <Select.Trigger class="w-full">
-              {finalExerciseTitle ?? $t('course.certification.final_exercise_none')}
+              {finalExerciseLabel}
             </Select.Trigger>
             <Select.Content>
               <Select.Group>
@@ -933,9 +992,12 @@
           </Select.Root>
           <Field.Description>{$t('course.certification.final_exercise_helper')}</Field.Description>
           <Field.Description>{$t('course.certification.final_exercise_multiple_attempts_note')}</Field.Description>
+          {#if finalExercise.kind === 'missing'}
+            <Field.Error>{$t('course.certification.final_exercise_deleted_warning')}</Field.Error>
+          {/if}
         </Field.Field>
 
-        {#if $settings.certificate.requiredExerciseId}
+        {#if finalExercise.kind === 'found'}
           <Field.Field id="min-exercise-score" class="scroll-mt-24">
             <Field.Label for="course-min-exercise-score">
               <a href="#min-exercise-score" class="hover:underline"
@@ -954,6 +1016,7 @@
                 courseApi.clearError('certificate.exerciseMinScorePercent');
                 hasUnsavedChanges = true;
               }}
+              isDisabled={areCompletionRulesLocked}
             />
             <Field.Description>{$t('course.certification.min_exercise_score_helper')}</Field.Description>
             {#if courseApi.errors['certificate.exerciseMinScorePercent']}
