@@ -1692,6 +1692,22 @@
           "awaiting_manual_hint": "Cần xem xét thủ công",
           "failed_hint": "Tự động chấm điểm không thành công. Chuyển nội dung gửi này trở lại Đã gửi để thử lại.",
           "invalid_transition": "Việc di chuyển trạng thái này không được phép bởi quy trình chấm điểm"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1869,7 +1885,9 @@
                 "responses": "Phản hồi",
                 "no_responses": "Chưa có phản hồi nào",
                 "other": "Khác",
-                "attempts": "Lần làm"
+                "attempts": "Lần làm",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Đang tải nội dung gửi...",
               "empty_title": "Chưa có bài nộp nào",
@@ -2057,6 +2075,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Các loại được chấp nhận (ví dụ: pdf, docx)",
                   "max_size_placeholder": "Kích thước tối đa (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {

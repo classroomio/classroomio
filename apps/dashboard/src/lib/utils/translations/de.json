@@ -1692,6 +1692,22 @@
           "awaiting_manual_hint": "Muss manuell überprüft werden",
           "failed_hint": "Die automatische Bewertung ist fehlgeschlagen. Verschieben Sie diese Übermittlung zurück zu „Gesendet“, um es erneut zu versuchen.",
           "invalid_transition": "Diese Statusverschiebung ist im Benotungsworkflow nicht zulässig"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1869,7 +1885,9 @@
                 "responses": "Antworten",
                 "no_responses": "Noch keine Antworten",
                 "other": "Andere",
-                "attempts": "Versuche"
+                "attempts": "Versuche",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Einsendungen werden geladen...",
               "empty_title": "Noch keine Einsendungen",
@@ -2057,6 +2075,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Akzeptierte Typen (z. B. pdf, docx)",
                   "max_size_placeholder": "Maximale Größe (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {

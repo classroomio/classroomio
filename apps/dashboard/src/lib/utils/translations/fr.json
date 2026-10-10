@@ -1692,6 +1692,22 @@
           "awaiting_manual_hint": "Nécessite un examen manuel",
           "failed_hint": "La notation automatique a échoué. Remettez cette soumission dans Soumis pour réessayer.",
           "invalid_transition": "Ce changement de statut n'est pas autorisé par le workflow de notation"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1869,7 +1885,9 @@
                 "responses": "Réponses",
                 "no_responses": "Pas encore de réponses",
                 "other": "Autre",
-                "attempts": "Tentatives"
+                "attempts": "Tentatives",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Chargement des soumissions...",
               "empty_title": "Aucune soumission pour l'instant",
@@ -2057,6 +2075,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Types acceptés (par exemple pdf,docx)",
                   "max_size_placeholder": "Taille maximale (Mo)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {

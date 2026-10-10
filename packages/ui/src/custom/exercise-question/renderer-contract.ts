@@ -77,6 +77,7 @@ import { default as ThumbsSubmission } from './renderers/thumbs/submission.svelt
 import { default as TrueFalseSubmission } from './renderers/true-false/submission.svelte';
 import { default as VideoRecordingSubmission } from './renderers/video-recording/submission.svelte';
 
+import { default as FileUploadReview } from './renderers/file-upload/review.svelte';
 import { default as RadioReview } from './renderers/radio/review.svelte';
 import { default as CheckboxReview } from './renderers/checkbox/review.svelte';
 import { default as NumericReview } from './renderers/numeric/review.svelte';
@@ -149,7 +150,8 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     edit: FileUploadEdit,
     take: FileUploadTake,
     preview: FileUploadPreview,
-    submission: FileUploadSubmission
+    submission: FileUploadSubmission,
+    review: FileUploadReview
   },
   [QUESTION_TYPE_KEY.MATCHING]: {
     edit: MatchingEdit,

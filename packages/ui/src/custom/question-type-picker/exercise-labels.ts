@@ -109,6 +109,8 @@ export const QUESTION_TYPE_PICKER_EXERCISE_LABELS: ExerciseQuestionLabels = {
   'file_upload.take.download': 'Download',
   'file_upload.preview.accepted_types_label': 'Accepted types',
   'file_upload.preview.max_size_label': 'Max size (MB)',
+  'file_upload.review.empty': 'No file was submitted.',
+  'file_upload.review.unavailable': 'This file cannot be opened.',
   'video_recording.edit.max_duration_label': 'Max duration',
   'video_recording.edit.max_duration_helper': 'Students record in the browser and can retake before submitting.',
   'video_recording.edit.max_duration_placeholder': '60',
@@ -183,5 +185,7 @@ export const QUESTION_TYPE_PICKER_EXERCISE_LABELS: ExerciseQuestionLabels = {
   'submission.chart.responses': 'Responses',
   'submission.chart.no_data': 'No responses yet',
   'submission.list.responses': 'Responses',
-  'submission.list.no_responses': 'No responses yet'
+  'submission.list.no_responses': 'No responses yet',
+  'submission.list.unknown_student': 'Unknown student',
+  'submission.list.no_file': 'No file'
 };

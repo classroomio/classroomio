@@ -46,6 +46,7 @@
 
       if (currentTab !== 'individual') {
         url.searchParams.delete('student');
+        url.searchParams.delete('attempt');
       }
 
       goto(`${url.pathname}${url.search}`, {
@@ -61,6 +62,7 @@
       (submission): ExerciseSubmissions => ({
         id: submission.id,
         statusId: submission.statusId ?? 1,
+        createdAt: typeof submission.createdAt === 'string' ? submission.createdAt : null,
         groupmember: submission.groupmember?.profile
           ? {
               profile: {

@@ -26,6 +26,32 @@ export function resolveExerciseFileUploadMaxSizeMb(
   return Math.min(requestedMax, effectivePlatformMax);
 }
 
+export function formatFileSize(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return '0 Bytes';
+
+  const units = ['Bytes', 'KB', 'MB', 'GB'];
+  const unitIndex = Math.min(Math.floor(Math.log(bytes) / Math.log(1024)), units.length - 1);
+  const size = bytes / 1024 ** unitIndex;
+  return `${parseFloat(size.toFixed(2))} ${units[unitIndex]}`;
+}
+
+export function fileTypeLabel(mimeType: string | undefined): string {
+  const mime = mimeType ?? '';
+  if (mime.includes('pdf')) return 'PDF';
+  if (mime.includes('wordprocessingml') || mime.includes('docx')) return 'DOCX';
+  if (mime.includes('msword') || mime.includes('doc')) return 'DOC';
+  if (mime.includes('image')) return 'IMAGE';
+  if (mime.includes('video')) return 'VIDEO';
+
+  const subtype = mime.split('/')[1]?.toUpperCase();
+  return subtype || 'FILE';
+}
+
+export function formatUploadedFileSubtitle(mimeType: string | undefined, size: number | undefined): string {
+  const parts = [fileTypeLabel(mimeType), size != null ? formatFileSize(size) : null].filter(Boolean);
+  return parts.join(' · ') || '–';
+}
+
 export function isFileSizeAllowed(
   file: File,
   maxSizeMb: number | undefined | null,

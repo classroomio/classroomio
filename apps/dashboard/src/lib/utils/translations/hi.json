@@ -1692,6 +1692,22 @@
           "awaiting_manual_hint": "मैन्युअल समीक्षा की आवश्यकता है",
           "failed_hint": "स्वतः-ग्रेडिंग विफल. पुनः प्रयास करने के लिए इस सबमिशन को वापस सबमिट किए गए पर ले जाएं।",
           "invalid_transition": "ग्रेडिंग वर्कफ़्लो द्वारा इस स्थिति परिवर्तन की अनुमति नहीं है"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1869,7 +1885,9 @@
                 "responses": "प्रतिक्रियाएँ",
                 "no_responses": "अभी तक कोई प्रतिक्रिया नहीं",
                 "other": "अन्य",
-                "attempts": "प्रयास"
+                "attempts": "प्रयास",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "सबमिशन लोड हो रहा है...",
               "empty_title": "अभी तक कोई सबमिशन नहीं",
@@ -2057,6 +2075,10 @@
                 "edit": {
                   "accepted_types_placeholder": "स्वीकृत प्रकार (उदा. पीडीएफ, डॉक्स)",
                   "max_size_placeholder": "अधिकतम आकार (एमबी)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {

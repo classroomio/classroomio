@@ -64,13 +64,51 @@
     hasNoSubmission = false;
   }
 
-  onMount(() => {
+  function applyAttemptParam(attemptId: string): boolean {
+    const owningGroupIndex = submissionGroups.findIndex((group) =>
+      group.attempts.some((attempt) => attempt.submission.id === attemptId)
+    );
+    if (owningGroupIndex < 0) return false;
+
+    const group = submissionGroups[owningGroupIndex];
+    const attemptIndex = group.attempts.findIndex((attempt) => attempt.submission.id === attemptId);
+    if (attemptIndex < 0) return false;
+
+    const currentIndex = selectedAttemptByStudentKey[group.studentKey];
+    studentSelected = owningGroupIndex;
+    hasNoSubmission = false;
+
+    if (currentIndex !== attemptIndex) {
+      selectedAttemptByStudentKey = {
+        ...selectedAttemptByStudentKey,
+        [group.studentKey]: attemptIndex
+      };
+    }
+
+    return true;
+  }
+
+  function applyReviewParams() {
+    const attemptId = page.url.searchParams.get('attempt');
+    const appliedAttempt = attemptId ? applyAttemptParam(attemptId) : false;
+    if (appliedAttempt) return;
+
     applyStudentParam(page.url.searchParams.get('student'));
+  }
+
+  onMount(() => {
+    applyReviewParams();
   });
 
-  // URL -> state: hydrate when the student param or the enrolled roster changes.
+  // URL -> state: hydrate when the student or attempt param changes.
   $effect(() => {
-    applyStudentParam(page.url.searchParams.get('student'));
+    page.url.searchParams.get('student');
+    page.url.searchParams.get('attempt');
+    submissionGroups;
+    enrolledStudentKeys;
+    untrack(() => {
+      applyReviewParams();
+    });
   });
 
   // state -> URL: keep ?student= in sync so the open student is deep-linkable.
@@ -84,11 +122,12 @@
 
     const currentStudent = page.url.searchParams.get('student') ?? '';
     const selectedStudent = submissionGroups[studentSelected]?.studentKey ?? '';
-    if (currentStudent === selectedStudent) return;
+    if (!selectedStudent || currentStudent === selectedStudent) return;
 
     untrack(() => {
       const url = new URL(page.url);
       url.searchParams.set('student', selectedStudent);
+      url.searchParams.delete('attempt');
       goto(`${url.pathname}${url.search}`, {
         replaceState: true,
         keepFocus: true,
@@ -204,10 +243,22 @@
     const selectedAttemptIndex = Number(value);
     if (Number.isNaN(selectedAttemptIndex)) return;
 
+    const submissionId = group.attempts[selectedAttemptIndex]?.submission.id ?? '';
     selectedAttemptByStudentKey = {
       ...selectedAttemptByStudentKey,
       [group.studentKey]: selectedAttemptIndex
     };
+
+    if (!submissionId || page.url.searchParams.get('attempt') === submissionId) return;
+
+    const url = new URL(page.url);
+    url.searchParams.set('attempt', submissionId);
+    url.searchParams.set('student', group.studentKey);
+    void goto(`${url.pathname}${url.search}`, {
+      replaceState: true,
+      keepFocus: true,
+      noScroll: true
+    });
   }
 </script>
 

@@ -1692,6 +1692,22 @@
           "awaiting_manual_hint": "Necesita revisión manual",
           "failed_hint": "Error en la calificación automática. Mueva este envío nuevamente a Enviado para volver a intentarlo.",
           "invalid_transition": "Este cambio de estado no está permitido por el flujo de trabajo de calificación"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1869,7 +1885,9 @@
                 "responses": "Respuestas",
                 "no_responses": "Aún no hay respuestas",
                 "other": "Otro",
-                "attempts": "Intentos"
+                "attempts": "Intentos",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Cargando envíos...",
               "empty_title": "Aún no hay presentaciones",
@@ -2057,6 +2075,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Tipos aceptados (por ejemplo, pdf, docx)",
                   "max_size_placeholder": "Tamaño máximo (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {
