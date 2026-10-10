@@ -1,6 +1,7 @@
 <script>
   import {
     Hero,
+    CustomerStorySection,
     RoiBand,
     AiBuildsSection,
     FeaturesSection,
@@ -14,6 +15,8 @@
 </script>
 
 <Hero />
+
+<CustomerStorySection />
 
 <RoiBand />
 
