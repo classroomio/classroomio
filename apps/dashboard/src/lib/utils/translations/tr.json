@@ -3937,6 +3937,13 @@
             "toggle_label": "Bağlantı daveti etkin",
             "disabled_notice": "Bu bağlantı devre dışı bırakıldı. Yeni üyelerin bağlantı yoluyla katılmasına izin vermek için etkinleştirin.",
             "select_role": "Bir rol seçin"
+          },
+          "change_role": {
+            "label": "{email} için rol",
+            "title": "Rolü değiştir",
+            "description": "{email} rolü {currentRole} iken {nextRole} olsun mu?",
+            "cancel": "İptal",
+            "approve": "Onayla"
           }
         },
         "filter": {
@@ -5201,7 +5208,10 @@
       "user_exists": "Kullanıcı Zaten Var",
       "invite_fail": "Davet gönderilemedi, lütfen tekrar deneyin",
       "remove_fail": "Kullanıcı kaldırılamadı, lütfen tekrar deneyin",
-      "remove_success": "Üye başarıyla kaldırıldı"
+      "remove_success": "Üye başarıyla kaldırıldı",
+      "role_updated": "Rol güncellendi",
+      "role_update_failed": "Rol güncellenemedi",
+      "last_admin": "Bu kuruluşta en az bir yönetici olmalıdır"
     },
     "link_invite": {
       "generated": "Bağlantı daveti oluşturuldu",

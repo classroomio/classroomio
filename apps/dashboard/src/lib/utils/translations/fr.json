@@ -313,7 +313,10 @@
       "user_exists": "L'utilisateur existe déjà",
       "invite_fail": "Échec de l'envoi de l'invitation, veuillez réessayer",
       "remove_fail": "Échec de la suppression de l'utilisateur, veuillez réessayer",
-      "remove_success": "Membre supprimé avec succès"
+      "remove_success": "Membre supprimé avec succès",
+      "role_updated": "Rôle mis à jour",
+      "role_update_failed": "Échec de la mise à jour du rôle",
+      "last_admin": "Cette organisation doit conserver au moins un administrateur"
     },
     "lms": {
       "error": {
@@ -1483,6 +1486,13 @@
             "toggle_label": "Invitation de lien active",
             "disabled_notice": "Ce lien est désactivé. Activez-le pour permettre aux nouveaux membres de rejoindre via un lien.",
             "select_role": "Sélectionnez un rôle"
+          },
+          "change_role": {
+            "label": "Rôle de {email}",
+            "title": "Changer le rôle",
+            "description": "Changer {email} de {currentRole} à {nextRole} ?",
+            "cancel": "Annuler",
+            "approve": "Approuver"
           }
         },
         "roles": {

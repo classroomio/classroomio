@@ -313,7 +313,10 @@
       "user_exists": "Người dùng đã tồn tại",
       "invite_fail": "Không gửi được lời mời, vui lòng thử lại",
       "remove_fail": "Không xóa được người dùng, vui lòng thử lại",
-      "remove_success": "Đã xóa thành viên thành công"
+      "remove_success": "Đã xóa thành viên thành công",
+      "role_updated": "Đã cập nhật vai trò",
+      "role_update_failed": "Không cập nhật được vai trò",
+      "last_admin": "Tổ chức này cần ít nhất một quản trị viên"
     },
     "lms": {
       "error": {
@@ -1483,6 +1486,13 @@
             "toggle_label": "Liên kết lời mời đang hoạt động",
             "disabled_notice": "Liên kết này bị vô hiệu hóa. Kích hoạt nó để cho phép thành viên mới tham gia thông qua liên kết.",
             "select_role": "Chọn một vai trò"
+          },
+          "change_role": {
+            "label": "Vai trò của {email}",
+            "title": "Đổi vai trò",
+            "description": "Đổi {email} từ {currentRole} sang {nextRole}?",
+            "cancel": "Hủy",
+            "approve": "Phê duyệt"
           }
         },
         "roles": {

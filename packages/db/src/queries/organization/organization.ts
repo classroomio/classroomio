@@ -203,9 +203,13 @@ export async function getOrganizationMemberIdByOrgAndProfile(
   }
 }
 
-export async function getOrganizationMemberRoleId(organizationId: string, profileId: string): Promise<number | null> {
+export async function getOrganizationMemberRoleId(
+  organizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<number | null> {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select({ roleId: schema.organizationmember.roleId })
       .from(schema.organizationmember)
       .where(
@@ -735,6 +739,107 @@ export const getOrganizationTeam = async (orgId: string) => {
     fullname: member.profile?.fullname || ''
   }));
 };
+
+export type OrganizationTeamMemberRoleRow = {
+  id: number;
+  email: string | null;
+  verified: boolean | null;
+  roleId: number;
+  profileId: string | null;
+};
+
+/**
+ * Admin or tutor membership in this org, or null when the row is missing or a student.
+ */
+export async function getOrganizationTeamMemberById(
+  orgId: string,
+  memberId: number,
+  dbClient: DbOrTxClient = db
+): Promise<OrganizationTeamMemberRoleRow | null> {
+  try {
+    const [member] = await dbClient
+      .select({
+        id: schema.organizationmember.id,
+        email: schema.organizationmember.email,
+        verified: schema.organizationmember.verified,
+        roleId: schema.organizationmember.roleId,
+        profileId: schema.organizationmember.profileId
+      })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.id, memberId),
+          or(eq(schema.organizationmember.roleId, ROLE.ADMIN), eq(schema.organizationmember.roleId, ROLE.TUTOR))
+        )
+      )
+      .limit(1);
+
+    if (!member) {
+      return null;
+    }
+
+    return member;
+  } catch (error) {
+    console.error('getOrganizationTeamMemberById error:', error);
+    throw new Error('Failed to fetch organization team member');
+  }
+}
+
+/**
+ * Writes the role and returns the row, or null when it is no longer a team member in this org.
+ */
+export async function updateOrganizationMemberRole(
+  orgId: string,
+  memberId: number,
+  roleId: number,
+  dbClient: DbOrTxClient = db
+) {
+  try {
+    const [updated] = await dbClient
+      .update(schema.organizationmember)
+      .set({ roleId })
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.id, memberId),
+          or(eq(schema.organizationmember.roleId, ROLE.ADMIN), eq(schema.organizationmember.roleId, ROLE.TUTOR))
+        )
+      )
+      .returning({
+        id: schema.organizationmember.id,
+        email: schema.organizationmember.email,
+        verified: schema.organizationmember.verified,
+        roleId: schema.organizationmember.roleId,
+        profileId: schema.organizationmember.profileId
+      });
+
+    return updated ?? null;
+  } catch (error) {
+    console.error('updateOrganizationMemberRole error:', error);
+    throw new Error('Failed to update organization member role');
+  }
+}
+
+export async function countOrganizationAdmins(orgId: string, dbClient: DbOrTxClient = db): Promise<number> {
+  try {
+    const [row] = await dbClient
+      .select({ count: count(schema.organizationmember.id) })
+      .from(schema.organizationmember)
+      .where(
+        and(
+          eq(schema.organizationmember.organizationId, orgId),
+          eq(schema.organizationmember.roleId, ROLE.ADMIN),
+          ne(schema.organizationmember.status, 'ARCHIVED')
+        )
+      );
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countOrganizationAdmins error:', error);
+    throw new Error('Failed to count organization admins');
+  }
+}
 
 /**
  * Counts active organization members with the student role. Used to enforce per-plan student caps.

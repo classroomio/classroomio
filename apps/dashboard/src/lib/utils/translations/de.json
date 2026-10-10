@@ -313,7 +313,10 @@
       "user_exists": "Benutzer existiert bereits",
       "invite_fail": "Die Einladung konnte nicht gesendet werden. Bitte versuchen Sie es erneut",
       "remove_fail": "Der Benutzer konnte nicht entfernt werden. Bitte versuchen Sie es erneut",
-      "remove_success": "Mitglied erfolgreich entfernt"
+      "remove_success": "Mitglied erfolgreich entfernt",
+      "role_updated": "Rolle aktualisiert",
+      "role_update_failed": "Rolle konnte nicht aktualisiert werden",
+      "last_admin": "Diese Organisation braucht mindestens einen Administrator"
     },
     "lms": {
       "error": {
@@ -1483,6 +1486,13 @@
             "toggle_label": "Linkeinladung aktiv",
             "disabled_notice": "Dieser Link ist deaktiviert. Aktivieren Sie es, um neuen Mitgliedern den Beitritt über einen Link zu ermöglichen.",
             "select_role": "Wählen Sie eine Rolle aus"
+          },
+          "change_role": {
+            "label": "Rolle für {email}",
+            "title": "Rolle ändern",
+            "description": "{email} von {currentRole} zu {nextRole} ändern?",
+            "cancel": "Abbrechen",
+            "approve": "Bestätigen"
           }
         },
         "roles": {

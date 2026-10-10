@@ -313,7 +313,10 @@
       "user_exists": "El usuario ya existe",
       "invite_fail": "No se pudo enviar la invitación, inténtelo de nuevo",
       "remove_fail": "No se pudo eliminar el usuario, inténtelo de nuevo",
-      "remove_success": "Miembro eliminado correctamente"
+      "remove_success": "Miembro eliminado correctamente",
+      "role_updated": "Rol actualizado",
+      "role_update_failed": "No se pudo actualizar el rol",
+      "last_admin": "Esta organización necesita al menos un administrador"
     },
     "lms": {
       "error": {
@@ -1483,6 +1486,13 @@
             "toggle_label": "Invitación de enlace activa",
             "disabled_notice": "Este enlace está deshabilitado. Habilítelo para permitir que nuevos miembros se unan a través de un enlace.",
             "select_role": "Seleccione un rol"
+          },
+          "change_role": {
+            "label": "Rol de {email}",
+            "title": "Cambiar rol",
+            "description": "¿Cambiar a {email} de {currentRole} a {nextRole}?",
+            "cancel": "Cancelar",
+            "approve": "Aprobar"
           }
         },
         "roles": {

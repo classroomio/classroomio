@@ -313,7 +313,10 @@
       "user_exists": "Użytkownik już istnieje",
       "invite_fail": "Nie udało się wysłać zaproszenia. Spróbuj ponownie",
       "remove_fail": "Nie udało się usunąć użytkownika. Spróbuj ponownie",
-      "remove_success": "Członek usunięty pomyślnie"
+      "remove_success": "Członek usunięty pomyślnie",
+      "role_updated": "Rola zaktualizowana",
+      "role_update_failed": "Nie udało się zaktualizować roli",
+      "last_admin": "Ta organizacja musi mieć co najmniej jednego administratora"
     },
     "lms": {
       "error": {
@@ -1483,6 +1486,13 @@
             "toggle_label": "Zaproszenie do linku aktywne",
             "disabled_notice": "To łącze jest wyłączone. Włącz tę opcję, aby umożliwić nowym członkom dołączanie za pośrednictwem łącza.",
             "select_role": "Wybierz rolę"
+          },
+          "change_role": {
+            "label": "Rola użytkownika {email}",
+            "title": "Zmień rolę",
+            "description": "Zmienić rolę {email} z {currentRole} na {nextRole}?",
+            "cancel": "Anuluj",
+            "approve": "Zatwierdź"
           }
         },
         "roles": {
