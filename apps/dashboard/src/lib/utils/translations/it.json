@@ -1672,7 +1672,16 @@
       "monthly": "Mensile",
       "annually": "Annualmente",
       "popular": "Popolare",
-      "per_org": "Per organizzazione"
+      "per_org": "Per organizzazione",
+      "priced_low": {
+        "eyebrow_open": "Tariffa Early Adopter · {days, plural, one {# giorno rimasto} other {# giorni rimasti}}",
+        "eyebrow_closing": "Tariffa Early Adopter · Ultimi {days} giorni",
+        "eyebrow_today": "Tariffa Early Adopter · Termina oggi",
+        "title": "Prezzo basso di proposito. Non per molto.",
+        "title_closing": "Prezzo basso di proposito. Sta per finire.",
+        "body": "Manteniamo ClassroomIO accessibile perché lo costruiamo insieme ai nostri clienti, non solo per loro. Blocca la tariffa di oggi prima del {date}. Dopo quella data il piano Early Adopter chiude e si applicano i nuovi prezzi.",
+        "link": "Scopri perché lo facciamo"
+      }
     }
   },
   "widgets": {
@@ -6212,6 +6221,26 @@
       "heading": "Oppure inizia da un modello",
       "description": "Un corso completo con lezioni, esercizi e impostazioni. Copialo e poi fallo tuo.",
       "browse": "Sfoglia tutti i modelli"
+    }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Pagamento ricevuto. Manca un passaggio.",
+      "body": "Crea il tuo account o accedi e collegheremo automaticamente il tuo piano Early Adopter alla tua accademia.",
+      "sign_up": "Crea il mio account",
+      "log_in": "Accedi",
+      "continue": "Continua verso la mia accademia"
+    },
+    "success": {
+      "title": "Il tuo piano Early Adopter è attivo",
+      "body": "La tua tariffa è bloccata e tutte le funzionalità Early Adopter sono ora sbloccate per la tua accademia.",
+      "continue": "Inizia a creare"
+    },
+    "errors": {
+      "invalid": "Questo link non è valido. Controlla l’e-mail che ti abbiamo inviato o contatta l’assistenza.",
+      "expired": "Questo link è scaduto. Contatta l’assistenza e ti aiuteremo a collegare il tuo piano.",
+      "unavailable": "Questo link del piano è già stato usato o non è più attivo. Contatta l’assistenza se si tratta di un errore.",
+      "conflict": "Questa accademia ha già un piano a pagamento, quindi non siamo riusciti a collegare questo. Contatta l’assistenza e ti aiuteremo."
     }
   }
 }
