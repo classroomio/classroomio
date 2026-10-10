@@ -15,7 +15,7 @@ const UPDATES_BASE_URL = 'https://feedback.classroomio.com/updates';
 const UPDATES_SITEMAP_URL = 'https://feedback.classroomio.com/sitemap.xml';
 const PLAYLIST_FEED_URL = `https://www.youtube.com/feeds/videos.xml?playlist_id=${CHANGELOG_PLAYLIST_ID}`;
 const FETCH_LIMIT = 30;
-const CACHE_TTL_MS = 1000 * 60 * 10;
+const CACHE_TTL_MS = 1000 * 60 * 60 * 3;
 const KV_KEY = 'userjot:changelog:v5';
 
 type ChangelogCacheEntry = {
@@ -236,9 +236,10 @@ async function resolveChangelog(
  * pairing or a video outside the playlist), the playlist pair, a YouTube link written in the entry text, or
  * null. Entries older than the playlist's latest 15 videos, or more than 24 hours from any video, get no video.
  *
- * Caching: isolate memory (L1) and Cloudflare KV (L2, key `KV_KEY`) both hold the result for 10 minutes, and
+ * Caching: isolate memory (L1) and Cloudflare KV (L2, key `KV_KEY`) both hold the result for 3 hours, and
  * simultaneous callers share one in-flight refresh. The key carries a version suffix, so change it whenever the
- * shape of an entry changes. A new video or entry therefore shows up within about 10 minutes.
+ * shape of an entry changes. A new entry or video therefore shows up within about 3 hours, or sooner if the KV key is deleted.
+ * An entry cached before its video was uploaded keeps showing no video until the next refresh.
  *
  * Who calls it: `routes/changelog/+page.server.ts` for the changelog page and `routes/api/changelog/+server.ts`
  * (`?limit=1..30`) for the home page section and for the dashboard. The dashboard never calls this endpoint from
