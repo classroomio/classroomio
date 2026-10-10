@@ -1654,6 +1654,10 @@
       },
       "submissions": {
         "title": "Bài tập đã gửi",
+        "access": {
+          "denied_title": "Bạn không thể chấm bài nộp của khóa học này",
+          "denied_description": "Hãy nhờ quản trị viên thêm bạn làm trợ giảng khóa học hoặc cố vấn của một nhóm học bao gồm khóa học này."
+        },
         "grading_modal": {
           "details": "Chi tiết",
           "early": "Sớm",

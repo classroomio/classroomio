@@ -1654,6 +1654,10 @@
       },
       "submissions": {
         "title": "Eingereichte Übungen",
+        "access": {
+          "denied_title": "Du kannst die Abgaben für diesen Kurs nicht bewerten",
+          "denied_description": "Bitte einen Admin, dich als Kurstutor hinzuzufügen oder als Mentor einer Kohorte, die diesen Kurs enthält."
+        },
         "grading_modal": {
           "details": "Einzelheiten",
           "early": "Früh",

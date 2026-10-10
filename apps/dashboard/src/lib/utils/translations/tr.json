@@ -3622,6 +3622,10 @@
       },
       "submissions": {
         "title": "Gönderilen Egzersizler",
+        "access": {
+          "denied_title": "Bu kursun gönderimlerini notlayamazsın",
+          "denied_description": "Bir yöneticiden seni kurs eğitmeni veya bu kursu içeren bir kohortun mentoru olarak eklemesini iste."
+        },
         "submission_status": {
           "submitted": "Gönderildi",
           "in_progress": "Devam Ediyor",

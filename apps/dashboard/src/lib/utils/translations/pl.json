@@ -1654,6 +1654,10 @@
       },
       "submissions": {
         "title": "Przesłane ćwiczenia",
+        "access": {
+          "denied_title": "Nie możesz oceniać prac z tego kursu",
+          "denied_description": "Poproś administratora, aby dodał Cię jako tutora kursu albo mentora kohorty, która obejmuje ten kurs."
+        },
         "grading_modal": {
           "details": "Szczegóły",
           "early": "Wcześnie",

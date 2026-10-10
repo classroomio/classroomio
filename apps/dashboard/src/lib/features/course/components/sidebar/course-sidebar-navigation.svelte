@@ -147,7 +147,8 @@
         show() {
           if (courseApi.course?.isTemplate) return false;
           if (isStudent) return false;
-          return true;
+
+          return courseApi.course?.canGrade === true;
         },
         icon: getNavIcon(NAV_IDS.SUBMISSIONS)
       },

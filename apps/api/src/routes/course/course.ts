@@ -45,6 +45,8 @@ import { sanitizeHtml } from '@cio/core/utils/sanitize-html';
 import { complianceRouter } from '@api/routes/course/compliance';
 import { contentRouter } from '@api/routes/course/content';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
+import { courseMemberOrGraderMiddleware } from '@api/middlewares/course-grader';
+import { canAccessCourseSubmissions } from '@cio/db/queries/group';
 import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
 import { createRateLimiter } from '@api/middlewares/rate-limiter';
@@ -252,13 +254,13 @@ export const courseRouter = new Hono()
   )
   /**
    * GET /course/:courseId
-   * Gets a course by ID or slug with all related data (group, members, lessons, sections, attendance)
-   * Query param: slug (optional) - if provided, courseId is ignored and course is fetched by slug
-   * Requires authentication and course membership
+   * Gets a course with its group, members, lessons, sections, and attendance.
+   * An optional slug must resolve to this course id.
+   * Requires authentication. Course members and submission graders may read it.
    */
   .get(
     '/:courseId',
-    courseMemberMiddleware,
+    courseMemberOrGraderMiddleware,
     zValidator('param', ZCourseGetParam),
     zValidator('query', ZCourseGetQuery),
     async (c) => {
@@ -267,11 +269,16 @@ export const courseRouter = new Hono()
         const { slug } = c.req.valid('query');
         const user = c.get('user')!;
         const course = await getCourse(slug ? undefined : courseId, slug, user.id);
+        if (course.id !== courseId) {
+          throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+        }
+
+        const canGrade = await canAccessCourseSubmissions(courseId, user.id);
 
         return c.json(
           {
             success: true,
-            data: course
+            data: { ...course, canGrade }
           },
           200
         );
