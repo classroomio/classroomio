@@ -6242,5 +6242,12 @@
       "unavailable": "Questo link del piano è già stato usato o non è più attivo. Contatta l’assistenza se si tratta di un errore.",
       "conflict": "Questa accademia ha già un piano a pagamento, quindi non siamo riusciti a collegare questo. Contatta l’assistenza e ti aiuteremo."
     }
+  },
+  "whats_new": {
+    "heading": "Novità",
+    "new_count": "{count} nuove",
+    "new_badge": "Nuovo",
+    "read_full": "Leggi il changelog completo",
+    "close": "Chiudi"
   }
 }

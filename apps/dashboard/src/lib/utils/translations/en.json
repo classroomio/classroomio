@@ -6242,5 +6242,12 @@
       "unavailable": "This plan link has already been used or is no longer active. Contact support if this is a mistake.",
       "conflict": "This academy already has a paid plan, so we could not connect this one. Contact support and we will help."
     }
+  },
+  "whats_new": {
+    "heading": "What's new",
+    "new_count": "{count} new",
+    "new_badge": "New",
+    "read_full": "Read the full changelog",
+    "close": "Close"
   }
 }

@@ -6272,5 +6272,12 @@
       "unavailable": "Ten link do planu został już użyty lub nie jest już aktywny. Skontaktuj się z pomocą, jeśli to pomyłka.",
       "conflict": "Ta akademia ma już płatny plan, więc nie mogliśmy połączyć tego. Skontaktuj się z pomocą, a pomożemy."
     }
+  },
+  "whats_new": {
+    "heading": "Co nowego",
+    "new_count": "Nowe: {count}",
+    "new_badge": "Nowość",
+    "read_full": "Przeczytaj pełny dziennik zmian",
+    "close": "Zamknij"
   }
 }

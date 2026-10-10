@@ -6272,5 +6272,12 @@
       "unavailable": "Ce lien de plan a déjà été utilisé ou n’est plus actif. Contactez le support s’il s’agit d’une erreur.",
       "conflict": "Cette académie a déjà un plan payant, nous n’avons donc pas pu connecter celui-ci. Contactez le support et nous vous aiderons."
     }
+  },
+  "whats_new": {
+    "heading": "Nouveautés",
+    "new_count": "{count} nouvelles",
+    "new_badge": "Nouveau",
+    "read_full": "Lire le journal des modifications complet",
+    "close": "Fermer"
   }
 }

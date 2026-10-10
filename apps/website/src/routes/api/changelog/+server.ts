@@ -8,7 +8,7 @@ export async function GET({ platform, setHeaders, url }) {
   const limit = Number.isInteger(requestedLimit) && requestedLimit > 0 ? Math.min(requestedLimit, 30) : 30;
   const entries = await getChangelog(platform?.env?.USERJOT_API_KEY, platform?.env?.CACHE);
 
-  setHeaders({ 'cache-control': 'public, max-age=300' });
+  setHeaders({ 'cache-control': 'public, max-age=300', 'access-control-allow-origin': '*' });
 
   return json({ entries: entries.slice(0, limit) });
 }

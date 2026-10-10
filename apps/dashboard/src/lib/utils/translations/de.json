@@ -6272,5 +6272,12 @@
       "unavailable": "Dieser Tariflink wurde bereits verwendet oder ist nicht mehr aktiv. Kontaktieren Sie den Support, falls das ein Fehler ist.",
       "conflict": "Diese Academy hat bereits einen kostenpflichtigen Tarif, daher konnten wir diesen nicht verbinden. Kontaktieren Sie den Support, wir helfen Ihnen."
     }
+  },
+  "whats_new": {
+    "heading": "Neuigkeiten",
+    "new_count": "{count} neu",
+    "new_badge": "Neu",
+    "read_full": "Vollständiges Änderungsprotokoll lesen",
+    "close": "Schließen"
   }
 }

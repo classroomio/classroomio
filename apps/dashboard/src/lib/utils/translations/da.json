@@ -6272,5 +6272,12 @@
       "unavailable": "Dette planlink er allerede brugt eller er ikke længere aktivt. Kontakt support, hvis det er en fejl.",
       "conflict": "Dette akademi har allerede en betalt plan, så vi kunne ikke forbinde denne. Kontakt support, så hjælper vi dig."
     }
+  },
+  "whats_new": {
+    "heading": "Nyheder",
+    "new_count": "{count} nye",
+    "new_badge": "Ny",
+    "read_full": "Læs hele ændringsloggen",
+    "close": "Luk"
   }
 }

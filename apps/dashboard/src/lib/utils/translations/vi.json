@@ -6272,5 +6272,12 @@
       "unavailable": "Liên kết gói này đã được dùng hoặc không còn hiệu lực. Hãy liên hệ hỗ trợ nếu đây là nhầm lẫn.",
       "conflict": "Học viện này đã có gói trả phí nên chúng tôi không thể kết nối gói này. Hãy liên hệ hỗ trợ và chúng tôi sẽ giúp."
     }
+  },
+  "whats_new": {
+    "heading": "Có gì mới",
+    "new_count": "{count} mới",
+    "new_badge": "Mới",
+    "read_full": "Đọc toàn bộ nhật ký thay đổi",
+    "close": "Đóng"
   }
 }

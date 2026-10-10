@@ -6272,5 +6272,12 @@
       "unavailable": "Este link de plano já foi usado ou já não está ativo. Contacte o suporte se for um engano.",
       "conflict": "Esta academia já tem um plano pago, por isso não foi possível ligar este. Contacte o suporte e ajudamos."
     }
+  },
+  "whats_new": {
+    "heading": "Novidades",
+    "new_count": "{count} novas",
+    "new_badge": "Novo",
+    "read_full": "Ler o changelog completo",
+    "close": "Fechar"
   }
 }
