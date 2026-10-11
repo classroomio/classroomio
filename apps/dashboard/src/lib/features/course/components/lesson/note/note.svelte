@@ -14,8 +14,10 @@
   import {
     NOTE_CALLOUT_BUTTON_KEY,
     NOTE_CALLOUT_OPTIONS,
+    noteCalloutByLesson,
     noteCalloutFrameClass,
     noteCalloutMeta,
+    setNoteCalloutStyle,
     type NoteCalloutStyle
   } from '$features/course/components/lesson/note/note-callout';
   import type { Writable } from 'svelte/store';
@@ -32,14 +34,13 @@
 
   let noteRoot: HTMLElement | undefined = $state();
   let editRoot: HTMLElement | undefined = $state();
-  let calloutByLesson = $state<Record<string, NoteCalloutStyle>>({});
 
-  const calloutStyle = $derived<NoteCalloutStyle>(calloutByLesson[lessonId] ?? '');
+  const calloutStyle = $derived<NoteCalloutStyle>($noteCalloutByLesson[lessonId] ?? '');
   const activeCallout = $derived(noteCalloutMeta(calloutStyle));
   const calloutFrameClass = $derived(noteCalloutFrameClass(calloutStyle));
 
   function setCalloutStyle(style: NoteCalloutStyle) {
-    calloutByLesson[lessonId] = style;
+    setNoteCalloutStyle(lessonId, style);
   }
 
   $effect(() => {
@@ -125,9 +126,18 @@
   <!-- View Mode -->
   {#if !isHtmlValueEmpty(content)}
     <div class="relative mx-auto w-full max-w-2xl" bind:this={noteRoot}>
-      <HTMLRender>
-        <SafeHtmlContent {content} />
-      </HTMLRender>
+      {#if activeCallout}
+        <div class="flex w-full items-start gap-2.5 px-3.5 py-3 {calloutFrameClass}">
+          {@render calloutLabel()}
+          <HTMLRender className="min-w-0 flex-1">
+            <SafeHtmlContent {content} />
+          </HTMLRender>
+        </div>
+      {:else}
+        <HTMLRender>
+          <SafeHtmlContent {content} />
+        </HTMLRender>
+      {/if}
       <QuoteSelection root={noteRoot} enabled />
     </div>
   {:else if hasAtLeastOneTranslation}
@@ -149,6 +159,22 @@
   }
 
   :global(.note-callout .tiptap > * + *) {
+    margin-top: 0.25rem;
+  }
+
+  :global(.note-callout .prose) {
+    max-width: none;
+  }
+
+  :global(.note-callout .prose > :first-child) {
+    margin-top: 0;
+  }
+
+  :global(.note-callout .prose > :last-child) {
+    margin-bottom: 0;
+  }
+
+  :global(.note-callout .prose > * + *) {
     margin-top: 0.25rem;
   }
 

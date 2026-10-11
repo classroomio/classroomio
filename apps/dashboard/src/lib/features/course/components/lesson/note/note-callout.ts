@@ -1,4 +1,5 @@
 import type { Component } from 'svelte';
+import { writable } from 'svelte/store';
 import CircleAlertIcon from '@lucide/svelte/icons/circle-alert';
 import InfoIcon from '@lucide/svelte/icons/info';
 import LightbulbIcon from '@lucide/svelte/icons/lightbulb';
@@ -82,4 +83,12 @@ export function noteCalloutFrameClass(style: NoteCalloutStyle) {
   if (!style) return '';
 
   return `note-callout note-callout-${style} min-w-0 overflow-hidden rounded-lg border`;
+}
+
+export const noteCalloutByLesson = writable<Record<string, NoteCalloutStyle>>({});
+
+export function setNoteCalloutStyle(lessonId: string, style: NoteCalloutStyle) {
+  noteCalloutByLesson.update((styles) => {
+    return { ...styles, [lessonId]: style };
+  });
 }
