@@ -15,8 +15,8 @@ export interface CustomerStory {
   videoUrl: string;
   videoDialogTitle: string;
   closeLabel: string;
-  thumbnailUrl: string;
-  thumbnailAlt: string;
+  posterUrl: string;
+  posterAlt: string;
   watchLabel: string;
   playAriaLabel: string;
   logoUrl: string;
@@ -24,38 +24,36 @@ export interface CustomerStory {
   cardHeading: string;
   cardBody: string;
   stats: CustomerStoryStat[];
-  statsCaption: string;
   ctaLabel: string;
   ctaHref: string;
 }
 
 export const CUSTOMER_STORY: CustomerStory = {
   eyebrow: 'Customer stories',
-  heading: 'Fixed by the end of the day, every time.',
-  subtitle:
-    "Andrew Bedell built SensorHubb's customer training on ClassroomIO as a summer intern. Here is what he says about working with our team.",
-  quote: 'Every single time, they fixed it by the end of the day, without fail.',
+  heading: 'Recommended for any SaaS platform.',
+  subtitle: "Andrew Bedell built SensorHubb's customer training on ClassroomIO. Here is what he says about our team.",
+  quote:
+    "\u201cI would recommend them to any other SaaS platform who's wanting to either train customers or sell training programs.\u201d",
   speakerName: 'Andrew Bedell',
-  speakerRole: 'Intern, SensorHubb',
+  speakerRole: 'Strategy and Operations Intern, SensorHubb',
   videoLabel: 'Customer story',
   videoDuration: '1:39',
   videoUrl: 'https://assets.cdn.clsrio.com/www/home/andrew-bedell-sensorhubb-website.mp4',
   videoDialogTitle: 'Andrew Bedell on building SensorHubb customer training with ClassroomIO',
   closeLabel: 'Close video',
-  thumbnailUrl: '/customer-stories/sensorhubb/thumbnail.webp',
-  thumbnailAlt: 'Andrew Bedell, intern at SensorHubb, looking at the camera',
+  posterUrl: '/customer-stories/sensorhubb/poster.webp',
+  posterAlt: 'Andrew Bedell, Strategy and Operations Intern at SensorHubb, looking at the camera',
   watchLabel: 'Watch the story',
   playAriaLabel: 'Play the customer story from Andrew Bedell, 1 minute 39 seconds',
   logoUrl: '/customer-stories/sensorhubb/logo.png',
   logoAlt: 'SensorHubb',
   cardHeading: 'SensorHubb built its customer training on ClassroomIO.',
   cardBody:
-    "Andrew built a self-paced programme that teaches SensorHubb's customers how to use its product. He found customisation options and edge-case support he had not seen in other learning platforms, and a team that answers bug reports within an hour.",
+    "Andrew built a self-paced programme that teaches SensorHubb's customers how to use its product. He found customisation options and edge-case support he had not seen in other learning platforms, and says the team's quick, professional replies show they care about their customers and the experience.",
   stats: [
-    { value: 'Within an hour', label: 'first reply to his bug reports' },
-    { value: 'Same day', label: 'fix, every time he reported one' }
+    { value: '5 stars', label: 'what Andrew would give us' },
+    { value: 'Recommended', label: 'for any SaaS platform that trains customers' }
   ],
-  statsCaption: 'As reported by Andrew Bedell',
   ctaLabel: 'Become an early adopter',
   ctaHref: '/pricing'
 };
