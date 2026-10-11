@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import PlayIcon from '@lucide/svelte/icons/play';
+  import { Badge } from '@cio/ui/base/badge';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { t } from '$lib/utils/functions/translations';
   import { whatsNewApi } from '../api/whats-new.svelte';
@@ -38,11 +39,9 @@
           {#if entry.coverUrl}
             <img src={entry.coverUrl} alt="" class="size-full object-cover" loading="lazy" />
           {/if}
-          <span
-            class="absolute top-1.5 left-1.5 rounded-full bg-white px-1.5 py-px text-[10px] font-bold text-black uppercase"
-          >
+          <Badge class="absolute top-1.5 left-1.5 px-1.5 py-px text-[10px] font-bold uppercase">
             {$t('whats_new.new_badge')}
-          </span>
+          </Badge>
           {#if entry.videoId}
             <span class="absolute inset-0 flex items-center justify-center">
               <span class="flex size-7 items-center justify-center rounded-full bg-white text-black shadow">
