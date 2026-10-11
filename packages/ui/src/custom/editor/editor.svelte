@@ -180,21 +180,35 @@
         <EdraDragHandleExtended {editor} />
       {/if}
     {/if}
-    <div class={cn('ui:flex ui:min-h-0 ui:flex-1 ui:flex-col', contentFrameClass)}>
-      {#if contentLeading}
-        {@render contentLeading()}
-      {/if}
-      <EdraEditor
-        class={cn('ui:relative ui:min-h-0 ui:flex-1 ui:overflow-auto ui:p-4', editorClass)}
-        bind:editor
-        {editable}
-        emailSafe={toolbarPreset === 'email'}
-        {content}
-        {onUpdate}
-        {placeholder}
-        {onImageUpload}
-        {onSearchUnsplash}
-      />
+    <div class={cn('ui:flex ui:min-h-0 ui:flex-1 ui:flex-col', contentFrameClass && 'ui:overflow-auto')}>
+      <div
+        class={cn(
+          'ui:flex ui:w-full',
+          contentFrameClass ? 'ui:h-fit ui:shrink-0 ui:flex-row ui:items-start' : 'ui:min-h-0 ui:flex-1 ui:flex-col',
+          contentFrameClass
+        )}
+      >
+        {#if contentLeading}
+          {@render contentLeading()}
+        {/if}
+        <EdraEditor
+          class={cn(
+            'ui:relative ui:w-full',
+            contentFrameClass
+              ? 'ui:h-auto ui:min-h-6 ui:min-w-0 ui:flex-1 ui:overflow-visible ui:py-1.5 ui:pr-3 ui:pl-1'
+              : 'ui:min-h-0 ui:flex-1 ui:overflow-auto ui:p-4',
+            editorClass
+          )}
+          bind:editor
+          {editable}
+          emailSafe={toolbarPreset === 'email'}
+          {content}
+          {onUpdate}
+          {placeholder}
+          {onImageUpload}
+          {onSearchUnsplash}
+        />
+      </div>
     </div>
   </div>
 

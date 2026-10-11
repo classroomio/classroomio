@@ -78,7 +78,7 @@
 {#snippet calloutLabel()}
   {#if activeCallout}
     <div
-      class="note-callout-label flex items-center gap-1.5 px-3.5 pt-2.5 text-[12.5px] font-bold {activeCallout.labelClass}"
+      class="note-callout-label flex shrink-0 items-center gap-1.5 px-3 py-2 text-xs font-bold {activeCallout.labelClass}"
     >
       <activeCallout.icon class="size-3.5" />
       <span>{$t(activeCallout.labelKey)}</span>
@@ -122,6 +122,27 @@
 {/if}
 
 <style>
+  :global(.note-callout .tiptap > *) {
+    margin-block: 0;
+  }
+
+  :global(.note-callout .tiptap > * + *) {
+    margin-top: 0.25rem;
+  }
+
+  :global(.note-callout .tiptap-mathematics-render[data-type='block-math']) {
+    margin: 0;
+    padding: 0;
+    font-size: 1rem;
+    text-align: left;
+  }
+
+  :global(.note-callout .tiptap > p.is-empty:not(:only-child)) {
+    height: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+
   :global(.note-callout.note-callout-info) {
     background: color-mix(in oklab, oklch(0.6 0.15 250), transparent 92%);
     border-color: color-mix(in oklab, oklch(0.6 0.15 250), transparent 60%);
