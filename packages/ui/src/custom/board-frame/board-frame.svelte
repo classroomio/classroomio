@@ -1,14 +1,16 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { cn } from '../../tools';
 
   interface Props {
-    src: string;
-    alt: string;
+    src?: string;
+    alt?: string;
     url?: string;
     class?: string;
+    children?: Snippet;
   }
 
-  let { src, alt, url = 'app.classroomio.com', class: className = '' }: Props = $props();
+  let { src, alt = '', url = 'app.classroomio.com', class: className = '', children }: Props = $props();
 </script>
 
 <div class={cn('board-frame', className)}>
@@ -19,7 +21,11 @@
       <span class="dot" style:left="calc(var(--u) * 59)"></span>
       <span class="url">{url}</span>
     </div>
-    <img {src} {alt} class="screen" loading="eager" decoding="async" />
+    {#if src}
+      <img {src} {alt} class="screen" loading="eager" decoding="async" />
+    {:else}
+      <div class="screen">{@render children?.()}</div>
+    {/if}
     <div class="shelf" aria-hidden="true">
       <span class="foot foot-left"></span>
       <span class="foot foot-right"></span>

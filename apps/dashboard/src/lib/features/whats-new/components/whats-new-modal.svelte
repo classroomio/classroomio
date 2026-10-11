@@ -1,6 +1,7 @@
 <script lang="ts">
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
+  import { ChangelogCover } from '@cio/ui/custom/changelog-cover';
   import { locale, t } from '$lib/utils/functions/translations';
   import { whatsNewApi } from '../api/whats-new.svelte';
   import { getYoutubeEmbedUrl } from '../utils/whats-new-utils';
@@ -37,6 +38,8 @@
           ></iframe>
         {:else if entry.coverUrl}
           <img src={entry.coverUrl} alt="" class="size-full object-cover" />
+        {:else}
+          <ChangelogCover title={entry.title} footer={publishedDate} />
         {/if}
       </div>
 

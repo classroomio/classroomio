@@ -1,5 +1,6 @@
 <script lang="ts">
   import { BoardFrame } from '@cio/ui/custom/board-frame';
+  import { ChangelogCover } from '@cio/ui/custom/changelog-cover';
   import { formatDate } from '$lib/utils/format-date';
   import type { ChangelogEntry } from '$lib/utils/types';
   import NotchCard from './ui/notch-card.svelte';
@@ -14,10 +15,12 @@
 </script>
 
 <NotchCard class="mx-auto max-w-[1300px] bg-white" notchClass="bg-gray-50">
-  <article class="grid items-center gap-2 {entry.coverUrl ? 'lg:grid-cols-[1.5fr_1fr]' : ''}">
-    {#if entry.coverUrl}
-      <BoardFrame src={entry.coverUrl} alt={entry.title} url={displayUrl} />
-    {/if}
+  <article class="grid items-center gap-2 lg:grid-cols-[1.5fr_1fr]">
+    <BoardFrame src={entry.coverUrl ?? undefined} alt={entry.title} url={displayUrl}>
+      <div class="aspect-[1600/838] w-full">
+        <ChangelogCover title={entry.title} footer={formatDate(entry.publishedAt.slice(0, 10))} />
+      </div>
+    </BoardFrame>
 
     <div class="flex flex-col gap-5">
       <div class="flex flex-wrap items-center gap-2">

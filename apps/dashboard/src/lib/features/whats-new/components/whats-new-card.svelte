@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import PlayIcon from '@lucide/svelte/icons/play';
   import { Badge } from '@cio/ui/base/badge';
+  import { ChangelogCover } from '@cio/ui/custom/changelog-cover';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { t } from '$lib/utils/functions/translations';
   import { whatsNewApi } from '../api/whats-new.svelte';
@@ -35,15 +36,23 @@
         class="ui:bg-background ui:border-border relative block w-full cursor-pointer overflow-hidden rounded-md border text-left shadow-sm transition-shadow hover:shadow-md"
         onclick={() => whatsNewApi.open()}
       >
-        <div class="relative aspect-[16/7] w-full bg-rose-100 dark:bg-rose-950">
+        <div class="relative aspect-[16/7] w-full overflow-hidden">
           {#if entry.coverUrl}
             <img src={entry.coverUrl} alt="" class="size-full object-cover" loading="lazy" />
+          {:else}
+            <ChangelogCover title={entry.title} label="" />
           {/if}
-          <Badge class="absolute top-1.5 left-1.5 px-1.5 py-px text-[10px] font-bold uppercase">
+          <Badge
+            class="absolute px-1.5 py-px text-[10px] font-bold uppercase {entry.coverUrl
+              ? 'top-1.5 left-1.5'
+              : 'top-1.5 right-1.5'}"
+          >
             {$t('whats_new.new_badge')}
           </Badge>
           {#if entry.videoId}
-            <span class="absolute inset-0 flex items-center justify-center">
+            <span
+              class="absolute flex items-center justify-center {entry.coverUrl ? 'inset-0' : 'right-1.5 bottom-1.5'}"
+            >
               <span class="flex size-7 items-center justify-center rounded-full bg-white text-black shadow">
                 <PlayIcon class="size-3 fill-current" />
               </span>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { ChangelogCover } from '@cio/ui/custom/changelog-cover';
   import { formatDate } from '$lib/utils/format-date';
   import type { ChangelogEntry } from '$lib/utils/types';
 
@@ -16,17 +17,21 @@
         class="absolute top-1.5 -left-[5px] size-2.5 rounded-full border-2 border-gray-50 bg-blue-700 ring-1 ring-blue-700"
       ></span>
 
-      <div class="grid items-start gap-5 {entry.coverUrl ? 'md:grid-cols-[240px_1fr]' : ''}">
-        {#if entry.coverUrl}
-          <a href={entry.url} target="_blank" rel="noopener noreferrer" class="block">
+      <div class="grid items-start gap-5 md:grid-cols-[240px_1fr]">
+        <a href={entry.url} target="_blank" rel="noopener noreferrer" class="block">
+          {#if entry.coverUrl}
             <img
               src={entry.coverUrl}
               alt={entry.title}
               loading="lazy"
               class="aspect-video w-full rounded-md border border-gray-200 object-cover"
             />
-          </a>
-        {/if}
+          {:else}
+            <div class="aspect-video w-full overflow-hidden rounded-md border border-gray-200">
+              <ChangelogCover title={entry.title} footer={formatDate(entry.publishedAt.slice(0, 10))} />
+            </div>
+          {/if}
+        </a>
 
         <div>
           <div class="mb-2 flex flex-wrap items-center gap-2">
