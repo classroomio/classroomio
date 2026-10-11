@@ -37,6 +37,7 @@ export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
 export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
+export const earlyAdopterClaimStatus = pgEnum('EARLY_ADOPTER_CLAIM_STATUS', ['pending', 'claimed', 'canceled']);
 export const courseImportSourceType = pgEnum('COURSE_IMPORT_SOURCE_TYPE', ['prompt', 'pdf', 'course']);
 export const courseImportDraftStatus = pgEnum('COURSE_IMPORT_DRAFT_STATUS', ['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const organizationApiKeyType = pgEnum('ORGANIZATION_API_KEY_TYPE', ['mcp', 'api', 'zapier']);
@@ -1944,6 +1945,48 @@ export const organizationPlan = pgTable(
     }),
     unique('organization_plan_subscription_id_key').on(table.subscriptionId),
     index('idx_organization_plan_org_id').on(table.orgId)
+  ]
+);
+
+export const earlyAdopterClaim = pgTable(
+  'early_adopter_claim',
+  {
+    id: bigint({ mode: 'number' }).primaryKey().generatedByDefaultAsIdentity({
+      name: 'early_adopter_claim_id_seq',
+      startWith: 1,
+      increment: 1,
+      minValue: 1,
+      cache: 1
+    }),
+    tokenHash: text('token_hash').notNull(),
+    polarSubscriptionId: text('polar_subscription_id').notNull(),
+    polarCustomerId: text('polar_customer_id'),
+    polarCheckoutId: text('polar_checkout_id'),
+    email: text().notNull(),
+    status: earlyAdopterClaimStatus().default('pending').notNull(),
+    claimedOrgId: uuid('claimed_org_id'),
+    claimedByProfileId: uuid('claimed_by_profile_id'),
+    expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),
+    reminderSentAt: timestamp('reminder_sent_at', { withTimezone: true, mode: 'string' }),
+    payload: jsonb(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    claimedAt: timestamp('claimed_at', { withTimezone: true, mode: 'string' })
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.claimedOrgId],
+      foreignColumns: [organization.id],
+      name: 'early_adopter_claim_claimed_org_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.claimedByProfileId],
+      foreignColumns: [profile.id],
+      name: 'early_adopter_claim_claimed_by_profile_id_fkey'
+    }),
+    unique('early_adopter_claim_token_hash_key').on(table.tokenHash),
+    unique('early_adopter_claim_polar_subscription_id_key').on(table.polarSubscriptionId),
+    index('idx_early_adopter_claim_status_created_at').on(table.status, table.createdAt)
   ]
 );
 

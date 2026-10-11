@@ -1682,7 +1682,16 @@
       "monthly": "Aylık",
       "annually": "Yıllık",
       "popular": "Popüler",
-      "per_org": "Kuruluş Başına"
+      "per_org": "Kuruluş Başına",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter fiyatı · {days, plural, one {# gün kaldı} other {# gün kaldı}}",
+        "eyebrow_closing": "Early Adopter fiyatı · Son {days} gün",
+        "eyebrow_today": "Early Adopter fiyatı · Bugün bitiyor",
+        "title": "Bilerek düşük fiyat. Uzun sürmeyecek.",
+        "title_closing": "Bilerek düşük fiyat. Yakında kapanıyor.",
+        "body": "ClassroomIO’yu uygun fiyatlı tutuyoruz çünkü onu yalnızca müşterilerimiz için değil, müşterilerimizle birlikte geliştiriyoruz. Bugünkü fiyatı {date} tarihinden önce sabitleyin. Ardından Early Adopter planı kapanır ve yeni fiyatlar geçerli olur.",
+        "link": "Bunu neden yaptığımızı okuyun"
+      }
     }
   },
   "widgets": {
@@ -6223,5 +6232,30 @@
       "description": "Dersler, alıştırmalar ve ayarlarla eksiksiz bir kurs. Kopyalayın ve kendinize ait yapın.",
       "browse": "Tüm şablonlara göz atın"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Ödeme alındı. Bir adım kaldı.",
+      "body": "Hesabınızı oluşturun veya giriş yapın, Early Adopter planınızı akademinize otomatik olarak bağlayalım.",
+      "sign_up": "Hesabımı oluştur",
+      "log_in": "Giriş yap",
+      "continue": "Akademime devam et"
+    },
+    "success": {
+      "title": "Early Adopter planınız etkin",
+      "body": "Fiyatınız sabitlendi ve tüm Early Adopter özellikleri artık akademiniz için açık.",
+      "continue": "Oluşturmaya başla"
+    },
+    "errors": {
+      "invalid": "Bu bağlantı geçerli değil. Size gönderdiğimiz e-postayı kontrol edin veya destekle iletişime geçin.",
+      "expired": "Bu bağlantının süresi doldu. Destekle iletişime geçin, planınızı bağlamanıza yardım edelim.",
+      "unavailable": "Bu plan bağlantısı daha önce kullanıldı veya artık etkin değil. Bir hata olduğunu düşünüyorsanız destekle iletişime geçin.",
+      "conflict": "Bu akademinin zaten ücretli bir planı var, bu yüzden bunu bağlayamadık. Destekle iletişime geçin, yardımcı olalım."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Yeni",
+    "read_full": "Tüm değişiklik günlüğünü oku",
+    "close": "Kapat"
   }
 }

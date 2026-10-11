@@ -107,6 +107,23 @@ export const ZCancelOrgPlan = z.object({
 
 export type TCancelOrgPlan = z.infer<typeof ZCancelOrgPlan>;
 
+export const ZEarlyAdopterSubscriptionEvent = z.object({
+  event: z.enum(['activated', 'updated', 'revoked']),
+  subscriptionId: z.string().min(1),
+  customerId: z.string().min(1).nullish(),
+  customerEmail: z.email(),
+  checkoutId: z.string().min(1).nullish(),
+  payload: z.record(z.string(), z.unknown())
+});
+
+export type TEarlyAdopterSubscriptionEvent = z.infer<typeof ZEarlyAdopterSubscriptionEvent>;
+
+export const ZClaimEarlyAdopterPlan = z.object({
+  token: z.string().trim().min(20).max(200)
+});
+
+export type TClaimEarlyAdopterPlan = z.infer<typeof ZClaimEarlyAdopterPlan>;
+
 export const ZCreateOrganization = z.object({
   name: z
     .string()
