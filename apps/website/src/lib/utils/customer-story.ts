@@ -8,7 +8,7 @@ export interface CustomerStory {
   heading: string;
   subtitle: string;
   quote: string;
-  speakerName: string;
+  '\u201cI think my favorite part of using ClassroomIO, however, has been the extremely professional and prompt response from their team.\u201d';
   speakerRole: string;
   videoLabel: string;
   videoDuration: string;
@@ -30,10 +30,10 @@ export interface CustomerStory {
 
 export const CUSTOMER_STORY: CustomerStory = {
   eyebrow: 'Customer stories',
-  heading: 'Recommended for any SaaS platform.',
+  heading: 'An extremely professional and prompt response.',
   subtitle: "Andrew Bedell built SensorHubb's customer training on ClassroomIO. Here is what he says about our team.",
   quote:
-    "\u201cI would recommend them to any other SaaS platform who's wanting to either train customers or sell training programs.\u201d",
+    '\u201cI think my favorite part of using ClassroomIO, however, has been the extremely professional and prompt response from their team.\u201d',
   speakerName: 'Andrew Bedell',
   speakerRole: 'Strategy and Operations Intern, SensorHubb',
   videoLabel: 'Customer story',
