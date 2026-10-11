@@ -3,7 +3,6 @@
   import { page } from '$app/state';
   import { Button } from '@cio/ui/base/button';
   import { AuthUI } from '$features/ui';
-  import RocketIcon from '@lucide/svelte/icons/rocket';
   import { storeClaimToken } from '$features/early-adopter-claim/utils/claim-utils';
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
@@ -19,8 +18,7 @@
 
 <AuthUI isLogin={false} showOnlyContent={true} showLogo={true}>
   <div class="flex w-full flex-col items-center gap-4 text-center">
-    <RocketIcon class="size-8" color="var(--primary)" />
-    <h1 class="text-2xl font-semibold text-balance">{$t('early_adopter_claim.page.title')}</h1>
+    <h1 class="text-2xl font-normal text-balance">{$t('early_adopter_claim.page.title')}</h1>
     <p class="text-sm text-pretty">{$t('early_adopter_claim.page.body')}</p>
 
     {#if $profile.id}
