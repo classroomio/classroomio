@@ -143,7 +143,7 @@
       <div class="mt-auto grid grid-cols-2 gap-2 pt-6">
         {#each story.stats as stat (stat.value)}
           <div class="rounded-md bg-white px-4 py-3.5">
-            <p class="text-base leading-tight font-medium md:text-lg">{stat.value}</p>
+            <p class="text-base leading-tight font-medium">{stat.value}</p>
             <p class="mt-1 text-[13px] leading-snug text-gray-600">{stat.label}</p>
           </div>
         {/each}
