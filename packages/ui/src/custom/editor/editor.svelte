@@ -165,7 +165,7 @@
       {#if showToolBar}
         <div transition:slide>
           <EdraToolBar
-            class="ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:overflow-x-auto ui:border-b ui:border-dashed ui:p-0.5"
+            class="ui:bg-secondary/50 ui:flex ui:w-full ui:flex-wrap ui:items-center ui:overflow-x-hidden ui:border-b ui:border-dashed ui:p-0.5"
             {editor}
             preset={toolbarPreset}
             trailingContent={toolbarTrailing}
@@ -180,11 +180,18 @@
         <EdraDragHandleExtended {editor} />
       {/if}
     {/if}
-    <div class={cn('ui:flex ui:min-h-0 ui:flex-1 ui:flex-col', contentFrameClass && 'ui:overflow-auto')}>
+    <div
+      class={cn(
+        'ui:flex ui:min-h-0 ui:min-w-0 ui:flex-1 ui:flex-col',
+        contentFrameClass && 'ui:overflow-x-hidden ui:overflow-y-auto'
+      )}
+    >
       <div
         class={cn(
-          'ui:flex ui:w-full',
-          contentFrameClass ? 'ui:h-fit ui:shrink-0 ui:flex-row ui:items-start' : 'ui:min-h-0 ui:flex-1 ui:flex-col',
+          'ui:flex ui:min-w-0 ui:flex-col',
+          contentFrameClass
+            ? 'ui:m-3 ui:h-fit ui:w-[min(36rem,calc(100%-1.5rem))] ui:flex-row ui:items-start ui:gap-2 ui:self-start ui:px-3 ui:py-3'
+            : 'ui:min-h-0 ui:w-full ui:flex-1',
           contentFrameClass
         )}
       >
@@ -193,9 +200,9 @@
         {/if}
         <EdraEditor
           class={cn(
-            'ui:relative ui:w-full',
+            'ui:relative ui:min-w-0 ui:w-full',
             contentFrameClass
-              ? 'ui:h-auto ui:min-h-6 ui:min-w-0 ui:flex-1 ui:overflow-visible ui:py-1.5 ui:pr-3 ui:pl-1'
+              ? 'ui:h-auto ui:min-w-0 ui:flex-1 ui:overflow-visible ui:p-0'
               : 'ui:min-h-0 ui:flex-1 ui:overflow-auto ui:p-4',
             editorClass
           )}

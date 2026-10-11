@@ -81,5 +81,5 @@ export function noteCalloutMeta(style: NoteCalloutStyle) {
 export function noteCalloutFrameClass(style: NoteCalloutStyle) {
   if (!style) return '';
 
-  return `note-callout note-callout-${style} m-2 h-fit w-full shrink-0 overflow-hidden rounded-lg border`;
+  return `note-callout note-callout-${style} min-w-0 overflow-hidden rounded-lg border`;
 }
