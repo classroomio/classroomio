@@ -1,11 +1,19 @@
+import * as z from 'zod';
 import {
+  ZPublicApiCourseDetailResponse,
+  ZPublicApiCourseListItemResponse,
   ZPublicApiCourseMemberListItemResponse,
   ZPublicApiCourseParam,
+  ZPublicApiCourseResponse,
+  ZPublicApiCourseStructureResponse,
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
+  ZPublicApiCreateCourseResponse,
   ZPublicApiPaginationQuery,
   ZPublicApiUpdateCourse,
-  ZPublicApiUpdateCourseStructure
+  ZPublicApiUpdateCourseEnvelope,
+  ZPublicApiUpdateCourseStructure,
+  ZPublicApiUpdateCourseStructureResponse
 } from '@cio/utils/validation/public-api';
 import {
   createPublicApiCourseService,
@@ -21,69 +29,13 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
+import { itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { PAGINATION_NOTE } from './docs';
 
-const PaginationSchema = {
-  type: 'object' as const,
-  properties: {
-    page: { type: 'number' as const },
-    limit: { type: 'number' as const },
-    total: { type: 'number' as const },
-    totalPages: { type: 'number' as const }
-  },
-  required: ['page', 'limit', 'total', 'totalPages']
-};
-
-const CoursesQuerySchema = {
-  type: 'object' as const,
-  properties: {
-    page: { type: 'number' as const },
-    limit: { type: 'number' as const },
-    search: { type: 'string' as const },
-    tags: { type: 'string' as const }
-  },
-  required: ['page', 'limit']
-};
-
-const CoursesListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } },
-    pagination: PaginationSchema,
-    query: CoursesQuerySchema
-  },
-  required: ['success', 'data', 'pagination', 'query']
-};
+const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
 const CourseStudentsDataResponse = paginatedResponse(ZPublicApiCourseMemberListItemResponse);
 const CourseStudentsResponse = jsonResponse('Course students returned successfully', CourseStudentsDataResponse);
-
-const NonAutoGradableQuestionOffenderSchema = {
-  type: 'object' as const,
-  properties: {
-    questionId: { type: 'number' as const },
-    questionTitle: { type: 'string' as const },
-    exerciseId: { type: 'string' as const },
-    exerciseTitle: { type: 'string' as const },
-    typeId: { type: 'number' as const }
-  },
-  required: ['questionId', 'questionTitle', 'exerciseId', 'exerciseTitle', 'typeId']
-};
-
-const CourseDetailResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const },
-    conversionBlocked: {
-      type: 'array' as const,
-      items: NonAutoGradableQuestionOffenderSchema
-    }
-  },
-  required: ['success', 'data']
-};
 
 export const v1CourseRouter = new Hono()
   .get(
@@ -92,14 +44,10 @@ export const v1CourseRouter = new Hono()
       description: 'List courses for the authenticated organization',
       tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Courses returned successfully',
-          content: {
-            'application/json': {
-              schema: CoursesListResponse
-            }
-          }
-        },
+        200: jsonResponse(
+          'Courses returned successfully',
+          paginatedResponse(ZPublicApiCourseListItemResponse, CoursesListEnvelope)
+        ),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' }
       }
@@ -131,14 +79,7 @@ export const v1CourseRouter = new Hono()
       description: 'Create a course for the authenticated organization',
       tags: ['Courses'],
       responses: {
-        201: {
-          description: 'Course created successfully',
-          content: {
-            'application/json': {
-              schema: CourseDetailResponse
-            }
-          }
-        },
+        201: jsonResponse('Course created successfully', itemResponse(ZPublicApiCreateCourseResponse)),
         400: { description: 'Invalid request body' },
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' }
@@ -209,14 +150,7 @@ export const v1CourseRouter = new Hono()
       description: 'Export a course structure snapshot',
       tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Course export returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseDetailResponse
-            }
-          }
-        },
+        200: jsonResponse('Course export returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
@@ -247,14 +181,7 @@ export const v1CourseRouter = new Hono()
       description: 'Get a course structure snapshot',
       tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Course structure returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseDetailResponse
-            }
-          }
-        },
+        200: jsonResponse('Course structure returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
@@ -285,14 +212,10 @@ export const v1CourseRouter = new Hono()
       description: 'Synchronize a course structure using the draft payload shape',
       tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Course structure updated successfully',
-          content: {
-            'application/json': {
-              schema: CourseDetailResponse
-            }
-          }
-        },
+        200: jsonResponse(
+          'Course structure updated successfully',
+          itemResponse(ZPublicApiUpdateCourseStructureResponse)
+        ),
         400: { description: 'Invalid request body' },
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
@@ -327,14 +250,7 @@ export const v1CourseRouter = new Hono()
       description: 'Get a single course by id',
       tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Course returned successfully',
-          content: {
-            'application/json': {
-              schema: CourseDetailResponse
-            }
-          }
-        },
+        200: jsonResponse('Course returned successfully', itemResponse(ZPublicApiCourseDetailResponse)),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
@@ -365,14 +281,10 @@ export const v1CourseRouter = new Hono()
       description: 'Update a course by id',
       tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Course updated successfully',
-          content: {
-            'application/json': {
-              schema: CourseDetailResponse
-            }
-          }
-        },
+        200: jsonResponse(
+          'Course updated successfully',
+          itemResponse(ZPublicApiCourseResponse, ZPublicApiUpdateCourseEnvelope)
+        ),
         400: { description: 'Invalid request body' },
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
@@ -407,14 +319,7 @@ export const v1CourseRouter = new Hono()
       description: 'Delete a course by id',
       tags: ['Courses'],
       responses: {
-        200: {
-          description: 'Course deleted successfully',
-          content: {
-            'application/json': {
-              schema: CourseDetailResponse
-            }
-          }
-        },
+        200: jsonResponse('Course deleted successfully', itemResponse(ZPublicApiCourseResponse)),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }
