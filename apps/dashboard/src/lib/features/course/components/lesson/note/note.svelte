@@ -97,8 +97,12 @@
 
 {#snippet calloutLabel()}
   {#if activeCallout}
-    <div class="note-callout-label mt-0.5 shrink-0 {activeCallout.labelClass}" aria-label={$t(activeCallout.labelKey)}>
+    <div
+      class="note-callout-label flex shrink-0 items-center gap-1.5 {activeCallout.labelClass}"
+      aria-label={$t(activeCallout.labelKey)}
+    >
       <activeCallout.icon class="size-5" />
+      <span class="text-xs leading-5 font-bold" aria-hidden="true">{$t(activeCallout.labelKey)}</span>
     </div>
   {/if}
 {/snippet}
