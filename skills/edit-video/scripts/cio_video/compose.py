@@ -87,13 +87,19 @@ def title_card(project, clip):
     draw = ImageDraw.Draw(image)
     lines, head, tracking = brand.fit_lines(clip['title'], 860, 3, 64)
     pad, line_height = 36, 64
-    width = max(brand.text_width(line, head, tracking) for line in lines)
-    height = 18 + 28 + line_height * len(lines) + 4
+    speaker = clip.get('speaker')
+    speaker_font = brand.mono(18)
+    speaker_width = brand.text_width(speaker, speaker_font, 18 * 0.08) if speaker else 0
+    width = max([brand.text_width(line, head, tracking) for line in lines] + [speaker_width])
+    height = 18 + 28 + line_height * len(lines) + 4 + (44 if speaker else 0)
     draw.rectangle((80, 80, 80 + width + pad * 2, 80 + height + pad * 2), fill=brand.INK + (235,))
     eyebrow = project.series if project.series.startswith('CLASSROOMIO') else f'CLASSROOMIO · {project.series}'
     brand.draw_tracked(draw, 80 + pad, 80 + pad + 16, eyebrow, brand.mono(18), brand.SKY, 18 * 0.12)
     for number, line in enumerate(lines):
         brand.draw_tracked(draw, 80 + pad, 80 + pad + 46 + line_height * number + 50, line, head, brand.PAPER, tracking)
+    if speaker:
+        speaker_y = 80 + pad + 46 + line_height * len(lines) + 50 + 24
+        brand.draw_tracked(draw, 80 + pad, speaker_y, speaker, speaker_font, brand.SKY, 18 * 0.08)
     draw.rectangle((80, 80 + height + pad * 2, 80 + width + pad * 2, 80 + height + pad * 2 + 6), fill=brand.BLUE + (255,))
     return image
 

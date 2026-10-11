@@ -31,6 +31,7 @@ One JSON file per editing job. Paths are relative to the file. A path that start
 | `file` | Instead of `start`: a pre-cut clip, located in the source by audio alignment. `trim_start` adds seconds. |
 | `start_phrase`, `end_phrase` | Instead of seconds: the first and last words of the clip as spoken. `search_from` (seconds) disambiguates repeats. |
 | `duration` | Instead of `end`. |
+| `speaker` | Optional one-line credit under the 16:9 title card headline, for example `Andrew Bedell, Strategy and Operations Intern, SensorHubb`. |
 | `title` | Headline on the 16:9 title card and the 9:16 header. A plain claim in sentence case, 4–9 words. |
 | `thumbnail` | Thumbnail headline, at most 6 words. |
 | `thumbnail_frame` | `{"time": 8.0, "top": 0.08}`: which trimmed-clip frame to use, and how far down to crop. |

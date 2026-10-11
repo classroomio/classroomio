@@ -844,12 +844,12 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4.1.17
         version: 4.1.18
-      html-to-image:
-        specifier: ^1.11.11
-        version: 1.11.13
       just-extend:
         specifier: ^6.2.0
         version: 6.2.0
+      marked:
+        specifier: ^15.0.12
+        version: 15.0.12
       posthog-node:
         specifier: ^3.1.3
         version: 3.6.3
@@ -862,6 +862,9 @@ importers:
       remark-unwrap-images:
         specifier: ^4.0.0
         version: 4.0.1
+      sanitize-html:
+        specifier: ^2.17.2
+        version: 2.17.2
       shiki:
         specifier: ^0.14.7
         version: 0.14.7
@@ -884,6 +887,9 @@ importers:
       '@tailwindcss/typography':
         specifier: ^0.5.9
         version: 0.5.19(tailwindcss@4.1.18)
+      '@types/sanitize-html':
+        specifier: ^2.16.1
+        version: 2.16.1
       cross-env:
         specifier: ^10.1.0
         version: 10.1.0

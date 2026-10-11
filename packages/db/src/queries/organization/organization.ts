@@ -1249,9 +1249,10 @@ export const createOrganizationPlan = async (
  */
 export const updateOrganizationPlan = async (
   subscriptionId: string,
-  updates: Partial<Pick<TOrganizationPlan, 'isActive' | 'deactivatedAt' | 'payload'>>
+  updates: Partial<Pick<TOrganizationPlan, 'isActive' | 'deactivatedAt' | 'payload'>>,
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationPlan | null> => {
-  const [plan] = await db
+  const [plan] = await dbClient
     .update(schema.organizationPlan)
     .set({ ...updates, updatedAt: sql`timezone('utc'::text, now())` })
     .where(eq(schema.organizationPlan.subscriptionId, subscriptionId))
@@ -1267,9 +1268,10 @@ export const updateOrganizationPlan = async (
  */
 export const activateOrganizationPlan = async (
   subscriptionId: string,
-  payload: TOrganizationPlan['payload']
+  payload: TOrganizationPlan['payload'],
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationPlan | null> => {
-  const [plan] = await db
+  const [plan] = await dbClient
     .update(schema.organizationPlan)
     .set({
       isActive: true,
@@ -1291,9 +1293,10 @@ export const activateOrganizationPlan = async (
  */
 export const cancelOrganizationPlan = async (
   subscriptionId: string,
-  payload: TOrganizationPlan['payload']
+  payload: TOrganizationPlan['payload'],
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationPlan> => {
-  const [plan] = await db
+  const [plan] = await dbClient
     .update(schema.organizationPlan)
     .set({
       isActive: false,

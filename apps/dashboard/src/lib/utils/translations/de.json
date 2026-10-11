@@ -3522,7 +3522,16 @@
       "monthly": "Monatlich",
       "annually": "Jährlich",
       "popular": "Beliebt",
-      "per_org": "Pro Organisation"
+      "per_org": "Pro Organisation",
+      "priced_low": {
+        "eyebrow_open": "Early-Adopter-Preis · {days, plural, one {# Tag übrig} other {# Tage übrig}}",
+        "eyebrow_closing": "Early-Adopter-Preis · Letzte {days} Tage",
+        "eyebrow_today": "Early-Adopter-Preis · Endet heute",
+        "title": "Bewusst günstig. Nicht für lange.",
+        "title_closing": "Bewusst günstig. Bald vorbei.",
+        "body": "Wir halten ClassroomIO bezahlbar, weil wir es gemeinsam mit unseren Kunden aufbauen, nicht nur für sie. Sichern Sie sich den heutigen Preis vor dem {date}. Danach wird der Early-Adopter-Tarif geschlossen und neue Preise gelten.",
+        "link": "Warum wir das tun"
+      }
     },
     "plan_names": {
       "free": "Kostenlos",
@@ -6243,5 +6252,30 @@
       "description": "Ein kompletter Kurs mit Lektionen, Übungen und Einstellungen. Kopieren Sie es und machen Sie es dann zu Ihrem.",
       "browse": "Durchsuchen Sie alle Vorlagen"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Zahlung erhalten. Noch ein Schritt.",
+      "body": "Erstellen Sie Ihr Konto oder melden Sie sich an, und wir verbinden Ihren Early-Adopter-Tarif automatisch mit Ihrer Academy.",
+      "sign_up": "Konto erstellen",
+      "log_in": "Anmelden",
+      "continue": "Weiter zu meiner Academy"
+    },
+    "success": {
+      "title": "Ihr Early-Adopter-Tarif ist aktiv",
+      "body": "Ihr Preis ist gesichert und alle Early-Adopter-Funktionen sind jetzt für Ihre Academy freigeschaltet.",
+      "continue": "Jetzt loslegen"
+    },
+    "errors": {
+      "invalid": "Dieser Link ist ungültig. Prüfen Sie die E-Mail, die wir Ihnen gesendet haben, oder kontaktieren Sie den Support.",
+      "expired": "Dieser Link ist abgelaufen. Kontaktieren Sie den Support, wir helfen Ihnen, Ihren Tarif zu verbinden.",
+      "unavailable": "Dieser Tariflink wurde bereits verwendet oder ist nicht mehr aktiv. Kontaktieren Sie den Support, falls das ein Fehler ist.",
+      "conflict": "Diese Academy hat bereits einen kostenpflichtigen Tarif, daher konnten wir diesen nicht verbinden. Kontaktieren Sie den Support, wir helfen Ihnen."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Neu",
+    "read_full": "Vollständiges Änderungsprotokoll lesen",
+    "close": "Schließen"
   }
 }
