@@ -15,9 +15,9 @@ _ClassroomIO Free Tools_
 
 For a while now, we've been looking to build tools that will help educators and students be more productive. The only rule of thumb for every tool is that it must be FREE to use. I spent time conducting research, examining existing options, and talking to students. As a result, I came up with several tools that can help educators and students enhance their productivity.
 
-We didn't build just 1 or 3, but 5 FREE tools available for anyone to try out. We've released them for a while now and have been receiving feedback. We will continue to improve them and enhance the user experience.
+We didn't build just 1 or 3, but 5 FREE tools for anyone to use. We released them and received plenty of feedback along the way. The tools have since been retired, but they shaped how we build for educators and students.
 
-Here are the 5 tools we've built:
+Here are the 5 tools we built:
 
 ### 1. Progress Report
 

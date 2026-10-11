@@ -8,7 +8,7 @@ export interface CustomerStory {
   heading: string;
   subtitle: string;
   quote: string;
-  '\u201cI think my favorite part of using ClassroomIO, however, has been the extremely professional and prompt response from their team.\u201d';
+  speakerName: string;
   speakerRole: string;
   videoLabel: string;
   videoDuration: string;

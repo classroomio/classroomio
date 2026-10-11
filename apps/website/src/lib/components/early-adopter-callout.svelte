@@ -30,18 +30,30 @@
     isLoading = true;
   }
 
-  const now = new Date();
-  const urgency = getEarlyAdopterUrgency(now);
-  const daysLeft = getEarlyAdopterDaysLeft(now);
+  const CLOCK_TICK_MS = 60_000;
+
+  let now = $state(new Date());
+  const urgency = $derived(getEarlyAdopterUrgency(now));
+  const daysLeft = $derived(getEarlyAdopterDaysLeft(now));
   const endDate = formatDate(EARLY_ADOPTER_OFFER.endsAt, 'long', 'en-GB');
 
-  const COUNTDOWN_LABEL: Record<Exclude<EarlyAdopterUrgency, 'ended'>, string> = {
+  $effect(() => {
+    const timer = setInterval(() => {
+      now = new Date();
+    }, CLOCK_TICK_MS);
+
+    return () => clearInterval(timer);
+  });
+
+  const countdownLabels = $derived<Record<Exclude<EarlyAdopterUrgency, 'ended'>, string>>({
     open: `${daysLeft} days left`,
     closing: `Last ${daysLeft} days`,
     final: '1 day left',
     today: 'Ends today'
-  };
-  const title = urgency === 'open' ? 'Priced low on purpose. Not for long.' : 'Priced low on purpose. Closing soon.';
+  });
+  const title = $derived(
+    urgency === 'open' ? 'Priced low on purpose. Not for long.' : 'Priced low on purpose. Closing soon.'
+  );
 </script>
 
 <svelte:window
@@ -54,7 +66,7 @@
   <NotchCard class="bg-[#EEF2FF] text-gray-950 {className}" notchClass="bg-white">
     <div class="grid items-center gap-6 md:grid-cols-[1fr_auto] md:gap-12">
       <div class="flex flex-col gap-3">
-        <Eyebrow size="sm" class="text-blue-700">Early Adopter rate · {COUNTDOWN_LABEL[urgency]}</Eyebrow>
+        <Eyebrow size="sm" class="text-blue-700">Early Adopter rate · {countdownLabels[urgency]}</Eyebrow>
         <h2 class="text-h3 font-medium text-balance">{title}</h2>
         <p class="max-w-[640px] text-pretty text-gray-600">
           We keep ClassroomIO affordable because we build it with our customers, not for them. Lock in today’s rate

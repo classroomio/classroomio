@@ -15,6 +15,8 @@ const UPDATES_BASE_URL = 'https://feedback.classroomio.com/updates';
 const UPDATES_SITEMAP_URL = 'https://feedback.classroomio.com/sitemap.xml';
 const PLAYLIST_FEED_URL = `https://www.youtube.com/feeds/videos.xml?playlist_id=${CHANGELOG_PLAYLIST_ID}`;
 const FETCH_LIMIT = 30;
+const ENTRIES_FETCH_TIMEOUT_MS = 8_000;
+const OPTIONAL_FETCH_TIMEOUT_MS = 3_000;
 const CACHE_TTL_MS = 1000 * 60 * 60 * 3;
 const KV_KEY = 'userjot:changelog:v5';
 
@@ -60,7 +62,7 @@ async function fetchEntryUrlsByDate(): Promise<Map<string, string>> {
   const urlsByDate = new Map<string, string>();
 
   try {
-    const response = await fetch(UPDATES_SITEMAP_URL);
+    const response = await fetch(UPDATES_SITEMAP_URL, { signal: AbortSignal.timeout(OPTIONAL_FETCH_TIMEOUT_MS) });
 
     if (!response.ok) {
       throw new Error(`UserJot sitemap returned ${response.status}`);
@@ -91,7 +93,7 @@ async function fetchEntryUrlsByDate(): Promise<Map<string, string>> {
  */
 async function fetchPlaylistVideos(): Promise<PlaylistVideo[]> {
   try {
-    const response = await fetch(PLAYLIST_FEED_URL);
+    const response = await fetch(PLAYLIST_FEED_URL, { signal: AbortSignal.timeout(OPTIONAL_FETCH_TIMEOUT_MS) });
 
     if (!response.ok) {
       throw new Error(`YouTube playlist feed returned ${response.status}`);
@@ -125,7 +127,10 @@ function toChangelogEntry(
 async function fetchFromUserJot(apiKey: string): Promise<ChangelogEntry[]> {
   const url = `${USERJOT_CHANGELOG_URL}?status=published&limit=${FETCH_LIMIT}`;
   const [response, urlsByDate, playlistVideos] = await Promise.all([
-    fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } }),
+    fetch(url, {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(ENTRIES_FETCH_TIMEOUT_MS)
+    }),
     fetchEntryUrlsByDate(),
     fetchPlaylistVideos()
   ]);
@@ -224,7 +229,8 @@ async function resolveChangelog(
  * How a refresh works: UserJot's changelogs API (bearer token, 30 published entries), UserJot's sitemap and
  * the changelog YouTube playlist's RSS feed are fetched in parallel. Entries scheduled for the future are
  * dropped and the rest are sorted newest first. A failing sitemap or feed only loses links or videos, while a
- * failing UserJot call fails the whole refresh.
+ * failing UserJot call fails the whole refresh. Each request has a deadline (8 seconds for UserJot, 3 for the
+ * sitemap and feed), so a stalled optional source cannot hold up the entries.
  *
  * How videos are matched: UserJot's API does not return an entry's embedded video, so the videos come from the
  * public "Changelogs" playlist (`CHANGELOG_PLAYLIST_ID`, RSS feed at
@@ -234,7 +240,8 @@ async function resolveChangelog(
  * one entry. The team publishes the video and the entry on the same day, so gaps are normally under a few
  * hours. The video for an entry is then the first of: an override in `CHANGELOG_VIDEO_OVERRIDES` (for a wrong
  * pairing or a video outside the playlist), the playlist pair, a YouTube link written in the entry text, or
- * null. Entries older than the playlist's latest 15 videos, or more than 24 hours from any video, get no video.
+ * null. Entries older than the playlist's latest 15 videos, or more than 24 hours from any video, get no
+ * playlist-matched video, and show none unless an override or a YouTube link in the entry text supplies one.
  *
  * Caching: isolate memory (L1) and Cloudflare KV (L2, key `KV_KEY`) both hold the result for 3 hours, and
  * simultaneous callers share one in-flight refresh. The key carries a version suffix, so change it whenever the

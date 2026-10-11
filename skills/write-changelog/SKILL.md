@@ -178,7 +178,7 @@ Write every image placeholder as `[IMAGE: file-name.png | what the screenshot sh
 
 - **Format:** PNG or JPG only, never webp. Convert a webp source with `sips -s format png in.webp --out out.png`.
 - **Location:** save the files in `company/changelogs/assets/<range>/`, for example `assets/28-sept-05-oct/`. Folder and file names are lowercase words separated by hyphens.
-- **Framing:** capture at 1350×830, device scale 1, and frame it in the ClassroomIO browser board, exactly as [`../add-docs-image/SKILL.md`](../add-docs-image/SKILL.md) describes. Write the framed output straight to `.png`.
+- **Framing:** capture at 1350×830, device scale 1, and use the ClassroomIO browser board with the framing settings in [`../add-docs-image/SKILL.md`](../add-docs-image/SKILL.md). For changelog assets, pass a `.png` output path to the framing script.
 - **Reuse:** if the Help Center already has a screenshot of the feature (under `apps/help/content/help/**/images/`), copy it and convert it to PNG instead of capturing a new one.
 - **Demo data:** when a feature needs content to look real, add an idempotent seed script under `packages/db/src/scripts/` with a fictional product and fictional names. Re-run it before capturing so earlier test edits are reset.
 - **Student view locally:** open `http://localhost:5173/?org=<siteName>` once before the student page, or every login opens the admin editor. Sign in through the API on port 3002, as the add-docs-image skill describes. Start the API with `pnpm api:dev` if it is not running, and stop it when you finish.
