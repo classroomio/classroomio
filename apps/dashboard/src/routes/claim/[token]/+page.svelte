@@ -8,6 +8,10 @@
   import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
 
+  function continueToAcademy() {
+    window.location.href = '/';
+  }
+
   onMount(() => {
     storeClaimToken(page.params.token ?? '');
   });
@@ -20,7 +24,7 @@
     <p class="text-sm text-pretty">{$t('early_adopter_claim.page.body')}</p>
 
     {#if $profile.id}
-      <Button class="w-full" href="/">{$t('early_adopter_claim.page.continue')}</Button>
+      <Button class="w-full" onclick={continueToAcademy}>{$t('early_adopter_claim.page.continue')}</Button>
     {:else}
       <div class="flex w-full flex-col gap-3">
         <Button class="w-full" href="/signup">{$t('early_adopter_claim.page.sign_up')}</Button>
