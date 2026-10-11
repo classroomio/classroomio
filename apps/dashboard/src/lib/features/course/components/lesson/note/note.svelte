@@ -9,8 +9,11 @@
   import type { TLocale } from '@cio/db/types';
   import AIButton from '$features/course/components/lesson/ai-button.svelte';
   import QuoteSelection from '$features/course/components/lesson/note/quote-selection.svelte';
+  import CircleOffIcon from '@lucide/svelte/icons/circle-off';
   import NoteCalloutPicker from '$features/course/components/lesson/note/note-callout-picker.svelte';
   import {
+    NOTE_CALLOUT_BUTTON_KEY,
+    NOTE_CALLOUT_OPTIONS,
     noteCalloutFrameClass,
     noteCalloutMeta,
     type NoteCalloutStyle
@@ -47,6 +50,22 @@
 
   function bindEditorRoot(editor: TiptapEditor) {
     editRoot = editor.view.dom as HTMLElement;
+    const title = t.get(NOTE_CALLOUT_BUTTON_KEY);
+    const actions = NOTE_CALLOUT_OPTIONS.map((option) => {
+      const tooltip = t.get(option.labelKey);
+      const styleId = option.id || 'default';
+
+      return {
+        icon: option.icon ?? CircleOffIcon,
+        name: `callout-${styleId}`,
+        tooltip,
+        onClick: () => {
+          setCalloutStyle(option.id);
+        }
+      };
+    });
+
+    editor.storage.slashCommand.extraGroups = [{ name: 'callout', title, actions }];
   }
 
   let hasAtLeastOneTranslation = $derived(

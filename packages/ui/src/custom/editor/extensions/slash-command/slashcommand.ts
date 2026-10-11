@@ -3,7 +3,7 @@ import Suggestion, { type SuggestionProps, type SuggestionKeyDownProps } from '@
 import { PluginKey } from '@tiptap/pm/state';
 import { computePosition, flip, offset, autoUpdate, type Placement } from '@floating-ui/dom';
 
-import { GROUPS } from './groups';
+import { GROUPS, type Group } from './groups';
 import SvelteRenderer from '../../svelte-renderer';
 
 import type { Component } from 'svelte';
@@ -75,13 +75,15 @@ export default (menuList: Component<any, any, ''>): Extension =>
             props.onClick(editor);
             view.focus();
           },
-          items: ({ query }: { query: string }) => {
-            const withFilteredCommands = GROUPS.map((group) => ({
+          items: ({ query, editor }: { query: string; editor: Editor }) => {
+            const extraGroups = (editor.storage[extensionName]?.extraGroups ?? []) as Group[];
+            const groups = [...GROUPS, ...extraGroups];
+            const queryNormalized = query.toLowerCase().trim();
+            const withFilteredCommands = groups.map((group) => ({
               ...group,
               commands: group.actions.filter((item) => {
-                const labelNormalized = item.tooltip!.toLowerCase().trim();
-                const queryNormalized = query.toLowerCase().trim();
-                return labelNormalized.includes(queryNormalized);
+                const label = `${item.tooltip ?? ''} ${item.name}`.toLowerCase();
+                return label.includes(queryNormalized);
               })
             }));
 
@@ -249,7 +251,8 @@ export default (menuList: Component<any, any, ''>): Extension =>
           top: 0,
           right: 0,
           bottom: 0
-        }
+        },
+        extraGroups: [] as Group[]
       };
     }
   });
