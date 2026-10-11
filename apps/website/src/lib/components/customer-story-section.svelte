@@ -149,7 +149,7 @@
         {/each}
       </div>
 
-      <div class="mt-4">
+      <div class="mt-7">
         <Button href={story.ctaHref} size="sm">
           {story.ctaLabel}
           <ArrowRightIcon />
