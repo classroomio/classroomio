@@ -53,8 +53,8 @@ export const NOTE_CALLOUT_OPTIONS: NoteCalloutOption[] = [
   {
     id: 'warning',
     labelKey: 'course.navItem.lessons.materials.tabs.note.callout.warning',
-    dotClass: 'bg-[oklch(0.5_0.15_70)]',
-    labelClass: 'text-[oklch(0.5_0.15_70)] dark:text-[oklch(0.84_0.12_70)]',
+    dotClass: 'bg-[oklch(0.55_0.2_25)]',
+    labelClass: 'text-[oklch(0.52_0.2_25)] dark:text-[oklch(0.82_0.12_25)]',
     icon: TriangleAlertIcon
   },
   {

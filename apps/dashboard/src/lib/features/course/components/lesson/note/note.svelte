@@ -216,13 +216,13 @@
   }
 
   :global(.note-callout.note-callout-warning) {
-    background: color-mix(in oklab, oklch(0.7 0.16 70), transparent 88%);
-    border-color: color-mix(in oklab, oklch(0.7 0.16 70), transparent 55%);
+    background: color-mix(in oklab, oklch(0.63 0.22 25), transparent 86%);
+    border-color: color-mix(in oklab, oklch(0.63 0.22 25), transparent 52%);
   }
 
   :global(.dark .note-callout.note-callout-warning) {
-    background: color-mix(in oklab, oklch(0.75 0.14 70), transparent 80%);
-    border-color: color-mix(in oklab, oklch(0.75 0.14 70), transparent 50%);
+    background: color-mix(in oklab, oklch(0.7 0.18 25), transparent 78%);
+    border-color: color-mix(in oklab, oklch(0.7 0.18 25), transparent 48%);
   }
 
   :global(.note-callout.note-callout-highlight) {
