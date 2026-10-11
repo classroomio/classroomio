@@ -16,8 +16,6 @@
     showToolBar?: boolean;
     toolbarPreset?: 'default' | 'email';
     toolbarTrailing?: Snippet<[]>;
-    contentLeading?: Snippet<[]>;
-    contentFrameClass?: string;
     // Whether the editor is editable
     editable?: boolean;
     // Whether to enable localStorage persistence
@@ -51,8 +49,6 @@
     showToolBar = true,
     toolbarPreset = 'default',
     toolbarTrailing,
-    contentLeading,
-    contentFrameClass = '',
     editable = true,
     enablePersistence = false,
     contentStorageKey = 'edra-content',
@@ -180,42 +176,18 @@
         <EdraDragHandleExtended {editor} />
       {/if}
     {/if}
-    <div
-      class={cn(
-        'ui:flex ui:min-h-0 ui:min-w-0 ui:flex-1 ui:flex-col',
-        contentFrameClass && 'ui:overflow-x-hidden ui:overflow-y-auto'
-      )}
-    >
-      <div
-        class={cn(
-          'ui:flex ui:min-w-0',
-          contentFrameClass
-            ? 'ui:mx-3 ui:my-3 ui:h-fit ui:flex-row ui:items-start ui:gap-2.5 ui:self-stretch ui:px-3.5 ui:py-3'
-            : 'ui:min-h-0 ui:w-full ui:flex-1 ui:flex-col',
-          contentFrameClass
-        )}
-      >
-        {#if contentLeading}
-          {@render contentLeading()}
-        {/if}
-        <EdraEditor
-          class={cn(
-            'ui:relative ui:min-w-0 ui:w-full',
-            contentFrameClass
-              ? 'ui:h-auto ui:min-w-0 ui:w-auto ui:flex-1 ui:overflow-visible ui:p-0'
-              : 'ui:min-h-0 ui:flex-1 ui:overflow-auto ui:p-4',
-            editorClass
-          )}
-          bind:editor
-          {editable}
-          emailSafe={toolbarPreset === 'email'}
-          {content}
-          {onUpdate}
-          {placeholder}
-          {onImageUpload}
-          {onSearchUnsplash}
-        />
-      </div>
+    <div class="ui:flex ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:flex-col">
+      <EdraEditor
+        class={cn('ui:relative ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:overflow-auto ui:p-4', editorClass)}
+        bind:editor
+        {editable}
+        emailSafe={toolbarPreset === 'email'}
+        {content}
+        {onUpdate}
+        {placeholder}
+        {onImageUpload}
+        {onSearchUnsplash}
+      />
     </div>
   </div>
 
@@ -235,8 +207,6 @@
               {editable}
               {toolbarPreset}
               {toolbarTrailing}
-              {contentLeading}
-              {contentFrameClass}
               {placeholder}
               {onImageUpload}
               {onSearchUnsplash}

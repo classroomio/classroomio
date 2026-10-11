@@ -2682,15 +2682,6 @@
                 "outline": "Gerar esboço da lição",
                 "note": "Gerar nota de aula",
                 "activities": "Gerar atividades de aula"
-              },
-              "callout": {
-                "button": "Estilo de destaque",
-                "default": "Padrão",
-                "info": "Info",
-                "tip": "Dica",
-                "important": "Importante",
-                "warning": "Aviso",
-                "highlight": "Destaque"
               }
             }
           }

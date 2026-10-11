@@ -29,8 +29,6 @@
     showToolBar?: boolean;
     toolbarPreset?: EditorToolbarPreset;
     toolbarTrailing?: Snippet<[]>;
-    contentLeading?: Snippet<[]>;
-    contentFrameClass?: string;
     editable?: boolean;
     enablePersistence?: boolean;
     contentStorageKey?: string;
@@ -51,8 +49,6 @@
     showToolBar = true,
     toolbarPreset = 'default',
     toolbarTrailing,
-    contentLeading,
-    contentFrameClass = '',
     editable = true,
     enablePersistence = false,
     contentStorageKey = 'edra-content',
@@ -87,8 +83,6 @@
     {showToolBar}
     {toolbarPreset}
     {toolbarTrailing}
-    {contentLeading}
-    {contentFrameClass}
     {editable}
     {enablePersistence}
     {contentStorageKey}

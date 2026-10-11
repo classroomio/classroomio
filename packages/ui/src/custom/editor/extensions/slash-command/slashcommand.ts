@@ -3,7 +3,7 @@ import Suggestion, { type SuggestionProps, type SuggestionKeyDownProps } from '@
 import { PluginKey } from '@tiptap/pm/state';
 import { computePosition, flip, offset, autoUpdate, type Placement } from '@floating-ui/dom';
 
-import { GROUPS, type Group } from './groups';
+import { GROUPS } from './groups';
 import SvelteRenderer from '../../svelte-renderer';
 
 import type { Component } from 'svelte';
@@ -75,11 +75,9 @@ export default (menuList: Component<any, any, ''>): Extension =>
             props.onClick(editor);
             view.focus();
           },
-          items: ({ query, editor }: { query: string; editor: Editor }) => {
-            const extraGroups = (editor.storage[extensionName]?.extraGroups ?? []) as Group[];
-            const groups = [...GROUPS, ...extraGroups];
+          items: ({ query }: { query: string }) => {
             const queryNormalized = query.toLowerCase().trim();
-            const withFilteredCommands = groups.map((group) => ({
+            const withFilteredCommands = GROUPS.map((group) => ({
               ...group,
               commands: group.actions.filter((item) => {
                 const label = `${item.tooltip ?? ''} ${item.name}`.toLowerCase();
@@ -251,8 +249,7 @@ export default (menuList: Component<any, any, ''>): Extension =>
           top: 0,
           right: 0,
           bottom: 0
-        },
-        extraGroups: [] as Group[]
+        }
       };
     }
   });

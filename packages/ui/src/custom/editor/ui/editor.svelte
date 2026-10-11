@@ -32,6 +32,7 @@
   import ImageUploadModal from './components/image-upload-modal.svelte';
 
   import '../editor.css';
+  import '../extensions/callout/callout.css';
   import './style.css';
   import '../onedark.css';
   import { Placeholder } from '@tiptap/extensions';

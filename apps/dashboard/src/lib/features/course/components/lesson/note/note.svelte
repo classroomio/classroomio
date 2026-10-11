@@ -9,17 +9,6 @@
   import type { TLocale } from '@cio/db/types';
   import AIButton from '$features/course/components/lesson/ai-button.svelte';
   import QuoteSelection from '$features/course/components/lesson/note/quote-selection.svelte';
-  import CircleOffIcon from '@lucide/svelte/icons/circle-off';
-  import NoteCalloutPicker from '$features/course/components/lesson/note/note-callout-picker.svelte';
-  import {
-    NOTE_CALLOUT_BUTTON_KEY,
-    NOTE_CALLOUT_OPTIONS,
-    noteCalloutByLesson,
-    noteCalloutFrameClass,
-    noteCalloutMeta,
-    setNoteCalloutStyle,
-    type NoteCalloutStyle
-  } from '$features/course/components/lesson/note/note-callout';
   import type { Writable } from 'svelte/store';
   import { saveDraft } from '$features/course/utils/lesson-draft';
 
@@ -35,14 +24,6 @@
   let noteRoot: HTMLElement | undefined = $state();
   let editRoot: HTMLElement | undefined = $state();
 
-  const calloutStyle = $derived<NoteCalloutStyle>($noteCalloutByLesson[lessonId] ?? '');
-  const activeCallout = $derived(noteCalloutMeta(calloutStyle));
-  const calloutFrameClass = $derived(noteCalloutFrameClass(calloutStyle));
-
-  function setCalloutStyle(style: NoteCalloutStyle) {
-    setNoteCalloutStyle(lessonId, style);
-  }
-
   $effect(() => {
     if (mode !== MODES.edit) {
       editRoot = undefined;
@@ -51,22 +32,6 @@
 
   function bindEditorRoot(editor: TiptapEditor) {
     editRoot = editor.view.dom as HTMLElement;
-    const title = t.get(NOTE_CALLOUT_BUTTON_KEY);
-    const actions = NOTE_CALLOUT_OPTIONS.map((option) => {
-      const tooltip = t.get(option.labelKey);
-      const styleId = option.id || 'default';
-
-      return {
-        icon: option.icon ?? CircleOffIcon,
-        name: `callout-${styleId}`,
-        tooltip,
-        onClick: () => {
-          setCalloutStyle(option.id);
-        }
-      };
-    });
-
-    editor.storage.slashCommand.extraGroups = [{ name: 'callout', title, actions }];
   }
 
   let hasAtLeastOneTranslation = $derived(
@@ -90,23 +55,6 @@
   const content = $derived(lessonApi.translations[lessonId]?.[lessonApi.currentLocale] || '');
 </script>
 
-{#snippet calloutToolbar()}
-  <div class="ui:bg-border mx-1 h-4 w-px shrink-0" aria-hidden="true"></div>
-  <NoteCalloutPicker value={calloutStyle} onChange={setCalloutStyle} />
-{/snippet}
-
-{#snippet calloutLabel()}
-  {#if activeCallout}
-    <div
-      class="note-callout-label flex shrink-0 items-center gap-1.5 {activeCallout.labelClass}"
-      aria-label={$t(activeCallout.labelKey)}
-    >
-      <activeCallout.icon class="size-5" />
-      <span class="text-xs leading-5 font-bold" aria-hidden="true">{$t(activeCallout.labelKey)}</span>
-    </div>
-  {/if}
-{/snippet}
-
 {#if mode === MODES.edit}
   <!-- AI Button -->
   <div class="flex justify-end gap-1">
@@ -120,9 +68,6 @@
       onChange={(content) => onEditorChange(content)}
       onReady={bindEditorRoot}
       placeholder={$t('course.navItem.lessons.materials.tabs.note.placeholder')}
-      toolbarTrailing={calloutToolbar}
-      contentLeading={calloutLabel}
-      contentFrameClass={calloutFrameClass}
     />
   </div>
   <QuoteSelection root={editRoot} enabled />
@@ -130,18 +75,9 @@
   <!-- View Mode -->
   {#if !isHtmlValueEmpty(content)}
     <div class="relative mx-auto w-full max-w-2xl" bind:this={noteRoot}>
-      {#if activeCallout}
-        <div class="flex w-full items-start gap-2.5 px-3.5 py-3 {calloutFrameClass}">
-          {@render calloutLabel()}
-          <HTMLRender className="min-w-0 flex-1">
-            <SafeHtmlContent {content} />
-          </HTMLRender>
-        </div>
-      {:else}
-        <HTMLRender>
-          <SafeHtmlContent {content} />
-        </HTMLRender>
-      {/if}
+      <HTMLRender>
+        <SafeHtmlContent {content} />
+      </HTMLRender>
       <QuoteSelection root={noteRoot} enabled />
     </div>
   {:else if hasAtLeastOneTranslation}
@@ -150,92 +86,3 @@
     </p>
   {/if}
 {/if}
-
-<style>
-  :global(.note-callout .tiptap) {
-    max-width: 100%;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-  }
-
-  :global(.note-callout .tiptap > *) {
-    margin-block: 0;
-  }
-
-  :global(.note-callout .tiptap > * + *) {
-    margin-top: 0.25rem;
-  }
-
-  :global(.note-callout .prose) {
-    max-width: none;
-  }
-
-  :global(.note-callout .prose > :first-child) {
-    margin-top: 0;
-  }
-
-  :global(.note-callout .prose > :last-child) {
-    margin-bottom: 0;
-  }
-
-  :global(.note-callout .prose > * + *) {
-    margin-top: 0.25rem;
-  }
-
-  :global(.note-callout .tiptap-mathematics-render[data-type='block-math']) {
-    margin: 0;
-    padding: 0;
-    font-size: 1rem;
-    text-align: left;
-  }
-
-  :global(.note-callout.note-callout-info) {
-    background: color-mix(in oklab, oklch(0.6 0.15 250), transparent 92%);
-    border-color: color-mix(in oklab, oklch(0.6 0.15 250), transparent 60%);
-  }
-
-  :global(.dark .note-callout.note-callout-info) {
-    background: color-mix(in oklab, oklch(0.7 0.12 250), transparent 82%);
-    border-color: color-mix(in oklab, oklch(0.7 0.12 250), transparent 55%);
-  }
-
-  :global(.note-callout.note-callout-tip) {
-    background: color-mix(in oklab, oklch(0.6 0.14 160), transparent 92%);
-    border-color: color-mix(in oklab, oklch(0.6 0.14 160), transparent 60%);
-  }
-
-  :global(.dark .note-callout.note-callout-tip) {
-    background: color-mix(in oklab, oklch(0.72 0.12 160), transparent 82%);
-    border-color: color-mix(in oklab, oklch(0.72 0.12 160), transparent 55%);
-  }
-
-  :global(.note-callout.note-callout-important) {
-    background: color-mix(in oklab, var(--primary), transparent 92%);
-    border-color: color-mix(in oklab, var(--primary), transparent 60%);
-  }
-
-  :global(.dark .note-callout.note-callout-important) {
-    background: color-mix(in oklab, var(--primary), transparent 84%);
-    border-color: color-mix(in oklab, var(--primary), transparent 55%);
-  }
-
-  :global(.note-callout.note-callout-warning) {
-    background: color-mix(in oklab, oklch(0.63 0.22 25), transparent 86%);
-    border-color: color-mix(in oklab, oklch(0.63 0.22 25), transparent 52%);
-  }
-
-  :global(.dark .note-callout.note-callout-warning) {
-    background: color-mix(in oklab, oklch(0.7 0.18 25), transparent 78%);
-    border-color: color-mix(in oklab, oklch(0.7 0.18 25), transparent 48%);
-  }
-
-  :global(.note-callout.note-callout-highlight) {
-    background: color-mix(in oklab, oklch(0.8 0.17 95), transparent 82%);
-    border-color: color-mix(in oklab, oklch(0.8 0.17 95), transparent 50%);
-  }
-
-  :global(.dark .note-callout.note-callout-highlight) {
-    background: color-mix(in oklab, oklch(0.8 0.14 95), transparent 78%);
-    border-color: color-mix(in oklab, oklch(0.8 0.14 95), transparent 48%);
-  }
-</style>
