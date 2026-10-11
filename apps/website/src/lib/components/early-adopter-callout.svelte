@@ -18,6 +18,18 @@
 
   let { interval = 'month', class: className = '' }: Props = $props();
 
+  let isLoading = $state(false);
+
+  function handleLockIn(event: MouseEvent) {
+    if (isLoading) {
+      event.preventDefault();
+
+      return;
+    }
+
+    isLoading = true;
+  }
+
   const now = new Date();
   const urgency = getEarlyAdopterUrgency(now);
   const daysLeft = getEarlyAdopterDaysLeft(now);
@@ -32,6 +44,12 @@
   const title = urgency === 'open' ? 'Priced low on purpose. Not for long.' : 'Priced low on purpose. Closing soon.';
 </script>
 
+<svelte:window
+  onpageshow={(event) => {
+    if (event.persisted) isLoading = false;
+  }}
+/>
+
 {#if urgency !== 'ended'}
   <NotchCard class="bg-[#EEF2FF] text-gray-950 {className}" notchClass="bg-white">
     <div class="grid items-center gap-6 md:grid-cols-[1fr_auto] md:gap-12">
@@ -45,7 +63,9 @@
       </div>
 
       <div class="flex flex-col gap-3 sm:flex-row md:flex-col">
-        <CtaButton href={getLockInHref(interval)} arrow>Lock in my rate</CtaButton>
+        <CtaButton href={getLockInHref(interval)} arrow loading={isLoading} onclick={handleLockIn}>
+          Lock in my rate
+        </CtaButton>
         <CtaButton variant="secondary" href={EARLY_ADOPTER_OFFER.postPath}>Read why we do it</CtaButton>
       </div>
     </div>
