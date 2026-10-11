@@ -41,6 +41,7 @@ class EarlyAdopterClaimApi extends BaseApi {
       },
       onError: (result) => {
         this.status = 'failed';
+        this.attemptedOrgId = null;
 
         if (typeof result === 'string' || !('code' in result)) return;
 

@@ -85,6 +85,45 @@ export const lockEarlyAdopterClaimByTokenHash = async (
   }
 };
 
+/**
+ * Locks the claim row for a Polar subscription so a webhook update and a claim cannot interleave.
+ */
+export const lockEarlyAdopterClaimBySubscriptionId = async (
+  subscriptionId: string,
+  dbClient: DbOrTxClient
+): Promise<TEarlyAdopterClaim | null> => {
+  try {
+    const [claim] = await dbClient
+      .select()
+      .from(schema.earlyAdopterClaim)
+      .where(eq(schema.earlyAdopterClaim.polarSubscriptionId, subscriptionId))
+      .limit(1)
+      .for('update');
+
+    return claim ?? null;
+  } catch (error) {
+    console.error('lockEarlyAdopterClaimBySubscriptionId error:', error);
+    throw new Error('Failed to lock early adopter claim');
+  }
+};
+
+/**
+ * Serializes claims for one organization so two purchases cannot both pass the active-plan check.
+ */
+export const lockOrganizationForPlanClaim = async (organizationId: string, dbClient: DbOrTxClient): Promise<void> => {
+  try {
+    await dbClient
+      .select({ id: schema.organization.id })
+      .from(schema.organization)
+      .where(eq(schema.organization.id, organizationId))
+      .limit(1)
+      .for('update');
+  } catch (error) {
+    console.error('lockOrganizationForPlanClaim error:', error);
+    throw new Error('Failed to lock organization for plan claim');
+  }
+};
+
 export const markEarlyAdopterClaimClaimed = async (
   id: number,
   data: { claimedOrgId: string; claimedByProfileId: string },

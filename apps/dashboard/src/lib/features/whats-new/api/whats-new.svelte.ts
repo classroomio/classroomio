@@ -37,7 +37,7 @@ class WhatsNewApi {
       this.entries = payload.entries ?? [];
     } catch (error) {
       console.error('fetching whats new entries error:', error);
-      this.entries = [];
+      this.hasRequested = false;
     } finally {
       this.isLoading = false;
     }

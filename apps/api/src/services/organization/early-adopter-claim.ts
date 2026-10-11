@@ -13,14 +13,17 @@ import {
   createEarlyAdopterClaim,
   createOrganizationPlan,
   getActiveOrganizationPlan,
-  getEarlyAdopterClaimBySubscriptionId,
   getOrganizationMemberIdByOrgAndProfile,
+  getOrganizationMemberRoleId,
   getOrganizationPlanBySubscriptionId,
+  lockEarlyAdopterClaimBySubscriptionId,
   lockEarlyAdopterClaimByTokenHash,
+  lockOrganizationForPlanClaim,
   markEarlyAdopterClaimClaimed,
   updateOrganizationPlan,
   updateUnclaimedEarlyAdopterClaim
 } from '@cio/db/queries/organization';
+import { ROLE } from '@cio/utils/constants';
 import { PLAN } from '@cio/utils/plans';
 import type { TEarlyAdopterSubscriptionEvent } from '@cio/utils/validation/organization';
 
@@ -47,53 +50,63 @@ async function enqueueClaimEmail(subscriptionId: string, customerEmail: string) 
   });
 
   if (jobIds.length === 0) {
-    console.error('enqueueClaimEmail error: email was not queued', { subscriptionId });
+    throw new AppError('The claim email was not queued', ErrorCodes.EARLY_ADOPTER_CLAIM_FAILED, 503);
   }
 }
 
 /**
  * Applies a Polar subscription event for a purchase made without an account.
  * Records a new unclaimed purchase and emails the buyer, or keeps an existing claim or plan in sync.
+ * The claim row is locked while the event is applied, so a revocation cannot be lost to a concurrent claim.
+ * The email is queued after commit and a failure throws, so Polar redelivers the activation and the
+ * idempotency key keeps the buyer from receiving two links.
  */
 export async function recordEarlyAdopterSubscriptionEvent(data: TEarlyAdopterSubscriptionEvent): Promise<void> {
   try {
     const { event, subscriptionId, payload } = data;
-    const claim = await getEarlyAdopterClaimBySubscriptionId(subscriptionId);
+    const shouldSendClaimEmail = await db.transaction(async (tx) => {
+      const claim = await lockEarlyAdopterClaimBySubscriptionId(subscriptionId, tx);
 
-    if (claim?.status === 'claimed') {
-      if (event === 'activated') await activateOrganizationPlan(subscriptionId, payload);
-      if (event === 'updated') await updateOrganizationPlan(subscriptionId, { payload });
-      if (event === 'revoked') await cancelOrganizationPlan(subscriptionId, payload);
+      if (claim?.status === 'claimed') {
+        if (event === 'activated') await activateOrganizationPlan(subscriptionId, payload, tx);
+        if (event === 'updated') await updateOrganizationPlan(subscriptionId, { payload }, tx);
+        if (event === 'revoked') await cancelOrganizationPlan(subscriptionId, payload, tx);
 
-      return;
-    }
+        return false;
+      }
 
-    if (claim) {
-      const status = event === 'revoked' ? 'canceled' : 'pending';
-      await updateUnclaimedEarlyAdopterClaim(subscriptionId, { status, payload });
+      if (claim) {
+        const status = event === 'revoked' ? 'canceled' : 'pending';
+        await updateUnclaimedEarlyAdopterClaim(subscriptionId, { status, payload }, tx);
 
-      return;
-    }
+        return event === 'activated';
+      }
 
-    if (event !== 'activated') return;
+      if (event !== 'activated') return false;
 
-    const existingPlan = await getOrganizationPlanBySubscriptionId(subscriptionId);
+      const existingPlan = await getOrganizationPlanBySubscriptionId(subscriptionId, tx);
 
-    if (existingPlan) return;
+      if (existingPlan) return false;
 
-    const tokenHash = hashEarlyAdopterClaimToken(deriveEarlyAdopterClaimToken(subscriptionId));
-    const expiresAt = new Date(Date.now() + CLAIM_TTL_MS).toISOString();
-    const created = await createEarlyAdopterClaim({
-      tokenHash,
-      polarSubscriptionId: subscriptionId,
-      polarCustomerId: data.customerId ?? null,
-      polarCheckoutId: data.checkoutId ?? null,
-      email: data.customerEmail,
-      expiresAt,
-      payload
+      const tokenHash = hashEarlyAdopterClaimToken(deriveEarlyAdopterClaimToken(subscriptionId));
+      const expiresAt = new Date(Date.now() + CLAIM_TTL_MS).toISOString();
+      const created = await createEarlyAdopterClaim(
+        {
+          tokenHash,
+          polarSubscriptionId: subscriptionId,
+          polarCustomerId: data.customerId ?? null,
+          polarCheckoutId: data.checkoutId ?? null,
+          email: data.customerEmail,
+          expiresAt,
+          payload
+        },
+        tx
+      );
+
+      return Boolean(created);
     });
 
-    if (created) {
+    if (shouldSendClaimEmail) {
       await enqueueClaimEmail(subscriptionId, data.customerEmail);
     }
   } catch (error) {
@@ -147,11 +160,18 @@ export async function claimEarlyAdopterPlan(
         throw new AppError('This link has expired', ErrorCodes.EARLY_ADOPTER_CLAIM_EXPIRED, 410);
       }
 
+      const roleId = await getOrganizationMemberRoleId(primary.id, userId, tx);
       const memberId = await getOrganizationMemberIdByOrgAndProfile(primary.id, userId, tx);
 
-      if (memberId == null) {
-        throw new AppError('You are not a member of this organization', ErrorCodes.ORG_TEAM_NOT_AUTHORIZED, 403);
+      if (memberId == null || roleId !== ROLE.ADMIN) {
+        throw new AppError(
+          'Only an admin of this organization can claim a plan',
+          ErrorCodes.ORG_TEAM_NOT_AUTHORIZED,
+          403
+        );
       }
+
+      await lockOrganizationForPlanClaim(primary.id, tx);
 
       const activePlan = await getActiveOrganizationPlan(primary.id, tx);
 

@@ -10,9 +10,19 @@
 
   let { class: className = '' }: Props = $props();
 
-  const now = new Date();
-  const urgency = getEarlyAdopterUrgency(now);
-  const daysLeft = getEarlyAdopterDaysLeft(now);
+  const CLOCK_TICK_MS = 60_000;
+
+  let now = $state(new Date());
+  const urgency = $derived(getEarlyAdopterUrgency(now));
+  const daysLeft = $derived(getEarlyAdopterDaysLeft(now));
+
+  $effect(() => {
+    const timer = setInterval(() => {
+      now = new Date();
+    }, CLOCK_TICK_MS);
+
+    return () => clearInterval(timer);
+  });
   const postUrl = `https://classroomio.com${EARLY_ADOPTER_OFFER.postPath}`;
 
   const endDate = $derived(

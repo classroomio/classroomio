@@ -12,7 +12,9 @@ const mocks = vi.hoisted(() => {
       createEarlyAdopterClaim: vi.fn(),
       createOrganizationPlan: vi.fn(),
       getActiveOrganizationPlan: vi.fn(),
-      getEarlyAdopterClaimBySubscriptionId: vi.fn(),
+      getOrganizationMemberRoleId: vi.fn(),
+      lockEarlyAdopterClaimBySubscriptionId: vi.fn(),
+      lockOrganizationForPlanClaim: vi.fn(),
       getOrganizationMemberIdByOrgAndProfile: vi.fn(),
       getOrganizationPlanBySubscriptionId: vi.fn(),
       lockEarlyAdopterClaimByTokenHash: vi.fn(),
@@ -56,6 +58,7 @@ describe('claimEarlyAdopterPlan', () => {
     mocks.queries.lockEarlyAdopterClaimByTokenHash.mockResolvedValue(pendingClaim());
     mocks.getAccountPrimary.mockResolvedValue({ id: 'org-primary' });
     mocks.queries.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(42);
+    mocks.queries.getOrganizationMemberRoleId.mockResolvedValue(1);
     mocks.queries.getActiveOrganizationPlan.mockResolvedValue(null);
     mocks.queries.getOrganizationPlanBySubscriptionId.mockResolvedValue(null);
     mocks.queries.createOrganizationPlan.mockResolvedValue({ id: 1 });
@@ -78,6 +81,7 @@ describe('claimEarlyAdopterPlan', () => {
       }),
       mocks.tx
     );
+    expect(mocks.queries.lockOrganizationForPlanClaim).toHaveBeenCalledWith('org-primary', mocks.tx);
     expect(mocks.queries.markEarlyAdopterClaimClaimed).toHaveBeenCalledWith(
       7,
       { claimedOrgId: 'org-primary', claimedByProfileId: 'user-1' },
@@ -131,6 +135,13 @@ describe('claimEarlyAdopterPlan', () => {
     await expect(claimEarlyAdopterPlan('user-1', 'org-1', 'tok')).rejects.toMatchObject({ statusCode: 409 });
   });
 
+  it('rejects a user who is only a tutor of the primary org with 403', async () => {
+    mocks.queries.getOrganizationMemberRoleId.mockResolvedValue(2);
+
+    await expect(claimEarlyAdopterPlan('user-1', 'org-1', 'tok')).rejects.toMatchObject({ statusCode: 403 });
+    expect(mocks.queries.createOrganizationPlan).not.toHaveBeenCalled();
+  });
+
   it('rejects a user who is not a member of the primary org with 403', async () => {
     mocks.queries.getOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
 
@@ -180,7 +191,7 @@ describe('recordEarlyAdopterSubscriptionEvent', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mocks.queries.getEarlyAdopterClaimBySubscriptionId.mockResolvedValue(null);
+    mocks.queries.lockEarlyAdopterClaimBySubscriptionId.mockResolvedValue(null);
     mocks.queries.getOrganizationPlanBySubscriptionId.mockResolvedValue(null);
     mocks.queries.createEarlyAdopterClaim.mockResolvedValue({ id: 1 });
     mocks.enqueueTransactionalEmail.mockResolvedValue({ jobIds: ['job-1'] });
@@ -194,7 +205,8 @@ describe('recordEarlyAdopterSubscriptionEvent', () => {
         tokenHash: 'hash-of-token-for-sub_1',
         polarSubscriptionId: 'sub_1',
         email: 'buyer@example.com'
-      })
+      }),
+      mocks.tx
     );
     expect(mocks.queries.createEarlyAdopterClaim.mock.calls[0][0]).not.toHaveProperty('token');
     expect(mocks.enqueueTransactionalEmail).toHaveBeenCalledWith('earlyAdopterReady', {
@@ -213,39 +225,73 @@ describe('recordEarlyAdopterSubscriptionEvent', () => {
   });
 
   it('only refreshes the payload for a pending claim on a repeated activation', async () => {
-    mocks.queries.getEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'pending' });
+    mocks.queries.lockEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'pending' });
 
     await recordEarlyAdopterSubscriptionEvent(event);
 
-    expect(mocks.queries.updateUnclaimedEarlyAdopterClaim).toHaveBeenCalledWith('sub_1', {
-      status: 'pending',
-      payload: event.payload
-    });
+    expect(mocks.queries.updateUnclaimedEarlyAdopterClaim).toHaveBeenCalledWith(
+      'sub_1',
+      { status: 'pending', payload: event.payload },
+      mocks.tx
+    );
     expect(mocks.queries.createEarlyAdopterClaim).not.toHaveBeenCalled();
+  });
+
+  it('queues the email again on a redelivered activation so a failed enqueue is recovered', async () => {
+    mocks.queries.lockEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'pending' });
+
+    await recordEarlyAdopterSubscriptionEvent(event);
+
+    expect(mocks.enqueueTransactionalEmail).toHaveBeenCalledWith(
+      'earlyAdopterReady',
+      expect.objectContaining({ idempotencyKey: 'early-adopter-ready:sub_1' })
+    );
+  });
+
+  it('does not queue an email for a non-activation event on a pending claim', async () => {
+    mocks.queries.lockEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'pending' });
+
+    await recordEarlyAdopterSubscriptionEvent({ ...event, event: 'updated' });
+
     expect(mocks.enqueueTransactionalEmail).not.toHaveBeenCalled();
   });
 
-  it('marks a pending claim canceled when the subscription is revoked', async () => {
-    mocks.queries.getEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'pending' });
+  it('fails the event when the email cannot be queued so Polar redelivers it', async () => {
+    mocks.enqueueTransactionalEmail.mockResolvedValue({ jobIds: [] });
+
+    await expect(recordEarlyAdopterSubscriptionEvent(event)).rejects.toMatchObject({ statusCode: 503 });
+  });
+
+  it('applies the event and the claim lookup on one locked transaction', async () => {
+    mocks.queries.lockEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'pending' });
 
     await recordEarlyAdopterSubscriptionEvent({ ...event, event: 'revoked' });
 
-    expect(mocks.queries.updateUnclaimedEarlyAdopterClaim).toHaveBeenCalledWith('sub_1', {
-      status: 'canceled',
-      payload: event.payload
-    });
+    expect(mocks.queries.lockEarlyAdopterClaimBySubscriptionId).toHaveBeenCalledWith('sub_1', mocks.tx);
+  });
+
+  it('marks a pending claim canceled when the subscription is revoked', async () => {
+    mocks.queries.lockEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'pending' });
+
+    await recordEarlyAdopterSubscriptionEvent({ ...event, event: 'revoked' });
+
+    expect(mocks.queries.updateUnclaimedEarlyAdopterClaim).toHaveBeenCalledWith(
+      'sub_1',
+      { status: 'canceled', payload: event.payload },
+      mocks.tx
+    );
   });
 
   it('forwards events for a claimed purchase to the organization plan', async () => {
-    mocks.queries.getEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'claimed' });
+    mocks.queries.lockEarlyAdopterClaimBySubscriptionId.mockResolvedValue({ status: 'claimed' });
 
     await recordEarlyAdopterSubscriptionEvent({ ...event, event: 'activated' });
     await recordEarlyAdopterSubscriptionEvent({ ...event, event: 'updated' });
     await recordEarlyAdopterSubscriptionEvent({ ...event, event: 'revoked' });
 
-    expect(mocks.queries.activateOrganizationPlan).toHaveBeenCalledWith('sub_1', event.payload);
-    expect(mocks.queries.updateOrganizationPlan).toHaveBeenCalledWith('sub_1', { payload: event.payload });
-    expect(mocks.queries.cancelOrganizationPlan).toHaveBeenCalledWith('sub_1', event.payload);
+    expect(mocks.queries.activateOrganizationPlan).toHaveBeenCalledWith('sub_1', event.payload, mocks.tx);
+    expect(mocks.queries.updateOrganizationPlan).toHaveBeenCalledWith('sub_1', { payload: event.payload }, mocks.tx);
+    expect(mocks.queries.cancelOrganizationPlan).toHaveBeenCalledWith('sub_1', event.payload, mocks.tx);
   });
 
   it('ignores a non-activation event for a purchase it has never seen', async () => {
