@@ -78,11 +78,10 @@
 {#snippet calloutLabel()}
   {#if activeCallout}
     <div
-      class="note-callout-label mt-0.5 flex shrink-0 {activeCallout.labelClass}"
-      aria-label={$t(activeCallout.labelKey)}
-      title={$t(activeCallout.labelKey)}
+      class="note-callout-label flex items-center gap-1.5 px-3 pt-2.5 text-sm font-semibold {activeCallout.labelClass}"
     >
-      <activeCallout.icon class="size-4" />
+      <activeCallout.icon class="size-4 shrink-0" />
+      <span>{$t(activeCallout.labelKey)}</span>
     </div>
   {/if}
 {/snippet}
@@ -142,12 +141,6 @@
     padding: 0;
     font-size: 1rem;
     text-align: left;
-  }
-
-  :global(.note-callout .tiptap > p.is-empty:not(:only-child)) {
-    height: 0;
-    margin: 0;
-    overflow: hidden;
   }
 
   :global(.note-callout.note-callout-info) {

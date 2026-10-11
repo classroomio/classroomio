@@ -190,7 +190,7 @@
         class={cn(
           'ui:flex ui:min-w-0 ui:flex-col',
           contentFrameClass
-            ? 'ui:m-3 ui:h-fit ui:w-[min(36rem,calc(100%-1.5rem))] ui:flex-row ui:items-start ui:gap-2 ui:self-start ui:px-3 ui:py-3'
+            ? 'ui:m-3 ui:h-fit ui:w-[min(36rem,calc(100%-1.5rem))] ui:self-start'
             : 'ui:min-h-0 ui:w-full ui:flex-1',
           contentFrameClass
         )}
@@ -202,7 +202,7 @@
           class={cn(
             'ui:relative ui:min-w-0 ui:w-full',
             contentFrameClass
-              ? 'ui:h-auto ui:min-w-0 ui:flex-1 ui:overflow-visible ui:p-0'
+              ? 'ui:h-auto ui:min-w-0 ui:flex-none ui:overflow-visible ui:px-3 ui:pt-1 ui:pb-2.5'
               : 'ui:min-h-0 ui:flex-1 ui:overflow-auto ui:p-4',
             editorClass
           )}

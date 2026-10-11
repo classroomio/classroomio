@@ -4,7 +4,13 @@
   import { Button } from '@cio/ui/base/button';
   import LayoutGridIcon from '@lucide/svelte/icons/layout-grid';
   import { t } from '$lib/utils/functions/translations';
-  import { NOTE_CALLOUT_BUTTON_KEY, NOTE_CALLOUT_OPTIONS, type NoteCalloutStyle } from './note-callout';
+  import {
+    NOTE_CALLOUT_BUTTON_KEY,
+    NOTE_CALLOUT_OPTIONS,
+    NOTE_CALLOUT_STYLES,
+    type NoteCalloutStyle,
+    type NoteCalloutStyleId
+  } from './note-callout';
 
   interface Props {
     value: NoteCalloutStyle;
@@ -13,7 +19,21 @@
 
   let { value, onChange }: Props = $props();
 
+  const DEFAULT_RADIO_VALUE = 'default';
+
   const label = $derived($t(NOTE_CALLOUT_BUTTON_KEY));
+  const radioValue = $derived(value || DEFAULT_RADIO_VALUE);
+
+  function selectStyle(next: string) {
+    if (next === DEFAULT_RADIO_VALUE) {
+      onChange('');
+      return;
+    }
+
+    if (!NOTE_CALLOUT_STYLES.includes(next as NoteCalloutStyleId)) return;
+
+    onChange(next as NoteCalloutStyle);
+  }
 </script>
 
 <Tooltip.Provider delayDuration={300}>
@@ -38,16 +58,14 @@
         {/snippet}
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end" class="min-w-[168px]">
-        {#each NOTE_CALLOUT_OPTIONS as option (option.id)}
-          <DropdownMenu.Item
-            class={value === option.id ? 'ui:bg-accent' : ''}
-            aria-checked={value === option.id}
-            onclick={() => onChange(option.id)}
-          >
-            <span class="size-2 shrink-0 rounded-full {option.dotClass}"></span>
-            <span>{$t(option.labelKey)}</span>
-          </DropdownMenu.Item>
-        {/each}
+        <DropdownMenu.RadioGroup value={radioValue} onValueChange={selectStyle}>
+          {#each NOTE_CALLOUT_OPTIONS as option (option.id || DEFAULT_RADIO_VALUE)}
+            <DropdownMenu.RadioItem value={option.id || DEFAULT_RADIO_VALUE}>
+              <span class="size-2 shrink-0 rounded-full {option.dotClass}"></span>
+              <span>{$t(option.labelKey)}</span>
+            </DropdownMenu.RadioItem>
+          {/each}
+        </DropdownMenu.RadioGroup>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
     <Tooltip.Content side="bottom">{label}</Tooltip.Content>
