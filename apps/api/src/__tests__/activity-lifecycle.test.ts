@@ -183,6 +183,9 @@ describe('activity asset usage', () => {
   });
 
   it('fans reset out to every provider', async () => {
-    await expect(resetActivityLearnerState(['activity-1'], 'profile-1', {} as never)).resolves.toBe(0);
+    const txStub = {
+      delete: () => ({ where: () => ({ returning: async () => [] }) })
+    };
+    await expect(resetActivityLearnerState(['activity-1'], 'profile-1', txStub as never)).resolves.toBe(0);
   });
 });

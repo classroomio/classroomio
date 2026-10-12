@@ -62,8 +62,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run database migrations
-        run: pnpm --filter @cio/db db:migrate
+      - name: Setup database (migrate + essential seed data)
+        run: pnpm --filter @cio/db db:setup
 
       - name: Build and test utils
         run: pnpm --filter @cio/utils^... build && pnpm --filter @cio/utils build && pnpm --filter @cio/utils test
