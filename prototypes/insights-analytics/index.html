@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insights Dashboard Mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app-style scope switcher on top; widget grid beneath. Every widget shows its metric spec and whether the data exists today. */
+:root {
+  --bg: #f5f6f9; --surface: #ffffff; --fg: #14171f; --muted: #5b6477; --line: #e2e5ec;
+  --accent: #2447d6; --accent-soft: #e8edff; --good: #1b8a5a; --warn: #a96f12; --bad: #c4372e;
+  --good-tint: #dff3e8; --warn-tint: #fbeccd; --bad-tint: #f9dad7;
+  --font-body: 'Figtree', system-ui, sans-serif; --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1117; --surface: #171b23; --fg: #e8ebf2; --muted: #98a2b6; --line: #272d39;
+  --accent: #8aa3ff; --accent-soft: #1e2850; --good: #4cc38a; --warn: #e0b04a; --bad: #f0766e;
+  --good-tint: #163528; --warn-tint: #3a2e14; --bad-tint: #3d1d1b; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1117; --surface: #171b23; --fg: #e8ebf2; --muted: #98a2b6; --line: #272d39;
+  --accent: #8aa3ff; --accent-soft: #1e2850; --good: #4cc38a; --warn: #e0b04a; --bad: #f0766e;
+  --good-tint: #163528; --warn-tint: #3a2e14; --bad-tint: #3d1d1b; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.45; padding-inline: 16px; }
+.wrap { max-width: 1180px; margin-inline: auto; padding-block: 20px 56px; display: flex; flex-direction: column; gap: 18px; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: 22px; font-weight: 700; text-wrap: balance; }
+h2 { font-size: 14px; font-weight: 600; }
+.sub { color: var(--muted); }
+.example { background: var(--warn-tint); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+.bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { font: inherit; font-weight: 600; border: 0; background: transparent; color: var(--muted); padding: 7px 14px; border-radius: 7px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+:root[data-theme="dark"] .seg button[aria-pressed="true"], :root:not([data-theme="light"]) .seg button[aria-pressed="true"] { color: #0e1117; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 13px; }
+.live i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 6px; }
+.toggle { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: 13px; cursor: pointer; }
+.head { display: flex; flex-direction: column; gap: 4px; }
+.keyrow { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 13px; color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
+.w { grid-column: span 12; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+@media (min-width: 860px) { .s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } }
+.wh { display: flex; flex-direction: column; gap: 6px; }
+.wt { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.tags { display: inline-flex; gap: 8px; align-items: center; }
+.viz { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.badge.ok { background: var(--good-tint); color: var(--good); }
+.badge.drv { background: var(--accent-soft); color: var(--accent); }
+.badge.new { background: var(--warn-tint); color: var(--warn); }
+.src { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 2px 7px; align-self: flex-start; overflow-wrap: anywhere; }
+body.hide-src .src { display: none; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
+.kpi .n { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.kpi .l { color: var(--muted); font-size: 13px; }
+.kpi .d { font-size: 12px; font-variant-numeric: tabular-nums; }
+.up { color: var(--good); } .down { color: var(--bad); } .flat { color: var(--muted); }
+.kpi .badge { margin-top: 4px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--muted); }
+td.c, th.c { text-align: center; }
+.cell { display: inline-block; min-width: 44px; padding: 3px 8px; border-radius: 6px; text-align: center; font-weight: 600; }
+.hi { background: var(--good-tint); } .mid { background: var(--warn-tint); } .lo { background: var(--bad-tint); } .na { color: var(--muted); font-weight: 400; }
+.pill { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; }
+.pill.ok { background: var(--good-tint); color: var(--good); } .pill.lag { background: var(--warn-tint); color: var(--warn); }
+.pill.risk { background: var(--bad-tint); color: var(--bad); } .pill.done { background: var(--accent-soft); color: var(--accent); }
+.hbar { display: grid; grid-template-columns: minmax(90px, 170px) 1fr 52px; gap: 10px; align-items: center; font-size: 13px; }
+.hbar .lab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.fill { height: 100%; background: var(--accent); border-radius: 5px; }
+.fill.warn { background: var(--warn); } .fill.bad { background: var(--bad); } .fill.good { background: var(--good); }
+.hbar .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 9px; }
+.cols { display: flex; align-items: flex-end; gap: 8px; height: 150px; }
+.col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: 100%; }
+.col .b { width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+.col .t { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.col .k { font-size: 12px; font-variant-numeric: tabular-nums; }
+svg text { fill: var(--muted); font-family: var(--font-body); font-size: 11px; }
+svg .g { stroke: var(--line); stroke-width: 1; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.note { font-size: 12px; color: var(--muted); }
+.gap { border: 1.5px dashed var(--warn); background: var(--warn-tint); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+.gap b { display: block; margin-bottom: 2px; }
+.reuse td:first-child { font-weight: 600; white-space: normal; min-width: 150px; }
+.reuse td { white-space: normal; vertical-align: top; min-width: 150px; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+.tools input, .tools select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; max-width: 100%; }
+.tools input { flex: 1 1 220px; min-width: 0; }
+.mxfoot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.btn { font: inherit; font-weight: 600; color: var(--accent); background: var(--accent-soft); border: 0; border-radius: 8px; padding: 7px 14px; cursor: pointer; }
+.btn:disabled { color: var(--muted); background: var(--line); cursor: default; }
+.btn.sm { padding: 3px 10px; font-size: 12px; }
+.empty { text-align: center; color: var(--muted); padding: 24px; }
+.pick { cursor: pointer; }
+.pick:hover td, .pick.sel td { background: var(--accent-soft); }
+.mini { display: grid; grid-template-columns: 56px 34px; gap: 8px; align-items: center; }
+.mini .track { height: 6px; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>Insights dashboard mock</h1>
+    <p class="sub">One widget set, three scopes. Each widget shows its metric spec and whether the data exists in ClassroomIO today.</p>
+  </div>
+  <div class="example">Example data only. Scenario: Example Co, seasonal hiring. Every cohort number on this page is computed from the same generated roster of 248 learners.</div>
+  <div class="keyrow">
+    <span><span class="badge ok">Data available</span> already stored</span>
+    <span><span class="badge drv">Derived</span> computed from stored data</span>
+    <span><span class="badge new">Needs work</span> new tracking or a product decision</span>
+  </div>
+
+  <div class="bar">
+    <div class="seg" role="group" aria-label="Scope">
+      <button id="b-cohort" aria-pressed="true" data-scope="cohort">Cohort</button>
+      <button id="b-course" aria-pressed="false" data-scope="course">Course</button>
+      <button id="b-org" aria-pressed="false" data-scope="org">Organization</button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="showsrc" checked> Show metric specs</label>
+  </div>
+
+  <div class="chips" id="scopechips"></div>
+  <div id="view"></div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const heat = (v) => (v == null ? 'na' : v >= 70 ? 'hi' : v >= 50 ? 'mid' : 'lo');
+const cell = (v) => `<span class="cell ${heat(v)}">${v == null ? '–' : v + '%'}</span>`;
+const pill = (s) => ({ ok: ['ok', 'On track'], lag: ['lag', 'Lagging'], risk: ['risk', 'At risk'], done: ['done', 'Completed'] })[s];
+const BADGE = { ok: 'Data available', drv: 'Derived', new: 'Needs work' };
+const badge = (a) => `<span class="badge ${a}">${BADGE[a]}</span>`;
+const taken = (vals) => vals.filter((v) => v != null);
+const mean = (xs) => (xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : 0);
+const pct = (part, whole) => (whole ? Math.round((part / whole) * 100) : 0);
+
+const widget = (cls, title, viz, src, body, note, avail = 'ok') => `
+  <section class="w ${cls}">
+    <div class="wh"><div class="wt"><h2>${title}</h2><span class="tags">${badge(avail)}<span class="viz">${viz}</span></span></div><code class="src">${src}</code></div>
+    ${body}${note ? `<p class="note">${note}</p>` : ''}
+  </section>`;
+
+const kpis = (items) => `<div class="kpis">${items.map((k) => `
+  <div class="kpi"><span class="l">${k.l}</span><span class="n">${k.n}</span>
+  <span class="d ${k.t}">${k.d}</span>${badge(k.a || 'drv')}<code class="src">${k.src}</code></div>`).join('')}</div>`;
+
+const hbars = (rows, max = 100, unit = '%') => `<div class="stack">${rows.map((r) => `
+  <div class="hbar"><span class="lab" title="${r.l}">${r.l}</span>
+  <div class="track"><div class="fill ${r.c || ''}" style="width:${Math.min(100, (r.v / max) * 100)}%"></div></div>
+  <span class="v">${r.v.toLocaleString()}${unit}</span></div>`).join('')}</div>`;
+
+const columns = (rows) => {
+  const max = Math.max(...rows.map((r) => r.v), 1);
+  return `<div class="cols">${rows.map((r) => `<div class="col"><span class="k">${r.v}</span>
+  <div class="b" style="height:${(r.v / max) * 100}%"></div><span class="t">${r.l}</span></div>`).join('')}</div>`;
+};
+
+const legend = (items) => `<div class="legend">${items.map((i) => `<span><i style="background:${i.c}"></i>${i.l}</span>`).join('')}</div>`;
+
+function lineChart({ labels, series, band, yMax = 100, yTicks = [0, 25, 50, 75, 100], fmt = (v) => v + '%' }) {
+  const W = 640, H = 240, L = 40, R = 14, T = 12, B = 30;
+  const x = (i) => L + (i * (W - L - R)) / (labels.length - 1);
+  const y = (v) => T + (1 - v / yMax) * (H - T - B);
+  const grid = yTicks.map((t) => `<line class="g" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L - 8}" y="${y(t) + 4}" text-anchor="end">${fmt(t)}</text>`).join('');
+  const xl = labels.map((l, i) => `<text x="${x(i)}" y="${H - 8}" text-anchor="middle">${l}</text>`).join('');
+  let bandEl = '';
+  if (band) {
+    const pts = band.map((b, i) => (b ? [i, b] : null)).filter(Boolean);
+    const up = pts.map(([i, b]) => `${x(i)},${y(b[1])}`).join(' ');
+    const dn = pts.slice().reverse().map(([i, b]) => `${x(i)},${y(b[0])}`).join(' ');
+    bandEl = `<polygon points="${up} ${dn}" fill="var(--accent)" fill-opacity=".14"/>`;
+  }
+  const lines = series.map((s) => {
+    const pts = s.values.map((v, i) => (v == null ? null : [x(i), y(v)])).filter(Boolean);
+    if (!pts.length) return '';
+    const path = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
+    const dots = pts.map((p) => `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${s.color}"/>`).join('');
+    const last = pts[pts.length - 1];
+    const lv = s.values.filter((v) => v != null).pop();
+    return `<path d="${path}" fill="none" stroke="${s.color}" stroke-width="2.5" ${s.dash ? 'stroke-dasharray="6 5"' : ''} stroke-linejoin="round"/>${dots}<text x="${last[0]}" y="${last[1] - 9}" text-anchor="middle" style="fill:${s.color};font-weight:600">${fmt(lv)}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Line chart">${grid}${xl}${bandEl}${lines}</svg>`;
+}
+
+const delta = (vals) => {
+  const t = taken(vals);
+  if (t.length < 2) return '<span class="na">–</span>';
+  const d = t[t.length - 1] - t[0];
+  return `<b class="${d > 0 ? 'up' : d < 0 ? 'down' : 'flat'}">${d > 0 ? '+' : ''}${d} pts</b>`;
+};
+function sparkline(vals) {
+  const W = 92, H = 28, P = 4;
+  const x = (i) => P + (i * (W - 2 * P)) / (vals.length - 1);
+  const y = (v) => P + (1 - v / 100) * (H - 2 * P);
+  const pts = vals.map((v, i) => (v == null ? null : [x(i), y(v)])).filter(Boolean);
+  const d = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
+  const end = pts[pts.length - 1];
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Score trend"><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/><circle cx="${end[0]}" cy="${end[1]}" r="3" fill="var(--accent)"/></svg>`;
+}
+
+/* ---------- One generated roster feeds every cohort number ---------- */
+function mulberry(seedValue) {
+  let a = seedValue;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const TESTS = ['Pre', 'Mod 1', 'Mod 2', 'Mod 3', 'Mod 4', 'Mod 5', 'Final'];
+const LESSONS = ['Intake and filing status', 'Income types', 'Deductions', 'Credits', 'Schedule C', 'Review cases', 'Mock returns'];
+const SEED = [
+  ['Rhea Kapoor', [22, 31, 35, 40, null, null, null], 3],
+  ['Dev Malhotra', [34, 29, 41, null, null, null, null], 2],
+  ['Sana Qureshi', [41, 44, 52, 58, 55, null, null], 0],
+  ['Imran Shaikh', [52, 48, 60, 62, 63, null, null], 0],
+  ['Meera Nair', [64, 71, 74, 78, 81, 84, null], 0],
+  ['Kabir Joshi', [58, 66, 69, 73, 79, 80, null], 1],
+  ['Tara Bose', [71, 80, 83, 86, 90, 92, 91], 1],
+  ['Nikhil Rao', [49, 63, 70, 74, 77, 82, 85], 0]
+];
+const FIRST = ['Aanya', 'Vikram', 'Isha', 'Arjun', 'Zoya', 'Rohan', 'Pooja', 'Karan', 'Anika', 'Samir', 'Neha', 'Yash', 'Divya', 'Aditya', 'Farah', 'Manav', 'Leela', 'Omar', 'Priya', 'Tejas', 'Mira', 'Sahil', 'Ananya', 'Rahul'];
+const LAST = ['Iyer', 'Khanna', 'Verma', 'Sethi', 'Desai', 'Menon', 'Gill', 'Patel', 'Reddy', 'Banerjee', 'Chopra', 'Sinha', 'Bhatt', 'Kulkarni', 'Mishra', 'Thomas', 'Dutta', 'Saxena', 'Pillai', 'Ahuja'];
+
+function buildRoster() {
+  const rnd = mulberry(7);
+  const clamp = (v) => Math.max(5, Math.min(98, Math.round(v)));
+  const pickFrom = (list) => list[Math.floor(rnd() * list.length)];
+  const make = (id, name, vals, days) => {
+    const count = taken(vals).length;
+    const latest = vals[count - 1];
+    const status = count === 7 ? 'done' : days >= 2 || latest < 50 ? 'risk' : latest < 65 || count < 5 ? 'lag' : 'ok';
+    const base = status === 'risk' ? 40 + rnd() * 35 : 60 + rnd() * 40;
+    const vidDays = Array.from({ length: 6 }, (_, d) => clamp((d === 5 ? 0.7 : 1) * (base + rnd() * 16 - 8)));
+    const clsDays = Array.from({ length: 6 }, () => (rnd() < (status === 'risk' ? 0.72 : 0.94) ? 100 : 0));
+    const passed = count === 7 && vals[6] >= 60;
+    return {
+      id, name, vals, count, latest, status, days,
+      progress: count === 7 ? 100 : Math.min(97, Math.round((count / 7) * 92 + rnd() * 6)),
+      lesson: count === 7 ? 'Finished' : LESSONS[Math.min(count, 6) - 1] || LESSONS[0],
+      vidDays, clsDays, vid: mean(vidDays), cls: mean(clsDays),
+      overdue: status !== 'done' && (days >= 2 ? rnd() < 0.6 : rnd() < 0.05),
+      passed, cert: passed,
+      cases: Math.round((count / 7) * 110 * (0.6 + rnd() * 0.6)) + (count === 7 ? 15 : 0)
+    };
+  };
+  const rows = SEED.map((s, i) => make(i, s[0], s[1], s[2]));
+  const seen = new Set(rows.map((l) => l.name));
+  while (rows.length < 248) {
+    const name = pickFrom(FIRST) + ' ' + pickFrom(LAST);
+    if (seen.has(name)) continue;
+    seen.add(name);
+    const pre = clamp(25 + rnd() * 40);
+    const gain = rnd() * 10 - 1.5;
+    const count = rnd() < 0.12 ? 7 : 3 + Math.floor(rnd() * 4);
+    const vals = Array.from({ length: 7 }, (_, j) => (j < count ? clamp(pre + gain * j + (rnd() * 10 - 5)) : null));
+    const days = rnd() < 0.72 ? 0 : rnd() < 0.5 ? 1 : 2 + Math.floor(rnd() * 4);
+    rows.push(make(rows.length, name, vals, days));
+  }
+  return rows;
+}
+const ROSTER = buildRoster();
+const lastLabel = (d) => (d === 0 ? 'Today' : d === 1 ? 'Yesterday' : d + ' days ago');
+const gainOf = (l) => { const t = taken(l.vals); return t.length > 1 ? t[t.length - 1] - t[0] : 0; };
+
+function quantile(sorted, p) { return sorted[Math.floor(p * (sorted.length - 1))]; }
+function computeStats(R) {
+  const n = R.length;
+  const journey = TESTS.map((_, t) => {
+    const scores = R.map((l) => l.vals[t]).filter((v) => v != null).sort((a, b) => a - b);
+    return scores.length >= n * 0.25 ? { avg: mean(scores), band: [quantile(scores, 0.25), quantile(scores, 0.75)] } : null;
+  });
+  const gains = R.map(gainOf);
+  const bucket = (lo, hi) => gains.filter((g) => g >= lo && g < hi).length;
+  const dayTests = [[0, 1], [2], [3], [4], [5], []];
+  const days = dayTests.map((tests, d) => {
+    const last = tests[tests.length - 1];
+    const took = last == null ? [] : R.filter((l) => l.vals[last] != null);
+    const scores = took.flatMap((l) => tests.map((t) => l.vals[t]).filter((v) => v != null));
+    return {
+      label: 'Day ' + (d + 1), took: took.length, avg: last == null ? null : mean(scores),
+      pass: last == null ? null : pct(took.filter((l) => l.vals[last] >= 60).length, took.length),
+      vid: mean(R.map((l) => l.vidDays[d])), cls: mean(R.map((l) => l.clsDays[d]))
+    };
+  });
+  const loggedIn = [244, 240, 236, 238, 229].concat([R.filter((l) => l.days === 0).length]);
+  return {
+    n, journey, days, loggedIn,
+    activeToday: R.filter((l) => l.days === 0).length,
+    avgProgress: mean(R.map((l) => l.progress)),
+    avgLatest: mean(R.map((l) => l.latest)),
+    avgPre: mean(R.map((l) => l.vals[0])),
+    overdue: R.filter((l) => l.overdue).length,
+    done: R.filter((l) => l.status === 'done').length,
+    cert: R.filter((l) => l.cert).length,
+    finalTaken: R.filter((l) => l.vals[6] != null).length,
+    finalPassed: R.filter((l) => l.passed).length,
+    cases100: R.filter((l) => l.cases >= 100).length,
+    ready: R.filter((l) => l.cert && l.cases >= 100).length,
+    progressBuckets: [
+      R.filter((l) => l.progress < 25).length, R.filter((l) => l.progress >= 25 && l.progress < 50).length,
+      R.filter((l) => l.progress >= 50 && l.progress < 75).length, R.filter((l) => l.progress >= 75 && l.progress < 100).length,
+      R.filter((l) => l.progress === 100).length
+    ],
+    gainBuckets: [bucket(-100, 0), bucket(0, 10), bucket(10, 20), bucket(20, 30), bucket(30, 200)],
+    inactive: R.filter((l) => l.days >= 2).length,
+    low: R.filter((l) => l.latest < 50).length,
+    lowVideo: R.filter((l) => l.vid < 60).length,
+    avgVid: mean(R.map((l) => l.vid)), avgCls: mean(R.map((l) => l.cls))
+  };
+}
+const S = computeStats(ROSTER);
+
+/* ---------- Learner detail, matrix, filters ---------- */
+const learnerDetail = (l) => {
+  const t = taken(l.vals);
+  const batch = S.journey.map((j) => (j ? j.avg : null));
+  const html = widget('s8', `${l.name}: score progression`, 'line vs batch', 'assessment_result · score_pct · dimension: exercise · filter: learner = selected',
+    `<div class="chips"><span class="chip">Pre-assessment <b>${t[0]}%</b></span><span class="chip">Latest <b>${t[t.length - 1]}%</b></span><span class="chip">Change ${delta(l.vals)}</span><span class="chip">Progress <b>${l.progress}%</b> · now at ${l.lesson}</span></div>` +
+    lineChart({ labels: TESTS, series: [{ values: l.vals, color: 'var(--accent)' }, { values: batch, color: 'var(--muted)', dash: true }] }) +
+    legend([{ c: 'var(--accent)', l: l.name }, { c: 'var(--muted)', l: 'Batch average' }]),
+    'Search or filter the matrix below and click a row to switch learner.', 'drv');
+  return html.replace('<section class="w s8"', '<section id="detail" class="w s8"');
+};
+
+let picked = 0;
+const mx = { q: '', status: '', active: '', score: '', flag: '', sort: 'status', limit: 10 };
+const ORDER = { risk: 0, lag: 1, ok: 2, done: 3 };
+const rowHtml = (l) => `<tr class="pick ${l.id === picked ? 'sel' : ''}" data-learner="${l.id}"><td><b>${l.name}</b></td>
+  <td><div class="mini"><div class="track"><div class="fill" style="width:${l.progress}%"></div></div><span>${l.progress}%</span></div></td><td>${l.lesson}</td>
+  ${l.vals.map((v) => `<td class="c">${cell(v)}</td>`).join('')}<td>${sparkline(l.vals)}</td><td class="c">${delta(l.vals)}</td>
+  <td class="c">${l.vid}%</td><td class="c">${l.cls}%</td><td class="c">${l.cert ? '<span class="pill done">Issued</span>' : '<span class="na">–</span>'}</td>
+  <td>${lastLabel(l.days)}</td><td><span class="pill ${pill(l.status)[0]}">${pill(l.status)[1]}</span>${l.overdue ? ' <span class="pill risk">Overdue</span>' : ''}</td></tr>`;
+
+function visibleRows() {
+  const q = mx.q.trim().toLowerCase();
+  const rows = ROSTER.filter((l) => {
+    if (q && !l.name.toLowerCase().includes(q)) return false;
+    if (mx.status && l.status !== mx.status) return false;
+    if (mx.active === 'today' && l.days !== 0) return false;
+    if (mx.active === 'idle' && l.days < 2) return false;
+    if (mx.score === 'lt50' && !(l.latest < 50)) return false;
+    if (mx.score === 'mid' && !(l.latest >= 50 && l.latest < 70)) return false;
+    if (mx.score === 'gte70' && !(l.latest >= 70)) return false;
+    if (mx.flag === 'overdue' && !l.overdue) return false;
+    if (mx.flag === 'cert' && !l.cert) return false;
+    if (mx.flag === 'nocert' && l.cert) return false;
+    return true;
+  });
+  const order = {
+    status: (a, b) => ORDER[a.status] - ORDER[b.status] || a.latest - b.latest,
+    name: (a, b) => a.name.localeCompare(b.name),
+    gain: (a, b) => gainOf(b) - gainOf(a),
+    low: (a, b) => a.latest - b.latest,
+    progress: (a, b) => a.progress - b.progress
+  };
+  return rows.sort(order[mx.sort]);
+}
+
+function drawMatrix() {
+  const rows = visibleRows();
+  const shown = rows.slice(0, mx.limit);
+  $('#mx-body').innerHTML = shown.length ? shown.map(rowHtml).join('') : '<tr><td colspan="19" class="empty">No learners match these filters.</td></tr>';
+  $('#mx-count').textContent = `Showing ${shown.length} of ${rows.length} matching · ${ROSTER.length} learners in batch`;
+  $('#mx-more').hidden = shown.length >= rows.length;
+  $('#mx-msg').textContent = '';
+  $('#mx-export').onclick = () => { $('#mx-msg').textContent = `Export would download ${rows.length} rows as CSV, with the current filters and sort applied.`; };
+  $('#mx-body').querySelectorAll('[data-learner]').forEach((row) => row.addEventListener('click', () => {
+    picked = Number(row.dataset.learner);
+    $('#detail').outerHTML = learnerDetail(ROSTER[picked]);
+    drawMatrix();
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $('#detail').scrollIntoView({ block: 'center', behavior: calm ? 'auto' : 'smooth' });
+  }));
+}
+
+function initCohort() {
+  [['#q', 'q'], ['#f-status', 'status'], ['#f-active', 'active'], ['#f-score', 'score'], ['#f-flag', 'flag'], ['#f-sort', 'sort']].forEach(([sel, key]) => {
+    const el = $(sel);
+    el.value = mx[key];
+    el.addEventListener('input', () => { mx[key] = el.value; mx.limit = 10; drawMatrix(); });
+  });
+  $('#mx-more').addEventListener('click', () => { mx.limit += 10; drawMatrix(); });
+  drawMatrix();
+  const overdue = ROSTER.filter((l) => l.overdue);
+  const remindAll = $('#remind-all');
+  if (remindAll) remindAll.onclick = () => { remindAll.disabled = true; remindAll.textContent = `Reminders queued for ${overdue.length}`; document.querySelectorAll('.remind').forEach((b) => { b.disabled = true; b.textContent = 'Queued'; }); };
+  document.querySelectorAll('.remind').forEach((b) => { b.onclick = () => { b.disabled = true; b.textContent = 'Queued'; }; });
+}
+
+/* ---------- Shared widgets ---------- */
+const questionsWidget = (cls) => widget(cls, 'Hardest questions', 'table', 'question_answer · point / max · avg · dimension: question · sort: asc', `
+  <div class="scroll"><table><thead><tr><th>Question</th><th>Test</th><th class="c">Answered correctly</th><th>Most common wrong answer</th></tr></thead><tbody>
+  <tr><td>Which form reports self-employment income?</td><td>Mod 4</td><td class="c">${cell(41)}</td><td>1099-K instead of 1099-NEC</td></tr>
+  <tr><td>Standard deduction, married filing jointly</td><td>Mod 3</td><td class="c">${cell(49)}</td><td>Single filer amount</td></tr>
+  <tr><td>Child tax credit income phase-out</td><td>Mod 4</td><td class="c">${cell(53)}</td><td>Skipped the phase-out step</td></tr>
+  <tr><td>Home office deduction eligibility</td><td>Mod 5</td><td class="c">${cell(58)}</td><td>Counted a shared room</td></tr>
+  <tr><td>Filing status for a widowed parent</td><td>Mod 1</td><td class="c">${cell(66)}</td><td>Head of household</td></tr>
+  </tbody></table></div>`, 'Example questions. Answers are stored per question, so this needs no new tracking.', 'ok');
+
+const reuse = () => widget('s12', 'How the same widgets serve every scope', 'reference', 'one spec · scope = { type, id } resolves to learners + courses', `
+  <div class="scroll"><table class="reuse"><thead><tr><th>Widget</th><th>Cohort</th><th>Course</th><th>Organization</th></tr></thead><tbody>
+  <tr><td>KPI row</td><td>Learners in this batch</td><td>Learners enrolled in this course</td><td>All students in the org</td></tr>
+  <tr><td>Score journey</td><td>Assessments in batch order, one line for the batch</td><td>Course assessments, one line per cohort</td><td>Pre vs final per batch</td></tr>
+  <tr><td>Day-by-day scorecard</td><td>One row per learning day</td><td>Same, across all cohorts</td><td>Batches compared at the same day</td></tr>
+  <tr><td>Learner matrix</td><td>One row per learner, one column per assessment</td><td>Same, across all cohorts</td><td>Rolled up: one row per batch</td></tr>
+  <tr><td>Needs attention</td><td>Learners below thresholds, with reasons</td><td>Learners stuck in this course</td><td>Counts by reason, per batch</td></tr>
+  <tr><td>Hardest questions</td><td>Questions this batch misses most</td><td>Same, across all cohorts</td><td>Questions missed across batches</td></tr>
+  </tbody></table></div>`,
+  'Only the scope filter and the dimension change. A user-built widget in a later version is the same spec, saved with a different metric or dimension.', 'drv');
+
+/* ---------- Views ---------- */
+const views = {
+  cohort() {
+    $('#scopechips').innerHTML = `<span class="chip live"><i></i>Live · updated <b id="age">0s</b> ago · refreshes every 30s</span><span class="chip"><b>Batch 7</b> · US Tax Prep</span><span class="chip">Started Mon 24 Nov · Day 6 of 10</span><span class="chip">Courses: 3</span>`;
+    const overdueList = ROSTER.filter((l) => l.overdue).sort((a, b) => b.days - a.days).slice(0, 5);
+    const journey = S.journey;
+    return `
+    ${kpis([
+      { l: 'Logged in today', n: `${S.activeToday} / ${S.n}`, d: `${pct(S.activeToday, S.n)}% of the batch`, t: 'flat', a: 'ok', src: 'analytics_login_events · learner · count' },
+      { l: 'Average progress', n: S.avgProgress + '%', d: 'lessons completed / total', t: 'flat', src: 'lesson_completion · progress_pct · avg' },
+      { l: 'Average latest score', n: S.avgLatest + '%', d: `+${S.avgLatest - S.avgPre} pts vs pre-assessment`, t: 'up', src: 'submission · score_pct · avg' },
+      { l: 'Overdue', n: S.overdue, d: 'past their deadline, not done', t: S.overdue > 10 ? 'down' : 'flat', src: 'exercise.due_by / course_completion_record.due_date' },
+      { l: 'Completed', n: S.done, d: `${pct(S.done, S.n)}% of the batch · ${S.cert} certified`, t: 'flat', src: 'learner_course · status=completed · count' }
+    ])}
+    <div class="grid">
+      ${widget('s7', 'Score journey, pre-assessment to final', 'line + band', 'submission · score_pct · avg · dimension: exercise (by position)', lineChart({ labels: TESTS, series: [{ values: journey.map((j) => (j ? j.avg : null)), color: 'var(--accent)' }], band: journey.map((j) => (j ? j.band : null)) }) + legend([{ c: 'var(--accent)', l: 'Batch average' }, { c: 'color-mix(in srgb, var(--accent) 25%, transparent)', l: 'Middle 50% of learners' }]), 'Pre is the first exercise, Final the last, Mod 1 to 5 the ones between. A point appears once a quarter of the batch has taken that test.', 'drv')}
+      ${widget('s5', 'Progress distribution', 'bar', 'lesson_completion · progress_pct · count · bucket: 25', columns([{ l: '0–25', v: S.progressBuckets[0] }, { l: '25–50', v: S.progressBuckets[1] }, { l: '50–75', v: S.progressBuckets[2] }, { l: '75–99', v: S.progressBuckets[3] }, { l: 'Done', v: S.progressBuckets[4] }]), null, 'drv')}
+      ${learnerDetail(ROSTER[picked])}
+      ${widget('s4', 'Improvement since pre-assessment', 'horizontal bar', 'submission · score_pct · latest − pre · count · bucket: 10 pts', hbars([{ l: 'Dropped', v: S.gainBuckets[0], c: 'bad' }, { l: '0 to 10 pts', v: S.gainBuckets[1], c: 'warn' }, { l: '10 to 20 pts', v: S.gainBuckets[2] }, { l: '20 to 30 pts', v: S.gainBuckets[3] }, { l: '30+ pts', v: S.gainBuckets[4] }], 100, ''), `Learners per bucket, ${S.n} in total.`, 'drv')}
+      ${widget('s12', 'Day-by-day scorecard', 'table', 'submission + lesson_video_progress + group_attendance · dimension: course_section (order)', `
+        <div class="scroll"><table><thead><tr><th>Learning day</th><th class="c">Tests taken</th><th class="c">Avg score</th><th class="c">Pass rate (60%+)</th><th class="c">Video attendance (self-paced)</th><th class="c">Classroom attendance</th></tr></thead><tbody>
+        ${S.days.map((d) => `<tr><td><b>${d.label}</b>${d.took ? '' : ' <span class="note">in progress</span>'}</td><td class="c">${d.took ? d.took + ' / ' + S.n : '–'}</td><td class="c">${cell(d.avg)}</td><td class="c">${cell(d.pass)}</td><td class="c">${d.vid}%</td><td class="c">${d.cls}%</td></tr>`).join('')}
+        </tbody></table></div>`, 'Assumes one course section per learning day. Video attendance is the share of lesson video watched; classroom attendance is the tutor-marked present flag.', 'drv')}
+      ${widget('s5', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: S.inactive, c: 'bad' }, { l: 'Latest score under 50%', v: S.low, c: 'bad' }, { l: 'Overdue', v: S.overdue, c: 'warn' }, { l: 'Video attendance under 60%', v: S.lowVideo, c: 'warn' }], S.n, ''), 'A learner can appear under more than one reason. Thresholds are placeholders to agree with the customer.', 'drv')}
+      ${widget('s7', 'Overdue, with reminders', 'table + action', 'exercise.due_by / course_completion_record.due_date · reminder = email to learner (+ supervisor)', `
+        <div class="scroll"><table><thead><tr><th>Learner</th><th>Now at</th><th class="c">Progress</th><th>Last login</th><th></th></tr></thead><tbody>
+        ${overdueList.map((l) => `<tr><td><b>${l.name}</b></td><td>${l.lesson}</td><td class="c">${l.progress}%</td><td>${lastLabel(l.days)}</td><td><button class="btn sm remind">Send reminder</button></td></tr>`).join('')}
+        </tbody></table></div>
+        <div class="chips"><button class="btn" id="remind-all">Remind all ${S.overdue} overdue learners</button></div>`,
+      'Deadline reminders exist for compliance courses today. Copying a supervisor needs a supervisor field on the learner, which the data model does not have.', 'new')}
+      ${widget('s5', 'Video watch time per lesson', 'horizontal bar', 'lesson_video_progress · watched_seconds · avg · dimension: lesson', hbars([{ l: 'Intake and filing status', v: 48 }, { l: 'Income types', v: 41 }, { l: 'Deductions', v: 52 }, { l: 'Credits', v: 37 }, { l: 'Schedule C', v: 29 }, { l: 'Review cases', v: 14 }], 60, ' min'), 'Average minutes watched per learner. Cumulative per lesson, so it cannot be split by day.', 'ok')}
+      ${questionsWidget('s7')}
+      ${widget('s5', 'Ready for the floor', 'funnel', 'submission + course_certificate_issue + simulation cases', hbars([{ l: 'Finished all modules', v: pct(S.done, S.n) }, { l: 'Passed the final', v: pct(S.finalPassed, S.n) }, { l: 'Certificate issued', v: pct(S.cert, S.n) }, { l: '100+ practice cases', v: pct(S.cases100, S.n) }, { l: 'Ready on all four', v: pct(S.ready, S.n), c: 'good' }]), `Percent of the ${S.n} learners. Certificates and passes exist today. The product has no simulation feature, so practice cases here are exercise submissions counted against a target of 100. That needs a product decision.`, 'new')}
+      ${widget('s12', 'Learner matrix', 'table + heat cells + filters', 'lesson_completion + submission + lesson_video_progress + group_attendance · dimension: learner', `
+        <div class="tools">
+          <input id="q" type="search" placeholder="Search learner by name" aria-label="Search learner by name">
+          <select id="f-status" aria-label="Status"><option value="">All statuses</option><option value="risk">At risk</option><option value="lag">Lagging</option><option value="ok">On track</option><option value="done">Completed</option></select>
+          <select id="f-active" aria-label="Last login"><option value="">Any login</option><option value="today">Logged in today</option><option value="idle">No login 2+ days</option></select>
+          <select id="f-score" aria-label="Latest score"><option value="">Any latest score</option><option value="lt50">Under 50%</option><option value="mid">50% to 69%</option><option value="gte70">70% and above</option></select>
+          <select id="f-flag" aria-label="Flags"><option value="">Any flag</option><option value="overdue">Overdue</option><option value="cert">Certificate issued</option><option value="nocert">No certificate</option></select>
+          <select id="f-sort" aria-label="Sort"><option value="status">Sort: lagging first</option><option value="progress">Sort: least progress</option><option value="name">Sort: name A to Z</option><option value="gain">Sort: biggest gain</option><option value="low">Sort: lowest latest score</option></select>
+        </div>
+        <div class="scroll"><table><thead><tr><th>Learner</th><th>Progress</th><th>Now at</th>${TESTS.map((t) => `<th class="c">${t}</th>`).join('')}<th>Trend</th><th class="c">Change</th><th class="c">Video</th><th class="c">Classroom</th><th class="c">Certificate</th><th>Last login</th><th>Status</th></tr></thead><tbody id="mx-body"></tbody></table></div>
+        <div class="mxfoot"><span id="mx-count" class="note"></span><span class="chips"><button class="btn" id="mx-export">Export CSV</button><button class="btn" id="mx-more">Show 10 more</button></span></div><p class="note" id="mx-msg"></p>`,
+      'Click a row to chart that learner above. Search, filters and sort apply to the export too.', 'drv')}
+      ${widget('s7', 'Learners logged in per day', 'bar', 'analytics_login_events · learner · count · dimension: day', columns(S.loggedIn.map((v, i) => ({ l: 'D' + (i + 1), v }))), 'One login row is stored per learner per day, so this counts days with a login, not time in the product.', 'ok')}
+      ${widget('s12', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
+        <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Daily batch summary · 08:00 · CEO, Head of L&amp;D</span><span class="badge new">Planned</span></div>
+        <div class="hbar" style="grid-template-columns:1fr auto"><span>Weekly cohort comparison · Mon 09:00 · Management</span><span class="badge new">Planned</span></div></div>`, 'Removes the manual MIS reporting the customer described. Needs a scheduler and email template.', 'new')}
+    </div>
+    ${reuse()}`;
+  },
+
+  course() {
+    $('#scopechips').innerHTML = `<span class="chip"><b>Individual Tax Fundamentals</b></span><span class="chip">Cohorts: 8</span><span class="chip">1,180 learners</span><span class="chip">Range: last 30 days</span>`;
+    return `
+    ${kpis([
+      { l: 'Enrolled', n: '1,180', d: '+212 this week', t: 'up', a: 'ok', src: 'groupmember · learner · count' },
+      { l: 'Completion rate', n: '41%', d: '+4 pts vs last week', t: 'up', src: 'learner_course · status=completed · rate' },
+      { l: 'Average grade', n: '67%', d: 'Pass mark 60%', t: 'flat', src: 'submission · score_pct · avg' },
+      { l: 'Pass rate, final', n: '79%', d: 'of 484 who took it', t: 'flat', src: 'submission · passed · rate' },
+      { l: 'Median days to finish', n: '8', d: 'enrolment to completion', t: 'flat', src: 'completed_at − enrolled_at · median' }
+    ])}
+    <div class="grid">
+      ${widget('s7', 'Score journey by cohort', 'multi-line', 'submission · score_pct · avg · dimensions: exercise, cohort', lineChart({ labels: TESTS.slice(0, 6), series: [{ values: [38, 52, 57, 61, 64, 68], color: 'var(--accent)' }, { values: [41, 49, 55, 58, 63, null], color: 'var(--good)' }, { values: [33, 44, 47, 52, null, null], color: 'var(--warn)', dash: true }] }) + legend([{ c: 'var(--accent)', l: 'Batch 7' }, { c: 'var(--good)', l: 'Batch 6' }, { c: 'var(--warn)', l: 'Batch 8 (in progress)' }]), null, 'drv')}
+      ${widget('s5', 'Score distribution, final exam', 'histogram', 'submission · score_pct · count · bucket: 10', columns([{ l: '<50', v: 38 }, { l: '50s', v: 61 }, { l: '60s', v: 112 }, { l: '70s', v: 148 }, { l: '80s', v: 91 }, { l: '90+', v: 34 }]), null, 'drv')}
+      ${widget('s6', 'Lesson completion drop-off', 'horizontal bar', 'lesson_completion · rate · dimension: lesson', hbars([{ l: 'Intake and filing status', v: 96 }, { l: 'Income types', v: 91 }, { l: 'Deductions', v: 84 }, { l: 'Credits', v: 71, c: 'warn' }, { l: 'Schedule C', v: 58, c: 'warn' }, { l: 'Review cases', v: 44, c: 'bad' }]), 'The steepest fall is between Credits and Schedule C.', 'ok')}
+      ${widget('s6', 'Hardest tests', 'table', 'submission · score_pct · avg · attempts · dimension: exercise · sort: asc', `
+        <div class="scroll"><table><thead><tr><th>Test</th><th class="c">Avg score</th><th class="c">Pass rate</th><th class="c">Avg attempts</th></tr></thead><tbody>
+        <tr><td>Mod 5 · Schedule C cases</td><td class="c">${cell(51)}</td><td class="c">${cell(48)}</td><td class="c">2.3</td></tr>
+        <tr><td>Mod 4 · Credits</td><td class="c">${cell(58)}</td><td class="c">${cell(62)}</td><td class="c">1.9</td></tr>
+        <tr><td>Mod 3 · Deductions</td><td class="c">${cell(66)}</td><td class="c">${cell(74)}</td><td class="c">1.4</td></tr>
+        <tr><td>Mod 1 · Intake</td><td class="c">${cell(78)}</td><td class="c">${cell(93)}</td><td class="c">1.1</td></tr>
+        </tbody></table></div>`, null, 'drv')}
+      ${questionsWidget('s12')}
+      ${widget('s12', 'Cohorts taking this course', 'table', 'lesson_completion + submission · dimension: cohort', `
+        <div class="scroll"><table><thead><tr><th>Cohort</th><th class="c">Learners</th><th class="c">Progress</th><th class="c">Avg score</th><th class="c">Pass rate</th><th class="c">Overdue</th></tr></thead><tbody>
+        <tr><td>Batch 8</td><td class="c">212</td><td class="c">${cell(22)}</td><td class="c">${cell(47)}</td><td class="c">${cell(null)}</td><td class="c">3</td></tr>
+        <tr><td>Batch 7</td><td class="c">${S.n}</td><td class="c">${cell(S.avgProgress)}</td><td class="c">${cell(S.avgLatest)}</td><td class="c">${cell(null)}</td><td class="c">${S.overdue}</td></tr>
+        <tr><td>Batch 6</td><td class="c">240</td><td class="c">${cell(93)}</td><td class="c">${cell(74)}</td><td class="c">${cell(81)}</td><td class="c">2</td></tr>
+        <tr><td>Batch 5</td><td class="c">236</td><td class="c">${cell(100)}</td><td class="c">${cell(72)}</td><td class="c">${cell(78)}</td><td class="c">0</td></tr>
+        </tbody></table></div>`, 'Showing 4 of 8 cohorts.', 'drv')}
+    </div>
+    ${reuse()}`;
+  },
+
+  org() {
+    $('#scopechips').innerHTML = `<span class="chip live"><i></i>Live · updated <b id="age">0s</b> ago</span><span class="chip"><b>Example Co</b></span><span class="chip">8 active batches</span><span class="chip">Seats: 2,046 of 5,000</span>`;
+    const batches = [
+      ['Batch 8', 'Mon 1 Dec', 'Day 1', 212, 12, null, 3, 'ok'],
+      ['Batch 7', 'Mon 24 Nov', 'Day 6', S.n, S.avgProgress, S.avgLatest, S.overdue, 'lag'],
+      ['Batch 6', 'Mon 17 Nov', 'Day 10', 240, 93, 74, 2, 'ok'],
+      ['Batch 5', 'Mon 10 Nov', 'Done', 236, 100, 72, 0, 'done'],
+      ['Batch 4', 'Mon 3 Nov', 'Done', 250, 100, 69, 0, 'done']
+    ];
+    return `
+    ${kpis([
+      { l: 'Logged in, last 7 days', n: '1,812', d: '89% of enrolled', t: 'flat', a: 'ok', src: 'analytics_login_events · learner · count' },
+      { l: 'Average progress', n: '71%', d: '+6 pts this week', t: 'up', src: 'lesson_completion · progress_pct · avg' },
+      { l: 'Completions', n: '726', d: '35% of enrolled', t: 'up', src: 'learner_course · status=completed · count' },
+      { l: 'Certificates issued', n: '684', d: '94% of completions', t: 'flat', a: 'ok', src: 'course_certificate_issue · count' },
+      { l: 'Needs attention', n: '97', d: 'inactive, low score or overdue', t: 'down', src: 'derived flags · count' }
+    ])}
+    <div class="grid">
+      ${widget('s8', 'Batches at a glance', 'table + progress', 'lesson_completion + submission · dimension: cohort', `
+        <div class="scroll"><table><thead><tr><th>Batch</th><th>Started</th><th>Stage</th><th class="c">Learners</th><th style="min-width:150px">Progress</th><th class="c">Avg score</th><th class="c">Overdue</th><th>Health</th></tr></thead><tbody>
+        ${batches.map((b) => `<tr><td><b>${b[0]}</b></td><td>${b[1]}</td><td>${b[2]}</td><td class="c">${b[3]}</td><td><div class="hbar" style="grid-template-columns:1fr 38px"><div class="track"><div class="fill" style="width:${b[4]}%"></div></div><span class="v">${b[4]}%</span></div></td><td class="c">${cell(b[5])}</td><td class="c">${b[6]}</td><td><span class="pill ${pill(b[7])[0]}">${pill(b[7])[1]}</span></td></tr>`).join('')}
+        </tbody></table></div>`, 'Showing 5 of 8 batches. A row opens that batch\'s cohort dashboard. Batch 7 matches the cohort tab.', 'drv')}
+      ${widget('s4', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: 41, c: 'bad' }, { l: 'Score under 50%', v: 33, c: 'bad' }, { l: 'Overdue', v: 14, c: 'warn' }, { l: 'Video attendance under 60%', v: 9, c: 'warn' }], 50, ''), null, 'drv')}
+      ${widget('s7', 'Batches compared at the same day', 'table', 'lesson_completion + submission · filter: day N since batch start', `
+        <div class="scroll"><table><thead><tr><th>At Day 6</th><th class="c">Avg progress</th><th class="c">Avg score</th><th class="c">Logged in</th></tr></thead><tbody>
+        <tr><td><b>Batch 7</b> (now)</td><td class="c">${cell(S.avgProgress)}</td><td class="c">${cell(S.avgLatest)}</td><td class="c">${pct(S.activeToday, S.n)}%</td></tr>
+        <tr><td>Batch 6</td><td class="c">${cell(54)}</td><td class="c">${cell(63)}</td><td class="c">95%</td></tr>
+        <tr><td>Batch 5</td><td class="c">${cell(51)}</td><td class="c">${cell(61)}</td><td class="c">92%</td></tr>
+        <tr><td>Batch 4</td><td class="c">${cell(49)}</td><td class="c">${cell(58)}</td><td class="c">90%</td></tr>
+        </tbody></table></div>`, 'Batches start on different days, so comparing them today is unfair. This needs a cohort start date.', 'new')}
+      ${widget('s5', 'Pre vs final score by batch', 'horizontal bar', 'submission · score_pct · avg · dimensions: cohort, exercise position', hbars([{ l: 'Batch 4 · pre', v: 35 }, { l: 'Batch 4 · final', v: 69 }, { l: 'Batch 5 · pre', v: 37 }, { l: 'Batch 5 · final', v: 72 }, { l: 'Batch 6 · pre', v: 38 }, { l: 'Batch 6 · final', v: 74 }]), 'Average lift across finished batches: +34 pts.', 'drv')}
+      ${widget('s7', 'Hiring ramp vs target', 'line', 'organizationmember · created_at · cumulative · dimension: week', lineChart({ labels: ['3 Nov', '10 Nov', '17 Nov', '24 Nov', '1 Dec', '8 Dec'], series: [{ values: [120, 480, 900, 1320, 1710, 2046], color: 'var(--accent)' }, { values: [2000, 2000, 2000, 2000, 2000, 2000], color: 'var(--muted)', dash: true }], yMax: 5000, yTicks: [0, 1000, 2000, 3000, 4000, 5000], fmt: (v) => v.toLocaleString() }) + legend([{ c: 'var(--accent)', l: 'Enrolled learners' }, { c: 'var(--muted)', l: 'First-wave target' }]), null, 'drv')}
+      ${widget('s5', 'Peak concurrent learners', 'column', 'live session heartbeat · distinct learners · max · dimension: hour', `
+        <div class="gap"><b>Not measured today.</b>The customer's worry is 1,000 learners online at once. Login events are per day, and lessons send no heartbeat, so concurrency cannot be read from the data. The same time-on-lesson tracker would provide it.</div>`, null, 'new')}
+      ${widget('s6', 'Courses by completion', 'horizontal bar', 'learner_course · status=completed · rate · dimension: course', hbars([{ l: 'Individual Tax Fundamentals', v: 41 }, { l: 'Schedule C and Self-Employed', v: 33 }, { l: 'Client Communication', v: 88 }, { l: 'Data Security Basics', v: 96 }]), null, 'drv')}
+      ${widget('s6', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
+        <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Executive summary · weekdays 08:00 · CEO</span><span class="badge new">Planned</span></div>
+        <div class="hbar" style="grid-template-columns:1fr auto"><span>Batch health digest · Mon 09:00 · Heads of L&amp;D</span><span class="badge new">Planned</span></div></div>`, 'Also needs a read-only way for the CEO to sign in. Today the roles are admin, tutor and student.', 'new')}
+    </div>
+    ${reuse()}`;
+  }
+};
+
+let scope = 'cohort';
+let ageTimer = null;
+function startClock() {
+  clearInterval(ageTimer);
+  let seconds = 0;
+  ageTimer = setInterval(() => {
+    seconds = (seconds + 1) % 30;
+    const el = $('#age');
+    if (el) el.textContent = seconds + 's';
+  }, 1000);
+}
+function render() {
+  $('#view').innerHTML = views[scope]();
+  if (scope === 'cohort') initCohort();
+  startClock();
+  document.querySelectorAll('[data-scope]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.scope === scope)));
+}
+document.querySelectorAll('[data-scope]').forEach((b) => b.addEventListener('click', () => { scope = b.dataset.scope; render(); }));
+$('#showsrc').addEventListener('change', (e) => document.body.classList.toggle('hide-src', !e.target.checked));
+render();
+</script>
+</body>
+</html>
