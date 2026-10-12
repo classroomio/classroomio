@@ -45,7 +45,9 @@ vi.mock('@api/services/lesson', () => ({
   upsertLessonCompletionService: vi.fn(),
   getLessonWatchProgressService: vi.fn(),
   updateLessonWatchProgressService: vi.fn(),
-  getLessonHistoryService: vi.fn()
+  getLessonHistoryService: vi.fn(),
+  hideLessonRecordingsFromLearners: vi.fn(async (_courseId: string, _profileId: string, lessons: unknown[]) => lessons),
+  releaseLessonRecordingsForViewer: vi.fn(async (_courseId: string, _profileId: string, lessons: unknown[]) => lessons)
 }));
 
 vi.mock('@cio/core/services/lesson-language', () => ({
