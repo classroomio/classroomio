@@ -618,7 +618,7 @@ export function buildAgentTools(
 
     update_lesson_content: tool({
       description:
-        'Update the text content of a lesson in this course. Replaces full lesson HTML for the given locale. For lesson HTML, put only the lesson body in the content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content. Write callouts with the callout markup from the system prompt, never as a blockquote, and keep existing callouts unchanged.',
+        'Update the text content of a lesson in this course. Replaces full lesson HTML for the given locale. For lesson HTML, put only the lesson body in the content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content. Write callouts as <div data-callout="tip"><p>…</p></div>, never as a blockquote.',
       inputSchema: updateContentParam,
       execute: async (args) => {
         return executeAgentTool('update_lesson_content', { orgId, userId, courseId, args }, async () => {

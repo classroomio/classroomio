@@ -35,11 +35,24 @@ function normalizeHeadingLevels(content: string): string {
     .replace(/<\/h2>/gi, '</h3>');
 }
 
+const BARE_CALLOUT_PATTERN =
+  /<div data-callout="(info|tip|important|warning|highlight)">((?:(?!<\/?div[\s>])[\s\S])*)<\/div>/gi;
+
+/** Expands `<div data-callout="tip">…</div>` into the full callout markup the editor and lesson view render. */
+function expandBareCallouts(content: string): string {
+  return content.replace(
+    BARE_CALLOUT_PATTERN,
+    (_match, style: string, body: string) =>
+      `<div data-callout="${style.toLowerCase()}" class="cio-callout"><div class="cio-callout-mark" aria-hidden="true" contenteditable="false"></div><div class="cio-callout-body">${body}</div></div>`
+  );
+}
+
 export function normalizeAgentLessonContent(content: string, lessonTitle: string): string {
   let normalizedContent = content.trim();
 
   normalizedContent = stripLeadingLessonTitle(normalizedContent, lessonTitle);
   normalizedContent = normalizeHeadingLevels(normalizedContent);
+  normalizedContent = expandBareCallouts(normalizedContent);
 
   return normalizedContent.trim();
 }

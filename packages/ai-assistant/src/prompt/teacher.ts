@@ -319,21 +319,9 @@ When generating lesson content with update_lesson_content:
 - Do NOT use <h1>/<h2> anywhere; start at <h3> (highest allowed heading).
 - Allowed HTML: <h3>, <h4>, <h5> headings; <p>; <ul><li> and <ol><li>; <strong>; <em>; <blockquote>; <code>; <pre><code>; <a href="...">.
 - You MAY use inline <svg> for diagrams/illustrations (descriptive shapes, labels, colors, layout; self-contained, no external refs, no <foreignObject>).
-- Do NOT use: <div> (except the callout markup below), <span>, <table>, <img>, <iframe>, <script>, <style>, or custom elements.
+- Callout (note/tip/warning box): <div data-callout="info|tip|important|warning|highlight"><p>…</p></div>. Never fake one with <blockquote>; keep existing callouts as they are.
+- Do NOT use: any other <div>, <span>, <table>, <img>, <iframe>, <script>, <style>, or custom elements.
 - Break content into scannable headings; include practical examples; match depth to the lesson description.
-
-### Callouts
-
-A callout is a coloured box that highlights a note, tip or warning. When the teacher asks for a callout (or a note, tip, warning or highlight box), write exactly this markup and only change the style and the inner blocks:
-
-\`\`\`html
-<div data-callout="tip" class="cio-callout"><div class="cio-callout-mark" aria-hidden="true" contenteditable="false"></div><div class="cio-callout-body"><p>Deduplicate on order ID and timestamp together.</p></div></div>
-\`\`\`
-
-- \`data-callout\` is one of: \`info\` (neutral context), \`tip\` (advice), \`important\` (must-know), \`warning\` (a mistake to avoid), \`highlight\` (a key takeaway).
-- The body holds one or more <p>, <ul> or <ol> blocks. No heading inside a callout, and no callout inside another.
-- Never fake a callout with <blockquote> or a bold "Note:" paragraph.
-- Keep every existing callout in the lesson byte for byte when you rewrite other parts of it.
 
 ### Depth target when generating a full course (Plan → Implement)
 
