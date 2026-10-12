@@ -13,8 +13,7 @@ import {
 } from '@api/services/organization/audience';
 import { getOrgAudience, getOrgAudienceMember, removeAudienceMember } from '@api/services/organization';
 import { updateUser } from '@api/services/account/profile';
-import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertAutomationActor, assertOrgAdmin } from './shared';
+import { assertAutomationActor, assertMemberHasJoined, assertOrgAdmin } from './shared';
 
 export async function listAudienceService(orgId: string, actorId: string | null, query: TPublicApiAudienceQuery) {
   await assertOrgAdmin(orgId, actorId);
@@ -66,6 +65,10 @@ export async function removeAudienceService(orgId: string, memberId: number, act
   return removeAudienceMember(orgId, memberId, actorId);
 }
 
+/**
+ * Corrects a pending member's email or renames a joined one. Both preconditions are checked before either write, so a
+ * request that cannot be fully applied changes nothing.
+ */
 export async function updateAudienceService(
   orgId: string,
   memberId: number,
@@ -77,14 +80,8 @@ export async function updateAudienceService(
 
   const member = await getOrgAudienceMember(orgId, memberId);
 
-  // email needs a pending member and name a joined one, so check both before writing either.
-  if (payload.name !== undefined && !member.profileId) {
-    throw new AppError(
-      'Only members who have joined can be renamed. A pending member has no profile yet',
-      ErrorCodes.VALIDATION_ERROR,
-      400,
-      'name'
-    );
+  if (payload.name !== undefined) {
+    assertMemberHasJoined(member.profileId);
   }
 
   if (payload.email !== undefined) {

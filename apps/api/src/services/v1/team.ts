@@ -7,7 +7,7 @@ import type {
 import { getOrgTeam, updateTeamMemberRole } from '@api/services/organization';
 import { updateUser } from '@api/services/account/profile';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertAutomationActor, assertOrgAdmin, paginateInMemory } from './shared';
+import { assertAutomationActor, assertMemberHasJoined, assertOrgAdmin, paginateInMemory } from './shared';
 
 type TOrgTeamMember = Awaited<ReturnType<typeof getOrgTeam>>[number];
 
@@ -47,6 +47,10 @@ export async function getTeamMemberService(orgId: string, actorId: string | null
   return toPublicTeamMember(await getTeamMember(orgId, params.memberId));
 }
 
+/**
+ * Changes a team member's role, name, or both. The rename precondition is checked before the role write, so a request
+ * that cannot be fully applied changes nothing. The role is written first, then the name.
+ */
 export async function updateTeamMemberService(
   orgId: string,
   actorId: string | null,
@@ -58,14 +62,8 @@ export async function updateTeamMemberService(
 
   const member = await getTeamMember(orgId, params.memberId);
 
-  // Checked before the role write, so a request that cannot be fully applied changes nothing.
-  if (payload.name !== undefined && !member.profileId) {
-    throw new AppError(
-      'Only members who have joined can be renamed. A pending member has no profile yet',
-      ErrorCodes.VALIDATION_ERROR,
-      400,
-      'name'
-    );
+  if (payload.name !== undefined) {
+    assertMemberHasJoined(member.profileId);
   }
 
   if (payload.roleId !== undefined) {
