@@ -91,7 +91,8 @@ export async function getPathJourneyService(
       currentCourseId
     } = summarizeJourney(journey.courses);
 
-    const certificate = await resolveDownloadableCertificate(path, activeMember, journey.certificate);
+    const certificateEnabled = await isPathCertificateEnabled(path);
+    const certificate = certificateEnabled && activeMember.status === 'COMPLETED' ? journey.certificate : null;
 
     return {
       path: {
@@ -113,6 +114,7 @@ export async function getPathJourneyService(
       completedAt: isComplete ? activeMember.completedAt : null,
       lastProgressAt: journey.lastProgressAt,
       courses: journey.courses,
+      certificateEnabled,
       certificate
     };
   } catch (error) {
@@ -121,19 +123,11 @@ export async function getPathJourneyService(
 }
 
 /**
- * The issued certificate, only when assertLearningPathCertificateDownloadAllowed
- * would let this member download it, so the hub never offers one that fails.
+ * Whether completing the path earns a certificate: the path offers a
+ * downloadable one and the org's plan includes certificates.
  */
-async function resolveDownloadableCertificate(
-  path: TLearningPath,
-  member: TLearningPathMember,
-  issued: { certificateId: string; issuedAt: string } | null
-) {
-  if (!issued || member.status !== 'COMPLETED' || !path.certificate?.isDownloadable) {
-    return null;
-  }
+async function isPathCertificateEnabled(path: TLearningPath): Promise<boolean> {
+  if (!path.certificate?.isDownloadable) return false;
 
-  const certificatesEnabled = await orgHasCertificatesEnabled(path.organizationId);
-
-  return certificatesEnabled ? issued : null;
+  return orgHasCertificatesEnabled(path.organizationId);
 }

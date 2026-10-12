@@ -95,6 +95,7 @@ describe('getPathJourneyService', () => {
       currentCourseId: 'b',
       completedAt: null,
       lastProgressAt: '2026-09-18 10:00:00+00',
+      certificateEnabled: true,
       certificate: null
     });
     expect(journey.path).toEqual({
@@ -106,7 +107,6 @@ describe('getPathJourneyService', () => {
       coverImage: null,
       sequentialUnlock: true
     });
-    expect(mocks.orgHasCertificatesEnabled).not.toHaveBeenCalled();
   });
 
   it('points a finished path at its last course and offers the downloadable certificate', async () => {
@@ -141,10 +141,10 @@ describe('getPathJourneyService', () => {
   });
 
   it.each([
-    ['the plan has no certificates', member, path, false],
-    ['the path certificate is not downloadable', member, { ...path, certificate: {} }, true],
-    ['the membership is no longer completed', { ...member, status: 'IN_PROGRESS' }, path, true]
-  ] as const)('hides an issued certificate when %s', async (_reason, pathMember, pathRow, plan) => {
+    ['the plan has no certificates', member, path, false, false],
+    ['the path certificate is not downloadable', member, { ...path, certificate: {} }, true, false],
+    ['the membership is no longer completed', { ...member, status: 'IN_PROGRESS' }, path, true, true]
+  ] as const)('hides an issued certificate when %s', async (_reason, pathMember, pathRow, plan, certificateEnabled) => {
     mocks.orgHasCertificatesEnabled.mockResolvedValue(plan);
     mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true)], issued));
 
@@ -155,6 +155,7 @@ describe('getPathJourneyService', () => {
     );
 
     expect(journey.certificate).toBeNull();
+    expect(journey.certificateEnabled).toBe(certificateEnabled);
   });
 
   it('finds the enrollment of an org admin, whom the middleware passes without one', async () => {
