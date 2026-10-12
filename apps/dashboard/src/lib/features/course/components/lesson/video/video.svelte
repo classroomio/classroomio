@@ -13,6 +13,8 @@
   import LessonVideoSimpleCard from './lesson-video-simple-card.svelte';
   import LessonVideoPlayer from './lesson-video-player.svelte';
   import { lessonVideoBus } from './lesson-video-bus.svelte';
+  import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
+  import { isOrgStudent } from '$lib/utils/store/app';
   import { TRANSCRIPT_PANEL_ID } from './transcript-panel-definition';
 
   interface Props {
@@ -54,10 +56,13 @@
     pollTimer ??= setInterval(() => void refreshVideoStatuses(), POLL_INTERVAL_MS);
   }
 
-  // Only the editor shows encoding state; a learner sees the video play, which
-  // is the same either way.
+  // Staff see encoding state wherever they look at the lesson. A learner never
+  // does: the video plays either way, so the state is theirs to act on, not
+  // theirs to worry about.
+  const showsEncodingState = $derived(mode === MODES.edit || $isOrgStudent !== true);
+
   $effect(() => {
-    if (mode !== MODES.edit || !courseId || !lessonId || lessonId === statusLessonId) return;
+    if (!showsEncodingState || !courseId || !lessonId || lessonId === statusLessonId) return;
 
     statusLessonId = lessonId;
     void refreshVideoStatuses();
@@ -138,6 +143,11 @@
     <div class="w-full">
       {#each videos as video, index}
         <div class="{index < videos.length - 1 ? 'mb-5' : ''} w-full overflow-hidden">
+          {#if showsEncodingState && video.assetId}
+            <div class="mb-1.5 flex justify-end">
+              <VideoHlsStatusBadge status={lessonApi.videoHlsStatuses[video.assetId]} />
+            </div>
+          {/if}
           {@render content(video, index)}
         </div>
       {/each}

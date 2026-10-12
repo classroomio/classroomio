@@ -4,6 +4,16 @@ import { env } from '../config/env';
 const FLY_API = 'https://api.machines.dev/v1';
 /** A hung Fly API must not hold a dispatch slot, or the claim, indefinitely. */
 const FLY_API_TIMEOUT_MS = 30_000;
+/**
+ * Root filesystem for the encode, in GB.
+ *
+ * The machine streams the source to local disk and writes the whole ladder
+ * beside it before uploading, so it needs room for both at once: a 2GiB source
+ * ceiling plus its renditions. Fly's default rootfs is sized from the image and
+ * is far smaller than that, and running out mid-encode fails after the work is
+ * already paid for.
+ */
+const ROOT_FS_SIZE_GB = 16;
 
 export interface EncoderJobEnvironment {
   CIO_ASSET_ID: string;
@@ -62,6 +72,7 @@ export async function startEncoderMachine(jobEnv: EncoderJobEnvironment): Promis
       region: env.FLY_ENCODER_REGION || undefined,
       config: {
         image: encoderImage(),
+        rootfs: { size_gb: ROOT_FS_SIZE_GB },
         env: buildMachineEnv(jobEnv),
         auto_destroy: true,
         restart: { policy: 'no' },
