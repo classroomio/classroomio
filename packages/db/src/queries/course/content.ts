@@ -173,6 +173,8 @@ export async function getCourseContentItems(
         ${activityCompletionSql} AS "isComplete",
         NULL::timestamptz AS "lessonAt",
         NULL::text AS "callUrl",
+        NULL::int AS "sessionDurationMinutes",
+        NULL::text AS "recordingUrl",
         NULL::boolean AS "hasNoteContent",
         NULL::boolean AS "hasSlideContent",
         NULL::int AS "videosCount",
