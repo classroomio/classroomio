@@ -35,7 +35,8 @@ h2 { font-size: 14px; font-weight: 600; }
 .seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
 .seg button { font: inherit; font-weight: 600; border: 0; background: transparent; color: var(--muted); padding: 7px 14px; border-radius: 7px; cursor: pointer; }
 .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
-:root[data-theme="dark"] .seg button[aria-pressed="true"], :root:not([data-theme="light"]) .seg button[aria-pressed="true"] { color: #0e1117; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .seg button[aria-pressed="true"] { color: #0e1117; } }
+:root[data-theme="dark"] .seg button[aria-pressed="true"] { color: #0e1117; }
 button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 13px; }
