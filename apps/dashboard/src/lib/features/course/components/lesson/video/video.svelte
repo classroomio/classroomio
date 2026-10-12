@@ -25,6 +25,46 @@
 
   const videos = $derived(lessonApi.lesson?.videos || []);
 
+  const POLL_INTERVAL_MS = 10_000;
+
+  let statusLessonId = $state('');
+  let pollTimer: ReturnType<typeof setInterval> | undefined;
+
+  function isEncoding() {
+    return Object.values(lessonApi.videoHlsStatuses).some((status) => status === 'pending' || status === 'converting');
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = undefined;
+    }
+  }
+
+  async function refreshVideoStatuses() {
+    await lessonApi.getVideoStatuses(courseId, lessonId);
+
+    // Encoding runs for minutes, so keep checking until nothing is in flight —
+    // then stop, rather than polling an idle lesson forever.
+    if (!isEncoding()) {
+      stopPolling();
+      return;
+    }
+
+    pollTimer ??= setInterval(() => void refreshVideoStatuses(), POLL_INTERVAL_MS);
+  }
+
+  // Only the editor shows encoding state; a learner sees the video play, which
+  // is the same either way.
+  $effect(() => {
+    if (mode !== MODES.edit || !courseId || !lessonId || lessonId === statusLessonId) return;
+
+    statusLessonId = lessonId;
+    void refreshVideoStatuses();
+
+    return stopPolling;
+  });
+
   const hasTranscript = $derived.by(() => {
     lessonVideoBus.transcriptSources;
     return lessonVideoBus.hasTranscriptAvailable();
