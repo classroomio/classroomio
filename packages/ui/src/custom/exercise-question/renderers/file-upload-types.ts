@@ -35,20 +35,37 @@ export function formatFileSize(bytes: number): string {
   return `${parseFloat(size.toFixed(2))} ${units[unitIndex]}`;
 }
 
-export function fileTypeLabel(mimeType: string | undefined): string {
+function fileExtensionLabel(fileName: string | undefined): string | null {
+  const extensionSeparatorIndex = fileName?.lastIndexOf('.') ?? -1;
+  if (!fileName || extensionSeparatorIndex < 0) return null;
+
+  return fileName.slice(extensionSeparatorIndex + 1).toUpperCase() || null;
+}
+
+/**
+ * A short type label for an uploaded file. Falls back to the file name's extension when the MIME type is
+ * missing or not one of the known families, so notebooks read "IPYNB" instead of a raw MIME subtype.
+ */
+export function fileTypeLabel(mimeType: string | undefined, fileName?: string): string {
   const mime = mimeType ?? '';
   if (mime.includes('pdf')) return 'PDF';
   if (mime.includes('wordprocessingml') || mime.includes('docx')) return 'DOCX';
   if (mime.includes('msword') || mime.includes('doc')) return 'DOC';
   if (mime.includes('image')) return 'IMAGE';
   if (mime.includes('video')) return 'VIDEO';
+  if (mime.includes('csv')) return 'CSV';
+  if (mime.includes('ipynb')) return 'IPYNB';
 
   const subtype = mime.split('/')[1]?.toUpperCase();
-  return subtype || 'FILE';
+  return fileExtensionLabel(fileName) || subtype || 'FILE';
 }
 
-export function formatUploadedFileSubtitle(mimeType: string | undefined, size: number | undefined): string {
-  const parts = [fileTypeLabel(mimeType), size != null ? formatFileSize(size) : null].filter(Boolean);
+export function formatUploadedFileSubtitle(
+  mimeType: string | undefined,
+  size: number | undefined,
+  fileName?: string
+): string {
+  const parts = [fileTypeLabel(mimeType, fileName), size != null ? formatFileSize(size) : null].filter(Boolean);
   return parts.join(' · ') || '–';
 }
 

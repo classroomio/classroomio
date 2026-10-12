@@ -23,7 +23,9 @@
     };
   });
 
-  const subtitle = $derived(uploadedFile ? formatUploadedFileSubtitle(uploadedFile.mimeType, uploadedFile.size) : '');
+  const subtitle = $derived(
+    uploadedFile ? formatUploadedFileSubtitle(uploadedFile.mimeType, uploadedFile.size, uploadedFile.fileName) : ''
+  );
 </script>
 
 {#if !uploadedFile}
