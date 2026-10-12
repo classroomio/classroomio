@@ -54,7 +54,7 @@ The **final exam** is explicit, not positional. It is the exercise the course al
 
 A cohort can have several courses (`cohort_course`), and each course has its own exercises, so one set of score columns cannot cover them. The cohort dashboard has a **course picker**:
 
-- **All courses (default).** KPIs and needs-attention are cohort level. A "Courses in this cohort" table shows learners, average progress, average score, completed, final exam taken and final exam pass rate per course. The learners list has one row per learner and one pair of columns (progress, average score) per course, plus video and classroom attendance, certificate, last login and status.
+- **All courses (default).** KPIs and needs-attention are cohort level. A "Courses in this cohort" table shows learners, average progress, average score, completed, final exam taken and final exam pass rate per course. The learners list has one row per learner with overall progress, average score, courses completed (for example "1 of 3"), video and classroom attendance, certificate, last login and status. Clicking a learner opens a panel listing their courses: progress, current section, average score and final exam score against the pass mark.
 - **One course.** The learners list shows that course's exercises as columns, with the final exam tagged. Scores by exercise, learner score progression, the section-by-section scorecard and the hardest questions all switch to that course.
 - **Overdue.** The list shows which course each learner is late on, and filters to the picked course.
 
@@ -63,7 +63,7 @@ A cohort can have several courses (`cohort_course`), and each course has its own
 | Capability | Today | Where |
 | --- | --- | --- |
 | Cohort ↔ learners ↔ courses | `cohort`, `cohort_member`, `cohort_course`. Per-course progress lives on `groupmember` | `packages/db/src/schema.ts` |
-| Cohort start date | **None.** `cohort` has `createdAt` only (tracked in #1301) | `schema.ts` (`cohort`) |
+| Cohort start date | **None.** `cohort` has `createdAt` only. Not needed: cohorts are compared by course section, not by calendar day | `schema.ts` (`cohort`) |
 | Scores | `submission.total`, `question_answer.point`, `question.points` (the maximum), `exercise.passThreshold`, `exercise.dueBy` | `schema.ts` |
 | Final exam | `course.certificate.requiredExerciseId` with `exerciseMinScorePercent`. Certification already scores it as best completed attempt over maximum points | `schema.ts` (`course.certificate`), `apps/api/src/services/course/completion.ts` |
 | Course deadline and progress threshold | `course.certificate.deadline` and `course.certificate.threshold` | `schema.ts` (`course.certificate`) |
@@ -138,7 +138,6 @@ Badges match the prototype: **Available** (already stored), **Derived** (compute
 | Overdue list with "send reminder now" | `cohort_goal_assignment`, reminder email | Needs work (manual send action) |
 | Scheduled reports | saved dashboard, scheduler | Needs work |
 | Learning time per day against 5–6 hours | time on lesson | **Blocked by #1299** |
-| Day N since cohort start (cohort header, daily charts) | `cohort.starts_at` | **Blocked by #1301** |
 | Supervisor copied on reminders | supervisor of a learner | **Blocked by #1302** |
 
 ### Course
@@ -147,7 +146,7 @@ Enrolled, completion rate, average grade, final pass rate (against the course's 
 
 ### Organization
 
-Logged in (7 days), average progress, completions, certificates issued, needs attention. Cohorts at a glance, needs attention by reason, final exam average by cohort, hiring ramp, courses by completion. Cohorts compared at the same day is **blocked by #1301**, and peak concurrent learners is **blocked by #1299**. Scheduled reports and a read-only executive login need product decisions.
+Logged in (7 days), average progress, completions, certificates issued, needs attention. Cohorts at a glance, needs attention by reason, final exam average by cohort, hiring ramp, courses by completion. Peak concurrent learners is **blocked by #1299**. Scheduled reports and a read-only executive login need product decisions.
 
 ## Blocked Sections
 
@@ -157,7 +156,6 @@ Each section below needs data the product does not collect today. A ticket track
 | --- | --- | --- |
 | Cohort: learning time per day against 5–6 hours | #1299 | Active time in lessons and exercises. `time_spent_minutes` is always 0 and lesson pages send no events |
 | Organization: peak concurrent learners | #1299 | The same heartbeat, counted per time bucket |
-| Cohort and organization: Day N since cohort start, cohorts compared at the same day | #1301 | `cohort.starts_at` |
 | Reminders that copy a supervisor | #1302 | A supervisor relationship for each learner |
 
 ## Architecture
@@ -192,7 +190,89 @@ Follows the layering in `CLAUDE.md`:
 
 ## Schema Changes
 
-Phase 1 needs no schema change. `cohort.starts_at` ships on its own under #1301 (one migration per PR, see **Database migrations** in `CLAUDE.md`), and the sections that need it are blocked until then.
+Phase 1 needs no schema change.
+
+Phase 2 adds an `insights_dashboard` table (`org_id`, `scope_type`, `definition jsonb`, schema version).
+
+## Implementation Plan
+
+### Phase 1: cohort scope, then course and org
+
+- [ ] Spec, result and dashboard Zod schemas.
+- [ ] Scope resolver (cohort, course, org) with tenant-isolation tests.
+- [ ] Registry: `learner_course`, `assessment_result`, `activity` sources and about 15 metrics.
+- [ ] Exercise ordering (section order, then exercise order) and final-exam resolver (`course.certificate.requiredExerciseId`) with edge-case tests.
+- [ ] Query compiler and `POST /insights/query`, plus preset dashboards endpoint.
+- [ ] Widgets: KPI, line with band, bar and distribution, matrix table, horizontal bar.
+- [ ] Cohort dashboard: KPIs, course picker, courses table (all courses), scores by exercise, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
+- [ ] Last-updated indicator and 30 second auto-refresh.
+- [ ] Course dashboard and organization dashboard from the same widgets.
+- [ ] Rollback-sensitive and cache tests, and a seeded 5,000-learner performance check.
+
+<!--
+Blocked by #1299 (time-on-lesson tracking, https://github.com/classroomio/classroomio/issues/1299).
+Nothing stores active learning time today: `course_completion_record.time_spent_minutes` is always written as 0,
+lesson pages send no events, and `lesson_video_progress.watched_seconds` is video-only and cumulative.
+
+- [ ] Cohort widget "Learning time per day against 5–6 hours":
+  - source `time on lesson` (new), measure `active_minutes` summed, dimensions learner and day
+  - column chart per day with a target line, plus a list of learners under target
+  - the target (for example 5 to 6 hours) is a per-dashboard setting, not a constant
+- [ ] Organization widget "Peak concurrent learners": distinct learners with a heartbeat per time bucket, max per hour
+
+Blocked by #1302** |
+
+### Course
+
+Enrolled, completion rate, average grade, final pass rate (against the course's pass mark), median days to finish (enrolment to completion). Scores by exercise with one line per cohort, final-exam histogram, lesson drop-off, hardest tests, hardest questions, cohorts taking this course.
+
+### Organization
+
+Logged in (7 days), average progress, completions, certificates issued, needs attention. Cohorts at a glance, needs attention by reason, final exam average by cohort, hiring ramp, courses by completion. Peak concurrent learners is **blocked by #1299**. Scheduled reports and a read-only executive login need product decisions.
+
+## Blocked Sections
+
+Each section below needs data the product does not collect today. A ticket tracks collecting it. The section is not built, and not shown in the prototype, until its ticket ships.
+
+| Section | Blocked by | What is missing |
+| --- | --- | --- |
+| Cohort: learning time per day against 5–6 hours | #1299 | Active time in lessons and exercises. `time_spent_minutes` is always 0 and lesson pages send no events |
+| Organization: peak concurrent learners | #1299 | The same heartbeat, counted per time bucket |
+| Reminders that copy a supervisor | #1302 | A supervisor relationship for each learner |
+
+## Architecture
+
+Follows the layering in `CLAUDE.md`:
+
+1. **Validation:** `packages/utils/src/validation/insights/` holds the spec, result and dashboard schemas.
+2. **Queries:** `packages/db/src/queries/insights/` holds the registry, scope resolver and compiler. The folder is named `insights` because `queries/analytics` is page events and `queries/report` is content moderation. Each query accepts an optional `DbOrTxClient` and logs the original error with its function name.
+3. **Service:** `apps/api/src/services/insights/` handles authorization, caching (`cachedRead`, key = spec hash + scope) and orchestration. It throws `AppError`.
+4. **Routes:** one `/insights` root mounted in `app.ts`.
+   - `POST /insights/query` returns `{ columns, rows }` (one type).
+   - `GET /insights/dashboards/:scopeType/:scopeId` returns the preset specs.
+   - Access reuses the cohort-team-member and course-team middleware.
+5. **Dashboard app:** `apps/dashboard/src/lib/features/insights/` with API class, `utils/types.ts` inferred from the RPC client, widget components, and a dashboard tab on cohort, course and org pages.
+   - Charts use the browser-only dynamic import (see Chart Imports and SSR in `CLAUDE.md`).
+   - All copy goes through translations.
+   - Filters and search follow the live-update form rules (`DebouncedSearch` for server-backed search).
+6. **Public API and MCP (Phase 3):** expose `POST /insights/query` through `v1/analytics` with the existing scopes.
+
+### Security
+
+- The compiler accepts only whitelisted metrics, dimensions and filter fields. No raw SQL.
+- The organization id and scope are injected server-side. A spec can never widen them.
+- Cohort and course access is checked per scope. Learners never see these dashboards.
+- Export applies the same filters and the same authorization as the table.
+
+### Performance
+
+- Aggregate in SQL. Do not build per-student rows in JS.
+- Target: a 250-learner cohort dashboard under one second warm, and an org rollup over 5,000 learners using grouped queries and the 30 to 60 second cache.
+- Add indexes only after measuring against a seeded 5,000-learner org.
+
+## Schema Changes
+
+Phase 1 needs no schema change.
 
 Phase 2 adds an `insights_dashboard` table (`org_id`, `scope_type`, `definition jsonb`, schema version).
 
@@ -251,7 +331,7 @@ Blocked by #1302 (supervisor of a learner, https://github.com/classroomio/classr
 1. **Executive access.** Admin account for now, or a read-only viewer role in Phase 3.
 2. **Retakes.** Best completed attempt, as certification does. Confirm whether a "latest attempt" option is needed.
 3. **Needs-attention thresholds.** No login for 2 or more days, average score under 50%, overdue, video attendance under 60% are placeholders.
-4. **Blocked sections.** Time tracking (#1299), cohort start date (#1301) and supervisor (#1302) each have their own open questions, tracked in those issues.
+4. **Blocked sections.** Time tracking (#1299) and supervisor (#1302) each have their own open questions, tracked in those issues.
 
 ## Success Criteria
 

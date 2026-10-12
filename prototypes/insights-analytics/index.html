@@ -361,10 +361,17 @@ const learnerDetail = (l, ci, journey) => {
   return html.replace('<section class="w s12"', '<section id="detail" class="w s12"');
 };
 
+const learnerCourses = (l) => {
+  const html = widget('s12', `${l.name}: courses`, 'table', 'learner_course + submission · filter: learner = selected', `
+    <div class="scroll"><table><thead><tr><th>Course</th><th>Progress</th><th>Now at</th><th class="c">Average score</th><th class="c">Final exam</th></tr></thead><tbody>
+    ${COURSES.map((c, i) => { const rec = l.c[i]; const fin = rec.vals[rec.n - 1]; return `<tr><td><b>${c.title}</b></td><td><div class="mini"><div class="track"><div class="fill" style="width:${rec.progress}%"></div></div><span>${rec.progress}%</span></div></td><td>${nowAt(l, i)}</td><td class="c">${cell(taken(rec.vals).length ? mean(taken(rec.vals)) : null)}</td><td class="c">${passCell(fin, c.passMark)}</td></tr>`; }).join('')}
+    </tbody></table></div>`, 'Search or filter the learners below and click a row to switch learner. Pick a course above to chart their scores by exercise.', 'drv');
+  return html.replace('<section class="w s12"', '<section id="detail" class="w s12"');
+};
+
 const matrixHead = () => {
   if (inAll()) {
-    return `<tr><th rowspan="2">Learner</th>${COURSES.map((c) => `<th class="c" colspan="2">${c.title}</th>`).join('')}<th rowspan="2" class="c">Video</th><th rowspan="2" class="c">Classroom</th><th rowspan="2" class="c">Certificate</th><th rowspan="2">Last login</th><th rowspan="2">Status</th></tr>
-      <tr>${COURSES.map(() => '<th class="c">Progress</th><th class="c">Avg score</th>').join('')}</tr>`;
+    return `<tr><th>Learner</th><th>Progress</th><th class="c">Average score</th><th class="c">Courses completed</th><th class="c">Video</th><th class="c">Classroom</th><th class="c">Certificate</th><th>Last login</th><th>Status</th></tr>`;
   }
   const course = COURSES[mx.course];
   return `<tr><th>Learner</th><th>Progress</th><th>Now at</th>${course.exercises.map((e, j) => `<th class="c">${e}${j === course.exercises.length - 1 ? `<small>pass ${course.passMark}%</small>` : ''}</th>`).join('')}<th>Trend</th><th class="c">Video</th><th class="c">Classroom</th><th class="c">Certificate</th><th>Last login</th><th>Status</th></tr>`;
@@ -374,8 +381,8 @@ const rowHtml = (l) => {
   const tail = `<td class="c">${l.vid}%</td><td class="c">${l.cls}%</td><td class="c">${l.cert ? '<span class="pill done">Issued</span>' : '<span class="na">–</span>'}</td><td>${lastLabel(l.days)}</td><td><span class="pill ${pill(l.status)[0]}">${pill(l.status)[1]}</span>${l.overdue ? ' <span class="pill risk">Overdue</span>' : ''}</td>`;
   const name = `<td><b>${l.name}</b></td>`;
   if (inAll()) {
-    const cols = l.c.map((rec) => `<td class="c"><div class="mini"><div class="track"><div class="fill" style="width:${rec.progress}%"></div></div><span>${rec.progress}%</span></div></td><td class="c">${cell(taken(rec.vals).length ? mean(taken(rec.vals)) : null)}</td>`).join('');
-    return `<tr data-learner="${l.id}">${name}${cols}${tail}</tr>`;
+    const done = l.c.filter((rec) => rec.progress === 100).length;
+    return `<tr class="pick ${l.id === picked ? 'sel' : ''}" data-learner="${l.id}">${name}<td><div class="mini"><div class="track"><div class="fill" style="width:${l.progress}%"></div></div><span>${l.progress}%</span></div></td><td class="c">${cell(l.avg)}</td><td class="c">${done} of ${COURSES.length}</td>${tail}</tr>`;
   }
   const rec = l.c[mx.course];
   const course = COURSES[mx.course];
@@ -418,10 +425,9 @@ function drawMatrix() {
   $('#mx-more').hidden = shown.length >= rows.length;
   $('#mx-msg').textContent = '';
   $('#mx-export').onclick = () => { $('#mx-msg').textContent = `Export would download ${rows.length} rows as CSV, with the current filters and sort applied.`; };
-  if (inAll()) return;
   $('#mx-body').querySelectorAll('[data-learner]').forEach((row) => row.addEventListener('click', () => {
     picked = Number(row.dataset.learner);
-    $('#detail').outerHTML = learnerDetail(ROSTER[picked], mx.course, courseStats(mx.course).journey);
+    $('#detail').outerHTML = inAll() ? learnerCourses(ROSTER[picked]) : learnerDetail(ROSTER[picked], mx.course, courseStats(mx.course).journey);
     drawMatrix();
     const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     $('#detail').scrollIntoView({ block: 'center', behavior: calm ? 'auto' : 'smooth' });
@@ -459,7 +465,7 @@ const reuse = () => widget('s12', 'How the same widgets serve every scope', 'ref
   <tr><td>KPI row</td><td>Learners in this cohort, for all courses or one course</td><td>Learners enrolled in this course</td><td>All students in the org</td></tr>
   <tr><td>Scores by exercise</td><td>The selected course's exercises in order, one line for the cohort</td><td>Same, one line per cohort</td><td>Final exam average per cohort</td></tr>
   <tr><td>Section-by-section scorecard</td><td>One row per course section</td><td>Same, across all cohorts</td><td>Rolled up per cohort</td></tr>
-  <tr><td>Learners</td><td>All courses: one column per course. One course: one column per exercise</td><td>Same, across all cohorts</td><td>Rolled up: one row per cohort</td></tr>
+  <tr><td>Learners</td><td>All courses: overall progress and score. One course: one column per exercise</td><td>Same, across all cohorts</td><td>Rolled up: one row per cohort</td></tr>
   <tr><td>Needs attention</td><td>Learners below thresholds, with reasons</td><td>Learners stuck in this course</td><td>Counts by reason, per cohort</td></tr>
   <tr><td>Hardest questions</td><td>Questions this cohort misses most in the selected course</td><td>Same, across all cohorts</td><td>Questions missed across cohorts</td></tr>
   </tbody></table></div>`,
@@ -511,7 +517,7 @@ const views = {
       { l: 'Completed', n: S.completed, d: `${pct(S.completed, S.n)}% of the cohort${inAll() ? ` · ${S.cert} certified` : ''}`, t: 'flat', src: 'learner_course · status=completed · count' }
     ])}
     <div class="grid">
-      ${inAll() ? courseTable : courseWidgets}
+      ${inAll() ? courseTable + learnerCourses(ROSTER[picked]) : courseWidgets}
       ${widget('s5', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: S.inactive, c: 'bad' }, { l: 'Average score under 50%', v: S.low, c: 'bad' }, { l: 'Overdue', v: S.overdue.length, c: 'warn' }, { l: 'Video attendance under 60%', v: S.lowVideo, c: 'warn' }], S.n, ''), note('A learner can appear under more than one reason. Thresholds are placeholders to agree with the customer.', 'A learner can appear under more than one reason.'), 'drv')}
       ${overdueWidget}
       ${inAll() ? '' : questionsWidget('s12', COURSES[ci].questions)}
@@ -526,7 +532,7 @@ const views = {
         </div>
         <div class="scroll"><table><thead id="mx-head"></thead><tbody id="mx-body"></tbody></table></div>
         <div class="mxfoot"><span id="mx-count" class="note"></span><span class="chips"><button class="btn" id="mx-export">Export CSV</button><button class="btn" id="mx-more">Show 10 more</button></span></div><p class="note" id="mx-msg"></p>`,
-      inAll() ? 'Showing every course side by side. Pick a course above to see each exercise.' : 'Click a learner to chart their scores above. Search, filters and sort also apply to the export.', 'drv')}
+      inAll() ? 'Click a learner to see their courses above. Pick a course above to see each exercise.' : 'Click a learner to chart their scores above. Search, filters and sort also apply to the export.', 'drv')}
       ${widget(CUSTOMER ? 's12' : 's6', 'Learners logged in per day', 'bar', 'analytics_login_events · learner · count · dimension: day', columns([244, 240, 236, 238, 229, S.activeToday].map((v, i) => ({ l: ['24 Nov', '25 Nov', '26 Nov', '27 Nov', '28 Nov', '29 Nov'][i], v }))), note('One login row is stored per learner per day, so this counts days with a login, not time in the product.', 'Learners who signed in each day.'), 'ok')}
       ${CUSTOMER ? '' : widget('s6', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
         <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Daily cohort summary · 08:00 · CEO, Head of L&amp;D</span><span class="badge new">Planned</span></div>
