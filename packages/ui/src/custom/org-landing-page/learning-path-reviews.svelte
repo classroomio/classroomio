@@ -33,7 +33,7 @@
       </div>
 
       <div class="ui:grid ui:grid-cols-1 ui:sm:grid-cols-2 ui:gap-5 ui:mt-8">
-        {#each reviews as review (review.id)}
+        {#each reviews as review, index (`${review.id}-${index}`)}
           <article
             class="ui:flex ui:flex-col ui:justify-between ui:bg-[var(--landing-card)] ui:border ui:border-[var(--landing-border)] ui:[border-radius:var(--landing-radius-card)] ui:[box-shadow:var(--landing-shadow-card)] ui:p-6"
           >

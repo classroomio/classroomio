@@ -103,16 +103,18 @@ export function buildLearningPathLandingPageProps(
     instructors: detail.instructors,
     reviews: detail.reviews,
     faq: detail.faq,
-    pricing: {
-      cost: detail.cost,
-      currency: detail.currency,
-      originalCost,
-      discount: detail.metadata?.discount,
-      showDiscount,
-      features: detail.pricing?.features,
-      ctaLabel: primaryActionLabel,
-      ctaHref: options.enrollHref
-    },
+    pricing: detail.pricing
+      ? {
+          cost: detail.cost,
+          currency: detail.currency,
+          originalCost,
+          discount: detail.metadata?.discount,
+          showDiscount,
+          features: detail.pricing?.features,
+          ctaLabel: primaryActionLabel,
+          ctaHref: options.enrollHref
+        }
+      : undefined,
     footer: landing.footer,
     labels: buildLabels(detail)
   };

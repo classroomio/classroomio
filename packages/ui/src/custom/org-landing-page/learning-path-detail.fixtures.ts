@@ -6,7 +6,7 @@ import type {
   LearningPathReviewItem,
   LearningPathFaqItem
 } from './learning-path-detail.types';
-import { mockLearningPaths } from './fixtures';
+import { mockLearningPaths, mockLearningPathLandingPageProps } from './fixtures';
 
 const instructors: LearningPathInstructorItem[] = [
   {
@@ -250,23 +250,25 @@ export const mockLearningPathDetails: Record<string, LearningPathDetail> = Objec
       outcomes,
       skills,
       series: buildSeries(path.slug),
-      instructors,
-      certificate,
-      reviews,
-      faq,
-      pricing: {
-        cost: path.cost || 199,
-        currency: path.currency || 'USD',
-        originalCost: (path.cost || 199) + 81,
-        discount: 29,
-        showDiscount: true,
-        features: [
-          'All 5 courses, unlocked in sequential order',
-          '52 lessons · 13 exercises · 1 capstone project',
-          'Path certificate on completion',
-          'Lifetime access, learn at your pace'
-        ]
-      },
+      instructors: mockLearningPathLandingPageProps.instructors ?? instructors,
+      certificate: mockLearningPathLandingPageProps.certificate ?? certificate,
+      reviews: mockLearningPathLandingPageProps.reviews ?? reviews,
+      faq: mockLearningPathLandingPageProps.faq ?? faq,
+      pricing: mockLearningPathLandingPageProps.pricing
+        ? {
+            cost: mockLearningPathLandingPageProps.pricing.cost ?? path.cost ?? 199,
+            currency: mockLearningPathLandingPageProps.pricing.currency ?? path.currency ?? 'USD',
+            originalCost: mockLearningPathLandingPageProps.pricing.originalCost ?? (path.cost || 199) + 81,
+            discount: mockLearningPathLandingPageProps.pricing.discount ?? 29,
+            showDiscount: mockLearningPathLandingPageProps.pricing.showDiscount ?? true,
+            features: mockLearningPathLandingPageProps.pricing.features ?? [
+              'All 5 courses, unlocked in sequential order',
+              '52 lessons · 13 exercises · 1 capstone project',
+              'Path certificate on completion',
+              'Lifetime access, learn at your pace'
+            ]
+          }
+        : undefined,
       metadata: {
         discount: 29,
         showDiscount: true

@@ -28,7 +28,20 @@
     return value && validThemes.has(value as LandingPageTheme) ? (value as LandingPageTheme) : null;
   });
 
-  const open = $derived(previewTheme !== null);
+  const open = $derived(previewTheme !== null && !closeRequested);
+
+  /** Best-effort close guard: clearing the ?preview= param can be swallowed by an
+   *  in-flight navigation, leaving the controlled dialog derived `open` stuck true
+   *  with an invisible full-screen overlay that eats clicks (the dots "stop clicking"
+   *  and ?preview=bold lingers). We also flip a synchronous in-memory flag so the
+   *  overlay always unmounts even if the URL cleanup races a pending goto. */
+  let closeRequested = $state(false);
+
+  $effect(() => {
+    if (previewTheme) {
+      closeRequested = false;
+    }
+  });
 
   let previewView = $state<PreviewView>('home');
 
@@ -69,6 +82,7 @@
   });
 
   function closePreview() {
+    closeRequested = true;
     const nextUrl = new URL(page.url);
     nextUrl.searchParams.delete('preview');
     goto(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`, {

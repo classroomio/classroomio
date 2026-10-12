@@ -28,7 +28,7 @@
       </div>
 
       <div class="ui:grid ui:grid-cols-1 ui:sm:grid-cols-2 ui:lg:grid-cols-3 ui:gap-5 ui:mt-8">
-        {#each instructors as instructor (instructor.id)}
+        {#each instructors as instructor, index (`${instructor.id}-${index}`)}
           <article
             class="ui:flex ui:flex-col ui:bg-[var(--landing-card)] ui:border ui:border-[var(--landing-border)] ui:[border-radius:var(--landing-radius-card)] ui:[box-shadow:var(--landing-shadow-card)] ui:p-6"
           >

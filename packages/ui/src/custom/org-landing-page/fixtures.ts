@@ -782,6 +782,24 @@ export const mockLearningPathLandingPageProps: LearningPathLandingPageProps = {
       description:
         'The locked courses kept me honest — no skipping ahead, and everything built on what came before. The certificate helped me land interviews.',
       createdAt: '2025-04-30'
+    },
+    {
+      id: 'lp-r-3',
+      name: 'Devon Ross',
+      rating: 5,
+      location: 'Austin, USA',
+      description:
+        'The guided order beats piecing together tutorials. I shipped my capstone before my holiday break started.',
+      createdAt: '2025-03-18'
+    },
+    {
+      id: 'lp-r-4',
+      name: 'Aisha Okonkwo',
+      rating: 4,
+      location: 'Lagos, Nigeria',
+      description:
+        'Challenging at times, but the sequential unlocking forced me to actually finish each course instead of skipping around.',
+      createdAt: '2025-02-09'
     }
   ],
   faq: [
