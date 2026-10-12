@@ -6,8 +6,10 @@ import { ZSlug } from '../shared/slug';
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
 
-// Declared field by field so a dashboard schema change can't silently change the public contract.
-// MATCHING (15) and HOTSPOT (16) are disabled and have no question_type row, so they are not accepted here.
+/**
+ * The question types the public API accepts, declared here so a dashboard schema change cannot change the public
+ * contract. MATCHING (15) and HOTSPOT (16) are disabled and have no question_type row, so they are left out.
+ */
 export const ZPublicApiQuestionTypeId = z.union([
   z.literal(QUESTION_TYPE.RADIO),
   z.literal(QUESTION_TYPE.CHECKBOX),
@@ -105,14 +107,18 @@ export const ZPublicApiCreateCourseExercise = z
   });
 export type TPublicApiCreateCourseExercise = z.infer<typeof ZPublicApiCreateCourseExercise>;
 
+/**
+ * A question or option with an `id` is a partial edit: omitted fields keep their stored values, and its option rules run
+ * in the service on the merged result. One without an `id` is new and must be complete.
+ */
 export const ZPublicApiUpdateExerciseQuestion = z
   .object({
     id: z.number().int().positive().optional(),
     delete: z.boolean().optional(),
     exerciseSectionId: z.string().uuid().nullable().optional(),
-    question: z.string().min(1),
+    question: z.string().min(1).optional().describe('Required for a new question'),
     questionTypeId: ZPublicApiQuestionTypeId.optional(),
-    points: z.number().int().min(1),
+    points: z.number().int().min(1).optional().describe('Required for a new question'),
     order: z.number().int().min(0).optional(),
     settings: ZSettings.optional(),
     options: z
@@ -120,8 +126,8 @@ export const ZPublicApiUpdateExerciseQuestion = z
         z.object({
           id: z.number().int().positive().optional(),
           delete: z.boolean().optional(),
-          label: z.string().min(1),
-          isCorrect: z.boolean(),
+          label: z.string().min(1).optional().describe('Required for a new option'),
+          isCorrect: z.boolean().optional().describe('Required for a new option'),
           settings: ZSettings.optional()
         })
       )
@@ -132,14 +138,48 @@ export const ZPublicApiUpdateExerciseQuestion = z
     if (question.delete && !question.id) {
       ctx.addIssue({ code: 'custom', message: 'delete needs the id of an existing question', path: ['delete'] });
     }
-    // An existing question sends an option diff, not the full list; its rules run on the merged options in the service.
+
+    (question.options ?? []).forEach((option, index) => {
+      if (option.id) return;
+      if (option.delete) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'delete needs the id of an existing option',
+          path: ['options', index, 'delete']
+        });
+      }
+      if (option.label === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'label is required for a new option',
+          path: ['options', index, 'label']
+        });
+      }
+      if (option.isCorrect === undefined) {
+        ctx.addIssue({
+          code: 'custom',
+          message: 'isCorrect is required for a new option',
+          path: ['options', index, 'isCorrect']
+        });
+      }
+    });
+
     if (question.id) return;
+
+    if (question.question === undefined) {
+      ctx.addIssue({ code: 'custom', message: 'question is required for a new question', path: ['question'] });
+    }
+    if (question.points === undefined) {
+      ctx.addIssue({ code: 'custom', message: 'points is required for a new question', path: ['points'] });
+    }
 
     validateQuestionOptions(
       {
         ...question,
         deletedAt: question.delete ? 'deleted' : undefined,
-        options: question.options?.filter((option) => !option.delete)
+        options: question.options
+          ?.filter((option) => !option.delete)
+          .map((option) => ({ isCorrect: option.isCorrect === true }))
       },
       ctx
     );

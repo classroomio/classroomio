@@ -820,10 +820,14 @@ export async function createExerciseFromTemplate(
       courseId
     };
 
-    const exerciseRow = await prepareExerciseRow(sanitizeExercisePayload(exerciseData));
-
-    // Process the questionnaire to create questions and options
     const { questions } = template.questionnaire!;
+
+    await guardNonAutoGradableQuestionsForCourseType({
+      courseId,
+      questionTypeIds: (questions ?? []).map((question) => question.question_type.id)
+    });
+
+    const exerciseRow = await prepareExerciseRow(sanitizeExercisePayload(exerciseData));
 
     const exercise = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;

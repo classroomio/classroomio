@@ -27,6 +27,7 @@ export const MCP_TOOL_CREDIT_COST = {
   tag_courses: 1,
   create_course_exercise: 1,
   update_course_exercise: 1,
+  create_course_exercise_from_template: 1,
   delete_course_exercise: 1,
   notify_course_exercise: 1,
   get_course_exercise_notify_status: 0,

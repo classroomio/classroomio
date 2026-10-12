@@ -107,4 +107,26 @@ describe('public API course exercise request contract', () => {
       }).success
     ).toBe(false);
   });
+
+  it('treats a question or option with an id as a partial edit', () => {
+    const update = (questions: unknown[]) => ZPublicApiUpdateCourseExercise.safeParse({ questions }).success;
+
+    expect(update([{ id: 5, delete: true }])).toBe(true);
+    expect(update([{ id: 5, order: 3 }])).toBe(true);
+    expect(update([{ id: 5, options: [{ id: 9, delete: true }] }])).toBe(true);
+    expect(update([{ id: 5, options: [{ id: 9, label: 'Renamed' }] }])).toBe(true);
+  });
+
+  it('still needs a new question or option to be complete', () => {
+    const update = (questions: unknown[]) => ZPublicApiUpdateCourseExercise.safeParse({ questions }).success;
+
+    expect(update([{ question: 'Q', questionTypeId: 3 }])).toBe(false);
+    expect(update([{ points: 1, questionTypeId: 3 }])).toBe(false);
+    expect(update([{ question: 'Q', points: 1, questionTypeId: 3 }])).toBe(true);
+    expect(update([{ id: 5, options: [{ label: 'New' }] }])).toBe(false);
+    expect(update([{ id: 5, options: [{ isCorrect: true }] }])).toBe(false);
+    expect(update([{ id: 5, options: [{ delete: true }] }])).toBe(false);
+    expect(update([{ id: 5, options: [{ label: 'New', isCorrect: false }] }])).toBe(true);
+    expect(update([{ delete: true }])).toBe(false);
+  });
 });

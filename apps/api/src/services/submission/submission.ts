@@ -124,6 +124,22 @@ function resolveOverallStatusFromTypenames(typenames: string[]): SubmissionOvera
   return 'auto_graded';
 }
 
+/** The stored overall status, or the one the exercise's question types imply when none is stored. */
+export function resolveSubmissionOverallStatus(
+  storedOverallStatus: unknown,
+  questionTypeIds: number[]
+): SubmissionOverallStatus {
+  if (
+    storedOverallStatus === 'auto_graded' ||
+    storedOverallStatus === 'manual_required' ||
+    storedOverallStatus === 'hybrid'
+  ) {
+    return storedOverallStatus;
+  }
+
+  return resolveOverallStatusFromQuestionTypeIds(questionTypeIds);
+}
+
 function resolveOverallStatusFromQuestionTypeIds(questionTypeIds: number[]): SubmissionOverallStatus {
   const manualFlags = questionTypeIds.map((questionTypeId) => {
     const metadata = getQuestionTypeById(questionTypeId);

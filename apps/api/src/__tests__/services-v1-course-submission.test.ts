@@ -13,12 +13,17 @@ vi.mock('@cio/db/queries/exercise', () => ({
   getQuestionsByExerciseIds: vi.fn()
 }));
 vi.mock('@cio/core/services/exercise/exercise', () => ({ resolveExerciseCourseId: vi.fn() }));
-vi.mock('@cio/db/queries/submission', () => ({ getSubmissionById: vi.fn() }));
+vi.mock('@cio/db/queries/submission', () => ({
+  getCourseSubmissionsPage: vi.fn(),
+  getQuestionAnswersBySubmissionId: vi.fn(),
+  getSubmissionById: vi.fn()
+}));
 vi.mock('@api/services/submission', () => ({
   deleteSubmissionService: vi.fn(),
   getSubmission: vi.fn(),
-  listSubmissionsForGrading: vi.fn(),
   resolveSubmissionGradingState: (submission: { gradingState?: string }) => submission.gradingState ?? 'queued',
+  resolveSubmissionOverallStatus: (stored: string | null, questionTypeIds: number[]) =>
+    stored ?? (questionTypeIds.includes(3) ? 'manual_required' : 'auto_graded'),
   updateSubmissionGradesBatch: vi.fn(),
   updateSubmissionService: vi.fn()
 }));
@@ -29,11 +34,14 @@ import { isCourseTeamMemberOrOrgAdmin, isUserCourseMemberOrOrgAdmin } from '@cio
 import { getCourseMember } from '@cio/db/queries/course/people';
 import { getExerciseById, getQuestionsByExerciseIds } from '@cio/db/queries/exercise';
 import { resolveExerciseCourseId } from '@cio/core/services/exercise/exercise';
-import { getSubmissionById } from '@cio/db/queries/submission';
+import {
+  getCourseSubmissionsPage,
+  getQuestionAnswersBySubmissionId,
+  getSubmissionById
+} from '@cio/db/queries/submission';
 import {
   deleteSubmissionService,
   getSubmission,
-  listSubmissionsForGrading,
   updateSubmissionGradesBatch,
   updateSubmissionService
 } from '@api/services/submission';
@@ -69,18 +77,11 @@ const submissionRow = (overrides: Record<string, unknown> = {}) =>
     ...overrides
   }) as never;
 
-const boardItem = (id: string, createdAt: string, overrides: Record<string, unknown> = {}) => ({
-  id,
-  createdAt,
-  memberId: 'member-1',
-  total: 3,
-  gradingState: 'awaiting_manual',
-  overallStatus: 'manual_required',
-  feedback: null,
-  isEarly: true,
-  exercise: { id: 'exercise-1', title: 'Quiz' },
-  student: { id: 'profile-1', fullname: 'Ada', email: 'ada@x.io', avatarUrl: null },
-  ...overrides
+const pageRow = (id: string, createdAt: string, overrides: Record<string, unknown> = {}) => ({
+  submission: submissionRow({ id, createdAt, total: 3, ...overrides }) as Record<string, unknown>,
+  exerciseTitle: 'Quiz',
+  exerciseDueBy: null as string | null,
+  student: { id: 'profile-1', fullname: 'Ada', email: 'ada@x.io', avatarUrl: null } as Record<string, unknown>
 });
 
 beforeEach(() => {
@@ -133,41 +134,92 @@ describe('submission access rules', () => {
 
 describe('listCourseSubmissionsService', () => {
   beforeEach(() => {
-    vi.mocked(listSubmissionsForGrading).mockResolvedValue({
-      sections: [
-        { id: 1, title: 'Submitted', value: 1, items: [boardItem('s-1', '2026-01-01', { gradingState: 'queued' })] },
-        { id: 2, title: 'In Progress', value: 1, items: [boardItem('s-2', '2026-01-03')] },
-        { id: 3, title: 'Graded', value: 1, items: [boardItem('s-3', '2026-01-02', { memberId: 'member-2' })] }
-      ],
-      submissionIdData: {}
+    vi.mocked(getQuestionsByExerciseIds).mockResolvedValue([]);
+    vi.mocked(getCourseSubmissionsPage).mockResolvedValue({
+      items: [pageRow('s-2', '2026-01-03'), pageRow('s-3', '2026-01-02')],
+      total: 41
     } as never);
   });
 
-  it('flattens the grading board newest first', async () => {
-    const result = await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 20 });
+  it('returns the page the query gives, in its order, with the total from the database', async () => {
+    const result = await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, { page: 2, limit: 20 });
 
-    expect(result.items.map((item) => item.id)).toEqual(['s-2', 's-3', 's-1']);
+    expect(getCourseSubmissionsPage).toHaveBeenCalledWith(
+      COURSE_ID,
+      { exerciseId: undefined, memberId: undefined, gradingState: undefined },
+      { page: 2, limit: 20 }
+    );
+    expect(result.items.map((item) => item.id)).toEqual(['s-2', 's-3']);
     expect(result.items[0]).toMatchObject({
       exerciseId: 'exercise-1',
       exerciseTitle: 'Quiz',
       memberId: 'member-1',
       student: { profileId: 'profile-1', fullname: 'Ada' },
+      gradingState: 'awaiting_manual',
+      overallStatus: 'manual_required',
+      total: 3,
+      isEarly: true,
       submittedAt: '2026-01-03'
     });
-    expect(result.pagination.total).toBe(3);
+    expect(result.pagination).toEqual({ page: 2, limit: 20, total: 41, totalPages: 3 });
   });
 
-  it('filters by grading state and member', async () => {
+  it('does not load answers or sign file URLs', async () => {
+    await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 20 });
+
+    expect(getSubmission).not.toHaveBeenCalled();
+    expect(getQuestionAnswersBySubmissionId).not.toHaveBeenCalled();
+  });
+
+  it('passes the filters to the query instead of filtering in memory', async () => {
     vi.mocked(getCourseMember).mockResolvedValue({ id: 'member-1' } as never);
 
-    const result = await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, {
+    await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, {
       page: 1,
       limit: 20,
       memberId: 'member-1',
       gradingState: 'awaiting_manual'
     });
 
-    expect(result.items.map((item) => item.id)).toEqual(['s-2']);
+    expect(getCourseSubmissionsPage).toHaveBeenCalledWith(
+      COURSE_ID,
+      { exerciseId: undefined, memberId: 'member-1', gradingState: 'awaiting_manual' },
+      expect.objectContaining({ page: 1, limit: 20 })
+    );
+  });
+
+  it('marks a submission made after the due date as not early', async () => {
+    vi.mocked(getCourseSubmissionsPage).mockResolvedValue({
+      items: [{ ...pageRow('s-2', '2026-01-03'), exerciseDueBy: '2026-01-02' }],
+      total: 1
+    } as never);
+
+    const result = await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 20 });
+
+    expect(result.items[0].isEarly).toBe(false);
+  });
+
+  it('works out the overall status from the question types when none is stored', async () => {
+    vi.mocked(getCourseSubmissionsPage).mockResolvedValue({
+      items: [pageRow('s-2', '2026-01-03', { overallStatus: null })],
+      total: 1
+    } as never);
+    vi.mocked(getQuestionsByExerciseIds).mockResolvedValue([{ exerciseId: 'exercise-1', questionTypeId: 3 }] as never);
+
+    const result = await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 20 });
+
+    expect(result.items[0].overallStatus).toBe('manual_required');
+  });
+
+  it('returns a null student when the member has no profile', async () => {
+    vi.mocked(getCourseSubmissionsPage).mockResolvedValue({
+      items: [{ ...pageRow('s-2', '2026-01-03'), student: { id: null, fullname: null, email: null, avatarUrl: null } }],
+      total: 1
+    } as never);
+
+    const result = await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 20 });
+
+    expect(result.items[0].student).toBeNull();
   });
 
   it('returns 404 for a member filter from another course', async () => {
@@ -221,10 +273,7 @@ describe('gradeCourseSubmissionService', () => {
 
   it('returns 400 for a question the learner did not answer, without saving', async () => {
     vi.mocked(getQuestionsByExerciseIds).mockResolvedValue([{ id: 7 }, { id: 8 }] as never);
-    vi.mocked(getSubmission).mockResolvedValue({
-      ...(submissionRow() as object),
-      answers: [{ questionId: 7 }]
-    } as never);
+    vi.mocked(getQuestionAnswersBySubmissionId).mockResolvedValue([{ questionId: 7 }] as never);
 
     await expect(
       gradeCourseSubmissionService(ORG_ID, ACTOR_ID, submissionParams, {
@@ -240,16 +289,15 @@ describe('gradeCourseSubmissionService', () => {
 
   it('grades through the dashboard service', async () => {
     vi.mocked(getQuestionsByExerciseIds).mockResolvedValue([{ id: 7 }] as never);
-    vi.mocked(getSubmission).mockResolvedValue({
-      ...(submissionRow() as object),
-      answers: [{ questionId: 7 }]
-    } as never);
+    vi.mocked(getQuestionAnswersBySubmissionId).mockResolvedValue([{ questionId: 7 }] as never);
     vi.mocked(updateSubmissionGradesBatch).mockResolvedValue(submissionRow({ gradingState: 'completed', total: 2 }));
     const payload = { answers: [{ questionId: 7, points: 2 }], total: 2, feedback: 'Good' };
 
     const result = await gradeCourseSubmissionService(ORG_ID, ACTOR_ID, submissionParams, payload);
 
     expect(getQuestionsByExerciseIds).toHaveBeenCalledWith(['exercise-1']);
+    expect(getQuestionAnswersBySubmissionId).toHaveBeenCalledWith(SUBMISSION_ID);
+    expect(getSubmission).not.toHaveBeenCalled();
     expect(updateSubmissionGradesBatch).toHaveBeenCalledWith(SUBMISSION_ID, COURSE_ID, payload);
     expect(result).toMatchObject({ gradingState: 'completed', total: 2 });
   });
@@ -289,7 +337,8 @@ describe('getCourseMarksService', () => {
       { id: 'member-2', profileId: 'p-2', email: null, profile: { fullname: 'Zed', email: 'zed@x.io' } },
       { id: 'member-1', profileId: 'p-1', email: null, profile: { fullname: 'Ada', email: 'ada@x.io' } }
     ],
-    studentMarksByExerciseId: { 'member-1': { 'exercise-1': '4' } }
+    studentMarksByExerciseId: { 'member-1': { 'exercise-1': '4', 'exercise-2': '0' } },
+    gradedPointsByExerciseId: { 'member-1': { 'exercise-1': 4 } }
   };
 
   it('returns one row per student with a mark per exercise, using the member rule', async () => {
@@ -305,6 +354,27 @@ describe('getCourseMarksService', () => {
       { exerciseId: 'exercise-2', exerciseTitle: 'Essay', maxPoints: 10, points: null }
     ]);
     expect(isCourseTeamMemberOrOrgAdmin).not.toHaveBeenCalled();
+  });
+
+  it('reports null, not 0, for a submission that is not graded yet', async () => {
+    vi.mocked(isUserCourseMemberOrOrgAdmin).mockResolvedValue(true);
+    vi.mocked(getGradebook).mockResolvedValue(gradebook as never);
+
+    const result = await getCourseMarksService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 20 });
+
+    expect(result.items[0].marks[1]).toMatchObject({ exerciseId: 'exercise-2', points: null });
+  });
+
+  it('reports a graded 0 as 0', async () => {
+    vi.mocked(isUserCourseMemberOrOrgAdmin).mockResolvedValue(true);
+    vi.mocked(getGradebook).mockResolvedValue({
+      ...gradebook,
+      gradedPointsByExerciseId: { 'member-1': { 'exercise-1': 0 } }
+    } as never);
+
+    const result = await getCourseMarksService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 20 });
+
+    expect(result.items[0].marks[0].points).toBe(0);
   });
 
   it('gives a student actor only the rows the gradebook scopes to them', async () => {

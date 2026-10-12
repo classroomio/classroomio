@@ -21,11 +21,11 @@ export async function getCourseMarksService(
   await assertCourseMemberOrOrgAdmin(params.courseId, actorId);
   assertAutomationActor(actorId);
 
-  const { students, exercises, studentMarksByExerciseId } = await getGradebook(params.courseId, actorId);
+  const { students, exercises, gradedPointsByExerciseId } = await getGradebook(params.courseId, actorId);
 
   const rows = students
     .map((student) => {
-      const studentMarks = studentMarksByExerciseId[student.id] ?? {};
+      const gradedPoints = gradedPointsByExerciseId[student.id] ?? {};
 
       return {
         memberId: student.id,
@@ -36,7 +36,7 @@ export async function getCourseMarksService(
           exerciseId: exercise.id,
           exerciseTitle: exercise.title,
           maxPoints: exercise.points,
-          points: studentMarks[exercise.id] !== undefined ? Number(studentMarks[exercise.id]) : null
+          points: gradedPoints[exercise.id] ?? null
         }))
       };
     })

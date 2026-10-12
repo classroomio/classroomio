@@ -215,4 +215,34 @@ describe('getMarks privacy', () => {
     expect(getMarksByCourseId).not.toHaveBeenCalled();
     expect(marks).toEqual([]);
   });
+
+  it('counts only graded submissions as graded points, taking the highest graded attempt', async () => {
+    vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
+    vi.mocked(getCourseMembers).mockResolvedValue([studentOne, studentTwo]);
+    vi.mocked(getMarksByCourseId).mockResolvedValue([
+      mark({ exerciseId: 'ex-1', groupmemberId: STUDENT_MEMBER_ID, statusId: 3, totalPointsGotten: 6 }),
+      mark({ exerciseId: 'ex-1', groupmemberId: STUDENT_MEMBER_ID, statusId: 3, totalPointsGotten: 9 }),
+      mark({ exerciseId: 'ex-1', groupmemberId: STUDENT_MEMBER_ID, statusId: 2, totalPointsGotten: 10 }),
+      mark({ exerciseId: 'ex-2', groupmemberId: STUDENT_MEMBER_ID, statusId: 1, totalPointsGotten: null }),
+      mark({ exerciseId: 'ex-2', groupmemberId: OTHER_STUDENT_MEMBER_ID, statusId: 3, totalPointsGotten: 0 })
+    ]);
+
+    const gradebook = await getGradebook(COURSE_ID, INSTRUCTOR_PROFILE_ID);
+
+    expect(gradebook.gradedPointsByExerciseId).toEqual({
+      [STUDENT_MEMBER_ID]: { 'ex-1': 9 },
+      [OTHER_STUDENT_MEMBER_ID]: { 'ex-2': 0 }
+    });
+  });
+
+  it('scopes graded points to the viewing student', async () => {
+    vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(false);
+    vi.mocked(getGroupMemberIdByCourseAndProfile).mockResolvedValue(STUDENT_MEMBER_ID);
+    vi.mocked(getMarksByCourseId).mockResolvedValue(allMarks);
+    vi.mocked(getCourseMember).mockResolvedValue(studentOne);
+
+    const gradebook = await getGradebook(COURSE_ID, STUDENT_PROFILE_ID);
+
+    expect(gradebook.gradedPointsByExerciseId).toEqual({ [STUDENT_MEMBER_ID]: { 'ex-1': 9, 'ex-2': 10 } });
+  });
 });

@@ -1,6 +1,10 @@
 import { getCourseMember } from '@cio/db/queries/course/people';
 import { getQuestionsByExerciseIds } from '@cio/db/queries/exercise';
-import { getSubmissionById } from '@cio/db/queries/submission';
+import {
+  getCourseSubmissionsPage,
+  getQuestionAnswersBySubmissionId,
+  getSubmissionById
+} from '@cio/db/queries/submission';
 import type { TSubmission } from '@cio/db/types';
 import type {
   TPublicApiCourseParam,
@@ -12,13 +16,13 @@ import type {
 import {
   deleteSubmissionService,
   getSubmission,
-  listSubmissionsForGrading,
   resolveSubmissionGradingState,
+  resolveSubmissionOverallStatus,
   updateSubmissionGradesBatch,
   updateSubmissionService
 } from '@api/services/submission';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin, paginateInMemory } from '../shared';
+import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin, toPublicApiPagination } from '../shared';
 import { assertExerciseBelongsToCourse } from './exercises';
 
 function toPublicSubmission(submission: TSubmission) {
@@ -65,44 +69,54 @@ export async function listCourseSubmissionsService(
     throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
   }
 
-  const { sections } = await listSubmissionsForGrading(params.courseId);
-  const submissions = sections
-    .flatMap((section) => section.items)
-    .filter(
-      (item) =>
-        (!query.exerciseId || item.exercise.id === query.exerciseId) &&
-        (!query.memberId || item.memberId === query.memberId) &&
-        (!query.gradingState || item.gradingState === query.gradingState)
-    )
-    .sort(
-      (a, b) => new Date(b.createdAt ?? 0).getTime() - new Date(a.createdAt ?? 0).getTime() || b.id.localeCompare(a.id)
-    );
-
-  const { items, pagination } = paginateInMemory(submissions, query);
+  const { items, total } = await getCourseSubmissionsPage(
+    params.courseId,
+    { exerciseId: query.exerciseId, memberId: query.memberId, gradingState: query.gradingState },
+    query
+  );
+  const questionTypeIdsByExerciseId = await getQuestionTypeIdsByExerciseId(
+    items.map((item) => item.submission.exerciseId)
+  );
 
   return {
-    items: items.map((item) => ({
-      id: item.id,
-      exerciseId: item.exercise.id,
-      exerciseTitle: item.exercise.title,
-      memberId: item.memberId,
-      student: item.student
+    items: items.map(({ submission, exerciseTitle, exerciseDueBy, student }) => ({
+      id: submission.id,
+      exerciseId: submission.exerciseId,
+      exerciseTitle,
+      memberId: submission.submittedBy ?? null,
+      student: student?.id
         ? {
-            profileId: item.student.id,
-            fullname: item.student.fullname ?? null,
-            email: item.student.email ?? null,
-            avatarUrl: item.student.avatarUrl ?? null
+            profileId: student.id,
+            fullname: student.fullname ?? null,
+            email: student.email ?? null,
+            avatarUrl: student.avatarUrl ?? null
           }
         : null,
-      gradingState: item.gradingState,
-      overallStatus: item.overallStatus,
-      total: item.total,
-      feedback: item.feedback,
-      isEarly: item.isEarly,
-      submittedAt: item.createdAt
+      gradingState: resolveSubmissionGradingState(submission),
+      overallStatus: resolveSubmissionOverallStatus(
+        submission.overallStatus,
+        questionTypeIdsByExerciseId.get(submission.exerciseId) ?? []
+      ),
+      total: submission.total ?? null,
+      feedback: submission.feedback,
+      isEarly: exerciseDueBy ? new Date(submission.createdAt!).getTime() <= new Date(exerciseDueBy).getTime() : true,
+      submittedAt: submission.createdAt ?? null
     })),
-    pagination
+    pagination: toPublicApiPagination(query.page, query.limit, total)
   };
+}
+
+async function getQuestionTypeIdsByExerciseId(exerciseIds: string[]) {
+  const questionTypeIdsByExerciseId = new Map<string, number[]>();
+  for (const question of await getQuestionsByExerciseIds([...new Set(exerciseIds)])) {
+    if (!question.exerciseId || question.questionTypeId == null) continue;
+
+    const questionTypeIds = questionTypeIdsByExerciseId.get(question.exerciseId) ?? [];
+    questionTypeIds.push(Number(question.questionTypeId));
+    questionTypeIdsByExerciseId.set(question.exerciseId, questionTypeIds);
+  }
+
+  return questionTypeIdsByExerciseId;
 }
 
 export async function getCourseSubmissionService(
@@ -125,6 +139,10 @@ export async function getCourseSubmissionService(
   };
 }
 
+/**
+ * Grades a submission. Every graded question must belong to the exercise and already have an answer row: the grade
+ * update skips questions with no answer, which would save a total that the stored points do not back.
+ */
 export async function gradeCourseSubmissionService(
   orgId: string,
   actorId: string | null,
@@ -142,9 +160,8 @@ export async function gradeCourseSubmissionService(
     throw new AppError(`Question ${unknownAnswer.questionId} not found in this exercise`, ErrorCodes.NOT_FOUND, 404);
   }
 
-  // The grade update skips questions with no answer row, which would save a total that the stored points do not back.
   const answeredQuestionIds = new Set(
-    ((await getSubmission(params.submissionId)).answers ?? []).map((answer) => Number(answer.questionId))
+    (await getQuestionAnswersBySubmissionId(params.submissionId)).map((answer) => Number(answer.questionId))
   );
   const unanswered = payload.answers.find((answer) => !answeredQuestionIds.has(answer.questionId));
   if (unanswered) {

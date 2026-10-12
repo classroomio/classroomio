@@ -128,7 +128,8 @@ async function assertQuestionTypesAllowed(orgId: string, questionTypeIds: Array<
 /**
  * Question and option ids in the update must already belong to this exercise: the core diff trusts them, so without
  * this check a caller could delete or edit another exercise's rows. Section ids may be new (callers mint them so new
- * questions can reference new sections) but must not belong to another exercise.
+ * questions can reference new sections) but must not belong to another exercise. When sections are sent, every
+ * question that stays must land in one of them, because deleting a section nulls the section of its questions.
  */
 async function assertUpdateIdsBelongToExercise(
   exerciseId: string,
@@ -180,7 +181,6 @@ async function assertUpdateIdsBelongToExercise(
 
   if (!payload.sections || payload.sections.length === 0) return;
 
-  // Deleting a section nulls its questions' section, so every question that stays must land in a sent section.
   const incomingById = new Map((payload.questions ?? []).filter((q) => q.id).map((q) => [q.id, q]));
   for (const question of current.questions ?? []) {
     const incoming = incomingById.get(Number(question.id));
@@ -198,7 +198,10 @@ async function assertUpdateIdsBelongToExercise(
   }
 }
 
-// options is a diff on an existing question, so the option rules and limit are checked on what the question ends up with.
+/**
+ * An existing question sends an option diff, so the option rules and the option limit are checked on what the question
+ * ends up with: its stored options, minus the deleted ones, with the sent ones applied.
+ */
 function assertEditedQuestionOptionsValid(current: ExerciseDetail, payload: TPublicApiUpdateCourseExercise) {
   const currentById = new Map((current.questions ?? []).map((question) => [Number(question.id), question]));
 
@@ -211,9 +214,12 @@ function assertEditedQuestionOptionsValid(current: ExerciseDetail, payload: TPub
 
     const sent = question.options ?? [];
     const sentIds = new Set(sent.map((option) => option.id));
+    const storedById = new Map(existing.options.map((option) => [Number(option.id), option]));
     const merged = [
       ...existing.options.filter((option) => !sentIds.has(Number(option.id))),
-      ...sent.filter((option) => !option.delete)
+      ...sent
+        .filter((option) => !option.delete)
+        .map((option) => ({ isCorrect: option.isCorrect ?? storedById.get(option.id ?? -1)?.isCorrect }))
     ];
     if (merged.length > PUBLIC_API_MAX_QUESTION_OPTIONS) {
       throw new AppError(
@@ -235,36 +241,62 @@ function assertEditedQuestionOptionsValid(current: ExerciseDetail, payload: TPub
   }
 }
 
-// The core diff deletes any option missing from the request, so options the caller left out are sent back unchanged.
+type StoredQuestion = NonNullable<ExerciseDetail['questions']>[number];
+type StoredOption = StoredQuestion['options'][number];
+type InternalQuestion = NonNullable<TExerciseUpdate['questions']>[number];
+type InternalOption = NonNullable<InternalQuestion['options']>[number];
+
+function toStoredSettings(settings: unknown): Record<string, unknown> | undefined {
+  return (settings as Record<string, unknown> | null) ?? undefined;
+}
+
+function toInternalOption(option: StoredOption): InternalOption {
+  return {
+    id: Number(option.id),
+    label: option.label ?? '',
+    isCorrect: option.isCorrect,
+    settings: toStoredSettings(option.settings)
+  };
+}
+
+/**
+ * Turns the public partial update into the full payload the core diff expects. The core diff overwrites every field it
+ * is sent and deletes any option missing from the request, so each field the caller omitted on an existing question or
+ * option is filled in from the stored row, and stored options the caller left out are sent back unchanged.
+ */
 function toInternalUpdate(payload: TPublicApiUpdateCourseExercise, current: ExerciseDetail): TExerciseUpdate {
   const deletedAt = new Date().toISOString();
   const { questions, ...fields } = payload;
-  const currentOptionsByQuestionId = new Map(
-    (current.questions ?? []).map((question) => [Number(question.id), question.options])
-  );
+  const storedQuestionById = new Map((current.questions ?? []).map((question) => [Number(question.id), question]));
 
   return {
     ...fields,
     questions: questions?.map(({ delete: isDeleted, options, ...question }) => {
+      const stored = question.id ? storedQuestionById.get(question.id) : undefined;
+      const storedOptionById = new Map((stored?.options ?? []).map((option) => [Number(option.id), option]));
       const sentOptionIds = new Set((options ?? []).map((option) => option.id));
+
       const keptOptions =
-        question.id && !isDeleted
-          ? (currentOptionsByQuestionId.get(question.id) ?? [])
-              .filter((option) => !sentOptionIds.has(Number(option.id)))
-              .map((option) => ({
-                id: Number(option.id),
-                label: option.label ?? '',
-                isCorrect: option.isCorrect,
-                settings: option.settings ?? undefined
-              }))
+        stored && !isDeleted
+          ? stored.options.filter((option) => !sentOptionIds.has(Number(option.id))).map(toInternalOption)
           : [];
-      const sentOptions = options?.map(({ delete: isOptionDeleted, ...option }) => ({
-        ...option,
-        deletedAt: isOptionDeleted ? deletedAt : undefined
-      }));
+      const sentOptions = options?.map(({ delete: isOptionDeleted, ...option }): InternalOption => {
+        const storedOption = option.id ? storedOptionById.get(option.id) : undefined;
+
+        return {
+          id: option.id,
+          label: option.label ?? storedOption?.label ?? '',
+          isCorrect: option.isCorrect ?? storedOption?.isCorrect ?? false,
+          settings: option.settings ?? toStoredSettings(storedOption?.settings),
+          deletedAt: isOptionDeleted ? deletedAt : undefined
+        };
+      });
 
       return {
         ...question,
+        question: question.question ?? stored?.title ?? '',
+        points: question.points ?? stored?.points ?? 1,
+        settings: question.settings ?? toStoredSettings(stored?.settings),
         deletedAt: isDeleted ? deletedAt : undefined,
         options: sentOptions || keptOptions.length > 0 ? [...keptOptions, ...(sentOptions ?? [])] : undefined
       };
@@ -400,16 +432,8 @@ export async function notifyCourseExerciseLearnersService(
   return notifyCourseExerciseService(params.courseId, params.exerciseId);
 }
 
-export async function getCourseExerciseNotifyStatusService(
-  orgId: string,
-  actorId: string | null,
-  params: TPublicApiCourseExerciseNotifyParam,
-  query: TPublicApiCourseExerciseNotifyStatusQuery
-) {
-  await assertCourseTeamAccess(orgId, actorId, params.courseId);
-  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
-
-  // Job ids are global to the notifications queue, so check the job is this exercise's notification.
+/** Job ids are global to the notifications queue, so a job id alone does not prove it is this exercise's notification. */
+async function assertNotifyJobBelongsToExercise(params: TPublicApiCourseExerciseNotifyParam) {
   const job = await getQueueJobMeta(QUEUE_NAMES.notifications, params.jobId);
   if (
     !job ||
@@ -419,6 +443,18 @@ export async function getCourseExerciseNotifyStatusService(
   ) {
     throw new AppError('Notification job not found', ErrorCodes.NOT_FOUND, 404);
   }
+}
+
+export async function getCourseExerciseNotifyStatusService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseExerciseNotifyParam,
+  query: TPublicApiCourseExerciseNotifyStatusQuery
+) {
+  await assertCourseTeamAccess(orgId, actorId, params.courseId);
+  await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
+
+  await assertNotifyJobBelongsToExercise(params);
 
   const envelope = await getNotifyCourseExerciseStatusService(params.jobId, query.pollCount);
 

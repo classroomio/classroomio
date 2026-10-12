@@ -500,6 +500,89 @@ describe('updateCourseExerciseService', () => {
   });
 });
 
+describe('updateCourseExerciseService partial edits', () => {
+  const numericExercise = () => {
+    const detail = exerciseDetail() as unknown as {
+      questions: Array<{ settings: unknown; options: Array<{ settings: unknown }> }>;
+    };
+    detail.questions[0].settings = { tolerance: 0.5 };
+    detail.questions[0].options[0].settings = { feedback: 'Right' };
+    return detail as never;
+  };
+
+  const internalQuestion = async (payload: Parameters<typeof updateCourseExerciseService>[3]) => {
+    vi.mocked(updateExerciseService).mockResolvedValue(exerciseDetail());
+    await updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, payload);
+
+    return vi.mocked(updateExerciseService).mock.calls[0][1].questions![0];
+  };
+
+  beforeEach(() => {
+    vi.mocked(getExercise).mockResolvedValue(numericExercise());
+  });
+
+  it('keeps the stored settings when an edit does not send them', async () => {
+    const sent = await internalQuestion({ questions: [{ id: 10, question: 'New title', points: 3 }] });
+
+    expect(sent).toMatchObject({ question: 'New title', points: 3, settings: { tolerance: 0.5 } });
+  });
+
+  it('keeps the stored title and points when an edit sends only the order', async () => {
+    const sent = await internalQuestion({ questions: [{ id: 10, order: 4 }] });
+
+    expect(sent).toMatchObject({ question: 'Pick one', points: 2, order: 4, settings: { tolerance: 0.5 } });
+  });
+
+  it('deletes a question from its id alone', async () => {
+    const sent = await internalQuestion({ questions: [{ id: 10, delete: true }] });
+
+    expect(sent.deletedAt).toEqual(expect.any(String));
+    expect(sent.question).toBe('Pick one');
+  });
+
+  it('keeps the stored label, answer and settings of an option that is only partly sent', async () => {
+    const sent = await internalQuestion({ questions: [{ id: 10, options: [{ id: 100, label: 'Renamed' }] }] });
+
+    expect(sent.options).toEqual([
+      { id: 101, label: 'B', isCorrect: false, settings: {} },
+      { id: 100, label: 'Renamed', isCorrect: true, settings: { feedback: 'Right' }, deletedAt: undefined }
+    ]);
+  });
+
+  it('deletes an option from its id alone', async () => {
+    const sent = await internalQuestion({
+      questions: [
+        {
+          id: 10,
+          options: [
+            { id: 101, delete: true },
+            { label: 'C', isCorrect: false }
+          ]
+        }
+      ]
+    });
+
+    expect(sent.options?.find((option) => option.id === 101)?.deletedAt).toEqual(expect.any(String));
+    expect(sent.options?.find((option) => option.id === 100)).toMatchObject({ label: 'A', isCorrect: true });
+  });
+
+  it('uses the settings the caller sends over the stored ones', async () => {
+    const sent = await internalQuestion({ questions: [{ id: 10, settings: { tolerance: 1 } }] });
+
+    expect(sent.settings).toEqual({ tolerance: 1 });
+  });
+
+  it('judges the option rules on the stored answer when an option edit omits isCorrect', async () => {
+    vi.mocked(updateExerciseService).mockResolvedValue(exerciseDetail());
+
+    await expect(
+      updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+        questions: [{ id: 10, options: [{ id: 100, label: 'Renamed' }] }]
+      })
+    ).resolves.toBeDefined();
+  });
+});
+
 describe('getCourseExerciseService', () => {
   it('returns the exercise with its questions, options and sections', async () => {
     const result = await getCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams);

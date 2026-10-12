@@ -425,9 +425,11 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                   "type": "integer",
                 },
                 "isCorrect": {
+                  "description": "Required for a new option",
                   "type": "boolean",
                 },
                 "label": {
+                  "description": "Required for a new option",
                   "minLength": 1,
                   "type": "string",
                 },
@@ -439,10 +441,6 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                   "type": "object",
                 },
               },
-              "required": [
-                "label",
-                "isCorrect",
-              ],
               "type": "object",
             },
             "maxItems": 50,
@@ -454,11 +452,13 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
             "type": "integer",
           },
           "points": {
+            "description": "Required for a new question",
             "maximum": 9007199254740991,
             "minimum": 1,
             "type": "integer",
           },
           "question": {
+            "description": "Required for a new question",
             "minLength": 1,
             "type": "string",
           },
@@ -530,10 +530,6 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
             "type": "object",
           },
         },
-        "required": [
-          "question",
-          "points",
-        ],
         "type": "object",
       },
       "maxItems": 200,
