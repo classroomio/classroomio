@@ -1,10 +1,11 @@
 import { client } from '$lib/utils/posthog';
+import { getDistinctId } from '$lib/utils/posthog/distinct-id';
 
 export const prerender = false;
 
 export const load = async ({ request }) => {
   client.capture({
-    distinctId: request.headers.get('x-forwarded-for') || new Date().getTime().toString(),
+    distinctId: getDistinctId(request),
     event: 'privacy policy page visited'
   });
 

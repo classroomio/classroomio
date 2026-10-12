@@ -133,7 +133,7 @@ We use third-party tools and subprocessors to operate our services and store or 
 - Payment and subscription providers
 - Authentication and security providers
 - AI model, transcription, and content-processing providers
-- **PostHog** (product analytics where implemented in our applications)
+- **PostHog** (product analytics and session replay in our applications and on our marketing site; form inputs are masked)
 - **Umami** (privacy-focused website analytics on our marketing site)
 
 This list may change as we update our vendors; material changes will be reflected in this Policy when practical.
