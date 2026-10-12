@@ -24,6 +24,7 @@
     "start:media-transcribe": "node dist/workers/media-transcribe.js",
     "start:activity-package": "node dist/workers/activity-package.js",
     "test": "vitest run",
+    "bench:scorm-500mb": "node scripts/bench-scorm-500mb.mjs",
     "start:emails": "node dist/workers/emails.js",
     "start:notifications": "node dist/workers/notifications.js",
     "start:maintenance": "node dist/workers/maintenance.js",

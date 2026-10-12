@@ -8,6 +8,8 @@ Hand-written fixtures are original works for this repository. Third-party packag
 - `scorm2004-three-modules.zip` — three 2004 modules, the quiz graded at 0.8.
 - `scorm12-quiz-mastery.zip` — 1.2 quiz with `adlcp:masteryscore` 80 that never sets a status.
 - `streamed-launcher.zip` — launcher that frames vendor content from a second origin.
+- `vendor-storyline-style.zip` — synthetic Storyline-shaped 1.2 quiz (`index_lms.html` entry point, `adlcp:masteryscore` 80, stub MP4) that exercises vendor launch filenames without proprietary exports.
+- `vendor-rise-style.zip` — synthetic Rise-shaped 2004 lesson (`indexapi.html` entry point, many small stub assets) that exercises multi-file layouts without proprietary exports.
 - `reject-external-launch.zip` — SCO whose launch URL is absolute `https://`; import must reject it.
 - `reject-assets-only.zip` — manifest with only `asset` resources; import must reject it.
 

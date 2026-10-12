@@ -12,6 +12,8 @@ const packages = [
   'scorm2004-three-modules',
   'scorm12-quiz-mastery',
   'streamed-launcher',
+  'vendor-storyline-style',
+  'vendor-rise-style',
   'reject-external-launch',
   'reject-assets-only'
 ];

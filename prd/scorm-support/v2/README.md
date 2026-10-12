@@ -411,7 +411,7 @@ Learner browser
               └─ optional: vendor frames or requests, for packages that stream content
 
 Activity page ──/proxy, session──▶ API: POST /course/:courseId/activity/:activityId/launch (one module per launch)
-Player ──launch token──▶ content host: /activity/scorm/runtime/{launchToken}/state, /commit
+Player ──launch token──▶ content host: /activity/scorm/runtime/{launchToken}/state, /commit, /event
 Package ──content token──▶ content host: /activity/content/{contentToken}/*
 
 Cloud: content host → tenant-router Worker → edge cache → R2 for files; API upstream for player and run-time
@@ -1118,6 +1118,7 @@ Course-scoped activity routes live with lessons and exercises in the course doma
 | GET | `/activity/content/:contentToken/*` | Content | Token | Package files with Range and caching |
 | GET | `/activity/scorm/runtime/:launchToken/state` | Content | Token | Saved CMI and launch data |
 | POST | `/activity/scorm/runtime/:launchToken/commit` | Content | Token | Save a numbered commit (JSON, or `text/plain` beacon) |
+| POST | `/activity/scorm/runtime/:launchToken/event` | Content | Token | Record player-observed diagnostic events (`initialize`, `not_initialized`, `error`) |
 
 - `POST /course` (new course) accepts `format: 'scorm'`, checks the plan or license, and creates the course with one empty SCORM activity in the same transaction. `/activity/courses` does the same with a package already attached.
 - The content routes (`/course/:courseId/content` reorder, update, delete) accept `ACTIVITY` items (map 4.5).
@@ -1126,7 +1127,7 @@ Course-scoped activity routes live with lessons and exercises in the course doma
 
 - `packages/utils/src/validation/activity/`:
   - `activity.ts`: `ZActivityCreate` (`kind`, `sectionId`, `title`), `ZActivityUpdate` (`title`, `instructions`, `isUnlocked`), `ZActivityAttachPackage` (`assetId`), `ZActivityParam`, `ZActivityLaunch` (`unitIdentifier?`, `newAttempt?`).
-  - `scorm.ts`: `ZScormSettings` (`completionRule`, `minScorePercent`, `allowRetakes`, `launchMode`), `ZScormCommit` (`seq`, `cmi`, `terminate`) with element and length limits.
+  - `scorm.ts`: `ZScormSettings` (`completionRule`, `minScorePercent`, `allowRetakes`, `launchMode`), `ZScormCommit` (`seq`, `cmi`, `terminate`) with element and length limits, `ZScormRuntimeEvent` (`kind`, `detail`).
   - `package.ts`: `ZPackageCreate` (`fileName`, `fileSize`, `title`), `ZPackageParam`, `ZPackageVersionParam`, `ZPackageMakeCurrent`.
   - `course.ts`: `ZActivityCoursesCreate` (`assetIds`, 1 to 20; `courseType`, `SELF_PACED` or `COMPLIANCE`; optional `titles` keyed by asset id).
   - `report.ts`: pagination and sort params.
@@ -1143,6 +1144,7 @@ Course-scoped activity routes live with lessons and exercises in the course doma
 - `scorm/sco-attempt.ts`: module tries: get open, lock (attempt first), create, update, list the latest try per module.
 - `scorm/outcome.ts`: `scormTryOutcomeSql` and `scormAttemptRollupSql`.
 - `scorm/report.ts`: summary and learner rows, computed with SQL aggregates over attempts and tries.
+- `scorm/session-event.ts`: record event, list events by learner, delete events older than cutoff.
 - Changes to existing query modules: map § 3.
 
 #### Service Layer
@@ -1152,7 +1154,8 @@ Course-scoped activity routes live with lessons and exercises in the course doma
 - `packages/core/src/services/activity/packages.ts`: package create, process, replace, make current, delete.
 - `packages/core/src/services/activity/courses.ts`: SCORM courses from packages (one transaction per course; every package checked first; the whole request fails if any is not ready or not in the organization).
 - `packages/core/src/services/jobs/activity-package-jobs.ts`: create the `media_job` row and enqueue.
-- `apps/api/src/services/activity/runtime-scorm.ts`: state and commit.
+- `packages/core/src/services/activity/retention.ts`: `runScormRetention` (diagnostic events and unpinned superseded package versions).
+- `apps/api/src/services/activity/runtime-scorm.ts`: state, commit, and player event reporting.
 - `apps/api/src/services/activity/plan.ts`: `assertActivityKindAllowed` implementation (cloud plan, self-hosted license).
 - `apps/api/src/services/course/compliance.ts`: `syncComplianceProgressForMember` (PR 0b).
 - Changes to existing services: map § 4.

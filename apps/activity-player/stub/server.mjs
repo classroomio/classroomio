@@ -27,6 +27,8 @@ const fixtures = {
   'scorm12-minimal': { format: 'scorm12', launch: 'sco.html' },
   'scorm2004-minimal': { format: 'scorm2004', launch: 'sco.html' },
   'scorm12-quiz-mastery': { format: 'scorm12', launch: 'quiz.html' },
+  'vendor-storyline-style': { format: 'scorm12', launch: 'index_lms.html' },
+  'vendor-rise-style': { format: 'scorm2004', launch: 'indexapi.html' },
   'scorm2004-three-modules': {
     format: 'scorm2004',
     launch: 'module1.html',

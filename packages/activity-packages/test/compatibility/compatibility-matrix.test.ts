@@ -228,6 +228,33 @@ describe('compatibility matrix: hand-written fixtures', () => {
     expect(launcher).toContain('127.0.0.1:3003');
   });
 
+  it('parses the Storyline-shaped 1.2 package through its index_lms entry point', () => {
+    const parsed = parseScormManifest(readSource('vendor-storyline-style'), ['index_lms.html', 'media/intro.mp4']);
+
+    expect(parsed.format).toBe('scorm12');
+    expect(parsed.units).toHaveLength(1);
+    expect(parsed.units[0]).toMatchObject({ unitType: 'sco', href: 'index_lms.html', masteryScore: 80 });
+  });
+
+  it('parses the Rise-shaped 2004 package through its indexapi entry point', () => {
+    const names = [
+      'indexapi.html',
+      'assets/app-01.js',
+      'assets/theme-01.css',
+      'assets/content-01.json',
+      'assets/font-01.woff2',
+      'assets/image-01.png',
+      'assets/captions-01.vtt',
+      'assets/clip-01.mp4'
+    ];
+    const parsed = parseScormManifest(readSource('vendor-rise-style'), names);
+
+    expect(parsed.format).toBe('scorm2004_4');
+    expect(parsed.units).toHaveLength(1);
+    expect(parsed.units[0]).toMatchObject({ unitType: 'sco', href: 'indexapi.html' });
+    expect(parsed.warnings).not.toContain('has_sequencing');
+  });
+
   it('rejects an absolute launch URL and an assets-only manifest', () => {
     try {
       parseScormManifest(readSource('reject-external-launch'), ['sco.html']);
@@ -253,7 +280,11 @@ describe('compatibility matrix: hand-written fixtures', () => {
 describe('compatibility matrix: Rustici golf examples', () => {
   const golfZips = readdirSync(fixturesDir).filter(
     (name) =>
-      name.endsWith('.zip') && !name.startsWith('scorm') && !name.startsWith('reject') && !name.startsWith('streamed')
+      name.endsWith('.zip') &&
+      !name.startsWith('scorm') &&
+      !name.startsWith('reject') &&
+      !name.startsWith('streamed') &&
+      !name.startsWith('vendor-')
   );
 
   it('ships the multi-edition golf set committed for CI', () => {

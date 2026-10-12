@@ -69,4 +69,21 @@ test.describe('scorm compatibility matrix against the stub content origin', () =
   test('1.2 mastery fixture boots without the package setting a status', async ({ page }) => {
     await bootFixture(page, origin, 'stub-scorm12-quiz-mastery');
   });
+
+  test('Storyline-style fixture initializes and commits through index_lms', async ({ page }) => {
+    const { playerFrame } = await bootFixture(page, origin, 'stub-vendor-storyline-style');
+    const scoFrame = playerFrame.frameLocator('#package-frame');
+
+    await scoFrame.getByRole('button', { name: 'Initialize' }).click();
+    await expect(scoFrame.locator('#log')).toContainText('LMSInitialize -> true');
+
+    await scoFrame.getByRole('button', { name: 'Commit' }).click();
+
+    const commits = await page.request.get(`${origin}/stub/commits`);
+    expect(commits.ok()).toBe(true);
+  });
+
+  test('Rise-style fixture reports ready through indexapi', async ({ page }) => {
+    await bootFixture(page, origin, 'stub-vendor-rise-style');
+  });
 });

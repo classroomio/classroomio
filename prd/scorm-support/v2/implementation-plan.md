@@ -302,7 +302,7 @@ Nothing in this phase lets a production user create an activity. Tests insert `c
 
 ### PR 14 · Diagnostics
 
-- Write `scorm_session_event` rows for launch, initialize, commit, terminate, beacon, errors and “did not connect”.
+- Write `scorm_session_event` rows for launch, initialize, commit, terminate, beacon, errors and “did not connect” (server-derived on launch/commit/beacon, and player-reported via `POST /activity/scorm/runtime/:launchToken/event`).
 - Show them in the student sheet.
 - Delete events older than 90 days and unpinned package versions 30 days after replacement in `apps/jobs/src/workers/maintenance.ts`.
 

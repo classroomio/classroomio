@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Rise-style lesson</title>
+    <link rel="stylesheet" href="assets/theme-01.css" />
+  </head>
+  <body>
+    <h1>Rise-style lesson</h1>
+    <div class="row">
+      <button id="btn-init">Initialize</button>
+      <button id="btn-term">Terminate</button>
+      <button id="btn-commit">Commit</button>
+    </div>
+    <h2>Log</h2>
+    <div id="log" aria-live="polite"></div>
+    <script src="assets/app-01.js"></script>
+    <script>
+      function findApi(win) {
+        while (win) {
+          if (win.API_1484_11 && win.API_1484_11.Initialize) return win.API_1484_11;
+          if (win.parent === win) return null;
+          win = win.parent;
+        }
+        return null;
+      }
+      var api = null;
+      var logEl = document.getElementById('log');
+      function log(msg) {
+        logEl.textContent += msg + '\n';
+      }
+      document.getElementById('btn-init').onclick = function () {
+        api = findApi(window);
+        if (!api) {
+          log('no API found');
+          return;
+        }
+        log('Initialize -> ' + api.Initialize(''));
+      };
+      document.getElementById('btn-term').onclick = function () {
+        log('Terminate -> ' + api.Terminate(''));
+      };
+      document.getElementById('btn-commit').onclick = function () {
+        log('Commit -> ' + api.Commit(''));
+      };
+    </script>
+  </body>
+</html>
