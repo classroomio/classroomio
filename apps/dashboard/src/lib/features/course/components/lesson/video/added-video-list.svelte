@@ -7,6 +7,7 @@
   import { lessonApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { LessonVideoType } from './video-card-utils';
+  import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
 
   interface Props {
     type: LessonVideoType;
@@ -33,6 +34,46 @@
   function handleRemove(index: number) {
     lessonApi.deleteLessonVideo(index);
   }
+
+  const POLL_INTERVAL_MS = 10_000;
+
+  let statusLessonId = $state('');
+  let pollTimer: ReturnType<typeof setInterval> | undefined;
+
+  function isEncoding() {
+    return Object.values(lessonApi.videoHlsStatuses).some((status) => status === 'pending' || status === 'converting');
+  }
+
+  function stopPolling() {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = undefined;
+    }
+  }
+
+  async function refreshStatuses(courseId: string, lessonId: string) {
+    await lessonApi.getVideoStatuses(courseId, lessonId);
+
+    // Encoding runs for minutes, so keep checking until nothing is in flight —
+    // then stop, rather than polling an idle lesson forever.
+    if (!isEncoding()) {
+      stopPolling();
+      return;
+    }
+
+    pollTimer ??= setInterval(() => void refreshStatuses(courseId, lessonId), POLL_INTERVAL_MS);
+  }
+
+  $effect(() => {
+    const lessonId = lessonApi.lesson?.id;
+    const courseId = lessonApi.lesson?.courseId;
+    if (!lessonId || !courseId || lessonId === statusLessonId) return;
+
+    statusLessonId = lessonId;
+    void refreshStatuses(courseId, lessonId);
+
+    return stopPolling;
+  });
 </script>
 
 <p class="mt-4 pl-2 text-sm">
@@ -50,6 +91,9 @@
       >
         <span class="truncate">{video.fileName || video.link}</span>
       </Badge>
+      {#if video.assetId}
+        <VideoHlsStatusBadge status={lessonApi.videoHlsStatuses[video.assetId]} />
+      {/if}
       <IconButton
         class="shrink-0"
         onclick={() => handleCopy(video.link)}

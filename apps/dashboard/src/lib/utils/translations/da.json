@@ -2588,7 +2588,16 @@
               "loading": "Indlæser video...",
               "playback_auth_error": "Din session udløb. Log venligst ind igen for at se denne video.",
               "playback_auth_action": "Log ind",
-              "vimeo_link": "Vimeo-link"
+              "vimeo_link": "Vimeo-link",
+              "hls_status": {
+                "pending": "Sat i kø til kodning",
+                "converting": "Kodning for jævn afspilning",
+                "ready": "Klar til alle forbindelser",
+                "failed": "Kodning mislykkedes",
+                "skipped": "Afspilles som uploadet",
+                "failed_hint": "Videoen afspilles stadig, men kun i dens originale kvalitet.",
+                "skipped_hint": "Adaptiv kodning er ikke aktiveret, så den afspilles i dens originale kvalitet."
+              }
             },
             "slide": {
               "title": "Dias",

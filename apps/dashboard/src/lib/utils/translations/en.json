@@ -2926,6 +2926,15 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Previous video transcript",
                 "next_video": "Next video transcript"
+              },
+              "hls_status": {
+                "pending": "Queued for encoding",
+                "converting": "Encoding for smooth playback",
+                "ready": "Ready for all connections",
+                "failed": "Encoding failed",
+                "skipped": "Plays as uploaded",
+                "failed_hint": "The video still plays, but only at its original quality.",
+                "skipped_hint": "Adaptive encoding is not enabled, so this plays at its original quality."
               }
             },
             "document": {

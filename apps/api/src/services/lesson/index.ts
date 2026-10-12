@@ -1,2 +1,3 @@
 export * from '@cio/core/services/lesson/lesson';
 export * from './recording';
+export * from './video-status';

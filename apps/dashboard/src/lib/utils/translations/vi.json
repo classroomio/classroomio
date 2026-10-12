@@ -2588,7 +2588,16 @@
               "loading": "Đang tải video…",
               "playback_auth_error": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại để xem video này.",
               "playback_auth_action": "Đăng nhập",
-              "vimeo_link": "Liên kết Vimeo"
+              "vimeo_link": "Liên kết Vimeo",
+              "hls_status": {
+                "pending": "Đang chờ mã hóa",
+                "converting": "Đang mã hóa để phát lại mượt mà",
+                "ready": "Sẵn sàng cho tất cả các kết nối",
+                "failed": "Mã hóa thất bại",
+                "skipped": "Phát như đã tải lên",
+                "failed_hint": "Video vẫn phát, nhưng chỉ ở chất lượng gốc.",
+                "skipped_hint": "Tính năng mã hóa thích ứng không được bật, vì vậy video phát ở chất lượng gốc."
+              }
             },
             "slide": {
               "title": "Slide",

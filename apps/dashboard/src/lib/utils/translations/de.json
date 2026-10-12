@@ -2588,7 +2588,16 @@
               "loading": "Video wird geladen…",
               "playback_auth_error": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an, um dieses Video anzusehen.",
               "playback_auth_action": "anmelden",
-              "vimeo_link": "Vimeo-Link"
+              "vimeo_link": "Vimeo-Link",
+              "hls_status": {
+                "pending": "Zur Kodierung in die Warteschlange gestellt",
+                "converting": "Kodierung für flüssige Wiedergabe",
+                "ready": "Bereit für alle Verbindungen",
+                "failed": "Kodierung fehlgeschlagen",
+                "skipped": "Wiedergabe wie hochgeladen",
+                "failed_hint": "Das Video wird weiterhin abgespielt, jedoch nur in Originalqualität.",
+                "skipped_hint": "Adaptive Kodierung ist nicht aktiviert, daher wird das Video in Originalqualität wiedergegeben."
+              }
             },
             "slide": {
               "title": "Folie",

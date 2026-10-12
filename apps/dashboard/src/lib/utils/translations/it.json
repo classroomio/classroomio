@@ -2926,6 +2926,15 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Trascrizione del video precedente",
                 "next_video": "Prossima trascrizione del video"
+              },
+              "hls_status": {
+                "pending": "In coda per la codifica",
+                "converting": "Codifica per una riproduzione fluida",
+                "ready": "Pronto per tutte le connessioni",
+                "failed": "Codifica non riuscita",
+                "skipped": "Riproduzione come caricato",
+                "failed_hint": "Il video viene riprodotto, ma solo alla qualità originale.",
+                "skipped_hint": "La codifica adattiva non è abilitata, quindi il video viene riprodotto alla qualità originale."
               }
             },
             "document": {

@@ -2588,7 +2588,16 @@
               "loading": "Cargando vídeo…",
               "playback_auth_error": "Tu sesión expiró. Inicie sesión nuevamente para ver este video.",
               "playback_auth_action": "Iniciar sesión",
-              "vimeo_link": "Enlace de Vimeo"
+              "vimeo_link": "Enlace de Vimeo",
+              "hls_status": {
+                "pending": "En cola para codificación",
+                "converting": "Codificando para una reproducción fluida",
+                "ready": "Listo para todas las conexiones",
+                "failed": "Error de codificación",
+                "skipped": "Se reproduce tal como se subió",
+                "failed_hint": "El video se reproduce, pero solo con su calidad original.",
+                "skipped_hint": "La codificación adaptativa no está habilitada, por lo que se reproduce con su calidad original."
+              }
             },
             "slide": {
               "title": "Diapositiva",
