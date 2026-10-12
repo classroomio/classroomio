@@ -29,12 +29,15 @@ import type {
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseMember,
   TPublicApiAddCourseToCohort,
+  TPublicApiAssignAudienceCourses,
   TPublicApiAssignStudentsToCohort,
+  TPublicApiAudienceQuery,
   TPublicApiCertificateFileFormat,
   TPublicApiCohortNewsfeedQuery,
   TPublicApiCourseInvitesQuery,
   TPublicApiCourseMemberAnalyticsQuery,
   TPublicApiCourseMembersQuery,
+  TPublicApiCreateAudience,
   TPublicApiCreateCohort,
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
@@ -45,12 +48,15 @@ import type {
   TPublicApiPaginationQuery,
   TPublicApiSetCohortInviteLinkRevoked,
   TPublicApiSetCohortReaction,
+  TPublicApiTeamQuery,
+  TPublicApiUpdateAudience,
   TPublicApiUpdateCohort,
   TPublicApiUpdateCohortGoal,
   TPublicApiUpdateCohortMember,
   TPublicApiUpdateCohortNewsfeed,
   TPublicApiUpdateCourseCertificate,
-  TPublicApiUpdateCourseMember
+  TPublicApiUpdateCourseMember,
+  TPublicApiUpdateTeamMember
 } from '@cio/utils/validation/public-api';
 
 type ApiSuccess<T> = {
@@ -286,6 +292,52 @@ export class ClassroomIoApiClient {
     const mimeType = response.headers.get('content-type') ?? 'application/octet-stream';
 
     return { base64: bytes.toString('base64'), mimeType };
+  }
+
+  // ─── Audience (public API) ──────────────────────────────────────────────
+
+  async listAudienceMembers(query: Partial<TPublicApiAudienceQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined && value !== '') searchParams.set(key, String(value));
+    }
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/public-api/v1/audience${querySuffix}`, { method: 'GET' });
+  }
+
+  async addAudienceMember(payload: TPublicApiCreateAudience) {
+    return this.request('/public-api/v1/audience', { method: 'POST', body: payload });
+  }
+
+  async assignAudienceCourses(payload: TPublicApiAssignAudienceCourses) {
+    return this.request('/public-api/v1/audience/assign-courses', { method: 'POST', body: payload });
+  }
+
+  async getAudienceMember(memberId: number) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'GET' });
+  }
+
+  async updateAudienceMember(memberId: number, payload: TPublicApiUpdateAudience) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'PUT', body: payload });
+  }
+
+  async removeAudienceMember(memberId: number) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'DELETE' });
+  }
+
+  // ─── Team (public API) ──────────────────────────────────────────────────
+
+  async listTeamMembers(query: Partial<TPublicApiTeamQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/team${toPageQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getTeamMember(memberId: number) {
+    return this.request(`/public-api/v1/team/${memberId}`, { method: 'GET' });
+  }
+
+  async updateTeamMember(memberId: number, payload: TPublicApiUpdateTeamMember) {
+    return this.request(`/public-api/v1/team/${memberId}`, { method: 'PUT', body: payload });
   }
 
   // ─── Course Members (public API) ────────────────────────────────────────

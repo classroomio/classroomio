@@ -20,6 +20,10 @@ export const ZOrganizationApiKeyScope = z.enum([
   'course:certificate:read',
   'course:certificate:write',
   'analytics:read',
+  'audience:read',
+  'audience:write',
+  'team:read',
+  'team:write',
   'public_api:*'
 ]);
 export type TOrganizationApiKeyScope = z.infer<typeof ZOrganizationApiKeyScope>;

@@ -231,7 +231,7 @@ Cohort tools:
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
 
-Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these, the course member, invite, and certificate tools, and analytics (below), MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
+Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these, the course member, invite, and certificate tools, and the analytics, audience, and team tools (below), MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
 
 - Reading a cohort needs them to be a member of the cohort or an org admin.
 - Changing a cohort, its members, courses, posts, or goals, inviting students, managing the join link, and re-evaluating goals need them to be a cohort tutor/admin or an org admin.
@@ -261,6 +261,26 @@ Analytics tools are read-only and cost no credits. They need the key's `analytic
 `get_org_analytics` returns only the sections you ask for in `include` (default `overview`): `overview`, `traffic`, `countries`, `funnel`, `courseTypes`, `topCourses`, `loginActivity`, `compliance`. `get_course_analytics` takes `summary` and `funnel` (default `summary`). Both take `days` (7, 30, 90 or 365; default 30), and `get_org_analytics` takes `limit` (1-20, default 5) for its list sections.
 
 Each section is cached for up to 10 minutes (login activity: 24 hours), and `meta.generatedAt` says when the oldest one was computed. `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50.
+
+Audience and team tools:
+
+- `list_audience_members`
+- `get_audience_member`
+- `add_audience_member`
+- `assign_audience_courses`
+- `update_audience_member`
+- `remove_audience_member`
+- `list_team_members`
+- `get_team_member`
+- `update_team_member`
+
+These call the public API and need the key's `audience:read` / `audience:write` and `team:read` / `team:write` scopes, which MCP keys have by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. They act as the person who created the key:
+
+- Every audience and team tool needs the key creator to be an org admin, the same as the dashboard's Audience and Team settings pages.
+- `update_team_member` switches a member between admin and tutor with `roleId` (1 or 2). The key creator cannot change their own role, and the organization must keep at least one admin.
+- `update_audience_member` and `update_team_member` take `name` to set a joined member's full name. The profile is shared, so the name changes in every organization that person belongs to. Email, password, username and avatar stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
+- `remove_audience_member` deletes the organization membership; the person keeps their account. Inviting and removing team members is not available yet.
+- `list_audience_members` and `list_team_members` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
 
 ## Draft Model
 

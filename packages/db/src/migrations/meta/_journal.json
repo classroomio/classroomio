@@ -232,6 +232,13 @@
       "when": 1791626490131,
       "tag": "0032_early_adopter_claim",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1791804604246,
+      "tag": "0033_mcp_audience_team_scopes",
+      "breakpoints": true
     }
   ]
 }

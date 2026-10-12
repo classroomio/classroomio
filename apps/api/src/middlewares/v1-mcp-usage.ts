@@ -12,6 +12,15 @@ import { MCP_TOOL_CREDIT_COST, type TAutomationUsageCategory, type TMcpToolName 
 type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
+  '/public-api/v1/audience': { GET: 'list_audience_members', POST: 'add_audience_member' },
+  '/public-api/v1/audience/assign-courses': { POST: 'assign_audience_courses' },
+  '/public-api/v1/audience/:memberId': {
+    GET: 'get_audience_member',
+    PUT: 'update_audience_member',
+    DELETE: 'remove_audience_member'
+  },
+  '/public-api/v1/team': { GET: 'list_team_members' },
+  '/public-api/v1/team/:memberId': { GET: 'get_team_member', PUT: 'update_team_member' },
   '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
   '/public-api/v1/courses/:courseId/members/:memberId': {
     GET: 'get_course_member',

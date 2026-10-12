@@ -7,6 +7,8 @@ import { organizationApiKeyHasScopes } from '@api/services/organization/automati
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
 const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
+const AUDIENCE_PATH = /^(?:\/public-api\/v1)?\/audience(?:\/|$)/;
+const TEAM_PATH = /^(?:\/public-api\/v1)?\/team(?:\/|$)/;
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
@@ -14,6 +16,14 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 
   if (COHORT_PATH.test(path)) {
     return isRead ? 'cohort:read' : 'cohort:write';
+  }
+
+  if (AUDIENCE_PATH.test(path)) {
+    return isRead ? 'audience:read' : 'audience:write';
+  }
+
+  if (TEAM_PATH.test(path)) {
+    return isRead ? 'team:read' : 'team:write';
   }
 
   if (ANALYTICS_PATH.test(path) && isRead) {
