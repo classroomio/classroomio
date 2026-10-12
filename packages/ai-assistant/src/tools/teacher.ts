@@ -109,7 +109,7 @@ export const updateLessonContentSchema = {
       .string()
       .min(1)
       .describe(
-        'The full lesson HTML content. Use only: h2, h3, p, ul, ol, li, strong, em, blockquote, code, pre, a. Never use div, span, table, img, iframe, script, or style.'
+        'The full lesson HTML content. Use only: h2, h3, p, ul, ol, li, strong, em, blockquote, code, pre, a, and the callout markup <div data-callout="info|tip|important|warning|highlight" class="cio-callout"><div class="cio-callout-mark" aria-hidden="true" contenteditable="false"></div><div class="cio-callout-body"><p>…</p></div></div>. Never use any other div, or span, table, img, iframe, script, or style.'
       )
   })
 };
