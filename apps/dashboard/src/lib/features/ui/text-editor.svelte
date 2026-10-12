@@ -73,9 +73,9 @@
     aria-hidden="true"
   >
     {#if showToolBar}
-      <div class="ui:bg-muted/50 h-9 shrink-0 border-b border-dashed" />
+      <div class="ui:bg-muted/50 h-9 shrink-0 border-b border-dashed"></div>
     {/if}
-    <div class={cn('ui:bg-muted/50 relative h-full w-full animate-pulse overflow-auto p-4', editorClass)} />
+    <div class={cn('ui:bg-muted/50 relative h-full w-full animate-pulse overflow-auto p-4', editorClass)}></div>
   </div>
 {:then { Editor }}
   <Editor
