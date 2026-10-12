@@ -79,8 +79,13 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
     const rollback = new Error('rollback');
     try {
       await db.transaction(async (tx) => {
-        const [profile] = await tx.select({ id: schema.profile.id }).from(schema.profile).limit(1);
-        if (!profile) throw rollback;
+        const profileId = crypto.randomUUID();
+        const email = `transfer-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
+        await tx.insert(schema.user).values({ id: profileId, name: 'Transfer', email });
+        const [profile] = await tx
+          .insert(schema.profile)
+          .values({ id: profileId, fullname: 'Transfer', username: `transfer-${Date.now()}`, email })
+          .returning({ id: schema.profile.id });
 
         const templateOrg = await createOrganization({ name: `transfer-source-${Date.now()}` }, tx);
         const courseOrg = await createOrganization({ name: `transfer-target-${Date.now()}` }, tx);
@@ -168,7 +173,13 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
     await expect(
       withAssetStorageRollback(() =>
         db.transaction(async (tx) => {
-          const [profile] = await tx.select({ id: schema.profile.id }).from(schema.profile).limit(1);
+          const profileId = crypto.randomUUID();
+          const email = `transfer-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
+          await tx.insert(schema.user).values({ id: profileId, name: 'Transfer', email });
+          const [profile] = await tx
+            .insert(schema.profile)
+            .values({ id: profileId, fullname: 'Transfer', username: `transfer-${Date.now()}`, email })
+            .returning({ id: schema.profile.id });
           const sourceOrg = await createOrganization({ name: `transfer-fail-source-${Date.now()}` }, tx);
           const targetOrg = await createOrganization({ name: `transfer-fail-target-${Date.now()}` }, tx);
           const [video] = await tx
@@ -209,8 +220,13 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
     try {
       await withAssetStorageRollback(() =>
         db.transaction(async (tx) => {
-          const [profile] = await tx.select({ id: schema.profile.id }).from(schema.profile).limit(1);
-          if (!profile) throw rollback;
+          const profileId = crypto.randomUUID();
+          const email = `transfer-${Date.now()}-${Math.floor(Math.random() * 1e6)}@example.com`;
+          await tx.insert(schema.user).values({ id: profileId, name: 'Transfer', email });
+          const [profile] = await tx
+            .insert(schema.profile)
+            .values({ id: profileId, fullname: 'Transfer', username: `transfer-${Date.now()}`, email })
+            .returning({ id: schema.profile.id });
 
           const sourceOrg = await createOrganization({ name: `scorm-source-${Date.now()}` }, tx);
           const targetOrg = await createOrganization({ name: `scorm-target-${Date.now()}` }, tx);

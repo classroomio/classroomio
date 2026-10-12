@@ -62,8 +62,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Setup database (migrate + essential seed data)
-        run: pnpm --filter @cio/db db:setup
+      - name: Run database migrations
+        run: pnpm --filter @cio/db db:migrate
 
       - name: Build and test utils
         run: pnpm --filter @cio/utils^... build && pnpm --filter @cio/utils build && pnpm --filter @cio/utils test
@@ -83,4 +83,6 @@ jobs:
         run: pnpm --filter @cio/api^... build && pnpm --filter @cio/api build
 
       - name: Run API tests
-        run: pnpm --filter @cio/api exec vitest run
+        # Files share one database, so run them sequentially: parallel files
+        # racing the same tables (profiles, members) cause FK flakes.
+        run: pnpm --filter @cio/api exec vitest run --fileParallelism=false
