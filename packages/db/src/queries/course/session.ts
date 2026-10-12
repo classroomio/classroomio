@@ -1,8 +1,9 @@
 import * as schema from '@db/schema';
 
-import { and, eq, gt, inArray, isNotNull, lt } from 'drizzle-orm';
+import { and, eq, gt, inArray, isNotNull, lt, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
+import { DEFAULT_SESSION_DURATION_MINUTES } from '@cio/utils/functions/live-session';
 import { db } from '@db/drizzle';
 
 export type UpcomingSessionReminderRow = {
@@ -157,8 +158,8 @@ export type CourseUpcomingSession = {
 };
 
 /**
- * The next upcoming live session (earliest future lesson with a `callUrl`) for
- * each of the given course ids. Used to show a "Join session" button on /lms.
+ * The live session that is running now or starts next (earliest lesson with a `callUrl` that has not ended yet)
+ * for each of the given course ids. Used to show a "Join session" button on /lms.
  */
 export async function getUpcomingSessionsForCourseIds(
   courseIds: string[]
@@ -166,7 +167,7 @@ export async function getUpcomingSessionsForCourseIds(
   try {
     if (courseIds.length === 0) return new Map();
 
-    const now = new Date().toISOString();
+    const sessionEndsAt = sql`${schema.lesson.lessonAt} + make_interval(mins => coalesce(${schema.lesson.sessionDurationMinutes}, ${DEFAULT_SESSION_DURATION_MINUTES})::int)`;
 
     const rows = await db
       .select({
@@ -184,7 +185,7 @@ export async function getUpcomingSessionsForCourseIds(
           inArray(schema.lesson.courseId, courseIds),
           isNotNull(schema.lesson.callUrl),
           isNotNull(schema.lesson.lessonAt),
-          gt(schema.lesson.lessonAt, now)
+          sql`${sessionEndsAt} > now()`
         )
       )
       .orderBy(schema.lesson.lessonAt);
