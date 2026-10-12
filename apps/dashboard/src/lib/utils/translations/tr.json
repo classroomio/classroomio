@@ -2936,13 +2936,12 @@
                 "next_video": "Sonraki video transkript"
               },
               "hls_status": {
-                "pending": "Kodlama için sıraya alındı",
-                "converting": "Sorunsuz oynatma için kodlama yapılıyor",
-                "ready": "Tüm bağlantılar için hazır",
-                "failed": "Kodlama başarısız oldu",
-                "skipped": "Yüklendiği gibi oynatılıyor",
-                "failed_hint": "Video hala oynatılıyor, ancak yalnızca orijinal kalitesinde.",
-                "skipped_hint": "Uyarlanabilir kodlama etkinleştirilmedi, bu nedenle orijinal kalitesinde oynatılıyor."
+                "encoding": "Kodlama",
+                "ready": "Hazır",
+                "failed": "Başarısız",
+                "skipped": "Kodlanmadı",
+                "failed_hint": "Kodlama başarısız oldu. Video yine de orijinal kalitesinde oynatılıyor.",
+                "skipped_hint": "Uyarlanabilir kodlama kapalı, bu nedenle orijinal kalitesinde oynatılıyor."
               }
             },
             "document": {

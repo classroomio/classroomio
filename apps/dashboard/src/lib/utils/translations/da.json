@@ -2590,13 +2590,12 @@
               "playback_auth_action": "Log ind",
               "vimeo_link": "Vimeo-link",
               "hls_status": {
-                "pending": "Sat i kø til kodning",
-                "converting": "Kodning for jævn afspilning",
-                "ready": "Klar til alle forbindelser",
-                "failed": "Kodning mislykkedes",
-                "skipped": "Afspilles som uploadet",
-                "failed_hint": "Videoen afspilles stadig, men kun i dens originale kvalitet.",
-                "skipped_hint": "Adaptiv kodning er ikke aktiveret, så den afspilles i dens originale kvalitet."
+                "encoding": "Kodning",
+                "ready": "Klar",
+                "failed": "Mislykkedes",
+                "skipped": "Ikke kodet",
+                "failed_hint": "Kodning mislykkedes. Videoen afspilles stadig i original kvalitet.",
+                "skipped_hint": "Adaptiv kodning er slået fra, så dette afspilles i original kvalitet."
               }
             },
             "slide": {

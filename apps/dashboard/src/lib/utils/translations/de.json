@@ -2590,13 +2590,12 @@
               "playback_auth_action": "anmelden",
               "vimeo_link": "Vimeo-Link",
               "hls_status": {
-                "pending": "Zur Kodierung in die Warteschlange gestellt",
-                "converting": "Kodierung für flüssige Wiedergabe",
-                "ready": "Bereit für alle Verbindungen",
-                "failed": "Kodierung fehlgeschlagen",
-                "skipped": "Wiedergabe wie hochgeladen",
-                "failed_hint": "Das Video wird weiterhin abgespielt, jedoch nur in Originalqualität.",
-                "skipped_hint": "Adaptive Kodierung ist nicht aktiviert, daher wird das Video in Originalqualität wiedergegeben."
+                "encoding": "Kodierung",
+                "ready": "Bereit",
+                "failed": "Fehlgeschlagen",
+                "skipped": "Nicht kodiert",
+                "failed_hint": "Kodierung fehlgeschlagen. Das Video wird weiterhin in Originalqualität abgespielt.",
+                "skipped_hint": "Adaptive Kodierung ist deaktiviert, daher wird das Video in Originalqualität wiedergegeben."
               }
             },
             "slide": {

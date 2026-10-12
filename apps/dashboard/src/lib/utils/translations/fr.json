@@ -2590,13 +2590,12 @@
               "playback_auth_action": "Se connecter",
               "vimeo_link": "Lien Vimeo",
               "hls_status": {
-                "pending": "En attente d'encodage",
-                "converting": "Encodage pour une lecture fluide",
-                "ready": "Prêt pour toutes les connexions",
-                "failed": "Échec de l'encodage",
-                "skipped": "Lecture telle que téléchargée",
-                "failed_hint": "La vidéo continue de se lire, mais uniquement en qualité d'origine.",
-                "skipped_hint": "L'encodage adaptatif n'est pas activé ; la vidéo est donc lue en qualité d'origine."
+                "encoding": "Encodage",
+                "ready": "Prêt",
+                "failed": "Échec",
+                "skipped": "Non encodé",
+                "failed_hint": "Échec de l'encodage. La vidéo est lue en qualité originale.",
+                "skipped_hint": "L'encodage adaptatif est désactivé ; la vidéo est donc lue en qualité originale."
               }
             },
             "slide": {

@@ -2590,13 +2590,12 @@
               "playback_auth_action": "Iniciar sesión",
               "vimeo_link": "Enlace de Vimeo",
               "hls_status": {
-                "pending": "En cola para codificación",
-                "converting": "Codificando para una reproducción fluida",
-                "ready": "Listo para todas las conexiones",
-                "failed": "Error de codificación",
-                "skipped": "Se reproduce tal como se subió",
-                "failed_hint": "El video se reproduce, pero solo con su calidad original.",
-                "skipped_hint": "La codificación adaptativa no está habilitada, por lo que se reproduce con su calidad original."
+                "encoding": "Codificación",
+                "ready": "Listo",
+                "failed": "Error",
+                "skipped": "No se ha codificado",
+                "failed_hint": "La codificación falló. El vídeo se reproduce con su calidad original.",
+                "skipped_hint": "La codificación adaptativa está desactivada, por lo que se reproduce con su calidad original."
               }
             },
             "slide": {

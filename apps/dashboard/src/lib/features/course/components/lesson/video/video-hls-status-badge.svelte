@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { Badge } from '@cio/ui/base/badge';
-  import LoaderIcon from '@lucide/svelte/icons/loader-circle';
   import { t } from '$lib/utils/functions/translations';
   import type { LessonVideoHlsStatus } from '$features/course/utils/types';
 
@@ -12,19 +10,22 @@
 
   const BASE_KEY = 'course.navItem.lessons.materials.tabs.video.hls_status';
 
-  const variant = $derived.by(() => {
-    switch (status) {
-      case 'ready':
-        return 'success' as const;
-      case 'converting':
-        return 'warning' as const;
-      case 'failed':
-        return 'destructive' as const;
-      case 'skipped':
-        return 'outline' as const;
-      default:
-        return 'secondary' as const;
-    }
+  const encoding = $derived(status === 'pending' || status === 'converting');
+
+  const label = $derived.by(() => {
+    if (encoding) return `${BASE_KEY}.encoding`;
+    if (status === 'ready') return `${BASE_KEY}.ready`;
+    if (status === 'failed') return `${BASE_KEY}.failed`;
+
+    return `${BASE_KEY}.skipped`;
+  });
+
+  const dotColor = $derived.by(() => {
+    if (encoding) return 'bg-amber-500';
+    if (status === 'ready') return 'bg-emerald-500';
+    if (status === 'failed') return 'bg-red-500';
+
+    return 'ui:bg-muted-foreground';
   });
 
   const hint = $derived(
@@ -35,10 +36,13 @@
 <!-- `none` means the pipeline never ran for this video, which is the normal
      state for an embed or a link. There is nothing to report, so nothing shows. -->
 {#if status && status !== 'none'}
-  <Badge class="shrink-0 gap-1" {variant} title={hint ? $t(hint) : undefined}>
-    {#if status === 'converting' || status === 'pending'}
-      <LoaderIcon size={12} class="animate-spin" />
-    {/if}
-    {$t(`${BASE_KEY}.${status}`)}
-  </Badge>
+  <span class="ui:text-muted-foreground flex shrink-0 items-center gap-1.5 text-xs" title={hint ? $t(hint) : undefined}>
+    <span class="relative flex size-2 shrink-0">
+      {#if encoding}
+        <span class="absolute inline-flex size-full animate-ping rounded-full bg-amber-500 opacity-75"></span>
+      {/if}
+      <span class="relative inline-flex size-2 rounded-full {dotColor}"></span>
+    </span>
+    {$t(label)}
+  </span>
 {/if}

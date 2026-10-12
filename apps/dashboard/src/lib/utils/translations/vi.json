@@ -2590,13 +2590,12 @@
               "playback_auth_action": "Đăng nhập",
               "vimeo_link": "Liên kết Vimeo",
               "hls_status": {
-                "pending": "Đang chờ mã hóa",
-                "converting": "Đang mã hóa để phát lại mượt mà",
-                "ready": "Sẵn sàng cho tất cả các kết nối",
-                "failed": "Mã hóa thất bại",
-                "skipped": "Phát như đã tải lên",
-                "failed_hint": "Video vẫn phát, nhưng chỉ ở chất lượng gốc.",
-                "skipped_hint": "Tính năng mã hóa thích ứng không được bật, vì vậy video phát ở chất lượng gốc."
+                "encoding": "Đang mã hóa",
+                "ready": "Sẵn sàng",
+                "failed": "Thất bại",
+                "skipped": "Chưa được mã hóa",
+                "failed_hint": "Mã hóa thất bại. Video vẫn phát ở chất lượng gốc.",
+                "skipped_hint": "Mã hóa thích ứng đã tắt, vì vậy video phát ở chất lượng gốc."
               }
             },
             "slide": {
