@@ -35,18 +35,30 @@ rather than average.
 
 ## Deploying
 
+One-time setup. `--build-only --push` rather than a plain deploy: the app has no
+services and nothing listens, so a deploy would wait on a health check that
+never arrives. Only the image needs publishing — the dispatcher boots machines
+from it per job.
+
 ```bash
 fly apps create classroomio-encoder
-fly deploy --config apps/encoder/fly.toml --dockerfile apps/encoder/Dockerfile .
+fly deploy --config apps/encoder/fly.toml --dockerfile apps/encoder/Dockerfile \
+           --build-only --push --image-label latest .
+fly tokens create deploy -a classroomio-encoder   # FLY_API_TOKEN for the jobs service
 ```
 
-Then point the dispatcher at the published image:
+CI republishes `registry.fly.io/<app>:latest` on every change under
+`apps/encoder/` (`.github/workflows/publish-encoder.yml`, needs a `FLY_API_TOKEN`
+repository secret). The dispatcher defaults to that tag, so shipping an encoder
+change is a merge to main — nothing downstream is reconfigured, because the
+dispatcher always boots that tag.
+
+Then point the dispatcher at the app:
 
 ```bash
 # on the jobs service
 FLY_API_TOKEN=...            # a deploy token for this app
 FLY_APP_NAME=classroomio-encoder
-FLY_ENCODER_IMAGE=registry.fly.io/classroomio-encoder:deployment-...
 FLY_ENCODER_REGION=iad
 ENCODER_CALLBACK_API_URL=https://api.classroomio.com
 HLS_SIGNING_SECRET=...       # must match the API's value
@@ -60,6 +72,5 @@ That is why the source-size ceiling is configured here and not in `fly.toml`.
 `HLS_SIGNING_SECRET` is already used for playback cookies. The dispatcher signs
 job tokens with it and the API verifies them, so both sides must agree.
 
-With `FLY_API_TOKEN`, `FLY_APP_NAME`, `FLY_ENCODER_IMAGE` or
-`ENCODER_CALLBACK_API_URL` unset, dispatch is skipped and assets are marked
+With `FLY_API_TOKEN`, `FLY_APP_NAME` or `ENCODER_CALLBACK_API_URL` unset, dispatch is skipped and assets are marked
 `skipped` rather than queueing behind an encoder that does not exist.

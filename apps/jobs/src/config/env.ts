@@ -38,7 +38,6 @@ const envSchema = z.object({
    */
   FLY_API_TOKEN: z.string().optional(),
   FLY_APP_NAME: z.string().optional(),
-  FLY_ENCODER_IMAGE: z.string().optional(),
   FLY_ENCODER_REGION: z.string().optional(),
   FLY_ENCODER_MACHINE_CPUS: z.string().optional(),
   FLY_ENCODER_MACHINE_MEMORY_MB: z.string().optional(),

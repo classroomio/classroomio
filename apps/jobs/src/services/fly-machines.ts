@@ -22,8 +22,17 @@ function buildMachineEnv(jobEnv: EncoderJobEnvironment): Record<string, string> 
   return maxSourceBytes ? { ...jobEnv, CIO_MAX_SOURCE_BYTES: maxSourceBytes } : { ...jobEnv };
 }
 
+/**
+ * Image the per-job machine boots. CI republishes this tag on every change to
+ * apps/encoder, so shipping the encoder is a merge to main and nothing
+ * downstream is reconfigured.
+ */
+function encoderImage(): string {
+  return `registry.fly.io/${env.FLY_APP_NAME}:latest`;
+}
+
 export function isFlyEncoderConfigured(): boolean {
-  return Boolean(env.FLY_API_TOKEN && env.FLY_APP_NAME && env.FLY_ENCODER_IMAGE && env.ENCODER_CALLBACK_API_URL);
+  return Boolean(env.FLY_API_TOKEN && env.FLY_APP_NAME && env.ENCODER_CALLBACK_API_URL);
 }
 
 /**
@@ -52,7 +61,7 @@ export async function startEncoderMachine(jobEnv: EncoderJobEnvironment): Promis
       name: `encode-${jobEnv.CIO_ASSET_ID}`.slice(0, 63),
       region: env.FLY_ENCODER_REGION || undefined,
       config: {
-        image: env.FLY_ENCODER_IMAGE,
+        image: encoderImage(),
         env: buildMachineEnv(jobEnv),
         auto_destroy: true,
         restart: { policy: 'no' },
