@@ -11,7 +11,7 @@ Give admins, tutors and executives live learner analytics at three levels (a **c
 Enterprise training teams run many cohorts of learners at once and need to answer, without downloading files:
 
 - Where is each learner right now, and who needs help today?
-- How are scores moving from the pre-assessment, through each module test, to the final?
+- How are scores moving across the exercises in a course, up to the final exam?
 - How do cohorts compare, and how is the whole programme doing?
 
 What exists today falls short:
@@ -29,33 +29,34 @@ The prospect that prompted this runs about 5,000 contract learners in cohorts of
 2. **Presets are data, not components.** Built-in dashboards ship as JSON specs in code. A later builder only persists and edits the same shape.
 3. **Registry, not raw SQL.** Users combine whitelisted metrics, dimensions and filters. The server compiles specs to parameterized SQL and injects tenant and scope filters.
 4. **Live queries with a short cache.** Learner performance is read live from source tables with a 30 to 60 second Redis cache (`cachedRead`). No new rollup tables in v1.
-5. **Assessment roles come from existing settings and position.** The **Final** is the exercise the course already requires for its certificate. **Pre** and **Mod n** are position-based. No schema change (see below).
+5. **Exercises are shown by name, in course order.** There is no pre-assessment or module label. The only special exercise is the **final exam**, which the course already designates for its certificate. No schema change (see below).
 6. **Show only what we can compute.** Where the data is not collected yet, a ticket tracks collecting it, the dashboard does not show the widget, the section here is marked **Blocked by** that ticket, and its implementation items stay commented out until the ticket ships (see Blocked Sections).
 
-## Assessment Roles
+## Exercises and the Final Exam
 
-Each exercise in a course gets a role for analytics. Roles are derived and never stored. The dashboard shows the real exercise title with the role as a label.
+Every score view shows a course's exercises as columns, using the real exercise title, ordered by section `order`, then exercise `order`. There are no generic labels such as "pre" or "module". The names come from the course.
 
-**Final** is explicit, not positional. It is the exercise the course already requires for its certificate:
+The **final exam** is explicit, not positional. It is the exercise the course already requires for its certificate:
 
 - Exercise: `course.certificate.requiredExerciseId`.
 - Pass mark: `course.certificate.exerciseMinScorePercent` (compliance courses fall back to `course.compliance.passingScore`; the default is 100).
-- If a course has no required exercise, it has no Final column and no final-exam pass rate.
-
-**Pre** and **Mod n** are position-based over the remaining exercises, ordered by section `order`, then exercise `order`:
-
-- The first remaining exercise is **Pre**.
-- The rest are **Mod 1, Mod 2, …** in order.
+- It is tagged "Final exam" with its pass mark. If a course has no required exercise, nothing is tagged and there is no final-exam pass rate.
 
 | Case | Rule |
 | --- | --- |
-| Only one exercise besides the Final | It is **Mod 1**. A Pre needs at least two |
-| Exercise reordered or added | Pre and Mod labels shift. Scores stay attached to the same exercise, only the labels move |
+| Exercise reordered or added | Columns follow the new order. Scores stay attached to the same exercise |
 | Locked exercises (`isUnlocked = false`) | Excluded, so cohorts that have not reached them show no empty columns |
-| Cohort with several courses | Roles are computed per course and the score chart groups by course |
 | Score percent | Best completed attempt: `submission.total` over the sum of `question.points`, counting only `gradingState = completed`. This matches how certification checks the final exam (`evaluateFinalExerciseRule`) |
 | Awaiting manual grade | Shown as "awaiting grade", never as zero |
-| Pass | Final uses `exerciseMinScorePercent`. Other exercises use `exercise.passThreshold` when set |
+| Pass | Final exam uses `exerciseMinScorePercent`. Other exercises use `exercise.passThreshold` when set |
+
+## Cohorts with Several Courses
+
+A cohort can have several courses (`cohort_course`), and each course has its own exercises, so one set of score columns cannot cover them. The cohort dashboard has a **course picker**:
+
+- **All courses (default).** KPIs and needs-attention are cohort level. A "Courses in this cohort" table shows learners, average progress, average score, completed, final exam taken and final exam pass rate per course. The learners list has one row per learner and one pair of columns (progress, average score) per course, plus video and classroom attendance, certificate, last login and status.
+- **One course.** The learners list shows that course's exercises as columns, with the final exam tagged. Scores by exercise, learner score progression, the section-by-section scorecard and the hardest questions all switch to that course.
+- **Overdue.** The list shows which course each learner is late on, and filters to the picked course.
 
 ## Current-State Audit
 
@@ -108,8 +109,7 @@ Each exercise in a course gets a role for analytics. Roles are derived and never
   "source": "assessment_result",
   "measures": [{ "metric": "score_pct", "agg": "avg" }],
   "dimensions": ["exercise"],
-  "filters": [{ "field": "exercise_role", "op": "in", "value": ["pre", "module", "final"] }],
-  "time": { "relativeTo": "cohort_start", "bucket": "day" },
+  "filters": [{ "field": "course", "op": "eq", "value": "<courseId>" }],
   "sort": [{ "field": "exercise_order" }],
   "viz": { "type": "line" }
 }
@@ -126,14 +126,15 @@ Badges match the prototype: **Available** (already stored), **Derived** (compute
 | Logged in today | `analytics_login_events` | Available |
 | Average progress, average latest score, completed | `lesson_completion`, `submission` | Derived |
 | Overdue | `cohort_goal_assignment` (`due_date`, status), `course_completion_record.due_date`, `exercise.dueBy` | Derived |
-| Score journey (pre to final, with middle 50% band) | `submission`. Final = the course's required exercise, Pre and Mod by position | Derived |
+| Scores by exercise (course order, with middle 50% band) | `submission`. The final exam is the course's required exercise | Derived |
+| Courses in this cohort (all-courses view) | `lesson_completion`, `submission`, grouped by course | Derived |
 | Progress distribution | `lesson_completion` | Derived |
 | Learner score progression (selected learner vs cohort average) | `submission` | Derived |
 | Section-by-section scorecard (one row per course section: tests, avg score, pass rate, video and classroom attendance) | `submission`, `lesson_video_progress`, `group_attendance`, grouped by `course_section` | Derived |
 | Needs attention, by reason | derived flags | Derived |
 | Hardest questions | `question_answer` | Available |
 | Learners logged in per day | `analytics_login_events` | Available |
-| Learner matrix: search, status, last login, latest score and flag filters, sort, export | all of the above | Derived |
+| Learners: search, status, last login, average score and flag filters, sort, export (per course or all courses) | all of the above | Derived |
 | Overdue list with "send reminder now" | `cohort_goal_assignment`, reminder email | Needs work (manual send action) |
 | Scheduled reports | saved dashboard, scheduler | Needs work |
 | Learning time per day against 5–6 hours | time on lesson | **Blocked by #1299** |
@@ -142,11 +143,11 @@ Badges match the prototype: **Available** (already stored), **Derived** (compute
 
 ### Course
 
-Enrolled, completion rate, average grade, final pass rate (against the course's pass mark), median days to finish (enrolment to completion). Score journey by cohort, final-exam histogram, lesson drop-off, hardest tests, hardest questions, cohorts taking this course.
+Enrolled, completion rate, average grade, final pass rate (against the course's pass mark), median days to finish (enrolment to completion). Scores by exercise with one line per cohort, final-exam histogram, lesson drop-off, hardest tests, hardest questions, cohorts taking this course.
 
 ### Organization
 
-Logged in (7 days), average progress, completions, certificates issued, needs attention. Cohorts at a glance, needs attention by reason, pre vs final by cohort, hiring ramp, courses by completion. Cohorts compared at the same day is **blocked by #1301**, and peak concurrent learners is **blocked by #1299**. Scheduled reports and a read-only executive login need product decisions.
+Logged in (7 days), average progress, completions, certificates issued, needs attention. Cohorts at a glance, needs attention by reason, final exam average by cohort, hiring ramp, courses by completion. Cohorts compared at the same day is **blocked by #1301**, and peak concurrent learners is **blocked by #1299**. Scheduled reports and a read-only executive login need product decisions.
 
 ## Blocked Sections
 
@@ -202,10 +203,10 @@ Phase 2 adds an `insights_dashboard` table (`org_id`, `scope_type`, `definition 
 - [ ] Spec, result and dashboard Zod schemas.
 - [ ] Scope resolver (cohort, course, org) with tenant-isolation tests.
 - [ ] Registry: `learner_course`, `assessment_result`, `activity` sources and about 15 metrics.
-- [ ] Position-based assessment role resolver with edge-case tests.
+- [ ] Exercise ordering (section order, then exercise order) and final-exam resolver (`course.certificate.requiredExerciseId`) with edge-case tests.
 - [ ] Query compiler and `POST /insights/query`, plus preset dashboards endpoint.
 - [ ] Widgets: KPI, line with band, bar and distribution, matrix table, horizontal bar.
-- [ ] Cohort dashboard: KPIs, score journey, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
+- [ ] Cohort dashboard: KPIs, course picker, courses table (all courses), scores by exercise, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
 - [ ] Last-updated indicator and 30 second auto-refresh.
 - [ ] Course dashboard and organization dashboard from the same widgets.
 - [ ] Rollback-sensitive and cache tests, and a seeded 5,000-learner performance check.
@@ -240,7 +241,7 @@ Blocked by #1302 (supervisor of a learner, https://github.com/classroomio/classr
 
 ### Phase 3: extensibility
 
-- [ ] Custom metrics as formulas over registry metrics (for example final minus pre).
+- [ ] Custom metrics as formulas over registry metrics (for example final exam score minus the first exercise score).
 - [ ] Scheduled email digests and threshold alerts.
 - [ ] Read-only share links or a viewer role for executives.
 - [ ] Expose `POST /insights/query` through the public API and MCP.
@@ -249,7 +250,7 @@ Blocked by #1302 (supervisor of a learner, https://github.com/classroomio/classr
 
 1. **Executive access.** Admin account for now, or a read-only viewer role in Phase 3.
 2. **Retakes.** Best completed attempt, as certification does. Confirm whether a "latest attempt" option is needed.
-3. **Needs-attention thresholds.** No login for 2 or more days, latest score under 50%, overdue, video attendance under 60% are placeholders.
+3. **Needs-attention thresholds.** No login for 2 or more days, average score under 50%, overdue, video attendance under 60% are placeholders.
 4. **Blocked sections.** Time tracking (#1299), cohort start date (#1301) and supervisor (#1302) each have their own open questions, tracked in those issues.
 
 ## Success Criteria
