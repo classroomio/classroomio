@@ -35,7 +35,7 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 - If `PUT` retains omitted fields, explicitly document that it is an idempotent merge update, including how `null`, empty objects, and empty strings clear values. Keep the behavior consistent with existing clients.
 - Keep one predictable response shape per endpoint and use the repository's standard success, error, and pagination structures.
 - Decide whether responses contain stored values or effective/defaulted values. Prefer normalized effective values when clients must reproduce dashboard behavior.
-- Use concrete resource schemas in OpenAPI. Avoid generic `{ type: "object" }` item schemas that prevent generated clients from discovering fields and validating responses.
+- Every success response declares the exact shape of `data`, for single items, list items, and mutation results alike. A bare `{ type: "object" }` is not allowed: generated clients cannot discover fields or validate responses from it.
 - Make sensitive list fields intentional and return only the personal data consumers need.
 - Document idempotency, concurrency behavior, pagination limits, filtering, sorting, and error responses in OpenAPI and client docs.
 
@@ -102,7 +102,7 @@ Apply this section when the public API is exposed through MCP or automation keys
 - [ ] Required scopes are minimal, configured, and tested.
 - [ ] Scope migrations do not widen custom keys and are ordered safely with the migration journal.
 - [ ] Public schemas are stable and validate the documented formats.
-- [ ] OpenAPI item schemas describe concrete resources rather than generic objects.
+- [ ] Every success response declares the exact shape of `data`; no bare `{ type: "object" }`.
 - [ ] Defaults and partial-update semantics are documented.
 - [ ] Routes and services are grouped by versioned domain folders.
 - [ ] Security and failure-mode tests are included.
