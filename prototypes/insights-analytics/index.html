@@ -119,7 +119,8 @@ svg .g { stroke: var(--line); stroke-width: 1; }
   <div class="keyrow">
     <span><span class="badge ok">Data available</span> already stored</span>
     <span><span class="badge drv">Derived</span> computed from stored data</span>
-    <span><span class="badge new">Needs work</span> new tracking or a product decision</span>
+    <span><span class="badge new">Needs work</span> a feature still to build</span>
+    <span>Widgets whose data is not collected yet are left out. See the PRD, Blocked Sections.</span>
   </div>
 
   <div class="bar">
@@ -415,7 +416,7 @@ const reuse = () => widget('s12', 'How the same widgets serve every scope', 'ref
   <div class="scroll"><table class="reuse"><thead><tr><th>Widget</th><th>Cohort</th><th>Course</th><th>Organization</th></tr></thead><tbody>
   <tr><td>KPI row</td><td>Learners in this batch</td><td>Learners enrolled in this course</td><td>All students in the org</td></tr>
   <tr><td>Score journey</td><td>Assessments in batch order, one line for the batch</td><td>Course assessments, one line per cohort</td><td>Pre vs final per batch</td></tr>
-  <tr><td>Day-by-day scorecard</td><td>One row per learning day</td><td>Same, across all cohorts</td><td>Batches compared at the same day</td></tr>
+  <tr><td>Day-by-day scorecard</td><td>One row per learning day</td><td>Same, across all cohorts</td><td>Rolled up per batch</td></tr>
   <tr><td>Learner matrix</td><td>One row per learner, one column per assessment</td><td>Same, across all cohorts</td><td>Rolled up: one row per batch</td></tr>
   <tr><td>Needs attention</td><td>Learners below thresholds, with reasons</td><td>Learners stuck in this course</td><td>Counts by reason, per batch</td></tr>
   <tr><td>Hardest questions</td><td>Questions this batch misses most</td><td>Same, across all cohorts</td><td>Questions missed across batches</td></tr>
@@ -425,7 +426,7 @@ const reuse = () => widget('s12', 'How the same widgets serve every scope', 'ref
 /* ---------- Views ---------- */
 const views = {
   cohort() {
-    $('#scopechips').innerHTML = `<span class="chip live"><i></i>Live · updated <b id="age">0s</b> ago · refreshes every 30s</span><span class="chip"><b>Batch 7</b> · US Tax Prep</span><span class="chip">Started Mon 24 Nov · Day 6 of 10</span><span class="chip">Courses: 3</span>`;
+    $('#scopechips').innerHTML = `<span class="chip live"><i></i>Live · updated <b id="age">0s</b> ago · refreshes every 30s</span><span class="chip"><b>Batch 7</b> · US Tax Prep</span><span class="chip">Created Mon 17 Nov</span><span class="chip">Courses: 3</span>`;
     const overdueList = ROSTER.filter((l) => l.overdue).sort((a, b) => b.days - a.days).slice(0, 5);
     const journey = S.journey;
     return `
@@ -433,7 +434,7 @@ const views = {
       { l: 'Logged in today', n: `${S.activeToday} / ${S.n}`, d: `${pct(S.activeToday, S.n)}% of the batch`, t: 'flat', a: 'ok', src: 'analytics_login_events · learner · count' },
       { l: 'Average progress', n: S.avgProgress + '%', d: 'lessons completed / total', t: 'flat', src: 'lesson_completion · progress_pct · avg' },
       { l: 'Average latest score', n: S.avgLatest + '%', d: `+${S.avgLatest - S.avgPre} pts vs pre-assessment`, t: 'up', src: 'submission · score_pct · avg' },
-      { l: 'Overdue', n: S.overdue, d: 'past their deadline, not done', t: S.overdue > 10 ? 'down' : 'flat', src: 'exercise.due_by / course_completion_record.due_date' },
+      { l: 'Overdue', n: S.overdue, d: 'past their deadline, not done', t: S.overdue > 10 ? 'down' : 'flat', src: 'cohort_goal_assignment · status = overdue · count' },
       { l: 'Completed', n: S.done, d: `${pct(S.done, S.n)}% of the batch · ${S.cert} certified`, t: 'flat', src: 'learner_course · status=completed · count' }
     ])}
     <div class="grid">
@@ -446,15 +447,14 @@ const views = {
         ${S.days.map((d) => `<tr><td><b>${d.label}</b>${d.took ? '' : ' <span class="note">in progress</span>'}</td><td class="c">${d.took ? d.took + ' / ' + S.n : '–'}</td><td class="c">${cell(d.avg)}</td><td class="c">${cell(d.pass)}</td><td class="c">${d.vid}%</td><td class="c">${d.cls}%</td></tr>`).join('')}
         </tbody></table></div>`, 'Assumes one course section per learning day. Video attendance is the share of lesson video watched; classroom attendance is the tutor-marked present flag.', 'drv')}
       ${widget('s5', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: S.inactive, c: 'bad' }, { l: 'Latest score under 50%', v: S.low, c: 'bad' }, { l: 'Overdue', v: S.overdue, c: 'warn' }, { l: 'Video attendance under 60%', v: S.lowVideo, c: 'warn' }], S.n, ''), 'A learner can appear under more than one reason. Thresholds are placeholders to agree with the customer.', 'drv')}
-      ${widget('s7', 'Overdue, with reminders', 'table + action', 'exercise.due_by / course_completion_record.due_date · reminder = email to learner (+ supervisor)', `
+      ${widget('s7', 'Overdue, with reminders', 'table + action', 'cohort_goal_assignment · due_date, status = overdue · action: send reminder email to learner', `
         <div class="scroll"><table><thead><tr><th>Learner</th><th>Now at</th><th class="c">Progress</th><th>Last login</th><th></th></tr></thead><tbody>
         ${overdueList.map((l) => `<tr><td><b>${l.name}</b></td><td>${l.lesson}</td><td class="c">${l.progress}%</td><td>${lastLabel(l.days)}</td><td><button class="btn sm remind">Send reminder</button></td></tr>`).join('')}
         </tbody></table></div>
         <div class="chips"><button class="btn" id="remind-all">Remind all ${S.overdue} overdue learners</button></div>`,
-      'Deadline reminders exist for compliance courses today. Copying a supervisor needs a supervisor field on the learner, which the data model does not have.', 'new')}
+      'Cohort goals already email learners on a schedule. "Send reminder" sends one now, which is new. Copying a supervisor is not shown because learners have no supervisor yet.', 'new')}
       ${widget('s5', 'Video watch time per lesson', 'horizontal bar', 'lesson_video_progress · watched_seconds · avg · dimension: lesson', hbars([{ l: 'Intake and filing status', v: 48 }, { l: 'Income types', v: 41 }, { l: 'Deductions', v: 52 }, { l: 'Credits', v: 37 }, { l: 'Schedule C', v: 29 }, { l: 'Review cases', v: 14 }], 60, ' min'), 'Average minutes watched per learner. Cumulative per lesson, so it cannot be split by day.', 'ok')}
       ${questionsWidget('s7')}
-      ${widget('s5', 'Ready for the floor', 'funnel', 'submission + course_certificate_issue + simulation cases', hbars([{ l: 'Finished all modules', v: pct(S.done, S.n) }, { l: 'Passed the final', v: pct(S.finalPassed, S.n) }, { l: 'Certificate issued', v: pct(S.cert, S.n) }, { l: '100+ practice cases', v: pct(S.cases100, S.n) }, { l: 'Ready on all four', v: pct(S.ready, S.n), c: 'good' }]), `Percent of the ${S.n} learners. Certificates and passes exist today. The product has no simulation feature, so practice cases here are exercise submissions counted against a target of 100. That needs a product decision.`, 'new')}
       ${widget('s12', 'Learner matrix', 'table + heat cells + filters', 'lesson_completion + submission + lesson_video_progress + group_attendance · dimension: learner', `
         <div class="tools">
           <input id="q" type="search" placeholder="Search learner by name" aria-label="Search learner by name">
@@ -467,8 +467,8 @@ const views = {
         <div class="scroll"><table><thead><tr><th>Learner</th><th>Progress</th><th>Now at</th>${TESTS.map((t) => `<th class="c">${t}</th>`).join('')}<th>Trend</th><th class="c">Change</th><th class="c">Video</th><th class="c">Classroom</th><th class="c">Certificate</th><th>Last login</th><th>Status</th></tr></thead><tbody id="mx-body"></tbody></table></div>
         <div class="mxfoot"><span id="mx-count" class="note"></span><span class="chips"><button class="btn" id="mx-export">Export CSV</button><button class="btn" id="mx-more">Show 10 more</button></span></div><p class="note" id="mx-msg"></p>`,
       'Click a row to chart that learner above. Search, filters and sort apply to the export too.', 'drv')}
-      ${widget('s7', 'Learners logged in per day', 'bar', 'analytics_login_events · learner · count · dimension: day', columns(S.loggedIn.map((v, i) => ({ l: 'D' + (i + 1), v }))), 'One login row is stored per learner per day, so this counts days with a login, not time in the product.', 'ok')}
-      ${widget('s12', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
+      ${widget('s6', 'Learners logged in per day', 'bar', 'analytics_login_events · learner · count · dimension: day', columns(S.loggedIn.map((v, i) => ({ l: ['24 Nov', '25 Nov', '26 Nov', '27 Nov', '28 Nov', '29 Nov'][i], v }))), 'One login row is stored per learner per day, so this counts days with a login, not time in the product.', 'ok')}
+      ${widget('s6', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
         <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Daily batch summary · 08:00 · CEO, Head of L&amp;D</span><span class="badge new">Planned</span></div>
         <div class="hbar" style="grid-template-columns:1fr auto"><span>Weekly cohort comparison · Mon 09:00 · Management</span><span class="badge new">Planned</span></div></div>`, 'Removes the manual MIS reporting the customer described. Needs a scheduler and email template.', 'new')}
     </div>
@@ -527,21 +527,12 @@ const views = {
     ])}
     <div class="grid">
       ${widget('s8', 'Batches at a glance', 'table + progress', 'lesson_completion + submission · dimension: cohort', `
-        <div class="scroll"><table><thead><tr><th>Batch</th><th>Started</th><th>Stage</th><th class="c">Learners</th><th style="min-width:150px">Progress</th><th class="c">Avg score</th><th class="c">Overdue</th><th>Health</th></tr></thead><tbody>
-        ${batches.map((b) => `<tr><td><b>${b[0]}</b></td><td>${b[1]}</td><td>${b[2]}</td><td class="c">${b[3]}</td><td><div class="hbar" style="grid-template-columns:1fr 38px"><div class="track"><div class="fill" style="width:${b[4]}%"></div></div><span class="v">${b[4]}%</span></div></td><td class="c">${cell(b[5])}</td><td class="c">${b[6]}</td><td><span class="pill ${pill(b[7])[0]}">${pill(b[7])[1]}</span></td></tr>`).join('')}
+        <div class="scroll"><table><thead><tr><th>Batch</th><th>Created</th><th class="c">Learners</th><th style="min-width:150px">Progress</th><th class="c">Avg score</th><th class="c">Overdue</th><th>Health</th></tr></thead><tbody>
+        ${batches.map((b) => `<tr><td><b>${b[0]}</b></td><td>${b[1]}</td><td class="c">${b[3]}</td><td><div class="hbar" style="grid-template-columns:1fr 38px"><div class="track"><div class="fill" style="width:${b[4]}%"></div></div><span class="v">${b[4]}%</span></div></td><td class="c">${cell(b[5])}</td><td class="c">${b[6]}</td><td><span class="pill ${pill(b[7])[0]}">${pill(b[7])[1]}</span></td></tr>`).join('')}
         </tbody></table></div>`, 'Showing 5 of 8 batches. A row opens that batch\'s cohort dashboard. Batch 7 matches the cohort tab.', 'drv')}
       ${widget('s4', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: 41, c: 'bad' }, { l: 'Score under 50%', v: 33, c: 'bad' }, { l: 'Overdue', v: 14, c: 'warn' }, { l: 'Video attendance under 60%', v: 9, c: 'warn' }], 50, ''), null, 'drv')}
-      ${widget('s7', 'Batches compared at the same day', 'table', 'lesson_completion + submission · filter: day N since batch start', `
-        <div class="scroll"><table><thead><tr><th>At Day 6</th><th class="c">Avg progress</th><th class="c">Avg score</th><th class="c">Logged in</th></tr></thead><tbody>
-        <tr><td><b>Batch 7</b> (now)</td><td class="c">${cell(S.avgProgress)}</td><td class="c">${cell(S.avgLatest)}</td><td class="c">${pct(S.activeToday, S.n)}%</td></tr>
-        <tr><td>Batch 6</td><td class="c">${cell(54)}</td><td class="c">${cell(63)}</td><td class="c">95%</td></tr>
-        <tr><td>Batch 5</td><td class="c">${cell(51)}</td><td class="c">${cell(61)}</td><td class="c">92%</td></tr>
-        <tr><td>Batch 4</td><td class="c">${cell(49)}</td><td class="c">${cell(58)}</td><td class="c">90%</td></tr>
-        </tbody></table></div>`, 'Batches start on different days, so comparing them today is unfair. This needs a cohort start date.', 'new')}
       ${widget('s5', 'Pre vs final score by batch', 'horizontal bar', 'submission · score_pct · avg · dimensions: cohort, exercise position', hbars([{ l: 'Batch 4 · pre', v: 35 }, { l: 'Batch 4 · final', v: 69 }, { l: 'Batch 5 · pre', v: 37 }, { l: 'Batch 5 · final', v: 72 }, { l: 'Batch 6 · pre', v: 38 }, { l: 'Batch 6 · final', v: 74 }]), 'Average lift across finished batches: +34 pts.', 'drv')}
       ${widget('s7', 'Hiring ramp vs target', 'line', 'organizationmember · created_at · cumulative · dimension: week', lineChart({ labels: ['3 Nov', '10 Nov', '17 Nov', '24 Nov', '1 Dec', '8 Dec'], series: [{ values: [120, 480, 900, 1320, 1710, 2046], color: 'var(--accent)' }, { values: [2000, 2000, 2000, 2000, 2000, 2000], color: 'var(--muted)', dash: true }], yMax: 5000, yTicks: [0, 1000, 2000, 3000, 4000, 5000], fmt: (v) => v.toLocaleString() }) + legend([{ c: 'var(--accent)', l: 'Enrolled learners' }, { c: 'var(--muted)', l: 'First-wave target' }]), null, 'drv')}
-      ${widget('s5', 'Peak concurrent learners', 'column', 'live session heartbeat · distinct learners · max · dimension: hour', `
-        <div class="gap"><b>Not measured today.</b>The customer's worry is 1,000 learners online at once. Login events are per day, and lessons send no heartbeat, so concurrency cannot be read from the data. The same time-on-lesson tracker would provide it.</div>`, null, 'new')}
       ${widget('s6', 'Courses by completion', 'horizontal bar', 'learner_course · status=completed · rate · dimension: course', hbars([{ l: 'Individual Tax Fundamentals', v: 41 }, { l: 'Schedule C and Self-Employed', v: 33 }, { l: 'Client Communication', v: 88 }, { l: 'Data Security Basics', v: 96 }]), null, 'drv')}
       ${widget('s6', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
         <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Executive summary · weekdays 08:00 · CEO</span><span class="badge new">Planned</span></div>
