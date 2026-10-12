@@ -222,6 +222,7 @@ function mulberry(seedValue) {
   };
 }
 const TESTS = ['Pre', 'Mod 1', 'Mod 2', 'Mod 3', 'Mod 4', 'Mod 5', 'Final'];
+const SECTIONS = ['Intake and filing status', 'Income types', 'Deductions', 'Credits', 'Schedule C', 'Review cases'];
 const LESSONS = ['Intake and filing status', 'Income types', 'Deductions', 'Credits', 'Schedule C', 'Review cases', 'Mock returns'];
 const SEED = [
   ['Rhea Kapoor', [22, 31, 35, 40, null, null, null], 3],
@@ -292,7 +293,7 @@ function computeStats(R) {
     const took = last == null ? [] : R.filter((l) => l.vals[last] != null);
     const scores = took.flatMap((l) => tests.map((t) => l.vals[t]).filter((v) => v != null));
     return {
-      label: 'Day ' + (d + 1), took: took.length, avg: last == null ? null : mean(scores),
+      label: 'Section ' + (d + 1) + ' · ' + SECTIONS[d], took: took.length, avg: last == null ? null : mean(scores),
       pass: last == null ? null : pct(took.filter((l) => l.vals[last] >= 60).length, took.length),
       vid: mean(R.map((l) => l.vidDays[d])), cls: mean(R.map((l) => l.clsDays[d]))
     };
@@ -416,7 +417,7 @@ const reuse = () => widget('s12', 'How the same widgets serve every scope', 'ref
   <div class="scroll"><table class="reuse"><thead><tr><th>Widget</th><th>Cohort</th><th>Course</th><th>Organization</th></tr></thead><tbody>
   <tr><td>KPI row</td><td>Learners in this cohort</td><td>Learners enrolled in this course</td><td>All students in the org</td></tr>
   <tr><td>Score journey</td><td>Assessments in cohort order, one line for the cohort</td><td>Course assessments, one line per cohort</td><td>Pre vs final per cohort</td></tr>
-  <tr><td>Day-by-day scorecard</td><td>One row per learning day</td><td>Same, across all cohorts</td><td>Rolled up per cohort</td></tr>
+  <tr><td>Section-by-section scorecard</td><td>One row per course section</td><td>Same, across all cohorts</td><td>Rolled up per cohort</td></tr>
   <tr><td>Learner matrix</td><td>One row per learner, one column per assessment</td><td>Same, across all cohorts</td><td>Rolled up: one row per cohort</td></tr>
   <tr><td>Needs attention</td><td>Learners below thresholds, with reasons</td><td>Learners stuck in this course</td><td>Counts by reason, per cohort</td></tr>
   <tr><td>Hardest questions</td><td>Questions this cohort misses most</td><td>Same, across all cohorts</td><td>Questions missed across cohorts</td></tr>
@@ -433,7 +434,7 @@ const views = {
     ${kpis([
       { l: 'Logged in today', n: `${S.activeToday} / ${S.n}`, d: `${pct(S.activeToday, S.n)}% of the cohort`, t: 'flat', a: 'ok', src: 'analytics_login_events · learner · count' },
       { l: 'Average progress', n: S.avgProgress + '%', d: 'lessons completed / total', t: 'flat', src: 'lesson_completion · progress_pct · avg' },
-      { l: 'Average latest score', n: S.avgLatest + '%', d: `+${S.avgLatest - S.avgPre} pts vs pre-assessment`, t: 'up', src: 'submission · score_pct · avg' },
+      { l: 'Average latest score', n: S.avgLatest + '%', d: 'latest test taken per learner', t: 'up', src: 'submission · score_pct · avg' },
       { l: 'Overdue', n: S.overdue, d: 'past their deadline, not done', t: S.overdue > 10 ? 'down' : 'flat', src: 'cohort_goal_assignment · status = overdue · count' },
       { l: 'Completed', n: S.done, d: `${pct(S.done, S.n)}% of the cohort · ${S.cert} certified`, t: 'flat', src: 'learner_course · status=completed · count' }
     ])}
@@ -441,11 +442,10 @@ const views = {
       ${widget('s7', 'Score journey, pre-assessment to final', 'line + band', 'submission · score_pct · avg · dimension: exercise (by position)', lineChart({ labels: TESTS, series: [{ values: journey.map((j) => (j ? j.avg : null)), color: 'var(--accent)' }], band: journey.map((j) => (j ? j.band : null)) }) + legend([{ c: 'var(--accent)', l: 'Cohort average' }, { c: 'color-mix(in srgb, var(--accent) 25%, transparent)', l: 'Middle 50% of learners' }]), 'Pre is the first exercise, Final the last, Mod 1 to 5 the ones between. A point appears once a quarter of the cohort has taken that test.', 'drv')}
       ${widget('s5', 'Progress distribution', 'bar', 'lesson_completion · progress_pct · count · bucket: 25', columns([{ l: '0–25', v: S.progressBuckets[0] }, { l: '25–50', v: S.progressBuckets[1] }, { l: '50–75', v: S.progressBuckets[2] }, { l: '75–99', v: S.progressBuckets[3] }, { l: 'Done', v: S.progressBuckets[4] }]), null, 'drv')}
       ${learnerDetail(ROSTER[picked])}
-      ${widget('s4', 'Improvement since pre-assessment', 'horizontal bar', 'submission · score_pct · latest − pre · count · bucket: 10 pts', hbars([{ l: 'Dropped', v: S.gainBuckets[0], c: 'bad' }, { l: '0 to 10 pts', v: S.gainBuckets[1], c: 'warn' }, { l: '10 to 20 pts', v: S.gainBuckets[2] }, { l: '20 to 30 pts', v: S.gainBuckets[3] }, { l: '30+ pts', v: S.gainBuckets[4] }], 100, ''), `Learners per bucket, ${S.n} in total.`, 'drv')}
-      ${widget('s12', 'Day-by-day scorecard', 'table', 'submission + lesson_video_progress + group_attendance · dimension: course_section (order)', `
-        <div class="scroll"><table><thead><tr><th>Learning day</th><th class="c">Tests taken</th><th class="c">Avg score</th><th class="c">Pass rate (60%+)</th><th class="c">Video attendance (self-paced)</th><th class="c">Classroom attendance</th></tr></thead><tbody>
+      ${widget('s12', 'Section-by-section scorecard', 'table', 'submission + lesson_video_progress + group_attendance · dimension: course_section (order)', `
+        <div class="scroll"><table><thead><tr><th>Course section</th><th class="c">Tests taken</th><th class="c">Avg score</th><th class="c">Pass rate</th><th class="c">Video attendance (self-paced)</th><th class="c">Classroom attendance</th></tr></thead><tbody>
         ${S.days.map((d) => `<tr><td><b>${d.label}</b>${d.took ? '' : ' <span class="note">in progress</span>'}</td><td class="c">${d.took ? d.took + ' / ' + S.n : '–'}</td><td class="c">${cell(d.avg)}</td><td class="c">${cell(d.pass)}</td><td class="c">${d.vid}%</td><td class="c">${d.cls}%</td></tr>`).join('')}
-        </tbody></table></div>`, 'Assumes one course section per learning day. Video attendance is the share of lesson video watched; classroom attendance is the tutor-marked present flag.', 'drv')}
+        </tbody></table></div>`, 'Each row is one course section. Video attendance is the share of lesson video watched; classroom attendance is the tutor-marked present flag.', 'drv')}
       ${widget('s5', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: S.inactive, c: 'bad' }, { l: 'Latest score under 50%', v: S.low, c: 'bad' }, { l: 'Overdue', v: S.overdue, c: 'warn' }, { l: 'Video attendance under 60%', v: S.lowVideo, c: 'warn' }], S.n, ''), 'A learner can appear under more than one reason. Thresholds are placeholders to agree with the customer.', 'drv')}
       ${widget('s7', 'Overdue, with reminders', 'table + action', 'cohort_goal_assignment · due_date, status = overdue · action: send reminder email to learner', `
         <div class="scroll"><table><thead><tr><th>Learner</th><th>Now at</th><th class="c">Progress</th><th>Last login</th><th></th></tr></thead><tbody>
@@ -453,8 +453,7 @@ const views = {
         </tbody></table></div>
         <div class="chips"><button class="btn" id="remind-all">Remind all ${S.overdue} overdue learners</button></div>`,
       'Cohort goals already email learners on a schedule. "Send reminder" sends one now, which is new. Copying a supervisor is not shown because learners have no supervisor yet.', 'new')}
-      ${widget('s5', 'Video watch time per lesson', 'horizontal bar', 'lesson_video_progress · watched_seconds · avg · dimension: lesson', hbars([{ l: 'Intake and filing status', v: 48 }, { l: 'Income types', v: 41 }, { l: 'Deductions', v: 52 }, { l: 'Credits', v: 37 }, { l: 'Schedule C', v: 29 }, { l: 'Review cases', v: 14 }], 60, ' min'), 'Average minutes watched per learner. Cumulative per lesson, so it cannot be split by day.', 'ok')}
-      ${questionsWidget('s7')}
+      ${questionsWidget('s12')}
       ${widget('s12', 'Learner matrix', 'table + heat cells + filters', 'lesson_completion + submission + lesson_video_progress + group_attendance · dimension: learner', `
         <div class="tools">
           <input id="q" type="search" placeholder="Search learner by name" aria-label="Search learner by name">

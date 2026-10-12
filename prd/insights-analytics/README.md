@@ -57,8 +57,6 @@ Each exercise in a course gets a role for analytics. Roles are derived and never
 | Awaiting manual grade | Shown as "awaiting grade", never as zero |
 | Pass | Final uses `exerciseMinScorePercent`. Other exercises use `exercise.passThreshold` when set |
 
-"Learning day" is assumed to be one **course section**. This must be confirmed with the customer.
-
 ## Current-State Audit
 
 | Capability | Today | Where |
@@ -129,11 +127,10 @@ Badges match the prototype: **Available** (already stored), **Derived** (compute
 | Average progress, average latest score, completed | `lesson_completion`, `submission` | Derived |
 | Overdue | `cohort_goal_assignment` (`due_date`, status), `course_completion_record.due_date`, `exercise.dueBy` | Derived |
 | Score journey (pre to final, with middle 50% band) | `submission`. Final = the course's required exercise, Pre and Mod by position | Derived |
-| Progress distribution, improvement since pre-assessment | `lesson_completion`, `submission` | Derived |
+| Progress distribution | `lesson_completion` | Derived |
 | Learner score progression (selected learner vs cohort average) | `submission` | Derived |
-| Day-by-day scorecard (tests, avg score, pass rate, video and classroom attendance) | `submission`, `lesson_video_progress`, `group_attendance`, by section | Derived |
+| Section-by-section scorecard (one row per course section: tests, avg score, pass rate, video and classroom attendance) | `submission`, `lesson_video_progress`, `group_attendance`, grouped by `course_section` | Derived |
 | Needs attention, by reason | derived flags | Derived |
-| Video watch time per lesson | `lesson_video_progress` | Available |
 | Hardest questions | `question_answer` | Available |
 | Learners logged in per day | `analytics_login_events` | Available |
 | Learner matrix: search, status, last login, latest score and flag filters, sort, export | all of the above | Derived |
@@ -208,7 +205,7 @@ Phase 2 adds an `insights_dashboard` table (`org_id`, `scope_type`, `definition 
 - [ ] Position-based assessment role resolver with edge-case tests.
 - [ ] Query compiler and `POST /insights/query`, plus preset dashboards endpoint.
 - [ ] Widgets: KPI, line with band, bar and distribution, matrix table, horizontal bar.
-- [ ] Cohort dashboard: KPIs, score journey, progress distribution, learner score progression, improvement, day-by-day scorecard, needs attention, video watch time, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
+- [ ] Cohort dashboard: KPIs, score journey, progress distribution, learner score progression, section-by-section scorecard, needs attention, hardest questions, logged in per day, learner matrix with search, filters, sort and CSV export.
 - [ ] Last-updated indicator and 30 second auto-refresh.
 - [ ] Course dashboard and organization dashboard from the same widgets.
 - [ ] Rollback-sensitive and cache tests, and a seeded 5,000-learner performance check.
@@ -250,11 +247,10 @@ Blocked by #1302 (supervisor of a learner, https://github.com/classroomio/classr
 
 ## Open Decisions
 
-1. **Learning day.** Confirm one course section per learning day.
-2. **Executive access.** Admin account for now, or a read-only viewer role in Phase 3.
-3. **Retakes.** Best completed attempt, as certification does. Confirm whether a "latest attempt" option is needed.
-4. **Needs-attention thresholds.** No login for 2 or more days, latest score under 50%, overdue, video attendance under 60% are placeholders.
-5. **Blocked sections.** Time tracking (#1299), cohort start date (#1301) and supervisor (#1302) each have their own open questions, tracked in those issues.
+1. **Executive access.** Admin account for now, or a read-only viewer role in Phase 3.
+2. **Retakes.** Best completed attempt, as certification does. Confirm whether a "latest attempt" option is needed.
+3. **Needs-attention thresholds.** No login for 2 or more days, latest score under 50%, overdue, video attendance under 60% are placeholders.
+4. **Blocked sections.** Time tracking (#1299), cohort start date (#1301) and supervisor (#1302) each have their own open questions, tracked in those issues.
 
 ## Success Criteria
 
