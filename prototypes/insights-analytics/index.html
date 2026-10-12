@@ -42,6 +42,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px s
 .live i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 6px; }
 .toggle { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: 13px; cursor: pointer; }
 .head { display: flex; flex-direction: column; gap: 4px; }
+#view { display: flex; flex-direction: column; gap: 18px; }
+#top > * + * { margin-top: 12px; }
 .keyrow { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 13px; color: var(--muted); }
 .grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
 .w { grid-column: span 12; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
