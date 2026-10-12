@@ -8,11 +8,11 @@ Give admins, tutors and executives live learner analytics at three levels (a **c
 
 ## Problem Statement
 
-Enterprise training teams run many batches of learners at once and need to answer, without downloading files:
+Enterprise training teams run many cohorts of learners at once and need to answer, without downloading files:
 
 - Where is each learner right now, and who needs help today?
 - How are scores moving from the pre-assessment, through each module test, to the final?
-- How do batches compare, and how is the whole programme doing?
+- How do cohorts compare, and how is the whole programme doing?
 
 What exists today falls short:
 
@@ -21,7 +21,7 @@ What exists today falls short:
 3. **Org analytics is marketing-shaped.** `analytics_org_daily` and `analytics_course_daily` hold views, enrollments and completions as daily counters, not learner performance.
 4. **Every chart is a bespoke component.** Adding a metric means new API, new query and new UI.
 
-The prospect that prompted this runs about 5,000 contract learners in batches of about 250, with several batches running in parallel and starting on different days. Their bar is real-time batch analytics that a CEO can open without downloading anything.
+The prospect that prompted this runs about 5,000 contract learners in cohorts of about 250, with several cohorts running in parallel and starting on different days. Their bar is real-time cohort analytics that a CEO can open without downloading anything.
 
 ## Confirmed Decisions
 
@@ -48,7 +48,7 @@ The dashboard shows the real exercise title with the role as a label. The role i
 | Two exercises | **Pre** and **Final** |
 | Three or more | **Pre**, **Mod 1..n**, **Final** |
 | Exercise reordered or added | Roles shift. Scores stay attached to the same exercise, only the labels move |
-| Locked exercises (`isUnlocked = false`) | Excluded, so batches that have not reached them show no empty columns |
+| Locked exercises (`isUnlocked = false`) | Excluded, so cohorts that have not reached them show no empty columns |
 | Cohort with several courses | Roles are computed per course and the score chart groups by course |
 | Retakes (`allowMultipleAttempts`) | Best attempt by default, latest as a per-widget option |
 
@@ -67,7 +67,6 @@ The dashboard shows the real exercise title with the role as a label. The role i
 | Deadlines and overdue | `cohort_goal_assignment` per learner (`due_date`, status including `at_risk` and `overdue`, completed and required counts), `course_completion_record.due_date` (compliance courses), `exercise.dueBy` | `schema.ts` |
 | Reminders | Cohort goals send scheduled reminder emails to the learner (`runCohortGoalReminderScan`, `reminderDaysBefore`). No supervisor copy (#1302) and no manual "send now" | `apps/api/src/services/cohort/goal.ts` |
 | Supervisor of a learner | **None** (tracked in #1302) | n/a |
-| Practice cases or simulations | **No feature** (tracked in #1303). Cohort goals have `n_of_m` and `readiness` types that count completions | `schema.ts` (`cohort_goal`) |
 | Certificates | `course_certificate_issue` | `schema.ts` |
 | Logins | `analytics_login_events`, one row per user per day | `schema.ts` |
 | Page events | Marketing events only (landing, course page, sign-in, pricing, CTA, enrollment, completion, certificate). **No lesson or exercise events** (tracked in #1299) | `packages/analytics/src/events/taxonomy.ts` |
@@ -78,7 +77,7 @@ The dashboard shows the real exercise title with the role as a label. The role i
 ## Product Goals
 
 1. A cohort dashboard a trainer can use all day: search and filter 250 learners, see each learner's score progression, spot who needs attention.
-2. The same widgets on a course (across its cohorts) and on the organization (across batches).
+2. The same widgets on a course (across its cohorts) and on the organization (across cohorts).
 3. Data fresh enough to call "live", with a visible last-updated indicator.
 4. A path to user-built dashboards without a rewrite.
 5. CSV export of any table with the current filters applied.
@@ -87,7 +86,7 @@ The dashboard shows the real exercise title with the role as a label. The role i
 
 - User-built widgets and dashboards (Phase 2).
 - Custom formula metrics (Phase 3).
-- A simulation or practice-case feature (#1303). The "Ready for the floor" widget waits on it.
+- A simulation or practice-case feature. It is a separate product feature, not part of analytics.
 - Replacing the existing course analytics and compliance pages. They migrate onto presets later.
 
 ## Concepts
@@ -124,7 +123,7 @@ Badges match the prototype: **Available** (already stored), **Derived** (compute
 | Overdue | `cohort_goal_assignment` (`due_date`, status), `course_completion_record.due_date`, `exercise.dueBy` | Derived |
 | Score journey (pre to final, with middle 50% band) | `submission` by exercise position | Derived |
 | Progress distribution, improvement since pre-assessment | `lesson_completion`, `submission` | Derived |
-| Learner score progression (selected learner vs batch average) | `submission` | Derived |
+| Learner score progression (selected learner vs cohort average) | `submission` | Derived |
 | Day-by-day scorecard (tests, avg score, pass rate, video and classroom attendance) | `submission`, `lesson_video_progress`, `group_attendance`, by section | Derived |
 | Needs attention, by reason | derived flags | Derived |
 | Video watch time per lesson | `lesson_video_progress` | Available |
@@ -134,8 +133,7 @@ Badges match the prototype: **Available** (already stored), **Derived** (compute
 | Overdue list with "send reminder now" | `cohort_goal_assignment`, reminder email | Needs work (manual send action) |
 | Scheduled reports | saved dashboard, scheduler | Needs work |
 | Learning time per day against 5–6 hours | time on lesson | **Blocked by #1299** |
-| Day N since batch start (cohort header, daily charts) | `cohort.starts_at` | **Blocked by #1301** |
-| Ready for the floor (modules, final, certificate, practice cases) | practice-case records | **Blocked by #1303** |
+| Day N since cohort start (cohort header, daily charts) | `cohort.starts_at` | **Blocked by #1301** |
 | Supervisor copied on reminders | supervisor of a learner | **Blocked by #1302** |
 
 ### Course
@@ -144,7 +142,7 @@ Enrolled, completion rate, average grade, final pass rate, median days to finish
 
 ### Organization
 
-Logged in (7 days), average progress, completions, certificates issued, needs attention. Batches at a glance, needs attention by reason, pre vs final by batch, hiring ramp, courses by completion. Batches compared at the same day is **blocked by #1301**, and peak concurrent learners is **blocked by #1299**. Scheduled reports and a read-only executive login need product decisions.
+Logged in (7 days), average progress, completions, certificates issued, needs attention. Cohorts at a glance, needs attention by reason, pre vs final by cohort, hiring ramp, courses by completion. Cohorts compared at the same day is **blocked by #1301**, and peak concurrent learners is **blocked by #1299**. Scheduled reports and a read-only executive login need product decisions.
 
 ## Blocked Sections
 
@@ -154,8 +152,7 @@ Each section below needs data the product does not collect today. A ticket track
 | --- | --- | --- |
 | Cohort: learning time per day against 5–6 hours | #1299 | Active time in lessons and exercises. `time_spent_minutes` is always 0 and lesson pages send no events |
 | Organization: peak concurrent learners | #1299 | The same heartbeat, counted per time bucket |
-| Cohort and organization: Day N since batch start, batches compared at the same day | #1301 | `cohort.starts_at` |
-| Cohort: Ready for the floor | #1303 | A way to record and count practice cases or simulations |
+| Cohort and organization: Day N since cohort start, cohorts compared at the same day | #1301 | `cohort.starts_at` |
 | Reminders that copy a supervisor | #1302 | A supervisor relationship for each learner |
 
 ## Architecture
@@ -223,12 +220,8 @@ lesson pages send no events, and `lesson_video_progress.watched_seconds` is vide
 Blocked by #1301 (cohort start date, https://github.com/classroomio/classroomio/issues/1301).
 
 - [ ] `cohort.starts_at` in the cohort create and edit forms and the cohort header
-- [ ] "Day N since batch start" as a time dimension (`"time": { "relativeTo": "cohort_start" }`) on cohort charts
-- [ ] Organization widget "Batches compared at the same day"
-
-Blocked by #1303 (practice cases, https://github.com/classroomio/classroomio/issues/1303).
-
-- [ ] Cohort widget "Ready for the floor": finished all modules, passed the final, certificate issued, required practice cases done
+- [ ] "Day N since cohort start" as a time dimension (`"time": { "relativeTo": "cohort_start" }`) on cohort charts
+- [ ] Organization widget "Cohorts compared at the same day"
 
 Blocked by #1302 (supervisor of a learner, https://github.com/classroomio/classroomio/issues/1302).
 
@@ -254,7 +247,7 @@ Blocked by #1302 (supervisor of a learner, https://github.com/classroomio/classr
 2. **Executive access.** Admin account for now, or a read-only viewer role in Phase 3.
 3. **Retakes.** Best attempt by default. Confirm how `submission.total` normalizes against maximum points before defining `score_pct`.
 4. **Needs-attention thresholds.** No login for 2 or more days, latest score under 50%, overdue, video attendance under 60% are placeholders.
-5. **Blocked sections.** Time tracking (#1299), cohort start date (#1301), supervisor (#1302) and practice cases (#1303) each have their own open questions, tracked in those issues.
+5. **Blocked sections.** Time tracking (#1299), cohort start date (#1301) and supervisor (#1302) each have their own open questions, tracked in those issues.
 
 ## Success Criteria
 
