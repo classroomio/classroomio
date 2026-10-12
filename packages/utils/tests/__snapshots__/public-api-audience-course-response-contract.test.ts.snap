@@ -3083,6 +3083,34 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
     "draft": {
       "additionalProperties": false,
       "properties": {
+        "activities": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "existingActivityId": {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              "order": {
+                "maximum": 9007199254740991,
+                "minimum": 1,
+                "type": "integer",
+              },
+              "sectionExternalId": {
+                "minLength": 1,
+                "type": "string",
+              },
+            },
+            "required": [
+              "existingActivityId",
+              "sectionExternalId",
+              "order",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
         "course": {
           "additionalProperties": false,
           "properties": {
@@ -3168,6 +3196,13 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             },
             "description": {
               "minLength": 1,
+              "type": "string",
+            },
+            "format": {
+              "enum": [
+                "standard",
+                "scorm",
+              ],
               "type": "string",
             },
             "locale": {
@@ -3663,7 +3698,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             ],
             "type": "object",
           },
-          "minItems": 1,
           "type": "array",
         },
         "lessons": {
@@ -3775,7 +3809,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             ],
             "type": "object",
           },
-          "minItems": 1,
           "type": "array",
         },
         "sections": {
