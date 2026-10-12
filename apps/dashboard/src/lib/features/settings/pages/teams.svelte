@@ -17,12 +17,21 @@
   import { Input } from '@cio/ui/base/input';
   import { Button } from '@cio/ui/base/button';
   import { ComingSoon, UpgradeBanner } from '$features/ui';
+  import * as Dialog from '@cio/ui/base/dialog';
   import * as Field from '@cio/ui/base/field';
 
   let emailsStr = $state('');
   let errorMessage = $state('');
   let role = $state(ROLE.TUTOR.toString());
   let isRemoving: number | null = $state(null);
+  let isUpdatingRole = $state(false);
+  let roleSelectVersion = $state(0);
+  let pendingRoleChange = $state<{
+    memberId: number;
+    email: string;
+    currentRoleId: number;
+    nextRoleId: number;
+  } | null>(null);
 
   function buildLinkInviteUrl(token: string): string {
     return `${getAppOrigin()}/invite/link/${encodeURIComponent(token)}`;
@@ -89,6 +98,67 @@
     }
 
     isRemoving = null;
+  }
+
+  function roleLabel(roleId: number) {
+    if (roleId === ROLE.ADMIN || roleId === ROLE.TUTOR || roleId === ROLE.STUDENT) {
+      return ROLE_LABEL[roleId];
+    }
+
+    return ROLE_LABEL[ROLE.TUTOR];
+  }
+
+  function requestRoleChange(member: { id: number; email: string; roleId: number }, nextRole: string) {
+    if ($isFreePlan) {
+      snackbar.error('upgrade.required');
+      return;
+    }
+
+    const nextRoleId = Number(nextRole);
+    if (!Number.isInteger(nextRoleId) || nextRoleId === member.roleId) return;
+
+    pendingRoleChange = {
+      memberId: member.id,
+      email: member.email,
+      currentRoleId: member.roleId,
+      nextRoleId
+    };
+  }
+
+  function cancelRoleChange() {
+    if (isUpdatingRole) return;
+
+    pendingRoleChange = null;
+    roleSelectVersion += 1;
+  }
+
+  async function approveRoleChange() {
+    if (!pendingRoleChange || isUpdatingRole) return;
+
+    if ($isFreePlan) {
+      snackbar.error('upgrade.required');
+      pendingRoleChange = null;
+      roleSelectVersion += 1;
+      return;
+    }
+
+    const memberId = pendingRoleChange.memberId;
+    const roleId = pendingRoleChange.nextRoleId;
+    if (roleId !== ROLE.ADMIN && roleId !== ROLE.TUTOR) return;
+
+    isUpdatingRole = true;
+    await orgApi.updateTeamMemberRole(memberId, roleId);
+    isUpdatingRole = false;
+
+    if (orgApi.success) {
+      pendingRoleChange = null;
+    }
+  }
+
+  function handleRoleDialogOpenChange(isOpen: boolean) {
+    if (isOpen) return;
+
+    cancelRoleChange();
   }
 
   const isTeamMemberAdmin = (members: OrgTeamMember[], profileId: string | undefined) => {
@@ -178,7 +248,37 @@
                 <p class="mr-3 text-sm text-gray-500 dark:text-white">
                   {teamMember.email}
                 </p>
-                <Badge variant="secondary" class="mr-3 text-xs">{$t(teamMember.role)}</Badge>
+                {#if teamMember.profileId !== $profile.id && isTeamMemberAdmin(orgApi.teamMembers, $profile.id)}
+                  {#key `${teamMember.id}-${teamMember.roleId}-${roleSelectVersion}`}
+                    <Select.Root
+                      type="single"
+                      value={teamMember.roleId.toString()}
+                      disabled={$isFreePlan || isUpdatingRole || pendingRoleChange !== null}
+                      onValueChange={(nextRole) => {
+                        if (!nextRole) return;
+
+                        requestRoleChange(teamMember, nextRole);
+                      }}
+                    >
+                      <Select.Trigger
+                        size="sm"
+                        class="mr-3"
+                        data-testid={`team-member-role-${teamMember.id}`}
+                        aria-label={$t('course.navItem.people.teams.change_role.label', {
+                          email: teamMember.email
+                        })}
+                      >
+                        {$t(roleLabel(teamMember.roleId))}
+                      </Select.Trigger>
+                      <Select.Content>
+                        <Select.Item value={ROLE.ADMIN.toString()}>{$t(ROLE_LABEL[ROLE.ADMIN])}</Select.Item>
+                        <Select.Item value={ROLE.TUTOR.toString()}>{$t(ROLE_LABEL[ROLE.TUTOR])}</Select.Item>
+                      </Select.Content>
+                    </Select.Root>
+                  {/key}
+                {:else}
+                  <Badge variant="secondary" class="mr-3 text-xs">{$t(teamMember.role)}</Badge>
+                {/if}
                 {#if !teamMember.verified}
                   <Badge variant="outline" class="bg-yellow-200 text-xs text-yellow-700 dark:bg-yellow-700">
                     {$t('course.navItem.people.teams.invite_sent')}
@@ -205,3 +305,40 @@
     </Field.Group>
   </Field.Set>
 </Field.Group>
+
+<Dialog.Root open={pendingRoleChange !== null} onOpenChange={handleRoleDialogOpenChange}>
+  <Dialog.Content class="w-full max-w-md">
+    <Dialog.Header>
+      <Dialog.Title>{$t('course.navItem.people.teams.change_role.title')}</Dialog.Title>
+      <Dialog.Description>
+        {#if pendingRoleChange}
+          {$t('course.navItem.people.teams.change_role.description', {
+            email: pendingRoleChange.email,
+            currentRole: $t(roleLabel(pendingRoleChange.currentRoleId)),
+            nextRole: $t(roleLabel(pendingRoleChange.nextRoleId))
+          })}
+        {/if}
+      </Dialog.Description>
+    </Dialog.Header>
+    <Dialog.Footer>
+      <Button
+        variant="outline"
+        size="sm"
+        testId="team-member-role-cancel"
+        onclick={cancelRoleChange}
+        disabled={isUpdatingRole}
+      >
+        {$t('course.navItem.people.teams.change_role.cancel')}
+      </Button>
+      <Button
+        size="sm"
+        testId="team-member-role-approve"
+        onclick={approveRoleChange}
+        loading={isUpdatingRole}
+        disabled={isUpdatingRole || !pendingRoleChange}
+      >
+        {$t('course.navItem.people.teams.change_role.approve')}
+      </Button>
+    </Dialog.Footer>
+  </Dialog.Content>
+</Dialog.Root>

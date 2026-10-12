@@ -313,7 +313,10 @@
       "user_exists": "Benutzer existiert bereits",
       "invite_fail": "Die Einladung konnte nicht gesendet werden. Bitte versuchen Sie es erneut",
       "remove_fail": "Der Benutzer konnte nicht entfernt werden. Bitte versuchen Sie es erneut",
-      "remove_success": "Mitglied erfolgreich entfernt"
+      "remove_success": "Mitglied erfolgreich entfernt",
+      "role_updated": "Rolle aktualisiert",
+      "role_update_failed": "Rolle konnte nicht aktualisiert werden",
+      "last_admin": "Diese Organisation braucht mindestens einen Administrator"
     },
     "lms": {
       "error": {
@@ -1136,7 +1139,66 @@
         "certificate_deadline_required_description": "Für Compliance-Kurse ist eine Zertifikatsfrist erforderlich, bevor Studierende eingeschrieben werden können. Bitte legen Sie vor der Veröffentlichung eine Frist in den Kurseinstellungen fest.",
         "progression_mode_description": "Steuern Sie, ob Schüler auf alle freigeschalteten Inhalte zugreifen können oder Elemente der Reihe nach abschließen müssen. Beim Abschluss der Videowiedergabe werden nur hochgeladene Videos erfasst.",
         "allow_markdown_export": "Lernenden erlauben, Lektionsseiten als Markdown zu kopieren",
-        "allow_markdown_export_description": "Wenn aktiviert, zeigen öffentliche Lektionsseiten eine „Seite kopieren“-Schaltfläche, die den Lektionsinhalt (ohne Videos) als Markdown exportiert. Dadurch wird außerdem eine öffentliche Markdown-URL für jede entsperrte Lektion veröffentlicht."
+        "allow_markdown_export_description": "Wenn aktiviert, zeigen öffentliche Lektionsseiten eine „Seite kopieren“-Schaltfläche, die den Lektionsinhalt (ohne Videos) als Markdown exportiert. Dadurch wird außerdem eine öffentliche Markdown-URL für jede entsperrte Lektion veröffentlicht.",
+        "live_session_reminders": {
+          "legend": "E-Mail-Erinnerungen für Sitzungen",
+          "description": "Legen Sie fest, wann eingeschriebene Studierende vor jeder Live-Sitzung eine E-Mail mit dem Beitrittslink erhalten.",
+          "empty": "Keine Erinnerungen. Studierende erhalten vor Live-Sitzungen keine E-Mails.",
+          "add": "Erinnerung hinzufügen",
+          "presets_label": "Schnell hinzufügen:",
+          "remove": "Erinnerung entfernen",
+          "unit_label": "Einheit",
+          "units": {
+            "days": "Tage",
+            "hours": "Stunden",
+            "minutes": "Minuten"
+          },
+          "duration": {
+            "days": "{count, plural, one {# Tag} other {# Tage}}",
+            "hours": "{count, plural, one {# Stunde} other {# Stunden}}",
+            "minutes": "{count, plural, one {# Minute} other {# Minuten}}"
+          },
+          "preview": "{duration} vor jeder Sitzung",
+          "offset_before": "{duration} vorher",
+          "max_count": "Sie können bis zu {count} Erinnerungen hinzufügen.",
+          "validation": {
+            "amount": "Geben Sie eine ganze Zahl von 1 oder größer ein.",
+            "min": "Erinnerungen müssen mindestens 15 Minuten vor der Sitzung liegen.",
+            "max": "Erinnerungen dürfen höchstens 7 Tage vor der Sitzung liegen.",
+            "duplicate": "Sie haben bereits eine Erinnerung zu diesem Zeitpunkt.",
+            "fix_errors": "Beheben Sie die Fehler bei den Sitzungserinnerungen, bevor Sie speichern."
+          },
+          "log": {
+            "title": "Zustellprotokoll",
+            "description": "Erinnerungs-E-Mails für Sitzungen der letzten 30 Tage und für bevorstehende Sitzungen.",
+            "view": "Protokoll anzeigen",
+            "empty": "Noch keine Erinnerungen. Sie erscheinen hier, sobald Sitzungen näher rücken.",
+            "load_error": "Das Zustellprotokoll der Erinnerungen konnte nicht geladen werden.",
+            "columns": {
+              "session": "Sitzung",
+              "student": "Studierende/r",
+              "reminder": "Erinnerung",
+              "status": "Status",
+              "detail": "Details"
+            }
+          },
+          "statuses": {
+            "pending": "Ausstehend",
+            "queued": "In der Warteschlange",
+            "sent": "Gesendet",
+            "failed": "Fehlgeschlagen",
+            "skipped": "Übersprungen"
+          },
+          "skip_reasons": {
+            "preferences": "Die/der Studierende hat E-Mail-Erinnerungen für Sitzungen deaktiviert.",
+            "no_email": "Die/der Studierende hat keine E-Mail-Adresse.",
+            "lesson_past": "Die Sitzung hatte bereits begonnen.",
+            "offset_removed": "Diese Erinnerung wurde aus den Kurseinstellungen entfernt.",
+            "lesson_rescheduled": "Die Sitzungszeit oder der Beitrittslink wurde geändert.",
+            "window_passed": "Der Erinnerungszeitpunkt war bei der Planung bereits vorbei.",
+            "unenrolled": "Die/der Studierende ist nicht mehr eingeschrieben."
+          }
+        }
       },
       "analytics": {
         "title": "Analysen"
@@ -1262,7 +1324,8 @@
               "name": {
                 "min_char": "Der Name ist zu kurz, mindestens 5 Zeichen"
               }
-            }
+            },
+            "validation_error": "Eine oder mehrere Bewertungen sind ungültig. Öffnen Sie jede Bewertung und korrigieren Sie Name, Avatar, Bewertung und Beschreibung, bevor Sie speichern."
           },
           "header_form": {
             "title": "Titel",
@@ -1423,6 +1486,13 @@
             "toggle_label": "Linkeinladung aktiv",
             "disabled_notice": "Dieser Link ist deaktiviert. Aktivieren Sie es, um neuen Mitgliedern den Beitritt über einen Link zu ermöglichen.",
             "select_role": "Wählen Sie eine Rolle aus"
+          },
+          "change_role": {
+            "label": "Rolle für {email}",
+            "title": "Rolle ändern",
+            "description": "{email} von {currentRole} zu {nextRole} ändern?",
+            "cancel": "Abbrechen",
+            "approve": "Bestätigen"
           }
         },
         "roles": {
@@ -1594,6 +1664,10 @@
       },
       "submissions": {
         "title": "Eingereichte Übungen",
+        "access": {
+          "denied_title": "Du kannst die Abgaben für diesen Kurs nicht bewerten",
+          "denied_description": "Bitte einen Admin, dich als Kurstutor hinzuzufügen oder als Mentor einer Kohorte, die diesen Kurs enthält."
+        },
         "grading_modal": {
           "details": "Einzelheiten",
           "early": "Früh",
@@ -1628,6 +1702,22 @@
           "awaiting_manual_hint": "Muss manuell überprüft werden",
           "failed_hint": "Die automatische Bewertung ist fehlgeschlagen. Verschieben Sie diese Übermittlung zurück zu „Gesendet“, um es erneut zu versuchen.",
           "invalid_transition": "Diese Statusverschiebung ist im Benotungsworkflow nicht zulässig"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1805,7 +1895,9 @@
                 "responses": "Antworten",
                 "no_responses": "Noch keine Antworten",
                 "other": "Andere",
-                "attempts": "Versuche"
+                "attempts": "Versuche",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Einsendungen werden geladen...",
               "empty_title": "Noch keine Einsendungen",
@@ -1993,6 +2085,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Akzeptierte Typen (z. B. pdf, docx)",
                   "max_size_placeholder": "Maximale Größe (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {
@@ -2684,7 +2780,7 @@
         "session": {
           "join": "Nehmen Sie an der Sitzung teil",
           "heading": "Live-Sitzung",
-          "intro": "Legen Sie den Beitrittslink und die geplante Zeit für diesen Live-Kurs fest. Schüler erhalten 24 Stunden und 1 Stunde vorher Erinnerungen.",
+          "intro": "Legen Sie den Beitrittslink und die geplante Zeit für diesen Live-Kurs fest. Studierende erhalten vor jeder Sitzung E-Mail-Erinnerungen. Den Zeitpunkt wählen Sie in den Kurseinstellungen.",
           "link_label": "Beitrittslink (Zoom, Meet usw.)",
           "datetime_label": "Datum und Uhrzeit",
           "timezone_label": "Zeitzone",
@@ -2714,7 +2810,15 @@
           "add_apple": "Apple Kalender (.ics)",
           "starts_in": "Beginnt in",
           "session_ended": "Sitzung beendet",
-          "link_copied": "Link kopiert"
+          "link_copied": "Link kopiert",
+          "duration_label": "Erwartete Sitzungsdauer (Minuten)",
+          "duration_helper": "Wird verwendet, um anzuzeigen, wann die Sitzung live ist und wann sie beendet ist.",
+          "recording_url_label": "Aufzeichnungslink",
+          "recording_url_helper": "Wird den Teilnehmenden nach dem Ende der Sitzung angezeigt.",
+          "recording_url_invalid": "Gib einen Link ein, der mit http:// oder https:// beginnt",
+          "recording_url_needs_session": "Füge einen Meeting-Link und eine Startzeit hinzu, bevor du eine Aufzeichnung hinzufügst",
+          "past_sessions_heading": "Vergangene Sitzungen",
+          "watch_recording": "Aufzeichnung ansehen"
         },
         "student_share_your_knowledge": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
         "student_body_content": "Diesem Kurs wurden noch keine Lektionen hinzugefügt. Bitte schauen Sie später wieder vorbei.",
@@ -3418,7 +3522,16 @@
       "monthly": "Monatlich",
       "annually": "Jährlich",
       "popular": "Beliebt",
-      "per_org": "Pro Organisation"
+      "per_org": "Pro Organisation",
+      "priced_low": {
+        "eyebrow_open": "Early-Adopter-Preis · {days, plural, one {# Tag übrig} other {# Tage übrig}}",
+        "eyebrow_closing": "Early-Adopter-Preis · Letzte {days} Tage",
+        "eyebrow_today": "Early-Adopter-Preis · Endet heute",
+        "title": "Bewusst günstig. Nicht für lange.",
+        "title_closing": "Bewusst günstig. Bald vorbei.",
+        "body": "Wir halten ClassroomIO bezahlbar, weil wir es gemeinsam mit unseren Kunden aufbauen, nicht nur für sie. Sichern Sie sich den heutigen Preis vor dem {date}. Danach wird der Early-Adopter-Tarif geschlossen und neue Preise gelten.",
+        "link": "Warum wir das tun"
+      }
     },
     "plan_names": {
       "free": "Kostenlos",
@@ -6139,5 +6252,30 @@
       "description": "Ein kompletter Kurs mit Lektionen, Übungen und Einstellungen. Kopieren Sie es und machen Sie es dann zu Ihrem.",
       "browse": "Durchsuchen Sie alle Vorlagen"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Zahlung erhalten. Noch ein Schritt.",
+      "body": "Erstellen Sie Ihr Konto oder melden Sie sich an, und wir verbinden Ihren Early-Adopter-Tarif automatisch mit Ihrer Academy.",
+      "sign_up": "Konto erstellen",
+      "log_in": "Anmelden",
+      "continue": "Weiter zu meiner Academy"
+    },
+    "success": {
+      "title": "Ihr Early-Adopter-Tarif ist aktiv",
+      "body": "Ihr Preis ist gesichert und alle Early-Adopter-Funktionen sind jetzt für Ihre Academy freigeschaltet.",
+      "continue": "Jetzt loslegen"
+    },
+    "errors": {
+      "invalid": "Dieser Link ist ungültig. Prüfen Sie die E-Mail, die wir Ihnen gesendet haben, oder kontaktieren Sie den Support.",
+      "expired": "Dieser Link ist abgelaufen. Kontaktieren Sie den Support, wir helfen Ihnen, Ihren Tarif zu verbinden.",
+      "unavailable": "Dieser Tariflink wurde bereits verwendet oder ist nicht mehr aktiv. Kontaktieren Sie den Support, falls das ein Fehler ist.",
+      "conflict": "Diese Academy hat bereits einen kostenpflichtigen Tarif, daher konnten wir diesen nicht verbinden. Kontaktieren Sie den Support, wir helfen Ihnen."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Neu",
+    "read_full": "Vollständiges Änderungsprotokoll lesen",
+    "close": "Schließen"
   }
 }

@@ -14,3 +14,4 @@ export * from './public-course';
 export * from './lesson-language-body';
 export * from './session';
 export * from './member-progress';
+export * from './live-session-reminder';

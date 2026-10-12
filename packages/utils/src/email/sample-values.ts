@@ -209,6 +209,25 @@ const localizedSamples: Record<EmailLocale, Record<string, string>> = {
     course_message: 'Eğitmeninizden bir not.',
     course_names: 'Örnek kurs',
     post_content: 'Kurstan örnek bir gönderi.'
+  },
+  it: {
+    course_name: 'Corso di esempio',
+    cohort_name: 'Gruppo di esempio',
+    student_name: 'Alex Studente',
+    teacher_name: 'Taylor Docente',
+    teacher_email: 'teacher@example.com',
+    exercise_title: 'Esercizio di esempio',
+    session_title: 'Sessione live di esempio',
+    goal_title: 'Completa il corso',
+    due_status: 'Questo obiettivo scade domani.',
+    completed_count: '1',
+    required_count: '3',
+    status: 'Revisionato',
+    score: '8/10',
+    lesson_title: 'Lezione di esempio',
+    course_message: 'Una nota del tuo istruttore.',
+    course_names: 'Corso di esempio',
+    post_content: 'Un post di esempio del corso.'
   }
 };
 

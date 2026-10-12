@@ -250,7 +250,7 @@ describe('gradeCourseSubmissionService', () => {
     const result = await gradeCourseSubmissionService(ORG_ID, ACTOR_ID, submissionParams, payload);
 
     expect(getQuestionsByExerciseIds).toHaveBeenCalledWith(['exercise-1']);
-    expect(updateSubmissionGradesBatch).toHaveBeenCalledWith(SUBMISSION_ID, payload);
+    expect(updateSubmissionGradesBatch).toHaveBeenCalledWith(SUBMISSION_ID, COURSE_ID, payload);
     expect(result).toMatchObject({ gradingState: 'completed', total: 2 });
   });
 });
@@ -263,7 +263,7 @@ describe('updateCourseSubmissionService', () => {
       gradingState: 'completed'
     });
 
-    expect(updateSubmissionService).toHaveBeenCalledWith(SUBMISSION_ID, { gradingState: 'completed' });
+    expect(updateSubmissionService).toHaveBeenCalledWith(SUBMISSION_ID, COURSE_ID, { gradingState: 'completed' });
     expect(result.gradingState).toBe('completed');
   });
 });
@@ -274,7 +274,7 @@ describe('deleteCourseSubmissionService', () => {
 
     const result = await deleteCourseSubmissionService(ORG_ID, ACTOR_ID, submissionParams);
 
-    expect(deleteSubmissionService).toHaveBeenCalledWith(SUBMISSION_ID);
+    expect(deleteSubmissionService).toHaveBeenCalledWith(SUBMISSION_ID, COURSE_ID);
     expect(result.id).toBe(SUBMISSION_ID);
   });
 });

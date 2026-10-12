@@ -15,6 +15,8 @@ export type CourseContentItemRow = {
   isComplete: boolean | null;
   lessonAt: string | null;
   callUrl: string | null;
+  sessionDurationMinutes: number | null;
+  recordingUrl: string | null;
   hasNoteContent: boolean | null;
   hasSlideContent: boolean | null;
   videosCount: number | null;
@@ -59,6 +61,8 @@ export async function getCourseContentItems(
         NULL::boolean AS "isComplete",
         NULL::timestamptz AS "lessonAt",
         NULL::text AS "callUrl",
+        NULL::int AS "sessionDurationMinutes",
+        NULL::text AS "recordingUrl",
         NULL::boolean AS "hasNoteContent",
         NULL::boolean AS "hasSlideContent",
         NULL::int AS "videosCount",
@@ -81,6 +85,8 @@ export async function getCourseContentItems(
         ${lessonCompletionSql} AS "isComplete",
         lesson_at AS "lessonAt",
         call_url AS "callUrl",
+        session_duration_minutes AS "sessionDurationMinutes",
+        recording_url AS "recordingUrl",
         (
           (
             length(trim(COALESCE(note, ''))) > 0
@@ -125,6 +131,8 @@ export async function getCourseContentItems(
         ${exerciseCompletionSql} AS "isComplete",
         NULL::timestamptz AS "lessonAt",
         NULL::text AS "callUrl",
+        NULL::int AS "sessionDurationMinutes",
+        NULL::text AS "recordingUrl",
         NULL::boolean AS "hasNoteContent",
         NULL::boolean AS "hasSlideContent",
         NULL::int AS "videosCount",

@@ -36,6 +36,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { courseMemberOrGraderMiddleware } from '@api/middlewares/course-grader';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { createSubmissionService, listExerciseSubmissionsOverview } from '@api/services/submission';
 import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
@@ -59,7 +60,7 @@ export const exerciseRouter = new Hono()
       return handleError(c, error, 'Failed to list exercises');
     }
   })
-  .get('/:exerciseId/submissions', authMiddleware, courseMemberMiddleware, async (c) => {
+  .get('/:exerciseId/submissions', authMiddleware, courseMemberOrGraderMiddleware, async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
       const exerciseId = c.req.param('exerciseId')!;
@@ -94,25 +95,31 @@ export const exerciseRouter = new Hono()
       return handleError(c, error, 'Failed to fetch notification status');
     }
   })
-  .get('/:exerciseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
-    try {
-      const { exerciseId } = c.req.valid('param');
-      const user = c.get('user')!;
+  .get(
+    '/:exerciseId',
+    authMiddleware,
+    courseMemberOrGraderMiddleware,
+    zValidator('param', ZExerciseGetParam),
+    async (c) => {
+      try {
+        const { exerciseId } = c.req.valid('param');
+        const user = c.get('user')!;
 
-      await assertEnrolledStudentContentAccess({
-        courseId: c.req.param('courseId')!,
-        profileId: user.id,
-        contentId: exerciseId,
-        type: ContentType.Exercise
-      });
+        await assertEnrolledStudentContentAccess({
+          courseId: c.req.param('courseId')!,
+          profileId: user.id,
+          contentId: exerciseId,
+          type: ContentType.Exercise
+        });
 
-      const exercise = await getExercise(exerciseId, undefined, user.id);
+        const exercise = await getExercise(exerciseId, undefined, user.id);
 
-      return c.json({ success: true, data: exercise }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to fetch exercise');
+        return c.json({ success: true, data: exercise }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch exercise');
+      }
     }
-  })
+  )
   .post('/', authMiddleware, courseMemberMiddleware, zValidator('json', ZExerciseCreate), async (c) => {
     try {
       const data = c.req.valid('json');
@@ -282,7 +289,7 @@ export const exerciseRouter = new Hono()
   .get(
     '/:exerciseId/submission/:submissionId/question/:questionId/video-recording/playback',
     authMiddleware,
-    courseMemberMiddleware,
+    courseMemberOrGraderMiddleware,
     zValidator('param', ZExerciseVideoRecordingPlaybackParam),
     async (c) => {
       try {

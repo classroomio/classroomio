@@ -313,7 +313,10 @@
       "user_exists": "Brugeren findes allerede",
       "invite_fail": "Kunne ikke sende invitationen. Prøv venligst igen",
       "remove_fail": "Kunne ikke fjerne bruger. Prøv venligst igen",
-      "remove_success": "Medlem fjernet"
+      "remove_success": "Medlem fjernet",
+      "role_updated": "Rollen er opdateret",
+      "role_update_failed": "Rollen kunne ikke opdateres",
+      "last_admin": "Denne organisation skal have mindst én administrator"
     },
     "lms": {
       "error": {
@@ -1136,7 +1139,66 @@
         "certificate_deadline_required_description": "Compliance-kurser kræver en certifikatfrist, før studerende kan tilmeldes. Angiv venligst en frist i kursusindstillingerne, før du publicerer.",
         "progression_mode_description": "Kontroller, om eleverne kan få adgang til alt ulåst indhold eller skal fuldføre elementer i rækkefølge. Afslutning af videoafspilning sporer kun uploadede videoer.",
         "allow_markdown_export": "Tillad elever at kopiere lektionssider som Markdown",
-        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion."
+        "allow_markdown_export_description": "Når funktionen er slået til, viser offentlige lektionssider en knap til Kopiér side, der eksporterer lektionsindholdet (uden videoer) som Markdown. Det udgiver også en offentlig Markdown-URL for hver ulåst lektion.",
+        "live_session_reminders": {
+          "legend": "E-mailpåmindelser om sessioner",
+          "description": "Vælg, hvornår tilmeldte elever får en e-mail med deltagelseslinket før hver livesession.",
+          "empty": "Ingen påmindelser. Eleverne får ikke e-mails før livesessioner.",
+          "add": "Tilføj påmindelse",
+          "presets_label": "Tilføj hurtigt:",
+          "remove": "Fjern påmindelse",
+          "unit_label": "Enhed",
+          "units": {
+            "days": "Dage",
+            "hours": "Timer",
+            "minutes": "Minutter"
+          },
+          "duration": {
+            "days": "{count, plural, one {# dag} other {# dage}}",
+            "hours": "{count, plural, one {# time} other {# timer}}",
+            "minutes": "{count, plural, one {# minut} other {# minutter}}"
+          },
+          "preview": "{duration} før hver session",
+          "offset_before": "{duration} før",
+          "max_count": "Du kan tilføje op til {count} påmindelser.",
+          "validation": {
+            "amount": "Indtast et helt tal på 1 eller mere.",
+            "min": "Påmindelser skal være mindst 15 minutter før sessionen.",
+            "max": "Påmindelser kan højst være 7 dage før sessionen.",
+            "duplicate": "Du har allerede en påmindelse på dette tidspunkt.",
+            "fix_errors": "Ret fejlene i sessionspåmindelserne, før du gemmer."
+          },
+          "log": {
+            "title": "Leveringslog",
+            "description": "Påmindelsesmails for sessioner i de sidste 30 dage og kommende sessioner.",
+            "view": "Vis log",
+            "empty": "Ingen påmindelser endnu. De vises her, når sessionerne nærmer sig.",
+            "load_error": "Leveringsloggen for påmindelser kunne ikke indlæses.",
+            "columns": {
+              "session": "Session",
+              "student": "Elev",
+              "reminder": "Påmindelse",
+              "status": "Status",
+              "detail": "Detaljer"
+            }
+          },
+          "statuses": {
+            "pending": "Afventer",
+            "queued": "I kø",
+            "sent": "Sendt",
+            "failed": "Mislykkedes",
+            "skipped": "Sprunget over"
+          },
+          "skip_reasons": {
+            "preferences": "Eleven har slået e-mailpåmindelser om sessioner fra.",
+            "no_email": "Eleven har ingen e-mailadresse.",
+            "lesson_past": "Sessionen var allerede startet.",
+            "offset_removed": "Denne påmindelse blev fjernet fra kursusindstillingerne.",
+            "lesson_rescheduled": "Sessionens tidspunkt eller deltagelseslink blev ændret.",
+            "window_passed": "Påmindelsestidspunktet var allerede passeret, da den blev planlagt.",
+            "unenrolled": "Eleven er ikke længere tilmeldt."
+          }
+        }
       },
       "analytics": {
         "title": "Analyse"
@@ -1262,7 +1324,8 @@
               "name": {
                 "min_char": "Navnet er for kort, minimum 5 tegn"
               }
-            }
+            },
+            "validation_error": "En eller flere anmeldelser er ugyldige. Åbn hver anmeldelse og ret navnet, avataren, bedømmelsen og beskrivelsen, før du gemmer."
           },
           "header_form": {
             "title": "Titel",
@@ -1423,6 +1486,13 @@
             "toggle_label": "Linkinvitation aktiv",
             "disabled_notice": "Dette link er deaktiveret. Aktiver det for at tillade nye medlemmer at deltage via link.",
             "select_role": "Vælg en rolle"
+          },
+          "change_role": {
+            "label": "Rolle for {email}",
+            "title": "Skift rolle",
+            "description": "Skift {email} fra {currentRole} til {nextRole}?",
+            "cancel": "Annuller",
+            "approve": "Godkend"
           }
         },
         "roles": {
@@ -1594,6 +1664,10 @@
       },
       "submissions": {
         "title": "Indsendte øvelser",
+        "access": {
+          "denied_title": "Du kan ikke bedømme afleveringer for dette kursus",
+          "denied_description": "Bed en administrator om at tilføje dig som kursustutor eller som mentor for et hold, der inkluderer dette kursus."
+        },
         "grading_modal": {
           "details": "Detaljer",
           "early": "Tidligt",
@@ -1628,6 +1702,22 @@
           "awaiting_manual_hint": "Trænger til manuel gennemgang",
           "failed_hint": "Automatisk bedømmelse mislykkedes. Flyt denne indsendelse tilbage til Indsendt for at prøve igen.",
           "invalid_transition": "Denne statusflytning er ikke tilladt af bedømmelsesarbejdsgangen"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1805,7 +1895,9 @@
                 "responses": "Svar",
                 "no_responses": "Ingen svar endnu",
                 "other": "Andet",
-                "attempts": "Forsøg"
+                "attempts": "Forsøg",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Indlæser indsendelser...",
               "empty_title": "Ingen indlæg endnu",
@@ -1993,6 +2085,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Accepterede typer (f.eks. pdf, docx)",
                   "max_size_placeholder": "Maksimal størrelse (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {
@@ -2684,7 +2780,7 @@
         "session": {
           "join": "Deltag i session",
           "heading": "Live-session",
-          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for dette livehold. Eleverne får rykker 24 timer og 1 time før.",
+          "intro": "Indstil deltagelseslinket og det planlagte tidspunkt for denne liveklasse. Eleverne får e-mailpåmindelser før hver session. Vælg hvornår i kursusindstillingerne.",
           "link_label": "Tilmeld dig link (Zoom, Mød osv.)",
           "datetime_label": "Dato og tid",
           "timezone_label": "Tidszone",
@@ -2714,7 +2810,15 @@
           "add_apple": "Apple-kalender (.ics)",
           "starts_in": "Starter i",
           "session_ended": "Session afsluttet",
-          "link_copied": "Linket er kopieret"
+          "link_copied": "Linket er kopieret",
+          "duration_label": "Forventet sessionslængde (minutter)",
+          "duration_helper": "Bruges til at vise, hvornår sessionen er live, og hvornår den er slut.",
+          "recording_url_label": "Link til optagelse",
+          "recording_url_helper": "Vises for studerende, når sessionen er slut.",
+          "recording_url_invalid": "Indtast et link, der starter med http:// eller https://",
+          "recording_url_needs_session": "Tilføj et mødelink og et starttidspunkt, før du tilføjer en optagelse",
+          "past_sessions_heading": "Tidligere sessioner",
+          "watch_recording": "Se optagelse"
         },
         "student_share_your_knowledge": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
         "student_body_content": "Der er endnu ikke tilføjet nogen lektioner til dette kursus. Tjek venligst tilbage senere.",
@@ -3418,7 +3522,16 @@
       "monthly": "Månedligt",
       "annually": "Årligt",
       "popular": "Populært",
-      "per_org": "Per organisation"
+      "per_org": "Per organisation",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter-pris · {days, plural, one {# dag tilbage} other {# dage tilbage}}",
+        "eyebrow_closing": "Early Adopter-pris · Sidste {days} dage",
+        "eyebrow_today": "Early Adopter-pris · Slutter i dag",
+        "title": "Lav pris med vilje. Ikke for evigt.",
+        "title_closing": "Lav pris med vilje. Lukker snart.",
+        "body": "Vi holder ClassroomIO billig, fordi vi bygger det sammen med vores kunder, ikke kun til dem. Lås dagens pris inden {date}. Derefter lukker Early Adopter-planen, og nye priser træder i kraft.",
+        "link": "Læs hvorfor vi gør det"
+      }
     },
     "plan_names": {
       "free": "Gratis",
@@ -6139,5 +6252,30 @@
       "description": "Et komplet kursus med lektioner, øvelser og indstillinger. Kopier det, og gør det derefter til dit.",
       "browse": "Gennemse alle skabeloner"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Betaling modtaget. Ét trin tilbage.",
+      "body": "Opret din konto eller log ind, så forbinder vi automatisk din Early Adopter-plan med dit akademi.",
+      "sign_up": "Opret min konto",
+      "log_in": "Log ind",
+      "continue": "Fortsæt til mit akademi"
+    },
+    "success": {
+      "title": "Din Early Adopter-plan er aktiv",
+      "body": "Din pris er låst, og alle Early Adopter-funktioner er nu låst op for dit akademi.",
+      "continue": "Kom i gang"
+    },
+    "errors": {
+      "invalid": "Dette link er ikke gyldigt. Tjek den e-mail, vi sendte dig, eller kontakt support.",
+      "expired": "Dette link er udløbet. Kontakt support, så hjælper vi dig med at forbinde din plan.",
+      "unavailable": "Dette planlink er allerede brugt eller er ikke længere aktivt. Kontakt support, hvis det er en fejl.",
+      "conflict": "Dette akademi har allerede en betalt plan, så vi kunne ikke forbinde denne. Kontakt support, så hjælper vi dig."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Ny",
+    "read_full": "Læs hele ændringsloggen",
+    "close": "Luk"
   }
 }

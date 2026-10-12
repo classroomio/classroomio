@@ -155,7 +155,7 @@ export async function gradeCourseSubmissionService(
     );
   }
 
-  const updated = await updateSubmissionGradesBatch(params.submissionId, payload);
+  const updated = await updateSubmissionGradesBatch(params.submissionId, params.courseId, payload);
 
   return toPublicSubmission(updated);
 }
@@ -169,7 +169,7 @@ export async function updateCourseSubmissionService(
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertSubmissionBelongsToCourse(params.courseId, params.submissionId);
 
-  const updated = await updateSubmissionService(params.submissionId, payload);
+  const updated = await updateSubmissionService(params.submissionId, params.courseId, payload);
 
   return toPublicSubmission(updated);
 }
@@ -182,7 +182,7 @@ export async function deleteCourseSubmissionService(
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertSubmissionBelongsToCourse(params.courseId, params.submissionId);
 
-  const deleted = await deleteSubmissionService(params.submissionId);
+  const deleted = await deleteSubmissionService(params.submissionId, params.courseId);
 
   return toPublicSubmission(deleted);
 }

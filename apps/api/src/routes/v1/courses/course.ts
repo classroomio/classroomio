@@ -1,4 +1,5 @@
 import {
+  ZPublicApiCourseMemberListItemResponse,
   ZPublicApiCourseParam,
   ZPublicApiCoursesQuery,
   ZPublicApiCreateCourse,
@@ -20,7 +21,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { jsonResponse, PaginatedListResponse } from '@api/utils/openapi/responses';
+import { jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { PAGINATION_NOTE } from './docs';
 
 const PaginationSchema = {
@@ -55,6 +56,9 @@ const CoursesListResponse = {
   },
   required: ['success', 'data', 'pagination', 'query']
 };
+
+const CourseStudentsDataResponse = paginatedResponse(ZPublicApiCourseMemberListItemResponse);
+const CourseStudentsResponse = jsonResponse('Course students returned successfully', CourseStudentsDataResponse);
 
 const NonAutoGradableQuestionOffenderSchema = {
   type: 'object' as const,
@@ -166,7 +170,7 @@ export const v1CourseRouter = new Hono()
       description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
       tags: ['Courses'],
       responses: {
-        200: jsonResponse('Course students returned successfully', PaginatedListResponse),
+        200: CourseStudentsResponse,
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Course not found' }

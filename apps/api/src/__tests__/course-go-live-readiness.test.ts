@@ -116,6 +116,8 @@ function buildContentItem(overrides: Partial<CourseContentItemRow> = {}): Course
     isComplete: false,
     lessonAt: null,
     callUrl: null,
+    sessionDurationMinutes: null,
+    recordingUrl: null,
     hasNoteContent: true,
     hasSlideContent: false,
     videosCount: 0,

@@ -1,14 +1,13 @@
 <script lang="ts">
   import get from 'lodash/get';
   import cloneDeep from 'lodash/cloneDeep';
-  import z from 'zod';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import UserIcon from '@lucide/svelte/icons/user';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { Button } from '@cio/ui/base/button';
   import ReviewFormEditor from './review-form-editor.svelte';
+  import { isEmptyReview, validateReview } from '../../utils';
   import * as Avatar from '@cio/ui/base/avatar';
-  import { processErrors } from '$lib/utils/functions/validator';
   import { t } from '$lib/utils/functions/translations';
   import type { Course } from '$features/course/utils/types';
 
@@ -22,60 +21,51 @@
   let reviews = $state(cloneDeep(get(course, 'metadata.reviews', [])));
   let reviewToExpand = $state<number | null>(null);
   let errors = $state({});
+  let reviewIdSequence = 0;
+
+  function nextReviewId() {
+    reviewIdSequence += 1;
+    return Date.now() + reviewIdSequence;
+  }
 
   function addReviewForm() {
-    const _review = {
-      id: new Date().getTime(),
+    const reviewId = nextReviewId();
+    const newReview = {
+      id: reviewId,
       hide: false,
       name: '',
       avatar_url: '',
       rating: 1,
-      created_at: new Date().getTime(),
+      created_at: Date.now(),
       description: ''
     };
-    reviews = [...reviews, _review];
-    reviewToExpand = _review.id;
+    reviews = [...reviews, newReview];
+    reviewToExpand = reviewId;
     syncReviews();
   }
 
-  function validateReviews(id) {
-    const review = reviews.find((r) => r.id === id);
-    const reviewSchema = z.object({
-      name: z.string().min(5, {
-        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.name.min_char')}`
-      }),
-      avatar_url: z.string().min(6, {
-        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.avatar_url.message')}`
-      }),
-      rating: z
-        .number()
-        .min(1, {
-          message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.rating.message')}`
-        })
-        .max(5, {
-          message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.rating.message')}`
-        }),
-      description: z.string().min(10, {
-        message: `${$t('course.navItem.landing_page.editor.reviews_form.validations.description.min_char')}`
-      })
-    });
-
-    const { error } = reviewSchema.safeParse(review);
-    return processErrors(error);
+  function removeReview(id: number) {
+    reviews = reviews.filter((review) => review.id !== id);
   }
 
-  function onExpand(id) {
+  function onExpand(id: number) {
     errors = {};
 
-    if (reviewToExpand) {
-      const validationRes = validateReviews(reviewToExpand);
-      if (Object.keys(validationRes).length) {
-        errors = Object.assign(errors, validationRes);
+    if (id === reviewToExpand) {
+      const openReview = reviews.find((review) => review.id === id);
+
+      if (isEmptyReview(openReview)) {
+        removeReview(id);
+        reviewToExpand = null;
         return;
       }
-    }
 
-    if (id === reviewToExpand) {
+      const validationRes = validateReview(openReview);
+      if (Object.keys(validationRes).length) {
+        errors = validationRes;
+        return;
+      }
+
       reviewToExpand = null;
       return;
     }
@@ -91,7 +81,7 @@
 <!-- Sections - Reviews -->
 <section id="reviews">
   <div class="">
-    {#each reviews || [] as review, index}
+    {#each reviews || [] as review, index (review.id)}
       <div
         id={String(review.id)}
         class="relative my-2.5 flex flex-col items-center rounded-lg border border-gray-300 p-2"

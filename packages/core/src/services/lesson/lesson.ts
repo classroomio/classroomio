@@ -25,7 +25,7 @@ import {
   type LessonById
 } from '@cio/db/queries/lesson';
 import type { TUpdateLessonWatchProgress } from '@cio/utils/validation/lesson';
-import { touchCourseUpdatedAt } from '@cio/db/queries/course';
+import { skipActiveReminderDeliveriesForLesson, touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { db } from '@cio/db/drizzle';
 import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
@@ -100,6 +100,16 @@ export async function getLesson(lessonId: string): Promise<LessonById> {
   }
 }
 
+function hasSessionMoved(
+  before: Pick<TLesson, 'lessonAt' | 'callUrl'>,
+  after: Pick<TLesson, 'lessonAt' | 'callUrl'>
+): boolean {
+  const beforeAt = before.lessonAt ? new Date(before.lessonAt).getTime() : null;
+  const afterAt = after.lessonAt ? new Date(after.lessonAt).getTime() : null;
+
+  return beforeAt !== afterAt || (before.callUrl ?? null) !== (after.callUrl ?? null);
+}
+
 /**
  * Updates a lesson
  * @param lessonId Lesson ID
@@ -109,9 +119,10 @@ export async function getLesson(lessonId: string): Promise<LessonById> {
 export async function updateLessonService(lessonId: string, data: TLessonUpdate): Promise<TLesson> {
   try {
     const payload: TLessonUpdate = { ...data };
+    const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
+    const existing = payload.slug !== undefined || touchesSession ? await getLessonById(lessonId) : null;
 
     if (payload.slug !== undefined) {
-      const existing = await getLessonById(lessonId);
       if (!existing) {
         throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
       }
@@ -134,6 +145,10 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
 
     if (updated.courseId) {
       await touchCourseUpdatedAt(updated.courseId);
+    }
+
+    if (existing && hasSessionMoved(existing, updated)) {
+      await skipActiveReminderDeliveriesForLesson(lessonId, 'lesson_rescheduled');
     }
 
     return updated;

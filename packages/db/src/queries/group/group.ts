@@ -259,6 +259,57 @@ export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: 
 };
 
 /**
+ * Active org tutor who mentors a cohort that includes this course.
+ * Cohort role must be ADMIN or TUTOR. Org-only tutors are not included.
+ */
+export const isActiveOrgTutorOfCourseCohort = async (courseId: string, profileId: string): Promise<boolean> => {
+  const result = await db
+    .select({ cohortMemberId: schema.cohortMember.id })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .innerJoin(
+      schema.organizationmember,
+      and(
+        eq(schema.organizationmember.organizationId, schema.group.organizationId),
+        eq(schema.organizationmember.profileId, profileId),
+        eq(schema.organizationmember.roleId, ROLE.TUTOR),
+        eq(schema.organizationmember.status, 'ACTIVE')
+      )
+    )
+    .innerJoin(schema.cohort, eq(schema.cohort.organizationId, schema.group.organizationId))
+    .innerJoin(
+      schema.cohortCourse,
+      and(eq(schema.cohortCourse.cohortId, schema.cohort.id), eq(schema.cohortCourse.courseId, schema.course.id))
+    )
+    .innerJoin(
+      schema.cohortMember,
+      and(
+        eq(schema.cohortMember.cohortId, schema.cohort.id),
+        eq(schema.cohortMember.profileId, profileId),
+        or(eq(schema.cohortMember.roleId, ROLE.ADMIN), eq(schema.cohortMember.roleId, ROLE.TUTOR))
+      )
+    )
+    .where(eq(schema.course.id, courseId))
+    .limit(1);
+
+  return result.length > 0;
+};
+
+/**
+ * Course group ADMIN/TUTOR, org ADMIN, or an active org tutor who mentors a cohort
+ * that includes the course. Students and org-only tutors return false.
+ */
+export const canAccessCourseSubmissions = async (courseId: string, profileId: string): Promise<boolean> => {
+  const isTeamOrOrgAdmin = await isCourseTeamMemberOrOrgAdmin(courseId, profileId);
+
+  if (isTeamOrOrgAdmin) {
+    return true;
+  }
+
+  return isActiveOrgTutorOfCourseCohort(courseId, profileId);
+};
+
+/**
  * Resolves program-based access to a course.
  * Returns the course group/org context plus the matched program member role.
  */

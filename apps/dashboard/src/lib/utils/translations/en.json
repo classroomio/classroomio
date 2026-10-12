@@ -1672,7 +1672,16 @@
       "monthly": "Monthly",
       "annually": "Annually",
       "popular": "Popular",
-      "per_org": "Per Organization"
+      "per_org": "Per Organization",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter rate · {days, plural, one {# day left} other {# days left}}",
+        "eyebrow_closing": "Early Adopter rate · Last {days} days",
+        "eyebrow_today": "Early Adopter rate · Ends today",
+        "title": "Priced low on purpose. Not for long.",
+        "title_closing": "Priced low on purpose. Closing soon.",
+        "body": "We keep ClassroomIO affordable because we build it with our customers, not for them. Lock in today’s rate before {date}. After that, the Early Adopter plan closes and new pricing applies.",
+        "link": "Read why we do it"
+      }
     }
   },
   "widgets": {
@@ -2564,7 +2573,7 @@
           "join": "Join session",
           "live_indicator": "This lesson is a live session",
           "heading": "Live session",
-          "intro": "Set the join link and scheduled time for this live class. Students get reminders 24 hours and 1 hour before.",
+          "intro": "Set the join link and scheduled time for this live class. Students get email reminders before each session. Choose when in Course settings.",
           "link_label": "Join link (Zoom, Meet, etc.)",
           "datetime_label": "Date and time",
           "timezone_label": "Timezone",
@@ -2593,7 +2602,15 @@
           "add_apple": "Apple Calendar (.ics)",
           "starts_in": "Starts in",
           "session_ended": "Session ended",
-          "link_copied": "Link copied"
+          "link_copied": "Link copied",
+          "duration_label": "Expected session length (minutes)",
+          "duration_helper": "Used to show when the session is live and when it has ended.",
+          "recording_url_label": "Recording link",
+          "recording_url_helper": "Shown to students after the session ends.",
+          "recording_url_invalid": "Enter a link that starts with http:// or https://",
+          "recording_url_needs_session": "Add a meeting link and start time before adding a recording",
+          "past_sessions_heading": "Past sessions",
+          "watch_recording": "Watch recording"
         },
         "share_your_knowledge": "Share your knowledge with the world by creating engaging lessons. Start by clicking on the Add button.",
         "student_share_your_knowledge": "No lessons have been added to this course yet. Please check back later.",
@@ -3189,7 +3206,9 @@
                 "responses": "Responses",
                 "attempts": "Attempts",
                 "no_responses": "No responses yet",
-                "other": "Other"
+                "other": "Other",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "individual": {
                 "heading": "Individual",
@@ -3410,6 +3429,10 @@
                 "preview": {
                   "accepted_types_label": "Accepted types",
                   "max_size_label": "Max size (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "video_recording": {
@@ -3604,6 +3627,10 @@
       },
       "submissions": {
         "title": "Submitted Exercises",
+        "access": {
+          "denied_title": "You can't grade submissions for this course",
+          "denied_description": "Ask an admin to add you as a course tutor, or as a mentor on a cohort that includes this course."
+        },
         "submission_status": {
           "submitted": "Submitted",
           "in_progress": "In Progress",
@@ -3638,6 +3665,22 @@
           "delete_prompt": "Delete",
           "delete_error": "Failed to delete submission",
           "delete_success": "Successfully deleted submission"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "marks": {
@@ -3883,6 +3926,13 @@
           "invite_sent": "Invite Sent",
           "you": "You",
           "remove": "Remove",
+          "change_role": {
+            "label": "Role for {email}",
+            "title": "Change role",
+            "description": "Change {email} from {currentRole} to {nextRole}?",
+            "cancel": "Cancel",
+            "approve": "Approve"
+          },
           "link_invite": {
             "heading": "Link Invite",
             "description": "Anyone with this link can join your organization.",
@@ -4068,7 +4118,8 @@
               "description": {
                 "min_char": "'Description is too short, min of 5 characters"
               }
-            }
+            },
+            "validation_error": "One or more reviews are invalid. Open each review and fix its name, avatar, rating and description before saving."
           },
           "certificate_form": {
             "upload_template": "Certificate template"
@@ -4323,7 +4374,66 @@
         },
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
-        "save": "Save Changes"
+        "save": "Save Changes",
+        "live_session_reminders": {
+          "legend": "Session email reminders",
+          "description": "Choose when enrolled students get an email with the join link before each live session.",
+          "empty": "No reminders. Students won't get emails before live sessions.",
+          "add": "Add reminder",
+          "presets_label": "Quick add:",
+          "remove": "Remove reminder",
+          "unit_label": "Unit",
+          "units": {
+            "days": "Days",
+            "hours": "Hours",
+            "minutes": "Minutes"
+          },
+          "duration": {
+            "days": "{count, plural, one {# day} other {# days}}",
+            "hours": "{count, plural, one {# hour} other {# hours}}",
+            "minutes": "{count, plural, one {# minute} other {# minutes}}"
+          },
+          "preview": "{duration} before each session",
+          "offset_before": "{duration} before",
+          "max_count": "You can add up to {count} reminders.",
+          "validation": {
+            "amount": "Enter a whole number of 1 or more.",
+            "min": "Reminders must be at least 15 minutes before the session.",
+            "max": "Reminders can be at most 7 days before the session.",
+            "duplicate": "You already have a reminder at this time.",
+            "fix_errors": "Fix the session reminder errors before saving."
+          },
+          "log": {
+            "title": "Delivery log",
+            "description": "Reminder emails for sessions in the last 30 days and upcoming sessions.",
+            "view": "View logs",
+            "empty": "No reminders yet. They appear here as sessions get close.",
+            "load_error": "Could not load the reminder delivery log.",
+            "columns": {
+              "session": "Session",
+              "student": "Student",
+              "reminder": "Reminder",
+              "status": "Status",
+              "detail": "Detail"
+            }
+          },
+          "statuses": {
+            "pending": "Pending",
+            "queued": "Queued",
+            "sent": "Sent",
+            "failed": "Failed",
+            "skipped": "Skipped"
+          },
+          "skip_reasons": {
+            "preferences": "The student turned off session reminder emails.",
+            "no_email": "The student has no email address.",
+            "lesson_past": "The session had already started.",
+            "offset_removed": "This reminder was removed from the course settings.",
+            "lesson_rescheduled": "The session time or join link changed.",
+            "window_passed": "The reminder time had already passed when it was scheduled.",
+            "unenrolled": "The student is no longer enrolled."
+          }
+        }
       }
     },
     "not_permitted": {
@@ -5097,7 +5207,10 @@
       "user_exists": "User Already Exists",
       "invite_fail": "Failed to send invite, please try again",
       "remove_fail": "Failed to remove user, please try again",
-      "remove_success": "Member removed successfully"
+      "remove_success": "Member removed successfully",
+      "role_updated": "Role updated",
+      "role_update_failed": "Failed to update role",
+      "last_admin": "This organization needs at least one admin"
     },
     "link_invite": {
       "generated": "Link invite generated",
@@ -6109,5 +6222,30 @@
       "description": "A complete course with lessons, exercises and settings. Copy it, then make it yours.",
       "browse": "Browse all templates"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Payment received. One step left.",
+      "body": "Create your account, or log in, and we connect your Early Adopter plan to your academy automatically.",
+      "sign_up": "Create my account",
+      "log_in": "Log in",
+      "continue": "Continue to my academy"
+    },
+    "success": {
+      "title": "Your Early Adopter plan is active",
+      "body": "Your rate is locked in and every Early Adopter feature is now unlocked for your academy.",
+      "continue": "Start building"
+    },
+    "errors": {
+      "invalid": "This link is not valid. Check the email we sent you, or contact support.",
+      "expired": "This link has expired. Contact support and we will help you connect your plan.",
+      "unavailable": "This plan link has already been used or is no longer active. Contact support if this is a mistake.",
+      "conflict": "This academy already has a paid plan, so we could not connect this one. Contact support and we will help."
+    }
+  },
+  "whats_new": {
+    "new_badge": "New",
+    "read_full": "Read the full changelog",
+    "close": "Close"
   }
 }

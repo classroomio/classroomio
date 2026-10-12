@@ -1682,7 +1682,16 @@
       "monthly": "Aylık",
       "annually": "Yıllık",
       "popular": "Popüler",
-      "per_org": "Kuruluş Başına"
+      "per_org": "Kuruluş Başına",
+      "priced_low": {
+        "eyebrow_open": "Early Adopter fiyatı · {days, plural, one {# gün kaldı} other {# gün kaldı}}",
+        "eyebrow_closing": "Early Adopter fiyatı · Son {days} gün",
+        "eyebrow_today": "Early Adopter fiyatı · Bugün bitiyor",
+        "title": "Bilerek düşük fiyat. Uzun sürmeyecek.",
+        "title_closing": "Bilerek düşük fiyat. Yakında kapanıyor.",
+        "body": "ClassroomIO’yu uygun fiyatlı tutuyoruz çünkü onu yalnızca müşterilerimiz için değil, müşterilerimizle birlikte geliştiriyoruz. Bugünkü fiyatı {date} tarihinden önce sabitleyin. Ardından Early Adopter planı kapanır ve yeni fiyatlar geçerli olur.",
+        "link": "Bunu neden yaptığımızı okuyun"
+      }
     }
   },
   "widgets": {
@@ -2574,7 +2583,7 @@
           "join": "Oturuma katılın",
           "live_indicator": "Bu ders canlı bir oturumdur",
           "heading": "Lcanlı oturum",
-          "intro": "Bu canlı ders için katılma bağlantısını ve planlanan zamanı ayarlayın. Öğrenciler 24 saat ve 1 saat önce hatırlatıcı alır.",
+          "intro": "Bu canlı ders için katılma bağlantısını ve planlanan zamanı ayarlayın. Öğrenciler her oturumdan önce e-posta hatırlatıcısı alır. Ne zaman gönderileceğini kurs ayarlarından seçin.",
           "link_label": "Katılım bağlantısı (Yakınlaştırma, Toplantı vb.)",
           "datetime_label": "Tarih ve saat",
           "timezone_label": "Timezone",
@@ -2603,7 +2612,15 @@
           "add_apple": "Apple Takvim (.ics)",
           "starts_in": "Başlangıç tarihi",
           "session_ended": "Oturum sona erdi",
-          "link_copied": "Bağlantı kopyalandı"
+          "link_copied": "Bağlantı kopyalandı",
+          "duration_label": "Beklenen oturum süresi (dakika)",
+          "duration_helper": "Oturumun ne zaman canlı olduğunu ve ne zaman sona erdiğini göstermek için kullanılır.",
+          "recording_url_label": "Kayıt bağlantısı",
+          "recording_url_helper": "Oturum sona erdikten sonra öğrencilere gösterilir.",
+          "recording_url_invalid": "http:// veya https:// ile başlayan bir bağlantı girin",
+          "recording_url_needs_session": "Kayıt eklemeden önce bir toplantı bağlantısı ve başlangıç saati ekleyin",
+          "past_sessions_heading": "Geçmiş oturumlar",
+          "watch_recording": "Kaydı izle"
         },
         "share_your_knowledge": "İlgi çekici dersler oluşturarak bilginizi dünyayla paylaşın. Ekle düğmesine tıklayarak başlayın.",
         "student_share_your_knowledge": "Bu kursa henüz ders eklenmedi. Lütfen daha sonra tekrar kontrol edin.",
@@ -3197,7 +3214,9 @@
                 "responses": "Yanıtlar",
                 "attempts": "Girişimler",
                 "no_responses": "Henüz yanıt yok",
-                "other": "Diğer"
+                "other": "Diğer",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "individual": {
                 "heading": "Bireysel",
@@ -3418,6 +3437,10 @@
                 "preview": {
                   "accepted_types_label": "Kabul edilen türler",
                   "max_size_label": "Maksimum boyut (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "video_recording": {
@@ -3614,6 +3637,10 @@
       },
       "submissions": {
         "title": "Gönderilen Egzersizler",
+        "access": {
+          "denied_title": "Bu kursun gönderimlerini notlayamazsın",
+          "denied_description": "Bir yöneticiden seni kurs eğitmeni veya bu kursu içeren bir kohortun mentoru olarak eklemesini iste."
+        },
         "submission_status": {
           "submitted": "Gönderildi",
           "in_progress": "Devam Ediyor",
@@ -3648,6 +3675,22 @@
           "delete_prompt": "Delete",
           "delete_error": "Gönderim silinemedi",
           "delete_success": "Gönderim başarıyla silindi"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "marks": {
@@ -3903,6 +3946,13 @@
             "toggle_label": "Bağlantı daveti etkin",
             "disabled_notice": "Bu bağlantı devre dışı bırakıldı. Yeni üyelerin bağlantı yoluyla katılmasına izin vermek için etkinleştirin.",
             "select_role": "Bir rol seçin"
+          },
+          "change_role": {
+            "label": "{email} için rol",
+            "title": "Rolü değiştir",
+            "description": "{email} rolü {currentRole} iken {nextRole} olsun mu?",
+            "cancel": "İptal",
+            "approve": "Onayla"
           }
         },
         "filter": {
@@ -4078,7 +4128,8 @@
               "description": {
                 "min_char": "'Açıklama çok kısa, en az 5 karakter"
               }
-            }
+            },
+            "validation_error": "Bir veya daha fazla yorum geçersiz. Kaydetmeden önce her yorumu açın ve adını, avatarını, puanını ve açıklamasını düzeltin."
           },
           "certificate_form": {
             "upload_template": "Sertifika şablon"
@@ -4333,7 +4384,66 @@
         },
         "delete": "Kursu Sil",
         "delete_text": "Bu kursu silin, bu işlem geri alınamaz",
-        "save": "Değişiklikleri Kaydet"
+        "save": "Değişiklikleri Kaydet",
+        "live_session_reminders": {
+          "legend": "Oturum e-posta hatırlatıcıları",
+          "description": "Kayıtlı öğrencilerin her canlı oturumdan önce katılma bağlantısını içeren e-postayı ne zaman alacağını seçin.",
+          "empty": "Hatırlatıcı yok. Öğrenciler canlı oturumlardan önce e-posta almayacak.",
+          "add": "Hatırlatıcı ekle",
+          "presets_label": "Hızlı ekle:",
+          "remove": "Hatırlatıcıyı kaldır",
+          "unit_label": "Birim",
+          "units": {
+            "days": "Gün",
+            "hours": "Saat",
+            "minutes": "Dakika"
+          },
+          "duration": {
+            "days": "{count, plural, one {# gün} other {# gün}}",
+            "hours": "{count, plural, one {# saat} other {# saat}}",
+            "minutes": "{count, plural, one {# dakika} other {# dakika}}"
+          },
+          "preview": "Her oturumdan {duration} önce",
+          "offset_before": "{duration} önce",
+          "max_count": "En fazla {count} hatırlatıcı ekleyebilirsiniz.",
+          "validation": {
+            "amount": "1 veya daha büyük bir tam sayı girin.",
+            "min": "Hatırlatıcılar oturumdan en az 15 dakika önce olmalıdır.",
+            "max": "Hatırlatıcılar oturumdan en fazla 7 gün önce olabilir.",
+            "duplicate": "Bu zamanda zaten bir hatırlatıcınız var.",
+            "fix_errors": "Kaydetmeden önce oturum hatırlatıcısı hatalarını düzeltin."
+          },
+          "log": {
+            "title": "Gönderim günlüğü",
+            "description": "Son 30 gündeki ve yaklaşan oturumlar için hatırlatma e-postaları.",
+            "view": "Kayıtları görüntüle",
+            "empty": "Henüz hatırlatıcı yok. Oturumlar yaklaştıkça burada görünürler.",
+            "load_error": "Hatırlatıcı gönderim günlüğü yüklenemedi.",
+            "columns": {
+              "session": "Oturum",
+              "student": "Öğrenci",
+              "reminder": "Hatırlatıcı",
+              "status": "Durum",
+              "detail": "Ayrıntı"
+            }
+          },
+          "statuses": {
+            "pending": "Beklemede",
+            "queued": "Sırada",
+            "sent": "Gönderildi",
+            "failed": "Başarısız",
+            "skipped": "Atlandı"
+          },
+          "skip_reasons": {
+            "preferences": "Öğrenci oturum hatırlatma e-postalarını kapattı.",
+            "no_email": "Öğrencinin e-posta adresi yok.",
+            "lesson_past": "Oturum zaten başlamıştı.",
+            "offset_removed": "Bu hatırlatıcı kurs ayarlarından kaldırıldı.",
+            "lesson_rescheduled": "Oturum saati veya katılma bağlantısı değişti.",
+            "window_passed": "Planlandığında hatırlatma zamanı zaten geçmişti.",
+            "unenrolled": "Öğrenci artık kayıtlı değil."
+          }
+        }
       }
     },
     "not_permitted": {
@@ -5107,7 +5217,10 @@
       "user_exists": "Kullanıcı Zaten Var",
       "invite_fail": "Davet gönderilemedi, lütfen tekrar deneyin",
       "remove_fail": "Kullanıcı kaldırılamadı, lütfen tekrar deneyin",
-      "remove_success": "Üye başarıyla kaldırıldı"
+      "remove_success": "Üye başarıyla kaldırıldı",
+      "role_updated": "Rol güncellendi",
+      "role_update_failed": "Rol güncellenemedi",
+      "last_admin": "Bu kuruluşta en az bir yönetici olmalıdır"
     },
     "link_invite": {
       "generated": "Bağlantı daveti oluşturuldu",
@@ -6119,5 +6232,30 @@
       "description": "Dersler, alıştırmalar ve ayarlarla eksiksiz bir kurs. Kopyalayın ve kendinize ait yapın.",
       "browse": "Tüm şablonlara göz atın"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Ödeme alındı. Bir adım kaldı.",
+      "body": "Hesabınızı oluşturun veya giriş yapın, Early Adopter planınızı akademinize otomatik olarak bağlayalım.",
+      "sign_up": "Hesabımı oluştur",
+      "log_in": "Giriş yap",
+      "continue": "Akademime devam et"
+    },
+    "success": {
+      "title": "Early Adopter planınız etkin",
+      "body": "Fiyatınız sabitlendi ve tüm Early Adopter özellikleri artık akademiniz için açık.",
+      "continue": "Oluşturmaya başla"
+    },
+    "errors": {
+      "invalid": "Bu bağlantı geçerli değil. Size gönderdiğimiz e-postayı kontrol edin veya destekle iletişime geçin.",
+      "expired": "Bu bağlantının süresi doldu. Destekle iletişime geçin, planınızı bağlamanıza yardım edelim.",
+      "unavailable": "Bu plan bağlantısı daha önce kullanıldı veya artık etkin değil. Bir hata olduğunu düşünüyorsanız destekle iletişime geçin.",
+      "conflict": "Bu akademinin zaten ücretli bir planı var, bu yüzden bunu bağlayamadık. Destekle iletişime geçin, yardımcı olalım."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Yeni",
+    "read_full": "Tüm değişiklik günlüğünü oku",
+    "close": "Kapat"
   }
 }

@@ -6,6 +6,7 @@ import {
   validateTextareaAnswer
 } from '@cio/question-types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { isFileTypeAllowed, normalizeAcceptedFileTypes } from '@cio/utils/file-upload';
 import type { TNewQuestionAnswer, TNewSubmission, TSubmission } from '@cio/db/types';
 import type {
   TSubmissionAnswerUpdate,
@@ -37,7 +38,7 @@ import {
 import { getCourseById, getCourseWithOrgData } from '@cio/db/queries/course';
 import { getCourseTeachers, getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 import { getExerciseById, getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
-import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { canAccessCourseSubmissions, getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
 
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
@@ -335,12 +336,11 @@ export async function listSubmissionsByExercise(
 export type ExerciseSubmissionsOverview = {
   mySubmission: Awaited<ReturnType<typeof listSubmissionsByExercise>>;
   allSubmissions: Awaited<ReturnType<typeof listSubmissionsByExercise>>;
+  canGrade: boolean;
 };
 
 /**
- * Returns submission overview for an exercise based on user role.
- * - Students: mySubmission = their submission(s), allSubmissions = []
- * - Instructors: mySubmission = [], allSubmissions = all submissions in exercise
+ * Students receive only their own submissions. Graders also receive every submission in the exercise.
  */
 export async function listExerciseSubmissionsOverview(
   courseId: string,
@@ -348,20 +348,20 @@ export async function listExerciseSubmissionsOverview(
   profileId: string
 ): Promise<ExerciseSubmissionsOverview> {
   try {
-    const [groupMemberId, isInstructor] = await Promise.all([
+    const [groupMemberId, canGrade] = await Promise.all([
       getGroupMemberIdByCourseAndProfile(courseId, profileId),
-      isCourseTeamMemberOrOrgAdmin(courseId, profileId)
+      canAccessCourseSubmissions(courseId, profileId)
     ]);
 
     const mySubmission = groupMemberId ? await listSubmissionsByExercise(courseId, exerciseId, groupMemberId) : [];
 
-    if (!isInstructor) {
-      return { mySubmission, allSubmissions: [] };
+    if (!canGrade) {
+      return { mySubmission, allSubmissions: [], canGrade: false };
     }
 
     const allSubmissions = await listSubmissionsByExercise(courseId, exerciseId);
 
-    return { mySubmission, allSubmissions };
+    return { mySubmission, allSubmissions, canGrade: true };
   } catch (error) {
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to list exercise submissions overview',
@@ -654,6 +654,15 @@ export async function createSubmissionService(
         }
       }
 
+      if (answerData.type === 'FILE_UPLOAD') {
+        const acceptedTypes = normalizeAcceptedFileTypes(question.settings.acceptedTypes);
+        const mimeType = answerData.mimeType ?? '';
+
+        if (!isFileTypeAllowed({ name: answerData.fileName, type: mimeType }, acceptedTypes)) {
+          throw new AppError('File type is not allowed for this question', ErrorCodes.FILE_TYPE_NOT_ALLOWED, 400);
+        }
+      }
+
       answerByQuestionId.set(ans.questionId, answerData);
 
       answerRows.push({
@@ -753,18 +762,31 @@ export async function createSubmissionService(
   }
 }
 
+function assertSubmissionBelongsToCourse(submission: { courseId: string | null }, courseId: string) {
+  if (submission.courseId !== courseId) {
+    throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
+  }
+}
+
 /**
- * Updates a submission
+ * Updates a submission in the given course.
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @param data Partial submission update data
  * @returns Updated submission
  */
-export async function updateSubmissionService(submissionId: string, data: TSubmissionUpdate): Promise<TSubmission> {
+export async function updateSubmissionService(
+  submissionId: string,
+  courseId: string,
+  data: TSubmissionUpdate
+): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const currentGradingState = resolveSubmissionGradingState(submission);
     const requestedGradingState = resolveRequestedGradingState(data);
@@ -814,12 +836,14 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
 /**
  * Updates a question answer in a submission
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @param questionId Question ID
  * @param data Question answer update data
  * @returns Updated question answer
  */
 export async function updateSubmissionAnswer(
   submissionId: string,
+  courseId: string,
   questionId: number,
   data: TSubmissionAnswerUpdate
 ): Promise<any> {
@@ -828,6 +852,8 @@ export async function updateSubmissionAnswer(
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const updateData: { point?: number } = {};
     if (data.points !== undefined) updateData.point = data.points;
@@ -858,6 +884,7 @@ export async function updateSubmissionAnswer(
  */
 export async function updateSubmissionGradesBatch(
   submissionId: string,
+  courseId: string,
   data: TSubmissionGradesUpdate
 ): Promise<TSubmission> {
   try {
@@ -865,6 +892,8 @@ export async function updateSubmissionGradesBatch(
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const currentGradingState = resolveSubmissionGradingState(submission);
     const targetGradingState: SubmissionGradingState = 'completed';
@@ -915,14 +944,17 @@ export async function updateSubmissionGradesBatch(
 /**
  * Deletes a submission
  * @param submissionId Submission ID
+ * @param courseId Course the caller is allowed to grade
  * @returns Deleted submission
  */
-export async function deleteSubmissionService(submissionId: string): Promise<TSubmission> {
+export async function deleteSubmissionService(submissionId: string, courseId: string): Promise<TSubmission> {
   try {
     const submission = await getSubmissionById(submissionId);
     if (!submission) {
       throw new AppError('Submission not found', ErrorCodes.SUBMISSION_NOT_FOUND, 404);
     }
+
+    assertSubmissionBelongsToCourse(submission, courseId);
 
     const deleted = await deleteSubmission(submissionId);
     if (!deleted) {

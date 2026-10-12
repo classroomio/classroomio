@@ -83,13 +83,18 @@
   );
   const canCheck = $derived(!!$profile.id && isCourseReady);
 
+  const serverAuthorizedCourse = $derived(data.course?.id === courseId);
+
   const isPermitted = $derived.by(() => {
     if (!isCourseReady) return false;
+
     if (!canCheck) return true;
 
     if ($isOrgAdmin === null) return true;
 
-    return $isOrgAdmin || user;
+    if ($isOrgAdmin || user) return true;
+
+    return serverAuthorizedCourse;
   });
 
   const isExercisePage = $derived(!!data.exerciseId);

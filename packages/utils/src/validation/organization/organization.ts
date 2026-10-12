@@ -1,7 +1,7 @@
 import * as z from 'zod';
 import { EMAIL_LOCALES, STUDENT_EMAIL_IDS } from '../../email';
 
-import { blockedSubdomain } from '@cio/utils/constants';
+import { ROLE, blockedSubdomain } from '@cio/utils/constants';
 import { ZCourseType } from '../course/course-type';
 import { containsDisallowedHrefs } from '../shared';
 
@@ -107,6 +107,23 @@ export const ZCancelOrgPlan = z.object({
 
 export type TCancelOrgPlan = z.infer<typeof ZCancelOrgPlan>;
 
+export const ZEarlyAdopterSubscriptionEvent = z.object({
+  event: z.enum(['activated', 'updated', 'revoked']),
+  subscriptionId: z.string().min(1),
+  customerId: z.string().min(1).nullish(),
+  customerEmail: z.email(),
+  checkoutId: z.string().min(1).nullish(),
+  payload: z.record(z.string(), z.unknown())
+});
+
+export type TEarlyAdopterSubscriptionEvent = z.infer<typeof ZEarlyAdopterSubscriptionEvent>;
+
+export const ZClaimEarlyAdopterPlan = z.object({
+  token: z.string().trim().min(20).max(200)
+});
+
+export type TClaimEarlyAdopterPlan = z.infer<typeof ZClaimEarlyAdopterPlan>;
+
 export const ZCreateOrganization = z.object({
   name: z
     .string()
@@ -163,7 +180,7 @@ export const ZUpdateOrganization = z.object({
       internalEnrollmentOnly: z.boolean().optional(),
       language: z
         .object({
-          locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr']).optional(),
+          locale: z.enum(['en', 'hi', 'fr', 'pt', 'de', 'vi', 'ru', 'es', 'pl', 'da', 'tr', 'it']).optional(),
           enforced: z.boolean().optional()
         })
         .optional(),
@@ -216,6 +233,12 @@ export const ZRemoveTeamMember = z.object({
 });
 
 export type TRemoveTeamMember = z.infer<typeof ZRemoveTeamMember>;
+
+export const ZUpdateTeamMemberRole = z.object({
+  roleId: z.union([z.literal(ROLE.ADMIN), z.literal(ROLE.TUTOR)])
+});
+
+export type TUpdateTeamMemberRole = z.infer<typeof ZUpdateTeamMemberRole>;
 
 export const ZCreateLinkInvite = z.object({
   roleId: z.number().int().positive()

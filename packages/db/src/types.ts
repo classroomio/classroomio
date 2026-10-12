@@ -139,6 +139,8 @@ export type TNewTestTenant = typeof schema.testTenant.$inferInsert;
 
 export type TOrganizationPlan = typeof schema.organizationPlan.$inferSelect;
 export type TNewOrganizationPlan = typeof schema.organizationPlan.$inferInsert;
+export type TEarlyAdopterClaim = typeof schema.earlyAdopterClaim.$inferSelect;
+export type TNewEarlyAdopterClaim = typeof schema.earlyAdopterClaim.$inferInsert;
 
 export type TLessonLanguage = typeof schema.lessonLanguage.$inferSelect;
 export type TNewLessonLanguage = typeof schema.lessonLanguage.$inferInsert;
@@ -265,3 +267,5 @@ export type TContentReportStatus = (typeof schema.contentReportStatus.enumValues
 export type TContentReportResolutionCode = (typeof schema.contentReportResolutionCode.enumValues)[number];
 export type TContentReport = typeof schema.contentReport.$inferSelect;
 export type TNewContentReport = typeof schema.contentReport.$inferInsert;
+export type TLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferSelect;
+export type TNewLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferInsert;

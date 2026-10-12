@@ -22,7 +22,9 @@
     },
     tags: ['autodocs']
   });
+</script>
 
+<script lang="ts">
   let defaultValue = $state<number | null>(50);
   let labeledValue = $state<number | null>(null);
   let errorValue = $state<number | null>(150);

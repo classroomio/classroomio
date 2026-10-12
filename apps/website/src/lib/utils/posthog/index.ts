@@ -1,9 +1,6 @@
 import { PostHog } from 'posthog-node';
+import { POSTHOG_HOST, POSTHOG_KEY } from './constants';
 
-export const client = new PostHog(
-  'phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov',
-
-  { host: 'https://app.posthog.com' }
-);
+export const client = new PostHog(POSTHOG_KEY, { host: POSTHOG_HOST });
 
 await client.shutdownAsync();

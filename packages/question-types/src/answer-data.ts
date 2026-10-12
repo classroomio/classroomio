@@ -13,6 +13,7 @@ export type FileUploadAnswerData = {
   fileName: string;
   mimeType?: string;
   size?: number;
+  fileUrl?: string;
 };
 export type MatchingAnswerData = { type: 'MATCHING'; pairs: Array<{ left: string; right: string }> };
 export type OrderingAnswerData = { type: 'ORDERING'; orderedValues: string[] };

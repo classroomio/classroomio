@@ -313,7 +313,10 @@
       "user_exists": "Użytkownik już istnieje",
       "invite_fail": "Nie udało się wysłać zaproszenia. Spróbuj ponownie",
       "remove_fail": "Nie udało się usunąć użytkownika. Spróbuj ponownie",
-      "remove_success": "Członek usunięty pomyślnie"
+      "remove_success": "Członek usunięty pomyślnie",
+      "role_updated": "Rola zaktualizowana",
+      "role_update_failed": "Nie udało się zaktualizować roli",
+      "last_admin": "Ta organizacja musi mieć co najmniej jednego administratora"
     },
     "lms": {
       "error": {
@@ -1136,7 +1139,66 @@
         "certificate_deadline_required_description": "Kursy zgodności wymagają terminu dostarczenia certyfikatu przed zapisaniem studentów. Ustaw termin w ustawieniach kursu przed publikacją.",
         "progression_mode_description": "Kontroluj, czy uczniowie mogą uzyskać dostęp do całej odblokowanej zawartości lub czy muszą ukończyć elementy w określonej kolejności. Reguła ukończenia na podstawie oglądania wideo działa tylko dla przesłanych filmów.",
         "allow_markdown_export": "Pozwól uczniom kopiować strony lekcji jako Markdown",
-        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej odblokowanej lekcji."
+        "allow_markdown_export_description": "Po włączeniu publiczne strony lekcji pokazują przycisk Kopiuj stronę, który eksportuje treść lekcji (bez filmów) jako Markdown. Publikuje też publiczny adres URL Markdown dla każdej odblokowanej lekcji.",
+        "live_session_reminders": {
+          "legend": "Przypomnienia e-mail o sesjach",
+          "description": "Wybierz, kiedy zapisani uczniowie otrzymają e-mail z linkiem dołączenia przed każdą sesją na żywo.",
+          "empty": "Brak przypomnień. Uczniowie nie otrzymają e-maili przed sesjami na żywo.",
+          "add": "Dodaj przypomnienie",
+          "presets_label": "Szybkie dodawanie:",
+          "remove": "Usuń przypomnienie",
+          "unit_label": "Jednostka",
+          "units": {
+            "days": "Dni",
+            "hours": "Godziny",
+            "minutes": "Minuty"
+          },
+          "duration": {
+            "days": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}}",
+            "hours": "{count, plural, one {# godzinę} few {# godziny} many {# godzin} other {# godziny}}",
+            "minutes": "{count, plural, one {# minutę} few {# minuty} many {# minut} other {# minuty}}"
+          },
+          "preview": "{duration} przed każdą sesją",
+          "offset_before": "{duration} wcześniej",
+          "max_count": "Możesz dodać maksymalnie {count} przypomnień.",
+          "validation": {
+            "amount": "Wpisz liczbę całkowitą równą 1 lub większą.",
+            "min": "Przypomnienia muszą być wysyłane co najmniej 15 minut przed sesją.",
+            "max": "Przypomnienia mogą być wysyłane najwyżej 7 dni przed sesją.",
+            "duplicate": "Masz już przypomnienie o tej porze.",
+            "fix_errors": "Popraw błędy w przypomnieniach o sesjach przed zapisaniem."
+          },
+          "log": {
+            "title": "Dziennik wysyłki",
+            "description": "E-maile z przypomnieniami dla sesji z ostatnich 30 dni i nadchodzących sesji.",
+            "view": "Zobacz dziennik",
+            "empty": "Brak przypomnień. Pojawią się tutaj, gdy sesje będą się zbliżać.",
+            "load_error": "Nie udało się wczytać dziennika wysyłki przypomnień.",
+            "columns": {
+              "session": "Sesja",
+              "student": "Uczeń",
+              "reminder": "Przypomnienie",
+              "status": "Status",
+              "detail": "Szczegóły"
+            }
+          },
+          "statuses": {
+            "pending": "Oczekujące",
+            "queued": "W kolejce",
+            "sent": "Wysłane",
+            "failed": "Niepowodzenie",
+            "skipped": "Pominięte"
+          },
+          "skip_reasons": {
+            "preferences": "Uczeń wyłączył e-mailowe przypomnienia o sesjach.",
+            "no_email": "Uczeń nie ma adresu e-mail.",
+            "lesson_past": "Sesja już się rozpoczęła.",
+            "offset_removed": "To przypomnienie zostało usunięte z ustawień kursu.",
+            "lesson_rescheduled": "Zmieniono godzinę sesji lub link dołączenia.",
+            "window_passed": "Czas przypomnienia już minął w chwili planowania.",
+            "unenrolled": "Uczeń nie jest już zapisany."
+          }
+        }
       },
       "analytics": {
         "title": "Analityka"
@@ -1262,7 +1324,8 @@
               "name": {
                 "min_char": "Nazwa jest za krótka, minimum 5 znaków"
               }
-            }
+            },
+            "validation_error": "Co najmniej jedna opinia jest nieprawidłowa. Otwórz każdą opinię i popraw jej nazwę, awatar, ocenę oraz opis przed zapisaniem."
           },
           "header_form": {
             "title": "Tytuł",
@@ -1423,6 +1486,13 @@
             "toggle_label": "Zaproszenie do linku aktywne",
             "disabled_notice": "To łącze jest wyłączone. Włącz tę opcję, aby umożliwić nowym członkom dołączanie za pośrednictwem łącza.",
             "select_role": "Wybierz rolę"
+          },
+          "change_role": {
+            "label": "Rola użytkownika {email}",
+            "title": "Zmień rolę",
+            "description": "Zmienić rolę {email} z {currentRole} na {nextRole}?",
+            "cancel": "Anuluj",
+            "approve": "Zatwierdź"
           }
         },
         "roles": {
@@ -1594,6 +1664,10 @@
       },
       "submissions": {
         "title": "Przesłane ćwiczenia",
+        "access": {
+          "denied_title": "Nie możesz oceniać prac z tego kursu",
+          "denied_description": "Poproś administratora, aby dodał Cię jako tutora kursu albo mentora kohorty, która obejmuje ten kurs."
+        },
         "grading_modal": {
           "details": "Szczegóły",
           "early": "Wcześnie",
@@ -1628,6 +1702,22 @@
           "awaiting_manual_hint": "Wymaga ręcznego sprawdzenia",
           "failed_hint": "Automatyczne ocenianie nie powiodło się. Przenieś to zgłoszenie z powrotem do sekcji Przesłane, aby spróbować ponownie.",
           "invalid_transition": "To przeniesienie stanu nie jest dozwolone w procesie oceniania"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1805,7 +1895,9 @@
                 "responses": "Odpowiedzi",
                 "no_responses": "Brak odpowiedzi",
                 "other": "Inne",
-                "attempts": "Próby"
+                "attempts": "Próby",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Ładowanie zgłoszeń...",
               "empty_title": "Nie ma jeszcze żadnych zgłoszeń",
@@ -1993,6 +2085,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Akceptowane typy (np. pdf, docx)",
                   "max_size_placeholder": "Maksymalny rozmiar (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {
@@ -2684,7 +2780,7 @@
         "session": {
           "join": "Dołącz do sesji",
           "heading": "Sesja na żywo",
-          "intro": "Ustaw link dołączenia i zaplanowany czas dla tych zajęć na żywo. Uczniowie otrzymują przypomnienia 24 godziny i 1 godzinę wcześniej.",
+          "intro": "Ustaw link dołączenia i zaplanowany czas dla tych zajęć na żywo. Uczniowie otrzymują przypomnienia e-mail przed każdą sesją. Termin wybierzesz w ustawieniach kursu.",
           "link_label": "Dołącz link (Zoom, Meet itp.)",
           "datetime_label": "Data i godzina",
           "timezone_label": "Strefa czasowa",
@@ -2714,7 +2810,15 @@
           "add_apple": "Kalendarz Apple (.ics)",
           "starts_in": "Zaczyna się w",
           "session_ended": "Sesja zakończona",
-          "link_copied": "Link skopiowany"
+          "link_copied": "Link skopiowany",
+          "duration_label": "Przewidywany czas trwania sesji (minuty)",
+          "duration_helper": "Służy do pokazania, kiedy sesja trwa na żywo, a kiedy się zakończyła.",
+          "recording_url_label": "Link do nagrania",
+          "recording_url_helper": "Wyświetlany uczniom po zakończeniu sesji.",
+          "recording_url_invalid": "Wpisz link zaczynający się od http:// lub https://",
+          "recording_url_needs_session": "Dodaj link do spotkania i godzinę rozpoczęcia, zanim dodasz nagranie",
+          "past_sessions_heading": "Poprzednie sesje",
+          "watch_recording": "Obejrzyj nagranie"
         },
         "student_share_your_knowledge": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
         "student_body_content": "Do tego kursu nie dodano jeszcze żadnych lekcji. Sprawdź później.",
@@ -3418,7 +3522,16 @@
       "monthly": "Miesięcznie",
       "annually": "Rocznie",
       "popular": "Popularne",
-      "per_org": "Na organizację"
+      "per_org": "Na organizację",
+      "priced_low": {
+        "eyebrow_open": "Cena Early Adopter · {days, plural, one {został # dzień} few {zostały # dni} many {zostało # dni} other {zostało # dni}}",
+        "eyebrow_closing": "Cena Early Adopter · Ostatnie {days} dni",
+        "eyebrow_today": "Cena Early Adopter · Kończy się dziś",
+        "title": "Niska cena celowo. Nie na długo.",
+        "title_closing": "Niska cena celowo. Wkrótce koniec.",
+        "body": "Utrzymujemy ClassroomIO w przystępnej cenie, bo budujemy go razem z naszymi klientami, a nie tylko dla nich. Zablokuj dzisiejszą cenę przed {date}. Potem plan Early Adopter zostanie zamknięty i zaczną obowiązywać nowe ceny.",
+        "link": "Przeczytaj, dlaczego tak robimy"
+      }
     },
     "plan_names": {
       "free": "Bezpłatny",
@@ -6139,5 +6252,30 @@
       "description": "Kompletny kurs z lekcjami, ćwiczeniami i ustawieniami. Skopiuj go, a następnie uczyń go swoim.",
       "browse": "Przeglądaj wszystkie szablony"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Płatność otrzymana. Został jeden krok.",
+      "body": "Utwórz konto lub zaloguj się, a automatycznie połączymy Twój plan Early Adopter z Twoją akademią.",
+      "sign_up": "Utwórz konto",
+      "log_in": "Zaloguj się",
+      "continue": "Przejdź do mojej akademii"
+    },
+    "success": {
+      "title": "Twój plan Early Adopter jest aktywny",
+      "body": "Twoja cena jest zablokowana, a wszystkie funkcje Early Adopter są teraz odblokowane dla Twojej akademii.",
+      "continue": "Zacznij tworzyć"
+    },
+    "errors": {
+      "invalid": "Ten link jest nieprawidłowy. Sprawdź e-mail, który wysłaliśmy, lub skontaktuj się z pomocą.",
+      "expired": "Ten link wygasł. Skontaktuj się z pomocą, a pomożemy połączyć Twój plan.",
+      "unavailable": "Ten link do planu został już użyty lub nie jest już aktywny. Skontaktuj się z pomocą, jeśli to pomyłka.",
+      "conflict": "Ta akademia ma już płatny plan, więc nie mogliśmy połączyć tego. Skontaktuj się z pomocą, a pomożemy."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Nowość",
+    "read_full": "Przeczytaj pełny dziennik zmian",
+    "close": "Zamknij"
   }
 }
