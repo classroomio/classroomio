@@ -4,7 +4,8 @@ import { describe, expect, it } from 'vitest';
 import {
   ZPublicApiCourseAnalyticsQuery,
   ZPublicApiCourseAnalyticsStudentsQuery,
-  ZPublicApiLearnerAnalyticsParam,
+  ZPublicApiCourseStudentAnalyticsParam,
+  ZPublicApiStudentAnalyticsParam,
   ZPublicApiOrgAnalyticsQuery
 } from '../src/validation/public-api';
 
@@ -13,7 +14,8 @@ const requestSchemas = {
   ZPublicApiOrgAnalyticsQuery,
   ZPublicApiCourseAnalyticsQuery,
   ZPublicApiCourseAnalyticsStudentsQuery,
-  ZPublicApiLearnerAnalyticsParam
+  ZPublicApiCourseStudentAnalyticsParam,
+  ZPublicApiStudentAnalyticsParam
 };
 
 describe('public API analytics request contract', () => {
@@ -39,7 +41,8 @@ describe('public API analytics request contract', () => {
     [ZPublicApiOrgAnalyticsQuery, { limit: '21' }],
     [ZPublicApiCourseAnalyticsQuery, { include: 'traffic' }],
     [ZPublicApiCourseAnalyticsStudentsQuery, { limit: '51' }],
-    [ZPublicApiLearnerAnalyticsParam, { profileId: 'not-a-uuid' }]
+    [ZPublicApiStudentAnalyticsParam, { profileId: 'not-a-uuid' }],
+    [ZPublicApiCourseStudentAnalyticsParam, { courseId: '11111111-1111-4111-8111-111111111111', profileId: 'nope' }]
   ] as const)('rejects out-of-contract input %#', (schema, input) => {
     expect(schema.safeParse(input).success).toBe(false);
   });

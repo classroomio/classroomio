@@ -3,7 +3,6 @@ import {
   ZPublicApiCourseInviteParam,
   ZPublicApiCourseInviteRevokeParam,
   ZPublicApiCourseInvitesQuery,
-  ZPublicApiCourseMemberAnalyticsQuery,
   ZPublicApiCourseMemberParam,
   ZPublicApiCourseMembersQuery,
   ZPublicApiCourseParam,
@@ -41,11 +40,6 @@ export const ZDeleteCourseMemberToolInput = ZPublicApiCourseMemberParam;
 
 export const ZResetCourseMemberProgressToolInput = ZPublicApiCourseMemberParam;
 
-export const ZGetCourseMemberAnalyticsToolInput = ZPublicApiCourseMemberAnalyticsQuery.safeExtend({
-  courseId: ZPublicApiCourseMemberParam.shape.courseId,
-  memberId: ZPublicApiCourseMemberParam.shape.memberId
-});
-
 export const ZListCourseInvitesToolInput = ZPublicApiCourseInvitesQuery.safeExtend({
   courseId: ZPublicApiCourseInviteParam.shape.courseId
 });
@@ -62,7 +56,6 @@ const getCourseMemberShape = ZGetCourseMemberToolInput.shape as unknown as ZodRa
 const updateCourseMemberShape = ZUpdateCourseMemberToolInput.shape as unknown as ZodRawShapeCompat;
 const deleteCourseMemberShape = ZDeleteCourseMemberToolInput.shape as unknown as ZodRawShapeCompat;
 const resetCourseMemberProgressShape = ZResetCourseMemberProgressToolInput.shape as unknown as ZodRawShapeCompat;
-const getCourseMemberAnalyticsShape = ZGetCourseMemberAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
 const listCourseInvitesShape = ZListCourseInvitesToolInput.shape as unknown as ZodRawShapeCompat;
 const createCourseInviteShape = ZCreateCourseInviteToolInput.shape as unknown as ZodRawShapeCompat;
 const revokeCourseInviteShape = ZRevokeCourseInviteToolInput.shape as unknown as ZodRawShapeCompat;
@@ -140,18 +133,6 @@ export function registerCourseMemberTools(server: McpServer, apiClient: Classroo
     async (args) => {
       const { courseId, memberId } = ZResetCourseMemberProgressToolInput.parse(args);
       const result = await apiClient.resetCourseMemberProgress(courseId, memberId);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'get_course_member_analytics',
-    `Fetch a student's progress and grade analytics for a course. Only student members have analytics. ${COURSE_TEAM_RULE}`,
-    getCourseMemberAnalyticsShape,
-    READ_ONLY,
-    async (args) => {
-      const { courseId, memberId, ...query } = ZGetCourseMemberAnalyticsToolInput.parse(args);
-      const result = await apiClient.getCourseMemberAnalytics(courseId, memberId, query);
       return jsonContent(result);
     }
   );

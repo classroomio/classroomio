@@ -68,7 +68,6 @@ export const MCP_TOOL_CREDIT_COST = {
   set_cohort_invite_link_revoked: 1,
   list_course_members: 0,
   get_course_member: 0,
-  get_course_member_analytics: 0,
   list_course_invites: 0,
   add_course_member: 1,
   update_course_member: 1,
@@ -81,9 +80,10 @@ export const MCP_TOOL_CREDIT_COST = {
   download_course_certificate: 0,
   update_course_certificate: 1,
   get_org_analytics: 0,
-  list_compliance_learners: 0,
-  get_learner_analytics: 0,
+  list_compliance_students: 0,
+  get_student_analytics: 0,
   get_course_analytics: 0,
+  get_course_student_analytics: 0,
   list_course_analytics_students: 0
 } as const;
 
@@ -175,15 +175,15 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_cohort_invite_link' ||
     toolName === 'list_course_members' ||
     toolName === 'get_course_member' ||
-    toolName === 'get_course_member_analytics' ||
     toolName === 'list_course_invites' ||
     toolName === 'get_course_certificate' ||
     toolName === 'list_course_certificates' ||
     toolName === 'download_course_certificate' ||
     toolName === 'get_org_analytics' ||
-    toolName === 'list_compliance_learners' ||
-    toolName === 'get_learner_analytics' ||
+    toolName === 'list_compliance_students' ||
+    toolName === 'get_student_analytics' ||
     toolName === 'get_course_analytics' ||
+    toolName === 'get_course_student_analytics' ||
     toolName === 'list_course_analytics_students'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;

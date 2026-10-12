@@ -7,6 +7,7 @@ import {
   ZPublicApiCertificateSettingsResponse,
   ZPublicApiCourseDetailResponse,
   ZPublicApiCourseListItemResponse,
+  ZPublicApiCourseMemberAnalyticsResponse,
   ZPublicApiCourseResponse,
   ZPublicApiCourseStructureResponse,
   ZPublicApiCreateAudienceResponse,
@@ -31,7 +32,8 @@ const responseSchemas = {
   ZPublicApiCourseStructureResponse,
   ZPublicApiUpdateCourseStructureResponse,
   ZPublicApiCertificateSettingsResponse,
-  ZPublicApiIssuedCertificateListItemResponse
+  ZPublicApiIssuedCertificateListItemResponse,
+  ZPublicApiCourseMemberAnalyticsResponse
 };
 
 describe('public API audience and course response contract', () => {

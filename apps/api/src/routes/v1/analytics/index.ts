@@ -1,7 +1,12 @@
 import { Hono } from '@api/utils/hono';
-import { v1LearnerAnalyticsRouter } from './learners';
-import { v1OrgAnalyticsRouter } from './analytics';
+import { createComplianceStudentsRouter, v1OrgAnalyticsRouter } from './analytics';
+import { v1CourseAnalyticsRouter } from './courses';
+import { createStudentAnalyticsRouter } from './students';
 
 export const v1AnalyticsRouter = new Hono()
-  .route('/learners', v1LearnerAnalyticsRouter)
-  .route('/', v1OrgAnalyticsRouter);
+  .route('/', v1OrgAnalyticsRouter)
+  .route('/compliance/students', createComplianceStudentsRouter())
+  .route('/courses/:courseId', v1CourseAnalyticsRouter)
+  .route('/students', createStudentAnalyticsRouter())
+  .route('/compliance/learners', createComplianceStudentsRouter({ isDeprecatedAlias: true }))
+  .route('/learners', createStudentAnalyticsRouter({ isDeprecatedAlias: true }));

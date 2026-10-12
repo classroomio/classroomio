@@ -25,7 +25,7 @@ export const CERTIFICATE_UPDATE_DESCRIPTION = [
 ].join(' ');
 
 export const CERTIFICATE_DOWNLOAD_DESCRIPTION =
-  "Download the certificate a student earned, rendered with the course's current design, as a PDF (format=pdf, default) or PNG (format=png). memberId comes from the issued certificates list. This works whether or not isDownloadable is on, because isDownloadable only controls learner downloads.";
+  "Download the certificate a student earned, rendered with the course's current design, as a PDF (format=pdf, default) or PNG (format=png). memberId comes from the issued certificates list. This works whether or not isDownloadable is on, because isDownloadable only controls student downloads.";
 
 const MEMBER_FORBIDDEN =
   'the automation actor is not a course member (directly or through a program) or org admin, or program access would exceed the Free plan student limit';

@@ -329,9 +329,9 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async getCourseMemberAnalytics(
+  async getCourseStudentAnalytics(
     courseId: string,
-    memberId: string,
+    profileId: string,
     query: Partial<TPublicApiCourseMemberAnalyticsQuery> = {}
   ) {
     const searchParams = new URLSearchParams();
@@ -340,7 +340,7 @@ export class ClassroomIoApiClient {
     }
 
     const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/public-api/v1/courses/${courseId}/members/${memberId}/analytics${querySuffix}`, {
+    return this.request(`/public-api/v1/analytics/courses/${courseId}/students/${profileId}${querySuffix}`, {
       method: 'GET'
     });
   }
@@ -568,22 +568,22 @@ export class ClassroomIoApiClient {
     return this.requestWithMeta(`/public-api/v1/analytics${toAnalyticsQuerySuffix(query)}`);
   }
 
-  async listComplianceLearners(query: Partial<TPublicApiPaginationQuery> = {}) {
-    return this.requestPaginated(`/public-api/v1/analytics/compliance/learners${toPageQuerySuffix(query)}`, {
+  async listComplianceStudents(query: Partial<TPublicApiPaginationQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/analytics/compliance/students${toPageQuerySuffix(query)}`, {
       method: 'GET'
     });
   }
 
-  async getLearnerAnalytics(profileId: string) {
-    return this.request(`/public-api/v1/analytics/learners/${profileId}`, { method: 'GET' });
+  async getStudentAnalytics(profileId: string) {
+    return this.request(`/public-api/v1/analytics/students/${profileId}`, { method: 'GET' });
   }
 
   async getCourseAnalytics(courseId: string, query: Partial<TPublicApiCourseAnalyticsQuery> = {}) {
-    return this.requestWithMeta(`/public-api/v1/courses/${courseId}/analytics${toAnalyticsQuerySuffix(query)}`);
+    return this.requestWithMeta(`/public-api/v1/analytics/courses/${courseId}${toAnalyticsQuerySuffix(query)}`);
   }
 
   async listCourseAnalyticsStudents(courseId: string, query: Partial<TPublicApiCourseAnalyticsStudentsQuery> = {}) {
-    return this.requestPaginated(`/public-api/v1/courses/${courseId}/analytics/students${toPageQuerySuffix(query)}`, {
+    return this.requestPaginated(`/public-api/v1/analytics/courses/${courseId}/students${toPageQuerySuffix(query)}`, {
       method: 'GET'
     });
   }

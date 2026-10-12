@@ -39,7 +39,7 @@ const tagGroup = (tag: (typeof apiTags)[number]) => ({
   display: 'group' as const,
   collapsed: true,
   items: Object.values(apiOperations)
-    .filter((operation) => operation.tagSlug === tag.slug)
+    .filter((operation) => operation.tagSlug === tag.slug && !operation.deprecated)
     .map((operation) => operation.route)
 });
 

@@ -20,9 +20,16 @@ function buildApp(scopes: string[]) {
     .get('/audience', (c) => c.json({ success: true }))
     .get('/analytics', (c) => c.json({ success: true }))
     .post('/analytics', (c) => c.json({ success: true }))
+    .get('/analytics/compliance/students', (c) => c.json({ success: true }))
+    .get('/analytics/courses/:courseId', (c) => c.json({ success: true }))
+    .get('/analytics/courses/:courseId/students', (c) => c.json({ success: true }))
+    .get('/analytics/courses/:courseId/students/:profileId', (c) => c.json({ success: true }))
+    .get('/analytics/students/:profileId', (c) => c.json({ success: true }))
+    .get('/analytics/compliance/learners', (c) => c.json({ success: true }))
     .get('/analytics/learners/:profileId', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics', (c) => c.json({ success: true }))
     .get('/courses/:courseId/analytics/students', (c) => c.json({ success: true }))
+    .get('/courses/:courseId/members/:memberId/analytics', (c) => c.json({ success: true }))
     .get('/courses/:courseId/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId', (c) => c.json({ success: true }));
 
@@ -56,19 +63,40 @@ describe('publicApiScopesMiddleware', () => {
     const app = buildApp(['analytics:read']);
 
     expect((await app.request('/public-api/v1/analytics')).status).toBe(200);
-    expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(200);
-    expect((await app.request('/public-api/v1/courses/c1/analytics/students')).status).toBe(200);
-    expect((await app.request('/public-api/v1/analytics/learners/p1')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics/compliance/students')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics/courses/c1')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics/courses/c1/students')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics/courses/c1/students/p1')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics/students/p1')).status).toBe(200);
     expect((await app.request('/public-api/v1/analytics', { method: 'POST' })).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1/students')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1')).status).toBe(403);
     expect((await app.request('/public-api/v1/cohorts')).status).toBe(403);
   });
 
+  it('still lets analytics:read reach the deprecated analytics paths', async () => {
+    const app = buildApp(['analytics:read']);
+
+    expect((await app.request('/public-api/v1/analytics/compliance/learners')).status).toBe(200);
+    expect((await app.request('/public-api/v1/analytics/learners/p1')).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses/c1/analytics/students')).status).toBe(200);
+  });
+
+  it('moves single-student course analytics from course:member:read to analytics:read', async () => {
+    const memberApp = buildApp(['course:member:read']);
+    const analyticsApp = buildApp(['analytics:read']);
+
+    expect((await memberApp.request('/public-api/v1/analytics/courses/c1/students/p1')).status).toBe(403);
+    expect((await memberApp.request('/public-api/v1/courses/c1/members/m1/analytics')).status).toBe(200);
+    expect((await analyticsApp.request('/public-api/v1/courses/c1/members/m1/analytics')).status).toBe(403);
+  });
+
   it('keeps cohort-scoped keys out of analytics', async () => {
     const app = buildApp(COHORT_SCOPES);
 
     expect((await app.request('/public-api/v1/analytics')).status).toBe(403);
+    expect((await app.request('/public-api/v1/analytics/courses/c1')).status).toBe(403);
     expect((await app.request('/public-api/v1/courses/c1/analytics')).status).toBe(403);
   });
 

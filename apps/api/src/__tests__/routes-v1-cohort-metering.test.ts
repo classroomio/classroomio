@@ -80,14 +80,15 @@ vi.mock('@api/services/v1/cohorts/invites', () => ({
 }));
 vi.mock('@api/services/v1/analytics/org', () => ({
   getPublicApiOrgAnalyticsService: mocks.ok(),
-  listPublicApiComplianceLearnersService: mocks.ok()
+  listPublicApiComplianceStudentsService: mocks.ok()
 }));
 vi.mock('@api/services/v1/analytics/course', () => ({
   getPublicApiCourseAnalyticsService: mocks.ok(),
+  getPublicApiCourseStudentAnalyticsService: mocks.ok(),
   listPublicApiCourseAnalyticsStudentsService: mocks.ok()
 }));
-vi.mock('@api/services/v1/analytics/learner', () => ({
-  getPublicApiLearnerAnalyticsService: mocks.ok()
+vi.mock('@api/services/v1/analytics/student', () => ({
+  getPublicApiStudentAnalyticsService: mocks.ok()
 }));
 
 import { v1Router } from '@api/routes/v1';
@@ -141,8 +142,16 @@ const CASES: [string, string, unknown, string][] = [
 const ANALYTICS_CASES: [string, string][] = [
   ['/analytics', 'get_org_analytics'],
   ['/analytics?include=traffic,compliance&days=7', 'get_org_analytics'],
-  ['/analytics/compliance/learners', 'list_compliance_learners'],
-  [`/analytics/learners/${X}`, 'get_learner_analytics'],
+  ['/analytics/compliance/students', 'list_compliance_students'],
+  [`/analytics/courses/${C}`, 'get_course_analytics'],
+  [`/analytics/courses/${C}/students`, 'list_course_analytics_students'],
+  [`/analytics/courses/${C}/students/${X}`, 'get_course_student_analytics'],
+  [`/analytics/students/${X}`, 'get_student_analytics']
+];
+
+const DEPRECATED_ANALYTICS_CASES: [string, string][] = [
+  ['/analytics/compliance/learners', 'list_compliance_students'],
+  [`/analytics/learners/${X}`, 'get_student_analytics'],
   [`/courses/${C}/analytics`, 'get_course_analytics'],
   [`/courses/${C}/analytics/students`, 'list_course_analytics_students']
 ];
@@ -201,7 +210,7 @@ describe('default MCP key through the real v1 analytics routers (scopes and mete
     });
   });
 
-  it.each(ANALYTICS_CASES)('GET %s is metered as %s', async (path, toolName) => {
+  it.each([...ANALYTICS_CASES, ...DEPRECATED_ANALYTICS_CASES])('GET %s is metered as %s', async (path, toolName) => {
     const response = await app.request(`/public-api/v1${path}`, {
       headers: { Authorization: 'Bearer cio_mcp_test' }
     });
@@ -209,6 +218,26 @@ describe('default MCP key through the real v1 analytics routers (scopes and mete
     expect(response.status).toBe(200);
     expect(mocks.complete).toHaveBeenCalledWith('reservation-id', toolName, 0);
   });
+
+  it.each([...ANALYTICS_CASES, ...DEPRECATED_ANALYTICS_CASES])(
+    'returns 403 for GET %s without analytics:read, before any handler runs',
+    async (path) => {
+      mocks.authenticate.mockResolvedValue({
+        id: 'key-id',
+        organizationId: 'org-id',
+        createdByProfileId: 'actor-id',
+        type: 'mcp',
+        scopes: ['cohort:read', 'cohort:write', 'course:member:read']
+      });
+
+      const response = await app.request(`/public-api/v1${path}`, {
+        headers: { Authorization: 'Bearer cio_mcp_test' }
+      });
+
+      expect(response.status).toBe(403);
+      expect(mocks.complete).not.toHaveBeenCalled();
+    }
+  );
 
   it.each([`/courses/${C}`, `/courses/${C}/students`])('keeps analytics:read out of GET %s', async (path) => {
     const response = await app.request(`/public-api/v1${path}`, {

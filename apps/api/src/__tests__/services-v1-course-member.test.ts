@@ -29,6 +29,13 @@ vi.mock('@cio/core/services/course/course', () => ({
   getUserCourseAnalytics: vi.fn()
 }));
 
+vi.mock('@api/utils/redis/cached-read', () => ({
+  cachedRead: vi.fn(async (_key: string, _ttl: number, compute: () => Promise<unknown>) => ({
+    data: await compute(),
+    generatedAt: '2026-10-12T10:00:00.000Z'
+  }))
+}));
+
 import { AppError } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
@@ -46,6 +53,7 @@ import {
   updateMember
 } from '@api/services/course/people';
 import { getUserCourseAnalytics } from '@cio/core/services/course/course';
+import { cachedRead } from '@api/utils/redis/cached-read';
 import {
   addCourseMemberService,
   deleteCourseMemberService,
@@ -280,5 +288,36 @@ describe('services/v1/courses/members', () => {
 
     expect(getUserCourseAnalytics).toHaveBeenCalledWith(COURSE_ID, 'profile-1', { includeProgressImpact: true });
     expect(result).toEqual({ some: 'analytics' });
+  });
+
+  it('getCourseMemberAnalyticsService caches per course, profile and includeProgressImpact', async () => {
+    vi.mocked(getCourseMember).mockResolvedValue({
+      id: MEMBER_ID,
+      roleId: ROLE.STUDENT,
+      profileId: 'profile-1'
+    } as Awaited<ReturnType<typeof getCourseMember>>);
+
+    await getCourseMemberAnalyticsService(ORG_ID, ACTOR_ID, memberParams, { includeProgressImpact: false });
+    await getCourseMemberAnalyticsService(ORG_ID, ACTOR_ID, memberParams, { includeProgressImpact: true });
+
+    expect(cachedRead).toHaveBeenCalledWith(
+      'public-api:analytics:course-student:course-1:profile-1:base',
+      600,
+      expect.any(Function)
+    );
+    expect(cachedRead).toHaveBeenCalledWith(
+      'public-api:analytics:course-student:course-1:profile-1:with-impact',
+      600,
+      expect.any(Function)
+    );
+  });
+
+  it('getCourseMemberAnalyticsService checks the membership before reading the cache', async () => {
+    vi.mocked(getCourseMember).mockResolvedValue(null);
+
+    await expect(
+      getCourseMemberAnalyticsService(ORG_ID, ACTOR_ID, memberParams, { includeProgressImpact: false })
+    ).rejects.toMatchObject({ statusCode: 404 });
+    expect(cachedRead).not.toHaveBeenCalled();
   });
 });

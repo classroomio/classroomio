@@ -26,3 +26,14 @@ export const analyticsForbiddenResponses = {
       'The key lacks the public_api:* or analytics:read scope, or the automation actor is not a course tutor/admin or org admin'
   }
 };
+
+export type TAnalyticsRouterOptions = { isDeprecatedAlias?: boolean };
+
+/** OpenAPI description fields for a route; with `replacement`, the route is documented as a deprecated alias of it. */
+export function analyticsRouteDocs(description: string, replacement?: string) {
+  if (!replacement) {
+    return { description };
+  }
+
+  return { description: `Deprecated: use ${replacement} instead. ${description}`, deprecated: true };
+}

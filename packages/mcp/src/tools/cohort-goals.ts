@@ -70,7 +70,7 @@ courseIds must be non-empty and every course must already be linked to the cohor
 export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_cohort_goals',
-    `List the active goals in a cohort, with per-status learner counts. ${PAGINATED} ${COHORT_MEMBER_RULE}`,
+    `List the active goals in a cohort, with per-status student counts. ${PAGINATED} ${COHORT_MEMBER_RULE}`,
     listCohortGoalsShape,
     READ_ONLY,
     async (args) => {
@@ -124,7 +124,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'delete_cohort_goal',
-    `Permanently delete a cohort goal and its learner progress. This is a hard delete; use archive_cohort_goal to keep history. ${COHORT_TEAM_RULE}`,
+    `Permanently delete a cohort goal and its student progress. This is a hard delete; use archive_cohort_goal to keep history. ${COHORT_TEAM_RULE}`,
     deleteCohortGoalShape,
     DESTRUCTIVE,
     async (args) => {
@@ -136,7 +136,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'evaluate_cohort_goal',
-    `Re-evaluate one goal's learner statuses now instead of waiting for the scheduled run. Returns the number of learner assignments evaluated. Archived goals are not evaluated (409), so their history is kept. ${COHORT_TEAM_RULE}`,
+    `Re-evaluate one goal's student statuses now instead of waiting for the scheduled run. Returns the number of student assignments evaluated. Archived goals are not evaluated (409), so their history is kept. ${COHORT_TEAM_RULE}`,
     evaluateCohortGoalShape,
     WRITE,
     async (args) => {
@@ -148,7 +148,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'evaluate_all_cohort_goals',
-    `Re-evaluate every active goal in a cohort now. Returns the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
+    `Re-evaluate every active goal in a cohort now. Returns the number of student assignments evaluated. ${COHORT_TEAM_RULE}`,
     evaluateAllCohortGoalsShape,
     WRITE,
     async (args) => {
@@ -160,7 +160,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'get_org_goals_overview',
-    `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status and on-track percentage. ${PAGINATED} The API key creator must be an org admin or tutor, otherwise 403.`,
+    `Organization-wide goal roll-up: one entry per active goal across all cohorts, with student counts per status and on-track percentage. ${PAGINATED} The API key creator must be an org admin or tutor, otherwise 403.`,
     paginationShape,
     READ_ONLY,
     async (args) => {

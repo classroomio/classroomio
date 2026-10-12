@@ -26,6 +26,7 @@ import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, forbiddenResponse, mcpRateLimitResponse } from './docs';
+import { ANALYTICS_CACHE_CONTROL, LIST_CACHE_NOTE, TAG as ANALYTICS_TAG, analyticsRouteDocs } from '../analytics/docs';
 
 const MemberResponse = itemResponse(ZPublicApiCourseMemberResponse);
 
@@ -257,8 +258,11 @@ export const v1CourseMembersRouter = new Hono()
   .get(
     '/:memberId/analytics',
     describeRoute({
-      description: `Fetch a student's progress and grade analytics for the course. Only student members have analytics. ${COURSE_TEAM_RULE}`,
-      tags: ['Course Members'],
+      ...analyticsRouteDocs(
+        `Fetch a student's progress and grade analytics for the course. Only student members have analytics. ${LIST_CACHE_NOTE} ${COURSE_TEAM_RULE}`,
+        'GET /analytics/courses/{courseId}/students/{profileId}'
+      ),
+      tags: [ANALYTICS_TAG],
       responses: {
         200: jsonResponse(
           'Course member analytics returned successfully',
@@ -281,6 +285,7 @@ export const v1CourseMembersRouter = new Hono()
         const query = c.req.valid('query');
         const analytics = await getCourseMemberAnalyticsService(orgId, actorId, params, query);
 
+        c.header('Cache-Control', ANALYTICS_CACHE_CONTROL);
         return c.json(
           {
             success: true,
