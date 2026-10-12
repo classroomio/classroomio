@@ -6,6 +6,8 @@ import type {
 } from '@cio/utils/validation/assets';
 
 import { failConvertingAsset, finalizeServerHls, getAssetById, touchConvertingAsset } from '@cio/db/queries/assets';
+import { recordDeadLetterJob } from '@cio/db/queries';
+import { JOB_NAMES, QUEUE_NAMES } from '@cio/jobs';
 import { generateUploadPresignedUrl } from '@cio/core/utils/s3';
 import { getStorageConfig } from '@cio/core/config/storage';
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -122,4 +124,20 @@ export async function failEncoderJobService(assetId: string, orgId: string, payl
   }
 
   console.error('HLS encoder reported failure', { assetId, reason: payload.reason });
+
+  // Recorded alongside other job failures rather than left as a log line: the
+  // raw upload still plays, so nobody notices a failed ladder on their own.
+  await recordDeadLetterJob({
+    organizationId: orgId,
+    domain: 'media',
+    runId: null,
+    queueName: QUEUE_NAMES.mediaHls,
+    jobName: JOB_NAMES.mediaHls.hlsEncode,
+    bullmqJobId: null,
+    payload: { assetId },
+    error: { code: 'HLS_ENCODE_FAILED', message: payload.reason },
+    attempts: 1
+  }).catch((error) => {
+    console.error('Failed to record HLS encoder failure', { assetId, error });
+  });
 }

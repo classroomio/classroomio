@@ -6,7 +6,17 @@ const mocks = vi.hoisted(() => ({
   touchConvertingAsset: vi.fn(),
   failConvertingAsset: vi.fn(),
   generateUploadPresignedUrl: vi.fn(),
-  getStorageConfig: vi.fn()
+  getStorageConfig: vi.fn(),
+  recordDeadLetterJob: vi.fn()
+}));
+
+vi.mock('@cio/db/queries', () => ({
+  recordDeadLetterJob: mocks.recordDeadLetterJob
+}));
+
+vi.mock('@cio/jobs', () => ({
+  QUEUE_NAMES: { mediaHls: 'media-hls' },
+  JOB_NAMES: { mediaHls: { hlsEncode: 'hls-encode' } }
 }));
 
 vi.mock('@cio/db/queries/assets', () => ({
@@ -52,6 +62,7 @@ describe('internal encoder callbacks', () => {
     mocks.failConvertingAsset.mockResolvedValue(true);
     mocks.getStorageConfig.mockReturnValue({ bucketVideos: 'videos' });
     mocks.generateUploadPresignedUrl.mockResolvedValue('https://storage.example.com/signed');
+    mocks.recordDeadLetterJob.mockResolvedValue({ id: 'dead-letter-1' });
   });
 
   describe('finalize', () => {
@@ -122,6 +133,35 @@ describe('internal encoder callbacks', () => {
       await expect(failEncoderJobService(ASSET_ID, ORG_ID, { reason: 'stale job' })).rejects.toMatchObject({
         statusCode: 409
       });
+    });
+
+    it('records the failure where other job failures are reported', async () => {
+      await failEncoderJobService(ASSET_ID, ORG_ID, { reason: 'ffmpeg exited 1' });
+
+      expect(mocks.recordDeadLetterJob).toHaveBeenCalledWith(
+        expect.objectContaining({
+          organizationId: ORG_ID,
+          queueName: 'media-hls',
+          payload: { assetId: ASSET_ID },
+          error: { code: 'HLS_ENCODE_FAILED', message: 'ffmpeg exited 1' }
+        })
+      );
+    });
+
+    it('still marks the asset failed when the failure cannot be recorded', async () => {
+      mocks.recordDeadLetterJob.mockRejectedValue(new Error('dead letter table is gone'));
+
+      await expect(failEncoderJobService(ASSET_ID, ORG_ID, { reason: 'boom' })).resolves.toBeUndefined();
+      expect(mocks.failConvertingAsset).toHaveBeenCalledWith(ASSET_ID, ORG_ID);
+    });
+
+    it('does not record a failure for a job that no longer owns the asset', async () => {
+      mocks.failConvertingAsset.mockResolvedValue(false);
+
+      await expect(failEncoderJobService(ASSET_ID, ORG_ID, { reason: 'stale' })).rejects.toMatchObject({
+        statusCode: 409
+      });
+      expect(mocks.recordDeadLetterJob).not.toHaveBeenCalled();
     });
 
     it('reports a missing asset rather than a conflict', async () => {

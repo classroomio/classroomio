@@ -1,6 +1,20 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, desc, eq, inArray, like, ne, or, sql, type SQL, type InferSelectModel } from '@db/drizzle';
+import {
+  and,
+  asc,
+  count,
+  desc,
+  eq,
+  inArray,
+  like,
+  lt,
+  ne,
+  or,
+  sql,
+  type SQL,
+  type InferSelectModel
+} from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TAsset, TAssetUsage, TNewAsset, TNewAssetUsage } from '@db/types';
 
@@ -618,6 +632,36 @@ export async function failConvertingAsset(
   } catch (error) {
     console.error('failConvertingAsset error:', error);
     throw new Error(`Failed to fail converting asset: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Fail assets left mid-encode.
+ *
+ * A machine that dies takes its job with it: no `/fail` ever arrives, and the
+ * asset would sit in `converting` indefinitely, invisible because the raw
+ * upload still plays. Sweeping them to `failed` is what makes the loss
+ * reportable rather than silent.
+ */
+export async function reapStuckHlsEncodes(
+  staleBeforeIso: string,
+  dbClient: DbOrTxClient = db
+): Promise<Pick<TAsset, 'id' | 'organizationId'>[]> {
+  try {
+    return await dbClient
+      .update(schema.asset)
+      .set({ hlsStatus: 'failed', updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          eq(schema.asset.hlsStatus, 'converting'),
+          lt(schema.asset.updatedAt, staleBeforeIso),
+          sql`${schema.asset.hlsManifestKey} IS NULL`
+        )
+      )
+      .returning({ id: schema.asset.id, organizationId: schema.asset.organizationId });
+  } catch (error) {
+    console.error('reapStuckHlsEncodes error:', error);
+    throw new Error('Failed to reap stuck HLS encodes');
   }
 }
 
