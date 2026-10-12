@@ -113,6 +113,10 @@ svg .g { stroke: var(--line); stroke-width: 1; }
 .cc { display: flex; gap: 10px; align-items: center; }
 .plan { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
 th small { display: block; font-weight: 400; }
+.w > svg { max-width: 760px; width: 100%; margin-inline: auto; display: block; }
+.donut { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.donut .stack { flex: 1 1 160px; min-width: 0; }
+.qrow .note { margin-top: 2px; }
 </style>
 
 </head>
@@ -189,7 +193,8 @@ function lineChart({ labels, series, band, yMax = 100, yTicks = [0, 25, 50, 75, 
     const dots = pts.map((p) => `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${s.color}"/>`).join('');
     const last = pts[pts.length - 1];
     const lv = s.values.filter((v) => v != null).pop();
-    return `<path d="${path}" fill="none" stroke="${s.color}" stroke-width="2.5" ${s.dash ? 'stroke-dasharray="6 5"' : ''} stroke-linejoin="round"/>${dots}<text x="${last[0]}" y="${last[1] - 9}" text-anchor="middle" style="fill:${s.color};font-weight:600">${fmt(lv)}</text>`;
+    const endLabel = s.noLabel ? '' : `<text x="${last[0]}" y="${last[1] - 9}" text-anchor="middle" style="fill:${s.color};font-weight:600">${fmt(lv)}</text>`;
+    return `<path d="${path}" fill="none" stroke="${s.color}" stroke-width="2.5" ${s.dash ? 'stroke-dasharray="6 5"' : ''} stroke-linejoin="round"/>${dots}${endLabel}`;
   }).join('');
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Line chart">${grid}${xl}${bandEl}${lines}</svg>`;
 }
@@ -206,17 +211,50 @@ function sparkline(vals) {
   return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Score trend"><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/><circle cx="${end[0]}" cy="${end[1]}" r="3" fill="var(--accent)"/></svg>`;
 }
 
+function groupedBars({ labels, series, max = 100 }) {
+  const W = 640, H = 250, L = 40, R = 14, T = 18, B = 44;
+  const groupW = (W - L - R) / labels.length;
+  const barW = Math.min(34, (groupW * 0.78) / series.length);
+  const y = (v) => T + (1 - v / max) * (H - T - B);
+  const grid = [0, 25, 50, 75, 100].map((t) => `<line class="g" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L - 8}" y="${y(t) + 4}" text-anchor="end">${t}%</text>`).join('');
+  const bars = labels.map((label, i) => {
+    const start = L + groupW * i + (groupW - barW * series.length) / 2;
+    const rects = series.map((s, j) => {
+      const v = s.values[i];
+      if (v == null) return '';
+      const x = start + barW * j;
+      return `<rect x="${x + 1}" y="${y(v)}" width="${barW - 2}" height="${y(0) - y(v)}" rx="3" fill="${s.color}"/><text x="${x + barW / 2}" y="${y(v) - 5}" text-anchor="middle" style="fill:var(--fg);font-weight:600">${v}</text>`;
+    }).join('');
+    return `${rects}<text x="${L + groupW * i + groupW / 2}" y="${H - 18}" text-anchor="middle">${label}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Bar chart">${grid}${bars}</svg>${legend(series.map((s) => ({ c: s.color, l: s.name })))}`;
+}
+
+function donut(segments) {
+  const total = segments.reduce((a, s) => a + s.value, 0);
+  const R = 62, C = 2 * Math.PI * R;
+  let offset = 0;
+  const arcs = segments.map((s) => {
+    const len = (s.value / total) * C;
+    const arc = `<circle cx="90" cy="90" r="${R}" fill="none" stroke="${s.color}" stroke-width="26" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-offset}" transform="rotate(-90 90 90)"/>`;
+    offset += len;
+    return arc;
+  }).join('');
+  const rows = segments.map((s) => `<div class="cc"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.color}"></i><span>${s.label}</span><b style="margin-left:auto">${s.value.toLocaleString()}</b><span class="note">${pct(s.value, total)}%</span></div>`).join('');
+  return `<div class="donut"><svg viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="Donut chart">${arcs}<text x="90" y="88" text-anchor="middle" style="fill:var(--fg);font-size:22px;font-weight:700">${total.toLocaleString()}</text><text x="90" y="106" text-anchor="middle">learners</text></svg><div class="stack">${rows}</div></div>`;
+}
+
 /* ---------- Courses in the cohort. Exercises are columns, in section then exercise order. ---------- */
 const COURSES = [
-  { title: 'Individual Tax Fundamentals', passMark: 70,
+  { title: 'Individual Tax Fundamentals', short: 'Tax fundamentals', passMark: 70,
     exercises: ['Filing basics', 'Filing status', 'Income types', 'Deductions', 'Credits', 'Schedule C', 'Final exam'],
     sections: [{ title: 'Intake and filing status', ex: [0, 1] }, { title: 'Income types', ex: [2] }, { title: 'Deductions', ex: [3] }, { title: 'Credits', ex: [4] }, { title: 'Schedule C', ex: [5] }, { title: 'Review cases', ex: [6] }],
     questions: [['Which form reports self-employment income?', 'Credits', 41, '1099-K instead of 1099-NEC'], ['Standard deduction, married filing jointly', 'Deductions', 49, 'Single filer amount'], ['Child tax credit income phase-out', 'Credits', 53, 'Skipped the phase-out step'], ['Home office deduction eligibility', 'Schedule C', 58, 'Counted a shared room'], ['Filing status for a widowed parent', 'Filing status', 66, 'Head of household']] },
-  { title: 'Client Communication', passMark: 70,
+  { title: 'Client Communication', short: 'Client communication', passMark: 70,
     exercises: ['Active listening', 'Difficult conversations', 'Final exam'],
     sections: [{ title: 'Listening', ex: [0] }, { title: 'Difficult conversations', ex: [1] }, { title: 'Wrap-up', ex: [2] }],
     questions: [['Best response to an upset client', 'Difficult conversations', 52, 'Offered a discount first'], ['Which is active listening?', 'Active listening', 71, 'Interrupting to confirm'], ['When to escalate a complaint', 'Difficult conversations', 60, 'Waited for a second complaint']] },
-  { title: 'Data Security Basics', passMark: 80,
+  { title: 'Data Security Basics', short: 'Data security', passMark: 80,
     exercises: ['Phishing', 'Passwords', 'Final exam'],
     sections: [{ title: 'Phishing', ex: [0] }, { title: 'Passwords', ex: [1] }, { title: 'Wrap-up', ex: [2] }],
     questions: [['Spotting a phishing sender', 'Phishing', 62, 'Trusted the display name'], ['Strongest password choice', 'Passwords', 70, 'Long but reused'], ['Where to report a suspicious email', 'Phishing', 80, 'Replied to the sender']] }
@@ -305,6 +343,13 @@ const nowAt = (l, ci) => {
   return sections[Math.min(sections.length - 1, Math.floor((rec.progress / 100) * sections.length))].title;
 };
 
+const statusSegments = () => [['ok', 'On track', 'var(--good)'], ['lag', 'Lagging', 'var(--warn)'], ['risk', 'At risk', 'var(--bad)'], ['done', 'Completed', 'var(--accent)']].map(([key, label, color]) => ({ label, color, value: ROSTER.filter((l) => l.status === key).length }));
+const scoreBuckets = () => {
+  const scores = ROSTER.map(scoreOf).filter((v) => v > 0);
+  const band = (lo, hi) => scores.filter((v) => v >= lo && v < hi).length;
+  return [{ l: '<50', v: band(0, 50) }, { l: '50s', v: band(50, 60) }, { l: '60s', v: band(60, 70) }, { l: '70s', v: band(70, 80) }, { l: '80s', v: band(80, 90) }, { l: '90+', v: band(90, 101) }];
+};
+
 function courseStats(ci) {
   const course = COURSES[ci];
   const n = ROSTER.length;
@@ -356,12 +401,12 @@ const learnerDetail = (l, ci, journey) => {
   const rec = l.c[ci];
   const course = COURSES[ci];
   const t = taken(rec.vals);
-  const html = widget('s12', `${l.name}: scores by exercise`, 'line vs cohort', 'submission · score_pct · dimension: exercise · filter: learner = selected',
+  const html = widget('s7', `${l.name}: scores by exercise`, 'line vs cohort', 'submission · score_pct · dimension: exercise · filter: learner = selected',
     `<div class="chips"><span class="chip">Latest <b>${t.length ? t[t.length - 1] + '%' : '–'}</b></span><span class="chip">Progress <b>${rec.progress}%</b> · now at ${nowAt(l, ci)}</span></div>` +
     lineChart({ labels: course.exercises, series: [{ values: rec.vals, color: 'var(--accent)' }, { values: journey.map((j) => (j ? j.avg : null)), color: 'var(--muted)', dash: true }] }) +
     legend([{ c: 'var(--accent)', l: l.name }, { c: 'var(--muted)', l: 'Cohort average' }]),
     'Search or filter the learners below and click a row to switch learner.', 'drv');
-  return html.replace('<section class="w s12"', '<section id="detail" class="w s12"');
+  return html.replace('<section class="w s7"', '<section id="detail" class="w s7"');
 };
 
 const learnerCourses = (l) => {
@@ -458,10 +503,8 @@ function initCohort() {
 }
 
 /* ---------- Shared widgets ---------- */
-const questionsWidget = (cls, rows) => widget(cls, 'Hardest questions', 'table', 'question_answer · point / max · avg · dimension: question · sort: asc', `
-  <div class="scroll"><table><thead><tr><th>Question</th><th>Exercise</th><th class="c">Answered correctly</th><th>Most common wrong answer</th></tr></thead><tbody>
-  ${rows.map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td class="c">${cell(r[2])}</td><td>${r[3]}</td></tr>`).join('')}
-  </tbody></table></div>`, note('Example questions. Answers are stored per question, so this needs no new tracking.', 'The questions learners miss most, with the most common wrong answer.'), 'ok');
+const questionsWidget = (cls, rows) => widget(cls, 'Hardest questions', 'bar', 'question_answer · point / max · avg · dimension: question · sort: asc', `
+  <div class="stack">${rows.map((r) => `<div class="qrow"><div class="hbar" style="grid-template-columns:minmax(140px,1.3fr) 1fr 48px"><span class="lab" title="${r[0]}">${r[0]}</span><div class="track"><div class="fill ${r[2] < 50 ? 'bad' : r[2] < 65 ? 'warn' : ''}" style="width:${r[2]}%"></div></div><span class="v">${r[2]}%</span></div><p class="note">${r[1]} · most common wrong answer: ${r[3]}</p></div>`).join('')}</div>`, note('Share of learners who answered correctly. Example questions; answers are stored per question, so this needs no new tracking.', 'The questions learners miss most, with the most common wrong answer.'), 'ok');
 
 const reuse = () => widget('s12', 'How the same widgets serve every scope', 'reference', 'one spec · scope = { type, id } resolves to learners + courses', `
   <div class="scroll"><table class="reuse"><thead><tr><th>Widget</th><th>Cohort</th><th>Course</th><th>Organization</th></tr></thead><tbody>
@@ -487,9 +530,12 @@ const views = {
     const ci = mx.course;
     const stats = inAll() ? null : courseStats(ci);
     const label = inAll() ? 'all courses' : COURSES[ci].title;
+    const statusDonut = widget('s5', 'Learners by status', 'donut', 'derived status · count', donut(statusSegments()), null, 'drv');
+    const coursesChart = widget('s7', 'Courses in this cohort', 'bar', 'learner_course + submission · dimension: course', groupedBars({ labels: COURSES.map((c) => c.short), series: [{ name: 'Average progress', color: 'var(--accent)', values: COURSES.map((_, i) => courseStats(i).avgProgress) }, { name: 'Average score', color: 'var(--good)', values: COURSES.map((_, i) => courseStats(i).avgScore) }, { name: 'Final exam pass rate', color: 'var(--warn)', values: COURSES.map((_, i) => (courseStats(i).finalTook ? courseStats(i).finalPass : null)) }] }), note('Pass rate uses each course\'s own pass mark.', ''), 'drv');
+    const scoreDist = (cls) => widget(cls, 'Average score distribution', 'histogram', 'submission · score_pct · avg per learner · count · bucket: 10', columns(scoreBuckets()), 'Learners per score band.', 'drv');
     const overdueList = S.overdue.slice().sort((a, b) => b.days - a.days).slice(0, 5);
 
-    const courseTable = widget('s12', 'Courses in this cohort', 'table', 'learner_course + submission · dimension: course', `
+    const courseTable = widget('s12', 'Course details', 'table', 'learner_course + submission · dimension: course', `
       <div class="scroll"><table><thead><tr><th>Course</th><th class="c">Learners</th><th class="c">Avg progress</th><th class="c">Avg score</th><th class="c">Completed</th><th class="c">Final exam taken</th><th class="c">Final exam pass rate</th></tr></thead><tbody>
       ${COURSES.map((c, i) => { const s = courseStats(i); return `<tr><td><b>${c.title}</b></td><td class="c">${ROSTER.length}</td><td class="c">${cell(s.avgProgress)}</td><td class="c">${cell(s.avgScore)}</td><td class="c">${s.completed}</td><td class="c">${s.finalTook}</td><td class="c">${s.finalTook ? passCell(s.finalPass, c.passMark) : cell(null)}</td></tr>`; }).join('')}
       </tbody></table></div>`, note('Pick a course above to see scores by exercise, the section-by-section scorecard and the hardest questions. Pass rate uses each course\'s own pass mark.', 'Pick a course above to see scores by exercise, the section-by-section scorecard and the hardest questions.'), 'drv');
@@ -498,6 +544,9 @@ const views = {
       ${widget('s7', `Scores by exercise, ${label}`, 'line + band', 'submission · score_pct · avg · dimension: exercise (section order, then exercise order)', lineChart({ labels: COURSES[ci].exercises, series: [{ values: stats.journey.map((j) => (j ? j.avg : null)), color: 'var(--accent)' }], band: stats.journey.map((j) => (j ? j.band : null)) }) + legend([{ c: 'var(--accent)', l: 'Cohort average' }, { c: 'color-mix(in srgb, var(--accent) 25%, transparent)', l: 'Middle 50% of learners' }]), note('Exercises are shown in course order. A point appears once a quarter of the cohort has taken it.', ''), 'drv')}
       ${widget('s5', 'Progress distribution', 'bar', 'lesson_completion · progress_pct · count · bucket: 25', columns([{ l: '0–25', v: S.progressBuckets[0] }, { l: '25–50', v: S.progressBuckets[1] }, { l: '50–75', v: S.progressBuckets[2] }, { l: '75–99', v: S.progressBuckets[3] }, { l: 'Done', v: S.progressBuckets[4] }]), null, 'drv')}
       ${learnerDetail(ROSTER[picked], ci, stats.journey)}
+      ${statusDonut}
+      ${widget('s7', 'Scores and attendance by section', 'bar', 'submission + lesson_video_progress + group_attendance · dimension: course_section', groupedBars({ labels: stats.sections.map((d) => `Section ${d.si + 1}`), series: [{ name: 'Average score', color: 'var(--accent)', values: stats.sections.map((d) => d.avg) }, { name: 'Video attendance', color: 'var(--good)', values: stats.sections.map((d) => d.vid) }, { name: 'Classroom attendance', color: 'var(--warn)', values: stats.sections.map((d) => d.cls) }] }), null, 'drv')}
+      ${scoreDist('s5')}
       ${widget('s12', 'Section-by-section scorecard', 'table', 'submission + lesson_video_progress + group_attendance · dimension: course_section (order)', `
         <div class="scroll"><table><thead><tr><th>Course section</th><th class="c">Exercises taken</th><th class="c">Avg score</th><th class="c">Pass rate</th><th class="c">Video attendance</th><th class="c">Classroom attendance</th></tr></thead><tbody>
         ${stats.sections.map((d) => `<tr><td><b>Section ${d.si + 1} · ${d.title}</b></td><td class="c">${d.took ? d.took + ' / ' + S.n : '–'}</td><td class="c">${cell(d.avg)}</td><td class="c">${cell(d.pass)}</td><td class="c">${d.vid}%</td><td class="c">${d.cls}%</td></tr>`).join('')}
@@ -520,7 +569,7 @@ const views = {
       { l: 'Completed', n: S.completed, d: `${pct(S.completed, S.n)}% of the cohort${inAll() ? ` · ${S.cert} certified` : ''}`, t: 'flat', src: 'learner_course · status=completed · count' }
     ])}
     <div class="grid">
-      ${inAll() ? courseTable + learnerCourses(ROSTER[picked]) : courseWidgets}
+      ${inAll() ? coursesChart + statusDonut + courseTable + learnerCourses(ROSTER[picked]) : courseWidgets}
       ${widget('s5', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: S.inactive, c: 'bad' }, { l: 'Average score under 50%', v: S.low, c: 'bad' }, { l: 'Overdue', v: S.overdue.length, c: 'warn' }, { l: 'Video attendance under 60%', v: S.lowVideo, c: 'warn' }], S.n, ''), note('A learner can appear under more than one reason. Thresholds are placeholders to agree with the customer.', 'A learner can appear under more than one reason.'), 'drv')}
       ${overdueWidget}
       ${inAll() ? '' : questionsWidget('s12', COURSES[ci].questions)}
@@ -536,8 +585,9 @@ const views = {
         <div class="scroll"><table><thead id="mx-head"></thead><tbody id="mx-body"></tbody></table></div>
         <div class="mxfoot"><span id="mx-count" class="note"></span><span class="chips"><button class="btn" id="mx-export">Export CSV</button><button class="btn" id="mx-more">Show 10 more</button></span></div><p class="note" id="mx-msg"></p>`,
       inAll() ? 'Click a learner to see their courses above. Pick a course above to see each exercise.' : 'Click a learner to chart their scores above. Search, filters and sort also apply to the export.', 'drv')}
-      ${widget(CUSTOMER ? 's12' : 's6', 'Learners logged in per day', 'bar', 'analytics_login_events · learner · count · dimension: day', columns([244, 240, 236, 238, 229, S.activeToday].map((v, i) => ({ l: ['24 Nov', '25 Nov', '26 Nov', '27 Nov', '28 Nov', '29 Nov'][i], v }))), note('One login row is stored per learner per day, so this counts days with a login, not time in the product.', 'Learners who signed in each day.'), 'ok')}
-      ${CUSTOMER ? '' : widget('s6', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
+      ${widget(inAll() ? 's6' : 's12', 'Learners logged in per day', 'bar', 'analytics_login_events · learner · count · dimension: day', columns([244, 240, 236, 238, 229, S.activeToday].map((v, i) => ({ l: ['24 Nov', '25 Nov', '26 Nov', '27 Nov', '28 Nov', '29 Nov'][i], v }))), note('One login row is stored per learner per day, so this counts days with a login, not time in the product.', 'Learners who signed in each day.'), 'ok')}
+      ${inAll() ? scoreDist('s6') : ''}
+      ${CUSTOMER ? '' : widget('s12', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
         <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Daily cohort summary · 08:00 · CEO, Head of L&amp;D</span><span class="badge new">Planned</span></div>
         <div class="hbar" style="grid-template-columns:1fr auto"><span>Weekly cohort comparison · Mon 09:00 · Management</span><span class="badge new">Planned</span></div></div>`, 'Removes the manual MIS reporting the customer described. Needs a scheduler and email template.', 'new')}
     </div>
@@ -559,21 +609,16 @@ const views = {
       ${widget('s7', 'Scores by exercise, one line per cohort', 'multi-line', 'submission · score_pct · avg · dimensions: exercise, cohort', lineChart({ labels: ex, series: [{ values: [52, 57, 61, 64, 68, 70, 74], color: 'var(--accent)' }, { values: [49, 55, 58, 63, 66, 69, null], color: 'var(--good)' }, { values: [44, 47, 52, 55, null, null, null], color: 'var(--warn)', dash: true }] }) + legend([{ c: 'var(--accent)', l: 'Cohort 7' }, { c: 'var(--good)', l: 'Cohort 6' }, { c: 'var(--warn)', l: 'Cohort 8 (in progress)' }]), null, 'drv')}
       ${widget('s5', 'Score distribution, final exam', 'histogram', 'submission · score_pct · count · bucket: 10 · exercise = course certificate required exercise', columns([{ l: '<50', v: 38 }, { l: '50s', v: 61 }, { l: '60s', v: 112 }, { l: '70s', v: 148 }, { l: '80s', v: 91 }, { l: '90+', v: 34 }]), null, 'drv')}
       ${widget('s6', 'Lesson completion drop-off', 'horizontal bar', 'lesson_completion · rate · dimension: lesson', hbars([{ l: 'Intake and filing status', v: 96 }, { l: 'Income types', v: 91 }, { l: 'Deductions', v: 84 }, { l: 'Credits', v: 71, c: 'warn' }, { l: 'Schedule C', v: 58, c: 'warn' }, { l: 'Review cases', v: 44, c: 'bad' }]), 'The steepest fall is between Credits and Schedule C.', 'ok')}
-      ${widget('s6', 'Hardest exercises', 'table', 'submission · score_pct · avg · attempts · dimension: exercise · sort: asc', `
-        <div class="scroll"><table><thead><tr><th>Exercise</th><th class="c">Avg score</th><th class="c">Pass rate</th><th class="c">Avg attempts</th></tr></thead><tbody>
-        <tr><td>Schedule C</td><td class="c">${cell(51)}</td><td class="c">${cell(48)}</td><td class="c">2.3</td></tr>
-        <tr><td>Credits</td><td class="c">${cell(58)}</td><td class="c">${cell(62)}</td><td class="c">1.9</td></tr>
-        <tr><td>Deductions</td><td class="c">${cell(66)}</td><td class="c">${cell(74)}</td><td class="c">1.4</td></tr>
-        <tr><td>Filing basics</td><td class="c">${cell(78)}</td><td class="c">${cell(93)}</td><td class="c">1.1</td></tr>
-        </tbody></table></div>`, null, 'drv')}
+      ${widget('s6', 'Hardest exercises', 'bar', 'submission · score_pct · avg · dimension: exercise · sort: asc', groupedBars({ labels: ['Schedule C', 'Credits', 'Deductions', 'Filing basics'], series: [{ name: 'Average score', color: 'var(--accent)', values: [51, 58, 66, 78] }, { name: 'Pass rate', color: 'var(--good)', values: [48, 62, 74, 93] }] }), null, 'drv')}
       ${questionsWidget('s12', COURSES[0].questions)}
-      ${widget('s12', 'Cohorts taking this course', 'table', 'lesson_completion + submission · dimension: cohort', `
+      ${widget('s12', 'Cohorts taking this course', 'bar', 'lesson_completion + submission · dimension: cohort', groupedBars({ labels: ['Cohort 8', 'Cohort 7', 'Cohort 6', 'Cohort 5'], series: [{ name: 'Average progress', color: 'var(--accent)', values: [22, courseStats(0).avgProgress, 93, 100] }, { name: 'Average score', color: 'var(--good)', values: [47, courseStats(0).avgScore, 74, 72] }, { name: 'Final exam pass rate', color: 'var(--warn)', values: [null, courseStats(0).finalTook ? courseStats(0).finalPass : null, 81, 78] }] }), 'Showing 4 of 8 cohorts.', 'drv')}
+      ${widget('s12', 'Cohort details', 'table', 'lesson_completion + submission · dimension: cohort', `
         <div class="scroll"><table><thead><tr><th>Cohort</th><th class="c">Learners</th><th class="c">Progress</th><th class="c">Avg score</th><th class="c">Final exam pass rate</th><th class="c">Overdue</th></tr></thead><tbody>
         <tr><td>Cohort 8</td><td class="c">212</td><td class="c">${cell(22)}</td><td class="c">${cell(47)}</td><td class="c">${cell(null)}</td><td class="c">3</td></tr>
         <tr><td>Cohort 7</td><td class="c">${ROSTER.length}</td><td class="c">${cell(courseStats(0).avgProgress)}</td><td class="c">${cell(courseStats(0).avgScore)}</td><td class="c">${courseStats(0).finalTook ? passCell(courseStats(0).finalPass, 70) : cell(null)}</td><td class="c">${ROSTER.filter((l) => l.overdue && l.overdueCourse === 0).length}</td></tr>
         <tr><td>Cohort 6</td><td class="c">240</td><td class="c">${cell(93)}</td><td class="c">${cell(74)}</td><td class="c">${cell(81)}</td><td class="c">2</td></tr>
         <tr><td>Cohort 5</td><td class="c">236</td><td class="c">${cell(100)}</td><td class="c">${cell(72)}</td><td class="c">${cell(78)}</td><td class="c">0</td></tr>
-        </tbody></table></div>`, 'Showing 4 of 8 cohorts.', 'drv')}
+        </tbody></table></div>`, null, 'drv')}
     </div>
     ${CUSTOMER ? planned() : reuse()}`;
   },
@@ -602,10 +647,12 @@ const views = {
         ${cohorts.map((b) => `<tr><td><b>${b[0]}</b></td><td>${b[1]}</td><td class="c">${b[2]}</td><td><div class="hbar" style="grid-template-columns:1fr 38px"><div class="track"><div class="fill" style="width:${b[3]}%"></div></div><span class="v">${b[3]}%</span></div></td><td class="c">${cell(b[4])}</td><td class="c">${b[5]}</td><td><span class="pill ${pill(b[6])[0]}">${pill(b[6])[1]}</span></td></tr>`).join('')}
         </tbody></table></div>`, note('Showing 5 of 8 cohorts. A row opens that cohort\'s dashboard. Cohort 7 matches the cohort tab.', 'Showing 5 of 8 cohorts. Select a cohort to open its dashboard.'), 'drv')}
       ${widget('s4', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: 41, c: 'bad' }, { l: 'Score under 50%', v: 33, c: 'bad' }, { l: 'Overdue', v: 14, c: 'warn' }, { l: 'Video attendance under 60%', v: 9, c: 'warn' }], 50, ''), null, 'drv')}
+      ${widget('s5', 'Learners by cohort health', 'donut', 'derived cohort health · learners · sum', donut([{ label: 'On track', color: 'var(--good)', value: cohorts.filter((c) => c[6] === 'ok').reduce((a, c) => a + c[2], 0) }, { label: 'Lagging', color: 'var(--warn)', value: cohorts.filter((c) => c[6] === 'lag').reduce((a, c) => a + c[2], 0) }, { label: 'Completed', color: 'var(--accent)', value: cohorts.filter((c) => c[6] === 'done').reduce((a, c) => a + c[2], 0) }]), 'The five cohorts in the table above.', 'drv')}
+      ${widget('s7', 'Hiring ramp vs target', 'line', 'organizationmember · created_at · cumulative · dimension: week', lineChart({ labels: ['3 Nov', '10 Nov', '17 Nov', '24 Nov', '1 Dec', '8 Dec'], series: [{ values: [120, 480, 900, 1320, 1710, 2046], color: 'var(--accent)' }, { values: [2000, 2000, 2000, 2000, 2000, 2000], color: 'var(--muted)', dash: true, noLabel: true }], yMax: 5000, yTicks: [0, 1000, 2000, 3000, 4000, 5000], fmt: (v) => v.toLocaleString() }) + legend([{ c: 'var(--accent)', l: 'Enrolled learners' }, { c: 'var(--muted)', l: 'First-wave target' }]), null, 'drv')}
+      ${widget('s7', 'Learners logged in per day', 'line', 'analytics_login_events · learner · count · dimension: day', lineChart({ labels: ['23 Nov', '24 Nov', '25 Nov', '26 Nov', '27 Nov', '28 Nov', '29 Nov'], series: [{ values: [1310, 1402, 1388, 1425, 1360, 902, 1275], color: 'var(--accent)' }], yMax: 2000, yTicks: [0, 500, 1000, 1500, 2000], fmt: (v) => v.toLocaleString() }), note('Sample figures for the whole organization.', ''), 'ok')}
       ${widget('s5', 'Final exam average, by cohort', 'horizontal bar', 'submission · score_pct · avg · dimension: cohort · exercise = course certificate required exercise', hbars([{ l: 'Cohort 4', v: 69 }, { l: 'Cohort 5', v: 72 }, { l: 'Cohort 6', v: 74 }]), 'Finished cohorts only.', 'drv')}
-      ${widget('s7', 'Hiring ramp vs target', 'line', 'organizationmember · created_at · cumulative · dimension: week', lineChart({ labels: ['3 Nov', '10 Nov', '17 Nov', '24 Nov', '1 Dec', '8 Dec'], series: [{ values: [120, 480, 900, 1320, 1710, 2046], color: 'var(--accent)' }, { values: [2000, 2000, 2000, 2000, 2000, 2000], color: 'var(--muted)', dash: true }], yMax: 5000, yTicks: [0, 1000, 2000, 3000, 4000, 5000], fmt: (v) => v.toLocaleString() }) + legend([{ c: 'var(--accent)', l: 'Enrolled learners' }, { c: 'var(--muted)', l: 'First-wave target' }]), null, 'drv')}
-      ${widget(CUSTOMER ? 's12' : 's6', 'Courses by completion', 'horizontal bar', 'learner_course · status=completed · rate · dimension: course', hbars([{ l: 'Individual Tax Fundamentals', v: 41 }, { l: 'Client Communication', v: 88 }, { l: 'Data Security Basics', v: 96 }]), null, 'drv')}
-      ${CUSTOMER ? '' : widget('s6', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
+      ${widget('s12', 'Courses by completion', 'horizontal bar', 'learner_course · status=completed · rate · dimension: course', hbars([{ l: 'Individual Tax Fundamentals', v: 41 }, { l: 'Client Communication', v: 88 }, { l: 'Data Security Basics', v: 96 }]), null, 'drv')}
+      ${CUSTOMER ? '' : widget('s12', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
         <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Executive summary · weekdays 08:00 · CEO</span><span class="badge new">Planned</span></div>
         <div class="hbar" style="grid-template-columns:1fr auto"><span>Cohort health digest · Mon 09:00 · Heads of L&amp;D</span><span class="badge new">Planned</span></div></div>`, 'Also needs a read-only way for the CEO to sign in. Today the roles are admin, tutor and student.', 'new')}
     </div>
