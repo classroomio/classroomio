@@ -482,12 +482,12 @@ const views = {
       { l: 'Enrolled', n: '1,180', d: '+212 this week', t: 'up', a: 'ok', src: 'groupmember · learner · count' },
       { l: 'Completion rate', n: '41%', d: '+4 pts vs last week', t: 'up', src: 'learner_course · status=completed · rate' },
       { l: 'Average grade', n: '67%', d: 'Pass mark 60%', t: 'flat', src: 'submission · score_pct · avg' },
-      { l: 'Pass rate, final', n: '79%', d: 'of 484 who took it', t: 'flat', src: 'submission · passed · rate' },
+      { l: 'Pass rate, final', n: '79%', d: 'of 484 who took it', t: 'flat', src: 'submission · score_pct ≥ course.certificate.exerciseMinScorePercent · rate' },
       { l: 'Median days to finish', n: '8', d: 'enrolment to completion', t: 'flat', src: 'completed_at − enrolled_at · median' }
     ])}
     <div class="grid">
       ${widget('s7', 'Score journey by cohort', 'multi-line', 'submission · score_pct · avg · dimensions: exercise, cohort', lineChart({ labels: TESTS.slice(0, 6), series: [{ values: [38, 52, 57, 61, 64, 68], color: 'var(--accent)' }, { values: [41, 49, 55, 58, 63, null], color: 'var(--good)' }, { values: [33, 44, 47, 52, null, null], color: 'var(--warn)', dash: true }] }) + legend([{ c: 'var(--accent)', l: 'Cohort 7' }, { c: 'var(--good)', l: 'Cohort 6' }, { c: 'var(--warn)', l: 'Cohort 8 (in progress)' }]), null, 'drv')}
-      ${widget('s5', 'Score distribution, final exam', 'histogram', 'submission · score_pct · count · bucket: 10', columns([{ l: '<50', v: 38 }, { l: '50s', v: 61 }, { l: '60s', v: 112 }, { l: '70s', v: 148 }, { l: '80s', v: 91 }, { l: '90+', v: 34 }]), null, 'drv')}
+      ${widget('s5', 'Score distribution, final exam', 'histogram', 'submission · score_pct · count · bucket: 10 · exercise = course certificate required exercise', columns([{ l: '<50', v: 38 }, { l: '50s', v: 61 }, { l: '60s', v: 112 }, { l: '70s', v: 148 }, { l: '80s', v: 91 }, { l: '90+', v: 34 }]), null, 'drv')}
       ${widget('s6', 'Lesson completion drop-off', 'horizontal bar', 'lesson_completion · rate · dimension: lesson', hbars([{ l: 'Intake and filing status', v: 96 }, { l: 'Income types', v: 91 }, { l: 'Deductions', v: 84 }, { l: 'Credits', v: 71, c: 'warn' }, { l: 'Schedule C', v: 58, c: 'warn' }, { l: 'Review cases', v: 44, c: 'bad' }]), 'The steepest fall is between Credits and Schedule C.', 'ok')}
       ${widget('s6', 'Hardest tests', 'table', 'submission · score_pct · avg · attempts · dimension: exercise · sort: asc', `
         <div class="scroll"><table><thead><tr><th>Test</th><th class="c">Avg score</th><th class="c">Pass rate</th><th class="c">Avg attempts</th></tr></thead><tbody>
