@@ -9,6 +9,7 @@ export const ROUTE = {
   LOGIN: '/login',
   SIGN_UP: '/signup',
   INVITE: '/invite',
+  CLAIM: '/claim',
   PROFILE: '/profile',
   PEOPLE: '/people',
   DISCUSSIONS: '/discussions',
@@ -26,6 +27,7 @@ export const PUBLIC_ROUTES = [
   ROUTE.LOGOUT,
   ROUTE.SIGN_UP,
   `^${ROUTE.INVITE}/.*`,
+  `^${ROUTE.CLAIM}/.*`,
   ROUTE.FORGOT,
   ROUTE.RESET,
   `^${ROUTE.PAGES}/.*`,
@@ -38,13 +40,14 @@ export const PUBLIC_ROUTES = [
   '^/csp-report$'
 ];
 
-export const PUBLIC_API_ROUTES = ['/api/polar/webhook', '/api/lmz', '/api/verify'];
+export const PUBLIC_API_ROUTES = ['/api/polar/webhook', '/api/polar/lock-in', '/api/lmz', '/api/verify'];
 
 export const ROUTES_TO_HIDE_NAV = [
   `^${ROUTE.LOGIN}$`,
   `^${ROUTE.SIGN_UP}$`,
   ROUTE.LMS_HOME,
   `^${ROUTE.INVITE}/.*`,
+  `^${ROUTE.CLAIM}/.*`,
   `^/course/.*/enroll$`,
   `^${ROUTE.FORGOT}$`,
   `^${ROUTE.RESET}$`,

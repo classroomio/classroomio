@@ -12,6 +12,8 @@ export const EMAIL_IDS = [
   'sessionUpdated',
   'submissionGraded',
   'submissionReceived',
+  'earlyAdopterReady',
+  'earlyAdopterReminder',
   'studentLimitReached',
   'studentLimitApproaching',
   'contentReportAlert',

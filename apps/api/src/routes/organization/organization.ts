@@ -2,10 +2,12 @@ import {
   ZAssignAudienceCourses,
   ZAudienceInviteByEmail,
   ZCancelOrgPlan,
+  ZClaimEarlyAdopterPlan,
   ZCourseReorder,
   ZCreateLinkInvite,
   ZCreateOrgPlan,
   ZCreateOrganization,
+  ZEarlyAdopterSubscriptionEvent,
   ZAudienceExportQuery,
   ZBulkAudienceAction,
   ZGetAudienceQuery,
@@ -18,6 +20,7 @@ import {
   ZInviteTeamMembers,
   ZLMSExercisesParam,
   ZRemoveTeamMember,
+  ZUpdateTeamMemberRole,
   ZToggleLinkInvite,
   ZUndoBulkAudienceAction,
   ZUpdateOrgPlan,
@@ -56,6 +59,7 @@ import {
   removeAudienceMember,
   removeTeamMember,
   reorderOrgCourses,
+  updateTeamMemberRole,
   updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
@@ -73,6 +77,11 @@ import { apiKeyMiddleware } from '@api/middlewares/api-key';
 import { authOrAutomationKeyMiddleware } from '@api/middlewares/auth-or-automation-key';
 import { automationRouter } from '@api/routes/organization/automation';
 import { courseImportRouter } from '@api/routes/organization/course-import';
+import {
+  claimEarlyAdopterPlan,
+  recordEarlyAdopterSubscriptionEvent
+} from '@api/services/organization/early-adopter-claim';
+import { createRateLimiter } from '@api/middlewares/rate-limiter';
 import { getLMSExercisesService } from '@api/services/exercise';
 import { handleError } from '@api/utils/errors';
 import {
@@ -93,6 +102,13 @@ import { widgetsRouter } from '@api/routes/organization/widgets';
 import { zValidator } from '@hono/zod-validator';
 import { ZGetRecommendedCourses } from '@cio/utils/validation/course';
 import { studentEmailTemplatesRouter } from '@api/routes/organization/email-templates';
+
+const earlyAdopterClaimRateLimit = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  maxRequests: 10,
+  message: 'Too many attempts. Please try again later.',
+  keyGenerator: (c) => `early_adopter_claim:${c.get('user')?.id ?? 'unknown'}`
+});
 
 export const organizationRouter = new Hono()
   /**
@@ -269,6 +285,26 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to remove team member');
     }
   })
+  .patch(
+    '/team/:memberId',
+    authMiddleware,
+    orgAdminMiddleware,
+    zValidator('param', ZRemoveTeamMember),
+    zValidator('json', ZUpdateTeamMemberRole),
+    async (c) => {
+      try {
+        const orgId = c.req.header('cio-org-id')!;
+        const user = c.get('user')!;
+        const { memberId } = c.req.valid('param');
+        const { roleId } = c.req.valid('json');
+        const member = await updateTeamMemberRole(orgId, memberId, roleId, user.id);
+
+        return c.json({ success: true, data: member }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to update team member role');
+      }
+    }
+  )
   /**
    * GET /organization/audience
    * Gets organization audience (students)
@@ -791,6 +827,50 @@ export const organizationRouter = new Hono()
       return handleError(c, error, 'Failed to update organization plan');
     }
   })
+  /**
+   * POST /organization/plan/early-adopter-event
+   * Records a Polar subscription event for an Early Adopter purchase made without an account.
+   * Requires a server API key
+   */
+  .post(
+    '/plan/early-adopter-event',
+    apiKeyMiddleware,
+    zValidator('json', ZEarlyAdopterSubscriptionEvent),
+    async (c) => {
+      try {
+        const data = c.req.valid('json');
+        await recordEarlyAdopterSubscriptionEvent(data);
+
+        return c.json({ success: true, data: { recorded: true } }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to record early adopter purchase');
+      }
+    }
+  )
+  /**
+   * POST /organization/plan/claim
+   * Connects a paid Early Adopter subscription to the organization in the cio-org-id header.
+   * Requires an organization admin session
+   */
+  .post(
+    '/plan/claim',
+    authMiddleware,
+    orgAdminMiddleware,
+    earlyAdopterClaimRateLimit,
+    zValidator('json', ZClaimEarlyAdopterPlan),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const orgId = c.req.header('cio-org-id')!;
+        const { token } = c.req.valid('json');
+        const result = await claimEarlyAdopterPlan(user.id, orgId, token);
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to claim early adopter plan');
+      }
+    }
+  )
   /**
    * POST /organization/plan/cancel
    * Cancels an organization plan by subscription ID

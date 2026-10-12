@@ -6,7 +6,12 @@ import { runAnalyticsRollupDaily } from '@cio/analytics';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
 import { pruneDeadLetterJobsOlderThan, reapStuckMediaJobs } from '@cio/db/queries';
-import { reconcileMemberLastActive } from '@cio/db/queries/organization';
+import {
+  listEarlyAdopterClaimsDueForReminder,
+  markEarlyAdopterClaimReminded,
+  reconcileMemberLastActive
+} from '@cio/db/queries/organization';
+import { buildEarlyAdopterClaimUrl, deriveEarlyAdopterClaimToken } from '@cio/core/services/early-adopter/claim-token';
 import { capAutoLessonVersionsPerLanguage, pruneAutoLessonVersions } from '@cio/db/queries/lesson/version';
 import {
   JOB_NAMES,
@@ -15,11 +20,13 @@ import {
   ZAssetStorageCleanupPayload,
   ZCourseRoleReconcilePayload,
   ZDeadLetterCleanupPayload,
+  ZEarlyAdopterClaimReminderPayload,
   ZLessonVersionRetentionPayload,
   ZMediaJobReapPayload,
   ZMemberActivityReconcilePayload,
   ZRetentionCompactPayload,
-  createRedisConnection
+  createRedisConnection,
+  enqueueEmailSend
 } from '@cio/jobs';
 
 import { errorMessage } from '../utils/cancel';
@@ -124,6 +131,27 @@ const worker = new Worker(
       return result;
     }
 
+    if (job.name === JOB_NAMES.maintenance.earlyAdopterClaimReminder) {
+      const data = ZEarlyAdopterClaimReminderPayload.parse(job.data ?? {});
+      const cutoff = new Date(Date.now() - data.remindAfterDays * 86_400 * 1_000).toISOString();
+      const due = await listEarlyAdopterClaimsDueForReminder(cutoff, data.batchSize);
+      let reminded = 0;
+
+      for (const claim of due) {
+        const claimUrl = buildEarlyAdopterClaimUrl(deriveEarlyAdopterClaimToken(claim.polarSubscriptionId));
+
+        await enqueueEmailSend(
+          { kind: 'template', template: 'earlyAdopterReminder', to: claim.email, fields: { claimUrl } },
+          { idempotencyKey: `early-adopter-reminder:${claim.polarSubscriptionId}` }
+        );
+        await markEarlyAdopterClaimReminded(claim.id);
+        reminded += 1;
+      }
+
+      log.info('early-adopter-claim-reminder-done', { due: due.length, reminded });
+      return { reminded };
+    }
+
     throw new Error(`Unknown maintenance job: ${job.name}`);
   },
   { connection, concurrency: 1 }
@@ -179,6 +207,16 @@ async function registerSchedulers(): Promise<void> {
     );
     log.info('lesson-version-retention-scheduler-registered', {
       name: JOB_NAMES.maintenance.lessonVersionRetention,
+      everyMs: 86_400_000
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'early-adopter-claim-reminder-scheduler',
+      { every: 86_400_000 },
+      { name: JOB_NAMES.maintenance.earlyAdopterClaimReminder, data: {} }
+    );
+    log.info('early-adopter-claim-reminder-scheduler-registered', {
+      name: JOB_NAMES.maintenance.earlyAdopterClaimReminder,
       everyMs: 86_400_000
     });
   } catch (err) {

@@ -1,9 +1,10 @@
 import * as z from 'zod';
 
 import { toFiniteNumber } from '../../functions/number';
-import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
+import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 import { ZCourseType } from './course-type';
+import { ZLiveSessionReminderOffsets } from './live-session-reminder';
 
 export const ZGetRecommendedCourses = z.object({
   limit: z.string().transform(Number).pipe(z.number().min(1).max(50)).optional(),
@@ -136,8 +137,9 @@ export type TCoursePresignUrlUpload = z.infer<typeof ZCoursePresignUrlUpload>;
 
 export const ZCourseDocumentPresignUrlUpload = z.object({
   fileName: z.string().min(1),
-  fileType: z.enum(ALLOWED_DOCUMENT_TYPES),
-  fileSize: z.number().int().min(0).optional()
+  fileType: z.string(),
+  fileSize: z.number().int().min(0).optional(),
+  acceptedTypes: z.array(z.string()).optional()
 });
 export type TCourseDocumentPresignUrlUpload = z.infer<typeof ZCourseDocumentPresignUrlUpload>;
 
@@ -415,6 +417,7 @@ const ZCourseMetadataFields = z.object({
   allowMarkdownExport: z.boolean().optional(),
   welcomeEmailMessage: z.string().max(20000).nullish(),
   sessionTimezone: z.string().max(64).nullish(),
+  liveSessionReminderOffsetsMinutes: ZLiveSessionReminderOffsets.optional(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
   progressionMode: z.enum(['free', 'sequential']).optional(),

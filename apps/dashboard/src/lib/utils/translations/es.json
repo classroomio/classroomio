@@ -313,7 +313,10 @@
       "user_exists": "El usuario ya existe",
       "invite_fail": "No se pudo enviar la invitación, inténtelo de nuevo",
       "remove_fail": "No se pudo eliminar el usuario, inténtelo de nuevo",
-      "remove_success": "Miembro eliminado correctamente"
+      "remove_success": "Miembro eliminado correctamente",
+      "role_updated": "Rol actualizado",
+      "role_update_failed": "No se pudo actualizar el rol",
+      "last_admin": "Esta organización necesita al menos un administrador"
     },
     "lms": {
       "error": {
@@ -1136,7 +1139,66 @@
         "certificate_deadline_required_description": "Los cursos de cumplimiento requieren una fecha límite para la obtención del certificado antes de que los estudiantes puedan inscribirse. Por favor, establezca una fecha límite en la configuración del curso antes de publicarlo.",
         "progression_mode_description": "Controle si los estudiantes pueden acceder a todo el contenido desbloqueado o deben completar los elementos en orden. La finalización de la visualización del video solo rastrea los videos subidos.",
         "allow_markdown_export": "Permitir a los alumnos copiar las páginas de las lecciones como Markdown",
-        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección desbloqueada."
+        "allow_markdown_export_description": "Cuando está activado, las páginas públicas de las lecciones muestran un botón Copiar página que exporta el contenido de la lección (sin vídeos) como Markdown. También publica una URL pública de Markdown para cada lección desbloqueada.",
+        "live_session_reminders": {
+          "legend": "Recordatorios de sesión por correo",
+          "description": "Elija cuándo reciben los estudiantes inscritos un correo con el enlace para unirse antes de cada sesión en vivo.",
+          "empty": "No hay recordatorios. Los estudiantes no recibirán correos antes de las sesiones en vivo.",
+          "add": "Agregar recordatorio",
+          "presets_label": "Agregar rápido:",
+          "remove": "Quitar recordatorio",
+          "unit_label": "Unidad",
+          "units": {
+            "days": "Días",
+            "hours": "Horas",
+            "minutes": "Minutos"
+          },
+          "duration": {
+            "days": "{count, plural, one {# día} other {# días}}",
+            "hours": "{count, plural, one {# hora} other {# horas}}",
+            "minutes": "{count, plural, one {# minuto} other {# minutos}}"
+          },
+          "preview": "{duration} antes de cada sesión",
+          "offset_before": "{duration} antes",
+          "max_count": "Puede agregar hasta {count} recordatorios.",
+          "validation": {
+            "amount": "Introduzca un número entero de 1 o más.",
+            "min": "Los recordatorios deben ser al menos 15 minutos antes de la sesión.",
+            "max": "Los recordatorios pueden ser como máximo 7 días antes de la sesión.",
+            "duplicate": "Ya tiene un recordatorio a esta hora.",
+            "fix_errors": "Corrija los errores de los recordatorios de sesión antes de guardar."
+          },
+          "log": {
+            "title": "Registro de envíos",
+            "description": "Correos de recordatorio de las sesiones de los últimos 30 días y de las próximas sesiones.",
+            "view": "Ver registros",
+            "empty": "Aún no hay recordatorios. Aparecerán aquí a medida que se acerquen las sesiones.",
+            "load_error": "No se pudo cargar el registro de envíos de recordatorios.",
+            "columns": {
+              "session": "Sesión",
+              "student": "Estudiante",
+              "reminder": "Recordatorio",
+              "status": "Estado",
+              "detail": "Detalle"
+            }
+          },
+          "statuses": {
+            "pending": "Pendiente",
+            "queued": "En cola",
+            "sent": "Enviado",
+            "failed": "Fallido",
+            "skipped": "Omitido"
+          },
+          "skip_reasons": {
+            "preferences": "El estudiante desactivó los correos de recordatorio de sesiones.",
+            "no_email": "El estudiante no tiene dirección de correo electrónico.",
+            "lesson_past": "La sesión ya había comenzado.",
+            "offset_removed": "Este recordatorio se eliminó de la configuración del curso.",
+            "lesson_rescheduled": "Cambió la hora de la sesión o el enlace para unirse.",
+            "window_passed": "La hora del recordatorio ya había pasado cuando se programó.",
+            "unenrolled": "El estudiante ya no está inscrito."
+          }
+        }
       },
       "analytics": {
         "title": "Analíticas"
@@ -1262,7 +1324,8 @@
               "name": {
                 "min_char": "El nombre es demasiado corto, mínimo de 5 caracteres."
               }
-            }
+            },
+            "validation_error": "Una o más reseñas no son válidas. Abre cada reseña y corrige su nombre, avatar, calificación y descripción antes de guardar."
           },
           "header_form": {
             "title": "Título",
@@ -1423,6 +1486,13 @@
             "toggle_label": "Invitación de enlace activa",
             "disabled_notice": "Este enlace está deshabilitado. Habilítelo para permitir que nuevos miembros se unan a través de un enlace.",
             "select_role": "Seleccione un rol"
+          },
+          "change_role": {
+            "label": "Rol de {email}",
+            "title": "Cambiar rol",
+            "description": "¿Cambiar a {email} de {currentRole} a {nextRole}?",
+            "cancel": "Cancelar",
+            "approve": "Aprobar"
           }
         },
         "roles": {
@@ -1594,6 +1664,10 @@
       },
       "submissions": {
         "title": "Ejercicios enviados",
+        "access": {
+          "denied_title": "No puedes calificar las entregas de este curso",
+          "denied_description": "Pide a un administrador que te añada como tutor del curso o como mentor de una cohorte que incluya este curso."
+        },
         "grading_modal": {
           "details": "Detalles",
           "early": "Temprano",
@@ -1628,6 +1702,22 @@
           "awaiting_manual_hint": "Necesita revisión manual",
           "failed_hint": "Error en la calificación automática. Mueva este envío nuevamente a Enviado para volver a intentarlo.",
           "invalid_transition": "Este cambio de estado no está permitido por el flujo de trabajo de calificación"
+        },
+        "filter": {
+          "student": "Student",
+          "exercise": "Exercise",
+          "students": "Students",
+          "exercises": "Exercises",
+          "selected_value": "{label}: {name}",
+          "search_students": "Search students",
+          "search_exercises": "Search exercises",
+          "select_all": "Select all",
+          "clear": "Clear",
+          "only": "Only",
+          "reset": "Reset",
+          "visible_of_total": "{visible} of {total} submissions",
+          "no_matches": "No matches",
+          "unknown_student": "Unknown student"
         }
       },
       "attendance": {
@@ -1805,7 +1895,9 @@
                 "responses": "Respuestas",
                 "no_responses": "Aún no hay respuestas",
                 "other": "Otro",
-                "attempts": "Intentos"
+                "attempts": "Intentos",
+                "unknown_student": "Unknown student",
+                "no_file": "No file"
               },
               "loading_submissions": "Cargando envíos...",
               "empty_title": "Aún no hay presentaciones",
@@ -1993,6 +2085,10 @@
                 "edit": {
                   "accepted_types_placeholder": "Tipos aceptados (por ejemplo, pdf, docx)",
                   "max_size_placeholder": "Tamaño máximo (MB)"
+                },
+                "review": {
+                  "empty": "No file was submitted.",
+                  "unavailable": "This file cannot be opened."
                 }
               },
               "fill_blank": {
@@ -2684,7 +2780,7 @@
         "session": {
           "join": "Unirse a la sesión",
           "heading": "Sesión en vivo",
-          "intro": "Configure el enlace para unirse y la hora programada para esta clase en vivo. Los estudiantes reciben recordatorios 24 horas y 1 hora antes.",
+          "intro": "Configure el enlace para unirse y la hora programada para esta clase en vivo. Los estudiantes reciben recordatorios por correo antes de cada sesión. Elija cuándo en la configuración del curso.",
           "link_label": "Enlace para unirse (Zoom, Meet, etc.)",
           "datetime_label": "Fecha y hora",
           "timezone_label": "Zona horaria",
@@ -2714,7 +2810,15 @@
           "add_apple": "Calendario de Apple (.ics)",
           "starts_in": "Comienza en",
           "session_ended": "Sesión finalizada",
-          "link_copied": "Enlace copiado"
+          "link_copied": "Enlace copiado",
+          "duration_label": "Duración prevista de la sesión (minutos)",
+          "duration_helper": "Se usa para mostrar cuándo la sesión está en vivo y cuándo ha terminado.",
+          "recording_url_label": "Enlace de la grabación",
+          "recording_url_helper": "Se muestra a los estudiantes cuando termina la sesión.",
+          "recording_url_invalid": "Introduce un enlace que empiece por http:// o https://",
+          "recording_url_needs_session": "Añade un enlace de reunión y una hora de inicio antes de añadir una grabación",
+          "past_sessions_heading": "Sesiones anteriores",
+          "watch_recording": "Ver grabación"
         },
         "student_share_your_knowledge": "Aún no se han añadido lecciones a este curso. Vuelve a intentarlo más tarde.",
         "student_body_content": "Aún no se han añadido lecciones a este curso. Vuelve a intentarlo más tarde.",
@@ -3418,7 +3522,16 @@
       "monthly": "Mensual",
       "annually": "Anualmente",
       "popular": "populares",
-      "per_org": "Por organización"
+      "per_org": "Por organización",
+      "priced_low": {
+        "eyebrow_open": "Tarifa Early Adopter · {days, plural, one {queda # día} other {quedan # días}}",
+        "eyebrow_closing": "Tarifa Early Adopter · Últimos {days} días",
+        "eyebrow_today": "Tarifa Early Adopter · Termina hoy",
+        "title": "Precio bajo a propósito. No por mucho tiempo.",
+        "title_closing": "Precio bajo a propósito. Termina pronto.",
+        "body": "Mantenemos ClassroomIO accesible porque lo construimos con nuestros clientes, no solo para ellos. Asegura el precio de hoy antes del {date}. Después, el plan Early Adopter se cierra y se aplican nuevos precios.",
+        "link": "Lee por qué lo hacemos"
+      }
     },
     "plan_names": {
       "free": "Gratis",
@@ -6139,5 +6252,30 @@
       "description": "Un curso completo con lecciones, ejercicios y configuración. Cópialo y hazlo tuyo.",
       "browse": "Explorar todas las plantillas"
     }
+  },
+  "early_adopter_claim": {
+    "page": {
+      "title": "Pago recibido. Falta un paso.",
+      "body": "Crea tu cuenta o inicia sesión y conectaremos tu plan Early Adopter con tu academia automáticamente.",
+      "sign_up": "Crear mi cuenta",
+      "log_in": "Iniciar sesión",
+      "continue": "Continuar a mi academia"
+    },
+    "success": {
+      "title": "Tu plan Early Adopter está activo",
+      "body": "Tu tarifa está asegurada y todas las funciones Early Adopter ya están desbloqueadas para tu academia.",
+      "continue": "Empezar a crear"
+    },
+    "errors": {
+      "invalid": "Este enlace no es válido. Revisa el correo que te enviamos o contacta con soporte.",
+      "expired": "Este enlace ha caducado. Contacta con soporte y te ayudaremos a conectar tu plan.",
+      "unavailable": "Este enlace de plan ya se usó o ya no está activo. Contacta con soporte si es un error.",
+      "conflict": "Esta academia ya tiene un plan de pago, así que no pudimos conectar este. Contacta con soporte y te ayudaremos."
+    }
+  },
+  "whats_new": {
+    "new_badge": "Nuevo",
+    "read_full": "Leer el registro de cambios completo",
+    "close": "Cerrar"
   }
 }

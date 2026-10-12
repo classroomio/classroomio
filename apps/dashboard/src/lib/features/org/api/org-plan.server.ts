@@ -1,4 +1,9 @@
-import type { TCancelOrgPlan, TCreateOrgPlan, TUpdateOrgPlan } from '@cio/utils/validation/organization';
+import type {
+  TCancelOrgPlan,
+  TCreateOrgPlan,
+  TEarlyAdopterSubscriptionEvent,
+  TUpdateOrgPlan
+} from '@cio/utils/validation/organization';
 
 import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 import { getApiKeyHeaders, safeServerApi } from '$lib/utils/services/api/server';
@@ -11,6 +16,8 @@ type UpdateOrgPlanRequest = typeof classroomio.organization.plan.$put;
 type UpdateOrgPlanSuccess = Extract<InferResponseType<UpdateOrgPlanRequest>, { success: true }>;
 type CancelOrgPlanRequest = typeof classroomio.organization.plan.cancel.$post;
 type CancelOrgPlanSuccess = Extract<InferResponseType<CancelOrgPlanRequest>, { success: true }>;
+type RecordEarlyAdopterEventRequest = (typeof classroomio.organization.plan)['early-adopter-event']['$post'];
+type RecordEarlyAdopterEventSuccess = Extract<InferResponseType<RecordEarlyAdopterEventRequest>, { success: true }>;
 
 /**
  * Server-side API methods for organization plan operations
@@ -104,6 +111,29 @@ export class OrgPlanApiServer {
 
     if (!result.ok) {
       console.error('Error canceling org plan (server):', result);
+      return null;
+    }
+
+    return result.body.data;
+  }
+
+  /**
+   * Records a Polar subscription event for a purchase made without an account (server-side)
+   * @param params Subscription event parameters
+   * @returns Response data or null on error
+   */
+  static async recordEarlyAdopterEvent(params: TEarlyAdopterSubscriptionEvent) {
+    const result = await safeServerApi<RecordEarlyAdopterEventSuccess>(() =>
+      classroomio.organization.plan['early-adopter-event'].$post(
+        {
+          json: params
+        },
+        getApiKeyHeaders()
+      )
+    );
+
+    if (!result.ok) {
+      console.error('Error recording early adopter event (server):', result);
       return null;
     }
 

@@ -161,7 +161,7 @@
       {#if showToolBar}
         <div transition:slide>
           <EdraToolBar
-            class="ui:bg-secondary/50 ui:flex ui:w-full ui:items-center ui:overflow-x-auto ui:border-b ui:border-dashed ui:p-0.5"
+            class="ui:bg-secondary/50 ui:flex ui:w-full ui:flex-wrap ui:items-center ui:overflow-x-hidden ui:border-b ui:border-dashed ui:p-0.5"
             {editor}
             preset={toolbarPreset}
             trailingContent={toolbarTrailing}
@@ -176,17 +176,19 @@
         <EdraDragHandleExtended {editor} />
       {/if}
     {/if}
-    <EdraEditor
-      class={cn('ui:relative ui:h-full ui:overflow-auto ui:p-4', editorClass)}
-      bind:editor
-      {editable}
-      emailSafe={toolbarPreset === 'email'}
-      {content}
-      {onUpdate}
-      {placeholder}
-      {onImageUpload}
-      {onSearchUnsplash}
-    />
+    <div class="ui:flex ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:flex-col">
+      <EdraEditor
+        class={cn('ui:relative ui:min-h-0 ui:min-w-0 ui:w-full ui:flex-1 ui:overflow-auto ui:p-4', editorClass)}
+        bind:editor
+        {editable}
+        emailSafe={toolbarPreset === 'email'}
+        {content}
+        {onUpdate}
+        {placeholder}
+        {onImageUpload}
+        {onSearchUnsplash}
+      />
+    </div>
   </div>
 
   {#if expandable}

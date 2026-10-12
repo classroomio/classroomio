@@ -8,11 +8,12 @@
   import { PricingCard } from '@cio/ui/custom/pricing-card';
   import { PricingToggle } from '@cio/ui/custom/pricing-toggle';
 
-  import { PLANS } from '@cio/utils/plans';
+  import { EARLY_ADOPTER_OFFER, PLANS } from '@cio/utils/plans';
   import { profile } from '$lib/utils/store/user';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
   import { toggleConfetti } from './confetti/store';
+  import EarlyAdopterCallout from './early-adopter-callout.svelte';
   import { currentOrg, isFreePlan } from '$lib/utils/store/org';
   import {
     UPGRADE_CONFIRMATION_PARAM,
@@ -110,7 +111,7 @@
   }
 
   function onLearnMore() {
-    window.open('https://classroomio.com/blog/early-adopter', '_blank');
+    window.open(`https://classroomio.com${EARLY_ADOPTER_OFFER.postPath}`, '_blank');
   }
 
   function handleUpgradeSuccess(upgradeSuccessful: boolean) {
@@ -170,6 +171,7 @@
             saveLabel={$t('pricing.modal.save')}
           />
         </div>
+        <EarlyAdopterCallout class="mb-4 sm:mb-6" />
         <div class="grid w-full grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
           {#each planNames as planName}
             {@const plan = PLANS[planName]}

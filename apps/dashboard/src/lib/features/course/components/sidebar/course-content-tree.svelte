@@ -18,10 +18,11 @@
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
   import { IconButton } from '@cio/ui/custom/icon-button';
-  import { RadioIcon } from '@cio/ui/custom/moving-icons';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { SvelteSet } from 'svelte/reactivity';
+  import { getSessionIndicatorPhase, liveSessionClock } from '$features/course/utils/live-session-phase';
+  import LiveSessionIndicator from '$features/course/components/lesson/live-session-indicator.svelte';
 
   interface Props {
     path: string;
@@ -78,19 +79,11 @@
   }
 </script>
 
-{#snippet liveSessionDot()}
-  <span
-    class="shrink-0"
-    title={$t('course.navItem.lessons.session.live_indicator')}
-    aria-label={$t('course.navItem.lessons.session.live_indicator')}
-  >
-    <RadioIcon size={14} color="#ef4444" />
-  </span>
-{/snippet}
-
 {#snippet contentItemRow(contentItem: (typeof contentData.items)[number])}
   {@const isContentLocked = (contentItem.isUnlocked ?? true) === false}
   {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
+  {@const sessionPhase =
+    contentItem.type === ContentType.Lesson ? getSessionIndicatorPhase(contentItem, $liveSessionClock) : null}
   <Sidebar.MenuSubItem>
     <Sidebar.MenuSubButton isActive={isContentItemInPath(contentItem.id, currentPath)}>
       {#snippet child({ props })}
@@ -121,8 +114,8 @@
                 <CircleCheckIcon size={16} filled />
               </span>
             {/if}
-            {#if contentItem.type === ContentType.Lesson && contentItem.callUrl}
-              {@render liveSessionDot()}
+            {#if sessionPhase === 'live'}
+              <LiveSessionIndicator phase={sessionPhase} />
             {:else if isContentLocked || isLockedForStudent}
               <span
                 class="shrink-0"
@@ -131,6 +124,8 @@
               >
                 <LockIcon size={12} />
               </span>
+            {:else if sessionPhase}
+              <LiveSessionIndicator phase={sessionPhase} />
             {/if}
           </div>
         </a>

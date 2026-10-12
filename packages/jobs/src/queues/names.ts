@@ -60,6 +60,7 @@ export const JOB_NAMES = {
     analyticsDailyRollup: 'analytics-daily-rollup',
     assetStorageCleanup: 'asset-storage-cleanup',
     courseRoleReconcile: 'course-role-reconcile',
-    memberActivityReconcile: 'member-activity-reconcile'
+    memberActivityReconcile: 'member-activity-reconcile',
+    earlyAdopterClaimReminder: 'early-adopter-claim-reminder'
   }
 } as const;

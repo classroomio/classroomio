@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isLiveSessionJoinable, liveSessionClock } from '$features/course/utils/live-session-phase';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
   import { flip } from 'svelte/animate';
@@ -517,7 +518,11 @@
             ? $t('course.navItem.lessons.add_lesson.lock')
             : $t('course.navItem.lessons.add_lesson.unlock')}
           {@const canRenderJoinButton =
-            item.type === ContentType.Lesson && isLiveCourse && Boolean(item.callUrl) && !itemLocked && !isEditingItem}
+            item.type === ContentType.Lesson &&
+            isLiveCourse &&
+            isLiveSessionJoinable(item, $liveSessionClock) &&
+            !itemLocked &&
+            !isEditingItem}
           {@const canRenderContinueButton = isStudentView && !itemLocked}
           {@const isLockPending = Boolean(lockPendingItemKeys[getItemLockKey(item)])}
           {@const actionDisabled = Boolean($contentEditingStore && !isEditingItem)}

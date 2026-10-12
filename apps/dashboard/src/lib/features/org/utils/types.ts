@@ -100,6 +100,9 @@ export type InviteTeamData = InviteTeamSuccess['data'];
 
 export type DeleteTeamRequest = (typeof classroomio.organization)['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamRequest>, { success: true }>;
+
+export type UpdateTeamMemberRoleRequest = (typeof classroomio.organization)['team'][':memberId']['$patch'];
+export type UpdateTeamMemberRoleSuccess = Extract<InferResponseType<UpdateTeamMemberRoleRequest>, { success: true }>;
 export type BulkAudienceActionRequest = (typeof classroomio.organization)['audience']['bulk-action']['$post'];
 export type BulkAudienceActionSuccess = Extract<InferResponseType<BulkAudienceActionRequest>, { success: true }>;
 export type BulkAudienceActionResult = BulkAudienceActionSuccess['data'];

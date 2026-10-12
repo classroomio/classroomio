@@ -1,16 +1,23 @@
 <script lang="ts">
   import { LiveSessionCard, type LiveSessionLabels } from '@cio/ui/custom/live-session-card';
   import { t } from '$lib/utils/functions/translations';
+  import { DEFAULT_SESSION_DURATION_MINUTES, getLiveSessionPhase } from '@cio/utils/functions/live-session';
+  import { liveSessionClock } from '$features/course/utils/live-session-phase';
 
   interface Props {
     title: string;
     callUrl: string;
     lessonAt: string;
     timezone?: string | null;
-    durationMinutes?: number;
+    durationMinutes?: number | null;
+    recordingUrl?: string | null;
   }
 
-  let { title, callUrl, lessonAt, timezone = null, durationMinutes = 60 }: Props = $props();
+  let { title, callUrl, lessonAt, timezone = null, durationMinutes = null, recordingUrl = null }: Props = $props();
+
+  const status = $derived(
+    getLiveSessionPhase({ callUrl, lessonAt, sessionDurationMinutes: durationMinutes }, $liveSessionClock) ?? undefined
+  );
 
   const labels: LiveSessionLabels = {
     liveNow: t.get('course.navItem.lessons.session.live_now'),
@@ -28,8 +35,18 @@
     addYahoo: t.get('course.navItem.lessons.session.add_yahoo'),
     addApple: t.get('course.navItem.lessons.session.add_apple'),
     startsIn: t.get('course.navItem.lessons.session.starts_in'),
-    sessionEnded: t.get('course.navItem.lessons.session.session_ended')
+    sessionEnded: t.get('course.navItem.lessons.session.session_ended'),
+    watchRecording: t.get('course.navItem.lessons.session.watch_recording')
   };
 </script>
 
-<LiveSessionCard {title} {callUrl} {lessonAt} {timezone} {durationMinutes} {labels} />
+<LiveSessionCard
+  {title}
+  {callUrl}
+  {lessonAt}
+  {timezone}
+  durationMinutes={durationMinutes ?? DEFAULT_SESSION_DURATION_MINUTES}
+  {recordingUrl}
+  {status}
+  {labels}
+/>

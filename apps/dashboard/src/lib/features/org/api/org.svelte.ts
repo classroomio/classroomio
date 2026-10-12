@@ -31,6 +31,7 @@ import type {
   ToggleLinkInviteRequest,
   UndoBulkAudienceActionRequest,
   UpdateOrganizationRequest,
+  UpdateTeamMemberRoleRequest,
   TOrgUpdateForm
 } from '../utils/types';
 import type { EmailLocale, StudentEmailId } from '@cio/utils/email';
@@ -43,14 +44,15 @@ import type {
   TCourseReorder,
   TBulkAudienceAction,
   TImportAudienceMembers,
-  TUpdateOrganization
+  TUpdateOrganization,
+  TUpdateTeamMemberRole
 } from '@cio/utils/validation/organization';
 import { ZBulkAudienceAction, ZCreateOrganization, ZUpdateOrganization } from '@cio/utils/validation/organization';
 import { currentOrg, mergeAccountOrgFromServer, orgs } from '$lib/utils/store/org';
 
 import type { AccountOrg } from '$features/app/types';
 import type { GetTeamRequest } from '../utils/types';
-import { ROLE } from '@cio/utils/constants';
+import { ROLE, ErrorCodes } from '@cio/utils/constants';
 import { ROLE_LABEL } from '$lib/utils/constants/roles';
 import { get } from 'svelte/store';
 import { goto } from '$app/navigation';
@@ -640,6 +642,35 @@ class OrgApi extends BaseApiWithErrors {
         if ('error' in result && 'field' in result) {
           this.errors[result.field as string] = result.error;
         }
+      }
+    });
+  }
+
+  /**
+   * Changes another team member's organization role.
+   *
+   * @param memberId Member ID to update
+   * @param roleId Admin or tutor role id
+   */
+  async updateTeamMemberRole(memberId: number, roleId: TUpdateTeamMemberRole['roleId']) {
+    return this.execute<UpdateTeamMemberRoleRequest>({
+      requestFn: () =>
+        classroomio.organization.team[':memberId'].$patch({
+          param: { memberId: memberId.toString() },
+          json: { roleId }
+        }),
+      logContext: 'updating team member role',
+      onSuccess: async () => {
+        snackbar.success('snackbar.team_members.role_updated');
+        await this.getOrgTeam();
+      },
+      onError: (result) => {
+        if (typeof result !== 'string' && result.code === ErrorCodes.ORG_TEAM_LAST_ADMIN) {
+          snackbar.error('snackbar.team_members.last_admin');
+          return;
+        }
+
+        snackbar.error('snackbar.team_members.role_update_failed');
       }
     });
   }

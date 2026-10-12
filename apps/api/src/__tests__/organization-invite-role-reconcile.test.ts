@@ -36,6 +36,7 @@ vi.mock('@cio/db/queries/organization', () => ({
   getActivePendingOrgInviteForEmail: vi.fn(),
   getOrganizationById: vi.fn(),
   getOrganizationInviteByTokenHash: vi.fn(),
+  lockOrganizationForUpdate: vi.fn(),
   getOrgLinkInvite: vi.fn(),
   getOrgLinkInviteWithOrg: vi.fn(),
   revokeActiveOrganizationInvitesByEmails: vi.fn(),
@@ -76,10 +77,13 @@ vi.mock('@api/services/course/compliance', () => ({
   ensureComplianceEnrollmentRecordsForProfiles: vi.fn()
 }));
 
-import { acceptLinkInvite } from '@api/services/organization/invite';
+import { acceptLinkInvite, acceptOrganizationInvite } from '@api/services/organization/invite';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import {
+  claimPendingOrganizationInvite,
   getOrgLinkInviteWithOrg,
+  lockOrganizationForUpdate,
+  selectOrganizationInviteWithOrgByTokenHash,
   selectOrganizationMemberByOrgAndNormalizedEmail,
   selectOrganizationMemberByOrgAndProfile,
   updateOrganizationMemberById
@@ -105,6 +109,8 @@ describe('acceptLinkInvite course-role reconciliation', () => {
       roleId: ROLE.ADMIN
     } as never);
     vi.mocked(updateOrganizationMemberById).mockResolvedValue(undefined as never);
+    vi.mocked(lockOrganizationForUpdate).mockResolvedValue(undefined as never);
+    vi.mocked(claimPendingOrganizationInvite).mockResolvedValue({ id: 'invite-1' } as never);
   });
 
   it('schedules reconciliation after the membership transaction commits', async () => {
@@ -122,5 +128,38 @@ describe('acceptLinkInvite course-role reconciliation', () => {
 
     expect(commitIndex).toBeGreaterThanOrEqual(0);
     expect(reconcileIndex).toBeGreaterThan(commitIndex);
+  });
+
+  it('writes the invite role read after the organization lock', async () => {
+    const staleInvite = {
+      invite: {
+        id: 'invite-1',
+        organizationId: ORG_ID,
+        roleId: ROLE.ADMIN,
+        isRevoked: false,
+        acceptedAt: null,
+        expiresAt: '2099-01-01T00:00:00.000Z',
+        email: 'admin@example.com',
+        metadata: {}
+      },
+      organization: { id: ORG_ID, siteName: 'acme' }
+    };
+    const lockedInvite = {
+      ...staleInvite,
+      invite: { ...staleInvite.invite, roleId: ROLE.TUTOR }
+    };
+
+    vi.mocked(selectOrganizationInviteWithOrgByTokenHash)
+      .mockResolvedValueOnce(staleInvite as never)
+      .mockResolvedValueOnce(lockedInvite as never);
+
+    await acceptOrganizationInvite('token-1', USER as never);
+
+    expect(lockOrganizationForUpdate).toHaveBeenCalledWith(ORG_ID, expect.anything());
+    expect(updateOrganizationMemberById).toHaveBeenCalledWith(
+      expect.anything(),
+      10,
+      expect.objectContaining({ roleId: ROLE.TUTOR })
+    );
   });
 });
