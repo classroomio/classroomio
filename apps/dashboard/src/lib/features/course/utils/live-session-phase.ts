@@ -11,8 +11,15 @@ export const liveSessionClock = readable(Date.now(), (set) => {
   return () => clearInterval(ticker);
 });
 
-export function isLiveSessionLive(session: LiveSessionTiming, now: number): boolean {
-  return getLiveSessionPhase(session, now) === 'live';
+export type SessionIndicatorPhase = 'upcoming' | 'live';
+
+/**
+ * The phase a lesson's live-session indicator shows, or null once the session has ended or when none is scheduled.
+ */
+export function getSessionIndicatorPhase(session: LiveSessionTiming, now: number): SessionIndicatorPhase | null {
+  const phase = getLiveSessionPhase(session, now);
+
+  return phase === 'upcoming' || phase === 'live' ? phase : null;
 }
 
 /**

@@ -1221,7 +1221,7 @@ export const getEnrolledCourses = async ({
       .orderBy(desc(schema.course.createdAt));
 
     const liveCourseIds = result.filter((row) => row.course.type === 'LIVE_CLASS').map((row) => row.course.id);
-    const upcomingByCourse = await getUpcomingSessionsForCourseIds(liveCourseIds);
+    const upcomingByCourse = await getUpcomingSessionsForCourseIds(liveCourseIds, { includeRunning: true });
 
     return result.map((row) => ({
       ...withResolvedCourseBannerImage(row.course),

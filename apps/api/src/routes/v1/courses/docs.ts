@@ -1,4 +1,8 @@
-import { ItemResponse, PaginatedListResponse } from '@api/utils/openapi/responses';
+import {
+  ZPublicApiCertificateSettingsResponse,
+  ZPublicApiIssuedCertificateListItemResponse
+} from '@cio/utils/validation/public-api';
+import { itemResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 export const COURSE_MEMBER_RULE =
   'The automation actor (the key creator) must be a member of the course (including access through a program) or an org admin, or this fails with 403. The role is checked on every call, so a creator who loses access loses it for the key too.';
@@ -64,82 +68,9 @@ export const forbiddenResponse = {
     'The key lacks the public_api:* or course:member:read/write scope, or the automation actor is not a course tutor/admin or org admin'
 };
 
-const SignatorySchema = {
-  type: 'object' as const,
-  properties: {
-    name: { type: 'string' as const, maxLength: 80 },
-    role: { type: 'string' as const, maxLength: 80 },
-    enabled: { type: 'boolean' as const },
-    signatureUrl: { type: 'string' as const, format: 'uri' }
-  },
-  required: ['name', 'role', 'enabled']
-};
+export const CertificateSettingsResponse = itemResponse(ZPublicApiCertificateSettingsResponse);
 
-export const CertificateSettingsResponse = {
-  ...ItemResponse,
-  properties: {
-    ...ItemResponse.properties,
-    data: {
-      type: 'object' as const,
-      properties: {
-        isDownloadable: { type: 'boolean' as const, default: false },
-        theme: { type: 'string' as const },
-        design: {
-          type: 'object' as const,
-          properties: {
-            templateId: {
-              type: 'string' as const,
-              enum: ['classique', 'brutalist', 'noir', 'poster', 'minimal']
-            },
-            accentColor: { type: 'string' as const, pattern: '^#[0-9a-fA-F]{6}$' },
-            subtitle: { type: 'string' as const },
-            descriptionOverride: { type: 'string' as const },
-            signatories: { type: 'array' as const, items: SignatorySchema, minItems: 2, maxItems: 2 },
-            idFormat: { type: 'string' as const }
-          },
-          required: ['templateId', 'accentColor', 'signatories']
-        },
-        deadline: { type: 'string' as const, format: 'date-time', nullable: true },
-        threshold: { type: 'number' as const, default: 100 },
-        requiredExerciseId: { type: 'string' as const, format: 'uuid', nullable: true },
-        exerciseMinScorePercent: { type: 'number' as const, nullable: true },
-        emailMessage: { type: 'string' as const, nullable: true }
-      },
-      required: [
-        'isDownloadable',
-        'theme',
-        'design',
-        'deadline',
-        'threshold',
-        'requiredExerciseId',
-        'exerciseMinScorePercent',
-        'emailMessage'
-      ]
-    }
-  }
-};
-
-export const IssuedCertificatesResponse = {
-  ...PaginatedListResponse,
-  properties: {
-    ...PaginatedListResponse.properties,
-    data: {
-      type: 'array' as const,
-      items: {
-        type: 'object' as const,
-        properties: {
-          memberId: { type: 'string' as const },
-          profileId: { type: 'string' as const, nullable: true },
-          fullname: { type: 'string' as const, nullable: true },
-          email: { type: 'string' as const, nullable: true },
-          certificateEarnedAt: { type: 'string' as const },
-          certificationEmailSentAt: { type: 'string' as const, nullable: true }
-        },
-        required: ['memberId', 'profileId', 'fullname', 'email', 'certificateEarnedAt', 'certificationEmailSentAt']
-      }
-    }
-  }
-};
+export const IssuedCertificatesResponse = paginatedResponse(ZPublicApiIssuedCertificateListItemResponse);
 
 export const CertificateFileResponse = {
   description: 'The certificate file',

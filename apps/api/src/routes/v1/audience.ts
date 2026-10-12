@@ -1,8 +1,13 @@
+import * as z from 'zod';
 import {
   ZPublicApiAssignAudienceCourses,
+  ZPublicApiAssignAudienceCoursesResponse,
   ZPublicApiAudienceMemberParam,
+  ZPublicApiAudienceMemberResponse,
   ZPublicApiAudienceQuery,
   ZPublicApiCreateAudience,
+  ZPublicApiCreateAudienceResponse,
+  ZPublicApiRemoveAudienceMemberResponse,
   ZPublicApiUpdateAudience
 } from '@cio/utils/validation/public-api';
 import {
@@ -17,35 +22,9 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
+import { itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
-const AudienceListResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'array' as const, items: { type: 'object' as const } },
-    pagination: { type: 'object' as const },
-    query: { type: 'object' as const }
-  },
-  required: ['success', 'data', 'pagination', 'query']
-};
-
-const AudienceMutationResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
-
-const AudienceDetailResponse = {
-  type: 'object' as const,
-  properties: {
-    success: { type: 'boolean' as const },
-    data: { type: 'object' as const }
-  },
-  required: ['success', 'data']
-};
+const AudienceListEnvelope = z.object({ query: ZPublicApiAudienceQuery });
 
 export const v1AudienceRouter = new Hono()
   .get(
@@ -54,14 +33,10 @@ export const v1AudienceRouter = new Hono()
       description: 'List audience members for the authenticated organization',
       tags: ['Audience'],
       responses: {
-        200: {
-          description: 'Audience members returned successfully',
-          content: {
-            'application/json': {
-              schema: AudienceListResponse
-            }
-          }
-        },
+        200: jsonResponse(
+          'Audience members returned successfully',
+          paginatedResponse(ZPublicApiAudienceMemberResponse, AudienceListEnvelope)
+        ),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' }
       }
@@ -93,14 +68,7 @@ export const v1AudienceRouter = new Hono()
       description: 'Create an audience member invitation for the authenticated organization',
       tags: ['Audience'],
       responses: {
-        201: {
-          description: 'Audience member created successfully',
-          content: {
-            'application/json': {
-              schema: AudienceMutationResponse
-            }
-          }
-        },
+        201: jsonResponse('Audience member created successfully', itemResponse(ZPublicApiCreateAudienceResponse)),
         400: { description: 'Invalid request body' },
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' }
@@ -132,14 +100,10 @@ export const v1AudienceRouter = new Hono()
       description: 'Assign one or more audience members to one or more courses',
       tags: ['Audience'],
       responses: {
-        200: {
-          description: 'Audience members assigned to courses successfully',
-          content: {
-            'application/json': {
-              schema: AudienceMutationResponse
-            }
-          }
-        },
+        200: jsonResponse(
+          'Audience members assigned to courses successfully',
+          itemResponse(ZPublicApiAssignAudienceCoursesResponse)
+        ),
         400: { description: 'Invalid request body' },
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' }
@@ -170,14 +134,7 @@ export const v1AudienceRouter = new Hono()
       description: 'Get a single audience member by id',
       tags: ['Audience'],
       responses: {
-        200: {
-          description: 'Audience member returned successfully',
-          content: {
-            'application/json': {
-              schema: AudienceDetailResponse
-            }
-          }
-        },
+        200: jsonResponse('Audience member returned successfully', itemResponse(ZPublicApiAudienceMemberResponse)),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Audience member not found' }
@@ -208,14 +165,7 @@ export const v1AudienceRouter = new Hono()
       description: 'Remove an audience member by id',
       tags: ['Audience'],
       responses: {
-        200: {
-          description: 'Audience member removed successfully',
-          content: {
-            'application/json': {
-              schema: AudienceMutationResponse
-            }
-          }
-        },
+        200: jsonResponse('Audience member removed successfully', itemResponse(ZPublicApiRemoveAudienceMemberResponse)),
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },
         404: { description: 'Audience member not found' }
@@ -247,14 +197,7 @@ export const v1AudienceRouter = new Hono()
       description: 'Update a pending audience member email address',
       tags: ['Audience'],
       responses: {
-        200: {
-          description: 'Audience member updated successfully',
-          content: {
-            'application/json': {
-              schema: AudienceDetailResponse
-            }
-          }
-        },
+        200: jsonResponse('Audience member updated successfully', itemResponse(ZPublicApiAudienceMemberResponse)),
         400: { description: 'Invalid request body' },
         401: { description: 'Unauthorized' },
         403: { description: 'Forbidden' },

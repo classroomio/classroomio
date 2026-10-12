@@ -7,12 +7,12 @@ vi.mock('@cio/db/queries/course', async (importOriginal) => ({
 
 vi.mock('@cio/db/queries/exercise', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@cio/db/queries/exercise')>()),
-  createExercise: vi.fn()
+  createExercises: vi.fn()
 }));
 
 import { createExerciseFromTemplate } from '@cio/core/services/exercise/exercise';
 import { getCourseTypeById } from '@cio/db/queries/course';
-import { createExercise } from '@cio/db/queries/exercise';
+import { createExercises } from '@cio/db/queries/exercise';
 import { ErrorCodes } from '@cio/utils/errors';
 
 const COURSE_ID = 'course-1';
@@ -48,7 +48,7 @@ describe('createExerciseFromTemplate on a PUBLIC course', () => {
     });
 
     expect(getCourseTypeById).toHaveBeenCalledWith(COURSE_ID);
-    expect(createExercise).not.toHaveBeenCalled();
+    expect(createExercises).not.toHaveBeenCalled();
   });
 
   it('rejects when only one of several template questions is manually graded', async () => {
@@ -56,6 +56,6 @@ describe('createExerciseFromTemplate on a PUBLIC course', () => {
       createExerciseFromTemplate(COURSE_ID, undefined, undefined, 1, template([1, TEXTAREA, 1]))
     ).rejects.toMatchObject({ code: ErrorCodes.QUESTION_TYPE_NOT_ALLOWED_IN_PUBLIC_COURSE });
 
-    expect(createExercise).not.toHaveBeenCalled();
+    expect(createExercises).not.toHaveBeenCalled();
   });
 });

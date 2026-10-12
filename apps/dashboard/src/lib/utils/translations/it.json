@@ -1042,7 +1042,7 @@
       },
       "preview_tabs": {
         "label": "Pagina di anteprima",
-        "home": "Casa",
+        "home": "Home",
         "course": "Corso"
       },
       "editor": {
@@ -1969,7 +1969,7 @@
   "navigation": {
     "goto": "Vai a",
     "courses": "Corsi",
-    "home": "Casa",
+    "home": "Home",
     "classroomio_home": "Home ClassroomIO",
     "dashboard": "Pannello di controllo",
     "discussion": "Discussione",
@@ -2143,7 +2143,7 @@
     "compliance_score_empty": "Nessun corso sulla conformità ancora assegnato",
     "compliance_met": "{completed} Di {total} incontrato",
     "required_courses_completed": "{completed} Di {total} corsi obbligatori completati",
-    "streak": "Strisciante",
+    "streak": "Serie",
     "days_active": "giorni attivi",
     "no_courses": "Nessun corso in corso ancora",
     "start_course": "Una volta iniziato un corso, i tuoi progressi si rifletteranno qui",
@@ -4973,7 +4973,7 @@
     "cohorts": "Coorti"
   },
   "lms": {
-    "view_landing_page": "Casa"
+    "view_landing_page": "Home"
   },
   "my_learning": {
     "heading": "Il mio apprendimento",
