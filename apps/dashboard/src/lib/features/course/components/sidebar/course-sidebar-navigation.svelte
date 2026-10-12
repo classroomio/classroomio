@@ -27,7 +27,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
   import { openAddContentModal } from '$features/course/components/content/open-content-create';
-  import { getCourseContent } from '$features/course/utils/content';
+  import { getCourseContent, getContentRoute } from '$features/course/utils/content';
   import CourseContentTree from './course-content-tree.svelte';
   import ContentCountBadges from '../content-count-badges.svelte';
 
@@ -56,8 +56,22 @@
   const currentPath = $derived(path || page.url.pathname);
   const lessonsRoute = $derived(getLessonsRoute(id));
   const isOnContentRoute = $derived(
-    currentPath.includes('/lessons') || currentPath.includes('/exercises') || currentPath === lessonsRoute
+    currentPath.includes('/lessons') ||
+      currentPath.includes('/exercises') ||
+      currentPath.includes('/activities') ||
+      currentPath === lessonsRoute
   );
+
+  const isScormCourse = $derived((courseApi.course as { format?: string } | null | undefined)?.format === 'scorm');
+  const scormPackageRoute = $derived.by(() => {
+    if (!isScormCourse) return lessonsRoute;
+
+    const items = contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items;
+    const activity = items.find((item) => item.type === ContentType.Activity);
+    if (!activity) return lessonsRoute;
+
+    return getContentRoute(id, activity);
+  });
 
   let contentTreeCollapsed = $state(false);
   let trackedContentKey = $state('');
@@ -70,11 +84,13 @@
       : contentData.items;
     const lessons = contentItems.filter((item) => item.type === ContentType.Lesson).length;
     const exercises = contentItems.filter((item) => item.type === ContentType.Exercise).length;
+    const activities = contentItems.filter((item) => item.type === ContentType.Activity).length;
 
     return {
       lessons,
       exercises,
-      total: lessons + exercises
+      activities,
+      total: lessons + exercises + activities
     };
   });
   const showContentCount = $derived(sidebar.open && !sidebar.isMobile && contentCount.total > 0);
@@ -98,10 +114,11 @@
       },
       {
         id: NAV_IDS.LESSONS,
-        title: $t('course.navItems.nav_content'),
-        url: lessonsRoute,
-        isActive: isOnContentRoute,
+        title: isScormCourse ? $t('course.navItems.nav_package') : $t('course.navItems.nav_content'),
+        url: isScormCourse ? scormPackageRoute : lessonsRoute,
+        isActive: isScormCourse ? currentPath.includes('/activities') : isOnContentRoute,
         isLesson: true,
+        isPackage: isScormCourse,
         icon: getNavIcon(NAV_IDS.LESSONS)
       },
       {
@@ -147,6 +164,7 @@
         show() {
           if (courseApi.course?.isTemplate) return false;
           if (isStudent) return false;
+          if (isScormCourse) return false;
 
           return courseApi.course?.canGrade === true;
         },
@@ -159,6 +177,7 @@
         isActive: currentPath === getNavItemRoute(id, 'marks'),
         show() {
           if (courseApi.course?.isTemplate) return false;
+          if (isScormCourse) return false;
           return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
         },
         icon: getNavIcon(NAV_IDS.MARKS)
@@ -358,7 +377,25 @@
 
   <Sidebar.Menu>
     {#each navItems as item (item.id)}
-      {#if item.isLesson}
+      {#if item.isPackage}
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
+            {#snippet child({ props })}
+              <HoverableItem>
+                {#snippet children(isHovered)}
+                  {@const Icon = item.icon}
+                  <a href={resolve(item.url, {})} data-testid="course-nav-package" {...props}>
+                    {#if Icon}
+                      <Icon {isHovered} size={16} />
+                    {/if}
+                    <span>{item.title}</span>
+                  </a>
+                {/snippet}
+              </HoverableItem>
+            {/snippet}
+          </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+      {:else if item.isLesson}
         <Sidebar.MenuItem>
           <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
             {#snippet child({ props })}
@@ -396,8 +433,12 @@
                           <Plus size={8} />
                         </IconButton>
                       {/if}
-                      {#if showContentCount}
-                        <ContentCountBadges lessons={contentCount.lessons} exercises={contentCount.exercises} />
+                      {#if showContentCount && !item.isPackage}
+                        <ContentCountBadges
+                          lessons={contentCount.lessons}
+                          exercises={contentCount.exercises}
+                          activities={contentCount.activities}
+                        />
                       {/if}
 
                       <IconButton

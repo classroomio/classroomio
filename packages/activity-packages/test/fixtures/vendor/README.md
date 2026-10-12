@@ -4,9 +4,7 @@ This folder holds third-party packages on the tester's machine only.
 
 ## Rustici golf examples (CC BY 3.0)
 
-1. Download https://scorm.com/scorm-explained/technical-scorm/golf-examples/.
-2. Keep both the SCORM 1.2 and SCORM 2004 editions here with their license file.
-3. The multi-SCO and sequencing samples exercise the module menu, rollup and the sequencing warning.
+Committed in `../` (`test/fixtures/*.zip`) under CC BY 3.0 US for automated testing in CI. See `../ATTRIBUTION.md` and `../README.md`.
 
 ## Adapt Learning course (GPL-3.0)
 

@@ -285,6 +285,9 @@ describe.skipIf(!hasDatabase)('characterization: course content structure (zero 
       expect(before).toEqual({
         completedLessons: 1,
         totalLessons: 2,
+        completedActivities: 0,
+        totalActivities: 0,
+        activityAttempts: 0,
         exerciseSubmissions: 1,
         lessonComments: 0,
         courseNewsfeedActivity: 0,

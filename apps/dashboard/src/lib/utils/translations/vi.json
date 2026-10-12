@@ -345,7 +345,8 @@
         "content_grouping_enabled": "Đã bật nhóm nội dung",
         "content_grouping_disabled": "Đã tắt nhóm nội dung",
         "link_generated": "Liên kết khóa học được cập nhật thành công",
-        "converted_to_public": "Khóa học được chuyển đổi thành công sang Công khai"
+        "converted_to_public": "Khóa học được chuyển đổi thành công sang Công khai",
+        "converted_to_standard": "Khóa học được chuyển đổi thành khóa học chuẩn"
       },
       "info": {
         "conversion_blocked": "Vui lòng sửa các câu hỏi bên dưới để hoàn tất chuyển đổi sang chế độ Công khai."
@@ -515,6 +516,27 @@
       "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
       "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
       "already_submitted": "Bạn đã báo cáo nội dung này rồi."
+    },
+    "activity": {
+      "created": "Gói SCORM đã được tạo",
+      "upload_failed": "Tải gói lên thất bại",
+      "process_failed": "Xử lý gói thất bại",
+      "settings_saved": "Đã lưu cài đặt gói",
+      "settings_failed": "Không thể lưu cài đặt gói",
+      "attach_failed": "Không thể đính kèm gói",
+      "detached": "Đã xóa gói",
+      "detach_failed": "Không thể xóa gói",
+      "instructions_saved": "Đã lưu hướng dẫn",
+      "instructions_failed": "Không thể lưu hướng dẫn",
+      "delete_failed": "Không thể xóa mục trong gói",
+      "package_deleted": "Đã xóa gói",
+      "delete_failed_package": "Không thể xóa gói",
+      "replace_failed": "Không thể thay thế gói",
+      "launch_failed": "Không thể mở gói",
+      "learner_reset": "Đặt lại số lần thử cho học viên này",
+      "learner_reset_failed": "Không thể đặt lại số lần thử",
+      "courses_created": "Đã tạo các khóa học SCORM nháp",
+      "courses_create_failed": "Không thể tạo khóa học từ các gói"
     }
   },
   "explore": {
@@ -710,7 +732,9 @@
       "students_table_description": "Tổng quan có thể sắp xếp với các liên kết đến hồ sơ sinh viên.",
       "kpi_team_tutors": "{count, plural, one {# gia sư trong nhóm khóa học} other {# gia sư trong nhóm khóa học}}",
       "kpi_lessons_exercises": "{count, plural, one {# bài tập} other {# bài tập}} được ánh xạ tới bài học",
-      "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký"
+      "kpi_progress_grade": "{grade}% điểm bài tập trung bình của các học sinh đã đăng ký",
+      "kpi_packages": "{count, plural, one {# gói} other {# gói}}",
+      "kpi_activity_completion": "{rate}% tỷ lệ hoàn thành gói của học viên đã đăng ký"
     },
     "exercises_completed": "Bài tập đã hoàn thành",
     "course_progress": "Tiến độ khóa học",
@@ -719,7 +743,10 @@
     "hours_ago": "{count, plural, other {# giờ trước}}",
     "days_ago": "{count, plural, other {# ngày trước}}",
     "months_ago": "{count, plural, other {# tháng trước}}",
-    "years_ago": "{count, plural, other {# năm trước}}"
+    "years_ago": "{count, plural, other {# năm trước}}",
+    "packages": "Các gói",
+    "packages_completed": "Các gói đã hoàn thành",
+    "activities": "Các gói SCORM"
   },
   "audience": {
     "title": "khán giả",
@@ -836,7 +863,14 @@
         "activity": "Hoạt động"
       },
       "activity_empty_title": "Lịch trình hoạt động Sắp ra mắt",
-      "activity_empty_description": "Lịch trình hoàn thành bài học và nộp bài tập trong các khóa học sẽ có trong bản phát hành tiếp theo."
+      "activity_empty_description": "Lịch trình hoàn thành bài học và nộp bài tập trong các khóa học sẽ có trong bản phát hành tiếp theo.",
+      "activities_title": "Các gói SCORM",
+      "scorm_package": "Gói SCORM",
+      "activity_status": {
+        "completed": "Đã hoàn thành",
+        "in_progress": "Đang thực hiện",
+        "not_started": "Chưa bắt đầu"
+      }
     },
     "delete": {
       "action": "Xóa",
@@ -1203,7 +1237,12 @@
             "window_passed": "Thời điểm nhắc đã qua khi lời nhắc được lên lịch.",
             "unenrolled": "Học viên không còn đăng ký khóa học."
           }
-        }
+        },
+        "convert_card_title": "Chuyển đổi thành khóa học chuẩn",
+        "convert_card_description": "Thêm bài học, bài tập và các phần bên cạnh gói. Gói sẽ trở thành mục đầu tiên. Không thể hoàn tác.",
+        "convert_card_cta": "Chuyển đổi sang chuẩn",
+        "convert_confirm_title": "Chuyển đổi khóa học này?",
+        "convert_confirm_body": "Gói vẫn là mục đầu tiên và Nội dung sẽ quay lại menu điều hướng. Không thể hoàn tác."
       },
       "analytics": {
         "title": "Phân tích"
@@ -1363,7 +1402,8 @@
           "skills_placeholder": "ví dụ. Phân tích dữ liệu",
           "tools_placeholder": "ví dụ: hình ảnh",
           "remove": "Xóa"
-        }
+        },
+        "packages": "gói"
       },
       "certificates": {
         "title": "Chứng chỉ",
@@ -1525,7 +1565,8 @@
               "video_progress": "Tiến độ xem video — {count} bài học được theo dõi",
               "attendance": "Mục điểm danh — {count}",
               "certificate_yes": "Hồ sơ chứng nhận/tuân thủ — có",
-              "certificate_no": "Hồ sơ chứng nhận/tuân thủ — không"
+              "certificate_no": "Hồ sơ chứng nhận/tuân thủ — không",
+              "activities": "Các gói SCORM đã hoàn thành — {completed}/{total} ({attempts} lần thử)"
             },
             "warning": "Không thể hoàn tác.",
             "cancel": "Hủy",
@@ -2626,64 +2667,64 @@
               },
               "platforms": {
                 "google-slides": {
-                  "hint": "File → Share → Publish to web → Embed",
-                  "step_1": "Open your deck and choose File → Share → Publish to web.",
-                  "step_2": "Switch to the Embed tab and click Publish.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Tệp → Chia sẻ → Xuất bản lên web → Nhúng",
+                  "step_1": "Mở bản trình bày của bạn và chọn Tệp → Chia sẻ → Xuất bản lên web.",
+                  "step_2": "Chuyển sang tab Nhúng và nhấp vào Xuất bản.",
+                  "step_3": "Sao chép mã nhúng iframe và dán vào đây."
                 },
                 "canva": {
-                  "hint": "Share → More → Embed",
-                  "step_1": "Above the editor, click Share → More.",
-                  "step_2": "Choose Embed and confirm (this makes the design public).",
-                  "step_3": "Copy the HTML embed code and paste it here."
+                  "hint": "Chia sẻ → Thêm → Nhúng",
+                  "step_1": "Phía trên trình chỉnh sửa, nhấp vào Chia sẻ → Thêm.",
+                  "step_2": "Chọn Nhúng và xác nhận (thao tác này đặt thiết kế ở chế độ công khai).",
+                  "step_3": "Sao chép mã nhúng HTML và dán vào đây."
                 },
                 "powerpoint": {
-                  "hint": "PowerPoint for the web → File → Share → Embed",
-                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
-                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
-                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                  "hint": "PowerPoint cho web → Tệp → Chia sẻ → Nhúng",
+                  "step_1": "Lưu bản trình bày vào OneDrive, sau đó mở trong PowerPoint cho web.",
+                  "step_2": "Chọn Tệp → Chia sẻ → Nhúng và chọn kích thước của bạn.",
+                  "step_3": "Sao chép mã nhúng iframe và dán vào đây. Chúng tôi sẽ tự điều chỉnh kích thước trình phát."
                 },
                 "keynote": {
-                  "hint": "Collaborate → Copy Link, then embed",
-                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
-                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Cộng tác → Sao chép liên kết, sau đó nhúng",
+                  "step_1": "Nhấp vào Cộng tác và đặt quyền truy cập thành Bất kỳ ai có liên kết · Chỉ xem.",
+                  "step_2": "Sao chép liên kết iCloud, sau đó lấy mã nhúng cho trang web của bạn.",
+                  "step_3": "Dán mã nhúng iframe vào đây."
                 },
                 "figma": {
-                  "hint": "Share a Figma Slides file and copy the embed",
-                  "step_1": "Open your Figma Slides file and enable link sharing.",
-                  "step_2": "Copy the embed code for the /slides or /deck file.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Chia sẻ tệp Figma Slides và sao chép mã nhúng",
+                  "step_1": "Mở tệp Figma Slides của bạn và bật chia sẻ liên kết.",
+                  "step_2": "Sao chép mã nhúng cho tệp /slides hoặc /deck.",
+                  "step_3": "Dán mã nhúng iframe vào đây."
                 },
                 "prezi": {
-                  "hint": "Share → Embed",
-                  "step_1": "From the dashboard, open Share on your presentation.",
-                  "step_2": "Click Embed and copy the code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Chia sẻ → Nhúng",
+                  "step_1": "Từ bảng điều khiển, mở Chia sẻ trên bản trình bày của bạn.",
+                  "step_2": "Nhấp vào Nhúng và sao chép mã.",
+                  "step_3": "Dán mã nhúng iframe vào đây."
                 },
                 "pitch": {
-                  "hint": "Share externally → Copy embed code",
-                  "step_1": "Click Share → Share externally and create a public link.",
-                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Chia sẻ bên ngoài → Sao chép mã nhúng",
+                  "step_1": "Nhấp vào Chia sẻ → Chia sẻ bên ngoài và tạo liên kết công khai.",
+                  "step_2": "Mở Tùy chọn liên kết (⋯) và chọn Sao chép mã nhúng.",
+                  "step_3": "Dán mã nhúng iframe vào đây."
                 },
                 "gamma": {
-                  "hint": "Share → enable public access → copy iframe",
-                  "step_1": "Open Share and toggle Allow public access.",
-                  "step_2": "Copy the generated iframe embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Chia sẻ → bật quyền truy cập công khai → sao chép iframe",
+                  "step_1": "Mở Chia sẻ và bật Cho phép truy cập công khai.",
+                  "step_2": "Sao chép mã nhúng iframe đã tạo.",
+                  "step_3": "Dán mã nhúng iframe vào đây."
                 },
                 "slideshare": {
-                  "hint": "Share → Embed under the deck",
-                  "step_1": "Open the public deck on slideshare.net.",
-                  "step_2": "Click Share under the viewer and open the Embed tab.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Chia sẻ → Nhúng bên dưới bản trình bày",
+                  "step_1": "Mở bản trình bày công khai trên slideshare.net.",
+                  "step_2": "Nhấp vào Chia sẻ bên dưới trình xem và mở tab Nhúng.",
+                  "step_3": "Sao chép mã nhúng iframe và dán vào đây."
                 },
                 "beautiful": {
-                  "hint": "Sharing Settings → Public → Get Embed Code",
-                  "step_1": "Open Sharing Settings and switch the deck to Public.",
-                  "step_2": "Click Get Embed Code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Cài đặt chia sẻ → Công khai → Lấy mã nhúng",
+                  "step_1": "Mở Cài đặt chia sẻ và chuyển bản trình bày sang Công khai.",
+                  "step_2": "Nhấp vào Lấy mã nhúng.",
+                  "step_3": "Dán mã nhúng iframe vào đây."
                 }
               },
               "frame_title": "{platform} ({index}/{total})"
@@ -2709,7 +2750,15 @@
           "lesson_title": "Bài học",
           "lesson_description": "Dạy bằng ghi chú, slide và video.",
           "exercise_title": "tập thể dục",
-          "exercise_description": "Đánh giá học sinh bằng các câu hỏi và nhiệm vụ."
+          "exercise_description": "Đánh giá học sinh bằng các câu hỏi và nhiệm vụ.",
+          "activity_scorm_title": "Gói SCORM",
+          "activity_scorm_description": "Chạy gói tương tác từ Storyline, Captivate hoặc iSpring.",
+          "activity_scorm_title_label": "Tiêu đề gói",
+          "activity_scorm_title_placeholder": "Ví dụ: Giới thiệu về an toàn lao động",
+          "activity_scorm_gated": "Gói trả phí",
+          "activity_scorm_upgrade_notice": "Gói SCORM được bao gồm trong mọi gói trả phí. Nâng cấp để thêm gói vào khóa học của bạn.",
+          "activity_scorm_upgrade_cta": "Xem các gói",
+          "activity_scorm_license_notice": "Gói SCORM cần giấy phép doanh nghiệp trên máy chủ này. Người học vẫn có quyền truy cập vào các gói hiện có."
         },
         "add_lesson": {
           "button_title": "Thêm",
@@ -2788,7 +2837,8 @@
         "stats": {
           "sections": "Phần",
           "lessons": "Bài học",
-          "exercises": "Bài tập"
+          "exercises": "Bài tập",
+          "activities": "Các hoạt động"
         },
         "session": {
           "join": "Tham gia phiên",
@@ -2845,7 +2895,198 @@
         "add_content_later": "Để sau",
         "add_content_add_to_section": "Thêm nội dung",
         "expand_content": "Mở rộng nội dung",
-        "collapse_content": "Thu gọn nội dung"
+        "collapse_content": "Thu gọn nội dung",
+        "content_progression_locked_description_activity": "Gói này sẽ được mở khóa sau khi bạn hoàn thành mục yêu cầu trước đó trong khóa học.",
+        "activities": {
+          "not_available_title": "Gói chưa khả dụng",
+          "not_available_description": "Gói SCORM này vẫn đang được thiết lập. Vui lòng quay lại sau.",
+          "header_locked": "Đã khóa",
+          "delete_confirm_title": "Xóa mục này trong gói?",
+          "delete_confirm_body": "Kết quả học tập của học viên cho mục này sẽ bị xóa. Gói vẫn còn trong Trình quản lý phương tiện.",
+          "results_placeholder_title": "Chưa có kết quả",
+          "results_placeholder_description": "Điểm số, số lần thử và thời gian sẽ hiển thị ở đây khi học viên mở gói.",
+          "settings": {
+            "completion_rule": "Quy tắc hoàn thành",
+            "completion_rule_helper": "Cách ClassroomIO quyết định gói đã hoàn thành.",
+            "rule_auto": "Tự động",
+            "rule_completed": "Đã hoàn thành",
+            "rule_passed": "Đã đạt",
+            "rule_score": "Điểm tối thiểu",
+            "graded_hint": "Gói này có điểm đạt là {score}%, vì vậy học viên phải đạt.",
+            "ungraded_hint": "Gói này không có điểm đạt, vì vậy học viên hoàn thành bằng cách hoàn tất.",
+            "passed_warning": "Một mô-đun không bao giờ báo cáo đã đạt sẽ khiến mục đó không được hoàn thành.",
+            "min_score": "Điểm tối thiểu (%)",
+            "retakes": "Cho phép làm lại",
+            "retakes_helper": "Các gói đã hoàn thành sẽ mở lại với nút Bắt đầu một lần thử mới. Điểm cao nhất sẽ được tính.",
+            "launch_mode": "Chế độ khởi chạy",
+            "launch_embedded": "Trong khóa học",
+            "launch_window": "Trong cửa sổ mới",
+            "save": "Lưu cài đặt"
+          },
+          "instructions": {
+            "label": "Hướng dẫn dành cho người học",
+            "placeholder": "Người học cần biết gì trước khi mở gói tài liệu?",
+            "save": "Lưu hướng dẫn"
+          },
+          "package": {
+            "drop_label": "Kéo tệp .zip SCORM của bạn vào đây",
+            "drop_hint": "Tối đa {size}. Quá trình xử lý có thể mất vài phút; bạn có thể rời khỏi trang.",
+            "wrong_type": "Chỉ có thể tải lên các tệp .zip dưới dạng gói SCORM.",
+            "too_large": "Tệp này lớn hơn {size}.",
+            "uploading": "Đang tải lên {progress}%",
+            "cancel_upload": "Hủy tải lên",
+            "processing": "Đang xử lý gói…",
+            "processing_stage": "{stage} · {progress}%",
+            "failed_title": "Không thể sử dụng gói này",
+            "retry": "Thử tệp khác",
+            "replace": "Thay thế gói",
+            "remove": "Xóa",
+            "remove_confirm_title": "Xóa gói này?",
+            "remove_confirm_body": "Người học sẽ mất quyền truy cập cho đến khi bạn đính kèm một gói khác. Tệp vẫn còn trong Trình quản lý phương tiện.",
+            "move_everyone": "Chuyển tất cả mọi người sang phiên bản này",
+            "move_everyone_helper": "Người học đang học dở dang phải bắt đầu lại trên phiên bản mới. {count, plural, one {# người học bị} other {# người học}} ảnh hưởng.",
+            "modules_title": "Gói này có {count, plural, one {# mô-đun} other {# mô-đun}}.",
+            "modules_hint": "Người học chọn mô-đun từ menu phía trên gói. Quy tắc hoàn thành áp dụng cho mỗi mô-đun.",
+            "sequencing_warning": "Các quy tắc sắp xếp trong gói này bị bỏ qua. Thay vào đó, cài đặt tiến trình khóa học của bạn sẽ được áp dụng.",
+            "case_warning": "Một số tên tệp chỉ khác nhau về chữ hoa chữ thường.",
+            "rebased_warning": "Tệp kê khai được tìm thấy bên trong một thư mục cấp cao nhất duy nhất.",
+            "version": "Phiên bản {version}",
+            "files": "Tệp tin",
+            "size": "Kích thước",
+            "pass_mark": "Điểm đạt {score}%",
+            "status": {
+              "uploading": "Đang tải lên",
+              "processing": "Đang xử lý",
+              "ready": "Sẵn sàng",
+              "failed": "Thất bại"
+            },
+            "errors": {
+              "missing_manifest": "Không tìm thấy imsmanifest.xml. Hãy xuất lại gói cho hệ thống quản lý học tập (LMS).",
+              "xapi_package": "Đây là gói xAPI (Tin Can). Hãy xuất lại dưới dạng SCORM.",
+              "cmi5_package": "Đây là gói cmi5. Hãy xuất lại dưới dạng SCORM.",
+              "unsupported_version": "Phiên bản SCORM này không được hỗ trợ. Vui lòng sử dụng SCORM 1.2 hoặc SCORM 2004.",
+              "invalid_xml": "Không thể đọc tệp manifest. Vui lòng xuất lại gói dữ liệu.",
+              "doctype_rejected": "Không thể đọc tệp manifest. Vui lòng xuất lại gói dữ liệu.",
+              "missing_launch": "Một mô-đun không có tệp khởi chạy. Vui lòng xuất lại gói dữ liệu.",
+              "external_launch": "Gói này mở nội dung từ một trang web khác, nơi không thể lưu lại tiến trình học tập tại đây.",
+              "assets_only": "Không có thành phần nào trong gói này báo cáo tiến trình học tập.",
+              "not_a_zip": "Tệp này không phải là tệp ZIP hợp lệ.",
+              "file_too_large": "Tệp này vượt quá giới hạn dung lượng của không gian làm việc.",
+              "total_too_large": "Gói dữ liệu sau khi giải nén vượt quá giới hạn dung lượng của không gian làm việc.",
+              "too_many_entries": "Gói này chứa quá nhiều tệp.",
+              "compression_bomb": "Gói này không vượt qua được bước kiểm tra an toàn.",
+              "unsafe_path": "Gói này chứa các đường dẫn tệp không an toàn.",
+              "symlink_rejected": "Gói này chứa các đường dẫn tệp không an toàn.",
+              "encrypted_entry": "Gói này được bảo vệ bằng mật khẩu.",
+              "upload_missing": "Quá trình tải lên chưa hoàn tất. Vui lòng thử lại.",
+              "generic": "Đã xảy ra lỗi trong quá trình xử lý gói này. Vui lòng thử lại."
+            }
+          },
+          "gating": {
+            "title": "Tính năng tạo gói SCORM đang bị tạm dừng.",
+            "plan_lapsed": "Gói dịch vụ của bạn không còn bao gồm tính năng gói SCORM. Người học vẫn có thể tham gia các gói này và kết quả học tập vẫn được lưu giữ.",
+            "no_license": "Máy chủ này cần giấy phép doanh nghiệp có hỗ trợ SCORM để thay đổi gói."
+          },
+          "tabs": {
+            "package": "Gói",
+            "instructions": "Hướng dẫn",
+            "results": "Kết quả",
+            "settings": "Cài đặt"
+          },
+          "player": {
+            "modules_complete": "{complete} trong tổng số {total} mô-đun đã hoàn thành",
+            "module_menu": "Mô-đun",
+            "status_completed": "Đã hoàn thành",
+            "status_review": "Đang xem xét",
+            "status_not_passed": "Chưa đạt",
+            "status_in_progress": "Đang tiến hành",
+            "load_failed_title": "Không thể mở gói",
+            "load_failed_body": "Đã xảy ra lỗi khi mở gói này. Vui lòng thử lại.",
+            "reload": "Tải lại",
+            "expired_title": "Phiên này đã hết hạn",
+            "expired_body": "Phiên của gói đã hết hạn. Vui lòng tải lại để tiếp tục từ nơi bạn đã dừng lại.",
+            "review_title": "Kết quả đã được ghi lại",
+            "review_body": "Không có gì trong phiên này được lưu.",
+            "new_attempt": "Bắt đầu một lần thử mới",
+            "retakes_off": "Không thể thi lại đối với gói này, vì vậy không thể bắt đầu một lần thử mới.",
+            "window_title": "Gói này sẽ mở trong một cửa sổ mới",
+            "window_body": "Tiến trình của bạn sẽ tự động được lưu trong khi cửa sổ mới vẫn mở.",
+            "open_window": "Mở gói",
+            "no_connection_title": "Gói không kết nối được",
+            "no_connection_body": "Gói chưa bao giờ gọi trình phát khóa học. Hãy xuất lại gói bằng tùy chọn xuất bản LMS hoặc SCORM, hoặc tải lại để thử lại.",
+            "fullscreen": "Toàn màn hình",
+            "complete_title": "Gói hoàn tất",
+            "complete_body": "Kết quả của bạn đã được ghi lại.",
+            "continue": "Tiếp tục",
+            "module_complete_title": "Mô-đun hoàn tất",
+            "module_complete_body": "Tiến trình của bạn đã được lưu. Mở mô-đun tiếp theo để tiếp tục.",
+            "next_module": "Mô-đun tiếp theo",
+            "autosave_hint": "Tiến trình được tự động lưu."
+          },
+          "results": {
+            "sheet": {
+              "title": "Các lần thử của {learnerName}",
+              "description": "Mọi lần thử cho từng mô-đun, các câu trả lời do gói ghi nhận và thời gian thực hiện.",
+              "attempt": "Lần thử {number}",
+              "version": "Phiên bản gói {number}",
+              "rule_met": "Đạt yêu cầu",
+              "interactions": "{count} câu trả lời được ghi nhận",
+              "no_attempts_title": "Chưa có lần thử nào",
+              "no_attempts_description": "Các lần thử sẽ hiển thị tại đây khi học viên mở gói.",
+              "reset": "Đặt lại cho học viên này",
+              "confirm_reset": "Nhấp lại để xác nhận đặt lại",
+              "columns": {
+                "module": "Mô-đun",
+                "completion": "Hoàn thành",
+                "success": "Thành công",
+                "score": "Điểm số",
+                "time": "Thời gian"
+              },
+              "diagnostics_title": "Chẩn đoán",
+              "events": {
+                "launch": "Đã khởi chạy",
+                "initialize": "Đã kết nối",
+                "commit": "Đã lưu",
+                "terminate": "Đã hoàn tất",
+                "beacon": "Đã lưu khi thoát",
+                "error": "Lỗi",
+                "not_initialized": "Không kết nối được"
+              }
+            },
+            "export": {
+              "title": "Kết quả SCORM"
+            },
+            "pass_fail": {
+              "passed": "Đạt",
+              "failed": "Không đạt"
+            },
+            "status": {
+              "not_started": "Chưa bắt đầu",
+              "in_progress": "Đang thực hiện",
+              "failed": "Chưa đạt",
+              "completed": "Đã hoàn thành"
+            },
+            "table": {
+              "student": "Học viên",
+              "score": "Điểm số",
+              "status": "Trạng thái",
+              "pass_fail": "Đạt/Không đạt",
+              "best_score": "Điểm cao nhất",
+              "time_spent": "Thời gian đã dành",
+              "attempts": "Số lần thử",
+              "last_launched": "Lần mở gần nhất"
+            },
+            "summary": {
+              "enrolled": "Đã đăng ký",
+              "started": "Đã bắt đầu",
+              "completed": "Đã hoàn thành",
+              "passed": "Đã đạt",
+              "average_score": "Điểm trung bình"
+            }
+          }
+        },
+        "add_content_created_activity": "Gói SCORM đã được tạo thành công!",
+        "add_content_create_another_activity": "Tạo gói khác"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -3015,7 +3256,8 @@
       "back_to_course": "Quay lại khóa học",
       "content_count": {
         "lessons": "{count} bài học",
-        "exercises": "bài tập {count}"
+        "exercises": "bài tập {count}",
+        "activities": "{count} hoạt động"
       },
       "compliance": {
         "title": "Tuân thủ",
@@ -3026,7 +3268,8 @@
         "title": "Tiến độ của bạn",
         "completed": "Đã hoàn thành {completed} trong số {total}",
         "lessons": "{completed} trong số {total} bài học",
-        "exercises": "{completed} trong số {total} bài tập"
+        "exercises": "{completed} trong số {total} bài tập",
+        "activities": "{completed} trong số {total} gói"
       },
       "footer_nav": {
         "label": "Điều hướng nội dung khóa học",
@@ -3048,7 +3291,8 @@
       "nav_settings": "Cài đặt",
       "nav_ai_assistant": "Trợ lý",
       "nav_ai_tutor": "Gia sư AI",
-      "exit_course": "Thoát khóa học"
+      "exit_course": "Thoát khóa học",
+      "nav_package": "Gói"
     },
     "completion": {
       "modal": {
@@ -3224,7 +3468,10 @@
       "student_empty_description": "Hiện chưa có khóa học nào trong tổ chức này. Vui lòng kiểm tra lại sau.",
       "updated_at": "Đã cập nhật {date}",
       "lessons_count": "{count, plural, other {# bài học}}",
-      "exercises_count": "{count, plural, other {# bài tập}}"
+      "exercises_count": "{count, plural, other {# bài tập}}",
+      "activities_count": "{count, plural, one {# gói} other {# gói}}",
+      "scorm_modules": "SCORM · {count, plural, one {# mô-đun} other {# mô-đun}}",
+      "scorm": "SCORM"
     },
     "course_filter": {
       "date_created_newest": "Ngày tạo: Mới nhất trước",
@@ -3608,15 +3855,18 @@
         "lesson": "Bài học",
         "exercise": "tập thể dục",
         "question": "Câu hỏi",
-        "unknown": "Không xác định"
+        "unknown": "Không xác định",
+        "activity": "Gói SCORM"
       },
       "go_to_lesson": "Đi học",
       "slot_type": {
         "lesson_video": "Video bài học",
         "lesson_document": "Tài liệu bài học",
-        "unknown": "Tệp đính kèm"
+        "unknown": "Tệp đính kèm",
+        "activity_package": "Gói SCORM"
       },
-      "refresh": "Làm mới mức sử dụng"
+      "refresh": "Làm mới mức sử dụng",
+      "go_to_package": "Đi đến gói"
     },
     "form": {
       "file_name": "Tên tệp",
@@ -3647,7 +3897,8 @@
       "where_used": "Nơi sử dụng",
       "download": "Tải xuống",
       "manage_thumbnails": "Quản lý hình thu nhỏ",
-      "delete": "Xóa"
+      "delete": "Xóa",
+      "create_course_from_package": "Tạo khóa học từ gói"
     },
     "table": {
       "title": "Tiêu đề",
@@ -3675,7 +3926,8 @@
       "document": "tài liệu",
       "image": "Hình ảnh",
       "audio": "Âm thanh",
-      "other": "Khác"
+      "other": "Khác",
+      "scorm": "Gói SCORM"
     },
     "filters": {
       "search_placeholder": "Tìm kiếm nội dung",
@@ -3690,7 +3942,8 @@
         "document": "tài liệu",
         "image": "Hình ảnh",
         "audio": "Âm thanh",
-        "other": "Khác"
+        "other": "Khác",
+        "scorm": "Gói SCORM"
       },
       "refresh": "Làm cho khỏe lại"
     },
@@ -3698,7 +3951,8 @@
       "total_bytes": "Tổng dung lượng lưu trữ",
       "internal_bytes": "Bộ nhớ trong",
       "external_assets": "Tài sản bên ngoài",
-      "bytes_by_kind": "Lưu trữ theo loại nội dung"
+      "bytes_by_kind": "Lưu trữ theo loại nội dung",
+      "scorm_bytes": "Các gói SCORM"
     },
     "common": {
       "not_available": "N/A"
@@ -3729,6 +3983,27 @@
       "confirm": "Xóa vĩnh viễn",
       "cancel": "Hủy bỏ",
       "close": "Đóng"
+    },
+    "scorm": {
+      "select": "Chọn",
+      "cancel_select": "Hủy",
+      "cancel": "Hủy",
+      "selected_count": "{count, plural, one {Đã chọn # gói} other {Đã chọn # gói}}",
+      "create_n_courses": "{count, plural, one {Tạo # khóa học} other {Tạo # khóa học}}",
+      "select_package": "Chọn gói {title}",
+      "modules_count": "{count, plural, one {# mô-đun} other {# mô-đun}}",
+      "create_course_title_single": "Tạo khóa học từ gói này",
+      "create_course_title_many": "Tạo {count, plural, one {# khóa học} other {# khóa học}} từ các gói",
+      "create_course_description": "Chúng tôi sẽ tạo một khóa học SCORM nháp cho mỗi gói. Các mô-đun của gói sẽ được nhóm lại trong một menu nằm phía trên gói đó.",
+      "course_nav_preview": "Điều hướng khóa học SCORM: Gói",
+      "course_type_self_paced": "Tự học theo tốc độ riêng",
+      "course_type_self_paced_description": "Học viên học gói nội dung theo tốc độ riêng của mình",
+      "course_type_compliance": "Tuân thủ quy định",
+      "course_type_compliance_description": "Đào tạo định kỳ bao gồm thi lại, nhắc nhở và theo dõi gia hạn",
+      "course_title_label": "Tiêu đề khóa học",
+      "course_title_label_for": "Tên khóa học cho {title}",
+      "create_course_confirm_single": "Tạo khóa học",
+      "create_course_confirm_many": "Tạo {count, plural, one {# khóa học} other {# khóa học}}"
     }
   },
   "settings": {
@@ -4774,7 +5049,15 @@
     "compliance_label": "Tuân thủ",
     "compliance_subtitle": "Đào tạo định kỳ với tính năng thi lại, nhắc nhở và theo dõi gia hạn",
     "public_label": "công cộng",
-    "public_subtitle": "Các trang khóa học miễn phí, không cần đăng ký mà bạn có thể chia sẻ công khai - rất tốt cho thế hệ khách hàng tiềm năng"
+    "public_subtitle": "Các trang khóa học miễn phí, không cần đăng ký mà bạn có thể chia sẻ công khai - rất tốt cho thế hệ khách hàng tiềm năng",
+    "build_course_label": "Xây dựng khóa học",
+    "build_course_subtitle": "Bài học, bài tập và các phần do bạn tự biên soạn",
+    "scorm_course_label": "Tải lên gói SCORM",
+    "scorm_course_subtitle": "Một gói tương tác duy nhất làm toàn bộ khóa học",
+    "scorm_gated": "Gói trả phí",
+    "scorm_upgrade_notice": "Các khóa học SCORM được bao gồm trong mọi gói trả phí. Nâng cấp để tạo một khóa học.",
+    "scorm_upgrade_cta": "Xem các gói dịch vụ",
+    "scorm_license_notice": "Các khóa học SCORM cần giấy phép doanh nghiệp trên máy chủ này."
   },
   "delete_modal": {
     "label": "Xóa",
@@ -5369,7 +5652,8 @@
         "course": "Khóa học",
         "lessons": "Bài học",
         "tags": "Thẻ"
-      }
+      },
+      "packages_suffix": "gói"
     },
     "plan": {
       "free": "Gói miễn phí",

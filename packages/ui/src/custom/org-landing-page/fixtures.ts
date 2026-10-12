@@ -60,6 +60,7 @@ export const mockOrgLandingPageProps: OrgLandingPageProps = {
       type: 'SELF_PACED',
       lessonCount: 12,
       exerciseCount: 6,
+      activityCount: 2,
       totalStudents: 4350,
       duration: '3 hours',
       tags: [
@@ -359,6 +360,8 @@ export const mockCourseLandingPageProps: CourseLandingPageProps = {
         id: 'sec-1',
         title: '1 · Foundations of Information Security',
         exerciseCount: 2,
+        activityCount: 1,
+        activities: [{ id: 'a-1', title: 'Phishing simulation package', activityKind: 'scorm' }],
         lessons: [
           { id: 'l-1', title: 'CIA triad and the modern threat landscape', durationMinutes: 12 },
           { id: 'l-2', title: 'Reading a SOC 2 report end-to-end', durationMinutes: 18 },

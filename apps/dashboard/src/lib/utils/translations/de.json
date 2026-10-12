@@ -345,7 +345,8 @@
         "content_grouping_enabled": "Inhaltsgruppierung aktiviert",
         "content_grouping_disabled": "Inhaltsgruppierung deaktiviert",
         "link_generated": "Der Kurslink wurde erfolgreich aktualisiert",
-        "converted_to_public": "Der Kurs wurde erfolgreich in den öffentlichen Kurs konvertiert"
+        "converted_to_public": "Der Kurs wurde erfolgreich in den öffentlichen Kurs konvertiert",
+        "converted_to_standard": "Kurs in Standardkurs umgewandelt"
       },
       "info": {
         "conversion_blocked": "Beantworten Sie die folgenden Fragen, um die Umstellung auf öffentlich abzuschließen."
@@ -515,6 +516,27 @@
       "success": "Danke. Wir prüfen diese Meldung.",
       "error": "Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
       "already_submitted": "Sie haben diesen Inhalt bereits gemeldet."
+    },
+    "activity": {
+      "created": "SCORM-Paket erstellt",
+      "upload_failed": "Hochladen des Pakets fehlgeschlagen",
+      "process_failed": "Verarbeitung des Pakets fehlgeschlagen",
+      "settings_saved": "Paketeinstellungen gespeichert",
+      "settings_failed": "Paketeinstellungen konnten nicht gespeichert werden",
+      "attach_failed": "Paket konnte nicht angehängt werden",
+      "detached": "Paket entfernt",
+      "detach_failed": "Paket konnte nicht entfernt werden",
+      "instructions_saved": "Anweisungen gespeichert",
+      "instructions_failed": "Anweisungen konnten nicht gespeichert werden",
+      "delete_failed": "Paketelement konnte nicht gelöscht werden",
+      "package_deleted": "Paket gelöscht",
+      "delete_failed_package": "Paket konnte nicht gelöscht werden",
+      "replace_failed": "Paket konnte nicht ersetzt werden",
+      "launch_failed": "Paket konnte nicht geöffnet werden",
+      "learner_reset": "Versuche für diesen Lernenden zurückgesetzt",
+      "learner_reset_failed": "Versuche konnten nicht zurückgesetzt werden",
+      "courses_created": "SCORM-Kursentwürfe erstellt",
+      "courses_create_failed": "Kurse konnten nicht aus den Paketen erstellt werden"
     }
   },
   "explore": {
@@ -710,7 +732,9 @@
       "students_table_description": "Sortierbare Übersicht mit Links zu Studierendenprofilen.",
       "kpi_team_tutors": "{count, plural, one {# Tutor im Kurs-Team} other {# Tutoren im Kurs-Team}}",
       "kpi_lessons_exercises": "{count, plural, one {# Übung} other {# Übungen}}, zugeordnet zu Lektionen",
-      "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Schüler"
+      "kpi_progress_grade": "{grade} % durchschnittliche Übungsnote aller eingeschriebenen Schüler",
+      "kpi_packages": "{count, plural, one {# Paket} other {# Pakete}}",
+      "kpi_activity_completion": "{rate} % Abschlussquote bei den eingeschriebenen Teilnehmenden"
     },
     "exercises_completed": "Übungen abgeschlossen",
     "course_progress": "Kursfortschritt",
@@ -719,7 +743,10 @@
     "hours_ago": "{count, plural, one {vor # Stunde} other {vor # Stunden}}",
     "days_ago": "{count, plural, one {vor # Tag} other {vor # Tagen}}",
     "months_ago": "{count, plural, one {vor # Monat} other {vor # Monaten}}",
-    "years_ago": "{count, plural, one {vor # Jahr} other {vor # Jahren}}"
+    "years_ago": "{count, plural, one {vor # Jahr} other {vor # Jahren}}",
+    "packages": "Pakete",
+    "packages_completed": "Abgeschlossene Pakete",
+    "activities": "SCORM-Pakete"
   },
   "audience": {
     "title": "Publikum",
@@ -836,7 +863,14 @@
         "activity": "Aktivität"
       },
       "activity_empty_title": "Aktivitätsübersicht – In Kürze verfügbar",
-      "activity_empty_description": "Eine Übersicht über den Abschluss von Lektionen und die Abgabe von Übungen in den verschiedenen Kursen wird in einer zukünftigen Version verfügbar sein."
+      "activity_empty_description": "Eine Übersicht über den Abschluss von Lektionen und die Abgabe von Übungen in den verschiedenen Kursen wird in einer zukünftigen Version verfügbar sein.",
+      "activities_title": "SCORM-Pakete",
+      "scorm_package": "SCORM-Paket",
+      "activity_status": {
+        "completed": "Abgeschlossen",
+        "in_progress": "In Bearbeitung",
+        "not_started": "Nicht begonnen"
+      }
     },
     "delete": {
       "action": "Löschen",
@@ -1203,7 +1237,12 @@
             "window_passed": "Der Erinnerungszeitpunkt war bei der Planung bereits vorbei.",
             "unenrolled": "Die/der Studierende ist nicht mehr eingeschrieben."
           }
-        }
+        },
+        "convert_card_title": "In Standardkurs umwandeln",
+        "convert_card_description": "Fügen Sie Lektionen, Übungen und Abschnitte zum Paket hinzu. Das Paket wird zum ersten Element. Dies kann nicht rückgängig gemacht werden.",
+        "convert_card_cta": "In Standard umwandeln",
+        "convert_confirm_title": "Diesen Kurs umwandeln?",
+        "convert_confirm_body": "Das Paket bleibt das erste Element, und der Inhalt kehrt zur Navigation zurück. Dies kann nicht rückgängig gemacht werden."
       },
       "analytics": {
         "title": "Analysen"
@@ -1363,7 +1402,8 @@
           "skills_placeholder": "z.B. Datenanalyse",
           "tools_placeholder": "z.B. Figma",
           "remove": "Entfernen"
-        }
+        },
+        "packages": "Pakete"
       },
       "certificates": {
         "title": "Zertifikate",
@@ -1525,7 +1565,8 @@
               "video_progress": "Videofortschritt — {count} verfolgte Lektionen",
               "attendance": "Anwesenheitseinträge — {count}",
               "certificate_yes": "Zertifizierungs-/Compliance-Daten — ja",
-              "certificate_no": "Zertifizierungs-/Compliance-Daten — nein"
+              "certificate_no": "Zertifizierungs-/Compliance-Daten — nein",
+              "activities": "SCORM-Pakete abgeschlossen – {completed} von {total} ({attempts} Versuche)"
             },
             "warning": "Dies kann nicht rückgängig gemacht werden.",
             "cancel": "Abbrechen",
@@ -2626,64 +2667,64 @@
               },
               "platforms": {
                 "google-slides": {
-                  "hint": "File → Share → Publish to web → Embed",
-                  "step_1": "Open your deck and choose File → Share → Publish to web.",
-                  "step_2": "Switch to the Embed tab and click Publish.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Datei → Freigeben → Im Web veröffentlichen → Einbetten",
+                  "step_1": "Öffnen Sie Ihre Präsentation und wählen Sie Datei → Freigeben → Im Web veröffentlichen.",
+                  "step_2": "Wechseln Sie zum Tab Einbetten und klicken Sie auf Veröffentlichen.",
+                  "step_3": "Kopieren Sie den iframe-Einbettungscode und fügen Sie ihn hier ein."
                 },
                 "canva": {
-                  "hint": "Share → More → Embed",
-                  "step_1": "Above the editor, click Share → More.",
-                  "step_2": "Choose Embed and confirm (this makes the design public).",
-                  "step_3": "Copy the HTML embed code and paste it here."
+                  "hint": "Teilen → Mehr → Einbetten",
+                  "step_1": "Klicken Sie über dem Editor auf Teilen → Mehr.",
+                  "step_2": "Wählen Sie Einbetten und bestätigen Sie (dies macht das Design öffentlich).",
+                  "step_3": "Kopieren Sie den HTML-Einbettungscode und fügen Sie ihn hier ein."
                 },
                 "powerpoint": {
-                  "hint": "PowerPoint for the web → File → Share → Embed",
-                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
-                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
-                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                  "hint": "PowerPoint für das Web → Datei → Teilen → Einbetten",
+                  "step_1": "Speichern Sie die Präsentation auf OneDrive und öffnen Sie sie in PowerPoint für das Web.",
+                  "step_2": "Wählen Sie Datei → Teilen → Einbetten und wählen Sie Ihre Abmessungen.",
+                  "step_3": "Kopieren Sie den iframe-Einbettungscode und fügen Sie ihn hier ein. Wir passen die Player-Größe selbst an."
                 },
                 "keynote": {
-                  "hint": "Collaborate → Copy Link, then embed",
-                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
-                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Zusammenarbeiten → Link kopieren, dann einbetten",
+                  "step_1": "Klicken Sie auf Zusammenarbeiten und setzen Sie den Zugriff auf Jeder mit dem Link · Nur anzeigen.",
+                  "step_2": "Kopieren Sie den iCloud-Link und rufen Sie den Einbettungscode für Ihre Website ab.",
+                  "step_3": "Fügen Sie den iframe-Einbettungscode hier ein."
                 },
                 "figma": {
-                  "hint": "Share a Figma Slides file and copy the embed",
-                  "step_1": "Open your Figma Slides file and enable link sharing.",
-                  "step_2": "Copy the embed code for the /slides or /deck file.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Teilen Sie eine Figma Slides-Datei und kopieren Sie den Einbettungscode",
+                  "step_1": "Öffnen Sie Ihre Figma Slides-Datei und aktivieren Sie die Linkfreigabe.",
+                  "step_2": "Kopieren Sie den Einbettungscode für die /slides- oder /deck-Datei.",
+                  "step_3": "Fügen Sie den iframe-Einbettungscode hier ein."
                 },
                 "prezi": {
-                  "hint": "Share → Embed",
-                  "step_1": "From the dashboard, open Share on your presentation.",
-                  "step_2": "Click Embed and copy the code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Teilen → Einbetten",
+                  "step_1": "Öffnen Sie im Dashboard Teilen für Ihre Präsentation.",
+                  "step_2": "Klicken Sie auf Einbetten und kopieren Sie den Code.",
+                  "step_3": "Fügen Sie den iframe-Einbettungscode hier ein."
                 },
                 "pitch": {
-                  "hint": "Share externally → Copy embed code",
-                  "step_1": "Click Share → Share externally and create a public link.",
-                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Extern teilen → Einbettungscode kopieren",
+                  "step_1": "Klicken Sie auf Teilen → Extern teilen und erstellen Sie einen öffentlichen Link.",
+                  "step_2": "Öffnen Sie die Link-Optionen (⋯) und wählen Sie Einbettungscode kopieren.",
+                  "step_3": "Fügen Sie den iframe-Einbettungscode hier ein."
                 },
                 "gamma": {
-                  "hint": "Share → enable public access → copy iframe",
-                  "step_1": "Open Share and toggle Allow public access.",
-                  "step_2": "Copy the generated iframe embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Teilen → Öffentlichen Zugriff aktivieren → iframe kopieren",
+                  "step_1": "Öffnen Sie Teilen und schalten Sie Öffentlichen Zugriff erlauben ein.",
+                  "step_2": "Kopieren Sie den generierten iframe-Einbettungscode.",
+                  "step_3": "Fügen Sie den iframe-Einbettungscode hier ein."
                 },
                 "slideshare": {
-                  "hint": "Share → Embed under the deck",
-                  "step_1": "Open the public deck on slideshare.net.",
-                  "step_2": "Click Share under the viewer and open the Embed tab.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Teilen → Unter der Präsentation einbetten",
+                  "step_1": "Öffnen Sie die öffentliche Präsentation auf slideshare.net.",
+                  "step_2": "Klicken Sie unter dem Viewer auf Teilen und öffnen Sie den Tab Einbetten.",
+                  "step_3": "Kopieren Sie den iframe-Einbettungscode und fügen Sie ihn hier ein."
                 },
                 "beautiful": {
-                  "hint": "Sharing Settings → Public → Get Embed Code",
-                  "step_1": "Open Sharing Settings and switch the deck to Public.",
-                  "step_2": "Click Get Embed Code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Freigabeeinstellungen → Öffentlich → Einbettungscode abrufen",
+                  "step_1": "Öffnen Sie die Freigabeeinstellungen und stellen Sie die Präsentation auf Öffentlich.",
+                  "step_2": "Klicken Sie auf Einbettungscode abrufen.",
+                  "step_3": "Fügen Sie den iframe-Einbettungscode hier ein."
                 }
               },
               "frame_title": "{platform} ({index} von {total})"
@@ -2709,7 +2750,15 @@
           "lesson_title": "Lektion",
           "lesson_description": "Unterrichten Sie mit Notizen, Folien und Videos.",
           "exercise_title": "Übung",
-          "exercise_description": "Bewerten Sie Schüler mit Tests und Aufgaben."
+          "exercise_description": "Bewerten Sie Schüler mit Tests und Aufgaben.",
+          "activity_scorm_title": "SCORM-Paket",
+          "activity_scorm_description": "Starten Sie ein interaktives Paket aus Storyline, Captivate oder iSpring.",
+          "activity_scorm_title_label": "Pakettitel",
+          "activity_scorm_title_placeholder": "z. B. Arbeitssicherheitseinweisung",
+          "activity_scorm_gated": "Kostenpflichtige Pakete",
+          "activity_scorm_upgrade_notice": "SCORM-Pakete sind in jedem kostenpflichtigen Paket enthalten. Mit einem Upgrade können Sie Pakete zu Ihren Kursen hinzufügen.",
+          "activity_scorm_upgrade_cta": "Pakete ansehen",
+          "activity_scorm_license_notice": "SCORM-Pakete benötigen auf diesem Server eine Enterprise-Lizenz. Lernende behalten Zugriff auf bestehende Pakete."
         },
         "add_lesson": {
           "button_title": "Hinzufügen",
@@ -2788,7 +2837,8 @@
         "stats": {
           "sections": "Abschnitte",
           "lessons": "Lektionen",
-          "exercises": "Übungen"
+          "exercises": "Übungen",
+          "activities": "Aktivitäten"
         },
         "session": {
           "join": "Nehmen Sie an der Sitzung teil",
@@ -2845,7 +2895,198 @@
         "add_content_later": "Später",
         "add_content_add_to_section": "Inhalte hinzufügen",
         "expand_content": "Inhalte erweitern",
-        "collapse_content": "Inhalt reduzieren"
+        "collapse_content": "Inhalt reduzieren",
+        "content_progression_locked_description_activity": "Dieses Paket wird freigeschaltet, sobald Sie die vorherige Pflichtaufgabe im Kurs abgeschlossen haben.",
+        "activities": {
+          "not_available_title": "Paket noch nicht verfügbar",
+          "not_available_description": "Dieses SCORM-Paket wird gerade eingerichtet. Bitte versuchen Sie es später erneut.",
+          "header_locked": "Gesperrt",
+          "delete_confirm_title": "Dieses Paketelement löschen?",
+          "delete_confirm_body": "Die Ergebnisse der Lernenden für dieses Element wurden gelöscht. Das Paket bleibt im Medienmanager erhalten.",
+          "results_placeholder_title": "Noch keine Ergebnisse",
+          "results_placeholder_description": "Punktzahl, Versuche und Zeit werden hier angezeigt, sobald die Lernenden das Paket öffnen.",
+          "settings": {
+            "completion_rule": "Abschlussregel",
+            "completion_rule_helper": "So entscheidet ClassroomIO, ob ein Paket abgeschlossen ist.",
+            "rule_auto": "Automatisch",
+            "rule_completed": "Abgeschlossen",
+            "rule_passed": "Bestanden",
+            "rule_score": "Mindestpunktzahl",
+            "graded_hint": "Dieses Paket hat eine Bestehensgrenze von {score}%. Die Lernenden müssen es bestehen.",
+            "ungraded_hint": "Dieses Paket hat keine Bestehensgrenze. Die Lernenden schließen es ab, indem sie es beenden.",
+            "passed_warning": "Ein Modul, das nie als bestanden gemeldet wird, verhindert den Abschluss des Elements.",
+            "min_score": "Mindestpunktzahl (%)",
+            "retakes": "Wiederholungen zulassen",
+            "retakes_helper": "Abgeschlossene Pakete können mit der Schaltfläche „Neuen Versuch starten“ erneut geöffnet werden. Die beste Punktzahl zählt.",
+            "launch_mode": "Startmodus",
+            "launch_embedded": "Im Kurs",
+            "launch_window": "In einem neuen Fenster",
+            "save": "Einstellungen speichern"
+          },
+          "instructions": {
+            "label": "Anleitung für Lernende",
+            "placeholder": "Was sollten Lernende wissen, bevor sie das Paket öffnen?",
+            "save": "Anleitung speichern"
+          },
+          "package": {
+            "drop_label": "Laden Sie Ihre SCORM-ZIP-Datei hier hoch.",
+            "drop_hint": "Maximal {size}. Die Verarbeitung kann einige Minuten dauern. Sie können die Seite verlassen.",
+            "wrong_type": "Nur ZIP-Dateien können als SCORM-Pakete hochgeladen werden.",
+            "too_large": "Diese Datei ist größer als {size}.",
+            "uploading": "Hochladen {progress}%",
+            "cancel_upload": "Hochladen abbrechen",
+            "processing": "Paket wird verarbeitet…",
+            "processing_stage": "{stage} · {progress}%",
+            "failed_title": "Dieses Paket konnte nicht verwendet werden.",
+            "retry": "Bitte eine andere Datei versuchen.",
+            "replace": "Paket ersetzen",
+            "remove": "Entfernen",
+            "remove_confirm_title": "Dieses Paket entfernen?",
+            "remove_confirm_body": "Die Lernenden haben keinen Zugriff mehr, bis Sie ein anderes Paket hinzufügen. Die Datei bleibt im Medienmanager.",
+            "move_everyone": "Alle auf diese Version umstellen",
+            "move_everyone_helper": "Lernende, die sich in einem laufenden Kurs befinden, starten mit der neuen Version neu. {count, plural, one {# Lernender ist} other {# Lernende sind}} betroffen.",
+            "modules_title": "Dieses Paket enthält {count, plural, one {# Modul} other {# Module}}.",
+            "modules_hint": "Lernende wählen Module aus einem Menü oberhalb des Pakets aus. Die Abschlussregel gilt für jedes Modul.",
+            "sequencing_warning": "Die Sequenzierungsregeln in diesem Paket werden ignoriert. Stattdessen gelten Ihre Kursfortschrittseinstellungen.",
+            "case_warning": "Einige Dateinamen unterscheiden sich nur in der Groß-/Kleinschreibung.",
+            "rebased_warning": "Das Manifest wurde in einem einzigen Ordner der obersten Ebene gefunden.",
+            "version": "Version {version}",
+            "files": "Dateien",
+            "size": "Größe",
+            "pass_mark": "Erfolgsquote {score}%",
+            "status": {
+              "uploading": "Hochladen",
+              "processing": "Verarbeitung",
+              "ready": "Bereit",
+              "failed": "Fehlgeschlagen"
+            },
+            "errors": {
+              "missing_manifest": "Es wurde keine imsmanifest.xml-Datei gefunden. Exportieren Sie das Paket erneut für ein LMS.",
+              "xapi_package": "Dies ist ein xAPI-Paket (Tin Can). Exportieren Sie es erneut als SCORM.",
+              "cmi5_package": "Dies ist ein cmi5-Paket. Exportieren Sie es erneut als SCORM.",
+              "unsupported_version": "Diese SCORM-Version wird nicht unterstützt. Verwenden Sie SCORM 1.2 oder SCORM 2004.",
+              "invalid_xml": "Das Manifest konnte nicht gelesen werden. Exportieren Sie das Paket erneut.",
+              "doctype_rejected": "Das Manifest konnte nicht gelesen werden. Exportieren Sie das Paket erneut.",
+              "missing_launch": "Ein Modul verfügt über keine Startdatei. Exportieren Sie das Paket erneut.",
+              "external_launch": "Dieses Paket öffnet Inhalte von einer anderen Website, die hier keinen Fortschritt speichern können.",
+              "assets_only": "Kein Element in diesem Paket meldet einen Fortschritt.",
+              "not_a_zip": "Diese Datei ist keine gültige ZIP-Datei.",
+              "file_too_large": "Diese Datei überschreitet das Limit für den Arbeitsbereich.",
+              "total_too_large": "Das entpackte Paket überschreitet das Limit für den Arbeitsbereich.",
+              "too_many_entries": "Dieses Paket enthält zu viele Dateien.",
+              "compression_bomb": "Dieses Paket hat eine Sicherheitsüberprüfung nicht bestanden.",
+              "unsafe_path": "Dieses Paket enthält unsichere Dateipfade.",
+              "symlink_rejected": "Dieses Paket enthält unsichere Dateipfade.",
+              "encrypted_entry": "Dieses Paket ist passwortgeschützt.",
+              "upload_missing": "Der Upload wurde nicht abgeschlossen. Versuchen Sie es erneut.",
+              "generic": "Bei der Verarbeitung dieses Pakets ist ein Fehler aufgetreten. Versuchen Sie es erneut."
+            }
+          },
+          "gating": {
+            "title": "Die SCORM-Erstellung ist pausiert.",
+            "plan_lapsed": "Ihr Tarif beinhaltet keine SCORM-Pakete mehr. Lernende können diese weiterhin bearbeiten, und die Ergebnisse bleiben verfügbar.",
+            "no_license": "Dieser Server benötigt eine Enterprise-Lizenz mit SCORM, um Pakete zu ändern."
+          },
+          "tabs": {
+            "package": "Paket",
+            "instructions": "Anleitung",
+            "results": "Ergebnisse",
+            "settings": "Einstellungen"
+          },
+          "player": {
+            "modules_complete": "{complete} von {total} Modulen abgeschlossen",
+            "module_menu": "Module",
+            "status_completed": "Abgeschlossen",
+            "status_review": "In Bearbeitung",
+            "status_not_passed": "Noch nicht bestanden",
+            "status_in_progress": "In Bearbeitung",
+            "load_failed_title": "Das Paket konnte nicht geöffnet werden.",
+            "load_failed_body": "Beim Öffnen dieses Pakets ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.",
+            "reload": "Neu laden",
+            "expired_title": "Diese Sitzung ist abgelaufen.",
+            "expired_body": "Die Paketsitzung ist abgelaufen. Laden Sie die Seite neu, um an der Stelle fortzufahren, an der Sie aufgehört haben.",
+            "review_title": "Ergebnisse bereits gespeichert",
+            "review_body": "In dieser Sitzung wurden keine Daten gespeichert.",
+            "new_attempt": "Neuen Versuch starten",
+            "retakes_off": "Für dieses Paket sind keine Wiederholungsversuche möglich.",
+            "window_title": "Dieses Paket öffnet sich in einem neuen Fenster.",
+            "window_body": "Ihr Fortschritt wird automatisch gespeichert, solange das neue Fenster geöffnet bleibt.",
+            "open_window": "Paket öffnen",
+            "no_connection_title": "Das Paket konnte keine Verbindung herstellen.",
+            "no_connection_body": "Der Kursplayer wurde vom Paket nicht aufgerufen. Exportieren Sie es erneut mit einer LMS- oder SCORM-Veröffentlichungsoption oder laden Sie die Seite neu, um es erneut zu versuchen.",
+            "fullscreen": "Vollbild",
+            "complete_title": "Paket abgeschlossen",
+            "complete_body": "Ihre Ergebnisse wurden gespeichert.",
+            "continue": "Weiter",
+            "module_complete_title": "Modul abgeschlossen",
+            "module_complete_body": "Ihr Fortschritt wurde gespeichert. Öffnen Sie das nächste Modul, um fortzufahren.",
+            "next_module": "Nächstes Modul",
+            "autosave_hint": "Der Fortschritt wird automatisch gespeichert."
+          },
+          "results": {
+            "sheet": {
+              "title": "Versuche für {learnerName}",
+              "description": "Jeder Versuch (einschließlich der Modul-Durchläufe), die vom Paket gemeldeten Antworten und die aufgewendete Zeit.",
+              "attempt": "Versuch {number}",
+              "version": "Paketversion {number}",
+              "rule_met": "Regel erfüllt",
+              "interactions": "{count} Antworten gemeldet",
+              "no_attempts_title": "Noch keine Versuche",
+              "no_attempts_description": "Versuche erscheinen hier, sobald der Lernende das Paket öffnet.",
+              "reset": "Für diesen Lernenden zurücksetzen",
+              "confirm_reset": "Zum Bestätigen des Zurücksetzens erneut klicken",
+              "columns": {
+                "module": "Modul",
+                "completion": "Abschluss",
+                "success": "Erfolg",
+                "score": "Punktzahl",
+                "time": "Zeit"
+              },
+              "diagnostics_title": "Diagnose",
+              "events": {
+                "launch": "Gestartet",
+                "initialize": "Verbunden",
+                "commit": "Gespeichert",
+                "terminate": "Abgeschlossen",
+                "beacon": "Beim Beenden gespeichert",
+                "error": "Fehler",
+                "not_initialized": "Keine Verbindung hergestellt"
+              }
+            },
+            "export": {
+              "title": "SCORM-Ergebnisse"
+            },
+            "pass_fail": {
+              "passed": "Bestanden",
+              "failed": "Nicht bestanden"
+            },
+            "status": {
+              "not_started": "Nicht begonnen",
+              "in_progress": "In Bearbeitung",
+              "failed": "Noch nicht bestanden",
+              "completed": "Abgeschlossen"
+            },
+            "table": {
+              "student": "Teilnehmer",
+              "score": "Punktzahl",
+              "status": "Status",
+              "pass_fail": "Bestanden/Nicht bestanden",
+              "best_score": "Bestes Ergebnis",
+              "time_spent": "Aufgewendete Zeit",
+              "attempts": "Versuche",
+              "last_launched": "Zuletzt gestartet"
+            },
+            "summary": {
+              "enrolled": "Angemeldet",
+              "started": "Gestartet",
+              "completed": "Abgeschlossen",
+              "passed": "Bestanden",
+              "average_score": "Durchschnittliche Punktzahl"
+            }
+          }
+        },
+        "add_content_created_activity": "SCORM-Paket wurde erfolgreich erstellt!",
+        "add_content_create_another_activity": "Weiteres Paket erstellen"
       },
       "news_feed": {
         "heading": "Newsfeed",
@@ -3015,7 +3256,8 @@
       "back_to_course": "Zurück zum Kurs",
       "content_count": {
         "lessons": "{count} Lektionen",
-        "exercises": "{count} Übungen"
+        "exercises": "{count} Übungen",
+        "activities": "{count} Aktivitäten"
       },
       "compliance": {
         "title": "Compliance",
@@ -3026,7 +3268,8 @@
         "title": "Ihr Fortschritt",
         "completed": "{completed} von {total} abgeschlossen",
         "lessons": "{completed} von {total} Lektionen",
-        "exercises": "{completed} von {total} Übungen"
+        "exercises": "{completed} von {total} Übungen",
+        "activities": "{completed} von {total} Paketen"
       },
       "footer_nav": {
         "label": "Kursinhalt-Navigation",
@@ -3048,7 +3291,8 @@
       "nav_settings": "Einstellungen",
       "nav_ai_assistant": "Assistent",
       "nav_ai_tutor": "KI-Tutor",
-      "exit_course": "Kurs verlassen"
+      "exit_course": "Kurs verlassen",
+      "nav_package": "Paket"
     },
     "completion": {
       "modal": {
@@ -3224,7 +3468,10 @@
       "student_empty_description": "In dieser Organisation sind derzeit keine Kurse verfügbar. Bitte schauen Sie später wieder vorbei.",
       "updated_at": "Aktualisiert am {date}",
       "lessons_count": "{count, plural, one {# Lektion} other {# Lektionen}}",
-      "exercises_count": "{count, plural, one {# Übung} other {# Übungen}}"
+      "exercises_count": "{count, plural, one {# Übung} other {# Übungen}}",
+      "activities_count": "{count, plural, one {# Paket} other {# Pakete}}",
+      "scorm_modules": "SCORM · {count, plural, one {# Modul} other {# Module}}",
+      "scorm": "SCORM"
     },
     "course_filter": {
       "date_created_newest": "Erstellungsdatum: Neueste zuerst",
@@ -3608,15 +3855,18 @@
         "lesson": "Lektion",
         "exercise": "Übung",
         "question": "Frage",
-        "unknown": "Unbekannt"
+        "unknown": "Unbekannt",
+        "activity": "SCORM-Paket"
       },
       "go_to_lesson": "Gehe zur Lektion",
       "slot_type": {
         "lesson_video": "Unterrichtsvideo",
         "lesson_document": "Unterrichtsdokument",
-        "unknown": "Anhang"
+        "unknown": "Anhang",
+        "activity_package": "SCORM-Paket"
       },
-      "refresh": "Nutzung aktualisieren"
+      "refresh": "Nutzung aktualisieren",
+      "go_to_package": "Zum Paket gehen"
     },
     "form": {
       "file_name": "Dateiname",
@@ -3647,7 +3897,8 @@
       "where_used": "Wo verwendet",
       "download": "Herunterladen",
       "manage_thumbnails": "Miniaturansichten verwalten",
-      "delete": "Löschen"
+      "delete": "Löschen",
+      "create_course_from_package": "Kurs aus Paket erstellen"
     },
     "table": {
       "title": "Titel",
@@ -3675,7 +3926,8 @@
       "document": "Dokument",
       "image": "Bild",
       "audio": "Audio",
-      "other": "Andere"
+      "other": "Andere",
+      "scorm": "SCORM-Paket"
     },
     "filters": {
       "search_placeholder": "Suchen Sie nach Assets",
@@ -3690,7 +3942,8 @@
         "document": "Dokument",
         "image": "Bild",
         "audio": "Audio",
-        "other": "Andere"
+        "other": "Andere",
+        "scorm": "SCORM-Paket"
       },
       "refresh": "Aktualisieren"
     },
@@ -3698,7 +3951,8 @@
       "total_bytes": "Gesamtspeicher",
       "internal_bytes": "Interner Speicher",
       "external_assets": "Externe Vermögenswerte",
-      "bytes_by_kind": "Speicher nach Asset-Typ"
+      "bytes_by_kind": "Speicher nach Asset-Typ",
+      "scorm_bytes": "SCORM-Pakete"
     },
     "common": {
       "not_available": "N/V"
@@ -3729,6 +3983,27 @@
       "confirm": "Dauerhaft löschen",
       "cancel": "Abbrechen",
       "close": "Schließen"
+    },
+    "scorm": {
+      "select": "Auswählen",
+      "cancel_select": "Abbrechen",
+      "cancel": "Abbrechen",
+      "selected_count": "{count, plural, one {# Paket ausgewählt} other {# Pakete ausgewählt}}",
+      "create_n_courses": "{count, plural, one {# Kurs erstellen} other {# Kurse erstellen}}",
+      "select_package": "Paket {title} auswählen",
+      "modules_count": "{count, plural, one {# Modul} other {# Module}}",
+      "create_course_title_single": "Kurs aus diesem Paket erstellen",
+      "create_course_title_many": "{count, plural, one {# Kurs} other {# Kurse}} aus Paketen erstellen",
+      "create_course_description": "Wir erstellen für jedes Paket einen SCORM-Kursentwurf. Die zugehörigen Module werden in einem Menü oberhalb des Pakets zusammengefasst.",
+      "course_nav_preview": "SCORM-Kursnavigation: Paket",
+      "course_type_self_paced": "Im eigenen Tempo",
+      "course_type_self_paced_description": "Teilnehmende bearbeiten das Paket in ihrem eigenen Tempo",
+      "course_type_compliance": "Compliance",
+      "course_type_compliance_description": "Wiederkehrende Schulungen mit Wiederholungen, Erinnerungen und Nachverfolgung der Gültigkeitsdauer",
+      "course_title_label": "Kurstitel",
+      "course_title_label_for": "Kursname für {title}",
+      "create_course_confirm_single": "Kurs erstellen",
+      "create_course_confirm_many": "{count, plural, one {# Kurs} other {# Kurse}} erstellen"
     }
   },
   "settings": {
@@ -4774,7 +5049,15 @@
     "compliance_label": "Compliance",
     "compliance_subtitle": "Wiederkehrende Schulungen mit Wiederholungen, Erinnerungen und Verlängerungsverfolgung",
     "public_label": "Öffentlich",
-    "public_subtitle": "Kostenlose Kursseiten ohne Anmeldung, die Sie öffentlich teilen können – ideal für die Lead-Generierung"
+    "public_subtitle": "Kostenlose Kursseiten ohne Anmeldung, die Sie öffentlich teilen können – ideal für die Lead-Generierung",
+    "build_course_label": "Kurs erstellen",
+    "build_course_subtitle": "Lektionen, Übungen und Abschnitte, die Sie selbst zusammenstellen",
+    "scorm_course_label": "SCORM-Paket hochladen",
+    "scorm_course_subtitle": "Ein interaktives Paket als gesamter Kurs",
+    "scorm_gated": "Kostenpflichtige Pakete",
+    "scorm_upgrade_notice": "SCORM-Kurse sind in jedem kostenpflichtigen Paket enthalten. Aktualisieren Sie Ihr Paket, um einen Kurs zu erstellen.",
+    "scorm_upgrade_cta": "Pläne ansehen",
+    "scorm_license_notice": "SCORM-Kurse benötigen auf diesem Server eine Enterprise-Lizenz."
   },
   "delete_modal": {
     "label": "Löschen",
@@ -5369,7 +5652,8 @@
         "course": "Kurs",
         "lessons": "Lektionen",
         "tags": "Tags"
-      }
+      },
+      "packages_suffix": "Pakete"
     },
     "plan": {
       "free": "Kostenloser Plan",

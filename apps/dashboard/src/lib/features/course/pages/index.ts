@@ -1,3 +1,4 @@
+export { default as ActivityPage } from './activity.svelte';
 export { default as AnalyticsPage } from './analytics.svelte';
 export { default as AttendancePage } from './attendance.svelte';
 export { default as CertificatesPage } from './certificates.svelte';

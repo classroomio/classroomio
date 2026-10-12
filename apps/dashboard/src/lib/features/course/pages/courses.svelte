@@ -173,6 +173,13 @@
           isPublished={courseData.isPublished ?? false}
           lessonCount={courseData.lessonCount}
           exerciseCount={'exerciseCount' in courseData ? (courseData.exerciseCount ?? 0) : 0}
+          activityCount={'activityCount' in courseData ? (courseData.activityCount ?? 0) : 0}
+          format={'format' in courseData ? ((courseData.format as string | null) ?? null) : null}
+          moduleCount={'moduleCount' in courseData
+            ? ((courseData.moduleCount as number | null) ?? null)
+            : 'totalModules' in courseData
+              ? ((courseData.totalModules as number | null) ?? null)
+              : null}
           totalStudents={'totalStudents' in courseData ? courseData.totalStudents : 0}
           updatedAt={'updatedAt' in courseData ? (courseData.updatedAt ?? null) : null}
           tags={('tags' in courseData && Array.isArray(courseData.tags) ? courseData.tags : []) as Array<{

@@ -1,5 +1,6 @@
 import type { Course, CourseContentItem, CourseContentSection } from './types';
 import { ExerciseIcon, LessonIcon } from '@cio/ui/custom/moving-icons';
+import PackageIcon from '@lucide/svelte/icons/package';
 
 import { ContentType as CourseContentType } from '@cio/utils/constants/content';
 import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
@@ -26,6 +27,10 @@ export const CONTENT_DEFINITIONS = {
   [CourseContentType.Exercise]: {
     label: 'Exercise',
     icon: ExerciseIcon
+  },
+  [CourseContentType.Activity]: {
+    label: 'SCORM package',
+    icon: PackageIcon
   }
 } as const;
 
@@ -44,6 +49,10 @@ export function getContentRoute(courseId: string, item: { id: string; type: stri
     return `/courses/${courseId}/exercises/${item.id}`;
   }
 
+  if (item.type === CourseContentType.Activity) {
+    return `/courses/${courseId}/activities/${item.id}`;
+  }
+
   if (item.type === CourseContentType.Section) {
     return `/courses/${courseId}/lessons#section-${item.id}`;
   }
@@ -55,13 +64,19 @@ export function getCourseContent(course: Course | null) {
   return course?.content ?? EMPTY_CONTENT;
 }
 
-const NAVIGABLE_CONTENT_TYPES = [CourseContentType.Lesson, CourseContentType.Exercise] as const;
+const NAVIGABLE_CONTENT_TYPES = [
+  CourseContentType.Lesson,
+  CourseContentType.Exercise,
+  CourseContentType.Activity
+] as const;
 
 export type ContentProgress = {
   lessonsTotal: number;
   lessonsComplete: number;
   exercisesTotal: number;
   exercisesComplete: number;
+  activitiesTotal: number;
+  activitiesComplete: number;
   total: number;
   completed: number;
   percent: number;
@@ -70,10 +85,12 @@ export type ContentProgress = {
 export function getContentItemsProgress(items: ContentItem[]): ContentProgress {
   const lessons = items.filter((item) => item.type === CourseContentType.Lesson);
   const exercises = items.filter((item) => item.type === CourseContentType.Exercise);
+  const activities = items.filter((item) => item.type === CourseContentType.Activity);
   const lessonsComplete = lessons.filter((item) => item.isComplete).length;
   const exercisesComplete = exercises.filter((item) => item.isComplete).length;
-  const total = lessons.length + exercises.length;
-  const completed = lessonsComplete + exercisesComplete;
+  const activitiesComplete = activities.filter((item) => item.isComplete).length;
+  const total = lessons.length + exercises.length + activities.length;
+  const completed = lessonsComplete + exercisesComplete + activitiesComplete;
   const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
   return {
@@ -81,6 +98,8 @@ export function getContentItemsProgress(items: ContentItem[]): ContentProgress {
     lessonsComplete,
     exercisesTotal: exercises.length,
     exercisesComplete,
+    activitiesTotal: activities.length,
+    activitiesComplete,
     total,
     completed,
     percent

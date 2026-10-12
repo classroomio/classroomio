@@ -3,6 +3,7 @@ import { ROUTES } from './constants';
 const COURSE_ROOT = `/${ROUTES.COURSES}`;
 const LESSONS_SEGMENT = `/${ROUTES.LESSONS}`;
 const EXERCISES_SEGMENT = '/exercises';
+const ACTIVITIES_SEGMENT = '/activities';
 
 function normalizePath(path = '') {
   if (!path) return '';
@@ -47,7 +48,7 @@ export function isCourseContentRoute(path = '') {
   const parts = pathname.split('/').filter(Boolean);
   const section = parts[2] ? `/${parts[2]}` : '';
 
-  return section === LESSONS_SEGMENT || section === EXERCISES_SEGMENT;
+  return section === LESSONS_SEGMENT || section === EXERCISES_SEGMENT || section === ACTIVITIES_SEGMENT;
 }
 
 export function isCourseContentRouteForId(path = '', courseId = '') {

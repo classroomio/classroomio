@@ -37,6 +37,7 @@
   let sheetOpen = $state(false);
   let isMarkingComplete = $state(false);
 
+  const isScormCourse = $derived((courseApi.course as { format?: string } | null | undefined)?.format === 'scorm');
   const currentPath = $derived(path || page.url.pathname);
   const courseProgress = $derived(getCourseProgress(courseApi.course));
   const activeIndex = $derived(resolveActiveNavigableContentIndex(courseApi.course, currentPath));
@@ -49,8 +50,8 @@
   );
 
   const contentLockReason = $derived(
-    activeItem?.type === ContentType.Lesson
-      ? getStudentContentLockReason(courseApi.course, activeItem.id, ContentType.Lesson)
+    activeItem?.type === ContentType.Lesson || activeItem?.type === ContentType.Activity
+      ? getStudentContentLockReason(courseApi.course, activeItem.id, activeItem.type)
       : null
   );
   const completionState = $derived(
@@ -70,8 +71,11 @@
       return null;
     }
 
-    const targetType = target.type === ContentType.Lesson ? ContentType.Lesson : ContentType.Exercise;
-    return getStudentContentLockReason(courseApi.course, target.id, targetType);
+    if (target.type === ContentType.Section) {
+      return null;
+    }
+
+    return getStudentContentLockReason(courseApi.course, target.id, target.type);
   }
 
   function goToContent(target: CourseContentItem | null) {
@@ -113,8 +117,8 @@
   {positionLabel}
   sublineLabel={activeItem?.title}
   sublineComplete={showCompleteToggle ? false : (activeItem?.isComplete ?? false)}
-  hasPrev={!isPreviousDisabled}
-  hasNext={!isNextDisabled}
+  hasPrev={!isScormCourse && !isPreviousDisabled}
+  hasNext={!isScormCourse && !isNextDisabled}
   onPrev={() => goToContent(previousItem)}
   onNext={() => goToContent(nextItem)}
   onOpenSheet={() => (sheetOpen = true)}

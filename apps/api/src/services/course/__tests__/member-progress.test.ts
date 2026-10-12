@@ -79,7 +79,7 @@ describe('deriveCourseMemberStage', () => {
       deriveCourseMemberStage({
         progressPercent: 33,
         certificateEarnedAt: null,
-        contentItems: [{ id: 'item-1', type: 'ACTIVITY', title: 'Package', isComplete: false }] as never
+        contentItems: [{ id: 'item-1', type: 'UNKNOWN', title: 'Package', isComplete: false }] as never
       })
     ).toThrow();
   });

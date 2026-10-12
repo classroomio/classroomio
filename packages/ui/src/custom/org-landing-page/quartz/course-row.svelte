@@ -45,6 +45,13 @@
 
     return course.exerciseCount === 1 ? '1 exercise' : `${course.exerciseCount} exercises`;
   });
+
+  const activitiesLabel = $derived.by(() => {
+    if (!course.activityCount) return undefined;
+    if (labels?.activitiesLabel) return labels.activitiesLabel(course.activityCount);
+
+    return course.activityCount === 1 ? '1 package' : `${course.activityCount} packages`;
+  });
 </script>
 
 <svelte:element
@@ -88,6 +95,7 @@
       <span class="ui:flex ui:flex-wrap ui:gap-x-4 ui:gap-y-1 ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
         {#if lessonsLabel}<span>{lessonsLabel}</span>{/if}
         {#if exercisesLabel}<span>{exercisesLabel}</span>{/if}
+        {#if activitiesLabel}<span>{activitiesLabel}</span>{/if}
         {#if courseTypeMeta}<span>{courseTypeMeta.label}</span>{/if}
       </span>
       <span class="ui:flex ui:items-center ui:gap-5">

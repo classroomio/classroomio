@@ -150,4 +150,9 @@ describe('formatCourseForWidget price', () => {
   it('renders Free when a paid course has a zero cost (state blocked by API validation)', () => {
     expect(format({ cost: 0, metadata: { paymentEnabled: true } }).price).toBe('Free');
   });
+
+  it('passes the package count through to the widget payload', () => {
+    expect(format({ activityCount: 3 }).activityCount).toBe(3);
+    expect(format({}).activityCount).toBe(0);
+  });
 });

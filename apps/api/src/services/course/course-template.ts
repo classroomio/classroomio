@@ -3,6 +3,7 @@ import {
   countCourseStudents,
   countOrgTemplates,
   canUseCourseTemplate,
+  getActivitiesByCourseId,
   getCourseById,
   getCourseOrganizationId,
   getCourseSectionsByCourseId,
@@ -144,10 +145,11 @@ function templatePreviewSettings(
 
 export async function getCourseTemplatePreview(templateId: string, orgId: string) {
   const { template, global, curated } = await requireUsableTemplate(templateId, orgId);
-  const [sections, lessons, exercises, highlights] = await Promise.all([
+  const [sections, lessons, exercises, activities, highlights] = await Promise.all([
     getCourseSectionsByCourseId(templateId),
     getLessonsByCourseId(templateId),
     getExercisesByCourseId(templateId),
+    getActivitiesByCourseId(templateId),
     global ? listTemplateHighlights([templateId]) : Promise.resolve([])
   ]);
   const questions =
@@ -174,12 +176,17 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
           id: exercise.id,
           title: exercise.title,
           questionCount: questionCountByExercise.get(exercise.id) ?? 0
-        }))
+        })),
+      activities: activities
+        .filter((activity) => activity.sectionId === section.id)
+        .sort((left, right) => left.order - right.order)
+        .map((activity) => ({ id: activity.id, title: activity.title, kind: activity.kind }))
     }));
 
   const unsectionedLessons = lessons.filter((lesson) => !lesson.sectionId);
   const unsectionedExercises = exercises.filter((exercise) => !exercise.sectionId);
-  if (unsectionedLessons.length > 0 || unsectionedExercises.length > 0) {
+  const unsectionedActivities = activities.filter((activity) => !activity.sectionId);
+  if (unsectionedLessons.length > 0 || unsectionedExercises.length > 0 || unsectionedActivities.length > 0) {
     outline.push({
       id: '',
       title: null,
@@ -192,7 +199,10 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
           id: exercise.id,
           title: exercise.title,
           questionCount: questionCountByExercise.get(exercise.id) ?? 0
-        }))
+        })),
+      activities: unsectionedActivities
+        .sort((left, right) => left.order - right.order)
+        .map((activity) => ({ id: activity.id, title: activity.title, kind: activity.kind }))
     });
   }
 
@@ -207,7 +217,8 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
     counts: {
       sections: sections.length,
       lessons: lessons.length,
-      exercises: exercises.length
+      exercises: exercises.length,
+      activities: activities.length
     },
     highlights: highlights.map((highlight) => ({
       title: highlight.title,

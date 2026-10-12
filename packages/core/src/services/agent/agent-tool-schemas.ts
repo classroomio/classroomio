@@ -363,11 +363,11 @@ export const reorderContentParam = z.object({
     .array(
       z.object({
         id: z.string().min(1),
-        type: z.enum([ContentType.Lesson, ContentType.Exercise]),
+        type: z.enum([ContentType.Lesson, ContentType.Exercise, ContentType.Activity]),
         order: z.number().int().min(1).optional().describe('New order within the section'),
         sectionId: z.string().nullable().optional().describe('Move item to a different section')
       })
     )
     .optional()
-    .describe('Reorder or move lessons/exercises')
+    .describe('Reorder or move lessons, exercises and activities')
 });

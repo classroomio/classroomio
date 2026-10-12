@@ -17,9 +17,10 @@ RUN pnpm fetch --store-dir /pnpm/store
 COPY . .
 
 RUN pnpm install --offline --frozen-lockfile --ignore-scripts --shamefully-hoist \
-    --store-dir /pnpm/store --filter @cio/api...
+    --store-dir /pnpm/store --filter @cio/api... --filter @cio/activity-player
 RUN find . -name 'tsconfig.tsbuildinfo' -delete
 RUN pnpm -r --filter @cio/api... build
+RUN pnpm --filter @cio/activity-player build
 
 COPY docker/entrypoint-api.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

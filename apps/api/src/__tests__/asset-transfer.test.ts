@@ -46,7 +46,8 @@ vi.mock('@cio/core/config/storage', async (importOriginal) => {
       ...original.getStorageConfig(),
       bucketVideos: 'videos',
       bucketDocuments: 'documents',
-      bucketMedia: 'media'
+      bucketMedia: 'media',
+      bucketScorm: 'scorm'
     })
   };
 });
@@ -187,5 +188,128 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
 
     expect([...storage.objects].sort()).toEqual(sourceObjects.sort());
     expect(copiedAssetId).not.toBe('');
+  });
+
+  it('copies a SCORM package with all versions, units and storage prefixes', async () => {
+    const { withAssetStorageRollback, transferScormPackageAsset } = await import(
+      '@cio/core/services/assets/asset-transfer'
+    );
+    const { db } = await import('@db/drizzle');
+    const { createOrganization } = await import('@db/queries/organization');
+    const schema = await import('@db/schema');
+
+    const rollback = new Error('rollback');
+    try {
+      await withAssetStorageRollback(() =>
+        db.transaction(async (tx) => {
+          const [profile] = await tx.select({ id: schema.profile.id }).from(schema.profile).limit(1);
+          if (!profile) throw rollback;
+
+          const sourceOrg = await createOrganization({ name: `scorm-source-${Date.now()}` }, tx);
+          const targetOrg = await createOrganization({ name: `scorm-target-${Date.now()}` }, tx);
+          const [source] = await tx
+            .insert(schema.asset)
+            .values({
+              organizationId: sourceOrg.id,
+              kind: 'scorm',
+              provider: 'upload',
+              storageKey: `scorm/source-placeholder`,
+              title: 'Safety library'
+            })
+            .returning();
+          await tx
+            .update(schema.asset)
+            .set({ storageKey: `scorm/${source.id}` })
+            .where(eq(schema.asset.id, source.id));
+
+          const [first] = await tx
+            .insert(schema.contentPackageVersion)
+            .values({
+              assetId: source.id,
+              versionNumber: 1,
+              isCurrent: false,
+              status: 'ready',
+              format: 'scorm12',
+              title: 'Safety library',
+              uploadKey: `scorm/${source.id}/v1.zip`,
+              contentPrefix: `scorm/${source.id}/v1`
+            })
+            .returning();
+          const [second] = await tx
+            .insert(schema.contentPackageVersion)
+            .values({
+              assetId: source.id,
+              versionNumber: 2,
+              isCurrent: true,
+              status: 'ready',
+              format: 'scorm2004_4',
+              title: 'Safety library',
+              uploadKey: `scorm/${source.id}/v2.zip`,
+              contentPrefix: `scorm/${source.id}/v2`
+            })
+            .returning();
+          await tx.insert(schema.contentPackageUnit).values([
+            {
+              packageVersionId: first.id,
+              identifier: 'sco-1',
+              title: 'Old module',
+              position: 1,
+              unitType: 'sco',
+              href: 'sco.html'
+            },
+            {
+              packageVersionId: second.id,
+              identifier: 'sco-1',
+              title: 'New module',
+              position: 1,
+              unitType: 'sco',
+              href: 'sco.html'
+            }
+          ]);
+          storage.objects.add(`scorm:scorm/${source.id}/v1.zip`);
+          storage.objects.add(`scorm:scorm/${source.id}/v1/sco.html`);
+          storage.objects.add(`scorm:scorm/${source.id}/v2.zip`);
+          storage.objects.add(`scorm:scorm/${source.id}/v2/sco.html`);
+
+          const transfer = await transferScormPackageAsset(source, targetOrg.id, profile.id, tx);
+
+          expect(transfer.asset.id).not.toBe(source.id);
+          expect(transfer.replacements).toContainEqual([source.id, transfer.asset.id]);
+          expect(transfer.asset).toMatchObject({
+            organizationId: targetOrg.id,
+            kind: 'scorm',
+            storageKey: `scorm/${transfer.asset.id}`
+          });
+
+          const versions = await tx
+            .select()
+            .from(schema.contentPackageVersion)
+            .where(eq(schema.contentPackageVersion.assetId, transfer.asset.id));
+          expect(versions.map((version) => [version.versionNumber, version.isCurrent, version.status])).toEqual([
+            [1, false, 'ready'],
+            [2, true, 'ready']
+          ]);
+
+          const units = await tx
+            .select({ identifier: schema.contentPackageUnit.identifier, title: schema.contentPackageUnit.title })
+            .from(schema.contentPackageUnit)
+            .innerJoin(
+              schema.contentPackageVersion,
+              eq(schema.contentPackageUnit.packageVersionId, schema.contentPackageVersion.id)
+            )
+            .where(eq(schema.contentPackageVersion.assetId, transfer.asset.id));
+          expect(units).toHaveLength(2);
+
+          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1.zip`)).toBe(true);
+          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1/sco.html`)).toBe(true);
+          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v2.zip`)).toBe(true);
+          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v2/sco.html`)).toBe(true);
+
+          throw rollback;
+        })
+      );
+    } catch (error) {
+      if (error !== rollback) throw error;
+    }
   });
 });

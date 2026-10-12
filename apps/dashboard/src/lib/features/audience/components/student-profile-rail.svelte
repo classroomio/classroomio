@@ -16,13 +16,33 @@
     analytics: AudienceAnalytics;
   } = $props();
 
+  function getCourseTotals(c: AudienceAnalyticsCourse): { total: number; completed: number } {
+    const record = c as Record<string, unknown>;
+    const asNumber = (value: unknown) => (typeof value === 'number' ? value : 0);
+    const total =
+      asNumber(record.lessons_count ?? record.lessonCount) +
+      asNumber(record.exercises_count ?? record.exerciseCount) +
+      asNumber(record.activities_count ?? record.activityCount);
+    const completed =
+      asNumber(record.lessons_completed ?? record.progressRate) +
+      asNumber(record.exercises_completed ?? record.exercisesCompleted) +
+      asNumber(record.activities_completed ?? record.activitiesCompleted);
+
+    return { total, completed };
+  }
+
   function isComplete(course: AudienceAnalyticsCourse): boolean {
-    return course.lessons_count > 0 && course.lessons_completed === course.lessons_count;
+    const { total, completed } = getCourseTotals(course);
+    return total > 0 && completed >= total;
+  }
+
+  function hasStarted(course: AudienceAnalyticsCourse): boolean {
+    return getCourseTotals(course).completed > 0;
   }
 
   let completedCourses = $derived(analytics.courses.filter(isComplete).length);
   let inProgressCourses = $derived(
-    analytics.courses.filter((course) => !isComplete(course) && course.lessons_completed > 0).length
+    analytics.courses.filter((course) => !isComplete(course) && hasStarted(course)).length
   );
 
   function gradeLabel(grade: number | null): string {

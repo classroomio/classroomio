@@ -40,6 +40,7 @@
     SettingsSeparator
   } from '$features/ui';
   import { Button } from '@cio/ui/base/button';
+  import * as Dialog from '@cio/ui/base/dialog';
 
   import { settings } from '$features/course/utils/settings-store';
   import { getOrderedNavigableContent } from '$features/course/utils/content';
@@ -152,7 +153,27 @@
 
   const lockedContentItems = $derived(collectLockedContentItems(courseApi.course));
   const isLiveClassCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
+  const isScormCourse = $derived((courseApi.course as { format?: string } | null | undefined)?.format === 'scorm');
   const showLockedContentNotice = $derived($settings.isPublished && lockedContentItems.length > 0);
+  let openConvertModal = $state(false);
+  let isConverting = $state(false);
+
+  async function handleConvertToStandard() {
+    const courseId = courseApi.course?.id;
+    if (!courseId || isConverting) return;
+
+    isConverting = true;
+    try {
+      const updated = await courseApi.update(courseId, { format: 'standard' }, { showSuccessToast: false });
+      if (updated) {
+        snackbar.success('snackbar.course_settings.success.converted_to_standard');
+        await goto(resolve(`/courses/${courseId}/lessons`, {}));
+      }
+    } finally {
+      isConverting = false;
+      openConvertModal = false;
+    }
+  }
 
   async function handleUnlockAllContent() {
     const courseId = courseApi.course?.id;
@@ -823,15 +844,19 @@
                 <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
                   {$t('course.navItem.settings.self_paced')}
                 </Select.Item>
-                <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
-                  {$t('course.navItem.settings.live_class')}
-                </Select.Item>
+                {#if !isScormCourse}
+                  <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
+                    {$t('course.navItem.settings.live_class')}
+                  </Select.Item>
+                {/if}
                 <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
                   {$t('course.navItem.settings.compliance')}
                 </Select.Item>
-                <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
-                  {$t('course.navItem.settings.public')}
-                </Select.Item>
+                {#if !isScormCourse}
+                  <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
+                    {$t('course.navItem.settings.public')}
+                  </Select.Item>
+                {/if}
               </Select.Group>
             </Select.Content>
           </Select.Root>
@@ -1002,55 +1027,59 @@
 
       <SettingsSeparator />
 
-      <Field.Field class="scroll-mt-24" orientation="horizontal">
-        <Field.Content>
-          <Field.Label for="content-grouping">
-            <a href="#content-grouping" class="hover:underline"
-              >{$t('course.navItem.settings.content_grouping_title')}</a
+      {#if !isScormCourse}
+        <Field.Field class="scroll-mt-24" orientation="horizontal">
+          <Field.Content>
+            <Field.Label for="content-grouping">
+              <a href="#content-grouping" class="hover:underline"
+                >{$t('course.navItem.settings.content_grouping_title')}</a
+              >
+            </Field.Label>
+            <Field.Description>{$t('course.navItem.settings.content_grouping_description')}</Field.Description>
+          </Field.Content>
+          <Switch
+            id="content-grouping"
+            checked={$settings.isContentGroupingEnabled}
+            onCheckedChange={(checked) => {
+              $settings.isContentGroupingEnabled = checked;
+              hasUnsavedChanges = true;
+            }}
+          />
+        </Field.Field>
+
+        <SettingsSeparator />
+
+        <Field.Field id="progression-mode" class="scroll-mt-24">
+          <Field.Label>
+            <a href="#progression-mode" class="hover:underline"
+              >{$t('course.navItem.settings.progression_mode_title')}</a
             >
           </Field.Label>
-          <Field.Description>{$t('course.navItem.settings.content_grouping_description')}</Field.Description>
-        </Field.Content>
-        <Switch
-          id="content-grouping"
-          checked={$settings.isContentGroupingEnabled}
-          onCheckedChange={(checked) => {
-            $settings.isContentGroupingEnabled = checked;
-            hasUnsavedChanges = true;
-          }}
-        />
-      </Field.Field>
-
-      <SettingsSeparator />
-
-      <Field.Field id="progression-mode" class="scroll-mt-24">
-        <Field.Label>
-          <a href="#progression-mode" class="hover:underline">{$t('course.navItem.settings.progression_mode_title')}</a>
-        </Field.Label>
-        <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
-        <RadioGroup.Root
-          value={$settings.progressionMode}
-          onValueChange={(value) => {
-            if (value === 'free' || value === 'sequential') {
-              $settings.progressionMode = value;
-              hasUnsavedChanges = true;
-            }
-          }}
-        >
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2">
-              <RadioGroup.Item value="free" id="progression-free" />
-              <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
+          <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
+          <RadioGroup.Root
+            value={$settings.progressionMode}
+            onValueChange={(value) => {
+              if (value === 'free' || value === 'sequential') {
+                $settings.progressionMode = value;
+                hasUnsavedChanges = true;
+              }
+            }}
+          >
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-2">
+                <RadioGroup.Item value="free" id="progression-free" />
+                <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
+              </div>
+              <div class="flex items-center gap-2">
+                <RadioGroup.Item value="sequential" id="progression-sequential" />
+                <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
+              </div>
             </div>
-            <div class="flex items-center gap-2">
-              <RadioGroup.Item value="sequential" id="progression-sequential" />
-              <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
-            </div>
-          </div>
-        </RadioGroup.Root>
-      </Field.Field>
+          </RadioGroup.Root>
+        </Field.Field>
 
-      <SettingsSeparator />
+        <SettingsSeparator />
+      {/if}
 
       <AttentionHighlight id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COURSE_COMMENTS} class="scroll-mt-24">
         <Field.Field orientation="horizontal" class="scroll-mt-24">
@@ -1308,6 +1337,37 @@
   </SettingsCard>
 
   <TemplateSettingsSection />
+
+  {#if isScormCourse}
+    <SettingsCard
+      id="convert"
+      title={$t('course.navItem.settings.convert_card_title')}
+      description={$t('course.navItem.settings.convert_card_description')}
+    >
+      <Button variant="outline" onclick={() => (openConvertModal = true)} class="w-fit!">
+        {$t('course.navItem.settings.convert_card_cta')}
+      </Button>
+    </SettingsCard>
+
+    <Dialog.Root bind:open={openConvertModal}>
+      <Dialog.Content class="w-96 p-6">
+        <Dialog.Header class="p-2">
+          <Dialog.Title>{$t('course.navItem.settings.convert_confirm_title')}</Dialog.Title>
+          <Dialog.Description>
+            {$t('course.navItem.settings.convert_confirm_body')}
+          </Dialog.Description>
+        </Dialog.Header>
+        <div class="mt-6 flex items-center justify-between">
+          <Button variant="outline" onclick={() => (openConvertModal = false)} disabled={isConverting}>
+            {$t('delete_modal.no')}
+          </Button>
+          <Button onclick={handleConvertToStandard} loading={isConverting}>
+            {$t('course.navItem.settings.convert_card_cta')}
+          </Button>
+        </div>
+      </Dialog.Content>
+    </Dialog.Root>
+  {/if}
 
   <SettingsCard
     id="delete"

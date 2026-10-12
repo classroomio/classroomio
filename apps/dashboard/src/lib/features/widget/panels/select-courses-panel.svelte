@@ -138,6 +138,10 @@
                     <span class="ui:text-muted-foreground/50">·</span>
                     <span>{course.exerciseCount} {$t('widgets.preview.exercises_suffix')}</span>
                   {/if}
+                  {#if (course.activityCount ?? 0) > 0}
+                    <span class="ui:text-muted-foreground/50">·</span>
+                    <span>{course.activityCount} {$t('widgets.preview.packages_suffix')}</span>
+                  {/if}
                 </div>
                 {#if course.tags.length > 0}
                   <CourseTagsOverflow tags={course.tags} variant="card" />

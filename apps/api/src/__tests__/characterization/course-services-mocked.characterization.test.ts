@@ -11,6 +11,11 @@ vi.mock('@cio/db/queries/course/certification-exercise', () => ({
   getStudentSubmissionsForExercise: vi.fn()
 }));
 
+vi.mock('@cio/db/queries/activity/activity', () => ({
+  getActivitiesByCourseId: vi.fn().mockResolvedValue([]),
+  getActivityCompletionsByProfile: vi.fn().mockResolvedValue([])
+}));
+
 vi.mock('@cio/db/queries/course/people', () => ({
   claimMemberCertificateEarned: vi.fn()
 }));

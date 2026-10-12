@@ -226,7 +226,15 @@
     "compliance_label": "Compliance",
     "compliance_subtitle": "Recurring training with retakes, reminders, and renewal tracking",
     "public_label": "Public",
-    "public_subtitle": "Free, no-signup course pages you can share publicly — great for lead gen"
+    "public_subtitle": "Free, no-signup course pages you can share publicly — great for lead gen",
+    "build_course_label": "Build a course",
+    "build_course_subtitle": "Lessons, exercises and sections you compose yourself",
+    "scorm_course_label": "Upload a SCORM package",
+    "scorm_course_subtitle": "One interactive package as the whole course",
+    "scorm_gated": "Paid plans",
+    "scorm_upgrade_notice": "SCORM courses are included in every paid plan. Upgrade to create one.",
+    "scorm_upgrade_cta": "View plans",
+    "scorm_license_notice": "SCORM courses need an enterprise license on this server."
   },
   "public_course": {
     "header": {
@@ -1417,7 +1425,8 @@
       "total_bytes": "Total Storage",
       "internal_bytes": "Internal Storage",
       "external_assets": "External Assets",
-      "bytes_by_kind": "Storage by Asset Type"
+      "bytes_by_kind": "Storage by Asset Type",
+      "scorm_bytes": "SCORM packages"
     },
     "filters": {
       "search_placeholder": "Search assets",
@@ -1428,7 +1437,8 @@
         "document": "Document",
         "image": "Image",
         "audio": "Audio",
-        "other": "Other"
+        "other": "Other",
+        "scorm": "SCORM package"
       },
       "status_options": {
         "all": "All statuses",
@@ -1441,7 +1451,8 @@
       "document": "Document",
       "image": "Image",
       "audio": "Audio",
-      "other": "Other"
+      "other": "Other",
+      "scorm": "SCORM package"
     },
     "provider": {
       "upload": "Upload",
@@ -1469,7 +1480,8 @@
       "where_used": "Where used",
       "download": "Download",
       "manage_thumbnails": "Manage thumbnails",
-      "delete": "Delete"
+      "delete": "Delete",
+      "create_course_from_package": "Create course from package"
     },
     "delete": {
       "title": "Delete video",
@@ -1532,12 +1544,14 @@
         "lesson": "Lesson",
         "exercise": "Exercise",
         "question": "Question",
-        "unknown": "Unknown"
+        "unknown": "Unknown",
+        "activity": "SCORM package"
       },
       "slot_type": {
         "lesson_video": "Lesson video",
         "lesson_document": "Lesson document",
-        "unknown": "Attachment"
+        "unknown": "Attachment",
+        "activity_package": "SCORM package"
       },
       "table": {
         "target_type": "Target Type",
@@ -1545,7 +1559,29 @@
         "slot": "Slot",
         "position": "Position",
         "added": "Added"
-      }
+      },
+      "go_to_package": "Go to package"
+    },
+    "scorm": {
+      "select": "Select",
+      "cancel_select": "Cancel",
+      "cancel": "Cancel",
+      "selected_count": "{count, plural, one {# package selected} other {# packages selected}}",
+      "create_n_courses": "{count, plural, one {Create # course} other {Create # courses}}",
+      "select_package": "Select package {title}",
+      "modules_count": "{count, plural, one {# module} other {# modules}}",
+      "create_course_title_single": "Create a course from this package",
+      "create_course_title_many": "Create {count, plural, one {# course} other {# courses}} from packages",
+      "create_course_description": "We’ll create a draft SCORM course with each package. Its modules stay together in a menu above the package.",
+      "course_nav_preview": "SCORM course navigation: Package",
+      "course_type_self_paced": "Self-paced",
+      "course_type_self_paced_description": "Students take the package at their own pace",
+      "course_type_compliance": "Compliance",
+      "course_type_compliance_description": "Recurring training with retakes, reminders, and renewal tracking",
+      "course_title_label": "Course title",
+      "course_title_label_for": "Course title for {title}",
+      "create_course_confirm_single": "Create course",
+      "create_course_confirm_many": "Create {count, plural, one {# course} other {# courses}}"
     }
   },
   "tags_admin": {
@@ -1831,6 +1867,7 @@
       "all_tags": "All",
       "none": "None",
       "lessons_suffix": "lessons",
+      "packages_suffix": "packages",
       "last_synced": "Synced",
       "refresh": "Refresh",
       "columns": {
@@ -2259,6 +2296,9 @@
       "updated_at": "Updated {date}",
       "lessons_count": "{count, plural, one {# lesson} other {# lessons}}",
       "exercises_count": "{count, plural, one {# exercise} other {# exercises}}",
+      "activities_count": "{count, plural, one {# package} other {# packages}}",
+      "scorm": "SCORM",
+      "scorm_modules": "SCORM · {count, plural, one {# module} other {# modules}}",
       "tags_overflow_aria": "{count} more tags",
       "list_view": {
         "title": "Title",
@@ -2358,6 +2398,7 @@
     "navItems": {
       "nav_news_feed": "News Feed",
       "nav_content": "Content",
+      "nav_package": "Package",
       "nav_attendance": "Attendance",
       "nav_submissions": "Submissions",
       "nav_marks": "Marks",
@@ -2380,12 +2421,14 @@
       },
       "content_count": {
         "lessons": "{count} lessons",
-        "exercises": "{count} exercises"
+        "exercises": "{count} exercises",
+        "activities": "{count} activities"
       },
       "progress": {
         "title": "Your progress",
         "completed": "{completed} of {total} completed",
         "lessons": "{completed} of {total} lessons",
+        "activities": "{completed} of {total} packages",
         "exercises": "{completed} of {total} exercises"
       },
       "footer_nav": {
@@ -2530,7 +2573,8 @@
         "stats": {
           "sections": "Sections",
           "lessons": "Lessons",
-          "exercises": "Exercises"
+          "exercises": "Exercises",
+          "activities": "Activities"
         },
         "drag": "drag a card to reorder",
         "no_lesson": "No lessons yet",
@@ -2540,6 +2584,7 @@
         "content_progression_locked_description": "This content unlocks after you finish the previous required item in the course.",
         "content_progression_locked_description_lesson": "This lesson unlocks after you finish the previous required item in the course.",
         "content_progression_locked_description_exercise": "This exercise unlocks after you finish the previous required item in the course.",
+        "content_progression_locked_description_activity": "This package unlocks after you finish the previous required item in the course.",
         "completion_policy": {
           "label": "Completion rule",
           "manual_label": "Manual",
@@ -2668,9 +2713,11 @@
         "add_content_created_section": "Section has been created successfully!",
         "add_content_created_lesson": "Lesson has been created successfully!",
         "add_content_created_exercise": "Exercise has been created successfully!",
+        "add_content_created_activity": "SCORM package has been created successfully!",
         "add_content_create_another_section": "Create another section",
         "add_content_create_another_lesson": "Create another lesson",
         "add_content_create_another_exercise": "Create another exercise",
+        "add_content_create_another_activity": "Create another package",
         "add_content_open_now": "Open now",
         "add_content_later": "Later",
         "add_content_add_to_section": "Add content",
@@ -2680,7 +2727,15 @@
           "lesson_title": "Lesson",
           "lesson_description": "Teach with notes, slides, and videos.",
           "exercise_title": "Exercise",
-          "exercise_description": "Assess students with quizzes and tasks."
+          "exercise_description": "Assess students with quizzes and tasks.",
+          "activity_scorm_title": "SCORM package",
+          "activity_scorm_description": "Run an interactive package from Storyline, Captivate or iSpring.",
+          "activity_scorm_title_label": "Package title",
+          "activity_scorm_title_placeholder": "e.g., Workplace safety induction",
+          "activity_scorm_gated": "Paid plans",
+          "activity_scorm_upgrade_notice": "SCORM packages are included in every paid plan. Upgrade to add packages to your courses.",
+          "activity_scorm_upgrade_cta": "View plans",
+          "activity_scorm_license_notice": "SCORM packages need an enterprise license on this server. Learners keep access to existing packages."
         },
         "add_content_section_title_placeholder": "e.g., Module 1: Introduction",
         "add_content_lesson_title_placeholder": "e.g., Getting Started with Variables",
@@ -3631,6 +3686,194 @@
           },
           "by_author": "by {name}",
           "empty": "No versions yet"
+        },
+        "activities": {
+          "not_available_title": "Package not available yet",
+          "not_available_description": "This SCORM package is still being set up. Please check back soon.",
+          "header_locked": "Locked",
+          "delete_confirm_title": "Delete this package item?",
+          "delete_confirm_body": "Learners' results for this item are deleted. The package stays in the Media Manager.",
+          "tabs": {
+            "package": "Package",
+            "instructions": "Instructions",
+            "results": "Results",
+            "settings": "Settings"
+          },
+          "results": {
+            "summary": {
+              "enrolled": "Enrolled",
+              "started": "Started",
+              "completed": "Completed",
+              "passed": "Passed",
+              "average_score": "Average score"
+            },
+            "table": {
+              "student": "Student",
+              "score": "Score",
+              "status": "Status",
+              "pass_fail": "Pass/fail",
+              "best_score": "Best score",
+              "time_spent": "Time spent",
+              "attempts": "Attempts",
+              "last_launched": "Last launched"
+            },
+            "status": {
+              "not_started": "Not started",
+              "in_progress": "In progress",
+              "failed": "Not passed yet",
+              "completed": "Completed"
+            },
+            "pass_fail": {
+              "passed": "Passed",
+              "failed": "Failed"
+            },
+            "export": {
+              "title": "SCORM results"
+            },
+            "sheet": {
+              "title": "Attempts for {learnerName}",
+              "description": "Every attempt with each module try, the answers the package reported, and time spent.",
+              "attempt": "Attempt {number}",
+              "version": "Package version {number}",
+              "rule_met": "Rule met",
+              "columns": {
+                "module": "Module",
+                "completion": "Completion",
+                "success": "Success",
+                "score": "Score",
+                "time": "Time"
+              },
+              "interactions": "{count} answers reported",
+              "no_attempts_title": "No attempts yet",
+              "no_attempts_description": "Attempts appear here once the learner opens the package.",
+              "reset": "Reset for this student",
+              "confirm_reset": "Click again to confirm reset",
+              "diagnostics_title": "Diagnostics",
+              "events": {
+                "launch": "Launched",
+                "initialize": "Connected",
+                "commit": "Saved",
+                "terminate": "Finished",
+                "beacon": "Saved on exit",
+                "error": "Error",
+                "not_initialized": "Did not connect"
+              }
+            }
+          },
+          "results_placeholder_title": "No results yet",
+          "results_placeholder_description": "Scores, attempts and time appear here once learners open the package.",
+          "gating": {
+            "title": "SCORM authoring is paused",
+            "plan_lapsed": "Your plan no longer includes SCORM packages. Learners can still take them and results stay available.",
+            "no_license": "This server needs an enterprise license with SCORM to change packages."
+          },
+          "package": {
+            "drop_label": "Drop your SCORM .zip here",
+            "drop_hint": "Up to {size}. Processing can take a few minutes; you can leave the page.",
+            "wrong_type": "Only .zip files can be uploaded as SCORM packages.",
+            "too_large": "This file is larger than {size}.",
+            "uploading": "Uploading {progress}%",
+            "cancel_upload": "Cancel upload",
+            "processing": "Processing package…",
+            "processing_stage": "{stage} · {progress}%",
+            "failed_title": "This package could not be used",
+            "retry": "Try another file",
+            "replace": "Replace package",
+            "remove": "Remove",
+            "remove_confirm_title": "Remove this package?",
+            "remove_confirm_body": "Learners lose access until you attach another package. The file stays in the Media Manager.",
+            "move_everyone": "Move everyone to this version",
+            "move_everyone_helper": "Learners part-way through restart on the new version. {count, plural, one {# learner is} other {# learners are}} affected.",
+            "modules_title": "This package has {count, plural, one {# module} other {# modules}}",
+            "modules_hint": "Learners pick modules from a menu above the package. The completion rule applies to each module.",
+            "sequencing_warning": "Sequencing rules in this package are ignored. Your course progression settings apply instead.",
+            "case_warning": "Some file names differ only in letter case.",
+            "rebased_warning": "The manifest was found inside a single top-level folder.",
+            "version": "Version {version}",
+            "files": "Files",
+            "size": "Size",
+            "pass_mark": "Pass mark {score}%",
+            "errors": {
+              "missing_manifest": "No imsmanifest.xml was found. Re-export the package for an LMS.",
+              "xapi_package": "This is an xAPI (Tin Can) package. Re-export it as SCORM.",
+              "cmi5_package": "This is a cmi5 package. Re-export it as SCORM.",
+              "unsupported_version": "This SCORM version is not supported. Use SCORM 1.2 or SCORM 2004.",
+              "invalid_xml": "The manifest could not be read. Re-export the package.",
+              "doctype_rejected": "The manifest could not be read. Re-export the package.",
+              "missing_launch": "A module has no launch file. Re-export the package.",
+              "external_launch": "This package opens content from another website, which cannot save progress here.",
+              "assets_only": "Nothing in this package reports progress.",
+              "not_a_zip": "This file is not a valid ZIP file.",
+              "file_too_large": "This file is larger than the workspace limit.",
+              "total_too_large": "The unpacked package is larger than the workspace limit.",
+              "too_many_entries": "This package holds too many files.",
+              "compression_bomb": "This package failed a safety check.",
+              "unsafe_path": "This package holds unsafe file paths.",
+              "symlink_rejected": "This package holds unsafe file paths.",
+              "encrypted_entry": "This package is password protected.",
+              "upload_missing": "The upload did not finish. Try again.",
+              "generic": "Something went wrong while processing this package. Try again."
+            },
+            "status": {
+              "uploading": "Uploading",
+              "processing": "Processing",
+              "ready": "Ready",
+              "failed": "Failed"
+            }
+          },
+          "instructions": {
+            "label": "Instructions for learners",
+            "placeholder": "What should learners know before they open the package?",
+            "save": "Save instructions"
+          },
+          "settings": {
+            "completion_rule": "Completion rule",
+            "completion_rule_helper": "How ClassroomIO decides the package is done.",
+            "rule_auto": "Automatic",
+            "rule_completed": "Completed",
+            "rule_passed": "Passed",
+            "rule_score": "Minimum score",
+            "graded_hint": "This package has a pass mark of {score}%, so students must pass it.",
+            "ungraded_hint": "This package has no pass mark, so students complete it by finishing it.",
+            "passed_warning": "A module that never reports passed keeps the item from completing.",
+            "min_score": "Minimum score (%)",
+            "retakes": "Allow retakes",
+            "retakes_helper": "Completed packages reopen with a Start a new attempt button. Best score counts.",
+            "launch_mode": "Launch mode",
+            "launch_embedded": "In the course",
+            "launch_window": "In a new window",
+            "save": "Save settings"
+          },
+          "player": {
+            "modules_complete": "{complete} of {total} modules complete",
+            "module_menu": "Modules",
+            "status_completed": "Completed",
+            "status_review": "In review",
+            "status_not_passed": "Not passed yet",
+            "status_in_progress": "In progress",
+            "load_failed_title": "The package could not be opened",
+            "load_failed_body": "Something went wrong while opening this package. Try again.",
+            "reload": "Reload",
+            "expired_title": "This session expired",
+            "expired_body": "The package session ran out. Reload to start again where you left off.",
+            "review_title": "Results already recorded",
+            "review_body": "Nothing in this session is saved.",
+            "new_attempt": "Start a new attempt",
+            "retakes_off": "Retakes are off for this package, so a new attempt cannot be started.",
+            "window_title": "This package opens in a new window",
+            "window_body": "Your progress saves automatically while the new window stays open.",
+            "open_window": "Open package",
+            "no_connection_title": "The package did not connect",
+            "no_connection_body": "The package never called the course player. Re-export it with an LMS or SCORM publishing option, or reload to try again.",
+            "fullscreen": "Full screen",
+            "complete_title": "Package complete",
+            "complete_body": "Your results were recorded.",
+            "continue": "Continue",
+            "module_complete_title": "Module complete",
+            "module_complete_body": "Your progress was saved. Open the next module to keep going.",
+            "next_module": "Next module",
+            "autosave_hint": "Progress saves automatically."
+          }
         }
       },
       "attendance": {
@@ -3913,6 +4156,7 @@
             "intro": "This permanently deletes this student's progress in this course. They will stay enrolled and can restart from lesson 1.",
             "bullets": {
               "lessons": "Lessons completed — {completed} of {total}",
+              "activities": "SCORM packages completed — {completed} of {total} ({attempts} attempts)",
               "exercises": "Exercises submitted — {count} submissions",
               "comments": "Lesson comments by this student — {count}",
               "newsfeed": "Course newsfeed posts and replies by this student — {count}",
@@ -4195,6 +4439,7 @@
         },
         "course_content": "Course content",
         "modules": "modules",
+        "packages": "packages",
         "lessons": "lessons",
         "exercises": "exercises",
         "start_course": "Start Course",
@@ -4391,6 +4636,11 @@
         },
         "delete": "Delete Course",
         "delete_text": "Delete this course,this action cannot be undone",
+        "convert_card_title": "Convert to a standard course",
+        "convert_card_description": "Add lessons, exercises and sections alongside the package. The package becomes the first item. This can't be undone.",
+        "convert_card_cta": "Convert to standard",
+        "convert_confirm_title": "Convert this course?",
+        "convert_confirm_body": "The package stays as the first item and Content returns to the navigation. This can't be undone.",
         "save": "Save Changes",
         "live_session_reminders": {
           "legend": "Session email reminders",
@@ -4557,7 +4807,14 @@
       "load_failed_description": "Something went wrong while loading this student. Please try again.",
       "retry": "Retry",
       "exercise": "Exercise",
-      "exercise_load_failed": "Could not load exercises for this course."
+      "exercise_load_failed": "Could not load exercises for this course.",
+      "activities_title": "SCORM packages",
+      "scorm_package": "SCORM package",
+      "activity_status": {
+        "completed": "Completed",
+        "in_progress": "In progress",
+        "not_started": "Not started"
+      }
     },
     "import": {
       "page_subtitle": "Add many people at once by email, then assign courses or cohorts if you like.",
@@ -4753,12 +5010,14 @@
     "average_grade_description": "Average grade of all completed assignments",
     "students": "Students",
     "lessons": "Lessons",
+    "packages": "Packages",
     "tutors": "tutors",
     "avg_grade": "Avg grade",
     "completion_rate": "Completion rate",
     "student_progress_overview": "Student Progress Overview",
     "student_name": "Student Name",
     "lessons_completed": "Lessons Completed",
+    "packages_completed": "Packages Completed",
     "exercises_submitted": "Exercises Submitted",
     "average_grade": "Average Grade",
     "actions": "Actions",
@@ -4794,6 +5053,8 @@
       "students_table_description": "Sortable overview with links to student profiles.",
       "kpi_team_tutors": "{count, plural, one {# tutor on the course team} other {# tutors on the course team}}",
       "kpi_lessons_exercises": "{count, plural, one {# exercise} other {# exercises}} mapped to lessons",
+      "kpi_packages": "{count, plural, one {# package} other {# packages}}",
+      "kpi_activity_completion": "{rate}% package completion across enrolled students",
       "kpi_progress_grade": "{grade}% average exercise grade across enrolled students"
     },
     "tabs": {
@@ -4864,7 +5125,8 @@
       "views": "Views"
     },
     "course_progress": "Course progress",
-    "exercises_completed": "Exercises Completed"
+    "exercises_completed": "Exercises Completed",
+    "activities": "SCORM packages"
   },
   "upgrade": {
     "certificate": "Upgrade your plan to generate certificates",
@@ -5135,6 +5397,27 @@
       "error_fetching": "Fetching exercises failed, please reload the page",
       "draft_restored": "We restored the unsaved changes you left behind"
     },
+    "activity": {
+      "created": "SCORM package created",
+      "upload_failed": "Package upload failed",
+      "process_failed": "Package processing failed",
+      "settings_saved": "Package settings saved",
+      "settings_failed": "Could not save package settings",
+      "attach_failed": "Could not attach package",
+      "detached": "Package removed",
+      "detach_failed": "Could not remove package",
+      "instructions_saved": "Instructions saved",
+      "instructions_failed": "Could not save instructions",
+      "delete_failed": "Could not delete package item",
+      "package_deleted": "Package deleted",
+      "delete_failed_package": "Could not delete package",
+      "replace_failed": "Could not replace package",
+      "launch_failed": "Could not open package",
+      "learner_reset": "Attempts reset for this student",
+      "learner_reset_failed": "Could not reset attempts",
+      "courses_created": "Draft SCORM courses created",
+      "courses_create_failed": "Could not create courses from packages"
+    },
     "materials": {
       "apology": "We apologise, there was an error saving your lesson.",
       "update_translations": "Updating translations failed",
@@ -5163,6 +5446,7 @@
     "course_settings": {
       "success": {
         "unlocked_all_content": "All course items unlocked",
+        "converted_to_standard": "Course converted to a standard course",
         "all_content_already_unlocked": "All content is already unlocked",
         "content_grouping_enabled": "Content grouping enabled",
         "content_grouping_disabled": "Content grouping disabled",

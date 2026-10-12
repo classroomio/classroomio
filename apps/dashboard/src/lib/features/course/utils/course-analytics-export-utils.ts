@@ -8,6 +8,8 @@ type CourseAnalyticsExportHeaders = {
   lessons: string;
   exercisesSubmitted: string;
   exercises: string;
+  packagesCompleted: string;
+  packages: string;
   progress: string;
   averageGrade: string;
   lastSeen: string;
@@ -41,6 +43,17 @@ export function buildCourseAnalyticsExportDocument(
       { key: 'lessons', header: headers.lessons, value: (row) => row.totalLessons ?? 0 },
       { key: 'exercisesSubmitted', header: headers.exercisesSubmitted, value: (row) => row.exercisesSubmitted ?? 0 },
       { key: 'exercises', header: headers.exercises, value: (row) => row.totalExercises ?? 0 },
+      {
+        key: 'packagesCompleted',
+        header: headers.packagesCompleted,
+        value: (row) =>
+          'activitiesCompleted' in row && typeof row.activitiesCompleted === 'number' ? row.activitiesCompleted : 0
+      },
+      {
+        key: 'packages',
+        header: headers.packages,
+        value: (row) => ('totalActivities' in row && typeof row.totalActivities === 'number' ? row.totalActivities : 0)
+      },
       { key: 'progress', header: headers.progress, value: (row) => `${row.progressPercentage ?? 0}%` },
       { key: 'averageGrade', header: headers.averageGrade, value: (row) => `${row.averageGrade ?? 0}%` },
       { key: 'lastSeen', header: headers.lastSeen, value: (row) => formatLastSeen(row.lastSeen) }

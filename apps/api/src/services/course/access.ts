@@ -32,7 +32,7 @@ export async function assertEnrolledStudentContentAccess(params: {
   courseId: string;
   profileId: string;
   contentId: string;
-  type: ContentType.Lesson | ContentType.Exercise;
+  type: ContentType.Lesson | ContentType.Exercise | ContentType.Activity;
 }): Promise<void> {
   const [courseRow, progress, contentItems] = await Promise.all([
     getCourseById(params.courseId),

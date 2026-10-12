@@ -250,7 +250,8 @@ describe.skipIf(!hasDatabase)('characterization: reorder/update/delete course co
         updatedSections: 0,
         updatedItems: 2,
         updatedLessons: 2,
-        updatedExercises: 0
+        updatedExercises: 0,
+        updatedActivities: 0
       });
 
       const rows = await getCourseContentItems(fixture.courseId);
@@ -577,7 +578,7 @@ describe.skipIf(!hasDatabase)('characterization: clone and templates (zero activ
       const { getCourseTemplatePreview } = await import('@api/services/course/course-template');
 
       const preview = await getCourseTemplatePreview(template.id, fixture.orgId);
-      expect(preview.counts).toEqual({ sections: 1, lessons: 1, exercises: 1 });
+      expect(preview.counts).toEqual({ sections: 1, lessons: 1, exercises: 1, activities: 0 });
       expect(preview.outline).toHaveLength(1);
       expect(preview.outline[0]).toMatchObject({ id: templateSection.id, title: 'Main' });
       expect(preview.outline[0].lessons.map((lesson) => lesson.title)).toEqual(['Template lesson']);
@@ -609,7 +610,7 @@ describe.skipIf(!hasDatabase)('characterization: assets (zero activities)', () =
       expect(graph).toMatchObject({ usageCount: 0, usages: [] });
 
       const deleted = await deleteAssetService(fixture.orgId, asset.id);
-      expect(deleted.id).toBe(asset.id);
+      expect(deleted!.id).toBe(asset.id);
     } finally {
       await cleanupServiceFixture(fixture);
     }
@@ -658,14 +659,17 @@ describe.skipIf(!hasDatabase)('characterization: agent course tools (zero activi
 
       const tools = buildAgentTools(fixture.orgId, fixture.tutorProfileId, fixture.courseId, []);
 
-      const structure = (await tools.get_course_structure.execute(undefined, {
-        toolCallId: 'char-1',
-        messages: []
-      })) as unknown as { sections: unknown[]; items: { id: string; type: string }[] };
+      const structure = (await tools.get_course_structure?.execute?.(
+        {},
+        {
+          toolCallId: 'char-1',
+          messages: []
+        }
+      )) as unknown as { sections: unknown[]; items: { id: string; type: string }[] };
       expect(structure.sections).toHaveLength(1);
       expect(structure.items.map((item) => item.type).sort()).toEqual(['EXERCISE', 'LESSON', 'LESSON', 'SECTION']);
 
-      const result = (await tools.reorder_content.execute(
+      const result = (await tools.reorder_content?.execute?.(
         {
           items: [
             { id: fixture.lessonOneId, type: ContentType.Lesson, order: 2 },

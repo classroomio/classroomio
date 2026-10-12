@@ -46,6 +46,13 @@ function exerciseBlocksProgression(): boolean {
 }
 
 /**
+ * Evaluates whether an activity blocks sequential progression (always true).
+ */
+function activityBlocksProgression(): boolean {
+  return true;
+}
+
+/**
  * Determines whether a course content item blocks sequential progression.
  */
 export function itemBlocksProgression(type?: ContentType, completionPolicy?: string | null): boolean {
@@ -54,6 +61,8 @@ export function itemBlocksProgression(type?: ContentType, completionPolicy?: str
       return lessonBlocksProgression(completionPolicy ?? 'manual');
     case ContentType.Exercise:
       return exerciseBlocksProgression();
+    case ContentType.Activity:
+      return activityBlocksProgression();
     case ContentType.Section:
     case undefined:
       return false;

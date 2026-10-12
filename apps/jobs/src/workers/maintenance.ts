@@ -12,6 +12,7 @@ import {
   reconcileMemberLastActive
 } from '@cio/db/queries/organization';
 import { buildEarlyAdopterClaimUrl, deriveEarlyAdopterClaimToken } from '@cio/core/services/early-adopter/claim-token';
+import { runScormRetention } from '@cio/core/services/activity/retention';
 import { capAutoLessonVersionsPerLanguage, pruneAutoLessonVersions } from '@cio/db/queries/lesson/version';
 import {
   JOB_NAMES,
@@ -25,6 +26,7 @@ import {
   ZMediaJobReapPayload,
   ZMemberActivityReconcilePayload,
   ZRetentionCompactPayload,
+  ZScormRetentionPayload,
   createRedisConnection,
   enqueueEmailSend
 } from '@cio/jobs';
@@ -136,6 +138,17 @@ const worker = new Worker(
       return { updated };
     }
 
+    if (job.name === JOB_NAMES.maintenance.scormRetention) {
+      const data = ZScormRetentionPayload.parse(job.data ?? {});
+      const result = await runScormRetention(data.eventOlderThanDays, data.unpinnedVersionDays);
+      log.info('scorm-retention-done', {
+        eventsDeleted: result.eventsDeleted,
+        versionsDeleted: result.versionsDeleted,
+        objectsDeleted: result.objectsDeleted
+      });
+      return result;
+    }
+
     if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {
       const data = ZAnalyticsDailyRollupPayload.parse(job.data ?? {});
       const result = await runAnalyticsRollupDaily({ daysAgo: data.daysAgo });
@@ -229,6 +242,16 @@ async function registerSchedulers(): Promise<void> {
     );
     log.info('early-adopter-claim-reminder-scheduler-registered', {
       name: JOB_NAMES.maintenance.earlyAdopterClaimReminder,
+      everyMs: 86_400_000
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'scorm-retention-scheduler',
+      { every: 86_400_000 },
+      { name: JOB_NAMES.maintenance.scormRetention, data: {} }
+    );
+    log.info('scorm-retention-scheduler-registered', {
+      name: JOB_NAMES.maintenance.scormRetention,
       everyMs: 86_400_000
     });
   } catch (err) {

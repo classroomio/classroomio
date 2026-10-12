@@ -232,6 +232,116 @@ export type DeleteExerciseRequest = (typeof classroomio.course)[':courseId']['ex
 export type SubmitExerciseRequest =
   (typeof classroomio.course)[':courseId']['exercise'][':exerciseId']['submission']['$post'];
 
+// Activity types
+export type GetActivityRequest = (typeof classroomio.course)[':courseId']['activity'][':activityId']['$get'];
+export type GetActivityResponse = InferResponseType<GetActivityRequest> | null;
+export type GetActivitySuccess = Extract<InferResponseType<GetActivityRequest>, { success: true }>;
+export type GetActivityData = GetActivitySuccess['data'];
+export type Activity = GetActivityData['activity'];
+export type ActivityEditor = GetActivityData['editor'];
+
+export type CreateActivityRequest = (typeof classroomio.course)[':courseId']['activity']['$post'];
+export type CreateActivityResponse = InferResponseType<CreateActivityRequest>;
+export type CreateActivitySuccess = Extract<CreateActivityResponse, { success: true }>;
+export type CreateActivityData = CreateActivitySuccess['data'];
+
+export type UpdateActivityRequest = (typeof classroomio.course)[':courseId']['activity'][':activityId']['$put'];
+export type UpdateActivityResponse = InferResponseType<UpdateActivityRequest>;
+export type UpdateActivitySuccess = Extract<UpdateActivityResponse, { success: true }>;
+export type UpdateActivityData = UpdateActivitySuccess['data'];
+
+export type DeleteActivityRequest = (typeof classroomio.course)[':courseId']['activity'][':activityId']['$delete'];
+export type DeleteActivityResponse = InferResponseType<DeleteActivityRequest>;
+export type DeleteActivitySuccess = Extract<DeleteActivityResponse, { success: true }>;
+export type DeleteActivityData = DeleteActivitySuccess['data'];
+
+export type LaunchActivityRequest =
+  (typeof classroomio.course)[':courseId']['activity'][':activityId']['launch']['$post'];
+export type LaunchActivityResponse = InferResponseType<LaunchActivityRequest>;
+export type LaunchActivitySuccess = Extract<LaunchActivityResponse, { success: true }>;
+export type LaunchActivityData = LaunchActivitySuccess['data'];
+export type LaunchActivityResult = LaunchActivityData;
+export type LaunchActivityModule = Extract<LaunchActivityData, { available: true }>['units'][number];
+
+export type UpdateActivitySettingsRequest =
+  (typeof classroomio.course)[':courseId']['activity'][':activityId']['settings']['$put'];
+export type UpdateActivitySettingsResponse = InferResponseType<UpdateActivitySettingsRequest>;
+export type UpdateActivitySettingsSuccess = Extract<UpdateActivitySettingsResponse, { success: true }>;
+export type UpdateActivitySettingsData = UpdateActivitySettingsSuccess['data'];
+
+export type AttachActivityPackageRequest =
+  (typeof classroomio.course)[':courseId']['activity'][':activityId']['package']['$put'];
+export type AttachActivityPackageResponse = InferResponseType<AttachActivityPackageRequest>;
+export type AttachActivityPackageSuccess = Extract<AttachActivityPackageResponse, { success: true }>;
+export type AttachActivityPackageData = AttachActivityPackageSuccess['data'];
+
+export type DetachActivityPackageRequest =
+  (typeof classroomio.course)[':courseId']['activity'][':activityId']['package']['$delete'];
+export type DetachActivityPackageResponse = InferResponseType<DetachActivityPackageRequest>;
+export type DetachActivityPackageSuccess = Extract<DetachActivityPackageResponse, { success: true }>;
+export type DetachActivityPackageData = DetachActivityPackageSuccess['data'];
+
+export type GetActivityResultsRequest =
+  (typeof classroomio.course)[':courseId']['activity'][':activityId']['results']['$get'];
+export type GetActivityResultsResponse = InferResponseType<GetActivityResultsRequest>;
+export type GetActivityResultsSuccess = Extract<GetActivityResultsResponse, { success: true }>;
+export type ActivityResultsLearners = GetActivityResultsSuccess['data'];
+export type ActivityResultsLearner = ActivityResultsLearners[number];
+export type ActivityResultsSummary = GetActivityResultsSuccess['summary'];
+export type ActivityResultsPagination = GetActivityResultsSuccess['pagination'];
+
+export type GetActivityLearnerResultRequest =
+  (typeof classroomio.course)[':courseId']['activity'][':activityId']['results'][':profileId']['$get'];
+export type GetActivityLearnerResultResponse = InferResponseType<GetActivityLearnerResultRequest>;
+export type GetActivityLearnerResultSuccess = Extract<GetActivityLearnerResultResponse, { success: true }>;
+export type ActivityLearnerAttempts = GetActivityLearnerResultSuccess['data'];
+
+export type ResetActivityLearnerRequest =
+  (typeof classroomio.course)[':courseId']['activity'][':activityId']['results'][':profileId']['reset']['$post'];
+export type ResetActivityLearnerResponse = InferResponseType<ResetActivityLearnerRequest>;
+export type ResetActivityLearnerSuccess = Extract<ResetActivityLearnerResponse, { success: true }>;
+export type ResetActivityLearnerData = ResetActivityLearnerSuccess['data'];
+
+export type CreatePackageRequest = (typeof classroomio.activity.packages)['$post'];
+export type CreatePackageResponse = InferResponseType<CreatePackageRequest>;
+export type CreatePackageSuccess = Extract<CreatePackageResponse, { success: true }>;
+export type CreatePackageData = CreatePackageSuccess['data'];
+
+export type CreatePackageVersionRequest = (typeof classroomio.activity.packages)[':assetId']['versions']['$post'];
+export type CreatePackageVersionResponse = InferResponseType<CreatePackageVersionRequest>;
+export type CreatePackageVersionSuccess = Extract<CreatePackageVersionResponse, { success: true }>;
+export type CreatePackageVersionData = CreatePackageVersionSuccess['data'];
+
+export type ProcessPackageVersionRequest =
+  (typeof classroomio.activity.packages)[':assetId']['versions'][':versionId']['process']['$post'];
+export type ProcessPackageVersionResponse = InferResponseType<ProcessPackageVersionRequest>;
+export type ProcessPackageVersionSuccess = Extract<ProcessPackageVersionResponse, { success: true }>;
+export type ProcessPackageVersionData = ProcessPackageVersionSuccess['data'];
+
+export type MakePackageVersionCurrentRequest =
+  (typeof classroomio.activity.packages)[':assetId']['versions'][':versionId']['current']['$post'];
+export type MakePackageVersionCurrentResponse = InferResponseType<MakePackageVersionCurrentRequest>;
+export type MakePackageVersionCurrentSuccess = Extract<MakePackageVersionCurrentResponse, { success: true }>;
+export type MakePackageVersionCurrentData = MakePackageVersionCurrentSuccess['data'];
+
+export type GetPackageRequest = (typeof classroomio.activity.packages)[':assetId']['$get'];
+export type GetPackageResponse = InferResponseType<GetPackageRequest> | null;
+export type GetPackageSuccess = Extract<InferResponseType<GetPackageRequest>, { success: true }>;
+export type PackageDetails = GetPackageSuccess['data'];
+
+export type DeletePackageRequest = (typeof classroomio.activity.packages)[':assetId']['$delete'];
+export type DeletePackageResponse = InferResponseType<DeletePackageRequest>;
+export type DeletePackageSuccess = Extract<InferResponseType<DeletePackageRequest>, { success: true }>;
+export type DeletePackageData = DeletePackageSuccess['data'];
+
+export type CreateCoursesFromPackagesRequest = (typeof classroomio.activity.courses)['$post'];
+export type CreateCoursesFromPackagesResponse = InferResponseType<CreateCoursesFromPackagesRequest>;
+export type CreateCoursesFromPackagesSuccess = Extract<
+  InferResponseType<CreateCoursesFromPackagesRequest>,
+  { success: true }
+>;
+export type CreatedPackageCourses = CreateCoursesFromPackagesSuccess['data'];
+
 // Newsfeed types
 export type ListNewsfeedRequest = (typeof classroomio.course)[':courseId']['newsfeed']['$get'];
 export type ListNewsfeedResponse = InferResponseType<ListNewsfeedRequest> | null;

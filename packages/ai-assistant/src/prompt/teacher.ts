@@ -445,6 +445,20 @@ export function buildTeacherContextMessage(
       : `The teacher is currently viewing exercise ID: ${context.exerciseId}`;
     contextLines.push(exerciseInfo);
   }
+  if (context.activityId) {
+    const activityInfo = context.activityTitle
+      ? `The teacher is currently viewing activity "${context.activityTitle}" (ID: ${context.activityId})`
+      : `The teacher is currently viewing activity ID: ${context.activityId}`;
+    contextLines.push(activityInfo);
+
+    if (context.activityInstructions) {
+      contextLines.push(
+        `Current activity instructions:\n\n<activity_instructions>\n${context.activityInstructions}\n</activity_instructions>`
+      );
+    } else {
+      contextLines.push('This activity has no instructions yet.');
+    }
+  }
   if (context.documentText) {
     const docAssets = context.documentAssets ?? [];
     const assetLines = docAssets

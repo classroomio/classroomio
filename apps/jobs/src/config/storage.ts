@@ -11,7 +11,8 @@ import { env } from './env';
 const BUCKET_DEFAULTS = {
   VIDEOS: 'videos',
   DOCUMENTS: 'documents',
-  MEDIA: 'media'
+  MEDIA: 'media',
+  SCORM: 'scorm'
 } as const;
 
 export interface StorageConfig {
@@ -23,6 +24,7 @@ export interface StorageConfig {
   bucketVideos: string;
   bucketDocuments: string;
   bucketMedia: string;
+  bucketScorm: string;
   mediaPublicBaseUrl: string | null;
 }
 
@@ -51,6 +53,7 @@ export function getStorageConfig(): StorageConfig {
       bucketVideos: env.OBJECT_STORAGE_BUCKET_VIDEOS || BUCKET_DEFAULTS.VIDEOS,
       bucketDocuments: env.OBJECT_STORAGE_BUCKET_DOCUMENTS || BUCKET_DEFAULTS.DOCUMENTS,
       bucketMedia: env.OBJECT_STORAGE_BUCKET_MEDIA || BUCKET_DEFAULTS.MEDIA,
+      bucketScorm: env.OBJECT_STORAGE_BUCKET_SCORM || BUCKET_DEFAULTS.SCORM,
       mediaPublicBaseUrl: env.OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL || null
     };
   } else if (isCloudflareConfigured()) {
@@ -63,6 +66,7 @@ export function getStorageConfig(): StorageConfig {
       bucketVideos: BUCKET_DEFAULTS.VIDEOS,
       bucketDocuments: BUCKET_DEFAULTS.DOCUMENTS,
       bucketMedia: BUCKET_DEFAULTS.MEDIA,
+      bucketScorm: BUCKET_DEFAULTS.SCORM,
       mediaPublicBaseUrl: env.CLOUDFLARE_IMAGE_BUCKET_DOMAIN || null
     };
   } else {

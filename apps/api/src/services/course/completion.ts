@@ -9,6 +9,7 @@ import {
   getExerciseTitleAndMaxPoints,
   getStudentSubmissionsForExercise
 } from '@cio/db/queries/course/certification-exercise';
+import { getActivitiesByCourseId, getActivityCompletionsByProfile } from '@cio/db/queries/activity/activity';
 import {
   getCourseById,
   getCourseCertificationRow,
@@ -153,18 +154,31 @@ async function buildCertificationEvaluation(
   const certificate = courseRow.certificate ?? {};
   const complianceMinScore = courseRow.type === 'COMPLIANCE' ? (courseRow.compliance?.passingScore ?? null) : null;
 
+  const activities = await getActivitiesByCourseId(courseId);
+  const completedActivityIds =
+    activities.length > 0
+      ? await getActivityCompletionsByProfile(
+          activities.map((activity) => activity.id),
+          profileId
+        )
+      : [];
+  const activitiesCount = activities.length;
+  const activitiesCompleted = completedActivityIds.length;
+
   const threshold = certificate.threshold ?? 100;
   const progressPercent = calcCourseProgressPercent({
     lessonsCompleted: progress.lessonsCompleted,
     totalLessons: progress.lessonsCount,
     exercisesCompleted: progress.exercisesCompleted,
-    exercisesCount: progress.exercisesCount
+    exercisesCount: progress.exercisesCount,
+    activitiesCompleted,
+    activitiesCount
   });
 
   const now = new Date();
   const meetsThreshold = progressPercent >= threshold;
   const withinDeadline = isBeforeOrEqualDeadline(certificate.deadline, now);
-  const hasContent = progress.lessonsCount + progress.exercisesCount > 0;
+  const hasContent = progress.lessonsCount + progress.exercisesCount + activitiesCount > 0;
 
   const blockers: CertificationBlocker[] = [];
 

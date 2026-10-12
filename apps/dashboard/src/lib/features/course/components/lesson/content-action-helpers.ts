@@ -26,6 +26,13 @@ type ExerciseApi = {
   success?: boolean;
 };
 
+type ActivityApi = {
+  update: (courseId: string, activityId: string, payload: Record<string, unknown>) => Promise<unknown>;
+  delete: (courseId: string, activityId: string) => Promise<unknown>;
+  errors?: CourseApiErrorMap;
+  success?: boolean;
+};
+
 function normalizeErrors(errors: CourseApiErrorMap): Record<string, string> {
   if (!errors) return {};
   const entries = Object.entries(errors).filter(([, value]) => Boolean(value));
@@ -48,12 +55,14 @@ export async function toggleLock({
   item,
   courseId,
   lessonApi,
-  exerciseApi
+  exerciseApi,
+  activityApi
 }: {
   item: ContentActionItem;
   courseId: string;
   lessonApi: LessonApi;
   exerciseApi: ExerciseApi;
+  activityApi: ActivityApi;
 }) {
   item.isUnlocked = !(item.isUnlocked ?? false);
   const payload = buildContentPayload(item, { order: undefined });
@@ -65,6 +74,9 @@ export async function toggleLock({
     case ContentType.Lesson:
       await lessonApi.update(courseId, item.contentId, payload);
       return normalizeErrors(lessonApi.errors);
+    case ContentType.Activity:
+      await activityApi.update(courseId, item.contentId, payload);
+      return normalizeErrors(activityApi.errors);
     case ContentType.Section:
       throw new Error(`Unexpected content type: ${item.type}`);
     default:
@@ -76,12 +88,14 @@ export async function saveContent({
   item,
   courseId,
   lessonApi,
-  exerciseApi
+  exerciseApi,
+  activityApi
 }: {
   item: ContentActionItem;
   courseId: string;
   lessonApi: LessonApi;
   exerciseApi: ExerciseApi;
+  activityApi: ActivityApi;
 }) {
   const payload = buildContentPayload(item);
 
@@ -92,6 +106,9 @@ export async function saveContent({
     case ContentType.Lesson:
       await lessonApi.update(courseId, item.contentId, payload);
       return normalizeErrors(lessonApi.errors);
+    case ContentType.Activity:
+      await activityApi.update(courseId, item.contentId, payload);
+      return normalizeErrors(activityApi.errors);
     case ContentType.Section:
       throw new Error(`Unexpected content type: ${item.type}`);
     default:
@@ -103,12 +120,14 @@ export async function deleteContent({
   item,
   courseId,
   lessonApi,
-  exerciseApi
+  exerciseApi,
+  activityApi
 }: {
   item: ContentActionItem;
   courseId: string;
   lessonApi: LessonApi;
   exerciseApi: ExerciseApi;
+  activityApi: ActivityApi;
 }) {
   switch (item.type) {
     case ContentType.Exercise:
@@ -117,6 +136,9 @@ export async function deleteContent({
     case ContentType.Lesson:
       await lessonApi.delete(courseId, item.contentId);
       return Boolean(lessonApi.success);
+    case ContentType.Activity:
+      await activityApi.delete(courseId, item.contentId);
+      return Boolean(activityApi.success);
     case ContentType.Section:
       throw new Error(`Unexpected content type: ${item.type}`);
     default:

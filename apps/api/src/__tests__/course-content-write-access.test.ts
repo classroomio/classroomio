@@ -103,11 +103,28 @@ const SECTION_ID = '44444444-4444-4444-8444-444444444444';
 const EXERCISE_ID = '55555555-5555-4555-8555-555555555555';
 const USER_ID = '66666666-6666-4666-8666-666666666666';
 
-function buildApp(mountPath: string, router: Hono) {
+function buildApp(mountPath: string, router: object) {
+  const stubUser = {
+    id: USER_ID,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    email: 'test@example.com',
+    emailVerified: true,
+    name: 'Test User'
+  };
+  const stubSession = {
+    id: 'session',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    userId: USER_ID,
+    expiresAt: new Date(),
+    token: 'session-token'
+  };
+
   return new Hono()
     .use('*', async (c, next) => {
-      c.set('user', { id: USER_ID });
-      c.set('session', { id: 'session' });
+      c.set('user', stubUser);
+      c.set('session', stubSession);
       await next();
     })
     .route(mountPath, router as never);

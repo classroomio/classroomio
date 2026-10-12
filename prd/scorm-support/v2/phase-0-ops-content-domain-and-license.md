@@ -76,7 +76,7 @@ license-server access. Verified against the codebase on 9 October 2026.
 
 ```bash
 dig +short anything.classroomio-content.com
-curl -sS -o /dev/null -w '%{http_code}\n' https://<orgKey>.classroomio-content.com/activity/content/<token>/v1.index.json
+curl -sS -o /dev/null -w '%{http_code}\n' https://<orgKey>.classroomio-content.com/activity/content/<token>/index.json
 pnpm --filter @cio/tenant-router deploy
 ```
 

@@ -1,5 +1,6 @@
 export enum ContentType {
   Section = 'SECTION',
   Lesson = 'LESSON',
-  Exercise = 'EXERCISE'
+  Exercise = 'EXERCISE',
+  Activity = 'ACTIVITY'
 }

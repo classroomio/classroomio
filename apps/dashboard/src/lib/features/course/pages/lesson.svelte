@@ -79,7 +79,7 @@
     isCourseMobileBottomNavVisible({
       isCourseLearnerView: $isCourseLearnerView,
       isMobile: isMobileStore.current,
-      isLessonOrExercisePage: true,
+      isContentPage: true,
       courseProgress: getCourseProgress(courseApi.course)
     })
   );

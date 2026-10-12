@@ -72,6 +72,8 @@ describe('characterization: getContentItemsProgress (zero activities)', () => {
       lessonsComplete: 0,
       exercisesTotal: 0,
       exercisesComplete: 0,
+      activitiesTotal: 0,
+      activitiesComplete: 0,
       total: 0,
       completed: 0,
       percent: 0
@@ -90,6 +92,8 @@ describe('characterization: getContentItemsProgress (zero activities)', () => {
       lessonsComplete: 1,
       exercisesTotal: 1,
       exercisesComplete: 1,
+      activitiesTotal: 0,
+      activitiesComplete: 0,
       total: 3,
       completed: 2,
       percent: 67

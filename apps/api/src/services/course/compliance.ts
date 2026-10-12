@@ -30,6 +30,9 @@ import {
 } from '@cio/db/queries/course/certification-exercise';
 import { getProfileByGroupMemberId } from '@cio/db/queries/course/people';
 import { getGroupMemberIdByCourseAndProfile, getUserCourseRole } from '@cio/db/queries/group/group';
+import { getActivitiesByCourseId } from '@cio/db/queries/activity';
+import { ACTIVITY_PROVIDERS } from '@cio/core/services/activity/providers';
+import type { TActivityKind } from '@cio/utils/constants/activity';
 import { evaluateCourseCertification } from './completion';
 
 export type ComplianceSyncSource = 'submission' | 'lesson' | 'activity';
@@ -177,9 +180,15 @@ function getCurrentIncompleteRecord(record: TCourseCompletionRecord | undefined 
 
 async function getComplianceCompletionSnapshot(params: {
   groupMemberId: string;
+  profileId: string;
+  course: { id: string; format: string };
   requiredExerciseId: string | null | undefined;
-}) {
-  const { groupMemberId, requiredExerciseId } = params;
+}): Promise<{ score: number | null; attempts: number | null; minutes?: number | null }> {
+  const { groupMemberId, profileId, course, requiredExerciseId } = params;
+
+  if (course.format === 'scorm') {
+    return getScormCourseCompletionSnapshot(course.id, profileId);
+  }
 
   if (!requiredExerciseId) {
     return {
@@ -210,6 +219,29 @@ async function getComplianceCompletionSnapshot(params: {
     score: bestScorePercent,
     attempts: submissions.length
   };
+}
+
+/**
+ * Takes the compliance score and attempts from the package in a SCORM course,
+ * where the activity is the scored item instead of an exercise.
+ */
+async function getScormCourseCompletionSnapshot(
+  courseId: string,
+  profileId: string
+): Promise<{ score: number | null; attempts: number | null; minutes?: number | null }> {
+  const activities = await getActivitiesByCourseId(courseId);
+  const activity = activities[0];
+  if (!activity) return { score: null, attempts: null };
+
+  const provider = (ACTIVITY_PROVIDERS as Partial<Record<TActivityKind, (typeof ACTIVITY_PROVIDERS)[TActivityKind]>>)[
+    activity.kind as TActivityKind
+  ];
+  if (!provider) return { score: null, attempts: null };
+
+  const snapshot = await provider.complianceSnapshot(activity.id, profileId);
+  if (!snapshot) return { score: null, attempts: null };
+
+  return { score: snapshot.score, attempts: snapshot.attempts, minutes: snapshot.minutes };
 }
 
 async function ensureComplianceEnrollmentRecordForLearner(
@@ -378,9 +410,11 @@ export async function syncComplianceProgressForMember(
   const validUntil = addMonths(completedAt, course.compliance?.retakeIntervalMonths ?? 0);
   const completionSnapshot = await getComplianceCompletionSnapshot({
     groupMemberId,
+    profileId,
+    course,
     requiredExerciseId: course.certificate?.requiredExerciseId ?? null
   });
-  const finalMinutes = suppliedMinutes ?? latestRecord.timeSpentMinutes;
+  const finalMinutes = suppliedMinutes ?? completionSnapshot.minutes ?? latestRecord.timeSpentMinutes;
   const finalScore = completionSnapshot.score ?? latestRecord.score;
   const finalAttempts = completionSnapshot.attempts ?? latestRecord.attempts;
   const finalStartedAt = latestRecord.startedAt ?? completedAt;

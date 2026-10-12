@@ -3,6 +3,9 @@
 // Naming convention: T prefix for types
 
 import * as schema from './schema';
+import type { TCourseFormat } from '@cio/utils/constants/course-format';
+
+export type { TCourseFormat };
 
 export type TUser = typeof schema.user.$inferSelect;
 export type TNewUser = typeof schema.user.$inferInsert;
@@ -118,6 +121,30 @@ export type TNewOrganizationInviteAudit = typeof schema.organizationInviteAudit.
 
 export type TLessonCompletion = typeof schema.lessonCompletion.$inferSelect;
 export type TNewLessonCompletion = typeof schema.lessonCompletion.$inferInsert;
+
+export type TCourseActivity = typeof schema.courseActivity.$inferSelect;
+export type TNewCourseActivity = typeof schema.courseActivity.$inferInsert;
+
+export type TActivityCompletion = typeof schema.activityCompletion.$inferSelect;
+export type TNewActivityCompletion = typeof schema.activityCompletion.$inferInsert;
+
+export type TContentPackageVersion = typeof schema.contentPackageVersion.$inferSelect;
+export type TNewContentPackageVersion = typeof schema.contentPackageVersion.$inferInsert;
+
+export type TContentPackageUnit = typeof schema.contentPackageUnit.$inferSelect;
+export type TNewContentPackageUnit = typeof schema.contentPackageUnit.$inferInsert;
+
+export type TActivityScorm = typeof schema.activityScorm.$inferSelect;
+export type TNewActivityScorm = typeof schema.activityScorm.$inferInsert;
+
+export type TScormAttempt = typeof schema.scormAttempt.$inferSelect;
+export type TNewScormAttempt = typeof schema.scormAttempt.$inferInsert;
+
+export type TScormScoAttempt = typeof schema.scormScoAttempt.$inferSelect;
+export type TNewScormScoAttempt = typeof schema.scormScoAttempt.$inferInsert;
+
+export type TScormSessionEvent = typeof schema.scormSessionEvent.$inferSelect;
+export type TNewScormSessionEvent = typeof schema.scormSessionEvent.$inferInsert;
 
 export type TLessonVideoProgress = typeof schema.lessonVideoProgress.$inferSelect;
 export type TNewLessonVideoProgress = typeof schema.lessonVideoProgress.$inferInsert;

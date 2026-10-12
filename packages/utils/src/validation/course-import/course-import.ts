@@ -1,7 +1,7 @@
 import * as z from 'zod';
 
 import { ZComplianceSettings, ZCourseMetadata } from '../course/course';
-import { ZCourseType } from '../course/course-type';
+import { ZCourseType, ZCourseFormat } from '../course/course-type';
 import { ZExerciseQuestionTypeId } from '../exercise/exercise';
 import { ZLessonVideoItem } from '../lesson/lesson';
 
@@ -29,6 +29,7 @@ export const ZCourseImportDraftCourse = z
     title: z.string().min(1),
     description: z.string().min(1),
     type: ZCourseType,
+    format: ZCourseFormat.optional(),
     locale: ZSupportedLocale.default('en'),
     metadata: ZCourseMetadata.optional(),
     compliance: ZComplianceSettings.optional()
@@ -93,14 +94,22 @@ export const ZCourseImportDraftExercise = z.object({
 });
 export type TCourseImportDraftExercise = z.infer<typeof ZCourseImportDraftExercise>;
 
+export const ZCourseImportDraftActivity = z.object({
+  existingActivityId: z.string().uuid(),
+  sectionExternalId: z.string().min(1),
+  order: z.number().int().min(1)
+});
+export type TCourseImportDraftActivity = z.infer<typeof ZCourseImportDraftActivity>;
+
 export const ZCourseImportDraftPayload = z
   .object({
     course: ZCourseImportDraftCourse,
     tags: z.array(z.string().trim().min(1).max(80)).max(100).default([]),
     sections: z.array(ZCourseImportDraftSection).min(1),
-    lessons: z.array(ZCourseImportDraftLesson).min(1),
-    lessonLanguages: z.array(ZCourseImportDraftLessonLanguage).min(1),
+    lessons: z.array(ZCourseImportDraftLesson),
+    lessonLanguages: z.array(ZCourseImportDraftLessonLanguage),
     exercises: z.array(ZCourseImportDraftExercise).optional(),
+    activities: z.array(ZCourseImportDraftActivity).optional(),
     sourceReferences: z.array(ZCourseImportSourceReference).optional(),
     warnings: z.array(ZCourseImportWarning).default([])
   })
@@ -214,6 +223,43 @@ export const ZCourseImportDraftPayload = z
       }
     });
 
+    const activityIds = new Set<string>();
+    value.activities?.forEach((activity, index) => {
+      if (activityIds.has(activity.existingActivityId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['activities', index, 'existingActivityId'],
+          message: 'Activity must not be referenced more than once'
+        });
+      }
+      activityIds.add(activity.existingActivityId);
+
+      if (!sectionIds.has(activity.sectionExternalId)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['activities', index, 'sectionExternalId'],
+          message: 'Activity sectionExternalId must reference an existing section'
+        });
+      }
+    });
+
+    const activityCount = value.activities?.length ?? 0;
+    if (value.lessons.length === 0 && activityCount === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['lessons'],
+        message: 'Draft must contain at least one lesson or reference at least one activity'
+      });
+    }
+
+    if (value.lessons.length > 0 && value.lessonLanguages.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['lessonLanguages'],
+        message: 'Draft lessons require at least one lesson language'
+      });
+    }
+
     if (value.exercises) {
       const lessonsByExternalId = new Map(value.lessons.map((l) => [l.externalId, l]));
       const exercisesByGroup = new Map<string, number[]>();
@@ -236,6 +282,40 @@ export const ZCourseImportDraftPayload = z
             message: 'Exercise orders within each group must be a contiguous 1-based sequence (1, 2, 3, ...)'
           });
         }
+      }
+    }
+
+    const sharedOrdersBySection = new Map<string, { section: string; orders: number[] }>();
+    const pushSharedOrder = (sectionExternalId: string | undefined, order: number) => {
+      if (!sectionExternalId || !sectionIds.has(sectionExternalId)) {
+        return;
+      }
+
+      const entry = sharedOrdersBySection.get(sectionExternalId) ?? { section: sectionExternalId, orders: [] };
+      entry.orders.push(order);
+      sharedOrdersBySection.set(sectionExternalId, entry);
+    };
+    const sectionOfLesson = new Map(value.lessons.map((lesson) => [lesson.externalId, lesson.sectionExternalId]));
+    for (const lesson of value.lessons) {
+      pushSharedOrder(lesson.sectionExternalId, lesson.order);
+    }
+    for (const exercise of value.exercises ?? []) {
+      const sectionExternalId = exercise.lessonExternalId
+        ? sectionOfLesson.get(exercise.lessonExternalId)
+        : exercise.sectionExternalId;
+      pushSharedOrder(sectionExternalId, exercise.order);
+    }
+    for (const activity of value.activities ?? []) {
+      pushSharedOrder(activity.sectionExternalId, activity.order);
+    }
+    for (const { section, orders } of sharedOrdersBySection.values()) {
+      const sorted = [...orders].sort((a, b) => a - b);
+      if (sorted.some((order, i) => order > i + 1)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['activities'],
+          message: `Content orders in section "${section}" must not leave gaps across lessons, exercises and activities`
+        });
       }
     }
   });

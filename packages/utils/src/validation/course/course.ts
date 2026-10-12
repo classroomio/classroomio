@@ -4,7 +4,7 @@ import { ContentType } from '@cio/utils/constants/content';
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
-import { ZCourseType } from './course-type';
+import { ZCourseFormat, ZCourseType } from './course-type';
 import { ZLiveSessionReminderOffsets } from './live-session-reminder';
 
 export const ZGetRecommendedCourses = z.object({
@@ -151,7 +151,7 @@ export type TCourseDownloadPresignedUrl = z.infer<typeof ZCourseDownloadPresigne
 
 export const ZCourseContentUpdateItem = z.object({
   id: z.string().min(1),
-  type: z.enum([ContentType.Lesson, ContentType.Exercise]),
+  type: z.enum([ContentType.Lesson, ContentType.Exercise, ContentType.Activity]),
   isUnlocked: z.boolean().optional(),
   order: z.number().int().min(1).optional(),
   sectionId: z.string().nullable().optional()
@@ -260,7 +260,7 @@ export type TCourseContentReorder = z.infer<typeof ZCourseContentReorder>;
 
 export const ZCourseContentDeleteItem = z.object({
   id: z.string().min(1),
-  type: z.enum([ContentType.Lesson, ContentType.Exercise])
+  type: z.enum([ContentType.Lesson, ContentType.Exercise, ContentType.Activity])
 });
 export type TCourseContentDeleteItem = z.infer<typeof ZCourseContentDeleteItem>;
 
@@ -309,6 +309,7 @@ export const ZCourseCreateBase = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
   type: ZCourseType,
+  format: ZCourseFormat.optional(),
   organizationId: z.string().min(1),
   compliance: ZComplianceSettings.optional()
 });
@@ -319,7 +320,10 @@ export const ZCourseCreate = ZCourseCreateBase.refine(
     message: 'Compliance settings are required for COMPLIANCE courses',
     path: ['compliance']
   }
-);
+).refine((data) => data.format !== 'scorm' || data.type === 'SELF_PACED' || data.type === 'COMPLIANCE', {
+  message: 'SCORM courses must be Self-paced or Compliance',
+  path: ['type']
+});
 export type TCourseCreate = z.infer<typeof ZCourseCreate>;
 
 export const ZCourseReward = z.object({
@@ -528,6 +532,7 @@ export const ZCourseUpdateBase = z.object({
   title: z.string().min(1).optional(),
   description: z.string().min(1).optional(),
   type: ZCourseType.optional(),
+  format: z.enum(['standard']).optional(),
   bannerImage: z.string().optional(),
   logo: z.string().optional(),
   slug: z.string().optional(),

@@ -345,7 +345,8 @@
         "content_grouping_enabled": "Группировка контента включена",
         "content_grouping_disabled": "Группировка контента отключена",
         "link_generated": "Ссылка на курс успешно обновлена",
-        "converted_to_public": "Курс успешно преобразован в общедоступный курс"
+        "converted_to_public": "Курс успешно преобразован в общедоступный курс",
+        "converted_to_standard": "Курс преобразован в стандартный"
       },
       "info": {
         "conversion_blocked": "Исправьте вопросы ниже, чтобы завершить преобразование в публичный доступ."
@@ -515,6 +516,27 @@
       "success": "Спасибо. Мы рассмотрим эту жалобу.",
       "error": "Не удалось отправить жалобу. Попробуйте ещё раз.",
       "already_submitted": "Вы уже пожаловались на этот контент."
+    },
+    "activity": {
+      "attach_failed": "Не удалось прикрепить пакет",
+      "created": "SCORM-пакет создан",
+      "delete_failed": "Не удалось удалить элемент-пакета",
+      "delete_failed_package": "Не удалось удалить пакет",
+      "detach_failed": "Не удалось открепить пакет",
+      "detached": "Пакет откреплён",
+      "instructions_failed": "Не удалось сохранить инструкции",
+      "instructions_saved": "Инструкции сохранены",
+      "launch_failed": "Не удалось открыть пакет",
+      "learner_reset": "Попытки этого студента сброшены",
+      "learner_reset_failed": "Не удалось сбросить попытки",
+      "package_deleted": "Пакет удалён",
+      "process_failed": "Не удалось обработать пакет",
+      "replace_failed": "Не удалось заменить пакет",
+      "settings_failed": "Не удалось сохранить настройки пакета",
+      "settings_saved": "Настройки пакета сохранены",
+      "upload_failed": "Не удалось загрузить пакет",
+      "courses_created": "Draft SCORM courses created",
+      "courses_create_failed": "Could not create courses from packages"
     }
   },
   "explore": {
@@ -710,7 +732,9 @@
       "students_table_description": "Сортируемый обзор со ссылками на профили студентов.",
       "kpi_team_tutors": "{count, plural, one {# преподаватель в команде курса} other {# преподавателей в команде курса}}",
       "kpi_lessons_exercises": "{count, plural, one {# упражнение} other {# упражнений}} сопоставлено с уроками",
-      "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся"
+      "kpi_progress_grade": "{grade} % средняя оценка за упражнения среди зачисленных учащихся",
+      "kpi_packages": "{count, plural, one {# упаковка} few {# упаковки} other {# упаковок}}",
+      "kpi_activity_completion": "{rate}% — доля студентов, полностью завершивших программу"
     },
     "exercises_completed": "Выполненные упражнения",
     "course_progress": "Прогресс курса",
@@ -719,7 +743,10 @@
     "hours_ago": "{count, plural, one {# час назад} other {# часов назад}}",
     "days_ago": "{count, plural, one {# день назад} other {# дней назад}}",
     "months_ago": "{count, plural, one {# месяц назад} other {# месяцев назад}}",
-    "years_ago": "{count, plural, one {# год назад} other {# лет назад}}"
+    "years_ago": "{count, plural, one {# год назад} other {# лет назад}}",
+    "packages": "Пакеты",
+    "packages_completed": "Пакеты выполнены",
+    "activities": "SCORM-пакеты"
   },
   "audience": {
     "title": "Аудитория",
@@ -836,7 +863,14 @@
         "activity": "Активность"
       },
       "activity_empty_title": "График выполнения заданий будет доступен в будущем.",
-      "activity_empty_description": "График завершения уроков и отправки заданий по всем курсам будет доступен в одном из будущих релизов."
+      "activity_empty_description": "График завершения уроков и отправки заданий по всем курсам будет доступен в одном из будущих релизов.",
+      "activities_title": "SCORM-пакеты",
+      "activity_status": {
+        "completed": "Завершено",
+        "in_progress": "В процессе",
+        "not_started": "Не начато"
+      },
+      "scorm_package": "SCORM-пакет"
     },
     "delete": {
       "action": "Удалить",
@@ -1203,7 +1237,12 @@
             "window_passed": "Время напоминания уже прошло на момент планирования.",
             "unenrolled": "Студент больше не записан на курс."
           }
-        }
+        },
+        "convert_card_cta": "Преобразовать в стандартный",
+        "convert_card_description": "Добавьте уроки, упражнения и разделы рядом с пакетом. Пакет станет первым элементом. Это нельзя отменить.",
+        "convert_card_title": "Преобразовать в стандартный курс",
+        "convert_confirm_body": "Пакет останется первым элементом, а Контент вернётся в навигацию. Это нельзя отменить.",
+        "convert_confirm_title": "Преобразовать этот курс?"
       },
       "analytics": {
         "title": "Аналитика"
@@ -1363,7 +1402,8 @@
           "skills_placeholder": "например Анализ данных",
           "tools_placeholder": "например Фигма",
           "remove": "Удалить"
-        }
+        },
+        "packages": "пакеты"
       },
       "certificates": {
         "title": "Сертификаты",
@@ -1525,7 +1565,8 @@
               "video_progress": "Прогресс просмотра видео — {count} отслеживаемых уроков",
               "attendance": "Записи посещаемости — {count}",
               "certificate_yes": "Записи сертификации/соответствия — да",
-              "certificate_no": "Записи сертификации/соответствия — нет"
+              "certificate_no": "Записи сертификации/соответствия — нет",
+              "activities": "Завершённые SCORM-пакеты — {completed} из {total} ({attempts, plural, one {# попытка} few {# попытки} many {# попыток} other {# попытки}})"
             },
             "warning": "Это действие нельзя отменить.",
             "cancel": "Отмена",
@@ -2626,64 +2667,64 @@
               },
               "platforms": {
                 "google-slides": {
-                  "hint": "File → Share → Publish to web → Embed",
-                  "step_1": "Open your deck and choose File → Share → Publish to web.",
-                  "step_2": "Switch to the Embed tab and click Publish.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Файл → Поделиться → Опубликовать в интернете → Встроить",
+                  "step_1": "Откройте презентацию и выберите «Файл» → «Поделиться» → «Опубликовать в интернете».",
+                  "step_2": "Перейдите на вкладку «Встроить» и нажмите «Опубликовать».",
+                  "step_3": "Скопируйте код для вставки iframe и вставьте его сюда."
                 },
                 "canva": {
-                  "hint": "Share → More → Embed",
-                  "step_1": "Above the editor, click Share → More.",
-                  "step_2": "Choose Embed and confirm (this makes the design public).",
-                  "step_3": "Copy the HTML embed code and paste it here."
+                  "hint": "Поделиться → Ещё → Встроить",
+                  "step_1": "Над редактором нажмите «Поделиться» → «Ещё».",
+                  "step_2": "Выберите «Встроить» и подтвердите (это сделает дизайн общедоступным).",
+                  "step_3": "Скопируйте HTML-код для вставки и вставьте его сюда."
                 },
                 "powerpoint": {
-                  "hint": "PowerPoint for the web → File → Share → Embed",
-                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
-                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
-                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                  "hint": "PowerPoint в интернете → Файл → Поделиться → Встроить",
+                  "step_1": "Сохраните презентацию в OneDrive, затем откройте её в веб-версии PowerPoint.",
+                  "step_2": "Выберите «Файл» → «Поделиться» → «Встроить» и укажите размеры.",
+                  "step_3": "Скопируйте код для вставки iframe и вставьте его сюда. Размер плеера подбирается автоматически."
                 },
                 "keynote": {
-                  "hint": "Collaborate → Copy Link, then embed",
-                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
-                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Совместная работа → Скопировать ссылку, затем встроить",
+                  "step_1": "Нажмите «Совместная работа» и установите доступ «Все, у кого есть ссылка · Только просмотр».",
+                  "step_2": "Скопируйте ссылку iCloud, затем получите код для вставки на ваш сайт.",
+                  "step_3": "Вставьте код для вставки iframe сюда."
                 },
                 "figma": {
-                  "hint": "Share a Figma Slides file and copy the embed",
-                  "step_1": "Open your Figma Slides file and enable link sharing.",
-                  "step_2": "Copy the embed code for the /slides or /deck file.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Поделитесь файлом Figma Slides и скопируйте код вставки",
+                  "step_1": "Откройте файл Figma Slides и включите доступ по ссылке.",
+                  "step_2": "Скопируйте код вставки для файла /slides или /deck.",
+                  "step_3": "Вставьте код для вставки iframe сюда."
                 },
                 "prezi": {
-                  "hint": "Share → Embed",
-                  "step_1": "From the dashboard, open Share on your presentation.",
-                  "step_2": "Click Embed and copy the code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Поделиться → Встроить",
+                  "step_1": "В панели управления откройте «Поделиться» для вашей презентации.",
+                  "step_2": "Нажмите «Встроить» и скопируйте код.",
+                  "step_3": "Вставьте код для вставки iframe сюда."
                 },
                 "pitch": {
-                  "hint": "Share externally → Copy embed code",
-                  "step_1": "Click Share → Share externally and create a public link.",
-                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Поделиться внешне → Скопировать код вставки",
+                  "step_1": "Нажмите «Поделиться» → «Поделиться внешне» и создайте публичную ссылку.",
+                  "step_2": "Откройте параметры ссылки (⋯) и выберите «Скопировать код вставки».",
+                  "step_3": "Вставьте код для вставки iframe сюда."
                 },
                 "gamma": {
-                  "hint": "Share → enable public access → copy iframe",
-                  "step_1": "Open Share and toggle Allow public access.",
-                  "step_2": "Copy the generated iframe embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Поделиться → включить публичный доступ → скопировать iframe",
+                  "step_1": "Откройте «Поделиться» и включите переключатель «Разрешить публичный доступ».",
+                  "step_2": "Скопируйте сгенерированный код для вставки iframe.",
+                  "step_3": "Вставьте код для вставки iframe сюда."
                 },
                 "slideshare": {
-                  "hint": "Share → Embed under the deck",
-                  "step_1": "Open the public deck on slideshare.net.",
-                  "step_2": "Click Share under the viewer and open the Embed tab.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Поделиться → Встроить под презентацией",
+                  "step_1": "Откройте публичную презентацию на slideshare.net.",
+                  "step_2": "Нажмите «Поделиться» под окном просмотра и откройте вкладку «Встроить».",
+                  "step_3": "Скопируйте код для вставки iframe и вставьте его сюда."
                 },
                 "beautiful": {
-                  "hint": "Sharing Settings → Public → Get Embed Code",
-                  "step_1": "Open Sharing Settings and switch the deck to Public.",
-                  "step_2": "Click Get Embed Code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Настройки доступа → Публичный → Получить код вставки",
+                  "step_1": "Откройте «Настройки доступа» и переключите презентацию в режим «Публичный».",
+                  "step_2": "Нажмите «Получить код вставки».",
+                  "step_3": "Вставьте код для вставки iframe сюда."
                 }
               },
               "frame_title": "{platform} ({index} из {total})"
@@ -2709,7 +2750,15 @@
           "lesson_title": "Урок",
           "lesson_description": "Преподавайте с помощью заметок, слайдов и видео.",
           "exercise_title": "Упражнение",
-          "exercise_description": "Оценивайте учащихся с помощью викторин и заданий."
+          "exercise_description": "Оценивайте учащихся с помощью викторин и заданий.",
+          "activity_scorm_description": "Запустите интерактивный пакет из Storyline, Captivate или iSpring.",
+          "activity_scorm_gated": "Платные тарифы",
+          "activity_scorm_license_notice": "Для SCORM-пакетов этому серверу нужна корпоративная лицензия. Учащиеся сохраняют доступ к существующим пакетам.",
+          "activity_scorm_title": "SCORM-пакет",
+          "activity_scorm_title_label": "Название пакета",
+          "activity_scorm_title_placeholder": "Например, вводный инструктаж по охране труда",
+          "activity_scorm_upgrade_cta": "Смотреть тарифы",
+          "activity_scorm_upgrade_notice": "SCORM-пакеты включены во все платные тарифы. Обновите тариф, чтобы добавлять пакеты в курсы."
         },
         "add_lesson": {
           "button_title": "Добавить",
@@ -2788,7 +2837,8 @@
         "stats": {
           "sections": "Разделы",
           "lessons": "Уроки",
-          "exercises": "Упражнения"
+          "exercises": "Упражнения",
+          "activities": "Деятельность"
         },
         "session": {
           "join": "Присоединиться к сеансу",
@@ -2845,7 +2895,198 @@
         "add_content_later": "Позже",
         "add_content_add_to_section": "Добавить в раздел",
         "expand_content": "Развернуть контент",
-        "collapse_content": "Свернуть содержимое"
+        "collapse_content": "Свернуть содержимое",
+        "content_progression_locked_description_activity": "Этот пакет становится доступным после завершения предыдущего обязательного элемента курса.",
+        "activities": {
+          "not_available_title": "Пакет пока недоступен",
+          "not_available_description": "Этот SCORM-пакет всё ещё настраивается. Пожалуйста, зайдите позже.",
+          "delete_confirm_body": "Результаты учащихся по этому элементу будут удалены. Пакет останется в медиатеке.",
+          "delete_confirm_title": "Удалить этот элемент-пакета?",
+          "gating": {
+            "no_license": "Этому серверу нужна корпоративная лицензия со SCORM, чтобы изменять пакеты.",
+            "plan_lapsed": "Ваш тариф больше не включает SCORM-пакеты. Учащиеся по-прежнему могут их проходить, а результаты сохраняются.",
+            "title": "Работа со SCORM приостановлена"
+          },
+          "header_locked": "Закрыто",
+          "instructions": {
+            "label": "Инструкции для учащихся",
+            "placeholder": "Что учащиеся должны знать перед открытием пакета?",
+            "save": "Сохранить инструкции"
+          },
+          "package": {
+            "cancel_upload": "Отменить загрузку",
+            "case_warning": "Некоторые имена файлов различаются только регистром букв.",
+            "drop_hint": "До {size}. Обработка может занять несколько минут; вы можете покинуть страницу.",
+            "drop_label": "Перетащите сюда SCORM .zip",
+            "errors": {
+              "assets_only": "Ничто в этом пакете не сообщает о прогрессе.",
+              "cmi5_package": "Это пакет cmi5. Экспортируйте его заново как SCORM.",
+              "compression_bomb": "Этот пакет не прошёл проверку безопасности.",
+              "doctype_rejected": "Не удалось прочитать манифест. Экспортируйте пакет заново.",
+              "encrypted_entry": "Этот пакет защищён паролем.",
+              "external_launch": "Этот пакет открывает содержимое с другого сайта, которое не может сохранять прогресс здесь.",
+              "file_too_large": "Этот файл больше лимита рабочего пространства.",
+              "generic": "Что-то пошло не так при обработке пакета. Попробуйте ещё раз.",
+              "invalid_xml": "Не удалось прочитать манифест. Экспортируйте пакет заново.",
+              "missing_launch": "У модуля нет стартового файла. Экспортируйте пакет заново.",
+              "missing_manifest": "Файл imsmanifest.xml не найден. Экспортируйте пакет заново для LMS.",
+              "not_a_zip": "Этот файл — не корректный ZIP-архив.",
+              "symlink_rejected": "В этом пакете небезопасные пути к файлам.",
+              "too_many_entries": "В этом пакете слишком много файлов.",
+              "total_too_large": "Распакованный пакет больше лимита рабочего пространства.",
+              "unsafe_path": "В этом пакете небезопасные пути к файлам.",
+              "unsupported_version": "Эта версия SCORM не поддерживается. Используйте SCORM 1.2 или SCORM 2004.",
+              "upload_missing": "Загрузка не завершилась. Попробуйте ещё раз.",
+              "xapi_package": "Это пакет xAPI (Tin Can). Экспортируйте его заново как SCORM."
+            },
+            "failed_title": "Этот пакет не удалось использовать",
+            "files": "Файлы",
+            "modules_hint": "Учащиеся выбирают модули из меню над пакетом. Правило завершения применяется к каждому модулю.",
+            "modules_title": "В этом пакете {count, plural, one {# модуль} few {# модуля} many {# модулей} other {# модуля}}",
+            "move_everyone": "Перевести всех на эту версию",
+            "move_everyone_helper": "Учащиеся, находящиеся в процессе прохождения, начнут заново на новой версии. Затронуто: {count, plural, one {# учащийся} few {# учащихся} many {# учащихся} other {# учащегося}}.",
+            "pass_mark": "Проходной балл {score}%",
+            "processing": "Обработка пакета…",
+            "processing_stage": "{stage} · {progress}%",
+            "rebased_warning": "Манифест найден внутри одной папки верхнего уровня.",
+            "remove": "Удалить",
+            "remove_confirm_body": "Учащиеся потеряют доступ, пока вы не прикрепите другой пакет. Файл останется в медиатеке.",
+            "remove_confirm_title": "Удалить этот пакет?",
+            "replace": "Заменить пакет",
+            "retry": "Выбрать другой файл",
+            "sequencing_warning": "Правила sequencing в этом пакете игнорируются. Вместо них применяются настройки прохождения курса.",
+            "size": "Размер",
+            "status": {
+              "failed": "Ошибка",
+              "processing": "Обработка",
+              "ready": "Готов",
+              "uploading": "Загрузка"
+            },
+            "too_large": "Этот файл больше, чем {size}.",
+            "uploading": "Загрузка {progress}%",
+            "version": "Версия {version}",
+            "wrong_type": "В качестве SCORM-пакета можно загружать только .zip-файлы."
+          },
+          "player": {
+            "autosave_hint": "Прогресс сохраняется автоматически.",
+            "complete_body": "Ваши результаты записаны.",
+            "complete_title": "Пакет завершён",
+            "continue": "Продолжить",
+            "expired_body": "Сессия пакета истекла. Обновите страницу, чтобы начать снова с того места, где остановились.",
+            "expired_title": "Сессия истекла",
+            "fullscreen": "Во весь экран",
+            "load_failed_body": "Что-то пошло не так при открытии пакета. Попробуйте ещё раз.",
+            "load_failed_title": "Не удалось открыть пакет",
+            "module_complete_body": "Ваш прогресс сохранён. Откройте следующий модуль, чтобы продолжить.",
+            "module_complete_title": "Модуль завершён",
+            "module_menu": "Модули",
+            "modules_complete": "Выполнено модулей: {complete} из {total}",
+            "new_attempt": "Начать новую попытку",
+            "next_module": "Следующий модуль",
+            "no_connection_body": "Пакет так и не обратился к плееру курса. Экспортируйте его заново с опцией LMS или SCORM либо обновите страницу и попробуйте снова.",
+            "no_connection_title": "Пакет не подключился",
+            "open_window": "Открыть пакет",
+            "reload": "Обновить",
+            "retakes_off": "Повторные попытки отключены для этого пакета, поэтому новую попытку начать нельзя.",
+            "review_body": "Ничего в этой сессии не сохраняется.",
+            "review_title": "Результаты уже записаны",
+            "status_completed": "Завершено",
+            "status_in_progress": "В процессе",
+            "status_not_passed": "Пока не пройдено",
+            "status_review": "На проверке",
+            "window_body": "Ваш прогресс сохраняется автоматически, пока новое окно открыто.",
+            "window_title": "Этот пакет открывается в новом окне"
+          },
+          "results": {
+            "export": {
+              "title": "Результаты SCORM"
+            },
+            "pass_fail": {
+              "failed": "Не пройдено",
+              "passed": "Пройдено"
+            },
+            "sheet": {
+              "attempt": "Попытка {number}",
+              "columns": {
+                "completion": "Завершение",
+                "module": "Модуль",
+                "score": "Оценка",
+                "success": "Успех",
+                "time": "Время"
+              },
+              "confirm_reset": "Нажмите ещё раз, чтобы подтвердить сброс",
+              "description": "Каждая попытка с попытками по модулям, ответы, сообщённые пакетом, и затраченное время.",
+              "interactions": "{count, plural, one {# ответ пакета} few {# ответа пакета} many {# ответов пакета} other {# ответа пакета}}",
+              "no_attempts_description": "Попытки появятся здесь, когда учащийся откроет пакет.",
+              "no_attempts_title": "Пока нет попыток",
+              "reset": "Сбросить для этого студента",
+              "rule_met": "Правило выполнено",
+              "title": "Попытки: {learnerName}",
+              "version": "Версия пакета {number}",
+              "diagnostics_title": "Диагностика",
+              "events": {
+                "launch": "Запущено",
+                "initialize": "Подключено",
+                "commit": "Сохранено",
+                "terminate": "Законченный",
+                "beacon": "Сохранено при выходе",
+                "error": "Ошибка",
+                "not_initialized": "Не удалось подключиться"
+              }
+            },
+            "status": {
+              "completed": "Завершено",
+              "failed": "Пока не пройдено",
+              "in_progress": "В процессе",
+              "not_started": "Не начато"
+            },
+            "summary": {
+              "average_score": "Средняя оценка",
+              "completed": "Завершили",
+              "enrolled": "Записаны",
+              "passed": "Прошли",
+              "started": "Начали"
+            },
+            "table": {
+              "attempts": "Попытки",
+              "best_score": "Лучшая оценка",
+              "last_launched": "Последний запуск",
+              "pass_fail": "Прошёл/не прошёл",
+              "score": "Оценка",
+              "status": "Статус",
+              "student": "Студент",
+              "time_spent": "Затраченное время"
+            }
+          },
+          "results_placeholder_description": "Оценки, попытки и время появятся здесь, когда учащиеся откроют пакет.",
+          "results_placeholder_title": "Пока нет результатов",
+          "settings": {
+            "completion_rule": "Правило завершения",
+            "completion_rule_helper": "Как ClassroomIO определяет, что пакет пройден.",
+            "graded_hint": "У этого пакета проходной балл {score}%, поэтому студенты должны его пройти.",
+            "launch_embedded": "В курсе",
+            "launch_mode": "Режим запуска",
+            "launch_window": "В новом окне",
+            "min_score": "Минимальная оценка (%)",
+            "passed_warning": "Модуль, который так и не сообщит о прохождении, не даст завершить элемент.",
+            "retakes": "Разрешить повторные попытки",
+            "retakes_helper": "Завершённые пакеты открываются заново с кнопкой «Начать новую попытку». Засчитывается лучшая оценка.",
+            "rule_auto": "Автоматически",
+            "rule_completed": "Завершено",
+            "rule_passed": "Пройдено",
+            "rule_score": "Минимальная оценка",
+            "save": "Сохранить настройки",
+            "ungraded_hint": "У этого пакета нет проходного балла, поэтому студенты завершают его, проходя до конца."
+          },
+          "tabs": {
+            "instructions": "Инструкции",
+            "package": "Пакет",
+            "results": "Результаты",
+            "settings": "Настройки"
+          }
+        },
+        "add_content_create_another_activity": "Создать ещё один пакет",
+        "add_content_created_activity": "SCORM-пакет успешно создан!"
       },
       "news_feed": {
         "heading": "Лента новостей",
@@ -3015,7 +3256,8 @@
       "back_to_course": "Вернуться к курсу",
       "content_count": {
         "lessons": "{count} уроков",
-        "exercises": "{count} упражнений"
+        "exercises": "{count} упражнений",
+        "activities": "{count} мероприятий"
       },
       "compliance": {
         "title": "Соответствие требованиям",
@@ -3026,7 +3268,8 @@
         "title": "Ваш прогресс",
         "completed": "Завершено {completed} из {total}",
         "lessons": "{completed} из {total} уроков",
-        "exercises": "{completed} из {total} упражнений"
+        "exercises": "{completed} из {total} упражнений",
+        "activities": "{completed} из {total} пакетов"
       },
       "footer_nav": {
         "label": "Навигация по содержанию курса",
@@ -3048,7 +3291,8 @@
       "nav_settings": "Настройки",
       "nav_ai_assistant": "Ассистент",
       "nav_ai_tutor": "Репетитор по искусственному интеллекту",
-      "exit_course": "Выйти из курса"
+      "exit_course": "Выйти из курса",
+      "nav_package": "Пакет"
     },
     "completion": {
       "modal": {
@@ -3224,7 +3468,10 @@
       "student_empty_description": "В этой организации пока нет доступных курсов. Пожалуйста, зайдите позже.",
       "updated_at": "Обновлено {date}",
       "lessons_count": "{count, plural, one {# урок} few {# урока} many {# уроков} other {# уроков}}",
-      "exercises_count": "{count, plural, one {# упражнение} few {# упражнения} many {# упражнений} other {# упражнений}}"
+      "exercises_count": "{count, plural, one {# упражнение} few {# упражнения} many {# упражнений} other {# упражнений}}",
+      "activities_count": "{count, plural, one {# упаковка} few {# упаковки} other {# упаковок}}",
+      "scorm_modules": "SCORM · {count, plural, one {# модуль} other {# модулей}}",
+      "scorm": "СКОРМ"
     },
     "course_filter": {
       "date_created_newest": "Дата создания: сначала новые",
@@ -3608,15 +3855,18 @@
         "lesson": "Урок",
         "exercise": "Упражнение",
         "question": "Вопрос",
-        "unknown": "Неизвестно"
+        "unknown": "Неизвестно",
+        "activity": "SCORM package"
       },
       "go_to_lesson": "Перейти на урок",
       "slot_type": {
         "lesson_video": "Видео урока",
         "lesson_document": "Документ урока",
-        "unknown": "Приложение"
+        "unknown": "Приложение",
+        "activity_package": "SCORM package"
       },
-      "refresh": "Обновить использование"
+      "refresh": "Обновить использование",
+      "go_to_package": "Go to package"
     },
     "form": {
       "file_name": "Имя файла",
@@ -3647,7 +3897,8 @@
       "where_used": "Где используется",
       "download": "Скачать",
       "manage_thumbnails": "Управление миниатюрами",
-      "delete": "Удалить"
+      "delete": "Удалить",
+      "create_course_from_package": "Create course from package"
     },
     "table": {
       "title": "Название",
@@ -3675,7 +3926,8 @@
       "document": "Документ",
       "image": "Изображение",
       "audio": "Аудио",
-      "other": "Другое"
+      "other": "Другое",
+      "scorm": "SCORM package"
     },
     "filters": {
       "search_placeholder": "Поиск активов",
@@ -3690,7 +3942,8 @@
         "document": "Документ",
         "image": "Изображение",
         "audio": "Аудио",
-        "other": "Другое"
+        "other": "Другое",
+        "scorm": "SCORM package"
       },
       "refresh": "Обновить"
     },
@@ -3698,7 +3951,8 @@
       "total_bytes": "Общий объем хранилища",
       "internal_bytes": "Внутреннее хранилище",
       "external_assets": "Внешние активы",
-      "bytes_by_kind": "Хранилище по типу актива"
+      "bytes_by_kind": "Хранилище по типу актива",
+      "scorm_bytes": "SCORM packages"
     },
     "common": {
       "not_available": "Н/Д"
@@ -3729,6 +3983,27 @@
       "confirm": "Удалить навсегда",
       "cancel": "Отмена",
       "close": "Закрыть"
+    },
+    "scorm": {
+      "select": "Select",
+      "cancel_select": "Cancel",
+      "cancel": "Cancel",
+      "selected_count": "{count, plural, one {# package selected} other {# packages selected}}",
+      "create_n_courses": "{count, plural, one {Create # course} other {Create # courses}}",
+      "select_package": "Select package {title}",
+      "modules_count": "{count, plural, one {# module} other {# modules}}",
+      "create_course_title_single": "Create a course from this package",
+      "create_course_title_many": "Create {count, plural, one {# course} other {# courses}} from packages",
+      "create_course_description": "We’ll create a draft SCORM course with each package. Its modules stay together in a menu above the package.",
+      "course_nav_preview": "SCORM course navigation: Package",
+      "course_type_self_paced": "Self-paced",
+      "course_type_self_paced_description": "Students take the package at their own pace",
+      "course_type_compliance": "Compliance",
+      "course_type_compliance_description": "Recurring training with retakes, reminders, and renewal tracking",
+      "course_title_label": "Course title",
+      "course_title_label_for": "Course title for {title}",
+      "create_course_confirm_single": "Create course",
+      "create_course_confirm_many": "Create {count, plural, one {# course} other {# courses}}"
     }
   },
   "settings": {
@@ -3913,7 +4188,7 @@
             "links_max_reached": "До 10 ссылок в колонке",
             "cta_toggle": "Добавить ссылку CTA",
             "cta_label": "Метка CTA",
-            "cta_href": "URL CTA",
+            "cta_href": "URL призыва к действию",
             "cta_default_label": "Узнать больше",
             "max_reached": "До 6 колонок"
           },
@@ -4774,7 +5049,15 @@
     "compliance_label": "Соответствие требованиям",
     "compliance_subtitle": "Регулярное обучение с повторной сдачей, напоминаниями и отслеживанием продлений",
     "public_label": "Общественный",
-    "public_subtitle": "Бесплатные страницы курсов без регистрации, которыми вы можете поделиться публично — отлично подходит для привлечения потенциальных клиентов."
+    "public_subtitle": "Бесплатные страницы курсов без регистрации, которыми вы можете поделиться публично — отлично подходит для привлечения потенциальных клиентов.",
+    "build_course_label": "Создать курс",
+    "build_course_subtitle": "Уроки, упражнения и разделы, которые вы составляете сами",
+    "scorm_course_label": "Загрузить SCORM-пакет",
+    "scorm_course_subtitle": "Один интерактивный пакет как весь курс",
+    "scorm_gated": "Платные тарифы",
+    "scorm_license_notice": "Для SCORM-курсов этому серверу нужна корпоративная лицензия.",
+    "scorm_upgrade_cta": "Смотреть тарифы",
+    "scorm_upgrade_notice": "SCORM-курсы включены во все платные тарифы. Обновите тариф, чтобы создать курс."
   },
   "delete_modal": {
     "label": "Удалить",
@@ -5369,7 +5652,8 @@
         "course": "Курс",
         "lessons": "Уроки",
         "tags": "Теги"
-      }
+      },
+      "packages_suffix": "пакеты"
     },
     "plan": {
       "free": "Бесплатный план",

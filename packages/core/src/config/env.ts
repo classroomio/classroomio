@@ -28,6 +28,7 @@ const envSchema = z.object({
   OBJECT_STORAGE_BUCKET_VIDEOS: z.string().optional(),
   OBJECT_STORAGE_BUCKET_DOCUMENTS: z.string().optional(),
   OBJECT_STORAGE_BUCKET_MEDIA: z.string().optional(),
+  OBJECT_STORAGE_BUCKET_SCORM: z.string().optional(),
   /** Public URL base for media bucket (images, thumbnails). Required for image uploads. */
   OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL: z.string().optional(),
   /** Optional: endpoint for presigned URLs when different from internal (e.g. browser-reachable) */
@@ -110,8 +111,16 @@ const envSchema = z.object({
   UPLOAD_MAX_LANDING_IMAGE_MB: z.string().optional(),
   /** Max media thumbnail upload size in megabytes (default 5). */
   UPLOAD_MAX_THUMBNAIL_MB: z.string().optional(),
+  /** Max SCORM package upload size in megabytes (default 500). */
+  UPLOAD_MAX_SCORM_MB: z.string().optional(),
   /** Org that owns ClassroomIO launch templates. Empty hides them. */
   PLATFORM_TEMPLATES_ORG_ID: z.union([z.string().uuid(), z.literal('')]).default(DEFAULT_PLATFORM_TEMPLATES_ORG_ID),
+  /** Self-hosted content origin, e.g. https://content.yourdomain.com. Local dev defaults to the stub port. */
+  SCORM_CONTENT_ORIGIN: z.string().optional(),
+  /** Cloud content wildcard domain, e.g. classroomio-content.com. */
+  SCORM_CONTENT_DOMAIN: z.string().optional(),
+  /** HMAC secret signing activity launch and content tokens. */
+  ACTIVITY_SIGNING_SECRET: z.string().optional(),
   /** Supadata API key for YouTube caption fetching. Leave unset to disable YouTube transcripts. */
   SUPADATA_API_KEY: z.string().optional(),
   /** YouTube caption provider identifier (default 'supadata'). */

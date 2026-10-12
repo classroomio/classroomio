@@ -7,6 +7,8 @@ export type OrgDataCounts = {
   groupMembers: number;
   lessons: number;
   exercises: number;
+  activities: number;
+  activityCompletions: number;
   submissions: number;
 };
 
@@ -22,6 +24,10 @@ export async function countOrgData(sql: postgres.Sql, orgId: string): Promise<Or
     await sql`SELECT count(*)::int AS count FROM lesson WHERE course_id IN (SELECT id FROM course WHERE group_id IN (SELECT id FROM "group" WHERE organization_id = ${orgId}))`;
   const [exerciseCount] =
     await sql`SELECT count(*)::int AS count FROM exercise WHERE course_id IN (SELECT id FROM course WHERE group_id IN (SELECT id FROM "group" WHERE organization_id = ${orgId}))`;
+  const [activityCount] =
+    await sql`SELECT count(*)::int AS count FROM course_activity WHERE course_id IN (SELECT id FROM course WHERE group_id IN (SELECT id FROM "group" WHERE organization_id = ${orgId}))`;
+  const [activityCompletionCount] =
+    await sql`SELECT count(*)::int AS count FROM activity_completion WHERE activity_id IN (SELECT id FROM course_activity WHERE course_id IN (SELECT id FROM course WHERE group_id IN (SELECT id FROM "group" WHERE organization_id = ${orgId})))`;
   const [submissionCount] =
     await sql`SELECT count(*)::int AS count FROM submission WHERE course_id IN (SELECT id FROM course WHERE group_id IN (SELECT id FROM "group" WHERE organization_id = ${orgId}))`;
 
@@ -32,6 +38,8 @@ export async function countOrgData(sql: postgres.Sql, orgId: string): Promise<Or
     groupMembers: groupMemberCount.count,
     lessons: lessonCount.count,
     exercises: exerciseCount.count,
+    activities: activityCount.count,
+    activityCompletions: activityCompletionCount.count,
     submissions: submissionCount.count
   };
 }
@@ -41,6 +49,8 @@ export function printCounts(counts: OrgDataCounts) {
   console.log(`  Courses:                ${counts.courses}`);
   console.log(`  Lessons:                ${counts.lessons}`);
   console.log(`  Exercises:              ${counts.exercises}`);
+  console.log(`  Activities:             ${counts.activities}`);
+  console.log(`  Activity completions:   ${counts.activityCompletions}`);
   console.log(`  Submissions:            ${counts.submissions}`);
   console.log(`  Org members:            ${counts.orgMembers}`);
   console.log(`  Group members (enrolled students/tutors): ${counts.groupMembers}`);
@@ -84,6 +94,11 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
     // Exercises
     const exercises = courseIds.length > 0 ? await tx`SELECT id FROM exercise WHERE course_id IN ${tx(courseIds)}` : [];
     const exerciseIds = exercises.map((e) => e.id);
+
+    // Activities
+    const activities =
+      courseIds.length > 0 ? await tx`SELECT id FROM course_activity WHERE course_id IN ${tx(courseIds)}` : [];
+    const activityIds = activities.map((a) => a.id);
 
     // Submissions
     const submissions =
@@ -356,6 +371,12 @@ export async function deleteOrganization(sql: postgres.Sql, orgId: string) {
         await tx`DELETE FROM lesson_language WHERE id IN ${tx(lessonLanguageIds)}`;
       }
       await tx`DELETE FROM lesson WHERE id IN ${tx(lessonIds)}`;
+    }
+
+    // Phase 17b: Activities and their completions
+    if (activityIds.length > 0) {
+      await tx`DELETE FROM activity_completion WHERE activity_id IN ${tx(activityIds)}`;
+      await tx`DELETE FROM course_activity WHERE id IN ${tx(activityIds)}`;
     }
 
     // Phase 18: Media jobs and transcripts

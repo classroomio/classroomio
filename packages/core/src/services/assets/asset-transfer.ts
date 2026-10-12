@@ -7,8 +7,16 @@ import { nanoid } from 'nanoid';
 
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import { createAsset } from '@cio/db/queries/assets';
-import type { TAsset } from '@cio/db/types';
+import { bulkInsertPackageUnits, listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
+import {
+  createPackageVersion,
+  getNextPackageVersionNumber,
+  getPackageVersionById,
+  listPackageVersionsByAsset
+} from '@cio/db/queries/activity/package-version';
+import type { TAsset, TContentPackageVersion } from '@cio/db/types';
 import type { TAssetStorageCleanupPayload } from '@cio/jobs';
+import { AppError, ErrorCodes } from '@cio/utils/errors';
 
 import { getS3Client, getStorageConfig } from '../../config/storage';
 import { purgeAssetStorage } from './assets';
@@ -150,10 +158,214 @@ export async function transferUploadedAsset(
   return transfer;
 }
 
+function scormUploadKey(assetId: string, versionNumber: number) {
+  return `scorm/${assetId}/v${versionNumber}.zip`;
+}
+
+function scormContentPrefix(assetId: string, versionNumber: number) {
+  return `scorm/${assetId}/v${versionNumber}`;
+}
+
+async function copyScormVersionStorage(
+  source: Pick<TContentPackageVersion, 'uploadKey' | 'contentPrefix'>,
+  targetAssetId: string,
+  targetVersionNumber: number
+) {
+  const config = getStorageConfig();
+  const uploadKey = scormUploadKey(targetAssetId, targetVersionNumber);
+  const contentPrefix = scormContentPrefix(targetAssetId, targetVersionNumber);
+
+  await copyObject(config.bucketScorm, source.uploadKey, uploadKey);
+  await copyPrefix(config.bucketScorm, `${source.contentPrefix}/`, `${contentPrefix}/`);
+
+  return { uploadKey, contentPrefix };
+}
+
+/**
+ * Brings a SCORM package asset into `organizationId` with all of its versions
+ * and their module rows, copying every version's ZIP plus extracted files in
+ * the `scorm` bucket. Returns the new asset and the source → copy asset id
+ * pair. Inside `withAssetStorageRollback`, the copied prefix is purged if the
+ * operation fails. Learner state (attempts, completions) is never copied.
+ */
+export async function transferScormPackageAsset(
+  asset: TAsset,
+  organizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient
+): Promise<TAssetTransfer> {
+  if (asset.kind !== 'scorm') throw new AppError('Asset is not a SCORM package', ErrorCodes.VALIDATION_ERROR, 400);
+
+  const scope = transferScope.getStore();
+  const scopeKey = `${asset.id}:${organizationId}`;
+  const earlier = scope?.transfers.get(scopeKey);
+  if (earlier) return earlier;
+
+  const config = getStorageConfig();
+  const versions = await listPackageVersionsByAsset(asset.id, dbClient);
+  const assetId = randomUUID();
+  const storageKey = `scorm/${assetId}`;
+  const replacements: [string, string][] = [[asset.id, assetId]];
+  if (asset.storageKey) replacements.push([asset.storageKey, storageKey]);
+
+  scope?.copied.push({
+    assetId,
+    organizationId,
+    prefixes: [{ bucket: config.bucketScorm, prefix: `scorm/${assetId}/` }],
+    keys: []
+  });
+
+  const created = await createAsset(
+    {
+      id: assetId,
+      organizationId,
+      kind: 'scorm',
+      provider: asset.provider,
+      storageProvider: asset.storageProvider,
+      storageKey,
+      sourceUrl: asset.sourceUrl,
+      mimeType: asset.mimeType,
+      byteSize: asset.byteSize,
+      checksum: asset.checksum,
+      title: asset.title,
+      description: asset.description,
+      thumbnailUrl: asset.thumbnailUrl,
+      thumbnailCandidates: asset.thumbnailCandidates,
+      durationSeconds: asset.durationSeconds,
+      aspectRatio: asset.aspectRatio,
+      isExternal: asset.isExternal,
+      status: asset.status,
+      metadata: asset.metadata ?? {},
+      createdByProfileId: profileId
+    },
+    dbClient
+  );
+
+  for (const version of versions) {
+    const storage = await copyScormVersionStorage(version, assetId, version.versionNumber);
+    const createdVersion = await createPackageVersion(
+      {
+        assetId,
+        versionNumber: version.versionNumber,
+        isCurrent: version.isCurrent,
+        status: version.status,
+        format: version.format,
+        manifestIdentifier: version.manifestIdentifier,
+        title: version.title,
+        manifest: version.manifest,
+        warnings: version.warnings,
+        error: version.error,
+        uploadKey: storage.uploadKey,
+        contentPrefix: storage.contentPrefix,
+        zipBytes: version.zipBytes,
+        extractedBytes: version.extractedBytes,
+        fileCount: version.fileCount,
+        createdByProfileId: profileId
+      },
+      dbClient
+    );
+    const units = await listPackageUnitsByVersion(version.id, dbClient);
+    if (units.length > 0) {
+      await bulkInsertPackageUnits(
+        units.map((unit) => ({
+          packageVersionId: createdVersion.id,
+          identifier: unit.identifier,
+          parentIdentifier: unit.parentIdentifier,
+          title: unit.title,
+          position: unit.position,
+          unitType: unit.unitType,
+          href: unit.href,
+          parameters: unit.parameters,
+          masteryScore: unit.masteryScore,
+          launchData: unit.launchData,
+          formatDetails: unit.formatDetails,
+          isVisible: unit.isVisible
+        })),
+        dbClient
+      );
+    }
+  }
+
+  const transfer = { asset: created, replacements };
+  scope?.transfers.set(scopeKey, transfer);
+
+  return transfer;
+}
+
+/**
+ * Copies one package version onto `targetAssetId` as its next version number,
+ * with the version's ZIP, extracted files and module rows. The caller decides
+ * whether to make it current.
+ */
+export async function copyPackageVersionToAsset(
+  sourceVersionId: string,
+  targetAssetId: string,
+  targetOrganizationId: string,
+  profileId: string,
+  dbClient: DbOrTxClient
+): Promise<TContentPackageVersion> {
+  const source = await getPackageVersionById(sourceVersionId, dbClient);
+  if (!source) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
+
+  const versionNumber = await getNextPackageVersionNumber(targetAssetId, dbClient);
+  const storage = await copyScormVersionStorage(source, targetAssetId, versionNumber);
+  const config = getStorageConfig();
+  transferScope.getStore()?.copied.push({
+    assetId: targetAssetId,
+    organizationId: targetOrganizationId,
+    prefixes: [{ bucket: config.bucketScorm, prefix: `${storage.contentPrefix}/` }],
+    keys: [{ bucket: config.bucketScorm, key: storage.uploadKey }]
+  });
+
+  const created = await createPackageVersion(
+    {
+      assetId: targetAssetId,
+      versionNumber,
+      status: source.status,
+      format: source.format,
+      manifestIdentifier: source.manifestIdentifier,
+      title: source.title,
+      manifest: source.manifest,
+      warnings: source.warnings,
+      error: source.error,
+      uploadKey: storage.uploadKey,
+      contentPrefix: storage.contentPrefix,
+      zipBytes: source.zipBytes,
+      extractedBytes: source.extractedBytes,
+      fileCount: source.fileCount,
+      createdByProfileId: profileId
+    },
+    dbClient
+  );
+
+  const units = await listPackageUnitsByVersion(source.id, dbClient);
+  if (units.length > 0) {
+    await bulkInsertPackageUnits(
+      units.map((unit) => ({
+        packageVersionId: created.id,
+        identifier: unit.identifier,
+        parentIdentifier: unit.parentIdentifier,
+        title: unit.title,
+        position: unit.position,
+        unitType: unit.unitType,
+        href: unit.href,
+        parameters: unit.parameters,
+        masteryScore: unit.masteryScore,
+        launchData: unit.launchData,
+        formatDetails: unit.formatDetails,
+        isVisible: unit.isVisible
+      })),
+      dbClient
+    );
+  }
+
+  return created;
+}
+
 /**
  * Runs `operation` (typically a DB transaction that copies content across orgs)
- * and, if it throws, purges any files `transferUploadedAsset` copied during it,
- * since object storage does not roll back with the transaction.
+ * and, if it throws, purges any files copied during it, since object storage
+ * does not roll back with the transaction.
  */
 export async function withAssetStorageRollback<T>(operation: () => Promise<T>): Promise<T> {
   const scope: TransferScope = { copied: [], transfers: new Map() };

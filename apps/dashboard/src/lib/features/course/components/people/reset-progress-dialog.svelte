@@ -37,6 +37,14 @@
         })
       },
       {
+        key: 'activities',
+        text: t.get('course.navItem.people.reset_progress.dialog.bullets.activities', {
+          completed: progressImpact.completedActivities,
+          total: progressImpact.totalActivities,
+          attempts: progressImpact.activityAttempts
+        })
+      },
+      {
         key: 'exercises',
         text: t.get('course.navItem.people.reset_progress.dialog.bullets.exercises', {
           count: progressImpact.exerciseSubmissions

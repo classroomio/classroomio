@@ -1,10 +1,11 @@
 <script lang="ts">
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { Checkbox } from '@cio/ui/base/checkbox';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Item from '@cio/ui/base/item';
-  import { IconButton } from '@cio/ui/custom/icon-button';
 
+  import BookPlusIcon from '@lucide/svelte/icons/book-plus';
   import DownloadIcon from '@lucide/svelte/icons/download';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import ImageIcon from '@lucide/svelte/icons/image';
@@ -24,35 +25,62 @@
   interface Props {
     asset: OrganizationAsset;
     downloadingAssetId?: string | null;
+    selectable?: boolean;
+    selected?: boolean;
+    selectDisabled?: boolean;
+    scormModuleCount?: number | null;
+    scormReady?: boolean;
     onEdit?: (asset: OrganizationAsset) => void;
     onUsage?: (asset: OrganizationAsset) => void;
     onDownload?: (asset: OrganizationAsset) => void;
     onManageThumbnails?: (asset: OrganizationAsset) => void;
     onDelete?: (asset: OrganizationAsset) => void;
+    onToggleSelect?: (asset: OrganizationAsset) => void;
+    onCreateCourse?: (asset: OrganizationAsset) => void;
   }
 
   let {
     asset,
     downloadingAssetId = null,
+    selectable = false,
+    selected = false,
+    selectDisabled = false,
+    scormModuleCount = null,
+    scormReady = false,
     onEdit = () => {},
     onUsage = () => {},
     onDownload = () => {},
     onManageThumbnails = () => {},
-    onDelete = () => {}
+    onDelete = () => {},
+    onToggleSelect = () => {},
+    onCreateCourse = () => {}
   }: Props = $props();
+
+  const isScorm = $derived(asset.kind === 'scorm');
 </script>
 
 <Item.Root
   variant="outline"
   class="group relative w-full! max-w-75 cursor-pointer p-4!"
-  onclick={() => onEdit(asset)}
+  onclick={() => (selectable && !selectDisabled ? onToggleSelect(asset) : onEdit(asset))}
   onkeydown={(event) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      onEdit(asset);
+      if (selectable && !selectDisabled) onToggleSelect(asset);
+      else onEdit(asset);
     }
   }}
 >
+  {#if selectable}
+    <div class="absolute top-3 left-3 z-40" onclick={(event) => event.stopPropagation()}>
+      <Checkbox
+        checked={selected}
+        disabled={selectDisabled}
+        onCheckedChange={() => onToggleSelect(asset)}
+        aria-label={$t('media_manager.scorm.select_package', { title: getAssetDisplayName(asset) })}
+      />
+    </div>
+  {/if}
   <Item.Header>
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
@@ -84,6 +112,14 @@
             {$t('media_manager.actions.where_used')}
           </span>
         </DropdownMenu.Item>
+        {#if isScorm}
+          <DropdownMenu.Item onclick={() => onCreateCourse(asset)} disabled={!scormReady}>
+            <span class="flex items-center gap-2">
+              <BookPlusIcon size={14} />
+              {$t('media_manager.actions.create_course_from_package')}
+            </span>
+          </DropdownMenu.Item>
+        {/if}
         <DropdownMenu.Item onclick={() => onDownload(asset)} disabled={downloadingAssetId === asset.id}>
           <span class="flex items-center gap-2">
             <DownloadIcon size={14} />
@@ -124,6 +160,11 @@
       <Badge variant="outline">{$t(`media_manager.kind.${asset.kind}`)}</Badge>
       <Badge variant="outline">{$t(`media_manager.provider.${asset.provider}`)}</Badge>
       <Badge variant="outline">{$t(`media_manager.status.${asset.status}`)}</Badge>
+      {#if isScorm && scormModuleCount !== null}
+        <Badge variant="outline">
+          {$t('media_manager.scorm.modules_count', { count: scormModuleCount })}
+        </Badge>
+      {/if}
     </div>
 
     <div class="mt-4 grid grid-cols-2 gap-3 text-sm">

@@ -405,8 +405,8 @@ export async function getLatestCompletionRecordsForProfilesAndCourses(
 
 /**
  * Fallback completion source for non-compliance courses: a learner is considered
- * "done" with a course when every lesson in the course has a `lesson_completion`
- * row marked completed. Returns set of (profileId, courseId) keys that match.
+ * "done" with a course when every lesson and every activity in the course is
+ * complete. Returns set of (profileId, courseId) keys that match.
  */
 export async function getNonComplianceCourseCompletions(
   profileIds: string[],
@@ -415,34 +415,91 @@ export async function getNonComplianceCourseCompletions(
   if (profileIds.length === 0 || courseIds.length === 0) return new Set();
 
   try {
-    const rows = await db
-      .select({
-        profileId: schema.lessonCompletion.profileId,
-        courseId: schema.lesson.courseId,
-        totalLessons: sql<number>`COUNT(DISTINCT ${schema.lesson.id})::int`.as('totalLessons'),
-        completedLessons: sql<number>`
-          COUNT(DISTINCT CASE
-            WHEN ${schema.lessonCompletion.isComplete} = true THEN ${schema.lessonCompletion.lessonId}
-            ELSE NULL
-          END)::int
-        `.as('completedLessons')
-      })
-      .from(schema.lesson)
-      .leftJoin(
-        schema.lessonCompletion,
-        and(
-          eq(schema.lessonCompletion.lessonId, schema.lesson.id),
-          inArray(schema.lessonCompletion.profileId, profileIds)
+    const [lessonRows, activityTotals, activityCompletions] = await Promise.all([
+      db
+        .select({
+          profileId: schema.lessonCompletion.profileId,
+          courseId: schema.lesson.courseId,
+          totalLessons: sql<number>`COUNT(DISTINCT ${schema.lesson.id})::int`.as('totalLessons'),
+          completedLessons: sql<number>`
+            COUNT(DISTINCT CASE
+              WHEN ${schema.lessonCompletion.isComplete} = true THEN ${schema.lessonCompletion.lessonId}
+              ELSE NULL
+            END)::int
+          `.as('completedLessons')
+        })
+        .from(schema.lesson)
+        .leftJoin(
+          schema.lessonCompletion,
+          and(
+            eq(schema.lessonCompletion.lessonId, schema.lesson.id),
+            inArray(schema.lessonCompletion.profileId, profileIds)
+          )
         )
-      )
-      .where(inArray(schema.lesson.courseId, courseIds))
-      .groupBy(schema.lessonCompletion.profileId, schema.lesson.courseId);
+        .where(inArray(schema.lesson.courseId, courseIds))
+        .groupBy(schema.lessonCompletion.profileId, schema.lesson.courseId),
+      db
+        .select({
+          courseId: schema.courseActivity.courseId,
+          totalActivities: sql<number>`COUNT(DISTINCT ${schema.courseActivity.id})::int`.as('totalActivities')
+        })
+        .from(schema.courseActivity)
+        .where(inArray(schema.courseActivity.courseId, courseIds))
+        .groupBy(schema.courseActivity.courseId),
+      db
+        .select({
+          profileId: schema.activityCompletion.profileId,
+          courseId: schema.courseActivity.courseId,
+          completedActivities: sql<number>`COUNT(DISTINCT ${schema.activityCompletion.activityId})::int`.as(
+            'completedActivities'
+          )
+        })
+        .from(schema.activityCompletion)
+        .innerJoin(schema.courseActivity, eq(schema.activityCompletion.activityId, schema.courseActivity.id))
+        .where(
+          and(
+            inArray(schema.courseActivity.courseId, courseIds),
+            inArray(schema.activityCompletion.profileId, profileIds),
+            eq(schema.activityCompletion.isComplete, true)
+          )
+        )
+        .groupBy(schema.activityCompletion.profileId, schema.courseActivity.courseId)
+    ]);
+
+    const totals = new Map<string, { total: number; completed: number }>();
+    for (const row of lessonRows) {
+      if (!row.profileId || !row.courseId) continue;
+      totals.set(`${row.profileId}:${row.courseId}`, {
+        total: row.totalLessons,
+        completed: row.completedLessons
+      });
+    }
+
+    const activitiesByCourse = new Map(activityTotals.map((row) => [row.courseId, row.totalActivities]));
+    for (const courseId of courseIds) {
+      const courseTotal = activitiesByCourse.get(courseId) ?? 0;
+      if (courseTotal === 0) continue;
+
+      for (const profileId of profileIds) {
+        const key = `${profileId}:${courseId}`;
+        const entry = totals.get(key) ?? { total: 0, completed: 0 };
+        entry.total += courseTotal;
+        totals.set(key, entry);
+      }
+    }
+
+    for (const row of activityCompletions) {
+      if (!row.profileId || !row.courseId) continue;
+      const key = `${row.profileId}:${row.courseId}`;
+      const entry = totals.get(key) ?? { total: 0, completed: 0 };
+      entry.completed += row.completedActivities;
+      totals.set(key, entry);
+    }
 
     const completed = new Set<string>();
-    for (const row of rows) {
-      if (!row.profileId || !row.courseId) continue;
-      if (row.totalLessons > 0 && row.completedLessons >= row.totalLessons) {
-        completed.add(`${row.profileId}:${row.courseId}`);
+    for (const [key, entry] of totals) {
+      if (entry.total > 0 && entry.completed >= entry.total) {
+        completed.add(key);
       }
     }
 

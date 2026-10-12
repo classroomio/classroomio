@@ -183,6 +183,8 @@ describe.skipIf(!hasDatabase)('characterization: course progress calculations (z
         lessonsCompleted: 0,
         exercisesCount: 0,
         exercisesCompleted: 0,
+        activitiesCount: 0,
+        activitiesCompleted: 0,
         groupMemberId: null,
         roleId: null,
         certificateEarnedAt: null,

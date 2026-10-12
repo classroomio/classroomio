@@ -4,12 +4,20 @@ import { assertNever } from '@cio/utils/functions/assert-never';
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import { db } from '@cio/db/drizzle';
 import { applyCourseContentBulkUpdates, applyCourseSectionOrderUpdates } from '@cio/db/queries/course/content-batch';
-import { deleteCourseSection, getCourseSectionById, getCourseSectionsByCourseId } from '@cio/db/queries/course';
+import {
+  deleteCourseSection,
+  getCourseById,
+  getCourseSectionById,
+  getCourseSectionsByCourseId
+} from '@cio/db/queries/course';
 import { OperationalQueryError } from '@cio/db/queries/query-errors';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
 import { deleteLesson } from '@cio/db/queries/lesson';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
+import { countActivitiesInCourse, deleteActivity, getActivityById } from '@cio/db/queries/activity';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
+import { ACTIVITY_PROVIDERS } from '../activity/providers';
+import type { TActivityKind } from '@cio/utils/constants/activity';
 import { ZCourseContentReorder } from '@cio/utils/validation/course';
 import type { TCourseContentDelete, TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
 
@@ -19,12 +27,33 @@ type CourseContentReorderResult = {
   updatedItems: number;
   updatedLessons: number;
   updatedExercises: number;
+  updatedActivities: number;
 };
 
 function buildContentKey(item: { id: string; type: string }) {
   return `${item.type}-${item.id}`;
 }
 
+/**
+ * Throws when content of the kind cannot be added to the course. SCORM courses
+ * hold exactly one SCORM activity and refuse everything else.
+ */
+export async function assertCourseAcceptsContent(courseId: string, contentType: ContentType): Promise<void> {
+  const [course] = await getCourseById(courseId);
+  if (!course || course.format !== 'scorm') return;
+
+  if (contentType === ContentType.Activity) {
+    if ((await countActivitiesInCourse(courseId)) === 0) return;
+
+    throw new AppError('A SCORM course holds exactly one package', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
+  throw new AppError(
+    'SCORM courses hold a single package. Convert to a standard course to add sections, lessons or exercises.',
+    ErrorCodes.VALIDATION_ERROR,
+    400
+  );
+}
 export function normalizeDeleteItems<TItem extends { id: string; type: string }>(items: TItem[]): TItem[] {
   const seenKeys = new Set<string>();
   const uniqueItems: TItem[] = [];
@@ -43,6 +72,7 @@ export function normalizeDeleteItems<TItem extends { id: string; type: string }>
     switch (item.type) {
       case ContentType.Lesson:
       case ContentType.Exercise:
+      case ContentType.Activity:
         break;
       default:
         throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
@@ -51,8 +81,9 @@ export function normalizeDeleteItems<TItem extends { id: string; type: string }>
 
   const exercises = uniqueItems.filter((item) => item.type === ContentType.Exercise);
   const lessons = uniqueItems.filter((item) => item.type === ContentType.Lesson);
+  const activities = uniqueItems.filter((item) => item.type === ContentType.Activity);
 
-  return [...exercises, ...lessons];
+  return [...exercises, ...lessons, ...activities];
 }
 
 async function getCourseContentMap(courseId: string) {
@@ -63,6 +94,7 @@ async function getCourseContentMap(courseId: string) {
     switch (item.type) {
       case ContentType.Lesson:
       case ContentType.Exercise:
+      case ContentType.Activity:
         contentMap.set(buildContentKey(item), item);
         break;
       case ContentType.Section:
@@ -87,6 +119,8 @@ async function assertCourseContentItems(courseId: string, items: TCourseContentU
           throw new AppError('Lesson does not belong to this course', ErrorCodes.LESSON_NOT_FOUND, 404);
         case ContentType.Exercise:
           throw new AppError('Exercise does not belong to this course', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+        case ContentType.Activity:
+          throw new AppError('Activity does not belong to this course', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
         default: {
           const exhaustive: never = item.type;
           throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
@@ -113,6 +147,28 @@ function mapContentBatchError(error: unknown): AppError | null {
   }
 
   return null;
+}
+
+/**
+ * Removes an activity and its kind rows. Throws when the activity is missing.
+ */
+async function deleteActivityWithProvider(activityId: string, tx: DbOrTxClient): Promise<void> {
+  const activity = await getActivityById(activityId, tx);
+  if (!activity) {
+    throw new AppError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
+  }
+
+  const provider = (ACTIVITY_PROVIDERS as Partial<Record<TActivityKind, (typeof ACTIVITY_PROVIDERS)[TActivityKind]>>)[
+    activity.kind as TActivityKind
+  ];
+  if (provider) {
+    await provider.delete(activityId, tx);
+  }
+
+  const deleted = await deleteActivity(activityId, tx);
+  if (!deleted) {
+    throw new AppError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
+  }
 }
 
 async function transactionWithContentBatch<TResult>(runner: (tx: DbOrTxClient) => Promise<TResult>): Promise<TResult> {
@@ -178,7 +234,8 @@ export async function reorderCourseContent(
         : {
             updatedItems: 0,
             updatedLessons: 0,
-            updatedExercises: 0
+            updatedExercises: 0,
+            updatedActivities: 0
           };
 
       return {
@@ -213,7 +270,10 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
       const itemsToDelete = normalizeDeleteItems(
         contentItems.filter(
           (item) =>
-            (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === sectionId
+            (item.type === ContentType.Lesson ||
+              item.type === ContentType.Exercise ||
+              item.type === ContentType.Activity) &&
+            item.sectionId === sectionId
         )
       );
 
@@ -236,6 +296,10 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
                 console.log('delete exercise failed for id:', item.id);
                 throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
               }
+              continue;
+            }
+            case ContentType.Activity: {
+              await deleteActivityWithProvider(item.id, tx);
               continue;
             }
             case ContentType.Section:
@@ -279,6 +343,10 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
             if (!deleted) {
               throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
             }
+            continue;
+          }
+          case ContentType.Activity: {
+            await deleteActivityWithProvider(item.id, tx);
             continue;
           }
           default: {

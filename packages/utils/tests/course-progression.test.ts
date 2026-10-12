@@ -196,8 +196,12 @@ describe('itemBlocksProgression', () => {
     expect(itemBlocksProgression(undefined)).toBe(false);
   });
 
+  it('blocks activities until they complete', () => {
+    expect(itemBlocksProgression(ContentType.Activity)).toBe(true);
+  });
+
   it('throws on unknown content types', () => {
-    expect(() => itemBlocksProgression('ACTIVITY' as never)).toThrow();
+    expect(() => itemBlocksProgression('UNKNOWN' as never)).toThrow();
   });
 });
 

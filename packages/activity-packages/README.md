@@ -1,22 +1,24 @@
-# Activity packages (Phase 0)
+# Activity packages
 
-Throwaway spike and test fixtures for SCORM support. Contract: `prd/scorm-support/v2/README.md`, `activity-integration-map.md`, `implementation-plan.md`.
+Pure helpers for packaged course content: SCORM manifest parsing, ZIP checks, run-time rules and activity tokens. Contract: `prd/scorm-support/v2/README.md`, `activity-integration-map.md`, `implementation-plan.md` (PR 5).
 
 ## Layout
 
-- `test/fixtures/sources/` — hand-written package sources (`imsmanifest.xml` plus SCO pages).
-- `test/fixtures/*.zip` — built packages, produced by `test/fixtures/build-fixtures.mjs`.
-- `test/fixtures/vendor/` — not in git. Download and build notes for Rustici golf examples and the Adapt course live here.
-- `test/fixtures/ATTRIBUTION.md` — license record for every fixture.
-- `test/fixtures/README.md` — fixture index with the per-fixture baseline.
-- `spike/player/` — throwaway two-origin player. Never imported by production code.
-- `spike/SPIKE-FINDINGS.md` — answers to the nine Phase 0 questions.
+- `src/zip/` — ZIP entry checks, manifest lookup, case-insensitive href fallback.
+- `src/scorm/manifest/` — SCORM 1.2 / 2004 manifest parsing and version detection.
+- `src/scorm/runtime/` — CMI normalization and merging, outcome mapping, LMS rules, completion rollup, terminate mapping.
+- `src/token/` — HMAC launch and content tokens (WebCrypto, Node and Workers).
+- `src/content-types.ts` — extension-to-content-type map for extracted files.
+- `test/fixtures/` — hand-written packages plus Rustici Golf examples (CC BY 3.0). Sources are the contract; `.zip` files are built artifacts. See `test/fixtures/README.md` and `ATTRIBUTION.md`.
+- `spike/` — throwaway two-origin player and Phase 0 findings. Never imported by production code.
 
 ## Commands
 
 ```bash
+pnpm --filter @cio/activity-packages test
+pnpm --filter @cio/activity-packages build
 node test/fixtures/build-fixtures.mjs
 node spike/player/server.mjs
 ```
 
-`src/` with the ZIP checks, manifest parser, outcome mapping and token helpers lands in PR 5. Nothing in this folder is imported by the app until then.
+Only dependency: `fast-xml-parser` (pinned exact). Nothing in `src/` touches the network, the filesystem, or the database.

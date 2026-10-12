@@ -173,11 +173,13 @@ export async function stampCopiedTemplateUnits(
     sectionIds: string[];
     lessonIds: string[];
     exerciseIds: string[];
+    activityIds?: string[];
     syncedAt: string;
   },
   dbClient: DbOrTxClient = db
 ) {
   const { sectionIds, lessonIds, exerciseIds, syncedAt } = input;
+  const activityIds = input.activityIds ?? [];
 
   try {
     if (sectionIds.length > 0) {
@@ -198,29 +200,41 @@ export async function stampCopiedTemplateUnits(
         .where(inArray(schema.lessonLanguage.lessonId, lessonIds));
     }
 
-    if (exerciseIds.length === 0) return;
+    if (exerciseIds.length === 0 && activityIds.length === 0) return;
+
+    if (exerciseIds.length > 0) {
+      await dbClient
+        .update(schema.exercise)
+        .set({ sourceSyncedAt: syncedAt, updatedAt: syncedAt })
+        .where(inArray(schema.exercise.id, exerciseIds));
+      await dbClient
+        .update(schema.exerciseSection)
+        .set({ updatedAt: syncedAt })
+        .where(inArray(schema.exerciseSection.exerciseId, exerciseIds));
+
+      const questions = await dbClient
+        .select({ id: schema.question.id })
+        .from(schema.question)
+        .where(inArray(schema.question.exerciseId, exerciseIds));
+      const questionIds = questions.map((question) => question.id);
+      if (questionIds.length > 0) {
+        await dbClient
+          .update(schema.question)
+          .set({ updatedAt: syncedAt })
+          .where(inArray(schema.question.id, questionIds));
+        await dbClient
+          .update(schema.option)
+          .set({ updatedAt: syncedAt })
+          .where(inArray(schema.option.questionId, questionIds));
+      }
+    }
+
+    if (activityIds.length === 0) return;
 
     await dbClient
-      .update(schema.exercise)
+      .update(schema.courseActivity)
       .set({ sourceSyncedAt: syncedAt, updatedAt: syncedAt })
-      .where(inArray(schema.exercise.id, exerciseIds));
-    await dbClient
-      .update(schema.exerciseSection)
-      .set({ updatedAt: syncedAt })
-      .where(inArray(schema.exerciseSection.exerciseId, exerciseIds));
-
-    const questions = await dbClient
-      .select({ id: schema.question.id })
-      .from(schema.question)
-      .where(inArray(schema.question.exerciseId, exerciseIds));
-    const questionIds = questions.map((question) => question.id);
-    if (questionIds.length === 0) return;
-
-    await dbClient.update(schema.question).set({ updatedAt: syncedAt }).where(inArray(schema.question.id, questionIds));
-    await dbClient
-      .update(schema.option)
-      .set({ updatedAt: syncedAt })
-      .where(inArray(schema.option.questionId, questionIds));
+      .where(inArray(schema.courseActivity.id, activityIds));
   } catch (error) {
     console.error('stampCopiedTemplateUnits error:', error);
     throw new Error(

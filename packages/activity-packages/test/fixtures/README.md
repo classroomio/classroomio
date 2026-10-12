@@ -16,6 +16,32 @@ Hand-written packages plus vendor notes. Rebuild with `node test/fixtures/build-
 
 The two rejection fixtures are negative tests: `reject-external-launch` has a SCO whose `href` is absolute `https://` and must fail with the external-content error; `reject-assets-only` has only `asset` resources and must fail with the nothing-to-track error.
 
-## Vendor packages
+## Rustici Golf examples (CC BY 3.0)
 
-Kept locally in `vendor/`, never in git. See `vendor/README.md` for the Rustici golf examples (CC BY 3.0), the in-house Adapt course (GPL-3.0), and the vendor exports that stay off disk entirely.
+Eighteen multi-edition packages from Rustici Software (<https://scorm.com/scorm-explained/technical-scorm/golf-examples/>), licensed under CC BY 3.0 US. Committed to ensure CI has real-world multi-edition SCORM packages (1.2, 2004 2nd, 3rd, and 4th Edition) for automated testing.
+
+| Fixture | Version | SCOs | Files | Uncompressed | ZIP | Sequencing | Pass mark |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `ContentPackagingMetadata_SCORM20043rdEdition.zip` | 2004 3rd Edition | 1 SCO | 80 | 638,650 B | 407,261 B | none | none |
+| `ContentPackagingOneFilePerSCO_SCORM12.zip` | 1.2 | 0 SCOs (19 assets) | 49 | 460,678 B | 357,534 B | none | none |
+| `ContentPackagingOneFilePerSCO_SCORM20043rdEdition.zip` | 2004 3rd Edition | 0 SCOs (19 assets) | 78 | 634,363 B | 404,762 B | none | none |
+| `ContentPackagingSingleSCO_SCORM11.zip` | 1.1 (CSF) | 0 SCOs | 46 | 411,640 B | 350,757 B | none | none |
+| `ContentPackagingSingleSCO_SCORM12.zip` | 1.2 | 1 SCO | 49 | 452,996 B | 356,589 B | none | none |
+| `ContentPackagingSingleSCO_SCORM20042ndEdition.zip` | CAM 1.3 | 1 SCO | 88 | 656,227 B | 403,647 B | none | none |
+| `ContentPackagingSingleSCO_SCORM20043rdEdition.zip` | 2004 3rd Edition | 1 SCO | 78 | 626,281 B | 403,634 B | none | none |
+| `RunTimeAdvancedCalls_SCORM20043rdEdition.zip` | 2004 3rd Edition | 1 SCO | 78 | 656,663 B | 411,126 B | yes | minNormalizedMeasure 0.8 |
+| `RuntimeBasicCalls_SCORM12.zip` | 1.2 | 1 SCO | 49 | 469,563 B | 360,842 B | none | none |
+| `RuntimeBasicCalls_SCORM20043rdEdition.zip` | 2004 3rd Edition | 1 SCO | 78 | 644,236 B | 408,328 B | yes | none |
+| `RuntimeMinimumCalls_SCORM12.zip` | 1.2 | 18 SCOs (1 asset) | 49 | 463,479 B | 358,203 B | none | none |
+| `RuntimeMinimumCalls_SCORM20043rdEdition.zip` | 2004 3rd Edition | 18 SCOs (1 asset) | 78 | 637,444 B | 405,525 B | none | none |
+| `SequencingForcedSequential_SCORM20043rdEdition.zip` | 2004 3rd Edition | 5 SCOs (1 asset) | 78 | 655,266 B | 409,948 B | yes | none |
+| `SequencingPostTestRollup4thEd_SCORM20044thEdition.zip` | 2004 4th Edition | 5 SCOs (1 asset) | 64 | 557,828 B | 385,188 B | yes | none |
+| `SequencingPostTestRollup_SCORM20043rdEdition.zip` | 2004 3rd Edition | 5 SCOs (1 asset) | 78 | 655,096 B | 409,828 B | yes | none |
+| `SequencingPreOrPostTestRollup_SCORM20043rdEdition.zip` | 2004 3rd Edition | 5 SCOs (1 asset) | 78 | 655,991 B | 410,052 B | yes | none |
+| `SequencingRandomTest_SCORM20043rdEdition.zip` | 2004 3rd Edition | 5 SCOs (1 asset) | 78 | 660,489 B | 411,027 B | yes | none |
+| `SequencingSimpleRemediation_SCORM20043rdEdition.zip` | 2004 3rd Edition | 5 SCOs (1 asset) | 78 | 658,046 B | 410,263 B | yes | none |
+
+## Local-only vendor packages
+
+Kept locally in `vendor/`, never in git. See `vendor/README.md` for the in-house Adapt course (GPL-3.0) and vendor exports that stay off disk entirely.
+

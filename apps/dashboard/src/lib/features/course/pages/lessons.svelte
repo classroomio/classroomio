@@ -14,7 +14,7 @@
   import { isOrgStudent } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
   import { getPastLiveSessions, liveSessionClock } from '$features/course/utils/live-session-phase';
-  import { getCourseContent } from '$features/course/utils/content';
+  import { getCourseContent, getContentRoute } from '$features/course/utils/content';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
 
@@ -31,7 +31,10 @@
     contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
   );
   const navigableContentItems = $derived(
-    contentItems.filter((item) => item.type === ContentType.Lesson || item.type === ContentType.Exercise)
+    contentItems.filter(
+      (item) =>
+        item.type === ContentType.Lesson || item.type === ContentType.Exercise || item.type === ContentType.Activity
+    )
   );
 
   const sectionsTotal = $derived(
@@ -40,6 +43,7 @@
   const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
   const lessonsTotal = $derived(contentItems.filter((item) => item.type === ContentType.Lesson).length);
   const exercisesTotal = $derived(contentItems.filter((item) => item.type === ContentType.Exercise).length);
+  const activitiesTotal = $derived(contentItems.filter((item) => item.type === ContentType.Activity).length);
 
   let isFetching: boolean = $state(false);
   let hasHandledNext = $state(false);
@@ -64,17 +68,25 @@
     void courseApi.refreshCourse(courseId, $profile.id);
   });
 
+  const scormPackageItem = $derived(
+    (courseApi.course as { format?: string } | null | undefined)?.format === 'scorm'
+      ? (navigableContentItems.find((item) => item.type === ContentType.Activity) ?? null)
+      : null
+  );
+
+  $effect(() => {
+    if (!isCourseLoadedForThisPage || !scormPackageItem || isFetching) return;
+
+    goto(getContentRoute(courseId, scormPackageItem), { replaceState: true });
+  });
+
   $effect(() => {
     if (!canResolveNext || isFetching || !isNextRequested) return;
 
     hasHandledNext = true;
     const incompleteContent = getFirstIncompleteNavigableContent(courseApi.course);
     if (incompleteContent) {
-      if (incompleteContent.type === ContentType.Lesson) {
-        goto(`/courses/${courseId}/lessons/${incompleteContent.id}`);
-      } else {
-        goto(`/courses/${courseId}/exercises/${incompleteContent.id}`);
-      }
+      goto(getContentRoute(courseId, incompleteContent));
     } else {
       goto(`/courses/${courseId}/lessons`, { replaceState: true });
     }
@@ -89,7 +101,7 @@
   </div>
 {:else if contentLength > 0}
   <div
-    class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3"
+    class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
     role="region"
     aria-label={t.get('course.navItem.lessons.heading_v2')}
   >
@@ -113,6 +125,13 @@
         <span>{$t('course.navItem.lessons.stats.exercises')}</span>
       </div>
       <p class="text-2xl font-semibold tabular-nums">{exercisesTotal}</p>
+    </div>
+    <div class="ui:border-border flex flex-col gap-1 rounded-lg border px-4 py-3">
+      <div class="ui:text-muted-foreground flex items-center gap-2 text-xs font-medium">
+        <CourseContentIcon type={ContentType.Activity} size={14} />
+        <span>{$t('course.navItem.lessons.stats.activities')}</span>
+      </div>
+      <p class="text-2xl font-semibold tabular-nums">{activitiesTotal}</p>
     </div>
   </div>
 

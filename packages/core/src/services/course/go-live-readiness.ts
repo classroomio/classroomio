@@ -1,5 +1,6 @@
 import { getCourseById } from '@cio/db/queries/course';
 import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
+import { getActivitiesByCourseId } from '@cio/db/queries/activity';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import type { TCourse, TOrganization } from '@cio/db/types';
@@ -8,6 +9,8 @@ import { ContentType } from '@cio/utils/constants';
 import type { TCourseLandingPageUpdate } from '@cio/utils/validation/course';
 
 import { AppError, ErrorCodes } from '@cio/utils/errors';
+import type { TActivityKind } from '@cio/utils/constants/activity';
+import { ACTIVITY_PROVIDERS } from '../activity/providers';
 import { getDashboardBaseUrl } from '../../config/dashboard-url';
 import { updateCourse } from './course';
 import { ensureCourseSlug, generateUniqueCourseSlug } from './landing-page';
@@ -157,7 +160,8 @@ export function evaluateCourseGoLiveReadiness(input: CourseReadinessInput): Cour
   }
 
   const learningItems = contentItems.filter(
-    (item) => item.type === ContentType.Lesson || item.type === ContentType.Exercise
+    (item) =>
+      item.type === ContentType.Lesson || item.type === ContentType.Exercise || item.type === ContentType.Activity
   );
 
   if (learningItems.length === 0) {
@@ -264,12 +268,30 @@ export async function getCourseGoLiveReadiness(courseId: string): Promise<Course
     ? undefined
     : await generateUniqueCourseSlug(generateSlug(course.title, { fallback: 'course' }));
 
-  return evaluateCourseGoLiveReadiness({
+  const readiness = evaluateCourseGoLiveReadiness({
     course,
     contentItems,
     suggestedSlug,
     organization
   });
+
+  const activities = await getActivitiesByCourseId(courseId);
+  for (const activity of activities) {
+    const provider = (ACTIVITY_PROVIDERS as Partial<Record<TActivityKind, (typeof ACTIVITY_PROVIDERS)[TActivityKind]>>)[
+      activity.kind as TActivityKind
+    ];
+    if (!provider) continue;
+
+    for (const blocker of await provider.goLiveBlockers(activity.id)) {
+      readiness.blockers.push({ code: blocker.code, message: blocker.message, target: blocker.target });
+    }
+  }
+
+  return {
+    ...readiness,
+    ready: readiness.blockers.length === 0,
+    courseUrl: buildCourseUrl(organization, course.slug ?? suggestedSlug)
+  };
 }
 
 export async function publishCourseWhenReady(courseId: string) {

@@ -77,6 +77,13 @@
             >{labels?.exercisesLabel?.(course.exerciseCount ?? 0) ??
               formatExerciseCountLabel(course.exerciseCount ?? 0)}</span
           >
+          {#if course.activityCount}
+            &
+            <span
+              >{labels?.activitiesLabel?.(course.activityCount) ??
+                `${course.activityCount} ${course.activityCount === 1 ? 'package' : 'packages'}`}</span
+            >
+          {/if}
         </p>
         <div class="ui:py-2 ui:text-xs">
           {#if course.price != null && String(course.price).length > 0}

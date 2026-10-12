@@ -3,8 +3,10 @@ export interface CourseAnalytics {
   totalStudents: number;
   totalLessons: number;
   totalExercises: number;
+  totalActivities?: number;
   lessonCompletionRate: number;
   exerciseCompletionRate: number;
+  activityCompletionRate?: number;
   averageGrade: number;
   students: StudentOverview[];
 }
@@ -20,6 +22,8 @@ export interface StudentOverview {
   totalLessons: number;
   exercisesSubmitted: number;
   totalExercises: number;
+  activitiesCompleted?: number;
+  totalActivities?: number;
   averageGrade: number;
   lastSeen: string | undefined;
   progressPercentage: number;

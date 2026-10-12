@@ -303,6 +303,7 @@ export const ZWidgetPayloadCourse = z.object({
   price: z.union([z.string(), z.number()]).nullable().optional(),
   lessonCount: z.number().int().nonnegative(),
   exerciseCount: z.number().int().nonnegative().default(0),
+  activityCount: z.number().int().nonnegative().default(0),
   rating: z.number().min(0).max(5).nullable().optional(),
   ratingCount: z.number().int().nonnegative().default(0),
   courseType: z.string().nullable().optional(),
@@ -370,6 +371,7 @@ export const ZWidgetEditorCourse = z.object({
   price: z.union([z.string(), z.number()]).nullable().optional(),
   lessonCount: z.number().int().nonnegative(),
   exerciseCount: z.number().int().nonnegative().default(0),
+  activityCount: z.number().int().nonnegative().default(0),
   courseType: z.string().nullable().optional(),
   createdAt: z.string(),
   tags: z.array(ZWidgetPayloadCourseTag).default([])

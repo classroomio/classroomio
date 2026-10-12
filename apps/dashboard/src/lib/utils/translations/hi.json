@@ -345,7 +345,8 @@
         "content_grouping_enabled": "सामग्री समूहीकरण सक्षम",
         "content_grouping_disabled": "सामग्री समूहीकरण अक्षम",
         "link_generated": "पाठ्यक्रम लिंक सफलतापूर्वक अपडेट किया गया",
-        "converted_to_public": "पाठ्यक्रम सफलतापूर्वक सार्वजनिक में परिवर्तित हो गया"
+        "converted_to_public": "पाठ्यक्रम सफलतापूर्वक सार्वजनिक में परिवर्तित हो गया",
+        "converted_to_standard": "कोर्स को मानक कोर्स में परिवर्तित किया गया"
       },
       "info": {
         "conversion_blocked": "सार्वजनिक करने की प्रक्रिया पूरी करने के लिए नीचे दिए गए प्रश्नों के उत्तर दें।"
@@ -515,6 +516,27 @@
       "success": "धन्यवाद। हम इस रिपोर्ट की समीक्षा करेंगे।",
       "error": "रिपोर्ट जमा नहीं हो सकी। कृपया फिर से प्रयास करें।",
       "already_submitted": "आप पहले ही इसकी रिपोर्ट कर चुके हैं।"
+    },
+    "activity": {
+      "created": "SCORM पैकेज बनाया गया",
+      "upload_failed": "पैकेज अपलोड नहीं हो सका",
+      "process_failed": "पैकेज की प्रोसेसिंग नहीं हो सकी",
+      "settings_saved": "पैकेज की सेटिंग्स सेव हो गईं",
+      "settings_failed": "पैकेज की सेटिंग्स सेव नहीं हो सकीं",
+      "attach_failed": "पैकेज अटैच नहीं हो सका",
+      "detached": "पैकेज हटा दिया गया",
+      "detach_failed": "पैकेज नहीं हटाया जा सका",
+      "instructions_saved": "निर्देश सेव हो गए",
+      "instructions_failed": "निर्देश सेव नहीं हो सके",
+      "delete_failed": "पैकेज आइटम डिलीट नहीं हो सका",
+      "package_deleted": "पैकेज डिलीट कर दिया गया",
+      "delete_failed_package": "पैकेज डिलीट नहीं हो सका",
+      "replace_failed": "पैकेज रिप्लेस नहीं हो सका",
+      "launch_failed": "पैकेज नहीं खुल सका",
+      "learner_reset": "इस स्टूडेंट के लिए प्रयास रीसेट किए गए",
+      "learner_reset_failed": "प्रयास रीसेट नहीं किए जा सके",
+      "courses_created": "ड्राफ़्ट SCORM कोर्स बनाए गए",
+      "courses_create_failed": "पैकेज से कोर्स नहीं बन सके"
     }
   },
   "explore": {
@@ -710,7 +732,9 @@
       "students_table_description": "छात्र प्रोफाइल के लिंक के साथ क्रमबद्ध अवलोकन।",
       "kpi_team_tutors": "{count, plural, one {पाठ्यक्रम टीम में # शिक्षक} other {पाठ्यक्रम टीम में # शिक्षक}}",
       "kpi_lessons_exercises": "{count, plural, one {# अभ्यास} other {# अभ्यास}} पाठों के अनुसार मैप किया गया",
-      "kpi_progress_grade": "नामांकित विद्यार्थियों में {grade}% औसत व्यायाम ग्रेड"
+      "kpi_progress_grade": "नामांकित विद्यार्थियों में {grade}% औसत व्यायाम ग्रेड",
+      "kpi_packages": "{count, plural, one {# पैकेज} other {# पैकेज}}",
+      "kpi_activity_completion": "एनरोल किए गए छात्रों में {rate}% पैकेज पूरे हुए"
     },
     "exercises_completed": "अभ्यास पूरे हुए",
     "course_progress": "पाठ्यक्रम प्रगति",
@@ -719,7 +743,10 @@
     "hours_ago": "{count, plural, one {# घंटा पहले} other {# घंटे पहले}}",
     "days_ago": "{count, plural, one {# दिन पहले} other {# दिन पहले}}",
     "months_ago": "{count, plural, one {# महीना पहले} other {# महीने पहले}}",
-    "years_ago": "{count, plural, one {# वर्ष पहले} other {# वर्ष पहले}}"
+    "years_ago": "{count, plural, one {# वर्ष पहले} other {# वर्ष पहले}}",
+    "packages": "पैकेज",
+    "packages_completed": "पूरे किए गए पैकेज",
+    "activities": "SCORM पैकेज"
   },
   "audience": {
     "title": "दर्शक",
@@ -836,7 +863,14 @@
         "activity": "गतिविधि"
       },
       "activity_empty_title": "गतिविधि समयरेखा जल्द ही उपलब्ध होगी",
-      "activity_empty_description": "उनके पाठ्यक्रमों में पाठों की पूर्णता और अभ्यास जमा करने की समयरेखा आगामी रिलीज़ में उपलब्ध होगी।"
+      "activity_empty_description": "उनके पाठ्यक्रमों में पाठों की पूर्णता और अभ्यास जमा करने की समयरेखा आगामी रिलीज़ में उपलब्ध होगी।",
+      "activities_title": "SCORM पैकेज",
+      "scorm_package": "SCORM पैकेज",
+      "activity_status": {
+        "completed": "पूरा हुआ",
+        "in_progress": "प्रगति पर है",
+        "not_started": "शुरू नहीं हुआ"
+      }
     },
     "delete": {
       "action": "हटाएँ",
@@ -1203,7 +1237,12 @@
             "window_passed": "शेड्यूल किए जाते समय रिमाइंडर का समय पहले ही बीत चुका था।",
             "unenrolled": "छात्र अब नामांकित नहीं है।"
           }
-        }
+        },
+        "convert_card_title": "मानक कोर्स में परिवर्तित करें",
+        "convert_card_description": "पैकेज के साथ पाठ, अभ्यास और अनुभाग जोड़ें। पैकेज पहला आइटम बन जाता है। इसे पूर्ववत नहीं किया जा सकता।",
+        "convert_card_cta": "मानक में परिवर्तित करें",
+        "convert_confirm_title": "क्या इस कोर्स को परिवर्तित करना है?",
+        "convert_confirm_body": "पैकेज पहला आइटम बना रहता है और सामग्री नेविगेशन में वापस आ जाती है। इसे पूर्ववत नहीं किया जा सकता।"
       },
       "analytics": {
         "title": "विश्लेषिकी"
@@ -1363,7 +1402,8 @@
           "skills_placeholder": "जैसे डेटा विश्लेषण",
           "tools_placeholder": "जैसे फिग्मा",
           "remove": "हटाओ"
-        }
+        },
+        "packages": "पैकेज"
       },
       "certificates": {
         "title": "प्रमाणपत्र",
@@ -1525,7 +1565,8 @@
               "video_progress": "वीडियो देखने की प्रगति — {count} ट्रैक किए गए पाठ",
               "attendance": "उपस्थिति प्रविष्टियाँ — {count}",
               "certificate_yes": "प्रमाणन/अनुपालन रिकॉर्ड — हाँ",
-              "certificate_no": "प्रमाणन/अनुपालन रिकॉर्ड — नहीं"
+              "certificate_no": "प्रमाणन/अनुपालन रिकॉर्ड — नहीं",
+              "activities": "SCORM पैकेज पूरे हुए — {total} में से {completed} ({attempts} प्रयास)"
             },
             "warning": "इसे पूर्ववत नहीं किया जा सकता।",
             "cancel": "रद्द करें",
@@ -2626,64 +2667,64 @@
               },
               "platforms": {
                 "google-slides": {
-                  "hint": "File → Share → Publish to web → Embed",
-                  "step_1": "Open your deck and choose File → Share → Publish to web.",
-                  "step_2": "Switch to the Embed tab and click Publish.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "फ़ाइल → साझा करें → वेब पर प्रकाशित करें → एम्बेड करें",
+                  "step_1": "अपनी प्रस्तुति खोलें और फ़ाइल → साझा करें → वेब पर प्रकाशित करें चुनें।",
+                  "step_2": "एम्बेड टैब पर जाएँ और प्रकाशित करें पर क्लिक करें।",
+                  "step_3": "iframe एम्बेड कोड कॉपी करें और यहाँ पेस्ट करें।"
                 },
                 "canva": {
-                  "hint": "Share → More → Embed",
-                  "step_1": "Above the editor, click Share → More.",
-                  "step_2": "Choose Embed and confirm (this makes the design public).",
-                  "step_3": "Copy the HTML embed code and paste it here."
+                  "hint": "साझा करें → अधिक → एम्बेड करें",
+                  "step_1": "संपादक के ऊपर, साझा करें → अधिक पर क्लिक करें।",
+                  "step_2": "एम्बेड चुनें और पुष्टि करें (यह डिज़ाइन को सार्वजनिक बनाता है)।",
+                  "step_3": "HTML एम्बेड कोड कॉपी करें और यहाँ पेस्ट करें।"
                 },
                 "powerpoint": {
-                  "hint": "PowerPoint for the web → File → Share → Embed",
-                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
-                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
-                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                  "hint": "वेब के लिए PowerPoint → फ़ाइल → साझा करें → एम्बेड करें",
+                  "step_1": "प्रस्तुति को OneDrive में सहेजें, फिर इसे वेब के लिए PowerPoint में खोलें।",
+                  "step_2": "फ़ाइल → साझा करें → एम्बेड चुनें और अपने आयाम चुनें।",
+                  "step_3": "iframe एम्बेड कोड कॉपी करें और यहाँ पेस्ट करें। हम प्लेयर का आकार खुद तय करते हैं।"
                 },
                 "keynote": {
-                  "hint": "Collaborate → Copy Link, then embed",
-                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
-                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "सहयोग करें → लिंक कॉपी करें, फिर एम्बेड करें",
+                  "step_1": "सहयोग करें पर क्लिक करें और एक्सेस को लिंक वाले किसी भी व्यक्ति · केवल देखने के लिए पर सेट करें।",
+                  "step_2": "iCloud लिंक कॉपी करें, फिर अपनी वेबसाइट के लिए एम्बेड कोड प्राप्त करें।",
+                  "step_3": "यहाँ iframe एम्बेड कोड पेस्ट करें।"
                 },
                 "figma": {
-                  "hint": "Share a Figma Slides file and copy the embed",
-                  "step_1": "Open your Figma Slides file and enable link sharing.",
-                  "step_2": "Copy the embed code for the /slides or /deck file.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Figma Slides फ़ाइल साझा करें और एम्बेड कॉपी करें",
+                  "step_1": "अपनी Figma Slides फ़ाइल खोलें और लिंक साझा करना सक्षम करें।",
+                  "step_2": "/slides या /deck फ़ाइल के लिए एम्बेड कोड कॉपी करें।",
+                  "step_3": "यहाँ iframe एम्बेड कोड पेस्ट करें।"
                 },
                 "prezi": {
-                  "hint": "Share → Embed",
-                  "step_1": "From the dashboard, open Share on your presentation.",
-                  "step_2": "Click Embed and copy the code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "साझा करें → एम्बेड करें",
+                  "step_1": "डैशबोर्ड से, अपनी प्रस्तुति पर साझा करें खोलें।",
+                  "step_2": "एम्बेड पर क्लिक करें और कोड कॉपी करें।",
+                  "step_3": "यहाँ iframe एम्बेड कोड पेस्ट करें।"
                 },
                 "pitch": {
-                  "hint": "Share externally → Copy embed code",
-                  "step_1": "Click Share → Share externally and create a public link.",
-                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "बाहरी रूप से साझा करें → एम्बेड कोड कॉपी करें",
+                  "step_1": "साझा करें → बाहरी रूप से साझा करें पर क्लिक करें और एक सार्वजनिक लिंक बनाएँ।",
+                  "step_2": "लिंक विकल्प (⋯) खोलें और एम्बेड कोड कॉपी करें चुनें।",
+                  "step_3": "यहाँ iframe एम्बेड कोड पेस्ट करें।"
                 },
                 "gamma": {
-                  "hint": "Share → enable public access → copy iframe",
-                  "step_1": "Open Share and toggle Allow public access.",
-                  "step_2": "Copy the generated iframe embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "साझा करें → सार्वजनिक पहुँच सक्षम करें → iframe कॉपी करें",
+                  "step_1": "साझा करें खोलें और सार्वजनिक पहुँच की अनुमति दें को टॉगल करें।",
+                  "step_2": "उत्पन्न iframe एम्बेड कोड कॉपी करें।",
+                  "step_3": "यहाँ iframe एम्बेड कोड पेस्ट करें।"
                 },
                 "slideshare": {
-                  "hint": "Share → Embed under the deck",
-                  "step_1": "Open the public deck on slideshare.net.",
-                  "step_2": "Click Share under the viewer and open the Embed tab.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "साझा करें → डेक के नीचे एम्बेड करें",
+                  "step_1": "slideshare.net पर सार्वजनिक डेक खोलें।",
+                  "step_2": "व्यूअर के नीचे साझा करें पर क्लिक करें और एम्बेड टैб खोलें।",
+                  "step_3": "iframe एम्बेड कोड कॉपी करें और यहाँ पेस्ट करें।"
                 },
                 "beautiful": {
-                  "hint": "Sharing Settings → Public → Get Embed Code",
-                  "step_1": "Open Sharing Settings and switch the deck to Public.",
-                  "step_2": "Click Get Embed Code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "साझाकरण सेटिंग्स → सार्वजनिक → एम्बेड कोड प्राप्त करें",
+                  "step_1": "साझाकरण सेटिंग्स खोलें और डेक को सार्वजनिक पर स्विच करें।",
+                  "step_2": "एम्बेड कोड प्राप्त करें पर क्लिक करें।",
+                  "step_3": "यहाँ iframe एम्बेड कोड पेस्ट करें।"
                 }
               },
               "frame_title": "{platform} ({index} में से {total})"
@@ -2709,7 +2750,15 @@
           "lesson_title": "पाठ",
           "lesson_description": "नोट्स, स्लाइड और वीडियो से पढ़ाएं।",
           "exercise_title": "व्यायाम",
-          "exercise_description": "क्विज़ और कार्यों के साथ छात्रों का मूल्यांकन करें।"
+          "exercise_description": "क्विज़ और कार्यों के साथ छात्रों का मूल्यांकन करें।",
+          "activity_scorm_title": "SCORM पैकेज",
+          "activity_scorm_description": "Storyline, Captivate या iSpring से इंटरैक्टिव पैकेज चलाएं।",
+          "activity_scorm_title_label": "पैकेज का टाइटल",
+          "activity_scorm_title_placeholder": "जैसे, वर्कप्लेस सेफ्टी इंडक्शन",
+          "activity_scorm_gated": "पेड प्लान",
+          "activity_scorm_upgrade_notice": "हर पेड प्लान में SCORM पैकेज शामिल होते हैं। अपने कोर्स में पैकेज जोड़ने के लिए अपग्रेड करें।",
+          "activity_scorm_upgrade_cta": "प्लान देखें",
+          "activity_scorm_license_notice": "इस सर्वर पर SCORM पैकेज के लिए एंटरप्राइज़ लाइसेंस की ज़रूरत होती है। लर्नर्स के पास मौजूदा पैकेज का एक्सेस बना रहता है।"
         },
         "add_lesson": {
           "button_title": "जोड़ें",
@@ -2788,7 +2837,8 @@
         "stats": {
           "sections": "अनुभाग",
           "lessons": "सबक",
-          "exercises": "व्यायाम"
+          "exercises": "व्यायाम",
+          "activities": "गतिविधियाँ"
         },
         "session": {
           "join": "सत्र में शामिल हों",
@@ -2845,7 +2895,198 @@
         "add_content_later": "बाद में",
         "add_content_add_to_section": "सामग्री जोड़ें",
         "expand_content": "सामग्री का विस्तार करें",
-        "collapse_content": "सामग्री संक्षिप्त करें"
+        "collapse_content": "सामग्री संक्षिप्त करें",
+        "content_progression_locked_description_activity": "यह पैकेज कोर्स में पिछली आवश्यक वस्तु पूरी करने के बाद अनलॉक होगा।",
+        "activities": {
+          "not_available_title": "पैकेज अभी उपलब्ध नहीं है",
+          "not_available_description": "यह SCORM पैकेज अभी सेटअप किया जा रहा है। कृपया कुछ देर बाद दोबारा देखें।",
+          "header_locked": "लॉक किया गया",
+          "delete_confirm_title": "क्या इस पैकेज आइटम को डिलीट करें?",
+          "delete_confirm_body": "इस आइटम के लिए शिक्षार्थियों के परिणाम डिलीट कर दिए गए हैं। पैकेज मीडिया मैनेजर में रहेगा।",
+          "results_placeholder_title": "अभी तक कोई परिणाम नहीं",
+          "results_placeholder_description": "शिक्षार्थियों द्वारा पैकेज खोलने पर स्कोर, प्रयास और समय यहां दिखाई देंगे।",
+          "settings": {
+            "completion_rule": "पूर्णता नियम",
+            "completion_rule_helper": "क्लासरूमआईओ कैसे तय करता है कि पैकेज पूरा हो गया है।",
+            "rule_auto": "स्वचालित",
+            "rule_completed": "पूर्ण हुआ",
+            "rule_passed": "सफल",
+            "rule_score": "न्यूनतम अंक",
+            "graded_hint": "इस पैकेज का उत्तीर्ण अंक {score}% है, इसलिए छात्रों को इसे उत्तीर्ण करना होगा।",
+            "ungraded_hint": "इस पैकेज का कोई उत्तीर्ण अंक नहीं है, इसलिए छात्रों को इसे पूरा करके ही पूर्ण करना होगा।",
+            "passed_warning": "जो मॉड्यूल कभी उत्तीर्ण होने की रिपोर्ट नहीं करता, वह आइटम को पूर्ण होने से रोकता है।",
+            "min_score": "न्यूनतम अंक (%)",
+            "retakes": "पुनः प्रयास की अनुमति दें",
+            "retakes_helper": "पूर्ण किए गए पैकेज \"नया प्रयास शुरू करें\" बटन के साथ फिर से खुलते हैं। सर्वश्रेष्ठ अंक मान्य होंगे।",
+            "launch_mode": "लॉन्च मोड",
+            "launch_embedded": "पाठ्यक्रम में",
+            "launch_window": "एक नई विंडो में",
+            "save": "सेटिंग्स सहेजें"
+          },
+          "instructions": {
+            "label": "शिक्षार्थियों के लिए निर्देश",
+            "placeholder": "पैकेज खोलने से पहले शिक्षार्थियों को क्या जानना चाहिए?",
+            "save": "निर्देश सहेजें"
+          },
+          "package": {
+            "drop_label": "अपनी SCORM .zip फ़ाइल यहाँ डालें",
+            "drop_hint": "अधिकतम {size}। प्रसंस्करण में कुछ मिनट लग सकते हैं; आप पृष्ठ छोड़ सकते हैं।",
+            "wrong_type": "SCORM पैकेज के रूप में केवल .zip फ़ाइलें ही अपलोड की जा सकती हैं।",
+            "too_large": "यह फ़ाइल {size} से बड़ी है।",
+            "uploading": "अपलोड हो रहा है {progress}%",
+            "cancel_upload": "अपलोड रद्द करें",
+            "processing": "पैकेज प्रोसेस हो रहा है…",
+            "processing_stage": "{stage} · {progress}%",
+            "failed_title": "इस पैकेज का उपयोग नहीं किया जा सका",
+            "retry": "कोई दूसरी फ़ाइल आज़माएँ",
+            "replace": "पैकेज बदलें",
+            "remove": "हटाएँ",
+            "remove_confirm_title": "क्या इस पैकेज को हटाना है?",
+            "remove_confirm_body": "जब तक आप कोई दूसरा पैकेज संलग्न नहीं करते, तब तक शिक्षार्थियों की पहुँच समाप्त हो जाएगी। फ़ाइल मीडिया मैनेजर में रहेगी।",
+            "move_everyone": "सभी को इस संस्करण पर स्थानांतरित करें",
+            "move_everyone_helper": "शिक्षार्थी बीच में ही नए संस्करण पर पुनः आरंभ करते हैं। {count, plural, one {# learner is} other {# learners are}} प्रभावित होते हैं।",
+            "modules_title": "इस पैकेज में {count, plural, one {# module} other {# modules}} हैं",
+            "modules_hint": "शिक्षार्थी पैकेज के ऊपर दिए गए मेनू से मॉड्यूल चुनते हैं। पूर्णता नियम प्रत्येक मॉड्यूल पर लागू होता है।",
+            "sequencing_warning": "इस पैकेज में अनुक्रमण नियमों को अनदेखा किया जाता है। इसके बजाय आपकी पाठ्यक्रम प्रगति सेटिंग्स लागू होती हैं।",
+            "case_warning": "कुछ फ़ाइल नामों में केवल अक्षरों का केस-केस ही भिन्न होता है।",
+            "rebased_warning": "मेनिफ़ेस्ट एक ही टॉप-लेवल फ़ोल्डर के अंदर मिला।",
+            "version": "वर्शन {version}",
+            "files": "फ़ाइलें",
+            "size": "साइज़",
+            "pass_mark": "पास मार्क्स {score}%",
+            "status": {
+              "uploading": "अपलोड हो रहा है",
+              "processing": "प्रोसेसिंग हो रही है",
+              "ready": "तैयार",
+              "failed": "फ़ेल हो गया"
+            },
+            "errors": {
+              "missing_manifest": "कोई imsmanifest.xml नहीं मिला। LMS के लिए पैकेज को फिर से एक्सपोर्ट करें।",
+              "xapi_package": "यह एक xAPI (Tin Can) पैकेज है। इसे SCORM के तौर पर फिर से एक्सपोर्ट करें।",
+              "cmi5_package": "यह एक cmi5 पैकेज है। इसे SCORM के तौर पर फिर से एक्सपोर्ट करें।",
+              "unsupported_version": "यह SCORM वर्शन सपोर्टेड नहीं है। SCORM 1.2 या SCORM 2004 का इस्तेमाल करें।",
+              "invalid_xml": "मेनिफ़ेस्ट पढ़ा नहीं जा सका। पैकेज को फिर से एक्सपोर्ट करें।",
+              "doctype_rejected": "मेनिफ़ेस्ट पढ़ा नहीं जा सका। पैकेज को फिर से एक्सपोर्ट करें।",
+              "missing_launch": "किसी मॉड्यूल में कोई लॉन्च फ़ाइल नहीं है। पैकेज को फिर से एक्सपोर्ट करें।",
+              "external_launch": "यह पैकेज किसी दूसरी वेबसाइट से कंटेंट खोलता है, जो यहाँ प्रोग्रेस सेव नहीं कर सकता।",
+              "assets_only": "इस पैकेज में कोई भी चीज़ प्रोग्रेस की रिपोर्ट नहीं करती है।",
+              "not_a_zip": "यह फ़ाइल एक वैलिड ZIP फ़ाइल नहीं है।",
+              "file_too_large": "यह फ़ाइल वर्कस्पेस की लिमिट से बड़ी है।",
+              "total_too_large": "अनपैक किया गया पैकेज वर्कस्पेस की लिमिट से बड़ा है।",
+              "too_many_entries": "इस पैकेज में बहुत ज़्यादा फ़ाइलें हैं।",
+              "compression_bomb": "यह पैकेज सेफ़्टी चेक में फ़ेल हो गया।",
+              "unsafe_path": "इस पैकेज में असुरक्षित फ़ाइल पाथ हैं।",
+              "symlink_rejected": "इस पैकेज में असुरक्षित फ़ाइल पथ हैं।",
+              "encrypted_entry": "यह पैकेज पासवर्ड से सुरक्षित है।",
+              "upload_missing": "अपलोड पूरा नहीं हुआ। पुनः प्रयास करें।",
+              "generic": "इस पैकेज को संसाधित करते समय कुछ गड़बड़ हो गई। पुनः प्रयास करें।"
+            }
+          },
+          "gating": {
+            "title": "SCORM ऑथरिंग रोक दी गई है।",
+            "plan_lapsed": "आपके प्लान में अब SCORM पैकेज शामिल नहीं हैं। शिक्षार्थी अभी भी इनका उपयोग कर सकते हैं और परिणाम उपलब्ध रहेंगे।",
+            "no_license": "पैकेज बदलने के लिए इस सर्वर को SCORM के साथ एंटरप्राइज़ लाइसेंस की आवश्यकता है।"
+          },
+          "tabs": {
+            "package": "पैकेज",
+            "instructions": "निर्देश",
+            "results": "परिणाम",
+            "settings": "सेटिंग्स"
+          },
+          "player": {
+            "modules_complete": "{total} में से {complete} मॉड्यूल पूरे हुए",
+            "module_menu": "मॉड्यूल",
+            "status_completed": "पूरा हुआ",
+            "status_review": "रिव्यू में",
+            "status_not_passed": "अभी पास नहीं हुआ",
+            "status_in_progress": "प्रगति पर है",
+            "load_failed_title": "पैकेज नहीं खुल सका",
+            "load_failed_body": "इस पैकेज को खोलने में कोई समस्या आई। फिर से कोशिश करें।",
+            "reload": "रीलोड करें",
+            "expired_title": "यह सेशन समाप्त हो गया",
+            "expired_body": "पैकेज सेशन समाप्त हो गया। जहाँ से छोड़ा था, वहाँ से फिर से शुरू करने के लिए रीलोड करें।",
+            "review_title": "नतीजे पहले ही रिकॉर्ड हो चुके हैं",
+            "review_body": "इस सेशन में कुछ भी सेव नहीं किया जाता है।",
+            "new_attempt": "नया प्रयास शुरू करें",
+            "retakes_off": "इस पैकेज के लिए दोबारा प्रयास करने की सुविधा नहीं है, इसलिए नया प्रयास शुरू नहीं किया जा सकता।",
+            "window_title": "यह पैकेज एक नई विंडो में खुलता है",
+            "window_body": "नई विंडो खुली रहने पर आपकी प्रोग्रेस अपने आप सेव हो जाती है।",
+            "open_window": "पैकेज खोलें",
+            "no_connection_title": "पैकेज कनेक्ट नहीं हुआ",
+            "no_connection_body": "पैकेज ने कोर्स प्लेयर को कॉल नहीं किया। इसे LMS या SCORM पब्लिशिंग विकल्प के साथ फिर से एक्सपोर्ट करें, या दोबारा कोशिश करने के लिए रीलोड करें।",
+            "fullscreen": "फ़ुल स्क्रीन",
+            "complete_title": "पैकेज पूरा हो गया",
+            "complete_body": "आपके नतीजे रिकॉर्ड कर लिए गए।",
+            "continue": "जारी रखें",
+            "module_complete_title": "मॉड्यूल पूरा हुआ",
+            "module_complete_body": "आपकी प्रगति सहेज ली गई है। आगे बढ़ने के लिए अगला मॉड्यूल खोलें।",
+            "next_module": "अगला मॉड्यूल",
+            "autosave_hint": "प्रोग्रेस अपने-आप सेव हो जाती है।"
+          },
+          "results": {
+            "sheet": {
+              "title": "{learnerName} के लिए प्रयास",
+              "description": "हर मॉड्यूल के साथ हर प्रयास, पैकेज द्वारा बताए गए जवाब और लगा समय।",
+              "attempt": "प्रयास {number}",
+              "version": "पैकेज संस्करण {number}",
+              "rule_met": "नियम का पालन हुआ",
+              "interactions": "{count} उत्तर दर्ज किए गए",
+              "no_attempts_title": "अभी तक कोई प्रयास नहीं",
+              "no_attempts_description": "शिक्षार्थी द्वारा पैकेज खोलने पर प्रयास यहां दिखाई देंगे।",
+              "reset": "इस छात्र के लिए रीसेट करें",
+              "confirm_reset": "रीसेट की पुष्टि करने के लिए पुनः क्लिक करें",
+              "columns": {
+                "module": "मॉड्यूल",
+                "completion": "पूर्ण",
+                "success": "सफलता",
+                "score": "स्कोर",
+                "time": "समय"
+              },
+              "diagnostics_title": "डायग्नोस्टिक्स",
+              "events": {
+                "launch": "लॉन्च किया गया",
+                "initialize": "कनेक्ट हो गया",
+                "commit": "सेव किया गया",
+                "terminate": "पूरा हुआ",
+                "beacon": "बाहर निकलने पर सेव किया गया",
+                "error": "एरर",
+                "not_initialized": "कनेक्ट नहीं हुआ"
+              }
+            },
+            "export": {
+              "title": "SCORM नतीजे"
+            },
+            "pass_fail": {
+              "passed": "पास",
+              "failed": "फ़ेल"
+            },
+            "status": {
+              "not_started": "शुरू नहीं हुआ",
+              "in_progress": "प्रगति पर है",
+              "failed": "अभी तक पास नहीं हुआ",
+              "completed": "पूरा हो गया"
+            },
+            "table": {
+              "student": "छात्र",
+              "score": "स्कोर",
+              "status": "स्थिति",
+              "pass_fail": "पास/फ़ेल",
+              "best_score": "बेहतरीन स्कोर",
+              "time_spent": "लगाया गया समय",
+              "attempts": "कोशिशें",
+              "last_launched": "पिछली बार शुरू किया गया"
+            },
+            "summary": {
+              "enrolled": "एनरोल किया गया",
+              "started": "शुरू किया गया",
+              "completed": "पूरा किया गया",
+              "passed": "पास किया गया",
+              "average_score": "औसत स्कोर"
+            }
+          }
+        },
+        "add_content_created_activity": "SCORM पैकेज सफलतापूर्वक बन गया है!",
+        "add_content_create_another_activity": "एक और पैकेज बनाएं"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -3015,7 +3256,8 @@
       "back_to_course": "पाठ्यक्रम पर वापस जाएँ",
       "content_count": {
         "lessons": "{count} पाठ",
-        "exercises": "{count} अभ्यास"
+        "exercises": "{count} अभ्यास",
+        "activities": "{count} गतिविधियाँ"
       },
       "compliance": {
         "title": "अनुपालन",
@@ -3026,7 +3268,8 @@
         "title": "आपकी प्रगति",
         "completed": "{total} में से {completed} पूर्ण",
         "lessons": "{total} में से {completed} पाठ",
-        "exercises": "{total} में से {completed} अभ्यास"
+        "exercises": "{total} में से {completed} अभ्यास",
+        "activities": "{total} पैकेज में से {completed} पूरे हुए"
       },
       "footer_nav": {
         "label": "कोर्स सामग्री नेविगेशन",
@@ -3048,7 +3291,8 @@
       "nav_settings": "सेटिंग्स",
       "nav_ai_assistant": "सहायक",
       "nav_ai_tutor": "एआई ट्यूटर",
-      "exit_course": "पाठ्यक्रम से बाहर निकलें"
+      "exit_course": "पाठ्यक्रम से बाहर निकलें",
+      "nav_package": "पैकेज"
     },
     "completion": {
       "modal": {
@@ -3224,7 +3468,10 @@
       "student_empty_description": "इस संगठन में अभी तक कोई कोर्स उपलब्ध नहीं है। कृपया बाद में दोबारा देखें।",
       "updated_at": "अद्यतन {date}",
       "lessons_count": "{count, plural, one {# पाठ} other {# पाठ}}",
-      "exercises_count": "{count, plural, one {# अभ्यास} other {# अभ्यास}}"
+      "exercises_count": "{count, plural, one {# अभ्यास} other {# अभ्यास}}",
+      "activities_count": "{count, plural, one {# पैकेज} other {# पैकेज}}",
+      "scorm_modules": "SCORM · {count, plural, one {# मॉड्यूल} other {# मॉड्यूल}}",
+      "scorm": "एससीओआरएम"
     },
     "course_filter": {
       "date_created_newest": "निर्माण तिथि: नवीनतम पहले",
@@ -3608,15 +3855,18 @@
         "lesson": "पाठ",
         "exercise": "व्यायाम",
         "question": "प्रश्न",
-        "unknown": "अज्ञात"
+        "unknown": "अज्ञात",
+        "activity": "SCORM पैकेज"
       },
       "go_to_lesson": "पाठ पर जाएँ",
       "slot_type": {
         "lesson_video": "पाठ वीडियो",
         "lesson_document": "पाठ दस्तावेज़",
-        "unknown": "लगाव"
+        "unknown": "लगाव",
+        "activity_package": "SCORM पैकेज"
       },
-      "refresh": "उपयोग ताज़ा करें"
+      "refresh": "उपयोग ताज़ा करें",
+      "go_to_package": "पैकेज पर जाएँ"
     },
     "form": {
       "file_name": "फ़ाइल का नाम",
@@ -3647,7 +3897,8 @@
       "where_used": "कहां उपयोग किया जाता है",
       "download": "डाउनलोड करें",
       "manage_thumbnails": "थंबनेल प्रबंधित करें",
-      "delete": "हटाएँ"
+      "delete": "हटाएँ",
+      "create_course_from_package": "पैकेज से कोर्स बनाएँ"
     },
     "table": {
       "title": "शीर्षक",
@@ -3675,7 +3926,8 @@
       "document": "दस्तावेज़",
       "image": "छवि",
       "audio": "ऑडियो",
-      "other": "अन्य"
+      "other": "अन्य",
+      "scorm": "SCORM पैकेज"
     },
     "filters": {
       "search_placeholder": "संपत्ति खोजें",
@@ -3690,7 +3942,8 @@
         "document": "दस्तावेज़",
         "image": "छवि",
         "audio": "ऑडियो",
-        "other": "अन्य"
+        "other": "अन्य",
+        "scorm": "SCORM पैकेज"
       },
       "refresh": "ताज़ा करना"
     },
@@ -3698,7 +3951,8 @@
       "total_bytes": "कुल संग्रहण",
       "internal_bytes": "आंतरिक भंडारण",
       "external_assets": "बाहरी संपत्ति",
-      "bytes_by_kind": "परिसंपत्ति प्रकार के अनुसार भंडारण"
+      "bytes_by_kind": "परिसंपत्ति प्रकार के अनुसार भंडारण",
+      "scorm_bytes": "SCORM पैकेज"
     },
     "common": {
       "not_available": "एन/ए"
@@ -3729,6 +3983,27 @@
       "confirm": "स्थायी रूप से हटाएँ",
       "cancel": "रद्द करें",
       "close": "बंद करें"
+    },
+    "scorm": {
+      "select": "चुनें",
+      "cancel_select": "रद्द करें",
+      "cancel": "रद्द करें",
+      "selected_count": "{count, plural, one {# पैकेज चुना गया} other {# पैकेज चुने गए}}",
+      "create_n_courses": "{count, plural, one {# कोर्स बनाएँ} other {# कोर्स बनाएँ}}",
+      "select_package": "पैकेज {title} चुनें",
+      "modules_count": "{count, plural, one {# मॉड्यूल} other {# मॉड्यूल}}",
+      "create_course_title_single": "इस पैकेज से एक कोर्स बनाएँ",
+      "create_course_title_many": "पैकेज से {count, plural, one {# कोर्स} other {# कोर्स}} बनाएँ",
+      "create_course_description": "हम हर पैकेज के साथ एक ड्राफ़्ट SCORM कोर्स बनाएँगे। इसके मॉड्यूल पैकेज के ऊपर एक मेनू में एक साथ रहेंगे।",
+      "course_nav_preview": "SCORM कोर्स नेविगेशन: पैकेज",
+      "course_type_self_paced": "अपनी गति से सीखने वाला",
+      "course_type_self_paced_description": "स्टूडेंट्स अपनी गति से पैकेज पूरा करते हैं",
+      "course_type_compliance": "अनुपालन",
+      "course_type_compliance_description": "रीटेक, रिमाइंडर और रिन्यूअल ट्रैकिंग के साथ बार-बार होने वाली ट्रेनिंग",
+      "course_title_label": "कोर्स का शीर्षक",
+      "course_title_label_for": "{title} के लिए कोर्स का शीर्षक",
+      "create_course_confirm_single": "कोर्स बनाएँ",
+      "create_course_confirm_many": "{count, plural, one {# कोर्स} other {# कोर्स}} बनाएँ"
     }
   },
   "settings": {
@@ -4774,7 +5049,15 @@
     "compliance_label": "अनुपालन",
     "compliance_subtitle": "रीटेक, रिमाइंडर और नवीनीकरण ट्रैकिंग के साथ आवर्ती प्रशिक्षण",
     "public_label": "सार्वजनिक",
-    "public_subtitle": "नि:शुल्क, बिना-साइनअप पाठ्यक्रम पृष्ठ जिन्हें आप सार्वजनिक रूप से साझा कर सकते हैं - लीड जनरल के लिए बढ़िया"
+    "public_subtitle": "नि:शुल्क, बिना-साइनअप पाठ्यक्रम पृष्ठ जिन्हें आप सार्वजनिक रूप से साझा कर सकते हैं - लीड जनरल के लिए बढ़िया",
+    "build_course_label": "एक कोर्स बनाएं",
+    "build_course_subtitle": "पाठ, अभ्यास और अनुभाग जिन्हें आप स्वयं बनाते हैं",
+    "scorm_course_label": "एक SCORM पैकेज अपलोड करें",
+    "scorm_course_subtitle": "एक इंटरैक्टिव पैकेज ही पूरा कोर्स है",
+    "scorm_gated": "भुगतान योजनाएँ",
+    "scorm_upgrade_notice": "SCORM कोर्स हर पेड प्लान में शामिल हैं। इसे बनाने के लिए अपग्रेड करें।",
+    "scorm_upgrade_cta": "प्लान देखें",
+    "scorm_license_notice": "इस सर्वर पर SCORM कोर्स के लिए एंटरप्राइज़ लाइसेंस की ज़रूरत होती है।"
   },
   "delete_modal": {
     "label": "हटाएँ",
@@ -5369,7 +5652,8 @@
         "course": "पाठ्यक्रम",
         "lessons": "सबक",
         "tags": "टैग"
-      }
+      },
+      "packages_suffix": "पैकेज"
     },
     "plan": {
       "free": "निःशुल्क योजना",

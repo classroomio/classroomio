@@ -345,7 +345,8 @@
         "content_grouping_enabled": "Indholdsgruppering aktiveret",
         "content_grouping_disabled": "Indholdsgruppering deaktiveret",
         "link_generated": "Kursuslinket blev opdateret",
-        "converted_to_public": "Kurset blev konverteret til offentligt"
+        "converted_to_public": "Kurset blev konverteret til offentligt",
+        "converted_to_standard": "Kursus konverteret til et standardkursus"
       },
       "info": {
         "conversion_blocked": "Ret spørgsmålene nedenfor for at fuldføre konverteringen til Offentlig."
@@ -515,6 +516,27 @@
       "success": "Tak. Vi gennemgår denne anmeldelse.",
       "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
       "already_submitted": "Du har allerede anmeldt dette."
+    },
+    "activity": {
+      "created": "SCORM-pakke oprettet",
+      "upload_failed": "Upload af pakke mislykkedes",
+      "process_failed": "Behandling af pakke mislykkedes",
+      "settings_saved": "Pakkeindstillinger gemt",
+      "settings_failed": "Kunne ikke gemme pakkeindstillinger",
+      "attach_failed": "Kunne ikke vedhæfte pakke",
+      "detached": "Pakke fjernet",
+      "detach_failed": "Kunne ikke fjerne pakke",
+      "instructions_saved": "Instruktioner gemt",
+      "instructions_failed": "Kunne ikke gemme instruktioner",
+      "delete_failed": "Kunne ikke slette pakkeelement",
+      "package_deleted": "Pakke slettet",
+      "delete_failed_package": "Kunne ikke slette pakke",
+      "replace_failed": "Kunne ikke erstatte pakke",
+      "launch_failed": "Pakken kunne ikke åbnes",
+      "learner_reset": "Nulstilling af forsøg for denne studerende",
+      "learner_reset_failed": "Kunne ikke nulstille forsøg",
+      "courses_created": "SCORM-kursuskladder oprettet",
+      "courses_create_failed": "Kunne ikke oprette kurser ud fra pakker"
     }
   },
   "explore": {
@@ -710,7 +732,9 @@
       "students_table_description": "Sorterbar oversigt med links til elevprofiler.",
       "kpi_team_tutors": "{count, plural, one {# underviser på kursusholdet} other {# undervisere på kursusholdet}}",
       "kpi_lessons_exercises": "{count, plural, one {# øvelse} other {# øvelser}} knyttet til lektioner",
-      "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever"
+      "kpi_progress_grade": "{grade} % gennemsnitlig øvelseskarakter på tværs af tilmeldte elever",
+      "kpi_packages": "{count, plural, one {# pakke} other {# pakker}}",
+      "kpi_activity_completion": "{rate} % fuldførelsesgrad blandt tilmeldte studerende"
     },
     "exercises_completed": "Øvelser fuldført",
     "course_progress": "Kursusstatus",
@@ -719,7 +743,10 @@
     "hours_ago": "{count, plural, one {# time siden} other {# timer siden}}",
     "days_ago": "{count, plural, one {# dag siden} other {# dage siden}}",
     "months_ago": "{count, plural, one {# måned siden} other {# måneder siden}}",
-    "years_ago": "{count, plural, one {# år siden} other {# år siden}}"
+    "years_ago": "{count, plural, one {# år siden} other {# år siden}}",
+    "packages": "Pakker",
+    "packages_completed": "Fuldførte pakker",
+    "activities": "SCORM-pakker"
   },
   "audience": {
     "title": "Publikum",
@@ -836,7 +863,14 @@
         "activity": "Aktivitet"
       },
       "activity_empty_title": "Aktivitetstidslinje Kommer snart",
-      "activity_empty_description": "En tidslinje over gennemførte lektioner og øvelsesafleveringer på tværs af deres kurser vil være tilgængelig i en fremtidig udgivelse."
+      "activity_empty_description": "En tidslinje over gennemførte lektioner og øvelsesafleveringer på tværs af deres kurser vil være tilgængelig i en fremtidig udgivelse.",
+      "activities_title": "SCORM-pakker",
+      "scorm_package": "SCORM-pakke",
+      "activity_status": {
+        "completed": "Fuldført",
+        "in_progress": "I gang",
+        "not_started": "Ikke påbegyndt"
+      }
     },
     "delete": {
       "action": "Slet",
@@ -1203,7 +1237,12 @@
             "window_passed": "Påmindelsestidspunktet var allerede passeret, da den blev planlagt.",
             "unenrolled": "Eleven er ikke længere tilmeldt."
           }
-        }
+        },
+        "convert_card_title": "Konverter til et standardkursus",
+        "convert_card_description": "Tilføj lektioner, øvelser og sektioner ved siden af ​​pakken. Pakken bliver det første element. Dette kan ikke fortrydes.",
+        "convert_card_cta": "Konverter til standard",
+        "convert_confirm_title": "Vil du konvertere dette kursus?",
+        "convert_confirm_body": "Pakken forbliver det første element, og indholdet vender tilbage til navigationen. Dette kan ikke fortrydes."
       },
       "analytics": {
         "title": "Analyse"
@@ -1363,7 +1402,8 @@
           "skills_placeholder": "f.eks. Dataanalyse",
           "tools_placeholder": "f.eks. Figma",
           "remove": "Fjern"
-        }
+        },
+        "packages": "pakker"
       },
       "certificates": {
         "title": "Certifikater",
@@ -1525,7 +1565,8 @@
               "video_progress": "Videofremskridt — {count} lektioner sporet",
               "attendance": "Fremmødeposter — {count}",
               "certificate_yes": "Certificerings-/compliance-data — ja",
-              "certificate_no": "Certificerings-/compliance-data — nej"
+              "certificate_no": "Certificerings-/compliance-data — nej",
+              "activities": "SCORM-pakker fuldført – {completed} ud af {total} ({attempts} forsøg)"
             },
             "warning": "Dette kan ikke fortrydes.",
             "cancel": "Annuller",
@@ -2709,7 +2750,15 @@
           "lesson_title": "Lektion",
           "lesson_description": "Undervis med noter, dias og videoer.",
           "exercise_title": "Motion",
-          "exercise_description": "Vurder eleverne med quizzer og opgaver."
+          "exercise_description": "Vurder eleverne med quizzer og opgaver.",
+          "activity_scorm_title": "SCORM-pakke",
+          "activity_scorm_description": "Kør en interaktiv pakke fra Storyline, Captivate eller iSpring.",
+          "activity_scorm_title_label": "Pakketitel",
+          "activity_scorm_title_placeholder": "f.eks. introduktion til arbejdspladssikkerhed",
+          "activity_scorm_gated": "Betalte abonnementer",
+          "activity_scorm_upgrade_notice": "SCORM-pakker er inkluderet i alle betalte abonnementer. Opgrader for at tilføje pakker til dine kurser.",
+          "activity_scorm_upgrade_cta": "Se abonnementer",
+          "activity_scorm_license_notice": "SCORM-pakker kræver en virksomhedslicens på denne server. Eleverne beholder adgang til eksisterende pakker."
         },
         "add_lesson": {
           "button_title": "Tilføj",
@@ -2788,7 +2837,8 @@
         "stats": {
           "sections": "Sektioner",
           "lessons": "Lektioner",
-          "exercises": "Øvelser"
+          "exercises": "Øvelser",
+          "activities": "Aktiviteter"
         },
         "session": {
           "join": "Deltag i session",
@@ -2845,7 +2895,198 @@
         "add_content_later": "Senere",
         "add_content_add_to_section": "Tilføj indhold",
         "expand_content": "Udvid indhold",
-        "collapse_content": "Skjul indholdet"
+        "collapse_content": "Skjul indholdet",
+        "content_progression_locked_description_activity": "Denne pakke låses op, når du er færdig med det forrige obligatoriske element i kurset.",
+        "activities": {
+          "not_available_title": "Pakken er endnu ikke tilgængelig",
+          "not_available_description": "Denne SCORM-pakke er stadig under opsætning. Tjek venligst igen snart.",
+          "header_locked": "Låst",
+          "delete_confirm_title": "Slet dette pakkeelement?",
+          "delete_confirm_body": "Elevernes resultater for dette element slettes. Pakken forbliver i Medieadministratoren.",
+          "results_placeholder_title": "Ingen resultater endnu",
+          "results_placeholder_description": "Scorer, forsøg og tid vises her, når eleverne åbner pakken.",
+          "settings": {
+            "completion_rule": "Fuldførelsesregel",
+            "completion_rule_helper": "Hvordan ClassroomIO afgør, at pakken er færdig.",
+            "rule_auto": "Automatisk",
+            "rule_completed": "Fuldført",
+            "rule_passed": "Bestået",
+            "rule_score": "Minimumsscore",
+            "graded_hint": "Denne pakke har en beståelseskrav på {score}%, så eleverne skal bestå den.",
+            "ungraded_hint": "Denne pakke har ingen beståelseskrav, så eleverne gennemfører den ved at afslutte den.",
+            "passed_warning": "Et modul, der aldrig rapporteres som bestået, forhindrer elementet i at blive færdiggjort.",
+            "min_score": "Minimumsscore (%)",
+            "retakes": "Tillad omprøve",
+            "retakes_helper": "Afsluttede pakker genåbnes med en \"Start et nyt forsøg\"-knap. Bedste score tæller.",
+            "launch_mode": "Starttilstand",
+            "launch_embedded": "I kurset",
+            "launch_window": "I et nyt vindue",
+            "save": "Gem indstillinger"
+          },
+          "instructions": {
+            "label": "Instruktioner til elever",
+            "placeholder": "Hvad skal eleverne vide, før de åbner pakken?",
+            "save": "Gem instruktioner"
+          },
+          "package": {
+            "drop_label": "Slip din SCORM .zip her",
+            "drop_hint": "Op til {size}. Behandlingen kan tage et par minutter; du kan forlade siden.",
+            "wrong_type": "Kun .zip-filer kan uploades som SCORM-pakker.",
+            "too_large": "Denne fil er større end {size}.",
+            "uploading": "Uploader {progress}%",
+            "cancel_upload": "Annuller upload",
+            "processing": "Behandler pakke…",
+            "processing_stage": "{stage} · {progress}%",
+            "failed_title": "Denne pakke kunne ikke bruges",
+            "retry": "Prøv en anden fil",
+            "replace": "Erstat pakke",
+            "remove": "Fjern",
+            "remove_confirm_title": "Fjern denne pakke?",
+            "remove_confirm_body": "Elever mister adgang, indtil du vedhæfter en anden pakke. Filen forbliver i Mediehåndtering.",
+            "move_everyone": "Flyt alle til denne version",
+            "move_everyone_helper": "Eleverne er midtvejs i genstarten på den nye version. {count, plural, one {# learner is} other {# learners are}} er berørt.",
+            "modules_title": "Denne pakke har {count, plural, one {# module} other {# modules}}",
+            "modules_hint": "Eleverne vælger moduler fra en menu over pakken. Fuldførelsesreglen gælder for hvert modul.",
+            "sequencing_warning": "Rækkefølgeregler i denne pakke ignoreres. Dine indstillinger for kursusprogression gælder i stedet.",
+            "case_warning": "Nogle filnavne adskiller sig kun ved store og små bogstaver.",
+            "rebased_warning": "Manifestet blev fundet i en enkelt mappe på øverste niveau.",
+            "version": "Version {version}",
+            "files": "Filer",
+            "size": "Størrelse",
+            "pass_mark": "Beståelsesgrad {score}%",
+            "status": {
+              "uploading": "Uploades",
+              "processing": "Behandling",
+              "ready": "Klar",
+              "failed": "Mislykkedes"
+            },
+            "errors": {
+              "missing_manifest": "Ingen imsmanifest.xml blev fundet. Geneksporter pakken til et LMS.",
+              "xapi_package": "Dette er en xAPI (Tin Can) pakke. Geneksporter den som SCORM.",
+              "cmi5_package": "Dette er en cmi5 pakke. Geneksporter den som SCORM.",
+              "unsupported_version": "Denne SCORM-version understøttes ikke. Brug SCORM 1.2 eller SCORM 2004.",
+              "invalid_xml": "Manifestet kunne ikke læses. Eksporter pakken igen.",
+              "doctype_rejected": "Manifestet kunne ikke læses. Eksporter pakken igen.",
+              "missing_launch": "Et modul mangler en startfil. Eksporter pakken igen.",
+              "external_launch": "Denne pakke åbner indhold fra et andet websted, som ikke kan gemme fremskridt her.",
+              "assets_only": "Intet i denne pakke rapporterer fremskridt.",
+              "not_a_zip": "Denne fil er ikke en gyldig ZIP-fil.",
+              "file_too_large": "Denne fil er større end grænsen for arbejdsområdet.",
+              "total_too_large": "Den udpakkede pakke er større end grænsen for arbejdsområdet.",
+              "too_many_entries": "Denne pakke indeholder for mange filer.",
+              "compression_bomb": "Denne pakke bestod ikke sikkerhedstjekket.",
+              "unsafe_path": "Denne pakke indeholder usikre filstier.",
+              "symlink_rejected": "Denne pakke indeholder usikre filstier.",
+              "encrypted_entry": "Denne pakke er adgangskodebeskyttet.",
+              "upload_missing": "Uploaden blev ikke fuldført. Prøv igen.",
+              "generic": "Der opstod en fejl under behandling af denne pakke. Prøv igen."
+            }
+          },
+          "gating": {
+            "title": "SCORM-redigering er sat på pause.",
+            "plan_lapsed": "Din plan inkluderer ikke længere SCORM-pakker. Deltagere kan stadig gennemføre dem, og resultaterne forbliver tilgængelige.",
+            "no_license": "Denne server kræver en virksomhedslicens med SCORM for at kunne skifte pakker."
+          },
+          "tabs": {
+            "package": "Pakke",
+            "instructions": "Instruktioner",
+            "results": "Resultater",
+            "settings": "Indstillinger"
+          },
+          "player": {
+            "modules_complete": "{complete} af {total} moduler fuldført",
+            "module_menu": "Moduler",
+            "status_completed": "Afsluttet",
+            "status_review": "Under gennemgang",
+            "status_not_passed": "Ikke bestået endnu",
+            "status_in_progress": "Igangværende",
+            "load_failed_title": "Pakken kunne ikke åbnes",
+            "load_failed_body": "Der gik noget galt under åbning af denne pakke. Prøv igen.",
+            "reload": "Genindlæs",
+            "expired_title": "Denne session udløb",
+            "expired_body": "Pakkesessionen udløb. Genindlæs for at starte forfra, hvor du slap.",
+            "review_title": "Resultater allerede registreret",
+            "review_body": "Intet i denne session er gemt.",
+            "new_attempt": "Start et nyt forsøg",
+            "retakes_off": "Gentagelser er slået fra for denne pakke, så et nyt forsøg kan ikke startes.",
+            "window_title": "Denne pakke åbner i et nyt vindue",
+            "window_body": "Dine fremskridt gemmes automatisk, mens det nye vindue forbliver åbent.",
+            "open_window": "Åbn pakke",
+            "no_connection_title": "Pakken oprettede ikke forbindelse",
+            "no_connection_body": "Pakken kaldte aldrig kursusafspilleren. Eksporter den igen med en LMS- eller SCORM-publiceringsmulighed, eller genindlæs for at prøve igen.",
+            "fullscreen": "Fuld skærm",
+            "complete_title": "Pakken er færdig",
+            "complete_body": "Dine resultater blev registreret.",
+            "continue": "Fortsæt",
+            "module_complete_title": "Modul færdigt",
+            "module_complete_body": "Dine fremskridt blev gemt. Åbn det næste modul for at fortsætte.",
+            "next_module": "Næste modul",
+            "autosave_hint": "Fremskridt gemmes automatisk."
+          },
+          "results": {
+            "sheet": {
+              "title": "Forsøg for {learnerName}",
+              "description": "Hvert forsøg med hvert modul, de svar, pakken rapporterede, og den anvendte tid.",
+              "attempt": "Forsøg {number}",
+              "version": "Pakkeversion {number}",
+              "rule_met": "Regel opfyldt",
+              "interactions": "{count} svar rapporteret",
+              "no_attempts_title": "Ingen forsøg endnu",
+              "no_attempts_description": "Forsøg vises her, så snart den studerende åbner pakken.",
+              "reset": "Nulstil for denne studerende",
+              "confirm_reset": "Klik igen for at bekræfte nulstilling",
+              "columns": {
+                "module": "Modul",
+                "completion": "Fuldførelse",
+                "success": "Resultat",
+                "score": "Score",
+                "time": "Tid"
+              },
+              "diagnostics_title": "Diagnostik",
+              "events": {
+                "launch": "Startet",
+                "initialize": "Forbundet",
+                "commit": "Gemt",
+                "terminate": "Afsluttet",
+                "beacon": "Gemt ved afslutning",
+                "error": "Fejl",
+                "not_initialized": "Kunne ikke oprette forbindelse"
+              }
+            },
+            "export": {
+              "title": "SCORM-resultater"
+            },
+            "pass_fail": {
+              "passed": "Bestået",
+              "failed": "Ikke bestået"
+            },
+            "status": {
+              "not_started": "Ikke påbegyndt",
+              "in_progress": "I gang",
+              "failed": "Endnu ikke bestået",
+              "completed": "Fuldført"
+            },
+            "table": {
+              "student": "Kursist",
+              "score": "Score",
+              "status": "Status",
+              "pass_fail": "Bestået/ikke bestået",
+              "best_score": "Bedste score",
+              "time_spent": "Brugt tid",
+              "attempts": "Forsøg",
+              "last_launched": "Sidst startet"
+            },
+            "summary": {
+              "enrolled": "Tilmeldt",
+              "started": "Påbegyndt",
+              "completed": "Fuldført",
+              "passed": "Bestået",
+              "average_score": "Gennemsnitlig score"
+            }
+          }
+        },
+        "add_content_created_activity": "SCORM-pakken er blevet oprettet!",
+        "add_content_create_another_activity": "Opret en anden pakke"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -3015,7 +3256,8 @@
       "back_to_course": "Tilbage til kurset",
       "content_count": {
         "lessons": "{count} lektioner",
-        "exercises": "{count} øvelser"
+        "exercises": "{count} øvelser",
+        "activities": "{count} aktiviteter"
       },
       "compliance": {
         "title": "Overholdelse",
@@ -3026,7 +3268,8 @@
         "title": "Dine fremskridt",
         "completed": "{completed} af {total} fuldført",
         "lessons": "{completed} af {total} lektioner",
-        "exercises": "{completed} af {total} øvelser"
+        "exercises": "{completed} af {total} øvelser",
+        "activities": "{completed} ud af {total} pakker"
       },
       "footer_nav": {
         "label": "Navigation i kursusindhold",
@@ -3048,7 +3291,8 @@
       "nav_settings": "Indstillinger",
       "nav_ai_assistant": "Assistent",
       "nav_ai_tutor": "AI underviser",
-      "exit_course": "Forlad kursus"
+      "exit_course": "Forlad kursus",
+      "nav_package": "Pakke"
     },
     "completion": {
       "modal": {
@@ -3224,7 +3468,10 @@
       "student_empty_description": "Der er endnu ingen kurser tilgængelige i denne organisation. Tjek venligst tilbage senere.",
       "updated_at": "Opdateret {date}",
       "lessons_count": "{count, plural, one {# lektion} other {# lektioner}}",
-      "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}"
+      "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}",
+      "activities_count": "{count, plural, one {# pakke} other {# pakker}}",
+      "scorm_modules": "SCORM · {count, plural, one {# modul} other {# moduler}}",
+      "scorm": "SCORM"
     },
     "course_filter": {
       "date_created_newest": "Oprettelsesdato: Nyeste først",
@@ -3608,15 +3855,18 @@
         "lesson": "Lektion",
         "exercise": "Motion",
         "question": "Spørgsmål",
-        "unknown": "Ukendt"
+        "unknown": "Ukendt",
+        "activity": "SCORM-pakke"
       },
       "go_to_lesson": "Gå til lektion",
       "slot_type": {
         "lesson_video": "Lektion video",
         "lesson_document": "Lektionsdokument",
-        "unknown": "Vedhæftet fil"
+        "unknown": "Vedhæftet fil",
+        "activity_package": "SCORM-pakke"
       },
-      "refresh": "Opdater brugen"
+      "refresh": "Opdater brugen",
+      "go_to_package": "Gå til pakke"
     },
     "form": {
       "file_name": "Filnavn",
@@ -3647,7 +3897,8 @@
       "where_used": "Hvor brugt",
       "download": "Download",
       "manage_thumbnails": "Administrer thumbnails",
-      "delete": "Slet"
+      "delete": "Slet",
+      "create_course_from_package": "Opret kursus fra pakke"
     },
     "table": {
       "title": "Titel",
@@ -3675,7 +3926,8 @@
       "document": "Dokument",
       "image": "Billede",
       "audio": "Lyd",
-      "other": "Andet"
+      "other": "Andet",
+      "scorm": "SCORM-pakke"
     },
     "filters": {
       "search_placeholder": "Søg efter aktiver",
@@ -3690,7 +3942,8 @@
         "document": "Dokument",
         "image": "Billede",
         "audio": "Lyd",
-        "other": "Andet"
+        "other": "Andet",
+        "scorm": "SCORM-pakke"
       },
       "refresh": "Opfriske"
     },
@@ -3698,7 +3951,8 @@
       "total_bytes": "Samlet opbevaring",
       "internal_bytes": "Intern opbevaring",
       "external_assets": "Eksterne aktiver",
-      "bytes_by_kind": "Opbevaring efter aktivtype"
+      "bytes_by_kind": "Opbevaring efter aktivtype",
+      "scorm_bytes": "SCORM-pakker"
     },
     "common": {
       "not_available": "N/A"
@@ -3729,6 +3983,27 @@
       "confirm": "Slet permanent",
       "cancel": "Annuller",
       "close": "Luk"
+    },
+    "scorm": {
+      "select": "Vælg",
+      "cancel_select": "Annuller",
+      "cancel": "Annuller",
+      "selected_count": "{count, plural, one {# pakke valgt} other {# pakker valgt}}",
+      "create_n_courses": "{count, plural, one {Opret # kursus} other {Opret # kurser}}",
+      "select_package": "Vælg pakke {title}",
+      "modules_count": "{count, plural, one {# modul} other {# moduler}}",
+      "create_course_title_single": "Opret et kursus ud fra denne pakke",
+      "create_course_title_many": "Opret {count, plural, one {# kursus} other {# kurser}} ud fra pakker",
+      "create_course_description": "Vi opretter en SCORM-kursuskladde for hver pakke. Dens moduler samles i en menu over pakken.",
+      "course_nav_preview": "Navigation i SCORM-kursus: Pakke",
+      "course_type_self_paced": "Selvstudium",
+      "course_type_self_paced_description": "Kursisterne gennemgår pakken i eget tempo",
+      "course_type_compliance": "Overholdelse af krav",
+      "course_type_compliance_description": "Periodisk træning med gentagelser, påmindelser og sporing af fornyelse",
+      "course_title_label": "Kursustitel",
+      "course_title_label_for": "Kursustitel for {title}",
+      "create_course_confirm_single": "Opret kursus",
+      "create_course_confirm_many": "Opret {count, plural, one {# kursus} other {# kurser}}"
     }
   },
   "settings": {
@@ -4774,7 +5049,15 @@
     "compliance_label": "Overholdelse",
     "compliance_subtitle": "Tilbagevendende træning med gentagninger, påmindelser og fornyelsessporing",
     "public_label": "Offentlig",
-    "public_subtitle": "Gratis kursussider uden tilmelding, du kan dele offentligt – fantastisk til leadgener"
+    "public_subtitle": "Gratis kursussider uden tilmelding, du kan dele offentligt – fantastisk til leadgener",
+    "build_course_label": "Opbyg et kursus",
+    "build_course_subtitle": "Lektioner, øvelser og sektioner, du selv sammensætter",
+    "scorm_course_label": "Upload en SCORM-pakke",
+    "scorm_course_subtitle": "Én interaktiv pakke som hele kurset",
+    "scorm_gated": "Betalte abonnementer",
+    "scorm_upgrade_notice": "SCORM-kurser er inkluderet i alle betalte abonnementer. Opgrader for at oprette et.",
+    "scorm_upgrade_cta": "Se planer",
+    "scorm_license_notice": "SCORM-kurser kræver en virksomhedslicens på denne server."
   },
   "delete_modal": {
     "label": "Slet",
@@ -5369,7 +5652,8 @@
         "course": "Kursus",
         "lessons": "Lektioner",
         "tags": "Tags"
-      }
+      },
+      "packages_suffix": "pakker"
     },
     "plan": {
       "free": "Gratis plan",

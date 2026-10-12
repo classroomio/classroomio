@@ -52,7 +52,7 @@ Built from four read-only inventories of the repository on 9 October 2026 (branc
 | 2.6 | `activity_scorm`, `scorm_attempt`, `scorm_sco_attempt`, `scorm_session_event` | New SCORM provider tables | 5 |
 | 2.7 | `lesson`, `exercise`, `course_section`, `lesson_completion`, `submission`, `course_completion_record`, `groupmember` | **No change, by design** | — |
 | 2.8 | Views `dash_org_stats`, `lesson_versions` | No change. `dash_org_stats` counts courses and students only | — |
-| 2.9 | Migrations | PR 1 adds `0031_course_activities` (or the next free number after the high-water-mark check in `CLAUDE.md`). PR 5 adds the package and SCORM tables. No other PR adds a migration | 1, 5 |
+| 2.9 | Migrations | PR 1 adds `0032_course_activities` (since `0031_lesson_session_lifecycle` was added on main). PR 5 adds the package and SCORM tables (`0033_scorm_tables`). No other PR adds a migration | 1, 5 |
 
 ## 3. Database queries (`packages/db/src/queries/`)
 

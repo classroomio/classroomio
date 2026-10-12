@@ -1,9 +1,11 @@
 import {
   DeleteObjectCommand,
   DeleteObjectCommandInput,
+  DeleteObjectsCommand,
   GetObjectCommand,
   GetObjectCommandInput,
   HeadObjectCommand,
+  ListObjectsV2Command,
   PutObjectCommand,
   PutObjectCommandInput
 } from '@aws-sdk/client-s3';
@@ -264,4 +266,73 @@ export async function deleteVideoObject(key: string): Promise<void> {
 export async function generateDocumentUploadPresignedUrl(fileKey: string, contentType: string): Promise<string> {
   const config = getStorageConfig();
   return generateUploadPresignedUrl(fileKey, config.bucketDocuments, contentType);
+}
+
+export const SCORM_UPLOAD_CONTENT_TYPE = 'application/zip';
+
+/**
+ * Generates a presigned PUT URL for a SCORM package ZIP in the private scorm bucket.
+ */
+export async function generateScormUploadPresignedUrl(fileKey: string): Promise<string> {
+  const config = getStorageConfig();
+  return generateUploadPresignedUrl(fileKey, config.bucketScorm, SCORM_UPLOAD_CONTENT_TYPE);
+}
+
+/**
+ * Returns the byte size of an object, or null when it does not exist.
+ */
+export async function headS3ObjectSize(bucket: string, key: string): Promise<number | null> {
+  try {
+    const output = await getS3Client().send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+    return typeof output.ContentLength === 'number' ? output.ContentLength : null;
+  } catch (error) {
+    const status = (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+    const name = (error as { name?: string }).name;
+    if (status === 404 || name === 'NotFound' || name === 'NoSuchKey') return null;
+
+    throw error;
+  }
+}
+
+/**
+ * Streams an object, optionally a byte range, for workers that process uploads without buffering them.
+ */
+export async function getS3ObjectStream(bucket: string, key: string, range?: string): Promise<ReadableStream> {
+  const output = await getS3Client().send(
+    new GetObjectCommand({ Bucket: bucket, Key: key, ...(range ? { Range: range } : {}) })
+  );
+  if (!output.Body) throw new Error(`S3 object ${bucket}/${key} returned no body`);
+
+  return output.Body as ReadableStream;
+}
+
+/**
+ * Deletes every object under a prefix. Idempotent — missing objects are
+ * fine. Returns the deleted key count.
+ */
+export async function deleteS3Prefix(bucket: string, prefix: string): Promise<number> {
+  const client = getS3Client();
+  let deleted = 0;
+  let continuationToken: string | undefined;
+
+  do {
+    const listed = await client.send(
+      new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix, ContinuationToken: continuationToken })
+    );
+    const keys = (listed.Contents ?? []).map((entry) => entry.Key).filter((key): key is string => Boolean(key));
+
+    if (keys.length > 0) {
+      await client.send(
+        new DeleteObjectsCommand({
+          Bucket: bucket,
+          Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true }
+        })
+      );
+      deleted += keys.length;
+    }
+
+    continuationToken = listed.IsTruncated ? listed.NextContinuationToken : undefined;
+  } while (continuationToken);
+
+  return deleted;
 }

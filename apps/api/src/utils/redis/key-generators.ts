@@ -102,6 +102,17 @@ export const ipKeyGenerator = (c: Context): string => {
 };
 
 /**
+ * Rate limit key for SCORM run-time commits: one bucket per launch token.
+ * The token is per launch, so this is effectively per module try.
+ */
+export const activityRuntimeKeyGenerator = (c: Context): string => {
+  const match = /\/activity\/scorm\/runtime\/([^/]+)/.exec(c.req.path);
+  const token = match?.[1] ?? 'unknown';
+
+  return `activity-runtime:${token}:ip:${extractClientIp(c)}`;
+};
+
+/**
  * Generate rate limit key for specific endpoints
  */
 export const endpointKeyGenerator =

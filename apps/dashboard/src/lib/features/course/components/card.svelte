@@ -54,6 +54,7 @@
     isPublished = false,
     totalLessons = 0,
     totalExercises = 0,
+    totalActivities = 0,
     totalStudents = 0,
     currency = 'USD',
     progressRate = 45,
@@ -82,14 +83,28 @@
       const c = course as { exerciseCount?: number };
       return typeof c.exerciseCount === 'number' ? c.exerciseCount : 0;
     })(),
+    totalActivities: (() => {
+      const c = course as { activityCount?: number };
+      return typeof c.activityCount === 'number' ? c.activityCount : 0;
+    })(),
     progressRate: (() => {
-      const c = course as { exerciseCount?: number; exercisesCompleted?: number };
-      if (typeof c.exerciseCount === 'number' && typeof c.exercisesCompleted === 'number') {
+      const c = course as {
+        exerciseCount?: number;
+        exercisesCompleted?: number;
+        activityCount?: number;
+        activitiesCompleted?: number;
+      };
+      if (
+        (typeof c.exerciseCount === 'number' && typeof c.exercisesCompleted === 'number') ||
+        (typeof c.activityCount === 'number' && typeof c.activitiesCompleted === 'number')
+      ) {
         return calcCourseProgress({
           lessonsCompleted: 'progressRate' in course ? (course.progressRate ?? 0) : 0,
           totalLessons: course.lessonCount ?? 0,
-          exercisesCompleted: c.exercisesCompleted,
-          totalExercises: c.exerciseCount
+          exercisesCompleted: c.exercisesCompleted ?? 0,
+          totalExercises: c.exerciseCount ?? 0,
+          activitiesCompleted: c.activitiesCompleted ?? 0,
+          totalActivities: c.activityCount ?? 0
         });
       }
       return calcProgressRate('progressRate' in course ? course.progressRate : 0, course.lessonCount);
@@ -191,6 +206,14 @@
 
   const showLmsPublicCourseMenu = $derived(isLMS && type === 'PUBLIC' && !!slug?.trim() && isPublished);
 
+  const isScormCourse = $derived('format' in course && course.format === 'scorm');
+  const scormModuleCount = $derived.by(() => {
+    const c = course as { moduleCount?: number; totalModules?: number };
+    if (typeof c.moduleCount === 'number') return c.moduleCount;
+    if (typeof c.totalModules === 'number') return c.totalModules;
+    return null;
+  });
+
   const complianceStatusKey = $derived(
     isLMS && type === 'COMPLIANCE' && !isExplore
       ? getStudentCourseComplianceStatusKey(course as UserEnrolledCourses[number])
@@ -266,16 +289,34 @@
     <div class="flex justify-between {isLMS && 'items-center'} w-full">
       <div class="w-[60%]">
         {#if isLMS || isOnLandingPage}
-          <p class="text-xs {!isLMS && 'pl-2'} flex gap-1 dark:text-white">
-            <span>
-              {totalLessons}
-              {$t('courses.course_card.lessons_number')}
-            </span>
-            &
-            <span>
-              {pluralize($t('courses.course_card.exercise'), totalExercises, true)}
-            </span>
-          </p>
+          {#if isScormCourse}
+            <p class="text-xs {!isLMS && 'pl-2'} flex gap-1 dark:text-white">
+              <span>
+                {#if scormModuleCount !== null}
+                  {$t('courses.course_card.scorm_modules', { count: scormModuleCount })}
+                {:else}
+                  {$t('courses.course_card.scorm')}
+                {/if}
+              </span>
+            </p>
+          {:else}
+            <p class="text-xs {!isLMS && 'pl-2'} flex gap-1 dark:text-white">
+              <span>
+                {totalLessons}
+                {$t('courses.course_card.lessons_number')}
+              </span>
+              &
+              <span>
+                {pluralize($t('courses.course_card.exercise'), totalExercises, true)}
+              </span>
+              {#if totalActivities > 0}
+                &
+                <span>
+                  {$t('courses.course_card.activities_count', { count: totalActivities })}
+                </span>
+              {/if}
+            </p>
+          {/if}
         {/if}
         <div class="py-2 text-xs">
           {#if isOnLandingPage}
@@ -346,16 +387,34 @@
         </Button>
       {:else if !isOnLandingPage}
         <div class="flex flex-col justify-end gap-1 text-right">
-          <p class="pl-2 text-xs whitespace-nowrap dark:text-white">
-            <span>
-              {totalLessons}
-              {$t('courses.course_card.lessons_number')}
-            </span>
-            &
-            <span>
-              {pluralize($t('courses.course_card.exercise'), totalExercises, true)}
-            </span>
-          </p>
+          {#if isScormCourse}
+            <p class="pl-2 text-xs whitespace-nowrap dark:text-white">
+              <span>
+                {#if scormModuleCount !== null}
+                  {$t('courses.course_card.scorm_modules', { count: scormModuleCount })}
+                {:else}
+                  {$t('courses.course_card.scorm')}
+                {/if}
+              </span>
+            </p>
+          {:else}
+            <p class="pl-2 text-xs whitespace-nowrap dark:text-white">
+              <span>
+                {totalLessons}
+                {$t('courses.course_card.lessons_number')}
+              </span>
+              &
+              <span>
+                {pluralize($t('courses.course_card.exercise'), totalExercises, true)}
+              </span>
+              {#if totalActivities > 0}
+                &
+                <span>
+                  {$t('courses.course_card.activities_count', { count: totalActivities })}
+                </span>
+              {/if}
+            </p>
+          {/if}
           <p class="pl-2 text-xs dark:text-white">
             {pluralize($t('courses.course_card.students'), totalStudents, true)}
           </p>

@@ -15,9 +15,17 @@
 
   const tutorsCount = $derived(data.totalTutors ?? 0);
   const exerciseTotal = $derived(data.totalExercises ?? 0);
+  const activityTotal = $derived(
+    'totalActivities' in data && typeof data.totalActivities === 'number' ? data.totalActivities : 0
+  );
   const avgGrade = $derived(data.averageGrade ?? 0);
   const lessonRate = $derived(data.lessonCompletionRate ?? 0);
   const exerciseRate = $derived(data.exerciseCompletionRate ?? 0);
+  const activityRate = $derived(
+    'activityCompletionRate' in data && typeof data.activityCompletionRate === 'number'
+      ? data.activityCompletionRate
+      : 0
+  );
 </script>
 
 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -35,6 +43,23 @@
     icon={BookOpenIcon}
     accent="warning"
   />
+  {#if activityTotal > 0}
+    <KpiCard
+      title={$t('analytics.packages')}
+      value={activityTotal.toLocaleString()}
+      description={$t('analytics.course_metrics.kpi_packages', { count: activityTotal })}
+      icon={ListChecksIcon}
+      accent="primary"
+    />
+  {:else}
+    <KpiCard
+      title={$t('analytics.exercises')}
+      value={`${exerciseRate}%`}
+      description={$t('analytics.completion_rate')}
+      icon={ListChecksIcon}
+      accent="primary"
+    />
+  {/if}
   <KpiCard
     title={$t('analytics.progress')}
     value={`${lessonRate}%`}
@@ -42,11 +67,13 @@
     icon={PercentIcon}
     accent="success"
   />
-  <KpiCard
-    title={$t('analytics.exercises')}
-    value={`${exerciseRate}%`}
-    description={$t('analytics.completion_rate')}
-    icon={ListChecksIcon}
-    accent="primary"
-  />
+  {#if activityTotal > 0}
+    <KpiCard
+      title={$t('analytics.exercises')}
+      value={`${exerciseRate}%`}
+      description={$t('analytics.course_metrics.kpi_activity_completion', { rate: activityRate })}
+      icon={ListChecksIcon}
+      accent="primary"
+    />
+  {/if}
 </div>

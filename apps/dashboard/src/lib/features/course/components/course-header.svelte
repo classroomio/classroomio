@@ -36,11 +36,12 @@
   const isPublished = $derived(courseApi.course?.isPublished ?? false);
   const lessonId = $derived(page.params.lessonId as string | undefined);
   const exerciseId = $derived(page.params.exerciseId as string | undefined);
+  const activityId = $derived(page.params.activityId as string | undefined);
   const showMobileBottomNav = $derived(
     isCourseMobileBottomNavVisible({
       isCourseLearnerView: $isCourseLearnerView,
       isMobile: isMobileStore.current,
-      isLessonOrExercisePage: Boolean(lessonId || exerciseId),
+      isContentPage: Boolean(lessonId || exerciseId || activityId),
       courseProgress: getCourseProgress(courseApi.course)
     })
   );

@@ -884,7 +884,7 @@ SCORM 1.2 has one status field; SCORM 2004 has two. Both normalize to a completi
 
 LMS-side rules, applied by `applyLmsRules` before the CMI is stored:
 
-- **SCORM 1.2, status never set**: when the module calls `LMSFinish` without ever setting `cmi.core.lesson_status`, the LMS records `completed`.
+- **SCORM 1.2, status never set**: when the module calls `LMSFinish` without ever setting `cmi.core.lesson_status`, the LMS records `completed` unless `cmi.core.exit` is `suspend` (which preserves incomplete/not-attempted so the try remains suspended for resume).
 - **SCORM 1.2, mastery score**: when the unit has `masteryScore`, the attempt has credit and the module set `cmi.core.score.raw`, the LMS sets `passed` or `failed` by comparing the raw score with the mastery score.
 - **SCORM 2004**: `cmi.completion_status` and `cmi.success_status` are used as stored, after the LMS evaluates `completion_threshold` against `progress_measure` and `scaled_passing_score` against `score.scaled`. These are the rules ADL’s reference run-time applies on Terminate.
 - Phase 0 checks which of these scorm-again already applies, so they run once.
@@ -943,7 +943,7 @@ launch(activityId, profileId, unitIdentifier?, newAttempt?):
   unit = unitIdentifier, or the first module in manifest order that doesn't meet the rule
   try = the open try for (attempt, unit)
   if try: resume it (entry = resume when its status is suspended, otherwise "")
-  else: create a try with empty CMI (entry = ab-initio in 1.2, ab_initio in 2004)
+  else: create a try with empty CMI (entry = ab-initio in both 1.2 and 2004)
 
 terminate(try, exit):
   exit = suspend                                       → try suspended
@@ -992,7 +992,7 @@ Two tokens, both HMAC-SHA256 over a JSON payload with a shared `ACTIVITY_SIGNING
 
 ### Content Serving, Caching and Headers
 
-- `GET` and `HEAD /activity/content/{contentToken}/{path}` read `{p}/{path}` from the private `scorm` bucket, after normalizing the path and checking it stays under `p`. When the exact key is missing, the path index (`v{n}.index.json`) resolves a case-insensitive match, because packages built on Windows often reference files in the wrong case.
+- `GET` and `HEAD /activity/content/{contentToken}/{path}` read `{p}/{path}` from the private `scorm` bucket, after normalizing the path and checking it stays under `p`. When the exact key is missing, the path index (`{contentPrefix}/index.json`, written as a JSON array of prefix-relative paths) resolves a case-insensitive match, because packages built on Windows often reference files in the wrong case.
 - `Range` requests return 206. Safari will not play MP4 without them.
 - Every object carries the content type set at extraction, because `nosniff` blocks scripts and styles served with the wrong type.
 - **Edge cache (cloud)**: the tenant-router Worker verifies the token, then looks up `caches.default` with a key built from the storage path and a hash of `anc` (the token itself is not in the key). On a miss it reads R2, returns the object and stores it with `cache.put`. Package versions are immutable, so responses carry `Cache-Control: public, max-age=604800, immutable`. Cloudflare’s cache limits apply: 512 MB per file on Free, Pro and Business plans.
@@ -1006,6 +1006,7 @@ Two tokens, both HMAC-SHA256 over a JSON payload with a shared `ACTIVITY_SIGNING
 | `Cross-Origin-Opener-Policy` | `unsafe-none` | New-window mode needs `window.opener` |
 | `Referrer-Policy` | `strict-origin` | Never leak a token in a Referer; embedded players still get an origin |
 | `X-Content-Type-Options` | `nosniff` | Kept |
+| `Cross-Origin-Resource-Policy` | `cross-origin` | Allows subresources (images, media) to load under COEP without embedding blocks |
 
 - The content CSP deliberately sets only `frame-ancestors`. Packages that stream content (decision 12), embed YouTube or load fonts from a CDN need outbound frames, scripts and requests, and the content origin is already isolated from the app, so allowing them costs nothing.
 - Vendor content framed inside the content origin is a third-party context. If it relies on its own cookies, it fails in browsers that block third-party cookies. The diagnostics and the help article name this as the usual cause when a streamed package loads blank.
@@ -1083,7 +1084,7 @@ The `activity-package` worker processes one version and dispatches by detected f
 
 4. Parse the manifest with `fast-xml-parser` (MIT) with entity processing off, after rejecting any manifest that contains a DOCTYPE. Detect the version from `schemaversion` (`1.2`, `CAM 1.3`, `2004 3rd Edition`, `2004 4th Edition`), then from the namespaces, falling back to 1.2 as Moodle does. Read attributes case-insensitively, because real packages write both `adlcp:scormtype` and `adlcp:scormType`.
 5. Check that every SCO’s `href` exists, with a case-insensitive fallback recorded as a warning. Reject the package when a SCO’s launch URL, resolved against `xml:base`, is absolute (`http:`, `https:` or `//`), with the error “This package opens content from another website”. Reject it when no resource is a SCO (only assets), with “Nothing in this package reports progress”.
-6. Upload each file to `{contentPrefix}/…` with its content type using a new streaming upload helper (today’s worker uploads read whole files into memory), and write `v{n}.index.json`.
+6. Upload each file to `{contentPrefix}/…` with its content type using a new streaming upload helper (today’s worker uploads read whole files into memory), and write `{contentPrefix}/index.json` as a JSON array of prefix-relative paths.
 7. Write the version and unit rows, then mark the version `ready`. When it is the first version, make it current.
 8. Update `media_job` stage and progress throughout. On the final failure, store a specific error code.
 
@@ -1169,11 +1170,12 @@ The dashboard is verified with svelte-check against the pre-existing error basel
 
 ### Frontend Plan (Dashboard)
 
-- Feature folder `apps/dashboard/src/lib/features/activity/`:
+- Feature folder `apps/dashboard/src/lib/features/course/` (per map 7.30 and domain architecture, curriculum items are unified under `features/course/`):
   - `api/activity.svelte.ts` and `api/package.svelte.ts`: `BaseApiWithErrors` classes, with Zod `safeParse` before `this.execute<…Request>()`.
   - `utils/types.ts`: request types such as `typeof classroomio.course[':courseId'].activity.$post`, success data via `Extract<InferResponseType<…>, { success: true }>['data']`, and the player message types.
   - `utils/scorm-utils.ts`: status labels, time formatting, rule descriptions.
-  - `components/`: `activity-create-stepper.svelte`, `package-upload.svelte`, `package-details.svelte`, `package-settings.svelte`, `activity-player.svelte`, `module-menu.svelte`, `activity-results-panel.svelte`, `learner-attempts-sheet.svelte`, `courses-from-packages-dialog.svelte`, `scorm-course-create.svelte`.
+  - `components/activity/`: `package-upload.svelte`, `package-details.svelte`, `package-settings.svelte`, `activity-player.svelte`, `activity-player-module-menu.svelte`, `activity-results-panel.svelte`, `learner-attempts-sheet.svelte`, `courses-from-packages-dialog.svelte`, `scorm-course-create.svelte`.
+  - `components/content/activity-create-stepper.svelte`.
   - `pages/activity.svelte`: picks the editor (team) or the player (student) for the activity’s kind.
 - Route `apps/dashboard/src/routes/(app)/courses/[id]/activities/[activityId]/+page.server.ts` and `+page.svelte`.
 - Course plumbing changes: map § 7. They are type-level and shared-utility changes first (PR 4), then SCORM screens (PR 7, 10, 11, 12).

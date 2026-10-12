@@ -41,6 +41,7 @@ import { updateCourseLandingPageService } from '../course/landing-page';
 import { getCourseGoLiveReadiness, publishCourseWhenReady } from '../course/go-live-readiness';
 import {
   assertValidUuid,
+  verifyActivityBelongsToCourse,
   verifyExerciseBelongsToCourse,
   verifyLessonBelongsToCourse,
   verifySectionBelongsToCourse
@@ -493,7 +494,7 @@ export function buildAgentTools(
   return {
     get_course_structure: tool({
       description:
-        'Get the full course structure including sections, lessons, and exercises as a tree. The courseId is automatically set — do not pass it.',
+        'Get the full course structure including sections, lessons, exercises and activities as a tree. The courseId is automatically set — do not pass it.',
       inputSchema: emptyParam,
       execute: async () => {
         return executeAgentTool('get_course_structure', { orgId, userId, courseId }, async () => {
@@ -956,7 +957,7 @@ export function buildAgentTools(
 
     reorder_content: tool({
       description:
-        'Reorder sections, lessons, or exercises in this course. Can change the order of sections, change the order of lessons/exercises within a section, or move items between sections. Use get_course_structure first to see current order, and copy item IDs exactly from that response. Never rewrite or guess UUIDs.',
+        'Reorder sections, lessons, exercises or activities in this course. Can change the order of sections, change the order of lessons/exercises/activities within a section, or move items between sections. Use get_course_structure first to see current order, and copy item IDs exactly from that response. Never rewrite or guess UUIDs.',
       inputSchema: reorderContentParam,
       execute: async (args) => {
         return executeAgentTool('reorder_content', { orgId, userId, courseId, args }, async () => {
@@ -974,6 +975,9 @@ export function buildAgentTools(
                   break;
                 case ContentType.Exercise:
                   await verifyExerciseBelongsToCourse(item.id, courseId);
+                  break;
+                case ContentType.Activity:
+                  await verifyActivityBelongsToCourse(item.id, courseId);
                   break;
                 default:
                   assertNever(item.type);

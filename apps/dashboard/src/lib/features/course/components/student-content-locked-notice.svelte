@@ -11,7 +11,7 @@
 
   interface Props {
     reason: StudentContentLockReason;
-    contentType: typeof ContentType.Lesson | typeof ContentType.Exercise;
+    contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | typeof ContentType.Activity;
   }
 
   let { reason, contentType }: Props = $props();

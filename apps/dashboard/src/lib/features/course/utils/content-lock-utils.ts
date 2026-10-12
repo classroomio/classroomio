@@ -4,7 +4,10 @@ import type { StudentContentLockReason } from '$features/ai-assistant/utils/cont
 import type { Course } from './types';
 import { getCourseContent } from './content';
 
-export type LockedContentItem = { id: string; type: ContentType.Lesson | ContentType.Exercise };
+export type LockedContentItem = {
+  id: string;
+  type: ContentType.Lesson | ContentType.Exercise | ContentType.Activity;
+};
 
 export function collectLockedContentItems(course: Course | null): LockedContentItem[] {
   const content = getCourseContent(course);
@@ -21,6 +24,8 @@ export function collectLockedContentItems(course: Course | null): LockedContentI
         return [{ id: item.id, type: ContentType.Exercise }];
       case ContentType.Section:
         return [];
+      case ContentType.Activity:
+        return [{ id: item.id, type: ContentType.Activity }];
       default:
         return assertNever(item.type);
     }
@@ -37,7 +42,7 @@ export function getStudentContentLockTitleKey(reason: StudentContentLockReason):
 
 export function getStudentContentLockDescriptionKey(
   reason: StudentContentLockReason,
-  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise
+  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | typeof ContentType.Activity
 ): string {
   if (reason === 'progression_locked') {
     switch (contentType) {
@@ -45,6 +50,8 @@ export function getStudentContentLockDescriptionKey(
         return 'course.navItem.lessons.content_progression_locked_description_exercise';
       case ContentType.Lesson:
         return 'course.navItem.lessons.content_progression_locked_description_lesson';
+      case ContentType.Activity:
+        return 'course.navItem.lessons.content_progression_locked_description_activity';
       default:
         return assertNever(contentType);
     }
