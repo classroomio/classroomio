@@ -158,11 +158,12 @@ export type CourseUpcomingSession = {
 };
 
 /**
- * The live session that is running now or starts next (earliest lesson with a `callUrl` that has not ended yet)
- * for each of the given course ids. Used to show a "Join session" button on /lms.
+ * The next live session (earliest lesson with a `callUrl` that starts in the future) for each of the given course
+ * ids. With `includeRunning`, a session that has started but not yet ended also counts.
  */
 export async function getUpcomingSessionsForCourseIds(
-  courseIds: string[]
+  courseIds: string[],
+  { includeRunning = false }: { includeRunning?: boolean } = {}
 ): Promise<Map<string, CourseUpcomingSession>> {
   try {
     if (courseIds.length === 0) return new Map();
@@ -185,7 +186,7 @@ export async function getUpcomingSessionsForCourseIds(
           inArray(schema.lesson.courseId, courseIds),
           isNotNull(schema.lesson.callUrl),
           isNotNull(schema.lesson.lessonAt),
-          sql`${sessionEndsAt} > now()`
+          sql`${includeRunning ? sessionEndsAt : schema.lesson.lessonAt} > now()`
         )
       )
       .orderBy(schema.lesson.lessonAt);
