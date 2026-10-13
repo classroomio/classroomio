@@ -12,6 +12,7 @@ import {
   checkSiteNameExists,
   createOrganizationPlan,
   deleteOrganizationAudienceMember,
+  deleteOrganizationById,
   deleteOrganizationMember,
   getActiveOrganizationPlan,
   getFirstOrganizationWithPlans,
@@ -57,6 +58,7 @@ import { createOrganizationWithOwner } from '@api/services/onboarding';
 import { deriveAudienceMemberStatus } from '@api/utils/audience-member-status';
 import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
+import { publishOutboxEvent } from './plugin/events';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
 
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
@@ -1102,4 +1104,9 @@ export async function getUserAnalytics(userId: string, orgId: string) {
       500
     );
   }
+}
+
+export async function deleteOrganization(orgId: string): Promise<void> {
+  await publishOutboxEvent('organization.deleted', { organizationId: orgId }, orgId);
+  await deleteOrganizationById(orgId);
 }

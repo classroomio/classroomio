@@ -156,7 +156,7 @@ function defaultMaxRequests(c: Context): number {
 function shouldSkipRateLimit(c: Context): boolean {
   if (isTrustedServerApiKeyRequest(c)) return true;
 
-  if (c.req.path.startsWith('/public-api/')) return true;
+  if (c.req.path.startsWith('/public-api/') || c.req.path.startsWith('/plugin-api/')) return true;
 
   return c.req.path === '/api/auth/get-session';
 }

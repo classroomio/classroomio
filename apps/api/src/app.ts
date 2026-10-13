@@ -48,12 +48,18 @@ import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 import { pluginsRouter } from '@api/routes/plugins';
+import { pluginApiRouter } from '@api/routes/plugin-api';
+import { handlePluginApiError } from '@api/routes/plugin-api/errors';
 
 // Create Hono app with chaining for RPC support
 export const app = new Hono()
   // Middleware
   .use('*', logger())
   .use('*', prettyJSON())
+  .use('/plugins/assets/*', async (c, next) => {
+    await next();
+    c.res.headers.delete('X-Frame-Options');
+  })
   // `Cross-Origin-Resource-Policy: same-origin` (Hono's default) blocks the
   // dashboard from embedding api-served media (e.g. HLS segments via
   // `<video>`) when the dashboard and api live on different origins in
@@ -260,6 +266,7 @@ export const app = new Hono()
   .route('/internal', internalRouter)
   .route('/agent', agentRouter)
   .route('/plugins', pluginsRouter)
+  .route('/plugin-api', pluginApiRouter)
 
   // Error handling
   .onError((err, c) => {
@@ -268,6 +275,10 @@ export const app = new Hono()
 
     if (c.req.path.startsWith('/public-api/v1/')) {
       return handlePublicApiError(c, err, 'Internal Server Error', ErrorCodes.INTERNAL_ERROR);
+    }
+
+    if (c.req.path.startsWith('/plugin-api/')) {
+      return handlePluginApiError(c, err, 'Plugin API request failed');
     }
 
     return c.json({ error: 'Internal Server Error' }, 500);

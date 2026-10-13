@@ -9,9 +9,10 @@ import { createCredential, listCredentials, revokeCredential } from '@api/servic
 export const pluginCredentialsRouter = new Hono()
   .get('/:installationId/credentials', authMiddleware, orgAdminMiddleware, async (c) => {
     const installationId = c.req.param('installationId');
+    const orgId = c.get('orgId') as string;
 
     try {
-      const credentials = await listCredentials(installationId);
+      const credentials = await listCredentials(installationId, orgId);
 
       return c.json({ success: true, data: credentials }, 200);
     } catch (error) {
@@ -25,11 +26,12 @@ export const pluginCredentialsRouter = new Hono()
     zValidator('json', ZCreatePluginCredential),
     async (c) => {
       const user = c.get('user')!;
+      const orgId = c.get('orgId') as string;
       const installationId = c.req.param('installationId');
       const input = c.req.valid('json');
 
       try {
-        const result = await createCredential(installationId, input.label, input.expiresInDays, user.id);
+        const result = await createCredential(installationId, orgId, input.label, input.expiresInDays, user.id);
 
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
@@ -39,11 +41,12 @@ export const pluginCredentialsRouter = new Hono()
   )
   .delete('/:installationId/credentials/:credentialId', authMiddleware, orgAdminMiddleware, async (c) => {
     const user = c.get('user')!;
+    const orgId = c.get('orgId') as string;
     const installationId = c.req.param('installationId');
     const credentialId = c.req.param('credentialId');
 
     try {
-      const revoked = await revokeCredential(installationId, credentialId, user.id);
+      const revoked = await revokeCredential(installationId, orgId, credentialId, user.id);
 
       return c.json({ success: true, data: revoked }, 200);
     } catch (error) {
