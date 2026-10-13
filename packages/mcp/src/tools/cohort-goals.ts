@@ -113,7 +113,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'evaluate_cohort_goal',
-    `Re-evaluate one goal's learner statuses now, without waiting for the scheduled run; ${COHORT_TEAM_RULE}. Archived goals are not evaluated and return 409.`,
+    `Re-evaluate one goal's learner statuses now, without waiting for the scheduled run; ${COHORT_TEAM_RULE}. Returns the number of learner assignments evaluated; archived goals are not evaluated and return 409.`,
     evaluateCohortGoalShape,
     WRITE,
     async (args) => {
@@ -125,7 +125,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'evaluate_all_cohort_goals',
-    `Re-evaluate every active goal in a cohort now, without waiting for the scheduled run; ${COHORT_TEAM_RULE}.`,
+    `Re-evaluate every active goal in a cohort now, without waiting for the scheduled run; ${COHORT_TEAM_RULE}. Returns the number of learner assignments evaluated.`,
     evaluateAllCohortGoalsShape,
     WRITE,
     async (args) => {
