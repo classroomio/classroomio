@@ -43,6 +43,7 @@ import { canAccessCourseSubmissions, getGroupMemberIdByCourseAndProfile } from '
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
@@ -546,6 +547,34 @@ export async function listSubmissionsForGrading(courseId: string) {
  * @param answers Array of question answers
  * @returns Created submission (with `answers` when auto-graded on the server)
  */
+async function emitSubmissionWebhookEvent(
+  eventType: 'course.submission.created' | 'course.submission.status_changed',
+  submission: TSubmission,
+  extra: Record<string, unknown> = {}
+) {
+  if (!submission.courseId) return;
+
+  await emitCourseWebhookEvent(submission.courseId, eventType, {
+    submissionId: submission.id,
+    exerciseId: submission.exerciseId,
+    submittedByProfileId: submission.submittedBy,
+    statusId: submission.statusId,
+    gradingState: submission.gradingState,
+    total: submission.total,
+    ...extra
+  });
+}
+
+async function emitExerciseCompletionWebhookEvent(submission: TSubmission, wasAlreadyComplete: boolean) {
+  if (!submission.courseId || wasAlreadyComplete) return;
+
+  await emitCourseWebhookEvent(submission.courseId, 'exercise.completion.updated', {
+    exerciseId: submission.exerciseId,
+    submittedByProfileId: submission.submittedBy,
+    isComplete: true
+  });
+}
+
 export async function createSubmissionService(
   courseId: string,
   exerciseId: string,
@@ -559,8 +588,9 @@ export async function createSubmissionService(
     ]);
     const course = courseRows[0];
 
+    const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
+
     if (!exerciseWithRelations.exercise.allowMultipleAttempts) {
-      const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
       if (alreadySubmitted) {
         throw new AppError('This exercise allows only one submission', ErrorCodes.VALIDATION_ERROR, 400);
       }
@@ -728,6 +758,14 @@ export async function createSubmissionService(
 
         await syncComplianceProgressFromSubmission(courseId, submittedBy);
         await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
+        await emitSubmissionWebhookEvent('course.submission.created', submission, {
+          statusId: projectLegacyStatusId(gradingState),
+          gradingState
+        });
+        await emitSubmissionWebhookEvent('course.submission.status_changed', submission, {
+          previousStatusId: projectLegacyStatusId(gradingState)
+        });
+        await emitExerciseCompletionWebhookEvent(submission, alreadySubmitted);
 
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
@@ -741,6 +779,8 @@ export async function createSubmissionService(
 
     await syncComplianceProgressFromSubmission(courseId, submittedBy);
     await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
+    await emitSubmissionWebhookEvent('course.submission.created', submission);
+    await emitExerciseCompletionWebhookEvent(submission, alreadySubmitted);
 
     return submission;
   } catch (error) {
@@ -811,6 +851,12 @@ export async function updateSubmissionService(
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+    }
+
+    if (statusChanged) {
+      await emitSubmissionWebhookEvent('course.submission.status_changed', updated, {
+        previousStatusId: previousLegacyStatusId
+      });
     }
 
     return updated;
@@ -919,6 +965,12 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+    }
+
+    if (statusChanged) {
+      await emitSubmissionWebhookEvent('course.submission.status_changed', updated, {
+        previousStatusId: previousLegacyStatusId
+      });
     }
 
     return updated;

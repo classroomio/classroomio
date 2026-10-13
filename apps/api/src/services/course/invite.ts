@@ -33,6 +33,7 @@ import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding, type EmailBranding } from '@cio/email';
@@ -295,6 +296,17 @@ function toInviteResponse(
   };
 }
 
+const COURSE_INVITE_WEBHOOK_EVENTS: Partial<
+  Record<
+    TNewCourseInviteAudit['eventType'],
+    'course.invite.created' | 'course.invite.accepted' | 'course.invite.revoked'
+  >
+> = {
+  CREATED: 'course.invite.created',
+  ACCEPTED: 'course.invite.accepted',
+  REVOKED: 'course.invite.revoked'
+};
+
 async function recordInviteAudit(
   inviteId: string,
   courseId: string,
@@ -317,6 +329,16 @@ async function recordInviteAudit(
     userAgent: context.userAgent ?? null,
     metadata: context.metadata ?? {}
   });
+
+  const webhookEventType = COURSE_INVITE_WEBHOOK_EVENTS[eventType];
+
+  if (webhookEventType) {
+    await emitCourseWebhookEvent(courseId, webhookEventType, {
+      inviteId,
+      email: context.targetEmail ?? null,
+      actorProfileId: context.actorProfileId ?? null
+    });
+  }
 }
 
 async function createSingleInvite(

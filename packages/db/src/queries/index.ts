@@ -22,3 +22,4 @@ export * from './media-transcript';
 export * from './invite-link';
 export * from './youtube-caption';
 export * from './report';
+export * from './webhook';
