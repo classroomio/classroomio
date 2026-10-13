@@ -1,0 +1,50 @@
+name: Plugin artifacts verification
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/build-plugin-artifacts.mjs'
+      - 'scripts/verify-plugin-artifacts.mjs'
+      - 'packages/plugin-sdk/**'
+      - 'packages/plugin-design/**'
+      - 'packages/certificate-kit/**'
+      - 'package.json'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build-plugin-artifacts.mjs'
+      - 'scripts/verify-plugin-artifacts.mjs'
+      - 'packages/plugin-sdk/**'
+      - 'packages/plugin-design/**'
+      - 'packages/certificate-kit/**'
+      - 'package.json'
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/classroomio-plugins
+          path: classroomio-plugins
+          token: ${{ secrets.PLUGIN_REPOSITORY_TOKEN || github.token }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.19.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
+        working-directory: classroomio-plugins
+      - run: pnpm plugins:build-artifacts
+      - run: pnpm plugins:verify-artifacts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-plugin-artifacts
+          path: .plugin-artifacts/
+          if-no-files-found: error
+          retention-days: 7

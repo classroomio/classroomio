@@ -28,7 +28,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/zapier` | draft |
 | - | - | `prd/release-process` | draft |
 | - | - | `prd/events` | draft |
-| - | - | `prd/plugin-system` | proposal |
+| - | - | `prd/plugin-system` | in-progress |
 | - | - | `prd/scroll-to-top` | draft |
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
 

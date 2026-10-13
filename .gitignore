@@ -79,4 +79,7 @@ output.css
 
 /reports
 
+# Immutable local plugin release output (uploaded by the release pipeline)
+/.plugin-artifacts/
+
 .dev.vars
