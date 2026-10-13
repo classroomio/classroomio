@@ -38,7 +38,7 @@
   href={pathHref}
   onclick={onClick}
   title={`${pathName} — ${$t('learningPath.ribbon.view_path')}`}
-  class="ui:bg-primary/10 ui:border-primary/25 ui:hover:border-primary/50 ui:max-w-full hidden min-w-0 items-center gap-2 overflow-hidden rounded-full border px-2.5 py-1 transition-colors md:inline-flex"
+  class="ui:bg-primary/10 ui:border-primary/25 ui:hover:border-primary/50 ui:max-w-full hidden min-w-9 items-center gap-2 overflow-hidden rounded-full border px-2.5 py-1 transition-colors md:inline-flex"
 >
   <span
     class="ui:text-primary inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold tracking-[0.06em] whitespace-nowrap uppercase"
