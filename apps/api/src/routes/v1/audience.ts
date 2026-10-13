@@ -44,7 +44,7 @@ export const v1AudienceRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List audience members (students) for the authenticated organization. ${ORG_ADMIN_RULE}`,
+      description: `List the organization's audience members; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse(
@@ -82,7 +82,7 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create an audience member invitation for the authenticated organization. ${ORG_ADMIN_RULE}`,
+      description: `Invite someone to the organization as an audience member; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         201: jsonResponse('Audience member created successfully', itemResponse(ZPublicApiCreateAudienceResponse)),
@@ -115,7 +115,7 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/assign-courses',
     describeRoute({
-      description: `Assign one or more audience members to one or more courses or cohorts. ${ORG_ADMIN_RULE}`,
+      description: `Assign one or more audience members to one or more courses or cohorts; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse(
@@ -151,7 +151,7 @@ export const v1AudienceRouter = new Hono()
   .get(
     '/:memberId',
     describeRoute({
-      description: `Get a single audience member by id. ${ORG_ADMIN_RULE}`,
+      description: `Get an audience member; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse('Audience member returned successfully', itemResponse(ZPublicApiAudienceMemberResponse)),
@@ -185,10 +185,13 @@ export const v1AudienceRouter = new Hono()
   .delete(
     '/:memberId',
     describeRoute({
-      description: `Remove an audience member from the organization. This deletes the membership; the person keeps their account. ${ORG_ADMIN_RULE}`,
+      description: `Remove an audience member; ${ORG_ADMIN_RULE}.`,
       tags: ['Audience'],
       responses: {
-        200: jsonResponse('Audience member removed successfully', itemResponse(ZPublicApiRemoveAudienceMemberResponse)),
+        200: jsonResponse(
+          'Organization membership deleted; the person keeps their account',
+          itemResponse(ZPublicApiRemoveAudienceMemberResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: forbidden('audience:write'),

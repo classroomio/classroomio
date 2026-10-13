@@ -21,9 +21,14 @@ export type TPublicApiCourseMembersQuery = z.infer<typeof ZPublicApiCourseMember
 
 export const ZPublicApiAddCourseMember = z
   .object({
-    profileId: z.uuid().optional(),
+    profileId: z.uuid().optional().describe('Must belong to someone already in your organization.'),
     roleId: ZPublicApiCourseRoleId,
-    email: z.email().optional(),
+    email: z
+      .email()
+      .optional()
+      .describe(
+        "Must belong to someone already in your organization; it is linked to that person's profile. To onboard someone new, use the invites endpoints."
+      ),
     name: z.string().optional().describe('Used in the welcome email sent to added tutors/admins')
   })
   .refine((data) => Boolean(data.profileId) || Boolean(data.email), {

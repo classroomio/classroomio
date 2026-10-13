@@ -28,15 +28,11 @@ export const v1CourseAnalyticsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `Course analytics. Pick sections with include (default: summary):
-- summary: totals (tutors, students, lessons, exercises) and per-student averages for progress, exercise completion and grade.
-- funnel: course page view → enrollment → completion for this course over days (7, 30, 90 or 365; default 30).
-
-List the students with GET /courses/{courseId}/analytics/students. ${CACHE_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Get a course's analytics, with the sections chosen by include; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          'Course analytics returned successfully',
+          `Course analytics returned; ${CACHE_NOTE}. List the students with GET /courses/{courseId}/analytics/students.`,
           itemWithMetaResponse(ZPublicApiCourseAnalyticsResponse, ZPublicApiCourseAnalyticsMeta)
         ),
         400: errorResponses.badRequest,
@@ -65,11 +61,11 @@ List the students with GET /courses/{courseId}/analytics/students. ${CACHE_NOTE}
   .get(
     '/students',
     describeRoute({
-      description: `Per-student progress, exercise submissions, average grade and last seen for the course, ordered by name. Paginated with page (default 1) and limit (default 20, max 50). ${LIST_CACHE_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `List each student's progress, exercise submissions, average grade and last seen for a course; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          'Course students returned successfully',
+          `Course students returned, ordered by name; ${LIST_CACHE_NOTE}`,
           paginatedResponse(ZPublicApiCourseAnalyticsStudentResponse)
         ),
         400: errorResponses.badRequest,

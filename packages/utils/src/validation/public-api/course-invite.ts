@@ -20,7 +20,10 @@ export const ZPublicApiCreateCourseInvite = z
     allowedDomains: z.array(z.string().min(1)).max(100).optional(),
     recipientEmails: z.array(z.string().email()).max(500).optional(),
     recipientCsv: z.string().max(25000).optional(),
-    sendEmail: z.boolean().default(false),
+    sendEmail: z
+      .boolean()
+      .default(false)
+      .describe('Email the recipients; false mints invite tokens without emailing anyone. Default: false.'),
     metadata: z.record(z.string(), z.unknown()).optional()
   })
   .refine(
