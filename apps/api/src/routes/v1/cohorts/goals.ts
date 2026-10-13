@@ -42,7 +42,7 @@ export const v1CohortGoalsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the active goals in a cohort, with per-status learner counts. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
+      description: `List the active goals in a cohort, with per-status student counts. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goals returned successfully', paginatedResponse(ZPublicApiCohortGoalListItemResponse)),
@@ -100,7 +100,7 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/evaluate-all',
     describeRoute({
-      description: `Re-evaluate every active goal in the cohort now, instead of waiting for the scheduled run. data.evaluated is the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
+      description: `Re-evaluate every active goal in the cohort now, instead of waiting for the scheduled run. data.evaluated is the number of student assignments evaluated. ${COHORT_TEAM_RULE}`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goals evaluated', EvaluateResponse),
@@ -183,7 +183,7 @@ export const v1CohortGoalsRouter = new Hono()
   .delete(
     '/:goalId',
     describeRoute({
-      description: `Permanently delete a cohort goal and its learner progress. Use the archive action to keep history. ${COHORT_TEAM_RULE}`,
+      description: `Permanently delete a cohort goal and its student progress. Use the archive action to keep history. ${COHORT_TEAM_RULE}`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal deleted successfully', GoalResponse),
@@ -237,7 +237,7 @@ export const v1CohortGoalsRouter = new Hono()
   .post(
     '/:goalId/evaluate',
     describeRoute({
-      description: `Re-evaluate one goal's learner statuses now, instead of waiting for the scheduled run. data.evaluated is the number of learner assignments evaluated. Archived goals are not evaluated, so their history is kept; evaluating one returns 409. ${COHORT_TEAM_RULE}`,
+      description: `Re-evaluate one goal's student statuses now, instead of waiting for the scheduled run. data.evaluated is the number of student assignments evaluated. Archived goals are not evaluated, so their history is kept; evaluating one returns 409. ${COHORT_TEAM_RULE}`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse('Goal evaluated', EvaluateResponse),
@@ -293,7 +293,7 @@ export const v1OrgCohortGoalsRouter = new Hono()
   .get(
     '/goals/overview',
     describeRoute({
-      description: `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status. ${PAGINATION_NOTE} The automation actor (the key creator) must be an organization admin or tutor, or this fails with 403.`,
+      description: `Organization-wide goal roll-up: one entry per active goal across all cohorts, with student counts per status. ${PAGINATION_NOTE} The automation actor (the key creator) must be an organization admin or tutor, or this fails with 403.`,
       tags: ['Cohort Goals'],
       responses: {
         200: jsonResponse(

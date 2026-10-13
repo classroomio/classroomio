@@ -41,7 +41,7 @@ const downloadCourseCertificateShape = ZDownloadCourseCertificateToolInput.shape
 export function registerCourseCertificateTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'get_course_certificate',
-    `Read a course's certificate settings and design: template, accent colour, signatories, subtitle, ID format, whether learners can download it, the completion email message, and completion rules (deadline, threshold, required exercise). Returns effective values: defaults are filled in where nothing is stored, matching what the dashboard shows. ${COURSE_MEMBER_RULE}`,
+    `Read a course's certificate settings and design: template, accent colour, signatories, subtitle, ID format, whether students can download it, the completion email message, and completion rules (deadline, threshold, required exercise). Returns effective values: defaults are filled in where nothing is stored, matching what the dashboard shows. ${COURSE_MEMBER_RULE}`,
     getCourseCertificateShape,
     READ_ONLY,
     async (args) => {

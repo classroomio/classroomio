@@ -26,6 +26,8 @@ import {
   assertProfileBelongsToOrganization
 } from '@api/services/v1/shared';
 import { AppError, ErrorCodes } from '@api/utils/errors';
+import { PUBLIC_API_ANALYTICS_TTL_SECONDS, publicApiAnalyticsKey } from '@api/utils/redis/key-generators';
+import { cachedRead } from '@api/utils/redis/cached-read';
 
 async function assertCanManageCourseMembers(orgId: string, courseId: string, actorId: string | null) {
   await assertCourseBelongsToOrganization(orgId, courseId);
@@ -113,15 +115,16 @@ export async function resetCourseMemberProgressService(
   return resetMemberCourseProgress(params.courseId, params.memberId, actorId);
 }
 
-export async function getCourseMemberAnalyticsService(
-  orgId: string,
-  actorId: string | null,
-  params: TPublicApiCourseMemberParam,
+/**
+ * Analytics for one course membership, cached per course, profile and `includeProgressImpact`.
+ * Throws 404 when the member is missing and 400 when they are not a student; neither is cached.
+ */
+export async function loadCourseMemberAnalytics(
+  courseId: string,
+  memberId: string,
   query: TPublicApiCourseMemberAnalyticsQuery
 ) {
-  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
-
-  const member = await getCourseMember(params.courseId, params.memberId);
+  const member = await getCourseMember(courseId, memberId);
   if (!member || !member.profileId) {
     throw new AppError('Course member not found', ErrorCodes.NOT_FOUND, 404);
   }
@@ -130,5 +133,24 @@ export async function getCourseMemberAnalyticsService(
     throw new AppError('Only student members have analytics', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  return getUserCourseAnalytics(params.courseId, member.profileId, query);
+  const profileId = member.profileId;
+  const impactVariant = query.includeProgressImpact ? 'with-impact' : 'base';
+  const { data } = await cachedRead(
+    publicApiAnalyticsKey('course-student', courseId, profileId, impactVariant),
+    PUBLIC_API_ANALYTICS_TTL_SECONDS,
+    () => getUserCourseAnalytics(courseId, profileId, query)
+  );
+
+  return data;
+}
+
+export async function getCourseMemberAnalyticsService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseMemberParam,
+  query: TPublicApiCourseMemberAnalyticsQuery
+) {
+  await assertCanManageCourseMembers(orgId, params.courseId, actorId);
+
+  return loadCourseMemberAnalytics(params.courseId, params.memberId, query);
 }

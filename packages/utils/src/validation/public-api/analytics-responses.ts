@@ -41,7 +41,7 @@ export const ZPublicApiAnalyticsOverviewResponse = z.object({
   recentCertifications: z
     .array(
       z.object({
-        id: z.string().uuid().describe('Profile id of the learner'),
+        id: z.string().uuid().describe('Profile id of the student'),
         avatarUrl: z.string().nullable(),
         name: z.string(),
         courseId: z.string().uuid(),
@@ -116,7 +116,7 @@ export const ZPublicApiComplianceOverviewResponse = z.object({
   )
 });
 
-export const ZPublicApiComplianceLearnerResponse = z.object({
+export const ZPublicApiComplianceStudentResponse = z.object({
   groupMemberId: z.string().uuid(),
   profileId: z.string().uuid().nullable(),
   fullname: z.string().nullable(),
@@ -142,7 +142,7 @@ const ZExerciseStat = z.object({
   isCompleted: z.boolean()
 });
 
-export const ZPublicApiLearnerAnalyticsResponse = z.object({
+export const ZPublicApiStudentAnalyticsResponse = z.object({
   user: z.object({
     id: z.string().uuid(),
     fullName: z.string(),

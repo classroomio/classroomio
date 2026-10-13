@@ -25,7 +25,7 @@ const ADMIN_ONLY_SECTIONS: ReadonlySet<TPublicApiOrgAnalyticsSection> = new Set(
 
 const TTL = PUBLIC_API_ANALYTICS_TTL_SECONDS;
 
-// Shared by the compliance section and the paginated learners list, so paging never rebuilds the report.
+// Shared by the compliance section and the paginated students list, so paging never rebuilds the report.
 function readComplianceOverview(orgId: string) {
   return cachedRead(publicApiAnalyticsKey('compliance', orgId), TTL, () => getOrgComplianceOverview(orgId));
 }
@@ -109,7 +109,7 @@ export async function getPublicApiOrgAnalyticsService(
   };
 }
 
-export async function listPublicApiComplianceLearnersService(
+export async function listPublicApiComplianceStudentsService(
   orgId: string,
   actorId: string | null,
   query: TPublicApiPaginationQuery

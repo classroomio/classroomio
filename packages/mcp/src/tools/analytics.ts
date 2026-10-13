@@ -1,8 +1,10 @@
 import {
-  ZPublicApiLearnerAnalyticsParam,
+  ZPublicApiStudentAnalyticsParam,
   ZPublicApiCourseAnalyticsQuery,
   ZPublicApiCourseAnalyticsStudentsQuery,
+  ZPublicApiCourseMemberAnalyticsQuery,
   ZPublicApiCourseParam,
+  ZPublicApiCourseStudentAnalyticsParam,
   ZPublicApiOrgAnalyticsQuery,
   ZPublicApiPaginationQuery
 } from '@cio/utils/validation/public-api';
@@ -18,18 +20,23 @@ const COURSE_TEAM_RULE = 'The API key creator must be a course tutor/admin or an
 const FRESHNESS = 'Each section may be up to 10 minutes old (login activity: 24 hours); meta.generatedAt says when.';
 
 export const ZOrgAnalyticsToolInput = ZPublicApiOrgAnalyticsQuery;
-export const ZListComplianceLearnersToolInput = ZPublicApiPaginationQuery;
-export const ZLearnerAnalyticsToolInput = ZPublicApiLearnerAnalyticsParam;
+export const ZListComplianceStudentsToolInput = ZPublicApiPaginationQuery;
+export const ZStudentAnalyticsToolInput = ZPublicApiStudentAnalyticsParam;
 export const ZCourseAnalyticsToolInput = ZPublicApiCourseParam.extend(ZPublicApiCourseAnalyticsQuery.shape);
 export const ZListCourseAnalyticsStudentsToolInput = ZPublicApiCourseParam.extend(
   ZPublicApiCourseAnalyticsStudentsQuery.shape
 );
 
+export const ZCourseStudentAnalyticsToolInput = ZPublicApiCourseMemberAnalyticsQuery.safeExtend(
+  ZPublicApiCourseStudentAnalyticsParam.shape
+);
+
 const orgAnalyticsShape = ZOrgAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
-const complianceLearnersShape = ZListComplianceLearnersToolInput.shape as unknown as ZodRawShapeCompat;
-const learnerAnalyticsShape = ZLearnerAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
+const complianceStudentsShape = ZListComplianceStudentsToolInput.shape as unknown as ZodRawShapeCompat;
+const studentAnalyticsShape = ZStudentAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
 const courseAnalyticsShape = ZCourseAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
 const courseAnalyticsStudentsShape = ZListCourseAnalyticsStudentsToolInput.shape as unknown as ZodRawShapeCompat;
+const courseStudentAnalyticsShape = ZCourseStudentAnalyticsToolInput.shape as unknown as ZodRawShapeCompat;
 
 export function registerAnalyticsTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
@@ -45,32 +52,32 @@ export function registerAnalyticsTools(server: McpServer, apiClient: ClassroomIo
   );
 
   server.tool(
-    'list_compliance_learners',
-    `One row per student per compliance course with their latest status, due date and validity, ordered by course title then learner name. For the counts, use get_org_analytics with include ["compliance"]. ${PAGINATED} ${ORG_ADMIN_RULE}`,
-    complianceLearnersShape,
+    'list_compliance_students',
+    `One row per student per compliance course with their latest status, due date and validity, ordered by course title then student name. For the counts, use get_org_analytics with include ["compliance"]. ${PAGINATED} ${ORG_ADMIN_RULE}`,
+    complianceStudentsShape,
     READ_ONLY,
     async (args) => {
-      const query = ZListComplianceLearnersToolInput.parse(args);
-      const result = await apiClient.listComplianceLearners(query);
+      const query = ZListComplianceStudentsToolInput.parse(args);
+      const result = await apiClient.listComplianceStudents(query);
       return jsonContent(result);
     }
   );
 
   server.tool(
-    'get_learner_analytics',
-    `A learner's progress and grades across every course they're enrolled in within this organization, with per-exercise results. profileId is the id list_compliance_learners and list_course_analytics_students return; 404 if it isn't in the organization. ${ORG_TEAM_RULE}`,
-    learnerAnalyticsShape,
+    'get_student_analytics',
+    `A student's progress and grades across every course they're enrolled in within this organization, with per-exercise results. profileId is the id list_compliance_students and list_course_analytics_students return; 404 if it isn't in the organization. ${ORG_TEAM_RULE}`,
+    studentAnalyticsShape,
     READ_ONLY,
     async (args) => {
-      const { profileId } = ZLearnerAnalyticsToolInput.parse(args);
-      const result = await apiClient.getLearnerAnalytics(profileId);
+      const { profileId } = ZStudentAnalyticsToolInput.parse(args);
+      const result = await apiClient.getStudentAnalytics(profileId);
       return jsonContent(result);
     }
   );
 
   server.tool(
     'get_course_analytics',
-    `Course analytics. Pick sections with include (default ["summary"]): summary (tutors, students, lessons, exercises, and per-student averages for progress, exercise completion and grade) and funnel (course page → enrollment → completion over days: 7, 30, 90 or 365, default 30). Use list_course_analytics_students for the per-student rows. ${FRESHNESS} ${COURSE_TEAM_RULE}`,
+    `Course analytics. Pick sections with include (default ["summary"]): summary (tutors, students, lessons, exercises, and per-student averages for progress, exercise completion and grade) and funnel (course page → enrollment → completion over days: 7, 30, 90 or 365, default 30). Use list_course_analytics_students for the per-student rows and get_course_student_analytics for one student. ${FRESHNESS} ${COURSE_TEAM_RULE}`,
     courseAnalyticsShape,
     READ_ONLY,
     async (args) => {
@@ -88,6 +95,18 @@ export function registerAnalyticsTools(server: McpServer, apiClient: ClassroomIo
     async (args) => {
       const { courseId, ...query } = ZListCourseAnalyticsStudentsToolInput.parse(args);
       const result = await apiClient.listCourseAnalyticsStudents(courseId, query);
+      return jsonContent(result);
+    }
+  );
+
+  server.tool(
+    'get_course_student_analytics',
+    `One student's progress and grades in a course, with per-exercise results. profileId is the id list_course_analytics_students returns; 404 if that person is not in the course, 400 if they are not a student. Results may be up to 10 minutes old. ${COURSE_TEAM_RULE}`,
+    courseStudentAnalyticsShape,
+    READ_ONLY,
+    async (args) => {
+      const { courseId, profileId, ...query } = ZCourseStudentAnalyticsToolInput.parse(args);
+      const result = await apiClient.getCourseStudentAnalytics(courseId, profileId, query);
       return jsonContent(result);
     }
   );

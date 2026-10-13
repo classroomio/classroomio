@@ -2,16 +2,27 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@api/services/v1/analytics/org', () => ({
   getPublicApiOrgAnalyticsService: vi.fn(),
-  listPublicApiComplianceLearnersService: vi.fn()
+  listPublicApiComplianceStudentsService: vi.fn()
 }));
 
 vi.mock('@api/services/v1/analytics/course', () => ({
   getPublicApiCourseAnalyticsService: vi.fn(),
+  getPublicApiCourseStudentAnalyticsService: vi.fn(),
   listPublicApiCourseAnalyticsStudentsService: vi.fn()
 }));
 
-vi.mock('@api/services/v1/analytics/learner', () => ({
-  getPublicApiLearnerAnalyticsService: vi.fn()
+vi.mock('@api/services/v1/courses/members', () => ({
+  addCourseMemberService: vi.fn(),
+  deleteCourseMemberService: vi.fn(),
+  getCourseMemberAnalyticsService: vi.fn(),
+  getCourseMemberService: vi.fn(),
+  listCourseMembersService: vi.fn(),
+  resetCourseMemberProgressService: vi.fn(),
+  updateCourseMemberService: vi.fn()
+}));
+
+vi.mock('@api/services/v1/analytics/student', () => ({
+  getPublicApiStudentAnalyticsService: vi.fn()
 }));
 
 vi.mock('@api/services/v1/courses/course', () => ({
@@ -29,14 +40,16 @@ import { Hono } from '@api/utils/hono';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
   getPublicApiCourseAnalyticsService,
+  getPublicApiCourseStudentAnalyticsService,
   listPublicApiCourseAnalyticsStudentsService
 } from '@api/services/v1/analytics/course';
+import { getCourseMemberAnalyticsService } from '@api/services/v1/courses/members';
 import {
   getPublicApiOrgAnalyticsService,
-  listPublicApiComplianceLearnersService
+  listPublicApiComplianceStudentsService
 } from '@api/services/v1/analytics/org';
 import { getCourseService } from '@api/services/v1/courses/course';
-import { getPublicApiLearnerAnalyticsService } from '@api/services/v1/analytics/learner';
+import { getPublicApiStudentAnalyticsService } from '@api/services/v1/analytics/student';
 import { v1AnalyticsRouter } from '@api/routes/v1/analytics';
 import { v1CoursesRouter } from '@api/routes/v1/courses';
 
@@ -110,54 +123,54 @@ describe('GET /analytics', () => {
   });
 });
 
-describe('GET /analytics/compliance/learners and /analytics/learners/:profileId', () => {
+describe('GET /analytics/compliance/students and /analytics/students/:profileId', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('paginates compliance learners', async () => {
-    vi.mocked(listPublicApiComplianceLearnersService).mockResolvedValue(EMPTY_PAGE as never);
+  it('paginates compliance students', async () => {
+    vi.mocked(listPublicApiComplianceStudentsService).mockResolvedValue(EMPTY_PAGE as never);
 
-    const response = await app.request('/analytics/compliance/learners?page=2&limit=5');
+    const response = await app.request('/analytics/compliance/students?page=2&limit=5');
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ success: true, data: [], pagination: EMPTY_PAGE.pagination });
-    expect(listPublicApiComplianceLearnersService).toHaveBeenCalledWith('org-1', 'actor-1', { page: 2, limit: 5 });
+    expect(listPublicApiComplianceStudentsService).toHaveBeenCalledWith('org-1', 'actor-1', { page: 2, limit: 5 });
   });
 
-  it('rejects a compliance learners limit over 100', async () => {
-    const response = await app.request('/analytics/compliance/learners?limit=101');
+  it('rejects a compliance students limit over 100', async () => {
+    const response = await app.request('/analytics/compliance/students?limit=101');
 
     expect(response.status).toBe(400);
   });
 
-  it('validates the learner profileId and maps service errors', async () => {
-    vi.mocked(getPublicApiLearnerAnalyticsService).mockRejectedValue(
+  it('validates the student profileId and maps service errors', async () => {
+    vi.mocked(getPublicApiStudentAnalyticsService).mockRejectedValue(
       new AppError('Profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404)
     );
 
-    const bad = await app.request('/analytics/learners/not-a-uuid');
-    const missing = await app.request(`/analytics/learners/${PROFILE_ID}`);
+    const bad = await app.request('/analytics/students/not-a-uuid');
+    const missing = await app.request(`/analytics/students/${PROFILE_ID}`);
 
     expect(bad.status).toBe(400);
     expect(missing.status).toBe(404);
-    expect(getPublicApiLearnerAnalyticsService).toHaveBeenCalledWith('org-1', 'actor-1', { profileId: PROFILE_ID });
+    expect(getPublicApiStudentAnalyticsService).toHaveBeenCalledWith('org-1', 'actor-1', { profileId: PROFILE_ID });
   });
 });
 
-describe('GET /courses/:courseId/analytics', () => {
+describe('GET /analytics/courses/:courseId', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('routes to course analytics, not the course detail handler, defaulting to the summary', async () => {
+  it('defaults to the summary section', async () => {
     const result = {
       data: { summary: { totalStudents: 1 } },
       meta: { include: ['summary'], days: 30, generatedAt: null }
     };
     vi.mocked(getPublicApiCourseAnalyticsService).mockResolvedValue(result as never);
 
-    const response = await app.request(`/courses/${COURSE_ID}/analytics`);
+    const response = await app.request(`/analytics/courses/${COURSE_ID}`);
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ success: true, ...result });
@@ -167,14 +180,13 @@ describe('GET /courses/:courseId/analytics', () => {
       { courseId: COURSE_ID },
       { include: ['summary'], days: 30 }
     );
-    expect(getCourseService).not.toHaveBeenCalled();
   });
 
   it('accepts the funnel section and rejects org-only sections', async () => {
     vi.mocked(getPublicApiCourseAnalyticsService).mockResolvedValue({ data: {}, meta: {} } as never);
 
-    const ok = await app.request(`/courses/${COURSE_ID}/analytics?include=summary,funnel&days=7`);
-    const bad = await app.request(`/courses/${COURSE_ID}/analytics?include=traffic`);
+    const ok = await app.request(`/analytics/courses/${COURSE_ID}?include=summary,funnel&days=7`);
+    const bad = await app.request(`/analytics/courses/${COURSE_ID}?include=traffic`);
 
     expect(ok.status).toBe(200);
     expect(bad.status).toBe(400);
@@ -189,8 +201,8 @@ describe('GET /courses/:courseId/analytics', () => {
   it('paginates course analytics students and caps limit at 50', async () => {
     vi.mocked(listPublicApiCourseAnalyticsStudentsService).mockResolvedValue(EMPTY_PAGE as never);
 
-    const response = await app.request(`/courses/${COURSE_ID}/analytics/students?page=2&limit=5`);
-    const tooMany = await app.request(`/courses/${COURSE_ID}/analytics/students?limit=51`);
+    const response = await app.request(`/analytics/courses/${COURSE_ID}/students?page=2&limit=5`);
+    const tooMany = await app.request(`/analytics/courses/${COURSE_ID}/students?limit=51`);
 
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ success: true, data: [], pagination: EMPTY_PAGE.pagination });
@@ -205,9 +217,102 @@ describe('GET /courses/:courseId/analytics', () => {
   });
 
   it('rejects a non-uuid courseId with 400', async () => {
-    const response = await app.request('/courses/nope/analytics');
+    const response = await app.request('/analytics/courses/nope');
 
     expect(response.status).toBe(400);
     expect(getPublicApiCourseAnalyticsService).not.toHaveBeenCalled();
+  });
+});
+
+describe('GET /analytics/courses/:courseId/students/:profileId', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns one student by profileId with a no-store cache header', async () => {
+    vi.mocked(getPublicApiCourseStudentAnalyticsService).mockResolvedValue({ progressPercentage: 40 } as never);
+
+    const response = await app.request(
+      `/analytics/courses/${COURSE_ID}/students/${PROFILE_ID}?includeProgressImpact=true`
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+    expect(await response.json()).toEqual({ success: true, data: { progressPercentage: 40 } });
+    expect(getPublicApiCourseStudentAnalyticsService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { courseId: COURSE_ID, profileId: PROFILE_ID },
+      { includeProgressImpact: true }
+    );
+  });
+
+  it('rejects a non-uuid profileId and maps a missing student to 404', async () => {
+    vi.mocked(getPublicApiCourseStudentAnalyticsService).mockRejectedValue(
+      new AppError('Student not found in this course', ErrorCodes.NOT_FOUND, 404)
+    );
+
+    const bad = await app.request(`/analytics/courses/${COURSE_ID}/students/nope`);
+    const missing = await app.request(`/analytics/courses/${COURSE_ID}/students/${PROFILE_ID}`);
+
+    expect(bad.status).toBe(400);
+    expect(missing.status).toBe(404);
+  });
+});
+
+describe('deprecated analytics aliases', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const bodyOf = async (path: string) => {
+    const response = await app.request(path);
+
+    return { status: response.status, body: await response.json() };
+  };
+
+  it('serves the compliance list from the old learners path', async () => {
+    vi.mocked(listPublicApiComplianceStudentsService).mockResolvedValue(EMPTY_PAGE as never);
+
+    expect(await bodyOf('/analytics/compliance/learners?page=2&limit=5')).toEqual(
+      await bodyOf('/analytics/compliance/students?page=2&limit=5')
+    );
+    expect(listPublicApiComplianceStudentsService).toHaveBeenCalledTimes(2);
+  });
+
+  it('serves student analytics from the old learners path', async () => {
+    vi.mocked(getPublicApiStudentAnalyticsService).mockResolvedValue({ courses: [] } as never);
+
+    const alias = await bodyOf(`/analytics/learners/${PROFILE_ID}`);
+
+    expect(alias.status).toBe(200);
+    expect(alias).toEqual(await bodyOf(`/analytics/students/${PROFILE_ID}`));
+  });
+
+  it('serves course analytics and its students list from the old course paths, not the course detail handler', async () => {
+    vi.mocked(getPublicApiCourseAnalyticsService).mockResolvedValue({ data: { summary: {} }, meta: {} } as never);
+    vi.mocked(listPublicApiCourseAnalyticsStudentsService).mockResolvedValue(EMPTY_PAGE as never);
+
+    const analytics = await bodyOf(`/courses/${COURSE_ID}/analytics`);
+    const students = await bodyOf(`/courses/${COURSE_ID}/analytics/students`);
+
+    expect(analytics.status).toBe(200);
+    expect(analytics).toEqual(await bodyOf(`/analytics/courses/${COURSE_ID}`));
+    expect(students).toEqual(await bodyOf(`/analytics/courses/${COURSE_ID}/students`));
+    expect(getCourseService).not.toHaveBeenCalled();
+  });
+
+  it('keeps the old member analytics path on memberId', async () => {
+    vi.mocked(getCourseMemberAnalyticsService).mockResolvedValue({ progressPercentage: 40 } as never);
+
+    const alias = await bodyOf(`/courses/${COURSE_ID}/members/${PROFILE_ID}/analytics`);
+
+    expect(alias).toEqual({ status: 200, body: { success: true, data: { progressPercentage: 40 } } });
+    expect(getCourseMemberAnalyticsService).toHaveBeenCalledWith(
+      'org-1',
+      'actor-1',
+      { courseId: COURSE_ID, memberId: PROFILE_ID },
+      { includeProgressImpact: false }
+    );
   });
 });

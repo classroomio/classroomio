@@ -148,7 +148,7 @@ describe('MCP usage on course member routes', () => {
       ['update_course_member', 'write', 1],
       ['delete_course_member', 'write', 1],
       ['reset_course_member_progress', 'write', 1],
-      ['get_course_member_analytics', 'read', 0],
+      ['get_course_student_analytics', 'read', 0],
       ['list_course_invites', 'read', 0],
       ['create_course_invite', 'write', 1],
       ['revoke_course_invite', 'write', 1]

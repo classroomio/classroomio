@@ -2,7 +2,9 @@ import type {
   TPublicApiCourseAnalyticsQuery,
   TPublicApiCourseAnalyticsSection,
   TPublicApiCourseAnalyticsStudentsQuery,
-  TPublicApiCourseParam
+  TPublicApiCourseMemberAnalyticsQuery,
+  TPublicApiCourseParam,
+  TPublicApiCourseStudentAnalyticsParam
 } from '@cio/utils/validation/public-api';
 import {
   assertCourseBelongsToOrganization,
@@ -11,6 +13,9 @@ import {
 } from '@api/services/v1/shared';
 import { buildCourseStudentAnalytics, getCourseAnalytics } from '@cio/core/services/course/course';
 import { getPaginatedCourseMembers } from '@cio/db/queries/course/people';
+import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
+import { loadCourseMemberAnalytics } from '@api/services/v1/courses/members';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { PUBLIC_API_ANALYTICS_TTL_SECONDS, publicApiAnalyticsKey } from '@api/utils/redis/key-generators';
 import { cachedRead, type CachedRead } from '@api/utils/redis/cached-read';
@@ -119,4 +124,20 @@ export async function listPublicApiCourseAnalyticsStudentsService(
   );
 
   return data;
+}
+
+export async function getPublicApiCourseStudentAnalyticsService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseStudentAnalyticsParam,
+  query: TPublicApiCourseMemberAnalyticsQuery
+) {
+  await assertCourseAnalyticsAccess(orgId, actorId, params);
+
+  const memberId = await getGroupMemberIdByCourseAndProfile(params.courseId, params.profileId);
+  if (!memberId) {
+    throw new AppError('Student not found in this course', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  return loadCourseMemberAnalytics(params.courseId, memberId, query);
 }

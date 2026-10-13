@@ -64,7 +64,6 @@ Current tools:
 - `update_course_member`
 - `delete_course_member`
 - `reset_course_member_progress`
-- `get_course_member_analytics`
 - `list_course_invites`
 - `create_course_invite`
 - `revoke_course_invite`
@@ -105,10 +104,11 @@ Current tools:
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
 - `get_org_analytics`
-- `list_compliance_learners`
-- `get_learner_analytics`
+- `list_compliance_students`
+- `get_student_analytics`
 - `get_course_analytics`
 - `list_course_analytics_students`
+- `get_course_student_analytics`
 
 Course certificate tools:
 
@@ -134,7 +134,7 @@ What the tools cover compared with the dashboard:
 
 - Covered: certificate settings and design, the list of students who earned the certificate, and downloading an issued certificate.
 - Not covered, on purpose: previewing a design, which is a UI concern.
-- Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
+- Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each student's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
 - Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
 
 ## Auth Model
@@ -156,7 +156,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, and analytics routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and need `analytics:read`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, and analytics routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -174,11 +174,11 @@ List tools (`list_org_cohorts`, `list_cohort_members`, `list_cohort_courses`, `l
 Analytics tools are read-only, cost no credits, and act as the key creator:
 
 - `get_org_analytics` returns the sections picked with `include` (default `overview`): `overview`, `traffic`, `countries`, `funnel`, `courseTypes`, `topCourses`, `loginActivity`, `compliance`. It takes `days` (7, 30, 90 or 365; default 30) and `limit` (1-20, default 5) for list sections, and returns `{ data, meta }`.
-- `get_org_analytics` and `get_learner_analytics` need the key creator to be an org admin or tutor. (The dashboard server lets any org member read these; the tools follow the dashboard UI, where only admins and tutors reach the analytics pages.) `loginActivity` and `compliance` need an org admin; for a tutor they are left out and listed in `meta.omitted`.
-- `list_compliance_learners` needs an org admin.
-- `get_course_analytics` (sections `summary`, `funnel`) and `list_course_analytics_students` need a course tutor/admin or an org admin.
+- `get_org_analytics` and `get_student_analytics` need the key creator to be an org admin or tutor. (The dashboard server lets any org member read these; the tools follow the dashboard UI, where only admins and tutors reach the analytics pages.) `loginActivity` and `compliance` need an org admin; for a tutor they are left out and listed in `meta.omitted`.
+- `list_compliance_students` needs an org admin.
+- `get_course_analytics` (sections `summary`, `funnel`), `list_course_analytics_students` and `get_course_student_analytics` need a course tutor/admin or an org admin.
 - Each section is cached for up to 10 minutes (login activity: 24 hours); `meta.generatedAt` says when the oldest one was computed.
-- `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50. Both return `{ data, pagination }`.
+- `list_compliance_students` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50. Both return `{ data, pagination }`.
 
 ## Required Environment Variables
 

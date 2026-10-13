@@ -1,4 +1,5 @@
 import * as z from 'zod';
+import { ZPublicApiCourseParam } from './course';
 
 export const PUBLIC_API_ORG_ANALYTICS_SECTIONS = [
   'overview',
@@ -64,7 +65,12 @@ export const ZPublicApiCourseAnalyticsStudentsQuery = z.object({
 });
 export type TPublicApiCourseAnalyticsStudentsQuery = z.infer<typeof ZPublicApiCourseAnalyticsStudentsQuery>;
 
-export const ZPublicApiLearnerAnalyticsParam = z.object({
+export const ZPublicApiStudentAnalyticsParam = z.object({
   profileId: z.string().uuid()
 });
-export type TPublicApiLearnerAnalyticsParam = z.infer<typeof ZPublicApiLearnerAnalyticsParam>;
+export type TPublicApiStudentAnalyticsParam = z.infer<typeof ZPublicApiStudentAnalyticsParam>;
+
+export const ZPublicApiCourseStudentAnalyticsParam = ZPublicApiCourseParam.extend({
+  profileId: z.string().uuid()
+});
+export type TPublicApiCourseStudentAnalyticsParam = z.infer<typeof ZPublicApiCourseStudentAnalyticsParam>;

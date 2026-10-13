@@ -7,7 +7,8 @@ import { organizationApiKeyHasScopes } from '@api/services/organization/automati
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
 const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
-const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
+const ANALYTICS_PATH = /^(?:\/public-api\/v1)?\/analytics(?:\/|$)/;
+const DEPRECATED_COURSE_ANALYTICS_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/analytics(?:\/|$)/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
   const isRead = method === 'GET' || method === 'HEAD';
@@ -16,7 +17,8 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return isRead ? 'cohort:read' : 'cohort:write';
   }
 
-  if (ANALYTICS_PATH.test(path) && isRead) {
+  const isAnalyticsPath = ANALYTICS_PATH.test(path) || DEPRECATED_COURSE_ANALYTICS_PATH.test(path);
+  if (isAnalyticsPath && isRead) {
     return 'analytics:read';
   }
 

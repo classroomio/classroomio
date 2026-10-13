@@ -153,7 +153,7 @@ export const ZPublicApiCohortGoalResponse = z.object({
 export const ZPublicApiCohortGoalListItemResponse = ZPublicApiCohortGoalResponse.extend({
   statusCounts: z
     .partialRecord(z.enum(GOAL_ASSIGNMENT_STATUSES), z.number())
-    .describe('Learner count per assignment status; statuses with no learners are omitted')
+    .describe('Student count per assignment status; statuses with no students are omitted')
 });
 
 export const ZPublicApiEvaluateCohortGoalsResponse = z.object({

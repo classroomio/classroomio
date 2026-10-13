@@ -2420,6 +2420,184 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
 }
 `;
 
+exports[`public API audience and course response contract > ZPublicApiCourseMemberAnalyticsResponse keeps its published shape > ZPublicApiCourseMemberAnalyticsResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "averageGrade": {
+      "anyOf": [
+        {
+          "type": "number",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Percentage across graded exercises; null when nothing is graded yet",
+    },
+    "completedExercises": {
+      "type": "number",
+    },
+    "lessonsCompleted": {
+      "type": "number",
+    },
+    "lessonsCount": {
+      "type": "number",
+    },
+    "progressImpact": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "attendanceEntries": {
+              "type": "number",
+            },
+            "completedLessons": {
+              "type": "number",
+            },
+            "courseNewsfeedActivity": {
+              "type": "number",
+            },
+            "exerciseSubmissions": {
+              "type": "number",
+            },
+            "hasCertificationRecords": {
+              "type": "boolean",
+            },
+            "lessonComments": {
+              "type": "number",
+            },
+            "totalLessons": {
+              "type": "number",
+            },
+            "videoProgressLessons": {
+              "type": "number",
+            },
+          },
+          "required": [
+            "completedLessons",
+            "totalLessons",
+            "exerciseSubmissions",
+            "lessonComments",
+            "courseNewsfeedActivity",
+            "videoProgressLessons",
+            "attendanceEntries",
+            "hasCertificationRecords",
+          ],
+          "type": "object",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Only set when includeProgressImpact=true",
+    },
+    "progressPercentage": {
+      "type": "number",
+    },
+    "totalExercises": {
+      "type": "number",
+    },
+    "user": {
+      "additionalProperties": false,
+      "properties": {
+        "avatarUrl": {
+          "type": "string",
+        },
+        "email": {
+          "type": "string",
+        },
+        "fullName": {
+          "type": "string",
+        },
+        "id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        "lastSeen": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "id",
+        "fullName",
+        "email",
+        "avatarUrl",
+      ],
+      "type": "object",
+    },
+    "userExercisesStats": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "isCompleted": {
+            "type": "boolean",
+          },
+          "lessonId": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "lessonTitle": {
+            "type": "string",
+          },
+          "score": {
+            "type": "number",
+          },
+          "status": {
+            "description": "Submission status id; absent when not submitted",
+            "type": "number",
+          },
+          "title": {
+            "type": "string",
+          },
+          "totalPoints": {
+            "type": "number",
+          },
+        },
+        "required": [
+          "id",
+          "lessonId",
+          "lessonTitle",
+          "title",
+          "score",
+          "totalPoints",
+          "isCompleted",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "user",
+    "averageGrade",
+    "userExercisesStats",
+    "totalExercises",
+    "completedExercises",
+    "lessonsCompleted",
+    "lessonsCount",
+    "progressPercentage",
+    "progressImpact",
+  ],
+  "type": "object",
+}
+`;
+
 exports[`public API audience and course response contract > ZPublicApiCourseResponse keeps its published shape > ZPublicApiCourseResponse 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",

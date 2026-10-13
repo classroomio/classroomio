@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, plus the analytics GET endpoints (\`/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -167,7 +167,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PUT /public-api/v1/courses/{courseId}/members/{memberId}': 'Update a course member',
   'DELETE /public-api/v1/courses/{courseId}/members/{memberId}': 'Remove a course member',
   'POST /public-api/v1/courses/{courseId}/members/{memberId}/reset-progress': 'Reset member progress',
-  'GET /public-api/v1/courses/{courseId}/members/{memberId}/analytics': 'Get member analytics',
+  'GET /public-api/v1/courses/{courseId}/members/{memberId}/analytics': "Get a student's course analytics (deprecated)",
   'GET /public-api/v1/courses/{courseId}/invites': 'List invites',
   'POST /public-api/v1/courses/{courseId}/invites': 'Create an invite',
   'POST /public-api/v1/courses/{courseId}/invites/{inviteId}/revoke': 'Revoke an invite',
@@ -209,16 +209,21 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/cohorts/{cohortId}/invite-link': 'Create the cohort join link',
   'PATCH /public-api/v1/cohorts/{cohortId}/invite-link': 'Disable or re-enable the cohort join link',
   'GET /public-api/v1/analytics': 'Get organization analytics',
-  'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
-  'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
-  'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
-  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics'
+  'GET /public-api/v1/analytics/compliance/students': 'List compliance status per student',
+  'GET /public-api/v1/analytics/courses/{courseId}': 'Get course analytics',
+  'GET /public-api/v1/analytics/courses/{courseId}/students': 'List per-student course analytics',
+  'GET /public-api/v1/analytics/courses/{courseId}/students/{profileId}': "Get a student's course analytics",
+  'GET /public-api/v1/analytics/students/{profileId}': "Get a student's analytics",
+  'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per student (deprecated)',
+  'GET /public-api/v1/analytics/learners/{profileId}': "Get a student's analytics (deprecated)",
+  'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics (deprecated)',
+  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics (deprecated)'
 };
 
 // Scalar groups operations under these tags.
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
-  { name: 'Courses', description: 'Create and manage courses.' },
+  { name: 'Courses', description: 'Create and manage courses. For course analytics, see the Analytics section.' },
   { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
   { name: 'Course Members', description: 'Manage the people in a course.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },
@@ -228,7 +233,7 @@ const OPERATION_TAGS = [
   { name: 'Cohort Newsfeed', description: 'Post, comment, and react on a cohort newsfeed.' },
   { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
   { name: 'Cohort Invites', description: 'Invite people to a cohort.' },
-  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' }
+  { name: 'Analytics', description: 'Read organization, compliance, course, and student analytics.' }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {

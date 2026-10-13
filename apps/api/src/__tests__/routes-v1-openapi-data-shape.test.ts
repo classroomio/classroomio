@@ -26,10 +26,29 @@ type JsonSchema = {
 };
 
 type Operation = {
+  deprecated?: boolean;
+  tags?: string[];
   responses?: Record<string, { content?: Record<string, { schema?: JsonSchema }> }>;
 };
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete'];
+
+const DEPRECATED_ANALYTICS_PATHS = [
+  '/public-api/v1/analytics/compliance/learners',
+  '/public-api/v1/analytics/learners/{profileId}',
+  '/public-api/v1/courses/{courseId}/analytics',
+  '/public-api/v1/courses/{courseId}/analytics/students',
+  '/public-api/v1/courses/{courseId}/members/{memberId}/analytics'
+];
+
+const ANALYTICS_PATHS_IN_DOCS_ORDER = [
+  '/public-api/v1/analytics',
+  '/public-api/v1/analytics/compliance/students',
+  '/public-api/v1/analytics/courses/{courseId}',
+  '/public-api/v1/analytics/courses/{courseId}/students',
+  '/public-api/v1/analytics/courses/{courseId}/students/{profileId}',
+  '/public-api/v1/analytics/students/{profileId}'
+];
 
 // A schema is typed when a generated client can tell what is inside it: a bare `{ type: 'object' }` is not.
 function isTyped(schema: JsonSchema | undefined): boolean {
@@ -70,5 +89,48 @@ describe('public API OpenAPI spec', () => {
 
     expect(checked).toBeGreaterThan(0);
     expect(untyped).toEqual([]);
+  });
+});
+
+describe('public API OpenAPI spec: analytics', () => {
+  const getOperations = async () => {
+    const app = new Hono().route('/public-api/v1', v1Router);
+    const spec = await generateSpecs(app);
+
+    return Object.entries(spec.paths ?? {}).flatMap(([path, pathItem]) =>
+      HTTP_METHODS.flatMap((method) => {
+        const operation = (pathItem as Record<string, Operation | undefined>)[method];
+
+        return operation ? [{ path, operation }] : [];
+      })
+    );
+  };
+
+  it('lists the analytics endpoints under the Analytics tag as organization, compliance, courses, students', async () => {
+    const operations = await getOperations();
+    const current = operations.filter(
+      ({ operation }) => operation.tags?.includes('Analytics') && !operation.deprecated
+    );
+
+    expect(current.map(({ path }) => path)).toEqual(ANALYTICS_PATHS_IN_DOCS_ORDER);
+  });
+
+  it('marks every old analytics path as deprecated and tags it Analytics', async () => {
+    const operations = await getOperations();
+    const deprecated = operations.filter(({ operation }) => operation.deprecated);
+
+    expect(deprecated.map(({ path }) => path).sort()).toEqual([...DEPRECATED_ANALYTICS_PATHS].sort());
+    expect(deprecated.every(({ operation }) => operation.tags?.includes('Analytics'))).toBe(true);
+  });
+
+  it('has no learner wording outside the deprecated paths and the response fields kept for compatibility', async () => {
+    const operations = await getOperations();
+    const keptFields = /totalLearners|learnerCount/g;
+    const offenders = operations
+      .filter(({ operation }) => !operation.deprecated)
+      .filter(({ path, operation }) => /learner/i.test(path + JSON.stringify(operation).replace(keptFields, '')))
+      .map(({ path }) => path);
+
+    expect(offenders).toEqual([]);
   });
 });
