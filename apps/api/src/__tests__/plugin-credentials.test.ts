@@ -23,6 +23,7 @@ describe('Plugin Credentials Service', () => {
     id: 'inst-123',
     organizationId: 'org-456',
     pluginId: 'com.example.test-plugin',
+    ownerType: 'organization',
     status: 'active'
   };
 
@@ -40,7 +41,7 @@ describe('Plugin Credentials Service', () => {
       revokedAt: null
     }));
 
-    const result = await createCredential('inst-123', 'Production Key', 30, 'user-admin');
+    const result = await createCredential('inst-123', 'org-456', 'Production Key', 30, 'user-admin');
 
     expect(result.secret).toMatch(/^cio_sec_/);
     expect(result.credential.secretPrefix).toBe(result.secret.slice(0, 16));
@@ -60,7 +61,7 @@ describe('Plugin Credentials Service', () => {
   it('throws 404 if installation is not found during credential creation', async () => {
     dbMocks.getInstallationById.mockResolvedValueOnce(null);
 
-    await expect(createCredential('inst-unknown')).rejects.toThrow('Installation not found');
+    await expect(createCredential('inst-unknown', 'org-456')).rejects.toThrow('Plugin installation not found');
   });
 
   it('revokes credential and writes audit entry', async () => {
@@ -76,7 +77,7 @@ describe('Plugin Credentials Service', () => {
       revokedAt: '2026-10-09T01:00:00Z'
     });
 
-    const revoked = await revokeCredential('inst-123', 'cred-1', 'user-admin');
+    const revoked = await revokeCredential('inst-123', 'org-456', 'cred-1', 'user-admin');
 
     expect(revoked.revokedAt).toBe('2026-10-09T01:00:00Z');
     expect(dbMocks.recordPluginAuditEvent).toHaveBeenCalledWith(

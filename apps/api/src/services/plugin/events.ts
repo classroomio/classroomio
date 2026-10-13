@@ -7,6 +7,7 @@ import {
   getEventDeliveryById,
   getEventDeliveryWithDetails,
   getInstallationById,
+  getPluginVersionById,
   listActiveSubscriptionsForEvent,
   listDeliveriesByInstallation,
   listSubscriptionsByInstallation,
@@ -15,9 +16,20 @@ import {
   upsertEventSubscription
 } from '@cio/db/queries/plugin';
 import type { TPluginEventDelivery, TPluginEventOutbox, TPluginEventSubscription } from '@cio/db/types';
+import { requireOrganizationInstallation } from './authorization';
 
-export function getInstallationWebhookSecret(installationId: string): string {
-  const masterKey = process.env.PLUGIN_WEBHOOK_SECRET ?? 'cio_webhook_secret_classroomio';
+function getWebhookMasterSecret(pluginId: string): string {
+  const environmentKey = `PLUGIN_WEBHOOK_SECRET_${pluginId.replace(/[^a-z0-9]/gi, '_').toUpperCase()}`;
+  const masterKey = process.env[environmentKey];
+
+  if (masterKey) return masterKey;
+  if (process.env.NODE_ENV === 'test') return 'test-only-plugin-webhook-secret';
+
+  throw new AppError(`Webhook signing secret is not configured for ${pluginId}`, 'PLUGIN_CONFIGURATION_ERROR', 503);
+}
+
+export function getInstallationWebhookSecret(installationId: string, pluginId: string): string {
+  const masterKey = getWebhookMasterSecret(pluginId);
 
   return createHmac('sha256', masterKey).update(installationId).digest('hex');
 }
@@ -75,6 +87,26 @@ export async function registerEventSubscription(
     throw new AppError('Installation is not active', 'INSTALLATION_NOT_ACTIVE', 403);
   }
 
+  const version = await getPluginVersionById(installation.pluginVersionId);
+  const manifest = version?.manifest as {
+    events?: { subscriptions?: string[] };
+    runtime?: { backend?: { baseUrl?: string; webhookPath?: string } };
+  } | null;
+  const declaredEvents = manifest?.events?.subscriptions ?? [];
+  if (!declaredEvents.includes(eventType)) {
+    throw new AppError('Event is not declared by the installed plugin version', 'FORBIDDEN', 403);
+  }
+
+  const backend = manifest?.runtime?.backend;
+  if (!backend?.baseUrl) {
+    throw new AppError('Plugin has no declared remote backend', 'FORBIDDEN', 403);
+  }
+
+  const expectedEndpoint = new URL(backend.webhookPath ?? '/v1/webhooks/classroomio', backend.baseUrl).toString();
+  if (new URL(endpoint).toString() !== expectedEndpoint) {
+    throw new AppError('Webhook endpoint does not match the installed manifest', 'FORBIDDEN', 403);
+  }
+
   return upsertEventSubscription({
     installationId,
     eventType,
@@ -83,23 +115,21 @@ export async function registerEventSubscription(
   });
 }
 
-export async function getInstallationSubscriptions(installationId: string): Promise<TPluginEventSubscription[]> {
-  const installation = await getInstallationById(installationId);
-  if (!installation) {
-    throw new AppError('Installation not found', 'INSTALLATION_NOT_FOUND', 404);
-  }
+export async function getInstallationSubscriptions(
+  installationId: string,
+  organizationId: string
+): Promise<TPluginEventSubscription[]> {
+  await requireOrganizationInstallation(installationId, organizationId);
 
   return listSubscriptionsByInstallation(installationId);
 }
 
 export async function getInstallationDeliveries(
   installationId: string,
+  organizationId: string,
   limit: number = 50
 ): Promise<TPluginEventDelivery[]> {
-  const installation = await getInstallationById(installationId);
-  if (!installation) {
-    throw new AppError('Installation not found', 'INSTALLATION_NOT_FOUND', 404);
-  }
+  await requireOrganizationInstallation(installationId, organizationId);
 
   return listDeliveriesByInstallation(installationId, limit);
 }
@@ -115,7 +145,12 @@ export async function deliverEvent(deliveryId: string): Promise<TPluginEventDeli
     return delivery;
   }
 
-  const secret = getInstallationWebhookSecret(subscription.installationId);
+  const installation = await getInstallationById(subscription.installationId);
+  if (!installation || installation.status !== 'active') {
+    return delivery;
+  }
+
+  const secret = getInstallationWebhookSecret(subscription.installationId, installation.pluginId);
   const now = Math.floor(Date.now() / 1000);
   const envelope = {
     id: delivery.id,
@@ -210,10 +245,6 @@ export async function publishOutboxEvent(
   const subscriptionIds = matchingSubs.map((sub) => sub.subscription.id);
   const deliveries = await createDeliveriesForOutboxEvent(outboxEvent.id, subscriptionIds);
 
-  for (const delivery of deliveries) {
-    void deliverEvent(delivery.id).catch(() => {});
-  }
-
   const deliveryCount = deliveries.length;
 
   return { outboxEvent, deliveryCount };
@@ -232,7 +263,14 @@ export async function processPendingOutboxDeliveries(limit: number = 20): Promis
   return pending.length;
 }
 
-export async function replayDelivery(deliveryId: string): Promise<TPluginEventDelivery> {
+export async function replayDelivery(deliveryId: string, organizationId: string): Promise<TPluginEventDelivery> {
+  const details = await getEventDeliveryWithDetails(deliveryId);
+  if (!details) {
+    throw new AppError('Delivery not found', 'DELIVERY_NOT_FOUND', 404);
+  }
+
+  await requireOrganizationInstallation(details.subscription.installationId, organizationId);
+
   const replayed = await replayDeadLetterDelivery(deliveryId);
   if (!replayed) {
     throw new AppError('Delivery not found', 'DELIVERY_NOT_FOUND', 404);

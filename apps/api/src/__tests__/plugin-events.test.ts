@@ -71,11 +71,11 @@ describe('Plugin Webhook Signature & Event Delivery', () => {
 
   it('derives consistent installation webhook secrets', () => {
     const instId = 'inst-uuid-1111';
-    const secret1 = getInstallationWebhookSecret(instId);
-    const secret2 = getInstallationWebhookSecret(instId);
+    const secret1 = getInstallationWebhookSecret(instId, 'com.example.plugin');
+    const secret2 = getInstallationWebhookSecret(instId, 'com.example.plugin');
 
     expect(secret1).toBe(secret2);
     expect(secret1).toMatch(/^[a-f0-9]{64}$/);
-    expect(getInstallationWebhookSecret('inst-uuid-2222')).not.toBe(secret1);
+    expect(getInstallationWebhookSecret('inst-uuid-2222', 'com.example.plugin')).not.toBe(secret1);
   });
 });

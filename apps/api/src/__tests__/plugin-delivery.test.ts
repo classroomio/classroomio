@@ -4,7 +4,8 @@ const dbMocks = vi.hoisted(() => ({
   getEventDeliveryWithDetails: vi.fn(),
   recordDeliveryAttempt: vi.fn(),
   replayDeadLetterDelivery: vi.fn(),
-  getEventDeliveryById: vi.fn()
+  getEventDeliveryById: vi.fn(),
+  getInstallationById: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/plugin', () => ({
@@ -15,7 +16,7 @@ vi.mock('@cio/db/queries/plugin', () => ({
   createDeliveriesForOutboxEvent: vi.fn(),
   enqueueOutboxEvent: vi.fn(),
   fetchPendingDeliveries: vi.fn(),
-  getInstallationById: vi.fn(),
+  getInstallationById: dbMocks.getInstallationById,
   listActiveSubscriptionsForEvent: vi.fn(),
   listDeliveriesByInstallation: vi.fn(),
   listSubscriptionsByInstallation: vi.fn(),
@@ -59,10 +60,17 @@ describe('Plugin Outbox Event Delivery Worker', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    dbMocks.getInstallationById.mockResolvedValue({
+      id: 'inst-01',
+      pluginId: 'com.example.plugin',
+      ownerType: 'organization',
+      organizationId: 'org-01',
+      status: 'active'
+    });
   });
 
   it('marks delivery as delivered when external endpoint responds with 200 OK', async () => {
-    dbMocks.getEventDeliveryWithDetails.mockResolvedValueOnce({
+    dbMocks.getEventDeliveryWithDetails.mockResolvedValue({
       delivery: { ...deliveryRecord },
       outboxEvent,
       subscription
@@ -197,7 +205,7 @@ describe('Plugin Outbox Event Delivery Worker', () => {
       })
     );
 
-    const result = await replayDelivery('del-111');
+    const result = await replayDelivery('del-111', 'org-01');
 
     expect(dbMocks.replayDeadLetterDelivery).toHaveBeenCalledWith('del-111');
     expect(result.status).toBe('delivered');
