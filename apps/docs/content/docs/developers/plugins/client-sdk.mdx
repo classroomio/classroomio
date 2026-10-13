@@ -1,0 +1,281 @@
+---
+title: Client SDK Reference
+description: Complete guide to @classroomio/plugin-sdk/client for building sandboxed UI plugins with themes, toasts, modals, and auto-resizing.
+---
+
+The Client SDK (`@classroomio/plugin-sdk/client`) runs inside your plugin's browser `<iframe>`. Because the iframe is sandboxed with an opaque origin (`null`), it communicates with the parent ClassroomIO dashboard through an authenticated point-to-point browser `MessageChannel`.
+
+---
+
+## Installation
+
+```bash
+npm install @classroomio/plugin-sdk
+# or
+pnpm add @classroomio/plugin-sdk
+```
+
+---
+
+## Initialization
+
+Create a client instance in your UI entrypoint:
+
+```typescript
+import { createClassroomIOClient, ClassroomIOClient } from '@classroomio/plugin-sdk/client';
+
+const client = createClassroomIOClient();
+```
+
+### Options
+
+```typescript
+const client = createClassroomIOClient({
+  timeoutMs: 8000 // Timeout in milliseconds for host RPC responses (default: 5000)
+});
+```
+
+---
+
+## UI Capabilities (`client.ui`)
+
+The `client.ui` namespace allows your sandboxed iframe to trigger native dashboard UI interactions.
+
+### 1. Toast Notifications (`client.ui.toast`)
+Displays a native ClassroomIO snackbar notification in the top-right corner of the screen:
+
+```typescript
+// Success toast
+await client.ui.toast({
+  message: 'Your progress has been saved.',
+  variant: 'success'
+});
+
+// Error toast
+await client.ui.toast({
+  message: 'Failed to submit response. Please retry.',
+  variant: 'error'
+});
+
+// Info toast (default)
+await client.ui.toast({
+  message: 'Connecting to grading server...',
+  variant: 'info'
+});
+```
+
+### 2. Auto-Resizing (`client.ui.resize`)
+When rendered inside inline slots like `lesson.after` or `lms.banner`, plugins must not cause awkward inner scrollbars. Use `resize()` to inform the host of your content's exact height.
+
+**Recommended Pattern with `ResizeObserver`:**
+
+```typescript
+// Automatically sync height whenever your DOM updates
+const observer = new ResizeObserver(() => {
+  const height = document.documentElement.scrollHeight;
+  void client.ui.resize(height);
+});
+
+observer.observe(document.body);
+```
+
+### 3. Modals (`client.ui.openModal`, `client.ui.closeModal`)
+Requests the host dashboard to open a centered modal overlay:
+
+```typescript
+// Open modal
+await client.ui.openModal({
+  title: 'Certificate Preview',
+  url: 'https://api.my-plugin.com/preview'
+});
+
+// Close modal
+await client.ui.closeModal();
+```
+
+### 4. Unsaved Changes Guard (`client.ui.setDirty`)
+Prevents students or admins from accidentally closing the browser tab when a form has unsaved edits:
+
+```typescript
+// When user edits an input:
+await client.ui.setDirty(true);
+
+// After saving successfully:
+await client.ui.setDirty(false);
+```
+
+---
+
+## Theme Synchronization (`client.theme`)
+
+Plugins render seamlessly alongside ClassroomIO's design system. When the client initializes, the host automatically injects CSS custom properties into `document.documentElement.style`.
+
+### Injected CSS Variables
+
+| CSS Variable | Description |
+| :--- | :--- |
+| `--cio-bg-canvas` | Main page background color |
+| `--cio-bg-card` | Card and container background color |
+| `--cio-bg-elevated`| Dropdown, modal, and tooltip background |
+| `--cio-text-primary` | Primary body and heading text color |
+| `--cio-text-muted` | Subtext, timestamps, and placeholder color |
+| `--cio-border` | Standard border line color |
+| `--cio-primary` | Primary brand accent color (buttons, links) |
+| `--cio-primary-foreground` | Text color on primary buttons |
+| `--cio-font-sans` | ClassroomIO typography font family |
+| `--cio-radius-md` | Standard button and card border-radius |
+
+You can reference these variables directly in your CSS:
+
+```css
+body {
+  background-color: var(--cio-bg-canvas);
+  color: var(--cio-text-primary);
+  font-family: var(--cio-font-sans, system-ui, sans-serif);
+}
+
+.card {
+  background-color: var(--cio-bg-card);
+  border: 1px solid var(--cio-border);
+  border-radius: var(--cio-radius-md);
+  padding: 1.5rem;
+}
+
+.primary-button {
+  background-color: var(--cio-primary);
+  color: var(--cio-primary-foreground);
+}
+```
+
+### Live Theme Changes
+
+When a user switches between light and dark mode, the dashboard sends real-time updates. You can reactively re-render canvases or charts:
+
+```typescript
+// 1. Get current theme object
+const currentTheme = await client.theme.get();
+console.log(currentTheme.mode); // 'light' or 'dark'
+
+// 2. Listen to live changes
+const unsubscribe = client.theme.onChange((theme) => {
+  console.log('Switched to mode:', theme.mode);
+  myChart.setTheme(theme.mode);
+});
+
+// To stop listening:
+unsubscribe();
+```
+
+---
+
+## Host Navigation (`client.navigation`)
+
+Because the iframe cannot change `window.parent.location` directly, use `client.navigation.open()` to navigate the user to host-relative paths:
+
+```typescript
+// Navigate to another page in ClassroomIO
+await client.navigation.open('/courses');
+
+// Navigate to specific course
+await client.navigation.open('/courses/fullstack-react');
+```
+
+:::note[Security Constraint]
+Navigation is restricted to host-relative paths starting with `/`. Protocol-relative URLs (e.g. `//evil.com`) or external links are rejected with an `INVALID_PARAMS` error.
+:::
+
+---
+
+## Backend Authentication (`client.auth.requestLaunchCode`)
+
+If your plugin declares a remote backend in `plugin.json` (`runtime.backend.baseUrl`), your frontend needs to authenticate requests to that backend without leaking user tokens.
+
+Use `requestLaunchCode()` to mint a short-lived, single-use **Launch Code**:
+
+```typescript
+const { code, state, expiresAt } = await client.auth.requestLaunchCode();
+
+// Send the one-time code to your plugin server:
+const response = await fetch('https://api.my-plugin.com/v1/auth/exchange', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ launchCode: code, state })
+});
+
+const { sessionToken } = await response.json();
+```
+
+Your server then exchanges this launch code with ClassroomIO's token endpoint to obtain a verified identity and tenant token.
+
+---
+
+## Host Context & Metadata
+
+The Client SDK provides helpers to inspect the active learning context:
+
+### Lesson Context
+```typescript
+// 1. Reading metrics (word count and estimated reading minutes)
+const metrics = await client.lessons.getReadingMetrics();
+console.log(metrics.estimatedMinutes, metrics.wordCount);
+
+// 2. Student lesson completion status
+const completion = await client.lessons.getCompletion();
+console.log(completion.isComplete, completion.completedAt);
+
+// 3. Mark current lesson as complete (if granted learner.progress:write)
+await client.lessons.setCompletion(true);
+```
+
+### Course Context
+```typescript
+const latestCourse = await client.courses.getLatestPublished();
+if (latestCourse) {
+  console.log(latestCourse.id, latestCourse.title, latestCourse.slug);
+}
+```
+
+### Organization Profile
+```typescript
+const org = await client.organization.getProfile();
+console.log(org.id, org.name, org.slug);
+```
+
+---
+
+## Complete Frontend Example (Vanilla TypeScript)
+
+```typescript
+import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
+
+async function main() {
+  const client = createClassroomIOClient();
+
+  // 1. Set up auto-resize
+  new ResizeObserver(() => {
+    void client.ui.resize(document.documentElement.scrollHeight);
+  }).observe(document.body);
+
+  // 2. Fetch context
+  const metrics = await client.lessons.getReadingMetrics();
+  const org = await client.organization.getProfile();
+
+  const app = document.getElementById('app')!;
+  app.innerHTML = `
+    <div class="reading-widget">
+      <h3>Estimated Reading Time</h3>
+      <p>This lesson in <strong>${org.name}</strong> will take approximately ${metrics.estimatedMinutes} minutes to read.</p>
+      <button id="toast-btn" class="primary-button">Show Confirmation</button>
+    </div>
+  `;
+
+  document.getElementById('toast-btn')?.addEventListener('click', async () => {
+    await client.ui.toast({
+      message: 'Happy studying!',
+      variant: 'success'
+    });
+  });
+}
+
+main().catch(console.error);
+```

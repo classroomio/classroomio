@@ -1,0 +1,364 @@
+---
+title: Manifest Reference (plugin.json)
+description: Specification for the plugin.json manifest defining identity, permissions, slots, entrypoints, and network access.
+---
+
+Every plugin must have a `plugin.json` manifest file located in its root directory. The manifest declares your plugin's identity, requested permissions, UI contribution slots, entrypoints, network domains, and optional remote backend configuration.
+
+ClassroomIO validates the manifest at packaging time with `cio-plugin validate` and at installation time using strict Zod validation schemas.
+
+---
+
+## Full Annotated Example
+
+```json
+{
+  "$schema": "https://classroomio.com/schemas/plugin.v1.json",
+  "manifestVersion": 1,
+  "id": "com.example.ai-assistant",
+  "name": "AI Course Assistant",
+  "version": "1.0.0",
+  "publisher": "classroomio",
+  "description": "Interactive AI tutoring and exercise assistance for students",
+  "engines": {
+    "classroomio": ">=2.0.0",
+    "pluginApi": "2026-10-08"
+  },
+  "icon": {
+    "resource": "dist/icon.svg"
+  },
+  "runtime": {
+    "ui": {
+      "entrypoints": {
+        "chatWidget": "dist/chat.html",
+        "settingsPage": "dist/settings.html"
+      }
+    },
+    "backend": {
+      "type": "remote",
+      "baseUrl": "https://api.my-plugin.com",
+      "webhookPath": "/v1/webhooks/classroomio"
+    }
+  },
+  "contributes": {
+    "slots": [
+      {
+        "id": "lesson-chat",
+        "target": "lesson.after",
+        "entrypoint": "chatWidget",
+        "title": "Ask AI Tutor"
+      }
+    ],
+    "pages": [
+      {
+        "id": "assistant-settings",
+        "entrypoint": "settingsPage",
+        "title": "AI Assistant Configuration"
+      }
+    ],
+    "navigation": [
+      {
+        "id": "nav-settings",
+        "title": "AI Assistant",
+        "location": "organization.settings",
+        "page": "assistant-settings",
+        "visibility": "organization.admin"
+      }
+    ],
+    "actions": [
+      {
+        "id": "summarize-lesson",
+        "target": "lesson.actions",
+        "label": "Summarize Lesson",
+        "actionType": "command",
+        "command": "assistant:summarize"
+      }
+    ]
+  },
+  "permissions": {
+    "required": [
+      "course.metadata:read",
+      "lesson.metadata:read",
+      "identity.profile:read",
+      "plugin.storage:read",
+      "plugin.storage:write"
+    ],
+    "optional": [
+      "learner.progress:write"
+    ]
+  },
+  "storage": {
+    "documents": [
+      {
+        "namespace": "assistant-settings",
+        "scope": "organization",
+        "schemaVersion": 1,
+        "schema": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" }
+          }
+        }
+      }
+    ]
+  },
+  "events": {
+    "subscriptions": [
+      "lesson.completed",
+      "course.completed"
+    ]
+  },
+  "networkAccess": {
+    "allowedDomains": [
+      "https://api.my-plugin.com",
+      "https://api.openai.com"
+    ]
+  },
+  "dataPolicy": {
+    "storesCustomerData": true,
+    "retentionAfterUninstallDays": 30,
+    "privacyPolicyUrl": "https://example.com/privacy"
+  }
+}
+```
+
+---
+
+## Top-Level Fields
+
+| Field | Type | Required | Description |
+| :--- | :--- | :--- | :--- |
+| `manifestVersion` | `1` | **Yes** | Version of the ClassroomIO manifest format. |
+| `id` | `string` | **Yes** | Unique reverse-DNS identifier (e.g. `com.company.plugin-name`). Must match `^[a-z0-9]+(\.[a-z0-9_-]+)+$`. |
+| `name` | `string` | **Yes** | Human-readable name of the plugin displayed in the marketplace. |
+| `version` | `string` | **Yes** | Semantic version string (e.g. `1.0.0`). Once published, a version's artifact is immutable. |
+| `publisher` | `string` | **Yes** | Registered publisher handle or domain. |
+| `description` | `string` | No | Short description of what the plugin does (max 500 characters). |
+| `icon` | `object` | No | Object containing `resource` pointing to an SVG or PNG in `dist/`. |
+| `runtime` | `object` | **Yes** | Declarations for UI entrypoints and backend services. |
+| `contributes` | `object` | No | Mounting slots, full pages, actions, and navigation items. |
+| `permissions` | `object` | No | Scopes required or optionally requested by the plugin. |
+| `events` | `object` | No | Webhook events your backend wants to subscribe to. |
+| `storage` | `object` | No | Durable host-owned document namespaces and their JSON schemas. |
+| `networkAccess`| `object` | No | Whitelisted domains for browser Content Security Policy (CSP). |
+| `dataPolicy` | `object` | **Yes** | Customer-data handling and uninstall retention declaration. |
+
+---
+
+## `runtime`
+
+The `runtime` block defines how the plugin runs in the browser and connects to optional backend infrastructure.
+
+### `runtime.ui.entrypoints`
+A key-value dictionary mapping entrypoint names to relative file paths:
+
+```json
+"runtime": {
+  "ui": {
+    "entrypoints": {
+      "banner": "dist/banner.html",
+      "adminPanel": {
+        "resource": "dist/admin.html",
+        "renderMode": "custom"
+      }
+    }
+  }
+}
+```
+
+Paths must resolve to a valid file inside `dist/`.
+
+### `runtime.backend` (Optional)
+If your plugin has a remote server, declare its endpoint:
+
+```json
+"runtime": {
+  "backend": {
+    "type": "remote",
+    "baseUrl": "https://api.my-plugin.com",
+    "webhookPath": "/v1/webhooks/classroomio"
+  }
+}
+```
+
+- `type`: Must be `"remote"`.
+- `baseUrl`: Base HTTPS URL for your backend server.
+- `webhookPath`: URL path where ClassroomIO delivers subscribed event payloads (default: `/v1/webhooks/classroomio`).
+
+---
+
+## `contributes`
+
+Specifies where and how the plugin renders inside the ClassroomIO dashboard.
+
+### `contributes.slots`
+Inline widgets embedded directly into specific dashboard surfaces:
+
+```json
+"slots": [
+  {
+    "id": "quiz-widget",
+    "target": "lesson.after",
+    "entrypoint": "quiz",
+    "title": "Interactive Quiz",
+    "renderMode": "custom"
+  }
+]
+```
+
+- `id`: Unique identifier for the contribution slot.
+- `target`: Supported mounting slot (e.g., `lesson.after`, `lms.banner`, `certificate.templates`).
+- `entrypoint`: Name matching a key in `runtime.ui.entrypoints`.
+- `title`: Label used for accessibility and framing.
+- `renderMode`: `"custom"` (renders the sandboxed iframe).
+
+### `contributes.pages`
+Full-page standalone dashboards rendered at `/org/:slug/plugins/:pluginId`:
+
+```json
+"pages": [
+  {
+    "id": "analytics-view",
+    "entrypoint": "analytics",
+    "title": "Academy Analytics"
+  }
+]
+```
+
+### `contributes.navigation`
+Links registered in the sidebar or top navigation:
+
+```json
+"navigation": [
+  {
+    "id": "nav-analytics",
+    "title": "Analytics Pro",
+    "location": "organization.settings",
+    "page": "analytics-view",
+    "icon": { "resource": "dist/icon.svg" },
+    "visibility": "admin"
+  }
+]
+```
+
+- `location`: Navigation placement (e.g., `organization.settings`).
+- `page`: ID of the page declared in `contributes.pages`.
+- `visibility`: `"admin"` (only organization admins can see) or `"all"`.
+
+### `contributes.actions`
+Contextual action buttons and menu items:
+
+```json
+"actions": [
+  {
+    "id": "export-pdf",
+    "target": "certificate.actions",
+    "label": "Export to PDF",
+    "actionType": "command",
+    "command": "pdf:export",
+    "icon": { "resource": "dist/pdf-icon.svg" }
+  }
+]
+```
+
+Supported `actionType` values:
+- `"command"`: Dispatches an RPC command event.
+- `"openUrl"`: Opens an external link declared in `urlTemplate`.
+- `"dialog"`: Opens a modal dialog with a custom entrypoint.
+
+---
+
+## `permissions`
+
+ClassroomIO uses granular, OAuth-compatible scopes. When an academy admin installs your plugin, they are presented with a consent screen showing exactly what your plugin can access.
+
+```json
+"permissions": {
+  "required": [
+    "course.metadata:read",
+    "lesson.metadata:read",
+    "plugin.storage:read",
+    "plugin.storage:write"
+  ],
+  "optional": [
+    "lesson:write"
+  ]
+}
+```
+
+### Available Permission Scopes
+
+| Scope | Description |
+| :--- | :--- |
+| `course.metadata:read` | Read course metadata. |
+| `course.content:read` | Read course structure and content. |
+| `course.metadata:write` | Update course metadata. |
+| `lesson.metadata:read` | Read lesson metadata. |
+| `lesson.content:read` | Read lesson content. |
+| `lesson:write` | Create or update lessons. |
+| `learner.progress:read` | Read learner progress. |
+| `learner.progress:write` | Update learner progress. |
+| `certificate.issued:read` | Read issued certificates. |
+| `certificate.template:read` | Read certificate templates. |
+| `certificate.template:write` | Apply certificate templates. |
+| `identity.profile:read` | Read the current user's approved profile fields. |
+| `organization.profile:read` | Read approved organization profile fields. |
+| `plugin.storage:read` | Read declared documents from the plugin's host-owned storage. |
+| `plugin.storage:write` | Write or delete declared documents in host-owned storage. |
+
+:::warning[Principle of Least Privilege]
+Only request permissions your plugin strictly requires. Plugins requesting sensitive scopes such as `lesson.content:read` or write access undergo deeper review before public directory approval.
+:::
+
+---
+
+## `storage`
+
+Declare every namespace used with `client.storage`. The installed manifest is the authority: ClassroomIO rejects access when the requested namespace and scope are not declared.
+
+```json
+"storage": {
+  "documents": [
+    {
+      "namespace": "assistant-settings",
+      "scope": "organization",
+      "schemaVersion": 1,
+      "schema": {
+        "type": "object",
+        "required": ["enabled"],
+        "properties": {
+          "enabled": { "type": "boolean" }
+        }
+      }
+    }
+  ]
+}
+```
+
+Use `organization` for shared academy state and `user` for records isolated to the signed-in user. See [Plugin storage](/developers/plugins/storage) for the SDK methods, limits, and device-local preferences.
+
+---
+
+## `networkAccess` (Content Security Policy)
+
+Because custom plugins render in an iframe, the ClassroomIO asset server dynamically generates a hardened **Content Security Policy (CSP)** for your plugin assets.
+
+If your plugin UI needs to connect to external APIs (e.g. your backend server, Sentry, or third-party web services), you must whitelist their origins in `allowedDomains`:
+
+```json
+"networkAccess": {
+  "allowedDomains": [
+    "https://api.my-plugin.com",
+    "https://sentry.io"
+  ]
+}
+```
+
+### Rules for `allowedDomains`:
+1. Every domain must begin with `https://`.
+2. Must be an exact origin without wildcards, paths, or query strings (e.g. `https://api.example.com`, NOT `https://*.example.com`).
+3. ClassroomIO compiles this into the response header:
+   ```http
+   Content-Security-Policy: default-src 'self'; connect-src 'self' https://api.my-plugin.com https://sentry.io; script-src 'self'; ...
+   ```
+4. If `allowedDomains` is empty or omitted, `connect-src` defaults to `'none'`, blocking all external HTTP/WebSocket requests from the iframe.

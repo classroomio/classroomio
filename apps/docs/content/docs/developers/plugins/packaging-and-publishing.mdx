@@ -1,0 +1,209 @@
+---
+title: Packaging and Publishing
+description: Build immutable content-addressed plugin artifacts with the cio-plugin CLI and publish locally or to production.
+---
+
+ClassroomIO uses **content-addressed immutable packaging**. Every plugin release is identified by a cryptographic SHA-256 digest calculated over its manifest and compiled production files.
+
+The official `@classroomio/plugin-sdk` includes the `cio-plugin` CLI to validate, hash, and package your plugins for distribution.
+
+---
+
+## The `cio-plugin` CLI
+
+The CLI is included automatically when you install `@classroomio/plugin-sdk`. You can execute it via `npx` or `pnpm exec`:
+
+```bash
+npx cio-plugin --help
+```
+
+### Commands
+
+| Command | Usage | Description |
+| :--- | :--- | :--- |
+| `cio-plugin pack [path]` | `npx cio-plugin pack` | Validates manifest, computes SHA-256 digest, and outputs packaged release artifacts. |
+| `cio-plugin digest <dir>` | `npx cio-plugin digest ./dist` | Calculates deterministic SHA-256 hash over directory file paths and byte contents. |
+| `cio-plugin validate [path]` | `npx cio-plugin validate` | Validates `plugin.json` structure against ClassroomIO manifest schema. |
+
+---
+
+## Local Development Workflow
+
+When developing plugins on your local machine, the ClassroomIO API automatically serves files from disk, allowing you to test changes rapidly.
+
+```mermaid
+flowchart TD
+    A[Vite Build: dist/] --> B[npx cio-plugin pack]
+    B --> C[Packaged in .plugin-artifacts/]
+    C --> D[pnpm plugins:verify-artifacts]
+    D --> E[pnpm plugins:seed-official]
+    E --> F[Test in Local Dashboard: http://localhost:5173]
+```
+
+### Step 1: Compile Your Assets
+Run your project build command to generate static files in `./dist`:
+
+```bash
+pnpm vite build
+```
+
+### Step 2: Package the Artifact
+Run `cio-plugin pack`:
+
+```bash
+npx cio-plugin pack
+```
+
+**Output:**
+```text
+✓ Validated manifest for com.example.reading-timer (v1.0.0)
+✓ Packed com.example.reading-timer v1.0.0 (sha256-a1b2c3d4e5f6...)
+
+Successfully packed 1 plugin release(s) in .plugin-artifacts/
+```
+
+### Step 3: Verify Integrity
+Validate that all files referenced in `runtime.ui.entrypoints` and icons exist:
+
+```bash
+pnpm plugins:verify-artifacts
+```
+
+### Step 4: Seed Into Local Database
+Register the plugin and version in your local PostgreSQL database:
+
+```bash
+pnpm plugins:seed-official
+```
+
+### Step 5: Test on Dashboard
+1. Open the dashboard at `http://localhost:5173`.
+2. Navigate to **Settings > Plugins**.
+3. Locate your plugin in the Catalog and click **Install**.
+4. Visit the slot where your plugin is mounted (e.g. `lesson.after`) to test live.
+
+---
+
+## Production CI/CD Workflow
+
+In production, assets are served from a high-performance CDN / Cloudflare R2 / AWS S3 origin (`PLUGIN_ASSET_ORIGIN`), and releases are published to the ClassroomIO database via authenticated internal endpoints.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant CI as GitHub Actions CI
+    participant S3 as S3 / Cloudflare R2 (CDN)
+    participant API as ClassroomIO API
+    participant DB as Production Database
+
+    CI->>CI: pnpm build && npx cio-plugin pack
+    CI->>S3: aws s3 sync .plugin-artifacts/ s3://assets.classroomio.com/
+    Note over S3: Assets cached with immutable headers
+    CI->>API: POST /internal/plugins/releases (with $INTERNAL_API_KEY)
+    API->>API: Validate manifest & check digest immutability
+    API->>DB: Upsert plugin & create approved plugin_version
+    API-->>CI: 201 Created (Plugin is live in Marketplace)
+```
+
+### Step 1: CI Build & Packaging
+In your CI workflow (e.g. `.github/workflows/deploy.yml`):
+
+```yaml
+- name: Build and Pack Plugin
+  run: |
+    pnpm install --frozen-lockfile
+    pnpm vite build
+    npx cio-plugin pack
+```
+
+### Step 2: Upload Assets to CDN / Object Storage
+Upload the contents of `.plugin-artifacts/` to your object storage bucket:
+
+<CodeGroup>
+
+```bash AWS S3
+aws s3 sync .plugin-artifacts/ s3://classroomio-plugin-assets/ \
+  --cache-control "public, max-age=31536000, immutable"
+```
+
+```bash Cloudflare R2
+wrangler r2 object put classroomio-plugin-assets/.plugin-artifacts \
+  --file=.plugin-artifacts \
+  --cache-control="public, max-age=31536000, immutable"
+```
+
+</CodeGroup>
+
+Because each version URL includes its exact SHA-256 digest (`/:pluginId/:version/:digest/...`), assets can be cached aggressively forever without cache invalidation risks.
+
+### Step 3: Register Release via Internal API
+Publish the release to the ClassroomIO production catalog:
+
+```bash
+curl -X POST https://api.classroomio.com/internal/plugins/releases \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $INTERNAL_API_KEY" \
+  -d '{
+    "manifest": {
+      "id": "com.example.reading-timer",
+      "name": "Reading Timer",
+      "version": "1.0.0",
+      "publisher": "classroomio",
+      "description": "Calculates reading time for lessons",
+      "runtime": {
+        "ui": {
+          "entrypoints": {
+            "banner": "dist/reading-time.html"
+          }
+        }
+      },
+      "contributes": {
+        "slots": [
+          {
+            "id": "timer-slot",
+            "target": "lesson.after",
+            "entrypoint": "banner",
+            "title": "Lesson Reading Time"
+          }
+        ]
+      }
+    },
+    "artifactDigest": "sha256-a1b2c3d4e5f6..."
+  }'
+```
+
+#### API Invariants
+1. **Manifest Validation**: Schema validated with Zod (`ZPluginManifest`).
+2. **Digest Validation**: Must match `/^sha256-[a-f0-9]{64}$/`.
+3. **Immutability Enforcement**: If `v1.0.0` was already published with a different digest, the API rejects the request with `409 Conflict`. You must bump the version number in `plugin.json` to release updates.
+4. **Audit Logging**: Emits a `plugin.published` event in the audit trail.
+
+---
+
+## Provisioning Backend OAuth2 Credentials
+
+If your plugin includes a remote server (`runtime.backend.baseUrl`), generate OAuth2 client credentials to authenticate your backend:
+
+```bash
+curl -X POST https://api.classroomio.com/internal/plugins/backend-clients \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $INTERNAL_API_KEY" \
+  -d '{
+    "pluginId": "com.example.reading-timer",
+    "label": "Production Backend"
+  }'
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "clientId": "cio_client_9f8e7d6c5b4a",
+    "clientSecret": "cio_sec_1a2b3c4d5e6f...",
+    "issuedAt": "2026-10-12T13:00:00Z"
+  }
+}
+```
+
+Store `clientId` and `clientSecret` securely in your backend environment variables to exchange launch codes and authenticate webhooks.

@@ -1,0 +1,91 @@
+---
+title: Plugin storage
+description: Store durable plugin data in ClassroomIO and keep device-only preferences separate.
+---
+
+Plugins do not store ClassroomIO customer data in a developer-owned database. Durable plugin data is stored by ClassroomIO in the host-owned `plugin_storage` table. It is isolated by installation, organization, user, namespace, and key.
+
+Use `client.storage` for data that must be available after a browser is closed, on another device, or for another authorized member of the organization. Use `client.preferences` only for device-local conveniences such as a collapsed panel or last-selected editor tab.
+
+## Declare durable documents
+
+Declare every durable namespace and its scope in `plugin.json`. This is part of the installed plugin version. The host rejects access to a namespace or scope that the installed manifest has not declared.
+
+```json
+{
+  "permissions": {
+    "required": ["plugin.storage:read", "plugin.storage:write"]
+  },
+  "storage": {
+    "documents": [
+      {
+        "namespace": "certificate-templates",
+        "scope": "organization",
+        "schemaVersion": 1,
+        "schema": {
+          "type": "object",
+          "required": ["id", "name", "design"],
+          "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "design": { "type": "object" }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+`schema` documents the JSON shape the plugin owns and `schemaVersion` lets the plugin evolve that shape. Persist only JSON-serializable data, not HTML, localized copy, or binary files.
+
+## Durable storage
+
+```ts
+const template = {
+  id: crypto.randomUUID(),
+  name: 'Completion certificate',
+  design: { accentColor: '#2563eb' }
+};
+
+await client.storage.set(template.id, template, 'certificate-templates', 'organization');
+
+const savedTemplate = await client.storage.get<typeof template>(
+  template.id,
+  'certificate-templates',
+  'organization'
+);
+
+const templates = await client.storage.list<typeof template>('certificate-templates', 'organization');
+
+await client.storage.delete(template.id, 'certificate-templates', 'organization');
+```
+
+The available scopes are:
+
+- `organization` — shared organization state. Only organization administrators can write it.
+- `user` — state private to the current signed-in user, such as an acknowledgement or draft.
+
+`owner` is accepted as a compatibility alias for `organization` by the SDK. New plugins should use `organization`.
+
+The host permits values up to 256 KiB each and up to 5 MiB for an installation. Store media in ClassroomIO media services and persist only its identifier or URL in plugin storage.
+
+## Device-local preferences
+
+Preferences live in the browser on the current device. They are not synced, not visible to other users, and must never hold learner data, organization content, credentials, or data needed for a plugin to function.
+
+```ts
+const inspectorOpen = await client.preferences.get<boolean>('inspector-open', 'certificate-studio');
+
+await client.preferences.set('inspector-open', true, 'certificate-studio');
+
+await client.preferences.delete('inspector-open', 'certificate-studio');
+```
+
+No storage permission or manifest declaration is required for preferences.
+
+## Uninstall behavior
+
+Uninstalling a plugin immediately revokes its access. ClassroomIO currently retains the host-owned storage rows so an administrator can reinstall the plugin without losing its data. Automated deletion after the manifest's retention period is a separate host lifecycle operation and is not yet enabled.
+
+A plugin's external backend must not be used as a second database for ClassroomIO customer data.
