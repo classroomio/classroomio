@@ -51,9 +51,10 @@ export const ZCreatePluginCredential = z.object({
 export type TCreatePluginCredential = z.infer<typeof ZCreatePluginCredential>;
 
 export const ZPluginStorageSet = z.object({
-  namespace: z.string().trim().min(1).max(128).default('default'),
-  key: z.string().trim().min(1).max(255),
-  value: z.unknown()
+  namespace: z.string().trim().min(1).max(64).default('default'),
+  key: z.string().trim().min(1).max(128),
+  value: z.unknown(),
+  scope: z.enum(['owner', 'user']).default('owner')
 });
 export type TPluginStorageSet = z.infer<typeof ZPluginStorageSet>;
 
@@ -63,8 +64,20 @@ export const ZPluginStorageDelete = z.object({
 });
 export type TPluginStorageDelete = z.infer<typeof ZPluginStorageDelete>;
 
-export const ZPluginLaunchCodeExchange = z.object({
-  code: z.string().trim().min(1),
-  clientSecret: z.string().trim().min(1)
-});
+export const ZPluginLaunchCodeExchange = z
+  .object({
+    code: z.string().trim().min(1),
+    clientSecret: z.string().trim().min(1),
+    clientId: z.string().trim().min(1)
+  })
+  .strict();
 export type TPluginLaunchCodeExchange = z.infer<typeof ZPluginLaunchCodeExchange>;
+
+export const ZApplyCertificateTemplate = z.object({
+  courseId: z.string().uuid(),
+  externalTemplateId: z.string().trim().min(1).max(128),
+  externalTemplateVersion: z.number().int().min(1),
+  name: z.string().trim().min(1).max(128),
+  design: z.record(z.string(), z.unknown())
+});
+export type TApplyCertificateTemplate = z.infer<typeof ZApplyCertificateTemplate>;

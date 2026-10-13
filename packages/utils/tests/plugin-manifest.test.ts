@@ -14,6 +14,9 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     version: '1.0.0',
     description: 'Displays estimated reading time for lesson articles.',
     publisher: 'classroomio',
+    icon: {
+      resource: 'assets/reading-time.svg'
+    },
     engines: {
       classroomio: '>=2.0.0 <3.0.0',
       pluginApi: '2026-10-08'
@@ -26,7 +29,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
       }
     },
     permissions: {
-      required: ['lessons.metadata:read']
+      required: ['lesson.metadata:read']
     },
     contributes: {
       slots: [
@@ -49,7 +52,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     if (result.success) {
       expect(result.data.id).toBe('com.classroomio.reading-time');
       expect(result.data.version).toBe('1.0.0');
-      expect(result.data.permissions.required).toEqual(['lessons.metadata:read']);
+      expect(result.data.permissions.required).toEqual(['lesson.metadata:read']);
     }
   });
 
@@ -79,8 +82,8 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
         }
       },
       permissions: {
-        required: ['organization.profile:read', 'certificate_templates:read', 'certificate_templates:write'],
-        optional: ['certificates.issued:read']
+        required: ['organization.profile:read', 'certificate.template:read', 'certificate.template:write'],
+        optional: []
       },
       networkAccess: {
         allowedDomains: ['https://cert-studio.classroomio.com']
@@ -170,6 +173,22 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     expect(result.success).toBe(false);
   });
 
+  it('allows packaged plugin icon assets and rejects unsafe or unsupported icon paths', () => {
+    expect(ZPluginManifest.safeParse(validManifest).success).toBe(true);
+
+    const traversalIcon = {
+      ...validManifest,
+      icon: { resource: '../assets/icon.svg' }
+    };
+    expect(ZPluginManifest.safeParse(traversalIcon).success).toBe(false);
+
+    const unsupportedIcon = {
+      ...validManifest,
+      icon: { resource: 'assets/icon.html' }
+    };
+    expect(ZPluginManifest.safeParse(unsupportedIcon).success).toBe(false);
+  });
+
   it('rejects contributes referencing undeclared entrypoints', () => {
     const invalid = {
       ...validManifest,
@@ -185,6 +204,24 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
     };
     const result = ZPluginManifest.safeParse(invalid);
     expect(result.success).toBe(false);
+  });
+
+  it('rejects navigation contributions that reference an undeclared page', () => {
+    const invalid = {
+      ...validManifest,
+      contributes: {
+        navigation: [
+          {
+            id: 'missing-page-navigation',
+            title: 'Missing page',
+            location: 'organization.settings',
+            page: 'missing-page'
+          }
+        ]
+      }
+    };
+
+    expect(ZPluginManifest.safeParse(invalid).success).toBe(false);
   });
 
   it('rejects storesCustomerData without privacyPolicyUrl', () => {
@@ -219,11 +256,11 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
   });
 
   it('correctly identifies sensitive permissions', () => {
-    expect(isSensitiveScope('learners.profile:read')).toBe(true);
-    expect(isSensitiveScope('courses:write')).toBe(true);
-    expect(isSensitiveScope('organization.settings:read')).toBe(true);
+    expect(isSensitiveScope('learner.profile:read')).toBe(true);
+    expect(isSensitiveScope('course.metadata:write')).toBe(true);
+    expect(isSensitiveScope('organization.members:read')).toBe(true);
     expect(isSensitiveScope('organization.profile:read')).toBe(false);
-    expect(isSensitiveScope('lessons.metadata:read')).toBe(false);
+    expect(isSensitiveScope('lesson.metadata:read')).toBe(false);
   });
 
   it('all sensitive scopes are contained within main permissions list', () => {
@@ -235,45 +272,116 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
   it('validates reading-time reference plugin manifest from disk', async () => {
     const fs = await import('node:fs');
     const path = await import('node:path');
-    const manifestPath = path.resolve(__dirname, '../../../plugins/reading-time/plugin.json');
+    const manifestPath = path.resolve(__dirname, './fixtures/plugins/reading-time.json');
     const manifestContent = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
     const result = ZPluginManifest.safeParse(manifestContent);
     expect(result.success).toBe(true);
   });
 
-  it('validates linkedin-certificate host-rendered action plugin manifest from disk', async () => {
+  it('validates lesson acknowledgment permissions and data policy from disk', async () => {
     const fs = await import('node:fs');
     const path = await import('node:path');
-    const manifestPath = path.resolve(__dirname, '../../../plugins/linkedin-certificate/plugin.json');
+    const manifestPath = path.resolve(__dirname, './fixtures/plugins/lesson-acknowledgment.json');
     const manifestContent = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
     const result = ZPluginManifest.safeParse(manifestContent);
     expect(result.success).toBe(true);
     if (result.success) {
-      expect(result.data.contributes.actions[0].renderMode).toBe('host');
-      expect(result.data.contributes.actions[0].actionType).toBe('openUrl');
+      expect(result.data.permissions.required).toEqual([
+        'learner.progress:read',
+        'learner.progress:write',
+        'plugin.storage:read',
+        'plugin.storage:write'
+      ]);
+      expect(result.data.dataPolicy.storesCustomerData).toBe(true);
     }
   });
 
-  it('validates lesson-acknowledgment plugin manifest from disk', async () => {
+  it('validates the official LinkedIn host-rendered action plugin manifest from disk', async () => {
     const fs = await import('node:fs');
     const path = await import('node:path');
-    const manifestPath = path.resolve(__dirname, '../../../plugins/lesson-acknowledgment/plugin.json');
+    const manifestPath = path.resolve(__dirname, './fixtures/plugins/linkedin-sharing.json');
     const manifestContent = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
     const result = ZPluginManifest.safeParse(manifestContent);
     expect(result.success).toBe(true);
+    if (result.success) {
+      const [action] = result.data.contributes.actions;
+
+      expect(result.data.permissions.required).toEqual([]);
+      expect(result.data.dataPolicy.storesCustomerData).toBe(false);
+      expect(result.data.networkAccess.allowedDomains).toEqual(['https://www.linkedin.com']);
+      expect(action.renderMode).toBe('host');
+      expect(action.actionType).toBe('openUrl');
+      expect(action.urlTemplate).toBe('https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME');
+    }
+  });
+
+  it('rejects unsafe or incomplete host-rendered URL actions', () => {
+    const unsafeActionManifest = {
+      ...validManifest,
+      contributes: {
+        actions: [
+          {
+            id: 'unsafe-action',
+            target: 'certificate.actions',
+            renderMode: 'host',
+            actionType: 'openUrl',
+            urlTemplate: 'javascript:alert(1)'
+          }
+        ]
+      }
+    };
+    const missingUrlManifest = {
+      ...validManifest,
+      contributes: {
+        actions: [
+          {
+            id: 'missing-url-action',
+            target: 'certificate.actions',
+            renderMode: 'host',
+            actionType: 'openUrl'
+          }
+        ]
+      }
+    };
+
+    expect(ZPluginManifest.safeParse(unsafeActionManifest).success).toBe(false);
+    expect(ZPluginManifest.safeParse(missingUrlManifest).success).toBe(false);
+  });
+
+  it('rejects a URL action whose origin is not declared', () => {
+    const undeclaredUrlManifest = {
+      ...validManifest,
+      contributes: {
+        actions: [
+          {
+            id: 'undeclared-url-action',
+            target: 'certificate.actions',
+            renderMode: 'host',
+            actionType: 'openUrl',
+            urlTemplate: 'https://example.com/action'
+          }
+        ]
+      }
+    };
+
+    expect(ZPluginManifest.safeParse(undeclaredUrlManifest).success).toBe(false);
   });
 
   it('validates announcement-banner plugin manifest from disk', async () => {
     const fs = await import('node:fs');
     const path = await import('node:path');
-    const manifestPath = path.resolve(__dirname, '../../../plugins/announcement-banner/plugin.json');
+    const manifestPath = path.resolve(__dirname, './fixtures/plugins/announcement-banner.json');
     const manifestContent = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
     const result = ZPluginManifest.safeParse(manifestContent);
     expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.permissions.required).toContain('course.metadata:read');
+      expect(result.data.contributes.navigation[0]?.location).toBe('organization.settings');
+    }
   });
 
   it('validates object-based entrypoints with explicit renderMode and resource', () => {
@@ -310,7 +418,7 @@ describe('Plugin Manifest Schema (plugin.json v1)', () => {
         subscriptions: ['course.completed.v1']
       },
       permissions: {
-        required: ['courses.metadata:read']
+        required: ['course.metadata:read']
       },
       dataPolicy: {
         storesCustomerData: false,

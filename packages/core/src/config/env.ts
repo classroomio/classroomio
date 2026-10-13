@@ -46,6 +46,12 @@ const envSchema = z.object({
   ZOHO_TOKEN: z.string().optional(),
   TRUSTED_ORIGINS: z.string().optional(),
   PRIVATE_SERVER_KEY: z.string().optional(),
+  /** HMAC key for short-lived tokens accepted only by /plugin-api/v1. Required in production. */
+  PLUGIN_API_TOKEN_SECRET: z.string().min(32).optional(),
+  /** Public immutable artifact origin, populated by the plugin artifact deployment pipeline. */
+  PLUGIN_ASSET_ORIGIN: z.string().url().optional(),
+  /** Local immutable artifact directory used by development and release validation. */
+  PLUGIN_ARTIFACTS_PATH: z.string().optional(),
   PROJECT_ID_VERCEL: z.string().optional(),
   TEAM_ID_VERCEL: z.string().optional(),
   UNSPLASH_API_KEY: z.string().optional(),

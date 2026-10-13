@@ -1,0 +1,38 @@
+{
+  "$schema": "https://classroomio.com/schemas/plugin.v1.json",
+  "manifestVersion": 1,
+  "id": "com.classroomio.linkedin-sharing",
+  "name": "LinkedIn Certificate Sharing",
+  "version": "1.0.0",
+  "description": "Adds a LinkedIn profile action to earned ClassroomIO certificates.",
+  "publisher": "classroomio",
+  "icon": { "resource": "assets/linkedin-sharing.svg" },
+  "license": "MIT",
+  "engines": {
+    "classroomio": ">=2.0.0",
+    "pluginApi": "2026-10-08"
+  },
+  "permissions": {
+    "required": []
+  },
+  "networkAccess": {
+    "allowedDomains": ["https://www.linkedin.com"]
+  },
+  "contributes": {
+    "actions": [
+      {
+        "id": "linkedin.add-certificate-to-profile",
+        "target": "certificate.actions",
+        "renderMode": "host",
+        "label": "Add to LinkedIn",
+        "icon": { "resource": "assets/linkedin-action.svg" },
+        "actionType": "openUrl",
+        "urlTemplate": "https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME"
+      }
+    ]
+  },
+  "dataPolicy": {
+    "storesCustomerData": false,
+    "retentionAfterUninstallDays": 0
+  }
+}
