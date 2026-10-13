@@ -219,7 +219,14 @@ describe.skipIf(!hasDatabase)('scorm commit event gating', () => {
       expect(kinds).toContain('beacon');
       expect(kinds).toContain('error');
 
-      const tries = await db.select().from(schema.scormScoAttempt).limit(10);
+      const tries = await db
+        .select({
+          commitSeq: schema.scormScoAttempt.commitSeq,
+          lastCommitAt: schema.scormScoAttempt.lastCommitAt
+        })
+        .from(schema.scormScoAttempt)
+        .innerJoin(schema.scormAttempt, eq(schema.scormScoAttempt.attemptId, schema.scormAttempt.id))
+        .where(eq(schema.scormAttempt.activityId, fixture.activityId));
       const gatedTry = tries.find((row) => row.commitSeq === 24);
       expect(gatedTry?.commitSeq).toBe(24);
       expect(gatedTry?.lastCommitAt).not.toBeNull();
