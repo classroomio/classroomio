@@ -63,6 +63,57 @@ export async function countOpenAttemptsForVersion(
   }
 }
 
+export interface ActivityOpenAttemptCounts {
+  inProgress: number;
+  stale: number;
+  staleVersionNumber: number | null;
+}
+
+/**
+ * Counts open attempts for an activity and how many sit on an older
+ * version of the same package. Attempts pinned to a previous package
+ * (after a swap) are excluded: they restart on next launch and no
+ * admin action can move them.
+ */
+export async function getActivityOpenAttemptCounts(
+  activityId: string,
+  currentVersionId: string | null,
+  currentAssetId: string | null,
+  dbClient: DbOrTxClient = db
+): Promise<ActivityOpenAttemptCounts> {
+  try {
+    const open = await dbClient
+      .select({
+        id: schema.scormAttempt.id,
+        packageVersionId: schema.scormAttempt.packageVersionId,
+        versionNumber: schema.contentPackageVersion.versionNumber,
+        assetId: schema.contentPackageVersion.assetId
+      })
+      .from(schema.scormAttempt)
+      .leftJoin(schema.contentPackageVersion, eq(schema.contentPackageVersion.id, schema.scormAttempt.packageVersionId))
+      .where(and(eq(schema.scormAttempt.activityId, activityId), isNull(schema.scormAttempt.closedAt)));
+
+    const staleRows =
+      currentVersionId && currentAssetId
+        ? open.filter((row) => row.packageVersionId !== currentVersionId && row.assetId === currentAssetId)
+        : [];
+    const staleVersionNumber =
+      staleRows.length === 0 ? null : Math.min(...staleRows.map((row) => row.versionNumber ?? Number.MAX_SAFE_INTEGER));
+
+    return {
+      inProgress: open.length,
+      stale: staleRows.length,
+      staleVersionNumber:
+        staleVersionNumber === null || staleVersionNumber === Number.MAX_SAFE_INTEGER ? null : staleVersionNumber
+    };
+  } catch (error) {
+    console.error('getActivityOpenAttemptCounts error:', error);
+    throw new Error(
+      `Failed to count open attempts for activity "${activityId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getScormAttemptById(
   attemptId: string,
   dbClient: DbOrTxClient = db

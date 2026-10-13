@@ -2939,12 +2939,9 @@
             "processing_stage": "{stage} · {progress}%",
             "failed_title": "No se pudo usar este paquete.",
             "retry": "Probar con otro archivo.",
-            "replace": "Reemplazar paquete.",
             "remove": "Eliminar.",
             "remove_confirm_title": "¿Eliminar este paquete?",
             "remove_confirm_body": "Los alumnos perderán el acceso hasta que adjunte otro paquete. El archivo permanecerá en el Administrador de medios.",
-            "move_everyone": "Migrar a todos a esta versión",
-            "move_everyone_helper": "Los alumnos que hayan interrumpido el curso reiniciarán la nueva versión. {count, plural, un {# alumno está} otros {# alumnos están}} afectados.",
             "modules_title": "Este paquete contiene {count, plural, un {# módulo} otros {# módulos}}",
             "modules_hint": "Los alumnos seleccionan los módulos desde un menú situado encima del paquete. La regla de finalización se aplica a cada módulo.",
             "sequencing_warning": "Las reglas de secuenciación de este paquete se ignoran. En su lugar, se aplican las configuraciones de progresión del curso.",
@@ -2980,7 +2977,30 @@
               "encrypted_entry": "Este paquete está protegido con contraseña.",
               "upload_missing": "La carga no finalizó. Inténtelo de nuevo.",
               "generic": "Hubo un problema al procesar este paquete. Inténtelo de nuevo."
-            }
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# estudiante está} other {# estudiantes están}} a mitad de este paquete. Si añades un paquete diferente, lo empezarán desde el principio. Los estudiantes que ya lo completaron mantendrán su estado de completado.",
+            "replace_choice_title": "¿Qué sucede con los estudiantes que están a mitad del curso?",
+            "replace_keep": "Permitirles terminar la versión actual",
+            "replace_keep_hint": "{count, plural, one {# estudiante permanece} other {# estudiantes permanecen}} en la versión anterior hasta terminar.",
+            "replace_restart": "Reiniciarlos en el nuevo paquete",
+            "replace_restart_hint": "{count, plural, one {# estudiante reinicia} other {# estudiantes reinician}} desde el principio.",
+            "stale_banner": "{count, plural, one {# estudiante está} other {# estudiantes están}} todavía en la versión {version}.",
+            "move_stale": "Pasarlos a esta versión",
+            "move_stale_confirm_title": "¿Pasar a todos a esta versión?",
+            "move_stale_confirm_body": "{count, plural, one {# estudiante está} other {# estudiantes están}} a mitad del curso. Reiniciarán la versión actual desde el principio.",
+            "upload_new_version": "Subir nueva versión",
+            "swap_package": "Cambiar paquete",
+            "swap_confirm_title": "¿Cambiar a un paquete diferente?",
+            "swap_confirm_body": "Los alumnos comenzarán el nuevo paquete desde el principio. El paquete actual permanecerá en el Gestor de medios.",
+            "swap_confirm_body_with_count": "{count, plural, one {# alumno ha} other {# alumnos han}} avanzado parcialmente. Reiniciarán el nuevo paquete desde el principio. El estado de los alumnos que completaron este paquete se mantendrá como completado.",
+            "mismatch_title": "Parece un curso diferente",
+            "mismatch_body": "Sus módulos no coinciden con los del paquete actual. Si se trata de un curso diferente, cambie el paquete en lugar de añadir una nueva versión.",
+            "swap_instead": "Cambiar paquete en su lugar",
+            "upload_anyway": "Subir como nueva versión de todos modos",
+            "same_file_title": "Ya es la versión actual",
+            "same_file_body": "Este archivo coincide con la versión actual. No se ha creado ninguna versión nueva.",
+            "promote_confirm_title": "Alumnos que comenzaron durante la subida",
+            "promote_confirm_body": "{count, plural, one {# alumno comenzó} other {# alumnos comenzaron}} mientras se procesaba la nueva versión."
           },
           "gating": {
             "title": "La creación de contenido SCORM está en pausa.",
@@ -3023,7 +3043,9 @@
             "next_module": "Siguiente módulo",
             "autosave_hint": "El progreso se guarda automáticamente.",
             "archived_title": "Utilizó una versión anterior de este paquete",
-            "archived_body": "Sus resultados no han cambiado."
+            "archived_body": "Sus resultados no han cambiado.",
+            "restarted_title": "Este contenido se ha actualizado",
+            "restarted_body": "Empiezan desde el principio porque el paquete ha cambiado."
           },
           "results": {
             "sheet": {

@@ -1,7 +1,9 @@
 <script lang="ts">
   import axios from 'axios';
   import { Button } from '@cio/ui/base/button';
-  import { Checkbox } from '@cio/ui/base/checkbox';
+  import { Label } from '@cio/ui/base/label';
+  import * as Dialog from '@cio/ui/base/dialog';
+  import * as RadioGroup from '@cio/ui/base/radio-group';
   import { Progress } from '@cio/ui/base/progress';
   import * as Alert from '@cio/ui/base/alert';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
@@ -12,19 +14,39 @@
   import { jobsApi, JobPoller, type MediaJobEnvelope } from '$features/jobs';
   import { t } from '$lib/utils/functions/translations';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
-  import { packageErrorKey } from '$features/course/utils/scorm-utils';
+  import {
+    compareManifestSignature,
+    packageErrorKey,
+    readScormManifestSignature
+  } from '$features/course/utils/scorm-utils';
+  import type { PackageFingerprint } from '$features/course/utils/types';
   import { onDestroy } from 'svelte';
 
   interface Props {
     courseId: string;
     activityId: string;
     assetId?: string | null;
-    mode: 'attach' | 'replace';
+    mode: 'attach' | 'upgrade' | 'swap';
+    inProgressCount?: number;
+    currentFingerprint?: PackageFingerprint | null;
+    getFreshInProgressCount?: () => Promise<number>;
     onAttached?: (assetId: string) => void;
     onReplaced?: () => void;
+    onSwapRequest?: () => void;
   }
 
-  let { courseId, activityId, assetId = null, mode, onAttached, onReplaced }: Props = $props();
+  let {
+    courseId,
+    activityId,
+    assetId = null,
+    mode,
+    inProgressCount = 0,
+    currentFingerprint = null,
+    getFreshInProgressCount,
+    onAttached,
+    onReplaced,
+    onSwapRequest
+  }: Props = $props();
 
   type Phase = 'idle' | 'uploading' | 'processing' | 'failed';
 
@@ -33,7 +55,12 @@
   let progress = $state(0);
   let stage = $state<string | null>(null);
   let errorKey = $state<string | null>(null);
-  let moveEveryone = $state(false);
+  let replaceChoice = $state<'keep' | 'restart'>('keep');
+  let sameFile = $state(false);
+  let mismatchOpen = $state(false);
+  let promoteOpen = $state(false);
+  let promoteCount = $state(0);
+  let promoteResolver = $state<((choice: 'keep' | 'restart') => void) | null>(null);
   let abortController = $state<AbortController | null>(null);
   let poller = $state<JobPoller<MediaJobEnvelope> | null>(null);
   let hasUnsavedChanges = $state(false);
@@ -61,6 +88,16 @@
     phase = 'idle';
     progress = 0;
     stage = null;
+    errorKey = null;
+    sameFile = false;
+    mismatchOpen = false;
+    promoteOpen = false;
+    promoteResolver = null;
+  }
+
+  function selectFile(next: File | null) {
+    file = next;
+    sameFile = false;
     errorKey = null;
   }
 
@@ -90,16 +127,38 @@
       return;
     }
 
+    if (mode === 'upgrade' && currentFingerprint) {
+      const signature = await readScormManifestSignature(selected);
+      const verdict = compareManifestSignature(signature, currentFingerprint, selected.size);
+      if (verdict === 'same_file') {
+        sameFile = true;
+        return;
+      }
+      if (verdict === 'different_course') {
+        mismatchOpen = true;
+        return;
+      }
+    }
+
+    await proceedUpload();
+  }
+
+  async function proceedUpload() {
+    const selected = file;
+    if (!selected || phase === 'uploading' || phase === 'processing') return;
+
+    mismatchOpen = false;
     phase = 'uploading';
     progress = 0;
     errorKey = null;
+    sameFile = false;
     abortController = new AbortController();
 
     try {
-      if (mode === 'attach') {
-        await uploadFirstVersion(selected, abortController.signal);
+      if (mode === 'upgrade') {
+        await uploadNewVersion(selected, abortController.signal);
       } else {
-        await uploadReplacement(selected, abortController.signal);
+        await uploadNewAsset(selected, abortController.signal);
       }
     } catch (error) {
       if (abortController?.signal.aborted) return;
@@ -108,6 +167,31 @@
       phase = 'failed';
       errorKey = 'course.navItem.lessons.activities.package.errors.generic';
     }
+  }
+
+  function askPromoteChoice(count: number): Promise<'keep' | 'restart'> {
+    promoteCount = count;
+    promoteOpen = true;
+
+    return new Promise<'keep' | 'restart'>((resolve) => {
+      promoteResolver = resolve;
+    });
+  }
+
+  function resolvePromoteChoice(choice: 'keep' | 'restart') {
+    promoteResolver?.(choice);
+    promoteResolver = null;
+    promoteOpen = false;
+  }
+
+  function handlePromoteOpenChange(isOpen: boolean) {
+    promoteOpen = isOpen;
+
+    if (!isOpen) resolvePromoteChoice('keep');
+  }
+
+  function handleMismatchOpenChange(isOpen: boolean) {
+    mismatchOpen = isOpen;
   }
 
   async function putZip(url: string, selected: File, signal: AbortSignal) {
@@ -123,7 +207,7 @@
     });
   }
 
-  async function uploadFirstVersion(selected: File, signal: AbortSignal) {
+  async function uploadNewAsset(selected: File, signal: AbortSignal) {
     const created = await packageApi.create({ fileName: selected.name, fileSize: selected.size });
     if (!created) throw new Error('Failed to create package');
 
@@ -138,7 +222,9 @@
         const current = details?.currentVersion;
         if (current?.status === 'ready') {
           await activityApi.attachPackage(courseId, activityId, created.asset.id);
-          if (activityApi.success) onAttached?.(created.asset.id);
+          if (!activityApi.success) return;
+          if (mode === 'attach') onAttached?.(created.asset.id);
+          else onReplaced?.();
           return;
         }
 
@@ -150,7 +236,7 @@
     );
   }
 
-  async function uploadReplacement(selected: File, signal: AbortSignal) {
+  async function uploadNewVersion(selected: File, signal: AbortSignal) {
     if (!assetId) throw new Error('No package to replace');
 
     const next = await packageApi.createVersion(assetId);
@@ -163,7 +249,10 @@
     await pollUntilDone(
       jobId,
       async () => {
-        await packageApi.makeCurrent(assetId, next.version.id, moveEveryone);
+        const freshCount = getFreshInProgressCount ? await getFreshInProgressCount() : inProgressCount;
+        const restart =
+          freshCount > 0 ? (await askPromoteChoice(freshCount)) === 'restart' : replaceChoice === 'restart';
+        await packageApi.makeCurrent(assetId, next.version.id, restart);
         if (packageApi.success) onReplaced?.();
       },
       async () => {
@@ -248,13 +337,20 @@
       </Alert.Root>
     {/if}
 
+    {#if sameFile}
+      <Alert.Root class="mb-4">
+        <Alert.Title>{$t('course.navItem.lessons.activities.package.same_file_title')}</Alert.Title>
+        <Alert.Description>{$t('course.navItem.lessons.activities.package.same_file_body')}</Alert.Description>
+      </Alert.Root>
+    {/if}
+
     {#if file}
       <div class="ui:border-border mb-4 flex items-center gap-3 rounded-lg border p-4">
         <div class="min-w-0 flex-1 text-left">
           <p class="ui:text-foreground truncate font-medium">{file.name}</p>
           <p class="ui:text-muted-foreground text-sm">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
         </div>
-        <Button variant="outline" size="sm" onclick={() => (file = null)}>
+        <Button variant="outline" size="sm" onclick={() => selectFile(null)}>
           {$t('course.navItem.lessons.activities.package.retry')}
         </Button>
       </div>
@@ -265,7 +361,7 @@
         fileCount={0}
         maxFileSize={maxSize}
         onUpload={(files) => {
-          if (files[0]) file = files[0];
+          if (files[0]) selectFile(files[0]);
         }}
         onFileRejected={handleRejected}
       >
@@ -276,24 +372,48 @@
       </FileDropZone.Root>
     {/if}
 
-    {#if mode === 'replace'}
-      <label class="mt-4 flex items-start gap-2 text-sm">
-        <Checkbox bind:checked={moveEveryone} />
-        <span>
-          {$t('course.navItem.lessons.activities.package.move_everyone')}
-          <span class="ui:text-muted-foreground block text-xs">
-            {$t('course.navItem.lessons.activities.package.move_everyone_helper', { count: 0 })}
-          </span>
-        </span>
-      </label>
+    {#if mode === 'upgrade' && inProgressCount > 0}
+      <div class="mt-4 space-y-2">
+        <p class="text-sm font-medium">
+          {$t('course.navItem.lessons.activities.package.replace_choice_title')}
+        </p>
+        <RadioGroup.Root bind:value={replaceChoice} class="space-y-3">
+          <div class="flex items-start gap-2 text-sm">
+            <RadioGroup.Item value="keep" id="replace-keep" class="mt-1" />
+            <div>
+              <Label for="replace-keep" class="font-medium">
+                {$t('course.navItem.lessons.activities.package.replace_keep')}
+              </Label>
+              <p class="ui:text-muted-foreground text-xs">
+                {$t('course.navItem.lessons.activities.package.replace_keep_hint', { count: inProgressCount })}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2 text-sm">
+            <RadioGroup.Item value="restart" id="replace-restart" class="mt-1" />
+            <div>
+              <Label for="replace-restart" class="font-medium">
+                {$t('course.navItem.lessons.activities.package.replace_restart')}
+              </Label>
+              <p class="ui:text-muted-foreground text-xs">
+                {$t('course.navItem.lessons.activities.package.replace_restart_hint', { count: inProgressCount })}
+              </p>
+            </div>
+          </div>
+        </RadioGroup.Root>
+      </div>
     {/if}
 
     {#if file}
       <div class="mt-4 flex justify-end">
         <Button onclick={startUpload} disabled={!file}>
-          {mode === 'attach'
-            ? $t('course.navItem.lessons.add_content_create')
-            : $t('course.navItem.lessons.activities.package.replace')}
+          {#if mode === 'attach'}
+            {$t('course.navItem.lessons.add_content_create')}
+          {:else if mode === 'upgrade'}
+            {$t('course.navItem.lessons.activities.package.upload_new_version')}
+          {:else}
+            {$t('course.navItem.lessons.activities.package.swap_package')}
+          {/if}
         </Button>
       </div>
     {/if}
@@ -327,4 +447,55 @@
       {/if}
     </div>
   {/if}
+
+  <Dialog.Root open={mismatchOpen} onOpenChange={handleMismatchOpenChange}>
+    <Dialog.Content class="w-96 p-6">
+      <Dialog.Header class="p-2">
+        <Dialog.Title>{$t('course.navItem.lessons.activities.package.mismatch_title')}</Dialog.Title>
+        <Dialog.Description>
+          {$t('course.navItem.lessons.activities.package.mismatch_body')}
+        </Dialog.Description>
+      </Dialog.Header>
+      <div class="mt-6 flex items-center justify-between">
+        <Button
+          variant="outline"
+          size="sm"
+          onclick={() => {
+            mismatchOpen = false;
+            void proceedUpload();
+          }}
+        >
+          {$t('course.navItem.lessons.activities.package.upload_anyway')}
+        </Button>
+        <Button
+          size="sm"
+          onclick={() => {
+            mismatchOpen = false;
+            onSwapRequest?.();
+          }}
+        >
+          {$t('course.navItem.lessons.activities.package.swap_instead')}
+        </Button>
+      </div>
+    </Dialog.Content>
+  </Dialog.Root>
+
+  <Dialog.Root open={promoteOpen} onOpenChange={handlePromoteOpenChange}>
+    <Dialog.Content class="w-96 p-6">
+      <Dialog.Header class="p-2">
+        <Dialog.Title>{$t('course.navItem.lessons.activities.package.promote_confirm_title')}</Dialog.Title>
+        <Dialog.Description>
+          {$t('course.navItem.lessons.activities.package.promote_confirm_body', { count: promoteCount })}
+        </Dialog.Description>
+      </Dialog.Header>
+      <div class="mt-6 flex items-center justify-between">
+        <Button variant="outline" size="sm" onclick={() => resolvePromoteChoice('keep')}>
+          {$t('course.navItem.lessons.activities.package.replace_keep')}
+        </Button>
+        <Button size="sm" onclick={() => resolvePromoteChoice('restart')}>
+          {$t('course.navItem.lessons.activities.package.replace_restart')}
+        </Button>
+      </div>
+    </Dialog.Content>
+  </Dialog.Root>
 </div>

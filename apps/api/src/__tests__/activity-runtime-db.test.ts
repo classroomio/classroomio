@@ -732,6 +732,109 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
     }
   });
 
+  it('keeps an open attempt on its pinned version after a replace that does not move everyone', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const first = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!first.available) throw new Error('launch unavailable');
+
+      const [version2] = await db
+        .insert(schema.contentPackageVersion)
+        .values({
+          assetId: fixture.assetId,
+          versionNumber: 2,
+          status: 'ready',
+          format: 'scorm12',
+          uploadKey: 'scorm/rt/v2.zip',
+          contentPrefix: 'scorm/rt/v2'
+        })
+        .returning();
+      for (const [index, identifier] of ['mod-1', 'mod-2'].entries()) {
+        await db.insert(schema.contentPackageUnit).values({
+          packageVersionId: version2!.id,
+          identifier,
+          title: `Module ${identifier}`,
+          position: index,
+          unitType: 'sco',
+          href: `${identifier}-v2.html`
+        });
+      }
+      await makeScormPackageVersionCurrent(fixture.orgId, fixture.assetId, version2!.id, {
+        closeOpenAttempts: false
+      });
+
+      const second = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!second.available) throw new Error('launch unavailable');
+      const state = await getScormRuntimeState(launchTokenOf(second.playerUrl));
+      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
+
+      expect(second.unit.href).toBe('mod1.html');
+      expect(state.launchPath).toBe('mod1.html');
+      expect(attempts).toHaveLength(1);
+      expect(attempts[0]?.packageVersionId).toBe(fixture.versionId);
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('starts a new attempt on the new package when the activity switches packages', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const first = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!first.available) throw new Error('launch unavailable');
+
+      const [otherAsset] = await db
+        .insert(schema.asset)
+        .values({ organizationId: fixture.orgId, kind: 'scorm', title: 'Other package zip' })
+        .returning();
+      const [otherVersion] = await db
+        .insert(schema.contentPackageVersion)
+        .values({
+          assetId: otherAsset!.id,
+          versionNumber: 1,
+          status: 'ready',
+          isCurrent: true,
+          format: 'scorm12',
+          uploadKey: 'scorm/rt-other/v1.zip',
+          contentPrefix: 'scorm/rt-other/v1'
+        })
+        .returning();
+      await db.insert(schema.contentPackageUnit).values({
+        packageVersionId: otherVersion!.id,
+        identifier: 'other-1',
+        title: 'Other module',
+        position: 0,
+        unitType: 'sco',
+        href: 'other.html'
+      });
+      await db
+        .update(schema.activityScorm)
+        .set({ assetId: otherAsset!.id })
+        .where(eq(schema.activityScorm.activityId, fixture.activityId));
+
+      const second = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!second.available) throw new Error('launch unavailable');
+      const state = await getScormRuntimeState(launchTokenOf(second.playerUrl));
+      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      const byNumber = [...attempts].sort((left, right) => left.attemptNumber - right.attemptNumber);
+
+      expect(second.mode).toBe('normal');
+      expect(state.launchPath).toBe('other.html');
+      expect(byNumber).toHaveLength(2);
+      expect(byNumber[0]?.closeReason).toBe('replaced');
+      expect(byNumber[1]?.packageVersionId).toBe(otherVersion!.id);
+      expect(byNumber[1]?.closedAt).toBeNull();
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
   it('gives team previews that open nothing and save nothing', async () => {
     const fixture = await createRuntimeFixture(suffix());
     try {

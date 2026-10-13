@@ -55,6 +55,13 @@
         (availableLaunch as { reviewOfArchivedVersion?: boolean }).reviewOfArchivedVersion
     )
   );
+  const wasRestarted = $derived(
+    Boolean(
+      availableLaunch &&
+        'restartedAfterReplace' in availableLaunch &&
+        (availableLaunch as { restartedAfterReplace?: boolean }).restartedAfterReplace
+    )
+  );
   const playerUrl = $derived(availableLaunch?.playerUrl ?? null);
   const units = $derived(availableLaunch?.units ?? []);
   const showMenu = $derived(units.length > 1);
@@ -197,7 +204,7 @@
   }
 
   function nextIncompleteModule() {
-    const list = launch?.units ?? [];
+    const list = availableLaunch?.units ?? [];
     const currentIndex = list.findIndex((unit) => unit.identifier === currentUnitIdentifier);
 
     for (let index = currentIndex + 1; index < list.length; index += 1) {
@@ -337,6 +344,13 @@
       </Alert.Root>
     {/if}
 
+    {#if wasRestarted}
+      <Alert.Root>
+        <Alert.Title>{$t('course.navItem.lessons.activities.player.restarted_title')}</Alert.Title>
+        <Alert.Description>{$t('course.navItem.lessons.activities.player.restarted_body')}</Alert.Description>
+      </Alert.Root>
+    {/if}
+
     {#if launch.mode === 'review'}
       <Alert.Root>
         <Alert.Title>{$t('course.navItem.lessons.activities.player.review_title')}</Alert.Title>
@@ -383,7 +397,7 @@
               title={activityApi.activity?.title ?? ''}
               class="aspect-video w-full"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-              allow="fullscreen"
+              allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
               data-testid="activity-player-frame"
             ></iframe>
           {/key}

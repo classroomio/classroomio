@@ -2939,12 +2939,9 @@
             "processing_stage": "{stage} · {progress}%",
             "failed_title": "Nie można użyć tego pakietu",
             "retry": "Wypróbuj inny plik",
-            "replace": "Zastąp pakiet",
             "remove": "Usuń",
             "remove_confirm_title": "Usunąć ten pakiet?",
             "remove_confirm_body": "Użytkownicy tracą dostęp do momentu dołączenia kolejnego pakietu. Plik pozostaje w Menedżerze multimediów.",
-            "move_everyone": "Przenieś wszystkich do tej wersji",
-            "move_everyone_helper": "Uczniowie są w trakcie ponownego uruchamiania nowej wersji. Dotyczy to {count, plural, one {# uczniów jest} other {# uczniów jest}}.",
             "modules_title": "Ten pakiet zawiera {count, plural, one {# modułów} other {# modułów}}",
             "modules_hint": "Uczniowie wybierają moduły z menu nad pakietem. Reguła ukończenia dotyczy każdego modułu.",
             "sequencing_warning": "Reguły kolejności w tym pakiecie są ignorowane. Zamiast nich obowiązują ustawienia postępu kursu.",
@@ -2980,7 +2977,30 @@
               "encrypted_entry": "Ten pakiet jest chroniony hasłem.",
               "upload_missing": "Przesyłanie nie zostało ukończone. Spróbuj ponownie.",
               "generic": "Wystąpił błąd podczas przetwarzania tego pakietu. Spróbuj ponownie."
-            }
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# uczestnik jest} other {# uczestników jest}} w trakcie realizacji tego pakietu. Jeśli dodasz inny pakiet, zaczną go od początku. Status ukończenia dla osób, które już go ukończyły, pozostanie bez zmian.",
+            "replace_choice_title": "Co stanie się z uczestnikami, którzy są w trakcie realizacji?",
+            "replace_keep": "Pozwól im ukończyć bieżącą wersję",
+            "replace_keep_hint": "{count, plural, one {# uczestnik pozostaje} other {# uczestników pozostaje}} przy starej wersji do momentu jej ukończenia.",
+            "replace_restart": "Rozpocznij z nimi nowy pakiet",
+            "replace_restart_hint": "{count, plural, one {# uczestnik zaczyna} other {# uczestników zaczyna}} od początku.",
+            "stale_banner": "{count, plural, one {# uczestnik jest} other {# uczestników jest}} nadal w wersji {version}.",
+            "move_stale": "Przenieś ich do tej wersji",
+            "move_stale_confirm_title": "Przenieść wszystkich do tej wersji?",
+            "move_stale_confirm_body": "{count, plural, one {# uczestnik jest} other {# uczestników jest}} w trakcie realizacji. Rozpoczną oni bieżącą wersję od początku.",
+            "upload_new_version": "Prześlij nową wersję",
+            "swap_package": "Zamień pakiet",
+            "swap_confirm_title": "Zamienić na inny pakiet?",
+            "swap_confirm_body": "Uczestnicy rozpoczną nowy pakiet od początku. Obecny pakiet pozostanie w Menedżerze mediów.",
+            "swap_confirm_body_with_count": "{count, plural, one {# uczestnik jest} other {# uczestników jest}} w trakcie realizacji. Rozpoczną oni nowy pakiet od początku. Status ukończenia dla uczestników, którzy już ukończyli ten pakiet, pozostanie bez zmian.",
+            "mismatch_title": "To wygląda na inny kurs",
+            "mismatch_body": "Jego moduły nie są zgodne z obecnym pakietem. Jeśli to inny kurs, zamień pakiet zamiast dodawać nową wersję.",
+            "swap_instead": "Zamień pakiet",
+            "upload_anyway": "Mimo to prześlij jako nową wersję",
+            "same_file_title": "To już jest bieżąca wersja",
+            "same_file_body": "Ten plik jest zgodny z bieżącą wersją. Nie utworzono nowej wersji.",
+            "promote_confirm_title": "Uczestnicy rozpoczęli naukę w trakcie przesyłania",
+            "promote_confirm_body": "{count, plural, one {# uczestnik rozpoczął} other {# uczestników rozpoczęło}} naukę w czasie przetwarzania nowej wersji."
           },
           "gating": {
             "title": "Tworzenie pakietów SCORM zostało wstrzymane.",
@@ -3023,7 +3043,9 @@
             "next_module": "Następny moduł",
             "autosave_hint": "Postęp zapisuje się automatycznie.",
             "archived_title": "Pobrano wcześniejszą wersję tego pakietu",
-            "archived_body": "Wyniki pozostają bez zmian."
+            "archived_body": "Wyniki pozostają bez zmian.",
+            "restarted_title": "Treść została zaktualizowana",
+            "restarted_body": "Uczestnicy zaczną od początku, ponieważ pakiet uległ zmianie."
           },
           "results": {
             "sheet": {

@@ -3,6 +3,7 @@ import { getActivityScormByActivityId } from '@cio/db/queries/scorm';
 import { getCurrentPackageVersion, getPackageVersionById } from '@cio/db/queries/activity/package-version';
 import { listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import {
+  closeScormAttempt,
   createScormAttempt,
   getLatestScormAttempt,
   getOpenScormAttempt,
@@ -27,7 +28,13 @@ import {
 import { AppError, ErrorCodes, isUniqueConstraintViolation } from '@cio/utils/errors';
 import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants/domains';
 import { ZScormSettings } from '@cio/utils/validation/activity/scorm';
-import type { TActivityScorm, TContentPackageUnit, TScormAttempt, TScormScoAttempt } from '@cio/db/types';
+import type {
+  TActivityScorm,
+  TContentPackageUnit,
+  TContentPackageVersion,
+  TScormAttempt,
+  TScormScoAttempt
+} from '@cio/db/types';
 
 import {
   getActivitySigningSecret,
@@ -215,27 +222,37 @@ async function hasComplianceCycleStartedSince(
 interface AttemptResolution {
   attempt: TScormAttempt;
   review: boolean;
+  restartedAfterReplace: boolean;
+}
+
+function isResumableVersion(pinned: TContentPackageVersion | null, current: TContentPackageVersion): boolean {
+  return pinned !== null && pinned.status === 'ready' && pinned.assetId === current.assetId;
 }
 
 async function resolveAttempt(
   activityId: string,
   courseId: string,
   profileId: string,
-  versionId: string,
+  current: TContentPackageVersion,
   allowRetakes: boolean,
   startNewAttempt: boolean,
   tx: DbOrTxClient
 ): Promise<AttemptResolution> {
   const open = await getOpenScormAttempt(activityId, profileId, tx);
   if (open) {
-    const locked = await lockScormAttemptForUpdate(open.id, tx);
+    const locked = (await lockScormAttemptForUpdate(open.id, tx)) ?? open;
+    const pinned =
+      locked.packageVersionId === current.id ? current : await getPackageVersionById(locked.packageVersionId, tx);
 
-    return { attempt: locked ?? open, review: false };
+    if (isResumableVersion(pinned, current)) return { attempt: locked, review: false, restartedAfterReplace: false };
+
+    await closeScormAttempt(locked.id, 'replaced', tx);
   }
 
   const latest = await getLatestScormAttempt(activityId, profileId, tx);
   const attemptNumber = (latest?.attemptNumber ?? 0) + 1;
   const closedAt = latest?.closedAt ?? null;
+  const restartedAfterReplace = latest?.closeReason === 'replaced' || Boolean(open);
 
   const shouldCreate =
     !latest ||
@@ -243,19 +260,22 @@ async function resolveAttempt(
     (startNewAttempt && allowRetakes) ||
     (await hasComplianceCycleStartedSince(courseId, profileId, closedAt ?? latest?.startedAt ?? null, tx));
 
-  if (!shouldCreate && latest) return { attempt: latest, review: true };
+  if (!shouldCreate && latest) return { attempt: latest, review: true, restartedAfterReplace: false };
 
   try {
-    const created = await createScormAttempt({ activityId, profileId, packageVersionId: versionId, attemptNumber }, tx);
+    const created = await createScormAttempt(
+      { activityId, profileId, packageVersionId: current.id, attemptNumber },
+      tx
+    );
 
-    return { attempt: created, review: false };
+    return { attempt: created, review: false, restartedAfterReplace: restartedAfterReplace && attemptNumber > 1 };
   } catch (error) {
     if (!isUniqueConstraintViolation(error)) throw error;
 
     const raced = await getOpenScormAttempt(activityId, profileId, tx);
     if (!raced) throw error;
 
-    return { attempt: raced, review: false };
+    return { attempt: raced, review: false, restartedAfterReplace: false };
   }
 }
 
@@ -323,6 +343,7 @@ interface LaunchedModule {
   scoAttempt: TScormScoAttempt | null;
   review: boolean;
   reviewOfArchivedVersion: boolean;
+  restartedAfterReplace: boolean;
 }
 
 /**
@@ -393,11 +414,11 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
   }
 
   const launched = await db.transaction(async (tx) => {
-    const { attempt, review } = await resolveAttempt(
+    const { attempt, review, restartedAfterReplace } = await resolveAttempt(
       context.activityId,
       context.courseId,
       context.profileId,
-      current.id,
+      current,
       details.allowRetakes,
       context.newAttempt ?? false,
       tx
@@ -422,7 +443,8 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
           unit: archivedUnit,
           scoAttempt: null,
           review: true,
-          reviewOfArchivedVersion: true
+          reviewOfArchivedVersion: true,
+          restartedAfterReplace: false
         };
 
         return launchedArchived;
@@ -441,16 +463,21 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
         unit: reviewUnit,
         scoAttempt: null,
         review: true,
-        reviewOfArchivedVersion: false
+        reviewOfArchivedVersion: false,
+        restartedAfterReplace: false
       };
 
       return launchedReview;
     }
 
+    const pinned =
+      attempt.packageVersionId === current.id ? current : await getPackageVersionById(attempt.packageVersionId, tx);
+    if (!pinned) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
+
     const tries = await latestTriesByUnit(attempt.id, tx);
-    const format = packageFormat(current.format);
+    const format = packageFormat(pinned.format);
     const unit = pickUnit(
-      await listPackageUnitsByVersion(current.id, tx),
+      await listPackageUnitsByVersion(pinned.id, tx),
       context.unitIdentifier,
       tries,
       settings,
@@ -460,12 +487,13 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
 
     const launchedTry: LaunchedModule = {
       attempt,
-      versionId: current.id,
+      versionId: pinned.id,
       format,
       unit,
       scoAttempt,
       review: false,
-      reviewOfArchivedVersion: false
+      reviewOfArchivedVersion: false,
+      restartedAfterReplace
     };
 
     return launchedTry;
@@ -504,6 +532,7 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
     launchMode: launchModeOf(details),
     unit: toLaunchUnit(launched.unit),
     units: modules,
-    ...(launched.reviewOfArchivedVersion ? { reviewOfArchivedVersion: true as const } : {})
+    ...(launched.reviewOfArchivedVersion ? { reviewOfArchivedVersion: true as const } : {}),
+    ...(launched.restartedAfterReplace ? { restartedAfterReplace: true as const } : {})
   };
 }

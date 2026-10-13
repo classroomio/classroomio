@@ -6,6 +6,7 @@ import { transferScormPackageAsset } from '../../../assets/asset-transfer';
 import { getCurrentPackageVersion, listPackageVersionsByAsset } from '@cio/db/queries/activity/package-version';
 import { listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import { getActivityScormByActivityId, upsertActivityScorm } from '@cio/db/queries/scorm';
+import { getActivityOpenAttemptCounts } from '@cio/db/queries/scorm/attempt';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { LICENSE_FEATURE } from '@cio/utils/license';
 import { ACTIVITY_PACKAGE_SLOT } from '@cio/utils/validation/assets/assets';
@@ -122,8 +123,18 @@ export const scormProvider: ActivityProvider = {
     }
 
     const { versions, currentVersion, units } = await resolvePackagePayload(asset.id);
+    const attemptCounts = await getActivityOpenAttemptCounts(
+      activityId,
+      currentVersion?.id ?? null,
+      currentVersion?.assetId ?? asset.id
+    );
 
-    return { available: true, kind: 'scorm', settings, package: { asset, versions, currentVersion, units } };
+    return {
+      available: true,
+      kind: 'scorm',
+      settings,
+      package: { asset, versions, currentVersion, units, attemptCounts }
+    };
   },
   async updateSettings(activityId: string, input: unknown, tx: DbOrTxClient): Promise<void> {
     const parsed = ZScormSettings.safeParse(input);

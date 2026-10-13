@@ -14,7 +14,7 @@
   import PackageIcon from '@lucide/svelte/icons/package';
   import TrashIcon from '@lucide/svelte/icons/trash-2';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
-  import { activityApi, courseApi } from '$features/course/api';
+  import { activityApi, courseApi, packageApi } from '$features/course/api';
   import ActivityResultsPanel from '$features/course/components/activity/activity-results-panel.svelte';
   import LearnerAttemptsSheet from '$features/course/components/activity/learner-attempts-sheet.svelte';
   import PackageDetails from '$features/course/components/activity/package-details.svelte';
@@ -38,9 +38,14 @@
   let { courseId, activityId }: Props = $props();
 
   let currentTab = $state('package');
-  let replacing = $state(false);
+  let replaceMode = $state<'upgrade' | 'swap' | null>(null);
   let deleteOpen = $state(false);
   let deleting = $state(false);
+  let removeOpen = $state(false);
+  let removing = $state(false);
+  let swapOpen = $state(false);
+  let moveStaleOpen = $state(false);
+  let movingStale = $state(false);
   let loadedActivityId = $state('');
   let selectedLearnerId = $state<string | null>(null);
   let sheetOpen = $state(false);
@@ -67,8 +72,11 @@
     if (activityId === loadedActivityId) return;
 
     loadedActivityId = activityId;
-    replacing = false;
+    replaceMode = null;
     deleteOpen = false;
+    removeOpen = false;
+    swapOpen = false;
+    moveStaleOpen = false;
     currentTab = 'package';
     title = activityApi.activity?.title ?? '';
     instructions = (activityApi.activity?.instructions as string | null) ?? '';
@@ -78,6 +86,26 @@
   const scormEditor = $derived(editorData && editorData.available ? editorData : null);
   const attachedPackage = $derived(scormEditor?.package ?? null);
   const editorSettings = $derived(scormEditor?.settings ?? null);
+  const attemptCounts = $derived(
+    attachedPackage && 'attemptCounts' in attachedPackage
+      ? (attachedPackage.attemptCounts as { inProgress: number; stale: number; staleVersionNumber: number | null })
+      : null
+  );
+  const inProgressCount = $derived(attemptCounts?.inProgress ?? 0);
+  const staleCount = $derived(attemptCounts?.stale ?? 0);
+  const staleVersionNumber = $derived(attemptCounts?.staleVersionNumber ?? null);
+  const currentFingerprint = $derived(
+    attachedPackage
+      ? {
+          zipBytes: attachedPackage.currentVersion?.zipBytes ?? null,
+          title: attachedPackage.asset.title ?? null,
+          scoIds: (attachedPackage.units ?? [])
+            .filter((unit) => unit.unitType === 'sco')
+            .map((unit) => unit.identifier)
+            .sort()
+        }
+      : null
+  );
 
   const hasPassMark = $derived.by(() => {
     for (const unit of attachedPackage?.units ?? []) {
@@ -135,10 +163,64 @@
   }
 
   async function refreshEditor() {
-    replacing = false;
     await activityApi.get(courseId, activityId);
+    replaceMode = null;
     const profileId = $profile.id;
     if (profileId) void courseApi.refreshCourse(courseId, profileId);
+  }
+
+  async function refreshAttemptCounts(): Promise<number> {
+    await activityApi.get(courseId, activityId);
+
+    return inProgressCount;
+  }
+
+  async function confirmRemovePackage() {
+    removing = true;
+    try {
+      await activityApi.detachPackage(courseId, activityId);
+      if (!activityApi.success) return;
+      removeOpen = false;
+      void refreshEditor();
+    } finally {
+      removing = false;
+    }
+  }
+
+  async function confirmMoveStale() {
+    const assetId = attachedPackage?.asset.id;
+    const versionId = attachedPackage?.currentVersion?.id;
+    if (!assetId || !versionId) return;
+
+    movingStale = true;
+    try {
+      await packageApi.makeCurrent(assetId, versionId, true);
+      if (!packageApi.success) return;
+      moveStaleOpen = false;
+      void refreshEditor();
+    } finally {
+      movingStale = false;
+    }
+  }
+
+  function handleRemoveRequest() {
+    removeOpen = true;
+  }
+
+  function handleSwapRequest() {
+    replaceMode = 'swap';
+  }
+
+  function handleRemoveOpenChange(isOpen: boolean) {
+    removeOpen = isOpen;
+  }
+
+  function handleSwapOpenChange(isOpen: boolean) {
+    swapOpen = isOpen;
+  }
+
+  function handleMoveStaleOpenChange(isOpen: boolean) {
+    moveStaleOpen = isOpen;
   }
 
   function openLearnerSheet(profileId: string) {
@@ -232,10 +314,10 @@
                   icon={PackageIcon}
                   variant="page"
                 />
-              {:else if !attachedPackage || replacing}
-                {#if replacing && attachedPackage}
+              {:else if !attachedPackage || replaceMode}
+                {#if replaceMode && attachedPackage}
                   <div class="mb-4 flex justify-end">
-                    <Button variant="outline" size="sm" onclick={() => (replacing = false)}>
+                    <Button variant="outline" size="sm" onclick={() => (replaceMode = null)}>
                       {$t('common.discard')}
                     </Button>
                   </div>
@@ -244,18 +326,35 @@
                   {courseId}
                   {activityId}
                   assetId={attachedPackage?.asset.id ?? null}
-                  mode={attachedPackage ? 'replace' : 'attach'}
+                  mode={attachedPackage ? (replaceMode ?? 'upgrade') : 'attach'}
+                  inProgressCount={attachedPackage ? inProgressCount : 0}
+                  currentFingerprint={attachedPackage ? currentFingerprint : null}
+                  getFreshInProgressCount={refreshAttemptCounts}
                   onAttached={refreshEditor}
                   onReplaced={refreshEditor}
+                  onSwapRequest={handleSwapRequest}
                 />
               {:else}
+                {#if staleCount > 0}
+                  <Alert.Root variant="warning" class="mb-4">
+                    <Alert.Description>
+                      {$t('course.navItem.lessons.activities.package.stale_banner', {
+                        count: staleCount,
+                        version: staleVersionNumber ?? 1
+                      })}
+                    </Alert.Description>
+                    <div class="mt-3">
+                      <Button size="sm" variant="outline" onclick={() => (moveStaleOpen = true)}>
+                        {$t('course.navItem.lessons.activities.package.move_stale')}
+                      </Button>
+                    </div>
+                  </Alert.Root>
+                {/if}
                 <PackageDetails
                   details={attachedPackage}
-                  onReplace={() => (replacing = true)}
-                  onRemove={async () => {
-                    await activityApi.detachPackage(courseId, activityId);
-                    if (activityApi.success) void refreshEditor();
-                  }}
+                  onUpgrade={() => (replaceMode = 'upgrade')}
+                  onSwap={() => (swapOpen = true)}
+                  onRemove={handleRemoveRequest}
                 />
               {/if}
             </div>
@@ -313,6 +412,81 @@
               </Button>
               <Button variant="destructive" onclick={deleteActivity} loading={deleting}>
                 {$t('delete_modal.yes')}
+              </Button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Root>
+
+        <Dialog.Root open={swapOpen} onOpenChange={handleSwapOpenChange}>
+          <Dialog.Content class="w-96 p-6">
+            <Dialog.Header class="p-2">
+              <Dialog.Title>{$t('course.navItem.lessons.activities.package.swap_confirm_title')}</Dialog.Title>
+              <Dialog.Description>
+                {#if inProgressCount > 0}
+                  {$t('course.navItem.lessons.activities.package.swap_confirm_body_with_count', {
+                    count: inProgressCount
+                  })}
+                {:else}
+                  {$t('course.navItem.lessons.activities.package.swap_confirm_body')}
+                {/if}
+              </Dialog.Description>
+            </Dialog.Header>
+            <div class="mt-6 flex items-center justify-between">
+              <Button variant="outline" size="sm" onclick={() => (swapOpen = false)}>
+                {$t('delete_modal.no')}
+              </Button>
+              <Button
+                size="sm"
+                onclick={() => {
+                  swapOpen = false;
+                  replaceMode = 'swap';
+                }}
+              >
+                {$t('course.navItem.lessons.activities.package.swap_package')}
+              </Button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Root>
+
+        <Dialog.Root open={removeOpen} onOpenChange={handleRemoveOpenChange}>
+          <Dialog.Content class="w-96 p-6">
+            <Dialog.Header class="p-2">
+              <Dialog.Title>{$t('course.navItem.lessons.activities.package.remove_confirm_title')}</Dialog.Title>
+              <Dialog.Description>
+                {#if inProgressCount > 0}
+                  {$t('course.navItem.lessons.activities.package.remove_confirm_body_with_count', {
+                    count: inProgressCount
+                  })}
+                {:else}
+                  {$t('course.navItem.lessons.activities.package.remove_confirm_body')}
+                {/if}
+              </Dialog.Description>
+            </Dialog.Header>
+            <div class="mt-6 flex items-center justify-between">
+              <Button variant="outline" size="sm" onclick={() => (removeOpen = false)} disabled={removing}>
+                {$t('delete_modal.no')}
+              </Button>
+              <Button variant="destructive" size="sm" onclick={confirmRemovePackage} loading={removing}>
+                {$t('delete_modal.yes')}
+              </Button>
+            </div>
+          </Dialog.Content>
+        </Dialog.Root>
+
+        <Dialog.Root open={moveStaleOpen} onOpenChange={handleMoveStaleOpenChange}>
+          <Dialog.Content class="w-96 p-6">
+            <Dialog.Header class="p-2">
+              <Dialog.Title>{$t('course.navItem.lessons.activities.package.move_stale_confirm_title')}</Dialog.Title>
+              <Dialog.Description>
+                {$t('course.navItem.lessons.activities.package.move_stale_confirm_body', { count: staleCount })}
+              </Dialog.Description>
+            </Dialog.Header>
+            <div class="mt-6 flex items-center justify-between">
+              <Button variant="outline" size="sm" onclick={() => (moveStaleOpen = false)} disabled={movingStale}>
+                {$t('delete_modal.no')}
+              </Button>
+              <Button size="sm" onclick={confirmMoveStale} loading={movingStale}>
+                {$t('course.navItem.lessons.activities.package.move_stale')}
               </Button>
             </div>
           </Dialog.Content>

@@ -2939,12 +2939,9 @@
             "processing_stage": "{stage} · {progress}%",
             "failed_title": "Denne pakke kunne ikke bruges",
             "retry": "Prøv en anden fil",
-            "replace": "Erstat pakke",
             "remove": "Fjern",
             "remove_confirm_title": "Fjern denne pakke?",
             "remove_confirm_body": "Elever mister adgang, indtil du vedhæfter en anden pakke. Filen forbliver i Mediehåndtering.",
-            "move_everyone": "Flyt alle til denne version",
-            "move_everyone_helper": "Eleverne er midtvejs i genstarten på den nye version. {count, plural, one {# learner is} other {# learners are}} er berørt.",
             "modules_title": "Denne pakke har {count, plural, one {# module} other {# modules}}",
             "modules_hint": "Eleverne vælger moduler fra en menu over pakken. Fuldførelsesreglen gælder for hvert modul.",
             "sequencing_warning": "Rækkefølgeregler i denne pakke ignoreres. Dine indstillinger for kursusprogression gælder i stedet.",
@@ -2980,7 +2977,30 @@
               "encrypted_entry": "Denne pakke er adgangskodebeskyttet.",
               "upload_missing": "Uploaden blev ikke fuldført. Prøv igen.",
               "generic": "Der opstod en fejl under behandling af denne pakke. Prøv igen."
-            }
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# kursist er} other {# kursister er}} halvvejs gennem denne pakke. Hvis du tilføjer en anden pakke, starter de forfra på den. Kursister, der har gennemført den, bevarer deres status som færdige.",
+            "replace_choice_title": "Hvad sker der med kursister, der er halvvejs igennem?",
+            "replace_keep": "Lad dem færdiggøre den nuværende version",
+            "replace_keep_hint": "{count, plural, one {# kursist bliver} other {# kursister bliver}} på den gamle version, indtil de er færdige.",
+            "replace_restart": "Lad dem starte forfra på den nye pakke",
+            "replace_restart_hint": "{count, plural, one {# kursist starter} other {# kursister starter}} forfra.",
+            "stale_banner": "{count, plural, one {# kursist er} other {# kursister er}} stadig på version {version}.",
+            "move_stale": "Flyt dem til denne version",
+            "move_stale_confirm_title": "Vil du flytte alle til denne version?",
+            "move_stale_confirm_body": "{count, plural, one {# kursist er} other {# kursister er}} halvvejs igennem. De starter forfra på den nuværende version.",
+            "upload_new_version": "Upload ny version",
+            "swap_package": "Udskift pakke",
+            "swap_confirm_title": "Vil du skifte til en anden pakke?",
+            "swap_confirm_body": "Deltagerne starter den nye pakke forfra. Den nuværende pakke bliver liggende i mediebiblioteket.",
+            "swap_confirm_body_with_count": "{count, plural, one {# deltager er} other {# deltagere er}} nået et stykke ind i forløbet. De vil starte forfra i den nye pakke. Deltagere, der har gennemført denne pakke, vil stadig stå som gennemførte.",
+            "mismatch_title": "Det ser ud til at være et andet kursus",
+            "mismatch_body": "Modulerne stemmer ikke overens med den nuværende pakke. Hvis der er tale om et andet kursus, bør du udskifte pakken i stedet for at tilføje en ny version.",
+            "swap_instead": "Udskift pakke i stedet",
+            "upload_anyway": "Upload som ny version alligevel",
+            "same_file_title": "Allerede den nuværende version",
+            "same_file_body": "Denne fil svarer til den nuværende version. Der blev ikke oprettet nogen ny version.",
+            "promote_confirm_title": "Deltagere startede under uploaden",
+            "promote_confirm_body": "{count, plural, one {# deltager startede} other {# deltagere startede}}, mens den nye version blev behandlet."
           },
           "gating": {
             "title": "SCORM-redigering er sat på pause.",
@@ -3023,7 +3043,9 @@
             "next_module": "Næste modul",
             "autosave_hint": "Fremskridt gemmes automatisk.",
             "archived_title": "Du har tidligere modtaget en tidligere version af denne pakke",
-            "archived_body": "Dine resultater er uændrede."
+            "archived_body": "Dine resultater er uændrede.",
+            "restarted_title": "Dette indhold er blevet opdateret",
+            "restarted_body": "De starter forfra, fordi pakken er blevet ændret."
           },
           "results": {
             "sheet": {

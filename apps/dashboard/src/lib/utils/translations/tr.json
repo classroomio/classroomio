@@ -3738,12 +3738,9 @@
             "processing_stage": "{stage} · %{progress}",
             "failed_title": "Bu paket kullanılamadı",
             "retry": "Başka bir dosya deneyin",
-            "replace": "Paketi değiştir",
             "remove": "Kaldır",
             "remove_confirm_title": "Bu paketi kaldırmak ister misiniz?",
             "remove_confirm_body": "Başka bir paket ekleyene kadar öğrenciler erişimlerini kaybeder. Dosya Medya Yöneticisinde kalır.",
-            "move_everyone": "Herkesi bu sürüme taşıyın",
-            "move_everyone_helper": "Yeni sürümde yeniden başlatma işlemine devam eden öğrenciler. {count, plural, one {# öğrenci} other {# öğrenci}} etkileniyor.",
             "modules_title": "Bu pakette {count, plural, one {# modül} other {# modül}} bulunmaktadır.",
             "modules_hint": "Öğrenciler, paketin üstündeki bir menüden modülleri seçerler. Tamamlama kuralı her modül için geçerlidir.",
             "sequencing_warning": "Bu paketteki sıralama kuralları göz ardı edilir. Bunun yerine kurs ilerleme ayarlarınız geçerlidir.",
@@ -3779,7 +3776,30 @@
               "encrypted_entry": "Bu paket parola korumalı.",
               "upload_missing": "Yükleme tamamlanamadı. Tekrar deneyin.",
               "generic": "Bu paket işlenirken bir sorun oluştu. Tekrar deneyin."
-            }
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# öğrenci} other {# öğrenci}} bu paketi kısmen tamamladı. Farklı bir paket eklerseniz, o pakete baştan başlayacaklardır. Paketi tamamlamış olan öğrencilerin durumu değişmez.",
+            "replace_choice_title": "Paketi kısmen tamamlamış öğrencilere ne olacak?",
+            "replace_keep": "Mevcut sürümü tamamlamalarına izin ver",
+            "replace_keep_hint": "{count, plural, one {# öğrenci} other {# öğrenci}}, tamamlayana kadar eski sürümde kalır.",
+            "replace_restart": "Yeni pakette yeniden başlat",
+            "replace_restart_hint": "{count, plural, one {# öğrenci} other {# öğrenci}} baştan yeniden başlar.",
+            "stale_banner": "{count, plural, one {# öğrenci} other {# öğrenci}} hâlâ {version} sürümünde.",
+            "move_stale": "Onları bu sürüme taşı",
+            "move_stale_confirm_title": "Herkesi bu sürüme taşıyın mı?",
+            "move_stale_confirm_body": "{count, plural, one {# öğrenci} other {# öğrenci}} paketi kısmen tamamladı. Mevcut sürümde baştan yeniden başlayacaklar.",
+            "upload_new_version": "Yeni sürüm yükle",
+            "swap_package": "Paketi değiştir",
+            "swap_confirm_title": "Farklı bir paketle değiştirilsin mi?",
+            "swap_confirm_body": "Öğrenenler yeni pakete baştan başlayacak. Mevcut paket Medya Yöneticisi'nde kalmaya devam eder.",
+            "swap_confirm_body_with_count": "{count, plural, one {# öğrenen} other {# öğrenen}} paketi kısmen tamamladı. Bu kişiler yeni pakete baştan başlayacak. Paketi tamamlamış olan öğrenenlerin durumu \"tamamlandı\" olarak kalır.",
+            "mismatch_title": "Bu farklı bir kursa benziyor",
+            "mismatch_body": "Modülleri mevcut paketle eşleşmiyor. Eğer farklı bir kurs ise, yeni bir sürüm eklemek yerine paketi değiştirin.",
+            "swap_instead": "Bunun yerine paketi değiştir",
+            "upload_anyway": "Yine de yeni sürüm olarak yükle",
+            "same_file_title": "Zaten mevcut sürüm",
+            "same_file_body": "Bu dosya mevcut sürümle eşleşiyor. Yeni bir sürüm oluşturulmadı.",
+            "promote_confirm_title": "Yükleme sırasında başlayan öğrenenler oldu",
+            "promote_confirm_body": "Yeni sürüm işlenirken {count, plural, one {# öğrenen} other {# öğrenen}} başladı."
           },
           "gating": {
             "title": "SCORM oluşturma işlemi duraklatıldı.",
@@ -3822,7 +3842,9 @@
             "next_module": "Sonraki modül",
             "autosave_hint": "İlerleme otomatik olarak kaydedilir.",
             "archived_title": "Bu paketin daha önceki bir sürümünü aldınız",
-            "archived_body": "Sonuçlarınız değişmedi."
+            "archived_body": "Sonuçlarınız değişmedi.",
+            "restarted_title": "Bu içerik güncellendi",
+            "restarted_body": "Paket değiştiği için baştan başlıyorsunuz."
           },
           "results": {
             "sheet": {

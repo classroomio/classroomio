@@ -7,11 +7,12 @@
 
   interface Props {
     details: PackageDetails;
-    onReplace?: () => void;
+    onUpgrade?: () => void;
+    onSwap?: () => void;
     onRemove?: () => void;
   }
 
-  let { details, onReplace, onRemove }: Props = $props();
+  let { details, onUpgrade, onSwap, onRemove }: Props = $props();
 
   const current = $derived(details.currentVersion);
   const units = $derived(details.units ?? []);
@@ -90,8 +91,11 @@
   {/if}
 
   <div class="flex flex-wrap gap-2">
-    <Button variant="outline" size="sm" onclick={onReplace}>
-      {$t('course.navItem.lessons.activities.package.replace')}
+    <Button variant="outline" size="sm" onclick={onUpgrade}>
+      {$t('course.navItem.lessons.activities.package.upload_new_version')}
+    </Button>
+    <Button variant="outline" size="sm" onclick={onSwap}>
+      {$t('course.navItem.lessons.activities.package.swap_package')}
     </Button>
     <Button variant="outline" size="sm" onclick={onRemove}>
       {$t('course.navItem.lessons.activities.package.remove')}

@@ -329,6 +329,12 @@ export type GetPackageResponse = InferResponseType<GetPackageRequest> | null;
 export type GetPackageSuccess = Extract<InferResponseType<GetPackageRequest>, { success: true }>;
 export type PackageDetails = GetPackageSuccess['data'];
 
+export interface PackageFingerprint {
+  zipBytes: number | null;
+  title: string | null;
+  scoIds: string[];
+}
+
 export type DeletePackageRequest = (typeof classroomio.activity.packages)[':assetId']['$delete'];
 export type DeletePackageResponse = InferResponseType<DeletePackageRequest>;
 export type DeletePackageSuccess = Extract<InferResponseType<DeletePackageRequest>, { success: true }>;

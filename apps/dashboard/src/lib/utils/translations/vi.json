@@ -2939,12 +2939,9 @@
             "processing_stage": "{stage} · {progress}%",
             "failed_title": "Không thể sử dụng gói này",
             "retry": "Thử tệp khác",
-            "replace": "Thay thế gói",
             "remove": "Xóa",
             "remove_confirm_title": "Xóa gói này?",
             "remove_confirm_body": "Người học sẽ mất quyền truy cập cho đến khi bạn đính kèm một gói khác. Tệp vẫn còn trong Trình quản lý phương tiện.",
-            "move_everyone": "Chuyển tất cả mọi người sang phiên bản này",
-            "move_everyone_helper": "Người học đang học dở dang phải bắt đầu lại trên phiên bản mới. {count, plural, one {# người học bị} other {# người học}} ảnh hưởng.",
             "modules_title": "Gói này có {count, plural, one {# mô-đun} other {# mô-đun}}.",
             "modules_hint": "Người học chọn mô-đun từ menu phía trên gói. Quy tắc hoàn thành áp dụng cho mỗi mô-đun.",
             "sequencing_warning": "Các quy tắc sắp xếp trong gói này bị bỏ qua. Thay vào đó, cài đặt tiến trình khóa học của bạn sẽ được áp dụng.",
@@ -2980,7 +2977,30 @@
               "encrypted_entry": "Gói này được bảo vệ bằng mật khẩu.",
               "upload_missing": "Quá trình tải lên chưa hoàn tất. Vui lòng thử lại.",
               "generic": "Đã xảy ra lỗi trong quá trình xử lý gói này. Vui lòng thử lại."
-            }
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# học viên đang} other {# học viên đang}} học dở dang gói nội dung này. Nếu bạn thêm một gói khác, họ sẽ bắt đầu lại từ đầu với gói đó. Những học viên đã hoàn thành gói cũ vẫn được tính là đã hoàn thành.",
+            "replace_choice_title": "Điều gì sẽ xảy ra với các học viên đang học dở dang?",
+            "replace_keep": "Cho phép họ hoàn thành phiên bản hiện tại",
+            "replace_keep_hint": "{count, plural, one {# học viên tiếp tục} other {# học viên tiếp tục}} học phiên bản cũ cho đến khi hoàn thành.",
+            "replace_restart": "Cho họ bắt đầu lại với gói nội dung mới",
+            "replace_restart_hint": "{count, plural, one {# học viên bắt đầu lại} other {# học viên bắt đầu lại}} từ đầu.",
+            "stale_banner": "{count, plural, one {# học viên vẫn} other {# học viên vẫn}} đang học phiên bản {version}.",
+            "move_stale": "Chuyển họ sang phiên bản này",
+            "move_stale_confirm_title": "Chuyển tất cả mọi người sang phiên bản này?",
+            "move_stale_confirm_body": "{count, plural, one {# học viên đang} other {# học viên đang}} học dở dang. Họ sẽ bắt đầu lại từ đầu với phiên bản hiện tại.",
+            "upload_new_version": "Tải lên phiên bản mới",
+            "swap_package": "Thay thế gói nội dung",
+            "swap_confirm_title": "Thay thế bằng một gói nội dung khác?",
+            "swap_confirm_body": "Người học sẽ bắt đầu gói nội dung mới từ đầu. Gói nội dung hiện tại vẫn được lưu trong Trình quản lý phương tiện (Media Manager).",
+            "swap_confirm_body_with_count": "{count, plural, one {# người học đang} other {# người học đang}} học dở dang. Họ sẽ bắt đầu lại gói nội dung mới từ đầu. Trạng thái hoàn thành của những người học đã hoàn tất gói nội dung này sẽ được giữ nguyên.",
+            "mismatch_title": "Có vẻ đây là một khóa học khác",
+            "mismatch_body": "Các mô-đun của gói này không khớp với gói nội dung hiện tại. Nếu đây là một khóa học khác, hãy thay thế gói nội dung thay vì thêm phiên bản mới.",
+            "swap_instead": "Thay thế gói nội dung",
+            "upload_anyway": "Vẫn tải lên dưới dạng phiên bản mới",
+            "same_file_title": "Đã là phiên bản hiện tại",
+            "same_file_body": "Tệp này khớp với phiên bản hiện tại. Không có phiên bản mới nào được tạo.",
+            "promote_confirm_title": "Người học đã bắt đầu trong quá trình tải lên",
+            "promote_confirm_body": "{count, plural, one {# người học đã bắt đầu} other {# người học đã bắt đầu}} trong khi phiên bản mới đang được xử lý."
           },
           "gating": {
             "title": "Tính năng tạo gói SCORM đang bị tạm dừng.",
@@ -3023,7 +3043,9 @@
             "next_module": "Mô-đun tiếp theo",
             "autosave_hint": "Tiến trình được tự động lưu.",
             "archived_title": "Bạn đã sử dụng một phiên bản trước đó của gói này",
-            "archived_body": "Kết quả của bạn không thay đổi."
+            "archived_body": "Kết quả của bạn không thay đổi.",
+            "restarted_title": "Nội dung này đã được cập nhật",
+            "restarted_body": "Bạn sẽ bắt đầu lại từ đầu vì gói nội dung đã thay đổi."
           },
           "results": {
             "sheet": {

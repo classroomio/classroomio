@@ -2939,12 +2939,9 @@
             "processing_stage": "{stage} · {progress}%",
             "failed_title": "Dieses Paket konnte nicht verwendet werden.",
             "retry": "Bitte eine andere Datei versuchen.",
-            "replace": "Paket ersetzen",
             "remove": "Entfernen",
             "remove_confirm_title": "Dieses Paket entfernen?",
             "remove_confirm_body": "Die Lernenden haben keinen Zugriff mehr, bis Sie ein anderes Paket hinzufügen. Die Datei bleibt im Medienmanager.",
-            "move_everyone": "Alle auf diese Version umstellen",
-            "move_everyone_helper": "Lernende, die sich in einem laufenden Kurs befinden, starten mit der neuen Version neu. {count, plural, one {# Lernender ist} other {# Lernende sind}} betroffen.",
             "modules_title": "Dieses Paket enthält {count, plural, one {# Modul} other {# Module}}.",
             "modules_hint": "Lernende wählen Module aus einem Menü oberhalb des Pakets aus. Die Abschlussregel gilt für jedes Modul.",
             "sequencing_warning": "Die Sequenzierungsregeln in diesem Paket werden ignoriert. Stattdessen gelten Ihre Kursfortschrittseinstellungen.",
@@ -2980,7 +2977,30 @@
               "encrypted_entry": "Dieses Paket ist passwortgeschützt.",
               "upload_missing": "Der Upload wurde nicht abgeschlossen. Versuchen Sie es erneut.",
               "generic": "Bei der Verarbeitung dieses Pakets ist ein Fehler aufgetreten. Versuchen Sie es erneut."
-            }
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# Lernender ist} other {# Lernende sind}} bereits mitten in diesem Paket. Wenn Sie ein anderes Paket hinzufügen, beginnen sie dieses von vorn. Der Status von Lernenden, die das Paket bereits abgeschlossen haben, bleibt unverändert.",
+            "replace_choice_title": "Was geschieht mit Lernenden, die sich mitten im Paket befinden?",
+            "replace_keep": "Die aktuelle Version abschließen lassen",
+            "replace_keep_hint": "{count, plural, one {# Lernender verbleibt} other {# Lernende verbleiben}} bei der alten Version, bis sie diese abgeschlossen haben.",
+            "replace_restart": "Mit dem neuen Paket neu starten lassen",
+            "replace_restart_hint": "{count, plural, one {# Lernender startet} other {# Lernende starten}} von vorn.",
+            "stale_banner": "{count, plural, one {# Lernender ist} other {# Lernende sind}} noch bei Version {version}.",
+            "move_stale": "Auf diese Version umstellen",
+            "move_stale_confirm_title": "Alle auf diese Version umstellen?",
+            "move_stale_confirm_body": "{count, plural, one {# Lernender ist} other {# Lernende sind}} mitten im Paket. Sie beginnen mit der aktuellen Version von vorn.",
+            "upload_new_version": "Neue Version hochladen",
+            "swap_package": "Paket austauschen",
+            "swap_confirm_title": "Zu einem anderen Paket wechseln?",
+            "swap_confirm_body": "Lernende beginnen das neue Paket von vorn. Das aktuelle Paket verbleibt im Medienmanager.",
+            "swap_confirm_body_with_count": "{count, plural, one {# Lernender ist} other {# Lernende sind}} bereits teilweise fortgeschritten. Sie beginnen das neue Paket von vorn. Bei Lernenden, die dieses Paket bereits abgeschlossen haben, bleibt der Status „abgeschlossen“ erhalten.",
+            "mismatch_title": "Dies scheint ein anderer Kurs zu sein",
+            "mismatch_body": "Die Module stimmen nicht mit denen des aktuellen Pakets überein. Wenn es sich um einen anderen Kurs handelt, tauschen Sie das Paket aus, anstatt eine neue Version hinzuzufügen.",
+            "swap_instead": "Stattdessen Paket austauschen",
+            "upload_anyway": "Trotzdem als neue Version hochladen",
+            "same_file_title": "Bereits die aktuelle Version",
+            "same_file_body": "Diese Datei entspricht der aktuellen Version. Es wurde keine neue Version erstellt.",
+            "promote_confirm_title": "Lernende haben während des Uploads begonnen",
+            "promote_confirm_body": "{count, plural, one {# Lernender hat begonnen} other {# Lernende haben begonnen}}, während die neue Version verarbeitet wurde."
           },
           "gating": {
             "title": "Die SCORM-Erstellung ist pausiert.",
@@ -3023,7 +3043,9 @@
             "next_module": "Nächstes Modul",
             "autosave_hint": "Der Fortschritt wird automatisch gespeichert.",
             "archived_title": "Sie haben eine frühere Version dieses Pakets verwendet",
-            "archived_body": "Ihre Ergebnisse sind unverändert."
+            "archived_body": "Ihre Ergebnisse sind unverändert.",
+            "restarted_title": "Dieser Inhalt wurde aktualisiert.",
+            "restarted_body": "Sie beginnen von vorn, da sich das Paket geändert hat."
           },
           "results": {
             "sheet": {

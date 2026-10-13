@@ -47,7 +47,7 @@ When processing finishes, the tab shows the title, SCORM version, file count, si
 - Modules of type asset appear in the menu but never count toward completion, because assets never talk to the SCORM API.
 - **Some file names differ only in letter case** appears when a package built on Windows references files in the wrong case. ClassroomIO resolves them, but re-export with matching case when you can.
 
-Use **Preview** to open the package as a learner would, **Replace package** to upload a new version, and **Remove** to detach the package from the item. The file stays in the Media Manager.
+Use **Preview** to open the package as a learner would, **Upload new version** for a revised export of the same course, **Swap package** for a different course, and **Remove** to detach the package from the item. The file stays in the Media Manager.
 
 If processing fails, the tab shows a specific reason — no `imsmanifest.xml`, an xAPI or cmi5 package, an unsupported version, a file that is too large, unsafe paths, a missing launch file, a module that launches from another website, or a package where nothing reports progress — with a **Try another file** action.
 
@@ -87,7 +87,11 @@ Progress saves automatically. When the package reports that the learner finished
 
 ## Replace a package without losing progress
 
-**Replace package** uploads a new version. Learners in the middle of an attempt keep the old version until they finish. To restart everyone on the new version, use the secondary action **Move everyone to this version** and confirm — the dialog states how many learners it affects.
+**Upload new version** adds a new version of the same course. Learners in the middle of an attempt keep the old version until they finish — or restart them on the new version, per the choice shown when learners are part-way through. If learners start while the new version is processing, ClassroomIO asks again with fresh numbers before switching. Uploading the unchanged file is refused with **Already the current version**, and a file whose modules do not match warns that it looks like a different course, with an offer to swap instead.
+
+**Swap package** attaches a different course as a new package. Learners part-way through restart it from the beginning on their next launch; learners who completed it stay completed. The previous package stays in the Media Manager with its results.
+
+When learners are still on an older version after an upgrade, the Package tab states how many and offers **Move them to this version** — the dialog states how many learners it affects.
 
 Unpinned package versions are deleted 30 days after replacement. The original ZIP of each version is kept for reprocessing.
 

@@ -2939,12 +2939,9 @@
             "processing_stage": "{stage} · {progress}%",
             "failed_title": "Este pacote não pôde ser usado",
             "retry": "Tente outro arquivo",
-            "replace": "Substituir pacote",
             "remove": "Remover",
             "remove_confirm_title": "Remover este pacote?",
             "remove_confirm_body": "Os alunos perdem o acesso até que você anexe outro pacote. O arquivo permanece no Gerenciador de Mídia.",
-            "move_everyone": "Mova todos para esta versão",
-            "move_everyone_helper": "Alunos que estavam no meio do curso reiniciaram na nova versão. {count, plural, um {# aluno está} e outros {# alunos estão}} afetados.",
             "modules_title": "Este pacote tem {count, plural, um {# módulo} e outros {# módulos}}",
             "modules_hint": "Os alunos selecionam módulos em um menu acima do pacote. A regra de conclusão se aplica a cada módulo.",
             "sequencing_warning": "As regras de sequenciamento neste pacote são ignoradas. Suas configurações de progressão do curso serão aplicadas.",
@@ -2980,7 +2977,30 @@
               "encrypted_entry": "Este pacote está protegido por senha.",
               "upload_missing": "O upload não foi concluído. Tente novamente.",
               "generic": "Algo deu errado ao processar este pacote. Tente novamente."
-            }
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# aluno está} other {# alunos estão}} no meio deste pacote. Se você adicionar um pacote diferente, eles começarão do início. Os alunos que já o concluíram permanecem com o status de concluído.",
+            "replace_choice_title": "O que acontece com os alunos que estão no meio do pacote?",
+            "replace_keep": "Permitir que terminem a versão atual",
+            "replace_keep_hint": "{count, plural, one {# aluno permanece} other {# alunos permanecem}} na versão antiga até terminarem.",
+            "replace_restart": "Reiniciá-los no novo pacote",
+            "replace_restart_hint": "{count, plural, one {# aluno reinicia} other {# alunos reiniciam}} do início.",
+            "stale_banner": "{count, plural, one {# aluno está} other {# alunos estão}} ainda na versão {version}.",
+            "move_stale": "Mover para esta versão",
+            "move_stale_confirm_title": "Mover todos para esta versão?",
+            "move_stale_confirm_body": "{count, plural, one {# aluno está} other {# alunos estão}} no meio do pacote. Eles reiniciarão a versão atual do início.",
+            "upload_new_version": "Carregar nova versão",
+            "swap_package": "Trocar pacote",
+            "swap_confirm_title": "Trocar por um pacote diferente?",
+            "swap_confirm_body": "Os alunos começarão o novo pacote do início. O pacote atual permanece no Gerenciador de Mídia.",
+            "swap_confirm_body_with_count": "{count, plural, one {# aluno está} other {# alunos estão}} no meio do progresso. Eles reiniciarão o novo pacote do início. O status de conclusão dos alunos que terminaram este pacote permanece inalterado.",
+            "mismatch_title": "Parece ser um curso diferente",
+            "mismatch_body": "Os módulos não correspondem aos do pacote atual. Se for um curso diferente, troque o pacote em vez de adicionar uma nova versão.",
+            "swap_instead": "Trocar pacote",
+            "upload_anyway": "Carregar como nova versão mesmo assim",
+            "same_file_title": "Já é a versão atual",
+            "same_file_body": "Este arquivo corresponde à versão atual. Nenhuma nova versão foi criada.",
+            "promote_confirm_title": "Alunos começaram durante o upload",
+            "promote_confirm_body": "{count, plural, one {# aluno começou} other {# alunos começaram}} enquanto a nova versão estava sendo processada."
           },
           "gating": {
             "title": "A criação de pacotes SCORM está pausada.",
@@ -3023,7 +3043,9 @@
             "next_module": "Próximo módulo",
             "autosave_hint": "O progresso é salvo automaticamente.",
             "archived_title": "Você utilizou uma versão anterior deste pacote",
-            "archived_body": "Seus resultados permanecem inalterados."
+            "archived_body": "Seus resultados permanecem inalterados.",
+            "restarted_title": "Este conteúdo foi atualizado",
+            "restarted_body": "Você está começando do início porque o pacote foi alterado."
           },
           "results": {
             "sheet": {

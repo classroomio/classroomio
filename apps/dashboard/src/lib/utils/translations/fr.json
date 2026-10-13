@@ -2939,12 +2939,9 @@
             "processing_stage": "{stage} · {progress}%",
             "failed_title": "Ce paquet ne peut pas être utilisé.",
             "retry": "Essayer un autre fichier.",
-            "replace": "Remplacer le paquet.",
             "remove": "Supprimer.",
             "remove_confirm_title": "Supprimer ce paquet ?",
             "remove_confirm_body": "Les apprenants perdent l’accès jusqu’à ce qu’un autre paquet soit chargé. Le fichier reste dans le Gestionnaire de médias.",
-            "move_everyone": "Déplacer tout le monde vers cette version",
-            "move_everyone_helper": "Les apprenants qui ont commencé leur formation reprennent sur la nouvelle version. {count, plural, one {# learner is} other {# learners are}} sont concernés.",
             "modules_title": "Ce paquet contient {count, plural, one {# module} other {# modules}}",
             "modules_hint": "Les apprenants choisissent leurs modules dans un menu situé au-dessus du paquet. La règle d'achèvement s'applique à chaque module.",
             "sequencing_warning": "Les règles de séquencement de ce paquet sont ignorées. Vos paramètres de progression de cours s'appliquent à la place.",
@@ -2980,7 +2977,30 @@
               "encrypted_entry": "Ce package est protégé par un mot de passe.",
               "upload_missing": "Le téléchargement ne s'est pas terminé. Réessayez.",
               "generic": "Une erreur s'est produite lors du traitement de ce package. Réessayez."
-            }
+            },
+            "remove_confirm_body_with_count": "{count, plural, one {# apprenant a} other {# apprenants ont}} commencé ce package sans l'avoir terminé. Si vous ajoutez un package différent, ils le commenceront depuis le début. Le statut des apprenants ayant terminé le package reste inchangé.",
+            "replace_choice_title": "Que faire pour les apprenants ayant commencé le package ?",
+            "replace_keep": "Les laisser terminer la version actuelle",
+            "replace_keep_hint": "{count, plural, one {# apprenant reste} other {# apprenants restent}} sur l'ancienne version jusqu'à ce qu'ils aient terminé.",
+            "replace_restart": "Les faire recommencer avec le nouveau package",
+            "replace_restart_hint": "{count, plural, one {# apprenant recommence} other {# apprenants recommencent}} depuis le début.",
+            "stale_banner": "{count, plural, one {# apprenant est} other {# apprenants sont}} encore sur la version {version}.",
+            "move_stale": "Les basculer vers cette version",
+            "move_stale_confirm_title": "Basculer tout le monde vers cette version ?",
+            "move_stale_confirm_body": "{count, plural, one {# apprenant a} other {# apprenants ont}} commencé le package sans l'avoir terminé. Ils recommenceront la version actuelle depuis le début.",
+            "upload_new_version": "Importer une nouvelle version",
+            "swap_package": "Remplacer le package",
+            "swap_confirm_title": "Remplacer par un autre package ?",
+            "swap_confirm_body": "Les apprenants recommenceront le nouveau package depuis le début. Le package actuel reste dans le gestionnaire de médias.",
+            "swap_confirm_body_with_count": "{count, plural, one {# apprenant a} other {# apprenants ont}} commencé le parcours. Ils recommenceront le nouveau package depuis le début. Le statut des apprenants ayant terminé ce package reste inchangé.",
+            "mismatch_title": "Il semble s'agir d'un cours différent",
+            "mismatch_body": "Ses modules ne correspondent pas à ceux du package actuel. S'il s'agit d'un cours différent, remplacez le package au lieu d'ajouter une nouvelle version.",
+            "swap_instead": "Remplacer le package",
+            "upload_anyway": "Importer comme nouvelle version malgré tout",
+            "same_file_title": "Déjà la version actuelle",
+            "same_file_body": "Ce fichier correspond à la version actuelle. Aucune nouvelle version n'a été créée.",
+            "promote_confirm_title": "Des apprenants ont commencé pendant l'importation",
+            "promote_confirm_body": "{count, plural, one {# apprenant a commencé} other {# apprenants ont commencé}} pendant le traitement de la nouvelle version."
           },
           "gating": {
             "title": "La création de contenu SCORM est suspendue.",
@@ -3023,7 +3043,9 @@
             "next_module": "Module suivant",
             "autosave_hint": "La progression est enregistrée automatiquement.",
             "archived_title": "Vous avez utilisé une version antérieure de ce package",
-            "archived_body": "Vos résultats restent inchangés."
+            "archived_body": "Vos résultats restent inchangés.",
+            "restarted_title": "Ce contenu a été mis à jour",
+            "restarted_body": "Ils recommenceront depuis le début car le package a changé."
           },
           "results": {
             "sheet": {

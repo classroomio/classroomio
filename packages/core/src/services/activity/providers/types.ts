@@ -52,6 +52,7 @@ export type ActivityEditorData =
         versions: TContentPackageVersion[];
         currentVersion: TContentPackageVersion | null;
         units: TContentPackageUnit[];
+        attemptCounts: { inProgress: number; stale: number; staleVersionNumber: number | null };
       } | null;
     };
 
@@ -95,6 +96,7 @@ export type ActivityLaunchResult =
       unit: ScormLaunchUnit;
       units: ScormLaunchModule[];
       reviewOfArchivedVersion?: boolean;
+      restartedAfterReplace?: boolean;
     };
 
 export type ActivityResultsSummary = {
