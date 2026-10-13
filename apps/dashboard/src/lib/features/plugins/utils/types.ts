@@ -1,4 +1,4 @@
-import { classroomio, type InferRequestType, type InferResponseType } from '$lib/utils/services/api';
+import { classroomio, type InferResponseType } from '$lib/utils/services/api';
 
 export type ListCatalogPluginsRequest = typeof classroomio.plugins.catalog.$get;
 export type ListCatalogPluginsResponse = InferResponseType<ListCatalogPluginsRequest>;
@@ -37,7 +37,10 @@ export type UpdateOrgApprovalRequest =
 
 export type GetPluginStorageRequest =
   (typeof classroomio.plugins.installations)[':installationId']['storage'][':namespace'][':key']['$get'];
-export type SetPluginStorageRequest = (typeof classroomio.plugins.installations)[':installationId']['storage']['$put'];
+export type ListPluginStorageRequest =
+  (typeof classroomio.plugins.installations)[':installationId']['storage'][':namespace']['$get'];
+export type SetPluginStorageRequest =
+  (typeof classroomio.plugins.installations)[':installationId']['storage'][':namespace'][':key']['$put'];
 export type DeletePluginStorageRequest =
   (typeof classroomio.plugins.installations)[':installationId']['storage'][':namespace'][':key']['$delete'];
 
@@ -51,9 +54,11 @@ export type CreateSubscriptionRequest =
 
 export type ListDeliveriesRequest =
   (typeof classroomio.plugins.events)['installations'][':installationId']['deliveries']['$get'];
-export type GetWebhookSecretRequest =
-  (typeof classroomio.plugins.events)['installations'][':installationId']['webhook-secret']['$get'];
 export type ReplayDeliveryRequest = (typeof classroomio.plugins.events)['deliveries'][':deliveryId']['replay']['$post'];
 export type TriggerTestEventRequest = typeof classroomio.plugins.events.test.$post;
 
-export type { PluginInstallationStatus, PluginOrgApprovalStatus } from '@cio/utils/validation/plugin';
+export type {
+  PluginInstallationStatus,
+  PluginOrgApprovalStatus,
+  TPluginApiStorageScope
+} from '@cio/utils/validation/plugin';

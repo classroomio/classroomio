@@ -3,10 +3,8 @@ import type {
   CatalogPluginDetails,
   CatalogPluginItem,
   CreateLaunchCodeRequest,
-  DeletePluginStorageRequest,
   GetCatalogPluginDetailsRequest,
   GetInstallationRequest,
-  GetPluginStorageRequest,
   InstallationDetails,
   InstalledPluginItem,
   InstallPluginRequest,
@@ -14,18 +12,21 @@ import type {
   ListInstallationsRequest,
   ListContributionsRequest,
   ResolvedContributionItem,
-  SetPluginStorageRequest,
   UpdateInstallationSettingsRequest,
   UpdateInstallationStatusRequest,
   UpdateOrgApprovalRequest,
+  GetPluginStorageRequest,
+  ListPluginStorageRequest,
+  SetPluginStorageRequest,
+  DeletePluginStorageRequest,
   PluginInstallationStatus,
-  PluginOrgApprovalStatus
+  PluginOrgApprovalStatus,
+  TPluginApiStorageScope
 } from '../utils/types';
 
 export class PluginsApi extends BaseApiWithErrors {
   catalog = $state<CatalogPluginItem[]>([]);
   installations = $state<InstalledPluginItem[]>([]);
-  contributions = $state<ResolvedContributionItem[]>([]);
   selectedPlugin = $state<CatalogPluginDetails | null>(null);
   selectedInstallation = $state<InstallationDetails | null>(null);
 
@@ -65,7 +66,7 @@ export class PluginsApi extends BaseApiWithErrors {
   async listOrgContributions(orgId: string, target?: string) {
     const query = target ? { target } : undefined;
 
-    return this.execute<ListContributionsRequest>({
+    const response = await this.execute<ListContributionsRequest>({
       requestFn: () =>
         classroomio.plugins.installations.contributions.$get(
           { query },
@@ -73,11 +74,10 @@ export class PluginsApi extends BaseApiWithErrors {
             headers: { 'cio-org-id': orgId }
           }
         ),
-      logContext: 'fetching organization plugin contributions',
-      onSuccess: (response) => {
-        this.contributions = response.data;
-      }
+      logContext: 'fetching organization plugin contributions'
     });
+
+    return response?.data ?? [];
   }
 
   async install(pluginId: string, version: string, orgId: string, settings?: Record<string, unknown>) {
@@ -105,12 +105,13 @@ export class PluginsApi extends BaseApiWithErrors {
     });
   }
 
-  async getInstallation(installationId: string) {
+  async getInstallation(installationId: string, orgId: string) {
     return this.execute<GetInstallationRequest>({
       requestFn: () =>
-        classroomio.plugins.installations[':installationId'].$get({
-          param: { installationId }
-        }),
+        classroomio.plugins.installations[':installationId'].$get(
+          { param: { installationId } },
+          { headers: { 'cio-org-id': orgId } }
+        ),
       logContext: 'fetching installation details',
       onSuccess: (response) => {
         this.selectedInstallation = response.data;
@@ -172,42 +173,105 @@ export class PluginsApi extends BaseApiWithErrors {
     });
   }
 
-  async getStorage(installationId: string, namespace: string, key: string) {
+  async getStorage(
+    installationId: string,
+    namespace: string,
+    key: string,
+    scope: TPluginApiStorageScope,
+    orgId: string
+  ) {
     const response = await this.execute<GetPluginStorageRequest>({
       requestFn: () =>
-        classroomio.plugins.installations[':installationId']['storage'][':namespace'][':key'].$get({
-          param: { installationId, namespace, key }
-        }),
-      logContext: 'getting plugin storage'
+        classroomio.plugins.installations[':installationId'].storage[':namespace'][':key'].$get(
+          {
+            param: { installationId, namespace, key },
+            query: { scope }
+          },
+          { headers: { 'cio-org-id': orgId } }
+        ),
+      logContext: 'loading plugin storage'
     });
 
-    return response ? response.data : null;
+    if (!response) throw new Error(this.error ?? 'Failed to load plugin storage');
+
+    return response.data.value;
   }
 
-  async setStorage(installationId: string, namespace: string, key: string, value: unknown) {
-    await this.execute<SetPluginStorageRequest>({
+  async listStorage(installationId: string, namespace: string, scope: TPluginApiStorageScope, orgId: string) {
+    const response = await this.execute<ListPluginStorageRequest>({
       requestFn: () =>
-        classroomio.plugins.installations[':installationId']['storage'].$put({
-          param: { installationId },
-          json: { namespace, key, value }
-        }),
-      logContext: 'setting plugin storage'
+        classroomio.plugins.installations[':installationId'].storage[':namespace'].$get(
+          {
+            param: { installationId, namespace },
+            query: { scope }
+          },
+          { headers: { 'cio-org-id': orgId } }
+        ),
+      logContext: 'listing plugin storage'
     });
+
+    if (!response) throw new Error(this.error ?? 'Failed to list plugin storage');
+
+    return response.data.items;
   }
 
-  async deleteStorage(installationId: string, namespace: string, key: string) {
+  async setStorage(
+    installationId: string,
+    namespace: string,
+    key: string,
+    value: unknown,
+    scope: TPluginApiStorageScope,
+    orgId: string
+  ) {
+    const response = await this.execute<SetPluginStorageRequest>({
+      requestFn: () =>
+        classroomio.plugins.installations[':installationId'].storage[':namespace'][':key'].$put(
+          {
+            param: { installationId, namespace, key },
+            json: { value, scope }
+          },
+          { headers: { 'cio-org-id': orgId } }
+        ),
+      logContext: 'saving plugin storage'
+    });
+
+    if (!response) throw new Error(this.error ?? 'Failed to save plugin storage');
+
+    return response.data;
+  }
+
+  async deleteStorage(
+    installationId: string,
+    namespace: string,
+    key: string,
+    scope: TPluginApiStorageScope,
+    orgId: string
+  ) {
     const response = await this.execute<DeletePluginStorageRequest>({
       requestFn: () =>
-        classroomio.plugins.installations[':installationId']['storage'][':namespace'][':key'].$delete({
-          param: { installationId, namespace, key }
-        }),
+        classroomio.plugins.installations[':installationId'].storage[':namespace'][':key'].$delete(
+          {
+            param: { installationId, namespace, key },
+            query: { scope }
+          },
+          { headers: { 'cio-org-id': orgId } }
+        ),
       logContext: 'deleting plugin storage'
     });
 
-    return response ? response.data.deleted : false;
+    if (!response) throw new Error(this.error ?? 'Failed to delete plugin storage');
+
+    return response.data.deleted;
   }
 
-  async requestLaunchCode(installationId: string, orgId?: string, target?: string) {
+  async requestLaunchCode(
+    installationId: string,
+    orgId: string | undefined,
+    target: string,
+    audience: string,
+    nonce: string,
+    resource?: { type: 'lesson' | 'course' | 'certificate' | 'organization'; id: string }
+  ) {
     const headers = orgId ? { 'cio-org-id': orgId } : undefined;
 
     const response = await this.execute<CreateLaunchCodeRequest>({
@@ -215,7 +279,7 @@ export class PluginsApi extends BaseApiWithErrors {
         classroomio.plugins.launch[':installationId']['launch-code'].$post(
           {
             param: { installationId },
-            json: { target }
+            json: { target, audience, nonce, resource }
           },
           { headers }
         ),

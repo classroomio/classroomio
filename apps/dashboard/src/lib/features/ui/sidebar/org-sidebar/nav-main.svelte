@@ -9,6 +9,30 @@
   import { HoverableItem, PremiumIcon } from '@cio/ui/custom/moving-icons';
   import { formatCompactCount } from '@cio/utils/functions';
   import { orgNavCountsApi } from './org-nav-counts.svelte';
+  import { PluginIcon, pluginsApi, PluginPopover } from '$features/plugins';
+  import BlocksIcon from '@lucide/svelte/icons/blocks';
+
+  let isPluginsOpen = $state(false);
+
+  const isPluginsActive = $derived(page.url.pathname.includes('/plugins'));
+
+  const installedPluginNavItems = $derived.by(() => {
+    return pluginsApi.installations
+      .filter((inst) => {
+        if (inst.status !== 'active') return false;
+        const manifest = inst.manifest as any;
+        const contributesPages = manifest?.contributes?.pages;
+        return Boolean(contributesPages && contributesPages.length > 0);
+      })
+      .map((inst) => {
+        return {
+          pluginId: inst.pluginId,
+          name: inst.plugin?.name ?? inst.pluginId,
+          iconUrl: inst.iconUrl ?? null,
+          url: `${$currentOrgPath}/plugins/${inst.pluginId}`
+        };
+      });
+  });
 
   const groups = $derived(
     getOrgNavigationGroups(
@@ -132,6 +156,65 @@
           {/snippet}
         </Collapsible.Root>
       {/each}
+      {#if group.labelKey === 'org_navigation.tools' && $isOrgAdmin}
+        <Collapsible.Root
+          open={isPluginsOpen || isPluginsActive}
+          onOpenChange={(open) => (isPluginsOpen = open)}
+          class="group/collapsible"
+        >
+          {#snippet child({ props })}
+            <Sidebar.MenuItem {...props}>
+              <PluginPopover>
+                {#snippet trigger({ props: popoverProps })}
+                  <Sidebar.MenuButton
+                    {...popoverProps}
+                    tooltipContent={$t('org_navigation.plugins_and_extensions')}
+                    isActive={isPluginsActive}
+                    data-testid="org-nav-plugins"
+                  >
+                    <div class="flex items-center gap-2">
+                      <BlocksIcon size={16} />
+                      <span>{$t('org_navigation.plugins_and_extensions')}</span>
+                    </div>
+                  </Sidebar.MenuButton>
+                {/snippet}
+              </PluginPopover>
+
+              {#if installedPluginNavItems.length > 0}
+                <Collapsible.Trigger>
+                  {#snippet child({ props: triggerProps })}
+                    <Sidebar.MenuAction {...triggerProps} showOnHover={false}>
+                      <ChevronRightIcon
+                        class="size-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90"
+                      />
+                      <span class="sr-only">Toggle plugins</span>
+                    </Sidebar.MenuAction>
+                  {/snippet}
+                </Collapsible.Trigger>
+
+                <Collapsible.Content>
+                  <Sidebar.MenuSub>
+                    {#each installedPluginNavItems as subItem (subItem.pluginId)}
+                      <Sidebar.MenuSubItem>
+                        <Sidebar.MenuSubButton isActive={page.url.pathname.startsWith(subItem.url)}>
+                          {#snippet child({ props: subProps })}
+                            <a href={subItem.url} {...subProps} data-testid="org-nav-plugin-{subItem.pluginId}">
+                              <div class="flex items-center gap-2 truncate">
+                                <PluginIcon src={subItem.iconUrl} alt={subItem.name} />
+                                <span class="truncate">{subItem.name}</span>
+                              </div>
+                            </a>
+                          {/snippet}
+                        </Sidebar.MenuSubButton>
+                      </Sidebar.MenuSubItem>
+                    {/each}
+                  </Sidebar.MenuSub>
+                </Collapsible.Content>
+              {/if}
+            </Sidebar.MenuItem>
+          {/snippet}
+        </Collapsible.Root>
+      {/if}
     </Sidebar.Menu>
   </Sidebar.Group>
 {/each}

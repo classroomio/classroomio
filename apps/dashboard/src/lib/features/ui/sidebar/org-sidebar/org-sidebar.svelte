@@ -2,6 +2,7 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg, orgs } from '$lib/utils/store/org';
+  import { pluginsApi } from '$features/plugins';
 
   import AppLogo from './app-logo.svelte';
   import NavMain from './nav-main.svelte';
@@ -15,6 +16,7 @@
   $effect(() => {
     if (!isOrgLoaded || !$currentOrg.id) return;
     void orgNavCountsApi.ensureCounts($currentOrg.id);
+    void pluginsApi.listOrgInstallations($currentOrg.id);
   });
 </script>
 

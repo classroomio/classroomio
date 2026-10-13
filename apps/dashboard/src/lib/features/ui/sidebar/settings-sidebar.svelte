@@ -1,12 +1,14 @@
 <script lang="ts">
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { currentOrgPath } from '$lib/utils/store/org';
+  import { currentOrg, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { page } from '$app/state';
   import { t } from '$lib/utils/functions/translations';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { BackButton } from '@cio/ui';
   import Search from '$features/ui/search.svelte';
   import { isActive } from '$lib/utils/functions/app';
+  import { pluginsApi } from '$features/plugins/api/plugins.svelte';
+  import type { ResolvedContributionItem } from '$features/plugins/utils/types';
 
   const groups = [
     {
@@ -42,6 +44,18 @@
   ];
 
   const currentPath = $derived($currentOrgPath);
+  let pluginNavigation = $state<ResolvedContributionItem[]>([]);
+  let listedOrganizationId = '';
+
+  $effect(() => {
+    const organizationId = $currentOrg.id;
+    if (!organizationId || !$isOrgAdmin || listedOrganizationId === organizationId) return;
+
+    listedOrganizationId = organizationId;
+    void pluginsApi.listOrgContributions(organizationId, 'organization.settings').then((result) => {
+      if ($currentOrg.id === organizationId) pluginNavigation = result;
+    });
+  });
 </script>
 
 <Sidebar.Root collapsible="offcanvas" class="border-r">
@@ -76,6 +90,18 @@
               </Sidebar.MenuButton>
             </Sidebar.MenuItem>
           {/each}
+          {#if group.label === 'settings.sidebar.extensions'}
+            {#each pluginNavigation as item (item.installationId + item.contributionId)}
+              {@const href = `${currentPath}/settings/plugins/${item.pluginId}/${item.page}`}
+              <Sidebar.MenuItem>
+                <Sidebar.MenuButton isActive={isActive(page.url.pathname, href)}>
+                  {#snippet child({ props })}
+                    <a {href} {...props}>{item.title}</a>
+                  {/snippet}
+                </Sidebar.MenuButton>
+              </Sidebar.MenuItem>
+            {/each}
+          {/if}
         </Sidebar.Menu>
       </Sidebar.Group>
     {/each}

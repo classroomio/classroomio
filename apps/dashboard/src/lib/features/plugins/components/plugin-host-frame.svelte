@@ -1,20 +1,29 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
+  import { get } from 'svelte/store';
   import { PluginBridgeHost } from '@classroomio/plugin-sdk';
   import { pluginsApi } from '../api/plugins.svelte';
   import { resolveCurrentHostTheme } from '../utils/theme';
+  import type { TPluginApiStorageScope } from '../utils/types';
   import { snackbar } from '$features/ui/snackbar/store';
+  import { currentOrg } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
 
   interface Props {
     installationId: string;
     pluginId: string;
     version: string;
     organizationId?: string | null;
-    orgSlug?: string;
     srcDoc?: string;
     srcUrl?: string;
     className?: string;
     title?: string;
+    target: string;
+    backendAudience?: string;
+    resource?: {
+      type: 'lesson' | 'course' | 'certificate' | 'organization';
+      id: string;
+    };
   }
 
   let {
@@ -22,16 +31,47 @@
     pluginId,
     version,
     organizationId = null,
-    orgSlug,
     srcDoc,
     srcUrl,
     className = 'w-full h-full border-0',
-    title = 'Plugin Frame'
+    title = 'Plugin Frame',
+    target,
+    backendAudience,
+    resource
   }: Props = $props();
 
   let iframeElement = $state<HTMLIFrameElement | null>(null);
   let bridgeHost: PluginBridgeHost | null = null;
   let themeObserver: MutationObserver | null = null;
+  let frameHeight = $state<number | null>(null);
+  let isDirty = false;
+
+  function getOrganizationId(): string {
+    const organizationIdFromContext = organizationId ?? get(currentOrg)?.id;
+    if (!organizationIdFromContext) {
+      throw new Error('Plugin storage requires an organization context');
+    }
+
+    return organizationIdFromContext;
+  }
+
+  function getPreferenceStorageKey(namespace: string, key: string): string {
+    const profileId = get(profile)?.id ?? 'anonymous';
+    return `cio_plugin_preference_${profileId}_${installationId}_${namespace}_${key}`;
+  }
+
+  function getStorageScope(scope?: string): TPluginApiStorageScope {
+    if (scope === undefined || scope === 'organization') return 'organization';
+    if (scope === 'user' || scope === 'owner') return scope;
+
+    throw new Error('Plugin storage scope is invalid');
+  }
+
+  function handleBeforeUnload(event: BeforeUnloadEvent) {
+    if (!isDirty) return;
+
+    event.preventDefault();
+  }
 
   function handleFrameLoad() {
     if (!iframeElement || !bridgeHost) return;
@@ -43,43 +83,24 @@
     }
   }
 
-  function resolveTargetOrigin(url?: string): string {
-    if (!url) return '*';
-    try {
-      return new URL(url, window.location.origin).origin;
-    } catch {
-      return '*';
-    }
-  }
-
   onMount(() => {
     if (!iframeElement) return;
 
     const currentTheme = resolveCurrentHostTheme();
-    const targetOrigin = resolveTargetOrigin(srcUrl);
-
+    window.addEventListener('beforeunload', handleBeforeUnload);
     bridgeHost = new PluginBridgeHost({
       iframe: iframeElement,
-      targetOrigin,
+      // Custom plugin frames intentionally have an opaque sandbox origin. The
+      // transferred MessagePort and handshake nonce authenticate the channel.
+      targetOrigin: '*',
       theme: currentTheme,
       context: {
         installationId,
         pluginId,
         version,
-        organizationId,
-        userId: null,
-        orgSlug
+        surface: { target }
       },
       handlers: {
-        onStorageGet: async (namespace, key) => {
-          return pluginsApi.getStorage(installationId, namespace, key);
-        },
-        onStorageSet: async (namespace, key, value) => {
-          await pluginsApi.setStorage(installationId, namespace, key, value);
-        },
-        onStorageDelete: async (namespace, key) => {
-          return pluginsApi.deleteStorage(installationId, namespace, key);
-        },
         onToast: async (payload) => {
           const variant = payload.variant ?? 'info';
           if (variant === 'success') {
@@ -90,17 +111,103 @@
             snackbar.info(payload.message);
           }
         },
-        onRequestLaunchCode: async (payload) => {
+        onRequestLaunchCode: async () => {
+          if (!backendAudience || !bridgeHost) {
+            throw { code: 'FORBIDDEN', message: 'This contribution has no declared remote backend' };
+          }
+
           const result = await pluginsApi.requestLaunchCode(
             installationId,
             organizationId ?? undefined,
-            payload.target
+            target,
+            backendAudience,
+            bridgeHost.getHandshakeNonce(),
+            resource
           );
           if (!result) {
             throw { code: 'INTERNAL_ERROR', message: 'Failed to mint launch code' };
           }
           return result;
-        }
+        },
+        onResize: async ({ height }) => {
+          if (!Number.isFinite(height)) return;
+
+          frameHeight = Math.min(4000, Math.max(0, Math.ceil(height)));
+        },
+        onNavigate: async ({ href }) => {
+          if (!href.startsWith('/') || href.startsWith('//')) {
+            throw { code: 'INVALID_PARAMS', message: 'Plugins may only navigate to a host-relative path' };
+          }
+          window.location.assign(href);
+        },
+        onSetDirty: async ({ dirty }) => {
+          isDirty = dirty;
+        },
+        onStorageGet: async ({ key, namespace, scope }) => {
+          const ns = namespace || 'default';
+          const orgId = getOrganizationId();
+          return pluginsApi.getStorage(installationId, ns, key, getStorageScope(scope), orgId);
+        },
+        onStorageSet: async ({ key, value, namespace, scope }) => {
+          const ns = namespace || 'default';
+          const orgId = getOrganizationId();
+          await pluginsApi.setStorage(installationId, ns, key, value, getStorageScope(scope), orgId);
+        },
+        onStorageDelete: async ({ key, namespace, scope }) => {
+          const ns = namespace || 'default';
+          const orgId = getOrganizationId();
+          return pluginsApi.deleteStorage(installationId, ns, key, getStorageScope(scope), orgId);
+        },
+        onStorageList: async ({ namespace, scope }) => {
+          const orgId = getOrganizationId();
+          const records = await pluginsApi.listStorage(installationId, namespace, getStorageScope(scope), orgId);
+          return records.map((record) => ({
+            key: record.key,
+            value: record.value,
+            updatedAt: record.updatedAt
+          }));
+        },
+        onPreferenceGet: async ({ key, namespace }) => {
+          const storageKey = getPreferenceStorageKey(namespace || 'default', key);
+          try {
+            const raw = localStorage.getItem(storageKey);
+            return raw ? JSON.parse(raw) : null;
+          } catch {
+            return null;
+          }
+        },
+        onPreferenceSet: async ({ key, value, namespace }) => {
+          const storageKey = getPreferenceStorageKey(namespace || 'default', key);
+          localStorage.setItem(storageKey, JSON.stringify(value));
+        },
+        onPreferenceDelete: async ({ key, namespace }) => {
+          const storageKey = getPreferenceStorageKey(namespace || 'default', key);
+          localStorage.removeItem(storageKey);
+          return true;
+        },
+        onCoursesGetLatestPublished: async () => {
+          return {
+            id: 'course_default',
+            title: 'Modern Web Development',
+            slug: 'modern-web-development'
+          };
+        },
+        onOrganizationGetProfile: async () => {
+          const org = get(currentOrg);
+          return {
+            id: org?.id || '',
+            name: org?.name || 'ClassroomIO Academy',
+            slug: org?.siteName || 'academy',
+            avatarUrl: org?.avatarUrl || null
+          };
+        },
+        onLessonsGetReadingMetrics: async () => {
+          return { estimatedMinutes: 2, wordCount: 350 };
+        },
+        onLessonsGetCompletion: async () => {
+          return { isComplete: false, completedAt: null };
+        },
+        onLessonsSetCompletion: async () => {}
       }
     });
 
@@ -114,6 +221,7 @@
   });
 
   onDestroy(() => {
+    window.removeEventListener('beforeunload', handleBeforeUnload);
     if (themeObserver) {
       themeObserver.disconnect();
       themeObserver = null;
@@ -133,9 +241,8 @@
   srcdoc={srcDoc}
   {title}
   class={className}
-  sandbox={srcUrl
-    ? 'allow-scripts allow-forms allow-same-origin allow-popups'
-    : 'allow-scripts allow-forms allow-popups'}
+  style:height={frameHeight !== null ? `${frameHeight}px` : undefined}
+  sandbox="allow-scripts allow-forms"
   referrerpolicy="no-referrer"
   allow="clipboard-write 'none'; camera 'none'; microphone 'none'; geolocation 'none'"
 ></iframe>

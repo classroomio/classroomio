@@ -13,7 +13,6 @@
   import { OrgSidebar } from '$features/ui/sidebar/org-sidebar';
   import SettingsSidebar from '$features/ui/sidebar/settings-sidebar.svelte';
   import { AddOrgModal } from '$features/org';
-  import { PluginSlotRenderer } from '$features/plugins/components';
 
   let { data, children } = $props();
   const isSettingsRoute = $derived(/\/settings(?:\/|$)/.test(page.url.pathname));
@@ -62,7 +61,6 @@
     <div
       class={isCoursesList ? 'flex w-full flex-1 flex-col' : 'mx-auto flex w-full max-w-6xl flex-1 flex-col gap-4 px-4'}
     >
-      <PluginSlotRenderer target="lms.banner" className="w-full" />
       {#if data.orgName === '*'}
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
           <Skeleton class="aspect-video rounded-xl" />

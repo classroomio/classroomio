@@ -640,7 +640,7 @@
               <Component {mode} {lessonId} {courseId} />
             {/each}
 
-            <PluginSlotRenderer target="lesson.after" context={{ lessonId, courseId }} className="my-4" />
+            <PluginSlotRenderer target="lesson.after" resource={{ type: 'lesson', id: lessonId }} className="my-4" />
 
             {#if showLessonComments}
               <hr class="my-2" />
