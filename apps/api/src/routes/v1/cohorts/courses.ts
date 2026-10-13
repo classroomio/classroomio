@@ -15,7 +15,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './docs';
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, cohortForbiddenResponses } from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const CohortCourseResponse = itemResponse(ZPublicApiCohortCourseResponse);
@@ -24,11 +24,11 @@ export const v1CohortCoursesRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the courses linked to a cohort. If the automation actor is a student in the cohort, only published courses are returned. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
+      description: `List the courses linked to a cohort; ${COHORT_MEMBER_RULE}.`,
       tags: ['Cohort Courses'],
       responses: {
         200: jsonResponse(
-          'Cohort courses returned successfully',
+          'Cohort courses returned; a key creator who is a student in the cohort gets only published courses',
           paginatedResponse(ZPublicApiCohortCourseListItemResponse)
         ),
         400: errorResponses.badRequest,
@@ -56,7 +56,7 @@ export const v1CohortCoursesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Link a course from your organization to a cohort. Existing cohort students are enrolled in the course. ${COHORT_TEAM_RULE}`,
+      description: `Link a course from your organization to a cohort and enrol the cohort's existing students in it; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Courses'],
       responses: {
         201: jsonResponse('Course added to cohort', CohortCourseResponse),
@@ -86,7 +86,7 @@ export const v1CohortCoursesRouter = new Hono()
   .delete(
     '/:courseId',
     describeRoute({
-      description: `Unlink a course from a cohort. The course itself is not deleted. ${COHORT_TEAM_RULE}`,
+      description: `Unlink a course from a cohort without deleting the course; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Courses'],
       responses: {
         200: jsonResponse('Course removed from cohort', CohortCourseResponse),
