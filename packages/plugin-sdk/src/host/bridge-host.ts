@@ -1,29 +1,43 @@
 import {
   type BridgeHandshakeInit,
   type BridgeModalOpenPayload,
+  type BridgeResizePayload,
+  type BridgeNavigationOpenPayload,
   type BridgeRpcRequest,
   type BridgeRpcResponse,
-  type BridgeStorageDeletePayload,
-  type BridgeStorageGetPayload,
-  type BridgeStorageSetPayload,
   type BridgeToastPayload,
   type BridgeLaunchCodeRequestPayload,
   type BridgeLaunchCodeResponseData,
   type PluginContext,
   type PluginThemeV1,
+  type BridgeSetDirtyPayload,
   DEFAULT_LIGHT_THEME_V1,
-  BRIDGE_PROTOCOL_VERSION
+  BRIDGE_PROTOCOL_VERSION,
+  isBridgeRpcRequest,
+  isValidBridgeRpcPayload
 } from '../bridge/protocol';
 
 export interface PluginBridgeHostHandlers {
-  onStorageGet?: (namespace: string, key: string) => Promise<unknown>;
-  onStorageSet?: (namespace: string, key: string, value: unknown) => Promise<void>;
-  onStorageDelete?: (namespace: string, key: string) => Promise<boolean>;
   onToast?: (payload: BridgeToastPayload) => Promise<void>;
   onOpenModal?: (payload: BridgeModalOpenPayload) => Promise<void>;
   onCloseModal?: () => Promise<void>;
+  onResize?: (payload: BridgeResizePayload) => Promise<void>;
+  onNavigate?: (payload: BridgeNavigationOpenPayload) => Promise<void>;
   onRequestLaunchCode?: (payload: BridgeLaunchCodeRequestPayload) => Promise<BridgeLaunchCodeResponseData>;
-  onCustomRpc?: (action: string, payload: unknown) => Promise<unknown>;
+  onSetDirty?: (payload: BridgeSetDirtyPayload) => Promise<void>;
+  onStorageGet?: (payload: { key: string; namespace?: string; scope?: string }) => Promise<unknown>;
+  onStorageSet?: (payload: { key: string; value: unknown; namespace?: string; scope?: string }) => Promise<void>;
+  onStorageDelete?: (payload: { key: string; namespace?: string; scope?: string }) => Promise<boolean | void>;
+  onStorageList?: (payload: { namespace: string; scope?: string }) => Promise<unknown>;
+  onPreferenceGet?: (payload: { key: string; namespace?: string }) => Promise<unknown>;
+  onPreferenceSet?: (payload: { key: string; value: unknown; namespace?: string }) => Promise<void>;
+  onPreferenceDelete?: (payload: { key: string; namespace?: string }) => Promise<boolean | void>;
+  onCoursesGetLatestPublished?: () => Promise<any>;
+  onOrganizationGetProfile?: () => Promise<any>;
+  onLessonsGetReadingMetrics?: () => Promise<any>;
+  onLessonsGetCompletion?: () => Promise<any>;
+  onLessonsSetCompletion?: (payload: { complete: boolean }) => Promise<void>;
+  onCertificateTemplatesApply?: (payload: any) => Promise<any>;
 }
 
 export interface PluginBridgeHostOptions {
@@ -41,7 +55,11 @@ export class PluginBridgeHost {
   private nonce: string;
 
   constructor(private options: PluginBridgeHostOptions) {
-    this.nonce = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    this.nonce = crypto.randomUUID();
+  }
+
+  public getHandshakeNonce(): string {
+    return this.nonce;
   }
 
   /**
@@ -95,9 +113,8 @@ export class PluginBridgeHost {
     }
 
     // Handle RPC requests from plugin
-    if (data?.type === 'CIO_RPC_REQUEST' && typeof data.id === 'string' && typeof data.action === 'string') {
-      const request = data as BridgeRpcRequest;
-      await this.dispatchRpc(request);
+    if (isBridgeRpcRequest(data)) {
+      await this.dispatchRpc(data);
     }
   }
 
@@ -105,34 +122,13 @@ export class PluginBridgeHost {
     if (!this.port) return;
 
     try {
+      if (!isValidBridgeRpcPayload(request.action, request.payload)) {
+        throw { code: 'INVALID_PARAMS', message: `Invalid payload for ${request.action}` };
+      }
+
       let resultData: unknown = undefined;
 
       switch (request.action) {
-        case 'storage.get':
-        case 'storage:get': {
-          const payload = request.payload as BridgeStorageGetPayload;
-          if (this.options.handlers.onStorageGet) {
-            resultData = await this.options.handlers.onStorageGet(payload.namespace, payload.key);
-          }
-          break;
-        }
-        case 'storage.set':
-        case 'storage:set': {
-          const payload = request.payload as BridgeStorageSetPayload;
-          if (this.options.handlers.onStorageSet) {
-            await this.options.handlers.onStorageSet(payload.namespace, payload.key, payload.value);
-          }
-          break;
-        }
-        case 'storage.delete':
-        case 'storage:delete': {
-          const payload = request.payload as BridgeStorageDeletePayload;
-          if (this.options.handlers.onStorageDelete) {
-            resultData = await this.options.handlers.onStorageDelete(payload.namespace, payload.key);
-          }
-          break;
-        }
-        case 'toast':
         case 'ui:toast': {
           const payload = request.payload as BridgeToastPayload;
           if (this.options.handlers.onToast) {
@@ -153,6 +149,21 @@ export class PluginBridgeHost {
           }
           break;
         }
+        case 'ui:resize': {
+          const payload = request.payload as BridgeResizePayload;
+          if (this.options.handlers.onResize) {
+            await this.options.handlers.onResize(payload);
+          }
+          break;
+        }
+        case 'navigation:open': {
+          const payload = request.payload as BridgeNavigationOpenPayload;
+          if (!this.options.handlers.onNavigate) {
+            throw { code: 'FORBIDDEN', message: 'Navigation is unavailable in this surface' };
+          }
+          await this.options.handlers.onNavigate(payload);
+          break;
+        }
         case 'auth:requestLaunchCode': {
           const payload = request.payload as BridgeLaunchCodeRequestPayload;
           if (this.options.handlers.onRequestLaunchCode) {
@@ -165,12 +176,116 @@ export class PluginBridgeHost {
           }
           break;
         }
-        default: {
-          if (this.options.handlers.onCustomRpc) {
-            resultData = await this.options.handlers.onCustomRpc(request.action, request.payload);
-          } else {
-            throw { code: 'NOT_FOUND', message: `Unknown RPC action: ${request.action}` };
+        case 'ui:setDirty': {
+          const payload = request.payload as BridgeSetDirtyPayload;
+          if (typeof payload?.dirty !== 'boolean') {
+            throw { code: 'INVALID_PARAMS', message: 'dirty must be a boolean' };
           }
+          if (this.options.handlers.onSetDirty) {
+            await this.options.handlers.onSetDirty(payload);
+          }
+          break;
+        }
+        case 'ui:storage:get': {
+          if (this.options.handlers.onStorageGet) {
+            resultData = await this.options.handlers.onStorageGet(request.payload as any);
+          } else {
+            resultData = null;
+          }
+          break;
+        }
+        case 'ui:storage:set': {
+          if (this.options.handlers.onStorageSet) {
+            await this.options.handlers.onStorageSet(request.payload as any);
+          }
+          break;
+        }
+        case 'ui:storage:delete': {
+          if (this.options.handlers.onStorageDelete) {
+            resultData = await this.options.handlers.onStorageDelete(request.payload as any);
+          } else {
+            resultData = true;
+          }
+          break;
+        }
+        case 'ui:storage:list': {
+          if (this.options.handlers.onStorageList) {
+            resultData = await this.options.handlers.onStorageList(request.payload as any);
+          } else {
+            resultData = [];
+          }
+          break;
+        }
+        case 'ui:preferences:get': {
+          if (this.options.handlers.onPreferenceGet) {
+            resultData = await this.options.handlers.onPreferenceGet(request.payload as any);
+          } else {
+            resultData = null;
+          }
+          break;
+        }
+        case 'ui:preferences:set': {
+          if (this.options.handlers.onPreferenceSet) {
+            await this.options.handlers.onPreferenceSet(request.payload as any);
+          }
+          break;
+        }
+        case 'ui:preferences:delete': {
+          if (this.options.handlers.onPreferenceDelete) {
+            resultData = await this.options.handlers.onPreferenceDelete(request.payload as any);
+          } else {
+            resultData = true;
+          }
+          break;
+        }
+        case 'courses:getLatestPublished': {
+          if (this.options.handlers.onCoursesGetLatestPublished) {
+            resultData = await this.options.handlers.onCoursesGetLatestPublished();
+          } else {
+            resultData = null;
+          }
+          break;
+        }
+        case 'organization:getProfile': {
+          if (this.options.handlers.onOrganizationGetProfile) {
+            resultData = await this.options.handlers.onOrganizationGetProfile();
+          } else {
+            resultData = null;
+          }
+          break;
+        }
+        case 'lessons:getReadingMetrics': {
+          if (this.options.handlers.onLessonsGetReadingMetrics) {
+            resultData = await this.options.handlers.onLessonsGetReadingMetrics();
+          } else {
+            resultData = { estimatedMinutes: 2, wordCount: 350 };
+          }
+          break;
+        }
+        case 'lessons:getCompletion': {
+          if (this.options.handlers.onLessonsGetCompletion) {
+            resultData = await this.options.handlers.onLessonsGetCompletion();
+          } else {
+            resultData = { isComplete: false, completedAt: null };
+          }
+          break;
+        }
+        case 'lessons:setCompletion': {
+          if (this.options.handlers.onLessonsSetCompletion) {
+            await this.options.handlers.onLessonsSetCompletion(request.payload as any);
+          }
+          break;
+        }
+        case 'certificateTemplates:apply': {
+          if (this.options.handlers.onCertificateTemplatesApply) {
+            resultData = await this.options.handlers.onCertificateTemplatesApply(request.payload);
+          } else {
+            resultData = { success: true };
+          }
+          break;
+        }
+        default: {
+          throw { code: 'NOT_FOUND', message: `Unknown host capability: ${request.action}` };
         }
       }
 

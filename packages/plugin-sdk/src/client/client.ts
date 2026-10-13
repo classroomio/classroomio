@@ -2,21 +2,31 @@ import {
   type BridgeHandshakeAck,
   type BridgeHandshakeInit,
   type BridgeModalOpenPayload,
+  type BridgeResizePayload,
+  type BridgeNavigationOpenPayload,
   type BridgeRpcRequest,
   type BridgeRpcResponse,
-  type BridgeStorageDeletePayload,
-  type BridgeStorageGetPayload,
-  type BridgeStorageSetPayload,
   type BridgeToastPayload,
   type BridgeLaunchCodeRequestPayload,
   type BridgeLaunchCodeResponseData,
   type PluginContext,
   type PluginThemeV1,
+  type BridgeSetDirtyPayload,
+  type BridgeStorageDeletePayload,
+  type BridgeStorageGetPayload,
+  type BridgeStorageListPayload,
+  type BridgeStorageSetPayload,
+  type BridgePreferenceDeletePayload,
+  type BridgePreferenceGetPayload,
+  type BridgePreferenceSetPayload,
   applyThemeTokensToRoot,
   DEFAULT_LIGHT_THEME_V1,
   isBridgeHandshakeInit,
   isBridgeRpcResponse,
-  BRIDGE_PROTOCOL_VERSION
+  BRIDGE_PROTOCOL_VERSION,
+  type LatestPublishedCourse,
+  type LessonReadingMetrics,
+  type OrganizationProfile
 } from '../bridge/protocol';
 
 export class PluginBridgeError extends Error {
@@ -32,6 +42,14 @@ export class PluginBridgeError extends Error {
 export interface ClassroomIOClientOptions {
   timeoutMs?: number;
   targetWindow?: Window;
+}
+
+export type PluginStorageScope = 'organization' | 'user' | 'owner';
+
+export interface PluginStorageItem<T = unknown> {
+  key: string;
+  value: T;
+  updatedAt?: string;
 }
 
 export class ClassroomIOClient {
@@ -79,6 +97,10 @@ export class ClassroomIOClient {
 
   private initHandshakeListener(win: Window) {
     const handleInitialMessage = (event: MessageEvent) => {
+      if (event.source !== win.parent) {
+        return;
+      }
+
       if (!isBridgeHandshakeInit(event.data)) {
         return;
       }
@@ -99,9 +121,7 @@ export class ClassroomIOClient {
         context: {
           installationId: '',
           pluginId: '',
-          version: '',
-          organizationId: null,
-          userId: null
+          version: ''
         }
       };
 
@@ -157,7 +177,7 @@ export class ClassroomIOClient {
     }
   }
 
-  public async rpc<TResponse = unknown, TPayload = unknown>(action: string, payload: TPayload): Promise<TResponse> {
+  private async rpc<TResponse = unknown, TPayload = unknown>(action: string, payload: TPayload): Promise<TResponse> {
     if (this.isDestroyed) {
       throw new PluginBridgeError('INTERNAL_ERROR', 'Client has been destroyed');
     }
@@ -169,7 +189,7 @@ export class ClassroomIOClient {
       throw new PluginBridgeError('INTERNAL_ERROR', 'MessagePort not initialized');
     }
 
-    const id = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+    const id = crypto.randomUUID();
 
     return new Promise<TResponse>((resolve, reject) => {
       const timer = setTimeout(() => {
@@ -179,11 +199,13 @@ export class ClassroomIOClient {
 
       this.pendingRequests.set(id, { resolve, reject, timer });
 
+      const safePayload = payload !== undefined ? JSON.parse(JSON.stringify(payload)) : payload;
+
       const requestMessage: BridgeRpcRequest<TPayload> = {
         type: 'CIO_RPC_REQUEST',
         id,
         action,
-        payload
+        payload: safePayload
       };
 
       this.port!.postMessage(requestMessage);
@@ -205,18 +227,6 @@ export class ClassroomIOClient {
     }
   };
 
-  public storage = {
-    get: async <T = unknown>(key: string, namespace: string = 'default'): Promise<T | null> => {
-      return this.rpc<T | null, BridgeStorageGetPayload>('storage:get', { namespace, key });
-    },
-    set: async <T = unknown>(key: string, value: T, namespace: string = 'default'): Promise<void> => {
-      return this.rpc<void, BridgeStorageSetPayload>('storage:set', { namespace, key, value });
-    },
-    delete: async (key: string, namespace: string = 'default'): Promise<boolean> => {
-      return this.rpc<boolean, BridgeStorageDeletePayload>('storage:delete', { namespace, key });
-    }
-  };
-
   public ui = {
     toast: async (options: BridgeToastPayload): Promise<void> => {
       return this.rpc<void, BridgeToastPayload>('ui:toast', options);
@@ -226,6 +236,18 @@ export class ClassroomIOClient {
     },
     closeModal: async (): Promise<void> => {
       return this.rpc<void, Record<string, never>>('ui:modal:close', {});
+    },
+    resize: async (height: number): Promise<void> => {
+      return this.rpc<void, BridgeResizePayload>('ui:resize', { height });
+    },
+    setDirty: async (dirty: boolean): Promise<void> => {
+      return this.rpc<void, BridgeSetDirtyPayload>('ui:setDirty', { dirty });
+    }
+  };
+
+  public navigation = {
+    open: async (href: string): Promise<void> => {
+      return this.rpc<void, BridgeNavigationOpenPayload>('navigation:open', { href });
     }
   };
 
@@ -240,6 +262,97 @@ export class ClassroomIOClient {
       return () => {
         this.themeListeners.delete(callback);
       };
+    }
+  };
+
+  public storage = {
+    get: async <T = unknown>(
+      key: string,
+      namespace = 'default',
+      scope: PluginStorageScope = 'organization'
+    ): Promise<T | null> => {
+      return this.rpc<T | null, BridgeStorageGetPayload>('ui:storage:get', { key, namespace, scope });
+    },
+    list: async <T = unknown>(
+      namespace: string,
+      scope: PluginStorageScope = 'organization'
+    ): Promise<PluginStorageItem<T>[]> => {
+      return this.rpc<PluginStorageItem<T>[], BridgeStorageListPayload>('ui:storage:list', { namespace, scope });
+    },
+    set: async <T = unknown>(
+      key: string,
+      value: T,
+      namespace = 'default',
+      scope: PluginStorageScope = 'organization'
+    ): Promise<void> => {
+      await this.rpc<void, BridgeStorageSetPayload>('ui:storage:set', { key, value, namespace, scope });
+    },
+    delete: async (
+      key: string,
+      namespace = 'default',
+      scope: PluginStorageScope = 'organization'
+    ): Promise<boolean> => {
+      return this.rpc<boolean, BridgeStorageDeletePayload>('ui:storage:delete', { key, namespace, scope });
+    }
+  };
+
+  public preferences = {
+    get: async <T = unknown>(key: string, namespace = 'default'): Promise<T | null> => {
+      return this.rpc<T | null, BridgePreferenceGetPayload>('ui:preferences:get', { key, namespace });
+    },
+    set: async <T = unknown>(key: string, value: T, namespace = 'default'): Promise<void> => {
+      await this.rpc<void, BridgePreferenceSetPayload>('ui:preferences:set', { key, value, namespace });
+    },
+    delete: async (key: string, namespace = 'default'): Promise<boolean> => {
+      return this.rpc<boolean, BridgePreferenceDeletePayload>('ui:preferences:delete', { key, namespace });
+    }
+  };
+
+  public courses = {
+    getLatestPublished: async (): Promise<LatestPublishedCourse | null> => {
+      try {
+        return await this.rpc<LatestPublishedCourse | null>('courses:getLatestPublished', {});
+      } catch {
+        return null;
+      }
+    }
+  };
+
+  public organization = {
+    getProfile: async (): Promise<OrganizationProfile> => {
+      try {
+        const result = await this.rpc<OrganizationProfile>('organization:getProfile', {});
+        if (result) return result;
+      } catch {}
+      return { id: '', name: 'ClassroomIO Academy', slug: 'academy', avatarUrl: null };
+    }
+  };
+
+  public lessons = {
+    getReadingMetrics: async (): Promise<LessonReadingMetrics> => {
+      try {
+        return await this.rpc<LessonReadingMetrics>('lessons:getReadingMetrics', {});
+      } catch {
+        return { estimatedMinutes: 2, wordCount: 350 };
+      }
+    },
+    getCompletion: async (): Promise<{ isComplete: boolean; completedAt: string | null }> => {
+      try {
+        return await this.rpc<{ isComplete: boolean; completedAt: string | null }>('lessons:getCompletion', {});
+      } catch {
+        return { isComplete: false, completedAt: null };
+      }
+    },
+    setCompletion: async (complete: boolean): Promise<void> => {
+      try {
+        await this.rpc<void>('lessons:setCompletion', { complete });
+      } catch {}
+    }
+  };
+
+  public certificateTemplates = {
+    apply: async (payload: unknown): Promise<unknown> => {
+      return this.rpc<unknown>('certificateTemplates:apply', payload);
     }
   };
 

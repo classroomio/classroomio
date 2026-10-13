@@ -21,10 +21,18 @@
     "./protocol": {
       "types": "./dist/bridge/protocol.d.ts",
       "default": "./dist/bridge/protocol.js"
+    },
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
     }
   },
+  "bin": {
+    "cio-plugin": "./bin/cio-plugin.mjs"
+  },
   "files": [
-    "dist"
+    "dist",
+    "bin"
   ],
   "scripts": {
     "build": "rimraf dist tsconfig.tsbuildinfo && tsc && tsc-alias",

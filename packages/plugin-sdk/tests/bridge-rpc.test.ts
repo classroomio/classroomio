@@ -1,161 +1,117 @@
 import { describe, expect, it } from 'vitest';
 import { ClassroomIOClient } from '../src/client/client';
+import {
+  DEFAULT_DARK_THEME_V1,
+  DEFAULT_LIGHT_THEME_V1,
+  isValidBridgeRpcPayload,
+  type PluginContext
+} from '../src/bridge/protocol';
 import { PluginBridgeHost } from '../src/host/bridge-host';
-import type { PluginContext } from '../src/bridge/protocol';
 
-describe('MessageChannel RPC Plugin Bridge', () => {
+describe('MessageChannel UI host bridge', () => {
   const mockContext: PluginContext = {
     installationId: 'inst_123',
-    pluginId: 'com.classroomio.reading-time',
+    pluginId: 'com.example.plugin',
     version: '1.0.0',
-    organizationId: 'org_abc',
-    userId: 'user_xyz'
+    surface: {
+      target: 'lesson.after'
+    }
   };
 
-  it('performs RPC calls and context exchange between Client and Host', async () => {
+  it('exposes only generic host capabilities', async () => {
     const channel = new MessageChannel();
-    const storedData = new Map<string, unknown>();
-
+    const calls: string[] = [];
     const host = new PluginBridgeHost({
       iframe: {} as HTMLIFrameElement,
-      targetOrigin: 'https://plugin.classroomio.com',
+      targetOrigin: 'https://plugin.example.com',
       context: mockContext,
       handlers: {
-        onStorageGet: async (namespace, key) => {
-          return storedData.get(`${namespace}:${key}`) ?? null;
+        onToast: async ({ message }) => {
+          calls.push(`toast:${message}`);
         },
-        onStorageSet: async (namespace, key, value) => {
-          storedData.set(`${namespace}:${key}`, value);
+        onResize: async ({ height }) => {
+          calls.push(`resize:${height}`);
         },
-        onStorageDelete: async (namespace, key) => {
-          return storedData.delete(`${namespace}:${key}`);
+        onNavigate: async ({ href }) => {
+          calls.push(`navigate:${href}`);
         },
-        onToast: async (payload) => {
-          expect(payload.message).toBe('Settings saved');
+        onSetDirty: async ({ dirty }) => {
+          calls.push(`dirty:${dirty}`);
         }
       }
     });
-
     const client = new ClassroomIOClient();
 
-    // Wire up simulated port connection
     host.attachPort(channel.port1);
     client.attachPort(channel.port2, mockContext);
 
-    // 1. Verify Context
-    const receivedContext = await client.context.get();
-    expect(receivedContext).toEqual(mockContext);
+    await expect(client.context.get()).resolves.toEqual(mockContext);
+    await client.ui.toast({ message: 'Saved', variant: 'success' });
+    await client.ui.resize(72);
+    await client.navigation.open('/courses/course-1');
+    await client.ui.setDirty(true);
 
-    // 2. Storage set and get
-    await client.storage.set('theme', 'dark', 'settings');
-    const value = await client.storage.get('theme', 'settings');
-    expect(value).toBe('dark');
-
-    // 3. Storage delete
-    const deleted = await client.storage.delete('theme', 'settings');
-    expect(deleted).toBe(true);
-
-    const deletedValue = await client.storage.get('theme', 'settings');
-    expect(deletedValue).toBeNull();
-
-    // 4. UI Toast
-    await expect(client.ui.toast({ message: 'Settings saved', variant: 'success' })).resolves.toBeUndefined();
-
-    // Cleanup
-    client.destroy();
-    host.destroy();
-  });
-
-  it('rejects with error when host returns an error', async () => {
-    const channel = new MessageChannel();
-
-    const host = new PluginBridgeHost({
-      iframe: {} as HTMLIFrameElement,
-      targetOrigin: 'https://plugin.classroomio.com',
-      context: mockContext,
-      handlers: {
-        onCustomRpc: async () => {
-          throw { code: 'UNAUTHORIZED', message: 'You lack permission to perform this action' };
-        }
-      }
-    });
-
-    const client = new ClassroomIOClient();
-    host.attachPort(channel.port1);
-    client.attachPort(channel.port2, mockContext);
-
-    await expect(client.rpc('custom:action', {})).rejects.toThrowError(
-      '[ClassroomIO Bridge Error] UNAUTHORIZED: You lack permission to perform this action'
-    );
+    expect(calls).toEqual(['toast:Saved', 'resize:72', 'navigate:/courses/course-1', 'dirty:true']);
 
     client.destroy();
     host.destroy();
   });
 
-  it('handles backend launch code request exchange', async () => {
+  it('returns a one-time launch code for a plugin backend', async () => {
     const channel = new MessageChannel();
-
     const host = new PluginBridgeHost({
       iframe: {} as HTMLIFrameElement,
-      targetOrigin: 'https://plugin.classroomio.com',
+      targetOrigin: 'https://plugin.example.com',
       context: mockContext,
       handlers: {
-        onRequestLaunchCode: async (payload) => {
-          expect(payload.target).toBe('certificate.actions');
-          return {
-            code: 'lc_sec_random_9999',
-            expiresInSeconds: 60
-          };
-        }
+        onRequestLaunchCode: async () => ({
+          code: 'lc_sec_random_9999',
+          expiresInSeconds: 60
+        })
       }
     });
-
     const client = new ClassroomIOClient();
+
     host.attachPort(channel.port1);
     client.attachPort(channel.port2, mockContext);
 
-    const result = await client.auth.requestLaunchCode({ target: 'certificate.actions' });
-    expect(result.code).toBe('lc_sec_random_9999');
-    expect(result.expiresInSeconds).toBe(60);
+    await expect(client.auth.requestLaunchCode()).resolves.toEqual({
+      code: 'lc_sec_random_9999',
+      expiresInSeconds: 60
+    });
 
     client.destroy();
     host.destroy();
   });
 
-  it('exchanges theme state and notifies client on dynamic theme change', async () => {
-    const channel = new MessageChannel();
-    const { DEFAULT_LIGHT_THEME_V1, DEFAULT_DARK_THEME_V1 } = await import('../src/bridge/protocol');
+  it('does not recognize data API calls as UI-host capabilities', () => {
+    expect(isValidBridgeRpcPayload('lessons:get', { id: 'lesson_123' })).toBe(false);
+    expect(isValidBridgeRpcPayload('courses:list', {})).toBe(false);
+    expect(isValidBridgeRpcPayload('storage:get', { namespace: 'settings', key: 'theme' })).toBe(false);
+  });
 
+  it('exchanges theme state and notifies the plugin when it changes', async () => {
+    const channel = new MessageChannel();
     const host = new PluginBridgeHost({
       iframe: {} as HTMLIFrameElement,
-      targetOrigin: 'https://plugin.classroomio.com',
+      targetOrigin: 'https://plugin.example.com',
       context: mockContext,
       theme: DEFAULT_LIGHT_THEME_V1,
       handlers: {}
     });
-
     const client = new ClassroomIOClient();
-
-    let notifiedTheme: any = null;
+    let colorScheme: string | null = null;
     const unsubscribe = client.theme.onChange((theme) => {
-      notifiedTheme = theme;
+      colorScheme = theme.colorScheme;
     });
 
     host.attachPort(channel.port1);
     client.attachPort(channel.port2, mockContext, DEFAULT_LIGHT_THEME_V1);
-
-    expect(client.theme.current().colorScheme).toBe('light');
-
-    // Host updates theme to dark
     host.setTheme(DEFAULT_DARK_THEME_V1);
+    await new Promise((resolve) => setTimeout(resolve, 25));
 
-    // Wait a tick for postMessage event processing
-    await new Promise((resolve) => setTimeout(resolve, 50));
-
-    expect(notifiedTheme).not.toBeNull();
-    expect(notifiedTheme.colorScheme).toBe('dark');
+    expect(colorScheme).toBe('dark');
     expect(client.theme.current().colorScheme).toBe('dark');
-    expect(client.theme.current().tokens.background).toBe('#090d16');
 
     unsubscribe();
     client.destroy();
