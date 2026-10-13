@@ -87,7 +87,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'update_course_landing_page',
-    'Update landing-page-facing course fields on a live course, including headline copy, overview, requirements, goals, pricing, reviews, instructor information, and the course image. Use imageUrl to set an explicit cover image, or set generateImage/imageQuery to fetch a random Unsplash-based image.',
+    "Update a live course's landing page fields. Use imageUrl to set an explicit cover image, or generateImage/imageQuery to fetch a random Unsplash-based image.",
     updateCourseLandingPageShape,
     async (args) => {
       const { courseId, ...payload } = ZUpdateCourseLandingPageToolInput.parse(args);
