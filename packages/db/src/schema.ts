@@ -4437,3 +4437,95 @@ export const liveSessionReminderDelivery = pgTable(
     index('idx_live_session_reminder_delivery_status_lesson_at').on(table.status, table.lessonAt)
   ]
 );
+
+export const webhookDeliveryStatus = pgEnum('WEBHOOK_DELIVERY_STATUS', ['PENDING', 'SUCCESS', 'FAILED', 'GAVE_UP']);
+
+export const webhookEndpoint = pgTable(
+  'webhook_endpoint',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    name: varchar('name', { length: 120 }).notNull(),
+    payloadUrl: text('payload_url').notNull(),
+    secretCiphertext: text('secret_ciphertext'),
+    secretLast4: varchar('secret_last4', { length: 4 }),
+    verifySsl: boolean('verify_ssl').default(true).notNull(),
+    eventMode: varchar('event_mode', { length: 16 }).default('selected').notNull(),
+    isActive: boolean('is_active').default(true).notNull(),
+    consecutiveFailures: integer('consecutive_failures').default(0).notNull(),
+    autoDisabledAt: timestamp('auto_disabled_at', { withTimezone: true, mode: 'string' }),
+    lastDeliveryStatus: webhookDeliveryStatus('last_delivery_status'),
+    lastDeliveryAt: timestamp('last_delivery_at', { withTimezone: true, mode: 'string' }),
+    createdByProfileId: uuid('created_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    updatedByProfileId: uuid('updated_by_profile_id').references(() => profile.id, { onDelete: 'set null' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_webhook_endpoint_org_id').on(table.organizationId)]
+);
+
+export const webhookSubscription = pgTable(
+  'webhook_subscription',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    webhookId: uuid('webhook_id')
+      .notNull()
+      .references(() => webhookEndpoint.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 64 }).notNull()
+  },
+  (table) => [
+    unique('webhook_subscription_webhook_event_key').on(table.webhookId, table.eventType),
+    index('idx_webhook_subscription_event_type').on(table.eventType)
+  ]
+);
+
+export const webhookEvent = pgTable(
+  'webhook_event',
+  {
+    id: text('id').primaryKey().notNull(),
+    organizationId: uuid('organization_id')
+      .notNull()
+      .references(() => organization.id, { onDelete: 'cascade' }),
+    eventType: varchar('event_type', { length: 64 }).notNull(),
+    payload: jsonb('payload').notNull().$type<Record<string, unknown>>(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [index('idx_webhook_event_org_created_at').on(table.organizationId, table.createdAt)]
+);
+
+export const webhookDelivery = pgTable(
+  'webhook_delivery',
+  {
+    id: text('id').primaryKey().notNull(),
+    webhookId: uuid('webhook_id')
+      .notNull()
+      .references(() => webhookEndpoint.id, { onDelete: 'cascade' }),
+    eventId: text('event_id')
+      .notNull()
+      .references(() => webhookEvent.id, { onDelete: 'cascade' }),
+    attempt: integer('attempt').default(0).notNull(),
+    status: webhookDeliveryStatus('status').default('PENDING').notNull(),
+    isTest: boolean('is_test').default(false).notNull(),
+    nextAttemptAt: timestamp('next_attempt_at', { withTimezone: true, mode: 'string' }),
+    requestHeaders: jsonb('request_headers').$type<Record<string, string>>(),
+    responseStatus: integer('response_status'),
+    responseBody: text('response_body'),
+    errorMessage: text('error_message'),
+    durationMs: integer('duration_ms'),
+    deliveredAt: timestamp('delivered_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    index('idx_webhook_delivery_webhook_created_at').on(table.webhookId, table.createdAt),
+    index('idx_webhook_delivery_status_next_attempt').on(table.status, table.nextAttemptAt),
+    index('idx_webhook_delivery_event_id').on(table.eventId)
+  ]
+);

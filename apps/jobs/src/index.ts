@@ -6,6 +6,7 @@ import './workers/media-hls';
 import './workers/youtube-captions';
 import './workers/emails';
 import './workers/notifications';
+import './workers/webhooks';
 import './workers/maintenance';
 import './workers/agent-course-generation';
 
@@ -19,6 +20,7 @@ log.info('all-workers-running', {
     'youtube-captions',
     'emails',
     'notifications',
+    'webhooks',
     'maintenance',
     'agent-course-generation'
   ]

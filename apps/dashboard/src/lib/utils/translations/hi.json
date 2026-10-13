@@ -162,6 +162,14 @@
       "question": {
         "too_small": "प्रश्न का शीर्षक आवश्यक है"
       }
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload URL http:// या https:// से शुरू होना चाहिए"
+      },
+      "event_types": {
+        "required": "कम से कम एक इवेंट चुनें"
+      }
     }
   },
   "generic": {
@@ -516,6 +524,17 @@
       "success": "धन्यवाद। हम इस रिपोर्ट की समीक्षा करेंगे।",
       "error": "रिपोर्ट जमा नहीं हो सकी। कृपया फिर से प्रयास करें।",
       "already_submitted": "आप पहले ही इसकी रिपोर्ट कर चुके हैं।"
+    },
+    "webhooks": {
+      "created": "Webhook बनाया गया। हस्ताक्षर सीक्रेट अभी कॉपी करें क्योंकि यह केवल एक बार दिखाया जाता है।",
+      "updated": "Webhook अपडेट किया गया।",
+      "enabled": "Webhook सक्षम किया गया।",
+      "disabled": "Webhook अक्षम किया गया।",
+      "deleted": "Webhook हटाया गया।",
+      "secret_regenerated": "हस्ताक्षर सीक्रेट दोबारा जनरेट किया गया। इसे अभी कॉपी करें क्योंकि यह केवल एक बार दिखाया जाता है।",
+      "test_success": "टेस्ट इवेंट सफलतापूर्वक डिलीवर हुआ।",
+      "test_failed": "टेस्ट इवेंट विफल रहा। कारण देखने के लिए डिलीवरी लॉग खोलें।",
+      "redelivered": "इवेंट दोबारा डिलीवरी के लिए कतार में है।"
     }
   },
   "explore": {
@@ -576,7 +595,8 @@
     "required": "अपग्रेड आवश्यक",
     "enterprise_required": "इस सुविधा के लिए एंटरप्राइज़ योजना की आवश्यकता है.",
     "public_api_required": "सार्वजनिक API तक पहुँचने के लिए Early Adopter या Enterprise में अपग्रेड करें।",
-    "unlock_field": "इस सेटिंग को अनलॉक करने के लिए अपग्रेड करें"
+    "unlock_field": "इस सेटिंग को अनलॉक करने के लिए अपग्रेड करें",
+    "webhooks_required": "Webhooks का उपयोग करने के लिए Early Adopter या Enterprise में अपग्रेड करें।"
   },
   "analytics": {
     "title": "विश्लेषिकी",
@@ -5064,7 +5084,8 @@
     "tabs": {
       "mcp": "एम.सी.पी",
       "zapier": "जैपियर",
-      "api": "एपीआई"
+      "api": "एपीआई",
+      "webhooks": "Webhooks"
     },
     "permissions": {
       "disabled_title": "केवल पढ़ने योग्य पहुंच",
@@ -5072,6 +5093,123 @@
     },
     "zapier": {
       "page_subtitle": "Zapier के माध्यम से हज़ारों ऐप्स के साथ ClassroomIO को स्वचालित करें। जल्द आ रहा है।"
+    },
+    "webhooks": {
+      "page_subtitle": "रीयल-टाइम ClassroomIO इवेंट को Slack, अपने CRM या अपने बैकएंड पर भेजें।",
+      "title": "Webhooks",
+      "description": "जब भी कोई चुना हुआ इवेंट होता है, ClassroomIO आपके URL पर एक हस्ताक्षरित HTTP POST भेजता है। विफल डिलीवरी अपने आप दोबारा आज़माई जाती हैं।",
+      "permissions_description": "केवल संगठन के एडमिन ही Webhooks बना, संपादित या हटा सकते हैं।",
+      "create": "नया Webhook",
+      "empty_title": "अभी तक कोई Webhook नहीं",
+      "empty_description": "आमंत्रण, नामांकन, पूर्णताएँ और सबमिशन को अपने अन्य टूल्स तक भेजने के लिए एक Webhook बनाएँ।",
+      "secret_once": "अपना हस्ताक्षर सीक्रेट अभी कॉपी करें। यह केवल एक बार दिखाया जाता है, और अनुरोधों को सत्यापित करने के लिए आपको इसकी आवश्यकता होगी।",
+      "secret_dismiss": "मैंने इसे सहेज लिया है",
+      "delete_confirm": "Webhook \"{name}\" हटाएँ? इसका डिलीवरी इतिहास भी हटा दिया जाएगा।",
+      "regenerate_confirm": "हस्ताक्षर सीक्रेट दोबारा जनरेट करें? वर्तमान सीक्रेट तुरंत काम करना बंद कर देगा।",
+      "events_all": "सभी इवेंट",
+      "events_count_one": "{count} इवेंट",
+      "events_count_other": "{count} इवेंट",
+      "no_deliveries": "अभी तक कोई डिलीवरी नहीं",
+      "table": {
+        "name": "Webhook",
+        "events": "इवेंट",
+        "health": "स्थिति",
+        "active": "सक्रिय"
+      },
+      "health": {
+        "healthy": "स्वस्थ",
+        "degraded": "विफल हो रहा है",
+        "disabled": "अपने आप अक्षम"
+      },
+      "actions": {
+        "label": "Webhook कार्रवाइयाँ",
+        "edit": "संपादित करें",
+        "test": "टेस्ट इवेंट भेजें",
+        "deliveries": "डिलीवरी देखें",
+        "regenerate_secret": "सीक्रेट दोबारा जनरेट करें",
+        "delete": "हटाएँ"
+      },
+      "form": {
+        "create_title": "नया Webhook",
+        "edit_title": "Webhook संपादित करें",
+        "description": "चुनें कि ClassroomIO इवेंट कहाँ भेजे और कौन से इवेंट भेजे।",
+        "sections": {
+          "endpoint": "एंडपॉइंट",
+          "events": "इवेंट"
+        },
+        "name": "नाम",
+        "name_placeholder": "CRM सिंक",
+        "payload_url": "Payload URL",
+        "payload_url_help": "यह एक सार्वजनिक HTTPS URL होना चाहिए जो 10 सेकंड के भीतर 2xx प्रतिक्रिया लौटाता हो।",
+        "secret": "हस्ताक्षर सीक्रेट",
+        "secret_placeholder": "जनरेट करने के लिए खाली छोड़ें",
+        "secret_help": "हर अनुरोध पर हस्ताक्षर करने के लिए उपयोग किया जाता है ताकि आप सत्यापित कर सकें कि वह ClassroomIO से आया है।",
+        "secret_edit_placeholder": "वर्तमान सीक्रेट रखने के लिए खाली छोड़ें",
+        "secret_edit_help": "सीक्रेट बदलने के लिए नया मान दर्ज करें। वर्तमान सीक्रेट कभी नहीं दिखाया जाता।",
+        "verify_ssl": "SSL प्रमाणपत्र सत्यापित करें",
+        "verify_ssl_help": "इसे चालू रखें, जब तक आप स्व-हस्ताक्षरित प्रमाणपत्र के विरुद्ध परीक्षण नहीं कर रहे हों।",
+        "active": "सक्रिय",
+        "events_help": "वे इवेंट चुनें जो इस Webhook को ट्रिगर करें।",
+        "mode_all": "मुझे सब कुछ भेजें",
+        "mode_selected": "मुझे अलग-अलग इवेंट चुनने दें",
+        "reset_events": "अनुशंसित इवेंट उपयोग करें",
+        "cancel": "रद्द करें",
+        "save": "Webhook सहेजें"
+      },
+      "event_groups": {
+        "organization": "संगठन",
+        "course": "कोर्स",
+        "learning": "सीखने की प्रगति"
+      },
+      "events": {
+        "organization_invite_created": "टीम आमंत्रण भेजा जाता है",
+        "organization_invite_accepted": "टीम आमंत्रण स्वीकार किया जाता है",
+        "organization_invite_revoked": "टीम आमंत्रण रद्द या बदला जाता है",
+        "course_invite_created": "विद्यार्थी आमंत्रण बनाया जाता है",
+        "course_invite_accepted": "कोई विद्यार्थी आमंत्रण स्वीकार करके नामांकन करता है",
+        "course_invite_revoked": "विद्यार्थी आमंत्रण रद्द किया जाता है",
+        "course_member_added": "किसी कोर्स में सदस्य जोड़ा जाता है",
+        "course_member_removed": "किसी कोर्स से सदस्य हटाया जाता है",
+        "course_completed": "कोई शिक्षार्थी कोर्स पूरा करता है",
+        "course_certificate_issued": "प्रमाणपत्र अर्जित किया जाता है",
+        "course_submission_created": "अभ्यास सबमिशन बनाया जाता है",
+        "course_submission_status_changed": "सबमिशन की स्थिति बदलती है, जैसे ग्रेड किए जाने पर",
+        "lesson_completion_updated": "पाठ को पूर्ण चिह्नित किया जाता है या रीसेट किया जाता है",
+        "exercise_completion_updated": "अभ्यास पूरा किया जाता है या रीसेट किया जाता है"
+      },
+      "deliveries": {
+        "title": "डिलीवरी",
+        "description": "पिछले 30 दिनों के इवेंट",
+        "back": "डिलीवरी पर वापस जाएँ",
+        "filter_all": "सभी स्थितियाँ",
+        "empty": "इस फ़िल्टर से कोई डिलीवरी मेल नहीं खाती।",
+        "load_error": "डिलीवरी लोड नहीं हो सकीं। कृपया पुनः प्रयास करें।",
+        "redeliver": "दोबारा भेजें",
+        "test_badge": "टेस्ट",
+        "status": {
+          "PENDING": "पुनः प्रयास हो रहा है",
+          "SUCCESS": "सफल",
+          "FAILED": "विफल",
+          "GAVE_UP": "विफल"
+        },
+        "columns": {
+          "event": "इवेंट",
+          "event_id": "इवेंट ID",
+          "status": "स्थिति",
+          "attempt": "प्रयास",
+          "http": "HTTP स्थिति",
+          "duration": "प्रतिक्रिया समय",
+          "time": "भेजा गया",
+          "next_attempt": "अगला पुनः प्रयास"
+        },
+        "detail": {
+          "error": "त्रुटि",
+          "request_headers": "अनुरोध हेडर",
+          "payload": "पेलोड",
+          "response_body": "प्रतिक्रिया",
+          "no_response": "कोई प्रतिक्रिया प्राप्त नहीं हुई।"
+        }
+      }
     }
   },
   "ai_assistant": {

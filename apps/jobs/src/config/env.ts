@@ -28,6 +28,7 @@ const envSchema = z.object({
   MEDIA_WORKER_CONCURRENCY: z.string().optional(),
   TRANSCRIBE_WORKER_CONCURRENCY: z.string().optional(),
   EMAIL_WORKER_CONCURRENCY: z.string().optional(),
+  WEBHOOK_WORKER_CONCURRENCY: z.string().optional(),
   AGENT_COURSE_GENERATION_WORKER_CONCURRENCY: z.string().optional(),
   HLS_DISPATCH_CONCURRENCY: z.string().optional(),
 

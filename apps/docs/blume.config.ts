@@ -215,7 +215,7 @@ export default defineConfig({
         label: 'Connect',
         display: 'group',
         collapsed: false,
-        items: ['/developers/mcp', '/developers/token-auth']
+        items: ['/developers/mcp', '/developers/webhooks', '/developers/token-auth']
       },
       {
         label: 'Self-hosting',

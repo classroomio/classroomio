@@ -11,13 +11,15 @@
   const tabs = [
     { value: 'mcp', href: '/automation/mcp', label: 'automation.tabs.mcp' },
     { value: 'api', href: '/automation/api', label: 'automation.tabs.api' },
-    { value: 'zapier', href: '/automation/zapier', label: 'automation.tabs.zapier' }
+    { value: 'zapier', href: '/automation/zapier', label: 'automation.tabs.zapier' },
+    { value: 'webhooks', href: '/automation/webhooks', label: 'automation.tabs.webhooks' }
   ] as const;
 
   function getCurrentTab(pathname: string) {
     if (pathname.endsWith('/automation/mcp')) return 'mcp';
     if (pathname.endsWith('/automation/api')) return 'api';
     if (pathname.endsWith('/automation/zapier')) return 'zapier';
+    if (pathname.endsWith('/automation/webhooks')) return 'webhooks';
     return 'mcp';
   }
 

@@ -7,6 +7,7 @@ import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { sendInstanceTelemetry } from '@cio/core/services/instance-telemetry';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
 import { pruneDeadLetterJobsOlderThan, reapStuckHlsEncodes, reapStuckMediaJobs } from '@cio/db/queries';
+import { deleteExpiredWebhookEvents, listWebhookIdsWithDueDeliveries } from '@cio/db/queries/webhook';
 import {
   listEarlyAdopterClaimsDueForReminder,
   markEarlyAdopterClaimReminded,
@@ -26,8 +27,10 @@ import {
   ZMediaJobReapPayload,
   ZMemberActivityReconcilePayload,
   ZRetentionCompactPayload,
+  ZWebhookRetentionPayload,
   createRedisConnection,
-  enqueueEmailSend
+  enqueueEmailSend,
+  enqueueWebhookDelivery
 } from '@cio/jobs';
 
 import { errorMessage } from '../utils/cancel';
@@ -171,6 +174,25 @@ const worker = new Worker(
       return result;
     }
 
+    if (job.name === JOB_NAMES.maintenance.webhookRetention) {
+      const data = ZWebhookRetentionPayload.parse(job.data ?? {});
+      const cutoff = new Date(Date.now() - data.olderThanDays * 86_400 * 1_000);
+      const deleted = await deleteExpiredWebhookEvents(cutoff);
+      log.info('webhook-retention-done', { deleted, cutoff: cutoff.toISOString() });
+      return { deleted };
+    }
+
+    if (job.name === JOB_NAMES.maintenance.webhookSweep) {
+      const webhookIds = await listWebhookIdsWithDueDeliveries();
+      await Promise.all(webhookIds.map((webhookId) => enqueueWebhookDelivery({ webhookId })));
+
+      if (webhookIds.length > 0) {
+        log.warn('webhook-sweep-requeued', { endpoints: webhookIds.length });
+      }
+
+      return { requeued: webhookIds.length };
+    }
+
     throw new Error(`Unknown maintenance job: ${job.name}`);
   },
   { connection, concurrency: 1 }
@@ -255,6 +277,26 @@ async function registerSchedulers(): Promise<void> {
     log.info('instance-telemetry-scheduler-registered', {
       name: JOB_NAMES.maintenance.instanceTelemetry,
       everyMs: INSTANCE_TELEMETRY_INTERVAL_MS
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'webhook-retention-scheduler',
+      { every: 86_400_000 },
+      { name: JOB_NAMES.maintenance.webhookRetention, data: {} }
+    );
+    log.info('webhook-retention-scheduler-registered', {
+      name: JOB_NAMES.maintenance.webhookRetention,
+      everyMs: 86_400_000
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'webhook-sweep-scheduler',
+      { every: MEDIA_JOB_REAP_INTERVAL_MS },
+      { name: JOB_NAMES.maintenance.webhookSweep, data: {} }
+    );
+    log.info('webhook-sweep-scheduler-registered', {
+      name: JOB_NAMES.maintenance.webhookSweep,
+      everyMs: MEDIA_JOB_REAP_INTERVAL_MS
     });
   } catch (err) {
     log.error('maintenance-scheduler-register-failed', { error: errorMessage(err) });

@@ -17,6 +17,7 @@ import {
 } from '@cio/db/queries/course/course';
 import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
+import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { assertCertificatesEnabled, orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
@@ -239,6 +240,10 @@ export async function evaluateCourseCertification(
         isNewCompletion = true;
 
         await invalidateOrgStats(courseRow.orgId);
+
+        const completionEventData = { profileId, groupMemberId: progress.groupMemberId, completedAt: earnedAt };
+        await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData });
+        await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', { courseId, ...completionEventData });
 
         scheduleCertificationCompletionWork({
           courseId,

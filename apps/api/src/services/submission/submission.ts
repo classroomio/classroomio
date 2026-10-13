@@ -50,6 +50,7 @@ import { canAccessCourseSubmissions, getGroupMemberIdByCourseAndProfile } from '
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
@@ -709,6 +710,34 @@ function decodeSubmissionAnswers(
  * Creates a submission with its answers, saving nothing if an answer is invalid. Throws 409 for a second attempt on a
  * one-attempt exercise. Returns the submission, with `answers` when auto-graded.
  */
+async function emitSubmissionWebhookEvent(
+  eventType: 'course.submission.created' | 'course.submission.status_changed',
+  submission: TSubmission,
+  extra: Record<string, unknown> = {}
+) {
+  if (!submission.courseId) return;
+
+  await emitCourseWebhookEvent(submission.courseId, eventType, {
+    submissionId: submission.id,
+    exerciseId: submission.exerciseId,
+    submittedByProfileId: submission.submittedBy,
+    statusId: submission.statusId,
+    gradingState: submission.gradingState,
+    total: submission.total,
+    ...extra
+  });
+}
+
+async function emitExerciseCompletionWebhookEvent(submission: TSubmission, wasAlreadyComplete: boolean) {
+  if (!submission.courseId || wasAlreadyComplete) return;
+
+  await emitCourseWebhookEvent(submission.courseId, 'exercise.completion.updated', {
+    exerciseId: submission.exerciseId,
+    submittedByProfileId: submission.submittedBy,
+    isComplete: true
+  });
+}
+
 export async function createSubmissionService(
   courseId: string,
   exerciseId: string,
@@ -725,6 +754,7 @@ export async function createSubmissionService(
 
     const questionById = toQuestionModelsById(exerciseWithRelations.questions);
     const answerByQuestionId = decodeSubmissionAnswers(questionById, answers, options);
+    const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
 
     const overallStatus = resolveOverallStatusFromTypenames(
       exerciseWithRelations.questions
@@ -823,6 +853,14 @@ export async function createSubmissionService(
 
         await syncComplianceProgressFromSubmission(courseId, submittedBy);
         await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
+        await emitSubmissionWebhookEvent('course.submission.created', submission, {
+          statusId: projectLegacyStatusId(gradingState),
+          gradingState
+        });
+        await emitSubmissionWebhookEvent('course.submission.status_changed', submission, {
+          previousStatusId: projectLegacyStatusId(gradingState)
+        });
+        await emitExerciseCompletionWebhookEvent(submission, alreadySubmitted);
 
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
@@ -836,6 +874,8 @@ export async function createSubmissionService(
 
     await syncComplianceProgressFromSubmission(courseId, submittedBy);
     await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
+    await emitSubmissionWebhookEvent('course.submission.created', submission);
+    await emitExerciseCompletionWebhookEvent(submission, alreadySubmitted);
 
     return submission;
   } catch (error) {
@@ -906,6 +946,12 @@ export async function updateSubmissionService(
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+    }
+
+    if (statusChanged) {
+      await emitSubmissionWebhookEvent('course.submission.status_changed', updated, {
+        previousStatusId: previousLegacyStatusId
+      });
     }
 
     return updated;
@@ -1014,6 +1060,12 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+    }
+
+    if (statusChanged) {
+      await emitSubmissionWebhookEvent('course.submission.status_changed', updated, {
+        previousStatusId: previousLegacyStatusId
+      });
     }
 
     return updated;
