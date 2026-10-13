@@ -17,11 +17,15 @@ import {
   isScormRuleMet,
   mergeCmi,
   mintContentToken,
+  moduleOutcomeFromCmi,
   normalizeCommitCmi,
+  scormLaunchUrl,
+  shouldRecordCommitEvent,
   statusAfterTerminate,
   verifyLaunchToken,
   type ActivityLaunchClaims,
-  type ScormCmi
+  type ScormCmi,
+  type ScormCommitOutcomeSnapshot
 } from '@cio/activity-packages';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TScormPlayerEventKind, TScormSessionEventKind } from '@cio/utils/validation/activity/scorm';
@@ -65,12 +69,6 @@ async function resolveClaims(launchToken: string): Promise<{ claims: ActivityLau
 
     throw new AppError('Invalid launch token', ErrorCodes.UNAUTHORIZED, 401);
   }
-}
-
-function launchPathOf(href: string, parameters: string | null): string {
-  if (!parameters) return href;
-
-  return href.includes('?') ? `${href}&${parameters}` : `${href}?${parameters}`;
 }
 
 async function recordRuntimeEventBestEffort(
@@ -140,7 +138,7 @@ export async function getScormRuntimeState(
       format: playerFormat(version.format),
       cmi: withLaunchData({}, unit.launchData),
       contentToken,
-      launchPath: launchPathOf(unit.href, unit.parameters),
+      launchPath: scormLaunchUrl(unit.href, unit.parameters),
       parentOrigin,
       parentOrigins,
       entry: 'ab-initio',
@@ -174,7 +172,7 @@ export async function getScormRuntimeState(
     format: playerFormat(version.format),
     cmi: withLaunchData(stored, unit.launchData),
     contentToken,
-    launchPath: launchPathOf(unit.href, unit.parameters),
+    launchPath: scormLaunchUrl(unit.href, unit.parameters),
     parentOrigin,
     parentOrigins,
     entry: entryOf(scoAttempt.status ?? 'active', stored, scoAttempt.commitSeq ?? 0),
@@ -227,12 +225,12 @@ export async function commitScormAttempt(
 
   const result = await db.transaction(async (tx) => {
     const chain = await lockScoAttemptChain(scoAttemptId, tx);
-    if (!chain) throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
+    if (!chain) return { unknownTry: true as const };
 
     const activityId = chain.attempt.activityId;
     const profileId = chain.attempt.profileId;
     if (commit.seq <= chain.scoAttempt.commitSeq)
-      return { saved: false, completedActivity: false, activityId, profileId };
+      return { saved: false, completedActivity: false, activityId, profileId, rejected: true as const };
 
     const unit = await getPackageUnitById(chain.scoAttempt.unitId, tx);
     if (!unit) throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
@@ -241,11 +239,32 @@ export async function commitScormAttempt(
     if (!version) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
 
     const format = packageFormat(version.format);
+    const outcomeUnit = toOutcomeUnit(unit);
     const stored = (chain.scoAttempt.cmi ?? {}) as ScormCmi;
-    const merged = applyLmsRules(mergeCmi(stored, commit.cmi), toOutcomeUnit(unit), format, {
+    const merged = applyLmsRules(mergeCmi(stored, commit.cmi), outcomeUnit, format, {
       terminated: commit.terminate
     });
     const nextStatus = commit.terminate ? statusAfterTerminate(merged, format) : chain.scoAttempt.status;
+    const previousOutcome = moduleOutcomeFromCmi(stored, format, outcomeUnit);
+    const nextOutcome = moduleOutcomeFromCmi(merged, format, outcomeUnit);
+    const previous: ScormCommitOutcomeSnapshot = {
+      completion: previousOutcome.completion,
+      success: previousOutcome.success,
+      scaledScore: previousOutcome.scaledScore,
+      tryStatus: chain.scoAttempt.status
+    };
+    const next: ScormCommitOutcomeSnapshot = {
+      completion: nextOutcome.completion,
+      success: nextOutcome.success,
+      scaledScore: nextOutcome.scaledScore,
+      tryStatus: nextStatus
+    };
+    const shouldRecord = shouldRecordCommitEvent(previous, next, {
+      isFirstCommit: chain.scoAttempt.commitSeq === 0,
+      isTerminate: commit.terminate,
+      isBeacon: viaBeacon || commit.beacon === true,
+      isRejected: false
+    });
     const now = new Date().toISOString();
     await updateScoAttempt(
       chain.scoAttempt.id,
@@ -260,28 +279,45 @@ export async function commitScormAttempt(
     );
 
     const details = await getActivityScormByActivityId(activityId, tx);
-    if (!details) return { saved: true, completedActivity: false, activityId, profileId };
+    if (!details)
+      return { saved: true, completedActivity: false, activityId, profileId, rejected: false as const, shouldRecord };
 
     const units = await listPackageUnitsByVersion(version.id, tx);
     const latest = await listLatestScoAttemptsByAttempt(chain.attempt.id, tx);
     const triesByUnit = new Map(latest.map((row) => [row.unitId, row]));
     const outcomes = attemptModuleOutcomes(units, triesByUnit, format);
     if (!isScormRuleMet(toRuleSettings(details), outcomes)) {
-      return { saved: true, completedActivity: false, activityId, profileId };
+      return { saved: true, completedActivity: false, activityId, profileId, rejected: false as const, shouldRecord };
     }
 
     await closeScormAttempt(chain.attempt.id, 'finished', tx);
     const completedActivity = await completeActivityOnce(activityId, profileId, tx);
 
-    return { saved: true, completedActivity, activityId, profileId };
+    return { saved: true, completedActivity, activityId, profileId, rejected: false as const, shouldRecord };
   });
+
+  if ('unknownTry' in result) {
+    const missing = await getScoAttemptById(scoAttemptId);
+
+    if (missing) {
+      await recordRuntimeEventBestEffort(scoAttemptId, 'error', { reason: 'unknown_try' }, userAgent);
+    }
+
+    throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
+  }
 
   if (result.completedActivity) {
     const snapshot = await getComplianceSnapshot(result.activityId, result.profileId);
     await runActivityCompletionSideEffects(result.activityId, result.profileId, snapshot?.minutes);
   }
 
-  if (result.saved) {
+  if (!result.saved && 'rejected' in result && result.rejected) {
+    await recordRuntimeEventBestEffort(scoAttemptId, 'error', { reason: 'stale_sequence', seq: commit.seq }, userAgent);
+
+    return { saved: false, completedActivity: false };
+  }
+
+  if (result.saved && 'shouldRecord' in result && result.shouldRecord) {
     const beacon = viaBeacon || commit.beacon === true;
     const kind: TScormSessionEventKind = beacon ? 'beacon' : commit.terminate ? 'terminate' : 'commit';
     const detail: Record<string, unknown> = { seq: commit.seq };
@@ -291,7 +327,7 @@ export async function commitScormAttempt(
     await recordRuntimeEventBestEffort(scoAttemptId, kind, detail, userAgent);
   }
 
-  return result;
+  return { saved: result.saved, completedActivity: result.completedActivity };
 }
 
 /**

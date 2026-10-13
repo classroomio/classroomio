@@ -12,6 +12,7 @@
   import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import type { RecommendedCourses } from '$features/course/types';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import pluralize from 'pluralize';
 
   interface Props {
@@ -36,7 +37,7 @@
   const requirements = $derived(metadata?.requirements?.trim() || null);
   const formatter = $derived(getCurrencyFormatter(course.currency ?? 'USD'));
 
-  const isScormCourse = $derived('format' in course && course.format === 'scorm');
+  const isSingleActivity = $derived(isSingleActivityCourse(course));
   const scormModuleCount = $derived.by(() => {
     const c = course as { moduleCount?: number; totalModules?: number };
     if (typeof c.moduleCount === 'number') return c.moduleCount;
@@ -79,13 +80,13 @@
       {/if}
 
       <div class="ui:text-muted-foreground mt-4 flex items-center gap-4 text-sm">
-        {#if isScormCourse}
+        {#if isSingleActivity}
           <span class="flex items-center gap-1.5">
             <BookOpenIcon class="size-4" />
             {#if scormModuleCount !== null}
               {$t('courses.course_card.scorm_modules', { count: scormModuleCount })}
             {:else}
-              {$t('courses.course_card.scorm')}
+              {$t('courses.course_card.scorm_course')}
             {/if}
           </span>
         {:else}

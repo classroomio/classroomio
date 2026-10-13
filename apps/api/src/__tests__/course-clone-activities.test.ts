@@ -81,7 +81,7 @@ async function createCloneFixture(suffix: string, withPackage: boolean): Promise
       groupId: group.id,
       slug: `clone-act-${suffix}`,
       type: 'SELF_PACED' as never,
-      format: 'scorm' as never,
+      format: 'single_activity' as never,
       status: 'ACTIVE'
     })
     .returning();
@@ -139,7 +139,9 @@ async function createCloneFixture(suffix: string, withPackage: boolean): Promise
     });
   }
 
-  await db.insert(schema.activityCompletion).values({ activityId: activity.id, profileId: userId, isComplete: true });
+  await db
+    .insert(schema.activityCompletion)
+    .values({ activityId: activity.id, profileId: userId, isComplete: true, completedAt: new Date().toISOString() });
 
   return {
     orgId: organization.id,
@@ -214,7 +216,7 @@ describe.skipIf(!hasDatabase)('clone copies activities and format without learne
         organizationId: fixture.orgId
       });
       extraCourses.push(copy.id);
-      expect(copy.format).toBe('scorm');
+      expect(copy.format).toBe('single_activity');
 
       const activities = await db
         .select()

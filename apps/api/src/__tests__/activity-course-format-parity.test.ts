@@ -23,7 +23,10 @@ type ParityFixture = {
   studentId: string;
 };
 
-async function createParityFixture(suffix: string, courseFormat: 'standard' | 'scorm'): Promise<ParityFixture> {
+async function createParityFixture(
+  suffix: string,
+  courseFormat: 'standard' | 'single_activity'
+): Promise<ParityFixture> {
   const { db } = await import('@db/drizzle');
   const schema = await import('@db/schema');
   const studentId = crypto.randomUUID();
@@ -128,11 +131,11 @@ function launchTokenOf(playerUrl: string): string {
   return playerUrl.slice(playerUrl.indexOf(marker) + marker.length);
 }
 
-describe.skipIf(!hasDatabase)('scorm placement parity: standard course vs scorm course', () => {
+describe.skipIf(!hasDatabase)('scorm placement parity: standard course vs single-activity course', () => {
   it('launches and completes the same package identically in both formats', async () => {
     const suffix = `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
     const standard = await createParityFixture(`${suffix}-std`, 'standard');
-    const scormCourse = await createParityFixture(`${suffix}-scorm`, 'scorm');
+    const singleActivityCourse = await createParityFixture(`${suffix}-single`, 'single_activity');
     try {
       const launchedStandard = await launchActivity(
         standard.courseId,
@@ -145,12 +148,12 @@ describe.skipIf(!hasDatabase)('scorm placement parity: standard course vs scorm 
         }
       );
       const launchedScorm = await launchActivity(
-        scormCourse.courseId,
-        scormCourse.activityId,
+        singleActivityCourse.courseId,
+        singleActivityCourse.activityId,
         {},
         {
-          profileId: scormCourse.studentId,
-          organizationId: scormCourse.orgId,
+          profileId: singleActivityCourse.studentId,
+          organizationId: singleActivityCourse.orgId,
           isPreview: false
         }
       );
@@ -166,18 +169,18 @@ describe.skipIf(!hasDatabase)('scorm placement parity: standard course vs scorm 
         cmi: { 'core.lesson_status': 'completed' },
         terminate: true
       });
-      const completedScorm = await commitScormAttempt(launchTokenOf(launchedScorm.playerUrl), {
+      const completedSingle = await commitScormAttempt(launchTokenOf(launchedScorm.playerUrl), {
         commitSequence: 1,
         cmi: { 'core.lesson_status': 'completed' },
         terminate: true
       });
 
       expect(completedStandard).toMatchObject({ saved: true, completedActivity: true });
-      expect(completedScorm).toMatchObject({ saved: true, completedActivity: true });
+      expect(completedSingle).toMatchObject({ saved: true, completedActivity: true });
 
       const { db } = await import('@db/drizzle');
       const schema = await import('@db/schema');
-      for (const fixture of [standard, scormCourse]) {
+      for (const fixture of [standard, singleActivityCourse]) {
         const [completion] = await db
           .select()
           .from(schema.activityCompletion)
@@ -186,7 +189,7 @@ describe.skipIf(!hasDatabase)('scorm placement parity: standard course vs scorm 
       }
     } finally {
       await cleanupParityFixture(standard);
-      await cleanupParityFixture(scormCourse);
+      await cleanupParityFixture(singleActivityCourse);
     }
   });
 });

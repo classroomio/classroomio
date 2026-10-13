@@ -59,6 +59,7 @@
   import { DeleteModal } from '$features/ui';
   import { contentApi, courseApi } from '$features/course/api';
   import { collectLockedContentItems } from '$features/course/utils/content-lock-utils';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { tagApi } from '$features/tag/api';
   import { uploadImage } from '$lib/utils/services/upload';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
@@ -153,7 +154,7 @@
 
   const lockedContentItems = $derived(collectLockedContentItems(courseApi.course));
   const isLiveClassCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
-  const isScormCourse = $derived((courseApi.course as { format?: string } | null | undefined)?.format === 'scorm');
+  const isSingleActivity = $derived(isSingleActivityCourse(courseApi.course));
   const showLockedContentNotice = $derived($settings.isPublished && lockedContentItems.length > 0);
   let openConvertModal = $state(false);
   let isConverting = $state(false);
@@ -844,7 +845,7 @@
                 <Select.Item value="SELF_PACED" label={$t('course.navItem.settings.self_paced')}>
                   {$t('course.navItem.settings.self_paced')}
                 </Select.Item>
-                {#if !isScormCourse}
+                {#if !isSingleActivity}
                   <Select.Item value="LIVE_CLASS" label={$t('course.navItem.settings.live_class')}>
                     {$t('course.navItem.settings.live_class')}
                   </Select.Item>
@@ -852,7 +853,7 @@
                 <Select.Item value="COMPLIANCE" label={$t('course.navItem.settings.compliance')}>
                   {$t('course.navItem.settings.compliance')}
                 </Select.Item>
-                {#if !isScormCourse}
+                {#if !isSingleActivity}
                   <Select.Item value="PUBLIC" label={$t('course.navItem.settings.public')}>
                     {$t('course.navItem.settings.public')}
                   </Select.Item>
@@ -1027,7 +1028,7 @@
 
       <SettingsSeparator />
 
-      {#if !isScormCourse}
+      {#if !isSingleActivity}
         <Field.Field class="scroll-mt-24" orientation="horizontal">
           <Field.Content>
             <Field.Label for="content-grouping">
@@ -1338,7 +1339,7 @@
 
   <TemplateSettingsSection />
 
-  {#if isScormCourse}
+  {#if isSingleActivity}
     <SettingsCard
       id="convert"
       title={$t('course.navItem.settings.convert_card_title')}

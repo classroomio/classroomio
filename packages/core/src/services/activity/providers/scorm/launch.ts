@@ -21,8 +21,8 @@ import {
   type ScormCompletionRule,
   type ScormModuleOutcome,
   type ScormPackageFormat,
-  type ScormRuleSettings,
-  type ScormUnitFormatDetails
+  type ScormPackageUnit,
+  type ScormRuleSettings
 } from '@cio/activity-packages';
 import { AppError, ErrorCodes, isUniqueConstraintViolation } from '@cio/utils/errors';
 import { TENANT_ROOT_DOMAIN } from '@cio/utils/constants/domains';
@@ -66,23 +66,13 @@ function toNumberOrNull(value: unknown): number | null {
  * Adapts a package unit row to the outcome helper's unit shape. Unit pass
  * marks arrive from numeric columns as strings.
  */
-export function toOutcomeUnit(row: TContentPackageUnit): {
-  masteryScore: number | null;
-  formatDetails: ScormUnitFormatDetails;
-} {
-  const formatDetails =
-    typeof row.formatDetails === 'object' && row.formatDetails !== null && !Array.isArray(row.formatDetails)
-      ? (row.formatDetails as Record<string, unknown>)
-      : {};
-
+export function toOutcomeUnit(
+  row: TContentPackageUnit
+): Pick<ScormPackageUnit, 'masteryScoreRaw' | 'passingScoreScaled' | 'completionThreshold'> {
   return {
-    masteryScore: toNumberOrNull(row.masteryScore),
-    formatDetails: {
-      scaledPassingScore: toNumberOrNull(formatDetails['scaledPassingScore']),
-      completionThreshold: toNumberOrNull(formatDetails['completionThreshold']),
-      maxTimeAllowed: null,
-      timeLimitAction: null
-    }
+    masteryScoreRaw: toNumberOrNull(row.masteryScoreRaw),
+    passingScoreScaled: toNumberOrNull(row.passingScoreScaled),
+    completionThreshold: toNumberOrNull(row.completionThreshold)
   };
 }
 
@@ -332,6 +322,7 @@ interface LaunchedModule {
   unit: TContentPackageUnit;
   scoAttempt: TScormScoAttempt | null;
   review: boolean;
+  reviewOfArchivedVersion: boolean;
 }
 
 /**
@@ -416,6 +407,27 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
       const reviewVersion = await getPackageVersionById(attempt.packageVersionId, tx);
       if (!reviewVersion) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
 
+      if (reviewVersion.status === 'archived') {
+        const currentLaunchable = launchableUnits(await listPackageUnitsByVersion(current.id, tx));
+        const archivedUnit = context.unitIdentifier
+          ? (currentLaunchable.find((candidate) => candidate.identifier === context.unitIdentifier) ??
+            currentLaunchable[0])
+          : currentLaunchable[0];
+        if (!archivedUnit) throw new AppError('Package has no launchable modules', ErrorCodes.VALIDATION_ERROR, 400);
+
+        const launchedArchived: LaunchedModule = {
+          attempt,
+          versionId: current.id,
+          format: packageFormat(current.format),
+          unit: archivedUnit,
+          scoAttempt: null,
+          review: true,
+          reviewOfArchivedVersion: true
+        };
+
+        return launchedArchived;
+      }
+
       const reviewUnits = launchableUnits(await listPackageUnitsByVersion(reviewVersion.id, tx));
       const reviewUnit = context.unitIdentifier
         ? (reviewUnits.find((candidate) => candidate.identifier === context.unitIdentifier) ?? null)
@@ -428,7 +440,8 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
         format: packageFormat(reviewVersion.format),
         unit: reviewUnit,
         scoAttempt: null,
-        review: true
+        review: true,
+        reviewOfArchivedVersion: false
       };
 
       return launchedReview;
@@ -451,15 +464,20 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
       format,
       unit,
       scoAttempt,
-      review: false
+      review: false,
+      reviewOfArchivedVersion: false
     };
 
     return launchedTry;
   });
 
-  const tries = await latestTriesByUnit(launched.attempt.id);
+  const triesByUnit = launched.reviewOfArchivedVersion
+    ? new Map<string, TScormScoAttempt>()
+    : await latestTriesByUnit(launched.attempt.id);
   const menuUnits = launchableUnits(await listPackageUnitsByVersion(launched.versionId));
-  const modules = menuUnits.map((unit) => toLaunchModule(unit, tries.get(unit.id) ?? null, settings, launched.format));
+  const modules = menuUnits.map((unit) =>
+    toLaunchModule(unit, triesByUnit.get(unit.id) ?? null, settings, launched.format)
+  );
 
   const mode: LaunchMode = launched.review ? 'review' : 'normal';
   const launchToken = await mintLaunchToken(
@@ -485,6 +503,7 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
     expiresAt,
     launchMode: launchModeOf(details),
     unit: toLaunchUnit(launched.unit),
-    units: modules
+    units: modules,
+    ...(launched.reviewOfArchivedVersion ? { reviewOfArchivedVersion: true as const } : {})
   };
 }

@@ -30,8 +30,8 @@ describe('activity platform contracts (dark)', () => {
     expect([...ACTIVITY_KINDS]).toEqual(['scorm']);
   });
 
-  it('supports standard and scorm course formats', () => {
-    expect([...COURSE_FORMAT_VALUES]).toEqual(['standard', 'scorm']);
+  it('supports standard and single_activity course formats', () => {
+    expect([...COURSE_FORMAT_VALUES]).toEqual(['standard', 'single_activity']);
   });
 
   it('accepts valid activity payloads and rejects bad kinds', () => {
@@ -48,7 +48,7 @@ describe('activity platform contracts (dark)', () => {
     expect(ZActivityLaunch.safeParse({ unitIdentifier: 'sco-1', newAttempt: true }).success).toBe(true);
   });
 
-  it('accepts a format on create but only scorm-to-standard on update', () => {
+  it('accepts a format on create but only single_activity-to-standard on update', () => {
     const base = {
       title: 'Course',
       description: 'Description',
@@ -58,11 +58,11 @@ describe('activity platform contracts (dark)', () => {
 
     expect(ZCourseCreate.safeParse(base).success).toBe(true);
     expect(ZCourseCreate.safeParse({ ...base, format: 'standard' }).success).toBe(true);
-    expect(ZCourseCreate.safeParse({ ...base, format: 'scorm' }).success).toBe(true);
+    expect(ZCourseCreate.safeParse({ ...base, format: 'single_activity' }).success).toBe(true);
     expect(ZCourseCreate.safeParse({ ...base, format: 'cmi5' }).success).toBe(false);
     expect(ZCourseUpdate.safeParse({}).success).toBe(true);
     expect(ZCourseUpdate.safeParse({ format: 'standard' }).success).toBe(true);
-    expect(ZCourseUpdate.safeParse({ format: 'scorm' }).success).toBe(false);
+    expect(ZCourseUpdate.safeParse({ format: 'single_activity' }).success).toBe(false);
   });
 
   it.skipIf(!hasDatabase)('registers a scorm provider with a working launch', async () => {
@@ -167,9 +167,9 @@ describe.skipIf(!hasDatabase)('activity platform schema (dark)', () => {
       .returning();
     expect(course.format).toBe('standard');
 
-    await db.update(schema.course).set({ format: 'scorm' }).where(eq(schema.course.id, course.id));
+    await db.update(schema.course).set({ format: 'single_activity' }).where(eq(schema.course.id, course.id));
     const [scormCourse] = await db.select().from(schema.course).where(eq(schema.course.id, course.id));
-    expect(scormCourse.format).toBe('scorm');
+    expect(scormCourse.format).toBe('single_activity');
 
     await db.delete(schema.course).where(eq(schema.course.id, course.id));
     await db.delete(schema.group).where(eq(schema.group.id, group.id));

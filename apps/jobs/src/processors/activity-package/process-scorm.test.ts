@@ -177,8 +177,10 @@ describe('processScormPackage (PR 6)', () => {
     expect(result.format).toBe('scorm2004_4');
     expect(state.insertedUnits).toHaveLength(3);
     const graded = state.insertedUnits.find((unit) => unit.identifier === 'ITEM-3');
-    expect(graded).toMatchObject({ masteryScore: null });
-    expect((graded?.formatDetails as Record<string, unknown>)?.scaledPassingScore).toBe(0.8);
+    expect(graded).toMatchObject({ masteryScoreRaw: null, passingScoreScaled: '0.8' });
+    expect(graded).toMatchObject({
+      formatDetails: { format: 'scorm2004' }
+    });
   });
 
   it('rejects an assets-only package without retry', async () => {
@@ -239,20 +241,46 @@ describe('processScormPackage (PR 6)', () => {
             unitType: 'sco',
             href: 'sco.html',
             parameters: null,
-            masteryScore: 80,
+            masteryScoreRaw: 80,
+            passingScoreScaled: null,
+            completionThreshold: null,
             launchData: null,
-            formatDetails: {
-              scaledPassingScore: null,
-              completionThreshold: null,
-              maxTimeAllowed: null,
-              timeLimitAction: null
-            },
+            formatDetails: { format: 'scorm12' },
             isVisible: true
           }
         ],
         'version-1'
       )
-    ).toEqual([expect.objectContaining({ packageVersionId: 'version-1', masteryScore: '80', href: 'sco.html' })]);
+    ).toEqual([expect.objectContaining({ packageVersionId: 'version-1', masteryScoreRaw: '80', href: 'sco.html' })]);
+    expect(
+      mapUnitsToRows(
+        [
+          {
+            identifier: 'sco-2',
+            parentIdentifier: null,
+            title: 'Module 2004',
+            position: 0,
+            unitType: 'sco',
+            href: 'sco.html',
+            parameters: null,
+            masteryScoreRaw: null,
+            passingScoreScaled: 0.8,
+            completionThreshold: 0.6,
+            launchData: null,
+            formatDetails: { format: 'scorm2004', maxTimeAllowed: 'PT45M', timeLimitAction: null },
+            isVisible: true
+          }
+        ],
+        'version-1'
+      )
+    ).toEqual([
+      expect.objectContaining({
+        packageVersionId: 'version-1',
+        passingScoreScaled: '0.8',
+        completionThreshold: '0.6',
+        formatDetails: { format: 'scorm2004', maxTimeAllowed: 'PT45M', timeLimitAction: null }
+      })
+    ]);
     expect(resolveScormLimitMb({} as NodeJS.ProcessEnv)).toBe(500);
     expect(resolveScormLimitMb({ UPLOAD_MAX_SCORM_MB: '100' } as NodeJS.ProcessEnv)).toBe(100);
   });

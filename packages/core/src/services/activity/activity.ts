@@ -189,9 +189,9 @@ export async function updateActivityService(
 export async function deleteActivityService(courseId: string, activityId: string): Promise<TCourseActivity> {
   const activity = await getActivity(courseId, activityId);
   const [course] = await getCourseById(courseId);
-  if (course?.format === 'scorm') {
+  if (course?.format === 'single_activity') {
     throw new AppError(
-      'The package in a SCORM course cannot be deleted. Replace the package or convert to a standard course.',
+      'The package in a single-activity course cannot be deleted. Replace the package or convert to a standard course.',
       ErrorCodes.VALIDATION_ERROR,
       400
     );

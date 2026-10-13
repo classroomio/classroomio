@@ -35,27 +35,20 @@ describe('scorm load: simulated commit burst', () => {
           unitType: 'sco',
           href: 'sco.html',
           parameters: null,
-          masteryScore: null,
+          masteryScoreRaw: null,
+          passingScoreScaled: null,
+          completionThreshold: null,
           launchData: null,
-          formatDetails: {
-            scaledPassingScore: null,
-            completionThreshold: null,
-            maxTimeAllowed: null,
-            timeLimitAction: null
-          },
+          formatDetails: { format: 'scorm12' },
           isVisible: true
         },
         'scorm12',
         { terminated: commit.terminate }
       );
       const outcome = moduleOutcomeFromCmi(ruled, 'scorm12', {
-        masteryScore: null,
-        formatDetails: {
-          scaledPassingScore: null,
-          completionThreshold: null,
-          maxTimeAllowed: null,
-          timeLimitAction: null
-        }
+        masteryScoreRaw: null,
+        passingScoreScaled: null,
+        completionThreshold: null
       });
 
       if (isScormRuleMet({ rule: 'auto' }, [outcome])) completed += 1;

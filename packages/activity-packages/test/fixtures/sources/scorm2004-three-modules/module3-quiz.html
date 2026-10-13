@@ -23,9 +23,26 @@
       var logEl = document.getElementById('log');
       if (api) api.Initialize('');
       function submit(score) {
+        var passed = score >= 0.8;
         api.SetValue('cmi.score.scaled', String(score));
         api.SetValue('cmi.completion_status', 'completed');
-        api.SetValue('cmi.success_status', score >= 0.8 ? 'passed' : 'failed');
+        api.SetValue('cmi.success_status', passed ? 'passed' : 'failed');
+        api.SetValue('cmi.interactions.0.id', 'Q1');
+        api.SetValue('cmi.interactions.0.type', 'choice');
+        api.SetValue('cmi.interactions.0.learner_response', passed ? 'a' : 'b');
+        api.SetValue('cmi.interactions.0.result', passed ? 'correct' : 'incorrect');
+        api.SetValue('cmi.interactions.0.latency', 'PT5S');
+        api.SetValue('cmi.interactions.0.timestamp', '2026-10-13T10:00:00');
+        api.SetValue('cmi.interactions.0.description', 'What counts as PHI?');
+        api.SetValue('cmi.interactions.0.correct_responses.0.pattern', 'a');
+        api.SetValue('cmi.interactions.1.id', 'Q2');
+        api.SetValue('cmi.interactions.1.type', 'true-false');
+        api.SetValue('cmi.interactions.1.learner_response', passed ? 'true' : 'false');
+        api.SetValue('cmi.interactions.1.result', passed ? 'correct' : 'incorrect');
+        api.SetValue('cmi.interactions.1.latency', 'PT3S');
+        api.SetValue('cmi.interactions.1.timestamp', '2026-10-13T10:00:05');
+        api.SetValue('cmi.interactions.1.description', 'Minimum necessary applies to every disclosure.');
+        api.SetValue('cmi.interactions.1.correct_responses.0.pattern', 'true');
         api.SetValue('cmi.exit', 'normal');
         api.Commit('');
         api.Terminate('');

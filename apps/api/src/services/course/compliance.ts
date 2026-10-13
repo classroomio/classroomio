@@ -186,8 +186,8 @@ async function getComplianceCompletionSnapshot(params: {
 }): Promise<{ score: number | null; attempts: number | null; minutes?: number | null }> {
   const { groupMemberId, profileId, course, requiredExerciseId } = params;
 
-  if (course.format === 'scorm') {
-    return getScormCourseCompletionSnapshot(course.id, profileId);
+  if (course.format === 'single_activity') {
+    return getSingleActivityCourseCompletionSnapshot(course.id, profileId);
   }
 
   if (!requiredExerciseId) {
@@ -222,10 +222,10 @@ async function getComplianceCompletionSnapshot(params: {
 }
 
 /**
- * Takes the compliance score and attempts from the package in a SCORM course,
+ * Takes the compliance score and attempts from the package in a single-activity course,
  * where the activity is the scored item instead of an exercise.
  */
-async function getScormCourseCompletionSnapshot(
+async function getSingleActivityCourseCompletionSnapshot(
   courseId: string,
   profileId: string
 ): Promise<{ score: number | null; attempts: number | null; minutes?: number | null }> {

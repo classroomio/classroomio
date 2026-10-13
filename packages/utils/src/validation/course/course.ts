@@ -5,6 +5,7 @@ import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
 import { ZCourseFormat, ZCourseType } from './course-type';
+import { isTypeAllowedForFormat } from '../../constants/course-format';
 import { ZLiveSessionReminderOffsets } from './live-session-reminder';
 
 export const ZGetRecommendedCourses = z.object({
@@ -320,8 +321,8 @@ export const ZCourseCreate = ZCourseCreateBase.refine(
     message: 'Compliance settings are required for COMPLIANCE courses',
     path: ['compliance']
   }
-).refine((data) => data.format !== 'scorm' || data.type === 'SELF_PACED' || data.type === 'COMPLIANCE', {
-  message: 'SCORM courses must be Self-paced or Compliance',
+).refine((data) => isTypeAllowedForFormat(data.format, data.type), {
+  message: 'Single-activity courses must be Self-paced or Compliance',
   path: ['type']
 });
 export type TCourseCreate = z.infer<typeof ZCourseCreate>;

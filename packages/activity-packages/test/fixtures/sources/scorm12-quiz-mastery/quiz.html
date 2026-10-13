@@ -26,9 +26,22 @@
       var logEl = document.getElementById('log');
       if (api) api.LMSInitialize('');
       function submit(score) {
+        var passed = score >= 80;
         api.LMSSetValue('cmi.core.score.raw', String(score));
         api.LMSSetValue('cmi.core.score.min', '0');
         api.LMSSetValue('cmi.core.score.max', '100');
+        api.LMSSetValue('cmi.interactions.0.id', 'Q1');
+        api.LMSSetValue('cmi.interactions.0.type', 'choice');
+        api.LMSSetValue('cmi.interactions.0.student_response', passed ? 'a' : 'b');
+        api.LMSSetValue('cmi.interactions.0.result', passed ? 'correct' : 'wrong');
+        api.LMSSetValue('cmi.interactions.0.latency', '00:00:05');
+        api.LMSSetValue('cmi.interactions.0.correct_responses.0.pattern', 'a');
+        api.LMSSetValue('cmi.interactions.1.id', 'Q2');
+        api.LMSSetValue('cmi.interactions.1.type', 'true-false');
+        api.LMSSetValue('cmi.interactions.1.student_response', passed ? 'true' : 'false');
+        api.LMSSetValue('cmi.interactions.1.result', passed ? 'correct' : 'wrong');
+        api.LMSSetValue('cmi.interactions.1.latency', '00:00:03');
+        api.LMSSetValue('cmi.interactions.1.correct_responses.0.pattern', 'true');
         api.LMSSetValue('cmi.core.exit', '');
         api.LMSCommit('');
         api.LMSFinish('');

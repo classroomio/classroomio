@@ -53,8 +53,9 @@ export interface ScormAttemptTryRow {
   unitTitle: string | null;
   unitPosition: number | null;
   unitType: string | null;
-  masteryScore: string | null;
-  scaledPassingScore: string | null;
+  masteryScoreRaw: string | null;
+  passingScoreScaled: string | null;
+  completionThreshold: string | null;
   cmi: Record<string, unknown>;
   commitSeq: number | null;
   tryStartedAt: string | null;
@@ -89,8 +90,8 @@ function attemptRollupCte(activityId: string, profileIds: string[], rule: string
   const outcome = scormTryOutcomeColumns({
     cmi: sql`t.cmi`,
     format: sql`v.format`,
-    masteryScore: sql`u.mastery_score`,
-    scaledPassingScore: sql`(u.format_details->>'scaledPassingScore')::numeric`
+    masteryScoreRaw: sql`u.mastery_score_raw`,
+    passingScoreScaled: sql`u.passing_score_scaled`
   });
 
   return sql`
@@ -322,8 +323,8 @@ export async function getScormActivityStatsForProfile(
     const outcome = scormTryOutcomeColumns({
       cmi: sql`t.cmi`,
       format: sql`v.format`,
-      masteryScore: sql`u.mastery_score`,
-      scaledPassingScore: sql`(u.format_details->>'scaledPassingScore')::numeric`
+      masteryScoreRaw: sql`u.mastery_score_raw`,
+      passingScoreScaled: sql`u.passing_score_scaled`
     });
 
     const result = await dbClient.execute(sql`
@@ -413,8 +414,9 @@ export async function getScormLearnerAttempts(
              t.id AS try_id, t.status AS try_status,
              u.id AS unit_id, u.identifier AS unit_identifier, u.title AS unit_title,
              u.position AS unit_position, u.unit_type AS unit_type,
-             u.mastery_score,
-             u.format_details->>'scaledPassingScore' AS scaled_passing_score,
+             u.mastery_score_raw,
+             u.passing_score_scaled,
+             u.completion_threshold,
              COALESCE(t.cmi, '{}'::jsonb) AS cmi,
              t.commit_seq, t.started_at AS try_started_at, t.last_commit_at, t.terminated_at
       FROM scorm_attempt a
@@ -439,8 +441,9 @@ export async function getScormLearnerAttempts(
       unitTitle: row['unit_title'] === null ? null : String(row['unit_title']),
       unitPosition: row['unit_position'] === null ? null : Number(row['unit_position']),
       unitType: row['unit_type'] === null ? null : String(row['unit_type']),
-      masteryScore: row['mastery_score'] === null ? null : String(row['mastery_score']),
-      scaledPassingScore: row['scaled_passing_score'] === null ? null : String(row['scaled_passing_score']),
+      masteryScoreRaw: row['mastery_score_raw'] === null ? null : String(row['mastery_score_raw']),
+      passingScoreScaled: row['passing_score_scaled'] === null ? null : String(row['passing_score_scaled']),
+      completionThreshold: row['completion_threshold'] === null ? null : String(row['completion_threshold']),
       cmi: (row['cmi'] ?? {}) as Record<string, unknown>,
       commitSeq: row['commit_seq'] === null ? null : Number(row['commit_seq']),
       tryStartedAt: row['try_started_at'] === null ? null : String(row['try_started_at']),

@@ -3021,7 +3021,9 @@
             "module_complete_title": "Mô-đun hoàn tất",
             "module_complete_body": "Tiến trình của bạn đã được lưu. Mở mô-đun tiếp theo để tiếp tục.",
             "next_module": "Mô-đun tiếp theo",
-            "autosave_hint": "Tiến trình được tự động lưu."
+            "autosave_hint": "Tiến trình được tự động lưu.",
+            "archived_title": "Bạn đã sử dụng một phiên bản trước đó của gói này",
+            "archived_body": "Kết quả của bạn không thay đổi."
           },
           "results": {
             "sheet": {
@@ -3051,7 +3053,8 @@
                 "beacon": "Đã lưu khi thoát",
                 "error": "Lỗi",
                 "not_initialized": "Không kết nối được"
-              }
+              },
+              "interaction_correct": "Đáp án đúng: {answer}"
             },
             "export": {
               "title": "Kết quả SCORM"
@@ -3471,7 +3474,8 @@
       "exercises_count": "{count, plural, other {# bài tập}}",
       "activities_count": "{count, plural, one {# gói} other {# gói}}",
       "scorm_modules": "SCORM · {count, plural, one {# mô-đun} other {# mô-đun}}",
-      "scorm": "SCORM"
+      "scorm": "SCORM",
+      "scorm_course": "Khóa học chuẩn SCORM"
     },
     "course_filter": {
       "date_created_newest": "Ngày tạo: Mới nhất trước",

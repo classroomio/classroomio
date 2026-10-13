@@ -3021,7 +3021,9 @@
             "module_complete_title": "Modul færdigt",
             "module_complete_body": "Dine fremskridt blev gemt. Åbn det næste modul for at fortsætte.",
             "next_module": "Næste modul",
-            "autosave_hint": "Fremskridt gemmes automatisk."
+            "autosave_hint": "Fremskridt gemmes automatisk.",
+            "archived_title": "Du har tidligere modtaget en tidligere version af denne pakke",
+            "archived_body": "Dine resultater er uændrede."
           },
           "results": {
             "sheet": {
@@ -3051,7 +3053,8 @@
                 "beacon": "Gemt ved afslutning",
                 "error": "Fejl",
                 "not_initialized": "Kunne ikke oprette forbindelse"
-              }
+              },
+              "interaction_correct": "Korrekt: {answer}"
             },
             "export": {
               "title": "SCORM-resultater"
@@ -3471,7 +3474,8 @@
       "exercises_count": "{count, plural, one {# øvelse} other {# øvelser}}",
       "activities_count": "{count, plural, one {# pakke} other {# pakker}}",
       "scorm_modules": "SCORM · {count, plural, one {# modul} other {# moduler}}",
-      "scorm": "SCORM"
+      "scorm": "SCORM",
+      "scorm_course": "SCORM-kursus"
     },
     "course_filter": {
       "date_created_newest": "Oprettelsesdato: Nyeste først",

@@ -36,6 +36,7 @@ import { listScormUnitSummariesForActivities } from '@cio/db/queries/activity/pa
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
 import { ContentType, ROLE, resolveLiveSessionReminderOffsets } from '@cio/utils/constants';
+import { isTypeAllowedForFormat } from '@cio/utils/constants/course-format';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
@@ -330,8 +331,8 @@ export async function createCourse(
   try {
     const description = sanitizeHtml(data.description);
 
-    if (data.format === 'scorm' && data.type !== 'SELF_PACED' && data.type !== 'COMPLIANCE') {
-      throw new AppError('SCORM courses must be Self-paced or Compliance', ErrorCodes.VALIDATION_ERROR, 400);
+    if (!isTypeAllowedForFormat(data.format, data.type)) {
+      throw new AppError('Single-activity courses must be Self-paced or Compliance', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
     const result = await db.transaction(async (tx) => {
@@ -389,7 +390,7 @@ export async function createCourse(
       );
 
       let activityId: string | null = null;
-      if (newCourse.format === 'scorm') {
+      if (newCourse.format === 'single_activity') {
         const slug = await resolveItemSlug({ courseId: newCourse.id, title: data.title });
         const [activity] = await createActivities(
           [
@@ -481,12 +482,16 @@ export async function updateCourse(
     }
 
     if (data.format !== undefined && data.format !== 'standard') {
-      throw new AppError('A course cannot be converted to a SCORM course', ErrorCodes.VALIDATION_ERROR, 400);
+      throw new AppError('A course cannot be converted to a single-activity course', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    if (currentCourse.format === 'scorm' && data.type !== undefined) {
-      if (data.type !== 'SELF_PACED' && data.type !== 'COMPLIANCE') {
-        throw new AppError('SCORM courses must be Self-paced or Compliance', ErrorCodes.VALIDATION_ERROR, 400);
+    if (currentCourse.format === 'single_activity' && data.type !== undefined) {
+      if (!data.type || !isTypeAllowedForFormat(currentCourse.format, data.type)) {
+        throw new AppError(
+          'Single-activity courses must be Self-paced or Compliance',
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
       }
     }
 

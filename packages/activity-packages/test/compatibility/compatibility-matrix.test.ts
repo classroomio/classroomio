@@ -12,7 +12,7 @@ import {
   normalizeCommitCmi,
   statusAfterTerminate
 } from '../../src/scorm/runtime/index.js';
-import { parseScormManifest } from '../../src/scorm/manifest/index.js';
+import { parseScormManifest, scormLaunchUrl } from '../../src/scorm/manifest/index.js';
 import { checkZipEntries, SCORM_ZIP_LIMITS, zipByteLimit } from '../../src/zip/index.js';
 import { mintContentToken, verifyContentToken } from '../../src/token/index.js';
 
@@ -63,7 +63,7 @@ describe('compatibility matrix: hand-written fixtures', () => {
 
     expect(parsed.format).toBe('scorm12');
     expect(parsed.units).toHaveLength(1);
-    expect(parsed.units[0]).toMatchObject({ unitType: 'sco', masteryScore: null });
+    expect(parsed.units[0]).toMatchObject({ unitType: 'sco', masteryScoreRaw: null });
     expect(parsed.warnings).toEqual([]);
   });
 
@@ -72,7 +72,7 @@ describe('compatibility matrix: hand-written fixtures', () => {
 
     expect(parsed.format).toBe('scorm2004_4');
     expect(parsed.units).toHaveLength(1);
-    expect(parsed.units[0].formatDetails.scaledPassingScore).toBeNull();
+    expect(parsed.units[0].passingScoreScaled).toBeNull();
   });
 
   it('parses three 2004 modules with the quiz graded at 0.8', () => {
@@ -84,8 +84,8 @@ describe('compatibility matrix: hand-written fixtures', () => {
 
     expect(parsed.units).toHaveLength(3);
     expect(parsed.units.map((unit) => unit.position)).toEqual([0, 1, 2]);
-    expect(parsed.units[2].formatDetails.scaledPassingScore).toBe(0.8);
-    expect(parsed.units[0].formatDetails.scaledPassingScore).toBeNull();
+    expect(parsed.units[2].passingScoreScaled).toBe(0.8);
+    expect(parsed.units[0].passingScoreScaled).toBeNull();
     expect(parsed.warnings).not.toContain('has_sequencing');
   });
 
@@ -93,7 +93,7 @@ describe('compatibility matrix: hand-written fixtures', () => {
     const parsed = parseScormManifest(readSource('scorm12-quiz-mastery'), ['quiz.html']);
 
     expect(parsed.format).toBe('scorm12');
-    expect(parsed.units[0].masteryScore).toBe(80);
+    expect(parsed.units[0].masteryScoreRaw).toBe(80);
   });
 
   it('exercises every 1.2 exit value through the terminate mapping', () => {
@@ -160,14 +160,11 @@ describe('compatibility matrix: hand-written fixtures', () => {
         unitType: 'sco',
         href: 'quiz.html',
         parameters: null,
-        masteryScore: 80,
+        masteryScoreRaw: 80,
+        passingScoreScaled: null,
+        completionThreshold: null,
         launchData: null,
-        formatDetails: {
-          scaledPassingScore: null,
-          completionThreshold: null,
-          maxTimeAllowed: null,
-          timeLimitAction: null
-        },
+        formatDetails: { format: 'scorm12' },
         isVisible: true
       },
       'scorm12',
@@ -186,14 +183,11 @@ describe('compatibility matrix: hand-written fixtures', () => {
         unitType: 'sco',
         href: 'quiz.html',
         parameters: null,
-        masteryScore: 80,
+        masteryScoreRaw: 80,
+        passingScoreScaled: null,
+        completionThreshold: null,
         launchData: null,
-        formatDetails: {
-          scaledPassingScore: null,
-          completionThreshold: null,
-          maxTimeAllowed: null,
-          timeLimitAction: null
-        },
+        formatDetails: { format: 'scorm12' },
         isVisible: true
       },
       'scorm12',
@@ -233,7 +227,7 @@ describe('compatibility matrix: hand-written fixtures', () => {
 
     expect(parsed.format).toBe('scorm12');
     expect(parsed.units).toHaveLength(1);
-    expect(parsed.units[0]).toMatchObject({ unitType: 'sco', href: 'index_lms.html', masteryScore: 80 });
+    expect(parsed.units[0]).toMatchObject({ unitType: 'sco', href: 'index_lms.html', masteryScoreRaw: 80 });
   });
 
   it('parses the Rise-shaped 2004 package through its indexapi entry point', () => {
@@ -326,6 +320,11 @@ describe('compatibility matrix: Rustici golf examples', () => {
     const scoCount = parsed.units.filter((unit) => unit.unitType === 'sco').length;
 
     expect(scoCount).toBe(expectedScoCount);
+
+    const quiz = parsed.units.find((unit) => unit.identifier === 'playing_quiz_item');
+
+    expect(quiz?.parameters).toBe('?questions=Playing');
+    expect(scormLaunchUrl(quiz!.href, quiz!.parameters)).toBe('shared/assessmenttemplate.html?questions=Playing');
   });
 
   it('flags sequencing samples while keeping them launchable', () => {
@@ -370,13 +369,9 @@ describe('compatibility matrix: Rustici golf examples', () => {
       { completion_status: 'completed', success_status: 'passed', score: { scaled: '0.9' } },
       'scorm2004_4',
       {
-        masteryScore: null,
-        formatDetails: {
-          scaledPassingScore: 0.8,
-          completionThreshold: null,
-          maxTimeAllowed: null,
-          timeLimitAction: null
-        }
+        masteryScoreRaw: null,
+        passingScoreScaled: 0.8,
+        completionThreshold: null
       }
     );
 

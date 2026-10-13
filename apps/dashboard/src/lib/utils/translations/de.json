@@ -3021,7 +3021,9 @@
             "module_complete_title": "Modul abgeschlossen",
             "module_complete_body": "Ihr Fortschritt wurde gespeichert. Öffnen Sie das nächste Modul, um fortzufahren.",
             "next_module": "Nächstes Modul",
-            "autosave_hint": "Der Fortschritt wird automatisch gespeichert."
+            "autosave_hint": "Der Fortschritt wird automatisch gespeichert.",
+            "archived_title": "Sie haben eine frühere Version dieses Pakets verwendet",
+            "archived_body": "Ihre Ergebnisse sind unverändert."
           },
           "results": {
             "sheet": {
@@ -3051,7 +3053,8 @@
                 "beacon": "Beim Beenden gespeichert",
                 "error": "Fehler",
                 "not_initialized": "Keine Verbindung hergestellt"
-              }
+              },
+              "interaction_correct": "Richtig: {answer}"
             },
             "export": {
               "title": "SCORM-Ergebnisse"
@@ -3471,7 +3474,8 @@
       "exercises_count": "{count, plural, one {# Übung} other {# Übungen}}",
       "activities_count": "{count, plural, one {# Paket} other {# Pakete}}",
       "scorm_modules": "SCORM · {count, plural, one {# Modul} other {# Module}}",
-      "scorm": "SCORM"
+      "scorm": "SCORM",
+      "scorm_course": "SCORM-Kurs"
     },
     "course_filter": {
       "date_created_newest": "Erstellungsdatum: Neueste zuerst",

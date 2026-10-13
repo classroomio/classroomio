@@ -11,7 +11,7 @@ import {
 import { updateContentCompletion } from './content-completion';
 import { getStudentContentLockDescriptionKey } from './content-lock-utils';
 import { isCourseContentRoute } from './sidebar-routes';
-import { calcCourseProgress, getActiveCourseNavKey } from './functions';
+import { calcCourseProgress, getActiveCourseNavKey, getSingleActivityNavLabelKey } from './functions';
 import { isCourseMobileBottomNavVisible } from './mobile-bottom-nav';
 
 function activity(id: string, overrides: Record<string, unknown> = {}) {
@@ -116,9 +116,13 @@ describe('activities in shared content utilities', () => {
   });
 
   it('maps the activity segment to the package nav key in a SCORM course', () => {
-    expect(getActiveCourseNavKey('/courses/course-1/activities/activity-1', 'course-1', 'scorm')).toBe(
+    expect(getActiveCourseNavKey('/courses/course-1/activities/activity-1', 'course-1', 'single_activity')).toBe(
       'course.navItems.nav_package'
     );
+    expect(
+      getActiveCourseNavKey('/courses/course-1/activities/activity-1', 'course-1', { format: 'single_activity' })
+    ).toBe('course.navItems.nav_package');
+    expect(getSingleActivityNavLabelKey('scorm')).toBe('course.navItems.nav_package');
   });
 
   it('includes activities in course progress math', () => {

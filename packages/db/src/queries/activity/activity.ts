@@ -265,15 +265,24 @@ export async function upsertActivityCompletion(
   dbClient: DbOrTxClient = db
 ): Promise<TActivityCompletion> {
   try {
+    const isComplete = Boolean(data.isComplete);
+    const now = new Date().toISOString();
+    const completedAt = data.completedAt !== undefined ? data.completedAt : isComplete ? now : null;
+    const values = {
+      ...data,
+      isComplete,
+      completedAt
+    };
+
     const [completion] = await dbClient
       .insert(schema.activityCompletion)
-      .values(data)
+      .values(values)
       .onConflictDoUpdate({
         target: [schema.activityCompletion.activityId, schema.activityCompletion.profileId],
         set: {
-          isComplete: data.isComplete,
-          ...(data.completedAt !== undefined ? { completedAt: data.completedAt } : {}),
-          updatedAt: new Date().toISOString()
+          isComplete,
+          completedAt,
+          updatedAt: now
         }
       })
       .returning();

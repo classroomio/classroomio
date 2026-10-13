@@ -48,6 +48,13 @@
 
   const launch = $derived(activityApi.launchResult);
   const availableLaunch = $derived(launch && launch.available ? launch : null);
+  const isArchivedReview = $derived(
+    Boolean(
+      availableLaunch &&
+        'reviewOfArchivedVersion' in availableLaunch &&
+        (availableLaunch as { reviewOfArchivedVersion?: boolean }).reviewOfArchivedVersion
+    )
+  );
   const playerUrl = $derived(availableLaunch?.playerUrl ?? null);
   const units = $derived(availableLaunch?.units ?? []);
   const showMenu = $derived(units.length > 1);
@@ -321,6 +328,13 @@
   {:else}
     {#if instructions}
       <div class="ui:text-muted-foreground text-sm">{@html instructions}</div>
+    {/if}
+
+    {#if isArchivedReview}
+      <Alert.Root>
+        <Alert.Title>{$t('course.navItem.lessons.activities.player.archived_title')}</Alert.Title>
+        <Alert.Description>{$t('course.navItem.lessons.activities.player.archived_body')}</Alert.Description>
+      </Alert.Root>
     {/if}
 
     {#if launch.mode === 'review'}

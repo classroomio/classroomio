@@ -208,7 +208,7 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
     expect(copiedAssetId).not.toBe('');
   });
 
-  it('copies a SCORM package with all versions, units and storage prefixes', async () => {
+  it('copies a SCORM package with its current version, units and storage prefix', async () => {
     const { withAssetStorageRollback, transferScormPackageAsset } = await import(
       '@cio/core/services/assets/asset-transfer'
     );
@@ -278,7 +278,8 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
               title: 'Old module',
               position: 1,
               unitType: 'sco',
-              href: 'sco.html'
+              href: 'sco.html',
+              masteryScoreRaw: '10'
             },
             {
               packageVersionId: second.id,
@@ -286,7 +287,11 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
               title: 'New module',
               position: 1,
               unitType: 'sco',
-              href: 'sco.html'
+              href: 'sco.html',
+              masteryScoreRaw: '70',
+              passingScoreScaled: '0.8',
+              completionThreshold: '0.6',
+              formatDetails: { format: 'scorm2004', maxTimeAllowed: 'PT45M', timeLimitAction: null }
             }
           ]);
           storage.objects.add(`scorm:scorm/${source.id}/v1.zip`);
@@ -309,24 +314,34 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
             .from(schema.contentPackageVersion)
             .where(eq(schema.contentPackageVersion.assetId, transfer.asset.id));
           expect(versions.map((version) => [version.versionNumber, version.isCurrent, version.status])).toEqual([
-            [1, false, 'ready'],
-            [2, true, 'ready']
+            [1, true, 'ready']
           ]);
+          expect(versions[0]?.format).toBe('scorm2004_4');
 
           const units = await tx
-            .select({ identifier: schema.contentPackageUnit.identifier, title: schema.contentPackageUnit.title })
+            .select({
+              identifier: schema.contentPackageUnit.identifier,
+              title: schema.contentPackageUnit.title,
+              masteryScoreRaw: schema.contentPackageUnit.masteryScoreRaw,
+              passingScoreScaled: schema.contentPackageUnit.passingScoreScaled,
+              completionThreshold: schema.contentPackageUnit.completionThreshold,
+              formatDetails: schema.contentPackageUnit.formatDetails
+            })
             .from(schema.contentPackageUnit)
             .innerJoin(
               schema.contentPackageVersion,
               eq(schema.contentPackageUnit.packageVersionId, schema.contentPackageVersion.id)
             )
             .where(eq(schema.contentPackageVersion.assetId, transfer.asset.id));
-          expect(units).toHaveLength(2);
+          expect(units).toHaveLength(1);
+          expect(units[0]).toMatchObject({ identifier: 'sco-1', title: 'New module' });
+          expect(Number(units[0]?.masteryScoreRaw)).toBe(70);
+          expect(Number(units[0]?.passingScoreScaled)).toBeCloseTo(0.8);
+          expect(Number(units[0]?.completionThreshold)).toBeCloseTo(0.6);
+          expect(units[0]?.formatDetails).toMatchObject({ format: 'scorm2004', maxTimeAllowed: 'PT45M' });
 
           expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1.zip`)).toBe(true);
           expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1/sco.html`)).toBe(true);
-          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v2.zip`)).toBe(true);
-          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v2/sco.html`)).toBe(true);
 
           throw rollback;
         })

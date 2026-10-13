@@ -9,6 +9,7 @@ import type { TScormLaunchMode, TScormSettings } from '@cio/utils/validation/act
 export interface ActivityProvider {
   kind: TActivityKind;
   licenseFeature: LicenseFeatureId;
+  singleActivityCourse: { navLabelKey: string; courseLabelKey: string };
   /** Creates the kind's detail rows for a new activity inside the caller's transaction. */
   createDetails(activityId: string, input: unknown, tx: DbOrTxClient): Promise<void>;
   /** Returns the kind's editor data: package, versions, settings, warnings. */
@@ -93,6 +94,7 @@ export type ActivityLaunchResult =
       launchMode: TScormLaunchMode;
       unit: ScormLaunchUnit;
       units: ScormLaunchModule[];
+      reviewOfArchivedVersion?: boolean;
     };
 
 export type ActivityResultsSummary = {
@@ -126,6 +128,8 @@ export interface ActivityLearnerInteraction {
   studentResponse: string | null;
   result: string | null;
   latency: string | null;
+  description: string | null;
+  correctResponse: string | null;
 }
 
 export interface ActivityLearnerAttemptModule {

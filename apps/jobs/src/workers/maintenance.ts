@@ -144,6 +144,7 @@ const worker = new Worker(
       log.info('scorm-retention-done', {
         eventsDeleted: result.eventsDeleted,
         versionsDeleted: result.versionsDeleted,
+        versionsArchived: result.versionsArchived,
         objectsDeleted: result.objectsDeleted
       });
       return result;

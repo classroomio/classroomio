@@ -76,7 +76,9 @@ export function mapUnitsToRows(units: ScormPackageUnit[], packageVersionId: stri
     unitType: unit.unitType,
     href: unit.href,
     parameters: unit.parameters,
-    masteryScore: unit.masteryScore === null ? null : String(unit.masteryScore),
+    masteryScoreRaw: unit.masteryScoreRaw === null ? null : String(unit.masteryScoreRaw),
+    passingScoreScaled: unit.passingScoreScaled === null ? null : String(unit.passingScoreScaled),
+    completionThreshold: unit.completionThreshold === null ? null : String(unit.completionThreshold),
     launchData: unit.launchData,
     formatDetails: { ...unit.formatDetails },
     isVisible: unit.isVisible

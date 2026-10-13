@@ -108,13 +108,17 @@ export function formatScorePercent(score: number | null | undefined): string {
 
   return `${score}%`;
 }
-export function unitPassMark(unit: { masteryScore?: unknown; formatDetails?: unknown }): number | null {
+export function unitPassMark(unit: { masteryScoreRaw?: unknown; passingScoreScaled?: unknown }): number | null {
   const rawMastery =
-    typeof unit.masteryScore === 'string' || typeof unit.masteryScore === 'number' ? Number(unit.masteryScore) : NaN;
+    typeof unit.masteryScoreRaw === 'string' || typeof unit.masteryScoreRaw === 'number'
+      ? Number(unit.masteryScoreRaw)
+      : NaN;
   if (Number.isFinite(rawMastery)) return rawMastery;
 
-  const details = unit.formatDetails as { scaledPassingScore?: unknown } | null | undefined;
-  const rawScaled = typeof details?.scaledPassingScore === 'number' ? details.scaledPassingScore : NaN;
+  const rawScaled =
+    typeof unit.passingScoreScaled === 'string' || typeof unit.passingScoreScaled === 'number'
+      ? Number(unit.passingScoreScaled)
+      : NaN;
   if (Number.isFinite(rawScaled)) return Math.round(rawScaled * 100);
 
   return null;

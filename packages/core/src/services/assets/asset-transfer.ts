@@ -10,9 +10,9 @@ import { createAsset } from '@cio/db/queries/assets';
 import { bulkInsertPackageUnits, listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import {
   createPackageVersion,
+  getCurrentPackageVersion,
   getNextPackageVersionNumber,
-  getPackageVersionById,
-  listPackageVersionsByAsset
+  getPackageVersionById
 } from '@cio/db/queries/activity/package-version';
 import type { TAsset, TContentPackageVersion } from '@cio/db/types';
 import type { TAssetStorageCleanupPayload } from '@cio/jobs';
@@ -182,8 +182,8 @@ async function copyScormVersionStorage(
 }
 
 /**
- * Brings a SCORM package asset into `organizationId` with all of its versions
- * and their module rows, copying every version's ZIP plus extracted files in
+ * Brings a SCORM package asset into `organizationId` with its current version
+ * and its module rows, copying that version's ZIP plus extracted files in
  * the `scorm` bucket. Returns the new asset and the source → copy asset id
  * pair. Inside `withAssetStorageRollback`, the copied prefix is purged if the
  * operation fails. Learner state (attempts, completions) is never copied.
@@ -202,7 +202,7 @@ export async function transferScormPackageAsset(
   if (earlier) return earlier;
 
   const config = getStorageConfig();
-  const versions = await listPackageVersionsByAsset(asset.id, dbClient);
+  const current = await getCurrentPackageVersion(asset.id, dbClient);
   const assetId = randomUUID();
   const storageKey = `scorm/${assetId}`;
   const replacements: [string, string][] = [[asset.id, assetId]];
@@ -241,30 +241,30 @@ export async function transferScormPackageAsset(
     dbClient
   );
 
-  for (const version of versions) {
-    const storage = await copyScormVersionStorage(version, assetId, version.versionNumber);
+  if (current) {
+    const storage = await copyScormVersionStorage(current, assetId, 1);
     const createdVersion = await createPackageVersion(
       {
         assetId,
-        versionNumber: version.versionNumber,
-        isCurrent: version.isCurrent,
-        status: version.status,
-        format: version.format,
-        manifestIdentifier: version.manifestIdentifier,
-        title: version.title,
-        manifest: version.manifest,
-        warnings: version.warnings,
-        error: version.error,
+        versionNumber: 1,
+        isCurrent: true,
+        status: current.status,
+        format: current.format,
+        manifestIdentifier: current.manifestIdentifier,
+        title: current.title,
+        manifest: current.manifest,
+        warnings: current.warnings,
+        error: current.error,
         uploadKey: storage.uploadKey,
         contentPrefix: storage.contentPrefix,
-        zipBytes: version.zipBytes,
-        extractedBytes: version.extractedBytes,
-        fileCount: version.fileCount,
+        zipBytes: current.zipBytes,
+        extractedBytes: current.extractedBytes,
+        fileCount: current.fileCount,
         createdByProfileId: profileId
       },
       dbClient
     );
-    const units = await listPackageUnitsByVersion(version.id, dbClient);
+    const units = await listPackageUnitsByVersion(current.id, dbClient);
     if (units.length > 0) {
       await bulkInsertPackageUnits(
         units.map((unit) => ({
@@ -276,7 +276,9 @@ export async function transferScormPackageAsset(
           unitType: unit.unitType,
           href: unit.href,
           parameters: unit.parameters,
-          masteryScore: unit.masteryScore,
+          masteryScoreRaw: unit.masteryScoreRaw,
+          passingScoreScaled: unit.passingScoreScaled,
+          completionThreshold: unit.completionThreshold,
           launchData: unit.launchData,
           formatDetails: unit.formatDetails,
           isVisible: unit.isVisible
@@ -350,7 +352,9 @@ export async function copyPackageVersionToAsset(
         unitType: unit.unitType,
         href: unit.href,
         parameters: unit.parameters,
-        masteryScore: unit.masteryScore,
+        masteryScoreRaw: unit.masteryScoreRaw,
+        passingScoreScaled: unit.passingScoreScaled,
+        completionThreshold: unit.completionThreshold,
         launchData: unit.launchData,
         formatDetails: unit.formatDetails,
         isVisible: unit.isVisible

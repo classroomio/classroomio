@@ -55,7 +55,7 @@ import {
 import { addGroupMember, createGroup } from '@cio/db/queries/group';
 import { createActivities } from '@cio/db/queries/activity';
 
-const scormCourse = { id: 'course-1', format: 'scorm', type: 'SELF_PACED', title: 'Package course' };
+const singleActivityCourse = { id: 'course-1', format: 'single_activity', type: 'SELF_PACED', title: 'Package course' };
 const standardCourse = { id: 'course-2', format: 'standard', type: 'SELF_PACED', title: 'Standard' };
 
 describe('assertCourseAcceptsContent', () => {
@@ -71,16 +71,16 @@ describe('assertCourseAcceptsContent', () => {
     }
   });
 
-  it('refuses sections, lessons and exercises in a SCORM course', async () => {
-    vi.mocked(getCourseById).mockResolvedValue([scormCourse] as never);
+  it('refuses sections, lessons and exercises in a single-activity course', async () => {
+    vi.mocked(getCourseById).mockResolvedValue([singleActivityCourse] as never);
 
     for (const type of [ContentType.Section, ContentType.Lesson, ContentType.Exercise]) {
       await expect(assertCourseAcceptsContent('course-1', type)).rejects.toMatchObject({ statusCode: 400 });
     }
   });
 
-  it('allows the first activity but refuses a second one in a SCORM course', async () => {
-    vi.mocked(getCourseById).mockResolvedValue([scormCourse] as never);
+  it('allows the first activity but refuses a second one in a single-activity course', async () => {
+    vi.mocked(getCourseById).mockResolvedValue([singleActivityCourse] as never);
     vi.mocked(countActivitiesInCourse).mockResolvedValue(0);
 
     await expect(assertCourseAcceptsContent('course-1', ContentType.Activity)).resolves.toBeUndefined();
@@ -93,11 +93,11 @@ describe('assertCourseAcceptsContent', () => {
   });
 });
 
-describe('createCourse with format scorm', () => {
+describe('createCourse with format single_activity', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(createGroup).mockResolvedValue([{ id: 'group-1' }] as never);
-    vi.mocked(createCourseQuery).mockResolvedValue([{ id: 'course-1', format: 'scorm' }] as never);
+    vi.mocked(createCourseQuery).mockResolvedValue([{ id: 'course-1', format: 'single_activity' }] as never);
     vi.mocked(addGroupMember).mockResolvedValue([{ id: 'member-1' }] as never);
     vi.mocked(createCourseNewsfeed).mockResolvedValue([{ id: 'news-1' }] as never);
     vi.mocked(createActivities).mockResolvedValue([{ id: 'act-1' }] as never);
@@ -108,12 +108,12 @@ describe('createCourse with format scorm', () => {
       title: 'Package course',
       description: 'A single package',
       type: 'SELF_PACED',
-      format: 'scorm',
+      format: 'single_activity',
       organizationId: 'org-1'
     });
 
     expect(createCourseQuery).toHaveBeenCalledWith(
-      expect.objectContaining({ format: 'scorm', type: 'SELF_PACED' }),
+      expect.objectContaining({ format: 'single_activity', type: 'SELF_PACED' }),
       expect.anything()
     );
     expect(createActivities).toHaveBeenCalledWith(
@@ -124,14 +124,14 @@ describe('createCourse with format scorm', () => {
     expect(result.activityId).toBe('act-1');
   });
 
-  it('refuses LIVE_CLASS and PUBLIC types for SCORM courses', async () => {
+  it('refuses LIVE_CLASS and PUBLIC types for single-activity courses', async () => {
     for (const type of ['LIVE_CLASS', 'PUBLIC'] as const) {
       await expect(
         createCourse('profile-1', {
           title: 'Package course',
           description: 'A single package',
           type,
-          format: 'scorm',
+          format: 'single_activity',
           organizationId: 'org-1'
         })
       ).rejects.toMatchObject({ statusCode: 400 });
@@ -155,14 +155,14 @@ describe('createCourse with format scorm', () => {
   });
 });
 
-describe('updateCourse SCORM guards', () => {
+describe('updateCourse single-activity guards', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getCourseById).mockResolvedValue([scormCourse] as never);
-    vi.mocked(updateCourseQuery).mockResolvedValue({ ...scormCourse, title: 'Renamed' } as never);
+    vi.mocked(getCourseById).mockResolvedValue([singleActivityCourse] as never);
+    vi.mocked(updateCourseQuery).mockResolvedValue({ ...singleActivityCourse, title: 'Renamed' } as never);
   });
 
-  it('refuses LIVE_CLASS and PUBLIC types in a SCORM course', async () => {
+  it('refuses LIVE_CLASS and PUBLIC types in a single-activity course', async () => {
     for (const type of ['LIVE_CLASS', 'PUBLIC'] as const) {
       await expect(updateCourse('course-1', { type } as never)).rejects.toMatchObject({ statusCode: 400 });
     }
@@ -170,7 +170,7 @@ describe('updateCourse SCORM guards', () => {
     expect(updateCourseQuery).not.toHaveBeenCalled();
   });
 
-  it('converts scorm to standard', async () => {
+  it('converts single_activity to standard', async () => {
     const result = await updateCourse('course-1', { format: 'standard' } as never);
 
     expect(updateCourseQuery).toHaveBeenCalledWith(
@@ -181,15 +181,17 @@ describe('updateCourse SCORM guards', () => {
     expect(result.course.title).toBe('Renamed');
   });
 
-  it('refuses conversion to a SCORM course', async () => {
+  it('refuses conversion to a single-activity course', async () => {
     vi.mocked(getCourseById).mockResolvedValue([standardCourse] as never);
 
-    await expect(updateCourse('course-2', { format: 'scorm' } as never)).rejects.toMatchObject({ statusCode: 400 });
+    await expect(updateCourse('course-2', { format: 'single_activity' } as never)).rejects.toMatchObject({
+      statusCode: 400
+    });
     expect(updateCourseQuery).not.toHaveBeenCalled();
   });
 });
 
-describe('deleteActivityService in a SCORM course', () => {
+describe('deleteActivityService in a single-activity course', () => {
   it('refuses to delete the only package', async () => {
     const { deleteActivityService } = await import('@cio/core/services/activity/activity');
     vi.mocked(getActivityById).mockResolvedValue({
@@ -197,7 +199,7 @@ describe('deleteActivityService in a SCORM course', () => {
       courseId: 'course-1',
       kind: 'scorm'
     } as never);
-    vi.mocked(getCourseByIdDirect).mockResolvedValue([scormCourse] as never);
+    vi.mocked(getCourseByIdDirect).mockResolvedValue([singleActivityCourse] as never);
 
     await expect(deleteActivityService('course-1', 'act-1')).rejects.toMatchObject({ statusCode: 400 });
   });

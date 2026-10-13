@@ -2995,7 +2995,9 @@
             "status_not_passed": "Пока не пройдено",
             "status_review": "На проверке",
             "window_body": "Ваш прогресс сохраняется автоматически, пока новое окно открыто.",
-            "window_title": "Этот пакет открывается в новом окне"
+            "window_title": "Этот пакет открывается в новом окне",
+            "archived_title": "Вы взяли более раннюю версию этого пакета.",
+            "archived_body": "Ваши результаты остались без изменений."
           },
           "results": {
             "export": {
@@ -3032,7 +3034,8 @@
                 "beacon": "Сохранено при выходе",
                 "error": "Ошибка",
                 "not_initialized": "Не удалось подключиться"
-              }
+              },
+              "interaction_correct": "Правильно: {answer}"
             },
             "status": {
               "completed": "Завершено",
@@ -3471,7 +3474,8 @@
       "exercises_count": "{count, plural, one {# упражнение} few {# упражнения} many {# упражнений} other {# упражнений}}",
       "activities_count": "{count, plural, one {# упаковка} few {# упаковки} other {# упаковок}}",
       "scorm_modules": "SCORM · {count, plural, one {# модуль} other {# модулей}}",
-      "scorm": "СКОРМ"
+      "scorm": "СКОРМ",
+      "scorm_course": "SCORM-курс"
     },
     "course_filter": {
       "date_created_newest": "Дата создания: сначала новые",

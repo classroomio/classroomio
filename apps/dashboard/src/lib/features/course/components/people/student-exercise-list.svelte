@@ -1,6 +1,6 @@
 <script lang="ts">
   import * as Card from '@cio/ui/base/card';
-  import * as Empty from '@cio/ui/custom/empty';
+  import * as Empty from '@cio/ui/base/empty';
   import * as ResourceListRow from '@cio/ui/custom/resource-list-row';
   import * as Separator from '@cio/ui/base/separator';
   import { Badge } from '@cio/ui/base/badge';

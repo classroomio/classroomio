@@ -997,9 +997,9 @@ export async function publishCourseImportDraftToExistingCourseService(
     const draft = parseStoredDraft(existingDraft);
     const course = await getCourseRecord(orgId, overrides.courseId);
 
-    if (course.format === 'scorm') {
+    if (course.format === 'single_activity') {
       throw new AppError(
-        'Drafts cannot publish to a SCORM course. Convert it to a standard course first.',
+        'Drafts cannot publish to a single-activity course. Convert it to a standard course first.',
         ErrorCodes.VALIDATION_ERROR,
         400
       );

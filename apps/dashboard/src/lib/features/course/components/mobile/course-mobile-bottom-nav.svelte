@@ -22,6 +22,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
@@ -37,7 +38,7 @@
   let sheetOpen = $state(false);
   let isMarkingComplete = $state(false);
 
-  const isScormCourse = $derived((courseApi.course as { format?: string } | null | undefined)?.format === 'scorm');
+  const isSingleActivity = $derived(isSingleActivityCourse(courseApi.course));
   const currentPath = $derived(path || page.url.pathname);
   const courseProgress = $derived(getCourseProgress(courseApi.course));
   const activeIndex = $derived(resolveActiveNavigableContentIndex(courseApi.course, currentPath));
@@ -117,8 +118,8 @@
   {positionLabel}
   sublineLabel={activeItem?.title}
   sublineComplete={showCompleteToggle ? false : (activeItem?.isComplete ?? false)}
-  hasPrev={!isScormCourse && !isPreviousDisabled}
-  hasNext={!isScormCourse && !isNextDisabled}
+  hasPrev={!isSingleActivity && !isPreviousDisabled}
+  hasNext={!isSingleActivity && !isNextDisabled}
   onPrev={() => goToContent(previousItem)}
   onNext={() => goToContent(nextItem)}
   onOpenSheet={() => (sheetOpen = true)}

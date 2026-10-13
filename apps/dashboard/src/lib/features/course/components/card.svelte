@@ -20,6 +20,7 @@
   import { calcCourseCost } from '$lib/utils/functions/course';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import {
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
@@ -206,7 +207,7 @@
 
   const showLmsPublicCourseMenu = $derived(isLMS && type === 'PUBLIC' && !!slug?.trim() && isPublished);
 
-  const isScormCourse = $derived('format' in course && course.format === 'scorm');
+  const isSingleActivity = $derived(isSingleActivityCourse(course));
   const scormModuleCount = $derived.by(() => {
     const c = course as { moduleCount?: number; totalModules?: number };
     if (typeof c.moduleCount === 'number') return c.moduleCount;
@@ -289,13 +290,13 @@
     <div class="flex justify-between {isLMS && 'items-center'} w-full">
       <div class="w-[60%]">
         {#if isLMS || isOnLandingPage}
-          {#if isScormCourse}
+          {#if isSingleActivity}
             <p class="text-xs {!isLMS && 'pl-2'} flex gap-1 dark:text-white">
               <span>
                 {#if scormModuleCount !== null}
                   {$t('courses.course_card.scorm_modules', { count: scormModuleCount })}
                 {:else}
-                  {$t('courses.course_card.scorm')}
+                  {$t('courses.course_card.scorm_course')}
                 {/if}
               </span>
             </p>
@@ -387,13 +388,13 @@
         </Button>
       {:else if !isOnLandingPage}
         <div class="flex flex-col justify-end gap-1 text-right">
-          {#if isScormCourse}
+          {#if isSingleActivity}
             <p class="pl-2 text-xs whitespace-nowrap dark:text-white">
               <span>
                 {#if scormModuleCount !== null}
                   {$t('courses.course_card.scorm_modules', { count: scormModuleCount })}
                 {:else}
-                  {$t('courses.course_card.scorm')}
+                  {$t('courses.course_card.scorm_course')}
                 {/if}
               </span>
             </p>

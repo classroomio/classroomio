@@ -182,7 +182,7 @@ export async function getCourseContentItems(
         NULL::int AS "questionCount",
         NULL::timestamp AS "dueBy",
         course_activity.slug AS "slug",
-        course_activity.kind AS "activityKind",
+        course_activity.kind::varchar AS "activityKind",
         NULL::text AS "activityStatus"
       FROM course_activity
       WHERE course_activity.course_id = ${courseId}

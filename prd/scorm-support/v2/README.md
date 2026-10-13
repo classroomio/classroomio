@@ -174,9 +174,15 @@ These are recommendations from the research and the review rounds. Each needs a 
    - Sequencing rules are ignored with a visible warning.
    - Pinning a single module to its own item is deferred.
 9. **Public courses**: activities cannot be added to courses of type `PUBLIC`, and a course that has activities cannot be converted to `PUBLIC`. Anonymous play is a later project (it would mint the token from the public course tree as `mintPublicHlsCookie` does, save nothing on the server, and keep best-effort resume data in the content origin’s browser storage).
-10. **Retention**: unpinned package versions are deleted 30 days after replacement. Diagnostic events are deleted after 90 days. The original ZIP of each version is kept for reprocessing.
+10. **Retention** ([`schema-improvements.md`](./schema-improvements.md) § 1.6): 30 days after a package version stops being current, retention acts according to its history:
+    - never launched: it is deleted with its ZIP;
+    - launched, with every attempt closed: it is archived, meaning its extracted files are deleted and its ZIP and rows are kept;
+    - any attempt still open: it is kept until those attempts close.
+    - Review of an attempt on an archived version opens the current version with empty run-time data and a banner.
+    - Diagnostic events are deleted after 90 days, and only meaningful commits write one (§ 1.1 of that file).
 11. **SCORM courses**: a course **format**, not a course type.
-    - `course.format` is `standard` (every existing course) or `scorm`. It sits beside `course.type`, so a SCORM course is Self-paced or Compliance. Live class and Public don’t apply to a single package.
+    - `course.format` is `standard` (every existing course) or `single_activity`. A single-activity course is one activity of any kind; with a SCORM activity it is shown as a “SCORM course”. The value is generic so cmi5, LTI or H5P courses later need no new format value and no change to the format checks.
+    - It sits beside `course.type`. A single-activity course is Self-paced or Compliance only, enforced by the database (`course_format_type_check`) and by one shared constant, `SINGLE_ACTIVITY_COURSE_TYPES`. Live class doesn’t apply because live sessions and attendance are lesson features, and Public doesn’t apply because SCORM needs a signed-in learner (decision 9).
     - A SCORM course holds exactly one SCORM activity and no sections. Server guards refuse new sections, lessons, exercises and a second activity in it, whichever route or tool asks.
     - Admin navigation: **Package** replaces Content in the same position and opens the package editor. Submissions, Marks and Attendance are hidden. Everything else (News Feed, Certificates, Analytics, Compliance, Landing Page, People, AI Tutor, Settings) stays.
     - Learner navigation: **Package** replaces Content and its tree. It is a normal nav item: click to enter, nothing to expand. The module menu lives on the package page.
@@ -284,7 +290,7 @@ These are recommendations from the research and the review rounds. Each needs a 
 ### 1. SCORM items in the course builder (admin, tutor)
 
 - The add-content modal gains a fourth option, **SCORM package**, beside Section, Lesson and Exercise. It creates a `course_activity` of kind `scorm` in the chosen section and opens it in the package editor at `/courses/[id]/activities/[activityId]`.
-  - Hidden in `PUBLIC` and `scorm`-format courses.
+  - Hidden in `PUBLIC` and single-activity courses.
   - On the Free plan the option shows a “Paid plans” pill and opens the upgrade modal.
   - On an unlicensed self-hosted server it shows “Needs an enterprise license” and links to the licensing docs.
 - The package editor has its own page, separate from the lesson editor. The header holds the title, lock, delete and save state; there is no language picker or version history. Four tabs:
@@ -489,14 +495,46 @@ Nothing in the shared column changes when a kind is added. Each new kind is its 
 
 Learner state is keyed by profile, like `lesson_completion` and `lesson_video_progress`. Following the house rules, relational ids live in real columns and nothing derivable is stored: learner totals (best score, total time, attempt count) and module rollups are computed when read, and outcomes are derived from the stored CMI by one shared SQL expression.
 
+Revised 12 October 2026 by [`schema-improvements.md`](./schema-improvements.md):
+- every enumerated column in the new tables is a database enum built from shared constants;
+- rule inputs from the manifest are typed, range-checked columns;
+- CHECK constraints keep paired columns consistent;
+- package versions gain `replaced_at` and `archived_at`.
+
+The blocks below show the revised schema.
+
+#### New enums
+
+```ts
+export const courseFormat = pgEnum('COURSE_FORMAT', [...COURSE_FORMAT_VALUES]);
+export const activityKind = pgEnum('ACTIVITY_KIND', [...ACTIVITY_KINDS]);
+export const contentPackageStatus = pgEnum('CONTENT_PACKAGE_STATUS', [...CONTENT_PACKAGE_STATUSES]);
+export const contentPackageFormat = pgEnum('CONTENT_PACKAGE_FORMAT', [...CONTENT_PACKAGE_FORMATS]);
+export const contentPackageUnitType = pgEnum('CONTENT_PACKAGE_UNIT_TYPE', [...CONTENT_PACKAGE_UNIT_TYPES]);
+export const scormCompletionRule = pgEnum('SCORM_COMPLETION_RULE', [...SCORM_COMPLETION_RULES]);
+export const scormLaunchMode = pgEnum('SCORM_LAUNCH_MODE', [...SCORM_LAUNCH_MODES]);
+export const scormAttemptCloseReason = pgEnum('SCORM_ATTEMPT_CLOSE_REASON', [...SCORM_ATTEMPT_CLOSE_REASONS]);
+export const scormScoAttemptStatus = pgEnum('SCORM_SCO_ATTEMPT_STATUS', [...SCORM_SCO_ATTEMPT_STATUSES]);
+export const scormSessionEventKind = pgEnum('SCORM_SESSION_EVENT_KIND', [...SCORM_SESSION_EVENT_KINDS]);
+```
+
+All value lists live in `packages/utils/src/constants/` (`course-format.ts`, `activity.ts`), as `COURSE_TYPE_VALUES` does.
+
 #### Changed: `course.format`
 
 ```ts
-format: varchar({ length: 16 }).default('standard').notNull(),
+format: courseFormat().default('standard').notNull(),
+// in the table's constraints:
+check(
+  'course_format_type_check',
+  sql`${table.format} = 'standard' OR ${table.type} IN ('SELF_PACED', 'COMPLIANCE')`
+),
 ```
 
-- Values from `COURSE_FORMAT_VALUES` (`packages/utils/src/constants/course-format.ts`). Existing rows get `standard`.
-- `ZCourseCreate` gains an optional `format`; only the SCORM course flow and course-from-package send `scorm`. `ZCourseUpdate` accepts only `scorm → standard`.
+- Values: `standard`, `single_activity`. Existing rows get `standard`.
+- The CHECK’s type list is generated from `SINGLE_ACTIVITY_COURSE_TYPES`, which the Zod schemas, the course service and the new-course modal also use.
+- `ZCourseCreate` gains an optional `format`; only the SCORM course flow and course-from-package send `single_activity`. `ZCourseUpdate` accepts only `single_activity → standard`.
+- The dashboard reads the format through one helper, `isSingleActivityCourse(course)`. Labels such as “SCORM course” and “Package” come from the activity kind’s provider.
 
 #### Changed: Zod enums only
 
@@ -517,7 +555,7 @@ export const courseActivity = pgTable(
       .notNull(),
     courseId: uuid('course_id').notNull(),
     sectionId: uuid('section_id'),
-    kind: varchar({ length: 16 }).notNull(),
+    kind: activityKind().notNull(),
     title: varchar().notNull(),
     instructions: text(),
     slug: varchar(),
@@ -591,7 +629,8 @@ export const activityCompletion = pgTable(
       foreignColumns: [profile.id],
       name: 'activity_completion_profile_id_fkey'
     }).onDelete('cascade'),
-    unique('activity_completion_activity_profile_key').on(table.activityId, table.profileId)
+    unique('activity_completion_activity_profile_key').on(table.activityId, table.profileId),
+    check('activity_completion_complete_check', sql`${table.isComplete} = (${table.completedAt} IS NOT NULL)`)
   ]
 );
 ```
@@ -611,8 +650,8 @@ export const contentPackageVersion = pgTable(
     assetId: uuid('asset_id').notNull(),
     versionNumber: integer('version_number').notNull(),
     isCurrent: boolean('is_current').default(false).notNull(),
-    status: varchar({ length: 16 }).default('uploading').notNull(),
-    format: varchar({ length: 16 }),
+    status: contentPackageStatus().default('uploading').notNull(),
+    format: contentPackageFormat(),
     manifestIdentifier: text('manifest_identifier'),
     title: text(),
     manifest: jsonb().$type<PackageManifestTree>(),
@@ -626,6 +665,8 @@ export const contentPackageVersion = pgTable(
     processingJobId: uuid('processing_job_id'),
     createdByProfileId: uuid('created_by_profile_id'),
     processedAt: timestamp('processed_at', { withTimezone: true, mode: 'string' }),
+    replacedAt: timestamp('replaced_at', { withTimezone: true, mode: 'string' }),
+    archivedAt: timestamp('archived_at', { withTimezone: true, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -648,12 +689,20 @@ export const contentPackageVersion = pgTable(
     unique('content_package_version_asset_number_key').on(table.assetId, table.versionNumber),
     uniqueIndex('content_package_version_current_key')
       .on(table.assetId)
-      .where(sql`${table.isCurrent}`)
+      .where(sql`${table.isCurrent}`),
+    index('idx_content_package_version_replaced')
+      .on(table.replacedAt)
+      .where(sql`${table.isCurrent} = false`),
+    check(
+      'content_package_version_current_not_replaced_check',
+      sql`NOT (${table.isCurrent} AND ${table.replacedAt} IS NOT NULL)`
+    )
   ]
 );
 ```
 
-- `status`: `uploading`, `processing`, `ready`, `failed`.
+- `status`: `uploading`, `processing`, `ready`, `failed`, `archived` (extracted files deleted by retention; ZIP and rows kept).
+- `replacedAt` is set in the same transaction that makes another version current; retention counts its 30 days from it. `archivedAt` is set by retention.
 - `format`: `scorm12`, `scorm2004_2`, `scorm2004_3`, `scorm2004_4` in version 1; later `cmi5`, `h5p`.
 - `manifest` holds the parsed manifest tree (identifiers, titles, hrefs as written in the file). It contains no ClassroomIO ids.
 - `warnings` includes `has_sequencing` for SCORM 2004 packages with sequencing rules.
@@ -674,10 +723,12 @@ export const contentPackageUnit = pgTable(
     parentIdentifier: text('parent_identifier'),
     title: text().notNull(),
     position: integer().notNull(),
-    unitType: varchar('unit_type', { length: 8 }).notNull(),
+    unitType: contentPackageUnitType('unit_type').notNull(),
     href: text().notNull(),
     parameters: text(),
-    masteryScore: numeric('mastery_score'),
+    masteryScoreRaw: numeric('mastery_score_raw'),
+    passingScoreScaled: numeric('passing_score_scaled'),
+    completionThreshold: numeric('completion_threshold'),
     launchData: text('launch_data'),
     formatDetails: jsonb('format_details').default({}).$type<PackageUnitFormatDetails>().notNull(),
     isVisible: boolean('is_visible').default(true).notNull()
@@ -688,15 +739,22 @@ export const contentPackageUnit = pgTable(
       foreignColumns: [contentPackageVersion.id],
       name: 'content_package_unit_package_version_id_fkey'
     }).onDelete('cascade'),
-    unique('content_package_unit_version_identifier_key').on(table.packageVersionId, table.identifier)
+    unique('content_package_unit_version_identifier_key').on(table.packageVersionId, table.identifier),
+    check('content_package_unit_mastery_score_raw_check', sql`${table.masteryScoreRaw} IS NULL OR ${table.masteryScoreRaw} BETWEEN 0 AND 100`),
+    check('content_package_unit_passing_score_scaled_check', sql`${table.passingScoreScaled} IS NULL OR ${table.passingScoreScaled} BETWEEN -1 AND 1`),
+    check('content_package_unit_completion_threshold_check', sql`${table.completionThreshold} IS NULL OR ${table.completionThreshold} BETWEEN 0 AND 1`)
   ]
 );
 ```
 
 - A unit is what a learner launches: a SCORM SCO or asset, a cmi5 AU, or the H5P main content.
 - `unitType`: `sco` or `asset` for SCORM; later `au` or `main`.
-- `masteryScore` holds SCORM 1.2 `adlcp:masteryscore` (and later cmi5 `masteryScore`). `launchData` holds `adlcp:dataFromLMS` (and later cmi5 launch parameters).
-- `formatDetails` holds per-format values typed by format, with no ids: for SCORM 2004 `scaledPassingScore` (from the primary objective’s `minNormalizedMeasure`, only when `satisfiedByMeasure="true"`), `completionThreshold`, `maxTimeAllowed`, `timeLimitAction`.
+- Every manifest value the LMS uses to decide completion or success is a typed, range-checked column:
+  - `masteryScoreRaw` (0 to 100) holds SCORM 1.2 `adlcp:masteryscore`;
+  - `passingScoreScaled` (−1 to 1) holds SCORM 2004’s primary objective `minNormalizedMeasure` when `satisfiedByMeasure="true"`, and later cmi5’s `masteryScore`;
+  - `completionThreshold` (0 to 1) holds SCORM 2004’s `completionThreshold`.
+- `launchData` holds `adlcp:dataFromLMS` (and later cmi5 launch parameters).
+- `formatDetails` keeps only values nothing decides on: for SCORM 2004 `maxTimeAllowed` and `timeLimitAction`, shown as a warning and not enforced. It is typed per format and holds no ids.
 
 #### New Table: `activity_scorm`
 
@@ -706,10 +764,10 @@ export const activityScorm = pgTable(
   {
     activityId: uuid('activity_id').primaryKey().notNull(),
     assetId: uuid('asset_id'),
-    completionRule: varchar('completion_rule', { length: 16 }).default('auto').notNull(),
+    completionRule: scormCompletionRule('completion_rule').default('auto').notNull(),
     minScorePercent: integer('min_score_percent'),
     allowRetakes: boolean('allow_retakes').default(false).notNull(),
-    launchMode: varchar('launch_mode', { length: 16 }).default('embedded').notNull(),
+    launchMode: scormLaunchMode('launch_mode').default('embedded').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -724,7 +782,8 @@ export const activityScorm = pgTable(
       foreignColumns: [asset.id],
       name: 'activity_scorm_asset_id_fkey'
     }).onDelete('restrict'),
-    index('idx_activity_scorm_asset_id').on(table.assetId)
+    index('idx_activity_scorm_asset_id').on(table.assetId),
+    check('activity_scorm_min_score_check', sql`${table.minScorePercent} IS NULL OR ${table.minScorePercent} BETWEEN 0 AND 100`)
   ]
 );
 ```
@@ -754,7 +813,7 @@ export const scormAttempt = pgTable(
     attemptNumber: integer('attempt_number').notNull(),
     startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     closedAt: timestamp('closed_at', { withTimezone: true, mode: 'string' }),
-    closeReason: varchar('close_reason', { length: 16 })
+    closeReason: scormAttemptCloseReason('close_reason')
   },
   (table) => [
     foreignKey({
@@ -776,7 +835,8 @@ export const scormAttempt = pgTable(
     uniqueIndex('scorm_attempt_open_key')
       .on(table.activityId, table.profileId)
       .where(sql`${table.closedAt} is null`),
-    index('idx_scorm_attempt_activity_id').on(table.activityId)
+    index('idx_scorm_attempt_activity_id').on(table.activityId),
+    check('scorm_attempt_close_reason_check', sql`(${table.closedAt} IS NULL) = (${table.closeReason} IS NULL)`)
   ]
 );
 
@@ -789,7 +849,7 @@ export const scormScoAttempt = pgTable(
       .notNull(),
     attemptId: uuid('attempt_id').notNull(),
     unitId: uuid('unit_id').notNull(),
-    status: varchar({ length: 16 }).default('active').notNull(),
+    status: scormScoAttemptStatus().default('active').notNull(),
     cmi: jsonb().default({}).$type<ScormCmiState>().notNull(),
     commitSeq: integer('commit_seq').default(0).notNull(),
     startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -833,7 +893,7 @@ export const scormSessionEvent = pgTable(
       .primaryKey()
       .notNull(),
     scoAttemptId: uuid('sco_attempt_id').notNull(),
-    kind: varchar({ length: 24 }).notNull(),
+    kind: scormSessionEventKind().notNull(),
     detail: jsonb().default({}).$type<Record<string, unknown>>().notNull(),
     userAgent: text('user_agent'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
@@ -844,12 +904,16 @@ export const scormSessionEvent = pgTable(
       foreignColumns: [scormScoAttempt.id],
       name: 'scorm_session_event_sco_attempt_id_fkey'
     }).onDelete('cascade'),
-    index('idx_scorm_session_event_sco_attempt_created').on(table.scoAttemptId, table.createdAt)
+    index('idx_scorm_session_event_sco_attempt_created').on(table.scoAttemptId, table.createdAt),
+    index('idx_scorm_session_event_created_at').on(table.createdAt)
   ]
 );
 ```
 
 - `kind`: `launch`, `initialize`, `commit`, `terminate`, `beacon`, `error`, `not_initialized`.
+- Only meaningful commits write an event: the first of a module try, a change in completion, success, score or try status, a rejected commit, a terminate commit, or a beacon. Routine autocommits write none; `scorm_sco_attempt.last_commit_at` records the latest save.
+- `detail` is capped at 2 KB and `user_agent` at 512 characters. The `created_at` index serves the 90-day retention delete.
+- It stays SCORM-specific so its foreign key to the module try cascades on reset and delete; a future kind adds its own events table.
 
 #### Relationship Diagram
 
@@ -885,14 +949,14 @@ SCORM 1.2 has one status field; SCORM 2004 has two. Both normalize to a completi
 LMS-side rules, applied by `applyLmsRules` before the CMI is stored:
 
 - **SCORM 1.2, status never set**: when the module calls `LMSFinish` without ever setting `cmi.core.lesson_status`, the LMS records `completed` unless `cmi.core.exit` is `suspend` (which preserves incomplete/not-attempted so the try remains suspended for resume).
-- **SCORM 1.2, mastery score**: when the unit has `masteryScore`, the attempt has credit and the module set `cmi.core.score.raw`, the LMS sets `passed` or `failed` by comparing the raw score with the mastery score.
+- **SCORM 1.2, mastery score**: when the unit has `masteryScoreRaw`, the attempt has credit and the module set `cmi.core.score.raw`, the LMS sets `passed` or `failed` by comparing the raw score with the mastery score.
 - **SCORM 2004**: `cmi.completion_status` and `cmi.success_status` are used as stored, after the LMS evaluates `completion_threshold` against `progress_measure` and `scaled_passing_score` against `score.scaled`. These are the rules ADL’s reference run-time applies on Terminate.
 - Phase 0 checks which of these scorm-again already applies, so they run once.
 
 Scores and graded modules:
 
 - Scaled score: SCORM 2004 `score.scaled`. For SCORM 1.2, `(raw - min) / (max - min)` when both are set, otherwise `raw / 100`.
-- A module has a pass mark when its unit has `masteryScore` or `formatDetails.scaledPassingScore`.
+- A module has a pass mark when its unit has `masteryScoreRaw` or `passingScoreScaled`. `applyLmsRules` reads `completionThreshold` and `passingScoreScaled` from the same unit row.
 
 The rule applies to every launchable module of the attempt’s version, using each module’s latest try. A module with no try yet is “not attempted”. Units of type `asset` are left out.
 
@@ -1120,7 +1184,7 @@ Course-scoped activity routes live with lessons and exercises in the course doma
 | POST | `/activity/scorm/runtime/:launchToken/commit` | Content | Token | Save a numbered commit (JSON, or `text/plain` beacon) |
 | POST | `/activity/scorm/runtime/:launchToken/event` | Content | Token | Record player-observed diagnostic events (`initialize`, `not_initialized`, `error`) |
 
-- `POST /course` (new course) accepts `format: 'scorm'`, checks the plan or license, and creates the course with one empty SCORM activity in the same transaction. `/activity/courses` does the same with a package already attached.
+- `POST /course` (new course) accepts `format: 'single_activity'`, checks the plan or license, and creates the course with one empty SCORM activity in the same transaction. `/activity/courses` does the same with a package already attached.
 - The content routes (`/course/:courseId/content` reorder, update, delete) accept `ACTIVITY` items (map 4.5).
 
 #### Validation Layer
@@ -1154,7 +1218,7 @@ Course-scoped activity routes live with lessons and exercises in the course doma
 - `packages/core/src/services/activity/packages.ts`: package create, process, replace, make current, delete.
 - `packages/core/src/services/activity/courses.ts`: SCORM courses from packages (one transaction per course; every package checked first; the whole request fails if any is not ready or not in the organization).
 - `packages/core/src/services/jobs/activity-package-jobs.ts`: create the `media_job` row and enqueue.
-- `packages/core/src/services/activity/retention.ts`: `runScormRetention` (diagnostic events and unpinned superseded package versions).
+- `packages/core/src/services/activity/retention.ts`: `runScormRetention` (90-day diagnostic-event delete; 30 days after replacement, never-launched versions deleted with ZIP and row, launched-and-closed versions archived with ZIP kept, open-attempt versions kept).
 - `apps/api/src/services/activity/runtime-scorm.ts`: state, commit, and player event reporting.
 - `apps/api/src/services/activity/plan.ts`: `assertActivityKindAllowed` implementation (cloud plan, self-hosted license).
 - `apps/api/src/services/course/compliance.ts`: `syncComplianceProgressForMember` (PR 0b).
@@ -1349,7 +1413,7 @@ PR 14 diagnostics, PR 15 docs (help, self-hosted, licensing, OpenAPI), the compa
 | Scope creep into sequencing or other kinds | Written non-goals, warnings on packages with sequencing rules, the provider registry and separate PRDs per kind |
 | `scorm-again` has one main maintainer | Pin exact versions, keep our own run-time tests, keep the provider seam |
 | Auditors question self-reported scores | Results labelled as reported by the package; recommend a ClassroomIO exercise as the graded final step |
-| Storage cost of large, often-replaced packages | Size limit, storage visibility, deletion of unpinned versions after 30 days |
+| Storage cost of large, often-replaced packages | Size limit, storage visibility, 30-day retention that deletes never-launched versions and archives launched-and-closed ones |
 | Migration skipped on existing databases | Run the `_journal.json` high-water-mark check from `CLAUDE.md` before merging PR 1 and PR 5; read the generated SQL, because the snapshot disagrees with migration 0017 on three foreign keys |
 
 ## References

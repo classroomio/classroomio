@@ -42,9 +42,10 @@ describe('completionRuleLabel', () => {
 });
 
 describe('unitPassMark', () => {
-  it('reads SCORM 1.2 mastery scores and 2004 scaled scores', () => {
-    expect(unitPassMark({ masteryScore: '80' })).toBe(80);
-    expect(unitPassMark({ formatDetails: { scaledPassingScore: 0.8 } })).toBe(80);
+  it('reads typed mastery and scaled pass marks', () => {
+    expect(unitPassMark({ masteryScoreRaw: '80' })).toBe(80);
+    expect(unitPassMark({ passingScoreScaled: 0.8 })).toBe(80);
+    expect(unitPassMark({ passingScoreScaled: '0.8' })).toBe(80);
   });
 
   it('returns null without a pass mark', () => {

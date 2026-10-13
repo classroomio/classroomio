@@ -5,12 +5,17 @@ export type ScormPackageFormat = 'scorm12' | 'scorm2004_2' | 'scorm2004_3' | 'sc
 export type ScormUnitType = 'sco' | 'asset';
 export type ScormPackageWarning = 'has_sequencing' | 'manifest_rebased' | 'href_case_fixed';
 
-export interface ScormUnitFormatDetails {
-  scaledPassingScore: number | null;
-  completionThreshold: number | null;
+export interface ScormUnitFormatDetails2004 {
+  format: 'scorm2004';
   maxTimeAllowed: string | null;
   timeLimitAction: string | null;
 }
+
+export interface ScormUnitFormatDetails12 {
+  format: 'scorm12';
+}
+
+export type ScormUnitFormatDetails = ScormUnitFormatDetails2004 | ScormUnitFormatDetails12;
 
 export interface ScormPackageUnit {
   identifier: string;
@@ -20,7 +25,9 @@ export interface ScormPackageUnit {
   unitType: ScormUnitType;
   href: string;
   parameters: string | null;
-  masteryScore: number | null;
+  masteryScoreRaw: number | null;
+  passingScoreScaled: number | null;
+  completionThreshold: number | null;
   launchData: string | null;
   formatDetails: ScormUnitFormatDetails;
   isVisible: boolean;
@@ -217,12 +224,12 @@ function readScormType(resource: unknown): ScormUnitType {
   return textOf(readAttr(resource, 'scormtype')).toLowerCase() === 'sco' ? 'sco' : 'asset';
 }
 
-function readMasteryScore(resource: unknown, item: unknown): number | null {
+function readMasteryScoreRaw(resource: unknown, item: unknown): number | null {
   for (const node of [resource, item]) {
     const candidates = findDescendants(node, 'masteryscore');
     for (const candidate of candidates) {
       const parsed = parseScoreNumber(textOf(candidate));
-      if (parsed !== null) {
+      if (parsed !== null && parsed >= 0 && parsed <= 100) {
         return parsed;
       }
     }
@@ -231,9 +238,7 @@ function readMasteryScore(resource: unknown, item: unknown): number | null {
   return null;
 }
 
-function readFormatDetails(item: unknown): ScormUnitFormatDetails {
-  let scaledPassingScore: number | null = null;
-
+function readPassingScoreScaled(item: unknown): number | null {
   for (const objective of findDescendants(item, 'primaryobjective')) {
     if (!attrTrue(objective, 'satisfiedbymeasure')) {
       continue;
@@ -241,25 +246,29 @@ function readFormatDetails(item: unknown): ScormUnitFormatDetails {
 
     for (const measure of findDescendants(objective, 'minnormalizedmeasure')) {
       const parsed = parseScoreNumber(textOf(measure));
-      if (parsed !== null) {
-        scaledPassingScore = parsed;
-        break;
+      if (parsed !== null && parsed >= -1 && parsed <= 1) {
+        return parsed;
       }
-    }
-
-    if (scaledPassingScore !== null) {
-      break;
     }
   }
 
-  let completionThreshold: number | null = null;
+  return null;
+}
 
+function readCompletionThreshold(item: unknown): number | null {
   for (const threshold of findDescendants(item, 'completionthreshold')) {
     const parsed = parseScoreNumber(textOf(threshold));
-    if (parsed !== null) {
-      completionThreshold = parsed;
-      break;
+    if (parsed !== null && parsed >= 0 && parsed <= 1) {
+      return parsed;
     }
+  }
+
+  return null;
+}
+
+function readFormatDetails(item: unknown, format: ScormPackageFormat): ScormUnitFormatDetails {
+  if (format === 'scorm12') {
+    return { format: 'scorm12' };
   }
 
   const maxTimeAllowed =
@@ -271,7 +280,7 @@ function readFormatDetails(item: unknown): ScormUnitFormatDetails {
       .map((node) => textOf(node))
       .find((text) => text !== '') ?? null;
 
-  return { scaledPassingScore, completionThreshold, maxTimeAllowed, timeLimitAction };
+  return { format: 'scorm2004', maxTimeAllowed, timeLimitAction };
 }
 
 function readSubtreeText(root: unknown, name: string): string | null {
@@ -288,7 +297,8 @@ function collectUnits(
   files: string[],
   prefix: string,
   parentIdentifier: string | null,
-  collector: UnitCollector
+  collector: UnitCollector,
+  format: ScormPackageFormat
 ): void {
   for (const rawItem of items) {
     if (typeof rawItem !== 'object' || rawItem === null) {
@@ -327,7 +337,7 @@ function collectUnits(
         collector.hrefCaseFixed = true;
       }
 
-      const parameters = readSubtreeText(item, 'parameters');
+      const parameters = readAttrText(item, 'parameters') || null;
       const launchData = readSubtreeText(resource, 'datafromlms') ?? readSubtreeText(item, 'datafromlms');
       const title = textOf(item['title']) || identifier || identifierref;
       const visibleRaw = readAttr(item, 'isvisible');
@@ -341,18 +351,36 @@ function collectUnits(
         unitType,
         href: `${fallback}${suffix}`,
         parameters,
-        masteryScore: readMasteryScore(resource, item),
+        masteryScoreRaw: readMasteryScoreRaw(resource, item),
+        passingScoreScaled: readPassingScoreScaled(item),
+        completionThreshold: readCompletionThreshold(item),
         launchData,
-        formatDetails: readFormatDetails(item),
+        formatDetails: readFormatDetails(item, format),
         isVisible
       });
     }
 
     const children = asArray(item['item'] as unknown);
     if (children.length > 0) {
-      collectUnits(children, resources, files, prefix, identifier || parentIdentifier, collector);
+      collectUnits(children, resources, files, prefix, identifier || parentIdentifier, collector, format);
     }
   }
+}
+
+/**
+ * Joins a unit's launch href with its manifest `parameters` per the SCORM CAM
+ * content-packaging algorithm.
+ */
+export function scormLaunchUrl(href: string, parameters: string | null): string {
+  const trimmed = (parameters ?? '').replace(/^[?&]+/, '');
+
+  if (!trimmed) return href;
+
+  if (trimmed.startsWith('#')) {
+    return href.includes('#') ? href : `${href}${trimmed}`;
+  }
+
+  return href.includes('?') ? `${href}&${trimmed}` : `${href}?${trimmed}`;
 }
 
 /**
@@ -408,7 +436,7 @@ export function parseScormManifest(xml: string, files: string[], prefix = ''): P
   const collector: UnitCollector = { units: [], warnings: new Set(), hrefCaseFixed: false };
   const rootItems = organization ? asArray(organization['item'] as unknown) : [];
 
-  collectUnits(rootItems, resources, files, prefix, null, collector);
+  collectUnits(rootItems, resources, files, prefix, null, collector, format);
 
   if (!collector.units.some((unit) => unit.unitType === 'sco')) {
     throw new PackageError('assets_only');

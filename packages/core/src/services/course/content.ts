@@ -35,21 +35,21 @@ function buildContentKey(item: { id: string; type: string }) {
 }
 
 /**
- * Throws when content of the kind cannot be added to the course. SCORM courses
- * hold exactly one SCORM activity and refuse everything else.
+ * Throws when content of the kind cannot be added to the course. Single-activity courses
+ * hold exactly one activity and refuse everything else.
  */
 export async function assertCourseAcceptsContent(courseId: string, contentType: ContentType): Promise<void> {
   const [course] = await getCourseById(courseId);
-  if (!course || course.format !== 'scorm') return;
+  if (!course || course.format !== 'single_activity') return;
 
   if (contentType === ContentType.Activity) {
     if ((await countActivitiesInCourse(courseId)) === 0) return;
 
-    throw new AppError('A SCORM course holds exactly one package', ErrorCodes.VALIDATION_ERROR, 400);
+    throw new AppError('A single-activity course holds exactly one package', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
   throw new AppError(
-    'SCORM courses hold a single package. Convert to a standard course to add sections, lessons or exercises.',
+    'Single-activity courses hold a single package. Convert to a standard course to add sections, lessons or exercises.',
     ErrorCodes.VALIDATION_ERROR,
     400
   );

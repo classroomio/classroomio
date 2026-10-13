@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, asc, count, eq, inArray, max, sql } from '@db/drizzle';
+import { and, asc, count, eq, inArray, max, ne, sql } from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TContentPackageVersion, TNewContentPackageVersion } from '@db/types';
 
@@ -116,32 +116,44 @@ export async function updatePackageVersion(
 
 /**
  * Makes a ready version current, clearing the previous current version first.
+ * Sets `replaced_at` on the version it replaces in the same transaction.
  * Throws when the version is missing or not ready.
  */
 export async function setCurrentPackageVersion(
   versionId: string,
-  dbClient: DbOrTxClient = db
+  dbClient?: DbOrTxClient
 ): Promise<TContentPackageVersion> {
-  try {
-    const version = await getPackageVersionById(versionId, dbClient);
+  const run = async (client: DbOrTxClient): Promise<TContentPackageVersion> => {
+    const version = await getPackageVersionById(versionId, client);
     if (!version) throw new Error(`Package version "${versionId}" not found`);
     if (version.status !== 'ready') throw new Error(`Package version "${versionId}" is not ready`);
 
-    await dbClient
+    const now = new Date().toISOString();
+    await client
       .update(schema.contentPackageVersion)
-      .set({ isCurrent: false, updatedAt: new Date().toISOString() })
+      .set({ isCurrent: false, replacedAt: now, updatedAt: now })
       .where(
-        and(eq(schema.contentPackageVersion.assetId, version.assetId), eq(schema.contentPackageVersion.isCurrent, true))
+        and(
+          eq(schema.contentPackageVersion.assetId, version.assetId),
+          eq(schema.contentPackageVersion.isCurrent, true),
+          ne(schema.contentPackageVersion.id, versionId)
+        )
       );
 
-    const [current] = await dbClient
+    const [current] = await client
       .update(schema.contentPackageVersion)
-      .set({ isCurrent: true, updatedAt: new Date().toISOString() })
+      .set({ isCurrent: true, replacedAt: null, updatedAt: now })
       .where(eq(schema.contentPackageVersion.id, versionId))
       .returning();
     if (!current) throw new Error(`Package version "${versionId}" not found`);
 
     return current;
+  };
+
+  try {
+    if (dbClient) return await run(dbClient);
+
+    return await db.transaction((tx) => run(tx));
   } catch (error) {
     console.error('setCurrentPackageVersion error:', error);
     throw new Error(
@@ -219,51 +231,80 @@ export async function listCurrentPackageVersionsForActivities(
   }
 }
 
-export interface StaleUnpinnedPackageVersion {
+export interface VersionDueForRetention {
   id: string;
   assetId: string;
   contentPrefix: string;
   uploadKey: string;
   versionNumber: number;
+  status: string;
+  replacedAt: string | null;
+  hasAttempts: boolean;
+  hasOpenAttempts: boolean;
 }
 
 /**
- * Lists versions replaced before the cutoff that no attempt references.
- * Only versions superseded by a newer current version qualify; versions
- * that were never current are left alone.
+ * Lists replaced versions past the cutoff. Retention decides per version:
+ * never launched rows are deleted, launched rows with only closed attempts
+ * are archived, rows with an open attempt are kept.
  */
-export async function listStaleUnpinnedPackageVersions(
+export async function listVersionsDueForRetention(
   cutoffIso: string,
   dbClient: DbOrTxClient = db
-): Promise<StaleUnpinnedPackageVersion[]> {
+): Promise<VersionDueForRetention[]> {
   try {
     const result = await dbClient.execute(sql`
-      SELECT v.id, v.asset_id, v.content_prefix, v.upload_key, v.version_number
+      SELECT v.id, v.asset_id, v.content_prefix, v.upload_key, v.version_number, v.status, v.replaced_at,
+        EXISTS (SELECT 1 FROM scorm_attempt a WHERE a.package_version_id = v.id) AS has_attempts,
+        EXISTS (SELECT 1 FROM scorm_attempt a WHERE a.package_version_id = v.id AND a.closed_at IS NULL) AS has_open_attempts
       FROM content_package_version v
       WHERE v.is_current = false
-        AND v.updated_at < ${cutoffIso}
-        AND EXISTS (
-          SELECT 1 FROM content_package_version current
-          WHERE current.asset_id = v.asset_id
-            AND current.is_current = true
-            AND current.version_number > v.version_number
-        )
-        AND NOT EXISTS (
-          SELECT 1 FROM scorm_attempt a WHERE a.package_version_id = v.id
-        )
-      ORDER BY v.updated_at ASC`);
+        AND v.replaced_at IS NOT NULL
+        AND v.replaced_at < ${cutoffIso}
+        AND v.status != 'archived'
+      ORDER BY v.replaced_at ASC`);
 
     return (result as unknown as Array<Record<string, unknown>>).map((row) => ({
       id: String(row['id']),
       assetId: String(row['asset_id']),
       contentPrefix: String(row['content_prefix']),
       uploadKey: String(row['upload_key']),
-      versionNumber: Number(row['version_number'])
+      versionNumber: Number(row['version_number']),
+      status: String(row['status']),
+      replacedAt: row['replaced_at'] === null ? null : String(row['replaced_at']),
+      hasAttempts: row['has_attempts'] === true,
+      hasOpenAttempts: row['has_open_attempts'] === true
     }));
   } catch (error) {
-    console.error('listStaleUnpinnedPackageVersions error:', error);
+    console.error('listVersionsDueForRetention error:', error);
     throw new Error(
-      `Failed to list stale package versions older than "${cutoffIso}": ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to list package versions due for retention older than "${cutoffIso}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Marks a replaced version archived after its extracted files are deleted.
+ * The ZIP and rows stay for audits. Returns the updated row, or null when
+ * the version is missing.
+ */
+export async function markPackageVersionArchived(
+  versionId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TContentPackageVersion | null> {
+  try {
+    const now = new Date().toISOString();
+    const [archived] = await dbClient
+      .update(schema.contentPackageVersion)
+      .set({ status: 'archived', archivedAt: now, updatedAt: now })
+      .where(eq(schema.contentPackageVersion.id, versionId))
+      .returning();
+
+    return archived ?? null;
+  } catch (error) {
+    console.error('markPackageVersionArchived error:', error);
+    throw new Error(
+      `Failed to archive package version "${versionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

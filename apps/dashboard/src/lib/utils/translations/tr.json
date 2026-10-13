@@ -2318,7 +2318,8 @@
       },
       "activities_count": "{count, plural, one {# paket} other {# paket}}",
       "scorm_modules": "SCORM · {count, plural, one {# modül} other {# modül}}",
-      "scorm": "SCORM"
+      "scorm": "SCORM",
+      "scorm_course": "SCORM eğitimi"
     },
     "new_course_modal": {
       "heading": "Kurs Oluştur",
@@ -3819,7 +3820,9 @@
             "module_complete_title": "Modül tamamlandı",
             "module_complete_body": "İlerlemeniz kaydedildi. Devam etmek için sonraki modülü açın.",
             "next_module": "Sonraki modül",
-            "autosave_hint": "İlerleme otomatik olarak kaydedilir."
+            "autosave_hint": "İlerleme otomatik olarak kaydedilir.",
+            "archived_title": "Bu paketin daha önceki bir sürümünü aldınız",
+            "archived_body": "Sonuçlarınız değişmedi."
           },
           "results": {
             "sheet": {
@@ -3849,7 +3852,8 @@
                 "beacon": "Çıkışta kaydedildi",
                 "error": "Hata",
                 "not_initialized": "Bağlanamadı"
-              }
+              },
+              "interaction_correct": "Doğru: {answer}"
             },
             "export": {
               "title": "SCORM sonuçları"

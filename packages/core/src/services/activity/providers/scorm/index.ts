@@ -92,6 +92,10 @@ async function resolvePackagePayload(assetId: string) {
 export const scormProvider: ActivityProvider = {
   kind: 'scorm',
   licenseFeature: LICENSE_FEATURE.SCORM,
+  singleActivityCourse: {
+    navLabelKey: 'course.navItems.nav_package',
+    courseLabelKey: 'courses.course_card.scorm_course'
+  },
   async createDetails(activityId: string, _input: unknown, tx: DbOrTxClient): Promise<void> {
     await upsertActivityScorm({ activityId }, tx);
   },

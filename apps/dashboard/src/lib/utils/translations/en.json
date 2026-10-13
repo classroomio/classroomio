@@ -2298,6 +2298,7 @@
       "exercises_count": "{count, plural, one {# exercise} other {# exercises}}",
       "activities_count": "{count, plural, one {# package} other {# packages}}",
       "scorm": "SCORM",
+      "scorm_course": "SCORM course",
       "scorm_modules": "SCORM · {count, plural, one {# module} other {# modules}}",
       "tags_overflow_aria": "{count} more tags",
       "list_view": {
@@ -3744,6 +3745,7 @@
                 "time": "Time"
               },
               "interactions": "{count} answers reported",
+              "interaction_correct": "Correct: {answer}",
               "no_attempts_title": "No attempts yet",
               "no_attempts_description": "Attempts appear here once the learner opens the package.",
               "reset": "Reset for this student",
@@ -3858,6 +3860,8 @@
             "expired_body": "The package session ran out. Reload to start again where you left off.",
             "review_title": "Results already recorded",
             "review_body": "Nothing in this session is saved.",
+            "archived_title": "You took an earlier version of this package",
+            "archived_body": "Your results are unchanged.",
             "new_attempt": "Start a new attempt",
             "retakes_off": "Retakes are off for this package, so a new attempt cannot be started.",
             "window_title": "This package opens in a new window",

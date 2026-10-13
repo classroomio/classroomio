@@ -4,6 +4,16 @@ Engineering breakdown of [`README.md`](./README.md). Every pull request below ow
 
 **Do not follow the prototypes in `prototypes/scorm-support/` for now.** They predate the activity content type and still show SCORM as a lesson. Build UI from `README.md` § Functional Requirements. The prototypes are rebuilt after sign-off and before PR 7 starts; until then they are not a reference for any PR.
 
+**Schema improvements (12 October 2026).** [`schema-improvements.md`](./schema-improvements.md) revises the activity and SCORM schema already implemented on this branch:
+- database enums for every enumerated column;
+- typed pass-mark and completion-threshold columns;
+- consistency checks;
+- `single_activity` as the course format value;
+- fewer session events;
+- archiving retention.
+
+It folds into migration `0033` and has its own work order (§ 5 of that file). Finish it before the branch merges. Every PR below that touches those tables follows it.
+
 Estimates assume one full-stack engineer who knows the codebase: about 14 to 16 weeks. Two engineers, one on the API, worker and Worker, one on the dashboard and player, finish in about 9 weeks of calendar time, because Foundations and Phase 1 must land in order before most parallel work starts.
 
 ## Timeline
@@ -146,7 +156,7 @@ Nothing in this phase lets a production user create an activity. Tests insert `c
 | Migration | `packages/db/src/migrations/0032_course_activities.sql`, `meta/_journal.json` | Generate with `pnpm --filter @cio/db db:generate`. Read the SQL line by line: the snapshot disagrees with migration 0017 on three foreign keys, so the diff may try to revert them. Run the high-water-mark check from `CLAUDE.md` and renumber if main moved (0031 taken by live session lifecycle on main) |
 | Types | `packages/db/src/types.ts` | `TCourseActivity`, `TActivityCompletion` and their `TNew…` forms; `TCourseFormat` |
 | Queries | `packages/db/src/queries/activity/activity.ts`, `queries/index.ts` | Map 3.9 |
-| Validation | `packages/utils/src/validation/activity/activity.ts`, `course/course.ts` (`format` on create, `scorm → standard` only on update) | Schemas from `README.md` |
+| Validation | `packages/utils/src/validation/activity/activity.ts`, `course/course.ts` (`format` on create, `single_activity → standard` only on update) | Schemas from `README.md` |
 | Registry | `packages/core/src/services/activity/providers/index.ts`, `types.ts` | `ActivityProvider` interface and an `ACTIVITY_PROVIDERS` record with a stub SCORM provider whose launch returns “not available yet” |
 | Tests | `packages/db` and `packages/utils` | Migration applies on a copy of the seeded database; existing rows get `format = 'standard'`; characterization unchanged |
 
@@ -259,7 +269,7 @@ Nothing in this phase lets a production user create an activity. Tests insert `c
 | Run-time | `apps/api/src/routes/activity/runtime-scorm.ts`, `apps/api/src/services/activity/runtime-scorm.ts` | `GET state`; `POST commit` accepting JSON and `text/plain`; answers `{ "result": true, "errorCode": 0 }`; the commit transaction from `README.md`; side effects after commit, including `syncComplianceProgressForMember` |
 | Player | `apps/activity-player/src/main.ts`, `scorm/adapter.ts`, `bridge.ts` | Bootstrap from `README.md`; flush on `pagehide` (with uninitialized guard `adapter.isInitialized()`); parent messages with exact origins targeting both `window.parent` and `window.opener` across all authorized ancestor origins in `parentOrigins` (`claims.anc`, covering tenant hosts, custom domains and `app.classroomio.com` preview); navigation request capture via `adapter.on('SetValue.adl.nav.request')` and internal `adl.nav._request` because `adl.nav.request` is write-only in SCORM 2004 and calling `GetValue` triggers error 405; “did not connect” after 30 seconds. Unit tests cover the bridge, adapter settings and token parsing; serving of the bundle (bytes, headers, token gating) is covered by the PR 8 route tests; `boot()` execution is covered by `e2e/regression/activity-player-boot.spec.ts` against the stub content origin (and later the PR 10 package flow), not unit tests |
 | Activity page | `C/components/activity/activity-player.svelte`, `activity-player-module-menu.svelte`, `C/pages/activity.svelte` | States from `README.md`, including not available yet, module complete, failed and review with **Start a new attempt**; module menu that relaunches on click; wide layout; full screen; accepts messages only from the content origin (per the Parent Bridge Contract in `apps/activity-player/README.md`), with a unit test that messages from other origins are dropped; completion through the shared `openCourseCompletionIfDone` |
-| Compliance | SCORM provider `complianceSnapshot`, `apps/api/src/services/course/compliance.ts` `getComplianceCompletionSnapshot` (Map 4.19) | Implement provider `complianceSnapshot` (best attempt score, attempt count, minutes from session times). Wire `getComplianceCompletionSnapshot` in `compliance.ts` so that in `scorm`-format courses, the compliance record snapshot takes score, attempts, and minutes from the package (via provider `complianceSnapshot`) rather than `requiredExerciseId` |
+| Compliance | SCORM provider `complianceSnapshot`, `apps/api/src/services/course/compliance.ts` `getComplianceCompletionSnapshot` (Map 4.19) | Implement provider `complianceSnapshot` (best attempt score, attempt count, minutes from session times). Wire `getComplianceCompletionSnapshot` in `compliance.ts` so that in single-activity courses, the compliance record snapshot takes score, attempts, and minutes from the package (via provider `complianceSnapshot`) rather than `requiredExerciseId` |
 | Tests | `apps/api/src/__tests__/activity-runtime-db.test.ts`, player unit tests | **Spike Q3 probe**: before completing runtime tests, run the spike's Q3 probe by feeding a 10 KB suspend value through `scorm-again` in a browser session to verify whether the client accepts it or returns error 351/405 before the server change lands. Database-backed: one open attempt per learner even with two launches; resume; stale sequence ignored; passing commit writes `activity_completion` and claims the certificate; compliance record becomes compliant with score and minutes; a three-module item completes only after the last module, in any order; a failed module starts fresh on the next launch without retakes; 1.2 unfinished exit resumes and 2004 `normal` exit starts fresh; `newAttempt` is refused with retakes off and opens attempt 2 with them on; “move everyone” closes old-version attempts; launch works on the Free plan for an existing item. Unit: activity-page listener drops messages from other origins (player-side bridge tests land with the player app) |
 
 ## Phase 4 · Results, SCORM Courses and Copying
@@ -278,13 +288,13 @@ Nothing in this phase lets a production user create an activity. Tests insert `c
 
 | Area | Files | Work |
 | --- | --- | --- |
-| Create | `packages/core/src/services/course/course.ts` `createCourse`, `apps/api/src/routes/course/course.ts`, `packages/utils/src/validation/course/course.ts` | `format: 'scorm'` creates the course and one empty SCORM activity in one transaction, after the plan or license check |
+| Create | `packages/core/src/services/course/course.ts` `createCourse`, `apps/api/src/routes/course/course.ts`, `packages/utils/src/validation/course/course.ts` | `format: 'single_activity'` creates the course and one empty SCORM activity in one transaction, after the plan or license check |
 | Guards | `assertCourseAcceptsContent` in `packages/core/src/services/course/content.ts`, called from lesson, exercise, section and activity create, draft publish to an existing course and the public API structure update | Refuse new content in a SCORM course; type limited to Self-paced or Compliance; the only activity can’t be deleted |
-| Convert | `updateCourse`, `C/pages/settings.svelte` | `scorm → standard` only, with confirmation |
+| Convert | `updateCourse`, `C/pages/settings.svelte` | `single_activity → standard` only, with confirmation |
 | Navigation | `C/components/sidebar/course-sidebar-navigation.svelte`, `constants.ts`, `C/utils/functions.ts`, footer and mobile nav | Package item in place of Content; hide Submissions, Marks, Attendance; hide previous and next |
 | Entry | `C/pages/lessons.svelte`, `routes/(app)/courses/[id]/+page.svelte`, `C/utils/student-course-navigation.ts` | `/lessons`, `?next=true` and Continue go to the package |
 | New course modal | `C/components/new-course-modal.svelte`, `C/components/activity/scorm-course-create.svelte` | “Build a course” or “Upload a SCORM package”; type, title, description |
-| Display & API feed | course cards and rows, landing-page utils and curriculum components | Populate `moduleCount` in course list queries (LMS enrolled, recommended, admin course lists) for `scorm`-format courses from `content_package_unit` SCO counts; feeds directly into `card.svelte` and `course-list-row.svelte` (“SCORM · N modules”) and package/module curriculum views |
+| Display & API feed | course cards and rows, landing-page utils and curriculum components | Populate `moduleCount` in course list queries (LMS enrolled, recommended, admin course lists) for single-activity courses from `content_package_unit` SCO counts; feeds directly into `card.svelte` and `course-list-row.svelte` (“SCORM · N modules”) and package/module curriculum views |
 | Compliance | Deferred to PR 10 (Map 4.19) | Package score, attempts, and minutes snapshot requires PR 10 runtime attempt data and provider `complianceSnapshot` (assigned to PR 0b/10 in `activity-integration-map.md` row 4.19). PR 12 provides course format gating and course-type restrictions |
 | Tests | guard tests for every caller; navigation and entry utility tests; `update-course.test.ts`; Playwright `e2e/regression/scorm-course.spec.ts` | Standard courses unchanged (characterization) |
 
@@ -302,9 +312,11 @@ Nothing in this phase lets a production user create an activity. Tests insert `c
 
 ### PR 14 · Diagnostics
 
-- Write `scorm_session_event` rows for launch, initialize, commit, terminate, beacon, errors and “did not connect” (server-derived on launch/commit/beacon, and player-reported via `POST /activity/scorm/runtime/:launchToken/event`).
+Per [`schema-improvements.md`](./schema-improvements.md) § 1.1 and § 1.6:
+
+- Write `scorm_session_event` rows for launch, initialize, terminate, beacon, errors and “did not connect” (server-derived on launch/commit/beacon, and player-reported via `POST /activity/scorm/runtime/:launchToken/event`). Commits write an event only when meaningful: first commit of a module try, a change to completion, success, score or try status, a rejected commit, a terminate commit, or a beacon. Routine autocommits write none.
 - Show them in the student sheet.
-- Delete events older than 90 days and unpinned package versions 30 days after replacement in `apps/jobs/src/workers/maintenance.ts`.
+- Delete events older than 90 days in `apps/jobs/src/workers/maintenance.ts`. Thirty days after a version stops being current, retention deletes never-launched versions with their ZIP and row, archives launched-and-closed versions (extracted files deleted, ZIP and rows kept), and keeps versions with an open attempt. The worker reports archived and deleted counts separately.
 
 ### PR 15 · Docs and release (Map § 9)
 

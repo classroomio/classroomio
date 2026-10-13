@@ -85,7 +85,7 @@ describe('characterization: course landing page curriculum (zero activities)', (
   it('lists package modules for a SCORM course', () => {
     const course = {
       title: 'Package course',
-      format: 'scorm',
+      format: 'single_activity',
       content: {
         grouped: false,
         sections: [],

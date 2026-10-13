@@ -82,7 +82,7 @@ async function createPackageCourse(
         title: ready.title,
         description,
         type: courseType,
-        format: 'scorm',
+        format: 'single_activity',
         groupId: newGroup.id,
         slug,
         isPublished: false,

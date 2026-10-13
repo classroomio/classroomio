@@ -12,6 +12,7 @@
   import { Image } from '$features/ui';
   import { locale, t } from '$lib/utils/functions/translations';
   import { buildCoursePlaceholderAvatarUrl } from '$features/course/utils/course-list-row-utils';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import CoursePublicBadge from './course-public-badge.svelte';
   import CourseContextMenuContent from './course-context-menu-content.svelte';
   import CourseContentIcon from './course-content-icon.svelte';
@@ -127,7 +128,7 @@
     updatedDateString ? $t('courses.course_card.updated_at', { date: updatedDateString }) : null
   );
 
-  const isScormCourse = $derived(format === 'scorm');
+  const isSingleActivity = $derived(isSingleActivityCourse({ format }));
 
   const courseUrl = $derived.by(() => {
     if (isExplore && onExploreClick) {
@@ -346,19 +347,19 @@
       <div class="mt-1.5 flex items-center gap-3 text-[11px] @3xl:mt-0 @3xl:contents">
         <!-- Column 5: Lessons & Exercises -->
         <div class="flex items-center gap-3 tabular-nums @3xl:flex-col @3xl:items-start @3xl:gap-1">
-          {#if isScormCourse}
+          {#if isSingleActivity}
             <p
               class="ui:text-foreground flex items-center gap-1 text-[11px] @3xl:gap-1.5 @3xl:text-sm"
               aria-label={moduleCount !== null && moduleCount !== undefined
                 ? $t('courses.course_card.scorm_modules', { count: moduleCount })
-                : $t('courses.course_card.scorm')}
+                : $t('courses.course_card.scorm_course')}
             >
               <CourseContentIcon type={ContentType.Activity} className="size-3 @3xl:size-3.5 [&>svg]:size-full!" />
               <span class="font-medium">
                 {#if moduleCount !== null && moduleCount !== undefined}
                   {$t('courses.course_card.scorm_modules', { count: moduleCount })}
                 {:else}
-                  {$t('courses.course_card.scorm')}
+                  {$t('courses.course_card.scorm_course')}
                 {/if}
               </span>
             </p>

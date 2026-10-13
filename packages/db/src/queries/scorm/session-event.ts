@@ -3,7 +3,12 @@ import * as schema from '@db/schema';
 import { lt, sql } from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TScormSessionEvent } from '@db/types';
-import type { TScormSessionEventKind } from '@cio/utils/validation/activity';
+import {
+  SCORM_SESSION_EVENT_KINDS,
+  ZScormSessionEventDetail,
+  ZScormSessionEventUserAgent,
+  type TScormSessionEventKind
+} from '@cio/utils/validation/activity';
 
 export type ScormSessionEventRow = {
   id: string;
@@ -24,10 +29,24 @@ export async function recordScormSessionEvent(
   userAgent: string | null,
   dbClient: DbOrTxClient = db
 ): Promise<TScormSessionEvent> {
+  if (!(SCORM_SESSION_EVENT_KINDS as readonly string[]).includes(kind)) {
+    throw new Error(`Invalid SCORM session event kind "${kind}"`);
+  }
+
+  const detailResult = ZScormSessionEventDetail.safeParse(detail ?? {});
+  if (!detailResult.success) {
+    throw new Error(`SCORM session event detail exceeds 2 KB for try "${scoAttemptId}"`);
+  }
+
+  const userAgentResult = ZScormSessionEventUserAgent.safeParse(userAgent);
+  if (!userAgentResult.success) {
+    throw new Error(`SCORM session event user agent exceeds 512 characters for try "${scoAttemptId}"`);
+  }
+
   try {
     const [row] = await dbClient
       .insert(schema.scormSessionEvent)
-      .values({ scoAttemptId, kind, detail, userAgent })
+      .values({ scoAttemptId, kind, detail: detailResult.data, userAgent: userAgentResult.data ?? null })
       .returning();
     if (!row) throw new Error('Insert returned no row');
 

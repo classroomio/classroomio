@@ -85,7 +85,7 @@ async function ensurePackageVersion(versionId: string, assetId: string, title: s
       identifier: `sco-${index + 1}`,
       title: moduleTitle,
       position: index + 1,
-      unitType: 'sco',
+      unitType: 'sco' as const,
       href: `sco-${index + 1}.html`
     }))
   );
@@ -193,7 +193,7 @@ export async function seedScormActivities() {
       certificate: { isDownloadable: false, theme: 'professional' },
       status: 'ACTIVE',
       type: 'SELF_PACED',
-      format: 'scorm'
+      format: 'single_activity'
     });
     console.log('   ✓ Inserted demo SCORM course');
   } else {

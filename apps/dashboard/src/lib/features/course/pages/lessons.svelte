@@ -16,6 +16,7 @@
   import { getPastLiveSessions, liveSessionClock } from '$features/course/utils/live-session-phase';
   import { getCourseContent, getContentRoute } from '$features/course/utils/content';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { ContentType } from '@cio/utils/constants/content';
 
   interface Props {
@@ -69,7 +70,7 @@
   });
 
   const scormPackageItem = $derived(
-    (courseApi.course as { format?: string } | null | undefined)?.format === 'scorm'
+    isSingleActivityCourse(courseApi.course)
       ? (navigableContentItems.find((item) => item.type === ContentType.Activity) ?? null)
       : null
   );

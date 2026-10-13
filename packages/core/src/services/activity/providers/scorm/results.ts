@@ -2,6 +2,7 @@ import {
   averageScaledScore,
   isScormRuleMet,
   moduleOutcomeFromCmi,
+  summarizeInteractions,
   type ScormCmi,
   type ScormModuleOutcome,
   type ScormPackageFormat,
@@ -28,7 +29,6 @@ import type {
   ActivityLearnerAttempt,
   ActivityLearnerAttemptModule,
   ActivityLearnerDetail,
-  ActivityLearnerInteraction,
   ActivityLearnerPassFail,
   ActivityLearnerStatus,
   ActivityLearnerSummary,
@@ -154,39 +154,6 @@ function pathOf(cmi: ScormCmi, path: string): unknown {
   return current;
 }
 
-function interactionOf(entry: unknown, index: number): ActivityLearnerInteraction {
-  const record = (entry ?? {}) as Record<string, unknown>;
-  const response = record['student_response'] ?? record['learner_response'];
-
-  return {
-    index,
-    id: textOf(record['id']),
-    type: textOf(record['type']),
-    studentResponse: textOf(typeof response === 'object' ? JSON.stringify(response) : response),
-    result: textOf(typeof record['result'] === 'object' ? JSON.stringify(record['result']) : record['result']),
-    latency: textOf(record['latency'] ?? record['timestamp'])
-  };
-}
-
-/**
- * Shapes the interactions a package reported, tolerating the array and
- * keyed-object forms scorm-again can store.
- */
-export function summarizeInteractions(cmi: ScormCmi): ActivityLearnerInteraction[] {
-  const raw = pathOf(cmi, 'interactions');
-
-  if (Array.isArray(raw)) return raw.map((entry, index) => interactionOf(entry, index));
-
-  if (raw !== null && typeof raw === 'object') {
-    return Object.keys(raw)
-      .filter((key) => /^\d+$/.test(key))
-      .sort((left, right) => Number(left) - Number(right))
-      .map((key, position) => interactionOf((raw as Record<string, unknown>)[key], position));
-  }
-
-  return [];
-}
-
 function secondsBetween(startedAt: string | null, endedAt: string | null): number {
   if (!startedAt || !endedAt) return 0;
 
@@ -250,13 +217,8 @@ export async function getScormLearnerDetail(activityId: string, profileId: strin
       if (!row.unitId) continue;
 
       const outcome = moduleOutcomeFromCmi(row.cmi, format, {
-        masteryScore: numericOrNull(row.masteryScore),
-        formatDetails: {
-          scaledPassingScore: numericOrNull(row.scaledPassingScore),
-          completionThreshold: null,
-          maxTimeAllowed: null,
-          timeLimitAction: null
-        }
+        masteryScoreRaw: numericOrNull(row.masteryScoreRaw),
+        passingScoreScaled: numericOrNull(row.passingScoreScaled)
       });
       const locationPath = format === 'scorm12' ? 'core.lesson_location' : 'location';
       const exitPath = format === 'scorm12' ? 'core.exit' : 'exit';

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { PackageError } from '../../errors.js';
-import { parseScormManifest } from './index.js';
+import { parseScormManifest, scormLaunchUrl } from './index.js';
 
 const sourcesDir = new URL('../../../test/fixtures/sources/', import.meta.url);
 
@@ -38,8 +38,11 @@ describe('parseScormManifest fixtures', () => {
       position: 0,
       unitType: 'sco',
       href: 'sco.html',
-      masteryScore: null
+      masteryScoreRaw: null,
+      passingScoreScaled: null,
+      completionThreshold: null
     });
+    expect(parsed.units[0].formatDetails).toEqual({ format: 'scorm12' });
     expect(parsed.warnings).toEqual([]);
   });
 
@@ -60,15 +63,19 @@ describe('parseScormManifest fixtures', () => {
 
     expect(parsed.units.map((unit) => unit.title)).toEqual(['Welcome', 'Core concepts', 'Final quiz']);
     expect(parsed.units.map((unit) => unit.position)).toEqual([0, 1, 2]);
-    expect(parsed.units[2].formatDetails.scaledPassingScore).toBe(0.8);
-    expect(parsed.units[0].formatDetails.scaledPassingScore).toBeNull();
+    expect(parsed.units[2].passingScoreScaled).toBe(0.8);
+    expect(parsed.units[2].completionThreshold).toBeNull();
+    expect(parsed.units[0].passingScoreScaled).toBeNull();
   });
 
   it('reads the 1.2 mastery score', () => {
     const parsed = parseScormManifest(readSource('scorm12-quiz-mastery'), ['quiz.html']);
 
     expect(parsed.format).toBe('scorm12');
-    expect(parsed.units[0].masteryScore).toBe(80);
+    expect(parsed.units[0].masteryScoreRaw).toBe(80);
+    expect(parsed.units[0].passingScoreScaled).toBeNull();
+    expect(parsed.units[0].completionThreshold).toBeNull();
+    expect(parsed.units[0].formatDetails).toEqual({ format: 'scorm12' });
   });
 
   it('rejects external launches and asset-only manifests', () => {
@@ -226,7 +233,7 @@ describe('parseScormManifest structure', () => {
       '<schemaversion>2004 4th Edition</schemaversion>',
       '<imsss:objectives xmlns:imsss="http://www.imsglobal.org/xsd/imsss"><imsss:primaryObjective satisfiedByMeasure="false"><imsss:minNormalizedMeasure>0.8</imsss:minNormalizedMeasure></imsss:primaryObjective></imsss:objectives>'
     );
-    expect(parseScormManifest(noSatisfy, ['sco.html']).units[0].formatDetails.scaledPassingScore).toBeNull();
+    expect(parseScormManifest(noSatisfy, ['sco.html']).units[0].passingScoreScaled).toBeNull();
 
     const withRest = manifestWith(
       '<schemaversion>2004 4th Edition</schemaversion>',
@@ -234,8 +241,66 @@ describe('parseScormManifest structure', () => {
     );
     const parsed = parseScormManifest(withRest, ['sco.html']);
 
-    expect(parsed.units[0].formatDetails.completionThreshold).toBe(0.6);
-    expect(parsed.units[0].formatDetails.maxTimeAllowed).toBe('PT45M');
+    expect(parsed.units[0].completionThreshold).toBe(0.6);
+    expect(parsed.units[0].formatDetails).toEqual({
+      format: 'scorm2004',
+      maxTimeAllowed: 'PT45M',
+      timeLimitAction: null
+    });
     expect(parsed.warnings).toContain('has_sequencing');
+  });
+
+  it('treats out-of-range pass marks as absent', () => {
+    const outOfRange = manifestWith(
+      '<schemaversion>2004 4th Edition</schemaversion>',
+      '<imsss:objectives xmlns:imsss="http://www.imsglobal.org/xsd/imsss"><imsss:primaryObjective satisfiedByMeasure="true"><imsss:minNormalizedMeasure>2.5</imsss:minNormalizedMeasure></imsss:primaryObjective></imsss:objectives><adlcp:completionThreshold>1.5</adlcp:completionThreshold>'
+    );
+    const parsed2004 = parseScormManifest(outOfRange, ['sco.html']);
+
+    expect(parsed2004.units[0].passingScoreScaled).toBeNull();
+    expect(parsed2004.units[0].completionThreshold).toBeNull();
+
+    const badMastery = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="T" version="1"
+  xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3">
+  <metadata><schema>ADL SCORM</schema><schemaversion>1.2</schemaversion></metadata>
+  <organizations default="ORG-1"><organization identifier="ORG-1"><title>Versioned</title>
+    <item identifier="ITEM-1" identifierref="RES-1"><title>SCO</title><adlcp:masteryscore>150</adlcp:masteryscore></item>
+  </organization></organizations>
+  <resources><resource identifier="RES-1" type="webcontent" adlcp:scormType="sco" href="sco.html">
+    <file href="sco.html"/>
+  </resource></resources>
+</manifest>`;
+    expect(parseScormManifest(badMastery, ['sco.html']).units[0].masteryScoreRaw).toBeNull();
+  });
+});
+
+describe('parseScormManifest parameters', () => {
+  it('reads the item parameters attribute', () => {
+    const xml = manifestWith('<schemaversion>1.2</schemaversion>').replace(
+      'identifierref="RES-1"',
+      'identifierref="RES-1" parameters="?questions=Playing"'
+    );
+
+    expect(parseScormManifest(xml, ['sco.html']).units[0].parameters).toBe('?questions=Playing');
+    expect(
+      parseScormManifest(manifestWith('<schemaversion>1.2</schemaversion>'), ['sco.html']).units[0].parameters
+    ).toBeNull();
+  });
+});
+
+describe('scormLaunchUrl', () => {
+  it.each([
+    ['sco.html', null, 'sco.html'],
+    ['sco.html', '', 'sco.html'],
+    ['sco.html', '?questions=Playing', 'sco.html?questions=Playing'],
+    ['sco.html', 'questions=Playing', 'sco.html?questions=Playing'],
+    ['sco.html', '&a=1', 'sco.html?a=1'],
+    ['sco.html?lang=en', '?a=1', 'sco.html?lang=en&a=1'],
+    ['sco.html', '#page2', 'sco.html#page2'],
+    ['sco.html#intro', '#page2', 'sco.html#intro']
+  ])('joins %s with %s', (href, parameters, expected) => {
+    expect(scormLaunchUrl(href, parameters)).toBe(expected);
   });
 });

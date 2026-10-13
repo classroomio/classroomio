@@ -183,9 +183,15 @@
                           <ul class="ui:text-muted-foreground mt-1 space-y-0.5 text-xs">
                             {#each module.interactions as interaction (interaction.index)}
                               <li>
-                                {interaction.id ?? `#${interaction.index + 1}`}
+                                {interaction.description ?? interaction.id ?? `#${interaction.index + 1}`}
+                                {#if interaction.description && interaction.id && interaction.description !== interaction.id}
+                                  ({interaction.id})
+                                {/if}
                                 {#if interaction.type}· {interaction.type}{/if}
                                 {#if interaction.studentResponse}· {interaction.studentResponse}{/if}
+                                {#if interaction.correctResponse}· {$t(`${T}.interaction_correct`, {
+                                    answer: interaction.correctResponse
+                                  })}{/if}
                                 {#if interaction.result}· {interaction.result}{/if}
                               </li>
                             {/each}

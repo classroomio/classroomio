@@ -3021,7 +3021,9 @@
             "module_complete_title": "मॉड्यूल पूरा हुआ",
             "module_complete_body": "आपकी प्रगति सहेज ली गई है। आगे बढ़ने के लिए अगला मॉड्यूल खोलें।",
             "next_module": "अगला मॉड्यूल",
-            "autosave_hint": "प्रोग्रेस अपने-आप सेव हो जाती है।"
+            "autosave_hint": "प्रोग्रेस अपने-आप सेव हो जाती है।",
+            "archived_title": "आपने इस पैकेज का पहले वाला वर्शन लिया था",
+            "archived_body": "आपके नतीजों में कोई बदलाव नहीं हुआ है।"
           },
           "results": {
             "sheet": {
@@ -3051,7 +3053,8 @@
                 "beacon": "बाहर निकलने पर सेव किया गया",
                 "error": "एरर",
                 "not_initialized": "कनेक्ट नहीं हुआ"
-              }
+              },
+              "interaction_correct": "सही उत्तर: {answer}"
             },
             "export": {
               "title": "SCORM नतीजे"
@@ -3471,7 +3474,8 @@
       "exercises_count": "{count, plural, one {# अभ्यास} other {# अभ्यास}}",
       "activities_count": "{count, plural, one {# पैकेज} other {# पैकेज}}",
       "scorm_modules": "SCORM · {count, plural, one {# मॉड्यूल} other {# मॉड्यूल}}",
-      "scorm": "एससीओआरएम"
+      "scorm": "एससीओआरएम",
+      "scorm_course": "SCORM कोर्स"
     },
     "course_filter": {
       "date_created_newest": "निर्माण तिथि: नवीनतम पहले",

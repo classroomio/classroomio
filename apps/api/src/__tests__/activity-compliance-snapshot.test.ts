@@ -68,11 +68,11 @@ import {
 import { db } from '@cio/db/drizzle';
 import { syncComplianceProgressForMember } from '@api/services/course/compliance';
 
-function buildScormCourse() {
+function buildSingleActivityCourse() {
   return {
     id: 'course-1',
     type: 'COMPLIANCE',
-    format: 'scorm',
+    format: 'single_activity',
     compliance: { retakeIntervalMonths: 12 },
     certificate: {
       deadline: '2027-12-31T23:59:00.000Z',
@@ -101,10 +101,10 @@ function buildActiveRecord(overrides: Record<string, unknown> = {}) {
   };
 }
 
-describe('syncComplianceProgressForMember in SCORM courses', () => {
+describe('syncComplianceProgressForMember in single-activity courses', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.mocked(getCourseById).mockResolvedValue([buildScormCourse()] as never);
+    vi.mocked(getCourseById).mockResolvedValue([buildSingleActivityCourse()] as never);
     vi.mocked(getGroupMemberIdByCourseAndProfile).mockResolvedValue('member-1');
     vi.mocked(getLatestComplianceRecordsByProfiles).mockResolvedValue([buildActiveRecord()] as never);
     vi.mocked(evaluateCourseCertification).mockResolvedValue({
@@ -156,7 +156,7 @@ describe('syncComplianceProgressForMember in SCORM courses', () => {
   it('keeps the exercise snapshot for standard courses', async () => {
     vi.mocked(getCourseById).mockResolvedValue([
       {
-        ...buildScormCourse(),
+        ...buildSingleActivityCourse(),
         format: 'standard',
         certificate: { deadline: '2027-12-31T23:59:00.000Z', requiredExerciseId: 'exercise-1', isDownloadable: false }
       }
@@ -176,7 +176,7 @@ describe('syncComplianceProgressForMember in SCORM courses', () => {
   });
 
   it('keeps the stored minutes when neither caller nor package supplies them', async () => {
-    vi.mocked(getCourseById).mockResolvedValue([{ ...buildScormCourse(), format: 'standard' }] as never);
+    vi.mocked(getCourseById).mockResolvedValue([{ ...buildSingleActivityCourse(), format: 'standard' }] as never);
     vi.mocked(getLatestComplianceRecordsByProfiles).mockResolvedValue([
       buildActiveRecord({ timeSpentMinutes: 7 })
     ] as never);

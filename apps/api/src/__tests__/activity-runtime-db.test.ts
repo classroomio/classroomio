@@ -23,14 +23,16 @@ type UnitDef = {
   identifier: string;
   title: string;
   href: string;
-  masteryScore?: number | null;
+  masteryScoreRaw?: number | null;
+  passingScoreScaled?: number | null;
+  completionThreshold?: number | null;
 };
 
 type FixtureOptions = {
-  format?: string;
+  format?: 'scorm12' | 'scorm2004_2' | 'scorm2004_3' | 'scorm2004_4';
   units?: UnitDef[];
   courseType?: 'SELF_PACED' | 'COMPLIANCE';
-  courseFormat?: 'standard' | 'scorm';
+  courseFormat?: 'standard' | 'single_activity';
   certificate?: Record<string, unknown> | null;
   compliance?: { retakeIntervalMonths: number } | null;
   withPlan?: boolean;
@@ -142,7 +144,9 @@ async function createRuntimeFixture(suffix: string, options: FixtureOptions = {}
         position: position++,
         unitType: 'sco',
         href: unit.href,
-        masteryScore: unit.masteryScore == null ? null : String(unit.masteryScore)
+        masteryScoreRaw: unit.masteryScoreRaw == null ? null : String(unit.masteryScoreRaw),
+        passingScoreScaled: unit.passingScoreScaled == null ? null : String(unit.passingScoreScaled),
+        completionThreshold: unit.completionThreshold == null ? null : String(unit.completionThreshold)
       })
       .returning();
     unitIds[unit.identifier] = row.id;
@@ -417,9 +421,9 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
 
   it('takes the compliance score, attempts and minutes from the package in a SCORM course', async () => {
     const fixture = await createRuntimeFixture(suffix(), {
-      units: [{ identifier: 'mod-1', title: 'Module one', href: 'mod1.html', masteryScore: 70 }],
+      units: [{ identifier: 'mod-1', title: 'Module one', href: 'mod1.html', masteryScoreRaw: 70 }],
       courseType: 'COMPLIANCE',
-      courseFormat: 'scorm',
+      courseFormat: 'single_activity',
       certificate: { deadline: '2027-12-31T23:59:00.000Z', requiredExerciseId: null, isDownloadable: false },
       compliance: { retakeIntervalMonths: 12 }
     });
@@ -467,9 +471,9 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
 
   it('stores package minutes on the compliance record when no minutes are supplied', { timeout: 30000 }, async () => {
     const fixture = await createRuntimeFixture(suffix(), {
-      units: [{ identifier: 'mod-1', title: 'Module one', href: 'mod1.html', masteryScore: 70 }],
+      units: [{ identifier: 'mod-1', title: 'Module one', href: 'mod1.html', masteryScoreRaw: 70 }],
       courseType: 'COMPLIANCE',
-      courseFormat: 'scorm',
+      courseFormat: 'single_activity',
       certificate: { deadline: '2027-12-31T23:59:00.000Z', requiredExerciseId: null, isDownloadable: false },
       compliance: { retakeIntervalMonths: 12 }
     });
@@ -574,7 +578,7 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
 
   it('starts a failed 1.2 module fresh while the attempt stays open', async () => {
     const fixture = await createRuntimeFixture(suffix(), {
-      units: [{ identifier: 'quiz', title: 'Quiz', href: 'quiz.html', masteryScore: 80 }]
+      units: [{ identifier: 'quiz', title: 'Quiz', href: 'quiz.html', masteryScoreRaw: 80 }]
     });
     try {
       const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };

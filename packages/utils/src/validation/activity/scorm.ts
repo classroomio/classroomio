@@ -1,10 +1,26 @@
 import * as z from 'zod';
 
-export const SCORM_COMPLETION_RULES = ['auto', 'completed', 'passed', 'score'] as const;
-export type TScormCompletionRule = (typeof SCORM_COMPLETION_RULES)[number];
+import { SCORM_COMPLETION_RULES, SCORM_LAUNCH_MODES, SCORM_SESSION_EVENT_KINDS } from '../../constants/activity';
 
-export const SCORM_LAUNCH_MODES = ['embedded', 'window'] as const;
-export type TScormLaunchMode = (typeof SCORM_LAUNCH_MODES)[number];
+export { SCORM_COMPLETION_RULES, SCORM_LAUNCH_MODES, SCORM_SESSION_EVENT_KINDS };
+export type { TScormCompletionRule, TScormLaunchMode, TScormSessionEventKind } from '../../constants/activity';
+
+export const SCORM_SESSION_EVENT_DETAIL_MAX_BYTES = 2048;
+export const SCORM_SESSION_EVENT_USER_AGENT_MAX_LENGTH = 512;
+
+export const ZScormSessionEventDetail = z
+  .record(z.string(), z.unknown())
+  .default({})
+  .superRefine((detail, ctx) => {
+    if (JSON.stringify(detail).length > SCORM_SESSION_EVENT_DETAIL_MAX_BYTES) {
+      ctx.addIssue({
+        code: 'custom',
+        message: `Detail must not exceed ${SCORM_SESSION_EVENT_DETAIL_MAX_BYTES} bytes`
+      });
+    }
+  });
+
+export const ZScormSessionEventUserAgent = z.string().max(SCORM_SESSION_EVENT_USER_AGENT_MAX_LENGTH).nullish();
 
 export const ZScormSettings = z
   .object({
@@ -28,17 +44,6 @@ export const ZRuntimeTokenParam = z.object({
   launchToken: z.string().min(1)
 });
 export type TRuntimeTokenParam = z.infer<typeof ZRuntimeTokenParam>;
-
-export const SCORM_SESSION_EVENT_KINDS = [
-  'launch',
-  'initialize',
-  'commit',
-  'terminate',
-  'beacon',
-  'error',
-  'not_initialized'
-] as const;
-export type TScormSessionEventKind = (typeof SCORM_SESSION_EVENT_KINDS)[number];
 
 export const SCORM_PLAYER_EVENT_KINDS = ['initialize', 'not_initialized', 'error'] as const;
 export type TScormPlayerEventKind = (typeof SCORM_PLAYER_EVENT_KINDS)[number];

@@ -1,6 +1,5 @@
 import type { Course, CourseContentItem, CourseContentSection } from './types';
-import { ExerciseIcon, LessonIcon } from '@cio/ui/custom/moving-icons';
-import PackageIcon from '@lucide/svelte/icons/package';
+import { ExerciseIcon, LessonIcon, PackageCheckIcon } from '@cio/ui/custom/moving-icons';
 
 import { ContentType as CourseContentType } from '@cio/utils/constants/content';
 import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
@@ -30,7 +29,7 @@ export const CONTENT_DEFINITIONS = {
   },
   [CourseContentType.Activity]: {
     label: 'SCORM package',
-    icon: PackageIcon
+    icon: PackageCheckIcon
   }
 } as const;
 

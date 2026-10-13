@@ -2308,7 +2308,8 @@
       },
       "activities_count": "{count, plural, one {# pacchetto} other {# pacchetti}}",
       "scorm_modules": "SCORM · {count, plural, one {# modulo} other {# moduli}}",
-      "scorm": "SCORM"
+      "scorm": "SCORM",
+      "scorm_course": "Corso SCORM"
     },
     "new_course_modal": {
       "heading": "Crea un corso",
@@ -3809,7 +3810,9 @@
             "module_complete_title": "Modulo completato",
             "module_complete_body": "I tuoi progressi sono stati salvati. Apri il modulo successivo per continuare.",
             "next_module": "Modulo successivo",
-            "autosave_hint": "I progressi vengono salvati automaticamente."
+            "autosave_hint": "I progressi vengono salvati automaticamente.",
+            "archived_title": "Hai utilizzato una versione precedente di questo pacchetto",
+            "archived_body": "I tuoi risultati rimangono invariati."
           },
           "results": {
             "sheet": {
@@ -3839,7 +3842,8 @@
                 "beacon": "Salvato all'uscita",
                 "error": "Errore",
                 "not_initialized": "Connessione non riuscita"
-              }
+              },
+              "interaction_correct": "Corretto: {answer}"
             },
             "export": {
               "title": "Risultati SCORM"

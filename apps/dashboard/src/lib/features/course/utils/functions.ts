@@ -2,7 +2,22 @@ import type { CourseMembers, SubmissionAnswer } from './types';
 
 import type { AnswerData } from '@cio/question-types';
 import type { Question } from '../types';
+import type { TActivityKind } from '@cio/utils/constants/activity';
+
 import { ROUTES } from './constants';
+import { isSingleActivityCourse } from './course-format';
+
+const SINGLE_ACTIVITY_NAV_LABEL_KEYS: Record<TActivityKind, string> = {
+  scorm: 'course.navItems.nav_package'
+};
+
+export function getSingleActivityNavLabelKey(kind?: TActivityKind | string | null): string {
+  if (kind && kind in SINGLE_ACTIVITY_NAV_LABEL_KEYS) {
+    return SINGLE_ACTIVITY_NAV_LABEL_KEYS[kind as TActivityKind];
+  }
+
+  return 'course.navItems.nav_package';
+}
 
 export function getGroupMemberId(people: CourseMembers, profileId: string): string | undefined {
   const groupMember = people.find((person) => person.profileId === profileId);
@@ -30,7 +45,12 @@ export function getLessonsRoute(courseId, lessonId?: string) {
   return `${path}/${lessonId}`;
 }
 
-export function getActiveCourseNavKey(pathname: string, courseId: string, courseFormat?: string): string | null {
+export function getActiveCourseNavKey(
+  pathname: string,
+  courseId: string,
+  courseOrFormat?: { format?: string | null } | string | null | undefined,
+  activityKind?: TActivityKind | string | null
+): string | null {
   if (!courseId) return null;
 
   const base = `/${ROUTES.COURSES}/${courseId}`;
@@ -41,8 +61,14 @@ export function getActiveCourseNavKey(pathname: string, courseId: string, course
 
   if (!segment) return 'course.navItems.nav_news_feed';
   if (segment === ROUTES.LESSONS || segment === 'exercises') return 'course.navItems.nav_content';
-  if (segment === 'activities')
-    return courseFormat === 'scorm' ? 'course.navItems.nav_package' : 'course.navItems.nav_content';
+  if (segment === 'activities') {
+    const isSingle =
+      typeof courseOrFormat === 'string'
+        ? courseOrFormat === 'single_activity'
+        : isSingleActivityCourse(courseOrFormat);
+
+    return isSingle ? getSingleActivityNavLabelKey(activityKind) : 'course.navItems.nav_content';
+  }
   if (segment === 'analytics') return 'course.navItems.nav_analytics';
   if (segment === 'attendance') return 'course.navItems.nav_attendance';
   if (segment === 'submissions') return 'course.navItems.nav_submissions';

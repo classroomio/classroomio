@@ -129,7 +129,12 @@ function suffix() {
   return `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
 }
 
-async function createPackageFixture(organizationId: string, profileId: string, title: string, status = 'ready') {
+async function createPackageFixture(
+  organizationId: string,
+  profileId: string,
+  title: string,
+  status: 'ready' | 'processing' | 'uploading' | 'failed' | 'archived' = 'ready'
+) {
   const { db } = await import('@db/drizzle');
   const schema = await import('@db/schema');
 
@@ -198,7 +203,7 @@ describe.skipIf(!hasDatabase)('createCoursesFromPackages', () => {
 
       for (const entry of created) {
         const [course] = await db.select().from(schema.course).where(eq(schema.course.id, entry.id));
-        expect(course).toMatchObject({ format: 'scorm', type: 'SELF_PACED', isPublished: false });
+        expect(course).toMatchObject({ format: 'single_activity', type: 'SELF_PACED', isPublished: false });
 
         const activities = await db
           .select()

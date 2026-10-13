@@ -17,7 +17,7 @@ import {
   listScormSessionEventsByLearner,
   recordScormSessionEvent
 } from '@cio/db/queries/scorm/session-event';
-import { deletePackageVersionsByIds, listStaleUnpinnedPackageVersions } from '@cio/db/queries/activity/package-version';
+import { deletePackageVersionsByIds, listVersionsDueForRetention } from '@cio/db/queries/activity/package-version';
 import {
   commitScormAttempt,
   getScormRuntimeState,
@@ -301,7 +301,7 @@ describe.skipIf(!hasDatabase)('scorm diagnostics events (PR 14)', () => {
     }
   });
 
-  it('deletes replaced, unreferenced versions and keeps the rest', async () => {
+  it('lists replaced versions past the cutoff with attempt flags', async () => {
     const fixture = await createDiagnosticsFixture(suffix());
     try {
       const { db } = await import('@db/drizzle');
@@ -309,7 +309,7 @@ describe.skipIf(!hasDatabase)('scorm diagnostics events (PR 14)', () => {
 
       await db
         .update(schema.contentPackageVersion)
-        .set({ isCurrent: false })
+        .set({ isCurrent: false, replacedAt: new Date(Date.now() - 40 * 86_400_000).toISOString() })
         .where(eq(schema.contentPackageVersion.id, fixture.versionId));
 
       const [second] = await db
@@ -319,6 +319,7 @@ describe.skipIf(!hasDatabase)('scorm diagnostics events (PR 14)', () => {
           versionNumber: 2,
           status: 'ready',
           isCurrent: false,
+          replacedAt: new Date(Date.now() - 40 * 86_400_000).toISOString(),
           format: 'scorm12',
           uploadKey: `scorm/dg/${fixture.assetId}/v2.zip`,
           contentPrefix: `scorm/dg/${fixture.assetId}/v2`
@@ -340,18 +341,12 @@ describe.skipIf(!hasDatabase)('scorm diagnostics events (PR 14)', () => {
         .returning();
       if (!third) throw new Error('missing version 3');
 
-      const ancient = new Date(Date.now() - 40 * 86_400_000).toISOString();
-      await db
-        .update(schema.contentPackageVersion)
-        .set({ updatedAt: ancient })
-        .where(eq(schema.contentPackageVersion.id, second.id));
-
       const cutoff = new Date(Date.now() - 30 * 86_400_000).toISOString();
-      const stale = await listStaleUnpinnedPackageVersions(cutoff);
-      const staleIds = stale.map((version) => version.id);
-      expect(staleIds).toContain(second.id);
-      expect(staleIds).not.toContain(fixture.versionId);
-      expect(staleIds).not.toContain(third.id);
+      const due = await listVersionsDueForRetention(cutoff);
+      const byId = new Map(due.map((version) => [version.id, version]));
+      expect(byId.get(second.id)?.hasAttempts).toBe(false);
+      expect(byId.get(second.id)?.hasOpenAttempts).toBe(false);
+      expect(byId.has(third.id)).toBe(false);
 
       expect(await deletePackageVersionsByIds([second.id])).toEqual([second.id]);
 
@@ -366,7 +361,7 @@ describe.skipIf(!hasDatabase)('scorm diagnostics events (PR 14)', () => {
     }
   });
 
-  it('excludes replaced versions still referenced by attempts', async () => {
+  it('includes replaced versions still referenced by attempts with flags', async () => {
     const fixture = await createDiagnosticsFixture(suffix());
     try {
       const { db } = await import('@db/drizzle');
@@ -396,13 +391,14 @@ describe.skipIf(!hasDatabase)('scorm diagnostics events (PR 14)', () => {
       const ancient = new Date(Date.now() - 40 * 86_400_000).toISOString();
       await db
         .update(schema.contentPackageVersion)
-        .set({ isCurrent: false, updatedAt: ancient })
+        .set({ isCurrent: false, replacedAt: ancient })
         .where(eq(schema.contentPackageVersion.id, fixture.versionId));
 
       const cutoff = new Date(Date.now() - 30 * 86_400_000).toISOString();
-      const stale = await listStaleUnpinnedPackageVersions(cutoff);
-
-      expect(stale.map((version) => version.id)).not.toContain(fixture.versionId);
+      const due = await listVersionsDueForRetention(cutoff);
+      const listed = due.find((version) => version.id === fixture.versionId);
+      expect(listed?.hasAttempts).toBe(true);
+      expect(listed?.hasOpenAttempts).toBe(true);
     } finally {
       await cleanupDiagnosticsFixture(fixture);
     }

@@ -12,8 +12,12 @@ import {
   moduleOutcomeFromCmi,
   normalizeCmiShape,
   normalizeCommitCmi,
+  shouldRecordCommitEvent,
   statusAfterTerminate,
+  summarizeInteractions,
   type ScormCmi,
+  type ScormCommitOutcomeSnapshot,
+  type ScormCommitRecordContext,
   type ScormModuleOutcome
 } from './index.js';
 
@@ -26,14 +30,11 @@ function unit(overrides: Partial<ScormPackageUnit> = {}): ScormPackageUnit {
     unitType: 'sco',
     href: 'sco.html',
     parameters: null,
-    masteryScore: null,
+    masteryScoreRaw: null,
+    passingScoreScaled: null,
+    completionThreshold: null,
     launchData: null,
-    formatDetails: {
-      scaledPassingScore: null,
-      completionThreshold: null,
-      maxTimeAllowed: null,
-      timeLimitAction: null
-    },
+    formatDetails: { format: 'scorm12' },
     isVisible: true,
     ...overrides
   };
@@ -70,7 +71,7 @@ describe('moduleOutcomeFromCmi', () => {
     const plain = moduleOutcomeFromCmi(
       { core: { lesson_status: 'completed', score: { raw: 80 } } },
       'scorm12',
-      unit({ masteryScore: 80 })
+      unit({ masteryScoreRaw: 80 })
     );
 
     expect(plain).toEqual({ completion: 'completed', success: 'unknown', hasPassMark: true, scaledScore: 0.8 });
@@ -89,14 +90,7 @@ describe('moduleOutcomeFromCmi', () => {
     const graded = moduleOutcomeFromCmi(
       { completion_status: 'completed', success_status: 'passed', score: { scaled: '0.9' } },
       'scorm2004_4',
-      unit({
-        formatDetails: {
-          scaledPassingScore: 0.8,
-          completionThreshold: null,
-          maxTimeAllowed: null,
-          timeLimitAction: null
-        }
-      })
+      unit({ passingScoreScaled: 0.8 })
     );
 
     expect(graded).toEqual({ completion: 'completed', success: 'passed', hasPassMark: true, scaledScore: 0.9 });
@@ -125,7 +119,7 @@ describe('applyLmsRules', () => {
   });
 
   it('overrides 1.2 status from the mastery score', () => {
-    const passed = applyLmsRules({ core: { score: { raw: 85 } } }, unit({ masteryScore: 80 }), 'scorm12', {
+    const passed = applyLmsRules({ core: { score: { raw: 85 } } }, unit({ masteryScoreRaw: 80 }), 'scorm12', {
       terminated: false
     });
 
@@ -133,16 +127,25 @@ describe('applyLmsRules', () => {
 
     const failed = applyLmsRules(
       { core: { lesson_status: 'completed', score: { raw: 60 } } },
-      unit({ masteryScore: 80 }),
+      unit({ masteryScoreRaw: 80 }),
       'scorm12',
       { terminated: false }
     );
 
     expect(failed).toMatchObject({ core: { lesson_status: 'failed' } });
 
+    const emptyCredit = applyLmsRules(
+      { core: { credit: '', score: { raw: 90 } } },
+      unit({ masteryScoreRaw: 80 }),
+      'scorm12',
+      { terminated: false }
+    );
+
+    expect(emptyCredit).toMatchObject({ core: { lesson_status: 'passed' } });
+
     const noCredit = applyLmsRules(
       { core: { credit: 'no-credit', score: { raw: 95 } } },
-      unit({ masteryScore: 80 }),
+      unit({ masteryScoreRaw: 80 }),
       'scorm12',
       { terminated: false }
     );
@@ -171,9 +174,7 @@ describe('applyLmsRules', () => {
   });
 
   it('evaluates 2004 thresholds on terminate only', () => {
-    const graded = unit({
-      formatDetails: { scaledPassingScore: 0.8, completionThreshold: 0.6, maxTimeAllowed: null, timeLimitAction: null }
-    });
+    const graded = unit({ passingScoreScaled: 0.8, completionThreshold: 0.6 });
     const cmi: ScormCmi = { progress_measure: '0.7', score: { scaled: '0.9' } };
 
     expect(applyLmsRules(cmi, graded, 'scorm2004_4', { terminated: true })).toMatchObject({
@@ -324,5 +325,166 @@ describe('statusAfterTerminate', () => {
     for (const exit of ['', 'normal', 'logout', 'time-out']) {
       expect(statusAfterTerminate({ exit }, 'scorm2004_4')).toBe('closed');
     }
+  });
+});
+
+describe('summarizeInteractions', () => {
+  it('reads 1.2 answers from the keyed-object form', () => {
+    const summarized = summarizeInteractions({
+      core: { lesson_status: 'completed' },
+      interactions: {
+        '0': {
+          id: 'Q1',
+          type: 'choice',
+          student_response: 'a',
+          result: 'correct',
+          latency: '00:00:05',
+          correct_responses: { '0': { pattern: 'a' } }
+        },
+        '1': {
+          id: 'Q2',
+          type: 'true-false',
+          student_response: 'true',
+          result: 'wrong',
+          latency: '00:00:03',
+          correct_responses: { '0': { pattern: 'false' } }
+        }
+      }
+    });
+
+    expect(summarized).toEqual([
+      {
+        index: 0,
+        id: 'Q1',
+        type: 'choice',
+        studentResponse: 'a',
+        result: 'correct',
+        latency: '00:00:05',
+        description: null,
+        correctResponse: 'a'
+      },
+      {
+        index: 1,
+        id: 'Q2',
+        type: 'true-false',
+        studentResponse: 'true',
+        result: 'wrong',
+        latency: '00:00:03',
+        description: null,
+        correctResponse: 'false'
+      }
+    ]);
+  });
+
+  it('reads 2004 questions with descriptions and correct patterns', () => {
+    const summarized = summarizeInteractions({
+      completion_status: 'completed',
+      interactions: [
+        {
+          id: 'Q1',
+          type: 'choice',
+          learner_response: 'a[,]b',
+          result: 'correct',
+          latency: 'PT5S',
+          timestamp: '2026-10-13T10:00:00',
+          description: 'What counts as PHI?',
+          correct_responses: [{ pattern: 'a[,]b' }]
+        }
+      ]
+    });
+
+    expect(summarized).toEqual([
+      {
+        index: 0,
+        id: 'Q1',
+        type: 'choice',
+        studentResponse: 'a[,]b',
+        result: 'correct',
+        latency: 'PT5S',
+        description: 'What counts as PHI?',
+        correctResponse: 'a[,]b'
+      }
+    ]);
+  });
+
+  it('returns nothing for empty or count-only interactions', () => {
+    expect(summarizeInteractions({})).toEqual([]);
+    expect(summarizeInteractions({ interactions: { _count: '2' } })).toEqual([]);
+  });
+});
+
+describe('shouldRecordCommitEvent', () => {
+  function snapshot(overrides: Partial<ScormCommitOutcomeSnapshot> = {}): ScormCommitOutcomeSnapshot {
+    return {
+      completion: 'incomplete',
+      success: 'unknown',
+      scaledScore: null,
+      tryStatus: 'active',
+      ...overrides
+    };
+  }
+
+  function context(overrides: Partial<ScormCommitRecordContext> = {}): ScormCommitRecordContext {
+    return { isFirstCommit: false, isTerminate: false, isBeacon: false, isRejected: false, ...overrides };
+  }
+
+  it('drops routine autocommits with no outcome or status change', () => {
+    expect(shouldRecordCommitEvent(snapshot(), snapshot(), context())).toBe(false);
+    expect(
+      shouldRecordCommitEvent(
+        snapshot({ completion: 'incomplete', scaledScore: null }),
+        snapshot({ completion: 'incomplete', scaledScore: null }),
+        context()
+      )
+    ).toBe(false);
+  });
+
+  it('records the first commit of a module try', () => {
+    expect(shouldRecordCommitEvent(snapshot(), snapshot(), context({ isFirstCommit: true }))).toBe(true);
+  });
+
+  it('records completion status changes', () => {
+    expect(
+      shouldRecordCommitEvent(snapshot({ completion: 'incomplete' }), snapshot({ completion: 'completed' }), context())
+    ).toBe(true);
+  });
+
+  it('records success status changes', () => {
+    expect(shouldRecordCommitEvent(snapshot({ success: 'unknown' }), snapshot({ success: 'passed' }), context())).toBe(
+      true
+    );
+    expect(shouldRecordCommitEvent(snapshot({ success: 'unknown' }), snapshot({ success: 'failed' }), context())).toBe(
+      true
+    );
+  });
+
+  it('records score changes', () => {
+    expect(shouldRecordCommitEvent(snapshot({ scaledScore: null }), snapshot({ scaledScore: 0.8 }), context())).toBe(
+      true
+    );
+    expect(shouldRecordCommitEvent(snapshot({ scaledScore: 0.8 }), snapshot({ scaledScore: 0.9 }), context())).toBe(
+      true
+    );
+  });
+
+  it('records try status changes', () => {
+    expect(
+      shouldRecordCommitEvent(snapshot({ tryStatus: 'active' }), snapshot({ tryStatus: 'suspended' }), context())
+    ).toBe(true);
+    expect(
+      shouldRecordCommitEvent(snapshot({ tryStatus: 'suspended' }), snapshot({ tryStatus: 'closed' }), context())
+    ).toBe(true);
+  });
+
+  it('records terminate commits even without an outcome change', () => {
+    expect(shouldRecordCommitEvent(snapshot(), snapshot(), context({ isTerminate: true }))).toBe(true);
+  });
+
+  it('records beacon commits even without an outcome change', () => {
+    expect(shouldRecordCommitEvent(snapshot(), snapshot(), context({ isBeacon: true }))).toBe(true);
+  });
+
+  it('records rejected commits', () => {
+    expect(shouldRecordCommitEvent(snapshot(), snapshot(), context({ isRejected: true }))).toBe(true);
   });
 });

@@ -34,17 +34,17 @@ Built from four read-only inventories of the repository on 9 October 2026 (branc
 | 1.8 | `packages/utils/src/validation/assets/assets.ts` `AssetTargetType`, `slotType` | `lesson`, `exercise`, `question`; free-text slots | Add target `activity` and slot `activity_package` | 2 | Asset liveness test (4.40) |
 | 1.9 | `packages/utils/src/validation/agent/agent.ts` `context` | `lessonId`, `exerciseId` | Add `activityId` | 3 | Agent context test |
 | 1.10 | `packages/utils/src/validation/course/template-sync.ts` `TemplateUnitKind`, `Sync*` types | `section`, `lesson`, `exercise` | Add `activity` | 3 | `template-sync.test.ts` |
-| 1.11 | `packages/utils/src/validation/course-import/course-import.ts` `ZCourseImportDraftPayload` (`lessons.min(1)`, `lessonLanguages.min(1)`, order contiguity per type) | Lessons required | Add `activities[]` that **reference existing activities only** (`existingActivityId`, `sectionExternalId`, `order`). Allow zero lessons when the course format is `scorm`. Contiguity check covers all three types in the shared order space | 3 | `lesson-video-schema.test.ts` plus new draft schema tests |
+| 1.11 | `packages/utils/src/validation/course-import/course-import.ts` `ZCourseImportDraftPayload` (`lessons.min(1)`, `lessonLanguages.min(1)`, order contiguity per type) | Lessons required | Add `activities[]` that **reference existing activities only** (`existingActivityId`, `sectionExternalId`, `order`). Allow zero lessons when the course format is `single_activity`. Contiguity check covers all three types in the shared order space | 3 | `lesson-video-schema.test.ts` plus new draft schema tests |
 | 1.12 | `packages/utils/src/validation/public-api/course-member-responses.ts:46` `contentType`, counters; `analytics-responses.ts` totals | `lesson`, `exercise` | Add `activity`, `totalActivities`, `activitiesCompleted`. Additive fields only, so existing clients keep working | 3 | `packages/utils/tests/public-api-*-contract.test.ts` |
 | 1.13 | `packages/utils/src/license/constants.ts`, `plan-features.ts` | Five license features; Early Adopter maps to custom domain and branding | Add `SCORM: 'scorm'`. Add it to the Early Adopter list (Enterprise already gets all) | 7 | `plan-features` unit test |
-| 1.14 | `packages/utils/src/constants/course-type.ts` | Four types | No change. New `packages/utils/src/constants/course-format.ts` with `COURSE_FORMAT_VALUES = ['standard', 'scorm']` | 1 | — |
+| 1.14 | `packages/utils/src/constants/course-type.ts` | Four types | No change. New `packages/utils/src/constants/course-format.ts` with `COURSE_FORMAT_VALUES = ['standard', 'single_activity'] (see `schema-improvements.md` § 1.3)` | 1 | — |
 | 1.15 | `packages/utils/src/validation/organization/automation-key.ts` scopes, `packages/utils/src/plans/automation.ts` MCP costs | Exercise scopes | No change, by design: activities are read through the existing structure and analytics scopes; there are no activity write tools in version 1 | — | `routes-v1-mcp-default-scopes.test.ts` stays green |
 
 ## 2. Database schema (`packages/db/src/schema.ts`)
 
 | # | Table or column | Change | PR |
 | --- | --- | --- | --- |
-| 2.1 | `course.format` | New `varchar(16) not null default 'standard'`, values from 1.14. Existing rows get `standard` | 1 |
+| 2.1 | `course.format` | New `courseFormat` enum (`standard`, `single_activity`) default `standard`, values from 1.14, with `course_format_type_check` (`standard` or type in `SELF_PACED`, `COMPLIANCE`). Existing rows get `standard` | 1 |
 | 2.2 | `course_activity` | New. Mirrors the structural columns of `lesson`: `course_id`, `section_id` (nullable), `order`, `is_unlocked`, `slug`, `source_id`, `source_synced_at`, plus `kind`, `title`, `instructions`. Full definition in `README.md` | 1 |
 | 2.3 | `course_activity.section_id` on delete | `restrict`, like exercises (`exercise_section_id_fkey` is `no action`). The section delete service checks first and returns a 409 that names the activities (4.13) | 1 |
 | 2.4 | `activity_completion` | New, keyed by profile like `lesson_completion`. Unique `(activity_id, profile_id)`. Cascades from the activity and the profile | 1 |
@@ -108,7 +108,7 @@ Each row keeps its existing lesson and exercise rule and adds activities through
 
 | # | Location | Change | PR |
 | --- | --- | --- | --- |
-| 3.32 | `packages/db/src/utils/seed/*` | No change to existing seeds, so characterization fixtures stay stable. New opt-in seed `scormActivities.ts` adds one SCORM item to HIPAA Awareness 2026 and one SCORM-format course to Coursera Test, behind `SEED_SCORM=true` | 13 |
+| 3.32 | `packages/db/src/utils/seed/*` | No change to existing seeds, so characterization fixtures stay stable. New opt-in seed `scormActivities.ts` adds one SCORM item to HIPAA Awareness 2026 and one single-activity SCORM course to Coursera Test, behind `SEED_SCORM=true` | 13 |
 
 ## 4. API and core services
 
@@ -123,13 +123,13 @@ Each row keeps its existing lesson and exercise rule and adds activities through
 | 4.5 | `apps/api/src/routes/course/content.ts` `PUT /reorder`, `PUT /`, `DELETE /` | Accepts lesson and exercise | Accepts activity through 1.6; same middleware | 2 | Route test |
 | 4.6 | `packages/core/src/services/course/section.ts` `promoteUngroupedSection` | Moves ungrouped lessons and exercises | Also activities | 2 | Section test |
 | 4.7 | `packages/core/src/services/course/course.ts` `updateCourse` grouping toggle (lines ~490–520) | Checks lessons and exercises | Also activities | 2 | `update-course.test.ts` |
-| 4.8 | same, `updateCourse` type change (lines 429–453) | Public conversion and compliance deadline | **Guard**: refuse `PUBLIC` while the course has activities, naming them. **Guard**: a `scorm`-format course accepts only `SELF_PACED` or `COMPLIANCE` | 2, 12 | `update-course.test.ts` |
+| 4.8 | same, `updateCourse` type change (lines 429–453) | Public conversion and compliance deadline | **Guard**: refuse `PUBLIC` while the course has activities, naming them. **Guard**: a single-activity course accepts only `SELF_PACED` or `COMPLIANCE` | 2, 12 | `update-course.test.ts` |
 | 4.9 | same, `getCourse` | Annotated content tree | Inherits 3.1 | 2 | Characterization |
 | 4.10 | `packages/core/src/services/course/slug.ts` `resolveItemSlug` | Lesson and exercise slugs | Include activities (3.7) | 2 | Slug test |
 | 4.11 | `packages/core/src/services/course/go-live-readiness.ts` `evaluateCourseGoLiveReadiness` | Counts lessons and exercises; lesson content and exercise question checks | Activities count as learning items. New blocker `ACTIVITY_NOT_READY` when a package has no ready current version | 2, 7 | `course-go-live-readiness.test.ts` |
 | 4.12 | New `packages/core/src/services/activity/activity.ts` | — | Create, update, delete, lock, settings, launch dispatch, completion side effects, all through the provider registry | 1, 2 | Unit and database tests |
 | 4.13 | `packages/core/src/services/course/section.ts` `deleteCourseSectionService` | Raw delete; exercises hit the foreign key | **Guard**: count activities first and return 409 `SECTION_HAS_ACTIVITIES` with their titles | 2 | Section test |
-| 4.14 | New `assertCourseAcceptsContent(courseId, contentType)` | — | **Guard**: a `scorm`-format course refuses new sections, lessons, exercises and a second activity. Called from lesson, exercise, section and activity create, draft publish to an existing course, and the public API structure update | 12 | Guard tests for every caller |
+| 4.14 | New `assertCourseAcceptsContent(courseId, contentType)` | — | **Guard**: a single-activity course refuses new sections, lessons, exercises and a second activity. Called from lesson, exercise, section and activity create, draft publish to an existing course, and the public API structure update | 12 | Guard tests for every caller |
 
 ### 4b. Access, progression and completion
 
@@ -139,7 +139,7 @@ Each row keeps its existing lesson and exercise rule and adds activities through
 | 4.16 | `apps/api/src/services/course/access.ts` `assertEnrolledStudentContentAccess` | `Lesson | Exercise` | Widen to Activity | 2 | Access test |
 | 4.17 | `apps/api/src/services/course/completion.ts` `evaluateCourseCertification`, `buildCertificationEvaluation`, `evaluateFinalExerciseRule` | Lessons and exercises; `CERT_NO_CONTENT` | Activities count toward the threshold; an activity-only course is not `CERT_NO_CONTENT`. Final-exercise rule unchanged | 2 | New certification tests |
 | 4.18 | `apps/api/src/utils/course-completion.ts` `calcCourseProgressPercent` | Lesson and exercise arguments | Add activity arguments | 2 | Unit test |
-| 4.19 | `apps/api/src/services/course/compliance.ts` `syncComplianceProgressFromSubmission`, `getComplianceCompletionSnapshot` | Exercise submissions only; score from `requiredExerciseId` | PR 0b extracts `syncComplianceProgressForMember(courseId, profileId, source)`, called from submissions, lesson completion and (PR 10) activity completion. In a `scorm`-format course the snapshot takes score and attempts from the package (best lesson-attempt score, attempt count) | 0b, 10 | Compliance tests (new) |
+| 4.19 | `apps/api/src/services/course/compliance.ts` `syncComplianceProgressFromSubmission`, `getComplianceCompletionSnapshot` | Exercise submissions only; score from `requiredExerciseId` | PR 0b extracts `syncComplianceProgressForMember(courseId, profileId, source)`, called from submissions, lesson completion and (PR 10) activity completion. In a single-activity course the snapshot takes score and attempts from the package (best lesson-attempt score, attempt count) | 0b, 10 | Compliance tests (new) |
 | 4.20 | `packages/core/src/services/course/public-course-guard.ts`, `apps/api/src/services/course/public-course.ts` | `kind: 'lesson' | 'exercise'` | **Guard**: activities are never created in `PUBLIC` courses (4.8). Public item lookups ignore activities | 2 | Public course test |
 | 4.21 | `apps/api/src/services/course/member-progress.ts` `getCourseMemberProgressSummaries`, `toTrackableContentItems`, `stage.contentType` | `'lesson' | 'exercise'`; line 112 falls back to `'lesson'` | Add `'activity'`; exhaustive | 0d, 2 | `member-progress.test.ts` |
 | 4.22 | `apps/api/src/services/course/people.ts` `resetMemberCourseProgress` | Lessons, video, submissions | Inherits 3.23 | 2, 11 | `reset-member-course-progress.test.ts` |
@@ -159,7 +159,7 @@ Each row keeps its existing lesson and exercise rule and adds activities through
 | 4.31 | `apps/api/src/services/course/template-sync.ts` `loadGraph`, `getCourseTemplateUpdates`, `pullCourseTemplateUpdates`; `detectTemplateContentChanges`, `preparePullSelection` | Three unit kinds | Add the `activity` kind: title, instructions, settings and package version changes are detectable and pullable | 3, 13 | `template-sync.test.ts` |
 | 4.32 | `apps/api/src/services/course-import/course-import.ts` `buildCourseStructureSnapshot` | Throws when a course has no lessons | Include activities; an activity-only course is valid | 3 | New snapshot tests |
 | 4.33 | same, `buildDraftExercisesSnapshot`, `resetCourseContentForDraftRetry`, `buildDraftSummary`, `getCourseImportStructureService` | Lessons and exercises | Include activities as references | 3 | same |
-| 4.34 | same, `publishCourseImportDraftService`, `publishCourseImportDraftToExistingCourseService` (replace mode deletes unreferenced lessons, exercises, sections) | — | Drafts never create or delete activities; they may place referenced ones. Replace mode keeps unreferenced activities. **Guard**: publishing fails with `ACTIVITY_SECTION_REMOVED` when it would delete a section that still holds an activity. Refused for `scorm`-format courses (4.14) | 3, 12 | New publish tests, both modes |
+| 4.34 | same, `publishCourseImportDraftService`, `publishCourseImportDraftToExistingCourseService` (replace mode deletes unreferenced lessons, exercises, sections) | — | Drafts never create or delete activities; they may place referenced ones. Replace mode keeps unreferenced activities. **Guard**: publishing fails with `ACTIVITY_SECTION_REMOVED` when it would delete a section that still holds an activity. Refused for single-activity courses (4.14) | 3, 12 | New publish tests, both modes |
 | 4.35 | `apps/api/src/services/v1/courses/course.ts` `exportCourseService`, `updatePublicApiCourseStructureService` | Uses the import services | Inherits 4.32 to 4.34 | 3 | `services-v1-course-*.test.ts` |
 
 ### 4d. Assets, media and storage
@@ -233,7 +233,7 @@ Each row keeps its existing lesson and exercise rule and adds activities through
 | 7.17 | `C/components/course-content-icon.svelte` | Indexes `CONTENT_DEFINITIONS`; unknown type crashes | Activity icon per kind | 4 |
 | 7.18 | `C/components/lesson/content-page-menu.svelte` | Unlock all, grouping toggle | Widen types | 4 |
 | 7.19 | `C/components/content/constants.ts` `CONTENT_OPTIONS`, `SUCCESS_SENTENCE_KEYS`, `REPEAT_LABEL_KEYS` | Typed `Record<ContentType, …>` | SCORM package option, keys, `ACTIVITY_STEPPER_DEFAULT_STATE`; option shows the plan or license state | 7 |
-| 7.20 | `C/components/content/content-create-modal.svelte` | Stepper ternaries and render | New `activity-create-stepper.svelte`; hidden in `PUBLIC` and `scorm`-format courses | 7 |
+| 7.20 | `C/components/content/content-create-modal.svelte` | Stepper ternaries and render | New `activity-create-stepper.svelte`; hidden in `PUBLIC` and single-activity courses | 7 |
 | 7.21 | `C/api/content.svelte.ts`, `C/api/course.svelte.ts` `updateContentItem`, `removeContentItem` | `Lesson | Exercise` | Widen | 4 |
 | 7.22 | New `C/api/activity.svelte.ts` | — | `ActivityApi extends BaseApiWithErrors` | 4 |
 
@@ -278,7 +278,7 @@ Each row keeps its existing lesson and exercise rule and adds activities through
 
 | # | Location | Change | PR |
 | --- | --- | --- | --- |
-| 7.45 | `C/components/sidebar/course-sidebar-navigation.svelte`, `C/components/sidebar/constants.ts` `NAV_IDS`, `C/utils/functions.ts` `getNavItemRoute` | In a `scorm`-format course, the Content item becomes **Package** (same position, click to enter, no tree, no badges, no add button). Submissions, Marks and Attendance are hidden. Learners see News Feed (when on), Package and Certificates | 12 |
+| 7.45 | `C/components/sidebar/course-sidebar-navigation.svelte`, `C/components/sidebar/constants.ts` `NAV_IDS`, `C/utils/functions.ts` `getNavItemRoute` | In a single-activity course, the Content item becomes **Package** (same position, click to enter, no tree, no badges, no add button). Submissions, Marks and Attendance are hidden. Learners see News Feed (when on), Package and Certificates | 12 |
 | 7.46 | `C/components/new-course-modal.svelte` | First choice “Build a course” or “Upload a SCORM package”; SCORM path offers Self-paced or Compliance, a title and the upload | 12 |
 | 7.47 | `C/pages/lessons.svelte`, `D/routes/(app)/courses/[id]/+page.svelte` | `/lessons` and `?next=true` redirect to the package in a SCORM course | 12 |
 | 7.48 | `C/components/sidebar/course-sidebar-footer-nav.svelte`, mobile bottom nav | Prev and next hidden in a SCORM course; progress ring stays | 12 |

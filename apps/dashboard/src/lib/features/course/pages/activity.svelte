@@ -80,10 +80,7 @@
   const editorSettings = $derived(scormEditor?.settings ?? null);
 
   const hasPassMark = $derived.by(() => {
-    for (const unit of (attachedPackage?.units ?? []) as Array<{
-      masteryScore?: unknown;
-      formatDetails?: unknown;
-    }>) {
+    for (const unit of attachedPackage?.units ?? []) {
       if (unitPassMark(unit) !== null) return true;
     }
     return false;

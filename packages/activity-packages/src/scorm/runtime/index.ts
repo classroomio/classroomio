@@ -147,6 +147,85 @@ export function flattenCmi(cmi: ScormCmi): Record<string, string> {
   return flat;
 }
 
+export interface ScormInteractionSummary {
+  index: number;
+  id: string | null;
+  type: string | null;
+  studentResponse: string | null;
+  result: string | null;
+  latency: string | null;
+  description: string | null;
+  correctResponse: string | null;
+}
+
+function interactionText(value: unknown): string | null {
+  if (value === null || value === undefined) {
+    return null;
+  }
+
+  const text = String(value);
+
+  return text === '' ? null : text;
+}
+
+function correctPatternsOf(value: unknown): string[] {
+  if (Array.isArray(value)) {
+    return value.flatMap((entry) => correctPatternsOf(entry));
+  }
+
+  if (isPlainObject(value)) {
+    if ('pattern' in value) {
+      const pattern = interactionText(value['pattern']);
+
+      return pattern === null ? [] : [pattern];
+    }
+
+    return Object.keys(value)
+      .filter((key) => /^\d+$/.test(key))
+      .sort((left, right) => Number(left) - Number(right))
+      .flatMap((key) => correctPatternsOf((value as ScormCmi)[key]));
+  }
+
+  return [];
+}
+
+function interactionSummaryOf(entry: unknown, index: number): ScormInteractionSummary {
+  const record = (entry ?? {}) as Record<string, unknown>;
+  const response = record['student_response'] ?? record['learner_response'];
+  const patterns = correctPatternsOf(record['correct_responses']);
+
+  return {
+    index,
+    id: interactionText(record['id']),
+    type: interactionText(record['type']),
+    studentResponse: interactionText(typeof response === 'object' ? JSON.stringify(response) : response),
+    result: interactionText(typeof record['result'] === 'object' ? JSON.stringify(record['result']) : record['result']),
+    latency: interactionText(record['latency'] ?? record['timestamp']),
+    description: interactionText(record['description']),
+    correctResponse: patterns.length === 0 ? null : patterns.join(', ')
+  };
+}
+
+/**
+ * Returns one entry per quiz answer the package reported, oldest first.
+ */
+export function summarizeInteractions(cmi: ScormCmi): ScormInteractionSummary[] {
+  const raw = cmi['interactions'];
+
+  if (Array.isArray(raw)) {
+    return raw.map((entry, index) => interactionSummaryOf(entry, index));
+  }
+
+  if (isPlainObject(raw)) {
+    return Object.keys(raw)
+      .filter((key) => /^\d+$/.test(key))
+      .sort((left, right) => Number(left) - Number(right))
+      .map((key, position) => interactionSummaryOf((raw as ScormCmi)[key], position));
+  }
+
+  return [];
+}
+
 function mergeValues(stored: unknown, incoming: unknown): unknown {
   if (Array.isArray(incoming) && Array.isArray(stored)) {
     const merged = [...stored];
@@ -314,14 +393,14 @@ function scaledScore12(cmi: ScormCmi): number | null {
 export function moduleOutcomeFromCmi(
   cmi: ScormCmi,
   format: ScormPackageFormat,
-  unit: Pick<ScormPackageUnit, 'masteryScore' | 'formatDetails'>
+  unit: Pick<ScormPackageUnit, 'masteryScoreRaw' | 'passingScoreScaled'>
 ): ScormModuleOutcome {
   if (format === 'scorm12') {
     const mapped = mapScorm12Outcome(getPath(cmi, 'core.lesson_status'));
 
     return {
       ...mapped,
-      hasPassMark: unit.masteryScore !== null && unit.masteryScore !== undefined,
+      hasPassMark: unit.masteryScoreRaw !== null && unit.masteryScoreRaw !== undefined,
       scaledScore: scaledScore12(cmi)
     };
   }
@@ -330,7 +409,7 @@ export function moduleOutcomeFromCmi(
 
   return {
     ...mapped,
-    hasPassMark: unit.formatDetails.scaledPassingScore !== null && unit.formatDetails.scaledPassingScore !== undefined,
+    hasPassMark: unit.passingScoreScaled !== null && unit.passingScoreScaled !== undefined,
     scaledScore: asNumber(getPath(cmi, 'score.scaled'))
   };
 }
@@ -342,7 +421,7 @@ export function moduleOutcomeFromCmi(
  */
 export function applyLmsRules(
   cmi: ScormCmi,
-  unit: Pick<ScormPackageUnit, 'masteryScore' | 'formatDetails'>,
+  unit: Pick<ScormPackageUnit, 'masteryScoreRaw' | 'passingScoreScaled' | 'completionThreshold'>,
   format: ScormPackageFormat,
   options: { terminated: boolean }
 ): ScormCmi {
@@ -358,13 +437,14 @@ export function applyLmsRules(
       }
     }
 
-    if (unit.masteryScore !== null && unit.masteryScore !== undefined) {
+    if (unit.masteryScoreRaw !== null && unit.masteryScoreRaw !== undefined) {
       const credit = getPath(next, 'core.credit');
-      const creditAllows = credit === null || credit === undefined || String(credit).toLowerCase() === 'credit';
+      const creditAllows =
+        credit === null || credit === undefined || credit === '' || String(credit).toLowerCase() === 'credit';
       const raw = asNumber(getPath(next, 'core.score.raw'));
 
       if (creditAllows && raw !== null) {
-        setPath(next, 'core.lesson_status', raw >= unit.masteryScore ? 'passed' : 'failed');
+        setPath(next, 'core.lesson_status', raw >= unit.masteryScoreRaw ? 'passed' : 'failed');
       }
     }
 
@@ -372,14 +452,14 @@ export function applyLmsRules(
   }
 
   if (options.terminated) {
-    const threshold = unit.formatDetails.completionThreshold;
+    const threshold = unit.completionThreshold;
     const progressMeasure = asNumber(getPath(next, 'progress_measure'));
 
     if (threshold !== null && threshold !== undefined && progressMeasure !== null) {
       setPath(next, 'completion_status', progressMeasure >= threshold ? 'completed' : 'incomplete');
     }
 
-    const passingScore = unit.formatDetails.scaledPassingScore;
+    const passingScore = unit.passingScoreScaled;
     const scaled = asNumber(getPath(next, 'score.scaled'));
 
     if (passingScore !== null && passingScore !== undefined && scaled !== null) {
@@ -473,4 +553,61 @@ export function isScormRuleMet(settings: ScormRuleSettings, modules: ScormModule
   }
 
   return modules.every((module) => isModuleRuleMet(rule, module));
+}
+
+export interface ScormCommitOutcomeSnapshot {
+  completion: ScormCompletionValue;
+  success: ScormSuccessValue;
+  scaledScore: number | null;
+  tryStatus: ScormTryStatus;
+}
+
+export interface ScormCommitRecordContext {
+  isFirstCommit: boolean;
+  isTerminate: boolean;
+  isBeacon: boolean;
+  isRejected: boolean;
+}
+
+/**
+ * Returns whether a commit writes a diagnostic event. Routine autocommits return false.
+ */
+export function shouldRecordCommitEvent(
+  previous: ScormCommitOutcomeSnapshot,
+  next: ScormCommitOutcomeSnapshot,
+  context: ScormCommitRecordContext
+): boolean {
+  if (context.isRejected) {
+    return true;
+  }
+
+  if (context.isFirstCommit) {
+    return true;
+  }
+
+  if (context.isTerminate) {
+    return true;
+  }
+
+  if (context.isBeacon) {
+    return true;
+  }
+
+  if (previous.completion !== next.completion) {
+    return true;
+  }
+
+  if (previous.success !== next.success) {
+    return true;
+  }
+
+  if (previous.scaledScore !== next.scaledScore) {
+    return true;
+  }
+
+  if (previous.tryStatus !== next.tryStatus) {
+    return true;
+  }
+
+  return false;
 }

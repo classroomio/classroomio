@@ -31,6 +31,7 @@
     REPEAT_LABEL_KEYS
   } from './constants';
   import { t } from '$lib/utils/functions/translations';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { shouldIgnoreGlobalShortcut } from '$lib/utils/functions/keyboard';
   import { isCourseLearnerView } from '$lib/utils/store/app';
@@ -103,8 +104,7 @@
   const sectionFromContext = $derived(!!$contentCreateStore.sectionId || !!lockedSection);
   const visibleContentOptions = $derived.by(() => {
     const courseType = courseApi.course?.type;
-    const courseFormat = courseApi.course ? (courseApi.course as { format?: string }).format : undefined;
-    const hideActivity = courseType === 'PUBLIC' || courseFormat === 'scorm';
+    const hideActivity = courseType === 'PUBLIC' || isSingleActivityCourse(courseApi.course);
 
     const options =
       sectionFromContext || !contentGroupingEnabled

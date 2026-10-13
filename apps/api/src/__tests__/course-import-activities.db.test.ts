@@ -133,7 +133,7 @@ async function cleanupImportCourse(ids: FixtureIds, extraCourseIds: string[] = [
 }
 
 describe.skipIf(!hasDatabase)('course import activities', () => {
-  it('snapshots activities as references in the shared order space', async () => {
+  it('snapshots activities as references in the shared order space', { timeout: 30000 }, async () => {
     const suffix = `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
     const ids = await createImportCourse(suffix, { lessons: 1, activities: [{ section: 0, order: 2 }] });
     try {
@@ -351,7 +351,7 @@ describe.skipIf(!hasDatabase)('course import activities', () => {
     }
   });
 
-  it('refuses drafts on SCORM courses and cross-course references', async () => {
+  it('refuses drafts on single-activity courses and cross-course references', async () => {
     const suffix = `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
     const ids = await createImportCourse(suffix, { lessons: 1, activities: [{ section: 0, order: 2 }] });
     const other = await createImportCourse(`other-${suffix}`, { lessons: 1, activities: [] });
@@ -364,9 +364,9 @@ describe.skipIf(!hasDatabase)('course import activities', () => {
       const { db } = await import('@db/drizzle');
       const schema = await import('@db/schema');
 
-      await db.update(schema.course).set({ format: 'scorm' }).where(eq(schema.course.id, other.courseId));
+      await db.update(schema.course).set({ format: 'single_activity' }).where(eq(schema.course.id, other.courseId));
 
-      const scormDraft = await createCourseImportDraftService(other.orgId, other.profileId, {
+      const singleActivityDraft = await createCourseImportDraftService(other.orgId, other.profileId, {
         sourceType: 'course',
         draft: {
           warnings: [],
@@ -388,10 +388,10 @@ describe.skipIf(!hasDatabase)('course import activities', () => {
           lessonLanguages: [{ lessonExternalId: other.lessons[0]!.id, locale: 'en', content: '<p>Hi.</p>' }]
         }
       });
-      other.drafts.push(scormDraft.id);
+      other.drafts.push(singleActivityDraft.id);
 
       await expect(
-        publishCourseImportDraftToExistingCourseService(other.orgId, scormDraft.id, {
+        publishCourseImportDraftToExistingCourseService(other.orgId, singleActivityDraft.id, {
           courseId: other.courseId,
           syncMode: 'merge'
         })

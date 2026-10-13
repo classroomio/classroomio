@@ -18,6 +18,7 @@
     LandingPageIcon,
     MarksIcon,
     NewsFeedIcon,
+    PackageCheckIcon,
     PeopleIcon,
     PremiumIcon,
     SettingsIcon,
@@ -37,7 +38,8 @@
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { currentOrg, isFreePlan, isStudentLimitReached, currentOrgPath } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
-  import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
+  import { getNavItemRoute, getLessonsRoute, getSingleActivityNavLabelKey } from '$features/course/utils/functions';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { useSidebar } from '@cio/ui/base/sidebar';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
@@ -62,15 +64,23 @@
       currentPath === lessonsRoute
   );
 
-  const isScormCourse = $derived((courseApi.course as { format?: string } | null | undefined)?.format === 'scorm');
-  const scormPackageRoute = $derived.by(() => {
-    if (!isScormCourse) return lessonsRoute;
+  const isSingleActivity = $derived(isSingleActivityCourse(courseApi.course));
+  const singleActivityItem = $derived.by(() => {
+    if (!isSingleActivity) return null;
 
     const items = contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items;
-    const activity = items.find((item) => item.type === ContentType.Activity);
-    if (!activity) return lessonsRoute;
 
-    return getContentRoute(id, activity);
+    return items.find((item) => item.type === ContentType.Activity) ?? null;
+  });
+  const singleActivityKind = $derived.by(() => {
+    const kind = (singleActivityItem as { activityKind?: unknown } | null)?.activityKind;
+
+    return typeof kind === 'string' ? kind : null;
+  });
+  const scormPackageRoute = $derived.by(() => {
+    if (!singleActivityItem) return lessonsRoute;
+
+    return getContentRoute(id, singleActivityItem);
   });
 
   let contentTreeCollapsed = $state(false);
@@ -114,11 +124,13 @@
       },
       {
         id: NAV_IDS.LESSONS,
-        title: isScormCourse ? $t('course.navItems.nav_package') : $t('course.navItems.nav_content'),
-        url: isScormCourse ? scormPackageRoute : lessonsRoute,
-        isActive: isScormCourse ? currentPath.includes('/activities') : isOnContentRoute,
+        title: isSingleActivity
+          ? $t(getSingleActivityNavLabelKey(singleActivityKind))
+          : $t('course.navItems.nav_content'),
+        url: isSingleActivity ? scormPackageRoute : lessonsRoute,
+        isActive: isSingleActivity ? currentPath.includes('/activities') : isOnContentRoute,
         isLesson: true,
-        isPackage: isScormCourse,
+        isPackage: isSingleActivity,
         icon: getNavIcon(NAV_IDS.LESSONS)
       },
       {
@@ -164,7 +176,7 @@
         show() {
           if (courseApi.course?.isTemplate) return false;
           if (isStudent) return false;
-          if (isScormCourse) return false;
+          if (isSingleActivity) return false;
 
           return courseApi.course?.canGrade === true;
         },
@@ -177,7 +189,7 @@
         isActive: currentPath === getNavItemRoute(id, 'marks'),
         show() {
           if (courseApi.course?.isTemplate) return false;
-          if (isScormCourse) return false;
+          if (isSingleActivity) return false;
           return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
         },
         icon: getNavIcon(NAV_IDS.MARKS)
@@ -279,7 +291,7 @@
     } else if (id === NAV_IDS.NEWS_FEED) {
       return NewsFeedIcon;
     } else if (id === NAV_IDS.LESSONS) {
-      return ContentIcon;
+      return isSingleActivity ? PackageCheckIcon : ContentIcon;
     } else if (id === NAV_IDS.ATTENDANCE) {
       return AttendanceIcon;
     } else if (id === NAV_IDS.SUBMISSIONS) {

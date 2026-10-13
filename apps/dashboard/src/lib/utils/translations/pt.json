@@ -3021,7 +3021,9 @@
             "module_complete_title": "Módulo concluído",
             "module_complete_body": "Seu progresso foi salvo. Abra o próximo módulo para continuar.",
             "next_module": "Próximo módulo",
-            "autosave_hint": "O progresso é salvo automaticamente."
+            "autosave_hint": "O progresso é salvo automaticamente.",
+            "archived_title": "Você utilizou uma versão anterior deste pacote",
+            "archived_body": "Seus resultados permanecem inalterados."
           },
           "results": {
             "sheet": {
@@ -3051,7 +3053,8 @@
                 "beacon": "Salvo ao sair",
                 "error": "Erro",
                 "not_initialized": "Não conectado"
-              }
+              },
+              "interaction_correct": "Correto: {answer}"
             },
             "export": {
               "title": "Resultados SCORM"
@@ -3471,7 +3474,8 @@
       "exercises_count": "{count, plural, one {# exercício} other {# exercícios}}",
       "activities_count": "{count, plural, one {# pacote} other {# pacotes}}",
       "scorm_modules": "SCORM · {count, plural, one {# módulo} other {# módulos}}",
-      "scorm": "SCORM"
+      "scorm": "SCORM",
+      "scorm_course": "Curso SCORM"
     },
     "course_filter": {
       "date_created_newest": "Data de criação: mais recentes primeiro",

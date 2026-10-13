@@ -77,7 +77,7 @@ describe('draft activities', () => {
 
     const scorm = ZCourseImportDraftPayload.parse(
       payload({
-        course: { title: 'Course', description: 'Description', type: 'SELF_PACED', format: 'scorm' as const },
+        course: { title: 'Course', description: 'Description', type: 'SELF_PACED', format: 'single_activity' as const },
         lessons: [],
         lessonLanguages: [],
         activities: [{ existingActivityId: ACTIVITY_ID, sectionExternalId: 'sec-1', order: 1 }]

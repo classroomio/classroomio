@@ -72,7 +72,7 @@ async function createResultsFixture(suffix: string): Promise<ResultsFixture> {
         position: 0,
         unitType: 'sco',
         href: 'quiz.html',
-        masteryScore: '80'
+        masteryScoreRaw: '80'
       },
       {
         packageVersionId: version.id,
@@ -132,6 +132,109 @@ function suffix() {
   return `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
 }
 
+type TypedUnitSeed = {
+  identifier: string;
+  title: string;
+  href: string;
+  masteryScoreRaw?: string | null;
+  passingScoreScaled?: string | null;
+  completionThreshold?: string | null;
+  formatDetails?:
+    | { format: 'scorm12' }
+    | { format: 'scorm2004'; maxTimeAllowed: string | null; timeLimitAction: string | null };
+};
+
+async function createTypedFixture(
+  sfx: string,
+  format: 'scorm12' | 'scorm2004_4',
+  seeds: TypedUnitSeed[]
+): Promise<ResultsFixture> {
+  const { db } = await import('@db/drizzle');
+  const schema = await import('@db/schema');
+
+  const [organization] = await db
+    .insert(schema.organization)
+    .values({ name: `scorm-typed-${sfx}` })
+    .returning();
+  const [group] = await db
+    .insert(schema.group)
+    .values({ name: `scorm-typed-${sfx}`, organizationId: organization.id })
+    .returning();
+  const [course] = await db
+    .insert(schema.course)
+    .values({
+      title: 'SCORM typed',
+      description: 'Typed pass-mark chain',
+      groupId: group.id,
+      slug: `scorm-typed-${sfx}`,
+      type: 'SELF_PACED' as never,
+      status: 'ACTIVE'
+    })
+    .returning();
+  const [activity] = await db
+    .insert(schema.courseActivity)
+    .values({ courseId: course.id, kind: 'scorm', title: 'Package', order: 1 })
+    .returning();
+  await db.insert(schema.activityScorm).values({ activityId: activity.id });
+  const [asset] = await db
+    .insert(schema.asset)
+    .values({ organizationId: organization.id, kind: 'scorm', title: 'Package zip' })
+    .returning();
+  const [version] = await db
+    .insert(schema.contentPackageVersion)
+    .values({
+      assetId: asset.id,
+      versionNumber: 1,
+      isCurrent: true,
+      status: 'ready',
+      format,
+      uploadKey: `zip/${sfx}.zip`,
+      contentPrefix: `scorm/${sfx}/v1`
+    })
+    .returning();
+  const units = await db
+    .insert(schema.contentPackageUnit)
+    .values(
+      seeds.map((seed, position) => ({
+        packageVersionId: version.id,
+        identifier: seed.identifier,
+        title: seed.title,
+        position,
+        unitType: 'sco' as const,
+        href: seed.href,
+        masteryScoreRaw: seed.masteryScoreRaw ?? null,
+        passingScoreScaled: seed.passingScoreScaled ?? null,
+        completionThreshold: seed.completionThreshold ?? null,
+        formatDetails: (seed.formatDetails ?? { format: 'scorm12' }) as never
+      }))
+    )
+    .returning();
+
+  const userId = crypto.randomUUID();
+  await db.insert(schema.user).values({ id: userId, name: `Scorm Typed ${sfx}`, email: `st-${sfx}@example.com` });
+  await db.insert(schema.profile).values({
+    id: userId,
+    fullname: `Scorm Typed ${sfx}`,
+    username: `scorm-typed-${sfx}`,
+    email: `st-${sfx}@example.com`
+  });
+  const [member] = await db
+    .insert(schema.groupmember)
+    .values({ groupId: group.id, roleId: 3, profileId: userId, email: `st-${sfx}@example.com` })
+    .returning();
+
+  return {
+    orgId: organization.id,
+    groupId: group.id,
+    courseId: course.id,
+    activityId: activity.id,
+    profileId: userId,
+    groupMemberId: member.id,
+    versionId: version.id,
+    unitIds: units.map((unit) => unit.id)
+  };
+}
+
 describe.skipIf(!hasDatabase)('scorm outcome mapping parity', () => {
   it('matches the TypeScript mapping on shared CMI samples', { timeout: 30000 }, async () => {
     const { evaluateTryOutcome } = await import('@db/queries/scorm/outcome');
@@ -140,94 +243,109 @@ describe.skipIf(!hasDatabase)('scorm outcome mapping parity', () => {
     const samples: Array<{
       cmi: Record<string, unknown>;
       format: 'scorm12' | 'scorm2004_4';
-      masteryScore: number | null;
-      scaledPassingScore: number | null;
+      masteryScoreRaw: number | null;
+      passingScoreScaled: number | null;
     }> = [
-      { cmi: { core: { lesson_status: 'passed' } }, format: 'scorm12', masteryScore: null, scaledPassingScore: null },
+      {
+        cmi: { core: { lesson_status: 'passed' } },
+        format: 'scorm12',
+        masteryScoreRaw: null,
+        passingScoreScaled: null
+      },
       {
         cmi: { core: { lesson_status: 'completed' } },
         format: 'scorm12',
-        masteryScore: null,
-        scaledPassingScore: null
+        masteryScoreRaw: null,
+        passingScoreScaled: null
       },
-      { cmi: { core: { lesson_status: 'failed' } }, format: 'scorm12', masteryScore: null, scaledPassingScore: null },
+      {
+        cmi: { core: { lesson_status: 'failed' } },
+        format: 'scorm12',
+        masteryScoreRaw: null,
+        passingScoreScaled: null
+      },
       {
         cmi: { core: { lesson_status: 'incomplete' } },
         format: 'scorm12',
-        masteryScore: null,
-        scaledPassingScore: null
+        masteryScoreRaw: null,
+        passingScoreScaled: null
       },
-      { cmi: { core: { lesson_status: 'browsed' } }, format: 'scorm12', masteryScore: null, scaledPassingScore: null },
+      {
+        cmi: { core: { lesson_status: 'browsed' } },
+        format: 'scorm12',
+        masteryScoreRaw: null,
+        passingScoreScaled: null
+      },
       {
         cmi: { core: { lesson_status: 'not attempted' } },
         format: 'scorm12',
-        masteryScore: null,
-        scaledPassingScore: null
+        masteryScoreRaw: null,
+        passingScoreScaled: null
       },
-      { cmi: { core: {} }, format: 'scorm12', masteryScore: null, scaledPassingScore: null },
-      { cmi: {}, format: 'scorm12', masteryScore: null, scaledPassingScore: null },
+      { cmi: { core: {} }, format: 'scorm12', masteryScoreRaw: null, passingScoreScaled: null },
+      { cmi: {}, format: 'scorm12', masteryScoreRaw: null, passingScoreScaled: null },
       {
         cmi: { core: { lesson_status: 'weird-status' } },
         format: 'scorm12',
-        masteryScore: null,
-        scaledPassingScore: null
+        masteryScoreRaw: null,
+        passingScoreScaled: null
       },
-      { cmi: { core: { lesson_status: 'PASSED' } }, format: 'scorm12', masteryScore: null, scaledPassingScore: null },
+      {
+        cmi: { core: { lesson_status: 'PASSED' } },
+        format: 'scorm12',
+        masteryScoreRaw: null,
+        passingScoreScaled: null
+      },
       {
         cmi: { core: { lesson_status: '', score: { raw: '85' } } },
         format: 'scorm12',
-        masteryScore: 80,
-        scaledPassingScore: null
+        masteryScoreRaw: 80,
+        passingScoreScaled: null
       },
       {
         cmi: { core: { lesson_status: 'completed', score: { raw: '70', min: '0', max: '100' } } },
         format: 'scorm12',
-        masteryScore: 80,
-        scaledPassingScore: null
+        masteryScoreRaw: 80,
+        passingScoreScaled: null
       },
       {
         cmi: { core: { score: { raw: '30', min: '10', max: '110' } } },
         format: 'scorm12',
-        masteryScore: null,
-        scaledPassingScore: null
+        masteryScoreRaw: null,
+        passingScoreScaled: null
       },
       {
         cmi: { core: { score: { raw: 'not-a-number' } } },
         format: 'scorm12',
-        masteryScore: null,
-        scaledPassingScore: null
+        masteryScoreRaw: null,
+        passingScoreScaled: null
       },
       {
         cmi: { completion_status: 'completed', success_status: 'passed', score: { scaled: '0.9' } },
         format: 'scorm2004_4',
-        masteryScore: null,
-        scaledPassingScore: 0.8
+        masteryScoreRaw: null,
+        passingScoreScaled: 0.8
       },
       {
         cmi: { completion_status: 'incomplete', success_status: 'failed' },
         format: 'scorm2004_4',
-        masteryScore: null,
-        scaledPassingScore: null
+        masteryScoreRaw: null,
+        passingScoreScaled: null
       },
       {
         cmi: { completion_status: 'COMPLETED', success_status: '' },
         format: 'scorm2004_4',
-        masteryScore: null,
-        scaledPassingScore: null
+        masteryScoreRaw: null,
+        passingScoreScaled: null
       },
-      { cmi: {}, format: 'scorm2004_4', masteryScore: null, scaledPassingScore: null }
+      { cmi: {}, format: 'scorm2004_4', masteryScoreRaw: null, passingScoreScaled: null }
     ];
 
     for (const sample of samples) {
       const fromSql = await evaluateTryOutcome(sample);
       const fromTs = moduleOutcomeFromCmi(sample.cmi, sample.format, {
-        masteryScore: sample.masteryScore,
-        formatDetails: {
-          scaledPassingScore: sample.scaledPassingScore,
-          completionThreshold: null,
-          maxTimeAllowed: null,
-          timeLimitAction: null
-        }
+        masteryScoreRaw: sample.masteryScoreRaw,
+        passingScoreScaled: sample.passingScoreScaled
       });
 
       expect(fromSql, JSON.stringify(sample)).toEqual({
@@ -236,6 +354,296 @@ describe.skipIf(!hasDatabase)('scorm outcome mapping parity', () => {
         scaledScore: fromTs.scaledScore,
         hasPassMark: fromTs.hasPassMark
       });
+    }
+  });
+
+  it('carries typed pass marks from manifest through rules with TS/SQL parity', { timeout: 60000 }, async () => {
+    const { parseScormManifest, applyLmsRules, isScormRuleMet, moduleOutcomeFromCmi } = await import(
+      '@cio/activity-packages'
+    );
+    const { evaluateTryOutcome } = await import('@db/queries/scorm/outcome');
+
+    const manifest12 = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="T12" version="1"
+  xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3">
+  <metadata><schema>ADL SCORM</schema><schemaversion>1.2</schemaversion></metadata>
+  <organizations default="ORG-1"><organization identifier="ORG-1"><title>Typed</title>
+    <item identifier="QUIZ" identifierref="RES-Q"><title>Quiz</title><adlcp:masteryscore>80</adlcp:masteryscore></item>
+    <item identifier="PLAIN12" identifierref="RES-P"><title>Plain</title></item>
+  </organization></organizations>
+  <resources>
+    <resource identifier="RES-Q" type="webcontent" adlcp:scormType="sco" href="quiz.html"><file href="quiz.html"/></resource>
+    <resource identifier="RES-P" type="webcontent" adlcp:scormType="sco" href="plain.html"><file href="plain.html"/></resource>
+  </resources>
+</manifest>`;
+    const manifest2004 = `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="T04" version="1"
+  xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3">
+  <metadata><schema>ADL SCORM</schema><schemaversion>2004 4th Edition</schemaversion></metadata>
+  <organizations default="ORG-1"><organization identifier="ORG-1"><title>Typed</title>
+    <item identifier="PASS" identifierref="RES-PASS"><title>Graded</title><imsss:objectives xmlns:imsss="http://www.imsglobal.org/xsd/imsss"><imsss:primaryObjective satisfiedByMeasure="true"><imsss:minNormalizedMeasure>0.8</imsss:minNormalizedMeasure></imsss:primaryObjective></imsss:objectives></item>
+    <item identifier="TH" identifierref="RES-TH"><title>Threshold</title><adlcp:completionThreshold>0.6</adlcp:completionThreshold><imsss:maxTimeAllowed xmlns:imsss="http://www.imsglobal.org/xsd/imsss">PT45M</imsss:maxTimeAllowed></item>
+    <item identifier="PLAIN04" identifierref="RES-PLAIN"><title>Plain</title></item>
+  </organization></organizations>
+  <resources>
+    <resource identifier="RES-PASS" type="webcontent" adlcp:scormType="sco" href="pass.html"><file href="pass.html"/></resource>
+    <resource identifier="RES-TH" type="webcontent" adlcp:scormType="sco" href="th.html"><file href="th.html"/></resource>
+    <resource identifier="RES-PLAIN" type="webcontent" adlcp:scormType="sco" href="plain.html"><file href="plain.html"/></resource>
+  </resources>
+</manifest>`;
+
+    const parsed12 = parseScormManifest(manifest12, ['quiz.html', 'plain.html']);
+    expect(parsed12.format).toBe('scorm12');
+    expect(parsed12.units).toHaveLength(2);
+    const quizUnit = parsed12.units.find((unit) => unit.identifier === 'QUIZ')!;
+    expect(quizUnit.masteryScoreRaw).toBe(80);
+    expect(quizUnit.passingScoreScaled).toBeNull();
+    expect(quizUnit.completionThreshold).toBeNull();
+    expect(quizUnit.formatDetails).toEqual({ format: 'scorm12' });
+
+    const parsed2004 = parseScormManifest(manifest2004, ['pass.html', 'th.html', 'plain.html']);
+    expect(parsed2004.format).toBe('scorm2004_4');
+    expect(parsed2004.units).toHaveLength(3);
+    const passUnit = parsed2004.units.find((unit) => unit.identifier === 'PASS')!;
+    const thresholdUnit = parsed2004.units.find((unit) => unit.identifier === 'TH')!;
+    expect(passUnit.passingScoreScaled).toBe(0.8);
+    expect(passUnit.completionThreshold).toBeNull();
+    expect(thresholdUnit.passingScoreScaled).toBeNull();
+    expect(thresholdUnit.completionThreshold).toBe(0.6);
+    expect(thresholdUnit.formatDetails).toEqual({
+      format: 'scorm2004',
+      maxTimeAllowed: 'PT45M',
+      timeLimitAction: null
+    });
+
+    const toInserted = (unit: {
+      masteryScoreRaw: number | null;
+      passingScoreScaled: number | null;
+      completionThreshold: number | null;
+    }) => ({
+      masteryScoreRaw: unit.masteryScoreRaw == null ? null : String(unit.masteryScoreRaw),
+      passingScoreScaled: unit.passingScoreScaled == null ? null : String(unit.passingScoreScaled),
+      completionThreshold: unit.completionThreshold == null ? null : String(unit.completionThreshold)
+    });
+    expect(toInserted(quizUnit)).toEqual({
+      masteryScoreRaw: '80',
+      passingScoreScaled: null,
+      completionThreshold: null
+    });
+    expect(toInserted(passUnit)).toEqual({
+      masteryScoreRaw: null,
+      passingScoreScaled: '0.8',
+      completionThreshold: null
+    });
+    expect(toInserted(thresholdUnit)).toEqual({
+      masteryScoreRaw: null,
+      passingScoreScaled: null,
+      completionThreshold: '0.6'
+    });
+
+    const ruledQuiz = applyLmsRules(
+      { core: { score: { raw: 85 } } },
+      { masteryScoreRaw: quizUnit.masteryScoreRaw, passingScoreScaled: null, completionThreshold: null },
+      'scorm12',
+      { terminated: false }
+    );
+    expect(ruledQuiz).toMatchObject({ core: { lesson_status: 'passed' } });
+
+    const ruledThreshold = applyLmsRules(
+      { progress_measure: '0.7' },
+      { masteryScoreRaw: null, passingScoreScaled: null, completionThreshold: thresholdUnit.completionThreshold },
+      'scorm2004_4',
+      { terminated: true }
+    );
+    expect(ruledThreshold).toMatchObject({ completion_status: 'completed' });
+
+    const fixture12 = await createTypedFixture(suffix(), 'scorm12', [
+      {
+        identifier: 'QUIZ',
+        title: 'Quiz',
+        href: 'quiz.html',
+        masteryScoreRaw: '80',
+        formatDetails: { format: 'scorm12' }
+      },
+      { identifier: 'PLAIN12', title: 'Plain', href: 'plain.html', formatDetails: { format: 'scorm12' } }
+    ]);
+    const fixture2004 = await createTypedFixture(suffix(), 'scorm2004_4', [
+      {
+        identifier: 'PASS',
+        title: 'Graded',
+        href: 'pass.html',
+        passingScoreScaled: '0.8',
+        formatDetails: { format: 'scorm2004', maxTimeAllowed: null, timeLimitAction: null }
+      },
+      {
+        identifier: 'TH',
+        title: 'Threshold',
+        href: 'th.html',
+        completionThreshold: '0.6',
+        formatDetails: { format: 'scorm2004', maxTimeAllowed: 'PT45M', timeLimitAction: null }
+      },
+      {
+        identifier: 'PLAIN04',
+        title: 'Plain',
+        href: 'plain.html',
+        formatDetails: { format: 'scorm2004', maxTimeAllowed: null, timeLimitAction: null }
+      }
+    ]);
+
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { listScormResults } = await import('@cio/core/services/activity/providers/scorm/results');
+
+      const [attempt12] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: fixture12.activityId,
+          profileId: fixture12.profileId,
+          packageVersionId: fixture12.versionId,
+          attemptNumber: 1
+        })
+        .returning();
+      await db.insert(schema.scormScoAttempt).values([
+        {
+          attemptId: attempt12!.id,
+          unitId: fixture12.unitIds[0]!,
+          status: 'closed',
+          cmi: ruledQuiz,
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString()
+        },
+        {
+          attemptId: attempt12!.id,
+          unitId: fixture12.unitIds[1]!,
+          status: 'closed',
+          cmi: { core: { lesson_status: 'completed' } },
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString()
+        }
+      ]);
+
+      const [attempt2004] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: fixture2004.activityId,
+          profileId: fixture2004.profileId,
+          packageVersionId: fixture2004.versionId,
+          attemptNumber: 1
+        })
+        .returning();
+      await db.insert(schema.scormScoAttempt).values([
+        {
+          attemptId: attempt2004!.id,
+          unitId: fixture2004.unitIds[0]!,
+          status: 'closed',
+          cmi: { completion_status: 'completed', success_status: 'passed', score: { scaled: '0.9' } },
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString()
+        },
+        {
+          attemptId: attempt2004!.id,
+          unitId: fixture2004.unitIds[1]!,
+          status: 'closed',
+          cmi: ruledThreshold,
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString()
+        },
+        {
+          attemptId: attempt2004!.id,
+          unitId: fixture2004.unitIds[2]!,
+          status: 'closed',
+          cmi: { completion_status: 'completed' },
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString()
+        }
+      ]);
+
+      const expected12 = [
+        moduleOutcomeFromCmi(ruledQuiz, 'scorm12', { masteryScoreRaw: 80, passingScoreScaled: null }),
+        moduleOutcomeFromCmi({ core: { lesson_status: 'completed' } }, 'scorm12', {
+          masteryScoreRaw: null,
+          passingScoreScaled: null
+        })
+      ];
+      expect(isScormRuleMet({ rule: 'auto' }, expected12)).toBe(true);
+
+      const expected2004 = [
+        moduleOutcomeFromCmi(
+          { completion_status: 'completed', success_status: 'passed', score: { scaled: '0.9' } },
+          'scorm2004_4',
+          { masteryScoreRaw: null, passingScoreScaled: 0.8 }
+        ),
+        moduleOutcomeFromCmi(ruledThreshold, 'scorm2004_4', { masteryScoreRaw: null, passingScoreScaled: null }),
+        moduleOutcomeFromCmi({ completion_status: 'completed' }, 'scorm2004_4', {
+          masteryScoreRaw: null,
+          passingScoreScaled: null
+        })
+      ];
+      expect(isScormRuleMet({ rule: 'auto' }, expected2004)).toBe(true);
+
+      for (const [cmi, format, unit] of [
+        [ruledQuiz, 'scorm12', { masteryScoreRaw: 80, passingScoreScaled: null }],
+        [{ core: { lesson_status: 'completed' } }, 'scorm12', { masteryScoreRaw: null, passingScoreScaled: null }],
+        [
+          { completion_status: 'completed', success_status: 'passed', score: { scaled: '0.9' } },
+          'scorm2004_4',
+          { masteryScoreRaw: null, passingScoreScaled: 0.8 }
+        ],
+        [ruledThreshold, 'scorm2004_4', { masteryScoreRaw: null, passingScoreScaled: null }],
+        [{ completion_status: 'completed' }, 'scorm2004_4', { masteryScoreRaw: null, passingScoreScaled: null }]
+      ] as Array<
+        [
+          Record<string, unknown>,
+          'scorm12' | 'scorm2004_4',
+          { masteryScoreRaw: number | null; passingScoreScaled: number | null }
+        ]
+      >) {
+        const fromSql = await evaluateTryOutcome({
+          cmi: cmi as Record<string, unknown>,
+          format,
+          masteryScoreRaw: unit.masteryScoreRaw,
+          passingScoreScaled: unit.passingScoreScaled
+        });
+        const fromTs = moduleOutcomeFromCmi(cmi as Record<string, unknown>, format, unit);
+
+        expect(fromSql).toEqual({
+          completion: fromTs.completion,
+          success: fromTs.success,
+          scaledScore: fromTs.scaledScore,
+          hasPassMark: fromTs.hasPassMark
+        });
+      }
+
+      const listed12 = await listScormResults(fixture12.activityId, [fixture12.profileId], {
+        page: 1,
+        limit: 20,
+        sort: 'name',
+        direction: 'asc'
+      });
+      expect(listed12.learners).toHaveLength(1);
+      expect(listed12.learners[0]?.scorePercent).toBe(85);
+      expect(listed12.learners[0]?.passFail).toBe('passed');
+
+      const listed2004 = await listScormResults(fixture2004.activityId, [fixture2004.profileId], {
+        page: 1,
+        limit: 20,
+        sort: 'name',
+        direction: 'asc'
+      });
+      expect(listed2004.learners).toHaveLength(1);
+      expect(listed2004.learners[0]?.scorePercent).toBe(90);
+      expect(listed2004.learners[0]?.passFail).toBe('passed');
+    } finally {
+      await cleanupResultsFixture(fixture12);
+      await cleanupResultsFixture(fixture2004);
     }
   });
 });

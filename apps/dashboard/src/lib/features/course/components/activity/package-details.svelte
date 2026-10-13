@@ -20,7 +20,7 @@
 
   const passMark = $derived.by(() => {
     for (const unit of launchable) {
-      const mark = unitPassMark(unit as { masteryScore?: unknown; formatDetails?: unknown });
+      const mark = unitPassMark(unit);
       if (mark !== null) return mark;
     }
     return null;

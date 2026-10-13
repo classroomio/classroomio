@@ -3201,7 +3201,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             "format": {
               "enum": [
                 "standard",
-                "scorm",
+                "single_activity",
               ],
               "type": "string",
             },

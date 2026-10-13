@@ -149,7 +149,7 @@ export const courseRouter = new Hono()
       const user = c.get('user')!;
       const validatedData = c.req.valid('json');
 
-      if (validatedData.format === 'scorm') {
+      if (validatedData.format === 'single_activity') {
         await assertActivityKindAllowed(validatedData.organizationId, 'scorm');
       }
 

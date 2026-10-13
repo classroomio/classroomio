@@ -1,5 +1,9 @@
 import { deleteScormSessionEventsOlderThan } from '@cio/db/queries/scorm/session-event';
-import { deletePackageVersionsByIds, listStaleUnpinnedPackageVersions } from '@cio/db/queries/activity/package-version';
+import {
+  deletePackageVersionsByIds,
+  listVersionsDueForRetention,
+  markPackageVersionArchived
+} from '@cio/db/queries/activity/package-version';
 
 import { getStorageConfig } from '../../config/storage';
 import { deleteS3Prefix } from '../../utils/s3';
@@ -7,6 +11,7 @@ import { deleteS3Prefix } from '../../utils/s3';
 export interface ScormRetentionResult {
   eventsDeleted: number;
   versionsDeleted: number;
+  versionsArchived: number;
   objectsDeleted: number;
 }
 
@@ -15,8 +20,10 @@ function cutoffIso(days: number, nowMs: number): string {
 }
 
 /**
- * Deletes diagnostic events past their window and extracted files plus rows
- * of replaced, unreferenced package versions. Original ZIPs are kept.
+ * Deletes diagnostic events past their window, then applies the three-way
+ * rule to replaced package versions: never-launched rows lose files, ZIP
+ * and row; launched rows with only closed attempts lose files and are
+ * archived; rows with an open attempt are kept.
  */
 export async function runScormRetention(
   eventOlderThanDays = 90,
@@ -25,18 +32,35 @@ export async function runScormRetention(
 ): Promise<ScormRetentionResult> {
   const eventsDeleted = await deleteScormSessionEventsOlderThan(cutoffIso(eventOlderThanDays, nowMs));
 
-  const stale = await listStaleUnpinnedPackageVersions(cutoffIso(unpinnedVersionDays, nowMs));
+  const due = await listVersionsDueForRetention(cutoffIso(unpinnedVersionDays, nowMs));
   const bucket = getStorageConfig().bucketScorm;
   let objectsDeleted = 0;
-  const purgedIds: string[] = [];
+  let versionsArchived = 0;
+  const deleteIds: string[] = [];
 
-  for (const version of stale) {
-    const removed = await deleteS3Prefix(bucket, `${version.contentPrefix}/`);
-    objectsDeleted += removed;
-    purgedIds.push(version.id);
+  for (const version of due) {
+    if (!version.hasAttempts) {
+      const removedFiles = await deleteS3Prefix(bucket, `${version.contentPrefix}/`);
+      const removedZip = await deleteS3Prefix(bucket, version.uploadKey);
+      objectsDeleted += removedFiles + removedZip;
+      deleteIds.push(version.id);
+    } else if (!version.hasOpenAttempts) {
+      const removed = await deleteS3Prefix(bucket, `${version.contentPrefix}/`);
+      objectsDeleted += removed;
+      await markPackageVersionArchived(version.id);
+      versionsArchived += 1;
+    }
   }
 
-  const deletedIds = await deletePackageVersionsByIds(purgedIds);
+  const deletedIds = await deletePackageVersionsByIds(deleteIds);
+  const versionsDeleted = deletedIds.length;
 
-  return { eventsDeleted, versionsDeleted: deletedIds.length, objectsDeleted };
+  console.info('runScormRetention', {
+    eventsDeleted,
+    versionsDeleted,
+    versionsArchived,
+    objectsDeleted
+  });
+
+  return { eventsDeleted, versionsDeleted, versionsArchived, objectsDeleted };
 }

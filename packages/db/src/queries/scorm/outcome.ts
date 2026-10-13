@@ -4,8 +4,8 @@ import { db, type DbOrTxClient } from '@db/drizzle';
 export interface ScormTryOutcomeInput {
   cmi: SQL;
   format: SQL;
-  masteryScore: SQL;
-  scaledPassingScore: SQL;
+  masteryScoreRaw: SQL;
+  passingScoreScaled: SQL;
 }
 
 export interface ScormTryOutcomeColumns {
@@ -29,7 +29,7 @@ function safeNumericText(value: SQL): SQL<number | null> {
  * TypeScript mapping. Keep the two in sync; the shared fixture test proves it.
  */
 export function scormTryOutcomeColumns(input: ScormTryOutcomeInput): ScormTryOutcomeColumns {
-  const { cmi, format, masteryScore, scaledPassingScore } = input;
+  const { cmi, format, masteryScoreRaw, passingScoreScaled } = input;
   const is12 = sql<boolean>`${format} = 'scorm12'`;
 
   const status12 = sql<string>`COALESCE(lower(${cmi}->'core'->>'lesson_status'), '')`;
@@ -43,7 +43,7 @@ export function scormTryOutcomeColumns(input: ScormTryOutcomeInput): ScormTryOut
 
   const completion = sql<string>`CASE WHEN ${is12} THEN (${completion12}) ELSE (${completion2004}) END`;
   const success = sql<string>`CASE WHEN ${is12} THEN (${success12}) ELSE (${success2004}) END`;
-  const hasPassMark = sql<boolean>`CASE WHEN ${is12} THEN (${masteryScore} IS NOT NULL) ELSE (${scaledPassingScore} IS NOT NULL) END`;
+  const hasPassMark = sql<boolean>`CASE WHEN ${is12} THEN (${masteryScoreRaw} IS NOT NULL) ELSE (${passingScoreScaled} IS NOT NULL) END`;
 
   const raw12 = safeNumericText(sql<string>`${cmi}->'core'->'score'->>'raw'`);
   const min12 = safeNumericText(sql<string>`${cmi}->'core'->'score'->>'min'`);
@@ -60,8 +60,8 @@ export function scormTryOutcomeColumns(input: ScormTryOutcomeInput): ScormTryOut
 export interface EvaluateTryOutcomeInput {
   cmi: Record<string, unknown>;
   format: string;
-  masteryScore: number | string | null;
-  scaledPassingScore: number | null;
+  masteryScoreRaw: number | string | null;
+  passingScoreScaled: number | null;
 }
 
 export interface EvaluatedTryOutcome {
@@ -84,8 +84,8 @@ export async function evaluateTryOutcome(
     const columns = scormTryOutcomeColumns({
       cmi: sql<typeof input.cmi>`${JSON.stringify(input.cmi)}::jsonb`,
       format: sql<string>`${input.format}::text`,
-      masteryScore: sql<number | string | null>`${input.masteryScore}::numeric`,
-      scaledPassingScore: sql<number | null>`${input.scaledPassingScore}::numeric`
+      masteryScoreRaw: sql<number | string | null>`${input.masteryScoreRaw}::numeric`,
+      passingScoreScaled: sql<number | null>`${input.passingScoreScaled}::numeric`
     });
 
     const [row] = await dbClient

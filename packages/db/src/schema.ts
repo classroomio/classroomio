@@ -25,7 +25,19 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
+import { COURSE_FORMAT_VALUES, SINGLE_ACTIVITY_COURSE_TYPES } from '@cio/utils/constants/course-format';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import {
+  ACTIVITY_KINDS,
+  CONTENT_PACKAGE_FORMATS,
+  CONTENT_PACKAGE_STATUSES,
+  CONTENT_PACKAGE_UNIT_TYPES,
+  SCORM_ATTEMPT_CLOSE_REASONS,
+  SCORM_COMPLETION_RULES,
+  SCORM_LAUNCH_MODES,
+  SCORM_SCO_ATTEMPT_STATUSES,
+  SCORM_SESSION_EVENT_KINDS
+} from '@cio/utils/constants/activity';
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import {
@@ -35,6 +47,16 @@ import {
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
+export const courseFormat = pgEnum('COURSE_FORMAT', [...COURSE_FORMAT_VALUES]);
+export const activityKind = pgEnum('ACTIVITY_KIND', [...ACTIVITY_KINDS]);
+export const contentPackageStatus = pgEnum('CONTENT_PACKAGE_STATUS', [...CONTENT_PACKAGE_STATUSES]);
+export const contentPackageFormat = pgEnum('CONTENT_PACKAGE_FORMAT', [...CONTENT_PACKAGE_FORMATS]);
+export const contentPackageUnitType = pgEnum('CONTENT_PACKAGE_UNIT_TYPE', [...CONTENT_PACKAGE_UNIT_TYPES]);
+export const scormCompletionRule = pgEnum('SCORM_COMPLETION_RULE', [...SCORM_COMPLETION_RULES]);
+export const scormLaunchMode = pgEnum('SCORM_LAUNCH_MODE', [...SCORM_LAUNCH_MODES]);
+export const scormAttemptCloseReason = pgEnum('SCORM_ATTEMPT_CLOSE_REASON', [...SCORM_ATTEMPT_CLOSE_REASONS]);
+export const scormScoAttemptStatus = pgEnum('SCORM_SCO_ATTEMPT_STATUS', [...SCORM_SCO_ATTEMPT_STATUSES]);
+export const scormSessionEventKind = pgEnum('SCORM_SESSION_EVENT_KIND', [...SCORM_SESSION_EVENT_KINDS]);
 export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
@@ -826,7 +848,7 @@ export const course = pgTable(
     }>(),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('SELF_PACED'),
-    format: varchar({ length: 16 }).default('standard').notNull(),
+    format: courseFormat().default('standard').notNull(),
     callout: jsonb().$type<{
       title: string;
       description: string;
@@ -848,7 +870,11 @@ export const course = pgTable(
       .where(sql`${table.templateId} is not null`),
     uniqueIndex('course_seed_key_unique')
       .on(table.seedKey)
-      .where(sql`${table.seedKey} is not null`)
+      .where(sql`${table.seedKey} is not null`),
+    check(
+      'course_format_type_check',
+      sql`${table.format} = 'standard' OR ${table.type} IN (${sql.raw(SINGLE_ACTIVITY_COURSE_TYPES.map((type) => `'${type}'`).join(', '))})`
+    )
   ]
 );
 
@@ -1762,7 +1788,7 @@ export const courseActivity = pgTable(
       .notNull(),
     courseId: uuid('course_id').notNull(),
     sectionId: uuid('section_id'),
-    kind: varchar({ length: 16 }).notNull(),
+    kind: activityKind().notNull(),
     title: varchar().notNull(),
     instructions: text(),
     slug: varchar(),
@@ -1828,7 +1854,8 @@ export const activityCompletion = pgTable(
       foreignColumns: [profile.id],
       name: 'activity_completion_profile_id_fkey'
     }).onDelete('cascade'),
-    unique('activity_completion_activity_profile_key').on(table.activityId, table.profileId)
+    unique('activity_completion_activity_profile_key').on(table.activityId, table.profileId),
+    check('activity_completion_complete_check', sql`${table.isComplete} = (${table.completedAt} IS NOT NULL)`)
   ]
 );
 
@@ -4507,7 +4534,9 @@ export type PackageManifestTree = Record<string, unknown>;
 
 export type PackageWarningCode = string;
 
-export type PackageUnitFormatDetails = Record<string, unknown>;
+export type PackageUnitFormatDetails =
+  | { format: 'scorm2004'; maxTimeAllowed: string | null; timeLimitAction: string | null }
+  | { format: 'scorm12' };
 
 export type ScormCmiState = Record<string, unknown>;
 
@@ -4521,8 +4550,8 @@ export const contentPackageVersion = pgTable(
     assetId: uuid('asset_id').notNull(),
     versionNumber: integer('version_number').notNull(),
     isCurrent: boolean('is_current').default(false).notNull(),
-    status: varchar({ length: 16 }).default('uploading').notNull(),
-    format: varchar({ length: 16 }),
+    status: contentPackageStatus().default('uploading').notNull(),
+    format: contentPackageFormat(),
     manifestIdentifier: text('manifest_identifier'),
     title: text(),
     manifest: jsonb().$type<PackageManifestTree>(),
@@ -4536,6 +4565,8 @@ export const contentPackageVersion = pgTable(
     processingJobId: uuid('processing_job_id'),
     createdByProfileId: uuid('created_by_profile_id'),
     processedAt: timestamp('processed_at', { withTimezone: true, mode: 'string' }),
+    replacedAt: timestamp('replaced_at', { withTimezone: true, mode: 'string' }),
+    archivedAt: timestamp('archived_at', { withTimezone: true, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -4558,7 +4589,14 @@ export const contentPackageVersion = pgTable(
     unique('content_package_version_asset_number_key').on(table.assetId, table.versionNumber),
     uniqueIndex('content_package_version_current_key')
       .on(table.assetId)
-      .where(sql`${table.isCurrent}`)
+      .where(sql`${table.isCurrent}`),
+    index('idx_content_package_version_replaced')
+      .on(table.replacedAt)
+      .where(sql`${table.isCurrent} = false`),
+    check(
+      'content_package_version_current_not_replaced_check',
+      sql`NOT (${table.isCurrent} AND ${table.replacedAt} IS NOT NULL)`
+    )
   ]
 );
 
@@ -4574,10 +4612,12 @@ export const contentPackageUnit = pgTable(
     parentIdentifier: text('parent_identifier'),
     title: text().notNull(),
     position: integer().notNull(),
-    unitType: varchar('unit_type', { length: 8 }).notNull(),
+    unitType: contentPackageUnitType('unit_type').notNull(),
     href: text().notNull(),
     parameters: text(),
-    masteryScore: numeric('mastery_score'),
+    masteryScoreRaw: numeric('mastery_score_raw'),
+    passingScoreScaled: numeric('passing_score_scaled'),
+    completionThreshold: numeric('completion_threshold'),
     launchData: text('launch_data'),
     formatDetails: jsonb('format_details').default({}).$type<PackageUnitFormatDetails>().notNull(),
     isVisible: boolean('is_visible').default(true).notNull()
@@ -4588,7 +4628,19 @@ export const contentPackageUnit = pgTable(
       foreignColumns: [contentPackageVersion.id],
       name: 'content_package_unit_package_version_id_fkey'
     }).onDelete('cascade'),
-    unique('content_package_unit_version_identifier_key').on(table.packageVersionId, table.identifier)
+    unique('content_package_unit_version_identifier_key').on(table.packageVersionId, table.identifier),
+    check(
+      'content_package_unit_mastery_score_raw_check',
+      sql`${table.masteryScoreRaw} IS NULL OR ${table.masteryScoreRaw} BETWEEN 0 AND 100`
+    ),
+    check(
+      'content_package_unit_passing_score_scaled_check',
+      sql`${table.passingScoreScaled} IS NULL OR ${table.passingScoreScaled} BETWEEN -1 AND 1`
+    ),
+    check(
+      'content_package_unit_completion_threshold_check',
+      sql`${table.completionThreshold} IS NULL OR ${table.completionThreshold} BETWEEN 0 AND 1`
+    )
   ]
 );
 
@@ -4597,10 +4649,10 @@ export const activityScorm = pgTable(
   {
     activityId: uuid('activity_id').primaryKey().notNull(),
     assetId: uuid('asset_id'),
-    completionRule: varchar('completion_rule', { length: 16 }).default('auto').notNull(),
+    completionRule: scormCompletionRule('completion_rule').default('auto').notNull(),
     minScorePercent: integer('min_score_percent'),
     allowRetakes: boolean('allow_retakes').default(false).notNull(),
-    launchMode: varchar('launch_mode', { length: 16 }).default('embedded').notNull(),
+    launchMode: scormLaunchMode('launch_mode').default('embedded').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -4615,7 +4667,11 @@ export const activityScorm = pgTable(
       foreignColumns: [asset.id],
       name: 'activity_scorm_asset_id_fkey'
     }).onDelete('restrict'),
-    index('idx_activity_scorm_asset_id').on(table.assetId)
+    index('idx_activity_scorm_asset_id').on(table.assetId),
+    check(
+      'activity_scorm_min_score_check',
+      sql`${table.minScorePercent} IS NULL OR ${table.minScorePercent} BETWEEN 0 AND 100`
+    )
   ]
 );
 
@@ -4632,7 +4688,7 @@ export const scormAttempt = pgTable(
     attemptNumber: integer('attempt_number').notNull(),
     startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     closedAt: timestamp('closed_at', { withTimezone: true, mode: 'string' }),
-    closeReason: varchar('close_reason', { length: 16 })
+    closeReason: scormAttemptCloseReason('close_reason')
   },
   (table) => [
     foreignKey({
@@ -4654,7 +4710,8 @@ export const scormAttempt = pgTable(
     uniqueIndex('scorm_attempt_open_key')
       .on(table.activityId, table.profileId)
       .where(sql`${table.closedAt} is null`),
-    index('idx_scorm_attempt_activity_id').on(table.activityId)
+    index('idx_scorm_attempt_activity_id').on(table.activityId),
+    check('scorm_attempt_close_reason_check', sql`(${table.closedAt} IS NULL) = (${table.closeReason} IS NULL)`)
   ]
 );
 
@@ -4667,7 +4724,7 @@ export const scormScoAttempt = pgTable(
       .notNull(),
     attemptId: uuid('attempt_id').notNull(),
     unitId: uuid('unit_id').notNull(),
-    status: varchar({ length: 16 }).default('active').notNull(),
+    status: scormScoAttemptStatus().default('active').notNull(),
     cmi: jsonb().default({}).$type<ScormCmiState>().notNull(),
     commitSeq: integer('commit_seq').default(0).notNull(),
     startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -4700,7 +4757,7 @@ export const scormSessionEvent = pgTable(
       .primaryKey()
       .notNull(),
     scoAttemptId: uuid('sco_attempt_id').notNull(),
-    kind: varchar({ length: 24 }).notNull(),
+    kind: scormSessionEventKind().notNull(),
     detail: jsonb().default({}).$type<Record<string, unknown>>().notNull(),
     userAgent: text('user_agent'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
@@ -4711,6 +4768,7 @@ export const scormSessionEvent = pgTable(
       foreignColumns: [scormScoAttempt.id],
       name: 'scorm_session_event_sco_attempt_id_fkey'
     }).onDelete('cascade'),
-    index('idx_scorm_session_event_sco_attempt_created').on(table.scoAttemptId, table.createdAt)
+    index('idx_scorm_session_event_sco_attempt_created').on(table.scoAttemptId, table.createdAt),
+    index('idx_scorm_session_event_created_at').on(table.createdAt)
   ]
 );

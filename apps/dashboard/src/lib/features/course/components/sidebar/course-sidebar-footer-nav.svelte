@@ -15,6 +15,7 @@
   import { getStudentContentLockTitleKey } from '$features/course/utils/content-lock-utils';
   import { ContentType } from '@cio/utils/constants/content';
   import { t } from '$lib/utils/functions/translations';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
@@ -27,7 +28,7 @@
 
   let { courseId, path, class: className = '' }: Props = $props();
 
-  const isScormCourse = $derived((courseApi.course as { format?: string } | null | undefined)?.format === 'scorm');
+  const isSingleActivity = $derived(isSingleActivityCourse(courseApi.course));
   const courseProgress = $derived(getCourseProgress(courseApi.course));
   const previousItem = $derived(getPreviousNavigableContent(courseApi.course, path));
   const nextItem = $derived(getNextIncompleteNavigableContent(courseApi.course, path));
@@ -70,7 +71,7 @@
 </script>
 
 <div class={className}>
-  {#if !isScormCourse}
+  {#if !isSingleActivity}
     <nav class="flex gap-2 px-3 py-2.5" aria-label={$t('course.sidebar.footer_nav.label')}>
       <Button
         size="sm"

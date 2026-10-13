@@ -12,6 +12,7 @@ export {
 } from './zip/index.js';
 export {
   parseScormManifest,
+  scormLaunchUrl,
   type ScormPackageFormat,
   type ScormUnitType,
   type ScormPackageWarning,
@@ -25,6 +26,7 @@ export {
   flattenCmi,
   mergeCmi,
   normalizeCommitCmi,
+  summarizeInteractions,
   mapScorm12Outcome,
   mapScorm2004Outcome,
   moduleOutcomeFromCmi,
@@ -32,6 +34,7 @@ export {
   statusAfterTerminate,
   averageScaledScore,
   isScormRuleMet,
+  shouldRecordCommitEvent,
   type ScormCmi,
   type ScormCompletionValue,
   type ScormSuccessValue,
@@ -39,7 +42,10 @@ export {
   type ScormTryStatus,
   type ScormModuleOutcome,
   type ScormRuleSettings,
-  type ScormCommit
+  type ScormCommit,
+  type ScormCommitOutcomeSnapshot,
+  type ScormCommitRecordContext,
+  type ScormInteractionSummary
 } from './scorm/runtime/index.js';
 export {
   LAUNCH_TOKEN_TTL_SECONDS,

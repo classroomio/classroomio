@@ -18,6 +18,7 @@
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { licenseApi } from '$features/license/api/license.svelte';
   import type { TCourseType } from '@cio/db/types';
+  import { SINGLE_ACTIVITY_COURSE_TYPES } from '@cio/utils/constants/course-format';
   import { courseApi } from '../api';
 
   type CoursePath = 'build' | 'scorm';
@@ -74,7 +75,7 @@
     }
   ];
   const scormTypeOptions = $derived(
-    typeOptions.filter((option) => option.type !== 'LIVE_CLASS' && option.type !== 'PUBLIC')
+    typeOptions.filter((option) => (SINGLE_ACTIVITY_COURSE_TYPES as readonly string[]).includes(option.type))
   );
   const visibleTypeOptions = $derived(path === 'scorm' ? scormTypeOptions : typeOptions);
   const courseTypeOptionsForGroup = $derived(
@@ -89,8 +90,8 @@
   let type = $state(typeOptions[0].type);
 
   $effect(() => {
-    if (path === 'scorm' && type !== 'SELF_PACED' && type !== 'COMPLIANCE') {
-      type = 'SELF_PACED';
+    if (path === 'scorm' && !(SINGLE_ACTIVITY_COURSE_TYPES as readonly string[]).includes(type)) {
+      type = SINGLE_ACTIVITY_COURSE_TYPES[0];
     }
   });
 
@@ -124,7 +125,7 @@
         title: $createCourseModal.title,
         description: $createCourseModal.description,
         type,
-        ...(path === 'scorm' ? { format: 'scorm' as const } : {})
+        ...(path === 'scorm' ? { format: 'single_activity' as const } : {})
       },
       (courseId, activityId) => {
         if (path === 'scorm' && activityId) {

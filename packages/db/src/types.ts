@@ -3,9 +3,17 @@
 // Naming convention: T prefix for types
 
 import * as schema from './schema';
-import type { TCourseFormat } from '@cio/utils/constants/course-format';
 
-export type { TCourseFormat };
+export type TCourseFormat = (typeof schema.courseFormat.enumValues)[number];
+export type TActivityKind = (typeof schema.activityKind.enumValues)[number];
+export type TContentPackageStatus = (typeof schema.contentPackageStatus.enumValues)[number];
+export type TContentPackageFormat = (typeof schema.contentPackageFormat.enumValues)[number];
+export type TContentPackageUnitType = (typeof schema.contentPackageUnitType.enumValues)[number];
+export type TScormCompletionRule = (typeof schema.scormCompletionRule.enumValues)[number];
+export type TScormLaunchMode = (typeof schema.scormLaunchMode.enumValues)[number];
+export type TScormAttemptCloseReason = (typeof schema.scormAttemptCloseReason.enumValues)[number];
+export type TScormScoAttemptStatus = (typeof schema.scormScoAttemptStatus.enumValues)[number];
+export type TScormSessionEventKind = (typeof schema.scormSessionEventKind.enumValues)[number];
 
 export type TUser = typeof schema.user.$inferSelect;
 export type TNewUser = typeof schema.user.$inferInsert;

@@ -2,7 +2,7 @@ import * as schema from '@db/schema';
 
 import { and, desc, eq, inArray, isNull, sql } from '@db/drizzle';
 import { db, type DbOrTxClient } from '@db/drizzle';
-import type { TNewScormAttempt, TScormAttempt } from '@db/types';
+import type { TNewScormAttempt, TScormAttempt, TScormAttemptCloseReason } from '@db/types';
 
 /**
  * Closes every open attempt pinned to an older version of the asset's package.
@@ -11,7 +11,7 @@ import type { TNewScormAttempt, TScormAttempt } from '@db/types';
 export async function closeSupersededAttempts(
   assetId: string,
   keepVersionId: string,
-  reason: string,
+  reason: TScormAttemptCloseReason,
   dbClient: DbOrTxClient = db
 ): Promise<number> {
   try {
@@ -201,7 +201,7 @@ export async function createScormAttempt(
  */
 export async function closeScormAttempt(
   attemptId: string,
-  reason: string,
+  reason: TScormAttemptCloseReason,
   dbClient: DbOrTxClient = db
 ): Promise<TScormAttempt | null> {
   try {
