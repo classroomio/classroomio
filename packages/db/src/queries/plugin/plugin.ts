@@ -63,6 +63,12 @@ export async function listPluginVersions(pluginId: string): Promise<TPluginVersi
     .orderBy(desc(schema.pluginVersion.publishedAt));
 }
 
+export async function getPluginVersionById(id: string): Promise<TPluginVersion | null> {
+  const [row] = await db.select().from(schema.pluginVersion).where(eq(schema.pluginVersion.id, id)).limit(1);
+
+  return row ?? null;
+}
+
 export async function createPluginVersion(data: TNewPluginVersion): Promise<TPluginVersion> {
   const [row] = await db.insert(schema.pluginVersion).values(data).returning();
 

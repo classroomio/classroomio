@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 import type { TNewPluginStorage, TPluginStorage, TPluginStorageScopeType } from '@db/types';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, not, sql } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
 export async function getPluginStorageItem(
@@ -89,6 +89,37 @@ export async function listPluginStorageByNamespace(
         eq(schema.pluginStorage.namespace, namespace)
       )
     );
+}
+
+export async function getPluginStorageUsageBytes(
+  installationId: string,
+  exclude?: {
+    scopeType: TPluginStorageScopeType;
+    scopeId: string;
+    namespace: string;
+    key: string;
+  }
+): Promise<number> {
+  const conditions = [eq(schema.pluginStorage.installationId, installationId)];
+  if (exclude) {
+    conditions.push(
+      not(
+        and(
+          eq(schema.pluginStorage.scopeType, exclude.scopeType),
+          eq(schema.pluginStorage.scopeId, exclude.scopeId),
+          eq(schema.pluginStorage.namespace, exclude.namespace),
+          eq(schema.pluginStorage.key, exclude.key)
+        )!
+      )
+    );
+  }
+
+  const [usage] = await db
+    .select({ bytes: sql<number>`coalesce(sum(pg_column_size(${schema.pluginStorage.value})), 0)` })
+    .from(schema.pluginStorage)
+    .where(and(...conditions));
+
+  return Number(usage?.bytes ?? 0);
 }
 
 export async function purgeInstallationStorage(installationId: string): Promise<number> {

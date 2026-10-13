@@ -37,6 +37,16 @@ export async function listSubscriptionsByInstallation(installationId: string): P
     .where(eq(schema.pluginEventSubscription.installationId, installationId));
 }
 
+export async function updateInstallationSubscriptionStatus(
+  installationId: string,
+  status: 'active' | 'disabled'
+): Promise<void> {
+  await db
+    .update(schema.pluginEventSubscription)
+    .set({ status, updatedAt: new Date().toISOString() })
+    .where(eq(schema.pluginEventSubscription.installationId, installationId));
+}
+
 export async function listActiveSubscriptionsForEvent(
   eventType: string,
   organizationId?: string

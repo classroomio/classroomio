@@ -4,7 +4,8 @@ import type {
   TPlugin,
   TPluginInstallation,
   TPluginInstallationStatus,
-  TPluginOrgApprovalStatus
+  TPluginOrgApprovalStatus,
+  TPluginVersion
 } from '@db/types';
 import type { TPluginManifest } from '@cio/utils/validation/plugin';
 
@@ -59,6 +60,7 @@ export async function getUserInstallation(userId: string, pluginId: string): Pro
 export type TInstalledPluginWithDetails = TPluginInstallation & {
   plugin: TPlugin;
   manifest: TPluginManifest | null;
+  versionRecord: TPluginVersion | null;
 };
 
 export async function listOrganizationInstallations(
@@ -89,7 +91,8 @@ export async function listOrganizationInstallations(
   return rows.map((r) => ({
     ...r.installation,
     plugin: r.plugin,
-    manifest: r.versionRecord?.manifest ?? null
+    manifest: r.versionRecord?.manifest ?? null,
+    versionRecord: r.versionRecord
   }));
 }
 
@@ -97,6 +100,34 @@ export async function createInstallation(data: TNewPluginInstallation): Promise<
   const [row] = await db.insert(schema.pluginInstallation).values(data).returning();
 
   return row;
+}
+
+export async function reinstallInstallation(
+  installationId: string,
+  data: {
+    pluginVersionId: string;
+    installedByProfileId: string;
+    settings?: Record<string, unknown>;
+  }
+): Promise<TPluginInstallation | null> {
+  const now = new Date().toISOString();
+  const [row] = await db
+    .update(schema.pluginInstallation)
+    .set({
+      pluginVersionId: data.pluginVersionId,
+      installedByProfileId: data.installedByProfileId,
+      settings: data.settings ?? {},
+      status: 'active',
+      orgApprovalStatus: 'approved',
+      installedAt: now,
+      uninstalledAt: null,
+      disabledAt: null,
+      updatedAt: now
+    })
+    .where(eq(schema.pluginInstallation.id, installationId))
+    .returning();
+
+  return row ?? null;
 }
 
 export async function updateInstallationStatus(

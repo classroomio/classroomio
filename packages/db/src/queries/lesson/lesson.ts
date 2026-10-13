@@ -10,7 +10,7 @@ import type {
   TNewLessonCompletion,
   TNewLessonLanguage
 } from '@db/types';
-import { and, db, desc, eq, inArray, lt, ne, sql } from '@db/drizzle';
+import { and, asc, db, desc, eq, gt, inArray, lt, ne, or, sql } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
 import { contentWriteBumpsTimestamp } from '@db/queries/course/content-timestamp';
@@ -52,6 +52,266 @@ export async function getLessonById(lessonId: string): Promise<LessonById | null
       `Failed to get lesson by ID "${lessonId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
+}
+
+export async function getPluginLessonReadingSource(
+  lessonId: string,
+  organizationId: string
+): Promise<{ courseId: string; content: string | null } | null> {
+  const rows = await db
+    .select({
+      courseId: schema.lesson.courseId,
+      content: schema.lessonLanguage.content,
+      locale: schema.lessonLanguage.locale
+    })
+    .from(schema.lesson)
+    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .leftJoin(schema.lessonLanguage, eq(schema.lessonLanguage.lessonId, schema.lesson.id))
+    .where(and(eq(schema.lesson.id, lessonId), eq(schema.group.organizationId, organizationId)));
+
+  if (rows.length === 0) return null;
+
+  const preferredRow = rows.find((row) => row.locale === 'en') ?? rows[0];
+
+  return { courseId: preferredRow.courseId, content: preferredRow.content };
+}
+
+/**
+ * Resolves the minimum host-owned context needed to authorize a lesson-scoped
+ * plugin operation. Plugins never receive this course identifier directly.
+ */
+export async function getPluginLessonAccessContext(
+  lessonId: string,
+  organizationId: string
+): Promise<{ courseId: string } | null> {
+  const [lessonContext] = await db
+    .select({ courseId: schema.course.id })
+    .from(schema.lesson)
+    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(and(eq(schema.lesson.id, lessonId), eq(schema.group.organizationId, organizationId)))
+    .limit(1);
+
+  return lessonContext ?? null;
+}
+
+export interface PluginLessonSourceItem {
+  id: string;
+  courseId: string;
+  title: string;
+  order: number;
+  public: boolean | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+  content: string | null;
+}
+
+function parseLessonCursor(cursor?: string | null): { order: number; id: string } | null {
+  if (!cursor) return null;
+  try {
+    const decoded = Buffer.from(cursor, 'base64url').toString('utf8');
+    const [orderStr, id] = decoded.split('|');
+    const order = Number(orderStr);
+    if (!Number.isNaN(order) && id) return { order, id };
+  } catch {}
+  const [orderStr, id] = cursor.split('|');
+  const order = Number(orderStr);
+  if (!Number.isNaN(order) && id) return { order, id };
+  return null;
+}
+
+function encodeLessonCursor(order: number, id: string): string {
+  return Buffer.from(`${order}|${id}`).toString('base64url');
+}
+
+export async function getPluginLessonsByCourseId(
+  organizationId: string,
+  courseId: string,
+  options?: { limit?: number; cursor?: string | null }
+): Promise<{ items: PluginLessonSourceItem[]; nextCursor: string | null } | null> {
+  const [courseExists] = await db
+    .select({ id: schema.course.id })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(
+      and(
+        eq(schema.course.id, courseId),
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.isTemplate, false)
+      )
+    )
+    .limit(1);
+
+  if (!courseExists) return null;
+
+  const limit = Math.max(1, Math.min(Number(options?.limit) || 20, 100));
+  const conditions = [eq(schema.lesson.courseId, courseId)];
+
+  const parsedCursor = parseLessonCursor(options?.cursor);
+  if (parsedCursor) {
+    conditions.push(
+      or(
+        gt(schema.lesson.order, parsedCursor.order),
+        and(eq(schema.lesson.order, parsedCursor.order), gt(schema.lesson.id, parsedCursor.id))
+      )!
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: schema.lesson.id,
+      courseId: schema.lesson.courseId,
+      title: schema.lesson.title,
+      order: schema.lesson.order,
+      public: schema.lesson.public,
+      createdAt: schema.lesson.createdAt,
+      updatedAt: schema.lesson.updatedAt,
+      content: schema.lessonLanguage.content
+    })
+    .from(schema.lesson)
+    .leftJoin(
+      schema.lessonLanguage,
+      and(eq(schema.lessonLanguage.lessonId, schema.lesson.id), eq(schema.lessonLanguage.locale, 'en'))
+    )
+    .where(and(...conditions))
+    .orderBy(asc(schema.lesson.order), asc(schema.lesson.id))
+    .limit(limit + 1);
+
+  const hasMore = rows.length > limit;
+  const items = hasMore ? rows.slice(0, limit) : rows;
+  const lastItem = items[items.length - 1];
+  const nextCursor = hasMore && lastItem ? encodeLessonCursor(Number(lastItem.order), lastItem.id) : null;
+
+  return { items, nextCursor };
+}
+
+export async function getPluginLessonById(
+  organizationId: string,
+  lessonId: string
+): Promise<PluginLessonSourceItem | null> {
+  const [row] = await db
+    .select({
+      id: schema.lesson.id,
+      courseId: schema.lesson.courseId,
+      title: schema.lesson.title,
+      order: schema.lesson.order,
+      public: schema.lesson.public,
+      createdAt: schema.lesson.createdAt,
+      updatedAt: schema.lesson.updatedAt,
+      content: schema.lessonLanguage.content
+    })
+    .from(schema.lesson)
+    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .leftJoin(
+      schema.lessonLanguage,
+      and(eq(schema.lessonLanguage.lessonId, schema.lesson.id), eq(schema.lessonLanguage.locale, 'en'))
+    )
+    .where(
+      and(
+        eq(schema.lesson.id, lessonId),
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.isTemplate, false)
+      )
+    )
+    .limit(1);
+
+  return row ?? null;
+}
+
+export interface PluginLessonContentItem {
+  id: string;
+  courseId: string;
+  title: string;
+  order: number;
+  content: string | null;
+  attachments: {
+    name: string;
+    url: string;
+    type: string;
+    size?: number;
+  }[];
+  updatedAt: string;
+}
+
+export async function getPluginLessonContent(
+  organizationId: string,
+  lessonId: string,
+  actorId?: string,
+  canReadAll = false
+): Promise<PluginLessonContentItem | null> {
+  const conditions = [
+    eq(schema.lesson.id, lessonId),
+    eq(schema.group.organizationId, organizationId),
+    eq(schema.course.isTemplate, false)
+  ];
+
+  if (!canReadAll) {
+    conditions.push(
+      eq(schema.lesson.public, true),
+      or(
+        and(
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          eq(schema.course.publicForAll, true)
+        ),
+        sql<boolean>`exists (
+          select 1 from ${schema.groupmember}
+          where ${schema.groupmember.groupId} = ${schema.course.groupId}
+            and ${schema.groupmember.profileId} = ${actorId}
+        )`
+      )!
+    );
+  }
+
+  const [row] = await db
+    .select({
+      id: schema.lesson.id,
+      courseId: schema.lesson.courseId,
+      title: schema.lesson.title,
+      order: schema.lesson.order,
+      documents: schema.lesson.documents,
+      createdAt: schema.lesson.createdAt,
+      updatedAt: schema.lesson.updatedAt,
+      content: schema.lessonLanguage.content
+    })
+    .from(schema.lesson)
+    .innerJoin(schema.course, eq(schema.lesson.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .leftJoin(
+      schema.lessonLanguage,
+      and(eq(schema.lessonLanguage.lessonId, schema.lesson.id), eq(schema.lessonLanguage.locale, 'en'))
+    )
+    .where(and(...conditions))
+    .limit(1);
+
+  if (!row) return null;
+
+  const rawDocs = Array.isArray(row.documents) ? row.documents : [];
+  const attachments = rawDocs
+    .filter((doc): doc is NonNullable<typeof doc> => Boolean(doc && doc.name && doc.link))
+    .map((doc) => {
+      const item: { name: string; url: string; type: string; size?: number } = {
+        name: doc.name,
+        url: doc.link,
+        type: doc.type || 'document'
+      };
+      if (typeof doc.size === 'number' && Number.isFinite(doc.size)) {
+        item.size = Math.max(0, Math.floor(doc.size));
+      }
+      return item;
+    });
+
+  return {
+    id: row.id,
+    courseId: row.courseId,
+    title: row.title,
+    order: Number(row.order),
+    content: row.content ?? null,
+    attachments,
+    updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
+  };
 }
 
 export interface LessonCommentsAvailability {

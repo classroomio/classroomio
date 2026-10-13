@@ -296,6 +296,9 @@ export type TNewPluginGrant = typeof schema.pluginGrant.$inferInsert;
 export type TPluginCredential = typeof schema.pluginCredential.$inferSelect;
 export type TNewPluginCredential = typeof schema.pluginCredential.$inferInsert;
 
+export type TPluginBackendClient = typeof schema.pluginBackendClient.$inferSelect;
+export type TNewPluginBackendClient = typeof schema.pluginBackendClient.$inferInsert;
+
 export type TPluginStorage = typeof schema.pluginStorage.$inferSelect;
 export type TNewPluginStorage = typeof schema.pluginStorage.$inferInsert;
 

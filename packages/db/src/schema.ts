@@ -95,6 +95,7 @@ export const pluginInstallationStatus = pgEnum('PLUGIN_INSTALLATION_STATUS', [
 ]);
 export const pluginStorageScopeType = pgEnum('PLUGIN_STORAGE_SCOPE_TYPE', ['organization', 'user', 'global']);
 export const pluginAuditOutcome = pgEnum('PLUGIN_AUDIT_OUTCOME', ['success', 'denied', 'error']);
+export const pluginBackendClientStatus = pgEnum('PLUGIN_BACKEND_CLIENT_STATUS', ['active', 'revoked']);
 
 /**
  * Lifecycle state of an organization membership. Orthogonal to `verified`,
@@ -4323,7 +4324,7 @@ export const contentReport = pgTable(
   ]
 );
 
-// ─── Plugin Platform (v2 Architecture) ────────────────────────────────────────
+// ─── Plugin Architecture ────────────────────────────────────────
 
 export const pluginPublisher = pgTable(
   'plugin_publisher',
@@ -4491,6 +4492,37 @@ export const pluginCredential = pgTable(
   ]
 );
 
+export const pluginBackendClient = pgTable(
+  'plugin_backend_client',
+  {
+    id: uuid('id')
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    pluginId: varchar('plugin_id', { length: 128 })
+      .notNull()
+      .references(() => plugin.id, { onDelete: 'cascade' }),
+    clientId: varchar('client_id', { length: 128 }).notNull(),
+    label: varchar('label', { length: 120 }),
+    secretPrefix: varchar('secret_prefix', { length: 32 }).notNull(),
+    secretHash: text('secret_hash').notNull(),
+    status: pluginBackendClientStatus('status').default('active').notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .default(sql`timezone('utc'::text, now())`)
+      .notNull()
+  },
+  (table) => [
+    uniqueIndex('idx_plugin_backend_client_client_id_unique').on(table.clientId),
+    uniqueIndex('idx_plugin_backend_client_secret_hash_unique').on(table.secretHash),
+    index('idx_plugin_backend_client_plugin_id').on(table.pluginId),
+    index('idx_plugin_backend_client_status').on(table.status)
+  ]
+);
+
 export const pluginStorage = pgTable(
   'plugin_storage',
   {
@@ -4532,9 +4564,7 @@ export const pluginAuditEvent = pgTable(
       .default(sql`gen_random_uuid()`)
       .primaryKey()
       .notNull(),
-    installationId: uuid('installation_id')
-      .notNull()
-      .references(() => pluginInstallation.id, { onDelete: 'cascade' }),
+    installationId: uuid('installation_id').references(() => pluginInstallation.id, { onDelete: 'cascade' }),
     organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'cascade' }),
     actorProfileId: uuid('actor_profile_id').references(() => profile.id, { onDelete: 'set null' }),
     action: varchar('action', { length: 120 }).notNull(),
@@ -4567,6 +4597,8 @@ export const pluginLaunchCode = pgTable(
       .references(() => profile.id, { onDelete: 'cascade' }),
     organizationId: uuid('organization_id').references(() => organization.id, { onDelete: 'cascade' }),
     contributionTarget: varchar('contribution_target', { length: 64 }),
+    resourceType: varchar('resource_type', { length: 32 }),
+    resourceId: uuid('resource_id'),
     audience: varchar('audience', { length: 255 }),
     handshakeNonce: varchar('handshake_nonce', { length: 128 }),
     expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'string' }).notNull(),

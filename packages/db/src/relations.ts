@@ -48,6 +48,7 @@ import {
   pluginInstallation,
   pluginGrant,
   pluginCredential,
+  pluginBackendClient,
   pluginStorage,
   pluginAuditEvent,
   pluginLaunchCode,
@@ -561,7 +562,8 @@ export const pluginRelations = relations(plugin, ({ one, many }) => ({
     references: [pluginPublisher.id]
   }),
   versions: many(pluginVersion),
-  installations: many(pluginInstallation)
+  installations: many(pluginInstallation),
+  backendClients: many(pluginBackendClient)
 }));
 
 export const pluginVersionRelations = relations(pluginVersion, ({ one, many }) => ({
@@ -616,6 +618,13 @@ export const pluginCredentialRelations = relations(pluginCredential, ({ one }) =
   installation: one(pluginInstallation, {
     fields: [pluginCredential.installationId],
     references: [pluginInstallation.id]
+  })
+}));
+
+export const pluginBackendClientRelations = relations(pluginBackendClient, ({ one }) => ({
+  plugin: one(plugin, {
+    fields: [pluginBackendClient.pluginId],
+    references: [plugin.id]
   })
 }));
 

@@ -11,7 +11,7 @@ import {
   TNewCourseSection,
   TProfile
 } from '@db/types';
-import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, isNull, lt, or, sql } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import type { TCourseType } from '@cio/utils/constants/course-type';
@@ -63,6 +63,321 @@ export interface TStudentCourse extends TBaseCourse {
   complianceDueDate: string | null;
   complianceValidUntil: string | null;
   upcomingSession: CourseUpcomingSession | null;
+}
+
+export interface PluginLatestPublishedCourse {
+  id: string;
+  title: string;
+  slug: string | null;
+}
+
+/**
+ * Returns the minimum public course metadata exposed by the plugin API.
+ * Keep this projection intentionally narrow so plugins never receive a core course row.
+ */
+export async function getPluginLatestPublishedCourse(
+  organizationId: string
+): Promise<PluginLatestPublishedCourse | null> {
+  const [course] = await db
+    .select({
+      id: schema.course.id,
+      title: schema.course.title,
+      slug: schema.course.slug
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(
+      and(
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.status, 'ACTIVE'),
+        eq(schema.course.isPublished, true),
+        eq(schema.course.isTemplate, false)
+      )
+    )
+    .orderBy(desc(schema.course.createdAt))
+    .limit(1);
+
+  return course ?? null;
+}
+
+export interface PluginCourseMetadata {
+  id: string;
+  title: string;
+  slug: string | null;
+  description: string | null;
+  imageUrl: string | null;
+  status: string;
+  visibility: 'public' | 'private';
+  published: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+function parseCourseCursor(cursor?: string | null): { createdAt: string; id: string } | null {
+  if (!cursor) return null;
+  try {
+    const decoded = Buffer.from(cursor, 'base64url').toString('utf8');
+    const [createdAt, id] = decoded.split('|');
+    if (createdAt && id) return { createdAt, id };
+  } catch {}
+  const [createdAt, id] = cursor.split('|');
+  if (createdAt && id) return { createdAt, id };
+  return null;
+}
+
+function encodeCourseCursor(createdAt: string, id: string): string {
+  return Buffer.from(`${createdAt}|${id}`).toString('base64url');
+}
+
+export async function getPluginCoursesList(
+  organizationId: string,
+  actorId: string,
+  canReadAllCourses: boolean,
+  options?: { limit?: number; cursor?: string | null }
+): Promise<{ items: PluginCourseMetadata[]; nextCursor: string | null }> {
+  const limit = Math.max(1, Math.min(Number(options?.limit) || 20, 100));
+  const conditions = [eq(schema.group.organizationId, organizationId), eq(schema.course.isTemplate, false)];
+  if (!canReadAllCourses) {
+    conditions.push(
+      or(
+        and(
+          eq(schema.course.status, 'ACTIVE'),
+          eq(schema.course.isPublished, true),
+          eq(schema.course.publicForAll, true)
+        ),
+        sql<boolean>`exists (
+          select 1 from ${schema.groupmember}
+          where ${schema.groupmember.groupId} = ${schema.course.groupId}
+            and ${schema.groupmember.profileId} = ${actorId}
+        )`
+      )!
+    );
+  }
+
+  const parsedCursor = parseCourseCursor(options?.cursor);
+  if (parsedCursor) {
+    conditions.push(
+      or(
+        lt(schema.course.createdAt, parsedCursor.createdAt),
+        and(eq(schema.course.createdAt, parsedCursor.createdAt), lt(schema.course.id, parsedCursor.id))
+      )!
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: schema.course.id,
+      title: schema.course.title,
+      slug: schema.course.slug,
+      description: schema.course.description,
+      bannerImage: schema.course.bannerImage,
+      logo: schema.course.logo,
+      status: schema.course.status,
+      publicForAll: schema.course.publicForAll,
+      isPublished: schema.course.isPublished,
+      createdAt: schema.course.createdAt,
+      updatedAt: schema.course.updatedAt
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(and(...conditions))
+    .orderBy(desc(schema.course.createdAt), desc(schema.course.id))
+    .limit(limit + 1);
+
+  const hasMore = rows.length > limit;
+  const pageRows = hasMore ? rows.slice(0, limit) : rows;
+  const lastRow = pageRows[pageRows.length - 1];
+  const nextCursor = hasMore && lastRow && lastRow.createdAt ? encodeCourseCursor(lastRow.createdAt, lastRow.id) : null;
+
+  const items: PluginCourseMetadata[] = pageRows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    slug: row.slug ?? null,
+    description: row.description ?? null,
+    imageUrl: resolveCourseBannerImage(row),
+    status: row.status,
+    visibility: row.publicForAll ? 'public' : 'private',
+    published: Boolean(row.isPublished),
+    publishedAt: row.isPublished ? (row.updatedAt ?? row.createdAt) : null,
+    createdAt: row.createdAt ?? new Date().toISOString(),
+    updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
+  }));
+
+  return { items, nextCursor };
+}
+
+export async function getPluginCourseById(
+  organizationId: string,
+  courseId: string,
+  actorId?: string,
+  canReadAllCourses = false
+): Promise<PluginCourseMetadata | null> {
+  const accessCondition =
+    !actorId || canReadAllCourses
+      ? undefined
+      : or(
+          and(
+            eq(schema.course.status, 'ACTIVE'),
+            eq(schema.course.isPublished, true),
+            eq(schema.course.publicForAll, true)
+          ),
+          sql<boolean>`exists (
+            select 1 from ${schema.groupmember}
+            where ${schema.groupmember.groupId} = ${schema.course.groupId}
+              and ${schema.groupmember.profileId} = ${actorId}
+          )`
+        );
+  const [row] = await db
+    .select({
+      id: schema.course.id,
+      title: schema.course.title,
+      slug: schema.course.slug,
+      description: schema.course.description,
+      bannerImage: schema.course.bannerImage,
+      logo: schema.course.logo,
+      status: schema.course.status,
+      publicForAll: schema.course.publicForAll,
+      isPublished: schema.course.isPublished,
+      createdAt: schema.course.createdAt,
+      updatedAt: schema.course.updatedAt
+    })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(
+      and(
+        eq(schema.course.id, courseId),
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.isTemplate, false),
+        accessCondition
+      )
+    )
+    .limit(1);
+
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug ?? null,
+    description: row.description ?? null,
+    imageUrl: resolveCourseBannerImage(row),
+    status: row.status,
+    visibility: row.publicForAll ? 'public' : 'private',
+    published: Boolean(row.isPublished),
+    publishedAt: row.isPublished ? (row.updatedAt ?? row.createdAt) : null,
+    createdAt: row.createdAt ?? new Date().toISOString(),
+    updatedAt: row.updatedAt ?? row.createdAt ?? new Date().toISOString()
+  };
+}
+
+export interface PluginCourseSectionLessonRef {
+  id: string;
+  title: string;
+  order: number;
+  type: string;
+}
+
+export interface PluginCourseSection {
+  id: string;
+  title: string;
+  order: number;
+  lessons: PluginCourseSectionLessonRef[];
+}
+
+export interface PluginCourseStructure {
+  courseId: string;
+  sections: PluginCourseSection[];
+}
+
+export async function getPluginCourseStructure(
+  organizationId: string,
+  courseId: string,
+  actorId?: string,
+  canReadAllCourses = false
+): Promise<PluginCourseStructure | null> {
+  const accessCondition =
+    !actorId || canReadAllCourses
+      ? undefined
+      : or(
+          and(
+            eq(schema.course.status, 'ACTIVE'),
+            eq(schema.course.isPublished, true),
+            eq(schema.course.publicForAll, true)
+          ),
+          sql<boolean>`exists (
+            select 1 from ${schema.groupmember}
+            where ${schema.groupmember.groupId} = ${schema.course.groupId}
+              and ${schema.groupmember.profileId} = ${actorId}
+          )`
+        );
+
+  const [courseExists] = await db
+    .select({ id: schema.course.id })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(
+      and(
+        eq(schema.course.id, courseId),
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.isTemplate, false),
+        accessCondition
+      )
+    )
+    .limit(1);
+
+  if (!courseExists) return null;
+
+  const sectionRows = await db
+    .select({
+      id: schema.courseSection.id,
+      title: schema.courseSection.title,
+      order: schema.courseSection.order
+    })
+    .from(schema.courseSection)
+    .where(eq(schema.courseSection.courseId, courseId))
+    .orderBy(asc(schema.courseSection.order), asc(schema.courseSection.id));
+
+  const lessonConditions = [eq(schema.lesson.courseId, courseId)];
+  if (!canReadAllCourses) {
+    lessonConditions.push(eq(schema.lesson.public, true));
+  }
+
+  const lessonRows = await db
+    .select({
+      id: schema.lesson.id,
+      title: schema.lesson.title,
+      order: schema.lesson.order,
+      sectionId: schema.lesson.sectionId
+    })
+    .from(schema.lesson)
+    .where(and(...lessonConditions))
+    .orderBy(asc(schema.lesson.order), asc(schema.lesson.id));
+
+  const lessonsBySection = new Map<string, PluginCourseSectionLessonRef[]>();
+  for (const row of lessonRows) {
+    if (!row.sectionId) continue;
+    const list = lessonsBySection.get(row.sectionId) ?? [];
+    list.push({
+      id: row.id,
+      title: row.title,
+      order: Number(row.order),
+      type: 'lesson'
+    });
+    lessonsBySection.set(row.sectionId, list);
+  }
+
+  const sections: PluginCourseSection[] = sectionRows.map((sec) => ({
+    id: sec.id,
+    title: sec.title ?? 'Untitled Section',
+    order: Number(sec.order),
+    lessons: lessonsBySection.get(sec.id) ?? []
+  }));
+
+  return {
+    courseId,
+    sections
+  };
 }
 
 /**
@@ -1730,4 +2045,289 @@ export async function updateCourseSlug(courseId: string, slug: string): Promise<
     console.error('updateCourseSlug error:', error);
     throw new Error(`Failed to update course slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
+}
+
+export interface PluginCourseEnrollment {
+  id: string;
+  courseId: string;
+  profileId: string;
+  role: 'admin' | 'tutor' | 'student';
+  status: 'active' | 'completed';
+  enrolledAt: string;
+  completedAt: string | null;
+}
+
+function parseEnrollmentCursor(cursor?: string | null): { createdAt: string; id: string } | null {
+  if (!cursor) return null;
+  try {
+    const decoded = Buffer.from(cursor, 'base64url').toString('utf8');
+    const [createdAt, id] = decoded.split('|');
+    if (createdAt && id) return { createdAt, id };
+  } catch {}
+  const [createdAt, id] = cursor.split('|');
+  if (createdAt && id) return { createdAt, id };
+  return null;
+}
+
+function encodeEnrollmentCursor(createdAt: string, id: string): string {
+  return Buffer.from(`${createdAt}|${id}`).toString('base64url');
+}
+
+export async function getPluginCourseEnrollmentsList(
+  organizationId: string,
+  courseId: string,
+  actorId: string,
+  canReadAll: boolean,
+  options?: { limit?: number; cursor?: string | null }
+): Promise<{ items: PluginCourseEnrollment[]; nextCursor: string | null }> {
+  const limit = Math.max(1, Math.min(Number(options?.limit) || 20, 100));
+
+  const [courseRow] = await db
+    .select({ groupId: schema.course.groupId })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(
+      and(
+        eq(schema.course.id, courseId),
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.isTemplate, false)
+      )
+    )
+    .limit(1);
+
+  if (!courseRow || !courseRow.groupId) {
+    return { items: [], nextCursor: null };
+  }
+
+  const conditions = [eq(schema.groupmember.groupId, courseRow.groupId)];
+
+  if (!canReadAll) {
+    conditions.push(eq(schema.groupmember.profileId, actorId));
+  }
+
+  const parsedCursor = parseEnrollmentCursor(options?.cursor);
+  if (parsedCursor) {
+    conditions.push(
+      or(
+        lt(schema.groupmember.createdAt, parsedCursor.createdAt),
+        and(eq(schema.groupmember.createdAt, parsedCursor.createdAt), lt(schema.groupmember.id, parsedCursor.id))
+      )!
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: schema.groupmember.id,
+      profileId: schema.groupmember.profileId,
+      roleId: schema.groupmember.roleId,
+      certificateEarnedAt: schema.groupmember.certificateEarnedAt,
+      createdAt: schema.groupmember.createdAt
+    })
+    .from(schema.groupmember)
+    .where(and(...conditions))
+    .orderBy(desc(schema.groupmember.createdAt), desc(schema.groupmember.id))
+    .limit(limit + 1);
+
+  const hasMore = rows.length > limit;
+  const pageRows = hasMore ? rows.slice(0, limit) : rows;
+  const lastRow = pageRows[pageRows.length - 1];
+  const nextCursor =
+    hasMore && lastRow && lastRow.createdAt ? encodeEnrollmentCursor(lastRow.createdAt, lastRow.id) : null;
+
+  const items: PluginCourseEnrollment[] = pageRows
+    .filter((row): row is typeof row & { profileId: string } => Boolean(row.profileId))
+    .map((row) => ({
+      id: row.id,
+      courseId,
+      profileId: row.profileId,
+      role: row.roleId === ROLE.ADMIN ? 'admin' : row.roleId === ROLE.TUTOR ? 'tutor' : 'student',
+      status: row.certificateEarnedAt ? 'completed' : 'active',
+      enrolledAt: row.createdAt ?? new Date().toISOString(),
+      completedAt: row.certificateEarnedAt ?? null
+    }));
+
+  return { items, nextCursor };
+}
+
+export async function getPluginCourseEnrollmentById(
+  organizationId: string,
+  courseId: string,
+  enrollmentId: string,
+  actorId: string,
+  canReadAll: boolean
+): Promise<PluginCourseEnrollment | null> {
+  const [courseRow] = await db
+    .select({ groupId: schema.course.groupId })
+    .from(schema.course)
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(
+      and(
+        eq(schema.course.id, courseId),
+        eq(schema.group.organizationId, organizationId),
+        eq(schema.course.isTemplate, false)
+      )
+    )
+    .limit(1);
+
+  if (!courseRow || !courseRow.groupId) {
+    return null;
+  }
+
+  const conditions = [eq(schema.groupmember.id, enrollmentId), eq(schema.groupmember.groupId, courseRow.groupId)];
+
+  if (!canReadAll) {
+    conditions.push(eq(schema.groupmember.profileId, actorId));
+  }
+
+  const [row] = await db
+    .select({
+      id: schema.groupmember.id,
+      profileId: schema.groupmember.profileId,
+      roleId: schema.groupmember.roleId,
+      certificateEarnedAt: schema.groupmember.certificateEarnedAt,
+      createdAt: schema.groupmember.createdAt
+    })
+    .from(schema.groupmember)
+    .where(and(...conditions))
+    .limit(1);
+
+  if (!row || !row.profileId) return null;
+
+  return {
+    id: row.id,
+    courseId,
+    profileId: row.profileId,
+    role: row.roleId === ROLE.ADMIN ? 'admin' : row.roleId === ROLE.TUTOR ? 'tutor' : 'student',
+    status: row.certificateEarnedAt ? 'completed' : 'active',
+    enrolledAt: row.createdAt ?? new Date().toISOString(),
+    completedAt: row.certificateEarnedAt ?? null
+  };
+}
+
+export interface PluginIssuedCertificate {
+  id: string;
+  courseId: string;
+  profileId: string;
+  cycleNumber: number;
+  issuedAt: string;
+  expiresAt: string;
+  status: string;
+  verificationUrl: string | null;
+}
+
+export async function getPluginIssuedCertificatesList(
+  organizationId: string,
+  courseId: string | undefined,
+  actorId: string,
+  canReadAll: boolean,
+  options?: { limit?: number; cursor?: string | null }
+): Promise<{ items: PluginIssuedCertificate[]; nextCursor: string | null }> {
+  const limit = Math.max(1, Math.min(Number(options?.limit) || 20, 100));
+
+  const conditions = [eq(schema.group.organizationId, organizationId), eq(schema.course.isTemplate, false)];
+
+  if (courseId) {
+    conditions.push(eq(schema.courseCertificateIssue.courseId, courseId));
+  }
+
+  if (!canReadAll) {
+    conditions.push(eq(schema.courseCertificateIssue.profileId, actorId));
+  }
+
+  const parsedCursor = parseEnrollmentCursor(options?.cursor);
+  if (parsedCursor) {
+    conditions.push(
+      or(
+        lt(schema.courseCertificateIssue.issuedAt, parsedCursor.createdAt),
+        and(
+          eq(schema.courseCertificateIssue.issuedAt, parsedCursor.createdAt),
+          lt(schema.courseCertificateIssue.id, parsedCursor.id)
+        )
+      )!
+    );
+  }
+
+  const rows = await db
+    .select({
+      id: schema.courseCertificateIssue.id,
+      courseId: schema.courseCertificateIssue.courseId,
+      profileId: schema.courseCertificateIssue.profileId,
+      cycleNumber: schema.courseCertificateIssue.cycleNumber,
+      issuedAt: schema.courseCertificateIssue.issuedAt,
+      expiresAt: schema.courseCertificateIssue.expiresAt,
+      status: schema.courseCertificateIssue.status,
+      fileUrl: schema.courseCertificateIssue.fileUrl
+    })
+    .from(schema.courseCertificateIssue)
+    .innerJoin(schema.course, eq(schema.courseCertificateIssue.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(and(...conditions))
+    .orderBy(desc(schema.courseCertificateIssue.issuedAt), desc(schema.courseCertificateIssue.id))
+    .limit(limit + 1);
+
+  const hasMore = rows.length > limit;
+  const pageRows = hasMore ? rows.slice(0, limit) : rows;
+  const lastRow = pageRows[pageRows.length - 1];
+  const nextCursor =
+    hasMore && lastRow && lastRow.issuedAt ? encodeEnrollmentCursor(lastRow.issuedAt, lastRow.id) : null;
+
+  const items: PluginIssuedCertificate[] = pageRows.map((row) => ({
+    id: row.id,
+    courseId: row.courseId,
+    profileId: row.profileId,
+    cycleNumber: Number(row.cycleNumber),
+    issuedAt: row.issuedAt,
+    expiresAt: row.expiresAt,
+    status: row.status,
+    verificationUrl: row.fileUrl ?? null
+  }));
+
+  return { items, nextCursor };
+}
+
+export async function getPluginIssuedCertificateById(
+  organizationId: string,
+  certificateId: string,
+  actorId: string,
+  canReadAll: boolean
+): Promise<PluginIssuedCertificate | null> {
+  const conditions = [
+    eq(schema.courseCertificateIssue.id, certificateId),
+    eq(schema.group.organizationId, organizationId),
+    eq(schema.course.isTemplate, false)
+  ];
+
+  if (!canReadAll) {
+    conditions.push(eq(schema.courseCertificateIssue.profileId, actorId));
+  }
+
+  const [row] = await db
+    .select({
+      id: schema.courseCertificateIssue.id,
+      courseId: schema.courseCertificateIssue.courseId,
+      profileId: schema.courseCertificateIssue.profileId,
+      cycleNumber: schema.courseCertificateIssue.cycleNumber,
+      issuedAt: schema.courseCertificateIssue.issuedAt,
+      expiresAt: schema.courseCertificateIssue.expiresAt,
+      status: schema.courseCertificateIssue.status,
+      fileUrl: schema.courseCertificateIssue.fileUrl
+    })
+    .from(schema.courseCertificateIssue)
+    .innerJoin(schema.course, eq(schema.courseCertificateIssue.courseId, schema.course.id))
+    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+    .where(and(...conditions))
+    .limit(1);
+
+  if (!row) return null;
+
+  return {
+    id: row.id,
+    courseId: row.courseId,
+    profileId: row.profileId,
+    cycleNumber: Number(row.cycleNumber),
+    issuedAt: row.issuedAt,
+    expiresAt: row.expiresAt,
+    status: row.status,
+    verificationUrl: row.fileUrl ?? null
+  };
 }
