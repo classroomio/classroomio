@@ -59,6 +59,11 @@ export const submissionForbiddenResponses = {
   marks: forbidden('course:submission:read', MEMBER_FORBIDDEN)
 };
 
+export const learnerForbiddenResponse = forbidden(
+  'course:learner:write',
+  `${TEAM_FORBIDDEN}, or the content is still locked for the learner`
+);
+
 export const mcpRateLimitResponse = {
   description: 'MCP keys only: the per-key or per-organization MCP rate limit was hit'
 };

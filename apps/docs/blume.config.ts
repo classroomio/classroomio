@@ -22,6 +22,7 @@ const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
       'Exercise Templates',
       'Course Submissions',
       'Course Marks',
+      'Learner Activity',
       'Course Certificates'
     ]
   },

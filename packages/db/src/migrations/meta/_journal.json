@@ -239,6 +239,13 @@
       "when": 1791801767391,
       "tag": "0033_mcp_submission_scopes",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1791931963617,
+      "tag": "0034_mcp_learner_scope",
+      "breakpoints": true
     }
   ]
 }

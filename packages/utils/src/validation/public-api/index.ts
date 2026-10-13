@@ -20,4 +20,6 @@ export * from './course-certificate-responses';
 export * from './course-exercise';
 export * from './course-exercise-responses';
 export * from './course-submission';
+export * from './course-learner';
+export * from './course-learner-responses';
 export * from './exercise-template';
