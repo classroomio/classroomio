@@ -24,13 +24,15 @@ import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
+const ANY_KEY_RULE = 'any key with the public_api:* scope may call it';
+
 const AudienceListEnvelope = z.object({ query: ZPublicApiAudienceQuery });
 
 export const v1AudienceRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: 'List audience members for the authenticated organization',
+      description: `List the organization's audience members; ${ANY_KEY_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse(
@@ -65,7 +67,7 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: 'Create an audience member invitation for the authenticated organization',
+      description: `Invite someone to the organization as an audience member; ${ANY_KEY_RULE}.`,
       tags: ['Audience'],
       responses: {
         201: jsonResponse('Audience member created successfully', itemResponse(ZPublicApiCreateAudienceResponse)),
@@ -97,7 +99,7 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/assign-courses',
     describeRoute({
-      description: 'Assign one or more audience members to one or more courses',
+      description: `Assign one or more audience members to one or more courses; ${ANY_KEY_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse(
@@ -131,7 +133,7 @@ export const v1AudienceRouter = new Hono()
   .get(
     '/:memberId',
     describeRoute({
-      description: 'Get a single audience member by id',
+      description: `Get an audience member; ${ANY_KEY_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse('Audience member returned successfully', itemResponse(ZPublicApiAudienceMemberResponse)),
@@ -162,7 +164,7 @@ export const v1AudienceRouter = new Hono()
   .delete(
     '/:memberId',
     describeRoute({
-      description: 'Remove an audience member by id',
+      description: `Remove an audience member; ${ANY_KEY_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse('Audience member removed successfully', itemResponse(ZPublicApiRemoveAudienceMemberResponse)),
@@ -194,7 +196,7 @@ export const v1AudienceRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: 'Update a pending audience member email address',
+      description: `Update a pending audience member's email address; ${ANY_KEY_RULE}.`,
       tags: ['Audience'],
       responses: {
         200: jsonResponse('Audience member updated successfully', itemResponse(ZPublicApiAudienceMemberResponse)),
