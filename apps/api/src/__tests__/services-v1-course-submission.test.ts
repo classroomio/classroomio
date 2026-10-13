@@ -199,6 +199,20 @@ describe('listCourseSubmissionsService', () => {
     expect(result.items[0].isEarly).toBe(false);
   });
 
+  it.each([
+    ['2026-01-02', null],
+    [null, true]
+  ])('with due date %s and no submission time, reports isEarly as %s', async (exerciseDueBy, isEarly) => {
+    vi.mocked(getCourseSubmissionsPage).mockResolvedValue({
+      items: [{ ...pageRow('s-2', '2026-01-03', { createdAt: null }), exerciseDueBy }],
+      total: 1
+    } as never);
+
+    const result = await listCourseSubmissionsService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 20 });
+
+    expect(result.items[0]).toMatchObject({ isEarly, submittedAt: null });
+  });
+
   it('works out the overall status from the question types when none is stored', async () => {
     vi.mocked(getCourseSubmissionsPage).mockResolvedValue({
       items: [pageRow('s-2', '2026-01-03', { overallStatus: null })],

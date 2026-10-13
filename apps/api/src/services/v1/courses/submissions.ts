@@ -99,11 +99,19 @@ export async function listCourseSubmissionsService(
       ),
       total: submission.total ?? null,
       feedback: submission.feedback,
-      isEarly: exerciseDueBy ? new Date(submission.createdAt!).getTime() <= new Date(exerciseDueBy).getTime() : true,
+      isEarly: isSubmittedEarly(submission.createdAt, exerciseDueBy),
       submittedAt: submission.createdAt ?? null
     })),
     pagination: toPublicApiPagination(query.page, query.limit, total)
   };
+}
+
+/** true with no due date. null when there is a due date but no submission time to compare it with. */
+function isSubmittedEarly(submittedAt: string | null, dueBy: string | null): boolean | null {
+  if (!dueBy) return true;
+  if (!submittedAt) return null;
+
+  return new Date(submittedAt).getTime() <= new Date(dueBy).getTime();
 }
 
 async function getQuestionTypeIdsByExerciseId(exerciseIds: string[]) {

@@ -118,8 +118,13 @@ export const ZPublicApiCourseSubmissionListItemResponse = z.object({
   overallStatus,
   total: z.number().nullable(),
   feedback: z.string().nullable(),
-  isEarly: z.boolean().describe('Submitted on or before the exercise due date (true when there is no due date)'),
-  submittedAt: timestamp
+  isEarly: z
+    .boolean()
+    .nullable()
+    .describe(
+      'Submitted on or before the exercise due date. true when there is no due date; null when there is one but the submission time is missing'
+    ),
+  submittedAt: nullableTimestamp
 });
 
 export const ZPublicApiCourseSubmissionResponse = z.object({

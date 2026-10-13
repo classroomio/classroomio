@@ -521,6 +521,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                 "type": "number",
               },
             ],
+            "description": "Defaults to RADIO (1) for a new question",
           },
           "settings": {
             "additionalProperties": {},

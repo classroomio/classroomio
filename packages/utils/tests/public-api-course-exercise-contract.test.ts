@@ -129,4 +129,14 @@ describe('public API course exercise request contract', () => {
     expect(update([{ id: 5, options: [{ label: 'New', isCorrect: false }] }])).toBe(true);
     expect(update([{ delete: true }])).toBe(false);
   });
+
+  it('judges a new question with no type as the RADIO question it is stored as', () => {
+    const update = (questions: unknown[]) => ZPublicApiUpdateCourseExercise.safeParse({ questions }).success;
+    const options = (correct: boolean[]) =>
+      correct.map((isCorrect, index) => ({ label: `Option ${index}`, isCorrect }));
+
+    expect(update([{ question: 'Q', points: 1, options: options([true]) }])).toBe(false);
+    expect(update([{ question: 'Q', points: 1, options: options([false, false]) }])).toBe(false);
+    expect(update([{ question: 'Q', points: 1, options: options([true, false]) }])).toBe(true);
+  });
 });

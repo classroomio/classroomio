@@ -117,7 +117,7 @@ export const ZPublicApiUpdateExerciseQuestion = z
     delete: z.boolean().optional(),
     exerciseSectionId: z.string().uuid().nullable().optional(),
     question: z.string().min(1).optional().describe('Required for a new question'),
-    questionTypeId: ZPublicApiQuestionTypeId.optional(),
+    questionTypeId: ZPublicApiQuestionTypeId.optional().describe('Defaults to RADIO (1) for a new question'),
     points: z.number().int().min(1).optional().describe('Required for a new question'),
     order: z.number().int().min(0).optional(),
     settings: ZSettings.optional(),
@@ -176,6 +176,7 @@ export const ZPublicApiUpdateExerciseQuestion = z
     validateQuestionOptions(
       {
         ...question,
+        questionTypeId: question.questionTypeId ?? QUESTION_TYPE.RADIO,
         deletedAt: question.delete ? 'deleted' : undefined,
         options: question.options
           ?.filter((option) => !option.delete)
