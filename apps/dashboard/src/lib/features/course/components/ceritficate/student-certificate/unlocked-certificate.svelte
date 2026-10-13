@@ -4,7 +4,6 @@
   import ImageIcon from '@lucide/svelte/icons/image';
 
   import { profile } from '$lib/utils/store/user';
-  import { currentOrg } from '$lib/utils/store/org';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { t } from '$lib/utils/functions/translations';
@@ -132,16 +131,6 @@
       })
     ];
   });
-
-  let actionContext = $derived({
-    courseId: courseApi.course?.id,
-    courseTitle: courseApi.course?.title,
-    orgId: $currentOrg.id,
-    orgName: $currentOrg.name,
-    orgSlug: $currentOrg.siteName,
-    studentName: $profile.fullname,
-    certUrl: typeof window !== 'undefined' ? window.location.href : ''
-  });
 </script>
 
 <div class="flex-1">
@@ -165,7 +154,7 @@
         {$t('course.navItem.certificates.download_image')}
       </Button>
       {#if isCourseComplete}
-        <PluginActionRenderer target="certificate.actions" context={actionContext} />
+        <PluginActionRenderer target="certificate.actions" />
       {/if}
     </div>
   </Empty>

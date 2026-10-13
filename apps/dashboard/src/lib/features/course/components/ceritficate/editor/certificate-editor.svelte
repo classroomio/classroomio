@@ -153,6 +153,7 @@
         <div class="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           {#if store.activePanel === 'templates'}
             <TemplatesPanel
+              {courseId}
               value={store.draft.templateId}
               disabled={$isFreePlan}
               onSelect={(id: CertificateTemplateId) => store.setTemplate(id)}
