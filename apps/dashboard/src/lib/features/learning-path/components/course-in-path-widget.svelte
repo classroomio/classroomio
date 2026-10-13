@@ -38,27 +38,27 @@
   href={pathHref}
   onclick={onClick}
   title={`${pathName} — ${$t('learningPath.ribbon.view_path')}`}
-  class="ui:bg-primary/10 ui:border-primary/25 ui:hover:border-primary/50 hidden min-w-0 items-center gap-2.5 rounded-full border px-3 py-1 transition-colors md:inline-flex"
+  class="ui:bg-primary/10 ui:border-primary/25 ui:hover:border-primary/50 ui:max-w-full hidden min-w-0 items-center gap-2 overflow-hidden rounded-full border px-2.5 py-1 transition-colors md:inline-flex"
 >
   <span
-    class="ui:text-primary inline-flex shrink-0 items-center gap-1.5 text-[11px] font-semibold tracking-[0.06em] whitespace-nowrap uppercase"
+    class="ui:text-primary inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold tracking-[0.06em] whitespace-nowrap uppercase"
   >
-    <PathIcon size={13} strokeWidth={2.2} />
-    {$t('learningPath.ribbon.path_label')}
+    <PathIcon size={14} strokeWidth={2.2} />
+    <span class="hidden lg:inline">{$t('learningPath.ribbon.path_label')}</span>
   </span>
 
-  <div class="flex min-w-0 items-center">
+  <div class="ui:overflow-hidden flex min-w-0 items-center">
     {#each nodes as node, index (index)}
       {#if index > 0}
         <span
-          class="h-0.5 w-[22px] shrink-0 rounded-full {nodes[index - 1].state === 'COMPLETED'
+          class="h-0.5 w-[18px] shrink-0 rounded-full {nodes[index - 1].state === 'COMPLETED'
             ? 'ui:bg-emerald-500'
             : 'ui:bg-border'}"
         ></span>
       {/if}
 
       <span
-        class="flex size-[22px] shrink-0 items-center justify-center rounded-full border text-[10.5px] font-semibold {dotClass(
+        class="flex size-[20px] shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold {dotClass(
           node,
           index
         )}"
@@ -76,7 +76,7 @@
       </span>
     {/each}
 
-    <span class="tnum ui:text-foreground ml-2 truncate text-xs font-medium whitespace-nowrap">
+    <span class="tnum ui:text-foreground ui:min-w-0 ml-2 truncate text-[11px] font-medium whitespace-nowrap">
       {positionLabel}
     </span>
   </div>

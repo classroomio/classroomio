@@ -15,9 +15,10 @@ export interface CourseLibraryItem {
   description: string;
   coverGradient?: string;
   coverImage?: string;
-  difficulty: PathDifficulty;
+  difficulty?: PathDifficulty;
   status: CourseStatus;
   progressPercent: number;
+  progressRate?: number;
   partOfPath: CourseLibraryPathRef | null;
   href: string;
   lessonCount?: number;

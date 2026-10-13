@@ -10,6 +10,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { courseCompletionModal, closeCourseCompletionModal } from '$features/course/store/course-completion-modal';
   import { getContentRoute } from '$features/course/utils/content';
+  import { getNavItemRoute } from '$features/course/utils/functions';
   import { formatBlockerMessage } from '$features/course/utils/certificate-utils';
   import { isFreePlan } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
@@ -49,7 +50,7 @@
   function goToCertificate() {
     if (!activeCourseId) return;
     onOpenChange(false);
-    goto(resolve(`/courses/${activeCourseId}/certificates`, {}));
+    goto(resolve(getNavItemRoute(activeCourseId, 'certificates'), {}));
   }
 
   function goToExercise() {

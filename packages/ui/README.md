@@ -257,14 +257,16 @@ Presentational card, badge, and progress bar for learning paths. Import as `impo
 | `coverGradient` / `coverImage`                                              | Banner background / image                                   |
 | `courseCount`                                                               | Number of courses in the path                               |
 | `totalHours`                                                                | Estimated duration                                          |
-| `progressPercent`                                                           | Overall progress 0–100                                      |
-| `coursesCompleted`                                                          | Courses completed so far                                    |
+| `progressPercent`                                                           | Overall progress 0–100 (defaults to 0)                      |
+| `coursesCompleted`                                                          | Courses completed so far (defaults to 0)                    |
 | `certificateEarned`                                                         | Done state for LMS/certificate surfaces                     |
 | `certificateEarnedAt`                                                       | ISO date shown as "Earned on" on certificate surfaces       |
 | `status`                                                                    | Admin status (`DRAFT` \| `ACTIVE` \| `ARCHIVED`)            |
 | `isLMS` / `isExplore` / `isAdmin` / `isCertificateView` / `isOnLandingPage` | Surface flags                                               |
 | `onExploreClick`                                                            | Fires when the whole card is clicked on the explore surface |
 | `ctaLabel`                                                                  | Overrides the surface-derived CTA label                     |
+| `overlay`                                                                   | Optional admin menu snippet rendered over the cover         |
+| `footer`                                                                    | Optional extra row below the action row                     |
 | `labels`                                                                    | `LearningPathCardLabels` object with all UI copy            |
 
 `LearningPathBadge` renders the small "Learning Path"/"Course" pill used on covers and rows (the `label` comes from the host; `onCover` switches to the translucent on-banner style). `LearningPathProgress` is a thin progress bar you can reuse in rows and heroes.

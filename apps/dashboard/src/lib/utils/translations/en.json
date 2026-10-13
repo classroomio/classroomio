@@ -2203,6 +2203,7 @@
     },
     "sidebar": {
       "back_to_course": "Back to course",
+      "back_to_path": "Back to path",
       "compliance": {
         "title": "Compliance",
         "due_date": "Due",
@@ -4633,7 +4634,9 @@
     "paths_empty_title": "No paths found",
     "paths_empty_description": "Try a different search or clear your filters.",
     "courses_empty_title": "No courses match your search",
-    "courses_empty_description": "Try a different search term."
+    "courses_empty_description": "Try a different search term.",
+    "courses_browse_empty_title": "No courses yet",
+    "courses_browse_empty_description": "Courses created in this org will show up here."
   },
   "snackbar": {
     "success": "Success",
@@ -5622,7 +5625,7 @@
       "course": "Course"
     },
     "progress": {
-      "label": "progress"
+      "label": "Progress"
     },
     "ribbon": {
       "part_of": "is part of",
@@ -5716,7 +5719,9 @@
       "path_not_found_title": "Path not found",
       "path_not_found_description": "This learning path may have been unpublished or removed.",
       "library_no_results_title": "Nothing matches your filters",
-      "library_no_results_description": "Try a different filter or clear them to see everything."
+      "library_no_results_description": "Try a different filter or clear them to see everything.",
+      "library_empty_title": "Nothing here yet",
+      "library_empty_description": "Courses you're taking and paths you've joined will show up here."
     },
     "my_learning": {
       "heading": "My Learning",

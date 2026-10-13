@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import { Progress } from '@cio/ui/base/progress';
   import { cn } from '@cio/ui/tools';
   import { t } from '$lib/utils/functions/translations';
@@ -16,16 +17,24 @@
   interface Props {
     courses: LearningPathCourseProgress[];
     courseHref?: (order: number) => string;
+    publicId?: string | null;
     certificateEnabled: boolean;
     certificateTitle: string;
     certificateEarned: boolean;
   }
 
-  let { courses, courseHref, certificateEnabled, certificateTitle, certificateEarned }: Props = $props();
+  let {
+    courses,
+    courseHref,
+    certificateEnabled,
+    certificateTitle,
+    certificateEarned,
+    publicId = null
+  }: Props = $props();
 
   const resolveCourseHref = (course: LearningPathCourseProgress) => {
     if (courseHref) return courseHref(course.order);
-    return getStudentCourseContinuePath(course.courseId);
+    return getStudentCourseContinuePath(course.courseId, publicId);
   };
 
   const isCompleted = (course: LearningPathCourseProgress) => course.state === 'COMPLETED';
@@ -77,13 +86,18 @@
         <a
           href={isLocked(course) ? undefined : resolveCourseHref(course)}
           class={cn(
-            'relative flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg',
+            'ui:bg-card relative flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg',
             isLocked(course) && 'pointer-events-none'
           )}
-          style="background: {course.coverGradient ??
-            'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))'}"
           aria-label={course.title}
         >
+          <img
+            src={DEFAULT_COURSE_BANNER_IMAGE}
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            class="absolute inset-0 h-full w-full object-cover"
+          />
           {#if course.coverImage}
             <img
               src={course.coverImage}
@@ -91,8 +105,6 @@
               loading="lazy"
               class="absolute inset-0 h-full w-full object-cover"
             />
-          {:else}
-            <BookIcon class="size-7 text-white/40" />
           {/if}
           {#if isLocked(course)}
             <div class="absolute inset-0 flex items-center justify-center bg-black/30">
@@ -119,10 +131,14 @@
                 <LockIcon class="size-3" />
                 {$t('learningPath.enrollment.locked')}
               </Badge>
-            {:else}
+            {:else if course.progressPercent > 0}
               <Badge variant="outline" class="ui:border-primary/30 ui:bg-primary/10 ui:text-primary gap-1">
                 <PlayIcon class="size-3" />
                 {$t('learningPath.enrollment.in_progress')}
+              </Badge>
+            {:else}
+              <Badge variant="outline" class="ui:text-muted-foreground gap-1">
+                {$t('learningPath.enrollment.not_started')}
               </Badge>
             {/if}
           </div>
@@ -184,8 +200,8 @@
                 : $t('learningPath.hero.start_learning')}
             </Button>
           {:else if isCompleted(course)}
-            <Button href={resolveCourseHref(course)} variant="outline" size="sm">
-              {$t('learningPath.detail.review')}
+            <Button href={`/courses/${course.courseId}/certificates`} variant="outline" size="sm">
+              {$t('learningPath.card.view_certificate')}
             </Button>
           {:else}
             <Button variant="secondary" size="sm" disabled>

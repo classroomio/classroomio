@@ -6,24 +6,21 @@ import type {
   CreateLearningPathRequest,
   DeleteLearningPathRequest,
   GetLearningPathDetailRequest,
-
   LearningPathDetail,
-  LearningPathWithEnrollment,
   LearningPathSummary,
+  EnrollInLearningPathRequest,
+  ExplorePathItem,
+  ListPublicLearningPathsRequest,
   LearningPathsPagination,
   ListLearningPathsRequest,
   PathListFilters,
   UpdateLearningPathData,
   UpdateLearningPathRequest
 } from '../utils/types';
+import { enrolledApi } from '$features/lms/api/enrolled.svelte';
+import type { EnrolledPath, GetPathJourneyRequest, PathJourney } from '$features/lms/utils/types';
+import type { MyPathCertificate, ListMyPathCertificatesRequest } from '$features/lms/utils/types';
 import type { CourseInPathContext, CourseInPathNode } from '../components/types';
-import {
-  MOCK_LEARNER_PATHS,
-  getMockPathsForUser,
-  getMockPathById,
-  getCourseProgressList,
-  findCourseInEnrolledMockPath
-} from '../utils/mock-data';
 import {
   ZCreateLearningPath,
   ZUpdateLearningPath,
@@ -362,107 +359,209 @@ export class LearningPathApi extends BaseApiWithErrors {
 
 export const learningPathApi = /* @__PURE__ */ new LearningPathApi();
 
-const sleep = (ms = 250) => new Promise<void>((resolve) => setTimeout(resolve, ms));
-
-class LearnerPathStore {
+class LearnerPathStore extends BaseApiWithErrors {
   // Learner-facing state
-  enrolledPaths = $state<LearningPathWithEnrollment[]>([]);
-  isLoading = $state(false);
+  enrolledPaths = $state<EnrolledPath[]>([]);
+  hasLoaded = $state(false);
 
-  // Selected path for the detail page
-  selectedPath = $state<LearningPathWithEnrollment | null>(null);
+  // Selected path journey for the detail page
+  selectedJourney = $state<PathJourney | null>(null);
+
+  // Explore strip rows, loaded on demand by the Explore page
+  explorePaths = $state<ExplorePathItem[]>([]);
+
+  // Full published catalog for the Explore page (page splits enrolled vs new)
+  catalogPaths = $state<PublicLearningPathItem[]>([]);
+
+  // Certificates the caller can download, for completed-path cards
+  pathCertificates = $state<MyPathCertificate[]>([]);
+
+  // Journey cache keyed by path id and publicId
+  private journeyCache = new Map<string, PathJourney>();
+
+  // Path widget context for the open course (null when the course is in no enrolled path)
+  pathContext = $state<CourseInPathContext | null>(null);
 
   // Derived learner helpers
   activePath = $derived.by(() => {
-    const inProgress = this.enrolledPaths.filter((path) => path.enrollment?.state === 'IN_PROGRESS');
+    const inProgress = this.enrolledPaths.filter((path) => !path.isComplete && path.progress > 0);
 
-    return (
-      inProgress.sort((a, b) => (b.enrollment?.progressPercent ?? 0) - (a.enrollment?.progressPercent ?? 0))[0] ?? null
-    );
+    return inProgress.sort((a, b) => b.progress - a.progress)[0] ?? null;
   });
 
-  completedPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state === 'COMPLETED'));
+  completedPaths = $derived(this.enrolledPaths.filter((path) => path.isComplete));
 
-  notStartedPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state === 'NOT_STARTED'));
+  notStartedPaths = $derived(this.enrolledPaths.filter((path) => !path.isComplete && path.progress <= 0));
 
-  inProgressPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state === 'IN_PROGRESS'));
-
-  hasLoaded = $state(false);
-
-  explorePaths = $derived.by(() => {
-    const enrolledIds = new Set(this.enrolledPaths.map((path) => path.id));
-
-    return MOCK_LEARNER_PATHS.filter((path) => !enrolledIds.has(path.id))
-      .map((path) => ({
-        id: path.id,
-        name: path.name,
-        description: path.description,
-        coverGradient: path.coverGradient,
-        coverImage: path.coverImage,
-        href: `/lms/paths/${path.id}`
-      }))
-      .slice(0, 3);
-  });
+  inProgressPaths = $derived(this.enrolledPaths.filter((path) => !path.isComplete && path.progress > 0));
 
   async listEnrolled(): Promise<void> {
     this.isLoading = true;
     try {
-      await sleep(150);
-      this.enrolledPaths = getMockPathsForUser();
+      await enrolledApi.fetchEnrolled({ status: 'all', limit: 50 });
+      this.enrolledPaths = enrolledApi.items.flatMap((item) => (item.kind === 'learning_path' ? [item.data] : []));
+      this.hasLoaded = true;
     } finally {
       this.isLoading = false;
-      this.hasLoaded = true;
     }
   }
 
-  getPath(authPathId: string): LearningPathWithEnrollment | null {
-    return this.enrolledPaths.find((path) => path.id === authPathId) ?? null;
+  getPath(idOrPublicId: string): EnrolledPath | null {
+    return this.enrolledPaths.find((path) => path.id === idOrPublicId || path.publicId === idOrPublicId) ?? null;
   }
 
-  getPathCourses(path: LearningPathWithEnrollment): LearningPathCourseProgress[] {
-    return getCourseProgressList(path);
+  getPathStatus(path: EnrolledPath): 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED' {
+    if (path.isComplete) return 'COMPLETED';
+    if (path.progress > 0) return 'IN_PROGRESS';
+
+    return 'NOT_STARTED';
   }
 
-  getCoursePathContext(courseId?: string, courseTitle?: string): CourseInPathContext | null {
-    const match = findCourseInEnrolledMockPath(courseId, courseTitle);
-    if (!match) {
-      return null;
+  hasPathCertificate(pathId: string): boolean {
+    return this.pathCertificates.some((certificate) => certificate.learningPathId === pathId);
+  }
+
+  async listCertificates(): Promise<void> {
+    const response = await this.execute<ListMyPathCertificatesRequest>({
+      requestFn: () => classroomio.organization['learning-paths'].certificates.$get({}),
+      logContext: 'loading path certificates'
+    });
+    this.pathCertificates = response?.data ?? [];
+  }
+
+  async ensureSelectedPath(pathId: string): Promise<PathJourney | null> {
+    if (!pathId) return null;
+
+    const journey = await this.fetchJourney(pathId);
+    this.selectedJourney = journey;
+
+    return journey;
+  }
+
+  private async fetchJourney(pathId: string): Promise<PathJourney | null> {
+    const cached = this.journeyCache.get(pathId);
+    if (cached) return cached;
+
+    const response = await this.execute<GetPathJourneyRequest>({
+      requestFn: () => classroomio['learning-path'][':pathId'].journey.$get({ param: { pathId } }),
+      logContext: 'loading learning path journey'
+    });
+    const journey = response?.data ?? null;
+    if (!journey) return null;
+
+    this.journeyCache.set(journey.path.id, journey);
+    if (journey.path.publicId) this.journeyCache.set(journey.path.publicId, journey);
+
+    return journey;
+  }
+
+  /**
+   * Resolves the path widget for an open course from real journey data.
+   * Stays null when the course is in none of the student's enrolled paths
+   * (plain courses render no widget). First matching path wins.
+   */
+  async loadPathContext(courseId: string): Promise<void> {
+    this.pathContext = null;
+    if (!courseId) return;
+
+    if (!this.hasLoaded) {
+      try {
+        await this.listEnrolled();
+      } catch {
+        return;
+      }
     }
 
-    const { path, courseIndex } = match;
-    const progress = getCourseProgressList(path);
-    const nodes: CourseInPathNode[] = progress.map((course) => ({ title: course.title, state: course.state }));
-    const nextCourse = progress.find((course) => course.courseIndex > courseIndex && course.state !== 'COMPLETED');
+    for (const path of this.enrolledPaths) {
+      let journey: PathJourney | null = null;
+      try {
+        journey = await this.fetchJourney(path.id);
+      } catch {
+        continue;
+      }
+      if (!journey) continue;
 
-    return {
-      pathName: path.name,
-      pathHref: `/lms/paths/${path.id}`,
-      nodes,
-      currentPosition: courseIndex + 1,
-      next: nextCourse
-        ? {
-            position: nextCourse.courseIndex + 1,
-            title: nextCourse.title,
-            remainingLessons: Math.max(0, nextCourse.lessonCount - nextCourse.lessonsCompleted),
-            remainingExercises: Math.max(0, nextCourse.exerciseCount - nextCourse.exercisesCompleted)
-          }
-        : null,
-      isPathComplete: progress.every((course) => course.state === 'COMPLETED')
-    };
-  }
+      const position = journey.courses.findIndex((course) => course.courseId === courseId);
+      if (position < 0) continue;
 
-  async ensureSelectedPath(pathId: string): Promise<void> {
-    if (this.selectedPath?.id === pathId) {
+      const current = journey.courses[position];
+      const nodes: CourseInPathNode[] = journey.courses.map((course) => ({
+        title: course.title,
+        state: course.status
+      }));
+      const nextCourse = journey.courses
+        .filter((course) => course.position > current.position && !course.isComplete)
+        .sort((a, b) => a.position - b.position)[0];
+
+      this.pathContext = {
+        pathName: journey.path.name,
+        pathHref: `/lms/paths/${journey.path.publicId ?? journey.path.id}`,
+        nodes,
+        currentPosition: current.position,
+        next: nextCourse
+          ? {
+              position: nextCourse.position,
+              title: nextCourse.title,
+              remainingLessons: Math.max(0, nextCourse.lessonsTotal - nextCourse.lessonsCompleted),
+              remainingExercises: Math.max(0, nextCourse.exercisesTotal - nextCourse.exercisesCompleted)
+            }
+          : null,
+        isPathComplete: journey.isComplete
+      };
+
       return;
     }
+  }
 
-    this.isLoading = true;
-    try {
-      await sleep(120);
-      this.selectedPath = getMockPathById(pathId);
-    } finally {
-      this.isLoading = false;
+  async loadExplorePaths(limit = 3): Promise<void> {
+    const siteName = get(currentOrg)?.siteName;
+    if (!siteName) return;
+
+    const enrolledIds = new Set(this.enrolledPaths.flatMap((path) => [path.id, path.publicId]));
+    const response = await this.execute<ListPublicLearningPathsRequest>({
+      requestFn: () => classroomio.organization['learning-paths'].public.$get({ query: { siteName } }),
+      logContext: 'loading paths to explore'
+    });
+    const rows = response?.data?.learningPaths ?? [];
+    this.explorePaths = rows
+      .filter((row) => !enrolledIds.has(row.id) && !enrolledIds.has(row.publicId))
+      .slice(0, limit)
+      .map((row) => ({
+        id: row.publicId ?? row.id,
+        name: row.name,
+        description: row.description ?? '',
+        coverImage: row.coverImage ?? undefined,
+        courseCount: row.courseCount ?? 0,
+        href: `/lms/paths/${row.publicId ?? row.id}`
+      }));
+  }
+
+  async enroll(pathId: string): Promise<boolean> {
+    let enrolled = false;
+    await this.execute<EnrollInLearningPathRequest>({
+      requestFn: () => classroomio['learning-path'][':pathId'].enroll.$post({ param: { pathId }, json: {} }),
+      logContext: 'enrolling in learning path',
+      onSuccess: () => {
+        enrolled = true;
+      }
+    });
+    if (enrolled) {
+      await this.listEnrolled();
     }
+
+    return enrolled;
+  }
+
+  async loadCatalogPaths(limit = 100): Promise<void> {
+    const siteName = get(currentOrg)?.siteName;
+    if (!siteName) return;
+
+    const response = await this.execute<ListPublicLearningPathsRequest>({
+      requestFn: () =>
+        classroomio.organization['learning-paths'].public.$get({ query: { siteName, limit: String(limit) } }),
+      logContext: 'loading path catalog'
+    });
+    this.catalogPaths = response?.data?.learningPaths ?? [];
   }
 }
 

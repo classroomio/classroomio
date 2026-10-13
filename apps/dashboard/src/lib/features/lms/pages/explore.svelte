@@ -8,8 +8,7 @@
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
   import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
-  import { MOCK_PATHS, MOCK_STANDALONE_COURSES } from '$features/learning-path/utils/mock-data';
-  import type { PathDifficulty } from '$features/learning-path/utils/types';
+  import { coursesApi } from '$features/course/api';
   import CourseFilterPopover, { type FilterGroup } from '$features/course/components/course-filter-popover.svelte';
   import CoursePreviewModal, { type CoursePreviewCourse } from '$features/lms/components/course-preview-modal.svelte';
 
@@ -19,29 +18,18 @@
     id: string;
     title: string;
     description: string;
-    coverGradient?: string;
     coverImage?: string;
     lessonCount: number;
     exerciseCount: number;
-    difficulty: PathDifficulty;
-    partOfPath: { name: string; href: string } | null;
     href: string;
     slug?: string;
     cost: number;
   }
 
-  const COURSE_DIFFICULTIES: PathDifficulty[] = ['Beginner', 'Intermediate', 'Advanced'];
-
   let searchValue = $state('');
   let contentType = $state<ContentTypeFilter>('ALL');
-  let difficulty = $state<PathDifficulty | 'ALL'>('ALL');
   let selectedCourse = $state<CoursePreviewCourse | null>(null);
   let previewOpen = $state(false);
-
-  function difficultyForId(id: string): PathDifficulty {
-    const sum = Array.from(id).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return COURSE_DIFFICULTIES[sum % COURSE_DIFFICULTIES.length];
-  }
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
@@ -49,86 +37,57 @@
     if (!learnerPathStore.hasLoaded) {
       learnerPathStore.listEnrolled();
     }
+    learnerPathStore.loadCatalogPaths();
+    coursesApi.getRecommendedCourses({ limit: 24 });
   });
 
-  const enrolledIds = $derived(new Set(learnerPathStore.enrolledPaths.map((path) => path.id)));
+  const enrolledIds = $derived(new Set(learnerPathStore.enrolledPaths.flatMap((path) => [path.id, path.publicId])));
 
-  const catalogPaths = $derived(MOCK_PATHS.filter((path) => path.status === 'ACTIVE' && !enrolledIds.has(path.id)));
+  const catalogPaths = $derived(
+    learnerPathStore.catalogPaths.filter((path) => !enrolledIds.has(path.id) && !enrolledIds.has(path.publicId))
+  );
 
   const pathItems = $derived(
     catalogPaths.map((path) => ({
-      id: path.id,
-      href: `/lms/paths/${path.id}`,
+      id: path.publicId ?? path.id,
+      href: `/lms/paths/${path.publicId ?? path.id}`,
       name: path.name,
-      description: path.description,
-      coverGradient: path.coverGradient,
-      coverImage: path.coverImage,
-      courseCount: path.courses.length,
-      difficulty: path.difficulty
+      description: path.description ?? '',
+      coverImage: path.coverImage ?? undefined,
+      courseCount: path.courseCount ?? 0
     }))
   );
 
   const courseItems = $derived.by((): ExploreCourseCard[] => {
-    const pathCourses = catalogPaths.flatMap((path) =>
-      path.courses.map((course) => ({
-        id: course.id,
-        title: course.title,
-        description: course.description,
-        coverGradient: course.coverGradient,
-        coverImage: course.coverImage,
-        lessonCount: course.lessonCount,
-        exerciseCount: course.exerciseCount,
-        difficulty: path.difficulty,
-        partOfPath: { name: path.name, href: `/lms/paths/${path.id}` },
-        href: `/lms/paths/${path.id}`,
-        slug: course.slug,
-        cost: course.cost
-      }))
-    );
-
-    const standaloneCourses = MOCK_STANDALONE_COURSES.map(
+    return coursesApi.recommendedCourses.map(
       (course): ExploreCourseCard => ({
         id: course.id,
         title: course.title,
-        description: course.description,
-        coverGradient: course.coverGradient,
-        coverImage: course.coverImage,
-        lessonCount: course.lessonCount,
-        exerciseCount: course.exerciseCount,
-        difficulty: difficultyForId(course.id),
-        partOfPath: null,
-        href: '/lms/mylearning',
-        slug: course.slug,
-        cost: course.cost
+        description: course.description ?? '',
+        coverImage: course.logo || undefined,
+        lessonCount: course.lessonCount ?? 0,
+        exerciseCount: course.exerciseCount ?? 0,
+        href: '/lms/explore',
+        slug: course.slug ?? undefined,
+        cost: course.cost ?? 0
       })
-    );
-
-    return [...pathCourses, ...standaloneCourses].filter(
-      (course, index, all) => all.findIndex((item) => item.id === course.id) === index
     );
   });
 
   const matchesSearch = (text: string) => !searchValue || text.toLowerCase().includes(searchValue.toLowerCase());
 
-  const filteredPaths = $derived(
-    pathItems.filter(
-      (path) =>
-        matchesSearch(`${path.name} ${path.description}`) && (difficulty === 'ALL' || path.difficulty === difficulty)
-    )
-  );
+  const filteredPaths = $derived(pathItems.filter((path) => matchesSearch(`${path.name} ${path.description}`)));
 
-  const filteredCourses = $derived(
-    courseItems.filter(
-      (course) => matchesSearch(course.title) && (difficulty === 'ALL' || course.difficulty === difficulty)
-    )
-  );
+  const filteredCourses = $derived(courseItems.filter((course) => matchesSearch(course.title)));
 
   const showPathsSection = $derived(contentType !== 'courses');
   const showCoursesSection = $derived(contentType !== 'paths');
 
-  const selected = $derived<Record<string, string>>({ contentType, difficulty });
+  const isSearchingOrFiltering = $derived(searchValue.trim() !== '' || contentType !== 'ALL');
 
-  const hasActiveFilters = $derived(contentType !== 'ALL' || difficulty !== 'ALL');
+  const selected = $derived<Record<string, string>>({ contentType });
+
+  const hasActiveFilters = $derived(contentType !== 'ALL');
 
   const groups = $derived<FilterGroup[]>([
     {
@@ -138,16 +97,6 @@
         { value: 'ALL', label: $t('explore.content_type_all') },
         { value: 'paths', label: $t('learningPath.badge.learning_path') },
         { value: 'courses', label: $t('learningPath.badge.course') }
-      ]
-    },
-    {
-      id: 'difficulty',
-      label: $t('learningPath.toolbar.difficulty'),
-      options: [
-        { value: 'ALL', label: $t('learningPath.toolbar.difficulty_any') },
-        { value: 'Beginner', label: $t('learningPath.toolbar.difficulty_beginner') },
-        { value: 'Intermediate', label: $t('learningPath.toolbar.difficulty_intermediate') },
-        { value: 'Advanced', label: $t('learningPath.toolbar.difficulty_advanced') }
       ]
     }
   ]);
@@ -194,12 +143,10 @@
 
   function handleFilterChange(groupId: string, value: string) {
     if (groupId === 'contentType') contentType = value as ContentTypeFilter;
-    if (groupId === 'difficulty') difficulty = value as PathDifficulty | 'ALL';
   }
 
   function clearFilters() {
     contentType = 'ALL';
-    difficulty = 'ALL';
   }
 
   function openCoursePreview(course: ExploreCourseCard) {
@@ -225,7 +172,7 @@
     <Spinner />
   </div>
 {:else}
-  <div class="mb-6 flex flex-wrap items-center justify-end gap-3">
+  <div class="mb-2 flex flex-wrap items-center justify-end gap-3">
     <Search
       class="max-w-sm flex-1 border md:w-2/3"
       placeholder={$t('explore.search_placeholder')}
@@ -241,46 +188,8 @@
     />
   </div>
 
-  {#if showPathsSection}
-    <section class="mt-2">
-      <div class="mb-3 flex items-center gap-2">
-        <h2 class="text-base font-semibold">{$t('explore.section_paths')}</h2>
-        <span
-          class="ui:text-muted-foreground ui:bg-muted inline-flex min-w-[22px] items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold"
-        >
-          {filteredPaths.length}
-        </span>
-      </div>
-
-      {#if filteredPaths.length === 0}
-        <Empty
-          icon={PathIcon}
-          title={$t('explore.paths_empty_title')}
-          description={$t('explore.paths_empty_description')}
-        />
-      {:else}
-        <div class="grid grid-cols-1 gap-4 px-2 md:grid-cols-3">
-          {#each filteredPaths as path}
-            <LearningPathCard
-              href={path.href}
-              name={path.name}
-              description={path.description}
-              coverGradient={path.coverGradient}
-              coverImage={path.coverImage}
-              courseCount={path.courseCount}
-              progressPercent={0}
-              coursesCompleted={0}
-              isExplore={true}
-              labels={pathLabels}
-            />
-          {/each}
-        </div>
-      {/if}
-    </section>
-  {/if}
-
   {#if showCoursesSection}
-    <section class="mt-8">
+    <section class="mt-2">
       <div class="mb-3 flex items-center gap-2">
         <h2 class="text-base font-semibold">{$t('explore.section_courses')}</h2>
         <span
@@ -293,8 +202,10 @@
       {#if filteredCourses.length === 0}
         <Empty
           icon={PathIcon}
-          title={$t('explore.courses_empty_title')}
-          description={$t('explore.courses_empty_description')}
+          title={isSearchingOrFiltering ? $t('explore.courses_empty_title') : $t('explore.courses_browse_empty_title')}
+          description={isSearchingOrFiltering
+            ? $t('explore.courses_empty_description')
+            : $t('explore.courses_browse_empty_description')}
         />
       {:else}
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -303,14 +214,51 @@
               href={course.href}
               title={course.title}
               description={course.description}
-              coverGradient={course.coverGradient}
               coverImage={course.coverImage}
               lessonCount={course.lessonCount}
               exerciseCount={course.exerciseCount}
-              partOfPath={course.partOfPath}
               isExplore={true}
               onExploreClick={() => openCoursePreview(course)}
               labels={courseLabels}
+            />
+          {/each}
+        </div>
+      {/if}
+    </section>
+  {/if}
+
+  {#if showPathsSection}
+    <section class="mt-4">
+      <div class="mb-3 flex items-center gap-2">
+        <h2 class="text-base font-semibold">{$t('explore.section_paths')}</h2>
+        <span
+          class="ui:text-muted-foreground ui:bg-muted inline-flex min-w-[22px] items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold"
+        >
+          {filteredPaths.length}
+        </span>
+      </div>
+
+      {#if filteredPaths.length === 0}
+        <Empty
+          icon={PathIcon}
+          title={isSearchingOrFiltering ? $t('explore.paths_empty_title') : $t('learningPath.empty.title')}
+          description={isSearchingOrFiltering
+            ? $t('explore.paths_empty_description')
+            : $t('dashboard.no_recommendations_description')}
+        />
+      {:else}
+        <div class="grid grid-cols-1 gap-4 px-2 md:grid-cols-3">
+          {#each filteredPaths as path}
+            <LearningPathCard
+              href={path.href}
+              name={path.name}
+              description={path.description}
+              coverImage={path.coverImage}
+              courseCount={path.courseCount}
+              progressPercent={0}
+              coursesCompleted={0}
+              isExplore={true}
+              labels={pathLabels}
             />
           {/each}
         </div>

@@ -16,6 +16,7 @@ export interface TPathJourneyCourse {
   description: string;
   slug: string | null;
   logo: string;
+  coverImage: string;
   type: string;
   /** Same rule as the member course cache written by syncPathProgressForMember. */
   status: TPathJourneyCourseStatus;
@@ -59,6 +60,7 @@ type TPathJourneyRow = {
   description: string | null;
   slug: string | null;
   logo: string | null;
+  cover_image: string | null;
   type: string | null;
   lessons_total: number | null;
   lessons_completed: number | null;
@@ -108,7 +110,7 @@ export async function getPathJourney(
       ${learnerCourseProgressCtes(profileId)},
       journey_courses AS (
         SELECT tc.course_id, tc."order", tc.added_at,
-          c.title, c.description, c.slug, c.logo, c.type::text AS type,
+          c.title, c.description, c.slug, c.logo, c.banner_image AS cover_image, c.type::text AS type,
           cp.lessons_total::int AS lessons_total,
           cp.lessons_completed::int AS lessons_completed,
           cp.exercises_total::int AS exercises_total,
@@ -131,7 +133,7 @@ export async function getPathJourney(
         FROM journey_courses jc
         WINDOW path_order AS (ORDER BY jc."order", jc.added_at, jc.course_id)
       )
-      SELECT oc.course_id, oc.position::int AS position, oc.title, oc.description, oc.slug, oc.logo, oc.type,
+      SELECT oc.course_id, oc.position::int AS position, oc.title, oc.description, oc.slug, oc.logo, oc.cover_image, oc.type,
         oc.lessons_total, oc.lessons_completed, oc.exercises_total, oc.exercises_completed,
         oc.last_progress_at, oc.is_complete,
         (NOT ${sequentialUnlock} OR oc.previous_complete) AS is_unlocked,
@@ -176,6 +178,7 @@ export async function getPathJourney(
           description: row.description ?? '',
           slug: row.slug,
           logo: row.logo ?? '',
+          coverImage: row.cover_image ?? '',
           type: row.type ?? '',
           status: toCourseStatus(isComplete, progress, isUnlocked),
           isUnlocked,

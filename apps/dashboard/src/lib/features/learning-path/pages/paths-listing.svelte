@@ -17,7 +17,9 @@
   import { page } from '$app/state';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
-  import { PathCard, PathRow, PathFilterPopover, CreatePathModal } from '../components';
+  import { PathRow, PathFilterPopover, CreatePathModal, PathCardDropdown } from '../components';
+  import { LearningPathCard, type LearningPathCardLabels } from '@cio/ui';
+  import CoursePublishBadge from '$features/course/components/course-publish-badge.svelte';
   import { learningPathApi } from '../api';
   import {
     LEARNING_PATHS_VIEW_MODE_KEY,
@@ -43,6 +45,26 @@
   let searchDebounce: ReturnType<typeof setTimeout> | null = null;
   let viewMode = $state<ViewMode>(DEFAULT_VIEW_MODE);
   let showCreateDialog = $state(false);
+
+  const pathCardLabels = $derived<LearningPathCardLabels>({
+    badge: $t('learningPath.badge.learning_path'),
+    course: $t('learningPath.card.course'),
+    courses: $t('learningPath.card.courses'),
+    certificateEarned: $t('learningPath.card.certificate_earned'),
+    adminContinueSetup: $t('learningPath.admin.continue_setup'),
+    adminManage: $t('learningPath.admin.manage'),
+    viewCertificate: $t('learningPath.card.view_certificate'),
+    viewPath: $t('learningPath.hero.view_path'),
+    startLearning: $t('learningPath.hero.start_learning'),
+    continueLearning: $t('learningPath.hero.continue_learning'),
+    statusDraft: $t('learningPath.status.draft'),
+    statusActive: $t('learningPath.status.active'),
+    statusArchived: $t('learningPath.status.archived'),
+    progressLabel: $t('learningPath.progress.label'),
+    of: $t('learningPath.card.of'),
+    coursesCompleted: $t('learningPath.hero.courses_completed'),
+    earnedOn: $t('certificates.earned_on')
+  });
 
   // Deletion modal state
   let deleteModalOpen = $state(false);
@@ -243,9 +265,42 @@
       </Button>
     </Empty>
   {:else if viewMode === 'grid'}
-    <Item.Group class="grid! w-full grid-cols-1 justify-items-center gap-4 md:grid-cols-2 xl:grid-cols-3">
+    <Item.Group class="grid! w-full grid-cols-1 justify-items-center gap-4 p-2 md:grid-cols-2 xl:grid-cols-3">
       {#each learningPathApi.paths as path (path.id)}
-        <PathCard {path} onDelete={handleRequestDelete} />
+        <LearningPathCard
+          isAdmin
+          href={!path.isPublished && (path.memberCount ?? 0) === 0
+            ? `/paths/${path.publicId}/setup`
+            : `/paths/${path.publicId}`}
+          name={path.name}
+          description={path.description ?? ''}
+          coverImage={path.coverImage ?? undefined}
+          courseCount={path.courseCount ?? 0}
+          status={path.isPublished ? 'ACTIVE' : 'DRAFT'}
+          labels={pathCardLabels}
+        >
+          {#snippet overlay()}
+            <PathCardDropdown
+              id={path.id}
+              publicId={path.publicId}
+              slug={path.slug}
+              name={path.name}
+              description={path.description}
+              isPublished={path.isPublished ?? false}
+              onDelete={handleRequestDelete}
+            />
+          {/snippet}
+          {#snippet footer()}
+            <div class="flex w-full items-center justify-between">
+              <CoursePublishBadge isPublished={path.isPublished ?? false} />
+              <p class="ui:text-muted-foreground pl-2 text-xs">
+                {(path.memberCount ?? 0) > 0
+                  ? $t('learningPath.listing.card.learners_count', { count: path.memberCount ?? 0 })
+                  : $t('learningPath.listing.filters.no_learners')}
+              </p>
+            </div>
+          {/snippet}
+        </LearningPathCard>
       {/each}
     </Item.Group>
   {:else}
