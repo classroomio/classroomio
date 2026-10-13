@@ -9,15 +9,7 @@ import {
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
-import {
-  COHORT_MEMBER_RULE,
-  COHORT_TEAM_RULE,
-  DESTRUCTIVE,
-  PAGINATED,
-  READ_ONLY,
-  WRITE,
-  jsonContent
-} from './cohort-tool-text';
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, DESTRUCTIVE, READ_ONLY, WRITE, jsonContent } from './cohort-tool-text';
 
 export const ZListCohortGoalsToolInput = ZPublicApiCohortParam.extend(ZPublicApiPaginationQuery.shape);
 
@@ -50,27 +42,12 @@ const evaluateCohortGoalShape = ZEvaluateCohortGoalToolInput.shape as unknown as
 const evaluateAllCohortGoalsShape = ZEvaluateAllCohortGoalsToolInput.shape as unknown as ZodRawShapeCompat;
 const paginationShape = ZPublicApiPaginationQuery.shape as unknown as ZodRawShapeCompat;
 
-const CREATE_COHORT_GOAL_DESCRIPTION = `Create a progress goal for a cohort. ${COHORT_TEAM_RULE}
-
-Required fields depend on "type":
-- complete_all: no extra fields beyond courseIds.
-- n_of_m: requiredCount (must be <= courseIds.length).
-- score: scoreThreshold.
-- pass_rate: scoreThreshold and teamPassRateThreshold.
-- readiness: no extra fields; deadlineKind must be "none".
-
-Required fields depend on "deadlineKind":
-- absolute: deadlineDate.
-- relative_to_join: relativeDays.
-- recurring: recurringMonths (and deadlineDate for the current cycle).
-- none: no extra fields.
-
-courseIds must be non-empty and every course must already be linked to the cohort (see add_cohort_course).`;
+const CREATE_COHORT_GOAL_DESCRIPTION = `Create a progress goal for a cohort; ${COHORT_TEAM_RULE}. The fields that type and deadlineKind require are listed on those two fields, and every course must already be linked to the cohort (see add_cohort_course).`;
 
 export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_cohort_goals',
-    `List the active goals in a cohort, with per-status learner counts. ${PAGINATED} ${COHORT_MEMBER_RULE}`,
+    `List the active goals in a cohort, with learner counts per status; ${COHORT_MEMBER_RULE}.`,
     listCohortGoalsShape,
     READ_ONLY,
     async (args) => {
@@ -88,7 +65,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'get_cohort_goal',
-    `Get a cohort goal. ${COHORT_MEMBER_RULE}`,
+    `Get a cohort goal; ${COHORT_MEMBER_RULE}.`,
     getCohortGoalShape,
     READ_ONLY,
     async (args) => {
@@ -100,7 +77,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'update_cohort_goal',
-    `Update a cohort goal. Send only the fields to change; omitted fields keep their values, and the resulting goal must still satisfy the create_cohort_goal rules. ${COHORT_TEAM_RULE}`,
+    `Update the fields you send on a cohort goal; ${COHORT_TEAM_RULE}. The result must still satisfy the create_cohort_goal rules.`,
     updateCohortGoalShape,
     WRITE,
     async (args) => {
@@ -112,7 +89,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'archive_cohort_goal',
-    `Archive a cohort goal. It stops being evaluated and drops out of list_cohort_goals, but its history is kept. ${COHORT_TEAM_RULE}`,
+    `Archive a cohort goal so it stops being evaluated and leaves list_cohort_goals while its history is kept; ${COHORT_TEAM_RULE}.`,
     archiveCohortGoalShape,
     WRITE,
     async (args) => {
@@ -124,7 +101,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'delete_cohort_goal',
-    `Permanently delete a cohort goal and its learner progress. This is a hard delete; use archive_cohort_goal to keep history. ${COHORT_TEAM_RULE}`,
+    `Permanently delete a cohort goal and its learner progress; ${COHORT_TEAM_RULE}. To keep history, use archive_cohort_goal instead.`,
     deleteCohortGoalShape,
     DESTRUCTIVE,
     async (args) => {
@@ -136,7 +113,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'evaluate_cohort_goal',
-    `Re-evaluate one goal's learner statuses now instead of waiting for the scheduled run. Returns the number of learner assignments evaluated. Archived goals are not evaluated (409), so their history is kept. ${COHORT_TEAM_RULE}`,
+    `Re-evaluate one goal's learner statuses now, without waiting for the scheduled run; ${COHORT_TEAM_RULE}. Archived goals are not evaluated and return 409.`,
     evaluateCohortGoalShape,
     WRITE,
     async (args) => {
@@ -148,7 +125,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'evaluate_all_cohort_goals',
-    `Re-evaluate every active goal in a cohort now. Returns the number of learner assignments evaluated. ${COHORT_TEAM_RULE}`,
+    `Re-evaluate every active goal in a cohort now, without waiting for the scheduled run; ${COHORT_TEAM_RULE}.`,
     evaluateAllCohortGoalsShape,
     WRITE,
     async (args) => {
@@ -160,7 +137,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'get_org_goals_overview',
-    `Organization-wide goal roll-up: one entry per active goal across all cohorts, with learner counts per status and on-track percentage. ${PAGINATED} The API key creator must be an org admin or tutor, otherwise 403.`,
+    'List one entry per active goal across every cohort, with learner counts per status and on-track percentage; the API key creator must be an org admin or tutor.',
     paginationShape,
     READ_ONLY,
     async (args) => {
@@ -171,7 +148,7 @@ export function registerCohortGoalTools(server: McpServer, apiClient: ClassroomI
 
   server.tool(
     'list_my_cohort_goals',
-    `List the API key creator's own goal assignments across their cohorts in this organization, with status and progress. ${PAGINATED}`,
+    "List the API key creator's own goal assignments across their cohorts in this organization, with status and progress.",
     paginationShape,
     READ_ONLY,
     async (args) => {
