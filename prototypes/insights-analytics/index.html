@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insights Dashboard Mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: app-style scope switcher on top; widget grid beneath. The internal build also shows each widget's metric spec and data status. */
+:root {
+  --bg: #f5f6f9; --surface: #ffffff; --fg: #14171f; --muted: #5b6477; --line: #e2e5ec;
+  --accent: #2447d6; --accent-soft: #e8edff; --good: #1b8a5a; --warn: #a96f12; --bad: #c4372e;
+  --good-tint: #dff3e8; --warn-tint: #fbeccd; --bad-tint: #f9dad7;
+  --font-body: 'Figtree', system-ui, sans-serif; --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1117; --surface: #171b23; --fg: #e8ebf2; --muted: #98a2b6; --line: #272d39;
+  --accent: #8aa3ff; --accent-soft: #1e2850; --good: #4cc38a; --warn: #e0b04a; --bad: #f0766e;
+  --good-tint: #163528; --warn-tint: #3a2e14; --bad-tint: #3d1d1b; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0e1117; --surface: #171b23; --fg: #e8ebf2; --muted: #98a2b6; --line: #272d39;
+  --accent: #8aa3ff; --accent-soft: #1e2850; --good: #4cc38a; --warn: #e0b04a; --bad: #f0766e;
+  --good-tint: #163528; --warn-tint: #3a2e14; --bad-tint: #3d1d1b; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.45; padding-inline: 16px; }
+.wrap { max-width: 1180px; margin-inline: auto; padding-block: 20px 56px; display: flex; flex-direction: column; gap: 18px; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: 22px; font-weight: 700; text-wrap: balance; }
+h2 { font-size: 14px; font-weight: 600; }
+.sub { color: var(--muted); }
+.example { background: var(--warn-tint); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+.bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.seg { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+.seg button { font: inherit; font-weight: 600; border: 0; background: transparent; color: var(--muted); padding: 7px 14px; border-radius: 7px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .seg button[aria-pressed="true"] { color: #0e1117; } }
+:root[data-theme="dark"] .seg button[aria-pressed="true"] { color: #0e1117; }
+button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 12px; font-size: 13px; }
+.live i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--good); margin-right: 6px; }
+.toggle { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: 13px; cursor: pointer; }
+.head { display: flex; flex-direction: column; gap: 4px; }
+#view { display: flex; flex-direction: column; gap: 18px; }
+#top > * + * { margin-top: 12px; }
+.keyrow { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 13px; color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 14px; }
+.w { grid-column: span 12; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+@media (min-width: 860px) { .s4 { grid-column: span 4; } .s5 { grid-column: span 5; } .s6 { grid-column: span 6; } .s7 { grid-column: span 7; } .s8 { grid-column: span 8; } }
+.wh { display: flex; flex-direction: column; gap: 6px; }
+.wt { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.tags { display: inline-flex; gap: 8px; align-items: center; }
+.viz { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+.badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.badge.ok { background: var(--good-tint); color: var(--good); }
+.badge.drv { background: var(--accent-soft); color: var(--accent); }
+.badge.new { background: var(--warn-tint); color: var(--warn); }
+.src { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); background: var(--accent-soft); border-radius: 6px; padding: 2px 7px; align-self: flex-start; overflow-wrap: anywhere; }
+body.hide-src .src { display: none; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; align-items: flex-start; }
+.kpi .n { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.kpi .l { color: var(--muted); font-size: 13px; }
+.kpi .d { font-size: 12px; font-variant-numeric: tabular-nums; }
+.up { color: var(--good); } .down { color: var(--bad); } .flat { color: var(--muted); }
+.kpi .badge { margin-top: 4px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th { font-size: 12px; font-weight: 600; color: var(--muted); }
+td.c, th.c { text-align: center; }
+.cell { display: inline-block; min-width: 44px; padding: 3px 8px; border-radius: 6px; text-align: center; font-weight: 600; }
+.hi { background: var(--good-tint); } .mid { background: var(--warn-tint); } .lo { background: var(--bad-tint); } .na { color: var(--muted); font-weight: 400; }
+.pill { font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 999px; }
+.pill.ok { background: var(--good-tint); color: var(--good); } .pill.lag { background: var(--warn-tint); color: var(--warn); }
+.pill.risk { background: var(--bad-tint); color: var(--bad); } .pill.done { background: var(--accent-soft); color: var(--accent); }
+.hbar { display: grid; grid-template-columns: minmax(90px, 170px) 1fr 52px; gap: 10px; align-items: center; font-size: 13px; }
+.hbar .lab { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track { height: 10px; border-radius: 5px; background: var(--line); overflow: hidden; }
+.fill { height: 100%; background: var(--accent); border-radius: 5px; }
+.fill.warn { background: var(--warn); } .fill.bad { background: var(--bad); } .fill.good { background: var(--good); }
+.hbar .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 9px; }
+.cols { display: flex; align-items: flex-end; gap: 8px; height: 150px; }
+.col { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; height: 100%; }
+.col .b { width: 100%; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 2px; }
+.col .t { font-size: 11px; color: var(--muted); white-space: nowrap; }
+.col .k { font-size: 12px; font-variant-numeric: tabular-nums; }
+svg text { fill: var(--muted); font-family: var(--font-body); font-size: 11px; }
+svg .g { stroke: var(--line); stroke-width: 1; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+.note { font-size: 12px; color: var(--muted); }
+.gap { border: 1.5px dashed var(--warn); background: var(--warn-tint); border-radius: 10px; padding: 12px 14px; font-size: 13px; }
+.reuse td:first-child { font-weight: 600; white-space: normal; min-width: 150px; }
+.reuse td { white-space: normal; vertical-align: top; min-width: 150px; }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tools input, .tools select, .picker select { font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; max-width: 100%; }
+.tools input { flex: 1 1 220px; min-width: 0; }
+.picker { display: inline-flex; gap: 8px; align-items: center; font-weight: 600; }
+.picker select { background: var(--surface); }
+.mxfoot { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.btn { font: inherit; font-weight: 600; color: var(--accent); background: var(--accent-soft); border: 0; border-radius: 8px; padding: 7px 14px; cursor: pointer; }
+.btn:disabled { color: var(--muted); background: var(--line); cursor: default; }
+.btn.sm { padding: 3px 10px; font-size: 12px; }
+.empty { text-align: center; color: var(--muted); padding: 24px; }
+.pick { cursor: pointer; }
+.pick:hover td, .pick.sel td { background: var(--accent-soft); }
+.mini { display: grid; grid-template-columns: 56px 34px; gap: 8px; align-items: center; }
+.mini .track { height: 6px; }
+.cc { display: flex; gap: 10px; align-items: center; }
+.plan { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+th small { display: block; font-weight: 400; }
+.w > svg { max-width: 760px; width: 100%; margin-inline: auto; display: block; }
+.donut { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.donut .stack { flex: 1 1 160px; min-width: 0; }
+.qrow .note { margin-top: 2px; }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="head" id="top"></div>
+  <div class="bar">
+    <div class="seg" role="group" aria-label="Scope">
+      <button id="b-cohort" aria-pressed="true" data-scope="cohort">Cohort</button>
+      <button id="b-course" aria-pressed="false" data-scope="course">Course</button>
+      <button id="b-org" aria-pressed="false" data-scope="org">Organization</button>
+    </div>
+    <label class="toggle" id="srctoggle"><input type="checkbox" id="showsrc" checked> Show metric specs</label>
+  </div>
+
+  <div class="chips" id="scopechips"></div>
+  <div id="view"></div>
+</div>
+
+<script>
+const CUSTOMER = false;
+const $ = (s) => document.querySelector(s);
+const note = (dev, customer) => (CUSTOMER ? customer : dev);
+const heat = (v) => (v == null ? 'na' : v >= 70 ? 'hi' : v >= 50 ? 'mid' : 'lo');
+const cell = (v) => `<span class="cell ${heat(v)}">${v == null ? '–' : v + '%'}</span>`;
+const passCell = (v, mark) => (v == null ? '<span class="cell na">–</span>' : `<span class="cell ${v >= mark ? 'hi' : 'lo'}">${v}%</span>`);
+const pill = (s) => ({ ok: ['ok', 'On track'], lag: ['lag', 'Lagging'], risk: ['risk', 'At risk'], done: ['done', 'Completed'] })[s];
+const BADGE = { ok: 'Data available', drv: 'Derived', new: 'Needs work' };
+const badge = (a) => `<span class="badge ${a}">${BADGE[a]}</span>`;
+const taken = (vals) => vals.filter((v) => v != null);
+const mean = (xs) => (xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length) : 0);
+const pct = (part, whole) => (whole ? Math.round((part / whole) * 100) : 0);
+
+const widget = (cls, title, viz, src, body, noteText, avail = 'ok') => `
+  <section class="w ${cls}">
+    <div class="wh"><div class="wt"><h2>${title}</h2>${CUSTOMER ? '' : `<span class="tags">${badge(avail)}<span class="viz">${viz}</span></span>`}</div>${CUSTOMER ? '' : `<code class="src">${src}</code>`}</div>
+    ${body}${noteText ? `<p class="note">${noteText}</p>` : ''}
+  </section>`;
+
+const kpis = (items) => `<div class="kpis">${items.map((k) => `
+  <div class="kpi"><span class="l">${k.l}</span><span class="n">${k.n}</span>
+  <span class="d ${k.t}">${k.d}</span>${CUSTOMER ? '' : `${badge(k.a || 'drv')}<code class="src">${k.src}</code>`}</div>`).join('')}</div>`;
+
+const hbars = (rows, max = 100, unit = '%') => `<div class="stack">${rows.map((r) => `
+  <div class="hbar"><span class="lab" title="${r.l}">${r.l}</span>
+  <div class="track"><div class="fill ${r.c || ''}" style="width:${Math.min(100, (r.v / max) * 100)}%"></div></div>
+  <span class="v">${r.v.toLocaleString()}${unit}</span></div>`).join('')}</div>`;
+
+const columns = (rows) => {
+  const max = Math.max(...rows.map((r) => r.v), 1);
+  return `<div class="cols">${rows.map((r) => `<div class="col"><span class="k">${r.v}</span>
+  <div class="b" style="height:${(r.v / max) * 100}%"></div><span class="t">${r.l}</span></div>`).join('')}</div>`;
+};
+
+const legend = (items) => `<div class="legend">${items.map((i) => `<span><i style="background:${i.c}"></i>${i.l}</span>`).join('')}</div>`;
+
+function lineChart({ labels, series, band, yMax = 100, yTicks = [0, 25, 50, 75, 100], fmt = (v) => v + '%' }) {
+  const W = 640, H = 250, L = 40, R = 34, T = 12, B = 40;
+  const x = (i) => L + (i * (W - L - R)) / Math.max(labels.length - 1, 1);
+  const y = (v) => T + (1 - v / yMax) * (H - T - B);
+  const grid = yTicks.map((t) => `<line class="g" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L - 8}" y="${y(t) + 4}" text-anchor="end">${fmt(t)}</text>`).join('');
+  const xl = labels.map((l, i) => `<text x="${x(i)}" y="${H - 14}" text-anchor="middle">${l}</text>`).join('');
+  let bandEl = '';
+  if (band) {
+    const pts = band.map((b, i) => (b ? [i, b] : null)).filter(Boolean);
+    const up = pts.map(([i, b]) => `${x(i)},${y(b[1])}`).join(' ');
+    const dn = pts.slice().reverse().map(([i, b]) => `${x(i)},${y(b[0])}`).join(' ');
+    bandEl = `<polygon points="${up} ${dn}" fill="var(--accent)" fill-opacity=".14"/>`;
+  }
+  const lines = series.map((s) => {
+    const pts = s.values.map((v, i) => (v == null ? null : [x(i), y(v)])).filter(Boolean);
+    if (!pts.length) return '';
+    const path = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
+    const dots = pts.map((p) => `<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="${s.color}"/>`).join('');
+    const last = pts[pts.length - 1];
+    const lv = s.values.filter((v) => v != null).pop();
+    const endLabel = s.noLabel ? '' : `<text x="${last[0]}" y="${last[1] - 9}" text-anchor="middle" style="fill:${s.color};font-weight:600">${fmt(lv)}</text>`;
+    return `<path d="${path}" fill="none" stroke="${s.color}" stroke-width="2.5" ${s.dash ? 'stroke-dasharray="6 5"' : ''} stroke-linejoin="round"/>${dots}${endLabel}`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Line chart">${grid}${xl}${bandEl}${lines}</svg>`;
+}
+
+function sparkline(vals) {
+  const t = taken(vals);
+  if (t.length < 2) return '<span class="na">–</span>';
+  const W = 92, H = 28, P = 4;
+  const x = (i) => P + (i * (W - 2 * P)) / (vals.length - 1);
+  const y = (v) => P + (1 - v / 100) * (H - 2 * P);
+  const pts = vals.map((v, i) => (v == null ? null : [x(i), y(v)])).filter(Boolean);
+  const d = pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' ');
+  const end = pts[pts.length - 1];
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Score trend"><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/><circle cx="${end[0]}" cy="${end[1]}" r="3" fill="var(--accent)"/></svg>`;
+}
+
+function groupedBars({ labels, series, max = 100 }) {
+  const W = 640, H = 250, L = 40, R = 14, T = 18, B = 44;
+  const groupW = (W - L - R) / labels.length;
+  const barW = Math.min(34, (groupW * 0.78) / series.length);
+  const y = (v) => T + (1 - v / max) * (H - T - B);
+  const grid = [0, 25, 50, 75, 100].map((t) => `<line class="g" x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}"/><text x="${L - 8}" y="${y(t) + 4}" text-anchor="end">${t}%</text>`).join('');
+  const bars = labels.map((label, i) => {
+    const start = L + groupW * i + (groupW - barW * series.length) / 2;
+    const rects = series.map((s, j) => {
+      const v = s.values[i];
+      if (v == null) return '';
+      const x = start + barW * j;
+      return `<rect x="${x + 1}" y="${y(v)}" width="${barW - 2}" height="${y(0) - y(v)}" rx="3" fill="${s.color}"/><text x="${x + barW / 2}" y="${y(v) - 5}" text-anchor="middle" style="fill:var(--fg);font-weight:600">${v}</text>`;
+    }).join('');
+    return `${rects}<text x="${L + groupW * i + groupW / 2}" y="${H - 18}" text-anchor="middle">${label}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Bar chart">${grid}${bars}</svg>${legend(series.map((s) => ({ c: s.color, l: s.name })))}`;
+}
+
+function donut(segments) {
+  const total = segments.reduce((a, s) => a + s.value, 0);
+  const R = 62, C = 2 * Math.PI * R;
+  let offset = 0;
+  const arcs = segments.map((s) => {
+    const len = (s.value / total) * C;
+    const arc = `<circle cx="90" cy="90" r="${R}" fill="none" stroke="${s.color}" stroke-width="26" stroke-dasharray="${len} ${C - len}" stroke-dashoffset="${-offset}" transform="rotate(-90 90 90)"/>`;
+    offset += len;
+    return arc;
+  }).join('');
+  const rows = segments.map((s) => `<div class="cc"><i style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${s.color}"></i><span>${s.label}</span><b style="margin-left:auto">${s.value.toLocaleString()}</b><span class="note">${pct(s.value, total)}%</span></div>`).join('');
+  return `<div class="donut"><svg viewBox="0 0 180 180" width="180" height="180" role="img" aria-label="Donut chart">${arcs}<text x="90" y="88" text-anchor="middle" style="fill:var(--fg);font-size:22px;font-weight:700">${total.toLocaleString()}</text><text x="90" y="106" text-anchor="middle">learners</text></svg><div class="stack">${rows}</div></div>`;
+}
+
+/* ---------- Courses in the cohort. Exercises are columns, in section then exercise order. ---------- */
+const COURSES = [
+  { title: 'Individual Tax Fundamentals', short: 'Tax fundamentals', passMark: 70,
+    exercises: ['Filing basics', 'Filing status', 'Income types', 'Deductions', 'Credits', 'Schedule C', 'Final exam'],
+    sections: [{ title: 'Intake and filing status', ex: [0, 1] }, { title: 'Income types', ex: [2] }, { title: 'Deductions', ex: [3] }, { title: 'Credits', ex: [4] }, { title: 'Schedule C', ex: [5] }, { title: 'Review cases', ex: [6] }],
+    questions: [['Which form reports self-employment income?', 'Credits', 41, '1099-K instead of 1099-NEC'], ['Standard deduction, married filing jointly', 'Deductions', 49, 'Single filer amount'], ['Child tax credit income phase-out', 'Credits', 53, 'Skipped the phase-out step'], ['Home office deduction eligibility', 'Schedule C', 58, 'Counted a shared room'], ['Filing status for a widowed parent', 'Filing status', 66, 'Head of household']] },
+  { title: 'Client Communication', short: 'Client communication', passMark: 70,
+    exercises: ['Active listening', 'Difficult conversations', 'Final exam'],
+    sections: [{ title: 'Listening', ex: [0] }, { title: 'Difficult conversations', ex: [1] }, { title: 'Wrap-up', ex: [2] }],
+    questions: [['Best response to an upset client', 'Difficult conversations', 52, 'Offered a discount first'], ['Which is active listening?', 'Active listening', 71, 'Interrupting to confirm'], ['When to escalate a complaint', 'Difficult conversations', 60, 'Waited for a second complaint']] },
+  { title: 'Data Security Basics', short: 'Data security', passMark: 80,
+    exercises: ['Phishing', 'Passwords', 'Final exam'],
+    sections: [{ title: 'Phishing', ex: [0] }, { title: 'Passwords', ex: [1] }, { title: 'Wrap-up', ex: [2] }],
+    questions: [['Spotting a phishing sender', 'Phishing', 62, 'Trusted the display name'], ['Strongest password choice', 'Passwords', 70, 'Long but reused'], ['Where to report a suspicious email', 'Phishing', 80, 'Replied to the sender']] }
+];
+
+/* ---------- One generated roster feeds every cohort number ---------- */
+function mulberry(seedValue) {
+  let a = seedValue;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const SEED = [
+  ['Rhea Kapoor', [22, 31, 35, 40, null, null, null], 3],
+  ['Dev Malhotra', [34, 29, 41, null, null, null, null], 2],
+  ['Sana Qureshi', [41, 44, 52, 58, 55, null, null], 0],
+  ['Imran Shaikh', [52, 48, 60, 62, 63, null, null], 0],
+  ['Meera Nair', [64, 71, 74, 78, 81, 84, null], 0],
+  ['Kabir Joshi', [58, 66, 69, 73, 79, 80, null], 1],
+  ['Tara Bose', [71, 80, 83, 86, 90, 92, 91], 1],
+  ['Nikhil Rao', [49, 63, 70, 74, 77, 82, 85], 0]
+];
+const FIRST = ['Aanya', 'Vikram', 'Isha', 'Arjun', 'Zoya', 'Rohan', 'Pooja', 'Karan', 'Anika', 'Samir', 'Neha', 'Yash', 'Divya', 'Aditya', 'Farah', 'Manav', 'Leela', 'Omar', 'Priya', 'Tejas', 'Mira', 'Sahil', 'Ananya', 'Rahul'];
+const LAST = ['Iyer', 'Khanna', 'Verma', 'Sethi', 'Desai', 'Menon', 'Gill', 'Patel', 'Reddy', 'Banerjee', 'Chopra', 'Sinha', 'Bhatt', 'Kulkarni', 'Mishra', 'Thomas', 'Dutta', 'Saxena', 'Pillai', 'Ahuja'];
+
+function buildRoster() {
+  const rnd = mulberry(7);
+  const clamp = (v) => Math.max(5, Math.min(98, Math.round(v)));
+  const pickFrom = (list) => list[Math.floor(rnd() * list.length)];
+  const make = (id, name, taxVals, days, finisher) => {
+    const ability = mean(taken(taxVals));
+    const record = (n, vals) => {
+      const count = taken(vals).length;
+      return { n, vals, count, progress: count === n ? 100 : Math.min(97, Math.round((count / n) * 92 + rnd() * 6)) };
+    };
+    const c = [record(7, taxVals)];
+    [3, 3].forEach((n) => {
+      const count = finisher ? n : Math.floor(rnd() * n);
+      c.push(record(n, Array.from({ length: n }, (_, j) => (j < count ? clamp(ability + rnd() * 20 - 10) : null))));
+    });
+    const avg = mean(c.flatMap((x) => taken(x.vals)));
+    const status = finisher ? 'done' : days >= 2 || avg < 50 ? 'risk' : avg < 65 || c[0].count < 5 ? 'lag' : 'ok';
+    const base = status === 'risk' ? 40 + rnd() * 35 : 60 + rnd() * 40;
+    const vidDays = Array.from({ length: 6 }, (_, d) => clamp((d === 5 ? 0.7 : 1) * (base + rnd() * 16 - 8)));
+    const clsDays = Array.from({ length: 6 }, () => (rnd() < (status === 'risk' ? 0.72 : 0.94) ? 100 : 0));
+    const finalsPass = c.every((x, i) => x.vals[x.n - 1] != null && x.vals[x.n - 1] >= COURSES[i].passMark);
+    return {
+      id, name, c, days, status, avg, progress: Math.round(c.reduce((sum, x) => sum + x.progress * x.n, 0) / c.reduce((sum, x) => sum + x.n, 0)),
+      vidDays, clsDays, vid: mean(vidDays), cls: mean(clsDays),
+      overdue: !finisher && (days >= 2 ? rnd() < 0.6 : rnd() < 0.05), overdueCourse: Math.floor(rnd() * 3),
+      cert: finisher && finalsPass
+    };
+  };
+  const rows = SEED.map((s, i) => make(i, s[0], s[1], s[2], s[1][6] != null));
+  const seen = new Set(rows.map((l) => l.name));
+  while (rows.length < 248) {
+    const name = pickFrom(FIRST) + ' ' + pickFrom(LAST);
+    if (seen.has(name)) continue;
+    seen.add(name);
+    const base = clamp(50 + rnd() * 30);
+    const gain = rnd() * 8 - 1;
+    const finisher = rnd() < 0.12;
+    const count = finisher ? 7 : 3 + Math.floor(rnd() * 4);
+    const vals = Array.from({ length: 7 }, (_, j) => (j < count ? clamp(base + gain * j + (rnd() * 10 - 5)) : null));
+    const days = rnd() < 0.72 ? 0 : rnd() < 0.5 ? 1 : 2 + Math.floor(rnd() * 4);
+    rows.push(make(rows.length, name, vals, days, finisher));
+  }
+  return rows;
+}
+const ROSTER = buildRoster();
+const lastLabel = (d) => (d === 0 ? 'Today' : d === 1 ? 'Yesterday' : d + ' days ago');
+const ORDER = { risk: 0, lag: 1, ok: 2, done: 3 };
+
+let picked = 0;
+const mx = { q: '', status: '', active: '', score: '', flag: '', sort: 'status', limit: 10, course: 'all' };
+const inAll = () => mx.course === 'all';
+const progressOf = (l) => (inAll() ? l.progress : l.c[mx.course].progress);
+const scoreOf = (l) => (inAll() ? l.avg : mean(taken(l.c[mx.course].vals)));
+const nowAt = (l, ci) => {
+  const rec = l.c[ci];
+  if (rec.progress === 100) return 'Finished';
+  const sections = COURSES[ci].sections;
+  return sections[Math.min(sections.length - 1, Math.floor((rec.progress / 100) * sections.length))].title;
+};
+
+const statusSegments = () => [['ok', 'On track', 'var(--good)'], ['lag', 'Lagging', 'var(--warn)'], ['risk', 'At risk', 'var(--bad)'], ['done', 'Completed', 'var(--accent)']].map(([key, label, color]) => ({ label, color, value: ROSTER.filter((l) => l.status === key).length }));
+const scoreBuckets = () => {
+  const scores = ROSTER.map(scoreOf).filter((v) => v > 0);
+  const band = (lo, hi) => scores.filter((v) => v >= lo && v < hi).length;
+  return [{ l: '<50', v: band(0, 50) }, { l: '50s', v: band(50, 60) }, { l: '60s', v: band(60, 70) }, { l: '70s', v: band(70, 80) }, { l: '80s', v: band(80, 90) }, { l: '90+', v: band(90, 101) }];
+};
+
+function courseStats(ci) {
+  const course = COURSES[ci];
+  const n = ROSTER.length;
+  const journey = course.exercises.map((_, j) => {
+    const scores = ROSTER.map((l) => l.c[ci].vals[j]).filter((v) => v != null).sort((a, b) => a - b);
+    return scores.length >= n * 0.25 ? { avg: mean(scores), band: [scores[Math.floor(0.25 * (scores.length - 1))], scores[Math.floor(0.75 * (scores.length - 1))]] } : null;
+  });
+  const sections = course.sections.map((section, si) => {
+    const lastEx = section.ex[section.ex.length - 1];
+    const took = ROSTER.filter((l) => l.c[ci].vals[lastEx] != null);
+    const scores = took.flatMap((l) => section.ex.map((e) => l.c[ci].vals[e]).filter((v) => v != null));
+    return {
+      title: section.title, si, took: took.length, avg: took.length ? mean(scores) : null,
+      pass: took.length ? pct(took.filter((l) => l.c[ci].vals[lastEx] >= course.passMark).length, took.length) : null,
+      vid: mean(ROSTER.map((l) => l.vidDays[si])), cls: mean(ROSTER.map((l) => l.clsDays[si]))
+    };
+  });
+  const last = course.exercises.length - 1;
+  const finalTook = ROSTER.filter((l) => l.c[ci].vals[last] != null);
+  return {
+    journey, sections,
+    avgProgress: mean(ROSTER.map((l) => l.c[ci].progress)),
+    avgScore: mean(ROSTER.map((l) => mean(taken(l.c[ci].vals))).filter((v) => v > 0)),
+    completed: ROSTER.filter((l) => l.c[ci].progress === 100).length,
+    finalTook: finalTook.length, finalPass: pct(finalTook.filter((l) => l.c[ci].vals[last] >= course.passMark).length, finalTook.length)
+  };
+}
+
+function selectionStats() {
+  const R = ROSTER;
+  const progs = R.map(progressOf);
+  const scores = R.map(scoreOf).filter((v) => v > 0);
+  const overdue = inAll() ? R.filter((l) => l.overdue) : R.filter((l) => l.overdue && l.overdueCourse === mx.course);
+  return {
+    n: R.length, activeToday: R.filter((l) => l.days === 0).length,
+    avgProgress: mean(progs), avgScore: mean(scores),
+    completed: inAll() ? R.filter((l) => l.status === 'done').length : R.filter((l) => l.c[mx.course].progress === 100).length,
+    cert: R.filter((l) => l.cert).length,
+    overdue,
+    progressBuckets: [progs.filter((p) => p < 25).length, progs.filter((p) => p >= 25 && p < 50).length, progs.filter((p) => p >= 50 && p < 75).length, progs.filter((p) => p >= 75 && p < 100).length, progs.filter((p) => p === 100).length],
+    inactive: R.filter((l) => l.days >= 2).length,
+    low: R.filter((l) => scoreOf(l) > 0 && scoreOf(l) < 50).length,
+    lowVideo: R.filter((l) => l.vid < 60).length
+  };
+}
+
+/* ---------- Learner detail, list, filters ---------- */
+const learnerDetail = (l, ci, journey) => {
+  const rec = l.c[ci];
+  const course = COURSES[ci];
+  const t = taken(rec.vals);
+  const html = widget('s7', `${l.name}: scores by exercise`, 'line vs cohort', 'submission · score_pct · dimension: exercise · filter: learner = selected',
+    `<div class="chips"><span class="chip">Latest <b>${t.length ? t[t.length - 1] + '%' : '–'}</b></span><span class="chip">Progress <b>${rec.progress}%</b> · now at ${nowAt(l, ci)}</span></div>` +
+    lineChart({ labels: course.exercises, series: [{ values: rec.vals, color: 'var(--accent)' }, { values: journey.map((j) => (j ? j.avg : null)), color: 'var(--muted)', dash: true }] }) +
+    legend([{ c: 'var(--accent)', l: l.name }, { c: 'var(--muted)', l: 'Cohort average' }]),
+    'Search or filter the learners below and click a row to switch learner.', 'drv');
+  return html.replace('<section class="w s7"', '<section id="detail" class="w s7"');
+};
+
+const learnerCourses = (l) => {
+  const html = widget('s12', `${l.name}: courses`, 'table', 'learner_course + submission · filter: learner = selected', `
+    <div class="scroll"><table><thead><tr><th>Course</th><th>Progress</th><th>Now at</th><th class="c">Average score</th><th class="c">Final exam</th></tr></thead><tbody>
+    ${COURSES.map((c, i) => { const rec = l.c[i]; const fin = rec.vals[rec.n - 1]; return `<tr><td><b>${c.title}</b></td><td><div class="mini"><div class="track"><div class="fill" style="width:${rec.progress}%"></div></div><span>${rec.progress}%</span></div></td><td>${nowAt(l, i)}</td><td class="c">${cell(taken(rec.vals).length ? mean(taken(rec.vals)) : null)}</td><td class="c">${passCell(fin, c.passMark)}</td></tr>`; }).join('')}
+    </tbody></table></div>`, 'Search or filter the learners below and click a row to switch learner. Pick a course above to chart their scores by exercise.', 'drv');
+  return html.replace('<section class="w s12"', '<section id="detail" class="w s12"');
+};
+
+const matrixHead = () => {
+  if (inAll()) {
+    return `<tr><th>Learner</th><th>Progress</th><th class="c">Average score</th><th class="c">Courses completed</th><th class="c">Video</th><th class="c">Classroom</th><th class="c">Certificate</th><th>Last login</th><th>Status</th></tr>`;
+  }
+  const course = COURSES[mx.course];
+  return `<tr><th>Learner</th><th>Progress</th><th>Now at</th>${course.exercises.map((e, j) => `<th class="c">${e}${j === course.exercises.length - 1 ? `<small>pass ${course.passMark}%</small>` : ''}</th>`).join('')}<th>Trend</th><th class="c">Video</th><th class="c">Classroom</th><th class="c">Certificate</th><th>Last login</th><th>Status</th></tr>`;
+};
+
+const rowHtml = (l) => {
+  const tail = `<td class="c">${l.vid}%</td><td class="c">${l.cls}%</td><td class="c">${l.cert ? '<span class="pill done">Issued</span>' : '<span class="na">–</span>'}</td><td>${lastLabel(l.days)}</td><td><span class="pill ${pill(l.status)[0]}">${pill(l.status)[1]}</span>${l.overdue ? ' <span class="pill risk">Overdue</span>' : ''}</td>`;
+  const name = `<td><b>${l.name}</b></td>`;
+  if (inAll()) {
+    const done = l.c.filter((rec) => rec.progress === 100).length;
+    return `<tr class="pick ${l.id === picked ? 'sel' : ''}" data-learner="${l.id}">${name}<td><div class="mini"><div class="track"><div class="fill" style="width:${l.progress}%"></div></div><span>${l.progress}%</span></div></td><td class="c">${cell(l.avg)}</td><td class="c">${done} of ${COURSES.length}</td>${tail}</tr>`;
+  }
+  const rec = l.c[mx.course];
+  const course = COURSES[mx.course];
+  const last = course.exercises.length - 1;
+  const scores = rec.vals.map((v, j) => `<td class="c">${j === last ? passCell(v, course.passMark) : cell(v)}</td>`).join('');
+  return `<tr class="pick ${l.id === picked ? 'sel' : ''}" data-learner="${l.id}">${name}<td><div class="mini"><div class="track"><div class="fill" style="width:${rec.progress}%"></div></div><span>${rec.progress}%</span></div></td><td>${nowAt(l, mx.course)}</td>${scores}<td>${sparkline(rec.vals)}</td>${tail}</tr>`;
+};
+
+function visibleRows() {
+  const q = mx.q.trim().toLowerCase();
+  const rows = ROSTER.filter((l) => {
+    const s = scoreOf(l);
+    if (q && !l.name.toLowerCase().includes(q)) return false;
+    if (mx.status && l.status !== mx.status) return false;
+    if (mx.active === 'today' && l.days !== 0) return false;
+    if (mx.active === 'idle' && l.days < 2) return false;
+    if (mx.score === 'lt50' && !(s < 50)) return false;
+    if (mx.score === 'mid' && !(s >= 50 && s < 70)) return false;
+    if (mx.score === 'gte70' && !(s >= 70)) return false;
+    if (mx.flag === 'overdue' && !l.overdue) return false;
+    if (mx.flag === 'cert' && !l.cert) return false;
+    if (mx.flag === 'nocert' && l.cert) return false;
+    return true;
+  });
+  const order = {
+    status: (a, b) => ORDER[a.status] - ORDER[b.status] || scoreOf(a) - scoreOf(b),
+    name: (a, b) => a.name.localeCompare(b.name),
+    progress: (a, b) => progressOf(a) - progressOf(b),
+    low: (a, b) => scoreOf(a) - scoreOf(b)
+  };
+  return rows.sort(order[mx.sort]);
+}
+
+function drawMatrix() {
+  const rows = visibleRows();
+  const shown = rows.slice(0, mx.limit);
+  $('#mx-head').innerHTML = matrixHead();
+  $('#mx-body').innerHTML = shown.length ? shown.map(rowHtml).join('') : '<tr><td colspan="20" class="empty">No learners match these filters.</td></tr>';
+  $('#mx-count').textContent = `Showing ${shown.length} of ${rows.length} matching · ${ROSTER.length} learners in cohort`;
+  $('#mx-more').hidden = shown.length >= rows.length;
+  $('#mx-msg').textContent = '';
+  $('#mx-export').onclick = () => { $('#mx-msg').textContent = `Export would download ${rows.length} rows as CSV, with the current filters and sort applied.`; };
+  $('#mx-body').querySelectorAll('[data-learner]').forEach((row) => row.addEventListener('click', () => {
+    picked = Number(row.dataset.learner);
+    $('#detail').outerHTML = inAll() ? learnerCourses(ROSTER[picked]) : learnerDetail(ROSTER[picked], mx.course, courseStats(mx.course).journey);
+    drawMatrix();
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $('#detail').scrollIntoView({ block: 'center', behavior: calm ? 'auto' : 'smooth' });
+  }));
+}
+
+function initCohort() {
+  $('#course-pick').value = String(mx.course);
+  $('#course-pick').addEventListener('change', (e) => {
+    mx.course = e.target.value === 'all' ? 'all' : Number(e.target.value);
+    mx.limit = 10;
+    mx.sort = mx.sort === 'progress' || mx.sort === 'low' || mx.sort === 'name' ? mx.sort : 'status';
+    render();
+  });
+  [['#q', 'q'], ['#f-status', 'status'], ['#f-active', 'active'], ['#f-score', 'score'], ['#f-flag', 'flag'], ['#f-sort', 'sort']].forEach(([sel, key]) => {
+    const el = $(sel);
+    el.value = mx[key];
+    el.addEventListener('input', () => { mx[key] = el.value; mx.limit = 10; drawMatrix(); });
+  });
+  $('#mx-more').addEventListener('click', () => { mx.limit += 10; drawMatrix(); });
+  drawMatrix();
+  const remindAll = $('#remind-all');
+  if (remindAll) remindAll.onclick = () => { remindAll.disabled = true; remindAll.textContent = 'Reminders queued'; document.querySelectorAll('.remind').forEach((b) => { b.disabled = true; b.textContent = 'Queued'; }); };
+  document.querySelectorAll('.remind').forEach((b) => { b.onclick = () => { b.disabled = true; b.textContent = 'Queued'; }; });
+}
+
+/* ---------- Shared widgets ---------- */
+const questionsWidget = (cls, rows) => widget(cls, 'Hardest questions', 'bar', 'question_answer · point / max · avg · dimension: question · sort: asc', `
+  <div class="stack">${rows.map((r) => `<div class="qrow"><div class="hbar" style="grid-template-columns:minmax(140px,1.3fr) 1fr 48px"><span class="lab" title="${r[0]}">${r[0]}</span><div class="track"><div class="fill ${r[2] < 50 ? 'bad' : r[2] < 65 ? 'warn' : ''}" style="width:${r[2]}%"></div></div><span class="v">${r[2]}%</span></div><p class="note">${r[1]} · most common wrong answer: ${r[3]}</p></div>`).join('')}</div>`, note('Share of learners who answered correctly. Example questions; answers are stored per question, so this needs no new tracking.', 'The questions learners miss most, with the most common wrong answer.'), 'ok');
+
+const reuse = () => widget('s12', 'How the same widgets serve every scope', 'reference', 'one spec · scope = { type, id } resolves to learners + courses', `
+  <div class="scroll"><table class="reuse"><thead><tr><th>Widget</th><th>Cohort</th><th>Course</th><th>Organization</th></tr></thead><tbody>
+  <tr><td>KPI row</td><td>Learners in this cohort, for all courses or one course</td><td>Learners enrolled in this course</td><td>All students in the org</td></tr>
+  <tr><td>Scores by exercise</td><td>The selected course's exercises in order, one line for the cohort</td><td>Same, one line per cohort</td><td>Final exam average per cohort</td></tr>
+  <tr><td>Section-by-section scorecard</td><td>One row per course section</td><td>Same, across all cohorts</td><td>Rolled up per cohort</td></tr>
+  <tr><td>Learners</td><td>All courses: overall progress and score. One course: one column per exercise</td><td>Same, across all cohorts</td><td>Rolled up: one row per cohort</td></tr>
+  <tr><td>Needs attention</td><td>Learners below thresholds, with reasons</td><td>Learners stuck in this course</td><td>Counts by reason, per cohort</td></tr>
+  <tr><td>Hardest questions</td><td>Questions this cohort misses most in the selected course</td><td>Same, across all cohorts</td><td>Questions missed across cohorts</td></tr>
+  </tbody></table></div>`,
+  'Only the scope filter and the dimension change. A user-built widget in a later version is the same spec, saved with a different metric or dimension.', 'drv');
+
+const planned = () => `<section class="w s12"><h2>Planned next</h2>
+  <p class="note">These build on the same dashboards and are not part of this first version.</p>
+  <ul class="plan"><li>Learning time per day against your target</li><li>Peak number of learners online at the same time</li>
+  <li>Scheduled report emails and a read-only view for leadership</li></ul></section>`;
+
+/* ---------- Views ---------- */
+const views = {
+  cohort() {
+    $('#scopechips').innerHTML = `<span class="chip live"><i></i>Live · updated <b id="age">0s</b> ago · refreshes every 30s</span><span class="chip"><b>Cohort 7</b> · US Tax Prep</span><span class="chip">${ROSTER.length} learners</span><span class="chip">Courses: ${COURSES.length}</span>`;
+    const S = selectionStats();
+    const ci = mx.course;
+    const stats = inAll() ? null : courseStats(ci);
+    const label = inAll() ? 'all courses' : COURSES[ci].title;
+    const statusDonut = widget('s5', 'Learners by status', 'donut', 'derived status · count', donut(statusSegments()), null, 'drv');
+    const coursesChart = widget('s7', 'Courses in this cohort', 'bar', 'learner_course + submission · dimension: course', groupedBars({ labels: COURSES.map((c) => c.short), series: [{ name: 'Average progress', color: 'var(--accent)', values: COURSES.map((_, i) => courseStats(i).avgProgress) }, { name: 'Average score', color: 'var(--good)', values: COURSES.map((_, i) => courseStats(i).avgScore) }, { name: 'Final exam pass rate', color: 'var(--warn)', values: COURSES.map((_, i) => (courseStats(i).finalTook ? courseStats(i).finalPass : null)) }] }), note('Pass rate uses each course\'s own pass mark.', ''), 'drv');
+    const scoreDist = (cls) => widget(cls, 'Average score distribution', 'histogram', 'submission · score_pct · avg per learner · count · bucket: 10', columns(scoreBuckets()), 'Learners per score band.', 'drv');
+    const overdueList = S.overdue.slice().sort((a, b) => b.days - a.days).slice(0, 5);
+
+    const courseTable = widget('s12', 'Course details', 'table', 'learner_course + submission · dimension: course', `
+      <div class="scroll"><table><thead><tr><th>Course</th><th class="c">Learners</th><th class="c">Avg progress</th><th class="c">Avg score</th><th class="c">Completed</th><th class="c">Final exam taken</th><th class="c">Final exam pass rate</th></tr></thead><tbody>
+      ${COURSES.map((c, i) => { const s = courseStats(i); return `<tr><td><b>${c.title}</b></td><td class="c">${ROSTER.length}</td><td class="c">${cell(s.avgProgress)}</td><td class="c">${cell(s.avgScore)}</td><td class="c">${s.completed}</td><td class="c">${s.finalTook}</td><td class="c">${s.finalTook ? passCell(s.finalPass, c.passMark) : cell(null)}</td></tr>`; }).join('')}
+      </tbody></table></div>`, note('Pick a course above to see scores by exercise, the section-by-section scorecard and the hardest questions. Pass rate uses each course\'s own pass mark.', 'Pick a course above to see scores by exercise, the section-by-section scorecard and the hardest questions.'), 'drv');
+
+    const courseWidgets = inAll() ? '' : `
+      ${widget('s7', `Scores by exercise, ${label}`, 'line + band', 'submission · score_pct · avg · dimension: exercise (section order, then exercise order)', lineChart({ labels: COURSES[ci].exercises, series: [{ values: stats.journey.map((j) => (j ? j.avg : null)), color: 'var(--accent)' }], band: stats.journey.map((j) => (j ? j.band : null)) }) + legend([{ c: 'var(--accent)', l: 'Cohort average' }, { c: 'color-mix(in srgb, var(--accent) 25%, transparent)', l: 'Middle 50% of learners' }]), note('Exercises are shown in course order. A point appears once a quarter of the cohort has taken it.', ''), 'drv')}
+      ${widget('s5', 'Progress distribution', 'bar', 'lesson_completion · progress_pct · count · bucket: 25', columns([{ l: '0–25', v: S.progressBuckets[0] }, { l: '25–50', v: S.progressBuckets[1] }, { l: '50–75', v: S.progressBuckets[2] }, { l: '75–99', v: S.progressBuckets[3] }, { l: 'Done', v: S.progressBuckets[4] }]), null, 'drv')}
+      ${learnerDetail(ROSTER[picked], ci, stats.journey)}
+      ${statusDonut}
+      ${widget('s7', 'Scores and attendance by section', 'bar', 'submission + lesson_video_progress + group_attendance · dimension: course_section', groupedBars({ labels: stats.sections.map((d) => `Section ${d.si + 1}`), series: [{ name: 'Average score', color: 'var(--accent)', values: stats.sections.map((d) => d.avg) }, { name: 'Video attendance', color: 'var(--good)', values: stats.sections.map((d) => d.vid) }, { name: 'Classroom attendance', color: 'var(--warn)', values: stats.sections.map((d) => d.cls) }] }), null, 'drv')}
+      ${scoreDist('s5')}
+      ${widget('s12', 'Section-by-section scorecard', 'table', 'submission + lesson_video_progress + group_attendance · dimension: course_section (order)', `
+        <div class="scroll"><table><thead><tr><th>Course section</th><th class="c">Exercises taken</th><th class="c">Avg score</th><th class="c">Pass rate</th><th class="c">Video attendance</th><th class="c">Classroom attendance</th></tr></thead><tbody>
+        ${stats.sections.map((d) => `<tr><td><b>Section ${d.si + 1} · ${d.title}</b></td><td class="c">${d.took ? d.took + ' / ' + S.n : '–'}</td><td class="c">${cell(d.avg)}</td><td class="c">${cell(d.pass)}</td><td class="c">${d.vid}%</td><td class="c">${d.cls}%</td></tr>`).join('')}
+        </tbody></table></div>`, note('One row per course section. Video attendance is the share of lesson video watched; classroom attendance is the tutor-marked present flag. Pass uses the course pass mark.', 'One row per course section. Video attendance is the share of lesson videos watched. Classroom attendance is marked by the tutor.'), 'drv')}`;
+
+    const overdueWidget = widget(inAll() ? 's7' : 's7', 'Overdue, with reminders', 'table + action', 'cohort_goal_assignment · due_date, status = overdue · action: send reminder email to learner', `
+      <div class="scroll"><table><thead><tr><th>Learner</th><th>Course</th><th class="c">Progress</th><th>Last login</th><th></th></tr></thead><tbody>
+      ${overdueList.map((l) => `<tr><td><b>${l.name}</b></td><td>${COURSES[l.overdueCourse].title}</td><td class="c">${l.c[l.overdueCourse].progress}%</td><td>${lastLabel(l.days)}</td><td><button class="btn sm remind">Send reminder</button></td></tr>`).join('') || '<tr><td colspan="5" class="empty">No overdue learners.</td></tr>'}
+      </tbody></table></div>
+      <div class="chips"><button class="btn" id="remind-all">Remind all ${S.overdue.length} overdue learners</button></div>`,
+      note('Cohort goals already email learners on a schedule. "Send reminder" sends one now, which is new. Copying a supervisor is not shown because learners have no supervisor yet.', 'Learners already get scheduled reminder emails before a deadline. "Send reminder" sends one right now.'), 'new');
+
+    return `
+    <div class="chips"><label class="picker">Course <select id="course-pick" aria-label="Course"><option value="all">All courses</option>${COURSES.map((c, i) => `<option value="${i}">${c.title}</option>`).join('')}</select></label></div>
+    ${kpis([
+      { l: 'Logged in today', n: `${S.activeToday} / ${S.n}`, d: `${pct(S.activeToday, S.n)}% of the cohort`, t: 'flat', a: 'ok', src: 'analytics_login_events · learner · count' },
+      { l: 'Average progress', n: S.avgProgress + '%', d: 'lessons completed / total', t: 'flat', src: 'lesson_completion · progress_pct · avg' },
+      { l: 'Average score', n: S.avgScore + '%', d: 'across exercises taken', t: 'flat', src: 'submission · score_pct · avg' },
+      { l: 'Overdue', n: S.overdue.length, d: 'past their deadline, not done', t: S.overdue.length > 10 ? 'down' : 'flat', src: 'cohort_goal_assignment · status = overdue · count' },
+      { l: 'Completed', n: S.completed, d: `${pct(S.completed, S.n)}% of the cohort${inAll() ? ` · ${S.cert} certified` : ''}`, t: 'flat', src: 'learner_course · status=completed · count' }
+    ])}
+    <div class="grid">
+      ${inAll() ? coursesChart + statusDonut + courseTable + learnerCourses(ROSTER[picked]) : courseWidgets}
+      ${widget('s5', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: S.inactive, c: 'bad' }, { l: 'Average score under 50%', v: S.low, c: 'bad' }, { l: 'Overdue', v: S.overdue.length, c: 'warn' }, { l: 'Video attendance under 60%', v: S.lowVideo, c: 'warn' }], S.n, ''), note('A learner can appear under more than one reason. Thresholds are placeholders to agree with the customer.', 'A learner can appear under more than one reason.'), 'drv')}
+      ${overdueWidget}
+      ${inAll() ? '' : questionsWidget('s12', COURSES[ci].questions)}
+      ${widget('s12', 'Learners', 'table + heat cells + filters', 'lesson_completion + submission + lesson_video_progress + group_attendance · dimension: learner', `
+        <div class="tools">
+          <input id="q" type="search" placeholder="Search learner by name" aria-label="Search learner by name">
+          <select id="f-status" aria-label="Status"><option value="">All statuses</option><option value="risk">At risk</option><option value="lag">Lagging</option><option value="ok">On track</option><option value="done">Completed</option></select>
+          <select id="f-active" aria-label="Last login"><option value="">Any login</option><option value="today">Logged in today</option><option value="idle">No login 2+ days</option></select>
+          <select id="f-score" aria-label="Average score"><option value="">Any average score</option><option value="lt50">Under 50%</option><option value="mid">50% to 69%</option><option value="gte70">70% and above</option></select>
+          <select id="f-flag" aria-label="Flags"><option value="">Any flag</option><option value="overdue">Overdue</option><option value="cert">Certificate issued</option><option value="nocert">No certificate</option></select>
+          <select id="f-sort" aria-label="Sort"><option value="status">Sort: lagging first</option><option value="progress">Sort: least progress</option><option value="name">Sort: name A to Z</option><option value="low">Sort: lowest average score</option></select>
+        </div>
+        <div class="scroll"><table><thead id="mx-head"></thead><tbody id="mx-body"></tbody></table></div>
+        <div class="mxfoot"><span id="mx-count" class="note"></span><span class="chips"><button class="btn" id="mx-export">Export CSV</button><button class="btn" id="mx-more">Show 10 more</button></span></div><p class="note" id="mx-msg"></p>`,
+      inAll() ? 'Click a learner to see their courses above. Pick a course above to see each exercise.' : 'Click a learner to chart their scores above. Search, filters and sort also apply to the export.', 'drv')}
+      ${widget(inAll() ? 's6' : 's12', 'Learners logged in per day', 'bar', 'analytics_login_events · learner · count · dimension: day', columns([244, 240, 236, 238, 229, S.activeToday].map((v, i) => ({ l: ['24 Nov', '25 Nov', '26 Nov', '27 Nov', '28 Nov', '29 Nov'][i], v }))), note('One login row is stored per learner per day, so this counts days with a login, not time in the product.', 'Learners who signed in each day.'), 'ok')}
+      ${inAll() ? scoreDist('s6') : ''}
+      ${CUSTOMER ? '' : widget('s12', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
+        <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Daily cohort summary · 08:00 · CEO, Head of L&amp;D</span><span class="badge new">Planned</span></div>
+        <div class="hbar" style="grid-template-columns:1fr auto"><span>Weekly cohort comparison · Mon 09:00 · Management</span><span class="badge new">Planned</span></div></div>`, 'Removes the manual MIS reporting the customer described. Needs a scheduler and email template.', 'new')}
+    </div>
+    ${CUSTOMER ? planned() : reuse()}`;
+  },
+
+  course() {
+    $('#scopechips').innerHTML = `<span class="chip"><b>${COURSES[0].title}</b></span><span class="chip">Cohorts: 8</span><span class="chip">1,180 learners</span><span class="chip">Range: last 30 days</span>`;
+    const ex = COURSES[0].exercises;
+    return `
+    ${kpis([
+      { l: 'Enrolled', n: '1,180', d: '+212 this week', t: 'up', a: 'ok', src: 'groupmember · learner · count' },
+      { l: 'Completion rate', n: '41%', d: '+4 pts vs last week', t: 'up', src: 'learner_course · status=completed · rate' },
+      { l: 'Average grade', n: '67%', d: 'across exercises taken', t: 'flat', src: 'submission · score_pct · avg' },
+      { l: 'Final exam pass rate', n: '79%', d: 'of 484 who took it, pass mark 70%', t: 'flat', src: 'submission · score_pct ≥ course.certificate.exerciseMinScorePercent · rate' },
+      { l: 'Median days to finish', n: '8', d: 'enrolment to completion', t: 'flat', src: 'completed_at − enrolled_at · median' }
+    ])}
+    <div class="grid">
+      ${widget('s7', 'Scores by exercise, one line per cohort', 'multi-line', 'submission · score_pct · avg · dimensions: exercise, cohort', lineChart({ labels: ex, series: [{ values: [52, 57, 61, 64, 68, 70, 74], color: 'var(--accent)' }, { values: [49, 55, 58, 63, 66, 69, null], color: 'var(--good)' }, { values: [44, 47, 52, 55, null, null, null], color: 'var(--warn)', dash: true }] }) + legend([{ c: 'var(--accent)', l: 'Cohort 7' }, { c: 'var(--good)', l: 'Cohort 6' }, { c: 'var(--warn)', l: 'Cohort 8 (in progress)' }]), null, 'drv')}
+      ${widget('s5', 'Score distribution, final exam', 'histogram', 'submission · score_pct · count · bucket: 10 · exercise = course certificate required exercise', columns([{ l: '<50', v: 38 }, { l: '50s', v: 61 }, { l: '60s', v: 112 }, { l: '70s', v: 148 }, { l: '80s', v: 91 }, { l: '90+', v: 34 }]), null, 'drv')}
+      ${widget('s6', 'Lesson completion drop-off', 'horizontal bar', 'lesson_completion · rate · dimension: lesson', hbars([{ l: 'Intake and filing status', v: 96 }, { l: 'Income types', v: 91 }, { l: 'Deductions', v: 84 }, { l: 'Credits', v: 71, c: 'warn' }, { l: 'Schedule C', v: 58, c: 'warn' }, { l: 'Review cases', v: 44, c: 'bad' }]), 'The steepest fall is between Credits and Schedule C.', 'ok')}
+      ${widget('s6', 'Hardest exercises', 'bar', 'submission · score_pct · avg · dimension: exercise · sort: asc', groupedBars({ labels: ['Schedule C', 'Credits', 'Deductions', 'Filing basics'], series: [{ name: 'Average score', color: 'var(--accent)', values: [51, 58, 66, 78] }, { name: 'Pass rate', color: 'var(--good)', values: [48, 62, 74, 93] }] }), null, 'drv')}
+      ${questionsWidget('s12', COURSES[0].questions)}
+      ${widget('s12', 'Cohorts taking this course', 'bar', 'lesson_completion + submission · dimension: cohort', groupedBars({ labels: ['Cohort 8', 'Cohort 7', 'Cohort 6', 'Cohort 5'], series: [{ name: 'Average progress', color: 'var(--accent)', values: [22, courseStats(0).avgProgress, 93, 100] }, { name: 'Average score', color: 'var(--good)', values: [47, courseStats(0).avgScore, 74, 72] }, { name: 'Final exam pass rate', color: 'var(--warn)', values: [null, courseStats(0).finalTook ? courseStats(0).finalPass : null, 81, 78] }] }), 'Showing 4 of 8 cohorts.', 'drv')}
+      ${widget('s12', 'Cohort details', 'table', 'lesson_completion + submission · dimension: cohort', `
+        <div class="scroll"><table><thead><tr><th>Cohort</th><th class="c">Learners</th><th class="c">Progress</th><th class="c">Avg score</th><th class="c">Final exam pass rate</th><th class="c">Overdue</th></tr></thead><tbody>
+        <tr><td>Cohort 8</td><td class="c">212</td><td class="c">${cell(22)}</td><td class="c">${cell(47)}</td><td class="c">${cell(null)}</td><td class="c">3</td></tr>
+        <tr><td>Cohort 7</td><td class="c">${ROSTER.length}</td><td class="c">${cell(courseStats(0).avgProgress)}</td><td class="c">${cell(courseStats(0).avgScore)}</td><td class="c">${courseStats(0).finalTook ? passCell(courseStats(0).finalPass, 70) : cell(null)}</td><td class="c">${ROSTER.filter((l) => l.overdue && l.overdueCourse === 0).length}</td></tr>
+        <tr><td>Cohort 6</td><td class="c">240</td><td class="c">${cell(93)}</td><td class="c">${cell(74)}</td><td class="c">${cell(81)}</td><td class="c">2</td></tr>
+        <tr><td>Cohort 5</td><td class="c">236</td><td class="c">${cell(100)}</td><td class="c">${cell(72)}</td><td class="c">${cell(78)}</td><td class="c">0</td></tr>
+        </tbody></table></div>`, null, 'drv')}
+    </div>
+    ${CUSTOMER ? planned() : reuse()}`;
+  },
+
+  org() {
+    $('#scopechips').innerHTML = `<span class="chip live"><i></i>Live · updated <b id="age">0s</b> ago</span><span class="chip"><b>${CUSTOMER ? 'Your organization' : 'Example Co'}</b></span><span class="chip">8 active cohorts</span><span class="chip">Seats: 2,046 of 5,000</span>`;
+    const S = selectionStats();
+    const cohorts = [
+      ['Cohort 8', 'Mon 1 Dec', 212, 12, null, 3, 'ok'],
+      ['Cohort 7', 'Mon 24 Nov', S.n, S.avgProgress, S.avgScore, ROSTER.filter((l) => l.overdue).length, 'lag'],
+      ['Cohort 6', 'Mon 17 Nov', 240, 93, 74, 2, 'ok'],
+      ['Cohort 5', 'Mon 10 Nov', 236, 100, 72, 0, 'done'],
+      ['Cohort 4', 'Mon 3 Nov', 250, 100, 69, 0, 'done']
+    ];
+    return `
+    ${kpis([
+      { l: 'Logged in, last 7 days', n: '1,812', d: '89% of enrolled', t: 'flat', a: 'ok', src: 'analytics_login_events · learner · count' },
+      { l: 'Average progress', n: '71%', d: '+6 pts this week', t: 'up', src: 'lesson_completion · progress_pct · avg' },
+      { l: 'Completions', n: '726', d: '35% of enrolled', t: 'up', src: 'learner_course · status=completed · count' },
+      { l: 'Certificates issued', n: '684', d: '94% of completions', t: 'flat', a: 'ok', src: 'course_certificate_issue · count' },
+      { l: 'Needs attention', n: '97', d: 'inactive, low score or overdue', t: 'down', src: 'derived flags · count' }
+    ])}
+    <div class="grid">
+      ${widget('s8', 'Cohorts at a glance', 'table + progress', 'lesson_completion + submission · dimension: cohort', `
+        <div class="scroll"><table><thead><tr><th>Cohort</th><th>Created</th><th class="c">Learners</th><th style="min-width:150px">Progress</th><th class="c">Avg score</th><th class="c">Overdue</th><th>Health</th></tr></thead><tbody>
+        ${cohorts.map((b) => `<tr><td><b>${b[0]}</b></td><td>${b[1]}</td><td class="c">${b[2]}</td><td><div class="hbar" style="grid-template-columns:1fr 38px"><div class="track"><div class="fill" style="width:${b[3]}%"></div></div><span class="v">${b[3]}%</span></div></td><td class="c">${cell(b[4])}</td><td class="c">${b[5]}</td><td><span class="pill ${pill(b[6])[0]}">${pill(b[6])[1]}</span></td></tr>`).join('')}
+        </tbody></table></div>`, note('Showing 5 of 8 cohorts. A row opens that cohort\'s dashboard. Cohort 7 matches the cohort tab.', 'Showing 5 of 8 cohorts. Select a cohort to open its dashboard.'), 'drv')}
+      ${widget('s4', 'Needs attention, by reason', 'horizontal bar', 'derived flags · count · dimension: reason', hbars([{ l: 'No login, 2+ days', v: 41, c: 'bad' }, { l: 'Score under 50%', v: 33, c: 'bad' }, { l: 'Overdue', v: 14, c: 'warn' }, { l: 'Video attendance under 60%', v: 9, c: 'warn' }], 50, ''), null, 'drv')}
+      ${widget('s5', 'Learners by cohort health', 'donut', 'derived cohort health · learners · sum', donut([{ label: 'On track', color: 'var(--good)', value: cohorts.filter((c) => c[6] === 'ok').reduce((a, c) => a + c[2], 0) }, { label: 'Lagging', color: 'var(--warn)', value: cohorts.filter((c) => c[6] === 'lag').reduce((a, c) => a + c[2], 0) }, { label: 'Completed', color: 'var(--accent)', value: cohorts.filter((c) => c[6] === 'done').reduce((a, c) => a + c[2], 0) }]), 'The five cohorts in the table above.', 'drv')}
+      ${widget('s7', 'Hiring ramp vs target', 'line', 'organizationmember · created_at · cumulative · dimension: week', lineChart({ labels: ['3 Nov', '10 Nov', '17 Nov', '24 Nov', '1 Dec', '8 Dec'], series: [{ values: [120, 480, 900, 1320, 1710, 2046], color: 'var(--accent)' }, { values: [2000, 2000, 2000, 2000, 2000, 2000], color: 'var(--muted)', dash: true, noLabel: true }], yMax: 5000, yTicks: [0, 1000, 2000, 3000, 4000, 5000], fmt: (v) => v.toLocaleString() }) + legend([{ c: 'var(--accent)', l: 'Enrolled learners' }, { c: 'var(--muted)', l: 'First-wave target' }]), null, 'drv')}
+      ${widget('s7', 'Learners logged in per day', 'line', 'analytics_login_events · learner · count · dimension: day', lineChart({ labels: ['23 Nov', '24 Nov', '25 Nov', '26 Nov', '27 Nov', '28 Nov', '29 Nov'], series: [{ values: [1310, 1402, 1388, 1425, 1360, 902, 1275], color: 'var(--accent)' }], yMax: 2000, yTicks: [0, 500, 1000, 1500, 2000], fmt: (v) => v.toLocaleString() }), note('Sample figures for the whole organization.', ''), 'ok')}
+      ${widget('s5', 'Final exam average, by cohort', 'horizontal bar', 'submission · score_pct · avg · dimension: cohort · exercise = course certificate required exercise', hbars([{ l: 'Cohort 4', v: 69 }, { l: 'Cohort 5', v: 72 }, { l: 'Cohort 6', v: 74 }]), 'Finished cohorts only.', 'drv')}
+      ${widget('s12', 'Courses by completion', 'horizontal bar', 'learner_course · status=completed · rate · dimension: course', hbars([{ l: 'Individual Tax Fundamentals', v: 41 }, { l: 'Client Communication', v: 88 }, { l: 'Data Security Basics', v: 96 }]), null, 'drv')}
+      ${CUSTOMER ? '' : widget('s12', 'Scheduled reports', 'planned', 'saved dashboard + schedule + recipients', `
+        <div class="stack"><div class="hbar" style="grid-template-columns:1fr auto"><span>Executive summary · weekdays 08:00 · CEO</span><span class="badge new">Planned</span></div>
+        <div class="hbar" style="grid-template-columns:1fr auto"><span>Cohort health digest · Mon 09:00 · Heads of L&amp;D</span><span class="badge new">Planned</span></div></div>`, 'Also needs a read-only way for the CEO to sign in. Today the roles are admin, tutor and student.', 'new')}
+    </div>
+    ${CUSTOMER ? planned() : reuse()}`;
+  }
+};
+
+let scope = 'cohort';
+let ageTimer = null;
+function startClock() {
+  clearInterval(ageTimer);
+  let seconds = 0;
+  ageTimer = setInterval(() => {
+    seconds = (seconds + 1) % 30;
+    const el = $('#age');
+    if (el) el.textContent = seconds + 's';
+  }, 1000);
+}
+function renderTop() {
+  $('#top').innerHTML = CUSTOMER
+    ? `<h1>Live learner analytics for every cohort</h1>
+       <p class="sub">A preview of what we plan to build. Switch between a single cohort, a course, and your whole organization. Every number is sample data.</p>
+       <div class="example">Sample data for illustration. Names and numbers are made up.</div>
+       <div class="keyrow"><span>See where every learner is today</span><span>Follow scores across a course's exercises</span><span>Spot who needs help</span><span>Give leadership one live view</span></div>`
+    : `<h1>Insights dashboard mock</h1>
+       <p class="sub">One widget set, three scopes. Each widget shows its metric spec and whether the data exists in ClassroomIO today.</p>
+       <div class="example">Example data only. Scenario: Example Co, seasonal hiring. Every cohort number on this page is computed from the same generated roster of 248 learners.</div>
+       <div class="keyrow"><span><span class="badge ok">Data available</span> already stored</span><span><span class="badge drv">Derived</span> computed from stored data</span><span><span class="badge new">Needs work</span> a feature still to build</span><span>Widgets whose data is not collected yet are left out. See the PRD, Blocked Sections.</span></div>`;
+  if (CUSTOMER) $('#srctoggle').remove();
+}
+function render() {
+  $('#view').innerHTML = views[scope]();
+  if (scope === 'cohort') initCohort();
+  startClock();
+  document.querySelectorAll('[data-scope]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.scope === scope)));
+}
+document.querySelectorAll('[data-scope]').forEach((b) => b.addEventListener('click', () => { scope = b.dataset.scope; render(); }));
+if (!CUSTOMER) $('#showsrc').addEventListener('change', (e) => document.body.classList.toggle('hide-src', !e.target.checked));
+renderTop();
+render();
+</script>
+</body>
+</html>
