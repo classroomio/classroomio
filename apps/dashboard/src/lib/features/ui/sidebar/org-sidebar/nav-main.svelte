@@ -25,11 +25,12 @@
         return Boolean(contributesPages && contributesPages.length > 0);
       })
       .map((inst) => {
+        const routeKey = inst.plugin?.slug ?? inst.pluginId;
         return {
           pluginId: inst.pluginId,
           name: inst.plugin?.name ?? inst.pluginId,
           iconUrl: inst.iconUrl ?? null,
-          url: `${$currentOrgPath}/plugins/${inst.pluginId}`
+          url: `${$currentOrgPath}/plugins/${routeKey}`
         };
       });
   });

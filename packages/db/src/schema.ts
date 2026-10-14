@@ -4351,6 +4351,7 @@ export const plugin = pgTable(
   'plugin',
   {
     id: varchar('id', { length: 128 }).primaryKey().notNull(),
+    slug: varchar('slug', { length: 128 }).notNull(),
     publisherId: varchar('publisher_id', { length: 64 }).references(() => pluginPublisher.id, {
       onDelete: 'set null'
     }),
@@ -4367,6 +4368,7 @@ export const plugin = pgTable(
       .notNull()
   },
   (table) => [
+    uniqueIndex('idx_plugin_slug_unique').on(table.slug),
     index('idx_plugin_publisher').on(table.publisher),
     index('idx_plugin_publisher_id').on(table.publisherId),
     index('idx_plugin_status').on(table.status)

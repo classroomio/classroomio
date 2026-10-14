@@ -1,9 +1,11 @@
 import { AppError } from '@api/utils/errors';
 import {
   getPluginById,
+  getPluginByIdOrSlug,
   getPluginVersion,
   listPluginVersions,
   listPlugins,
+  listPublishers,
   upsertPlugin,
   createPluginVersion
 } from '@cio/db/queries/plugin';
@@ -15,6 +17,8 @@ export type CatalogPluginListItem = TPlugin & {
   latestVersion: string | null;
   iconUrl?: string;
   permissions?: string[];
+  publisherClass?: string;
+  publisherVerified?: boolean;
 };
 
 function resolveCatalogIconUrl(pluginId: string, version: TPluginVersion | undefined): string | undefined {
@@ -29,7 +33,8 @@ function resolveCatalogIconUrl(pluginId: string, version: TPluginVersion | undef
 }
 
 export async function listCatalogPlugins(options: { status?: TPluginStatus } = {}): Promise<CatalogPluginListItem[]> {
-  const plugins = await listPlugins(options);
+  const [plugins, publishers] = await Promise.all([listPlugins(options), listPublishers()]);
+  const publisherMap = new Map(publishers.map((p) => [p.id, p]));
 
   return Promise.all(
     plugins.map(async (plugin) => {
@@ -39,28 +44,31 @@ export async function listCatalogPlugins(options: { status?: TPluginStatus } = {
         permissions?: { required?: string[]; optional?: string[] };
       } | null;
       const permissions = [...(manifest?.permissions?.required ?? []), ...(manifest?.permissions?.optional ?? [])];
+      const pub = plugin.publisherId ? publisherMap.get(plugin.publisherId) : undefined;
 
       return {
         ...plugin,
         latestVersion: latestVersion?.version ?? null,
         iconUrl: resolveCatalogIconUrl(plugin.id, latestVersion),
-        permissions
+        permissions,
+        publisherClass: pub?.publisherClass ?? 'community',
+        publisherVerified: pub?.verified ?? false
       };
     })
   );
 }
 
-export async function getCatalogPluginDetails(pluginId: string): Promise<{
+export async function getCatalogPluginDetails(idOrSlug: string): Promise<{
   plugin: TPlugin;
   latestVersion: TPluginVersion | null;
   versions: TPluginVersion[];
 }> {
-  const plugin = await getPluginById(pluginId);
+  const plugin = await getPluginByIdOrSlug(idOrSlug);
   if (!plugin) {
     throw new AppError('Plugin not found', 'PLUGIN_NOT_FOUND', 404);
   }
 
-  const versions = await listPluginVersions(pluginId);
+  const versions = await listPluginVersions(plugin.id);
   const latestVersion = versions[0] ?? null;
 
   return {
@@ -117,9 +125,12 @@ export async function publishOfficialPluginRelease(input: {
     return { plugin, version: existingVersion };
   }
 
+  const slug = manifest.slug ?? manifest.id.replace(/^([a-z0-9_-]+\.)+/i, '');
+
   return registerPluginWithVersion(
     {
       id: manifest.id,
+      slug,
       name: manifest.name,
       description: manifest.description,
       publisher: manifest.publisher,

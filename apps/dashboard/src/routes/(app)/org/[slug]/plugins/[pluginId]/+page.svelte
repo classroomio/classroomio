@@ -35,13 +35,26 @@
     });
   });
 
-  const installation = $derived(pluginsApi.installations.find((inst) => inst.pluginId === page.params.pluginId));
+  const installation = $derived(
+    pluginsApi.installations.find(
+      (inst) => inst.pluginId === page.params.pluginId || inst.plugin?.slug === page.params.pluginId
+    )
+  );
 
   const contribution = $derived(
     contributions.find(
-      (item) => item.pluginId === page.params.pluginId && item.target === 'plugin.page' && item.artifactUrl
+      (item) =>
+        (item.pluginId === page.params.pluginId || item.pluginId === installation?.pluginId) &&
+        item.target === 'plugin.page' &&
+        item.artifactUrl
     )
   );
+
+  $effect(() => {
+    if (installation?.plugin?.slug && page.params.pluginId !== installation.plugin.slug) {
+      void goto(`${$currentOrgPath}/plugins/${installation.plugin.slug}`, { replaceState: true });
+    }
+  });
 
   async function handleEnable() {
     if (!$currentOrg.id || !installation || isEnabling) return;

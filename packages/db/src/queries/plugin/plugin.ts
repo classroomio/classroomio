@@ -1,10 +1,26 @@
 import * as schema from '@db/schema';
 import type { TNewPlugin, TNewPluginVersion, TPlugin, TPluginStatus, TPluginVersion } from '@db/types';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, desc, eq, or } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
 export async function getPluginById(pluginId: string): Promise<TPlugin | null> {
   const [row] = await db.select().from(schema.plugin).where(eq(schema.plugin.id, pluginId)).limit(1);
+
+  return row ?? null;
+}
+
+export async function getPluginBySlug(slug: string): Promise<TPlugin | null> {
+  const [row] = await db.select().from(schema.plugin).where(eq(schema.plugin.slug, slug)).limit(1);
+
+  return row ?? null;
+}
+
+export async function getPluginByIdOrSlug(idOrSlug: string): Promise<TPlugin | null> {
+  const [row] = await db
+    .select()
+    .from(schema.plugin)
+    .where(or(eq(schema.plugin.id, idOrSlug), eq(schema.plugin.slug, idOrSlug)))
+    .limit(1);
 
   return row ?? null;
 }
@@ -32,6 +48,7 @@ export async function upsertPlugin(data: TNewPlugin): Promise<TPlugin> {
     .onConflictDoUpdate({
       target: schema.plugin.id,
       set: {
+        slug: data.slug,
         name: data.name,
         description: data.description,
         publisher: data.publisher,

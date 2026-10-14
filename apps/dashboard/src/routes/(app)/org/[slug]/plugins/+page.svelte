@@ -36,9 +36,11 @@
 
   interface DisplayPluginCard {
     id: string;
+    slug: string;
     name: string;
     description: string;
     publisher: string;
+    publisherClass: string;
     version: string;
     iconUrl?: string | null;
     isInstalled: boolean;
@@ -65,9 +67,11 @@
 
       items.push({
         id: inst.pluginId,
+        slug: inst.plugin?.slug ?? inst.pluginId,
         name: inst.plugin?.name ?? inst.pluginId,
         description: inst.plugin?.description ?? '',
         publisher: inst.plugin?.publisher ?? 'ClassroomIO',
+        publisherClass: (inst.plugin as any)?.publisherClass ?? 'first-party',
         version: manifest?.version ?? '1.0.0',
         iconUrl: inst.iconUrl ?? null,
         isInstalled: true,
@@ -83,9 +87,11 @@
 
       items.push({
         id: cat.id,
+        slug: cat.slug ?? cat.id,
         name: cat.name,
         description: cat.description ?? '',
         publisher: cat.publisher ?? 'ClassroomIO',
+        publisherClass: cat.publisherClass ?? 'community',
         version: cat.latestVersion ?? '1.0.0',
         iconUrl: cat.iconUrl ?? null,
         isInstalled: false,
@@ -275,12 +281,27 @@
                           {plugin.name}
                         </h3>
                         <div class="mt-0.5 flex items-center gap-2">
-                          <span
-                            class="inline-flex items-center gap-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                          >
-                            <ShieldCheckIcon class="size-3 text-emerald-500" />
-                            {$t('plugins.badge_official')}
-                          </span>
+                          {#if plugin.publisherClass === 'first-party'}
+                            <span
+                              class="inline-flex items-center gap-1 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400"
+                            >
+                              <ShieldCheckIcon class="size-3 text-emerald-600" />
+                              {$t('plugins.badge_official')}
+                            </span>
+                          {:else if plugin.publisherClass === 'verified-third-party'}
+                            <span
+                              class="inline-flex items-center gap-1 rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:bg-blue-950/50 dark:text-blue-400"
+                            >
+                              <ShieldCheckIcon class="size-3 text-blue-600" />
+                              {$t('plugins.badge_verified')}
+                            </span>
+                          {:else}
+                            <span
+                              class="inline-flex items-center gap-1 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                            >
+                              {$t('plugins.badge_community')}
+                            </span>
+                          {/if}
                           <span class="text-[11px] text-slate-400">
                             v{plugin.version}
                           </span>
@@ -370,7 +391,7 @@
                     {#if plugin.isInstalled}
                       {#if plugin.isActive && plugin.hasPage}
                         <a
-                          href="{$currentOrgPath}/plugins/{plugin.id}"
+                          href="{$currentOrgPath}/plugins/{plugin.slug}"
                           class="inline-flex items-center gap-1 rounded-md bg-blue-600 px-2.5 py-1 text-xs font-medium text-white transition-colors hover:bg-blue-700"
                         >
                           <span>{$t('plugins.open_plugin')}</span>

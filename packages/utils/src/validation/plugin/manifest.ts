@@ -328,6 +328,15 @@ export const ZPluginManifest = z
     id: z.string().trim().min(3).max(128).regex(REVERSE_DOMAIN_ID_REGEX, {
       message: 'Plugin ID must be in reverse-domain format (e.g. "com.classroomio.certificate-studio")'
     }),
+    slug: z
+      .string()
+      .trim()
+      .min(2)
+      .max(64)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
+        message: 'Plugin slug must be lowercase kebab-case (e.g. "certificate-studio")'
+      })
+      .optional(),
     name: z.string().trim().min(2).max(64),
     version: z.string().trim().regex(SEMVER_REGEX, {
       message: 'Plugin version must follow SemVer 2.0 (e.g. "1.0.0")'

@@ -67,10 +67,13 @@ async function main() {
   for (const item of releases) {
     const { manifest, artifactDigest } = item;
 
+    const slug = manifest.slug ?? manifest.id.replace(/^com\.classroomio\./, '');
+
     await db
       .insert(plugin)
       .values({
         id: manifest.id,
+        slug,
         publisherId: 'classroomio',
         name: manifest.name,
         description: manifest.description ?? null,
@@ -81,6 +84,7 @@ async function main() {
       .onConflictDoUpdate({
         target: plugin.id,
         set: {
+          slug,
           name: manifest.name,
           description: manifest.description ?? null,
           updatedAt: sql`now()`

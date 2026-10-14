@@ -10,6 +10,7 @@ CREATE TYPE "public"."PLUGIN_STATUS" AS ENUM('draft', 'published', 'deprecated',
 CREATE TYPE "public"."PLUGIN_STORAGE_SCOPE_TYPE" AS ENUM('organization', 'user', 'global');--> statement-breakpoint
 CREATE TABLE "plugin" (
 	"id" varchar(128) PRIMARY KEY NOT NULL,
+	"slug" varchar(128) NOT NULL,
 	"publisher_id" varchar(64),
 	"name" varchar(128) NOT NULL,
 	"description" text,
@@ -193,6 +194,7 @@ ALTER TABLE "plugin_version" ADD CONSTRAINT "plugin_version_plugin_id_plugin_id_
 CREATE INDEX "idx_plugin_publisher" ON "plugin" USING btree ("publisher");--> statement-breakpoint
 CREATE INDEX "idx_plugin_publisher_id" ON "plugin" USING btree ("publisher_id");--> statement-breakpoint
 CREATE INDEX "idx_plugin_status" ON "plugin" USING btree ("status");--> statement-breakpoint
+CREATE UNIQUE INDEX "idx_plugin_slug_unique" ON "plugin" USING btree ("slug");--> statement-breakpoint
 CREATE INDEX "idx_plugin_audit_installation_created" ON "plugin_audit_event" USING btree ("installation_id","created_at");--> statement-breakpoint
 CREATE INDEX "idx_plugin_audit_org_created" ON "plugin_audit_event" USING btree ("organization_id","created_at");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_plugin_backend_client_client_id_unique" ON "plugin_backend_client" USING btree ("client_id");--> statement-breakpoint

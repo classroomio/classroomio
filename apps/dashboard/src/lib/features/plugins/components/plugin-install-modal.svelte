@@ -23,6 +23,7 @@
       id: string;
       name: string;
       publisher: string;
+      publisherClass?: string;
       version: string;
       description?: string;
       iconUrl?: string | null;
@@ -86,12 +87,27 @@
               <h2 class="truncate text-base font-bold text-slate-900 dark:text-slate-100">
                 {plugin.name}
               </h2>
-              <span
-                class="inline-flex shrink-0 items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400"
-              >
-                <ShieldCheckIcon class="size-3" />
-                <span>{$t('plugins.badge_official')}</span>
-              </span>
+              {#if plugin.publisherClass === 'first-party'}
+                <span
+                  class="inline-flex shrink-0 items-center gap-0.5 rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400"
+                >
+                  <ShieldCheckIcon class="size-3 text-emerald-600" />
+                  <span>{$t('plugins.badge_official')}</span>
+                </span>
+              {:else if plugin.publisherClass === 'verified-third-party'}
+                <span
+                  class="inline-flex shrink-0 items-center gap-0.5 rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:bg-blue-950/50 dark:text-blue-400"
+                >
+                  <ShieldCheckIcon class="size-3 text-blue-600" />
+                  <span>{$t('plugins.badge_verified')}</span>
+                </span>
+              {:else}
+                <span
+                  class="inline-flex shrink-0 items-center gap-0.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                >
+                  <span>{$t('plugins.badge_community')}</span>
+                </span>
+              {/if}
             </div>
 
             <p class="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
