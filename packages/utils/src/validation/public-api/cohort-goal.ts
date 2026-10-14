@@ -12,15 +12,24 @@ export type TPublicApiCohortGoalParam = z.infer<typeof ZPublicApiCohortGoalParam
 
 export const ZPublicApiCreateCohortGoal = z
   .object({
-    type: z.enum(GOAL_TYPES),
+    type: z
+      .enum(GOAL_TYPES)
+      .describe(
+        'complete_all needs nothing extra, n_of_m needs requiredCount (at most the number of courses), score needs scoreThreshold, pass_rate needs scoreThreshold and teamPassRateThreshold, and readiness needs nothing extra but cannot have a deadline.'
+      ),
     title: z.string().min(1).max(255),
     description: z.string().max(2000).nullable().optional(),
-    courseIds: z.array(z.string().uuid()).max(50),
+    courseIds: z.array(z.string().uuid()).max(50).describe('At least one course, each already linked to the cohort.'),
     requiredCount: z.number().int().min(1).max(50).nullable().optional(),
     scoreThreshold: z.number().int().min(0).max(100).nullable().optional(),
     teamPassRateThreshold: z.number().int().min(0).max(100).nullable().optional(),
     reminderDaysBefore: z.array(z.number().int().min(0).max(365)).max(5).default([7, 1]),
-    deadlineKind: z.enum(GOAL_DEADLINE_KINDS).default('none'),
+    deadlineKind: z
+      .enum(GOAL_DEADLINE_KINDS)
+      .default('none')
+      .describe(
+        'absolute needs deadlineDate, relative_to_join needs relativeDays, recurring needs recurringMonths (with deadlineDate as the current cycle). Default: none.'
+      ),
     deadlineDate: z.string().datetime().nullable().optional(),
     relativeDays: z.number().int().min(1).max(3650).nullable().optional(),
     recurringMonths: z.number().int().min(1).max(120).nullable().optional()
@@ -73,7 +82,10 @@ export type TPublicApiCreateCohortGoal = z.infer<typeof ZPublicApiCreateCohortGo
 
 export const ZPublicApiUpdateCohortGoal = z
   .object({
-    type: z.enum(GOAL_TYPES).optional(),
+    type: z
+      .enum(GOAL_TYPES)
+      .optional()
+      .describe('Omitted fields keep their current values; the updated goal must still satisfy the create rules.'),
     title: z.string().min(1).max(255).optional(),
     description: z.string().max(2000).nullable().optional(),
     courseIds: z.array(z.string().uuid()).max(50).optional(),

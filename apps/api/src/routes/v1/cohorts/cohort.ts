@@ -19,13 +19,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import {
-  ACTOR_OWN_DATA_NOTE,
-  COHORT_MEMBER_RULE,
-  COHORT_TEAM_RULE,
-  PAGINATION_NOTE,
-  cohortForbiddenResponses
-} from './docs';
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, cohortForbiddenResponses } from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const CohortResponse = itemResponse(ZPublicApiCohortResponse);
@@ -34,7 +28,8 @@ export const v1CohortRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the cohorts the automation actor can see: every cohort for an org admin, otherwise only cohorts the actor belongs to. ${PAGINATION_NOTE}`,
+      description:
+        'List the cohorts the key creator can see: every cohort for an org admin, otherwise only the ones they belong to.',
       tags: ['Cohorts'],
       responses: {
         200: jsonResponse('Cohorts returned successfully', paginatedResponse(ZPublicApiCohortListItemResponse)),
@@ -60,7 +55,7 @@ export const v1CohortRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: 'Create a cohort. The automation actor (the key creator) is added as its tutor.',
+      description: 'Create a cohort, with the key creator added as its tutor.',
       tags: ['Cohorts'],
       responses: {
         201: jsonResponse('Cohort created successfully', CohortResponse),
@@ -86,11 +81,11 @@ export const v1CohortRouter = new Hono()
   .get(
     '/enrolled',
     describeRoute({
-      description: `List the cohorts the automation actor is enrolled in, with the actor's role in each. ${ACTOR_OWN_DATA_NOTE} ${PAGINATION_NOTE}`,
+      description: 'List the cohorts the key creator is enrolled in, with their role in each.',
       tags: ['Cohorts'],
       responses: {
         200: jsonResponse(
-          'Enrolled cohorts returned successfully',
+          "Cohorts the key creator is enrolled in, limited to the key's organization",
           paginatedResponse(ZPublicApiEnrolledCohortResponse)
         ),
         400: errorResponses.badRequest,
@@ -115,7 +110,7 @@ export const v1CohortRouter = new Hono()
   .get(
     '/:cohortId',
     describeRoute({
-      description: `Get a cohort. ${COHORT_MEMBER_RULE}`,
+      description: `Get a cohort; ${COHORT_MEMBER_RULE}.`,
       tags: ['Cohorts'],
       responses: {
         200: jsonResponse('Cohort returned successfully', CohortResponse),
@@ -142,7 +137,7 @@ export const v1CohortRouter = new Hono()
   .put(
     '/:cohortId',
     describeRoute({
-      description: `Update a cohort. Send only the fields to change. ${COHORT_TEAM_RULE}`,
+      description: `Update the fields you send on a cohort; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohorts'],
       responses: {
         200: jsonResponse('Cohort updated successfully', CohortResponse),
@@ -171,7 +166,7 @@ export const v1CohortRouter = new Hono()
   .delete(
     '/:cohortId',
     describeRoute({
-      description: `Permanently delete a cohort and its memberships, newsfeed, and goals. ${COHORT_TEAM_RULE}`,
+      description: `Permanently delete a cohort and its memberships, newsfeed, and goals; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohorts'],
       responses: {
         200: jsonResponse('Cohort deleted successfully', CohortResponse),

@@ -24,8 +24,9 @@ export const ZPublicApiCohortNewsfeedQuery = z.object({
     .refine((cursor) => NEWSFEED_CURSOR_PATTERN.test(cursor) && !Number.isNaN(Date.parse(cursor.split('|')[0]!)), {
       message: 'Invalid cursor'
     })
-    .optional(),
-  limit: z.coerce.number().int().min(1).max(50).default(10)
+    .optional()
+    .describe('Pass data.nextCursor from the previous page to get the next one.'),
+  limit: z.coerce.number().int().min(1).max(50).default(10).describe('Posts per page, 1-50. Default: 10.')
 });
 export type TPublicApiCohortNewsfeedQuery = z.infer<typeof ZPublicApiCohortNewsfeedQuery>;
 
@@ -44,7 +45,12 @@ export const ZPublicApiUpdateCohortNewsfeed = z
 export type TPublicApiUpdateCohortNewsfeed = z.infer<typeof ZPublicApiUpdateCohortNewsfeed>;
 
 export const ZPublicApiSetCohortReaction = z.object({
-  reaction: z.enum(PUBLIC_API_COHORT_REACTION_TYPES).nullable()
+  reaction: z
+    .enum(PUBLIC_API_COHORT_REACTION_TYPES)
+    .nullable()
+    .describe(
+      "The key creator's reaction; null removes it. Other members' reactions are untouched, and setting the same value again is a no-op, so retries are safe."
+    )
 });
 export type TPublicApiSetCohortReaction = z.infer<typeof ZPublicApiSetCohortReaction>;
 

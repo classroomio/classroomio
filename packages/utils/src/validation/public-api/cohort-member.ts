@@ -3,7 +3,9 @@ import * as z from 'zod';
 import { ROLE } from '@cio/utils/constants';
 import { ZPublicApiCohortParam } from './cohort';
 
-const ZPublicApiCohortMemberRole = z.union([z.literal(ROLE.TUTOR), z.literal(ROLE.STUDENT)]);
+const ZPublicApiCohortMemberRole = z
+  .union([z.literal(ROLE.TUTOR), z.literal(ROLE.STUDENT)])
+  .describe('2 = tutor, 3 = student');
 
 export const ZPublicApiCohortMemberParam = ZPublicApiCohortParam.extend({
   memberId: z.string().uuid()
@@ -14,8 +16,14 @@ export const ZPublicApiAddCohortMembers = z.object({
   members: z
     .array(
       z.object({
-        profileId: z.string().uuid().optional(),
-        email: z.string().email().optional(),
+        profileId: z.string().uuid().optional().describe('Must belong to someone already in your organization.'),
+        email: z
+          .string()
+          .email()
+          .optional()
+          .describe(
+            'Linked to its existing profile if there is one; otherwise the membership is stored against the email alone.'
+          ),
         name: z.string().optional(),
         roleId: ZPublicApiCohortMemberRole
       })
@@ -30,6 +38,9 @@ export const ZPublicApiAddCohortMembers = z.object({
         return new Set(keys).size === keys.length;
       },
       { message: 'Each profileId or email may appear only once per request' }
+    )
+    .describe(
+      "People to add, each with a profileId or an email that appears only once per request. No invitation email or organization invite is sent; use POST /cohorts/{cohortId}/invite for the dashboard's invite flow. Students with a profile are also added to your organization and to the cohort's courses."
     )
 });
 export type TPublicApiAddCohortMembers = z.infer<typeof ZPublicApiAddCohortMembers>;

@@ -4,7 +4,6 @@ import {
   LIST_CACHE_NOTE,
   ORG_ADMIN_RULE,
   ORG_TEAM_RULE,
-  PAGINATION_NOTE,
   TAG,
   analyticsForbiddenResponses
 } from './docs';
@@ -29,21 +28,11 @@ export const v1OrgAnalyticsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `Organization analytics. Pick sections with include (default: overview):
-- overview: totals (courses, students, certificates), top courses by students, and recent certificates.
-- traffic: landing and course page views, unique visitors, enrollments and completions, with a per-day series.
-- countries: views and enrollments by visitor country.
-- funnel: landing view → course page view → enrollment → completion. For one course, use GET /courses/{courseId}/analytics?include=funnel.
-- courseTypes: views, enrollments and completions by course type.
-- topCourses: the most viewed course pages.
-- loginActivity: student logins by day of week (org admin only).
-- compliance: compliance status counts, overall and per course (org admin only). List the learners with GET /analytics/compliance/learners.
-
-days (7, 30, 90 or 365; default 30) applies to every time-windowed section. limit (1-20, default 5) caps list sections. Sections the key creator may not see are left out and listed in meta.omitted. ${CACHE_NOTE} ${ORG_TEAM_RULE}`,
+      description: `Get organization analytics, with the sections chosen by include; ${ORG_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          'Analytics returned successfully',
+          `Analytics returned; ${CACHE_NOTE}`,
           itemWithMetaResponse(ZPublicApiOrgAnalyticsResponse, ZPublicApiOrgAnalyticsMeta)
         ),
         400: errorResponses.badRequest,
@@ -69,11 +58,11 @@ days (7, 30, 90 or 365; default 30) applies to every time-windowed section. limi
   .get(
     '/compliance/learners',
     describeRoute({
-      description: `One row per student per compliance course with their latest cycle status, due date and validity, ordered by course title then learner name. ${PAGINATION_NOTE} ${LIST_CACHE_NOTE} ${ORG_ADMIN_RULE}`,
+      description: `List each student's latest cycle status, due date and validity in every compliance course; ${ORG_ADMIN_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          'Compliance learners returned successfully',
+          `Compliance learners returned, ordered by course title then learner name; ${LIST_CACHE_NOTE}`,
           paginatedResponse(ZPublicApiComplianceLearnerResponse)
         ),
         400: errorResponses.badRequest,

@@ -18,7 +18,7 @@ import {
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, PAGINATION_NOTE, cohortForbiddenResponses } from './docs';
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, cohortForbiddenResponses } from './docs';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
 
 const MemberResponse = itemResponse(ZPublicApiCohortMemberResponse);
@@ -27,7 +27,7 @@ export const v1CohortMembersRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the members of a cohort. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
+      description: `List the members of a cohort; ${COHORT_MEMBER_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         200: jsonResponse(
@@ -59,7 +59,7 @@ export const v1CohortMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create cohort memberships directly. This does not send an invitation email or create an organization invite; use POST /cohorts/{cohortId}/invite for the dashboard's invite flow. A profileId must belong to someone already in your organization. An email is linked to its existing profile if there is one; otherwise the membership is stored against the email alone. Students with a profile are also added to your organization and to the cohort's courses. Each entry is processed independently: data.added lists the new memberships, and data.errors lists each failed entry with its index in the request, email, profileId, error code, and message. Retrying the same request is safe: entries that already exist fail with code MEMBER_ALREADY_IN_COHORT and nothing is duplicated. A profileId or email may appear only once per request. ${COHORT_TEAM_RULE}`,
+      description: `Add people to a cohort directly, without sending an invitation; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         201: jsonResponse(
@@ -91,7 +91,7 @@ export const v1CohortMembersRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: `Change a cohort member's role (tutor or student). ${COHORT_TEAM_RULE}`,
+      description: `Change a cohort member's role to tutor or student; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
         200: jsonResponse('Cohort member updated successfully', MemberResponse),
@@ -120,10 +120,13 @@ export const v1CohortMembersRouter = new Hono()
   .delete(
     '/:memberId',
     describeRoute({
-      description: `Remove a member from a cohort. This is a hard delete of the cohort membership only; the person keeps their account, organization membership, and course enrolments. ${COHORT_TEAM_RULE}`,
+      description: `Permanently remove a member from a cohort without touching their account or enrolments; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Members'],
       responses: {
-        200: jsonResponse('Cohort member removed successfully', MemberResponse),
+        200: jsonResponse(
+          'Cohort membership deleted; the person keeps their account, organization membership and course enrolments',
+          MemberResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: cohortForbiddenResponses.team,

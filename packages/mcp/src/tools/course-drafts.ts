@@ -134,7 +134,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'update_course_landing_page',
-    'Update landing-page-facing course fields on a live course, including headline copy, overview, requirements, goals, pricing, reviews, instructor information, and the course image. Use imageUrl to set an explicit cover image, or set generateImage/imageQuery to fetch a random Unsplash-based image.',
+    "Update a live course's landing page fields. Use imageUrl to set an explicit cover image, or generateImage/imageQuery to fetch a random Unsplash-based image.",
     updateCourseLandingPageShape,
     async (args) => {
       const { courseId, ...payload } = ZUpdateCourseLandingPageToolInput.parse(args);
@@ -145,7 +145,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'reorder_course_content',
-    'Batch reorder live course sections and lesson or exercise content without creating a draft. Use this for section ordering or moving/reordering lessons and exercises between sections. For items, pass type as LESSON or EXERCISE and use sectionId to move between sections or null for ungrouped content.',
+    "Reorder a live course's sections, lessons and exercises without creating a draft. For items, pass type as LESSON or EXERCISE, and sectionId to move between sections or null for ungrouped content.",
     reorderCourseContentShape,
     async (args) => {
       const { courseId, ...rawPayload } = ZReorderCourseContentToolInput.parse(args);

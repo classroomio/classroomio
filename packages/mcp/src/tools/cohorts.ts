@@ -16,15 +16,7 @@ import {
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
-import {
-  COHORT_MEMBER_RULE,
-  COHORT_TEAM_RULE,
-  DESTRUCTIVE,
-  PAGINATED,
-  READ_ONLY,
-  WRITE,
-  jsonContent
-} from './cohort-tool-text';
+import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, DESTRUCTIVE, READ_ONLY, WRITE, jsonContent } from './cohort-tool-text';
 
 export const ZListOrgCohortsToolInput = ZPublicApiPaginationQuery;
 
@@ -93,7 +85,7 @@ const setCohortInviteLinkRevokedShape = ZSetCohortInviteLinkRevokedToolInput.sha
 export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_org_cohorts',
-    `List the cohorts the API key creator can see: all cohorts for an org admin, otherwise only cohorts they belong to. ${PAGINATED}`,
+    'List the cohorts the API key creator can see: every cohort for an org admin, otherwise only the ones they belong to.',
     listOrgCohortsShape,
     READ_ONLY,
     async (args) => {
@@ -105,7 +97,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'create_cohort',
-    'Create a cohort. The API key creator becomes its tutor.',
+    'Create a cohort, with the API key creator added as its tutor.',
     createCohortShape,
     WRITE,
     async (args) => {
@@ -115,7 +107,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
     }
   );
 
-  server.tool('get_cohort', `Get a cohort by id. ${COHORT_MEMBER_RULE}`, getCohortShape, READ_ONLY, async (args) => {
+  server.tool('get_cohort', `Get a cohort; ${COHORT_MEMBER_RULE}.`, getCohortShape, READ_ONLY, async (args) => {
     const { cohortId } = ZGetCohortToolInput.parse(args);
     const result = await apiClient.getCohort(cohortId);
     return jsonContent(result);
@@ -123,7 +115,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'update_cohort',
-    `Update a cohort. Send only the fields to change. ${COHORT_TEAM_RULE}`,
+    `Update the fields you send on a cohort; ${COHORT_TEAM_RULE}.`,
     updateCohortShape,
     WRITE,
     async (args) => {
@@ -135,7 +127,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'delete_cohort',
-    `Permanently delete a cohort with its memberships, newsfeed, and goals. This is a hard delete and cannot be undone; to keep history, use update_cohort with status ARCHIVED. ${COHORT_TEAM_RULE}`,
+    `Permanently delete a cohort with its memberships, newsfeed and goals; ${COHORT_TEAM_RULE}. To keep history, use update_cohort with status ARCHIVED instead.`,
     deleteCohortShape,
     DESTRUCTIVE,
     async (args) => {
@@ -147,7 +139,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'list_cohort_members',
-    `List the members of a cohort. ${PAGINATED} ${COHORT_MEMBER_RULE}`,
+    `List the members of a cohort; ${COHORT_MEMBER_RULE}.`,
     listCohortMembersShape,
     READ_ONLY,
     async (args) => {
@@ -159,7 +151,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'add_cohort_members',
-    `Create cohort memberships directly, each with a role. This sends no invitation email; use invite_students_to_cohort for the dashboard invite flow. A profileId must belong to someone already in the organization; an email is linked to its existing profile if there is one. Returns { added, errors }, where each error has the entry's index, email, profileId, code, and message. Retrying is safe: existing members fail with code MEMBER_ALREADY_IN_COHORT. ${COHORT_TEAM_RULE}`,
+    `Add people to a cohort directly, each with a role and without an invitation email; ${COHORT_TEAM_RULE}. Returns { added, errors }; retrying is safe because existing members fail with code MEMBER_ALREADY_IN_COHORT. For the dashboard invite flow, use invite_students_to_cohort.`,
     addCohortMembersShape,
     WRITE,
     async (args) => {
@@ -171,7 +163,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'update_cohort_member',
-    `Change a cohort member's role (tutor or student). ${COHORT_TEAM_RULE}`,
+    `Change a cohort member's role to tutor or student; ${COHORT_TEAM_RULE}.`,
     updateCohortMemberShape,
     WRITE,
     async (args) => {
@@ -183,7 +175,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'delete_cohort_member',
-    `Remove a member from a cohort. Hard-deletes the cohort membership only; the person keeps their account, organization membership, and course enrolments. ${COHORT_TEAM_RULE}`,
+    `Permanently remove a member from a cohort without touching their account or enrolments; ${COHORT_TEAM_RULE}.`,
     deleteCohortMemberShape,
     DESTRUCTIVE,
     async (args) => {
@@ -195,7 +187,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'list_cohort_courses',
-    `List the courses linked to a cohort. If the API key creator is a student in the cohort, only published courses are returned. ${PAGINATED} ${COHORT_MEMBER_RULE}`,
+    `List the courses linked to a cohort (published ones only when the API key creator is a student in it); ${COHORT_MEMBER_RULE}.`,
     listCohortCoursesShape,
     READ_ONLY,
     async (args) => {
@@ -207,7 +199,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'add_cohort_course',
-    `Link a course from the organization to a cohort; existing cohort students are enrolled in it. Fails with 409 if already linked. ${COHORT_TEAM_RULE}`,
+    `Link a course from the organization to a cohort and enrol the cohort's existing students in it; ${COHORT_TEAM_RULE}. Fails with 409 if already linked.`,
     addCohortCourseShape,
     WRITE,
     async (args) => {
@@ -219,7 +211,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'remove_cohort_course',
-    `Unlink a course from a cohort. The course itself is not deleted. ${COHORT_TEAM_RULE}`,
+    `Unlink a course from a cohort without deleting the course; ${COHORT_TEAM_RULE}.`,
     removeCohortCourseShape,
     DESTRUCTIVE,
     async (args) => {
@@ -231,7 +223,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'list_my_enrolled_cohorts',
-    `List the cohorts the API key creator is enrolled in within this organization, with their role in each. ${PAGINATED}`,
+    'List the cohorts the API key creator is enrolled in within this organization, with their role in each.',
     listOrgCohortsShape,
     READ_ONLY,
     async (args) => {
@@ -242,7 +234,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'invite_students_to_cohort',
-    `Invite students to a cohort by email, like the dashboard invite modal. recipientCsv is a CSV of emails (optionally with names). New emails get a 7-day organization invite that joins the cohort on acceptance; existing students are enrolled directly; staff are skipped. With sendEmail true (default), invite and welcome emails are queued. Returns per-row statuses. ${COHORT_TEAM_RULE}`,
+    `Invite students to a cohort by email, like the dashboard invite modal; ${COHORT_TEAM_RULE}. Returns a status for each CSV row.`,
     inviteStudentsToCohortShape,
     WRITE,
     async (args) => {
@@ -254,7 +246,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'assign_students_to_cohort',
-    `Add existing students from the organization's audience to a cohort. Profiles that are not students in this organization are skipped. With sendEmail true (default), a welcome email is queued for each newly assigned student. ${COHORT_TEAM_RULE}`,
+    `Add students already in the organization's audience to a cohort; ${COHORT_TEAM_RULE}.`,
     assignStudentsToCohortShape,
     WRITE,
     async (args) => {
@@ -266,7 +258,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'get_cohort_invite_link',
-    `Get the cohort's shareable student join link, or null if none has been created. ${COHORT_TEAM_RULE}`,
+    `Get the cohort's shareable student join link, or null if none has been created; ${COHORT_TEAM_RULE}.`,
     cohortInviteLinkShape,
     READ_ONLY,
     async (args) => {
@@ -278,7 +270,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'create_cohort_invite_link',
-    `Get the cohort's shareable student join link, creating it on the first call. ${COHORT_TEAM_RULE}`,
+    `Get the cohort's shareable student join link, creating it on the first call; ${COHORT_TEAM_RULE}.`,
     cohortInviteLinkShape,
     { readOnlyHint: false, destructiveHint: false, idempotentHint: true },
     async (args) => {
@@ -290,7 +282,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'set_cohort_invite_link_revoked',
-    `Disable (isRevoked true) or re-enable (isRevoked false) the cohort's join link. ${COHORT_TEAM_RULE}`,
+    `Disable or re-enable the cohort's student join link; ${COHORT_TEAM_RULE}.`,
     setCohortInviteLinkRevokedShape,
     { readOnlyHint: false, destructiveHint: true, idempotentHint: true },
     async (args) => {
