@@ -6,7 +6,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
-  import * as HoverCard from '@cio/ui/base/hover-card';
+  import * as Popover from '@cio/ui/base/popover';
   import * as Field from '@cio/ui/base/field';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { Switch } from '@cio/ui/base/switch';
@@ -172,26 +172,22 @@
                   <p class="ui:text-muted-foreground max-w-xs truncate text-xs">{webhook.payloadUrl}</p>
                 </Table.Cell>
                 <Table.Cell class="text-sm">
-                  <HoverCard.Root openDelay={150}>
-                    <HoverCard.Trigger>
-                      {#snippet child({ props })}
-                        <button {...props} type="button" class="text-left">
-                          {#if webhook.eventMode === 'all'}
-                            {$t(`${T}.events_all`)}
-                          {:else}
-                            {$t(getWebhookEventsCountKey(webhook), { count: getWebhookEventsLabelCount(webhook) })}
-                          {/if}
-                        </button>
-                      {/snippet}
-                    </HoverCard.Trigger>
-                    <HoverCard.Content class="w-auto max-w-sm" data-testid={`webhook-events-${webhook.id}`}>
+                  <Popover.Root>
+                    <Popover.Trigger class="text-left underline decoration-dotted underline-offset-4">
+                      {#if webhook.eventMode === 'all'}
+                        {$t(`${T}.events_all`)}
+                      {:else}
+                        {$t(getWebhookEventsCountKey(webhook), { count: getWebhookEventsLabelCount(webhook) })}
+                      {/if}
+                    </Popover.Trigger>
+                    <Popover.Content class="w-auto max-w-sm" data-testid={`webhook-events-${webhook.id}`}>
                       <ul class="space-y-1">
                         {#each getWebhookEventTypes(webhook) as eventType (eventType)}
                           <li class="font-mono text-xs">{eventType}</li>
                         {/each}
                       </ul>
-                    </HoverCard.Content>
-                  </HoverCard.Root>
+                    </Popover.Content>
+                  </Popover.Root>
                 </Table.Cell>
                 <Table.Cell>
                   <Badge variant={WEBHOOK_HEALTH_BADGE[webhook.health]}>{$t(`${T}.health.${webhook.health}`)}</Badge>
