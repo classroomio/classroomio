@@ -77,6 +77,10 @@
       return null;
     }
 
+    if (!learnerPathStore.hasPathCertificate(pathProps.pathId)) {
+      return null;
+    }
+
     return { id: pathProps.pathId, name: pathProps.name };
   });
 </script>
