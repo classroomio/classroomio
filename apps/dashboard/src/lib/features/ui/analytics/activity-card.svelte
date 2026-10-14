@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Component } from 'svelte';
+  import type { ResolvedPathname } from '$app/paths';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import { cn } from '@cio/ui/tools';
 
@@ -10,7 +11,7 @@
     description: string;
     hidePercentage?: boolean;
     className?: string;
-    href?: string;
+    href?: ResolvedPathname;
   }
 
   interface Props {
@@ -68,7 +69,7 @@
   >
     {@render content()}
     <ArrowUpRightIcon
-      class="ui:text-muted-foreground absolute top-3 right-3 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
+      class="ui:text-muted-foreground absolute top-3 right-3 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
       aria-hidden="true"
     />
   </a>
