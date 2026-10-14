@@ -21,11 +21,12 @@ export type PluginStorageScopeType = (typeof PLUGIN_STORAGE_SCOPE_TYPES)[number]
 export const ZPluginStorageScopeType = z.enum(PLUGIN_STORAGE_SCOPE_TYPES);
 
 export const ZInstallPlugin = z.object({
-  pluginId: z.string().trim().min(3).max(128),
+  pluginId: z.string().trim().min(3).max(128).optional(),
   version: z.string().trim().min(1).max(64),
   ownerType: ZPluginOwnerType.default('organization'),
   organizationId: z.string().uuid().optional(),
-  settings: z.record(z.string(), z.unknown()).optional().default({})
+  settings: z.record(z.string(), z.unknown()).optional().default({}),
+  allowDowngrade: z.boolean().optional().default(false)
 });
 export type TInstallPlugin = z.infer<typeof ZInstallPlugin>;
 

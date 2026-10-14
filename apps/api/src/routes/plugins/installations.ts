@@ -72,7 +72,8 @@ export const pluginInstallationsRouter = new Hono()
         organizationId: orgId,
         userId: user.id,
         installedByProfileId: user.id,
-        settings: input.settings
+        settings: input.settings,
+        allowDowngrade: input.allowDowngrade
       });
 
       return c.json({ success: true, data: result }, 201);

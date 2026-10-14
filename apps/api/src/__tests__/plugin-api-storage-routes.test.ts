@@ -202,8 +202,7 @@ describe('plugin API storage routes', () => {
         'settings',
         'theme',
         { mode: 'dark' },
-        'organization',
-        true
+        'organization'
       );
       expect(mocks.recordPluginAuditEvent).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -239,8 +238,7 @@ describe('plugin API storage routes', () => {
         'settings',
         'theme',
         { mode: 'dark' },
-        'organization',
-        false
+        'organization'
       );
     });
 
@@ -321,8 +319,7 @@ describe('plugin API storage routes', () => {
         adminClaims.sub,
         'settings',
         'theme',
-        'organization',
-        true
+        'organization'
       );
       expect(mocks.recordPluginAuditEvent).toHaveBeenCalledWith(
         expect.objectContaining({

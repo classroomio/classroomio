@@ -5,7 +5,9 @@ import {
   getInstallationById,
   getOrganizationInstallation,
   getPluginById,
+  getPluginByIdOrSlug,
   getPluginVersion,
+  getPluginVersionById,
   getUserInstallation,
   listOrganizationInstallations,
   recordPluginAuditEvent,
@@ -21,13 +23,76 @@ import { publishOutboxEvent, registerEventSubscription } from './events';
 import { requireOrganizationInstallation } from './authorization';
 import type {
   TNewPluginInstallation,
+  TPlugin,
   TPluginGrant,
   TPluginInstallation,
   TPluginInstallationStatus,
   TPluginOrgApprovalStatus,
-  TPluginOwnerType
+  TPluginOwnerType,
+  TPluginVersion
 } from '@cio/db/types';
 import type { TInstalledPluginWithDetails } from '@cio/db/queries/plugin';
+
+function parseSemVer(v: string): [number, number, number] {
+  const clean = v.replace(/^v/, '').split('-')[0];
+  const parts = clean.split('.').map((p) => parseInt(p, 10) || 0);
+  return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0];
+}
+
+function isSemVerLessThan(v1: string, v2: string): boolean {
+  const [maj1, min1, pat1] = parseSemVer(v1);
+  const [maj2, min2, pat2] = parseSemVer(v2);
+  if (maj1 !== maj2) return maj1 < maj2;
+  if (min1 !== min2) return min1 < min2;
+  return pat1 < pat2;
+}
+
+export async function assertInstallableRelease(params: {
+  plugin: TPlugin;
+  versionRecord: TPluginVersion;
+  targetOrgId?: string;
+  currentInstallation?: TPluginInstallation | null;
+  allowDowngrade?: boolean;
+}): Promise<void> {
+  const { plugin, versionRecord, targetOrgId, currentInstallation, allowDowngrade } = params;
+
+  if (plugin.status === 'revoked') {
+    throw new AppError('This plugin has been revoked and cannot be installed', 'PLUGIN_REVOKED', 403);
+  }
+
+  if (plugin.status === 'deprecated' && !currentInstallation) {
+    throw new AppError('This plugin has been deprecated and cannot be installed', 'PLUGIN_DEPRECATED', 400);
+  }
+
+  if (versionRecord.reviewStatus && versionRecord.reviewStatus !== 'approved') {
+    throw new AppError(
+      `Plugin version ${versionRecord.version} is not approved for installation (review status: ${versionRecord.reviewStatus})`,
+      'PLUGIN_VERSION_NOT_APPROVED',
+      403
+    );
+  }
+
+  if (plugin.distribution === 'private' && plugin.publisherId) {
+    if (targetOrgId && plugin.publisherId !== targetOrgId && plugin.publisherId !== 'classroomio') {
+      throw new AppError(
+        'Private plugins can only be installed by the publishing organization',
+        'PLUGIN_PRIVATE_ACCESS_DENIED',
+        403
+      );
+    }
+  }
+
+  if (currentInstallation && currentInstallation.pluginVersionId && !allowDowngrade) {
+    const currentVersionRecord = await getPluginVersionById(currentInstallation.pluginVersionId);
+    if (currentVersionRecord && isSemVerLessThan(versionRecord.version, currentVersionRecord.version)) {
+      throw new AppError(
+        `Downgrading plugin from ${currentVersionRecord.version} to ${versionRecord.version} is forbidden without explicit downgrade consent`,
+        'PLUGIN_DOWNGRADE_FORBIDDEN',
+        400
+      );
+    }
+  }
+}
 
 export interface InstallPluginParams {
   pluginId: string;
@@ -37,18 +102,20 @@ export interface InstallPluginParams {
   userId?: string;
   installedByProfileId: string;
   settings?: Record<string, unknown>;
+  allowDowngrade?: boolean;
 }
 
 export async function installPlugin(params: InstallPluginParams): Promise<{
   installation: TPluginInstallation;
   grants: TPluginGrant[];
 }> {
-  const pluginRecord = await getPluginById(params.pluginId);
+  const pluginRecord = await getPluginByIdOrSlug(params.pluginId);
   if (!pluginRecord) {
     throw new AppError('Plugin not found', 'PLUGIN_NOT_FOUND', 404);
   }
 
-  const versionRecord = await getPluginVersion(params.pluginId, params.version);
+  const actualPluginId = pluginRecord.id;
+  const versionRecord = await getPluginVersion(actualPluginId, params.version);
   if (!versionRecord) {
     throw new AppError('Plugin version not found', 'PLUGIN_VERSION_NOT_FOUND', 404);
   }
@@ -60,7 +127,7 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
       throw new AppError('Organization ID is required for organization installations', 'INVALID_PARAMS', 400);
     }
 
-    existingInstallation = await getOrganizationInstallation(params.organizationId, params.pluginId);
+    existingInstallation = await getOrganizationInstallation(params.organizationId, actualPluginId);
     if (existingInstallation && existingInstallation.status !== 'uninstalled') {
       throw new AppError('Plugin is already installed for this organization', 'PLUGIN_ALREADY_INSTALLED', 409);
     }
@@ -69,11 +136,19 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
       throw new AppError('User ID is required for user installations', 'INVALID_PARAMS', 400);
     }
 
-    existingInstallation = await getUserInstallation(params.userId, params.pluginId);
+    existingInstallation = await getUserInstallation(params.userId, actualPluginId);
     if (existingInstallation && existingInstallation.status !== 'uninstalled') {
       throw new AppError('Plugin is already installed for this user', 'PLUGIN_ALREADY_INSTALLED', 409);
     }
   }
+
+  await assertInstallableRelease({
+    plugin: pluginRecord,
+    versionRecord,
+    targetOrgId: params.organizationId,
+    currentInstallation: existingInstallation,
+    allowDowngrade: params.allowDowngrade
+  });
 
   const initialSettings = params.settings ?? {};
   let installation: TPluginInstallation;
@@ -91,7 +166,7 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
     await updateInstallationSubscriptionStatus(installation.id, 'active');
   } else {
     const newInstallationData: TNewPluginInstallation = {
-      pluginId: params.pluginId,
+      pluginId: actualPluginId,
       pluginVersionId: versionRecord.id,
       ownerType: params.ownerType,
       organizationId: params.organizationId,
@@ -105,17 +180,20 @@ export async function installPlugin(params: InstallPluginParams): Promise<{
     installation = await createInstallation(newInstallationData);
   }
 
-  const manifest = versionRecord.manifest as {
-    permissions?: { required?: string[] };
-    runtime?: { backend?: { baseUrl?: string; webhookPath?: string } };
-    events?: { subscriptions?: string[] };
-  };
-  const requiredScopes = manifest.permissions?.required ?? [];
+  const manifest = versionRecord.manifest as
+    | {
+        permissions?: { required?: string[] };
+        runtime?: { backend?: { baseUrl?: string; webhookPath?: string } };
+        events?: { subscriptions?: string[] };
+      }
+    | null
+    | undefined;
+  const requiredScopes = manifest?.permissions?.required ?? [];
 
   const grants = await replaceInstallationGrants(installation.id, requiredScopes, params.installedByProfileId);
 
-  const backend = manifest.runtime?.backend;
-  const subscriptions = manifest.events?.subscriptions ?? [];
+  const backend = manifest?.runtime?.backend;
+  const subscriptions = manifest?.events?.subscriptions ?? [];
   if (backend?.baseUrl && subscriptions.length > 0) {
     const webhookPath = backend.webhookPath ?? '/v1/webhooks/classroomio';
     const endpoint = `${backend.baseUrl}${webhookPath}`;

@@ -9,7 +9,9 @@ const dbMocks = vi.hoisted(() => ({
   getInstallationGrants: vi.fn(),
   getOrganizationInstallation: vi.fn(),
   getPluginById: vi.fn(),
+  getPluginByIdOrSlug: vi.fn(),
   getPluginVersion: vi.fn(),
+  getPluginVersionById: vi.fn(),
   getUserInstallation: vi.fn(),
   listOrganizationInstallations: vi.fn(),
   recordPluginAuditEvent: vi.fn(),
@@ -38,6 +40,7 @@ const announcementManifest = JSON.parse(readFileSync(announcementManifestPath, '
 describe('Plugin Installation Service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    dbMocks.getPluginByIdOrSlug.mockImplementation((id: string) => dbMocks.getPluginById(id));
   });
 
   it('installs the LinkedIn plugin without granting unused permissions', async () => {
@@ -192,5 +195,99 @@ describe('Plugin Installation Service', () => {
         )
       })
     ]);
+  });
+
+  it('rejects installation of revoked plugins', async () => {
+    dbMocks.getPluginById.mockResolvedValueOnce({ id: linkedinManifest.id, status: 'revoked' });
+    dbMocks.getPluginVersion.mockResolvedValueOnce({
+      id: 'version-1',
+      pluginId: linkedinManifest.id,
+      version: linkedinManifest.version,
+      reviewStatus: 'approved'
+    });
+
+    await expect(
+      installPlugin({
+        pluginId: linkedinManifest.id,
+        version: linkedinManifest.version,
+        ownerType: 'organization',
+        organizationId: 'organization-1',
+        installedByProfileId: 'profile-1'
+      })
+    ).rejects.toThrow('This plugin has been revoked');
+  });
+
+  it('rejects installation of unapproved plugin versions', async () => {
+    dbMocks.getPluginById.mockResolvedValueOnce({ id: linkedinManifest.id, status: 'published' });
+    dbMocks.getPluginVersion.mockResolvedValueOnce({
+      id: 'version-1',
+      pluginId: linkedinManifest.id,
+      version: linkedinManifest.version,
+      reviewStatus: 'pending'
+    });
+
+    await expect(
+      installPlugin({
+        pluginId: linkedinManifest.id,
+        version: linkedinManifest.version,
+        ownerType: 'organization',
+        organizationId: 'organization-1',
+        installedByProfileId: 'profile-1'
+      })
+    ).rejects.toThrow('not approved for installation');
+  });
+
+  it('blocks downgrade unless allowDowngrade is explicitly set', async () => {
+    const existing = {
+      id: 'installation-1',
+      pluginId: linkedinManifest.id,
+      organizationId: 'organization-1',
+      pluginVersionId: 'version-2',
+      status: 'uninstalled'
+    };
+
+    dbMocks.getPluginById.mockResolvedValue({ id: linkedinManifest.id, status: 'published' });
+    dbMocks.getPluginVersion.mockResolvedValue({
+      id: 'version-1',
+      pluginId: linkedinManifest.id,
+      version: '1.0.0',
+      reviewStatus: 'approved',
+      manifest: linkedinManifest
+    });
+    dbMocks.getPluginVersionById.mockResolvedValue({
+      id: 'version-2',
+      pluginId: linkedinManifest.id,
+      version: '2.0.0',
+      manifest: linkedinManifest
+    });
+    dbMocks.getOrganizationInstallation.mockResolvedValue(existing);
+
+    await expect(
+      installPlugin({
+        pluginId: linkedinManifest.id,
+        version: '1.0.0',
+        ownerType: 'organization',
+        organizationId: 'organization-1',
+        installedByProfileId: 'profile-1'
+      })
+    ).rejects.toThrow('Downgrading plugin from 2.0.0 to 1.0.0 is forbidden');
+
+    // With allowDowngrade: true
+    dbMocks.reinstallInstallation.mockResolvedValueOnce({
+      ...existing,
+      status: 'active'
+    });
+    dbMocks.replaceInstallationGrants.mockResolvedValueOnce([]);
+
+    await expect(
+      installPlugin({
+        pluginId: linkedinManifest.id,
+        version: '1.0.0',
+        ownerType: 'organization',
+        organizationId: 'organization-1',
+        installedByProfileId: 'profile-1',
+        allowDowngrade: true
+      })
+    ).resolves.toBeDefined();
   });
 });
