@@ -43,16 +43,24 @@ class WebhookApi extends BaseApiWithErrors {
   selectedDelivery = $state<WebhookDeliveryDetail | null>(null);
   isDeliveryLoading = $state(false);
   isTesting = $state(false);
+  private listRequestSeq = 0;
   private deliveriesRequestSeq = 0;
+  private deliveryRequestSeq = 0;
 
   async list() {
+    const requestSeq = ++this.listRequestSeq;
+
     return this.execute<ListWebhooksRequest>({
       requestFn: () => classroomio.organization.webhooks.$get(),
       logContext: 'listing webhooks',
       onSuccess: (response) => {
+        if (requestSeq !== this.listRequestSeq) return;
+
         this.webhooks = response.data;
       },
       onError: () => {
+        if (requestSeq !== this.listRequestSeq) return;
+
         this.webhooks ??= [];
       }
     });
@@ -138,19 +146,19 @@ class WebhookApi extends BaseApiWithErrors {
   async sendTest(webhookId: string) {
     this.isTesting = true;
 
-    const result = await this.execute<SendTestWebhookRequest>({
-      requestFn: () => classroomio.organization.webhooks[':webhookId'].test.$post({ param: { webhookId } }),
-      logContext: 'sending test webhook',
-      onSuccess: (response) => {
-        snackbar[response.data.status === 'SUCCESS' ? 'success' : 'error'](
-          response.data.status === 'SUCCESS' ? 'snackbar.webhooks.test_success' : 'snackbar.webhooks.test_failed'
-        );
-      }
-    });
-
-    this.isTesting = false;
-
-    return result;
+    try {
+      return await this.execute<SendTestWebhookRequest>({
+        requestFn: () => classroomio.organization.webhooks[':webhookId'].test.$post({ param: { webhookId } }),
+        logContext: 'sending test webhook',
+        onSuccess: (response) => {
+          snackbar[response.data.status === 'SUCCESS' ? 'success' : 'error'](
+            response.data.status === 'SUCCESS' ? 'snackbar.webhooks.test_success' : 'snackbar.webhooks.test_failed'
+          );
+        }
+      });
+    } finally {
+      this.isTesting = false;
+    }
   }
 
   async listDeliveries(webhookId: string, options: { status?: WebhookDeliveryStatus; page?: number } = {}) {
@@ -183,20 +191,27 @@ class WebhookApi extends BaseApiWithErrors {
   }
 
   async loadDelivery(webhookId: string, deliveryId: string) {
+    const requestSeq = ++this.deliveryRequestSeq;
     this.isDeliveryLoading = true;
 
-    await this.execute<GetWebhookDeliveryRequest>({
-      requestFn: () =>
-        classroomio.organization.webhooks[':webhookId'].deliveries[':deliveryId'].$get({
-          param: { webhookId, deliveryId }
-        }),
-      logContext: 'loading webhook delivery',
-      onSuccess: (response) => {
-        this.selectedDelivery = response.data;
-      }
-    });
+    try {
+      await this.execute<GetWebhookDeliveryRequest>({
+        requestFn: () =>
+          classroomio.organization.webhooks[':webhookId'].deliveries[':deliveryId'].$get({
+            param: { webhookId, deliveryId }
+          }),
+        logContext: 'loading webhook delivery',
+        onSuccess: (response) => {
+          if (requestSeq !== this.deliveryRequestSeq) return;
 
-    this.isDeliveryLoading = false;
+          this.selectedDelivery = response.data;
+        }
+      });
+    } finally {
+      if (requestSeq === this.deliveryRequestSeq) {
+        this.isDeliveryLoading = false;
+      }
+    }
   }
 
   async redeliver(webhookId: string, deliveryId: string) {
@@ -216,8 +231,18 @@ class WebhookApi extends BaseApiWithErrors {
     this.revealedSecret = null;
   }
 
+  resetOrganizationState() {
+    this.listRequestSeq += 1;
+    this.webhooks = null;
+    this.revealedSecret = null;
+    this.errors = {};
+    this.clearDeliveries();
+  }
+
   clearDeliveries() {
     this.deliveriesRequestSeq += 1;
+    this.deliveryRequestSeq += 1;
+    this.isDeliveryLoading = false;
     this.deliveries = null;
     this.deliveryPagination = null;
     this.selectedDelivery = null;

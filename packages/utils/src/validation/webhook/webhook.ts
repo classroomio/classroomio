@@ -37,7 +37,10 @@ export const ZCreateWebhook = ZWebhookFields.pick({ name: true, payloadUrl: true
   .refine(requireEventsWhenSelected, { message: 'validations.webhook.event_types.required', path: ['eventTypes'] });
 export type TCreateWebhook = z.infer<typeof ZCreateWebhook>;
 
-export const ZUpdateWebhook = ZWebhookFields.partial().refine(requireEventsWhenSelected, {
+const requireEventsWhenProvided = (data: { eventMode?: string; eventTypes?: string[] }) =>
+  data.eventMode !== 'selected' || data.eventTypes === undefined || data.eventTypes.length > 0;
+
+export const ZUpdateWebhook = ZWebhookFields.partial().refine(requireEventsWhenProvided, {
   message: 'validations.webhook.event_types.required',
   path: ['eventTypes']
 });

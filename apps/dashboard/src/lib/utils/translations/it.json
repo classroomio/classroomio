@@ -4995,7 +4995,6 @@
     },
     "webhooks": {
       "page_subtitle": "Invia in tempo reale gli eventi di ClassroomIO a Slack, al tuo CRM o al tuo backend.",
-      "title": "Webhook",
       "description": "ClassroomIO invia una richiesta HTTP POST firmata al tuo URL ogni volta che si verifica un evento selezionato. Le consegne non riuscite vengono ritentate automaticamente.",
       "permissions_description": "Solo gli amministratori dell'organizzazione possono creare, modificare o eliminare i webhook.",
       "create": "Nuovo webhook",

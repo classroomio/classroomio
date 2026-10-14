@@ -44,6 +44,15 @@ export async function sendWebhookRequest(input: TWebhookSendInput): Promise<TWeb
   const transport = input.url.protocol === 'https:' ? https : http;
 
   return new Promise<TWebhookSendResult>((resolve) => {
+    let settled = false;
+    const settle = (result: TWebhookSendResult) => {
+      if (settled) return;
+
+      settled = true;
+      clearTimeout(deadline);
+      resolve(result);
+    };
+
     const request = transport.request(
       {
         protocol: input.url.protocol,
@@ -52,37 +61,43 @@ export async function sendWebhookRequest(input: TWebhookSendInput): Promise<TWeb
         path: `${input.url.pathname}${input.url.search}`,
         method: 'POST',
         headers: { ...input.headers, 'Content-Length': Buffer.byteLength(input.body).toString() },
-        timeout: WEBHOOK_REQUEST_TIMEOUT_MS,
         servername: input.url.hostname,
         rejectUnauthorized: input.verifySsl,
         lookup: (_hostname, _options, callback) => callback(null, target.address, target.family)
       } as https.RequestOptions,
       (response) => {
         const chunks: Buffer[] = [];
+        const readLimit = WEBHOOK_RESPONSE_BODY_LIMIT * 4;
         let received = 0;
 
-        response.on('data', (chunk: Buffer) => {
-          received += chunk.length;
-
-          if (received <= WEBHOOK_RESPONSE_BODY_LIMIT * 4) chunks.push(chunk);
-        });
-        response.on('end', () =>
-          resolve({
+        const finish = () =>
+          settle({
             responseStatus: response.statusCode ?? null,
             responseBody: Buffer.concat(chunks).toString('utf8'),
             errorMessage: null,
             durationMs: Date.now() - startedAt
-          })
-        );
-        response.on('error', (error) => resolve(failure(error.message)));
+          });
+
+        response.on('data', (chunk: Buffer) => {
+          received += chunk.length;
+          chunks.push(chunk);
+
+          if (received <= readLimit) return;
+
+          response.destroy();
+          finish();
+        });
+        response.on('end', finish);
+        response.on('error', (error) => settle(failure(error.message)));
       }
     );
 
-    request.on('timeout', () => {
+    const deadline = setTimeout(() => {
       request.destroy();
-      resolve(failure(`Request timed out after ${WEBHOOK_REQUEST_TIMEOUT_MS / 1000} seconds`));
-    });
-    request.on('error', (error) => resolve(failure(error.message)));
+      settle(failure(`Request timed out after ${WEBHOOK_REQUEST_TIMEOUT_MS / 1000} seconds`));
+    }, WEBHOOK_REQUEST_TIMEOUT_MS);
+
+    request.on('error', (error) => settle(failure(error.message)));
     request.end(input.body);
   });
 }

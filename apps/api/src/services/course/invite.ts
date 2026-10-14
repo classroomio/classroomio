@@ -33,7 +33,7 @@ import type { TNewCourseInviteAudit } from '@db/types';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
-import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
+import { emitCourseMemberWebhookEvent, emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { getCourseTeachers } from '@cio/db/queries/course/people';
 import { getProfileById } from '@cio/db/queries/auth';
 import { buildEmailFromName, buildEmailBranding, type EmailBranding } from '@cio/email';
@@ -307,17 +307,37 @@ const COURSE_INVITE_WEBHOOK_EVENTS: Partial<
   REVOKED: 'course.invite.revoked'
 };
 
+type TInviteAuditContext = {
+  actorProfileId?: string | null;
+  targetEmail?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  metadata?: Record<string, unknown>;
+  deferWebhook?: boolean;
+};
+
+async function emitInviteWebhook(
+  inviteId: string,
+  courseId: string,
+  eventType: TNewCourseInviteAudit['eventType'],
+  context: Pick<TInviteAuditContext, 'actorProfileId' | 'targetEmail'>
+) {
+  const webhookEventType = COURSE_INVITE_WEBHOOK_EVENTS[eventType];
+
+  if (!webhookEventType) return;
+
+  await emitCourseWebhookEvent(courseId, webhookEventType, {
+    inviteId,
+    email: context.targetEmail ?? null,
+    actorProfileId: context.actorProfileId ?? null
+  });
+}
+
 async function recordInviteAudit(
   inviteId: string,
   courseId: string,
   eventType: TNewCourseInviteAudit['eventType'],
-  context: {
-    actorProfileId?: string | null;
-    targetEmail?: string | null;
-    ipAddress?: string | null;
-    userAgent?: string | null;
-    metadata?: Record<string, unknown>;
-  } = {}
+  context: TInviteAuditContext = {}
 ) {
   await createCourseInviteAudit({
     inviteId,
@@ -330,15 +350,9 @@ async function recordInviteAudit(
     metadata: context.metadata ?? {}
   });
 
-  const webhookEventType = COURSE_INVITE_WEBHOOK_EVENTS[eventType];
+  if (context.deferWebhook) return;
 
-  if (webhookEventType) {
-    await emitCourseWebhookEvent(courseId, webhookEventType, {
-      inviteId,
-      email: context.targetEmail ?? null,
-      actorProfileId: context.actorProfileId ?? null
-    });
-  }
+  await emitInviteWebhook(inviteId, courseId, eventType, context);
 }
 
 async function createSingleInvite(
@@ -1035,11 +1049,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         targetEmail: normalizedEmail,
         ipAddress: context.ipAddress,
         userAgent: context.userAgent,
-        metadata: { alreadyJoined: true }
+        metadata: { alreadyJoined: true },
+        deferWebhook: true
       });
 
       return {
         alreadyJoined: true,
+        inviteId: invite.id,
+        enrolledMember: null,
         courseId: course.id,
         courseName: course.title,
         orgName: organization.name,
@@ -1102,7 +1119,7 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       );
     }
 
-    await addGroupMember(
+    const [enrolledMember] = await addGroupMember(
       {
         groupId: course.groupId,
         roleId: ROLE.STUDENT,
@@ -1125,11 +1142,14 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
       targetEmail: normalizedEmail,
       ipAddress: context.ipAddress,
       userAgent: context.userAgent,
-      metadata: { alreadyJoined: false }
+      metadata: { alreadyJoined: false },
+      deferWebhook: true
     });
 
     return {
       alreadyJoined: false,
+      inviteId: invite.id,
+      enrolledMember: enrolledMember ?? null,
       courseId: course.id,
       courseName: course.title,
       orgName: organization.name,
@@ -1144,6 +1164,15 @@ export async function acceptStudentInvite(token: string, user: TAuthUser, contex
         (course.metadata as { welcomeEmailMessage?: string | null } | null)?.welcomeEmailMessage ?? null
     };
   });
+
+  await emitInviteWebhook(result.inviteId, result.courseId, 'ACCEPTED', {
+    actorProfileId: user.id,
+    targetEmail: normalizedEmail
+  });
+
+  if (result.enrolledMember) {
+    await emitCourseMemberWebhookEvent('course.member.added', result.courseId, result.enrolledMember);
+  }
 
   if (!result.alreadyJoined) {
     await invalidateOrgStats(result.organizationId);

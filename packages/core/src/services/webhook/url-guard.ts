@@ -33,14 +33,59 @@ function isPrivateIpv4(parts: number[]): boolean {
   return first >= 224;
 }
 
+function parseIpv6Groups(address: string): number[] | null {
+  let text = address;
+  const dottedTail = text.match(/(\d+\.\d+\.\d+\.\d+)$/);
+
+  if (dottedTail) {
+    const octets = parseIpv4(dottedTail[1]);
+
+    if (!octets) return null;
+
+    const high = ((octets[0] << 8) | octets[1]).toString(16);
+    const low = ((octets[2] << 8) | octets[3]).toString(16);
+    text = `${text.slice(0, -dottedTail[1].length)}${high}:${low}`;
+  }
+
+  const halves = text.split('::');
+
+  if (halves.length > 2) return null;
+
+  const head = halves[0] ? halves[0].split(':') : [];
+  const tail = halves.length === 2 && halves[1] ? halves[1].split(':') : [];
+  const missing = 8 - head.length - tail.length;
+
+  if (halves.length === 1 ? missing !== 0 : missing < 1) return null;
+
+  const groups = [...head, ...Array(halves.length === 2 ? missing : 0).fill('0'), ...tail].map((group) =>
+    Number.parseInt(group, 16)
+  );
+
+  return groups.length === 8 && groups.every((group) => Number.isInteger(group) && group >= 0 && group <= 0xffff)
+    ? groups
+    : null;
+}
+
+function embeddedIpv4(groups: number[]): number[] | null {
+  const [g0, g1, g2, g3, g4, g5, g6, g7] = groups;
+  const leadingZero = g0 === 0 && g1 === 0 && g2 === 0 && g3 === 0 && g4 === 0;
+  const isMapped = leadingZero && g5 === 0xffff;
+  const isCompatible = leadingZero && g5 === 0 && (g6 !== 0 || g7 > 1);
+  const isNat64 = g0 === 0x64 && g1 === 0xff9b && g2 === 0 && g3 === 0 && g4 === 0 && g5 === 0;
+
+  if (isMapped || isCompatible || isNat64) return [g6 >> 8, g6 & 0xff, g7 >> 8, g7 & 0xff];
+
+  if (g0 === 0x2002) return [g1 >> 8, g1 & 0xff, g2 >> 8, g2 & 0xff];
+
+  return null;
+}
+
 /**
  * True when the address is loopback, private, link-local, multicast, or otherwise not publicly routable.
+ * IPv6 forms that embed an IPv4 address (mapped, compatible, NAT64, 6to4) are judged by the embedded address.
  */
 export function isPrivateAddress(address: string): boolean {
   const normalized = address.toLowerCase();
-  const mappedIpv4 = normalized.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-
-  if (mappedIpv4) return isPrivateAddress(mappedIpv4[1]);
 
   if (isIP(normalized) === 4) {
     const parts = parseIpv4(normalized);
@@ -49,16 +94,20 @@ export function isPrivateAddress(address: string): boolean {
   }
 
   if (isIP(normalized) === 6) {
+    const groups = parseIpv6Groups(normalized);
+
+    if (!groups) return true;
+
+    const embedded = embeddedIpv4(groups);
+
+    if (embedded) return isPrivateIpv4(embedded);
+
     return (
-      normalized === '::' ||
-      normalized === '::1' ||
-      normalized.startsWith('fc') ||
-      normalized.startsWith('fd') ||
-      normalized.startsWith('fe8') ||
-      normalized.startsWith('fe9') ||
-      normalized.startsWith('fea') ||
-      normalized.startsWith('feb') ||
-      normalized.startsWith('ff')
+      groups.every((group) => group === 0) ||
+      (groups.slice(0, 7).every((group) => group === 0) && groups[7] === 1) ||
+      (groups[0] & 0xfe00) === 0xfc00 ||
+      (groups[0] & 0xffc0) === 0xfe80 ||
+      (groups[0] & 0xff00) === 0xff00
     );
   }
 

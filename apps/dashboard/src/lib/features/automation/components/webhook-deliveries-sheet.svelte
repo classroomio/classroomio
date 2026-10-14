@@ -69,8 +69,8 @@
 
     if (!result) return;
 
-    webhookApi.clearDeliveries();
-    reload(1);
+    reload();
+    await webhookApi.loadDelivery(webhook.id, deliveryId);
   }
 
   onMount(() => {

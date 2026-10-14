@@ -5096,7 +5096,6 @@
     },
     "webhooks": {
       "page_subtitle": "रीयल-टाइम ClassroomIO इवेंट को Slack, अपने CRM या अपने बैकएंड पर भेजें।",
-      "title": "Webhooks",
       "description": "जब भी कोई चुना हुआ इवेंट होता है, ClassroomIO आपके URL पर एक हस्ताक्षरित HTTP POST भेजता है। विफल डिलीवरी अपने आप दोबारा आज़माई जाती हैं।",
       "permissions_description": "केवल संगठन के एडमिन ही Webhooks बना, संपादित या हटा सकते हैं।",
       "create": "नया Webhook",

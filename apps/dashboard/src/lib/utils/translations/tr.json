@@ -5005,7 +5005,6 @@
     },
     "webhooks": {
       "page_subtitle": "ClassroomIO olaylarını gerçek zamanlı olarak Slack'e, CRM'inize veya kendi arka ucunuza gönderin.",
-      "title": "Webhook'lar",
       "description": "Seçili bir olay gerçekleştiğinde ClassroomIO, URL'nize imzalı bir HTTP POST isteği gönderir. Başarısız teslimatlar otomatik olarak yeniden denenir.",
       "permissions_description": "Webhook'ları yalnızca kuruluş yöneticileri oluşturabilir, düzenleyebilir veya silebilir.",
       "create": "Yeni webhook",

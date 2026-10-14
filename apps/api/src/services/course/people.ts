@@ -262,6 +262,7 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
       for (const member of members) {
         const addedMember = await addCourseMember(courseId, member);
         addedMembers.push(addedMember);
+        await emitCourseMemberWebhookEvent('course.member.added', courseId, addedMember);
 
         if (member.roleId === ROLE.STUDENT) {
           addedStudentMember = true;
@@ -272,10 +273,6 @@ export async function addMembers(courseId: string, members: TAddCourseMembers) {
         await invalidateOrgStats(courseOrgData.orgId);
       }
     }
-
-    await Promise.all(
-      addedMembers.map((addedMember) => emitCourseMemberWebhookEvent('course.member.added', courseId, addedMember))
-    );
 
     const studentProfileIds = members
       .filter((member) => member.roleId === ROLE.STUDENT && member.profileId)

@@ -5096,7 +5096,6 @@
     },
     "webhooks": {
       "page_subtitle": "Send ClassroomIO-hændelser i realtid til Slack, dit CRM eller din egen backend.",
-      "title": "Webhooks",
       "description": "ClassroomIO sender en signeret HTTP POST til din URL, hver gang en valgt hændelse opstår. Mislykkede leverancer forsøges automatisk igen.",
       "permissions_description": "Kun organisationsadministratorer kan oprette, redigere eller slette webhooks.",
       "create": "Ny webhook",

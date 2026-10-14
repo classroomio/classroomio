@@ -90,6 +90,35 @@ export async function createWebhookEndpoint(
   }
 }
 
+/**
+ * Creates the endpoint only while the organization is under `maxEndpoints`, counting and inserting under
+ * a row lock on the organization so concurrent creates cannot exceed the cap. Returns null when at the cap.
+ */
+export async function createWebhookEndpointWithinLimit(
+  values: TNewWebhookEndpoint,
+  eventTypes: string[],
+  maxEndpoints: number
+): Promise<TWebhookEndpointWithEvents | null> {
+  try {
+    return await db.transaction(async (tx) => {
+      await tx
+        .select({ id: schema.organization.id })
+        .from(schema.organization)
+        .where(eq(schema.organization.id, values.organizationId))
+        .for('update');
+
+      const existing = await countWebhookEndpoints(values.organizationId, tx);
+
+      if (existing >= maxEndpoints) return null;
+
+      return createWebhookEndpoint(values, eventTypes, tx);
+    });
+  } catch (error) {
+    console.error('createWebhookEndpointWithinLimit error:', error);
+    throw new Error('Failed to create webhook endpoint');
+  }
+}
+
 export async function updateWebhookEndpoint(
   organizationId: string,
   webhookId: string,
@@ -193,9 +222,9 @@ export async function listWebhookEndpoints(organizationId: string): Promise<TWeb
   }
 }
 
-export async function countWebhookEndpoints(organizationId: string): Promise<number> {
+export async function countWebhookEndpoints(organizationId: string, client: DbOrTxClient = db): Promise<number> {
   try {
-    const [row] = await db
+    const [row] = await client
       .select({ total: count() })
       .from(schema.webhookEndpoint)
       .where(eq(schema.webhookEndpoint.organizationId, organizationId));
@@ -363,32 +392,12 @@ export async function requeueWebhookDelivery(webhookId: string, deliveryId: stri
  * Runs `work` inside a transaction holding a per-endpoint advisory lock, so only one worker
  * delivers to an endpoint at a time. Returns `null` without running `work` when another worker holds it.
  */
-export async function withWebhookEndpointLock<T>(
-  webhookId: string,
-  work: (tx: TxClient) => Promise<T>
-): Promise<T | null> {
-  try {
-    return await db.transaction(async (tx) => {
-      const [lock] = await tx.execute<{ locked: boolean }>(
-        sql`select pg_try_advisory_xact_lock(hashtext(${`webhook:${webhookId}`})) as locked`
-      );
-
-      if (!lock?.locked) return null;
-
-      return work(tx);
-    });
-  } catch (error) {
-    console.error('withWebhookEndpointLock error:', error);
-    throw error;
-  }
-}
-
 /**
  * Returns the oldest PENDING delivery for the endpoint that is due, locking the row.
  */
 export async function claimNextDueWebhookDelivery(
   webhookId: string,
-  client: DbOrTxClient
+  client: DbOrTxClient = db
 ): Promise<TWebhookDeliveryRecord | null> {
   try {
     const [row] = await client
@@ -403,8 +412,7 @@ export async function claimNextDueWebhookDelivery(
         )
       )
       .orderBy(schema.webhookDelivery.createdAt)
-      .limit(1)
-      .for('update', { of: schema.webhookDelivery, skipLocked: true });
+      .limit(1);
 
     return row ?? null;
   } catch (error) {
@@ -418,9 +426,15 @@ export async function recordWebhookAttempt(
   webhookId: string,
   affectsHealth: boolean,
   result: TWebhookAttemptResult,
-  client: DbOrTxClient
+  client?: DbOrTxClient
 ): Promise<void> {
   try {
+    if (!client) {
+      await db.transaction((tx) => recordWebhookAttempt(deliveryId, webhookId, affectsHealth, result, tx));
+
+      return;
+    }
+
     const nowIso = new Date().toISOString();
     const status: TWebhookDelivery['status'] = result.success
       ? 'SUCCESS'
@@ -488,7 +502,7 @@ export async function deleteExpiredWebhookEvents(olderThan: Date): Promise<numbe
 
 export async function getEarliestPendingWebhookAttemptAt(
   webhookId: string,
-  client: DbOrTxClient
+  client: DbOrTxClient = db
 ): Promise<Date | null> {
   try {
     const [row] = await client

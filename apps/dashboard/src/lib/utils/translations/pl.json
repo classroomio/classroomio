@@ -5096,7 +5096,6 @@
     },
     "webhooks": {
       "page_subtitle": "Wysyłaj zdarzenia ClassroomIO w czasie rzeczywistym do Slacka, Twojego CRM lub własnego backendu.",
-      "title": "Webhooki",
       "description": "ClassroomIO wysyła podpisane żądanie HTTP POST na Twój URL za każdym razem, gdy wystąpi wybrane zdarzenie. Nieudane dostarczenia są ponawiane automatycznie.",
       "permissions_description": "Tylko administratorzy organizacji mogą tworzyć, edytować i usuwać webhooki.",
       "create": "Nowy webhook",

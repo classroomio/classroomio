@@ -31,12 +31,12 @@ Leave the secret blank to have ClassroomIO generate one. Every delivery is signe
 | `course.invite.revoked` | A student invite is revoked |
 | `course.member.added` | A member is added to a course |
 | `course.member.removed` | A member is removed from a course |
-| `course.completed` | A learner completes a course |
+| `course.completed` | A learner completes a course and earns its certificate. Requires certificates to be enabled for the organization |
 | `course.certificate.issued` | A certificate is earned |
 | `course.submission.created` | An exercise submission is created |
 | `course.submission.status_changed` | A submission status changes, for example when it is graded |
 | `lesson.completion.updated` | A lesson is marked complete or reset |
-| `exercise.completion.updated` | An exercise is completed or reset |
+| `exercise.completion.updated` | An exercise is completed, meeting any passing grade the exercise requires, or reset |
 
 Recommended defaults: `course.invite.accepted`, `course.member.added`, `course.completed`, `course.certificate.issued`, and `course.submission.created`.
 
