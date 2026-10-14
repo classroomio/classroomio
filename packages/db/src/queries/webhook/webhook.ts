@@ -389,11 +389,7 @@ export async function requeueWebhookDelivery(webhookId: string, deliveryId: stri
 }
 
 /**
- * Runs `work` inside a transaction holding a per-endpoint advisory lock, so only one worker
- * delivers to an endpoint at a time. Returns `null` without running `work` when another worker holds it.
- */
-/**
- * Returns the oldest PENDING delivery for the endpoint that is due, locking the row.
+ * Returns the oldest due PENDING delivery for the endpoint without locking it; callers must hold the endpoint's Redis lock.
  */
 export async function claimNextDueWebhookDelivery(
   webhookId: string,
