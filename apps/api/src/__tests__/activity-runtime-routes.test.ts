@@ -45,7 +45,7 @@ describe('runtime-scorm routes', () => {
   });
 
   it('accepts beacon commits sent as text/plain', async () => {
-    mockedCommit.mockResolvedValue({ saved: true, completedActivity: false });
+    mockedCommit.mockResolvedValue({ saved: true, completedActivity: false, progressChanged: true });
 
     const response = await app().request('/activity/scorm/runtime/launch-token/commit', {
       method: 'POST',
@@ -54,7 +54,12 @@ describe('runtime-scorm routes', () => {
     });
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ result: true, errorCode: 0, completedActivity: false });
+    expect(await response.json()).toEqual({
+      result: true,
+      errorCode: 0,
+      completedActivity: false,
+      progressChanged: true
+    });
     expect(mockedCommit).toHaveBeenCalledWith(
       'launch-token',
       expect.objectContaining({ commitSequence: 3, terminate: true }),
@@ -64,7 +69,7 @@ describe('runtime-scorm routes', () => {
   });
 
   it('passes non-beacon commits without the beacon flag', async () => {
-    mockedCommit.mockResolvedValue({ saved: true, completedActivity: false });
+    mockedCommit.mockResolvedValue({ saved: true, completedActivity: false, progressChanged: true });
 
     const response = await app().request('/activity/scorm/runtime/launch-token/commit', {
       method: 'POST',

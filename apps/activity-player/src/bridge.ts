@@ -7,6 +7,7 @@ export type PlayerOutboundMessage =
   | { type: 'ready' }
   | { type: 'terminated'; navRequest: string | null }
   | { type: 'completed' }
+  | { type: 'progress' }
   | { type: 'did-not-connect' };
 
 export const DID_NOT_CONNECT_MS = 30_000;
@@ -61,6 +62,10 @@ export function connectParentBridge(
 
 export function notifyCompleted(parentOrigin: string | string[]): void {
   postMessage({ type: 'completed' }, parentOrigin);
+}
+
+export function notifyProgress(parentOrigin: string | string[]): void {
+  postMessage({ type: 'progress' }, parentOrigin);
 }
 
 function readNavRequest(adapter: ScormAdapter, format: ScormFormat): string | null {

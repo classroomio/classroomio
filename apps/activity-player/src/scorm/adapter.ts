@@ -32,7 +32,12 @@ const CLIENT_LMS_RULE_FLAGS = {
   mastery_override: false
 } as const;
 
-export function buildAdapterSettings(launchToken: string, debug: boolean, onCompleted?: () => void): AdapterSettings {
+export function buildAdapterSettings(
+  launchToken: string,
+  debug: boolean,
+  onCompleted?: () => void,
+  onProgress?: () => void
+): AdapterSettings {
   return {
     autocommit: true,
     autocommitSeconds: 30,
@@ -42,15 +47,16 @@ export function buildAdapterSettings(launchToken: string, debug: boolean, onComp
     terminateCommitPayloadField: 'terminate',
     selfReportSessionTime: false,
     logLevel: debug ? 1 : 4,
-    xhrResponseHandler: (xhr: XMLHttpRequest) => readCommitResponse(xhr, onCompleted),
+    xhrResponseHandler: (xhr: XMLHttpRequest) => readCommitResponse(xhr, onCompleted, onProgress),
     ...CLIENT_LMS_RULE_FLAGS
   };
 }
 
-// scorm-again only forwards result and errorCode, so the completion flag is observed here.
+// scorm-again only forwards result and errorCode, so the completion and progress flags are observed here.
 function readCommitResponse(
   xhr: XMLHttpRequest,
-  onCompleted?: () => void
+  onCompleted?: () => void,
+  onProgress?: () => void
 ): { result: string | boolean; errorCode: number } {
   if (typeof xhr === 'undefined' || xhr.status < 200 || xhr.status > 299) {
     return { result: false, errorCode: 101 };
@@ -68,9 +74,15 @@ function readCommitResponse(
     return { result: true, errorCode: 0 };
   }
 
-  const body = parsed as { result: string | boolean; errorCode?: unknown; completedActivity?: unknown };
+  const body = parsed as {
+    result: string | boolean;
+    errorCode?: unknown;
+    completedActivity?: unknown;
+    progressChanged?: unknown;
+  };
 
   if (body.completedActivity === true) onCompleted?.();
+  else if (body.progressChanged === true) onProgress?.();
 
   return {
     result: body.result,

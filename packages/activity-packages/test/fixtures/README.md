@@ -15,6 +15,7 @@ Hand-written packages plus vendor notes. Rebuild with `node test/fixtures/build-
 | `vendor-rise-style`       | 2004 4th | 1           | `""` then terminate                                                | none                            | 18    | 3,761 B      | 3,584 B | none       | none                                                             |
 | `reject-external-launch`  | 2004 4th | 1, rejected | n/a                                                                | n/a                             | 2     | 1,233 B      | 856 B   | n/a        | n/a                                                              |
 | `reject-assets-only`      | 2004 4th | 0, rejected | n/a                                                                | n/a                             | 2     | 1,230 B      | 847 B   | n/a        | n/a                                                              |
+| `scorm-timer-test`        | 1.2/2004 | 1           | `normal`, `suspend`, or `time-out` on expiry                       | none                            | 2     | 27,828 B     | 6,994 B | none       | pass mark 80 (quiz); tests active timer, countdown, session time |
 
 The two rejection fixtures are negative tests: `reject-external-launch` has a SCO whose `href` is absolute `https://` and must fail with the external-content error; `reject-assets-only` has only `asset` resources and must fail with the nothing-to-track error.
 

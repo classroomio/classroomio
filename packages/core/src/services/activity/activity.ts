@@ -163,6 +163,26 @@ export async function launchActivity(
 }
 
 /**
+ * Returns the learner's module menu through the activity's provider without
+ * opening or writing anything. Throws when the activity is not in the course.
+ */
+export async function getActivityProgress(
+  courseId: string,
+  activityId: string,
+  context: { profileId: string; isPreview: boolean }
+) {
+  const activity = await getActivity(courseId, activityId);
+  const provider = (ACTIVITY_PROVIDERS as Partial<Record<TActivityKind, (typeof ACTIVITY_PROVIDERS)[TActivityKind]>>)[
+    activity.kind as TActivityKind
+  ];
+  if (!provider) throw new AppError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
+
+  const units = await provider.progress({ activityId, profileId: context.profileId, isPreview: context.isPreview });
+
+  return { units };
+}
+
+/**
  * Updates title, instructions or lock. Throws when the activity is missing.
  */
 export async function updateActivityService(

@@ -11,7 +11,7 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { LICENSE_FEATURE } from '@cio/utils/license';
 import { ACTIVITY_PACKAGE_SLOT } from '@cio/utils/validation/assets/assets';
 import { ZScormSettings } from '@cio/utils/validation/activity/scorm';
-import { launchScormActivity } from './launch';
+import { getScormModuleProgress, launchScormActivity } from './launch';
 import {
   getComplianceSnapshot as fetchComplianceSnapshot,
   getLearnerDetail as fetchLearnerDetail,
@@ -29,10 +29,22 @@ import type {
   ActivityLearnerSummary,
   ActivityLaunchContext,
   ActivityLaunchResult,
+  ActivityProgressContext,
   ActivityProvider,
   ActivityResultsSummary,
-  GoLiveBlocker
+  GoLiveBlocker,
+  ScormLaunchModule
 } from '../types';
+
+function decodeXmlEntities(value: string): string {
+  return value
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_match, code) => String.fromCharCode(Number(code)));
+}
 
 /**
  * Attaches a processed org package to an activity, replacing any previous
@@ -47,7 +59,7 @@ export async function attachScormPackage(
   assetId: string,
   organizationId: string,
   userId: string
-): Promise<void> {
+): Promise<{ title?: string }> {
   const asset = await getAssetById(assetId, organizationId);
   if (!asset || asset.kind !== 'scorm') throw new AppError('Package not found', ErrorCodes.NOT_FOUND, 404);
 
@@ -55,9 +67,9 @@ export async function attachScormPackage(
   if (!current || current.status !== 'ready')
     throw new AppError('Package has no ready version yet', ErrorCodes.VALIDATION_ERROR, 400);
 
-  await db.transaction(async (tx) => {
+  return db.transaction(async (tx) => {
     const previous = await getActivityScormByActivityId(activityId, tx);
-    if (previous?.assetId === asset.id) return;
+    if (previous?.assetId === asset.id) return {};
 
     const previousCurrent = previous?.assetId ? await getCurrentPackageVersion(previous.assetId, tx) : null;
     if (previousCurrent?.contentSha256 && previousCurrent.contentSha256 === current.contentSha256) {
@@ -84,12 +96,20 @@ export async function attachScormPackage(
     );
 
     const activity = await getActivityById(activityId, tx);
-    if (activity && (!activity.title || activity.title.trim().length === 0)) {
-      const packageTitle = current.title || asset.title;
+    let updatedTitle: string | undefined;
+    const isUnnamed =
+      !activity?.title || activity.title.trim().length === 0 || activity.title.trim().toLowerCase() === 'scorm package';
+
+    if (activity && isUnnamed) {
+      const rawTitle = current.title || asset.title;
+      const packageTitle = rawTitle ? decodeXmlEntities(rawTitle) : undefined;
       if (packageTitle) {
         await updateActivity(activityId, { title: packageTitle }, tx);
+        updatedTitle = packageTitle;
       }
     }
+
+    return { title: updatedTitle ?? activity?.title ?? undefined };
   });
 }
 
@@ -177,6 +197,9 @@ export const scormProvider: ActivityProvider = {
   },
   async launch(context: ActivityLaunchContext): Promise<ActivityLaunchResult> {
     return launchScormActivity(context);
+  },
+  async progress(context: ActivityProgressContext): Promise<ScormLaunchModule[]> {
+    return getScormModuleProgress(context);
   },
   async listLearnerSummaries(
     activityId: string,

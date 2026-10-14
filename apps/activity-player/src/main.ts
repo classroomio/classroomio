@@ -8,7 +8,7 @@ import {
 } from './scorm/adapter';
 import type { Scorm12API } from 'scorm-again/scorm12';
 import type { Scorm2004API } from 'scorm-again/scorm2004';
-import { connectParentBridge, flushOnPageHide, notifyCompleted, watchForConnection } from './bridge';
+import { connectParentBridge, flushOnPageHide, notifyCompleted, notifyProgress, watchForConnection } from './bridge';
 import { reportRuntimeEvent } from './runtime-event';
 
 /**
@@ -63,7 +63,12 @@ async function boot(): Promise<void> {
     state.parentOrigins && state.parentOrigins.length > 0 ? state.parentOrigins : state.parentOrigin;
   const adapter = createScormAdapter(
     state.format,
-    buildAdapterSettings(launchToken, state.debug, () => notifyCompleted(parentOrigins))
+    buildAdapterSettings(
+      launchToken,
+      state.debug,
+      () => notifyCompleted(parentOrigins),
+      () => notifyProgress(parentOrigins)
+    )
   );
 
   initializeCommitSequence(adapter, state.commitSeq ?? 0);

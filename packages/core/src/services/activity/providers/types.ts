@@ -18,6 +18,8 @@ export interface ActivityProvider {
   updateSettings(activityId: string, input: unknown, tx: DbOrTxClient): Promise<void>;
   /** Resolves what a launch opens: the player URL, mode and modules. Never writes completion. */
   launch(context: ActivityLaunchContext): Promise<ActivityLaunchResult>;
+  /** The learner's module menu as it stands, without opening or writing anything. */
+  progress(context: ActivityProgressContext): Promise<ScormLaunchModule[]>;
   /** Summary rows for the Results tab and People pages. */
   listLearnerSummaries(
     activityId: string,
@@ -70,6 +72,8 @@ export type ActivityLaunchContext = {
   newAttempt?: boolean;
   isPreview: boolean;
 };
+
+export type ActivityProgressContext = Pick<ActivityLaunchContext, 'activityId' | 'profileId' | 'isPreview'>;
 
 export type ScormLaunchModule = {
   identifier: string;

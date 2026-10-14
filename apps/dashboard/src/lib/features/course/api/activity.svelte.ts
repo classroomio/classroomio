@@ -22,6 +22,7 @@ import type {
   DeleteActivityRequest,
   DetachActivityPackageRequest,
   GetActivityLearnerResultRequest,
+  GetActivityProgressRequest,
   GetActivityRequest,
   GetActivityResultsRequest,
   LaunchActivityData,
@@ -96,6 +97,25 @@ export class ActivityApi extends BaseApiWithErrors {
     }
 
     return launched;
+  }
+
+  /**
+   * Refreshes the module ticks and locks of the current launch without
+   * relaunching, so a running module is left alone. Keeps the launch as is
+   * when the request fails or the activity is unavailable.
+   */
+  async refreshProgress(courseId: string, activityId: string) {
+    await this.execute<GetActivityProgressRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].activity[':activityId'].progress.$get({ param: { courseId, activityId } }),
+      logContext: 'refreshing activity progress',
+      onSuccess: (response) => {
+        const launch = this.launchResult;
+        if (!response.data || !launch?.available || response.data.units.length === 0) return;
+
+        this.launchResult = { ...launch, units: response.data.units };
+      }
+    });
   }
 
   /**

@@ -18,6 +18,7 @@ import {
   deleteActivityService,
   getActivity,
   getActivityLearnerResult,
+  getActivityProgress,
   getActivityResults,
   getActivityWithEditorData,
   launchActivity,
@@ -127,9 +128,10 @@ export const activityRouter = new Hono()
         await assertScormAuthoringAllowed(courseId, existing.kind);
         const organizationId = await getOrgIdByCourseId(courseId);
         if (!organizationId) throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
-        await attachScormPackage(activityId, data.assetId, organizationId, user.id);
+        const attachResult = await attachScormPackage(activityId, data.assetId, organizationId, user.id);
+        const title = attachResult && 'title' in attachResult ? attachResult.title : undefined;
 
-        return c.json({ success: true, data: { activityId, assetId: data.assetId } }, 200);
+        return c.json({ success: true, data: { activityId, assetId: data.assetId, title } }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to attach package');
       }
@@ -201,6 +203,31 @@ export const activityRouter = new Hono()
         return c.json({ success: true, data: result }, 200);
       } catch (error) {
         return handleError(c, error, 'Failed to launch activity');
+      }
+    }
+  )
+  .get(
+    '/:activityId/progress',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZActivityParam),
+    async (c) => {
+      try {
+        const courseId = c.req.param('courseId')!;
+        const user = c.get('user')!;
+        const { activityId } = c.req.valid('param');
+        await assertEnrolledStudentContentAccess({
+          courseId,
+          profileId: user.id,
+          contentId: activityId,
+          type: ContentType.Activity
+        });
+        const isPreview = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
+        const result = await getActivityProgress(courseId, activityId, { profileId: user.id, isPreview });
+
+        return c.json({ success: true, data: result }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch activity progress');
       }
     }
   )

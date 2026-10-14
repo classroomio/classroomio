@@ -263,6 +263,9 @@ export type LaunchActivityData = LaunchActivitySuccess['data'];
 export type LaunchActivityResult = LaunchActivityData;
 export type LaunchActivityModule = Extract<LaunchActivityData, { available: true }>['units'][number];
 
+export type GetActivityProgressRequest =
+  (typeof classroomio.course)[':courseId']['activity'][':activityId']['progress']['$get'];
+
 export type UpdateActivitySettingsRequest =
   (typeof classroomio.course)[':courseId']['activity'][':activityId']['settings']['$put'];
 export type UpdateActivitySettingsResponse = InferResponseType<UpdateActivitySettingsRequest>;

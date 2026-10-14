@@ -2,6 +2,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import * as Popover from '@cio/ui/base/popover';
+  import * as Tooltip from '@cio/ui/base/tooltip';
   import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
   import ClockIcon from '@lucide/svelte/icons/clock';
@@ -23,6 +24,7 @@
     portalTarget?: HTMLElement | null;
     showExit?: boolean;
     onExit?: () => void;
+    menuOpen?: boolean;
   }
 
   let {
@@ -35,15 +37,20 @@
     overlayVisible = true,
     portalTarget = null,
     showExit = false,
-    onExit
+    onExit,
+    menuOpen = $bindable(false)
   }: Props = $props();
-
-  let menuOpen = $state(false);
 
   const currentIndex = $derived(units.findIndex((unit) => unit.identifier === currentIdentifier));
   const completedCount = $derived(units.filter((unit) => unit.completed).length);
+  const prevUnit = $derived(currentIndex > 0 ? units[currentIndex - 1] : null);
+  const nextUnit = $derived(currentIndex >= 0 && currentIndex < units.length - 1 ? units[currentIndex + 1] : null);
+  const isPrevLocked = $derived(Boolean(prevUnit?.locked));
+  const isNextLocked = $derived(Boolean(nextUnit?.locked));
   const hasPrevious = $derived(currentIndex > 0);
   const hasNext = $derived(currentIndex >= 0 && currentIndex < units.length - 1);
+  const isPrevDisabled = $derived(!hasPrevious || isPrevLocked);
+  const isNextDisabled = $derived(!hasNext || isNextLocked);
   const timeLimit = $derived(formatTimeLimit(units[currentIndex]?.maxTimeAllowed));
   const contentProps = $derived(portalTarget ? { portalProps: { to: portalTarget } } : {});
 
@@ -51,19 +58,33 @@
     menuOpen = false;
     onSelect(identifier);
   }
+
+  $effect(() => {
+    if (!menuOpen) return;
+
+    function handleWindowBlur() {
+      menuOpen = false;
+    }
+
+    window.addEventListener('blur', handleWindowBlur);
+
+    return () => {
+      window.removeEventListener('blur', handleWindowBlur);
+    };
+  });
 </script>
 
 <div
   class={overlay
     ? `ui:bg-background/85 ui:border-border absolute inset-x-0 top-0 z-50 border-b backdrop-blur-md transition-opacity duration-300 ${overlayVisible ? 'opacity-100' : 'pointer-events-none opacity-0'}`
-    : 'ui:border-border border-b'}
+    : 'ui:border-border relative z-50 border-b'}
 >
   <div class="flex items-center gap-2 px-3 py-2">
     <Button
       size="sm"
       variant="secondary"
       onclick={onPrevious}
-      disabled={!hasPrevious}
+      disabled={isPrevDisabled}
       aria-label={$t('course.navItem.lessons.activities.player.prev_module')}
     >
       <ChevronLeftIcon size={14} />
@@ -125,15 +146,31 @@
         </Popover.Content>
       </Popover.Root>
     </div>
-    <Button
-      size="sm"
-      variant="secondary"
-      onclick={onNext}
-      disabled={!hasNext}
-      aria-label={$t('course.navItem.lessons.activities.player.next_module')}
-    >
-      <ChevronRightIcon size={14} />
-    </Button>
+    <Tooltip.Provider>
+      <Tooltip.Root>
+        <Tooltip.Trigger>
+          {#snippet child({ props })}
+            <span {...props} class="inline-flex {isNextLocked ? 'cursor-not-allowed' : ''}">
+              <Button
+                size="sm"
+                variant="secondary"
+                onclick={onNext}
+                disabled={isNextDisabled}
+                title={isNextLocked ? $t('course.navItem.lessons.activities.player.module_locked') : undefined}
+                aria-label={$t('course.navItem.lessons.activities.player.next_module')}
+              >
+                <ChevronRightIcon size={14} />
+              </Button>
+            </span>
+          {/snippet}
+        </Tooltip.Trigger>
+        {#if isNextLocked}
+          <Tooltip.Content side="bottom" sideOffset={4}>
+            {$t('course.navItem.lessons.activities.player.module_locked')}
+          </Tooltip.Content>
+        {/if}
+      </Tooltip.Root>
+    </Tooltip.Provider>
     {#if timeLimit}
       <Badge variant="outline" title={$t('course.navItem.lessons.activities.player.time_limit', { time: timeLimit })}>
         <ClockIcon size={12} />

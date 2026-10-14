@@ -426,6 +426,7 @@ export type PlayerInboundMessage =
   | { type: 'ready' }
   | { type: 'terminated'; navRequest: string | null }
   | { type: 'completed' }
+  | { type: 'progress' }
   | { type: 'did-not-connect' };
 
 /**
@@ -438,6 +439,7 @@ export function parsePlayerMessage(data: unknown): PlayerInboundMessage | null {
   const record = data as Record<string, unknown>;
   if (record['type'] === 'ready') return { type: 'ready' };
   if (record['type'] === 'completed') return { type: 'completed' };
+  if (record['type'] === 'progress') return { type: 'progress' };
   if (record['type'] === 'did-not-connect') return { type: 'did-not-connect' };
   if (record['type'] === 'terminated') {
     const navRequest = record['navRequest'];

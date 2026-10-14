@@ -319,6 +319,7 @@ describe('parsePlayerMessage', () => {
   it('parses player lifecycle messages', () => {
     expect(parsePlayerMessage({ type: 'ready' })).toEqual({ type: 'ready' });
     expect(parsePlayerMessage({ type: 'completed' })).toEqual({ type: 'completed' });
+    expect(parsePlayerMessage({ type: 'progress' })).toEqual({ type: 'progress' });
     expect(parsePlayerMessage({ type: 'did-not-connect' })).toEqual({ type: 'did-not-connect' });
     expect(parsePlayerMessage({ type: 'terminated', navRequest: 'continue' })).toEqual({
       type: 'terminated',

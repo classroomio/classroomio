@@ -302,6 +302,7 @@ function withLearnerFields(
 export interface ScormCommitResult {
   saved: boolean;
   completedActivity: boolean;
+  progressChanged: boolean;
 }
 
 /**
@@ -317,7 +318,8 @@ export async function commitScormAttempt(
 ): Promise<ScormCommitResult> {
   const { claims } = await resolveClaims(launchToken);
 
-  if (claims.mode !== 'normal' || !claims.att) return { saved: false, completedActivity: false };
+  if (claims.mode !== 'normal' || !claims.att)
+    return { saved: false, completedActivity: false, progressChanged: false };
 
   const scoAttemptId = claims.att;
   let commit;
@@ -343,7 +345,14 @@ export async function commitScormAttempt(
     const activityId = chain.attempt.activityId;
     const profileId = chain.attempt.profileId;
     if (commit.seq <= chain.scoAttempt.commitSeq)
-      return { saved: false, completedActivity: false, activityId, profileId, rejected: true as const };
+      return {
+        saved: false,
+        completedActivity: false,
+        progressChanged: false,
+        activityId,
+        profileId,
+        rejected: true as const
+      };
 
     const unit = await getPackageUnitById(chain.scoAttempt.unitId, tx);
     if (!unit) throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
@@ -372,6 +381,10 @@ export async function commitScormAttempt(
       scaledScore: nextOutcome.scaledScore,
       tryStatus: nextStatus
     };
+    const progressChanged =
+      previous.completion !== next.completion ||
+      previous.success !== next.success ||
+      previous.scaledScore !== next.scaledScore;
     const shouldRecord = shouldRecordCommitEvent(previous, next, {
       isFirstCommit: chain.scoAttempt.commitSeq === 0,
       isTerminate: commit.terminate,
@@ -399,20 +412,44 @@ export async function commitScormAttempt(
 
     const details = await getActivityScormByActivityId(activityId, tx);
     if (!details)
-      return { saved: true, completedActivity: false, activityId, profileId, rejected: false as const, shouldRecord };
+      return {
+        saved: true,
+        completedActivity: false,
+        progressChanged,
+        activityId,
+        profileId,
+        rejected: false as const,
+        shouldRecord
+      };
 
     const units = await listPackageUnitsByVersion(version.id, tx);
     const latest = await listLatestScoAttemptsByAttempt(chain.attempt.id, tx);
     const triesByUnit = new Map(latest.map((row) => [row.unitId, row]));
     const outcomes = attemptModuleOutcomes(units, triesByUnit, format);
     if (!isScormRuleMet(toRuleSettings(details), outcomes)) {
-      return { saved: true, completedActivity: false, activityId, profileId, rejected: false as const, shouldRecord };
+      return {
+        saved: true,
+        completedActivity: false,
+        progressChanged,
+        activityId,
+        profileId,
+        rejected: false as const,
+        shouldRecord
+      };
     }
 
     await closeScormAttempt(chain.attempt.id, 'finished', tx);
     const completedActivity = await completeActivityOnce(activityId, profileId, tx);
 
-    return { saved: true, completedActivity, activityId, profileId, rejected: false as const, shouldRecord };
+    return {
+      saved: true,
+      completedActivity,
+      progressChanged,
+      activityId,
+      profileId,
+      rejected: false as const,
+      shouldRecord
+    };
   });
 
   if ('unknownTry' in result) {
@@ -433,7 +470,7 @@ export async function commitScormAttempt(
   if (!result.saved && 'rejected' in result && result.rejected) {
     await recordRuntimeEventBestEffort(scoAttemptId, 'error', { reason: 'stale_sequence', seq: commit.seq }, userAgent);
 
-    return { saved: false, completedActivity: false };
+    return { saved: false, completedActivity: false, progressChanged: false };
   }
 
   if (result.saved && 'shouldRecord' in result && result.shouldRecord) {
@@ -446,7 +483,7 @@ export async function commitScormAttempt(
     await recordRuntimeEventBestEffort(scoAttemptId, kind, detail, userAgent);
   }
 
-  return { saved: result.saved, completedActivity: result.completedActivity };
+  return { saved: result.saved, completedActivity: result.completedActivity, progressChanged: result.progressChanged };
 }
 
 /**

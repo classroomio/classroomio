@@ -334,3 +334,12 @@ describe('scormLaunchUrl', () => {
     expect(scormLaunchUrl(href, parameters)).toBe(expected);
   });
 });
+
+describe('parseScormManifest entities', () => {
+  it('decodes XML entities in package and unit titles', () => {
+    const parsed = parseScormManifest(readSource('scorm-timer-test'), ['index.html']);
+
+    expect(parsed.title).toBe('ClassroomIO Timed Assessment & Session Tracker');
+    expect(parsed.units[0].title).toBe('Timed Quiz & Live Session Timer Test');
+  });
+});

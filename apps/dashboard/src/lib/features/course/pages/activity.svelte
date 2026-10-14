@@ -81,6 +81,7 @@
   let revertTargetVersion = $state<NonNullable<PackageDetailsType['versions']>[number] | null>(null);
   let revertCloseOpenAttempts = $state(false);
   let loadedActivityId = $state('');
+  let syncedActivityId = $state<string | null>(null);
   let selectedLearnerId = $state<string | null>(null);
   let sheetOpen = $state(false);
   let title = $state('');
@@ -127,19 +128,28 @@
   });
 
   $effect(() => {
-    if (activityId === loadedActivityId) return;
+    if (activityId !== loadedActivityId) {
+      loadedActivityId = activityId;
+      syncedActivityId = null;
+      replaceMode = null;
+      deleteOpen = false;
+      removeOpen = false;
+      swapOpen = false;
+      moveStaleOpen = false;
+      revertOpen = false;
+      revertTargetVersion = null;
+      currentTab = 'package';
+      const navItem = currentNavigableItem;
+      title = navItem?.id === activityId ? (navItem.title ?? '') : '';
+      instructions = '';
+    }
 
-    loadedActivityId = activityId;
-    replaceMode = null;
-    deleteOpen = false;
-    removeOpen = false;
-    swapOpen = false;
-    moveStaleOpen = false;
-    revertOpen = false;
-    revertTargetVersion = null;
-    currentTab = 'package';
-    title = activityApi.activity?.title ?? currentNavigableItem?.title ?? '';
-    instructions = (activityApi.activity?.instructions as string | null) ?? '';
+    const currentActivity = activityApi.activity;
+    if (currentActivity && currentActivity.id === activityId && syncedActivityId !== activityId) {
+      syncedActivityId = activityId;
+      title = currentActivity.title ?? '';
+      instructions = (currentActivity.instructions as string | null) ?? '';
+    }
   });
 
   const attemptCounts = $derived(
@@ -183,8 +193,12 @@
     return null;
   });
 
-  const titleDirty = $derived(title.trim() !== (activityApi.activity?.title ?? '').trim());
-  const instructionsDirty = $derived(instructions !== ((activityApi.activity?.instructions as string | null) ?? ''));
+  const titleDirty = $derived(
+    syncedActivityId === activityId && title.trim() !== (activityApi.activity?.title ?? '').trim()
+  );
+  const instructionsDirty = $derived(
+    syncedActivityId === activityId && instructions !== ((activityApi.activity?.instructions as string | null) ?? '')
+  );
 
   $effect(() => {
     hasUnsavedChanges = (titleDirty || instructionsDirty || settingsDirty) && mode === MODES.edit;
@@ -316,6 +330,15 @@
   async function refreshEditor() {
     await activityApi.get(courseId, activityId);
     replaceMode = null;
+    const currentActivity = activityApi.activity;
+    if (currentActivity?.id === activityId) {
+      const freshTitle = currentActivity.title ?? '';
+      const isUnnamed = !title.trim() || title.trim().toLowerCase() === 'scorm package';
+      if (isUnnamed && freshTitle) {
+        title = freshTitle;
+        courseApi.updateContentItem(activityId, ContentType.Activity, { title: freshTitle });
+      }
+    }
     const profileId = $profile.id;
     if (profileId) void courseApi.refreshCourse(courseId, profileId);
   }

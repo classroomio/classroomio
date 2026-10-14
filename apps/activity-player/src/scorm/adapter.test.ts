@@ -84,9 +84,10 @@ describe('commit response', () => {
   }
 
   function responseHandler(
-    onCompleted?: () => void
+    onCompleted?: () => void,
+    onProgress?: () => void
   ): (xhr: XMLHttpRequest) => { result: string | boolean; errorCode: number } {
-    const settings = buildAdapterSettings('t', false, onCompleted);
+    const settings = buildAdapterSettings('t', false, onCompleted, onProgress);
 
     if (!settings || !settings.xhrResponseHandler) throw new Error('commit response handler is missing');
 
@@ -116,6 +117,32 @@ describe('commit response', () => {
     responseHandler(onCompleted)(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":false}'));
 
     expect(onCompleted).not.toHaveBeenCalled();
+  });
+
+  it('notifies progress when a module outcome changed', () => {
+    const onCompleted = vi.fn();
+    const onProgress = vi.fn();
+
+    responseHandler(
+      onCompleted,
+      onProgress
+    )(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":false,"progressChanged":true}'));
+
+    expect(onProgress).toHaveBeenCalledTimes(1);
+    expect(onCompleted).not.toHaveBeenCalled();
+  });
+
+  it('reports completion alone when both flags are set', () => {
+    const onCompleted = vi.fn();
+    const onProgress = vi.fn();
+
+    responseHandler(
+      onCompleted,
+      onProgress
+    )(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":true,"progressChanged":true}'));
+
+    expect(onCompleted).toHaveBeenCalledTimes(1);
+    expect(onProgress).not.toHaveBeenCalled();
   });
 });
 

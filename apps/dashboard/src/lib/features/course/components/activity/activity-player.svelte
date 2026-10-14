@@ -20,6 +20,7 @@
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { openCourseCompletionIfDone } from '$features/course/utils/toggle-lesson-completion';
   import { isTrustedPlayerMessage, parsePlayerMessage } from '$features/course/utils/scorm-utils';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
@@ -43,6 +44,7 @@
   let isFullscreen = $state(false);
   let isFocusMode = $state(false);
   let navVisible = $state(true);
+  let isMenuOpen = $state(false);
   let now = $state(Date.now());
   let frameWrap = $state<HTMLElement | null>(null);
   let expiryTimer: ReturnType<typeof setInterval> | null = null;
@@ -197,7 +199,10 @@
       playerReady = true;
       didNotConnect = false;
     } else if (message.type === 'completed') {
+      void activityApi.refreshProgress(courseId, activityId);
       void refreshProgressAndMaybeComplete(availableLaunch?.mode !== 'preview');
+    } else if (message.type === 'progress') {
+      void activityApi.refreshProgress(courseId, activityId);
     } else if (message.type === 'did-not-connect') didNotConnect = true;
     else void handleTerminated(message.navRequest);
   }
@@ -221,8 +226,15 @@
     navVisible = true;
     clearIdleTimer();
 
-    if (isImmersive) idleTimer = setTimeout(() => (navVisible = false), 2500);
+    if (isImmersive && !isMenuOpen) idleTimer = setTimeout(() => (navVisible = false), 2500);
   }
+
+  $effect(() => {
+    if (isMenuOpen) {
+      navVisible = true;
+      clearIdleTimer();
+    }
+  });
 
   function setFocusMode(next: boolean) {
     isFocusMode = next;
@@ -262,7 +274,11 @@
 
   async function selectUnit(identifier: string) {
     if (identifier === currentUnitIdentifier && playerReady && !terminated) return;
-    if ((availableLaunch?.units ?? []).some((unit) => unit.identifier === identifier && unit.locked)) return;
+
+    if ((availableLaunch?.units ?? []).some((unit) => unit.identifier === identifier && unit.locked)) {
+      snackbar.error('course.navItem.lessons.activities.player.module_locked');
+      return;
+    }
 
     currentUnitIdentifier = identifier;
     await runLaunch({ unitIdentifier: identifier });
@@ -485,9 +501,10 @@
           portalTarget={isImmersive ? frameWrap : null}
           showExit={isImmersive}
           onExit={toggleFullscreen}
+          bind:menuOpen={isMenuOpen}
         />
       {/if}
-      <div class={isImmersive ? 'min-h-0 flex-1' : ''}>
+      <div class={isImmersive ? 'relative min-h-0 flex-1' : 'relative'}>
         {#if displayedPlayerUrl}
           {#key displayedPlayerUrl}
             <iframe
@@ -499,6 +516,16 @@
               data-testid="activity-player-frame"
             ></iframe>
           {/key}
+          {#if isMenuOpen}
+            <div
+              class="absolute inset-0 z-40 bg-transparent"
+              role="presentation"
+              tabindex="-1"
+              onclick={() => {
+                isMenuOpen = false;
+              }}
+            ></div>
+          {/if}
           {#if !playerReady && !didNotConnect && !terminated}
             <Skeleton class="absolute inset-0 h-full w-full" />
           {/if}

@@ -283,6 +283,7 @@
   async function uploadNewVersion(selected: File, signal: AbortSignal) {
     if (!assetId) throw new Error('No package to replace');
 
+    const startingInProgressCount = inProgressCount;
     const contentSha256 = peek?.file === selected ? (peek.contentSha256 ?? undefined) : undefined;
     const next = await packageApi.createVersion(assetId, { contentSha256 });
     if (!next) throw new Error('Failed to create package version');
@@ -304,9 +305,15 @@
           return;
         }
 
-        const freshCount = getFreshInProgressCount ? await getFreshInProgressCount() : inProgressCount;
+        const freshCount = getFreshInProgressCount ? await getFreshInProgressCount() : startingInProgressCount;
+        const hadInitialChoice = startingInProgressCount > 0;
+        const newLearnersStarted = hadInitialChoice ? freshCount > startingInProgressCount : freshCount > 0;
+        const deltaCount = hadInitialChoice ? freshCount - startingInProgressCount : freshCount;
+
         const restart =
-          freshCount > 0 ? (await askPromoteChoice(freshCount)) === 'restart' : replaceChoice === 'restart';
+          newLearnersStarted && deltaCount > 0
+            ? (await askPromoteChoice(deltaCount)) === 'restart'
+            : replaceChoice === 'restart';
         await packageApi.makeCurrent(assetId, next.version.id, restart);
         if (packageApi.success) onReplaced?.();
       },
@@ -575,21 +582,28 @@
   {/if}
 
   <Dialog.Root open={promoteOpen} onOpenChange={handlePromoteOpenChange}>
-    <Dialog.Content class="w-96 p-6">
-      <Dialog.Header class="p-2">
+    <Dialog.Content class="sm:max-w-md">
+      <Dialog.Header>
         <Dialog.Title>{$t('course.navItem.lessons.activities.package.promote_confirm_title')}</Dialog.Title>
         <Dialog.Description>
           {$t('course.navItem.lessons.activities.package.promote_confirm_body', { count: promoteCount })}
         </Dialog.Description>
       </Dialog.Header>
-      <div class="mt-6 flex items-center justify-between">
-        <Button variant="outline" size="sm" onclick={() => resolvePromoteChoice('keep')}>
-          {$t('course.navItem.lessons.activities.package.replace_keep')}
-        </Button>
-        <Button size="sm" onclick={() => resolvePromoteChoice('restart')}>
+      <Dialog.Footer class="flex flex-col gap-2 sm:flex-col">
+        <Button
+          class="h-auto w-full py-2.5 text-center whitespace-normal"
+          onclick={() => resolvePromoteChoice('restart')}
+        >
           {$t('course.navItem.lessons.activities.package.replace_restart')}
         </Button>
-      </div>
+        <Button
+          variant="outline"
+          class="h-auto w-full py-2.5 text-center whitespace-normal"
+          onclick={() => resolvePromoteChoice('keep')}
+        >
+          {$t('course.navItem.lessons.activities.package.replace_keep')}
+        </Button>
+      </Dialog.Footer>
     </Dialog.Content>
   </Dialog.Root>
 </div>

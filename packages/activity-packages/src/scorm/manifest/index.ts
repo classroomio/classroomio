@@ -48,7 +48,8 @@ const manifestParser = new XMLParser({
   attributeNamePrefix: '@_',
   parseAttributeValue: false,
   trimValues: true,
-  processEntities: false
+  processEntities: true,
+  htmlEntities: true
 });
 
 function asArray<T>(value: T | T[] | undefined | null): T[] {

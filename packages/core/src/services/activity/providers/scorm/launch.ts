@@ -44,7 +44,13 @@ import {
 } from '../../../../config/activity-content';
 import { getAppBaseUrl, getDashboardBaseUrl } from '../../../../config/dashboard-url';
 import { env } from '../../../../config/env';
-import type { ActivityLaunchContext, ActivityLaunchResult, ScormLaunchModule, ScormLaunchUnit } from '../types';
+import type {
+  ActivityLaunchContext,
+  ActivityLaunchResult,
+  ActivityProgressContext,
+  ScormLaunchModule,
+  ScormLaunchUnit
+} from '../types';
 
 const NOT_AVAILABLE_MESSAGE = "This package isn't available yet";
 
@@ -582,4 +588,40 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
     ...(launched.reviewOfArchivedVersion ? { reviewOfArchivedVersion: true as const } : {}),
     ...(launched.restartedAfterReplace ? { restartedAfterReplace: true as const } : {})
   };
+}
+
+/**
+ * Returns the learner's module menu as it stands, for refreshing ticks and
+ * locks while a module is still running. Reads the open attempt, else the
+ * latest one, and never creates, closes or replaces anything. Previews and
+ * learners without an attempt see every module untouched.
+ */
+export async function getScormModuleProgress(context: ActivityProgressContext): Promise<ScormLaunchModule[]> {
+  const details = await getActivityScormByActivityId(context.activityId);
+  if (!details?.assetId) return [];
+
+  const current = await getCurrentPackageVersion(details.assetId);
+  if (!current || current.status !== 'ready') return [];
+
+  const open = context.isPreview ? null : await getOpenScormAttempt(context.activityId, context.profileId);
+  const attempt = context.isPreview || open ? open : await getLatestScormAttempt(context.activityId, context.profileId);
+  const pinned =
+    attempt && attempt.packageVersionId !== current.id
+      ? await getPackageVersionById(attempt.packageVersionId)
+      : current;
+  const version = pinned && pinned.status !== 'archived' ? pinned : current;
+
+  const tries =
+    attempt && attempt.packageVersionId === version.id
+      ? await latestTriesByUnit(attempt.id)
+      : new Map<string, TScormScoAttempt>();
+  const settings = toRuleSettings(details);
+  const format = packageFormat(version.format);
+  const units = await listPackageUnitsByVersion(version.id);
+  const sequential = !context.isPreview && details.moduleOrder === 'sequential' && (open !== null || !attempt);
+  const locked = lockedIdentifiers(units, tries, settings, format, sequential);
+
+  return launchableUnits(units).map((unit) =>
+    toLaunchModule(unit, tries.get(unit.id) ?? null, settings, format, locked.has(unit.identifier))
+  );
 }

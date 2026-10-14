@@ -9,7 +9,7 @@ vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
   return { ...original, getActivitySigningSecret: () => 'test-activity-signing-secret' };
 });
 
-import { launchActivity } from '@cio/core/services/activity/activity';
+import { getActivityProgress, launchActivity } from '@cio/core/services/activity/activity';
 import { makeScormPackageVersionCurrent } from '@cio/core/services/activity/packages';
 import { attachScormPackage } from '@cio/core/services/activity/providers';
 import { createCoursesFromPackages } from '@cio/core/services/activity/courses';
@@ -561,6 +561,47 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
       expect(record?.score).toBe(85);
       expect(record?.attempts).toBe(1);
       expect(record?.timeSpentMinutes).toBe(6);
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('reports a module tick mid-session without relaunching', async () => {
+    const fixture = await createRuntimeFixture(suffix(), {
+      format: 'scorm2004_4',
+      units: [
+        { identifier: 'm-1', title: 'One', href: 'm1.html' },
+        { identifier: 'm-2', title: 'Two', href: 'm2.html' }
+      ]
+    });
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'm-1' }, context);
+      if (!launched.available) throw new Error('launch unavailable');
+      const token = launchTokenOf(launched.playerUrl);
+
+      const before = await getActivityProgress(fixture.courseId, fixture.activityId, context);
+      expect(before.units.map((unit) => unit.completed)).toEqual([false, false]);
+
+      const ticked = await commitScormAttempt(token, {
+        commitSequence: 1,
+        cmi: { completion_status: 'completed', success_status: 'unknown' }
+      });
+      expect(ticked).toMatchObject({ saved: true, completedActivity: false, progressChanged: true });
+
+      const repeated = await commitScormAttempt(token, {
+        commitSequence: 2,
+        cmi: { completion_status: 'completed', success_status: 'unknown', location: 'page-2' }
+      });
+      expect(repeated.progressChanged).toBe(false);
+
+      const after = await getActivityProgress(fixture.courseId, fixture.activityId, context);
+      expect(after.units.map((unit) => unit.completed)).toEqual([true, false]);
+      expect(after.units[0]?.status).toBe('active');
+
+      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      expect(attempts).toHaveLength(1);
+      expect(attempts[0]?.closedAt).toBeNull();
     } finally {
       await cleanupRuntimeFixture(fixture);
     }

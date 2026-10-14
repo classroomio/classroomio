@@ -37,7 +37,15 @@ export const runtimeScormRouter = new Hono()
       const viaBeacon = contentType.includes('text/plain');
       const result = await commitScormAttempt(launchToken, parsed.data, viaBeacon, c.req.header('user-agent') ?? null);
 
-      return c.json({ result: true, errorCode: 0, completedActivity: result.completedActivity }, 200);
+      return c.json(
+        {
+          result: true,
+          errorCode: 0,
+          completedActivity: result.completedActivity,
+          progressChanged: result.progressChanged
+        },
+        200
+      );
     } catch (error) {
       return handleError(c, error, 'Failed to save commit');
     }
