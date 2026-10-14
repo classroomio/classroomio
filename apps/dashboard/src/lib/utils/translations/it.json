@@ -4991,10 +4991,13 @@
       "events_count_other": "{count} eventi",
       "no_deliveries": "Nessuna consegna ancora",
       "table": {
-        "name": "Webhook",
+        "name": "Destinazione",
         "events": "Eventi",
         "health": "Stato",
-        "active": "Attivo"
+        "active": "Attivo",
+        "error_rate": "Tasso di errore (24 h)",
+        "error_rate_detail": "{failed} su {total} non riusciti",
+        "no_recent_deliveries": "Nessuna consegna nelle ultime 24 h"
       },
       "health": {
         "healthy": "Funzionante",
@@ -5032,9 +5035,10 @@
         "events_help": "Scegli gli eventi che devono attivare questo webhook.",
         "mode_all": "Inviami tutto",
         "mode_selected": "Seleziono io i singoli eventi",
-        "reset_events": "Usa gli eventi consigliati",
         "cancel": "Annulla",
-        "save": "Salva webhook"
+        "save": "Salva webhook",
+        "select_all": "Seleziona tutto",
+        "events_selected": "{selected} di {total} selezionati"
       },
       "event_groups": {
         "organization": "Organizzazione",

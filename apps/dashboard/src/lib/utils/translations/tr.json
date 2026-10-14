@@ -5001,10 +5001,13 @@
       "events_count_other": "{count} olay",
       "no_deliveries": "Henüz teslimat yok",
       "table": {
-        "name": "Webhook",
+        "name": "Hedef",
         "events": "Olaylar",
         "health": "Durum",
-        "active": "Etkin"
+        "active": "Etkin",
+        "error_rate": "Hata oranı (24 sa)",
+        "error_rate_detail": "{total} içinden {failed} başarısız",
+        "no_recent_deliveries": "24 saatte teslimat yok"
       },
       "health": {
         "healthy": "Sağlıklı",
@@ -5042,9 +5045,10 @@
         "events_help": "Bu webhook'u tetikleyecek olayları seçin.",
         "mode_all": "Her şeyi gönder",
         "mode_selected": "Olayları ben seçeyim",
-        "reset_events": "Önerilen olayları kullan",
         "cancel": "İptal",
-        "save": "Webhook'u kaydet"
+        "save": "Webhook'u kaydet",
+        "select_all": "Tümünü seç",
+        "events_selected": "{total} içinden {selected} seçildi"
       },
       "event_groups": {
         "organization": "Kuruluş",

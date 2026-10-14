@@ -4901,10 +4901,13 @@
       "events_count_other": "{count} events",
       "no_deliveries": "No deliveries yet",
       "table": {
-        "name": "Webhook",
+        "name": "Destination",
         "events": "Events",
         "health": "Status",
-        "active": "Active"
+        "active": "Active",
+        "error_rate": "Error rate (24h)",
+        "error_rate_detail": "{failed} of {total} failed",
+        "no_recent_deliveries": "No deliveries in 24h"
       },
       "health": {
         "healthy": "Healthy",
@@ -4942,9 +4945,10 @@
         "events_help": "Pick the events that should trigger this webhook.",
         "mode_all": "Send me everything",
         "mode_selected": "Let me select individual events",
-        "reset_events": "Use recommended events",
         "cancel": "Cancel",
-        "save": "Save webhook"
+        "save": "Save webhook",
+        "select_all": "Select all",
+        "events_selected": "{selected} of {total} selected"
       },
       "event_groups": {
         "organization": "Organization",

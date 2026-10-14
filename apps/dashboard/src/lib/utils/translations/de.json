@@ -5092,10 +5092,13 @@
       "events_count_other": "{count} Ereignisse",
       "no_deliveries": "Noch keine Zustellungen",
       "table": {
-        "name": "Webhook",
+        "name": "Ziel",
         "events": "Ereignisse",
         "health": "Status",
-        "active": "Aktiv"
+        "active": "Aktiv",
+        "error_rate": "Fehlerquote (24 Std.)",
+        "error_rate_detail": "{failed} von {total} fehlgeschlagen",
+        "no_recent_deliveries": "Keine Zustellungen in 24 Std."
       },
       "health": {
         "healthy": "Fehlerfrei",
@@ -5133,9 +5136,10 @@
         "events_help": "Wählen Sie die Ereignisse aus, die diesen Webhook auslösen sollen.",
         "mode_all": "Alles senden",
         "mode_selected": "Einzelne Ereignisse auswählen",
-        "reset_events": "Empfohlene Ereignisse verwenden",
         "cancel": "Abbrechen",
-        "save": "Webhook speichern"
+        "save": "Webhook speichern",
+        "select_all": "Alle auswählen",
+        "events_selected": "{selected} von {total} ausgewählt"
       },
       "event_groups": {
         "organization": "Organisation",

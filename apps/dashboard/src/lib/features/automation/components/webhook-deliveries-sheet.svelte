@@ -48,6 +48,16 @@
     });
   }
 
+  function handleRefresh() {
+    if (selectedDelivery) {
+      void webhookApi.loadDelivery(webhook.id, selectedDelivery.id);
+
+      return;
+    }
+
+    reload();
+  }
+
   function handleOpenChange(isOpen: boolean) {
     if (isOpen) return;
 
@@ -92,7 +102,7 @@
           size="icon-sm"
           tooltip={$t('common.refresh')}
           aria-label={$t('common.refresh')}
-          onclick={() => reload()}
+          onclick={handleRefresh}
         >
           <RefreshCwIcon />
         </IconButton>

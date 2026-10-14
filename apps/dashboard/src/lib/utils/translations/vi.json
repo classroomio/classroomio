@@ -5092,10 +5092,13 @@
       "events_count_other": "{count} sự kiện",
       "no_deliveries": "Chưa có lần gửi nào",
       "table": {
-        "name": "Webhook",
+        "name": "Đích đến",
         "events": "Sự kiện",
         "health": "Trạng thái",
-        "active": "Hoạt động"
+        "active": "Hoạt động",
+        "error_rate": "Tỷ lệ lỗi (24 giờ)",
+        "error_rate_detail": "{failed}/{total} thất bại",
+        "no_recent_deliveries": "Không có lượt gửi trong 24 giờ"
       },
       "health": {
         "healthy": "Ổn định",
@@ -5133,9 +5136,10 @@
         "events_help": "Chọn các sự kiện sẽ kích hoạt webhook này.",
         "mode_all": "Gửi cho tôi mọi thứ",
         "mode_selected": "Cho phép tôi chọn từng sự kiện",
-        "reset_events": "Dùng các sự kiện được đề xuất",
         "cancel": "Hủy",
-        "save": "Lưu webhook"
+        "save": "Lưu webhook",
+        "select_all": "Chọn tất cả",
+        "events_selected": "Đã chọn {selected}/{total}"
       },
       "event_groups": {
         "organization": "Tổ chức",

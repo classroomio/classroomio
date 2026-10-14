@@ -59,6 +59,28 @@ export function getWebhookEventsLabelCount(webhook: Webhook): number {
   return webhook.eventMode === 'all' ? WEBHOOK_EVENT_TYPES.length : webhook.eventTypes.length;
 }
 
+export function getWebhookEventTypes(webhook: Webhook): readonly string[] {
+  return webhook.eventMode === 'all' ? WEBHOOK_EVENT_TYPES : webhook.eventTypes;
+}
+
+export function getWebhookErrorRate(webhook: Webhook): number | null {
+  const { total, failed } = webhook.recentDeliveries;
+
+  return total === 0 ? null : Math.round((failed / total) * 100);
+}
+
+export function getEventGroupSelection(
+  selectedEventTypes: readonly string[],
+  groupEventTypes: readonly string[]
+): { isAllSelected: boolean; isPartiallySelected: boolean } {
+  const selectedCount = groupEventTypes.filter((eventType) => selectedEventTypes.includes(eventType)).length;
+
+  return {
+    isAllSelected: selectedCount === groupEventTypes.length,
+    isPartiallySelected: selectedCount > 0 && selectedCount < groupEventTypes.length
+  };
+}
+
 export function getWebhookEventsCountKey(webhook: Webhook): string {
   return getWebhookEventsLabelCount(webhook) === 1
     ? 'automation.webhooks.events_count_one'
