@@ -949,7 +949,10 @@
       "empty_description": "Spróbuj poszerzyć zakres dat lub wyczyścić filtr.",
       "exclude_recent_joiners_hint": "Pomija studentów, którzy dołączyli zbyt niedawno, by zostać uznani za nieaktywnych.",
       "empty_title": "Żaden student nie spełnia tych kryteriów",
-      "invite_status": "Status zaproszenia"
+      "invite_status": "Status zaproszenia",
+      "certificate": "Certyfikat",
+      "certificate_earned": "Zdobyty",
+      "certificate_not_earned": "Niezdobyty"
     },
     "views": {
       "never_logged_in": "Nigdy się nie logował",
@@ -960,7 +963,9 @@
       "custom": "Filtry niestandardowe",
       "all": "Wszyscy studenci"
     },
-    "learner_count": "{count} studentów"
+    "learner_count": "{count} studentów",
+    "certificate_earned": "Zdobyto {count} certyfikat",
+    "certificates_earned": "Zdobyto {count} certyfikatów"
   },
   "community": {
     "title": "Społeczność",
@@ -2608,7 +2613,15 @@
               "loading": "Ładowanie wideo…",
               "playback_auth_error": "Twoja sesja wygasła. Aby obejrzeć ten film, zaloguj się ponownie.",
               "playback_auth_action": "Zalogować się",
-              "vimeo_link": "Link do Vimeo"
+              "vimeo_link": "Link do Vimeo",
+              "hls_status": {
+                "encoding": "Kodowanie",
+                "ready": "Gotowy",
+                "failed": "Niepowodzenie",
+                "skipped": "Niezakodowano",
+                "failed_hint": "Kodowanie nie powiodło się. Film nadal odtwarza się w oryginalnej jakości.",
+                "skipped_hint": "Kodowanie adaptacyjne jest wyłączone, więc film odtwarza się w oryginalnej jakości."
+              }
             },
             "slide": {
               "title": "Slajd",

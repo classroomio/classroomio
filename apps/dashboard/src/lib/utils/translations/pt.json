@@ -949,7 +949,10 @@
       "empty_description": "Tente ampliar o intervalo de datas ou limpar um filtro.",
       "exclude_recent_joiners_hint": "Exclui alunos que se inscreveram recentemente e não podem mais ser considerados inativos.",
       "empty_title": "Nenhum aluno corresponde a estes filtros",
-      "invite_status": "Status de convite"
+      "invite_status": "Status de convite",
+      "certificate": "Certificado",
+      "certificate_earned": "Obtido",
+      "certificate_not_earned": "Não obtido"
     },
     "views": {
       "never_logged_in": "Nunca acessaram",
@@ -960,7 +963,9 @@
       "custom": "Filtros personalizados",
       "all": "Todos os alunos"
     },
-    "learner_count": "{count} alunos"
+    "learner_count": "{count} alunos",
+    "certificate_earned": "{count} certificado obtido",
+    "certificates_earned": "{count} certificados obtidos"
   },
   "community": {
     "title": "Comunidade",
@@ -2608,7 +2613,15 @@
               "loading": "Carregando vídeo…",
               "playback_auth_error": "Sua sessão expirou. Faça login novamente para assistir a este vídeo.",
               "playback_auth_action": "Entrar",
-              "vimeo_link": "Link do Vimeo"
+              "vimeo_link": "Link do Vimeo",
+              "hls_status": {
+                "encoding": "Codificação",
+                "ready": "Pronto",
+                "failed": "Falha",
+                "skipped": "Não codificado",
+                "failed_hint": "Falha na codificação. O vídeo continua sendo reproduzido em sua qualidade original.",
+                "skipped_hint": "A codificação adaptativa está desativada, portanto, o vídeo é reproduzido em sua qualidade original."
+              }
             },
             "slide": {
               "title": "Slide",

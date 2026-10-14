@@ -949,7 +949,10 @@
       "empty_description": "Versuchen Sie, den Datumsbereich zu erweitern oder einen Filter zu löschen.",
       "exclude_recent_joiners_hint": "Studierende, die erst kürzlich beigetreten sind und daher nicht als inaktiv gelten, werden nicht berücksichtigt.",
       "empty_title": "Keine Studierenden entsprechen diesen Filtern.",
-      "invite_status": "Einladungsstatus"
+      "invite_status": "Einladungsstatus",
+      "certificate": "Zertifikat",
+      "certificate_earned": "Erworben",
+      "certificate_not_earned": "Nicht erworben"
     },
     "views": {
       "never_logged_in": "Nie angemeldet",
@@ -960,7 +963,9 @@
       "custom": "Benutzerdefinierte Filter",
       "all": "Alle Studierenden"
     },
-    "learner_count": "{count} Studierende"
+    "learner_count": "{count} Studierende",
+    "certificate_earned": "{count} Zertifikat erworben",
+    "certificates_earned": "{count} Zertifikate erworben"
   },
   "community": {
     "title": "Gemeinschaft",
@@ -2608,7 +2613,15 @@
               "loading": "Video wird geladen…",
               "playback_auth_error": "Ihre Sitzung ist abgelaufen. Bitte melden Sie sich erneut an, um dieses Video anzusehen.",
               "playback_auth_action": "anmelden",
-              "vimeo_link": "Vimeo-Link"
+              "vimeo_link": "Vimeo-Link",
+              "hls_status": {
+                "encoding": "Kodierung",
+                "ready": "Bereit",
+                "failed": "Fehlgeschlagen",
+                "skipped": "Nicht kodiert",
+                "failed_hint": "Kodierung fehlgeschlagen. Das Video wird weiterhin in Originalqualität abgespielt.",
+                "skipped_hint": "Adaptive Kodierung ist deaktiviert, daher wird das Video in Originalqualität wiedergegeben."
+              }
             },
             "slide": {
               "title": "Folie",

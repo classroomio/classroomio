@@ -2926,6 +2926,14 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Trascrizione del video precedente",
                 "next_video": "Prossima trascrizione del video"
+              },
+              "hls_status": {
+                "encoding": "Codifica",
+                "ready": "Pronto",
+                "failed": "Errore",
+                "skipped": "Non codificato",
+                "failed_hint": "Codifica non riuscita. Il video viene comunque riprodotto alla sua qualità originale.",
+                "skipped_hint": "La codifica adattiva è disattivata, quindi il video viene riprodotto alla sua qualità originale."
               }
             },
             "document": {
@@ -4645,7 +4653,10 @@
       "clear": "Cancella filtri",
       "empty_title": "Nessuno studente corrisponde a questi filtri",
       "empty_description": "Prova ad ampliare l'intervallo di date o a cancellare un filtro.",
-      "invite_status": "Stato dell'invito"
+      "invite_status": "Stato dell'invito",
+      "certificate": "Certificato",
+      "certificate_earned": "Ottenuto",
+      "certificate_not_earned": "Non ottenuto"
     },
     "bulk": {
       "actions": "Azioni",
@@ -4698,7 +4709,9 @@
       "queued_running": "Candidatura a {count} studenti. Puoi continuare a lavorare: ti diremo quando finirà.",
       "queued_failed": "Questa azione collettiva non è terminata. Non è stato applicato altro.",
       "queued_lost": "Abbiamo perso traccia di questa corsa. Ricarica per vedere lo stato attuale."
-    }
+    },
+    "certificate_earned": "{count} certificato ottenuto",
+    "certificates_earned": "{count} certificati ottenuti"
   },
   "analytics": {
     "title": "Analitica",

@@ -5,7 +5,7 @@ import { Queue, Worker } from 'bullmq';
 import { runAnalyticsRollupDaily } from '@cio/analytics';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
-import { pruneDeadLetterJobsOlderThan, reapStuckMediaJobs } from '@cio/db/queries';
+import { pruneDeadLetterJobsOlderThan, reapStuckHlsEncodes, reapStuckMediaJobs } from '@cio/db/queries';
 import { deleteExpiredWebhookEvents, listWebhookIdsWithDueDeliveries } from '@cio/db/queries/webhook';
 import {
   listEarlyAdopterClaimsDueForReminder,
@@ -91,7 +91,19 @@ const worker = new Worker(
         });
       }
 
-      return { reaped: reaped.length };
+      // A dead encoder machine never calls /fail, so the asset would stay
+      // `converting` forever — and stay invisible, because the raw upload still
+      // plays. Sweep those to `failed` on the same cutoff.
+      const strandedEncodes = await reapStuckHlsEncodes(cutoffIso);
+      if (strandedEncodes.length > 0) {
+        log.warn('hls-encode-reap-done', {
+          reaped: strandedEncodes.length,
+          cutoffIso,
+          assetIds: strandedEncodes.map((row) => row.id)
+        });
+      }
+
+      return { reaped: reaped.length, strandedEncodes: strandedEncodes.length };
     }
 
     if (job.name === JOB_NAMES.maintenance.assetStorageCleanup) {

@@ -2934,6 +2934,14 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Önceki video transkript",
                 "next_video": "Sonraki video transkript"
+              },
+              "hls_status": {
+                "encoding": "Kodlama",
+                "ready": "Hazır",
+                "failed": "Başarısız",
+                "skipped": "Kodlanmadı",
+                "failed_hint": "Kodlama başarısız oldu. Video yine de orijinal kalitesinde oynatılıyor.",
+                "skipped_hint": "Uyarlanabilir kodlama kapalı, bu nedenle orijinal kalitesinde oynatılıyor."
               }
             },
             "document": {
@@ -4655,7 +4663,10 @@
       "clear": "Filtreleri temizle",
       "empty_title": "Bu filtrelerle eşleşen öğrenci yok",
       "empty_description": "Tarih aralığını genişletmeyi veya bir filtreyi temizlemeyi deneyin.",
-      "invite_status": "Davet durumu"
+      "invite_status": "Davet durumu",
+      "certificate": "Sertifika",
+      "certificate_earned": "Kazanıldı",
+      "certificate_not_earned": "Kazanılmadı"
     },
     "bulk": {
       "actions": "Eylemler",
@@ -4708,7 +4719,9 @@
       "queued_running": "{count} öğrencilerine uygulanıyor. Çalışmaya devam edebilirsiniz; bittiğinde size haber vereceğiz.",
       "queued_failed": "Bu toplu işlem tamamlanmadı. Başka hiçbir şey uygulanmadı.",
       "queued_lost": "Bu koşunun izini kaybettik. Mevcut durumu görmek için yeniden yükleyin."
-    }
+    },
+    "certificate_earned": "{count} sertifika kazanıldı",
+    "certificates_earned": "{count} sertifika kazanıldı"
   },
   "analytics": {
     "title": "Analytics",

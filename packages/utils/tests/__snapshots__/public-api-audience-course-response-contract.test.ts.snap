@@ -32,6 +32,10 @@ exports[`public API audience and course response contract > ZPublicApiAudienceMe
     "avatarUrl": {
       "type": "string",
     },
+    "certificateCount": {
+      "description": "Courses in this organization where the learner has earned a certificate",
+      "type": "number",
+    },
     "completedCount": {
       "type": "number",
     },
@@ -121,6 +125,7 @@ exports[`public API audience and course response contract > ZPublicApiAudienceMe
     "enrolledCount",
     "completedCount",
     "progressPercent",
+    "certificateCount",
   ],
   "type": "object",
 }

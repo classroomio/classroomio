@@ -949,7 +949,10 @@
       "empty_description": "Prøv at udvide datointervallet eller rydde et filter.",
       "exclude_recent_joiners_hint": "Udelader elever, der er tilmeldt for nylig til at blive bedømt som inaktive.",
       "empty_title": "Ingen studerende matcher disse filtre",
-      "invite_status": "Invitationsstatus"
+      "invite_status": "Invitationsstatus",
+      "certificate": "Certifikat",
+      "certificate_earned": "Optjent",
+      "certificate_not_earned": "Ikke optjent"
     },
     "views": {
       "never_logged_in": "Aldrig logget ind",
@@ -960,7 +963,9 @@
       "custom": "Brugerdefinerede filtre",
       "all": "Alle studerende"
     },
-    "learner_count": "{count} elever"
+    "learner_count": "{count} elever",
+    "certificate_earned": "{count} certifikat opnået",
+    "certificates_earned": "{count} certifikater opnået"
   },
   "community": {
     "title": "Fællesskab",
@@ -2608,7 +2613,15 @@
               "loading": "Indlæser video...",
               "playback_auth_error": "Din session udløb. Log venligst ind igen for at se denne video.",
               "playback_auth_action": "Log ind",
-              "vimeo_link": "Vimeo-link"
+              "vimeo_link": "Vimeo-link",
+              "hls_status": {
+                "encoding": "Kodning",
+                "ready": "Klar",
+                "failed": "Mislykkedes",
+                "skipped": "Ikke kodet",
+                "failed_hint": "Kodning mislykkedes. Videoen afspilles stadig i original kvalitet.",
+                "skipped_hint": "Adaptiv kodning er slået fra, så dette afspilles i original kvalitet."
+              }
             },
             "slide": {
               "title": "Dias",

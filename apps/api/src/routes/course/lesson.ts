@@ -21,6 +21,7 @@ import {
   getLessonCommentsPaginated,
   getLessonCompletionService,
   getLessonHistoryService,
+  getLessonVideoHlsStatusesService,
   getLessonWatchProgressService,
   hideLessonRecordingsFromLearners,
   listLessons,
@@ -87,6 +88,22 @@ export const lessonRouter = new Hono()
       return handleError(c, error, 'Failed to fetch lesson');
     }
   })
+  .get(
+    '/:lessonId/video-status',
+    authMiddleware,
+    courseMemberMiddleware,
+    zValidator('param', ZLessonGetParam),
+    async (c) => {
+      try {
+        const { lessonId } = c.req.valid('param');
+        const statuses = await getLessonVideoHlsStatusesService(lessonId);
+
+        return c.json({ success: true, data: { statuses } }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch lesson video status');
+      }
+    }
+  )
   .post('/', authMiddleware, courseMemberMiddleware, zValidator('json', ZLessonCreate), async (c) => {
     try {
       const user = c.get('user')!;

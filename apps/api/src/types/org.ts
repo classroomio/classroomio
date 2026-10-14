@@ -1,6 +1,7 @@
 import type { AudienceMemberStatus } from '@api/utils/audience-member-status';
 import type {
   TAudienceActivityWindow,
+  TAudienceCertificate,
   TAudienceCompletion,
   TAudienceEnrollment,
   TAudienceInviteStatus,
@@ -25,6 +26,8 @@ export type OrgAudienceMember = {
   enrolledCount: number;
   completedCount: number;
   progressPercent: number;
+  /** Courses in this organization where the learner has earned a certificate. */
+  certificateCount: number;
 };
 
 export type OrgAudiencePagination = {
@@ -44,6 +47,7 @@ export type OrgAudienceQuery = {
   inviteStatus?: TAudienceInviteStatus;
   enrollment?: TAudienceEnrollment;
   completion?: TAudienceCompletion;
+  certificate?: TAudienceCertificate;
   lastLoginBefore?: TAudienceActivityWindow;
   lastActiveBefore?: TAudienceActivityWindow;
   excludeRecentJoiners: boolean;
