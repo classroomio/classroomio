@@ -105,7 +105,11 @@
   );
 
   const heroType = $derived.by<'path' | 'course' | null>(() => {
+    const activePathCompleted = activePath ? learnerPathStore.getPathStatus(activePath) === 'COMPLETED' : false;
+
     if (activePath && activeCourse) {
+      if (activePathCompleted) return 'course';
+
       const pathProgress = activePath.progress ?? 0;
       return pathProgress >= activeCourse.progressPercent ? 'path' : 'course';
     }
@@ -227,6 +231,7 @@
       </div>
       <CurrentlyLearningHero
         variant="path"
+        pathId={activePath.id}
         name={activePath.name}
         coverImage={activePath.coverImage}
         courseCount={pathCompletionProgress(activePath).courseCount}
@@ -297,10 +302,11 @@
           {/each}
         </div>
       {:else}
-        <div class="flex flex-col gap-3 divide-y rounded-md border">
+        <div class="flex flex-col divide-y rounded-md border">
           {#each combinedItems as entry (entry.kind === 'path' ? entry.path.id : entry.item.id)}
             {#if entry.kind === 'path'}
               <LearningPathRow
+                pathId={entry.path.id}
                 href={`/lms/paths/${entry.path.publicId ?? entry.path.id}`}
                 name={entry.path.name}
                 description={entry.path.description ?? ''}

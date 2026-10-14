@@ -1,11 +1,16 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
+  import { ComboButton } from '@cio/ui/custom/combo-button';
+  import DownloadIcon from '@lucide/svelte/icons/download';
+  import ImageIcon from '@lucide/svelte/icons/image';
+  import { learnerPathStore } from '../api/learning-path.svelte';
   import { LearningPathBadge, LearningPathProgress, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 
   type PathVariantProps = {
     variant: 'path';
+    pathId: string;
     name: string;
     courseCount: number;
     coursesCompleted: number;
@@ -65,6 +70,14 @@
     return `${pathProps.courseCount} ${
       pathProps.courseCount === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')
     }`;
+  });
+
+  const completedPath = $derived.by(() => {
+    if (!pathProps || pathProps.coursesCompleted !== pathProps.courseCount || pathProps.courseCount <= 0) {
+      return null;
+    }
+
+    return { id: pathProps.pathId, name: pathProps.name };
   });
 </script>
 
@@ -134,12 +147,36 @@
         {:else}
           <p class="tnum ui:text-muted-foreground min-w-0 flex-1 truncate text-xs">{courseProps?.lessonsLabel}</p>
         {/if}
-        <Button {href} variant="default" size="default" class="shrink-0">
-          {ctaLabel}
-          {#if courseProps}
-            <ArrowRightIcon class="size-4" />
-          {/if}
-        </Button>
+        {#if completedPath}
+          <ComboButton
+            label={$t('course.navItem.certificates.download_certificate')}
+            menuLabel={$t('course.navItem.certificates.download_certificate')}
+            testId="hero-path-certificate-download"
+            loading={learnerPathStore.isDownloadingCertificate}
+            onSelect={() => learnerPathStore.downloadCertificate(completedPath.id, completedPath.name, 'pdf')}
+            items={[
+              {
+                id: 'pdf',
+                label: $t('course.navItem.certificates.editor.download_pdf'),
+                icon: DownloadIcon,
+                onSelect: () => learnerPathStore.downloadCertificate(completedPath.id, completedPath.name, 'pdf')
+              },
+              {
+                id: 'png',
+                label: $t('course.navItem.certificates.editor.download_png'),
+                icon: ImageIcon,
+                onSelect: () => learnerPathStore.downloadCertificate(completedPath.id, completedPath.name, 'png')
+              }
+            ]}
+          />
+        {:else}
+          <Button {href} variant="default" size="default" class="shrink-0">
+            {ctaLabel}
+            {#if courseProps}
+              <ArrowRightIcon class="size-4" />
+            {/if}
+          </Button>
+        {/if}
       </div>
     </div>
   </div>

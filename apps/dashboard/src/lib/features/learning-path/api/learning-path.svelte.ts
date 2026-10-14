@@ -31,6 +31,7 @@ import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import { snackbar } from '$features/ui/snackbar/store';
+import { slugifyForFilename } from '@cio/utils/functions';
 import { toPathListApiQuery } from '../utils/path-list-filters';
 
 /** Staff workspace API: every request hits team-only endpoints (org admin or assigned tutor). Learner data lives in pathJourneyApi. */
@@ -376,6 +377,9 @@ class LearnerPathStore extends BaseApiWithErrors {
   // Certificates the caller can download, for completed-path cards
   pathCertificates = $state<MyPathCertificate[]>([]);
 
+  // True while a certificate file is being generated for download
+  isDownloadingCertificate = $state(false);
+
   // Journey cache keyed by path id and publicId
   private journeyCache = new Map<string, PathJourney>();
 
@@ -385,8 +389,17 @@ class LearnerPathStore extends BaseApiWithErrors {
   // Derived learner helpers
   activePath = $derived.by(() => {
     const inProgress = this.enrolledPaths.filter((path) => !path.isComplete && path.progress > 0);
+    const resumable = inProgress.sort((a, b) => b.progress - a.progress)[0];
 
-    return inProgress.sort((a, b) => b.progress - a.progress)[0] ?? null;
+    if (resumable) return resumable;
+
+    // No path in progress: fall back to the most recently completed path so an
+    // earned certificate stays one click away in the hero.
+    const latestCompleted = this.enrolledPaths
+      .filter((path) => path.isComplete)
+      .sort((a, b) => +new Date(b.completedAt ?? 0) - +new Date(a.completedAt ?? 0))[0];
+
+    return latestCompleted ?? null;
   });
 
   completedPaths = $derived(this.enrolledPaths.filter((path) => path.isComplete));
@@ -550,6 +563,45 @@ class LearnerPathStore extends BaseApiWithErrors {
     }
 
     return enrolled;
+  }
+
+  async downloadCertificate(pathId: string, name: string, format: 'pdf' | 'png'): Promise<boolean> {
+    if (!pathId || this.isDownloadingCertificate) return false;
+
+    this.isDownloadingCertificate = true;
+    try {
+      const response =
+        format === 'png'
+          ? await classroomio['learning-path'][':pathId']['download']['certificate']['png'].$post({
+              param: { pathId },
+              json: {}
+            })
+          : await classroomio['learning-path'][':pathId']['download']['certificate'].$post({
+              param: { pathId },
+              json: {}
+            });
+      if (!response.ok) {
+        throw new Error(`Certificate download failed: ${response.status}`);
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(new Blob([blob], { type: format === 'png' ? 'image/png' : 'application/pdf' }));
+      const link = document.createElement('a');
+      document.body.append(link);
+      link.download = `certificate-${slugifyForFilename(name || 'learning-path')}.${format}`;
+      link.href = url;
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+
+      return true;
+    } catch (error) {
+      console.error('Error downloading learning path certificate:', error);
+      snackbar.error('course.navItem.certificates.unexpected_error');
+
+      return false;
+    } finally {
+      this.isDownloadingCertificate = false;
+    }
   }
 
   async loadCatalogPaths(limit = 100): Promise<void> {

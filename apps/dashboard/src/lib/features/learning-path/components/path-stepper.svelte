@@ -1,11 +1,15 @@
 <script lang="ts">
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
+  import { ComboButton } from '@cio/ui/custom/combo-button';
+  import DownloadIcon from '@lucide/svelte/icons/download';
+  import ImageIcon from '@lucide/svelte/icons/image';
   import { DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import { Progress } from '@cio/ui/base/progress';
   import { cn } from '@cio/ui/tools';
   import { t } from '$lib/utils/functions/translations';
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
+  import { learnerPathStore } from '../api/learning-path.svelte';
   import type { LearningPathCourseProgress } from '../utils/types';
   import BookIcon from '@lucide/svelte/icons/book-open';
   import CheckIcon from '@lucide/svelte/icons/check';
@@ -247,9 +251,27 @@
           </p>
         </div>
         {#if certificateEarned}
-          <Button href="/lms/certificates" variant="outline" size="sm" class="shrink-0">
-            {$t('learningPath.card.view_certificate')}
-          </Button>
+          <ComboButton
+            label={$t('course.navItem.certificates.download_certificate')}
+            menuLabel={$t('course.navItem.certificates.download_certificate')}
+            testId="path-certificate-download"
+            loading={learnerPathStore.isDownloadingCertificate}
+            onSelect={() => learnerPathStore.downloadCertificate(publicId ?? '', certificateTitle, 'pdf')}
+            items={[
+              {
+                id: 'pdf',
+                label: $t('course.navItem.certificates.editor.download_pdf'),
+                icon: DownloadIcon,
+                onSelect: () => learnerPathStore.downloadCertificate(publicId ?? '', certificateTitle, 'pdf')
+              },
+              {
+                id: 'png',
+                label: $t('course.navItem.certificates.editor.download_png'),
+                icon: ImageIcon,
+                onSelect: () => learnerPathStore.downloadCertificate(publicId ?? '', certificateTitle, 'png')
+              }
+            ]}
+          />
         {/if}
       </div>
     </li>
