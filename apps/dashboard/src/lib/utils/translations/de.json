@@ -929,7 +929,10 @@
       "empty_description": "Versuchen Sie, den Datumsbereich zu erweitern oder einen Filter zu löschen.",
       "exclude_recent_joiners_hint": "Studierende, die erst kürzlich beigetreten sind und daher nicht als inaktiv gelten, werden nicht berücksichtigt.",
       "empty_title": "Keine Studierenden entsprechen diesen Filtern.",
-      "invite_status": "Einladungsstatus"
+      "invite_status": "Einladungsstatus",
+      "certificate": "Zertifikat",
+      "certificate_earned": "Erworben",
+      "certificate_not_earned": "Nicht erworben"
     },
     "views": {
       "never_logged_in": "Nie angemeldet",
@@ -940,7 +943,9 @@
       "custom": "Benutzerdefinierte Filter",
       "all": "Alle Studierenden"
     },
-    "learner_count": "{count} Studierende"
+    "learner_count": "{count} Studierende",
+    "certificate_earned": "{count} Zertifikat erworben",
+    "certificates_earned": "{count} Zertifikate erworben"
   },
   "community": {
     "title": "Gemeinschaft",

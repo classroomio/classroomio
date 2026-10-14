@@ -929,7 +929,10 @@
       "empty_description": "Tente ampliar o intervalo de datas ou limpar um filtro.",
       "exclude_recent_joiners_hint": "Exclui alunos que se inscreveram recentemente e não podem mais ser considerados inativos.",
       "empty_title": "Nenhum aluno corresponde a estes filtros",
-      "invite_status": "Status de convite"
+      "invite_status": "Status de convite",
+      "certificate": "Certificado",
+      "certificate_earned": "Obtido",
+      "certificate_not_earned": "Não obtido"
     },
     "views": {
       "never_logged_in": "Nunca acessaram",
@@ -940,7 +943,9 @@
       "custom": "Filtros personalizados",
       "all": "Todos os alunos"
     },
-    "learner_count": "{count} alunos"
+    "learner_count": "{count} alunos",
+    "certificate_earned": "{count} certificado obtido",
+    "certificates_earned": "{count} certificados obtidos"
   },
   "community": {
     "title": "Comunidade",

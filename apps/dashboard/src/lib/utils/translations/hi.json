@@ -929,7 +929,10 @@
       "empty_description": "दिनांक सीमा बढ़ाने या फ़िल्टर साफ़ करने का प्रयास करें।",
       "exclude_recent_joiners_hint": "उन छात्रों को छोड़ देता है जो हाल ही में शामिल हुए हैं और जिन्हें निष्क्रिय नहीं माना जा सकता।",
       "empty_title": "इन फ़िल्टरों से कोई छात्र मेल नहीं खाता",
-      "invite_status": "आमंत्रण स्थिति"
+      "invite_status": "आमंत्रण स्थिति",
+      "certificate": "प्रमाणपत्र",
+      "certificate_earned": "प्राप्त किया गया",
+      "certificate_not_earned": "प्राप्त नहीं किया गया"
     },
     "views": {
       "never_logged_in": "कभी लॉग इन नहीं किया",
@@ -940,7 +943,9 @@
       "custom": "कस्टम फ़िल्टर",
       "all": "सभी छात्र"
     },
-    "learner_count": "{count} छात्र"
+    "learner_count": "{count} छात्र",
+    "certificate_earned": "{count} सर्टिफ़िकेट हासिल किए",
+    "certificates_earned": "{count} सर्टिफ़िकेट हासिल किए"
   },
   "community": {
     "title": "समुदाय",

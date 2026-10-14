@@ -929,7 +929,10 @@
       "empty_description": "Попробуйте расширить диапазон дат или очистить фильтр.",
       "exclude_recent_joiners_hint": "Оставляет без внимания студентов, которые присоединились слишком недавно, чтобы считаться неактивными.",
       "empty_title": "Нет студентов, соответствующих этим фильтрам",
-      "invite_status": "Статус приглашения"
+      "invite_status": "Статус приглашения",
+      "certificate": "Сертификат",
+      "certificate_earned": "Заработал",
+      "certificate_not_earned": "Не заработано"
     },
     "views": {
       "never_logged_in": "Никогда не входили в систему",
@@ -940,7 +943,9 @@
       "custom": "Пользовательские фильтры",
       "all": "Все студенты"
     },
-    "learner_count": "{count} студентов"
+    "learner_count": "{count} студентов",
+    "certificate_earned": "{count} сертификат получен",
+    "certificates_earned": "{count} сертификатов получено"
   },
   "community": {
     "title": "Сообщество",

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Component } from 'svelte';
+  import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
   import { cn } from '@cio/ui/tools';
 
   interface Activity {
@@ -9,6 +10,7 @@
     description: string;
     hidePercentage?: boolean;
     className?: string;
+    href?: string;
   }
 
   interface Props {
@@ -24,15 +26,17 @@
   }
 
   let { activity, className = '', classes = {} }: Props = $props();
+
+  const containerClass = $derived(
+    cn(
+      'flex w-full flex-col items-center justify-evenly gap-2 rounded-xl border p-3 md:flex-row md:px-5 md:py-3',
+      className,
+      classes.container
+    )
+  );
 </script>
 
-<div
-  class={cn(
-    'flex w-full flex-col items-center justify-evenly gap-2 rounded-xl border p-3 md:flex-row md:px-5 md:py-3',
-    className,
-    classes.container
-  )}
->
+{#snippet content()}
   <div class="bg-primary-200 w-fit rounded-full p-4 text-black">
     <activity.icon />
   </div>
@@ -55,4 +59,21 @@
       </p>
     {/if}
   </div>
-</div>
+{/snippet}
+
+{#if activity.href}
+  <a
+    href={activity.href}
+    class={cn(containerClass, 'group ui:hover:border-primary/60 ui:hover:bg-muted/40 relative transition-colors')}
+  >
+    {@render content()}
+    <ArrowUpRightIcon
+      class="ui:text-muted-foreground absolute top-3 right-3 h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100"
+      aria-hidden="true"
+    />
+  </a>
+{:else}
+  <div class={containerClass}>
+    {@render content()}
+  </div>
+{/if}

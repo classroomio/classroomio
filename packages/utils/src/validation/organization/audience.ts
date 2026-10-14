@@ -14,6 +14,9 @@ export const AudienceEnrollment = z.enum(['enrolled', 'not_enrolled']);
 /** Exclusive by precedence, not three independent predicates. See `getOrganizationAudience`. */
 export const AudienceCompletion = z.enum(['not_started', 'in_progress', 'completed']);
 
+/** Whether any of the learner's course memberships in this org has earned a certificate. */
+export const AudienceCertificate = z.enum(['earned', 'not_earned']);
+
 /**
  * Staleness thresholds, not recency windows: `90d` means "not seen in 90 days".
  * `never` means no such event was ever recorded.
@@ -31,6 +34,7 @@ export const ZGetAudienceQuery = z.object({
   inviteStatus: AudienceInviteStatus.optional(),
   enrollment: AudienceEnrollment.optional(),
   completion: AudienceCompletion.optional(),
+  certificate: AudienceCertificate.optional(),
   lastLoginBefore: AudienceActivityWindow.optional(),
   lastActiveBefore: AudienceActivityWindow.optional(),
   /**
@@ -51,6 +55,7 @@ export type TAudienceMemberStatus = z.infer<typeof AudienceMemberStatus>;
 export type TAudienceInviteStatus = z.infer<typeof AudienceInviteStatus>;
 export type TAudienceEnrollment = z.infer<typeof AudienceEnrollment>;
 export type TAudienceCompletion = z.infer<typeof AudienceCompletion>;
+export type TAudienceCertificate = z.infer<typeof AudienceCertificate>;
 export type TAudienceActivityWindow = z.infer<typeof AudienceActivityWindow>;
 export type TGetAudienceQuery = z.infer<typeof ZGetAudienceQuery>;
 
