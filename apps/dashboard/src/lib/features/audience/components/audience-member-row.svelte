@@ -7,6 +7,7 @@
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
   import { CertificateIcon } from '@cio/ui/custom/moving-icons';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
+  import type { ResolvedPathname } from '$app/paths';
   import type { OrganizationAudienceMember } from '$features/org/utils/types';
   import { t } from '$lib/utils/functions/translations';
   import { PercentRingProgress } from '@cio/ui/custom/percent-ring-progress';
@@ -23,7 +24,7 @@
 
   interface Props {
     row: OrganizationAudienceMember;
-    memberDetailHref: string | null;
+    memberDetailHref: ResolvedPathname | null;
     selected: boolean;
     onToggleSelect: () => void;
     inviteActionEmail: string | null;
