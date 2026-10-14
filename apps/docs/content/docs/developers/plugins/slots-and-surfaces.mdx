@@ -53,23 +53,10 @@ import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
 const client = createClassroomIOClient();
 
 async function initBanner() {
-  // 1. Pull the latest published course from the host bridge
-  const latestCourse = await client.courses.getLatestPublished();
-  if (!latestCourse) {
+  // 1. Check whether the student previously dismissed this announcement
+  const dismissed = await client.preferences.get<boolean>('dismissed_banner', 'announcements');
+  if (dismissed) {
     await client.ui.resize(0); // Nothing to show
-    return;
-  }
-
-  // 2. Check the last course ID this specific student dismissed
-  const dismissedCourseId = await client.storage.get<string>(
-    'dismissed_course_id',
-    'banner',
-    'user' // Scoped per student
-  );
-
-  // 3. If student already dismissed this course, keep banner hidden
-  if (dismissedCourseId === latestCourse.id) {
-    await client.ui.resize(0);
     return;
   }
 
@@ -137,8 +124,8 @@ Mounted directly beneath the content of an individual lesson in the course reade
 
 ### Context & Design Guidelines
 - **Available Resource**: `{ type: 'lesson', id: 'lesson-uuid' }`
-- **Dynamic Content**: Because discussions and quizzes expand dynamically, use `new ResizeObserver()` to call `client.ui.resize()` whenever children render.
-- **Accessing Lesson Data**: Use `client.lessons.getReadingMetrics()` or `client.lessons.getCompletion()` to adapt your widget to the student's current progress.
+- **Dynamic Content**: Because widgets expand dynamically, use `new ResizeObserver()` to call `client.ui.resize()` whenever children render.
+- **Accessing Lesson Data**: Query lesson details or student progress via your backend using the **[Server SDK](/docs/developers/plugins/server-sdk)** with a scoped launch token from `client.auth.requestLaunchCode()`.
 
 ---
 

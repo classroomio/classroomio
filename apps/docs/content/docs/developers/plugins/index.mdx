@@ -150,13 +150,13 @@ import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
 const client = createClassroomIOClient();
 
 async function init() {
-  // 1. Fetch estimated reading time from host context
-  const metrics = await client.lessons.getReadingMetrics();
+  // 1. Inspect active iframe surface context
+  const context = await client.context.get();
 
   const container = document.getElementById('app')!;
   container.innerHTML = `
     <div class="reading-badge">
-      ⏱️ <strong>${metrics.estimatedMinutes} min read</strong> (${metrics.wordCount} words)
+      ⏱️ <strong>Lesson Widget</strong> (Mounted on ${context.surface.target})
     </div>
   `;
 

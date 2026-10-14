@@ -32,11 +32,6 @@ export interface PluginBridgeHostHandlers {
   onPreferenceGet?: (payload: { key: string; namespace?: string }) => Promise<unknown>;
   onPreferenceSet?: (payload: { key: string; value: unknown; namespace?: string }) => Promise<void>;
   onPreferenceDelete?: (payload: { key: string; namespace?: string }) => Promise<boolean | void>;
-  onCoursesGetLatestPublished?: () => Promise<any>;
-  onOrganizationGetProfile?: () => Promise<any>;
-  onLessonsGetReadingMetrics?: () => Promise<any>;
-  onLessonsGetCompletion?: () => Promise<any>;
-  onLessonsSetCompletion?: (payload: { complete: boolean }) => Promise<void>;
   onCertificateTemplatesApply?: (payload: any) => Promise<any>;
 }
 
@@ -238,49 +233,14 @@ export class PluginBridgeHost {
           }
           break;
         }
-        case 'courses:getLatestPublished': {
-          if (this.options.handlers.onCoursesGetLatestPublished) {
-            resultData = await this.options.handlers.onCoursesGetLatestPublished();
-          } else {
-            resultData = null;
-          }
-          break;
-        }
-        case 'organization:getProfile': {
-          if (this.options.handlers.onOrganizationGetProfile) {
-            resultData = await this.options.handlers.onOrganizationGetProfile();
-          } else {
-            resultData = null;
-          }
-          break;
-        }
-        case 'lessons:getReadingMetrics': {
-          if (this.options.handlers.onLessonsGetReadingMetrics) {
-            resultData = await this.options.handlers.onLessonsGetReadingMetrics();
-          } else {
-            resultData = { estimatedMinutes: 2, wordCount: 350 };
-          }
-          break;
-        }
-        case 'lessons:getCompletion': {
-          if (this.options.handlers.onLessonsGetCompletion) {
-            resultData = await this.options.handlers.onLessonsGetCompletion();
-          } else {
-            resultData = { isComplete: false, completedAt: null };
-          }
-          break;
-        }
-        case 'lessons:setCompletion': {
-          if (this.options.handlers.onLessonsSetCompletion) {
-            await this.options.handlers.onLessonsSetCompletion(request.payload as any);
-          }
-          break;
-        }
         case 'certificateTemplates:apply': {
           if (this.options.handlers.onCertificateTemplatesApply) {
             resultData = await this.options.handlers.onCertificateTemplatesApply(request.payload);
           } else {
-            resultData = { success: true };
+            throw {
+              code: 'NOT_SUPPORTED',
+              message: 'certificateTemplates:apply capability is not supported in this surface context'
+            };
           }
           break;
         }

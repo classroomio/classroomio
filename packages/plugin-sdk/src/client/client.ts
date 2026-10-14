@@ -23,10 +23,7 @@ import {
   DEFAULT_LIGHT_THEME_V1,
   isBridgeHandshakeInit,
   isBridgeRpcResponse,
-  BRIDGE_PROTOCOL_VERSION,
-  type LatestPublishedCourse,
-  type LessonReadingMetrics,
-  type OrganizationProfile
+  BRIDGE_PROTOCOL_VERSION
 } from '../bridge/protocol';
 
 export class PluginBridgeError extends Error {
@@ -305,48 +302,6 @@ export class ClassroomIOClient {
     },
     delete: async (key: string, namespace = 'default'): Promise<boolean> => {
       return this.rpc<boolean, BridgePreferenceDeletePayload>('ui:preferences:delete', { key, namespace });
-    }
-  };
-
-  public courses = {
-    getLatestPublished: async (): Promise<LatestPublishedCourse | null> => {
-      try {
-        return await this.rpc<LatestPublishedCourse | null>('courses:getLatestPublished', {});
-      } catch {
-        return null;
-      }
-    }
-  };
-
-  public organization = {
-    getProfile: async (): Promise<OrganizationProfile> => {
-      try {
-        const result = await this.rpc<OrganizationProfile>('organization:getProfile', {});
-        if (result) return result;
-      } catch {}
-      return { id: '', name: 'ClassroomIO Academy', slug: 'academy', avatarUrl: null };
-    }
-  };
-
-  public lessons = {
-    getReadingMetrics: async (): Promise<LessonReadingMetrics> => {
-      try {
-        return await this.rpc<LessonReadingMetrics>('lessons:getReadingMetrics', {});
-      } catch {
-        return { estimatedMinutes: 2, wordCount: 350 };
-      }
-    },
-    getCompletion: async (): Promise<{ isComplete: boolean; completedAt: string | null }> => {
-      try {
-        return await this.rpc<{ isComplete: boolean; completedAt: string | null }>('lessons:getCompletion', {});
-      } catch {
-        return { isComplete: false, completedAt: null };
-      }
-    },
-    setCompletion: async (complete: boolean): Promise<void> => {
-      try {
-        await this.rpc<void>('lessons:setCompletion', { complete });
-      } catch {}
     }
   };
 

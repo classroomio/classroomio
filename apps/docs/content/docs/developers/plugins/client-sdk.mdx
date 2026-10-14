@@ -209,37 +209,40 @@ Your server then exchanges this launch code with ClassroomIO's token endpoint to
 
 ---
 
-## Host Context & Metadata
+---
 
-The Client SDK provides helpers to inspect the active learning context:
+## Host Context & Launch Tokens
 
-### Lesson Context
+The Client SDK provides helpers to inspect the active learning environment and authenticate with your plugin backend:
+
+### Active Plugin Context
 ```typescript
-// 1. Reading metrics (word count and estimated reading minutes)
-const metrics = await client.lessons.getReadingMetrics();
-console.log(metrics.estimatedMinutes, metrics.wordCount);
-
-// 2. Student lesson completion status
-const completion = await client.lessons.getCompletion();
-console.log(completion.isComplete, completion.completedAt);
-
-// 3. Mark current lesson as complete (if granted learner.progress:write)
-await client.lessons.setCompletion(true);
+const context = await client.context.get();
+console.log(context.installationId); // Current installation UUID
+console.log(context.pluginId);       // e.g. "com.acme.my-plugin"
+console.log(context.surface.target); // e.g. "lesson.after"
+console.log(context.resource);       // { type: 'lesson', id: 'lesson-uuid' }
 ```
 
-### Course Context
+### Requesting a Backend Launch Token
+When your frontend needs to communicate with your backend server or ClassroomIO's Public API:
+
 ```typescript
-const latestCourse = await client.courses.getLatestPublished();
-if (latestCourse) {
-  console.log(latestCourse.id, latestCourse.title, latestCourse.slug);
-}
+const launch = await client.auth.requestLaunchCode({
+  target: 'lesson.after',
+  resource: context.resource
+});
+
+// Send launch.code to your plugin backend, which exchanges it for a scoped JWT
+const response = await fetch('https://api.myplugin.com/session', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ code: launch.code })
+});
 ```
 
-### Organization Profile
-```typescript
-const org = await client.organization.getProfile();
-console.log(org.id, org.name, org.slug);
-```
+> **Domain Data Queries**:
+> Protected domain models (courses, lessons, enrollments, certificates, and student progress) are queried through the **[Server SDK](/docs/developers/plugins/server-sdk)** using authenticated REST endpoints and declared permission scopes, ensuring student privacy and organization security boundaries are enforced.
 
 ---
 
@@ -250,28 +253,26 @@ import { createClassroomIOClient } from '@classroomio/plugin-sdk/client';
 
 async function main() {
   const client = createClassroomIOClient();
+  const context = await client.context.get();
 
   // 1. Set up auto-resize
   new ResizeObserver(() => {
     void client.ui.resize(document.documentElement.scrollHeight);
   }).observe(document.body);
 
-  // 2. Fetch context
-  const metrics = await client.lessons.getReadingMetrics();
-  const org = await client.organization.getProfile();
-
+  // 2. Render UI
   const app = document.getElementById('app')!;
   app.innerHTML = `
-    <div class="reading-widget">
-      <h3>Estimated Reading Time</h3>
-      <p>This lesson in <strong>${org.name}</strong> will take approximately ${metrics.estimatedMinutes} minutes to read.</p>
-      <button id="toast-btn" class="primary-button">Show Confirmation</button>
+    <div class="plugin-widget">
+      <h3>Active Surface</h3>
+      <p>Target: <strong>${context.surface.target}</strong></p>
+      <button id="toast-btn" class="primary-button">Show Toast</button>
     </div>
   `;
 
   document.getElementById('toast-btn')?.addEventListener('click', async () => {
     await client.ui.toast({
-      message: 'Happy studying!',
+      message: 'Action completed!',
       variant: 'success'
     });
   });

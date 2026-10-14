@@ -158,13 +158,6 @@ export function isValidBridgeRpcPayload(action: string, payload: unknown): boole
       return typeof payload.key === 'string';
     case 'ui:preferences:set':
       return typeof payload.key === 'string' && 'value' in payload;
-    case 'courses:getLatestPublished':
-    case 'organization:getProfile':
-    case 'lessons:getReadingMetrics':
-    case 'lessons:getCompletion':
-      return true;
-    case 'lessons:setCompletion':
-      return typeof payload.complete === 'boolean';
     case 'certificateTemplates:apply':
       return true;
     default:
@@ -210,24 +203,6 @@ export interface BridgePreferenceSetPayload {
 export interface BridgePreferenceDeletePayload {
   key: string;
   namespace?: string;
-}
-
-export interface LatestPublishedCourse {
-  id: string;
-  title: string;
-  slug?: string;
-}
-
-export interface LessonReadingMetrics {
-  estimatedMinutes: number;
-  wordCount: number;
-}
-
-export interface OrganizationProfile {
-  id: string;
-  name: string;
-  slug: string;
-  avatarUrl?: string | null;
 }
 
 export interface PluginThemeTokensV1 {

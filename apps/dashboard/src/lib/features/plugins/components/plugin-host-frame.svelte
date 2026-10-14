@@ -184,30 +184,7 @@
           const storageKey = getPreferenceStorageKey(namespace || 'default', key);
           localStorage.removeItem(storageKey);
           return true;
-        },
-        onCoursesGetLatestPublished: async () => {
-          return {
-            id: 'course_default',
-            title: 'Modern Web Development',
-            slug: 'modern-web-development'
-          };
-        },
-        onOrganizationGetProfile: async () => {
-          const org = get(currentOrg);
-          return {
-            id: org?.id || '',
-            name: org?.name || 'ClassroomIO Academy',
-            slug: org?.siteName || 'academy',
-            avatarUrl: org?.avatarUrl || null
-          };
-        },
-        onLessonsGetReadingMetrics: async () => {
-          return { estimatedMinutes: 2, wordCount: 350 };
-        },
-        onLessonsGetCompletion: async () => {
-          return { isComplete: false, completedAt: null };
-        },
-        onLessonsSetCompletion: async () => {}
+        }
       }
     });
 
