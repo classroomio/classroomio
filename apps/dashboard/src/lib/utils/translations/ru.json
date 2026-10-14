@@ -5110,10 +5110,13 @@
       "events_count_other": "{count} событий",
       "no_deliveries": "Доставок пока нет",
       "table": {
-        "name": "Вебхук",
+        "name": "Получатель",
         "events": "События",
         "health": "Статус",
-        "active": "Активен"
+        "active": "Активен",
+        "error_rate": "Доля ошибок (24 ч)",
+        "error_rate_detail": "Не удалось: {failed} из {total}",
+        "no_recent_deliveries": "Нет доставок за 24 ч"
       },
       "health": {
         "healthy": "Работает",
@@ -5151,9 +5154,10 @@
         "events_help": "Выберите события, которые должны запускать этот вебхук.",
         "mode_all": "Отправлять всё",
         "mode_selected": "Выбрать отдельные события",
-        "reset_events": "Использовать рекомендуемые события",
         "cancel": "Отмена",
-        "save": "Сохранить вебхук"
+        "save": "Сохранить вебхук",
+        "select_all": "Выбрать все",
+        "events_selected": "Выбрано {selected} из {total}"
       },
       "event_groups": {
         "organization": "Организация",

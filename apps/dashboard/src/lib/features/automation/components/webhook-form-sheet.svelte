@@ -8,12 +8,13 @@
   import * as Sheet from '@cio/ui/base/sheet';
   import { Switch } from '@cio/ui/base/switch';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { WEBHOOK_DEFAULT_EVENT_TYPES } from '@cio/utils/constants/webhook';
+  import { WEBHOOK_EVENT_TYPES } from '@cio/utils/constants/webhook';
 
   import { webhookApi } from '$features/automation/api/webhook.svelte';
   import type { Webhook, WebhookFormFields } from '$features/automation/utils/types';
   import {
     getDefaultWebhookFormFields,
+    getEventGroupSelection,
     toWebhookEventTranslationKey,
     toWebhookFormFields,
     WEBHOOK_EVENT_GROUPS
@@ -49,10 +50,18 @@
     webhookApi.clearError('eventTypes');
   }
 
-  function resetToDefaultEvents() {
-    fields.eventTypes = [...WEBHOOK_DEFAULT_EVENT_TYPES];
+  function toggleEventGroup(groupEventTypes: readonly string[], isChecked: boolean) {
+    const withoutGroup = fields.eventTypes.filter((selected) => !groupEventTypes.includes(selected));
+    fields.eventTypes = isChecked ? [...withoutGroup, ...groupEventTypes] : withoutGroup;
     webhookApi.clearError('eventTypes');
   }
+
+  function toggleAllEvents(isChecked: boolean) {
+    fields.eventTypes = isChecked ? [...WEBHOOK_EVENT_TYPES] : [];
+    webhookApi.clearError('eventTypes');
+  }
+
+  const allEventsSelection = $derived(getEventGroupSelection(fields.eventTypes, WEBHOOK_EVENT_TYPES));
 
   async function handleSave() {
     const result = webhook ? await webhookApi.update(webhook.id, fields) : await webhookApi.create(fields);
@@ -146,12 +155,45 @@
 
           {#if fields.eventMode === 'selected'}
             <Field.Group>
+              <Field.Field orientation="horizontal">
+                <Checkbox
+                  id="webhook-events-all"
+                  checked={allEventsSelection.isAllSelected}
+                  indeterminate={allEventsSelection.isPartiallySelected}
+                  onCheckedChange={(isChecked) => toggleAllEvents(isChecked === true)}
+                  data-testid="webhook-events-select-all"
+                />
+                <Field.Content>
+                  <Field.Label for="webhook-events-all">{$t(`${T}.form.select_all`)}</Field.Label>
+                </Field.Content>
+                <span class="ui:text-muted-foreground ml-auto text-xs">
+                  {$t(`${T}.form.events_selected`, {
+                    selected: fields.eventTypes.length,
+                    total: WEBHOOK_EVENT_TYPES.length
+                  })}
+                </span>
+              </Field.Field>
+
               {#each WEBHOOK_EVENT_GROUPS as group (group.key)}
+                {@const groupSelection = getEventGroupSelection(fields.eventTypes, group.eventTypes)}
                 <Field.Set>
-                  <Field.Legend variant="label">{$t(`${T}.event_groups.${group.key}`)}</Field.Legend>
+                  <Field.Field orientation="horizontal">
+                    <Checkbox
+                      id={`webhook-group-${group.key}`}
+                      checked={groupSelection.isAllSelected}
+                      indeterminate={groupSelection.isPartiallySelected}
+                      onCheckedChange={(isChecked) => toggleEventGroup(group.eventTypes, isChecked === true)}
+                      data-testid={`webhook-group-${group.key}`}
+                    />
+                    <Field.Content>
+                      <Field.Label for={`webhook-group-${group.key}`} class="font-semibold">
+                        {$t(`${T}.event_groups.${group.key}`)}
+                      </Field.Label>
+                    </Field.Content>
+                  </Field.Field>
 
                   {#each group.eventTypes as eventType (eventType)}
-                    <Field.Field orientation="horizontal">
+                    <Field.Field orientation="horizontal" class="pl-6">
                       <Checkbox
                         id={`webhook-event-${eventType}`}
                         checked={fields.eventTypes.includes(eventType)}
@@ -173,12 +215,6 @@
               {#if webhookApi.errors.eventTypes}
                 <Field.Error>{webhookApi.errors.eventTypes}</Field.Error>
               {/if}
-
-              <div>
-                <Button variant="outline" size="sm" onclick={resetToDefaultEvents}>
-                  {$t(`${T}.form.reset_events`)}
-                </Button>
-              </div>
             </Field.Group>
           {/if}
         </Field.Set>
@@ -190,10 +226,12 @@
     </div>
 
     <Sheet.Footer>
-      <Button variant="outline" size="sm" onclick={() => handleOpenChange(false)}>{$t(`${T}.form.cancel`)}</Button>
-      <Button size="sm" onclick={handleSave} loading={webhookApi.isLoading} testId="webhook-form-save">
-        {$t(`${T}.form.save`)}
-      </Button>
+      <div class="flex justify-end gap-2">
+        <Button variant="outline" size="sm" onclick={() => handleOpenChange(false)}>{$t(`${T}.form.cancel`)}</Button>
+        <Button size="sm" onclick={handleSave} loading={webhookApi.isLoading} testId="webhook-form-save">
+          {$t(`${T}.form.save`)}
+        </Button>
+      </div>
     </Sheet.Footer>
   </Sheet.Content>
 </Sheet.Root>

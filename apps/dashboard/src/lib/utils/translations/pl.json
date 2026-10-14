@@ -5110,10 +5110,13 @@
       "events_count_other": "{count} zdarzeń",
       "no_deliveries": "Brak dostarczeń",
       "table": {
-        "name": "Webhook",
+        "name": "Miejsce docelowe",
         "events": "Zdarzenia",
         "health": "Status",
-        "active": "Aktywny"
+        "active": "Aktywny",
+        "error_rate": "Odsetek błędów (24 godz.)",
+        "error_rate_detail": "Niepowodzenia: {failed} z {total}",
+        "no_recent_deliveries": "Brak dostarczeń w ciągu 24 godz."
       },
       "health": {
         "healthy": "Działa poprawnie",
@@ -5151,9 +5154,10 @@
         "events_help": "Wybierz zdarzenia, które mają uruchamiać ten webhook.",
         "mode_all": "Wysyłaj wszystko",
         "mode_selected": "Wybiorę poszczególne zdarzenia",
-        "reset_events": "Użyj zalecanych zdarzeń",
         "cancel": "Anuluj",
-        "save": "Zapisz webhook"
+        "save": "Zapisz webhook",
+        "select_all": "Zaznacz wszystko",
+        "events_selected": "Wybrano {selected} z {total}"
       },
       "event_groups": {
         "organization": "Organizacja",

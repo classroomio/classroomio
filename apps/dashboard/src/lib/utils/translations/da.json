@@ -5110,10 +5110,13 @@
       "events_count_other": "{count} hændelser",
       "no_deliveries": "Ingen leverancer endnu",
       "table": {
-        "name": "Webhook",
+        "name": "Destination",
         "events": "Hændelser",
         "health": "Status",
-        "active": "Aktiv"
+        "active": "Aktiv",
+        "error_rate": "Fejlrate (24t)",
+        "error_rate_detail": "{failed} af {total} mislykkedes",
+        "no_recent_deliveries": "Ingen leverancer på 24t"
       },
       "health": {
         "healthy": "Sund",
@@ -5151,9 +5154,10 @@
         "events_help": "Vælg de hændelser, der skal udløse denne webhook.",
         "mode_all": "Send mig alt",
         "mode_selected": "Lad mig vælge individuelle hændelser",
-        "reset_events": "Brug anbefalede hændelser",
         "cancel": "Annuller",
-        "save": "Gem webhook"
+        "save": "Gem webhook",
+        "select_all": "Vælg alle",
+        "events_selected": "{selected} af {total} valgt"
       },
       "event_groups": {
         "organization": "Organisation",

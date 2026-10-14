@@ -5110,10 +5110,13 @@
       "events_count_other": "{count} इवेंट",
       "no_deliveries": "अभी तक कोई डिलीवरी नहीं",
       "table": {
-        "name": "Webhook",
+        "name": "गंतव्य",
         "events": "इवेंट",
         "health": "स्थिति",
-        "active": "सक्रिय"
+        "active": "सक्रिय",
+        "error_rate": "त्रुटि दर (24 घंटे)",
+        "error_rate_detail": "{total} में से {failed} विफल",
+        "no_recent_deliveries": "24 घंटे में कोई डिलीवरी नहीं"
       },
       "health": {
         "healthy": "स्वस्थ",
@@ -5151,9 +5154,10 @@
         "events_help": "वे इवेंट चुनें जो इस Webhook को ट्रिगर करें।",
         "mode_all": "मुझे सब कुछ भेजें",
         "mode_selected": "मुझे अलग-अलग इवेंट चुनने दें",
-        "reset_events": "अनुशंसित इवेंट उपयोग करें",
         "cancel": "रद्द करें",
-        "save": "Webhook सहेजें"
+        "save": "Webhook सहेजें",
+        "select_all": "सभी चुनें",
+        "events_selected": "{total} में से {selected} चुने गए"
       },
       "event_groups": {
         "organization": "संगठन",

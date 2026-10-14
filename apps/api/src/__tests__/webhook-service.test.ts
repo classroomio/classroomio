@@ -11,6 +11,7 @@ vi.mock('@cio/db/queries/organization', () => ({
 
 vi.mock('@cio/db/queries/webhook', () => ({
   createWebhookEndpointWithinLimit: vi.fn(),
+  getWebhookDeliveryStats: vi.fn(),
   deleteWebhookEndpoint: vi.fn(),
   getWebhookDeliveryRecord: vi.fn(),
   getWebhookEndpoint: vi.fn(),
@@ -36,6 +37,7 @@ import { decryptWebhookSecret } from '@cio/core/services/webhook/secret';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import {
   createWebhookEndpointWithinLimit,
+  getWebhookDeliveryStats,
   getWebhookEndpoint,
   listWebhookEndpoints,
   requeueWebhookDelivery,
@@ -90,6 +92,7 @@ describe('webhook service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     allowPlan('EARLY_ADOPTER');
+    vi.mocked(getWebhookDeliveryStats).mockResolvedValue(new Map());
     vi.mocked(createWebhookEndpointWithinLimit).mockImplementation(
       async (values, eventTypes) =>
         ({
@@ -132,6 +135,25 @@ describe('webhook service', () => {
       vi.mocked(listWebhookEndpoints).mockResolvedValue([buildEndpoint()]);
 
       await expect(listWebhooksService(orgId)).resolves.toHaveLength(1);
+    });
+  });
+
+  describe('recent delivery stats', () => {
+    it('adds the 24 hour delivery counts to each listed webhook', async () => {
+      vi.mocked(listWebhookEndpoints).mockResolvedValue([buildEndpoint()]);
+      vi.mocked(getWebhookDeliveryStats).mockResolvedValue(new Map([[webhookId, { total: 10, failed: 3 }]]));
+
+      const [webhook] = await listWebhooksService(orgId);
+
+      expect(webhook!.recentDeliveries).toEqual({ total: 10, failed: 3 });
+    });
+
+    it('reports zero deliveries for a webhook with no recent activity', async () => {
+      vi.mocked(listWebhookEndpoints).mockResolvedValue([buildEndpoint()]);
+
+      const [webhook] = await listWebhooksService(orgId);
+
+      expect(webhook!.recentDeliveries).toEqual({ total: 0, failed: 0 });
     });
   });
 

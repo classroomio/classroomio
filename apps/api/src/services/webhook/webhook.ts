@@ -10,6 +10,7 @@ import {
   createWebhookEndpointWithinLimit,
   deleteWebhookEndpoint,
   getWebhookDeliveryRecord,
+  getWebhookDeliveryStats,
   getWebhookEndpoint,
   insertWebhookEventWithDeliveries,
   listWebhookDeliveries,
@@ -18,6 +19,7 @@ import {
   requeueWebhookDelivery,
   updateWebhookEndpoint,
   type TWebhookDeliveryRecord,
+  type TWebhookDeliveryStats,
   type TWebhookEndpointWithEvents
 } from '@cio/db/queries/webhook';
 import { enqueueWebhookDelivery } from '@cio/jobs';
@@ -39,7 +41,13 @@ function resolveHealth(endpoint: TWebhookEndpointWithEvents): TWebhookEndpointHe
   return 'healthy';
 }
 
-export function toWebhookView(endpoint: TWebhookEndpointWithEvents) {
+const RECENT_DELIVERIES_WINDOW_MS = 24 * 60 * 60 * 1000;
+const NO_RECENT_DELIVERIES: TWebhookDeliveryStats = { total: 0, failed: 0 };
+
+export function toWebhookView(
+  endpoint: TWebhookEndpointWithEvents,
+  recentDeliveries: TWebhookDeliveryStats = NO_RECENT_DELIVERIES
+) {
   return {
     id: endpoint.id,
     name: endpoint.name,
@@ -55,6 +63,7 @@ export function toWebhookView(endpoint: TWebhookEndpointWithEvents) {
     lastDeliveryStatus: endpoint.lastDeliveryStatus,
     lastDeliveryAt: endpoint.lastDeliveryAt,
     autoDisabledAt: endpoint.autoDisabledAt,
+    recentDeliveries,
     createdAt: endpoint.createdAt,
     updatedAt: endpoint.updatedAt
   };
@@ -119,6 +128,18 @@ async function assertPayloadUrlAllowed(payloadUrl: string): Promise<void> {
   }
 }
 
+async function loadRecentDeliveryStats(webhookIds: string[]) {
+  const sinceIso = new Date(Date.now() - RECENT_DELIVERIES_WINDOW_MS).toISOString();
+
+  return getWebhookDeliveryStats(webhookIds, sinceIso);
+}
+
+async function toWebhookViewWithStats(endpoint: TWebhookEndpointWithEvents) {
+  const stats = await loadRecentDeliveryStats([endpoint.id]);
+
+  return toWebhookView(endpoint, stats.get(endpoint.id));
+}
+
 async function loadWebhookOrThrow(organizationId: string, webhookId: string) {
   const endpoint = await getWebhookEndpoint(organizationId, webhookId);
 
@@ -133,13 +154,15 @@ export async function listWebhooksService(organizationId: string) {
   await assertWebhooksAllowed(organizationId);
   const endpoints = await listWebhookEndpoints(organizationId);
 
-  return endpoints.map(toWebhookView);
+  const stats = await loadRecentDeliveryStats(endpoints.map((endpoint) => endpoint.id));
+
+  return endpoints.map((endpoint) => toWebhookView(endpoint, stats.get(endpoint.id)));
 }
 
 export async function getWebhookService(organizationId: string, webhookId: string) {
   await assertWebhooksAllowed(organizationId);
 
-  return toWebhookView(await loadWebhookOrThrow(organizationId, webhookId));
+  return toWebhookViewWithStats(await loadWebhookOrThrow(organizationId, webhookId));
 }
 
 /**
@@ -235,7 +258,7 @@ export async function updateWebhookService(
     await enqueueWebhookDelivery({ webhookId });
   }
 
-  return toWebhookView(updated);
+  return toWebhookViewWithStats(updated);
 }
 
 export async function regenerateWebhookSecretService(organizationId: string, webhookId: string, profileId: string) {
@@ -254,7 +277,7 @@ export async function regenerateWebhookSecretService(organizationId: string, web
     throw new AppError('Webhook not found', ErrorCodes.WEBHOOK_NOT_FOUND, 404);
   }
 
-  return { webhook: toWebhookView(updated), secret };
+  return { webhook: await toWebhookViewWithStats(updated), secret };
 }
 
 export async function deleteWebhookService(organizationId: string, webhookId: string) {

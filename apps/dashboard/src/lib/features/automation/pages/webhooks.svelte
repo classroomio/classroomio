@@ -6,6 +6,7 @@
   import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
+  import * as HoverCard from '@cio/ui/base/hover-card';
   import * as Field from '@cio/ui/base/field';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { Switch } from '@cio/ui/base/switch';
@@ -21,8 +22,10 @@
   import type { Webhook } from '$features/automation/utils/types';
   import {
     formatWebhookTimestamp,
+    getWebhookErrorRate,
     getWebhookEventsCountKey,
     getWebhookEventsLabelCount,
+    getWebhookEventTypes,
     WEBHOOK_HEALTH_BADGE
   } from '$features/automation/utils/webhook-utils';
   import { UpgradeBanner } from '$features/ui';
@@ -156,6 +159,7 @@
               <Table.Head>{$t(`${T}.table.name`)}</Table.Head>
               <Table.Head>{$t(`${T}.table.events`)}</Table.Head>
               <Table.Head>{$t(`${T}.table.health`)}</Table.Head>
+              <Table.Head>{$t(`${T}.table.error_rate`)}</Table.Head>
               <Table.Head>{$t(`${T}.table.active`)}</Table.Head>
               <Table.Head class="w-10"></Table.Head>
             </Table.Row>
@@ -168,17 +172,45 @@
                   <p class="ui:text-muted-foreground max-w-xs truncate text-xs">{webhook.payloadUrl}</p>
                 </Table.Cell>
                 <Table.Cell class="text-sm">
-                  {#if webhook.eventMode === 'all'}
-                    {$t(`${T}.events_all`)}
-                  {:else}
-                    {$t(getWebhookEventsCountKey(webhook), { count: getWebhookEventsLabelCount(webhook) })}
-                  {/if}
+                  <HoverCard.Root openDelay={150}>
+                    <HoverCard.Trigger>
+                      {#snippet child({ props })}
+                        <button {...props} type="button" class="text-left">
+                          {#if webhook.eventMode === 'all'}
+                            {$t(`${T}.events_all`)}
+                          {:else}
+                            {$t(getWebhookEventsCountKey(webhook), { count: getWebhookEventsLabelCount(webhook) })}
+                          {/if}
+                        </button>
+                      {/snippet}
+                    </HoverCard.Trigger>
+                    <HoverCard.Content class="w-auto max-w-sm" data-testid={`webhook-events-${webhook.id}`}>
+                      <ul class="space-y-1">
+                        {#each getWebhookEventTypes(webhook) as eventType (eventType)}
+                          <li class="font-mono text-xs">{eventType}</li>
+                        {/each}
+                      </ul>
+                    </HoverCard.Content>
+                  </HoverCard.Root>
                 </Table.Cell>
                 <Table.Cell>
                   <Badge variant={WEBHOOK_HEALTH_BADGE[webhook.health]}>{$t(`${T}.health.${webhook.health}`)}</Badge>
                   <p class="ui:text-muted-foreground mt-1 text-xs">
                     {webhook.lastDeliveryAt ? formatWebhookTimestamp(webhook.lastDeliveryAt) : $t(`${T}.no_deliveries`)}
                   </p>
+                </Table.Cell>
+                <Table.Cell class="text-sm">
+                  {#if getWebhookErrorRate(webhook) === null}
+                    <span class="ui:text-muted-foreground">{$t(`${T}.table.no_recent_deliveries`)}</span>
+                  {:else}
+                    <p class="font-medium">{getWebhookErrorRate(webhook)}%</p>
+                    <p class="ui:text-muted-foreground text-xs">
+                      {$t(`${T}.table.error_rate_detail`, {
+                        failed: webhook.recentDeliveries.failed,
+                        total: webhook.recentDeliveries.total
+                      })}
+                    </p>
+                  {/if}
                 </Table.Cell>
                 <Table.Cell>
                   <Switch

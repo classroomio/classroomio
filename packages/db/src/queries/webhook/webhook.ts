@@ -8,7 +8,7 @@ import type {
   TWebhookEndpoint,
   TWebhookEvent
 } from '@db/types';
-import { and, count, desc, eq, inArray, lte, or, sql } from 'drizzle-orm';
+import { and, count, desc, eq, gte, inArray, lte, or, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient, type TxClient } from '@db/drizzle';
 
 export type TWebhookEndpointWithEvents = TWebhookEndpoint & { eventTypes: string[] };
@@ -219,6 +219,43 @@ export async function listWebhookEndpoints(organizationId: string): Promise<TWeb
   } catch (error) {
     console.error('listWebhookEndpoints error:', error);
     throw new Error('Failed to list webhook endpoints');
+  }
+}
+
+export type TWebhookDeliveryStats = { total: number; failed: number };
+
+/**
+ * Counts non-test deliveries created since `sinceIso` per endpoint. A delivery counts as failed when it
+ * has gave up or is waiting to retry after a failed attempt.
+ */
+export async function getWebhookDeliveryStats(
+  webhookIds: string[],
+  sinceIso: string,
+  client: DbOrTxClient = db
+): Promise<Map<string, TWebhookDeliveryStats>> {
+  if (webhookIds.length === 0) return new Map();
+
+  try {
+    const rows = await client
+      .select({
+        webhookId: schema.webhookDelivery.webhookId,
+        total: count(),
+        failed: sql<number>`count(*) filter (where ${schema.webhookDelivery.status} in ('FAILED', 'GAVE_UP') or (${schema.webhookDelivery.status} = 'PENDING' and ${schema.webhookDelivery.attempt} > 0))`
+      })
+      .from(schema.webhookDelivery)
+      .where(
+        and(
+          inArray(schema.webhookDelivery.webhookId, webhookIds),
+          eq(schema.webhookDelivery.isTest, false),
+          gte(schema.webhookDelivery.createdAt, sinceIso)
+        )
+      )
+      .groupBy(schema.webhookDelivery.webhookId);
+
+    return new Map(rows.map((row) => [row.webhookId, { total: Number(row.total), failed: Number(row.failed) }]));
+  } catch (error) {
+    console.error('getWebhookDeliveryStats error:', error);
+    throw new Error('Failed to load webhook delivery stats');
   }
 }
 
