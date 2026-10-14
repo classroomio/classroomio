@@ -160,7 +160,7 @@ describe.skipIf(!hasDatabase)('getEarnedCertificates (database)', () => {
     });
   }, 30000);
 
-  it('leaves out course certificates once the org membership is deactivated, as the download route does', async () => {
+  it('lists nothing once the org membership is deactivated, as the download routes do', async () => {
     await withRollback(async (tx) => {
       const { ada, orgId, earnCourse, certifyPath } = await seedOrg(tx);
 
@@ -168,7 +168,7 @@ describe.skipIf(!hasDatabase)('getEarnedCertificates (database)', () => {
       await certifyPath('Data Science');
       await tx.execute(sql`UPDATE organizationmember SET status = 'DEACTIVATED' WHERE profile_id = ${ada}`);
 
-      expect(toTitles(await readCertificates(tx, { orgId, profileId: ada }))).toEqual(['path:Data Science']);
+      expect(toTitles(await readCertificates(tx, { orgId, profileId: ada }))).toEqual([]);
     });
   }, 30000);
 

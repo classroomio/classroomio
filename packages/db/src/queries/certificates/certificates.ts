@@ -65,7 +65,8 @@ type TEarnedCertificateRow = {
  * One page of the certificates a learner can download in an organization,
  * newest first, in a single statement: course certificates earned on their
  * enrollment (including courses taken inside a path) and issued path
- * certificates. Each row passes the same checks as its download route, except
+ * certificates, only while the learner is an active member of the
+ * organization. Each row passes the same checks as its download route, except
  * the org plan, which the caller checks once for the whole list. Totals come
  * from a one-row CTE the page is left-joined onto, so a page past the end
  * still reports them.
@@ -101,10 +102,6 @@ export async function getEarnedCertificates(
             SELECT 1 FROM ${schema.courseEnrollmentGrant} ceg
             WHERE ceg.course_id = c.id AND ceg.profile_id = ${profileId} AND ceg.revoked_at IS NULL
           )
-          AND EXISTS (
-            SELECT 1 FROM ${schema.organizationmember} om
-            WHERE om.organization_id = ${orgId} AND om.profile_id = ${profileId} AND om.status = 'ACTIVE'
-          )
         UNION ALL
         SELECT 'learning_path',
           lp.id,
@@ -135,7 +132,12 @@ export async function getEarnedCertificates(
           AND lpm.status = 'COMPLETED'
       ),
       matching_certificates AS (
-        SELECT ec.* FROM earned_certificates ec WHERE ${matchesSearch}
+        SELECT ec.* FROM earned_certificates ec
+        WHERE ${matchesSearch}
+          AND EXISTS (
+            SELECT 1 FROM ${schema.organizationmember} om
+            WHERE om.organization_id = ${orgId} AND om.profile_id = ${profileId} AND om.status = 'ACTIVE'
+          )
       ),
       certificate_totals AS (
         SELECT COUNT(*)::int AS total FROM matching_certificates
