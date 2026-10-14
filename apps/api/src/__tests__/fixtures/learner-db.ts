@@ -33,6 +33,17 @@ export async function insertOrganization(tx: DbOrTxClient, name: string) {
   return orgId;
 }
 
+export async function insertOrgMember(
+  tx: DbOrTxClient,
+  orgId: string,
+  profileId: string,
+  status: 'ACTIVE' | 'DEACTIVATED' = 'ACTIVE'
+) {
+  await tx.execute(sql`
+    INSERT INTO organizationmember (organization_id, profile_id, role_id, status)
+    VALUES (${orgId}, ${profileId}, ${STUDENT}, ${status})`);
+}
+
 export async function insertProfile(tx: DbOrTxClient, name: string) {
   const profileId = randomUUID();
   const email = `${name}-${profileId}@learner.test`;

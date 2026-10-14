@@ -101,6 +101,10 @@ export async function getEarnedCertificates(
             SELECT 1 FROM ${schema.courseEnrollmentGrant} ceg
             WHERE ceg.course_id = c.id AND ceg.profile_id = ${profileId} AND ceg.revoked_at IS NULL
           )
+          AND EXISTS (
+            SELECT 1 FROM ${schema.organizationmember} om
+            WHERE om.organization_id = ${orgId} AND om.profile_id = ${profileId} AND om.status = 'ACTIVE'
+          )
         UNION ALL
         SELECT 'learning_path',
           lp.id,

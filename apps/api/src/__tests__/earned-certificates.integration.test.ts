@@ -8,6 +8,7 @@
  *     pnpm --filter @cio/api vitest run src/__tests__/earned-certificates.integration.test.ts
  */
 import { describe, expect, it } from 'vitest';
+import { sql } from 'drizzle-orm';
 
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import type { TEarnedCertificatesPage } from '@cio/db/queries/certificates';
@@ -19,6 +20,7 @@ import {
   insertGrant,
   insertCourse,
   insertMember,
+  insertOrgMember,
   insertOrganization,
   insertPath,
   insertProfile,
@@ -53,6 +55,8 @@ async function seedOrg(tx: DbOrTxClient) {
   const bob = await insertProfile(tx, 'bob');
   const orgId = await insertOrganization(tx, 'Org');
   const otherOrgId = await insertOrganization(tx, 'Other');
+  await insertOrgMember(tx, orgId, ada);
+  await insertOrgMember(tx, orgId, bob);
 
   const earnCourse = async (title: string, options: CourseCertificateOptions = {}) => {
     const course = await insertCourse(tx, options.org ?? orgId, title, {
@@ -153,6 +157,18 @@ describe.skipIf(!hasDatabase)('getEarnedCertificates (database)', () => {
       const dataScience = page.items.find((item) => item.kind === 'learning_path');
       expect(dataScience?.kind === 'learning_path' && dataScience.data.courseCount).toBe(1);
       expect(dataScience?.kind === 'learning_path' && dataScience.data.certificateId).toMatch(/^CERT-/);
+    });
+  }, 30000);
+
+  it('leaves out course certificates once the org membership is deactivated, as the download route does', async () => {
+    await withRollback(async (tx) => {
+      const { ada, orgId, earnCourse, certifyPath } = await seedOrg(tx);
+
+      await earnCourse('Excel');
+      await certifyPath('Data Science');
+      await tx.execute(sql`UPDATE organizationmember SET status = 'DEACTIVATED' WHERE profile_id = ${ada}`);
+
+      expect(toTitles(await readCertificates(tx, { orgId, profileId: ada }))).toEqual(['path:Data Science']);
     });
   }, 30000);
 
