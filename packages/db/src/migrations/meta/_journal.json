@@ -239,6 +239,13 @@
       "when": 1791748761307,
       "tag": "0033_media_upload_pipeline",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1791971013728,
+      "tag": "0034_restore_missing_unique_constraints",
+      "breakpoints": true
     }
   ]
 }
