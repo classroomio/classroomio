@@ -2588,7 +2588,15 @@
               "loading": "Cargando vídeo…",
               "playback_auth_error": "Tu sesión expiró. Inicie sesión nuevamente para ver este video.",
               "playback_auth_action": "Iniciar sesión",
-              "vimeo_link": "Enlace de Vimeo"
+              "vimeo_link": "Enlace de Vimeo",
+              "hls_status": {
+                "encoding": "Codificación",
+                "ready": "Listo",
+                "failed": "Error",
+                "skipped": "No se ha codificado",
+                "failed_hint": "La codificación falló. El vídeo se reproduce con su calidad original.",
+                "skipped_hint": "La codificación adaptativa está desactivada, por lo que se reproduce con su calidad original."
+              }
             },
             "slide": {
               "title": "Diapositiva",

@@ -20,6 +20,12 @@ export type ListLessons = ListLessonsSuccess['data'];
 // Get lesson types
 export type GetLessonRequest = (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['$get'];
 export type GetLessonResponse = InferResponseType<GetLessonRequest> | null;
+export type GetLessonVideoStatusRequest =
+  (typeof classroomio.course)[':courseId']['lesson'][':lessonId']['video-status']['$get'];
+export type GetLessonVideoStatusSuccess = Extract<InferResponseType<GetLessonVideoStatusRequest>, { success: true }>;
+export type LessonVideoHlsStatuses = GetLessonVideoStatusSuccess['data']['statuses'];
+export type LessonVideoHlsStatus = LessonVideoHlsStatuses[string];
+
 export type GetLessonSuccess = Extract<InferResponseType<GetLessonRequest>, { success: true }>;
 export type Lesson = GetLessonSuccess['data'];
 

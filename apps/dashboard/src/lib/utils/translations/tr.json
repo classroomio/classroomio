@@ -2934,6 +2934,14 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Önceki video transkript",
                 "next_video": "Sonraki video transkript"
+              },
+              "hls_status": {
+                "encoding": "Kodlama",
+                "ready": "Hazır",
+                "failed": "Başarısız",
+                "skipped": "Kodlanmadı",
+                "failed_hint": "Kodlama başarısız oldu. Video yine de orijinal kalitesinde oynatılıyor.",
+                "skipped_hint": "Uyarlanabilir kodlama kapalı, bu nedenle orijinal kalitesinde oynatılıyor."
               }
             },
             "document": {

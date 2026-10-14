@@ -14,6 +14,7 @@ import { v1AnalyticsRouter } from './analytics';
 import { v1AudienceRouter } from './audience';
 import { v1CohortsRouter } from './cohorts';
 import { v1CoursesRouter } from './courses';
+import { v1MediaRouter } from './media';
 
 export const v1Router = new Hono()
   .use('*', publicApiCors)
@@ -39,4 +40,5 @@ export const v1Router = new Hono()
   .route('/analytics', v1AnalyticsRouter)
   .route('/audience', v1AudienceRouter)
   .route('/courses', v1CoursesRouter)
-  .route('/cohorts', v1CohortsRouter);
+  .route('/cohorts', v1CohortsRouter)
+  .route('/assets', v1MediaRouter);

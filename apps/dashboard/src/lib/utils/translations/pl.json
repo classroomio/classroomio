@@ -2588,7 +2588,15 @@
               "loading": "Ładowanie wideo…",
               "playback_auth_error": "Twoja sesja wygasła. Aby obejrzeć ten film, zaloguj się ponownie.",
               "playback_auth_action": "Zalogować się",
-              "vimeo_link": "Link do Vimeo"
+              "vimeo_link": "Link do Vimeo",
+              "hls_status": {
+                "encoding": "Kodowanie",
+                "ready": "Gotowy",
+                "failed": "Niepowodzenie",
+                "skipped": "Niezakodowano",
+                "failed_hint": "Kodowanie nie powiodło się. Film nadal odtwarza się w oryginalnej jakości.",
+                "skipped_hint": "Kodowanie adaptacyjne jest wyłączone, więc film odtwarza się w oryginalnej jakości."
+              }
             },
             "slide": {
               "title": "Slajd",
