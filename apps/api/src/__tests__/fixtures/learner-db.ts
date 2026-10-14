@@ -33,6 +33,17 @@ export async function insertOrganization(tx: DbOrTxClient, name: string) {
   return orgId;
 }
 
+export async function insertOrgMember(
+  tx: DbOrTxClient,
+  orgId: string,
+  profileId: string,
+  status: 'ACTIVE' | 'DEACTIVATED' = 'ACTIVE'
+) {
+  await tx.execute(sql`
+    INSERT INTO organizationmember (organization_id, profile_id, role_id, status)
+    VALUES (${orgId}, ${profileId}, ${STUDENT}, ${status})`);
+}
+
 export async function insertProfile(tx: DbOrTxClient, name: string) {
   const profileId = randomUUID();
   const email = `${name}-${profileId}@learner.test`;
@@ -48,17 +59,24 @@ export async function insertCourse(
   tx: DbOrTxClient,
   orgId: string,
   title: string,
-  options: { lessons: number; type?: string; status?: string; enrollOnlyInLearningPath?: boolean }
+  options: {
+    lessons: number;
+    type?: string;
+    status?: string;
+    enrollOnlyInLearningPath?: boolean;
+    certificateDownloadable?: boolean;
+  }
 ) {
   const groupId = randomUUID();
   const courseId = randomUUID();
   const lessonIds = Array.from({ length: options.lessons }, () => randomUUID());
+  const certificate = JSON.stringify({ isDownloadable: options.certificateDownloadable ?? false });
 
   await tx.execute(sql`INSERT INTO "group" (id, name, organization_id) VALUES (${groupId}, ${title}, ${orgId})`);
   await tx.execute(sql`
-    INSERT INTO course (id, title, description, group_id, type, status, enroll_only_in_learning_path)
+    INSERT INTO course (id, title, description, group_id, type, status, enroll_only_in_learning_path, certificate)
     VALUES (${courseId}, ${title}, 'x', ${groupId}, ${options.type ?? 'SELF_PACED'}, ${options.status ?? 'ACTIVE'},
-      ${options.enrollOnlyInLearningPath ?? false})`);
+      ${options.enrollOnlyInLearningPath ?? false}, ${certificate}::jsonb)`);
   for (const [order, lessonId] of lessonIds.entries()) {
     await tx.execute(sql`
       INSERT INTO lesson (id, title, course_id, "order") VALUES (${lessonId}, 'Lesson', ${courseId}, ${order})`);
@@ -73,6 +91,10 @@ export async function insertMember(tx: DbOrTxClient, groupId: string, profileId:
     INSERT INTO groupmember (id, group_id, profile_id, role_id) VALUES (${groupMemberId}, ${groupId}, ${profileId}, ${STUDENT})`);
 
   return groupMemberId;
+}
+
+export async function earnCourseCertificate(tx: DbOrTxClient, groupMemberId: string, earnedAt: string) {
+  await tx.execute(sql`UPDATE groupmember SET certificate_earned_at = ${earnedAt} WHERE id = ${groupMemberId}`);
 }
 
 export async function insertGrant(

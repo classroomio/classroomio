@@ -4590,7 +4590,10 @@
     "empty_description": "Complete a course to earn your first certificate. Your earned certificates will appear here.",
     "no_results_title": "No certificates found",
     "no_results_description": "Try a different search term.",
-    "go_to_my_learning": "Go to My Learning"
+    "go_to_my_learning": "Go to My Learning",
+    "load_error_title": "Couldn't load your certificates",
+    "load_error_description": "Something went wrong while loading your certificates.",
+    "retry": "Try again"
   },
   "exercises": {
     "heading": "Exercises",

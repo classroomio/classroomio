@@ -6,6 +6,7 @@ export const FIELDS = [
   'progressPercent',
   'coursesCompleted',
   'certificateEarned',
+  'certificateEarnedAt',
   'status',
   'isLMS',
   'isExplore',

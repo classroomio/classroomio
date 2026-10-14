@@ -101,7 +101,7 @@
 
   const ctaVariant = 'outline';
 
-  const ctaHref = $derived(surface === 'certificate' || (surface === 'lms' && done) ? '/lms/certificates' : href);
+  const ctaHref = $derived(surface === 'lms' && done ? '/lms/certificates' : href);
 
   const ctaLabelText = $derived(
     ctaLabel ??

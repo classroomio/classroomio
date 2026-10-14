@@ -2,6 +2,7 @@ export * from './audience';
 export * from './audience-import';
 export * from './organization';
 export * from './enrolled';
+export * from './certificates';
 export * from './domain';
 export * from './quiz';
 export * from './exercise';

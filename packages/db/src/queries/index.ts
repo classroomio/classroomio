@@ -24,3 +24,4 @@ export * from './invite-link';
 export * from './youtube-caption';
 export * from './learning-path';
 export * from './enrolled';
+export * from './certificates';

@@ -3,6 +3,7 @@ import type { OrgAudienceMember, OrgAudiencePagination, OrgAudienceQuery } from 
 import type {
   TCourseReorder,
   TGetAudienceQuery,
+  TGetEarnedCertificates,
   TGetEnrolled,
   TGetOrganizationCoursesQuery
 } from '@cio/utils/validation/organization';
@@ -49,6 +50,7 @@ import { countAssetsByOrg } from '@cio/db/queries/assets';
 import { countTagsByOrg, getCourseIdsByTagSlugs, getCourseTagsByCourseIdsForOrganization } from '@cio/db/queries/tag';
 import { countLearningPathsByOrg, listPublicLearningPaths } from '@cio/db/queries/learning-path';
 import { getEnrolled } from '@cio/db/queries/enrolled';
+import { getEarnedCertificates } from '@cio/db/queries/certificates';
 import { getAccountPrimary } from '@cio/db/queries/account';
 import { getLastLogin, getProfileCourseProgress, getUserExercisesStats } from '@cio/db/queries/analytics';
 
@@ -62,6 +64,7 @@ import { getProfileById, getProfileByEmail } from '@cio/db/queries/auth';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { inviteTeamMembers as inviteTeamMembersSecure } from './organization/invite';
 import { trustCustomDomainHostname, untrustCustomDomainHostname } from '@cio/db/utils';
+import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
 
 const PUBLIC_ORG_LANDING_PAGE_COURSE_LIMIT = 4;
 const ORG_COURSES_PAGE_SIZE = 6;
@@ -618,6 +621,32 @@ export async function getUserEnrolled(orgId: string, userId: string, query: TGet
     throw new AppError(
       error instanceof Error ? error.message : 'Failed to fetch enrolled',
       ErrorCodes.COURSES_FETCH_FAILED,
+      500
+    );
+  }
+}
+
+/**
+ * Gets one page of the certificates the user can download in an organization,
+ * newest first: course certificates and learning path certificates as
+ * `{ kind, data }` rows. Empty when the org plan does not include certificates.
+ *
+ * @param orgId - The organization ID
+ * @param userId - Student's profile ID
+ * @param query - Page, limit and title search
+ * @returns Page of `{ kind, data }` rows and the filtered total
+ */
+export async function getUserEarnedCertificates(orgId: string, userId: string, query: TGetEarnedCertificates) {
+  try {
+    const certificatesEnabled = await orgHasCertificatesEnabled(orgId);
+    if (!certificatesEnabled) return { items: [], total: 0 };
+
+    return await getEarnedCertificates({ orgId, profileId: userId, ...query });
+  } catch (error) {
+    if (error instanceof AppError) throw error;
+    throw new AppError(
+      error instanceof Error ? error.message : 'Failed to fetch certificates',
+      ErrorCodes.CERTIFICATES_FETCH_FAILED,
       500
     );
   }

@@ -1,11 +1,8 @@
-import { AppError, ErrorCodes, throwAsInternal } from '@api/utils/errors';
+import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TLearningPathCertificateDownloadRequest } from '@cio/utils/validation/learning-path';
-import {
-  getLearningPathCertificate,
-  getMemberByPathAndProfile,
-  listLearnerPathCertificates
-} from '@cio/db/queries/learning-path';
+import { getLearningPathCertificate, getMemberByPathAndProfile } from '@cio/db/queries/learning-path';
 import { getOrganizationById } from '@cio/db/queries';
+import { getActiveOrganizationMemberIdByOrgAndProfile } from '@cio/db/queries/organization';
 import {
   buildCertificateRenderInput,
   resolveCertificateDesign,
@@ -51,7 +48,8 @@ export async function assertLearningPathCertificatePreviewAllowed(
 }
 
 /**
- * Throws unless the caller completed the path and a certificate was issued.
+ * Throws unless the caller completed the path, is still an active member of its organization, and a
+ * certificate was issued.
  * Returns the issued record so the render uses the stored id/date instead of client input.
  */
 export async function assertLearningPathCertificateDownloadAllowed(
@@ -62,6 +60,12 @@ export async function assertLearningPathCertificateDownloadAllowed(
   const member = await getMemberByPathAndProfile(path.id, userId);
 
   if (!member || member.removedAt || member.status !== 'COMPLETED' || !path.certificate?.isDownloadable) {
+    throw new AppError('Certificate not available', ErrorCodes.UNAUTHORIZED, 403);
+  }
+
+  const activeOrgMemberId = await getActiveOrganizationMemberIdByOrgAndProfile(path.organizationId, userId);
+
+  if (!activeOrgMemberId) {
     throw new AppError('Certificate not available', ErrorCodes.UNAUTHORIZED, 403);
   }
 
@@ -81,25 +85,6 @@ export async function assertLearningPathCertificateDownloadAllowed(
   const issuedAt = issued.issuedAt;
 
   return { certificateId, issuedAt };
-}
-
-/**
- * The caller's path certificates in an organization for the LMS Certificates
- * page: exactly the ones `assertLearningPathCertificateDownloadAllowed` would
- * let them download, so every listed certificate opens.
- */
-export async function listMyPathCertificatesService(organizationId: string, profileId: string) {
-  try {
-    const certificatesEnabled = await orgHasCertificatesEnabled(organizationId);
-
-    if (!certificatesEnabled) {
-      return [];
-    }
-
-    return await listLearnerPathCertificates(organizationId, profileId);
-  } catch (error) {
-    throwAsInternal(error, 'Failed to list learning path certificates');
-  }
 }
 
 /**

@@ -25,9 +25,13 @@ export type PathJourney = GetPathJourneySuccess['data'];
 export type PathJourneyCourse = PathJourney['courses'][number];
 export type PathJourneyCertificate = NonNullable<PathJourney['certificate']>;
 
-export type ListMyPathCertificatesRequest = (typeof classroomio.organization)['learning-paths']['certificates']['$get'];
-export type ListMyPathCertificatesSuccess = Extract<
-  InferResponseType<ListMyPathCertificatesRequest>,
-  { success: true }
->;
-export type MyPathCertificate = ListMyPathCertificatesSuccess['data'][number];
+export type GetEarnedCertificatesRequest = (typeof classroomio.organization)['certificates']['$get'];
+export type GetEarnedCertificatesSuccess = Extract<InferResponseType<GetEarnedCertificatesRequest>, { success: true }>;
+export type EarnedCertificates = GetEarnedCertificatesSuccess['data'];
+export type EarnedCertificate = EarnedCertificates[number];
+export type EarnedCertificatesPagination = GetEarnedCertificatesSuccess['pagination'];
+export type EarnedCertificatesQuery = {
+  page?: number;
+  limit?: number;
+  search?: string;
+};
