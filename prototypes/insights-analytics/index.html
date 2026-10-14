@@ -305,7 +305,7 @@ function buildRoster() {
     const clsDays = Array.from({ length: 6 }, () => (rnd() < (status === 'risk' ? 0.72 : 0.94) ? 100 : 0));
     const finalsPass = c.every((x, i) => x.vals[x.n - 1] != null && x.vals[x.n - 1] >= COURSES[i].passMark);
     return {
-      id, name, c, days, status, avg, progress: mean(c.map((x) => x.progress)),
+      id, name, c, days, status, avg, progress: Math.round(c.reduce((sum, x) => sum + x.progress * x.n, 0) / c.reduce((sum, x) => sum + x.n, 0)),
       vidDays, clsDays, vid: mean(vidDays), cls: mean(clsDays),
       overdue: !finisher && (days >= 2 ? rnd() < 0.6 : rnd() < 0.05), overdueCourse: Math.floor(rnd() * 3),
       cert: finisher && finalsPass
