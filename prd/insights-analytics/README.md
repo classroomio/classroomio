@@ -28,7 +28,7 @@ The prospect that prompted this runs about 5,000 contract learners in cohorts of
 1. **One spec, three scopes.** A widget is a query spec plus a viz type. Scope (`org`, `course`, `cohort`) is a filter, not a different widget.
 2. **Presets are data, not components.** Built-in dashboards ship as JSON specs in code. A later builder only persists and edits the same shape.
 3. **Registry, not raw SQL.** Users combine whitelisted metrics, dimensions and filters. The server compiles specs to parameterized SQL and injects tenant and scope filters.
-4. **Live queries with a short cache.** Learner performance is read live from source tables with a 30 to 60 second Redis cache (`cachedRead`). No new rollup tables in v1.
+4. **Live queries with a short cache.** Learner performance is read live from source tables with a 30- to 60-second Redis cache (`cachedRead`). No new rollup tables in v1.
 5. **Exercises are shown by name, in course order.** There is no pre-assessment or module label. The only special exercise is the **final exam**, which the course already designates for its certificate. No schema change (see below).
 6. **Show only what we can compute.** Where the data is not collected yet, a ticket tracks collecting it, the dashboard does not show the widget, the section here is marked **Blocked by** that ticket, and its implementation items stay commented out until the ticket ships (see Blocked Sections).
 
@@ -45,7 +45,7 @@ The **final exam** is explicit, not positional. It is the exercise the course al
 | Case | Rule |
 | --- | --- |
 | Exercise reordered or added | Columns follow the new order. Scores stay attached to the same exercise |
-| Locked exercises (`isUnlocked = false`) | Excluded, so cohorts that have not reached them show no empty columns |
+| Locked exercises (`isUnlocked = false`) | Not shown as columns. `isUnlocked` belongs to the exercise, not to a cohort or learner, so it says nothing about which cohort has reached what. The final exam column is kept even when it is locked, so its tag and pass mark are never lost |
 | Score percent | Best completed attempt: `submission.total` over the sum of `question.points`, counting only `gradingState = completed`. This matches how certification checks the final exam (`evaluateFinalExerciseRule`) |
 | Awaiting manual grade | Shown as "awaiting grade", never as zero |
 | Pass | Final exam uses `exerciseMinScorePercent`. Other exercises use `exercise.passThreshold` when set |
@@ -54,9 +54,20 @@ The **final exam** is explicit, not positional. It is the exercise the course al
 
 A cohort can have several courses (`cohort_course`), and each course has its own exercises, so one set of score columns cannot cover them. The cohort dashboard has a **course picker**:
 
-- **All courses (default).** KPIs and needs-attention are cohort level. A "Courses in this cohort" table shows learners, average progress, average score, completed, final exam taken and final exam pass rate per course. The learners list has one row per learner with overall progress, average score, courses completed (for example "1 of 3"), video and classroom attendance, certificate, last login and status. Clicking a learner opens a panel listing their courses: progress, current section, average score and final exam score against the pass mark.
+- **All courses (default).** KPIs and needs-attention are cohort level. A "Courses in this cohort" table shows learners, average progress, average score, completed, final exam taken and final exam pass rate per course. Overall progress and average score are pooled across the learner's courses, not averages of per-course percentages: progress is completed lessons and exercises over total lessons and exercises, and average score is points earned over points possible across the exercises the learner has taken (best completed attempt), so a short course does not weigh the same as a long one. The learners list has one row per learner with overall progress, average score, courses completed (for example "1 of 3"), video and classroom attendance, certificate, last login and status. Clicking a learner opens a panel listing their courses: progress, current section, average score and final exam score against the pass mark.
 - **One course.** The learners list shows that course's exercises as columns, with the final exam tagged. Scores by exercise, learner score progression, the section-by-section scorecard and the hardest questions all switch to that course.
 - **Overdue.** The list shows which course each learner is late on, and filters to the picked course.
+
+## Section Scorecard Rules
+
+The section-by-section scorecard has one row per `course_section`, ordered by `order`. Exercises join to a section through `exercise.section_id` and lessons through `lesson.section_id`. Items without a section are listed under "Other", last.
+
+- **Base grain.** One row per learner and exercise, holding the best completed attempt (score percent as defined above). Every rollup starts from this grain, so multiple attempts cannot duplicate results.
+- **Exercises taken.** Learners with a completed attempt on every exercise in the section.
+- **Average score.** For each learner who took the section, the mean of their exercise scores in it. The row value is the mean across those learners, so each learner counts once.
+- **Pass rate.** The share of learners who took the section and met the pass mark on every exercise in it that has one. Exercises with no pass mark are ignored. A section with no pass mark shows "–".
+- **Video attendance.** A lesson with video counts as watched when every one of its video assets has `lesson_video_progress.is_complete = true`. Assets collapse to the lesson first, so several assets cannot duplicate a lesson. A learner's value is watched lessons over lessons with video in the section, and the row value is the mean across the cohort's learners. `watched_seconds` is not used: it is cumulative and cannot be split by day.
+- **Classroom attendance.** From `group_attendance` (one row per learner and lesson where attendance was taken) for lessons in the section: present rows over recorded rows for the cohort's learners. Lessons with no attendance taken are not counted as absent.
 
 ## Current-State Audit
 
@@ -168,7 +179,7 @@ Follows the layering in `CLAUDE.md`:
 4. **Routes:** one `/insights` root mounted in `app.ts`.
    - `POST /insights/query` returns `{ columns, rows }` (one type).
    - `GET /insights/dashboards/:scopeType/:scopeId` returns the preset specs.
-   - Access reuses the cohort-team-member and course-team middleware.
+   - Authorization is scope-aware and runs in the service. The existing `cohortTeamMemberMiddleware` and `courseTeamMemberMiddleware` read `cohortId` and `courseId` from the path, and these routes do not have those params, so the routes use `authMiddleware` only. The service reuses the underlying queries: `getCohortMemberRole` and `isOrgAdminByCohortId` for cohort scope, `isCourseTeamMemberOrOrgAdmin` for course scope, and an org admin check for org scope.
 5. **Dashboard app:** `apps/dashboard/src/lib/features/insights/` with API class, `utils/types.ts` inferred from the RPC client, widget components, and a dashboard tab on cohort, course and org pages.
    - Charts use the browser-only dynamic import (see Chart Imports and SSR in `CLAUDE.md`).
    - All copy goes through translations.
@@ -185,7 +196,7 @@ Follows the layering in `CLAUDE.md`:
 ### Performance
 
 - Aggregate in SQL. Do not build per-student rows in JS.
-- Target: a 250-learner cohort dashboard under one second warm, and an org rollup over 5,000 learners using grouped queries and the 30 to 60 second cache.
+- Target: a 250-learner cohort dashboard under one second warm, and an org rollup over 5,000 learners using grouped queries and the 30- to 60-second cache.
 - Add indexes only after measuring against a seeded 5,000-learner org.
 
 ## Schema Changes
@@ -241,9 +252,10 @@ Blocked by #1302 (supervisor of a learner, https://github.com/classroomio/classr
 ## Open Decisions
 
 1. **Executive access.** Admin account for now, or a read-only viewer role in Phase 3.
-2. **Retakes.** Best completed attempt, as certification does. Confirm whether a "latest attempt" option is needed.
-3. **Needs-attention thresholds.** No login for 2 or more days, average score under 50%, overdue, video attendance under 60% are placeholders.
-4. **Blocked sections.** Time tracking (#1299) and supervisor (#1302) each have their own open questions, tracked in those issues.
+2. **Classroom attendance rows.** Confirm whether tutors create a `group_attendance` row for absent learners or only mark present ones. That decides the denominator.
+3. **Retakes.** Best completed attempt, as certification does. Confirm whether a "latest attempt" option is needed.
+4. **Needs-attention thresholds.** No login for 2 or more days, average score under 50%, overdue, video attendance under 60% are placeholders.
+5. **Blocked sections.** Time tracking (#1299) and supervisor (#1302) each have their own open questions, tracked in those issues.
 
 ## Success Criteria
 
