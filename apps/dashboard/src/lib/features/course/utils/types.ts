@@ -692,3 +692,14 @@ export type LiveSessionReminderRow = {
 };
 
 export type LiveSessionReminderRowError = 'amount' | 'min' | 'max' | 'duplicate';
+
+export type ReorderCourseContentRequest = (typeof classroomio.course)[':courseId']['content']['reorder']['$put'];
+export type SidebarOutlineEntry =
+  | { id: string; kind: 'item'; order: number; item: CourseContentItem }
+  | {
+      id: string;
+      kind: 'section';
+      order: number;
+      section: Omit<CourseContentSection, 'items'>;
+      items: SidebarOutlineEntry[];
+    };

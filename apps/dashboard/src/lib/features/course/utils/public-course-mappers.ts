@@ -20,47 +20,36 @@ type GetPublicCourseItemSuccess = Extract<
 
 type PublicItem = GetPublicCourseItemSuccess['data'];
 
-/**
- * Group the flat tree into sidebar sections. Items that aren't assigned to any
- * section are grouped under a synthetic "Lessons" section so the UI never has
- * orphaned rows.
- */
 export function toPublicSidebarSections(tree: PublicCourseTree): PublicCourseSidebarSection[] {
-  const sectionLookup = new Map<string, PublicCourseSidebarSection>();
-  for (const section of tree.sections) {
-    sectionLookup.set(section.id, {
-      id: section.id,
-      title: section.title,
-      items: []
-    });
-  }
-
-  const orphanSection: PublicCourseSidebarSection = {
-    id: '__unsectioned',
-    title: 'Lessons',
+  const sections: Array<PublicCourseSidebarSection & { order: number }> = tree.sections.map((section) => ({
+    id: section.id,
+    title: section.title,
+    order: section.order,
     items: []
-  };
-
+  }));
   for (const item of tree.items) {
-    const targetSection =
-      item.sectionId && sectionLookup.has(item.sectionId) ? sectionLookup.get(item.sectionId)! : orphanSection;
-
-    targetSection.items.push({
+    const sidebarItem = {
       kind: item.kind,
       id: item.id,
       slug: item.slug,
       title: item.title,
       isUnlocked: item.isUnlocked
+    };
+    const section = sections.find((entry) => entry.id === item.sectionId);
+    if (section) {
+      section.items.push(sidebarItem);
+      continue;
+    }
+
+    sections.push({
+      id: `standalone-${item.id}`,
+      title: '',
+      order: item.order,
+      standalone: true,
+      items: [sidebarItem]
     });
   }
-
-  const ordered = Array.from(sectionLookup.values()).filter((section) => section.items.length > 0);
-
-  if (orphanSection.items.length > 0) {
-    ordered.push(orphanSection);
-  }
-
-  return ordered;
+  return sections.filter((section) => section.items.length > 0).sort((left, right) => left.order - right.order);
 }
 
 export function toPublicLessonView(lesson: Extract<PublicItem, { kind: 'lesson' }>): PublicLessonViewData {

@@ -102,8 +102,7 @@
     }))
   );
   const requiresSection = $derived(contentGroupingEnabled && selectedType !== ContentType.Section);
-  const hasSections = $derived(sections.length > 0 || !!lockedSection);
-  const canCreateLessonOrExercise = $derived(!requiresSection || (requiresSection && !!sectionId));
+  const canCreateLessonOrExercise = $derived(true);
   const successSentenceKey = $derived(createdContent ? SUCCESS_SENTENCE_KEYS[createdContent.type] : '');
   const repeatLabelKey = $derived(createdContent ? REPEAT_LABEL_KEYS[createdContent.type] : '');
   const isSectionSuccess = $derived(createdContent?.type === ContentType.Section);
@@ -114,7 +113,7 @@
   );
 
   const courseId = $derived(courseApi.course?.id || '');
-  const effectiveSectionId = $derived(requiresSection ? sectionId : undefined);
+  const effectiveSectionId = $derived(requiresSection && sectionId !== UNGROUPED_SECTION_KEY ? sectionId : undefined);
   /** Local reserved orders for sections created in this modal session while refreshCourse is pending */
   let reservedSectionOrders = $state<number[]>([]);
   /** Local reserved orders for lessons/exercises created in this modal session (keyed by sectionId or UNGROUPED_SECTION_KEY) */
@@ -123,7 +122,12 @@
   const nextContentOrder = $derived(getNextContentOrder(effectiveSectionId));
 
   function getNextSectionOrder() {
-    return calculateNextSectionOrder(sections, reservedSectionOrders);
+    const standaloneOrders =
+      courseApi.course?.content?.sections
+        .find((section) => section.id === UNGROUPED_SECTION_KEY)
+        ?.items.map((item) => item.order ?? 0) ?? [];
+    const reservedRootOrders = reservedContentOrders[UNGROUPED_SECTION_KEY] ?? [];
+    return calculateNextSectionOrder(sections, [...reservedSectionOrders, ...standaloneOrders, ...reservedRootOrders]);
   }
 
   function getContentReservationKey(targetSectionId?: string) {
@@ -132,7 +136,10 @@
 
   function getNextContentOrder(targetSectionId?: string) {
     const key = getContentReservationKey(targetSectionId);
-    return calculateNextContentOrder(courseApi.course?.content, targetSectionId, reservedContentOrders[key]);
+    return calculateNextContentOrder(courseApi.course?.content, targetSectionId, [
+      ...(reservedContentOrders[key] ?? []),
+      ...(!targetSectionId ? reservedSectionOrders : [])
+    ]);
   }
 
   function resetModalState() {
@@ -171,7 +178,7 @@
         const initialType = $contentCreateStore.initialType ?? ContentType.Lesson;
         selectedType = contentGroupingEnabled || initialType !== ContentType.Section ? initialType : ContentType.Lesson;
         const storeSectionId = $contentCreateStore.sectionId;
-        sectionId = storeSectionId || (contentGroupingEnabled ? sections[0]?.id || '' : '');
+        sectionId = storeSectionId || UNGROUPED_SECTION_KEY;
 
         resetAllSteppers();
       });
@@ -409,7 +416,7 @@
                       $t('course.navItem.lessons.add_content_section_fallback')}
                   </strong>
                 </p>
-              {:else if hasSections}
+              {:else}
                 <Select.Root
                   type="single"
                   value={sectionId}
@@ -418,19 +425,19 @@
                   }}
                 >
                   <Select.Trigger class="h-10 w-full max-w-full">
-                    {sections.find((s) => s.id === sectionId)?.title ||
-                      $t('course.navItem.lessons.add_content_select_section')}
+                    {sections.find((s) => s.id === sectionId)?.title || $t('course.navItem.lessons.outside_section')}
                   </Select.Trigger>
                   <Select.Content>
                     <Select.Group>
+                      <Select.Item value={UNGROUPED_SECTION_KEY}
+                        >{$t('course.navItem.lessons.outside_section')}</Select.Item
+                      >
                       {#each sections as section (section.id)}
                         <Select.Item value={section.id}>{section.title}</Select.Item>
                       {/each}
                     </Select.Group>
                   </Select.Content>
                 </Select.Root>
-              {:else}
-                <p class="text-xs text-gray-500">{$t('course.navItem.lessons.add_content_create_section_first')}</p>
               {/if}
             </div>
           {/if}

@@ -32,9 +32,10 @@
 
   interface Props {
     reorder?: boolean;
+    standaloneItem?: CourseContentItem;
   }
 
-  let { reorder = false }: Props = $props();
+  let { reorder = false, standaloneItem }: Props = $props();
 
   let prevTitle: string | undefined = $state();
   let errors: Record<string, string> = $state({});
@@ -63,7 +64,7 @@
   let contentItems = $state<ContentDndItem[]>([]);
 
   function buildContentItems(): ContentDndItem[] {
-    return (contentData.items || []).map((item) => ({
+    return (standaloneItem ? [standaloneItem] : contentData.items || []).map((item) => ({
       ...item,
       id: `${item.type}-${item.id}`,
       contentId: item.id

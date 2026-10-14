@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getCourseOutline } from '@cio/utils/functions/course-content';
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
   import LockIcon from '@lucide/svelte/icons/lock';
@@ -161,39 +162,46 @@
 
 <nav class="flex flex-col gap-1 {className}" aria-label={$t('course.navItems.nav_content')}>
   {#if contentData.grouped}
-    {#each contentData.sections as section (section.id)}
-      {@const sectionProgress = getContentItemsProgress(section.items)}
-      {@const sectionOpen = isSectionOpen(section.id)}
-      <Collapsible.Root
-        open={sectionOpen}
-        onOpenChange={(open) => handleSectionOpenChange(section.id, open)}
-        class="group/section"
-      >
-        <Collapsible.Trigger class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium">
-          <CourseContentIcon type={ContentType.Section} size={12} />
-          <span class="min-w-0 flex-1 truncate">{section.title}</span>
-          <div class="ml-auto flex items-center gap-1">
-            {#if sectionProgress.total > 0}
-              <span
-                class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.completed ===
-                sectionProgress.total
-                  ? 'ui:text-green-600'
-                  : 'ui:text-muted-foreground'}"
-              >
-                {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}
-              </span>
-            {/if}
-            <ChevronRightIcon
-              class="text-muted-foreground size-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/section:rotate-90"
-            />
-          </div>
-        </Collapsible.Trigger>
-        <Collapsible.Content class="ml-2 flex flex-col gap-0.5 border-l pl-2">
-          {#each section.items as contentItem (contentItem.id)}
-            {@render contentItemRow(contentItem)}
-          {/each}
-        </Collapsible.Content>
-      </Collapsible.Root>
+    {#each getCourseOutline(contentData) as entry (entry.id)}
+      {#if entry.kind === 'item'}
+        {@render contentItemRow(entry.item)}
+      {:else}
+        {@const section = entry.section}
+        {@const sectionProgress = getContentItemsProgress(section.items)}
+        {@const sectionOpen = isSectionOpen(section.id)}
+        <Collapsible.Root
+          open={sectionOpen}
+          onOpenChange={(open) => handleSectionOpenChange(section.id, open)}
+          class="group/section"
+        >
+          <Collapsible.Trigger
+            class="flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium"
+          >
+            <CourseContentIcon type={ContentType.Section} size={12} />
+            <span class="min-w-0 flex-1 truncate">{section.title}</span>
+            <div class="ml-auto flex items-center gap-1">
+              {#if sectionProgress.total > 0}
+                <span
+                  class="shrink-0 text-[11px] font-medium tabular-nums {sectionProgress.completed ===
+                  sectionProgress.total
+                    ? 'ui:text-green-600'
+                    : 'ui:text-muted-foreground'}"
+                >
+                  {formatSectionCompletionLabel(sectionProgress.completed, sectionProgress.total)}
+                </span>
+              {/if}
+              <ChevronRightIcon
+                class="text-muted-foreground size-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/section:rotate-90"
+              />
+            </div>
+          </Collapsible.Trigger>
+          <Collapsible.Content class="ml-2 flex flex-col gap-0.5 border-l pl-2">
+            {#each section.items as contentItem (contentItem.id)}
+              {@render contentItemRow(contentItem)}
+            {/each}
+          </Collapsible.Content>
+        </Collapsible.Root>
+      {/if}
     {/each}
   {:else}
     {#each contentData.items as contentItem (contentItem.id)}

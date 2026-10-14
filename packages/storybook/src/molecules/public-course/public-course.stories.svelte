@@ -299,3 +299,20 @@
     </div>
   {/snippet}
 </Story>
+
+<Story name="Outline · standalone items between sections">
+  {#snippet template()}
+    <div class="h-screen w-80">
+      <PublicCourse.PublicCourseSidebar
+        sections={[
+          { id: 'intro', title: '', standalone: true, items: [SIDEBAR_FIXTURE[0].items[0]] },
+          SIDEBAR_FIXTURE[0],
+          { id: 'checkpoint', title: '', standalone: true, items: [SIDEBAR_FIXTURE[1].items[0]] },
+          SIDEBAR_FIXTURE[1]
+        ]}
+        activeSlug={SIDEBAR_FIXTURE[0].items[0].slug}
+        collapsibleSections
+      />
+    </div>
+  {/snippet}
+</Story>

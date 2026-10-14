@@ -39,9 +39,10 @@
 
   interface Props {
     reorder?: boolean;
+    sectionId?: string;
   }
 
-  let { reorder = false }: Props = $props();
+  let { reorder = false, sectionId }: Props = $props();
 
   let prevTitle: string | undefined = $state();
   let errors: Record<string, string> = $state({});
@@ -93,10 +94,12 @@
   }
 
   function syncSections() {
-    sections = (contentData.sections || []).map((section) => ({
-      ...section,
-      items: buildSectionItems(section)
-    }));
+    sections = (contentData.sections || [])
+      .filter((section) => !sectionId || section.id === sectionId)
+      .map((section) => ({
+        ...section,
+        items: buildSectionItems(section)
+      }));
   }
 
   function toCourseContentItems(items: ContentDndItem[]): CourseContentItem[] {
@@ -111,11 +114,16 @@
 
     courseApi.course.content = {
       ...courseApi.course.content,
-      sections: updatedSections.map((section) => ({
-        ...section,
-        items: toCourseContentItems(section.items),
-        order: section.order ?? null
-      }))
+      sections: courseApi.course.content.sections.map((existing) => {
+        const section = updatedSections.find((entry) => entry.id === existing.id);
+        if (!section) return existing;
+
+        return {
+          ...section,
+          items: toCourseContentItems(section.items),
+          order: section.order ?? null
+        };
+      })
     };
   }
 
@@ -162,7 +170,7 @@
 
       return {
         ...section,
-        order: sectionIndex + 1,
+        order: sectionId ? section.order : sectionIndex + 1,
         items: updatedItems
       };
     });
@@ -174,7 +182,7 @@
       .filter((section) => section.id !== 'ungrouped')
       .map((section) => ({ id: section.id, order: section.order ?? 0 }));
 
-    if (sectionsToReorder.length > 0) {
+    if (!sectionId && sectionsToReorder.length > 0) {
       await lessonApi.reorderSections(courseId, sectionsToReorder);
     }
 
@@ -200,8 +208,10 @@
     const activeEditId = $contentEditingStore;
     if (!activeEditId) return;
 
-    const hasMatchingSection = sections.some((section) => section.id === activeEditId);
-    const hasMatchingItem = sections.some((section) => section.items.some((item) => item.contentId === activeEditId));
+    const hasMatchingSection = contentData.sections.some((section) => section.id === activeEditId);
+    const hasMatchingItem = contentData.sections.some((section) =>
+      section.items.some((item) => item.id === activeEditId)
+    );
 
     if (!hasMatchingSection && !hasMatchingItem) {
       contentEditingStore.set(undefined);
@@ -276,7 +286,10 @@
 
   function removeSection(sectionId: string) {
     sections = sections.filter((section) => section.id !== sectionId);
-    syncCourseContentSections(sections);
+    if (courseApi.course?.content) {
+      const remainingSections = courseApi.course.content.sections.filter((section) => section.id !== sectionId);
+      courseApi.course.content = { ...courseApi.course.content, sections: remainingSections };
+    }
   }
 
   async function deleteLesson() {
@@ -452,7 +465,7 @@
       border: '2px #1d4ed8 solid',
       'border-style': 'dashed'
     },
-    dragDisabled: !reorder
+    dragDisabled: !reorder || Boolean(sectionId)
   }}
   onconsider={handleDndConsiderColumns}
   onfinalize={handleDndFinalizeColumns}
