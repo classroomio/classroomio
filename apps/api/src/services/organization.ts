@@ -629,7 +629,7 @@ export async function getUserEnrolled(orgId: string, userId: string, query: TGet
 /**
  * Gets one page of the certificates the user can download in an organization,
  * newest first: course certificates and learning path certificates as
- * `{ kind, data }` rows.
+ * `{ kind, data }` rows. Empty when the org plan does not include certificates.
  *
  * @param orgId - The organization ID
  * @param userId - Student's profile ID
@@ -638,9 +638,10 @@ export async function getUserEnrolled(orgId: string, userId: string, query: TGet
  */
 export async function getUserEarnedCertificates(orgId: string, userId: string, query: TGetEarnedCertificates) {
   try {
-    const includePathCertificates = await orgHasCertificatesEnabled(orgId);
+    const certificatesEnabled = await orgHasCertificatesEnabled(orgId);
+    if (!certificatesEnabled) return { items: [], total: 0 };
 
-    return await getEarnedCertificates({ orgId, profileId: userId, includePathCertificates, ...query });
+    return await getEarnedCertificates({ orgId, profileId: userId, ...query });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { Component } from 'svelte';
   import { CourseCard, LearningPathCard, type CourseCardLabels, type LearningPathCardLabels } from '@cio/ui';
-  import UserIcon from '@lucide/svelte/icons/user';
-  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
-  import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
-  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import { t } from '$lib/utils/functions/translations';
+  import {
+    getCourseTypeBadgeMeta,
+    getCourseVisibilityBadgeMeta,
+    toCourseCardBadge
+  } from '$features/course/utils/course-card-badges';
   import type { EarnedCertificate } from '../utils/types';
 
   interface Props {
@@ -14,37 +14,9 @@
 
   let { certificate }: Props = $props();
 
-  const COURSE_TYPE_BADGES: Record<string, { labelKey: string; icon: Component; iconClass: string }> = {
-    LIVE_CLASS: {
-      labelKey: 'course.navItem.settings.live_class',
-      icon: CircleDotIcon,
-      iconClass: 'ui:size-3 ui:shrink-0 ui:text-red-600'
-    },
-    SELF_PACED: {
-      labelKey: 'course.navItem.settings.self_paced',
-      icon: UserIcon,
-      iconClass: 'ui:size-3 ui:shrink-0 ui:text-primary'
-    },
-    COMPLIANCE: {
-      labelKey: 'course.navItem.settings.compliance',
-      icon: ShieldCheckIcon,
-      iconClass: 'ui:size-3 ui:shrink-0 ui:text-emerald-600'
-    },
-    SPECIALIZATION: {
-      labelKey: 'specialization.course_tag',
-      icon: TrendingUpIcon,
-      iconClass: 'ui:size-3 ui:shrink-0 ui:text-amber-600'
-    }
-  };
-
-  const courseTypeBadge = $derived.by(() => {
-    if (certificate.kind !== 'course') return undefined;
-
-    const badge = COURSE_TYPE_BADGES[certificate.data.type];
-    if (!badge) return undefined;
-
-    return { label: $t(badge.labelKey), icon: badge.icon, iconClass: badge.iconClass };
-  });
+  const courseType = $derived(certificate.kind === 'course' ? certificate.data.type : undefined);
+  const typeBadge = $derived(toCourseCardBadge(getCourseTypeBadgeMeta(courseType), $t));
+  const visibilityBadge = $derived(toCourseCardBadge(getCourseVisibilityBadgeMeta(courseType), $t));
 
   const courseCardLabels = $derived<CourseCardLabels>({
     courseBadge: $t('learningPath.badge.course'),
@@ -94,7 +66,8 @@
     title={certificate.data.title}
     description={certificate.data.description}
     coverImage={certificate.data.logo || undefined}
-    typeBadge={courseTypeBadge}
+    {typeBadge}
+    {visibilityBadge}
     status="COMPLETED"
     certificateEarnedAt={certificate.data.earnedAt}
     labels={courseCardLabels}

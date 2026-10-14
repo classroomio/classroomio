@@ -12,11 +12,13 @@ import type {
 class EarnedCertificatesApi extends BaseApiWithErrors {
   items = $state<EarnedCertificates | null>(null);
   pagination = $state<EarnedCertificatesPagination | null>(null);
+  loadFailed = $state(false);
   private requestSeq = 0;
 
   /**
    * Fetches one page of the student's downloadable certificates, newest first.
    * Only the newest request writes state, so a slow earlier search never overwrites a later one.
+   * A failed request sets `loadFailed` so the page shows a retry instead of results for another query.
    * Org ID is automatically added from currentOrg store
    */
   async fetchCertificates(options: EarnedCertificatesQuery = {}) {
@@ -35,6 +37,12 @@ class EarnedCertificatesApi extends BaseApiWithErrors {
 
         this.items = response.data;
         this.pagination = response.pagination;
+        this.loadFailed = false;
+      },
+      onError: () => {
+        if (seq !== this.requestSeq) return;
+
+        this.loadFailed = true;
       }
     });
   }

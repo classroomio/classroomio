@@ -25,21 +25,20 @@ describe('getUserEarnedCertificates', () => {
     mocks.getEarnedCertificates.mockResolvedValue({ items: [], total: 0 });
   });
 
-  it.each([
-    ['includes path certificates when the plan has certificates', true],
-    ['leaves out path certificates when the plan has none', false]
-  ])('%s', async (_label, planAllows) => {
-    mocks.orgHasCertificatesEnabled.mockResolvedValue(planAllows);
+  it('reads the certificates when the plan includes certificates', async () => {
+    mocks.orgHasCertificatesEnabled.mockResolvedValue(true);
 
     await getUserEarnedCertificates('org-1', 'ada', query);
 
     expect(mocks.orgHasCertificatesEnabled).toHaveBeenCalledWith('org-1');
-    expect(mocks.getEarnedCertificates).toHaveBeenCalledWith({
-      orgId: 'org-1',
-      profileId: 'ada',
-      includePathCertificates: planAllows,
-      ...query
-    });
+    expect(mocks.getEarnedCertificates).toHaveBeenCalledWith({ orgId: 'org-1', profileId: 'ada', ...query });
+  });
+
+  it('returns an empty page without reading certificates when the plan has none', async () => {
+    mocks.orgHasCertificatesEnabled.mockResolvedValue(false);
+
+    await expect(getUserEarnedCertificates('org-1', 'ada', query)).resolves.toEqual({ items: [], total: 0 });
+    expect(mocks.getEarnedCertificates).not.toHaveBeenCalled();
   });
 
   it('turns a rejected query into an AppError with CERTIFICATES_FETCH_FAILED', async () => {

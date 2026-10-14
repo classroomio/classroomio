@@ -44,8 +44,6 @@ interface GetEarnedCertificatesOptions {
   page: number;
   /** Case-insensitive match on course titles and path names. */
   search?: string;
-  /** False drops every path certificate: path downloads also need the org plan to include certificates. */
-  includePathCertificates: boolean;
 }
 
 type TEarnedCertificateRow = {
@@ -67,12 +65,13 @@ type TEarnedCertificateRow = {
  * One page of the certificates a learner can download in an organization,
  * newest first, in a single statement: course certificates earned on their
  * enrollment (including courses taken inside a path) and issued path
- * certificates. Each row passes the same checks as its download route.
- * Totals come from a one-row CTE the page is left-joined onto, so a page past
- * the end still reports them.
+ * certificates. Each row passes the same checks as its download route, except
+ * the org plan, which the caller checks once for the whole list. Totals come
+ * from a one-row CTE the page is left-joined onto, so a page past the end
+ * still reports them.
  */
 export async function getEarnedCertificates(
-  { orgId, profileId, limit, page, search, includePathCertificates }: GetEarnedCertificatesOptions,
+  { orgId, profileId, limit, page, search }: GetEarnedCertificatesOptions,
   dbClient: DbOrTxClient = db
 ): Promise<TEarnedCertificatesPage> {
   try {
@@ -98,6 +97,10 @@ export async function getEarnedCertificates(
         WHERE gm.profile_id = ${profileId}
           AND gm.certificate_earned_at IS NOT NULL
           AND c.certificate->>'isDownloadable' = 'true'
+          AND EXISTS (
+            SELECT 1 FROM ${schema.courseEnrollmentGrant} ceg
+            WHERE ceg.course_id = c.id AND ceg.profile_id = ${profileId} AND ceg.revoked_at IS NULL
+          )
         UNION ALL
         SELECT 'learning_path',
           lp.id,
@@ -118,8 +121,7 @@ export async function getEarnedCertificates(
         FROM ${schema.learningPathCertificateIssue} ci
         JOIN ${schema.learningPath} lp ON lp.id = ci.learning_path_id
         JOIN ${schema.learningPathMember} lpm ON lpm.id = ci.learning_path_member_id
-        WHERE ${includePathCertificates}
-          AND ci.profile_id = ${profileId}
+        WHERE ci.profile_id = ${profileId}
           AND ci.status = 'valid'
           AND ci.revoked_at IS NULL
           AND lp.organization_id = ${orgId}

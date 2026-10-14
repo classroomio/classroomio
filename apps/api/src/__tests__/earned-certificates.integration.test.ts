@@ -16,6 +16,7 @@ import {
   addPathCourses,
   earnCourseCertificate,
   hasDatabase,
+  insertGrant,
   insertCourse,
   insertMember,
   insertOrganization,
@@ -32,6 +33,7 @@ type CourseCertificateOptions = {
   courseStatus?: string;
   downloadable?: boolean;
   earnedAt?: string | null;
+  grantRevokedAt?: string;
 };
 
 type PathCertificateOptions = {
@@ -58,7 +60,13 @@ async function seedOrg(tx: DbOrTxClient) {
       status: options.courseStatus,
       certificateDownloadable: options.downloadable ?? true
     });
-    const groupMemberId = await insertMember(tx, course.groupId, options.profileId ?? ada);
+    const profileId = options.profileId ?? ada;
+    const groupMemberId = await insertMember(tx, course.groupId, profileId);
+    await insertGrant(
+      tx,
+      { groupMemberId, courseId: course.courseId, profileId, source: 'SELF_ENROLL', grantedAt: '2026-08-01T00:00:00Z' },
+      { revokedAt: options.grantRevokedAt }
+    );
     const earnedAt = options.earnedAt === undefined ? '2026-09-01T00:00:00Z' : options.earnedAt;
 
     if (earnedAt) {
@@ -94,7 +102,7 @@ async function seedOrg(tx: DbOrTxClient) {
 
 async function readCertificates(
   tx: DbOrTxClient,
-  options: { orgId: string; profileId: string; page?: number; limit?: number; search?: string; paths?: boolean }
+  options: { orgId: string; profileId: string; page?: number; limit?: number; search?: string }
 ) {
   const { getEarnedCertificates } = await import('@cio/db/queries/certificates');
 
@@ -104,8 +112,7 @@ async function readCertificates(
       profileId: options.profileId,
       page: options.page ?? 1,
       limit: options.limit ?? 12,
-      search: options.search,
-      includePathCertificates: options.paths ?? true
+      search: options.search
     },
     tx
   );
@@ -127,6 +134,7 @@ describe.skipIf(!hasDatabase)('getEarnedCertificates (database)', () => {
       await earnCourse('Deleted course', { courseStatus: 'DELETED' });
       await earnCourse('Other org course', { org: otherOrgId });
       await earnCourse("Bob's course", { profileId: bob });
+      await earnCourse('Access revoked', { grantRevokedAt: '2026-09-10T00:00:00Z' });
 
       await certifyPath('Data Science', { issuedAt: '2026-09-10T00:00:00Z', courseIds: [excel.courseId] });
       await certifyPath('Path download off', { downloadable: false });
@@ -159,20 +167,6 @@ describe.skipIf(!hasDatabase)('getEarnedCertificates (database)', () => {
         'path:Data Science',
         'course:SQL'
       ]);
-    });
-  }, 30000);
-
-  it('drops path certificates when the plan has none, and keeps course certificates', async () => {
-    await withRollback(async (tx) => {
-      const { ada, orgId, earnCourse, certifyPath } = await seedOrg(tx);
-
-      await earnCourse('Excel');
-      await certifyPath('Data Science');
-
-      const page = await readCertificates(tx, { orgId, profileId: ada, paths: false });
-
-      expect(toTitles(page)).toEqual(['course:Excel']);
-      expect(page.total).toBe(1);
     });
   }, 30000);
 

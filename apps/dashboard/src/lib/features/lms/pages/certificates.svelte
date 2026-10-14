@@ -61,7 +61,11 @@
     placeholder={$t('certificates.search')}
   />
 
-  {#if !certificates}
+  {#if earnedCertificatesApi.loadFailed}
+    <Empty title={$t('certificates.load_error_title')} description={$t('certificates.load_error_description')}>
+      <Button onclick={loadCertificates} disabled={earnedCertificatesApi.isLoading}>{$t('certificates.retry')}</Button>
+    </Empty>
+  {:else if !certificates}
     <div class="grid w-full grid-cols-1 justify-items-center gap-4 md:grid-cols-2 xl:grid-cols-3">
       {#each [0, 1, 2] as index (index)}
         <CourseCardLoader />
