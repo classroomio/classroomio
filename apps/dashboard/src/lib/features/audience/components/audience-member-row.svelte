@@ -5,7 +5,7 @@
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Badge } from '@cio/ui/base/badge';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
-  import MedalIcon from '@lucide/svelte/icons/medal';
+  import { CertificateIcon } from '@cio/ui/custom/moving-icons';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import type { OrganizationAudienceMember } from '$features/org/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -64,6 +64,8 @@
       count: row.certificateCount
     })
   );
+
+  let isRowHovered = $state(false);
 </script>
 
 {#snippet nameCellContent(triggerProps: Record<string, unknown>)}
@@ -81,11 +83,15 @@
     {/if}
 
     {#if row.certificateCount > 0}
-      <span class="inline-flex items-center gap-1">
-        <MedalIcon class="h-4 w-4 text-amber-500" aria-hidden="true" />
+      <span class="inline-flex items-center gap-1" aria-hidden="true">
+        <span
+          class="inline-flex items-center justify-center rounded-full bg-amber-100 p-1 text-amber-800 dark:bg-amber-500/20 dark:text-amber-200"
+        >
+          <CertificateIcon size={14} isHovered={isRowHovered} />
+        </span>
         {#if row.certificateCount > 1}
           <span
-            class="rounded-full bg-amber-100 px-1.5 text-[10px] font-semibold text-amber-900 dark:bg-amber-500/20 dark:text-amber-200"
+            class="rounded-full bg-amber-100 px-1.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-500/20 dark:text-amber-200"
           >
             {row.certificateCount}
           </span>
@@ -95,7 +101,11 @@
   </div>
 {/snippet}
 
-<Table.Row class={isSuspended ? 'ui:text-muted-foreground' : undefined}>
+<Table.Row
+  class={isSuspended ? 'ui:text-muted-foreground' : undefined}
+  onmouseenter={() => (isRowHovered = true)}
+  onmouseleave={() => (isRowHovered = false)}
+>
   <Table.Cell class="w-10">
     <Checkbox disabled={!row.profileId} checked={selected} onCheckedChange={onToggleSelect} />
   </Table.Cell>
