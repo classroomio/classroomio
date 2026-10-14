@@ -77,6 +77,7 @@
 
           <Field.Group>
             <InputField
+              name="webhook-name"
               testId="webhook-form-name"
               label={$t(`${T}.form.name`)}
               placeholder={$t(`${T}.form.name_placeholder`)}
@@ -87,6 +88,7 @@
             />
 
             <InputField
+              name="webhook-payload-url"
               testId="webhook-form-url"
               label={$t(`${T}.form.payload_url`)}
               placeholder="https://example.com/webhooks/classroomio"
@@ -97,6 +99,7 @@
             />
 
             <InputField
+              name="webhook-secret"
               testId="webhook-form-secret"
               type="password"
               label={$t(`${T}.form.secret`)}

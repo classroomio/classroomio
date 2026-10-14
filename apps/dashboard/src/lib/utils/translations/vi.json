@@ -5065,7 +5065,6 @@
     },
     "webhooks": {
       "page_subtitle": "Gửi các sự kiện ClassroomIO theo thời gian thực đến Slack, CRM hoặc backend của riêng bạn.",
-      "title": "Webhooks",
       "description": "ClassroomIO gửi một HTTP POST đã ký đến URL của bạn mỗi khi một sự kiện được chọn xảy ra. Các lần gửi thất bại sẽ được tự động thử lại.",
       "permissions_description": "Chỉ quản trị viên tổ chức mới có thể tạo, chỉnh sửa hoặc xóa webhook.",
       "create": "Webhook mới",

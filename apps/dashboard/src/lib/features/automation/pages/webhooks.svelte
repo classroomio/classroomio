@@ -45,11 +45,24 @@
   $effect(() => {
     const organizationId = $currentOrg.id;
 
-    if (!organizationId || organizationId === loadedOrgId || !canManage) return;
+    if (!organizationId || organizationId === loadedOrgId) return;
+
+    if (loadedOrgId) {
+      resetOrganizationView();
+    }
+
+    if (!canManage) return;
 
     loadedOrgId = organizationId;
     void webhookApi.list();
   });
+
+  function resetOrganizationView() {
+    isFormOpen = false;
+    editingWebhook = null;
+    deliveriesWebhook = null;
+    webhookApi.resetOrganizationState();
+  }
 
   function openCreate() {
     editingWebhook = null;
@@ -92,18 +105,14 @@
   {/if}
 
   <div class="space-y-3">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2 font-medium">
-        <WebhookIcon class="size-5" />
-        {$t(`${T}.title`)}
-      </div>
+    <div class="flex items-start justify-between gap-4">
+      <p class="ui:text-muted-foreground text-sm">{$t(`${T}.description`)}</p>
       {#if canManage}
         <IconButton onclick={openCreate} tooltip={$t(`${T}.create`)} testId="webhook-create">
           <PlusIcon size={16} />
         </IconButton>
       {/if}
     </div>
-    <p class="ui:text-muted-foreground text-sm">{$t(`${T}.description`)}</p>
 
     {#if webhookApi.revealedSecret}
       <div class="rounded-lg border border-amber-200 bg-amber-50 p-4" data-testid="webhook-secret-reveal">
@@ -181,10 +190,12 @@
                 </Table.Cell>
                 <Table.Cell>
                   <DropdownMenu.Root>
-                    <DropdownMenu.Trigger class="inline-flex items-center justify-center">
-                      <IconButton aria-label={$t(`${T}.actions.label`)}>
-                        <EllipsisVerticalIcon size={16} />
-                      </IconButton>
+                    <DropdownMenu.Trigger>
+                      {#snippet child({ props })}
+                        <IconButton {...props} aria-label={$t(`${T}.actions.label`)}>
+                          <EllipsisVerticalIcon size={16} />
+                        </IconButton>
+                      {/snippet}
                     </DropdownMenu.Trigger>
                     <DropdownMenu.Content align="end">
                       <DropdownMenu.Item onclick={() => openEdit(webhook)}>{$t(`${T}.actions.edit`)}</DropdownMenu.Item>

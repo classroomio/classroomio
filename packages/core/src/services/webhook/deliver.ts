@@ -5,11 +5,10 @@ import {
   getEarliestPendingWebhookAttemptAt,
   getWebhookEndpointById,
   recordWebhookAttempt,
-  withWebhookEndpointLock,
   type TWebhookAttemptResult
 } from '@cio/db/queries/webhook';
 import type { TWebhookDelivery, TWebhookEndpoint, TWebhookEvent } from '@cio/db/types';
-import { enqueueWebhookDelivery } from '@cio/jobs';
+import { enqueueWebhookDelivery, withRedisLock } from '@cio/jobs';
 import {
   WEBHOOK_AUTO_DISABLE_FAILURE_THRESHOLD,
   WEBHOOK_MAX_ATTEMPTS,
@@ -28,6 +27,7 @@ import { assertWebhookUrlShape, WebhookUrlError } from './url-guard';
 
 const LOCK_BUSY_RETRY_MS = 5_000;
 const MAX_DELIVERIES_PER_RUN = 25;
+const ENDPOINT_LOCK_TTL_MS = 6 * 60_000;
 
 export function createWebhookRecordId(prefix: 'evt' | 'whd'): string {
   return `${prefix}_${randomUUID().replace(/-/g, '')}`;
@@ -99,76 +99,86 @@ export async function attemptWebhookDelivery(
   const errorMessage =
     sendResult.errorMessage ?? (success ? null : `Endpoint responded with HTTP ${sendResult.responseStatus}`);
 
+  const responseBody = sendResult.responseBody
+    ? truncateText(redactSensitiveText(sendResult.responseBody), WEBHOOK_RESPONSE_BODY_LIMIT)
+    : null;
+  const nextAttemptAt = !success && canRetry ? new Date(Date.now() + retryDelayMs) : null;
+
   return {
     success,
     attempt,
     responseStatus: sendResult.responseStatus,
-    responseBody: sendResult.responseBody
-      ? truncateText(redactSensitiveText(sendResult.responseBody), WEBHOOK_RESPONSE_BODY_LIMIT)
-      : null,
+    responseBody,
     errorMessage,
     durationMs: sendResult.durationMs,
     requestHeaders: headers,
-    nextAttemptAt: !success && canRetry ? new Date(Date.now() + retryDelayMs) : null,
+    nextAttemptAt,
     failureThreshold: WEBHOOK_AUTO_DISABLE_FAILURE_THRESHOLD
   };
 }
 
-/**
- * Drains every due delivery for the endpoint (oldest first, one in flight at a time), then schedules
- * the next run for the earliest pending retry. Safe to call concurrently and repeatedly.
- */
-export async function processWebhookEndpoint(webhookId: string): Promise<{ processed: number }> {
-  const processed = await withWebhookEndpointLock(webhookId, async (tx) => {
-    let count = 0;
+async function drainWebhookEndpoint(webhookId: string): Promise<{ count: number; nextAttemptAt: Date | null }> {
+  let count = 0;
 
-    while (count < MAX_DELIVERIES_PER_RUN) {
-      const record = await claimNextDueWebhookDelivery(webhookId, tx);
+  while (count < MAX_DELIVERIES_PER_RUN) {
+    const record = await claimNextDueWebhookDelivery(webhookId);
 
-      if (!record) break;
+    if (!record) break;
 
-      const endpoint = await getWebhookEndpointById(webhookId, tx);
+    const endpoint = await getWebhookEndpointById(webhookId);
 
-      if (!endpoint) break;
+    if (!endpoint) break;
 
-      count += 1;
+    count += 1;
 
-      if (!endpoint.isActive && !record.delivery.isTest) {
-        const skipped: TWebhookAttemptResult = {
-          success: false,
-          attempt: record.delivery.attempt,
-          responseStatus: null,
-          responseBody: null,
-          errorMessage: 'Endpoint is disabled',
-          durationMs: 0,
-          requestHeaders: {},
-          nextAttemptAt: null,
-          failureThreshold: WEBHOOK_AUTO_DISABLE_FAILURE_THRESHOLD
-        };
-        await recordWebhookAttempt(record.delivery.id, webhookId, false, skipped, tx);
+    if (!endpoint.isActive && !record.delivery.isTest) {
+      const skipped: TWebhookAttemptResult = {
+        success: false,
+        attempt: record.delivery.attempt,
+        responseStatus: null,
+        responseBody: null,
+        errorMessage: 'Endpoint is disabled',
+        durationMs: 0,
+        requestHeaders: {},
+        nextAttemptAt: null,
+        failureThreshold: WEBHOOK_AUTO_DISABLE_FAILURE_THRESHOLD
+      };
+      await recordWebhookAttempt(record.delivery.id, webhookId, false, skipped);
 
-        continue;
-      }
-
-      const result = await attemptWebhookDelivery(endpoint, record.delivery, record.event);
-      await recordWebhookAttempt(record.delivery.id, webhookId, !record.delivery.isTest, result, tx);
+      continue;
     }
 
-    const nextAttemptAt = await getEarliestPendingWebhookAttemptAt(webhookId, tx);
+    const result = await attemptWebhookDelivery(endpoint, record.delivery, record.event);
+    await recordWebhookAttempt(record.delivery.id, webhookId, !record.delivery.isTest, result);
+  }
 
-    return { count, nextAttemptAt };
-  });
+  const nextAttemptAt = await getEarliestPendingWebhookAttemptAt(webhookId);
 
-  if (!processed) {
+  return { count, nextAttemptAt };
+}
+
+/**
+ * Drains every due delivery for the endpoint (oldest first, one in flight at a time), then schedules
+ * the next run for the earliest pending retry. The per-endpoint Redis lock keeps runs exclusive without
+ * holding a database transaction open during HTTP requests. Safe to call concurrently and repeatedly.
+ */
+export async function processWebhookEndpoint(webhookId: string): Promise<{ processed: number }> {
+  const outcome = await withRedisLock(`webhook:${webhookId}`, ENDPOINT_LOCK_TTL_MS, () =>
+    drainWebhookEndpoint(webhookId)
+  );
+
+  if (!outcome.acquired) {
     await enqueueWebhookDelivery({ webhookId }, { delayMs: LOCK_BUSY_RETRY_MS });
 
     return { processed: 0 };
   }
 
-  if (processed.nextAttemptAt) {
-    const delayMs = Math.max(0, processed.nextAttemptAt.getTime() - Date.now());
+  const { count, nextAttemptAt } = outcome.value;
+
+  if (nextAttemptAt) {
+    const delayMs = Math.max(0, nextAttemptAt.getTime() - Date.now());
     await enqueueWebhookDelivery({ webhookId }, { delayMs });
   }
 
-  return { processed: processed.count };
+  return { processed: count };
 }

@@ -322,13 +322,12 @@ export async function resetStudentCourseProgress(input: {
         aiChatConversations: deletedAiChatConversations.length
       };
 
-      return {
-        summary,
-        resetLessonIds: [
-          ...new Set(deletedLessonCompletions.map((row) => row.lessonId).filter((id): id is string => id !== null))
-        ],
-        resetExerciseIds: [...new Set(deletedSubmissions.map((row) => row.exerciseId))]
-      };
+      const resetLessonIds = [
+        ...new Set(deletedLessonCompletions.map((row) => row.lessonId).filter((id): id is string => id !== null))
+      ];
+      const resetExerciseIds = [...new Set(deletedSubmissions.map((row) => row.exerciseId))];
+
+      return { summary, resetLessonIds, resetExerciseIds };
     });
   } catch (error) {
     console.error('resetStudentCourseProgress error:', error);

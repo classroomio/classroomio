@@ -7,8 +7,7 @@ import { assertWebhookUrlShape, resolveWebhookTarget, WebhookUrlError } from '@c
 import { db } from '@cio/db/drizzle';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import {
-  countWebhookEndpoints,
-  createWebhookEndpoint,
+  createWebhookEndpointWithinLimit,
   deleteWebhookEndpoint,
   getWebhookDeliveryRecord,
   getWebhookEndpoint,
@@ -150,27 +149,18 @@ export async function getWebhookService(organizationId: string, webhookId: strin
 export async function createWebhookService(organizationId: string, profileId: string, payload: TCreateWebhook) {
   await assertWebhooksAllowed(organizationId);
 
-  const existing = await countWebhookEndpoints(organizationId);
-
-  if (existing >= WEBHOOK_MAX_ENDPOINTS_PER_ORG) {
-    throw new AppError(
-      `You can create up to ${WEBHOOK_MAX_ENDPOINTS_PER_ORG} webhooks`,
-      ErrorCodes.WEBHOOK_LIMIT_EXCEEDED,
-      403
-    );
-  }
-
   await assertPayloadUrlAllowed(payload.payloadUrl);
 
   const secret = payload.secret ?? generateWebhookSecret();
   const eventTypes = payload.eventMode === 'all' ? [...WEBHOOK_EVENT_TYPES] : payload.eventTypes;
+  const secretCiphertext = encryptWebhookSecret(secret);
 
-  const created = await createWebhookEndpoint(
+  const created = await createWebhookEndpointWithinLimit(
     {
       organizationId,
       name: payload.name,
       payloadUrl: payload.payloadUrl,
-      secretCiphertext: encryptWebhookSecret(secret),
+      secretCiphertext,
       secretLast4: secret.slice(-4),
       verifySsl: payload.verifySsl,
       eventMode: payload.eventMode,
@@ -178,8 +168,17 @@ export async function createWebhookService(organizationId: string, profileId: st
       createdByProfileId: profileId,
       updatedByProfileId: profileId
     },
-    eventTypes
+    eventTypes,
+    WEBHOOK_MAX_ENDPOINTS_PER_ORG
   );
+
+  if (!created) {
+    throw new AppError(
+      `You can create up to ${WEBHOOK_MAX_ENDPOINTS_PER_ORG} webhooks`,
+      ErrorCodes.WEBHOOK_LIMIT_EXCEEDED,
+      403
+    );
+  }
 
   return { webhook: toWebhookView(created), secret };
 }
@@ -205,6 +204,12 @@ export async function updateWebhookService(
   }
 
   const reEnabling = payload.isActive === true && !current.isActive;
+  const secretFields = payload.secret
+    ? { secretCiphertext: encryptWebhookSecret(payload.secret), secretLast4: payload.secret.slice(-4) }
+    : {};
+  const healthResetFields = reEnabling ? { consecutiveFailures: 0, autoDisabledAt: null } : {};
+  const eventTypesToStore =
+    payload.eventMode !== undefined || payload.eventTypes !== undefined ? nextEventTypes : undefined;
 
   const updated = await updateWebhookEndpoint(
     organizationId,
@@ -215,13 +220,11 @@ export async function updateWebhookService(
       verifySsl: payload.verifySsl,
       eventMode,
       isActive: payload.isActive,
-      ...(payload.secret
-        ? { secretCiphertext: encryptWebhookSecret(payload.secret), secretLast4: payload.secret.slice(-4) }
-        : {}),
-      ...(reEnabling ? { consecutiveFailures: 0, autoDisabledAt: null } : {}),
+      ...secretFields,
+      ...healthResetFields,
       updatedByProfileId: profileId
     },
-    payload.eventMode !== undefined || payload.eventTypes !== undefined ? nextEventTypes : undefined
+    eventTypesToStore
   );
 
   if (!updated) {
@@ -240,8 +243,9 @@ export async function regenerateWebhookSecretService(organizationId: string, web
   await loadWebhookOrThrow(organizationId, webhookId);
 
   const secret = generateWebhookSecret();
+  const secretCiphertext = encryptWebhookSecret(secret);
   const updated = await updateWebhookEndpoint(organizationId, webhookId, {
-    secretCiphertext: encryptWebhookSecret(secret),
+    secretCiphertext,
     secretLast4: secret.slice(-4),
     updatedByProfileId: profileId
   });

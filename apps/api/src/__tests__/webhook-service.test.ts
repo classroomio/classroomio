@@ -10,8 +10,7 @@ vi.mock('@cio/db/queries/organization', () => ({
 }));
 
 vi.mock('@cio/db/queries/webhook', () => ({
-  countWebhookEndpoints: vi.fn(),
-  createWebhookEndpoint: vi.fn(),
+  createWebhookEndpointWithinLimit: vi.fn(),
   deleteWebhookEndpoint: vi.fn(),
   getWebhookDeliveryRecord: vi.fn(),
   getWebhookEndpoint: vi.fn(),
@@ -36,8 +35,7 @@ vi.mock('@cio/core/services/webhook/url-guard', async (importOriginal) => {
 import { decryptWebhookSecret } from '@cio/core/services/webhook/secret';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import {
-  countWebhookEndpoints,
-  createWebhookEndpoint,
+  createWebhookEndpointWithinLimit,
   getWebhookEndpoint,
   listWebhookEndpoints,
   requeueWebhookDelivery,
@@ -92,8 +90,7 @@ describe('webhook service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     allowPlan('EARLY_ADOPTER');
-    vi.mocked(countWebhookEndpoints).mockResolvedValue(0);
-    vi.mocked(createWebhookEndpoint).mockImplementation(
+    vi.mocked(createWebhookEndpointWithinLimit).mockImplementation(
       async (values, eventTypes) =>
         ({
           ...buildEndpoint(),
@@ -121,7 +118,7 @@ describe('webhook service', () => {
         statusCode: 403
       });
       await expect(redeliverWebhookService(orgId, webhookId, 'whd_1')).rejects.toMatchObject({ statusCode: 403 });
-      expect(createWebhookEndpoint).not.toHaveBeenCalled();
+      expect(createWebhookEndpointWithinLimit).not.toHaveBeenCalled();
     });
 
     it('rejects an org with no active plan', async () => {
@@ -147,7 +144,7 @@ describe('webhook service', () => {
 
     it('returns the plaintext secret once, stores it encrypted, and never exposes it in the view', async () => {
       const { webhook, secret } = await createWebhookService(orgId, 'profile-1', payload);
-      const stored = vi.mocked(createWebhookEndpoint).mock.calls[0]![0];
+      const stored = vi.mocked(createWebhookEndpointWithinLimit).mock.calls[0]![0];
 
       expect(secret).toMatch(/^whsec_/);
       expect(stored.secretCiphertext).not.toContain(secret);
@@ -167,7 +164,7 @@ describe('webhook service', () => {
     it('subscribes to every event in all mode', async () => {
       await createWebhookService(orgId, 'profile-1', { ...payload, eventMode: 'all', eventTypes: [] });
 
-      expect(vi.mocked(createWebhookEndpoint).mock.calls[0]![1]).toEqual([...WEBHOOK_EVENT_TYPES]);
+      expect(vi.mocked(createWebhookEndpointWithinLimit).mock.calls[0]![1]).toEqual([...WEBHOOK_EVENT_TYPES]);
     });
 
     it.each([
@@ -181,11 +178,11 @@ describe('webhook service', () => {
         code: 'WEBHOOK_URL_INVALID',
         field: 'payloadUrl'
       });
-      expect(createWebhookEndpoint).not.toHaveBeenCalled();
+      expect(createWebhookEndpointWithinLimit).not.toHaveBeenCalled();
     });
 
     it('enforces the per-org endpoint limit', async () => {
-      vi.mocked(countWebhookEndpoints).mockResolvedValue(WEBHOOK_MAX_ENDPOINTS_PER_ORG);
+      vi.mocked(createWebhookEndpointWithinLimit).mockResolvedValue(null);
 
       await expect(createWebhookService(orgId, 'profile-1', payload)).rejects.toMatchObject({
         statusCode: 403,
@@ -227,6 +224,7 @@ describe('webhook service', () => {
     it('still validates events when an update switches to selected mode', () => {
       expect(ZUpdateWebhook.safeParse({ eventMode: 'selected', eventTypes: [] }).success).toBe(false);
       expect(ZUpdateWebhook.safeParse({ eventMode: 'all' }).success).toBe(true);
+      expect(ZUpdateWebhook.safeParse({ eventMode: 'selected' }).success).toBe(true);
     });
   });
 

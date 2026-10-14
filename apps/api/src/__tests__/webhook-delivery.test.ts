@@ -13,7 +13,12 @@ import { attemptWebhookDelivery } from '@cio/core/services/webhook/deliver';
 import { encryptWebhookSecret } from '@cio/core/services/webhook/secret';
 import { verifyWebhookSignature } from '@cio/core/services/webhook/signature';
 import type { TWebhookEndpoint, TWebhookEvent } from '@cio/db/types';
-import { WEBHOOK_MAX_ATTEMPTS, WEBHOOK_RETRY_DELAYS_MS } from '@cio/utils/constants/webhook';
+import {
+  WEBHOOK_MAX_ATTEMPTS,
+  WEBHOOK_REQUEST_TIMEOUT_MS,
+  WEBHOOK_RESPONSE_BODY_LIMIT,
+  WEBHOOK_RETRY_DELAYS_MS
+} from '@cio/utils/constants/webhook';
 
 type CapturedRequest = { headers: http.IncomingHttpHeaders; body: string };
 
@@ -90,6 +95,33 @@ describe('attemptWebhookDelivery', () => {
       verifyWebhookSignature(secret, timestamp, request.body, String(request.headers['x-cio-signature-256']))
     ).toBe(true);
   });
+
+  it('stops reading an oversized response body and still reports the status', async () => {
+    respond = (response) => {
+      response.write(Buffer.alloc(WEBHOOK_RESPONSE_BODY_LIMIT * 8, 'a'));
+      response.end();
+    };
+
+    const result = await attemptWebhookDelivery(buildEndpoint('/big'), { id: 'whd_big', attempt: 0 }, event);
+
+    expect(result.responseStatus).toBe(200);
+    expect(result.responseBody!.length).toBeLessThanOrEqual(WEBHOOK_RESPONSE_BODY_LIMIT + 32);
+  });
+
+  it('enforces a total deadline against a receiver that trickles bytes', async () => {
+    respond = (response) => {
+      response.writeHead(200);
+      const interval = setInterval(() => response.write('x'), 2_000);
+      response.on('close', () => clearInterval(interval));
+    };
+
+    const startedAt = Date.now();
+    const result = await attemptWebhookDelivery(buildEndpoint('/slow'), { id: 'whd_slow', attempt: 0 }, event);
+
+    expect(result.success).toBe(false);
+    expect(result.errorMessage).toContain('timed out');
+    expect(Date.now() - startedAt).toBeLessThan(WEBHOOK_REQUEST_TIMEOUT_MS + 3_000);
+  }, 20_000);
 
   it('keeps the same event id on every attempt', async () => {
     captured = [];

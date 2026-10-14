@@ -70,6 +70,16 @@ describe('webhook url guard', () => {
     ['::1', true],
     ['fd00::1', true],
     ['::ffff:127.0.0.1', true],
+    ['::ffff:7f00:1', true],
+    ['::ffff:a9fe:a9fe', true],
+    ['::ffff:808:808', false],
+    ['::7f00:1', true],
+    ['64:ff9b::7f00:1', true],
+    ['64:ff9b::808:808', false],
+    ['2002:7f00:1::', true],
+    ['fe80::1', true],
+    ['ff02::1', true],
+    ['::', true],
     ['2606:4700:4700::1111', false]
   ])('classifies %s as private=%s', (address, expected) => {
     expect(isPrivateAddress(address)).toBe(expected);
@@ -81,6 +91,8 @@ describe('webhook url guard', () => {
     'https://service.internal/hook',
     'https://127.0.0.1/hook',
     'https://[::1]/hook',
+    'https://[::ffff:127.0.0.1]/hook',
+    'https://[::ffff:169.254.169.254]/hook',
     'https://169.254.169.254/latest/meta-data',
     'http://example.com/hook',
     'ftp://example.com/hook',

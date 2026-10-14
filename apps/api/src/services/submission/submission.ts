@@ -554,10 +554,13 @@ async function emitSubmissionWebhookEvent(
 ) {
   if (!submission.courseId) return;
 
+  const profile = submission.submittedBy ? await getProfileByGroupMemberId(submission.submittedBy) : null;
+
   await emitCourseWebhookEvent(submission.courseId, eventType, {
     submissionId: submission.id,
     exerciseId: submission.exerciseId,
-    submittedByProfileId: submission.submittedBy,
+    memberId: submission.submittedBy,
+    profileId: profile?.id ?? null,
     statusId: submission.statusId,
     gradingState: submission.gradingState,
     total: submission.total,
@@ -565,12 +568,25 @@ async function emitSubmissionWebhookEvent(
   });
 }
 
-async function emitExerciseCompletionWebhookEvent(submission: TSubmission, wasAlreadyComplete: boolean) {
-  if (!submission.courseId || wasAlreadyComplete) return;
+async function wasExerciseCompleteForMember(exerciseId: string | null, groupMemberId: string | null) {
+  if (!exerciseId || !groupMemberId) return false;
+
+  return isExerciseCompletedForMember(exerciseId, groupMemberId);
+}
+
+async function emitExerciseCompletionIfReached(submission: TSubmission, wasCompleteBefore: boolean) {
+  if (!submission.courseId || !submission.exerciseId || !submission.submittedBy || wasCompleteBefore) return;
+
+  const isCompleteNow = await isExerciseCompletedForMember(submission.exerciseId, submission.submittedBy);
+
+  if (!isCompleteNow) return;
+
+  const profile = await getProfileByGroupMemberId(submission.submittedBy);
 
   await emitCourseWebhookEvent(submission.courseId, 'exercise.completion.updated', {
     exerciseId: submission.exerciseId,
-    submittedByProfileId: submission.submittedBy,
+    memberId: submission.submittedBy,
+    profileId: profile?.id ?? null,
     isComplete: true
   });
 }
@@ -589,6 +605,7 @@ export async function createSubmissionService(
     const course = courseRows[0];
 
     const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
+    const wasCompleteBefore = await wasExerciseCompleteForMember(exerciseId, submittedBy);
 
     if (!exerciseWithRelations.exercise.allowMultipleAttempts) {
       if (alreadySubmitted) {
@@ -765,7 +782,7 @@ export async function createSubmissionService(
         await emitSubmissionWebhookEvent('course.submission.status_changed', submission, {
           previousStatusId: projectLegacyStatusId(gradingState)
         });
-        await emitExerciseCompletionWebhookEvent(submission, alreadySubmitted);
+        await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
 
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
@@ -780,7 +797,7 @@ export async function createSubmissionService(
     await syncComplianceProgressFromSubmission(courseId, submittedBy);
     await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
     await emitSubmissionWebhookEvent('course.submission.created', submission);
-    await emitExerciseCompletionWebhookEvent(submission, alreadySubmitted);
+    await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
 
     return submission;
   } catch (error) {
@@ -829,6 +846,7 @@ export async function updateSubmissionService(
     }
 
     const previousLegacyStatusId = projectLegacyStatusId(currentGradingState);
+    const wasCompleteBefore = await wasExerciseCompleteForMember(submission.exerciseId, submission.submittedBy);
     const updatePayload: Partial<TSubmission> = { ...data };
     if (requestedGradingState) {
       updatePayload.gradingState = requestedGradingState;
@@ -837,6 +855,7 @@ export async function updateSubmissionService(
 
     const nextLegacyStatusId = Number(updatePayload.statusId ?? previousLegacyStatusId);
     const statusChanged = nextLegacyStatusId !== previousLegacyStatusId;
+    const gradingStateChanged = Boolean(requestedGradingState) && requestedGradingState !== currentGradingState;
 
     const updated = await updateSubmission(submissionId, updatePayload);
     if (!updated) {
@@ -853,11 +872,14 @@ export async function updateSubmissionService(
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
     }
 
-    if (statusChanged) {
+    if (statusChanged || gradingStateChanged) {
       await emitSubmissionWebhookEvent('course.submission.status_changed', updated, {
-        previousStatusId: previousLegacyStatusId
+        previousStatusId: previousLegacyStatusId,
+        previousGradingState: currentGradingState
       });
     }
+
+    await emitExerciseCompletionIfReached(updated, wasCompleteBefore);
 
     return updated;
   } catch (error) {
@@ -944,6 +966,7 @@ export async function updateSubmissionGradesBatch(
 
     const previousLegacyStatusId = projectLegacyStatusId(currentGradingState);
     const statusChanged = targetStatusId !== previousLegacyStatusId;
+    const wasCompleteBefore = await wasExerciseCompleteForMember(submission.exerciseId, submission.submittedBy);
 
     const updated = await updateSubmissionGrades(submissionId, {
       answers: data.answers,
@@ -967,11 +990,14 @@ export async function updateSubmissionGradesBatch(
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
     }
 
-    if (statusChanged) {
+    if (statusChanged || currentGradingState !== targetGradingState) {
       await emitSubmissionWebhookEvent('course.submission.status_changed', updated, {
-        previousStatusId: previousLegacyStatusId
+        previousStatusId: previousLegacyStatusId,
+        previousGradingState: currentGradingState
       });
     }
+
+    await emitExerciseCompletionIfReached(updated, wasCompleteBefore);
 
     return updated;
   } catch (error) {
