@@ -28,6 +28,7 @@ import { assertWebhookUrlShape, WebhookUrlError } from './url-guard';
 const LOCK_BUSY_RETRY_MS = 5_000;
 const MAX_DELIVERIES_PER_RUN = 25;
 const ENDPOINT_LOCK_TTL_MS = 6 * 60_000;
+const DRAIN_BUDGET_MS = 3 * 60_000;
 
 export function createWebhookRecordId(prefix: 'evt' | 'whd'): string {
   return `${prefix}_${randomUUID().replace(/-/g, '')}`;
@@ -118,9 +119,10 @@ export async function attemptWebhookDelivery(
 }
 
 async function drainWebhookEndpoint(webhookId: string): Promise<{ count: number; nextAttemptAt: Date | null }> {
+  const drainStartedAt = Date.now();
   let count = 0;
 
-  while (count < MAX_DELIVERIES_PER_RUN) {
+  while (count < MAX_DELIVERIES_PER_RUN && Date.now() - drainStartedAt < DRAIN_BUDGET_MS) {
     const record = await claimNextDueWebhookDelivery(webhookId);
 
     if (!record) break;
