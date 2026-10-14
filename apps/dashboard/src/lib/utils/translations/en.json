@@ -2926,6 +2926,14 @@
                 "video_nav_label": "Video {number}",
                 "previous_video": "Previous video transcript",
                 "next_video": "Next video transcript"
+              },
+              "hls_status": {
+                "encoding": "Encoding",
+                "ready": "Ready",
+                "failed": "Failed",
+                "skipped": "Not encoded",
+                "failed_hint": "Encoding failed. The video still plays, at its original quality.",
+                "skipped_hint": "Adaptive encoding is off, so this plays at its original quality."
               }
             },
             "document": {

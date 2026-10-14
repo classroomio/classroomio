@@ -2588,7 +2588,15 @@
               "loading": "Chargement de la vidéo…",
               "playback_auth_error": "Votre session a expiré. Veuillez vous reconnecter pour regarder cette vidéo.",
               "playback_auth_action": "Se connecter",
-              "vimeo_link": "Lien Vimeo"
+              "vimeo_link": "Lien Vimeo",
+              "hls_status": {
+                "encoding": "Encodage",
+                "ready": "Prêt",
+                "failed": "Échec",
+                "skipped": "Non encodé",
+                "failed_hint": "Échec de l'encodage. La vidéo est lue en qualité originale.",
+                "skipped_hint": "L'encodage adaptatif est désactivé ; la vidéo est donc lue en qualité originale."
+              }
             },
             "slide": {
               "title": "Diapositive",
