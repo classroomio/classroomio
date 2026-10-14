@@ -1,5 +1,6 @@
 import type {
   OrganizationAudienceActivityWindow,
+  OrganizationAudienceCertificate,
   OrganizationAudienceCompletion,
   OrganizationAudienceEnrollment,
   OrganizationAudienceInviteStatus,
@@ -26,6 +27,7 @@ const MEMBER_STATUS_VALUES: OrganizationAudienceMemberStatus[] = ['ACTIVE', 'DEA
 const INVITE_STATUS_VALUES: OrganizationAudienceInviteStatus[] = ['active', 'pending', 'expired', 'revoked'];
 const ENROLLMENT_VALUES: OrganizationAudienceEnrollment[] = ['enrolled', 'not_enrolled'];
 const COMPLETION_VALUES: OrganizationAudienceCompletion[] = ['not_started', 'in_progress', 'completed'];
+const CERTIFICATE_VALUES: OrganizationAudienceCertificate[] = ['earned', 'not_earned'];
 const ACTIVITY_WINDOW_VALUES: OrganizationAudienceActivityWindow[] = ['7d', '30d', '90d', '180d', 'never'];
 
 /** Unknown values fall back to the default, so a truncated link still loads. */
@@ -51,6 +53,7 @@ export function getAudienceQueryFromSearchParams(
     inviteStatus: readEnum(searchParams.get('inviteStatus'), INVITE_STATUS_VALUES),
     enrollment: readEnum(searchParams.get('enrollment'), ENROLLMENT_VALUES),
     completion: readEnum(searchParams.get('completion'), COMPLETION_VALUES),
+    certificate: readEnum(searchParams.get('certificate'), CERTIFICATE_VALUES),
     lastLoginBefore: readEnum(searchParams.get('lastLoginBefore'), ACTIVITY_WINDOW_VALUES),
     lastActiveBefore: readEnum(searchParams.get('lastActiveBefore'), ACTIVITY_WINDOW_VALUES),
     // Only an explicit "false" turns the guard off.
@@ -75,6 +78,7 @@ export function getAudienceSearchParams(
   if (query.inviteStatus) searchParams.set('inviteStatus', query.inviteStatus);
   if (query.enrollment) searchParams.set('enrollment', query.enrollment);
   if (query.completion) searchParams.set('completion', query.completion);
+  if (query.certificate) searchParams.set('certificate', query.certificate);
   if (query.lastLoginBefore) searchParams.set('lastLoginBefore', query.lastLoginBefore);
   if (query.lastActiveBefore) searchParams.set('lastActiveBefore', query.lastActiveBefore);
   if (query.excludeRecentJoiners !== defaults.excludeRecentJoiners) {
@@ -102,6 +106,7 @@ export function toAudienceRequestQuery(
     inviteStatus: query.inviteStatus,
     enrollment: query.enrollment,
     completion: query.completion,
+    certificate: query.certificate,
     lastLoginBefore: query.lastLoginBefore,
     lastActiveBefore: query.lastActiveBefore,
     excludeRecentJoiners: query.excludeRecentJoiners != null ? String(query.excludeRecentJoiners) : undefined
@@ -118,6 +123,7 @@ export function toAudienceBulkFilterQuery(query: OrganizationAudienceQuery) {
     inviteStatus: query.inviteStatus,
     enrollment: query.enrollment,
     completion: query.completion,
+    certificate: query.certificate,
     lastLoginBefore: query.lastLoginBefore,
     lastActiveBefore: query.lastActiveBefore,
     excludeRecentJoiners: String(query.excludeRecentJoiners),
@@ -167,6 +173,7 @@ export function matchAudienceView(query: OrganizationAudienceQuery): Organizatio
       candidate.inviteStatus === query.inviteStatus &&
       candidate.enrollment === query.enrollment &&
       candidate.completion === query.completion &&
+      candidate.certificate === query.certificate &&
       candidate.lastLoginBefore === query.lastLoginBefore &&
       candidate.lastActiveBefore === query.lastActiveBefore;
 
@@ -186,6 +193,7 @@ export function countActiveAudienceFilters(query: OrganizationAudienceQuery): nu
   if (query.inviteStatus) active += 1;
   if (query.enrollment) active += 1;
   if (query.completion) active += 1;
+  if (query.certificate) active += 1;
   if (query.lastLoginBefore) active += 1;
   if (query.lastActiveBefore) active += 1;
 

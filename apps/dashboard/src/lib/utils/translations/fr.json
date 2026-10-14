@@ -929,7 +929,10 @@
       "empty_description": "Essayez d'élargir la plage de dates ou de supprimer un filtre.",
       "exclude_recent_joiners_hint": "Les étudiants inscrits trop récemment pour être considérés comme inactifs sont exclus.",
       "empty_title": "Aucun étudiant ne correspond à ces filtres.",
-      "invite_status": "Statut de l'invitation"
+      "invite_status": "Statut de l'invitation",
+      "certificate": "Certificat",
+      "certificate_earned": "Obtenu",
+      "certificate_not_earned": "Non obtenu"
     },
     "views": {
       "never_logged_in": "Jamais connecté",

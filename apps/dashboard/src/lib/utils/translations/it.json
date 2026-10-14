@@ -4645,7 +4645,10 @@
       "clear": "Cancella filtri",
       "empty_title": "Nessuno studente corrisponde a questi filtri",
       "empty_description": "Prova ad ampliare l'intervallo di date o a cancellare un filtro.",
-      "invite_status": "Stato dell'invito"
+      "invite_status": "Stato dell'invito",
+      "certificate": "Certificato",
+      "certificate_earned": "Ottenuto",
+      "certificate_not_earned": "Non ottenuto"
     },
     "bulk": {
       "actions": "Azioni",

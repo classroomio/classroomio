@@ -1,6 +1,7 @@
 import type { AudienceMemberStatus } from '@api/utils/audience-member-status';
 import type {
   TAudienceActivityWindow,
+  TAudienceCertificate,
   TAudienceCompletion,
   TAudienceEnrollment,
   TAudienceInviteStatus,
@@ -44,6 +45,7 @@ export type OrgAudienceQuery = {
   inviteStatus?: TAudienceInviteStatus;
   enrollment?: TAudienceEnrollment;
   completion?: TAudienceCompletion;
+  certificate?: TAudienceCertificate;
   lastLoginBefore?: TAudienceActivityWindow;
   lastActiveBefore?: TAudienceActivityWindow;
   excludeRecentJoiners: boolean;

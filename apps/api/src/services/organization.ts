@@ -188,6 +188,7 @@ export async function getOrgAudience(
         inviteStatus: query.inviteStatus,
         enrollment: query.enrollment,
         completion: query.completion,
+        certificate: query.certificate,
         lastLoginBefore: query.lastLoginBefore,
         lastActiveBefore: query.lastActiveBefore,
         excludeRecentJoiners: query.excludeRecentJoiners

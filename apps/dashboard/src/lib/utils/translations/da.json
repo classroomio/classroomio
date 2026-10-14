@@ -929,7 +929,10 @@
       "empty_description": "Prøv at udvide datointervallet eller rydde et filter.",
       "exclude_recent_joiners_hint": "Udelader elever, der er tilmeldt for nylig til at blive bedømt som inaktive.",
       "empty_title": "Ingen studerende matcher disse filtre",
-      "invite_status": "Invitationsstatus"
+      "invite_status": "Invitationsstatus",
+      "certificate": "Certifikat",
+      "certificate_earned": "Optjent",
+      "certificate_not_earned": "Ikke optjent"
     },
     "views": {
       "never_logged_in": "Aldrig logget ind",

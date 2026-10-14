@@ -8,6 +8,7 @@ import { ROLE } from '@cio/utils/constants';
 import { type DbOrTxClient, db } from '@db/drizzle';
 import type {
   TAudienceActivityWindow,
+  TAudienceCertificate,
   TAudienceCompletion,
   TAudienceEnrollment,
   TAudienceInviteStatus,
@@ -26,6 +27,7 @@ export type GetOrganizationAudienceOptions = {
   inviteStatus?: TAudienceInviteStatus;
   enrollment?: TAudienceEnrollment;
   completion?: TAudienceCompletion;
+  certificate?: TAudienceCertificate;
   lastLoginBefore?: TAudienceActivityWindow;
   lastActiveBefore?: TAudienceActivityWindow;
   excludeRecentJoiners?: boolean;
@@ -184,6 +186,18 @@ function completionCondition(completion: TAudienceCompletion): SQL {
   )`;
 }
 
+function certificateCondition(orgId: string, certificate: TAudienceCertificate): SQL {
+  const earned = sql`EXISTS (
+    SELECT 1
+    FROM ${schema.groupmember} gm
+    JOIN ${schema.group} g ON g.id = gm.group_id AND g.organization_id = ${orgId}
+    WHERE gm.profile_id = ${schema.profile.id}
+      AND gm.certificate_earned_at IS NOT NULL
+  )`;
+
+  return certificate === 'earned' ? earned : sql`NOT ${earned}`;
+}
+
 /**
  * Same shape as a `getOrganizationAudience` row, so the detail view and list
  * agree. Not status-filtered — a link to an archived learner should still work.
@@ -307,6 +321,10 @@ export function buildAudienceWhereClause(
 
   if (options.completion) {
     conditions.push(completionCondition(options.completion));
+  }
+
+  if (options.certificate) {
+    conditions.push(certificateCondition(orgId, options.certificate));
   }
 
   if (options.lastLoginBefore) {

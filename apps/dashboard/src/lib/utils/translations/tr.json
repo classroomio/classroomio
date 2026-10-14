@@ -4655,7 +4655,10 @@
       "clear": "Filtreleri temizle",
       "empty_title": "Bu filtrelerle eşleşen öğrenci yok",
       "empty_description": "Tarih aralığını genişletmeyi veya bir filtreyi temizlemeyi deneyin.",
-      "invite_status": "Davet durumu"
+      "invite_status": "Davet durumu",
+      "certificate": "Sertifika",
+      "certificate_earned": "Kazanıldı",
+      "certificate_not_earned": "Kazanılmadı"
     },
     "bulk": {
       "actions": "Eylemler",

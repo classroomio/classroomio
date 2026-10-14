@@ -60,7 +60,8 @@
               title: $t('dashboard.certificates_earned'),
               percentage: totalCertificates ?? 0,
               description: $t('dashboard.certificates_earned_description'),
-              hidePercentage: true
+              hidePercentage: true,
+              href: `${$currentOrgPath}/audience?certificate=earned`
             }}
           />
           <ActivityCard
@@ -69,7 +70,8 @@
               title: $t('dashboard.no_of_courses'),
               percentage: numberOfCourses ?? 0,
               description: $t('dashboard.no_courses_description'),
-              hidePercentage: true
+              hidePercentage: true,
+              href: `${$currentOrgPath}/courses`
             }}
           />
           <ActivityCard
@@ -78,7 +80,8 @@
               title: $t('dashboard.total_students'),
               percentage: totalStudents ?? 0,
               description: $t('dashboard.total_students_description'),
-              hidePercentage: true
+              hidePercentage: true,
+              href: `${$currentOrgPath}/audience`
             }}
           />
         </div>

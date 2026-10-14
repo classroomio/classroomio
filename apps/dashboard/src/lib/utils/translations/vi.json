@@ -929,7 +929,10 @@
       "empty_description": "Hãy thử mở rộng phạm vi ngày hoặc xóa một bộ lọc.",
       "exclude_recent_joiners_hint": "Loại bỏ những học sinh mới tham gia quá gần đây để được coi là không hoạt động.",
       "empty_title": "Không có học viên nào phù hợp với các bộ lọc này",
-      "invite_status": "Trạng thái mời"
+      "invite_status": "Trạng thái mời",
+      "certificate": "Chứng chỉ",
+      "certificate_earned": "Đã đạt được",
+      "certificate_not_earned": "Chưa đạt được"
     },
     "views": {
       "never_logged_in": "Chưa từng đăng nhập",
