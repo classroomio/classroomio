@@ -48,16 +48,13 @@
       '<path d="M21 12a9 9 0 0 0-15-6.7L3 8"/><path d="M3 3v5h5M3 12a9 9 0 0 0 15 6.7l3-2.7"/><path d="M21 21v-5h-5"/>',
     graduation: '<path d="m22 10-10-5L2 10l10 5z"/><path d="M6 12v5c3 2 9 2 12 0v-5"/>',
     warn: '<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/>',
+    arrowUp: '<path d="m18 15-6-6-6 6"/>',
+    chevron: '<path d="m6 9 6 6 6-6"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
     sparkle: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>'
   };
   const ico = (name, cls) => `<svg class="ico ${cls || ''}" viewBox="0 0 24 24">${ICONS[name] || ''}</svg>`;
 
-  const PALETTE = ['#7c3aed', '#0891b2', '#db2777', '#ea580c', '#16a34a', '#2563eb', '#9333ea'];
-  const colorFor = (text) => {
-    let hash = 0;
-    for (const ch of String(text)) hash = (hash * 31 + ch.charCodeAt(0)) >>> 0;
-    return PALETTE[hash % PALETTE.length];
-  };
   const initials = (name) =>
     String(name)
       .split(/\s+/)
@@ -66,14 +63,9 @@
       .join('')
       .toUpperCase();
   const avatar = (name, size) =>
-    `<span class="avatar-sm ${size || ''}" style="background:${colorFor(name)}" title="${esc(name)}">${esc(initials(name))}</span>`;
-  const COVERS = [
-    'linear-gradient(135deg,#4c1d95,#7c3aed 60%,#c084fc)',
-    'linear-gradient(135deg,#0c4a6e,#0891b2 60%,#67e8f9)',
-    'linear-gradient(135deg,#831843,#db2777 60%,#f9a8d4)',
-    'linear-gradient(135deg,#7c2d12,#ea580c 60%,#fdba74)',
-    'linear-gradient(135deg,#14532d,#16a34a 60%,#86efac)'
-  ];
+    `<span class="ev-avatar ${size || ''}" title="${esc(name)}">${esc(initials(name))}</span>`;
+  const lpAvatar = (name, size) =>
+    `<span class="lp-avatar ${size || ''}" title="${esc(name)}">${esc(initials(name))}</span>`;
 
   /* ---------- state ---------- */
   const TIMEZONES = ['America/New_York', 'Europe/London', 'Africa/Lagos', 'Asia/Kolkata'];
@@ -368,7 +360,16 @@
   }
 
   let state = seedState();
-  const ui = { draft: null, dirty: false, tab: 'all', drawer: false, editorNotice: '', mailFilter: '' };
+  const ui = {
+    draft: null,
+    dirty: false,
+    tab: 'all',
+    drawer: false,
+    editorNotice: '',
+    search: '',
+    formats: new Set(),
+    topics: new Set()
+  };
 
   /* ---------- time ---------- */
   const now = () => state.simBase + (Date.now() - state.anchor);
@@ -380,7 +381,7 @@
       .find((part) => part.type === 'timeZoneName').value;
   const fmtRange = (ev, tz) => {
     const end = ev.startsAt + ev.durationMinutes * MIN;
-    return `${fmtTime(ev.startsAt, tz)} – ${fmtTime(end, tz)} ${tzName(ev.startsAt, tz)}`;
+    return `${fmtTime(ev.startsAt, tz)} - ${fmtTime(end, tz)} ${tzName(ev.startsAt, tz)}`;
   };
   const fmtDate = (ts, tz, short) =>
     new Intl.DateTimeFormat(
@@ -443,8 +444,16 @@
     'on-demand': 'On demand',
     cancelled: 'Cancelled'
   };
+  const STATE_BADGE = {
+    draft: 'badge-muted',
+    upcoming: 'badge-primary-soft',
+    live: 'badge-success',
+    'replay-pending': 'badge-warning-soft',
+    'on-demand': 'badge-secondary',
+    cancelled: 'badge-destructive-soft'
+  };
   const statePill = (stateName) =>
-    `<span class="pill ${stateName}">${stateName === 'live' ? '<span class="pulse"></span>' : ''}${STATE_LABEL[stateName]}</span>`;
+    `<span class="badge ${STATE_BADGE[stateName]}">${stateName === 'live' ? '<span class="pulse"></span>' : ''}${STATE_LABEL[stateName]}</span>`;
   const REG_LABEL = {
     registered: 'Registered',
     awaiting_verification: 'Awaiting email confirmation',
@@ -453,7 +462,16 @@
     rejected: 'Rejected',
     revoked: 'Revoked'
   };
-  const regPill = (status) => `<span class="pill ${status}">${REG_LABEL[status] || status}</span>`;
+  const REG_BADGE = {
+    registered: 'badge-success-soft',
+    awaiting_verification: 'badge-warning-soft',
+    pending_approval: 'badge-warning-soft',
+    waitlisted: 'badge-primary-soft',
+    rejected: 'badge-destructive-soft',
+    revoked: 'badge-destructive-soft'
+  };
+  const regPill = (status) =>
+    `<span class="badge ${REG_BADGE[status] || 'badge-muted'}">${REG_LABEL[status] || status}</span>`;
 
   const regsOf = (evId) => state.regs[evId] || (state.regs[evId] = []);
   const registeredCount = (ev) => ev.seedRegistered + regsOf(ev.id).filter((row) => row.status === 'registered').length;
@@ -514,11 +532,11 @@
         );
       case 'calendar':
         return wrap(
-          `<h2>You're in: ${esc(ev.title)}</h2><p><b>${esc(when)}</b></p><p>Join link: <a href="${esc(ev.meetingUrl)}" style="color:var(--org)">${esc(ev.meetingUrl)}</a></p><div class="attach">${ico('calendar')} ${esc(ev.slug)}.ics · alarms 24h and 1h before</div>${courseLine(ev)}`
+          `<h2>You're in: ${esc(ev.title)}</h2><p><b>${esc(when)}</b></p><p>Join link: <a href="${esc(ev.meetingUrl)}" style="color:var(--primary)">${esc(ev.meetingUrl)}</a></p><div class="attach">${ico('calendar')} ${esc(ev.slug)}.ics · alarms 24h and 1h before</div>${courseLine(ev)}`
         );
       case 'reminder24':
         return wrap(
-          `<h2>Tomorrow: ${esc(ev.title)}</h2><p><b>${esc(when)}</b></p><p>Join link: <a href="${esc(ev.meetingUrl)}" style="color:var(--org)">${esc(ev.meetingUrl)}</a></p><a class="m-btn" href="#/site/events/${ev.slug}">Open event page</a>`
+          `<h2>Tomorrow: ${esc(ev.title)}</h2><p><b>${esc(when)}</b></p><p>Join link: <a href="${esc(ev.meetingUrl)}" style="color:var(--primary)">${esc(ev.meetingUrl)}</a></p><a class="m-btn" href="#/site/events/${ev.slug}">Open event page</a>`
         );
       case 'reminder1':
         return wrap(
@@ -547,7 +565,7 @@
   function courseLine(ev) {
     const course = state.courses.find((item) => item.id === ev.linkedCourseId);
     if (!course || ev.courseEnrollment !== 'on_registration') return '';
-    return `<p style="margin-top:14px;padding:12px;border-radius:8px;background:#f5f3ff">${ico('graduation')} You've also been enrolled in <b>${esc(course.title)}</b>. Your certificate comes from that course.</p>`;
+    return `<div class="course-note">${ico('graduation')} You've also been enrolled in <b>${esc(course.title)}</b>. Your certificate comes from that course.</div>`;
   }
 
   const MAIL_SUBJECT = {
@@ -754,7 +772,7 @@
   }
 
   /* ---------- admin ---------- */
-  function adminShell(active, crumbs, bodyHtml, actions) {
+  function adminShell(active, crumbs, bodyHtml, actions, floating) {
     const nav = (href, icon, label, isActive, badge) =>
       `<a class="nav-item ${isActive ? 'active' : ''}" href="${href}">${ico(icon)}${label}${badge ? `<span class="nav-tail text-muted small">${badge}</span>` : ''}</a>`;
     return `
@@ -773,28 +791,33 @@
       <div class="main">
         <header class="topbar"><nav class="crumbs">${crumbs}</nav><div class="top-actions">${actions || ''}</div></header>
         <div class="content"><div class="wrap">${bodyHtml}</div></div>
+        ${floating || ''}
       </div>
     </div>`;
   }
 
+  function appEventCard(ev, href) {
+    const st = derive(ev);
+    const scheduled = ev.startsAt && st !== 'on-demand';
+    const banner = scheduled
+      ? `<div class="date"><b>${dayOf(ev.startsAt)}</b><span>${monthOf(ev.startsAt)}</span></div>`
+      : ico(st === 'on-demand' ? 'video' : 'calendar');
+    const regs = ev.form || ev.seedRegistered ? `${registeredCount(ev)} registered` : 'Public replay';
+    return `<div class="ev-card" data-go="${href}">
+      <div class="ev-banner">${banner}<span class="badge badge-secondary">${esc(ev.format)}</span></div>
+      <div class="row-wrap">${statePill(st)}<span class="badge badge-outline">${ev.published ? 'Published' : 'Not published'}</span>${ev.linkedCourseId ? `<span class="badge badge-outline">${ico('graduation')} Course linked</span>` : ''}</div>
+      <h3>${esc(ev.title || 'Untitled event')}</h3>
+      <p class="desc">${esc((ev.description || 'No description yet.').split('\n')[0])}</p>
+      <div class="foot"><span class="row avatar-stack">${ev.hosts.map((host) => avatar(host.name)).join('')}</span><span class="grow">${esc(ev.startsAt ? `${fmtDate(ev.startsAt, state.tz, true)} · ${fmtRange(ev)}` : 'On demand')}</span><span>${regs}</span></div>
+    </div>`;
+  }
+
   function viewAdminList() {
-    const cards = state.events
-      .map((ev) => {
-        const st = derive(ev);
-        const regs = ev.form || ev.seedRegistered ? `${registeredCount(ev)} registered` : 'Public replay';
-        return `<div class="ev-card" data-go="#/admin/events/${ev.id}">
-          <div class="cover sm" style="background:${COVERS[ev.cover % COVERS.length]}"><span class="cover-fmt format-badge">${esc(ev.format)}</span>${esc(ev.title)}</div>
-          <div class="row-wrap">${statePill(st)}${ev.published ? '<span class="pill">Published</span>' : '<span class="pill">Not published</span>'}${ev.linkedCourseId ? `<span class="pill">${ico('graduation')} Course linked</span>` : ''}</div>
-          <div class="meta">${ev.startsAt ? `${fmtDate(ev.startsAt, state.tz, true)} · ${fmtRange(ev)}` : 'On demand'}</div>
-          <div class="row"><span class="row avatar-stack">${ev.hosts.map((host) => avatar(host.name)).join('') || '<span class="text-muted small">No hosts</span>'}</span><span class="grow"></span><span class="text-muted small">${regs}</span></div>
-        </div>`;
-      })
-      .join('');
     return adminShell(
       'events',
       '<span class="here">Events</span>',
       `<div class="page-head"><div><h1 class="page-title">Events</h1><p class="page-sub">Webinars, livestreams and workshops. Events never appear in the Courses list.</p></div><button class="btn btn-primary" data-act="create-event">${ico('plus')} Create event</button></div>
-       <div class="ev-grid">${cards}</div>`
+       <div class="ev-grid">${state.events.map((ev) => appEventCard(ev, '#/admin/events/' + ev.id)).join('')}</div>`
     );
   }
 
@@ -820,16 +843,16 @@
          <div class="notice mt-2">${ico('refresh')}<div><b>Zoom sync</b>: ${state.zoomConnected ? 'Connected as maya@acme.edu. When the cloud recording finishes, it is downloaded here for your review.' : 'Not connected.'}
          <div class="mt-1"><button class="btn btn-secondary btn-sm" data-act="zoom-toggle">${state.zoomConnected ? 'Disconnect Zoom' : 'Connect Zoom'}</button> <button class="btn btn-outline btn-sm" data-act="zoom-webhook" ${state.zoomConnected ? '' : 'disabled'}>Simulate recording.completed</button></div></div></div>`
       : rec.status === 'review'
-        ? `<div class="recording-box"><div class="thumb">${ico('play')}</div><div class="grow"><b>Recording synced from Zoom</b> <span class="pill replay-pending">Needs review</span><div class="text-muted small">${esc(rec.duration)} · Not visible to anyone yet. Check for private Q&A before publishing.</div></div><button class="btn btn-primary btn-sm" data-act="rec-publish">Publish replay</button></div>`
-        : `<div class="recording-box"><div class="thumb">${ico('play')}</div><div class="grow"><b>Replay published</b> <span class="pill on-demand">${esc(rec.source)}</span><div class="text-muted small">${esc(rec.duration)} · Registrants were emailed that the replay is ready.</div></div><button class="btn btn-outline btn-sm" data-act="rec-remove">Remove</button></div>`;
+        ? `<div class="recording-box"><div class="thumb">${ico('play')}</div><div class="grow"><b>Recording synced from Zoom</b> <span class="badge badge-warning-soft">Needs review</span><div class="text-muted small">${esc(rec.duration)} · Not visible to anyone yet. Check for private Q&A before publishing.</div></div><button class="btn btn-primary btn-sm" data-act="rec-publish">Publish replay</button></div>`
+        : `<div class="recording-box"><div class="thumb">${ico('play')}</div><div class="grow"><b>Replay published</b> <span class="badge badge-secondary">${esc(rec.source)}</span><div class="text-muted small">${esc(rec.duration)} · Registrants were emailed that the replay is ready.</div></div><button class="btn btn-outline btn-sm" data-act="rec-remove">Remove</button></div>`;
 
     const hostsHtml = d.hosts
       .map(
         (
           host
-        ) => `<div class="host-row">${avatar(host.name, 'avatar-md')}<div class="grow"><b>${esc(host.name)}</b> ${host.kind === 'guest' ? '<span class="pill">Guest</span>' : '<span class="pill">Team member</span>'} ${host.status === 'invited' ? '<span class="pill pending_approval">Invite sent</span>' : ''}<div class="text-muted small">${esc(host.bio || host.email)}</div></div>
+        ) => `<div class="host-row">${avatar(host.name, 'avatar-md')}<div class="grow"><b>${esc(host.name)}</b> ${host.kind === 'guest' ? '<span class="badge badge-outline">Guest</span>' : '<span class="badge badge-outline">Team member</span>'} ${host.status === 'invited' ? '<span class="badge badge-warning-soft">Invite sent</span>' : ''}<div class="text-muted small">${esc(host.bio || host.email)}</div></div>
           <select class="select" style="width:190px" data-host-role="${host.id}"><option value="speaker" ${host.role === 'speaker' ? 'selected' : ''}>Speaker (display)</option><option value="manager" ${host.role === 'manager' ? 'selected' : ''}>Manager (can edit)</option></select>
-          <button class="icon-btn" data-act="host-remove" data-id="${host.id}" aria-label="Remove host">${ico('x')}</button></div>`
+          <button class="btn btn-secondary btn-icon btn-sm" data-act="host-remove" data-id="${host.id}" aria-label="Remove host">${ico('x')}</button></div>`
       )
       .join('');
     const teamOptions = state.team.filter((member) => !d.hosts.some((host) => host.email === member.email));
@@ -931,15 +954,17 @@
           </div>
         </aside>
       </div>
-      ${ui.dirty ? savebar() : ''}`;
+      `;
     return adminShell(
       'events',
       `<a href="#/admin/events">Events</a><span class="sep">/</span><span class="here">${esc(d.title || 'New event')}</span>`,
-      body
+      body,
+      '',
+      ui.dirty ? savebar() : ''
     );
   }
   const savebar = () =>
-    `<div class="savebar" id="savebar"><span class="small"><b>Unsaved changes</b></span><button class="btn btn-secondary btn-sm" data-act="discard">Discard</button><button class="btn btn-primary btn-sm" data-act="save">Save changes</button></div>`;
+    `<div class="floatbar" id="savebar"><div class="floatbar-inner"><p><span class="dot"></span>Unsaved changes</p><div class="row"><button class="btn btn-secondary btn-sm" type="button" data-act="discard">Discard</button><button class="btn btn-primary btn-sm" type="button" data-act="save">Save changes</button></div></div></div>`;
 
   function viewAdminGuests(id) {
     const ev = getEvent(id);
@@ -949,7 +974,7 @@
       .slice()
       .reverse()
       .map((row) => {
-        let action = '<span class="text-muted small">—</span>';
+        let action = '<span class="text-muted small">None</span>';
         if (row.status === 'pending_approval')
           action = `<button class="btn btn-primary btn-sm" data-act="approve" data-id="${row.id}">Approve</button> <button class="btn btn-outline btn-sm" data-act="reject" data-id="${row.id}">Reject</button>`;
         if (row.status === 'waitlisted')
@@ -958,7 +983,7 @@
           action = `<button class="btn btn-outline btn-sm" data-act="resend" data-id="${row.id}">Resend</button>`;
         if (row.status === 'registered')
           action = `<button class="btn btn-ghost btn-sm" data-act="revoke" data-id="${row.id}">Revoke</button>`;
-        return `<div class="gl-row"><div><b>${esc(row.name)}</b></div><div class="text-muted">${esc(row.email)}</div><div>${esc(row.company || '—')}</div><div>${esc(row.job || '—')}</div><div>${regPill(row.status)}</div><div>${action}</div></div>`;
+        return `<div class="gl-row"><div><b>${esc(row.name)}</b></div><div class="text-muted">${esc(row.email)}</div><div>${esc(row.company || '-')}</div><div>${esc(row.job || '-')}</div><div>${regPill(row.status)}</div><div>${action}</div></div>`;
       })
       .join('');
     return adminShell(
@@ -971,16 +996,26 @@
     );
   }
 
-  /* ---------- public site ---------- */
-  function siteShell(active, inner, wide) {
-    const user = state.session
-      ? `<a href="#/lms/events" class="row">${avatar(state.session.name)}<span class="small">${esc(state.session.name)}</span></a>`
-      : `<button class="btn btn-outline btn-sm" data-act="signin">Sign in</button>`;
-    const hasEvents = state.events.some((ev) => ev.published);
+  /* ---------- public site (landing-theme recipes, --landing-* tokens only) ---------- */
+  const lpState = (stateName) =>
+    `<span class="lp-state ${stateName}">${stateName === 'live' ? '<span class="pulse"></span>' : ''}${STATE_LABEL[stateName]}</span>`;
+  const lpAvatars = (ev) => `<span class="lp-avatars">${ev.hosts.map((host) => lpAvatar(host.name)).join('')}</span>`;
+
+  function siteShell(active, inner) {
+    const authControl = state.session
+      ? `<a href="#/lms/events" class="lp-nav-user">${lpAvatar(state.session.name)}<span>${esc(state.session.name)}</span></a>`
+      : `<button class="lp-nav-auth" type="button" data-act="signin">Sign in</button>`;
+    const hasEvents = state.events.some((ev) => ev.published && derive(ev) !== 'draft');
     return `<div class="site">
-      <header class="site-head"><a class="site-brand" href="#/site"><span class="mark">A</span>Acme Academy</a>
-        <nav class="site-nav"><a href="#/site">Home</a><a href="#/site">Courses</a>${hasEvents ? `<a href="#/site/events" class="${active === 'events' ? 'on' : ''}">Events</a>` : ''}</nav>${user}</header>
-      ${inner}</div>`;
+      <div class="lp-nav-outer"><nav class="lp-nav">
+        <a class="lp-nav-brand" href="#/site"><span class="lp-nav-logo">A</span>Acme Academy</a>
+        <div class="lp-nav-links"><a href="#/site">Courses</a>${hasEvents ? `<a class="${active === 'events' ? 'active' : ''}" href="#/site/events">Events</a>` : ''}</div>
+        ${authControl}
+      </nav></div>
+      ${inner}
+      <footer class="lp-footer"><div class="lp-wrap"><span>Acme Academy</span><span>Powered by ClassroomIO</span></div></footer>
+      <button class="scroll-top" id="scrollTop" type="button" data-act="scroll-top" aria-label="Scroll to top" hidden>${ico('arrowUp')}</button>
+    </div>`;
   }
 
   function ctaFor(ev) {
@@ -991,68 +1026,126 @@
     if (st === 'replay-pending') return { label: 'Replay coming soon', disabled: true };
     if (st === 'on-demand')
       return ev.accessMode === 'public' || reg ? { label: 'Watch now' } : { label: 'Register to watch' };
-    if (reg) return st === 'live' ? { label: 'Join now' } : { label: 'Registered ✓', soft: true };
+    if (reg) return st === 'live' ? { label: 'Join now' } : { label: 'Registered', soft: true };
     return { label: st === 'live' ? 'Register to join' : 'Register' };
   }
 
-  function pubCard(ev) {
+  const dayOf = (ts) => new Intl.DateTimeFormat('en-US', { day: 'numeric', timeZone: state.tz }).format(ts);
+  const monthOf = (ts) => new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: state.tz }).format(ts);
+
+  function eventCard(ev) {
     const st = derive(ev);
     const cta = ctaFor(ev);
-    return `<div class="pub-card" data-go="#/site/events/${ev.slug}">
-      <div class="cover" style="background:${COVERS[ev.cover % COVERS.length]}"><span class="cover-fmt format-badge">${esc(ev.format)}</span>${esc(ev.title)}</div>
-      <div class="row-wrap">${statePill(st)}<span class="text-muted small">${ev.startsAt ? `${fmtDate(ev.startsAt, state.tz, true)} · ${fmtRange(ev)}` : 'On demand · ' + (ev.recording ? ev.recording.duration : '')}</span></div>
-      <h3>${esc(ev.title)}</h3>
-      <div class="row"><span class="avatar-stack">${ev.hosts.map((host) => avatar(host.name)).join('')}</span><span class="text-muted small">${esc(hostsText(ev))}</span></div>
-      <div class="row-wrap">${ev.tags.map((tag) => `<span class="tag">${esc(tag)}</span>`).join('')}</div>
-      <div><span class="btn ${cta.disabled ? 'btn-secondary' : cta.soft ? 'btn-secondary' : 'btn-primary'} btn-sm" ${cta.disabled ? 'style="opacity:.6"' : ''}>${esc(cta.label)}</span></div>
-    </div>`;
+    const onDemand = st === 'on-demand';
+    const thumb =
+      onDemand || !ev.startsAt
+        ? `<span class="play">${ico('play')}</span>${ev.recording ? `<span class="dur">${esc(ev.recording.duration)}</span>` : ''}`
+        : `<div class="date"><b>${dayOf(ev.startsAt)}</b><span>${monthOf(ev.startsAt)}</span></div>`;
+    const when = ev.startsAt ? `${fmtDate(ev.startsAt, state.tz, true)} · ${fmtRange(ev)}` : 'On demand';
+    return `<a class="lp-vcard" href="#/site/events/${ev.slug}">
+      <div class="lp-ethumb"><span class="fmt">${esc(ev.format)}</span>${thumb}</div>
+      <div class="lp-vbody">
+        <div>${lpState(st)}</div>
+        <h3 class="lp-vtitle">${esc(ev.title)}</h3>
+        <p class="lp-vdesc">${esc(ev.description.split('\n')[0])}</p>
+        <div class="lp-ehosts">${lpAvatars(ev)}<span>${esc(hostsText(ev))}</span></div>
+        <div class="lp-vtags">${ev.tags.map((tag) => `<span class="lp-vtag">${esc(tag)}</span>`).join('')}</div>
+        <div class="lp-vmeta"><span class="m">${ico('clock')}${esc(when)}</span><span class="lp-ecta ${cta.disabled ? 'muted' : ''}" style="margin-left:auto">${esc(cta.label)}</span></div>
+      </div></a>`;
   }
 
+  const publicEvents = () => state.events.filter((ev) => ev.published && derive(ev) !== 'draft');
+
   function viewSiteLanding() {
-    const events = state.events.filter((ev) => ev.published && derive(ev) !== 'draft').slice(0, 3);
+    const events = publicEvents().slice(0, 3);
     return siteShell(
       'home',
-      `<section class="hero-land"><h1>Learn from the people building what's next.</h1><p class="text-muted" style="max-width:520px;font-size:16px">Courses, live events and on-demand sessions from Acme Academy.</p><div class="row-wrap mt-3"><a class="btn btn-primary btn-lg" href="#/site/events">Browse events</a><button class="btn btn-outline btn-lg">Explore courses</button></div></section>
-       <div class="site-wrap">
-         <div class="row"><h2 class="sec-title-lg grow">Courses</h2></div>
-         <div class="ev-grid mt-3">${state.courses
-           .slice(0, 3)
-           .map(
-             (course, index) =>
-               `<div class="pub-card"><div class="course-ph" style="background:${COVERS[(index + 2) % 5]};color:#fff">${esc(course.title)}</div><div class="text-muted small">${course.lessons} lessons</div></div>`
-           )
-           .join('')}</div>
-         <div class="row mt-4"><h2 class="sec-title-lg grow">Upcoming events &amp; sessions</h2><a class="btn btn-outline btn-sm" href="#/site/events">View all ${ico('arrow')}</a></div>
-         <div class="ev-grid mt-3">${events.map(pubCard).join('')}</div>
-         <p class="text-muted small mt-3">Events section is enabled in Landing page settings. It sits after Courses in all themes.</p>
-       </div>`
+      `<section class="lp-hero"><div class="lp-hero-dots"></div><div class="lp-hero-inner">
+        <h1>Learn from the people building what’s next</h1>
+        <p class="sub">Courses, live events and on-demand sessions from Acme Academy.</p>
+        <div class="lp-cta-row"><a class="lp-btn lp-btn-primary lp-btn-lg" href="#/site/events">Browse events</a><a class="lp-btn lp-btn-secondary lp-btn-lg" href="#/site">Explore courses</a></div>
+      </div></section>
+      <section class="lp-section" id="courses"><div class="lp-wrap">
+        <span class="lp-eyebrow">Courses</span><h2>Start learning</h2><p class="lead">Self-paced courses with certificates.</p>
+        <div class="lp-vgrid">${state.courses
+          .slice(0, 3)
+          .map(
+            (course) =>
+              `<div class="lp-card lp-course-card"><h3>${esc(course.title)}</h3><p>${course.lessons} lessons</p></div>`
+          )
+          .join('')}</div>
+      </div></section>
+      <section class="lp-section" id="events"><div class="lp-wrap">
+        <span class="lp-eyebrow">Events</span>
+        <div class="row"><h2 class="grow">Upcoming events and sessions</h2><a class="lp-btn lp-btn-secondary sm" href="#/site/events">View all</a></div>
+        <p class="lead">Join live, or watch the replay when it suits you.</p>
+        <div class="lp-vgrid">${events.map(eventCard).join('')}</div>
+      </div></section>`
     );
   }
 
-  function viewSiteCatalog() {
-    const all = state.events.filter((ev) => ev.published && derive(ev) !== 'draft');
-    const match = (ev) => {
-      const st = derive(ev);
-      if (ui.tab === 'upcoming') return st === 'upcoming';
-      if (ui.tab === 'live') return st === 'live';
-      if (ui.tab === 'past') return st === 'on-demand' || st === 'replay-pending' || st === 'cancelled';
-      return true;
-    };
+  function catalogList() {
+    const search = ui.search.trim().toLowerCase();
     const order = { live: 0, upcoming: 1, 'on-demand': 2, 'replay-pending': 3, cancelled: 4 };
-    const list = all
-      .filter(match)
+    return publicEvents()
+      .filter((ev) => {
+        const st = derive(ev);
+        if (ui.tab === 'upcoming' && st !== 'upcoming') return false;
+        if (ui.tab === 'live' && st !== 'live') return false;
+        if (ui.tab === 'past' && !['on-demand', 'replay-pending', 'cancelled'].includes(st)) return false;
+        if (ui.formats.size && !ui.formats.has(ev.format)) return false;
+        if (ui.topics.size && !ev.tags.some((tag) => ui.topics.has(tag))) return false;
+        if (search && !`${ev.title} ${ev.description} ${hostsText(ev)}`.toLowerCase().includes(search)) return false;
+        return true;
+      })
       .sort((a, b) => order[derive(a)] - order[derive(b)] || (a.startsAt || 0) - (b.startsAt || 0));
+  }
+  function catalogResultsHtml() {
+    const list = catalogList();
+    if (!list.length) {
+      return `<div class="lp-empty">${ico('calendar')}<h3>No events match</h3><p>Try another tab or clear a filter.</p></div>`;
+    }
+    return `<div class="lp-vgrid">${list.map(eventCard).join('')}</div>`;
+  }
+
+  function viewSiteCatalog() {
+    const all = publicEvents();
+    const formats = [...new Set(all.map((ev) => ev.format))];
+    const topics = [...new Set(all.flatMap((ev) => ev.tags))];
+    const countBy = (fn) => all.filter(fn).length;
     const tabs = [
       ['all', 'All'],
       ['upcoming', 'Upcoming'],
       ['live', 'Live now'],
       ['past', 'Past']
     ];
+    const facet = (kind, label, values, matcher) =>
+      `<div class="lp-facet"><h4>${label}</h4>${values
+        .map(
+          (value) =>
+            `<label class="lp-check"><input type="checkbox" data-facet="${kind}" value="${esc(value)}" ${ui[kind === 'format' ? 'formats' : 'topics'].has(value) ? 'checked' : ''} /><span style="text-transform:${kind === 'format' ? 'capitalize' : 'none'}">${esc(value)}</span><span class="n">${countBy((ev) => matcher(ev, value))}</span></label>`
+        )
+        .join('')}</div>`;
     return siteShell(
       'events',
-      `<div class="site-wrap"><div class="row-wrap"><h1 class="sec-title-lg grow" style="font-size:30px">Events</h1><div class="tabs">${tabs.map(([key, label]) => `<button data-tab="${key}" class="${ui.tab === key ? 'on' : ''}">${label}</button>`).join('')}</div></div>
-       <p class="text-muted mt-1">Times shown in your timezone (${esc(state.tz)}).</p>
-       <div class="ev-grid mt-3">${list.map(pubCard).join('') || '<p class="text-muted">Nothing here right now.</p>'}</div></div>`
+      `<main class="lp-section"><div class="lp-wrap">
+        <span class="lp-eyebrow">Events</span>
+        <h1 class="lp-page-title">Events</h1>
+        <p class="lp-page-lead">Webinars, workshops and livestreams. Times are shown in your timezone (${esc(state.tz)}).</p>
+        <div class="lp-vlayout">
+          <aside>
+            ${facet('format', 'Format', formats, (ev, value) => ev.format === value)}
+            ${facet('topic', 'Topic', topics, (ev, value) => ev.tags.includes(value))}
+          </aside>
+          <div>
+            <div class="lp-searchbar">
+              <div class="lp-search">${ico('search')}<input class="lp-input" id="evSearch" placeholder="Search events…" value="${esc(ui.search)}" /></div>
+              <div class="lp-tabs">${tabs.map(([key, label]) => `<button type="button" data-tab="${key}" class="${ui.tab === key ? 'on' : ''}">${label}</button>`).join('')}</div>
+            </div>
+            <div id="evResults">${catalogResultsHtml()}</div>
+          </div>
+        </div>
+      </div></main>`
     );
   }
 
@@ -1067,18 +1160,18 @@
   function registrationCard(ev) {
     const result = state.regResult[ev.id];
     if (result && result.kind === 'check-email') {
-      return `<div class="reg-card"><span class="center-icon">${ico('mail')}</span><h3 style="margin-top:12px">Check your email</h3><p class="text-muted">If we can register <b>${esc(result.email)}</b>, a confirmation link is on its way. Open it to unlock the event.</p>
-        <div class="row-wrap mt-2"><button class="btn btn-primary" data-go="#/inbox">Open inbox (prototype)</button><button class="btn btn-ghost" data-act="resend-self">Resend email</button></div></div>`;
+      return `<div class="lp-panel"><span class="lp-icon-tile">${ico('mail')}</span><h3 style="margin-top:14px">Check your email</h3><p style="color:var(--landing-fg-muted)">If we can register <b>${esc(result.email)}</b>, a confirmation link is on its way. Open it to unlock the event.</p>
+        <div class="row-wrap mt-2"><a class="lp-btn lp-btn-primary" href="#/inbox">Open inbox (prototype)</a><button class="lp-btn lp-btn-secondary" type="button" data-act="resend-self">Resend email</button></div></div>`;
     }
     if (result && result.kind === 'waitlisted') {
-      return `<div class="reg-card"><span class="center-icon">${ico('clock')}</span><h3 style="margin-top:12px">You're on the waitlist</h3><p class="text-muted">This event is full. We'll email <b>${esc(result.email)}</b> if a spot opens up.</p></div>`;
+      return `<div class="lp-panel"><span class="lp-icon-tile">${ico('clock')}</span><h3 style="margin-top:14px">You’re on the waitlist</h3><p style="color:var(--landing-fg-muted)">This event is full. We’ll email <b>${esc(result.email)}</b> if a spot opens up.</p></div>`;
     }
     if (result && result.kind === 'pending_approval') {
-      return `<div class="reg-card"><span class="center-icon">${ico('check')}</span><h3 style="margin-top:12px">Request received</h3><p class="text-muted">The organizers review each registration. You'll get an email with next steps.</p></div>`;
+      return `<div class="lp-panel"><span class="lp-icon-tile">${ico('check')}</span><h3 style="margin-top:14px">Request received</h3><p style="color:var(--landing-fg-muted)">The organizers review each registration. You’ll get an email with next steps.</p></div>`;
     }
     const st = derive(ev);
     if (st === 'replay-pending' || st === 'cancelled') {
-      return `<div class="reg-card"><h3>Registration closed</h3><p class="text-muted">${st === 'cancelled' ? 'This event was cancelled.' : 'This event has finished. The replay will appear on this page.'}</p></div>`;
+      return `<div class="lp-panel"><h3>Registration closed</h3><p style="color:var(--landing-fg-muted)">${st === 'cancelled' ? 'This event was cancelled.' : 'This event has finished. The replay will appear on this page.'}</p></div>`;
     }
     const full = isFull(ev);
     const label = full
@@ -1088,20 +1181,28 @@
         : st === 'on-demand'
           ? 'Register to watch the replay'
           : 'Register';
-    return `<form class="reg-card" id="regForm"><h3>${st === 'on-demand' ? 'Watch the replay' : 'Reserve your spot'}</h3><p class="text-muted small">${esc(ev.form.name)}${full ? ' · This event is at capacity.' : ''}</p>
-      ${state.flags.studentLimit ? `<div class="notice err mt-2">${ico('warn')}<div>Registration is currently closed for this organization. Please contact the organizers.</div></div>` : ''}
-      <div class="fgroup mt-2">
-        <div class="field"><label class="label">Full name</label><input class="input" name="name" required value="Jamie Chen"></div>
-        <div class="field"><label class="label">Work email</label><input class="input" name="email" type="email" required value="jamie@example.com"></div>
-        <div class="two"><div class="field"><label class="label">Company</label><input class="input" name="company" value="Contoso"></div><div class="field"><label class="label">Job title</label><input class="input" name="job" value="Training Manager"></div></div>
-        <div class="field"><label class="label">What do you hope to learn?</label><textarea class="textarea" name="goal" rows="2"></textarea></div>
-        <button class="btn btn-primary btn-lg" type="submit" ${state.flags.studentLimit ? 'disabled' : ''}>${label}</button>
+    return `<form class="lp-panel" id="regForm"><h3>${st === 'on-demand' ? 'Watch the replay' : 'Reserve your spot'}</h3>
+      <p style="color:var(--landing-fg-muted);font-size:14px">${esc(ev.form.name)}${full ? ' · This event is at capacity.' : ''}</p>
+      ${state.flags.studentLimit ? `<div class="lp-note err" style="margin-top:14px">${ico('warn')}<div>Registration is currently closed for this organization. Please contact the organizers.</div></div>` : ''}
+      <div class="lp-form">
+        <div class="lp-field"><label for="f-name">Full name</label><input class="lp-input" id="f-name" name="name" required value="Jamie Chen" /></div>
+        <div class="lp-field"><label for="f-email">Work email</label><input class="lp-input" id="f-email" name="email" type="email" required value="jamie@example.com" /></div>
+        <div class="lp-form-two"><div class="lp-field"><label for="f-company">Company</label><input class="lp-input" id="f-company" name="company" value="Contoso" /></div><div class="lp-field"><label for="f-job">Job title</label><input class="lp-input" id="f-job" name="job" value="Training Manager" /></div></div>
+        <div class="lp-field"><label for="f-goal">What do you hope to learn?</label><textarea id="f-goal" name="goal" rows="2"></textarea></div>
+        <button class="lp-btn lp-btn-primary lp-btn-lg" type="submit" ${state.flags.studentLimit ? 'disabled' : ''}>${label}</button>
       </div></form>`;
   }
 
+  const calendarMenu =
+    () => `<details class="lp-menu"><summary class="lp-btn lp-btn-secondary lp-btn-block">${ico('calendar')} Add to calendar ${ico('chevron')}</summary>
+    <div class="lp-menu-list">${['Google Calendar', 'Outlook', 'Office 365', 'Yahoo', 'Apple Calendar', 'Download .ics']
+      .map((label) => `<button type="button" data-act="add-cal">${label}</button>`)
+      .join('')}</div></details>`;
+
   function viewSiteEvent(slug) {
     const ev = getEventBySlug(slug);
-    if (!ev || !ev.published) return siteShell('events', `<div class="site-wrap"><h2>Event not found</h2></div>`);
+    if (!ev || !ev.published)
+      return siteShell('events', `<div class="lp-wrap"><div class="lp-center"><h2>Event not found</h2></div></div>`);
     const st = derive(ev);
     const reg = myReg(ev);
     const cta = ctaFor(ev);
@@ -1112,76 +1213,80 @@
     let media = '';
     if (st === 'upcoming' || st === 'live') {
       if (reg && st === 'live') {
-        media = `<div class="reg-card" style="background:linear-gradient(135deg,var(--org-soft),transparent)"><span class="pill live"><span class="pulse"></span>Live now</span><h3 style="margin-top:10px">The event has started</h3><a class="btn btn-primary btn-lg mt-2" href="${esc(ev.meetingUrl)}" target="_blank" rel="noopener">${ico('video')} Join the call</a><p class="text-muted small mt-2">${esc(ev.meetingUrl)}</p></div>`;
+        media = `<div class="lp-panel accent"><span class="lp-state live"><span class="pulse"></span>Live now</span><h3 style="margin-top:12px">The event has started</h3>
+          <a class="lp-btn lp-btn-primary lp-btn-lg mt-2" href="${esc(ev.meetingUrl)}" target="_blank" rel="noopener">${ico('video')} Join the call</a>
+          <div class="lp-join-link"><span>${esc(ev.meetingUrl)}</span><button class="lp-btn lp-btn-secondary sm" type="button" data-act="copy-link">Copy</button></div></div>`;
       } else if (reg) {
-        media = `<div class="reg-card"><span class="pill registered">${ico('check')} You're registered</span><h3 style="margin-top:10px">Your join link</h3><p class="text-muted">Only registered attendees see this. We'll also email reminders.</p><div class="resource">${ico('link')}<div class="grow">${esc(ev.meetingUrl)}</div><button class="btn btn-outline btn-sm" data-act="copy-link">Copy</button></div></div>`;
+        media = `<div class="lp-panel"><span class="lp-state on-demand">${ico('check')} Registered</span><h3 style="margin-top:12px">Your join link</h3><p style="color:var(--landing-fg-muted)">Only registered attendees see this. We’ll also email reminders.</p>
+          <div class="lp-join-link"><span>${esc(ev.meetingUrl)}</span><button class="lp-btn lp-btn-secondary sm" type="button" data-act="copy-link">Copy</button></div></div>`;
       } else {
         media = registrationCard(ev);
       }
     } else if (st === 'on-demand') {
       media = showRecording
-        ? `<div class="player"><span class="badge-tl pill on-demand">On demand · ${esc(ev.recording.duration)}</span><span class="play" data-act="play">${ico('play')}</span><div class="bar"><i id="playbar"></i></div></div>`
-        : `<div class="gate">${ico('lock')}<b>Register to watch the replay</b><span class="small">Confirm your email and the recording unlocks on this page.</span></div>${registrationCard(ev)}`;
+        ? `<div class="lp-eplayer"><span class="tag">On demand · ${esc(ev.recording.duration)}</span><button class="big" type="button" data-act="play" aria-label="Play">${ico('play')}</button><div class="track"><i id="playbar"></i></div></div>`
+        : `<div class="lp-gate">${ico('lock')}<b>Register to watch the replay</b><span style="font-size:14px">Confirm your email and the recording unlocks on this page.</span></div><div class="mt-3">${registrationCard(ev)}</div>`;
     } else if (st === 'replay-pending') {
-      media = `<div class="gate">${ico('clock')}<b>Event has finished</b><span class="small">The replay is coming soon. This page will update automatically.</span></div>`;
+      media = `<div class="lp-gate">${ico('clock')}<b>Event has finished</b><span style="font-size:14px">The replay is coming soon. This page will update automatically.</span></div>`;
     } else {
-      media = `<div class="gate">${ico('x')}<b>This event was cancelled</b></div>`;
+      media = `<div class="lp-gate">${ico('x')}<b>This event was cancelled</b></div>`;
     }
 
-    const cd =
-      st === 'upcoming' ? `<div class="countdown" data-cd="${ev.id}">${cdHtml(ev.startsAt - now())}</div>` : '';
-    const hero = `<div class="event-hero">
-      <div class="cover" style="background:${COVERS[ev.cover % COVERS.length]};font-size:28px"><span class="cover-fmt format-badge">${esc(ev.format)}</span>${esc(ev.title)}</div>
-      <div>${ev.startsAt ? `<div class="text-muted">${esc(fmtDate(ev.startsAt, state.tz))} · <b>${esc(fmtRange(ev))}</b></div>` : '<div class="text-muted">On demand</div>'}
-        <h1>${esc(ev.title)}</h1>
-        <div class="row-wrap">${statePill(st)}${ev.tags.map((tag) => `<span class="tag">${esc(tag)}</span>`).join('')}</div>
-        <div class="mt-3"><button class="btn ${cta.disabled || cta.soft ? 'btn-secondary' : 'btn-primary'} btn-lg" data-act="cta" ${cta.disabled ? 'disabled' : ''}>${esc(cta.label)}</button></div>
-        ${cd}</div></div>`;
+    const countdown =
+      st === 'upcoming' ? `<div class="lp-countdown" data-cd="${ev.id}">${cdHtml(ev.startsAt - now())}</div>` : '';
+    const head = `<div class="lp-ehead">
+      <div class="row-wrap">${lpState(st)}<span class="lp-vtag" style="text-transform:capitalize">${esc(ev.format)}</span>${ev.tags.map((tag) => `<span class="lp-vtag">${esc(tag)}</span>`).join('')}</div>
+      <h1>${esc(ev.title)}</h1>
+      <div class="lp-ehosts">${lpAvatars(ev)}<span>${esc(hostsText(ev))}</span></div>
+      <p class="when" style="margin:10px 0 0">${ev.startsAt ? `${esc(fmtDate(ev.startsAt, state.tz))} · <b>${esc(fmtRange(ev))}</b>` : 'On demand'}</p>
+      ${countdown}
+    </div>`;
 
     const resources = ev.resources.length
-      ? `<h3 class="sec-title-lg mt-4" style="font-size:18px">Resources</h3><div class="fgroup mt-2">${ev.resources
+      ? `<h3 class="lp-block-title">Resources</h3>${ev.resources
           .map(
             (res) =>
-              `<div class="resource">${ico('file')}<div class="grow">${esc(res.name)}<div class="text-muted small">${esc(res.size)}</div></div>${open || ev.accessMode === 'public' ? `<button class="btn btn-outline btn-sm" data-act="download">Download</button>` : `<span class="pill">${ico('lock')} Registrants only</span>`}</div>`
+              `<div class="lp-resource">${ico('file')}<div class="meta">${esc(res.name)}<small>${esc(res.size)}</small></div>${open || ev.accessMode === 'public' ? `<button class="lp-btn lp-btn-secondary sm" type="button" data-act="download">Download</button>` : `<span class="lp-vtag">${ico('lock')} Registrants only</span>`}</div>`
           )
-          .join('')}</div>`
+          .join('')}`
       : '';
-
     const hosts = ev.hosts
       .map(
         (host) =>
-          `<div class="host-card">${avatar(host.name, 'avatar-lg')}<div><b>${esc(host.name)}</b>${host.kind === 'guest' ? ' <span class="pill">Guest speaker</span>' : ''}<div class="text-muted small">${esc(host.bio)}</div></div></div>`
+          `<div class="lp-host">${lpAvatar(host.name, 'lg')}<div><b>${esc(host.name)}</b>${host.kind === 'guest' ? '<span class="lp-guest">Guest speaker</span>' : ''}<small>${esc(host.bio)}</small></div></div>`
       )
       .join('');
 
-    const sideLines = [
-      ev.startsAt ? `<div class="side-line">${ico('clock')}<div><b>${esc(statusLine(ev, st))}</b></div></div>` : '',
-      ev.startsAt
-        ? `<div class="side-line">${ico('calendar')}<div>${esc(fmtDate(ev.startsAt, state.tz))}<br><span class="text-muted">${esc(fmtRange(ev))}</span></div></div>`
-        : '',
-      `<div class="side-line">${ico('map')}<div>${ev.delivery === 'online' ? 'Online' : esc(ev.location || ev.delivery.replace('_', ' '))}</div></div>`,
-      `<div class="side-line">${ico('users')}<div>${registeredCount(ev) + (ev.form ? '' : 0)} registered${ev.form ? ` · ${Math.max(0, ev.form.capacity - registeredCount(ev))} spots left` : ''}</div></div>`
-    ].join('');
+    const rail = `<aside class="lp-rail"><div class="lp-rail-card" style="display:grid;gap:14px">
+        ${ev.startsAt ? `<div class="lp-line">${ico('clock')}<div><b>${esc(statusLine(ev, st))}</b></div></div>` : ''}
+        ${ev.startsAt ? `<div class="lp-line">${ico('calendar')}<div>${esc(fmtDate(ev.startsAt, state.tz))}<small>${esc(fmtRange(ev))}</small></div></div>` : ''}
+        <div class="lp-line">${ico('map')}<div>${ev.delivery === 'online' ? 'Online' : esc(ev.location || ev.delivery.replace('_', ' '))}</div></div>
+        <div class="lp-line">${ico('users')}<div>${registeredCount(ev)} registered${ev.form ? `<small>${Math.max(0, ev.form.capacity - registeredCount(ev))} spots left</small>` : ''}</div></div>
+        <button class="lp-btn ${cta.disabled || cta.soft ? 'lp-btn-secondary' : 'lp-btn-primary'} lp-btn-block" type="button" data-act="cta" ${cta.disabled ? 'disabled' : ''}>${esc(cta.label)}</button>
+        ${reg && ev.startsAt ? calendarMenu() : ''}
+        <div class="lp-share"><span>Share</span><button type="button" data-act="share" aria-label="Share on LinkedIn">in</button><button type="button" data-act="share" aria-label="Share on X">X</button><button type="button" data-act="share" aria-label="Share by email">${ico('mail')}</button></div>
+      </div></aside>`;
 
-    const body = `<div class="event-body"><div>
-        ${media}
-        <div class="prose mt-4">${ev.description
-          .split('\n\n')
-          .map((p) => `<p>${esc(p)}</p>`)
-          .join(
-            ''
-          )}${ev.bullets.length ? `<h3>What you'll learn</h3><ul>${ev.bullets.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}</div>
-        ${resources}
-        ${ev.callout ? `<div class="callout mt-4"><div>${esc(ev.callout.text)}</div><button class="btn btn-primary" data-act="callout">${esc(ev.callout.cta)}</button></div>` : ''}
-        ${reg && course && ev.courseEnrollment === 'on_registration' ? `<div class="notice ok mt-3">${ico('graduation')}<div>You've been enrolled in <b>${esc(course.title)}</b>. <a class="text-primary" href="#/lms/learning"><u>Open your course</u></a>. Your certificate comes from the course.</div></div>` : ''}
-        <h3 class="sec-title-lg mt-4" style="font-size:18px">Hosted by</h3><div class="fgroup mt-2">${hosts}</div>
-      </div>
-      <aside class="event-side">${sideLines}
-        <button class="btn ${cta.disabled || cta.soft ? 'btn-secondary' : 'btn-primary'}" data-act="cta" ${cta.disabled ? 'disabled' : ''}>${esc(cta.label)}</button>
-        ${reg && ev.startsAt ? `<button class="btn btn-outline" data-act="add-cal">${ico('calendar')} Add to calendar</button>` : ''}
-        <div class="row-wrap"><span class="text-muted small">Share</span><button class="icon-btn" data-act="share" aria-label="Share on LinkedIn">in</button><button class="icon-btn" data-act="share" aria-label="Share on X">X</button><button class="icon-btn" data-act="share" aria-label="Share by email">${ico('mail')}</button></div>
-      </aside></div>`;
-    return siteShell('events', `<div class="site-wrap">${hero}${body}</div>`);
+    const main = `${head}
+      <div class="mt-3">${media}</div>
+      <div class="lp-prose mt-4">${ev.description
+        .split('\n\n')
+        .map((paragraph) => `<p>${esc(paragraph)}</p>`)
+        .join(
+          ''
+        )}${ev.bullets.length ? `<h3>What you’ll learn</h3><ul>${ev.bullets.map((bullet) => `<li>${esc(bullet)}</li>`).join('')}</ul>` : ''}</div>
+      ${resources}
+      ${ev.callout ? `<div class="lp-callout"><div>${esc(ev.callout.text)}</div><button class="lp-btn lp-btn-primary" type="button" data-act="callout">${esc(ev.callout.cta)}</button></div>` : ''}
+      ${reg && course && ev.courseEnrollment === 'on_registration' ? `<div class="lp-note ok mt-3">${ico('graduation')}<div>You’ve been enrolled in <b>${esc(course.title)}</b>. <a href="#/lms/learning" style="color:var(--landing-accent);text-decoration:underline">Open your course</a>. Your certificate comes from the course.</div></div>` : ''}
+      <h3 class="lp-block-title" style="margin-top:40px">Hosted by</h3>${hosts}`;
+
+    return siteShell(
+      'events',
+      `<main class="lp-section" style="padding-top:32px"><div class="lp-wrap">
+        <div class="lp-crumb"><a href="#/site/events">Events</a> / ${esc(ev.title)}</div>
+        <div class="lp-watch"><div>${main}</div>${rail}</div>
+      </div></main>`
+    );
   }
   function cdHtml(ms) {
     const total = Math.max(0, Math.floor(ms / 1000));
@@ -1197,18 +1302,19 @@
 
   function viewRedeem(grantId) {
     const grant = state.grants.find((item) => item.id === grantId);
-    if (!grant)
+    if (!grant) {
       return siteShell(
         'events',
-        `<div class="center-card"><span class="center-icon">${ico('x')}</span><h2>This link isn't valid</h2><p class="text-muted">It may have expired or been replaced. Request a new link from the event page.</p></div>`
+        `<div class="lp-wrap"><div class="lp-center"><span class="lp-icon-tile">${ico('x')}</span><h2>This link isn’t valid</h2><p style="color:var(--landing-fg-muted)">It may have expired or been replaced. Request a new link from the event page.</p></div></div>`
       );
+    }
     const ev = getEvent(grant.evId);
     return siteShell(
       'events',
-      `<div class="center-card"><span class="center-icon">${ico('mail')}</span><h2>${grant.used ? 'Already confirmed' : 'Confirm your email'}</h2>
-       <p class="text-muted">${grant.used ? 'This link has been used. Continue to the event page.' : `You're about to unlock <b>${esc(ev.title)}</b> as <b>${esc(grant.email)}</b>.`}</p>
-       <button class="btn btn-primary btn-lg mt-2" data-act="redeem" data-id="${grant.id}" style="width:100%">${grant.used ? 'Continue to event' : 'Watch event'}</button>
-       <p class="text-muted small mt-2">Opening this page doesn't use up the link. Email scanners can't confirm for you. Only this button does.</p></div>`
+      `<div class="lp-wrap"><div class="lp-center"><span class="lp-icon-tile">${ico('mail')}</span><h2>${grant.used ? 'Already confirmed' : 'Confirm your email'}</h2>
+       <p style="color:var(--landing-fg-muted)">${grant.used ? 'This link has been used. Continue to the event page.' : `You’re about to unlock <b>${esc(ev.title)}</b> as <b>${esc(grant.email)}</b>.`}</p>
+       <button class="lp-btn lp-btn-primary lp-btn-lg lp-btn-block mt-2" type="button" data-act="redeem" data-id="${grant.id}">${grant.used ? 'Continue to event' : 'Watch event'}</button>
+       <p style="color:var(--landing-fg-faint);font-size:13px;margin-top:12px">Opening this page doesn’t use up the link. Email scanners can’t confirm for you. Only this button does.</p></div></div>`
     );
   }
 
@@ -1216,14 +1322,14 @@
   function viewInbox(mailId) {
     const mails = inboxMails();
     if (!state.inbox) {
-      return `<div class="inbox"><div class="inbox-list"><div class="inbox-head"><b>Inbox</b></div></div><div class="mail-view"><div class="center-card"><span class="center-icon">${ico('mail')}</span><h2>No mail yet</h2><p class="text-muted">Register for an event on the public site and the emails appear here.</p><a class="btn btn-primary" href="#/site/events/building-ai-agents-for-teams">Go to the webinar</a></div></div></div>`;
+      return `<div class="inbox"><div class="inbox-list"><div class="inbox-head"><b>Inbox</b></div></div><div class="mail-view"><div class="empty-state"><span class="ev-avatar md">${ico('mail')}</span><h2>No mail yet</h2><p class="text-muted">Register for an event on the public site and the emails appear here.</p><a class="btn btn-primary" href="#/site/events/building-ai-agents-for-teams">Go to the webinar</a></div></div></div>`;
     }
     const sel = mails.find((mail) => mail.id === mailId) || mails[0];
     if (sel) state.mailsRead[sel.id] = true;
     const list = mails
       .map((mail) => {
         const ev = getEvent(mail.evId);
-        return `<a class="mail-item ${sel && sel.id === mail.id ? 'on' : ''}" href="#/inbox/${mail.id}"><div class="subj">${state.mailsRead[mail.id] ? '' : '● '}${esc(MAIL_SUBJECT[mail.kind](ev))}</div><div class="snip">Acme Academy · ${esc(fmtStamp(mail.at))}</div></a>`;
+        return `<a class="mail-item ${sel && sel.id === mail.id ? 'on' : ''}" href="#/inbox/${mail.id}"><div class="subj">${state.mailsRead[mail.id] ? '' : '<span class="unread"></span>'}${esc(MAIL_SUBJECT[mail.kind](ev))}</div><div class="snip">Acme Academy · ${esc(fmtStamp(mail.at))}</div></a>`;
       })
       .join('');
     const detail = sel
@@ -1245,14 +1351,14 @@
     if (!state.session) {
       return lmsShell(
         'events',
-        `<div class="center-card" style="margin:40px auto"><span class="center-icon">${ico('calendar')}</span><h2>Sign in to see your events</h2><p class="text-muted">Register for an event and confirm your email first. That signs you in.</p><a class="btn btn-primary" href="#/site/events/building-ai-agents-for-teams">Go to the webinar</a></div>`
+        `<div class="empty-state"><span class="ev-avatar md">${ico('calendar')}</span><h2>Sign in to see your events</h2><p class="text-muted">Register for an event and confirm your email first. That signs you in.</p><a class="btn btn-primary" href="#/site/events/building-ai-agents-for-teams">Go to the webinar</a></div>`
       );
     }
     const mine = state.events.filter((ev) => ev.published && myReg(ev));
     const lib = state.events.filter((ev) => ev.published && derive(ev) === 'on-demand' && !mine.includes(ev));
     const cards = (list) =>
       list.length
-        ? `<div class="ev-grid mt-2">${list.map(pubCard).join('')}</div>`
+        ? `<div class="ev-grid mt-2">${list.map((ev) => appEventCard(ev, '#/site/events/' + ev.slug)).join('')}</div>`
         : '<p class="text-muted mt-2">Nothing here yet.</p>';
     return lmsShell(
       'events',
@@ -1265,7 +1371,7 @@
     return lmsShell(
       'learning',
       `<div class="page-head"><div><h1 class="page-title">My Learning</h1><p class="page-sub">Events never appear here. Only courses do.</p></div></div>
-       ${courses.length ? `<div class="ev-grid mt-2">${courses.map((course, index) => `<div class="ev-card"><div class="cover sm" style="background:${COVERS[(index + 2) % 5]}">${esc(course.title)}</div><div class="row-wrap"><span class="pill registered">Enrolled</span><span class="text-muted small">${course.lessons} lessons</span></div><div class="progress progress-thin"><div style="width:0%"></div></div><div class="text-muted small">0% complete · Enrolled through an event registration. Certificate on completion.</div></div>`).join('')}</div>` : '<div class="notice mt-2">' + ico('book') + '<div>No courses yet. Registering for an event linked to a course enrolls you automatically.</div></div>'}`
+       ${courses.length ? `<div class="ev-grid mt-2">${courses.map((course) => `<div class="ev-card"><div class="ev-banner">${ico('graduation')}</div><h3>${esc(course.title)}</h3><div class="row-wrap"><span class="badge badge-success-soft">Enrolled</span><span class="text-muted small">${course.lessons} lessons</span></div><div class="progress progress-thin"><div style="width:0%"></div></div><div class="text-muted small">0% complete · Enrolled through an event registration. Certificate on completion.</div></div>`).join('')}</div>` : '<div class="notice mt-2">' + ico('book') + '<div>No courses yet. Registering for an event linked to a course enrolls you automatically.</div></div>'}`
     );
   }
 
@@ -1304,7 +1410,7 @@
       ],
       [
         'Time travel',
-        'Controls → 24 hours before, then 1 hour before. Reminder emails arrive. Then Live now (join call), then Ended with no replay.',
+        'Controls, then 24 hours before, then 1 hour before. Reminder emails arrive. Then Live now (join call), then Ended with no replay.',
         '#/inbox',
         'Watch the inbox'
       ],
@@ -1716,6 +1822,12 @@
       case 'download':
         toast('Downloading resource');
         break;
+      case 'scroll-top':
+        window.scrollTo({
+          top: 0,
+          behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+        });
+        break;
       case 'share':
         toast('Opens a share dialog with the public event URL');
         break;
@@ -1809,6 +1921,13 @@
       render();
       return;
     }
+    if (el.dataset.facet) {
+      const set = el.dataset.facet === 'format' ? ui.formats : ui.topics;
+      if (el.checked) set.add(el.value);
+      else set.delete(el.value);
+      render();
+      return;
+    }
     if (el.id === 'tzSelect') {
       state.tz = el.value;
       render();
@@ -1842,6 +1961,11 @@
 
   document.addEventListener('input', (event) => {
     const el = event.target;
+    if (el.id === 'evSearch') {
+      ui.search = el.value;
+      $('#evResults').innerHTML = catalogResultsHtml();
+      return;
+    }
     if (!el.dataset.field) return;
     if (el.type === 'text' || el.tagName === 'TEXTAREA') {
       const draft = ui.draft;
@@ -1858,7 +1982,7 @@
 
   function softRefresh() {
     const bar = $('#savebar');
-    if (ui.dirty && !bar) document.body.insertAdjacentHTML('beforeend', savebar());
+    if (ui.dirty && !bar) $('.main').insertAdjacentHTML('beforeend', savebar());
     const draft = ui.draft;
     if (!draft) return;
     const v = validate(draft);
@@ -1889,6 +2013,15 @@
   window.addEventListener('hashchange', () => {
     ui.editorNotice = location.hash.includes('/admin/events/') ? ui.editorNotice : '';
     render();
+  });
+
+  window.addEventListener('scroll', () => {
+    const button = $('#scrollTop');
+    if (!button) return;
+    const viewport = window.innerHeight;
+    const overflows = document.documentElement.scrollHeight > viewport * 1.5;
+    if (button.hidden && overflows && window.scrollY >= viewport) button.hidden = false;
+    else if (!button.hidden && window.scrollY < viewport * 0.8) button.hidden = true;
   });
 
   /* ---------- clock ---------- */
