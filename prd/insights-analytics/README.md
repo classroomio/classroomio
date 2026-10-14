@@ -62,7 +62,8 @@ A cohort can have several courses (`cohort_course`), and each course has its own
 
 The section-by-section scorecard has one row per `course_section`, ordered by `order`. Exercises join to a section through `exercise.section_id` and lessons through `lesson.section_id`. Items without a section are listed under "Other", last.
 
-- **Base grain.** One row per learner and exercise, holding the best completed attempt (score percent as defined above). Every rollup starts from this grain, so multiple attempts cannot duplicate results.
+- **Exercise grain.** For exercise metrics, one row per learner and exercise, holding the best completed attempt (score percent as defined above). Exercise rollups start from this grain, so multiple attempts cannot duplicate results.
+- **Attendance grain.** Video and classroom attendance are computed independently at learner-and-section grain, not from the exercise rows. A learner with attendance records but no completed exercise still counts in the attendance averages. The scorecard row joins the exercise and attendance results by section.
 - **Exercises taken.** Learners with a completed attempt on every exercise in the section.
 - **Average score.** For each learner who took the section, the mean of their exercise scores in it. The row value is the mean across those learners, so each learner counts once.
 - **Pass rate.** The share of learners who took the section and met the pass mark on every exercise in it that has one. Exercises with no pass mark are ignored. A section with no pass mark shows "–".
