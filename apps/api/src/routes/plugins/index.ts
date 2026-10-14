@@ -5,6 +5,7 @@ import { pluginInstallationsRouter } from './installations';
 import { pluginLaunchRouter } from './launch';
 import { pluginEventsRouter } from './events';
 import { pluginAssetsRouter } from './assets';
+import { pluginSubmissionsRouter } from './submissions';
 
 export const pluginsRouter = new Hono()
   .route('/catalog', pluginCatalogRouter)
@@ -12,4 +13,5 @@ export const pluginsRouter = new Hono()
   .route('/installations', pluginCredentialsRouter)
   .route('/launch', pluginLaunchRouter)
   .route('/events', pluginEventsRouter)
-  .route('/assets', pluginAssetsRouter);
+  .route('/assets', pluginAssetsRouter)
+  .route('/submissions', pluginSubmissionsRouter);

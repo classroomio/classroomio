@@ -1,5 +1,12 @@
 import * as schema from '@db/schema';
-import type { TNewPlugin, TNewPluginVersion, TPlugin, TPluginStatus, TPluginVersion } from '@db/types';
+import type {
+  TNewPlugin,
+  TNewPluginVersion,
+  TPlugin,
+  TPluginReviewStatus,
+  TPluginStatus,
+  TPluginVersion
+} from '@db/types';
 import { and, desc, eq, or } from 'drizzle-orm';
 import { db } from '@db/drizzle';
 
@@ -90,4 +97,18 @@ export async function createPluginVersion(data: TNewPluginVersion): Promise<TPlu
   const [row] = await db.insert(schema.pluginVersion).values(data).returning();
 
   return row;
+}
+
+export async function updatePluginVersionReviewStatus(
+  pluginId: string,
+  version: string,
+  reviewStatus: TPluginReviewStatus
+): Promise<TPluginVersion | null> {
+  const [row] = await db
+    .update(schema.pluginVersion)
+    .set({ reviewStatus })
+    .where(and(eq(schema.pluginVersion.pluginId, pluginId), eq(schema.pluginVersion.version, version)))
+    .returning();
+
+  return row ?? null;
 }

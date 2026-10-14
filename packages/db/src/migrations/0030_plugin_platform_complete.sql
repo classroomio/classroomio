@@ -8,6 +8,8 @@ CREATE TYPE "public"."PLUGIN_PUBLISHER_CLASS" AS ENUM('first-party', 'verified-t
 CREATE TYPE "public"."PLUGIN_REVIEW_STATUS" AS ENUM('pending', 'approved', 'rejected');--> statement-breakpoint
 CREATE TYPE "public"."PLUGIN_STATUS" AS ENUM('draft', 'published', 'deprecated', 'revoked');--> statement-breakpoint
 CREATE TYPE "public"."PLUGIN_STORAGE_SCOPE_TYPE" AS ENUM('organization', 'user', 'global');--> statement-breakpoint
+CREATE TYPE "public"."PLUGIN_RELEASE_LANE" AS ENUM('first-party', 'private', 'community');--> statement-breakpoint
+CREATE TYPE "public"."PLUGIN_SUBMISSION_STATUS" AS ENUM('pending_upload', 'quarantined', 'in_review', 'approved', 'rejected');--> statement-breakpoint
 CREATE TABLE "plugin" (
 	"id" varchar(128) PRIMARY KEY NOT NULL,
 	"slug" varchar(128) NOT NULL,
@@ -169,6 +171,23 @@ CREATE TABLE "plugin_version" (
 	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "plugin_submission" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"plugin_id" varchar(128) NOT NULL,
+	"publisher_id" varchar(64),
+	"organization_id" uuid,
+	"version" varchar(64) NOT NULL,
+	"release_lane" "PLUGIN_RELEASE_LANE" NOT NULL,
+	"quarantine_bucket" text NOT NULL,
+	"quarantine_key" text NOT NULL,
+	"artifact_digest" text NOT NULL,
+	"status" "PLUGIN_SUBMISSION_STATUS" DEFAULT 'pending_upload' NOT NULL,
+	"review_notes" text,
+	"submitted_by_profile_id" uuid NOT NULL,
+	"created_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "plugin" ADD CONSTRAINT "plugin_publisher_id_plugin_publisher_id_fk" FOREIGN KEY ("publisher_id") REFERENCES "public"."plugin_publisher"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "plugin_audit_event" ADD CONSTRAINT "plugin_audit_event_installation_id_plugin_installation_id_fk" FOREIGN KEY ("installation_id") REFERENCES "public"."plugin_installation"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "plugin_audit_event" ADD CONSTRAINT "plugin_audit_event_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -191,6 +210,9 @@ ALTER TABLE "plugin_launch_code" ADD CONSTRAINT "plugin_launch_code_user_id_prof
 ALTER TABLE "plugin_launch_code" ADD CONSTRAINT "plugin_launch_code_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "plugin_storage" ADD CONSTRAINT "plugin_storage_installation_id_plugin_installation_id_fk" FOREIGN KEY ("installation_id") REFERENCES "public"."plugin_installation"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "plugin_version" ADD CONSTRAINT "plugin_version_plugin_id_plugin_id_fk" FOREIGN KEY ("plugin_id") REFERENCES "public"."plugin"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "plugin_submission" ADD CONSTRAINT "plugin_submission_publisher_id_plugin_publisher_id_fk" FOREIGN KEY ("publisher_id") REFERENCES "public"."plugin_publisher"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "plugin_submission" ADD CONSTRAINT "plugin_submission_organization_id_organization_id_fk" FOREIGN KEY ("organization_id") REFERENCES "public"."organization"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "plugin_submission" ADD CONSTRAINT "plugin_submission_submitted_by_profile_id_profile_id_fk" FOREIGN KEY ("submitted_by_profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "idx_plugin_publisher" ON "plugin" USING btree ("publisher");--> statement-breakpoint
 CREATE INDEX "idx_plugin_publisher_id" ON "plugin" USING btree ("publisher_id");--> statement-breakpoint
 CREATE INDEX "idx_plugin_status" ON "plugin" USING btree ("status");--> statement-breakpoint
@@ -223,6 +245,10 @@ CREATE UNIQUE INDEX "idx_plugin_installation_owner_user_unique" ON "plugin_insta
 CREATE UNIQUE INDEX "idx_plugin_launch_code_hash_unique" ON "plugin_launch_code" USING btree ("code_hash");--> statement-breakpoint
 CREATE INDEX "idx_plugin_launch_code_installation_id" ON "plugin_launch_code" USING btree ("installation_id");--> statement-breakpoint
 CREATE INDEX "idx_plugin_publisher_class" ON "plugin_publisher" USING btree ("publisher_class");--> statement-breakpoint
+CREATE INDEX "idx_plugin_submission_plugin" ON "plugin_submission" USING btree ("plugin_id");--> statement-breakpoint
+CREATE INDEX "idx_plugin_submission_status" ON "plugin_submission" USING btree ("status");--> statement-breakpoint
+CREATE INDEX "idx_plugin_submission_publisher" ON "plugin_submission" USING btree ("publisher_id");--> statement-breakpoint
+CREATE INDEX "idx_plugin_submission_org" ON "plugin_submission" USING btree ("organization_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_plugin_storage_inst_scope_ns_key_unique" ON "plugin_storage" USING btree ("installation_id","scope_type","scope_id","namespace","key");--> statement-breakpoint
 CREATE INDEX "idx_plugin_storage_lookup" ON "plugin_storage" USING btree ("installation_id","namespace");--> statement-breakpoint
 CREATE UNIQUE INDEX "idx_plugin_version_plugin_ver_unique" ON "plugin_version" USING btree ("plugin_id","version");--> statement-breakpoint
