@@ -42,7 +42,7 @@ Recommended defaults: `course.invite.accepted`, `course.member.added`, `course.c
 
 ## Payload
 
-Every event uses the same envelope. `data` varies by event type.
+Every event uses the same envelope. The shape of `data` depends on the event type, see the [event reference](#event-reference).
 
 ```json
 {
@@ -54,7 +54,7 @@ Every event uses the same envelope. `data` varies by event type.
   "data": {
     "courseId": "98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e",
     "profileId": "0c256e75-aa40-4f62-8d30-0217ca1c60d9",
-    "groupMemberId": "5d3f1c2e-0a9b-4c8d-b7e6-1f2a3b4c5d6e",
+    "memberId": "5d3f1c2e-0a9b-4c8d-b7e6-1f2a3b4c5d6e",
     "completedAt": "2026-10-13T12:15:30.000Z"
   }
 }
@@ -72,6 +72,231 @@ Every event uses the same envelope. `data` varies by event type.
 | `X-Cio-Webhook` | The webhook id |
 | `X-Cio-Timestamp` | Unix time in seconds when the request was signed |
 | `X-Cio-Signature-256` | `sha256=<hex>` HMAC of the request |
+
+## Event reference
+
+Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. IDs are UUIDs and timestamps are ISO 8601 in UTC.
+
+### Team invites
+
+#### `organization.invite.created`
+
+A team invite is sent.
+
+```json
+{
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "tutor@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "reason": null
+}
+```
+
+`reason` is only set when an invite is replaced or revoked, and is otherwise `null`.
+
+#### `organization.invite.accepted`
+
+A team invite is accepted.
+
+```json
+{
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "tutor@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "reason": null
+}
+```
+
+#### `organization.invite.revoked`
+
+A team invite is revoked or replaced.
+
+```json
+{
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "tutor@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "reason": "revoked"
+}
+```
+
+### Course invites
+
+#### `course.invite.created`
+
+A student invite is created.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "student@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+}
+```
+
+`email` is `null` for shareable invite links that are not tied to an address.
+
+#### `course.invite.accepted`
+
+A student accepts an invite and enrolls.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "student@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+}
+```
+
+`actorProfileId` is the student who accepted. A `course.member.added` event follows for the new enrollment.
+
+#### `course.invite.revoked`
+
+A student invite is revoked.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "student@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+}
+```
+
+### Course members
+
+#### `course.member.added`
+
+A member is added to a course, by an admin or by accepting an invite.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "email": "student@example.com",
+  "roleId": 3
+}
+```
+
+`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `roleId` is `1` for admin, `2` for tutor, `3` for student.
+
+#### `course.member.removed`
+
+A member is removed from a course.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "email": "student@example.com",
+  "roleId": 3
+}
+```
+
+### Completion and certificates
+
+#### `course.completed`
+
+A learner completes a course and earns its certificate. Requires certificates to be enabled for the organization.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "completedAt": "2026-10-13T12:15:30.000Z"
+}
+```
+
+#### `course.certificate.issued`
+
+A certificate is earned. Sent together with `course.completed`.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "completedAt": "2026-10-13T12:15:30.000Z"
+}
+```
+
+### Submissions
+
+#### `course.submission.created`
+
+An exercise submission is created.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "submissionId": "000000f1-0000-4000-8000-0000000000f1",
+  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "statusId": 1,
+  "gradingState": "queued",
+  "total": null
+}
+```
+
+`statusId` is `1` submitted, `2` in progress, `3` graded. `gradingState` is one of `queued`, `processing`, `awaiting_manual`, `failed`, `completed`. `total` is the score once graded.
+
+#### `course.submission.status_changed`
+
+A submission status or grading state changes, for example when it is graded.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "submissionId": "000000f1-0000-4000-8000-0000000000f1",
+  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "statusId": 3,
+  "gradingState": "completed",
+  "total": 8,
+  "previousStatusId": 2,
+  "previousGradingState": "awaiting_manual"
+}
+```
+
+`statusId` and `gradingState` are the new values.
+
+### Progress
+
+#### `lesson.completion.updated`
+
+A lesson is marked complete, or reset when an admin resets a learner's progress.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "lessonId": "000000f3-0000-4000-8000-0000000000f3",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "isComplete": true
+}
+```
+
+#### `exercise.completion.updated`
+
+An exercise is completed, meeting any passing grade it requires, or reset by an admin.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "isComplete": true
+}
+```
+
+`memberId` is the course membership id of the learner.
 
 ## Verify the signature
 

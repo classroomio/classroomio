@@ -710,24 +710,46 @@ function decodeSubmissionAnswers(
  * Creates a submission with its answers, saving nothing if an answer is invalid. Throws 409 for a second attempt on a
  * one-attempt exercise. Returns the submission, with `answers` when auto-graded.
  */
-async function emitSubmissionWebhookEvent(
-  eventType: 'course.submission.created' | 'course.submission.status_changed',
-  submission: TSubmission,
-  extra: Record<string, unknown> = {}
+async function buildSubmissionWebhookData(
+  submission: TSubmission & { courseId: string },
+  overrides: { statusId?: number | null; gradingState?: string | null } = {}
 ) {
-  if (!submission.courseId) return;
-
   const profile = submission.submittedBy ? await getProfileByGroupMemberId(submission.submittedBy) : null;
 
-  await emitCourseWebhookEvent(submission.courseId, eventType, {
+  return {
     submissionId: submission.id,
     exerciseId: submission.exerciseId,
     memberId: submission.submittedBy,
     profileId: profile?.id ?? null,
-    statusId: submission.statusId,
-    gradingState: submission.gradingState,
-    total: submission.total,
-    ...extra
+    statusId: overrides.statusId === undefined ? submission.statusId : overrides.statusId,
+    gradingState: overrides.gradingState === undefined ? submission.gradingState : overrides.gradingState,
+    total: submission.total
+  };
+}
+
+async function emitSubmissionCreatedWebhookEvent(
+  submission: TSubmission,
+  overrides: { statusId?: number | null; gradingState?: string | null } = {}
+) {
+  if (!submission.courseId) return;
+
+  const data = await buildSubmissionWebhookData({ ...submission, courseId: submission.courseId }, overrides);
+
+  await emitCourseWebhookEvent(submission.courseId, 'course.submission.created', data);
+}
+
+async function emitSubmissionStatusChangedWebhookEvent(
+  submission: TSubmission,
+  previous: { statusId: number; gradingState: string }
+) {
+  if (!submission.courseId) return;
+
+  const submissionData = await buildSubmissionWebhookData({ ...submission, courseId: submission.courseId });
+
+  await emitCourseWebhookEvent(submission.courseId, 'course.submission.status_changed', {
+    ...submissionData,
+    previousStatusId: previous.statusId,
+    previousGradingState: previous.gradingState
   });
 }
 
@@ -870,12 +892,13 @@ export async function createSubmissionService(
 
         await syncComplianceProgressFromSubmission(courseId, submittedBy);
         await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
-        await emitSubmissionWebhookEvent('course.submission.created', submission, {
+        await emitSubmissionCreatedWebhookEvent(submission, {
           statusId: projectLegacyStatusId(gradingState),
           gradingState
         });
-        await emitSubmissionWebhookEvent('course.submission.status_changed', submission, {
-          previousStatusId: projectLegacyStatusId(gradingState)
+        await emitSubmissionStatusChangedWebhookEvent(submission, {
+          statusId: projectLegacyStatusId(gradingState),
+          gradingState
         });
         await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
 
@@ -891,7 +914,7 @@ export async function createSubmissionService(
 
     await syncComplianceProgressFromSubmission(courseId, submittedBy);
     await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
-    await emitSubmissionWebhookEvent('course.submission.created', submission);
+    await emitSubmissionCreatedWebhookEvent(submission);
     await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
 
     return submission;
@@ -968,9 +991,9 @@ export async function updateSubmissionService(
     }
 
     if (statusChanged || gradingStateChanged) {
-      await emitSubmissionWebhookEvent('course.submission.status_changed', updated, {
-        previousStatusId: previousLegacyStatusId,
-        previousGradingState: currentGradingState
+      await emitSubmissionStatusChangedWebhookEvent(updated, {
+        statusId: previousLegacyStatusId,
+        gradingState: currentGradingState
       });
     }
 
@@ -1086,9 +1109,9 @@ export async function updateSubmissionGradesBatch(
     }
 
     if (statusChanged || currentGradingState !== targetGradingState) {
-      await emitSubmissionWebhookEvent('course.submission.status_changed', updated, {
-        previousStatusId: previousLegacyStatusId,
-        previousGradingState: currentGradingState
+      await emitSubmissionStatusChangedWebhookEvent(updated, {
+        statusId: previousLegacyStatusId,
+        gradingState: currentGradingState
       });
     }
 

@@ -120,6 +120,7 @@ describe('resetMemberCourseProgress', () => {
     });
     expect(emitCourseWebhookEvent).toHaveBeenCalledWith('course-1', 'exercise.completion.updated', {
       exerciseId: 'exercise-1',
+      memberId: 'member-1',
       profileId: 'profile-1',
       isComplete: false
     });

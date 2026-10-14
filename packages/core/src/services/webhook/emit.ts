@@ -4,6 +4,7 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import type { TGroupmember } from '@cio/db/types';
 import { enqueueWebhookDelivery } from '@cio/jobs';
 import { WEBHOOK_API_VERSION, type TWebhookEventType } from '@cio/utils/constants/webhook';
+import type { TCourseWebhookEventType, TWebhookEventData } from '@cio/utils/validation/webhook';
 import { canUsePublicApi } from '@cio/utils/plans';
 
 import { env } from '../../config/env';
@@ -40,10 +41,10 @@ export async function buildWebhookEnvelope(
  * Records the event for every subscribed endpoint and schedules delivery. Call after the domain
  * write commits. Never throws: a webhook failure must not fail the action that triggered it.
  */
-export async function emitWebhookEvent(
+export async function emitWebhookEvent<TEvent extends TWebhookEventType>(
   organizationId: string,
-  eventType: TWebhookEventType,
-  data: Record<string, unknown>
+  eventType: TEvent,
+  data: TWebhookEventData<TEvent>
 ): Promise<void> {
   try {
     const endpoints = await listActiveEndpointsForEvent(organizationId, eventType);
@@ -75,17 +76,17 @@ export async function emitWebhookEvent(
  * Resolves the course's organization and emits the event with `courseId` merged into the data.
  * Never throws.
  */
-export async function emitCourseWebhookEvent(
+export async function emitCourseWebhookEvent<TEvent extends TCourseWebhookEventType>(
   courseId: string,
-  eventType: TWebhookEventType,
-  data: Record<string, unknown>
+  eventType: TEvent,
+  data: Omit<TWebhookEventData<TEvent>, 'courseId'>
 ): Promise<void> {
   try {
     const organizationId = await getCourseOrganizationId(courseId);
 
     if (!organizationId) return;
 
-    await emitWebhookEvent(organizationId, eventType, { courseId, ...data });
+    await emitWebhookEvent(organizationId, eventType, { courseId, ...data } as TWebhookEventData<TEvent>);
   } catch (error) {
     console.error('emitCourseWebhookEvent error:', { eventType, courseId, error });
   }
