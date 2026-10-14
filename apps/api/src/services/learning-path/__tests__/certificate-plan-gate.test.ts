@@ -15,6 +15,7 @@ const mocks = vi.hoisted(() => ({
   getOrganizationById: vi.fn(),
   getProfileById: vi.fn(),
   orgHasCertificatesEnabled: vi.fn(),
+  getActiveOrganizationMemberIdByOrgAndProfile: vi.fn(),
   trackServerEvent: vi.fn(),
   enqueueTransactionalEmail: vi.fn().mockResolvedValue(undefined),
   enqueueWorkerTemplateEmail: vi.fn().mockResolvedValue(true)
@@ -42,7 +43,8 @@ vi.mock('@cio/db/queries/group', () => ({
 }));
 
 vi.mock('@cio/db/queries/organization', () => ({
-  getOrganizationById: mocks.getOrganizationById
+  getOrganizationById: mocks.getOrganizationById,
+  getActiveOrganizationMemberIdByOrgAndProfile: mocks.getActiveOrganizationMemberIdByOrgAndProfile
 }));
 
 vi.mock('@cio/db/queries', () => ({
@@ -110,6 +112,7 @@ describe('certificate plan gate', () => {
     mocks.getCourseIdsInPath.mockResolvedValue(['c-1']);
     mocks.getCourseCompletionStatsForProfile.mockResolvedValue({ isComplete: true });
     mocks.getOrganizationById.mockResolvedValue({ id: 'org-1', name: 'Org' });
+    mocks.getActiveOrganizationMemberIdByOrgAndProfile.mockResolvedValue(1);
   });
 
   it('marks the path complete but skips issuance when the plan disables certificates', async () => {
@@ -228,6 +231,19 @@ describe('certificate plan gate', () => {
     const issued = await assertLearningPathCertificateDownloadAllowed(PATH_ID, 'student-1');
 
     expect(issued).toEqual({ certificateId: 'cert-1', issuedAt: '2026-01-01' });
+  });
+
+  it('blocks certificate download once the org membership is no longer active', async () => {
+    mocks.getMemberByPathAndProfile.mockResolvedValue({ ...mockMember, status: 'COMPLETED' });
+    mocks.getLearningPathCertificate.mockResolvedValue({ certificateId: 'cert-1', issuedAt: '2026-01-01' });
+    mocks.orgHasCertificatesEnabled.mockResolvedValue(true);
+    mocks.getActiveOrganizationMemberIdByOrgAndProfile.mockResolvedValue(null);
+
+    await expect(assertLearningPathCertificateDownloadAllowed(PATH_ID, 'student-1')).rejects.toMatchObject({
+      code: ErrorCodes.UNAUTHORIZED,
+      statusCode: 403
+    });
+    expect(mocks.getActiveOrganizationMemberIdByOrgAndProfile).toHaveBeenCalledWith('org-1', 'student-1');
   });
 
   it('still allows team preview without a plan check', async () => {

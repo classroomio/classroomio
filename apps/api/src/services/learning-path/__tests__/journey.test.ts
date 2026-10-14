@@ -6,14 +6,12 @@ import type { TPathJourneyCourse } from '@cio/db/queries/learning-path';
 const mocks = vi.hoisted(() => ({
   getMemberByPathAndProfile: vi.fn(),
   getPathJourney: vi.fn(),
-  listLearnerPathCertificates: vi.fn(),
   orgHasCertificatesEnabled: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/learning-path', () => ({
   getMemberByPathAndProfile: mocks.getMemberByPathAndProfile,
-  getPathJourney: mocks.getPathJourney,
-  listLearnerPathCertificates: mocks.listLearnerPathCertificates
+  getPathJourney: mocks.getPathJourney
 }));
 
 vi.mock('@api/utils/plan-features', () => ({
@@ -21,7 +19,6 @@ vi.mock('@api/utils/plan-features', () => ({
 }));
 
 import { getPathJourneyService } from '../journey';
-import { listMyPathCertificatesService } from '../certificate';
 
 const path = {
   id: 'path-1',
@@ -177,27 +174,5 @@ describe('getPathJourneyService', () => {
       statusCode: 404
     });
     expect(mocks.getPathJourney).not.toHaveBeenCalled();
-  });
-});
-
-describe('listMyPathCertificatesService', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('returns nothing without reading certificates when the plan has none', async () => {
-    mocks.orgHasCertificatesEnabled.mockResolvedValue(false);
-
-    await expect(listMyPathCertificatesService('org-1', 'ada')).resolves.toEqual([]);
-    expect(mocks.listLearnerPathCertificates).not.toHaveBeenCalled();
-  });
-
-  it("returns the learner's downloadable certificates when the plan allows them", async () => {
-    const certificates = [{ certificateId: 'CERT-1', name: 'Data Science' }];
-    mocks.orgHasCertificatesEnabled.mockResolvedValue(true);
-    mocks.listLearnerPathCertificates.mockResolvedValue(certificates);
-
-    await expect(listMyPathCertificatesService('org-1', 'ada')).resolves.toEqual(certificates);
-    expect(mocks.listLearnerPathCertificates).toHaveBeenCalledWith('org-1', 'ada');
   });
 });

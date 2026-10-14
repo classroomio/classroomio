@@ -1,15 +1,15 @@
 <script lang="ts">
-  import type { Component, Snippet } from 'svelte';
+  import type { Snippet } from 'svelte';
   import { resolve } from '$app/paths';
   import { CourseCard, DEFAULT_COURSE_BANNER_IMAGE, type CourseCardLabels } from '@cio/ui';
-  import UserIcon from '@lucide/svelte/icons/user';
-  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
-  import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
-  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
-  import GlobeIcon from '@lucide/svelte/icons/globe';
 
   import { t } from '$lib/utils/functions/translations';
   import { calcCourseProgress, calcProgressRate } from '$features/course/utils/functions';
+  import {
+    getCourseTypeBadgeMeta,
+    getCourseVisibilityBadgeMeta,
+    toCourseCardBadge
+  } from '$features/course/utils/course-card-badges';
   import {
     getStudentCourseComplianceDate,
     getStudentCourseComplianceStatusKey,
@@ -83,41 +83,6 @@
     }>
   );
 
-  const COURSE_TAG: Record<
-    string,
-    {
-      style: string;
-      label: string;
-      icon: Component;
-      iconStyle?: string;
-    }
-  > = {
-    ['LIVE_CLASS']: {
-      style: '',
-      label: $t('course.navItem.settings.live_class'),
-      icon: CircleDotIcon,
-      iconStyle: 'ui:size-3 ui:shrink-0 ui:text-red-600'
-    },
-    ['SELF_PACED']: {
-      style: '',
-      label: $t('course.navItem.settings.self_paced'),
-      icon: UserIcon,
-      iconStyle: 'ui:size-3 ui:shrink-0 ui:text-primary'
-    },
-    ['COMPLIANCE']: {
-      style: '',
-      label: $t('course.navItem.settings.compliance'),
-      icon: ShieldCheckIcon,
-      iconStyle: 'ui:size-3 ui:shrink-0 ui:text-emerald-600'
-    },
-    SPECIALIZATION: {
-      style: '',
-      label: $t('specialization.course_tag'),
-      icon: TrendingUpIcon,
-      iconStyle: 'ui:size-3 ui:shrink-0 ui:text-amber-600'
-    }
-  };
-
   const isExploreClickable = $derived(!!(isLMS && isExplore && onExploreClick));
 
   let courseUrl = $derived.by(() => {
@@ -144,25 +109,9 @@
     return `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
   });
 
-  const typeBadge = $derived(
-    type && COURSE_TAG[type]
-      ? {
-          label: COURSE_TAG[type].label,
-          icon: COURSE_TAG[type].icon,
-          iconClass: COURSE_TAG[type].iconStyle
-        }
-      : undefined
-  );
+  const typeBadge = $derived(toCourseCardBadge(getCourseTypeBadgeMeta(type), $t));
 
-  const visibilityBadge = $derived(
-    type === 'PUBLIC'
-      ? {
-          label: $t('courses.course_card.public_badge'),
-          icon: GlobeIcon,
-          iconClass: 'ui:size-3 ui:shrink-0 ui:text-primary'
-        }
-      : undefined
-  );
+  const visibilityBadge = $derived(toCourseCardBadge(getCourseVisibilityBadgeMeta(type), $t));
 
   const showLmsPublicCourseMenu = $derived(isLMS && type === 'PUBLIC' && !!slug?.trim() && isPublished);
 

@@ -1,8 +1,7 @@
 /**
- * Runs getPathJourney and listLearnerPathCertificates against a real
- * database. Every test builds its own fixture inside a transaction and rolls
- * it back, so it needs no seed data and leaves nothing behind. Skipped when no
- * database URL is available.
+ * Runs getPathJourney against a real database. Every test builds its own
+ * fixture inside a transaction and rolls it back, so it needs no seed data and
+ * leaves nothing behind. Skipped when no database URL is available.
  *
  * Run (Node 20, Postgres up):
  *   DATABASE_URL="$(grep ^DATABASE_URL= apps/api/.env | cut -d= -f2- | tr -d '"')" \
@@ -226,62 +225,6 @@ describe.skipIf(!hasDatabase)('getPathJourney (database)', () => {
         { status: 'revoked', revokedAt: '2026-09-20T00:00:00Z' }
       );
       expect((await readScenarioJourney(tx, scenario)).certificate).toBeNull();
-    });
-  }, 30000);
-});
-
-describe.skipIf(!hasDatabase)('listLearnerPathCertificates (database)', () => {
-  it('lists only the certificates the learner can download in this org, newest first', async () => {
-    await withRollback(async (tx) => {
-      const { listLearnerPathCertificates } = await import('@cio/db/queries/learning-path');
-      const ada = await insertProfile(tx, 'ada');
-      const bob = await insertProfile(tx, 'bob');
-      const orgId = await insertOrganization(tx, 'Org');
-      const otherOrgId = await insertOrganization(tx, 'Other');
-
-      const certify = async (
-        name: string,
-        options: {
-          org?: string;
-          profileId?: string;
-          pathStatus?: string;
-          downloadable?: boolean;
-          memberStatus?: string;
-          memberRemovedAt?: string;
-          revoked?: boolean;
-          issuedAt?: string;
-        } = {}
-      ) => {
-        const profileId = options.profileId ?? ada;
-        const path = await insertPath(tx, options.org ?? orgId, name, {
-          status: options.pathStatus,
-          certificateDownloadable: options.downloadable ?? true
-        });
-        const memberId = await joinPath(tx, path.pathId, profileId, '2026-08-01T00:00:00Z', {
-          status: options.memberStatus ?? 'COMPLETED',
-          removedAt: options.memberRemovedAt
-        });
-        const revocation = options.revoked ? { status: 'revoked' as const, revokedAt: '2026-09-20T00:00:00Z' } : {};
-        await issuePathCertificate(
-          tx,
-          { pathId: path.pathId, memberId, profileId, issuedAt: options.issuedAt ?? '2026-09-01T00:00:00Z' },
-          revocation
-        );
-      };
-
-      await certify('Older', { issuedAt: '2026-09-01T00:00:00Z' });
-      await certify('Newer', { issuedAt: '2026-09-15T00:00:00Z' });
-      await certify('Not downloadable', { downloadable: false });
-      await certify('Left the path', { memberRemovedAt: '2026-09-10T00:00:00Z' });
-      await certify('Revoked', { revoked: true });
-      await certify('Reopened', { memberStatus: 'IN_PROGRESS' });
-      await certify('Deleted path', { pathStatus: 'DELETED' });
-      await certify('Other org', { org: otherOrgId });
-      await certify("Bob's", { profileId: bob });
-
-      const certificates = await listLearnerPathCertificates(orgId, ada, tx);
-
-      expect(certificates.map((certificate) => certificate.name)).toEqual(['Newer', 'Older']);
     });
   }, 30000);
 });

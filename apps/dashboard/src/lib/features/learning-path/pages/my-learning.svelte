@@ -4,12 +4,11 @@
   import { PathIcon } from '@cio/ui/custom/moving-icons';
   import { CourseCard, LearningPathCard, type CourseCardLabels, type LearningPathCardLabels } from '@cio/ui';
   import { t } from '$lib/utils/functions/translations';
-  import type { Component } from 'svelte';
-  import UserIcon from '@lucide/svelte/icons/user';
-  import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
-  import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
-  import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
-  import GlobeIcon from '@lucide/svelte/icons/globe';
+  import {
+    getCourseTypeBadgeMeta,
+    getCourseVisibilityBadgeMeta,
+    toCourseCardBadge
+  } from '$features/course/utils/course-card-badges';
   import { coursesApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
@@ -163,56 +162,6 @@
     coursesCompleted: $t('learningPath.hero.courses_completed'),
     earnedOn: $t('certificates.earned_on')
   });
-
-  const courseTypeBadgeFor = (courseType?: string) => {
-    if (!courseType) return undefined;
-
-    const meta: Record<
-      string,
-      {
-        label: string;
-        icon: Component;
-        iconClass: string;
-      }
-    > = {
-      LIVE_CLASS: {
-        label: $t('learningPath.course.type_live_class'),
-        icon: CircleDotIcon,
-        iconClass: 'size-3 text-red-600 shrink-0'
-      },
-      SELF_PACED: {
-        label: $t('learningPath.course.type_self_paced'),
-        icon: UserIcon,
-        iconClass: 'size-3 text-primary shrink-0'
-      },
-      COMPLIANCE: {
-        label: $t('learningPath.course.type_compliance'),
-        icon: ShieldCheckIcon,
-        iconClass: 'size-3 text-emerald-600 shrink-0'
-      },
-      SPECIALIZATION: {
-        label: $t('specialization.course_tag'),
-        icon: TrendingUpIcon,
-        iconClass: 'size-3 text-amber-600 shrink-0'
-      },
-      PUBLIC: {
-        label: $t('learningPath.course.type_public'),
-        icon: GlobeIcon,
-        iconClass: 'size-3 text-primary shrink-0'
-      }
-    };
-
-    const match = meta[courseType];
-    if (!match) {
-      return undefined;
-    }
-
-    return {
-      label: match.label,
-      icon: match.icon,
-      iconClass: match.iconClass
-    };
-  };
 </script>
 
 {#if isLoading}
@@ -287,7 +236,8 @@
                 title={entry.item.title}
                 description={entry.item.description}
                 coverImage={entry.item.coverImage}
-                typeBadge={courseTypeBadgeFor(entry.item.courseType)}
+                typeBadge={toCourseCardBadge(getCourseTypeBadgeMeta(entry.item.courseType), $t)}
+                visibilityBadge={toCourseCardBadge(getCourseVisibilityBadgeMeta(entry.item.courseType), $t)}
                 status={entry.item.status}
                 progressPercent={entry.item.progressPercent}
                 lessonCount={entry.item.lessonCount}
