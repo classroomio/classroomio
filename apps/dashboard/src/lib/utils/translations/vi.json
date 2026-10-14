@@ -471,7 +471,12 @@
   "explore": {
     "heading": "Khám phá",
     "courses_browse_empty_title": "Chưa có khóa học nào",
-    "courses_browse_empty_description": "Các khóa học được tạo trong tổ chức này sẽ hiển thị ở đây."
+    "courses_browse_empty_description": "Các khóa học được tạo trong tổ chức này sẽ hiển thị ở đây.",
+    "paths_browse_empty_title": "Chưa có lộ trình học nào",
+    "paths_browse_empty_description": "Các lộ trình được tạo trong tổ chức này sẽ hiển thị ở đây.",
+    "paths_all_enrolled_title": "Bạn đã ghi danh mọi lộ trình",
+    "paths_all_enrolled_description": "Bạn đã tham gia mọi lộ trình đã xuất bản. Tiếp tục học từ Học tập của tôi.",
+    "paths_all_enrolled_action": "Đến Học tập của tôi"
   },
   "exercises": {
     "heading": "Bài tập",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "Đã sao chép URL đường dẫn học tập vào bảng nhớ tạm",
       "view_path_site": "Xem trang web đường dẫn"
+    },
+    "preview": {
+      "courses_heading": "Các khóa học trong lộ trình này"
     }
   }
 }

@@ -471,7 +471,12 @@
   "explore": {
     "heading": "Explorar",
     "courses_browse_empty_title": "Ainda não há cursos",
-    "courses_browse_empty_description": "Os cursos criados nesta organização aparecerão aqui."
+    "courses_browse_empty_description": "Os cursos criados nesta organização aparecerão aqui.",
+    "paths_browse_empty_title": "Ainda não há trilhas de aprendizagem",
+    "paths_browse_empty_description": "As trilhas criadas nesta organização aparecerão aqui.",
+    "paths_all_enrolled_title": "Você está inscrito em todas as trilhas",
+    "paths_all_enrolled_description": "Você entrou em todas as trilhas publicadas. Continue aprendendo em Meu aprendizado.",
+    "paths_all_enrolled_action": "Ir para Meu aprendizado"
   },
   "exercises": {
     "heading": "Exercícios",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "URL do caminho de aprendizagem copiado para a área de transferência",
       "view_path_site": "Ver site do caminho"
+    },
+    "preview": {
+      "courses_heading": "Cursos nesta trilha"
     }
   }
 }

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Spinner } from '@cio/ui/base/spinner';
+  import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { PathIcon } from '@cio/ui/custom/moving-icons';
   import { Search } from '@cio/ui/custom/search';
@@ -11,6 +12,7 @@
   import { coursesApi } from '$features/course/api';
   import CourseFilterPopover, { type FilterGroup } from '$features/course/components/course-filter-popover.svelte';
   import CoursePreviewModal, { type CoursePreviewCourse } from '$features/lms/components/course-preview-modal.svelte';
+  import PathPreviewModal, { type PathPreviewItem } from '$features/lms/components/path-preview-modal.svelte';
 
   type ContentTypeFilter = 'ALL' | 'paths' | 'courses';
 
@@ -30,6 +32,8 @@
   let contentType = $state<ContentTypeFilter>('ALL');
   let selectedCourse = $state<CoursePreviewCourse | null>(null);
   let previewOpen = $state(false);
+  let selectedPath = $state<PathPreviewItem | null>(null);
+  let pathPreviewOpen = $state(false);
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
@@ -49,12 +53,15 @@
 
   const pathItems = $derived(
     catalogPaths.map((path) => ({
-      id: path.publicId ?? path.id,
+      id: path.id,
       href: `/lms/paths/${path.publicId ?? path.id}`,
+      slug: path.slug ?? null,
       name: path.name,
       description: path.description ?? '',
       coverImage: path.coverImage ?? undefined,
-      courseCount: path.courseCount ?? 0
+      courseCount: path.courseCount ?? 0,
+      cost: path.cost ?? 0,
+      currency: path.currency ?? undefined
     }))
   );
 
@@ -165,6 +172,22 @@
     };
     previewOpen = true;
   }
+
+  function openPathPreview(path: (typeof pathItems)[number]) {
+    selectedPath = {
+      id: path.id,
+      slug: path.slug,
+      name: path.name,
+      description: path.description,
+      coverImage: path.coverImage ?? null,
+      courseCount: path.courseCount,
+      cost: path.cost,
+      currency: path.currency ?? null,
+      href: path.href,
+      enrolled: false
+    };
+    pathPreviewOpen = true;
+  }
 </script>
 
 {#if learnerPathStore.isLoading}
@@ -239,13 +262,29 @@
       </div>
 
       {#if filteredPaths.length === 0}
-        <Empty
-          icon={PathIcon}
-          title={isSearchingOrFiltering ? $t('explore.paths_empty_title') : $t('learningPath.empty.title')}
-          description={isSearchingOrFiltering
-            ? $t('explore.paths_empty_description')
-            : $t('dashboard.no_recommendations_description')}
-        />
+        {#if isSearchingOrFiltering}
+          <Empty
+            icon={PathIcon}
+            title={$t('explore.paths_empty_title')}
+            description={$t('explore.paths_empty_description')}
+          />
+        {:else if learnerPathStore.catalogPaths.length === 0}
+          <Empty
+            icon={PathIcon}
+            title={$t('explore.paths_browse_empty_title')}
+            description={$t('explore.paths_browse_empty_description')}
+          />
+        {:else}
+          <Empty
+            icon={PathIcon}
+            title={$t('explore.paths_all_enrolled_title')}
+            description={$t('explore.paths_all_enrolled_description')}
+          >
+            {#snippet children()}
+              <Button href="/lms/mylearning">{$t('explore.paths_all_enrolled_action')}</Button>
+            {/snippet}
+          </Empty>
+        {/if}
       {:else}
         <div class="grid grid-cols-1 gap-4 px-2 md:grid-cols-3">
           {#each filteredPaths as path}
@@ -258,6 +297,7 @@
               progressPercent={0}
               coursesCompleted={0}
               isExplore={true}
+              onExploreClick={() => openPathPreview(path)}
               labels={pathLabels}
             />
           {/each}
@@ -269,4 +309,8 @@
 
 {#if selectedCourse}
   <CoursePreviewModal course={selectedCourse} bind:open={previewOpen} />
+{/if}
+
+{#if selectedPath}
+  <PathPreviewModal path={selectedPath} bind:open={pathPreviewOpen} />
 {/if}

@@ -10,10 +10,12 @@ import type {
   LearningPathSummary,
   EnrollInLearningPathRequest,
   ExplorePathItem,
+  GetPublicLearningPathRequest,
   ListPublicLearningPathsRequest,
   LearningPathsPagination,
   ListLearningPathsRequest,
   PathListFilters,
+  PublicLearningPathDetail,
   UpdateLearningPathData,
   UpdateLearningPathRequest
 } from '../utils/types';
@@ -367,6 +369,9 @@ class LearnerPathStore extends BaseApiWithErrors {
 
   // Selected path journey for the detail page
   selectedJourney = $state<PathJourney | null>(null);
+  // True once the in-flight selected-journey request finished (found or not).
+  // Guards redirects that must only fire for definitively-unenrolled paths.
+  selectedJourneyLoaded = $state(false);
 
   // Explore strip rows, loaded on demand by the Explore page
   explorePaths = $state<ExplorePathItem[]>([]);
@@ -376,6 +381,10 @@ class LearnerPathStore extends BaseApiWithErrors {
 
   // Certificates the caller can download, for completed-path cards
   pathCertificates = $state<MyPathCertificate[]>([]);
+
+  // Public detail (with courses) for the explore preview modal
+  publicPathDetail = $state<PublicLearningPathDetail | null>(null);
+  isLoadingPublicPathDetail = $state(false);
 
   // True while a certificate file is being generated for download
   isDownloadingCertificate = $state(false);
@@ -445,10 +454,15 @@ class LearnerPathStore extends BaseApiWithErrors {
   async ensureSelectedPath(pathId: string): Promise<PathJourney | null> {
     if (!pathId) return null;
 
-    const journey = await this.fetchJourney(pathId);
-    this.selectedJourney = journey;
+    this.selectedJourneyLoaded = false;
+    try {
+      const journey = await this.fetchJourney(pathId);
+      this.selectedJourney = journey;
 
-    return journey;
+      return journey;
+    } finally {
+      this.selectedJourneyLoaded = true;
+    }
   }
 
   private async fetchJourney(pathId: string): Promise<PathJourney | null> {
@@ -614,6 +628,28 @@ class LearnerPathStore extends BaseApiWithErrors {
       logContext: 'loading path catalog'
     });
     this.catalogPaths = response?.data?.learningPaths ?? [];
+  }
+
+  async loadPublicPathDetail(slug: string): Promise<void> {
+    const organizationId = get(currentOrg)?.id;
+    this.publicPathDetail = null;
+    if (!slug || !organizationId) return;
+
+    this.isLoadingPublicPathDetail = true;
+    try {
+      const response = await this.execute<GetPublicLearningPathRequest>({
+        requestFn: () =>
+          classroomio['learning-path'].public[':slug'].$get({ param: { slug }, query: { organizationId } }),
+        logContext: 'loading public path detail'
+      });
+      this.publicPathDetail = response?.data ?? null;
+    } finally {
+      this.isLoadingPublicPathDetail = false;
+    }
+  }
+
+  clearPublicPathDetail(): void {
+    this.publicPathDetail = null;
   }
 }
 

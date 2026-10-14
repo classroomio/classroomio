@@ -4636,7 +4636,12 @@
     "courses_empty_title": "No courses match your search",
     "courses_empty_description": "Try a different search term.",
     "courses_browse_empty_title": "No courses yet",
-    "courses_browse_empty_description": "Courses created in this org will show up here."
+    "courses_browse_empty_description": "Courses created in this org will show up here.",
+    "paths_browse_empty_title": "No learning paths yet",
+    "paths_browse_empty_description": "Learning paths created in this org will show up here.",
+    "paths_all_enrolled_title": "You are enrolled in all paths",
+    "paths_all_enrolled_description": "You joined every published learning path. Continue learning from My Learning.",
+    "paths_all_enrolled_action": "Go to My Learning"
   },
   "snackbar": {
     "success": "Success",
@@ -6389,6 +6394,9 @@
       "description": "You are about to see what a student will see when they enroll in this learning path",
       "copy_link": "Copy link",
       "go_to_lms": "Go to LMS"
+    },
+    "preview": {
+      "courses_heading": "Courses in this path"
     }
   }
 }

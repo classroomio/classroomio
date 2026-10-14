@@ -471,7 +471,12 @@
   "explore": {
     "heading": "Entdecken",
     "courses_browse_empty_title": "Noch keine Kurse",
-    "courses_browse_empty_description": "Kurse, die in dieser Organisation erstellt werden, erscheinen hier."
+    "courses_browse_empty_description": "Kurse, die in dieser Organisation erstellt werden, erscheinen hier.",
+    "paths_browse_empty_title": "Noch keine Lernpfade",
+    "paths_browse_empty_description": "Lernpfade, die in dieser Organisation erstellt werden, erscheinen hier.",
+    "paths_all_enrolled_title": "Du bist in allen Pfaden eingeschrieben",
+    "paths_all_enrolled_description": "Du bist allen veröffentlichten Lernpfaden beigetreten. Lerne unter Mein Lernen weiter.",
+    "paths_all_enrolled_action": "Zu Mein Lernen"
   },
   "exercises": {
     "heading": "Übungen",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "Lernpfad-URL in die Zwischenablage kopiert",
       "view_path_site": "Pfadseite anzeigen"
+    },
+    "preview": {
+      "courses_heading": "Kurse in diesem Pfad"
     }
   }
 }

@@ -471,7 +471,12 @@
   "explore": {
     "heading": "Исследуйте",
     "courses_browse_empty_title": "Курсов пока нет",
-    "courses_browse_empty_description": "Курсы, созданные в этой организации, появятся здесь."
+    "courses_browse_empty_description": "Курсы, созданные в этой организации, появятся здесь.",
+    "paths_browse_empty_title": "Учебных траекторий пока нет",
+    "paths_browse_empty_description": "Траектории, созданные в этой организации, появятся здесь.",
+    "paths_all_enrolled_title": "Вы записаны на все траектории",
+    "paths_all_enrolled_description": "Вы присоединились ко всем опубликованным траекториям. Продолжите обучение в разделе «Моё обучение».",
+    "paths_all_enrolled_action": "Перейти к Моему обучению"
   },
   "exercises": {
     "heading": "Упражнения",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "URL-адрес пути обучения скопирован в буфер обмена.",
       "view_path_site": "Посмотреть путь к сайту"
+    },
+    "preview": {
+      "courses_heading": "Курсы этой траектории"
     }
   }
 }

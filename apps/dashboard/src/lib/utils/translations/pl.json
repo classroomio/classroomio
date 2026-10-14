@@ -471,7 +471,12 @@
   "explore": {
     "heading": "Eksploruj",
     "courses_browse_empty_title": "Brak kursów",
-    "courses_browse_empty_description": "Kursy utworzone w tej organizacji pojawią się tutaj."
+    "courses_browse_empty_description": "Kursy utworzone w tej organizacji pojawią się tutaj.",
+    "paths_browse_empty_title": "Brak ścieżek nauki",
+    "paths_browse_empty_description": "Ścieżki nauki utworzone w tej organizacji pojawią się tutaj.",
+    "paths_all_enrolled_title": "Zapisano Cię na wszystkie ścieżki",
+    "paths_all_enrolled_description": "Dołączono do wszystkich opublikowanych ścieżek nauki. Kontynuuj naukę w Moja nauka.",
+    "paths_all_enrolled_action": "Przejdź do Moja nauka"
   },
   "exercises": {
     "heading": "Ćwiczenia",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "Adres URL ścieżki szkoleniowej skopiowany do schowka",
       "view_path_site": "Zobacz stronę ścieżki"
+    },
+    "preview": {
+      "courses_heading": "Kursy w tej ścieżce"
     }
   }
 }

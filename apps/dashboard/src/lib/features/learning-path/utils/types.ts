@@ -104,6 +104,10 @@ export type ListPublicLearningPathsSuccess = Extract<
   { success: true }
 >;
 export type PublicLearningPathItem = ListPublicLearningPathsSuccess['data']['learningPaths'][number];
+export type GetPublicLearningPathRequest = (typeof classroomio)['learning-path']['public'][':slug']['$get'];
+export type GetPublicLearningPathSuccess = Extract<InferResponseType<GetPublicLearningPathRequest>, { success: true }>;
+export type PublicLearningPathDetail = GetPublicLearningPathSuccess['data'];
+export type PublicLearningPathDetailCourse = PublicLearningPathDetail['courses'][number];
 export type ExplorePathItem = {
   id: string;
   name: string;

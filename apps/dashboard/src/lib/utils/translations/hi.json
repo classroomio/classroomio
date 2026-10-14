@@ -471,7 +471,12 @@
   "explore": {
     "heading": "अन्वेषण करें",
     "courses_browse_empty_title": "अभी कोई पाठ्यक्रम नहीं",
-    "courses_browse_empty_description": "इस संगठन में बनाए गए पाठ्यक्रम यहाँ दिखेंगे।"
+    "courses_browse_empty_description": "इस संगठन में बनाए गए पाठ्यक्रम यहाँ दिखेंगे।",
+    "paths_browse_empty_title": "अभी कोई लर्निंग पाथ नहीं",
+    "paths_browse_empty_description": "इस संगठन में बनाए गए लर्निंग पाथ यहाँ दिखेंगे।",
+    "paths_all_enrolled_title": "आप सभी पाथ में नामांकित हैं",
+    "paths_all_enrolled_description": "आप सभी प्रकाशित लर्निंग पाथ से जुड़ गए हैं। माई लर्निंग से सीखना जारी रखें।",
+    "paths_all_enrolled_action": "माई लर्निंग पर जाएं"
   },
   "exercises": {
     "heading": "व्यायाम",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "शिक्षण पथ URL को क्लिपबोर्ड पर कॉपी किया गया",
       "view_path_site": "पथ साइट देखें"
+    },
+    "preview": {
+      "courses_heading": "इस पाथ के पाठ्यक्रम"
     }
   }
 }

@@ -471,7 +471,12 @@
   "explore": {
     "heading": "Explorer",
     "courses_browse_empty_title": "Aucun cours pour le moment",
-    "courses_browse_empty_description": "Les cours créés dans cette organisation apparaîtront ici."
+    "courses_browse_empty_description": "Les cours créés dans cette organisation apparaîtront ici.",
+    "paths_browse_empty_title": "Aucun parcours pour le moment",
+    "paths_browse_empty_description": "Les parcours créés dans cette organisation apparaîtront ici.",
+    "paths_all_enrolled_title": "Vous êtes inscrit à tous les parcours",
+    "paths_all_enrolled_description": "Vous avez rejoint tous les parcours publiés. Continuez depuis Mon apprentissage.",
+    "paths_all_enrolled_action": "Aller à Mon apprentissage"
   },
   "exercises": {
     "heading": "Exercices",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "URL du parcours d'apprentissage copiée dans le presse-papiers",
       "view_path_site": "Voir le site du chemin"
+    },
+    "preview": {
+      "courses_heading": "Cours de ce parcours"
     }
   }
 }

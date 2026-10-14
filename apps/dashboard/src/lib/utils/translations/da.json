@@ -471,7 +471,12 @@
   "explore": {
     "heading": "Udforsk",
     "courses_browse_empty_title": "Ingen kurser endnu",
-    "courses_browse_empty_description": "Kurser, der oprettes i denne organisation, vises her."
+    "courses_browse_empty_description": "Kurser, der oprettes i denne organisation, vises her.",
+    "paths_browse_empty_title": "Ingen læringsstier endnu",
+    "paths_browse_empty_description": "Læringsstier, der oprettes i denne organisation, vises her.",
+    "paths_all_enrolled_title": "Du er tilmeldt alle stier",
+    "paths_all_enrolled_description": "Du har tilmeldt dig alle offentliggjorte læringsstier. Fortsæt med at lære fra Min læring.",
+    "paths_all_enrolled_action": "Gå til Min læring"
   },
   "exercises": {
     "heading": "Øvelser",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "Læringssti-URL kopieret til udklipsholder",
       "view_path_site": "Se stiwebsted"
+    },
+    "preview": {
+      "courses_heading": "Kurser i denne sti"
     }
   }
 }

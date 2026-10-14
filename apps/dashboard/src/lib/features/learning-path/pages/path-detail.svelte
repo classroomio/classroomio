@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
@@ -85,12 +86,15 @@
     return getStudentCourseContinuePath(course.courseId, journey?.path.publicId ?? authPathId);
   }
 
-  async function handleEnroll() {
-    const enrolled = await learnerPathStore.enroll(authPathId);
-    if (enrolled) {
-      await learnerPathStore.ensureSelectedPath(authPathId);
+  // Enrollment lives in the explore preview modal now: unenrolled visitors
+  // are sent back to explore instead of enrolling from this page. Only
+  // redirect once the journey request settled — the catalog resolves first
+  // and would otherwise bounce freshly-enrolled students away.
+  $effect(() => {
+    if (loadSettled && learnerPathStore.selectedJourneyLoaded && !journey && previewPath) {
+      goto('/lms/explore');
     }
-  }
+  });
 </script>
 
 {#if !journey && !loadSettled}
@@ -98,24 +102,8 @@
     <Spinner />
   </div>
 {:else if previewPath}
-  <div class="mx-auto w-full max-w-2xl">
-    {#if previewPath.coverImage}
-      <img src={previewPath.coverImage} alt={previewPath.name} class="h-48 w-full rounded-lg object-cover" />
-    {/if}
-    <h1 class="mt-4 text-2xl font-semibold">{previewPath.name}</h1>
-    {#if previewPath.description}
-      <p class="ui:text-muted-foreground mt-2 text-sm">{previewPath.description}</p>
-    {/if}
-    <p class="ui:text-muted-foreground mt-2 text-xs">
-      {previewPath.courseCount}
-      {previewPath.courseCount === 1 ? $t('learningPath.card.course') : $t('learningPath.card.courses')}
-    </p>
-    <div class="mt-4 flex items-center gap-2">
-      <Button onclick={handleEnroll} disabled={learnerPathStore.isLoading}>
-        {$t('learningPath.detail.enroll')}
-      </Button>
-      <Button variant="outline" href="/lms/mylearning">{$t('learningPath.empty.back_to_paths')}</Button>
-    </div>
+  <div class="flex min-h-64 items-center justify-center">
+    <Spinner />
   </div>
 {:else if !journey}
   <Empty

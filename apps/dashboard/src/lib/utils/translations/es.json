@@ -471,7 +471,12 @@
   "explore": {
     "heading": "Explorar",
     "courses_browse_empty_title": "Aún no hay cursos",
-    "courses_browse_empty_description": "Los cursos creados en esta organización aparecerán aquí."
+    "courses_browse_empty_description": "Los cursos creados en esta organización aparecerán aquí.",
+    "paths_browse_empty_title": "Aún no hay rutas de aprendizaje",
+    "paths_browse_empty_description": "Las rutas de aprendizaje creadas en esta organización aparecerán aquí.",
+    "paths_all_enrolled_title": "Estás inscrito en todas las rutas",
+    "paths_all_enrolled_description": "Te uniste a todas las rutas de aprendizaje publicadas. Sigue aprendiendo desde Mi aprendizaje.",
+    "paths_all_enrolled_action": "Ir a Mi aprendizaje"
   },
   "exercises": {
     "heading": "Ejercicios",
@@ -6133,6 +6138,9 @@
       },
       "url_copied": "URL de la ruta de aprendizaje copiada al portapapeles",
       "view_path_site": "Ver sitio de ruta"
+    },
+    "preview": {
+      "courses_heading": "Cursos en esta ruta"
     }
   }
 }
