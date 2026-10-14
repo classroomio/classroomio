@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -89,6 +90,21 @@ for (const release of releaseIndex.releases ?? []) {
 
   if (!/^sha256-[a-f0-9]{64}$/.test(release.artifactDigest)) {
     violations.push(`${release.pluginId}: invalid artifact digest ${release.artifactDigest}`);
+  }
+
+  if (release.archive) {
+    const archivePath = path.resolve(artifactRoot, release.archive);
+    if (!fs.existsSync(archivePath)) {
+      violations.push(`${release.pluginId}: missing archive file ${release.archive}`);
+    } else {
+      const hash = createHash('sha256').update(fs.readFileSync(archivePath)).digest('hex');
+      const expectedDigest = `sha256-${hash}`;
+      if (release.artifactDigest !== expectedDigest) {
+        violations.push(
+          `${release.pluginId}: archive digest mismatch: expected ${expectedDigest}, got ${release.artifactDigest}`
+        );
+      }
+    }
   }
 }
 
