@@ -67,85 +67,103 @@
 </script>
 
 <Story name="Default">
-  <ComboButton
-    label="Export as CSV"
-    menuLabel="More export formats"
-    icon={DownloadIcon}
-    items={exportItems}
-    onSelect={() => (lastAction = 'csv')}
-  />
-  <p class="mt-4 text-sm">Last action: {lastAction}</p>
+  {#snippet template()}
+    <ComboButton
+      label="Export as CSV"
+      menuLabel="More export formats"
+      icon={DownloadIcon}
+      items={exportItems}
+      onSelect={() => (lastAction = 'csv')}
+    />
+    <p class="mt-4 text-sm">Last action: {lastAction}</p>
+  {/snippet}
 </Story>
 
 <Story name="Without a primary icon">
-  <ComboButton label="Export as CSV" menuLabel="More export formats" items={exportItems} onSelect={() => {}} />
+  {#snippet template()}
+    <ComboButton label="Export as CSV" menuLabel="More export formats" items={exportItems} onSelect={() => {}} />
+  {/snippet}
 </Story>
 
 <Story name="Loading">
-  <ComboButton
-    label="Export as CSV"
-    menuLabel="More export formats"
-    icon={DownloadIcon}
-    items={exportItems}
-    loading
-    onSelect={() => {}}
-  />
+  {#snippet template()}
+    <ComboButton
+      label="Export as CSV"
+      menuLabel="More export formats"
+      icon={DownloadIcon}
+      items={exportItems}
+      loading
+      onSelect={() => {}}
+    />
+  {/snippet}
 </Story>
 
 <Story name="Disabled">
-  <ComboButton
-    label="Export as CSV"
-    menuLabel="More export formats"
-    icon={DownloadIcon}
-    items={exportItems}
-    disabled
-    onSelect={() => {}}
-  />
+  {#snippet template()}
+    <ComboButton
+      label="Export as CSV"
+      menuLabel="More export formats"
+      icon={DownloadIcon}
+      items={exportItems}
+      disabled
+      onSelect={() => {}}
+    />
+  {/snippet}
 </Story>
 
 <Story name="With a disabled item and reason">
-  <ComboButton
-    label="Export as CSV"
-    menuLabel="More export formats"
-    icon={DownloadIcon}
-    items={withDisabledItem}
-    onSelect={() => {}}
-  />
+  {#snippet template()}
+    <ComboButton
+      label="Export as CSV"
+      menuLabel="More export formats"
+      icon={DownloadIcon}
+      items={withDisabledItem}
+      onSelect={() => {}}
+    />
+  {/snippet}
 </Story>
 
 <Story name="With a destructive item">
-  <ComboButton label="Save" menuLabel="More actions" items={withDestructiveItem} onSelect={() => {}} />
+  {#snippet template()}
+    <ComboButton label="Save" menuLabel="More actions" items={withDestructiveItem} onSelect={() => {}} />
+  {/snippet}
 </Story>
 
 <Story name="Primary variant">
-  <ComboButton
-    label="Export as CSV"
-    menuLabel="More export formats"
-    icon={DownloadIcon}
-    items={exportItems}
-    variant="default"
-    onSelect={() => {}}
-  />
+  {#snippet template()}
+    <ComboButton
+      label="Export as CSV"
+      menuLabel="More export formats"
+      icon={DownloadIcon}
+      items={exportItems}
+      variant="default"
+      onSelect={() => {}}
+    />
+  {/snippet}
 </Story>
 
 <Story name="Large">
-  <ComboButton
-    label="Export as CSV"
-    menuLabel="More export formats"
-    icon={DownloadIcon}
-    items={exportItems}
-    size="lg"
-    onSelect={() => {}}
-  />
+  {#snippet template()}
+    <ComboButton
+      label="Export as CSV"
+      menuLabel="More export formats"
+      icon={DownloadIcon}
+      items={exportItems}
+      size="lg"
+      onSelect={() => {}}
+    />
+  {/snippet}
 </Story>
 
 <Story name="Menu aligned to start">
-  <ComboButton
-    label="Export as CSV"
-    menuLabel="More export formats"
-    icon={DownloadIcon}
-    items={exportItems}
-    align="start"
-    onSelect={() => {}}
-  />
+  {#snippet template()}
+    <ComboButton
+      label="Export as CSV"
+      menuLabel="More export formats"
+      icon={DownloadIcon}
+      items={exportItems}
+      align="start"
+      onSelect={() => {}}
+    />
+  {/snippet}
 </Story>
