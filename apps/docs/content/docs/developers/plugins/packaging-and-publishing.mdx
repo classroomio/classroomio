@@ -21,9 +21,13 @@ npx cio-plugin --help
 
 | Command | Usage | Description |
 | :--- | :--- | :--- |
-| `cio-plugin pack [path]` | `npx cio-plugin pack` | Validates manifest, computes SHA-256 digest, and outputs packaged release artifacts. |
+| `cio-plugin init [name]` | `npx cio-plugin init my-plugin` | Scaffolds a new ClassroomIO plugin starter with TypeScript, Vite, and SDK setup. |
+| `cio-plugin validate [path]` | `npx cio-plugin validate` | Validates `plugin.json` structure against the ClassroomIO manifest schema. |
+| `cio-plugin pack [path]` | `npx cio-plugin pack` | Validates manifest, creates a deterministic `.tar.gz` archive and canonical SHA-256 digest. |
+| `cio-plugin publish [path]` | `npx cio-plugin publish --token $TOKEN` | Packages and uploads plugin to the quarantine registry for automated validation and review. |
+| `cio-plugin status <id>` | `npx cio-plugin status <id>` | Checks review and approval status for a submitted plugin release. |
 | `cio-plugin digest <dir>` | `npx cio-plugin digest ./dist` | Calculates deterministic SHA-256 hash over directory file paths and byte contents. |
-| `cio-plugin validate [path]` | `npx cio-plugin validate` | Validates `plugin.json` structure against ClassroomIO manifest schema. |
+
 
 ---
 
@@ -136,47 +140,46 @@ wrangler r2 object put classroomio-plugin-assets/.plugin-artifacts \
 
 Because each version URL includes its exact SHA-256 digest (`/:pluginId/:version/:digest/...`), assets can be cached aggressively forever without cache invalidation risks.
 
-### Step 3: Register Release via Internal API
-Publish the release to the ClassroomIO production catalog:
+### Step 3: Publish with the `cio-plugin publish` Command
+
+ClassroomIO uses a **three-lane release model** with automated quarantine scanning and integrity verification:
+
+| Release Lane | Publisher | Distribution | Review & Approval Policy |
+| :--- | :--- | :--- | :--- |
+| **First-Party** | ClassroomIO Core Team | Public Catalog | Fast team approval; auto-promoted on valid signature and `com.classroomio.*` namespace. |
+| **Private** | Organization Developers | Organization Only | Automatic approval for the publishing organization; scoped strictly to authorized workspaces. |
+| **Community Public** | Third-Party Developers | Public Marketplace | Uploaded to isolated quarantine storage; undergoes static code analysis and ClassroomIO marketplace team review. |
+
+#### Submitting a Release
+
+From your plugin project directory, run:
 
 ```bash
-curl -X POST https://api.classroomio.com/internal/plugins/releases \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $INTERNAL_API_KEY" \
-  -d '{
-    "manifest": {
-      "id": "com.example.reading-timer",
-      "name": "Reading Timer",
-      "version": "1.0.0",
-      "publisher": "classroomio",
-      "description": "Calculates reading time for lessons",
-      "runtime": {
-        "ui": {
-          "entrypoints": {
-            "banner": "dist/reading-time.html"
-          }
-        }
-      },
-      "contributes": {
-        "slots": [
-          {
-            "id": "timer-slot",
-            "target": "lesson.after",
-            "entrypoint": "banner",
-            "title": "Lesson Reading Time"
-          }
-        ]
-      }
-    },
-    "artifactDigest": "sha256-a1b2c3d4e5f6..."
-  }'
+npx cio-plugin publish --token $CLASSROOMIO_API_TOKEN
 ```
 
-#### API Invariants
-1. **Manifest Validation**: Schema validated with Zod (`ZPluginManifest`).
-2. **Digest Validation**: Must match `/^sha256-[a-f0-9]{64}$/`.
-3. **Immutability Enforcement**: If `v1.0.0` was already published with a different digest, the API rejects the request with `409 Conflict`. You must bump the version number in `plugin.json` to release updates.
-4. **Audit Logging**: Emits a `plugin.published` event in the audit trail.
+For private organization plugins, pass the `--org` flag:
+
+```bash
+npx cio-plugin publish --token $CLASSROOMIO_API_TOKEN --org $ORG_ID
+```
+
+#### What Happens Under the Hood
+1. **Packaging**: Creates an in-memory deterministic POSIX ustar `.tar.gz` archive and computes the exact `sha256-<hex>` digest.
+2. **Quarantine Upload**: Creates a submission intent and uploads the tarball to an isolated quarantine bucket.
+3. **Automated Security Scan**: The registry downloads the quarantined archive, recomputes the SHA-256 hash, validates `plugin.json` against `ZPluginManifest`, and scans for forbidden imports (`@cio/*`, `$lib/*`) or path traversal attempts.
+4. **Promotion**:
+   - First-party and private plugins are automatically unpacked into the CDN and published.
+   - Community plugins transition to `in_review` and are queued for marketplace approval.
+
+#### Checking Submission Status
+
+You can monitor review progress at any time:
+
+```bash
+npx cio-plugin status <submissionId>
+```
+
 
 ---
 
