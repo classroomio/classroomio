@@ -943,7 +943,9 @@
       "custom": "कस्टम फ़िल्टर",
       "all": "सभी छात्र"
     },
-    "learner_count": "{count} छात्र"
+    "learner_count": "{count} छात्र",
+    "certificate_earned": "{count} सर्टिफ़िकेट हासिल किए",
+    "certificates_earned": "{count} सर्टिफ़िकेट हासिल किए"
   },
   "community": {
     "title": "समुदाय",

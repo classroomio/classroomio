@@ -186,16 +186,20 @@ function completionCondition(completion: TAudienceCompletion): SQL {
   )`;
 }
 
-function certificateCondition(orgId: string, certificate: TAudienceCertificate): SQL {
-  const earned = sql`EXISTS (
-    SELECT 1
-    FROM ${schema.groupmember} gm
-    JOIN ${schema.group} g ON g.id = gm.group_id AND g.organization_id = ${orgId}
-    WHERE gm.profile_id = ${schema.profile.id}
-      AND gm.certificate_earned_at IS NOT NULL
+function certificateCountSql(orgId: string): SQL<number> {
+  return sql<number>`(
+    SELECT COUNT(*)::int
+    FROM ${schema.groupmember} gmc
+    JOIN ${schema.group} gc ON gc.id = gmc.group_id AND gc.organization_id = ${orgId}
+    WHERE gmc.profile_id = ${schema.profile.id}
+      AND gmc.certificate_earned_at IS NOT NULL
   )`;
+}
 
-  return certificate === 'earned' ? earned : sql`NOT ${earned}`;
+function certificateCondition(orgId: string, certificate: TAudienceCertificate): SQL {
+  const certificateCount = certificateCountSql(orgId);
+
+  return certificate === 'earned' ? sql`${certificateCount} > 0` : sql`${certificateCount} = 0`;
 }
 
 /**
@@ -219,7 +223,8 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
       enrolledCount: enrolledCountSql.as('enrolledCount'),
       completedCount: completedCountSql.as('completedCount'),
       completedItems: completedItemsSql.as('completedItems'),
-      totalItems: totalItemsSql.as('totalItems')
+      totalItems: totalItemsSql.as('totalItems'),
+      certificateCount: certificateCountSql(orgId).as('certificateCount')
     })
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -258,7 +263,8 @@ export const getOrganizationAudienceMember = async (orgId: string, memberId: num
     lastActiveAt: row.lastActiveAt ?? null,
     enrolledCount: Number(row.enrolledCount ?? 0),
     completedCount: Number(row.completedCount ?? 0),
-    progressPercent: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0
+    progressPercent: totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0,
+    certificateCount: Number(row.certificateCount ?? 0)
   };
 };
 
@@ -499,7 +505,8 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
       enrolledCount: enrolledCountSql.as('enrolledCount'),
       completedCount: completedCountSql.as('completedCount'),
       completedItems: completedItemsSql.as('completedItems'),
-      totalItems: totalItemsSql.as('totalItems')
+      totalItems: totalItemsSql.as('totalItems'),
+      certificateCount: certificateCountSql(orgId).as('certificateCount')
     })
     .from(schema.organizationmember)
     .leftJoin(schema.profile, eq(schema.organizationmember.profileId, schema.profile.id))
@@ -530,7 +537,8 @@ export const getOrganizationAudience = async (orgId: string, options: GetOrganiz
         lastActiveAt: row.lastActiveAt ?? null,
         enrolledCount: Number(row.enrolledCount ?? 0),
         completedCount: Number(row.completedCount ?? 0),
-        progressPercent
+        progressPercent,
+        certificateCount: Number(row.certificateCount ?? 0)
       };
     }),
     page,

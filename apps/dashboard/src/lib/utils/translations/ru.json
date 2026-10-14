@@ -943,7 +943,9 @@
       "custom": "Пользовательские фильтры",
       "all": "Все студенты"
     },
-    "learner_count": "{count} студентов"
+    "learner_count": "{count} студентов",
+    "certificate_earned": "{count} сертификат получен",
+    "certificates_earned": "{count} сертификатов получено"
   },
   "community": {
     "title": "Сообщество",

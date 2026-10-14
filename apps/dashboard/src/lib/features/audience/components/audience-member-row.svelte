@@ -4,6 +4,7 @@
   import { Checkbox } from '@cio/ui/base/checkbox';
   import { Badge } from '@cio/ui/base/badge';
   import { UserAvatar } from '@cio/ui/custom/user-avatar';
+  import AwardIcon from '@lucide/svelte/icons/award';
   import EllipsisVerticalIcon from '@lucide/svelte/icons/ellipsis-vertical';
   import type { OrganizationAudienceMember } from '$features/org/utils/types';
   import { t } from '$lib/utils/functions/translations';
@@ -63,17 +64,30 @@
     <Checkbox disabled={!row.profileId} checked={selected} onCheckedChange={onToggleSelect} />
   </Table.Cell>
   <Table.Cell>
-    {#if memberDetailHref}
-      <a href={memberDetailHref} class="ui:text-primary flex items-center gap-2 hover:underline">
-        <UserAvatar src={row.avatarUrl} alt={row.name ?? 'User'} class="h-5 w-5" />
-        {row.name}
-      </a>
-    {:else}
-      <span class="flex items-center gap-2">
-        <UserAvatar src={row.avatarUrl} alt={row.name ?? 'User'} class="h-5 w-5" />
-        {row.name}
-      </span>
-    {/if}
+    <div class="flex flex-col items-start gap-1">
+      {#if memberDetailHref}
+        <a href={memberDetailHref} class="ui:text-primary inline-flex items-center gap-2 hover:underline">
+          <UserAvatar src={row.avatarUrl} alt={row.name ?? 'User'} class="h-5 w-5" />
+          {row.name}
+        </a>
+      {:else}
+        <span class="inline-flex items-center gap-2">
+          <UserAvatar src={row.avatarUrl} alt={row.name ?? 'User'} class="h-5 w-5" />
+          {row.name}
+        </span>
+      {/if}
+
+      {#if row.certificateCount > 0}
+        <span
+          class="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-900 dark:bg-amber-500/20 dark:text-amber-200"
+        >
+          <AwardIcon class="h-3 w-3" aria-hidden="true" />
+          {$t(row.certificateCount === 1 ? 'audience.certificate_earned' : 'audience.certificates_earned', {
+            count: row.certificateCount
+          })}
+        </span>
+      {/if}
+    </div>
   </Table.Cell>
   <Table.Cell>{row.email}</Table.Cell>
   <Table.Cell>

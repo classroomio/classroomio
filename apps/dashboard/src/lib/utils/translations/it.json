@@ -4701,7 +4701,9 @@
       "queued_running": "Candidatura a {count} studenti. Puoi continuare a lavorare: ti diremo quando finirà.",
       "queued_failed": "Questa azione collettiva non è terminata. Non è stato applicato altro.",
       "queued_lost": "Abbiamo perso traccia di questa corsa. Ricarica per vedere lo stato attuale."
-    }
+    },
+    "certificate_earned": "{count} certificato ottenuto",
+    "certificates_earned": "{count} certificati ottenuti"
   },
   "analytics": {
     "title": "Analitica",

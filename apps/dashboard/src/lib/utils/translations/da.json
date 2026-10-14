@@ -943,7 +943,9 @@
       "custom": "Brugerdefinerede filtre",
       "all": "Alle studerende"
     },
-    "learner_count": "{count} elever"
+    "learner_count": "{count} elever",
+    "certificate_earned": "{count} certifikat opnået",
+    "certificates_earned": "{count} certifikater opnået"
   },
   "community": {
     "title": "Fællesskab",

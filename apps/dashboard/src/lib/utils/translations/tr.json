@@ -4711,7 +4711,9 @@
       "queued_running": "{count} öğrencilerine uygulanıyor. Çalışmaya devam edebilirsiniz; bittiğinde size haber vereceğiz.",
       "queued_failed": "Bu toplu işlem tamamlanmadı. Başka hiçbir şey uygulanmadı.",
       "queued_lost": "Bu koşunun izini kaybettik. Mevcut durumu görmek için yeniden yükleyin."
-    }
+    },
+    "certificate_earned": "{count} sertifika kazanıldı",
+    "certificates_earned": "{count} sertifika kazanıldı"
   },
   "analytics": {
     "title": "Analytics",

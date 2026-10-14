@@ -943,7 +943,9 @@
       "custom": "Benutzerdefinierte Filter",
       "all": "Alle Studierenden"
     },
-    "learner_count": "{count} Studierende"
+    "learner_count": "{count} Studierende",
+    "certificate_earned": "{count} Zertifikat erworben",
+    "certificates_earned": "{count} Zertifikate erworben"
   },
   "community": {
     "title": "Gemeinschaft",

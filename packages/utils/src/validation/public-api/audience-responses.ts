@@ -19,7 +19,8 @@ export const ZPublicApiAudienceMemberResponse = z.object({
   lastActiveAt: nullableTimestamp,
   enrolledCount: z.number(),
   completedCount: z.number(),
-  progressPercent: z.number()
+  progressPercent: z.number(),
+  certificateCount: z.number().describe('Courses in this organization where the learner has earned a certificate')
 });
 
 export const ZPublicApiCreateAudienceResponse = z.object({

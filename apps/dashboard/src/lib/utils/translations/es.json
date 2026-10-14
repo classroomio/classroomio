@@ -943,7 +943,9 @@
       "custom": "Filtros personalizados",
       "all": "Todos los estudiantes"
     },
-    "learner_count": "{count} estudiantes"
+    "learner_count": "{count} estudiantes",
+    "certificate_earned": "{count} certificado obtenido",
+    "certificates_earned": "{count} certificados obtenidos"
   },
   "community": {
     "title": "Comunidad",

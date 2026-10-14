@@ -26,6 +26,8 @@ export type OrgAudienceMember = {
   enrolledCount: number;
   completedCount: number;
   progressPercent: number;
+  /** Courses in this organization where the learner has earned a certificate. */
+  certificateCount: number;
 };
 
 export type OrgAudiencePagination = {

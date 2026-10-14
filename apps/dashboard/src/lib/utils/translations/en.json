@@ -4496,6 +4496,8 @@
     "status_expired": "Expired",
     "status_revoked": "Revoked",
     "date_joined": "Date Joined",
+    "certificate_earned": "{count} certificate earned",
+    "certificates_earned": "{count} certificates earned",
     "upgrade": "Upgrade your plan to invite more students",
     "select_all": "Select all",
     "selected_count": "{count} selected",

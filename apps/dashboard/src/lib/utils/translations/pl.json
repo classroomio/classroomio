@@ -943,7 +943,9 @@
       "custom": "Filtry niestandardowe",
       "all": "Wszyscy studenci"
     },
-    "learner_count": "{count} studentów"
+    "learner_count": "{count} studentów",
+    "certificate_earned": "Zdobyto {count} certyfikat",
+    "certificates_earned": "Zdobyto {count} certyfikatów"
   },
   "community": {
     "title": "Społeczność",

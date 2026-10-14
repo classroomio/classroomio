@@ -943,7 +943,9 @@
       "custom": "Bộ lọc tùy chỉnh",
       "all": "Tất cả học viên"
     },
-    "learner_count": "{count} học sinh"
+    "learner_count": "{count} học sinh",
+    "certificate_earned": "Đã đạt được {count} chứng chỉ",
+    "certificates_earned": "Đã đạt được {count} chứng chỉ"
   },
   "community": {
     "title": "cộng đồng",
