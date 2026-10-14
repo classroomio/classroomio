@@ -29,4 +29,15 @@ describe('public API course learner contract', () => {
       true
     );
   });
+
+  it('rejects a questionId that appears twice', () => {
+    expect(
+      ZPublicApiCreateLearnerSubmission.safeParse({
+        answers: [
+          { questionId: 7, optionId: 70 },
+          { questionId: 7, optionId: 71 }
+        ]
+      }).success
+    ).toBe(false);
+  });
 });

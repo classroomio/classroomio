@@ -1,6 +1,11 @@
-import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
+import {
+  QUESTION_TYPE_ID_TO_KEY,
+  fromApiPayload,
+  validateTextareaAnswer,
+  type ExerciseQuestionModel
+} from '@cio/question-types';
 import { getCourseMember } from '@cio/db/queries/course/people';
-import { getQuestionsByExerciseIds } from '@cio/db/queries/exercise';
+import { getExerciseWithRelationsOptimized } from '@cio/db/queries/exercise';
 import { getLessonById } from '@cio/db/queries/lesson';
 import { hasSubmission } from '@cio/db/queries/submission';
 import { ContentType, ROLE } from '@cio/utils/constants';
@@ -43,6 +48,48 @@ async function resolveLearner(orgId: string, actorId: string | null, courseId: s
   }
 
   return { memberId: member.id, profileId: member.profileId };
+}
+
+type LearnerAnswer = TPublicApiCreateLearnerSubmission['answers'][number];
+
+function invalidAnswer(questionId: number, reason: string) {
+  return new AppError(`Question ${questionId}: ${reason}`, ErrorCodes.VALIDATION_ERROR, 400);
+}
+
+/**
+ * createSubmissionService saves the submission before it reads the answers, so a bad answer would leave an empty
+ * submission behind and use up the learner's attempt. Every answer is decoded here first, the same way.
+ */
+function assertAnswerIsValid(answer: LearnerAnswer, question: ExerciseQuestionModel) {
+  if (UPLOAD_QUESTION_TYPES.has(question.questionType)) {
+    throw invalidAnswer(answer.questionId, 'needs a file or video upload, which the API does not support');
+  }
+
+  let answerData: ReturnType<typeof fromApiPayload>;
+  try {
+    answerData = fromApiPayload(question.questionType, answer, question);
+  } catch {
+    answerData = null;
+  }
+
+  if (!answerData) {
+    throw invalidAnswer(answer.questionId, `the answer is not in the format a ${question.questionType} question takes`);
+  }
+
+  const optionIds = new Set((question.options ?? []).map((option) => Number(option.id)));
+  const chosenOptionIds =
+    answerData.type === 'RADIO' ? [answerData.optionId] : answerData.type === 'CHECKBOX' ? answerData.optionIds : [];
+  if (chosenOptionIds.some((optionId) => !optionIds.has(Number(optionId)))) {
+    throw invalidAnswer(answer.questionId, 'an option does not belong to this question');
+  }
+
+  if (answerData.type === 'NUMERIC' && !Number.isFinite(answerData.value)) {
+    throw invalidAnswer(answer.questionId, 'the value must be a number');
+  }
+
+  if (answerData.type === 'TEXTAREA' && !validateTextareaAnswer(answerData.text, question).isValid) {
+    throw invalidAnswer(answer.questionId, 'the answer is shorter or longer than the question allows');
+  }
 }
 
 export async function setLearnerLessonCompletionService(
@@ -97,25 +144,36 @@ export async function createLearnerSubmissionService(
     type: ContentType.Exercise
   });
 
-  const questionTypeById = new Map(
-    (await getQuestionsByExerciseIds([params.exerciseId])).map((question) => [
+  const { questions } = await getExerciseWithRelationsOptimized(params.exerciseId);
+  const questionById = new Map<number, ExerciseQuestionModel>(
+    questions.map((question) => [
       Number(question.id),
-      QUESTION_TYPE_ID_TO_KEY[Number(question.questionTypeId)]
+      {
+        id: Number(question.id),
+        title: String(question.title ?? ''),
+        questionType: QUESTION_TYPE_ID_TO_KEY[Number(question.questionTypeId)] ?? 'TEXTAREA',
+        points: Number(question.points ?? 0),
+        settings:
+          question.settings && typeof question.settings === 'object' && !Array.isArray(question.settings)
+            ? (question.settings as Record<string, unknown>)
+            : {},
+        options: (question.options ?? []).map((option) => ({
+          id: option.id as number,
+          label: option.label ?? '',
+          value: option.value ?? undefined,
+          isCorrect: option.isCorrect
+        }))
+      }
     ])
   );
 
   for (const answer of payload.answers) {
-    if (!questionTypeById.has(answer.questionId)) {
+    const question = questionById.get(answer.questionId);
+    if (!question) {
       throw new AppError(`Question ${answer.questionId} not found in this exercise`, ErrorCodes.NOT_FOUND, 404);
     }
 
-    if (UPLOAD_QUESTION_TYPES.has(questionTypeById.get(answer.questionId) ?? '')) {
-      throw new AppError(
-        `Question ${answer.questionId} needs a file or video upload, which the API does not support`,
-        ErrorCodes.VALIDATION_ERROR,
-        400
-      );
-    }
+    assertAnswerIsValid(answer, question);
   }
 
   if (!exercise.allowMultipleAttempts && (await hasSubmission(params.exerciseId, learner.memberId))) {

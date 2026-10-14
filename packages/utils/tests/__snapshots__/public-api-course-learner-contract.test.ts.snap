@@ -63,15 +63,15 @@ exports[`public API course learner contract > ZPublicApiCreateLearnerSubmission 
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "answers": {
-      "description": "File-upload and video-recording questions cannot be answered through the API.",
+      "description": "One entry per answered question. File-upload and video-recording questions cannot be answered through the API.",
       "items": {
         "properties": {
           "answer": {
-            "description": "The answer text, for every other question type.",
+            "description": "Every question type except single choice. True/false: "true" or "false". Short answer and paragraph: the plain text. Every other type: a JSON string. Multiple choice: {"type":"CHECKBOX","optionIds":[30,31]}. Numeric: {"type":"NUMERIC","value":2}. Fill in the blank: {"type":"FILL_BLANK","answers":["Paris"]}. Word bank: {"type":"WORD_BANK","filledBlanks":["Paris"]}. Matching: {"type":"MATCHING","value":[{"left":"A","right":"1"}]}. Ordering: {"type":"ORDERING","value":["first","second"]}. Link: {"type":"LINK","links":["https://example.com"]}. Hotspot: {"type":"HOTSPOT","value":[{"x":10,"y":20}]}. Star rating: {"type":"STAR","value":4}.",
             "type": "string",
           },
           "optionId": {
-            "description": "The chosen option, for choice questions.",
+            "description": "Single choice questions only: the chosen option, which must belong to the question.",
             "maximum": 9007199254740991,
             "minimum": -9007199254740991,
             "type": "integer",
