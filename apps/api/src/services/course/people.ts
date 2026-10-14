@@ -453,14 +453,21 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
     await invalidateOrgStats(statsOrgId);
 
     const profileId = member.profileId;
-    await Promise.all([
-      ...resetLessonIds.map((lessonId) =>
-        emitCourseWebhookEvent(courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete: false })
-      ),
-      ...resetExerciseIds.map((exerciseId) =>
-        emitCourseWebhookEvent(courseId, 'exercise.completion.updated', { exerciseId, profileId, isComplete: false })
-      )
-    ]);
+    const lessonResetEvents = profileId
+      ? resetLessonIds.map((lessonId) =>
+          emitCourseWebhookEvent(courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete: false })
+        )
+      : [];
+    const exerciseResetEvents = resetExerciseIds.map((exerciseId) =>
+      emitCourseWebhookEvent(courseId, 'exercise.completion.updated', {
+        exerciseId,
+        memberId,
+        profileId,
+        isComplete: false
+      })
+    );
+
+    await Promise.all([...lessonResetEvents, ...exerciseResetEvents]);
 
     return summary;
   } catch (error) {

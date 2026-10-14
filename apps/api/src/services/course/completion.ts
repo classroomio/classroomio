@@ -240,7 +240,7 @@ export async function evaluateCourseCertification(
 
         await invalidateOrgStats(courseRow.orgId);
 
-        const completionEventData = { profileId, groupMemberId: progress.groupMemberId, completedAt: earnedAt };
+        const completionEventData = { profileId, memberId: progress.groupMemberId, completedAt: earnedAt };
         await emitWebhookEvent(courseRow.orgId, 'course.completed', { courseId, ...completionEventData });
         await emitWebhookEvent(courseRow.orgId, 'course.certificate.issued', { courseId, ...completionEventData });
 
