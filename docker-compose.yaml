@@ -236,6 +236,11 @@ services:
       SMTP_SENDER: ${SMTP_SENDER:-}
       # Transcription + OpenAI-backed agent runs.
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      # Anonymous weekly usage ping (instance ID, version, counts). CIO_TELEMETRY_DISABLED=true turns it off.
+      PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
+      CIO_DEPLOYMENT_METHOD: ${CIO_DEPLOYMENT_METHOD:-}
+      CIO_TELEMETRY_DISABLED: ${CIO_TELEMETRY_DISABLED:-}
+      LICENSE_KEY: ${LICENSE_KEY:-}
     restart: unless-stopped
 
 volumes:
