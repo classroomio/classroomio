@@ -520,7 +520,7 @@ async function pullActivityDetails(
           completionRule: templateDetails.completionRule,
           minScorePercent: templateDetails.minScorePercent,
           allowRetakes: templateDetails.allowRetakes,
-          launchMode: templateDetails.launchMode
+          moduleOrder: templateDetails.moduleOrder
         },
         client
       );
@@ -553,7 +553,7 @@ async function pullActivityDetails(
         completionRule: templateDetails.completionRule,
         minScorePercent: templateDetails.minScorePercent,
         allowRetakes: templateDetails.allowRetakes,
-        launchMode: templateDetails.launchMode
+        moduleOrder: templateDetails.moduleOrder
       },
       client
     );
@@ -579,7 +579,7 @@ async function pullActivityDetails(
       completionRule: templateDetails.completionRule,
       minScorePercent: templateDetails.minScorePercent,
       allowRetakes: templateDetails.allowRetakes,
-      launchMode: templateDetails.launchMode
+      moduleOrder: templateDetails.moduleOrder
     },
     client
   );

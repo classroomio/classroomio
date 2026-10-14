@@ -32,6 +32,8 @@ describe('runtime-scorm routes', () => {
       launchPath: 'sco.html',
       parentOrigin: 'https://org.example.com',
       entry: 'ab-initio',
+      commitSeq: 0,
+      mode: 'normal',
       debug: false
     });
 
@@ -52,7 +54,7 @@ describe('runtime-scorm routes', () => {
     });
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ result: true, errorCode: 0 });
+    expect(await response.json()).toEqual({ result: true, errorCode: 0, completedActivity: false });
     expect(mockedCommit).toHaveBeenCalledWith(
       'launch-token',
       expect.objectContaining({ commitSequence: 3, terminate: true }),

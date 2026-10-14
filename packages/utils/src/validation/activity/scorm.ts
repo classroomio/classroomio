@@ -1,9 +1,19 @@
 import * as z from 'zod';
 
-import { SCORM_COMPLETION_RULES, SCORM_LAUNCH_MODES, SCORM_SESSION_EVENT_KINDS } from '../../constants/activity';
+import {
+  SCORM_COMPLETION_MODULES,
+  SCORM_COMPLETION_RULES,
+  SCORM_MODULE_ORDERS,
+  SCORM_SESSION_EVENT_KINDS
+} from '../../constants/activity';
 
-export { SCORM_COMPLETION_RULES, SCORM_LAUNCH_MODES, SCORM_SESSION_EVENT_KINDS };
-export type { TScormCompletionRule, TScormLaunchMode, TScormSessionEventKind } from '../../constants/activity';
+export { SCORM_COMPLETION_MODULES, SCORM_COMPLETION_RULES, SCORM_MODULE_ORDERS, SCORM_SESSION_EVENT_KINDS };
+export type {
+  TScormCompletionModules,
+  TScormCompletionRule,
+  TScormModuleOrder,
+  TScormSessionEventKind
+} from '../../constants/activity';
 
 export const SCORM_SESSION_EVENT_DETAIL_MAX_BYTES = 2048;
 export const SCORM_SESSION_EVENT_USER_AGENT_MAX_LENGTH = 512;
@@ -27,7 +37,8 @@ export const ZScormSettings = z
     completionRule: z.enum(SCORM_COMPLETION_RULES).default('auto'),
     minScorePercent: z.number().int().min(0).max(100).nullish(),
     allowRetakes: z.boolean().default(false),
-    launchMode: z.enum(SCORM_LAUNCH_MODES).default('embedded')
+    moduleOrder: z.enum(SCORM_MODULE_ORDERS).default('free'),
+    completionModules: z.enum(SCORM_COMPLETION_MODULES).default('all')
   })
   .superRefine((settings, ctx) => {
     if (settings.completionRule === 'score' && settings.minScorePercent == null) {

@@ -11,14 +11,17 @@ import {
   getScoAttemptById
 } from '@cio/db/queries/scorm/sco-attempt';
 import { getOrganizationById } from '@cio/db/queries/organization/organization';
+import { getProfileById } from '@cio/db/queries/auth/profile';
 import {
   PackageError,
+  accumulateTryTime,
   applyLmsRules,
   isScormRuleMet,
   mergeCmi,
   mintContentToken,
   moduleOutcomeFromCmi,
   normalizeCommitCmi,
+  parseCommitSessionTime,
   scormLaunchUrl,
   shouldRecordCommitEvent,
   statusAfterTerminate,
@@ -27,6 +30,7 @@ import {
   type ScormCmi,
   type ScormCommitOutcomeSnapshot
 } from '@cio/activity-packages';
+import type { TContentPackageUnit } from '@cio/db/types';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import type { TScormPlayerEventKind, TScormSessionEventKind } from '@cio/utils/validation/activity/scorm';
 import { SCORM_PLAYER_EVENT_KINDS } from '@cio/utils/validation/activity/scorm';
@@ -51,6 +55,8 @@ export interface ScormRuntimeState {
   parentOrigin: string;
   parentOrigins?: string[];
   entry: string;
+  commitSeq: number;
+  mode: 'preview' | 'normal' | 'review';
   debug: boolean;
 }
 
@@ -133,15 +139,27 @@ export async function getScormRuntimeState(
     );
     const parentOrigin = await resolveParentOrigin(claims);
     const parentOrigins = claims.anc && claims.anc.length > 0 ? claims.anc : [parentOrigin];
+    const profile = await getProfileById(claims.sub);
+    const outcomeUnit = toOutcomeUnit(unit);
+    const timeLimits = timeLimitsOf(unit.formatDetails);
+    const launchCmi = withLearnerFields(
+      withLaunchData({}, unit.launchData),
+      playerFormat(version.format),
+      claims.sub,
+      profile?.fullname ?? null,
+      { ...outcomeUnit, ...timeLimits }
+    );
 
     return {
       format: playerFormat(version.format),
-      cmi: withLaunchData({}, unit.launchData),
+      cmi: launchCmi,
       contentToken,
       launchPath: scormLaunchUrl(unit.href, unit.parameters),
       parentOrigin,
       parentOrigins,
       entry: 'ab-initio',
+      commitSeq: 0,
+      mode: 'preview',
       debug: false
     };
   }
@@ -167,15 +185,27 @@ export async function getScormRuntimeState(
   );
   const parentOrigin = await resolveParentOrigin(claims);
   const parentOrigins = claims.anc && claims.anc.length > 0 ? claims.anc : [parentOrigin];
+  const profile = await getProfileById(claims.sub);
+  const outcomeUnit = toOutcomeUnit(unit);
+  const timeLimits = timeLimitsOf(unit.formatDetails);
+  const launchCmi = withLearnerFields(
+    withLaunchData(stored, unit.launchData),
+    playerFormat(version.format),
+    claims.sub,
+    profile?.fullname ?? null,
+    { ...outcomeUnit, ...timeLimits }
+  );
 
   return {
     format: playerFormat(version.format),
-    cmi: withLaunchData(stored, unit.launchData),
+    cmi: launchCmi,
     contentToken,
     launchPath: scormLaunchUrl(unit.href, unit.parameters),
     parentOrigin,
     parentOrigins,
     entry: entryOf(scoAttempt.status ?? 'active', stored, scoAttempt.commitSeq ?? 0),
+    commitSeq: scoAttempt.commitSeq ?? 0,
+    mode: claims.mode === 'review' ? 'review' : 'normal',
     debug: false
   };
 }
@@ -184,6 +214,89 @@ function withLaunchData(cmi: ScormCmi, launchData: string | null): ScormCmi {
   if (!launchData || cmi['launch_data'] !== undefined) return cmi;
 
   return { ...cmi, launch_data: launchData };
+}
+
+function formatLearnerName(fullname: string | null): string | null {
+  const parts = (fullname ?? '').trim().split(/\s+/).filter(Boolean);
+
+  if (parts.length === 0) return null;
+  if (parts.length === 1) return parts[0] ?? null;
+
+  return `${parts[parts.length - 1]}, ${parts.slice(0, -1).join(' ')}`;
+}
+
+function mergeRecord(base: unknown, patch: Record<string, unknown>): Record<string, unknown> {
+  const current = typeof base === 'object' && base !== null ? (base as Record<string, unknown>) : {};
+
+  return { ...current, ...patch };
+}
+
+function timeLimitsOf(formatDetails: TContentPackageUnit['formatDetails']): {
+  maxTimeAllowed: string | null;
+  timeLimitAction: string | null;
+} {
+  return {
+    maxTimeAllowed: 'maxTimeAllowed' in formatDetails ? (formatDetails.maxTimeAllowed ?? null) : null,
+    timeLimitAction: 'timeLimitAction' in formatDetails ? (formatDetails.timeLimitAction ?? null) : null
+  };
+}
+
+function withLearnerFields(
+  cmi: ScormCmi,
+  format: 'scorm12' | 'scorm2004',
+  profileId: string,
+  fullname: string | null,
+  unit: {
+    masteryScoreRaw: number | null;
+    passingScoreScaled: number | null;
+    maxTimeAllowed: string | null;
+    timeLimitAction: string | null;
+  }
+): ScormCmi {
+  const learnerName = formatLearnerName(fullname);
+
+  if (format === 'scorm12') {
+    const current = typeof cmi['core'] === 'object' && cmi['core'] !== null ? cmi['core'] : {};
+    const core: Record<string, unknown> = { ...(current as Record<string, unknown>) };
+    if (core['student_id'] === undefined) core['student_id'] = profileId;
+    if (core['student_name'] === undefined && learnerName !== null) core['student_name'] = learnerName;
+
+    const next: ScormCmi = { ...cmi, core };
+    const currentStudentData =
+      typeof cmi['student_data'] === 'object' && cmi['student_data'] !== null
+        ? (cmi['student_data'] as Record<string, unknown>)
+        : {};
+    const studentData: Record<string, unknown> = { ...currentStudentData };
+    if (studentData['mastery_score'] === undefined && unit.masteryScoreRaw !== null) {
+      studentData['mastery_score'] = String(unit.masteryScoreRaw);
+    }
+    if (studentData['max_time_allowed'] === undefined && unit.maxTimeAllowed !== null) {
+      studentData['max_time_allowed'] = unit.maxTimeAllowed;
+    }
+    if (studentData['time_limit_action'] === undefined && unit.timeLimitAction !== null) {
+      studentData['time_limit_action'] = unit.timeLimitAction;
+    }
+    if (Object.keys(studentData).length > 0) {
+      next['student_data'] = studentData;
+    }
+
+    return next;
+  }
+
+  const next: ScormCmi = { ...cmi };
+  if (next['learner_id'] === undefined) next['learner_id'] = profileId;
+  if (next['learner_name'] === undefined && learnerName !== null) next['learner_name'] = learnerName;
+  if (next['scaled_passing_score'] === undefined && unit.passingScoreScaled !== null) {
+    next['scaled_passing_score'] = String(unit.passingScoreScaled);
+  }
+  if (next['max_time_allowed'] === undefined && unit.maxTimeAllowed !== null) {
+    next['max_time_allowed'] = unit.maxTimeAllowed;
+  }
+  if (next['time_limit_action'] === undefined && unit.timeLimitAction !== null) {
+    next['time_limit_action'] = unit.timeLimitAction;
+  }
+
+  return next;
 }
 
 export interface ScormCommitResult {
@@ -265,7 +378,12 @@ export async function commitScormAttempt(
       isBeacon: viaBeacon || commit.beacon === true,
       isRejected: false
     });
-    const now = new Date().toISOString();
+    const nowMs = Date.now();
+    const now = new Date(nowMs).toISOString();
+    const sessionTimeSeconds = parseCommitSessionTime(commit.cmi, format);
+    const lastActivityMs = new Date(chain.scoAttempt.lastCommitAt ?? chain.scoAttempt.startedAt).getTime();
+    const currentTimeSpent = chain.scoAttempt.timeSpentSeconds ?? 0;
+    const nextTimeSpent = accumulateTryTime(currentTimeSpent, sessionTimeSeconds, lastActivityMs, nowMs);
     await updateScoAttempt(
       chain.scoAttempt.id,
       {
@@ -273,6 +391,7 @@ export async function commitScormAttempt(
         commitSeq: commit.seq,
         status: nextStatus,
         lastCommitAt: now,
+        timeSpentSeconds: nextTimeSpent,
         ...(nextStatus === 'closed' ? { terminatedAt: now } : {})
       },
       tx

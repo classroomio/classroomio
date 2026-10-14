@@ -164,6 +164,36 @@ describe('activity package services (PR 6)', () => {
     expect(result.uploadKey).toBe('scorm/asset-1/v2.zip');
   });
 
+  it('returns the current version unchanged when the declared digest matches', async () => {
+    const digest = 'a'.repeat(64);
+    vi.mocked(getCurrentPackageVersion).mockResolvedValue({
+      ...versionFixture,
+      status: 'ready',
+      contentSha256: digest
+    } as never);
+
+    const result = await createScormPackageVersion(ORG_ID, 'asset-1', PROFILE_ID, { contentSha256: digest });
+
+    expect(result).toMatchObject({ unchanged: true, version: { id: 'version-1' }, uploadUrl: null, uploadKey: null });
+    expect(vi.mocked(createPackageVersion)).not.toHaveBeenCalled();
+    expect(vi.mocked(generateScormUploadPresignedUrl)).not.toHaveBeenCalled();
+  });
+
+  it('creates a version when the declared digest differs or is absent', async () => {
+    vi.mocked(getCurrentPackageVersion).mockResolvedValue({
+      ...versionFixture,
+      status: 'ready',
+      contentSha256: 'a'.repeat(64)
+    } as never);
+
+    const declared = await createScormPackageVersion(ORG_ID, 'asset-1', PROFILE_ID, { contentSha256: 'b'.repeat(64) });
+    const undeclared = await createScormPackageVersion(ORG_ID, 'asset-1', PROFILE_ID);
+
+    expect(declared).toMatchObject({ unchanged: false, uploadKey: 'scorm/asset-1/v2.zip' });
+    expect(undeclared).toMatchObject({ unchanged: false, uploadKey: 'scorm/asset-1/v2.zip' });
+    expect(vi.mocked(createPackageVersion)).toHaveBeenCalledTimes(2);
+  });
+
   it('refuses versions for missing or foreign assets', async () => {
     vi.mocked(getAssetById).mockResolvedValue(null);
     await expect(createScormPackageVersion(ORG_ID, 'missing', PROFILE_ID)).rejects.toBeInstanceOf(AppError);

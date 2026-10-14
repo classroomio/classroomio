@@ -2,12 +2,12 @@ import {
   ZPackageCreate,
   ZPackageMakeCurrent,
   ZPackageParam,
+  ZPackageVersionCreate,
   ZPackageVersionParam
 } from '@cio/utils/validation/activity/package';
 import {
   createScormPackage,
   createScormPackageVersion,
-  deleteScormPackage,
   getScormPackage,
   makeScormPackageVersionCurrent,
   processScormPackageVersion
@@ -17,7 +17,6 @@ import { assertActivityKindAllowed } from '@api/services/activity/plan';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
-import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
 import { zValidator } from '@hono/zod-validator';
 
@@ -40,15 +39,18 @@ export const packagesRouter = new Hono()
     authMiddleware,
     orgTeamMemberMiddleware,
     zValidator('param', ZPackageParam),
+    zValidator('json', ZPackageVersionCreate),
     async (c) => {
       try {
         const orgId = c.req.header('cio-org-id')!;
         const user = c.get('user')!;
         const { assetId } = c.req.valid('param');
+        const data = c.req.valid('json');
         await assertActivityKindAllowed(orgId, 'scorm');
-        const result = await createScormPackageVersion(orgId, assetId, user.id);
+        const result = await createScormPackageVersion(orgId, assetId, user.id, data);
+        const status = result.unchanged ? 200 : 201;
 
-        return c.json({ success: true, data: result }, 201);
+        return c.json({ success: true, data: result }, status);
       } catch (error) {
         return handleError(c, error, 'Failed to create package version');
       }
@@ -102,16 +104,5 @@ export const packagesRouter = new Hono()
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to fetch package');
-    }
-  })
-  .delete('/:assetId', authMiddleware, orgAdminMiddleware, zValidator('param', ZPackageParam), async (c) => {
-    try {
-      const orgId = c.req.header('cio-org-id')!;
-      const { assetId } = c.req.valid('param');
-      const result = await deleteScormPackage(orgId, assetId);
-
-      return c.json({ success: true, data: result }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to delete package');
     }
   });

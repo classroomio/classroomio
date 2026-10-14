@@ -9,13 +9,12 @@
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import MaximizeIcon from '@lucide/svelte/icons/maximize';
-  import MinimizeIcon from '@lucide/svelte/icons/minimize';
   import PackageIcon from '@lucide/svelte/icons/package';
   import { ContentType } from '@cio/utils/constants/content';
   import { activityApi, courseApi } from '$features/course/api';
   import ContentNavigationActions from '$features/course/components/lesson/content-navigation-actions.svelte';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
-  import ActivityPlayerModuleMenu from '$features/course/components/activity/activity-player-module-menu.svelte';
+  import ActivityPlayerModuleNav from '$features/course/components/activity/activity-player-module-nav.svelte';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { getCourseProgress, getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
@@ -42,9 +41,14 @@
   let requestingAttempt = $state(false);
   let retakesUnavailable = $state(false);
   let isFullscreen = $state(false);
+  let isFocusMode = $state(false);
+  let navVisible = $state(true);
   let now = $state(Date.now());
   let frameWrap = $state<HTMLElement | null>(null);
   let expiryTimer: ReturnType<typeof setInterval> | null = null;
+  let idleTimer: ReturnType<typeof setTimeout> | null = null;
+
+  const isImmersive = $derived(isFullscreen || isFocusMode);
 
   const launch = $derived(activityApi.launchResult);
   const availableLaunch = $derived(launch && launch.available ? launch : null);
@@ -62,13 +66,11 @@
         (availableLaunch as { restartedAfterReplace?: boolean }).restartedAfterReplace
     )
   );
-  const playerUrl = $derived(availableLaunch?.playerUrl ?? null);
   const units = $derived(availableLaunch?.units ?? []);
   const showMenu = $derived(units.length > 1);
-  const launchMode = $derived(
-    activityApi.editor && activityApi.editor.available ? activityApi.editor.settings.launchMode : 'embedded'
+  const allowRetakes = $derived(
+    activityApi.editor && activityApi.editor.available ? (activityApi.editor.settings.allowRetakes ?? false) : false
   );
-  const useNewWindow = $derived(launchMode === 'window' && !isMobileStore.current);
 
   const lockReason = $derived(
     $isCourseLearnerView ? getStudentContentLockReason(courseApi.course, activityId, ContentType.Activity) : null
@@ -89,6 +91,7 @@
   });
 
   const pill = $derived.by(() => {
+    if (availableLaunch?.mode === 'preview') return 'preview';
     if (activityComplete) return 'completed';
     if (availableLaunch?.mode === 'review') return 'review';
     if ((availableLaunch?.units ?? []).some((unit) => !unit.completed && unit.scorePercent !== null)) {
@@ -145,7 +148,7 @@
     return result;
   }
 
-  async function refreshProgressAndMaybeComplete() {
+  async function refreshProgressAndMaybeComplete(openCompletion = true) {
     const profileId = $profile.id;
     if (!profileId) return;
 
@@ -154,19 +157,31 @@
       (entry) => entry.type === ContentType.Activity && entry.id === activityId
     );
 
-    if (item?.isComplete) await openCourseCompletionIfDone(courseId);
+    if (item?.isComplete && openCompletion) await openCourseCompletionIfDone(courseId);
   }
 
   async function handleTerminated(navRequest: string | null) {
     terminated = true;
     playerReady = false;
-    await refreshProgressAndMaybeComplete();
+    await refreshProgressAndMaybeComplete(availableLaunch?.mode !== 'preview');
     await activityApi.launch(courseId, activityId, {});
 
-    if (navRequest === 'continue') {
+    if (!navRequest || navRequest === '_none_' || navRequest === 'exit' || navRequest === 'exitAll') {
+      return;
+    }
+
+    if (navRequest === 'continue' || navRequest === '_next_') {
       const nextIncomplete = nextIncompleteModule();
       if (nextIncomplete && nextIncomplete.identifier !== currentUnitIdentifier) {
         await selectUnit(nextIncomplete.identifier);
+      }
+    } else if (navRequest === 'previous' || navRequest === '_previous_') {
+      previousModule();
+    } else if (navRequest.startsWith('choice.')) {
+      const target = navRequest.replace(/^choice\.(?:\{target=)?([^}]+)\}?$/, '$1');
+      const targetUnit = (availableLaunch?.units ?? []).find((unit) => unit.identifier === target);
+      if (targetUnit && !targetUnit.locked) {
+        await selectUnit(targetUnit.identifier);
       }
     }
   }
@@ -178,13 +193,46 @@
     const message = parsePlayerMessage(event.data);
     if (!message) return;
 
-    if (message.type === 'ready') playerReady = true;
-    else if (message.type === 'did-not-connect') didNotConnect = true;
+    if (message.type === 'ready') {
+      playerReady = true;
+      didNotConnect = false;
+    } else if (message.type === 'completed') {
+      void refreshProgressAndMaybeComplete(availableLaunch?.mode !== 'preview');
+    } else if (message.type === 'did-not-connect') didNotConnect = true;
     else void handleTerminated(message.navRequest);
   }
 
   function onFullscreenChange() {
     isFullscreen = Boolean(document.fullscreenElement);
+
+    if (isFullscreen) pokeNav();
+    else {
+      navVisible = true;
+      clearIdleTimer();
+    }
+  }
+
+  function clearIdleTimer() {
+    if (idleTimer) clearTimeout(idleTimer);
+    idleTimer = null;
+  }
+
+  function pokeNav() {
+    navVisible = true;
+    clearIdleTimer();
+
+    if (isImmersive) idleTimer = setTimeout(() => (navVisible = false), 2500);
+  }
+
+  function setFocusMode(next: boolean) {
+    isFocusMode = next;
+    document.documentElement.style.overflow = next ? 'hidden' : '';
+
+    if (next) pokeNav();
+    else {
+      navVisible = true;
+      clearIdleTimer();
+    }
   }
 
   async function toggleFullscreen() {
@@ -193,11 +241,28 @@
       return;
     }
 
-    if (frameWrap) await frameWrap.requestFullscreen().catch(() => {});
+    if (isFocusMode) {
+      setFocusMode(false);
+      return;
+    }
+
+    if (!frameWrap) return;
+
+    if (typeof frameWrap.requestFullscreen !== 'function' || document.fullscreenEnabled === false) {
+      setFocusMode(true);
+      return;
+    }
+
+    try {
+      await frameWrap.requestFullscreen();
+    } catch {
+      setFocusMode(true);
+    }
   }
 
   async function selectUnit(identifier: string) {
     if (identifier === currentUnitIdentifier && playerReady && !terminated) return;
+    if ((availableLaunch?.units ?? []).some((unit) => unit.identifier === identifier && unit.locked)) return;
 
     currentUnitIdentifier = identifier;
     await runLaunch({ unitIdentifier: identifier });
@@ -214,6 +279,22 @@
     }
 
     return list.find((unit) => !unit.completed) ?? null;
+  }
+
+  function adjacentModule(offset: 1 | -1) {
+    const list = availableLaunch?.units ?? [];
+    const currentIndex = list.findIndex((unit) => unit.identifier === currentUnitIdentifier);
+    const adjacent = currentIndex === -1 ? null : (list[currentIndex + offset] ?? null);
+
+    if (adjacent) void selectUnit(adjacent.identifier);
+  }
+
+  function previousModule() {
+    adjacentModule(-1);
+  }
+
+  function nextModule() {
+    adjacentModule(1);
   }
 
   async function reloadPlayer() {
@@ -238,12 +319,6 @@
     } finally {
       requestingAttempt = false;
     }
-  }
-
-  function openInNewWindow() {
-    if (!playerUrl) return;
-
-    window.open(playerUrl, '_blank', 'noopener');
   }
 
   function goToNextCourseItem() {
@@ -278,7 +353,9 @@
   });
 
   onDestroy(() => {
+    clearIdleTimer();
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    if (isFocusMode) setFocusMode(false);
   });
 
   $effect(() => {
@@ -337,6 +414,13 @@
       <div class="ui:text-muted-foreground text-sm">{@html instructions}</div>
     {/if}
 
+    {#if launch.mode === 'preview'}
+      <Alert.Root>
+        <Alert.Title>{$t('course.navItem.lessons.activities.player.preview_title')}</Alert.Title>
+        <Alert.Description>{$t('course.navItem.lessons.activities.player.preview_body')}</Alert.Description>
+      </Alert.Root>
+    {/if}
+
     {#if isArchivedReview}
       <Alert.Root>
         <Alert.Title>{$t('course.navItem.lessons.activities.player.archived_title')}</Alert.Title>
@@ -355,57 +439,71 @@
       <Alert.Root>
         <Alert.Title>{$t('course.navItem.lessons.activities.player.review_title')}</Alert.Title>
         <Alert.Description>{$t('course.navItem.lessons.activities.player.review_body')}</Alert.Description>
-        <div class="mt-3 flex flex-wrap items-center gap-2">
-          <Button size="sm" onclick={startNewAttempt} loading={requestingAttempt}>
-            {$t('course.navItem.lessons.activities.player.new_attempt')}
-          </Button>
-          {#if retakesUnavailable}
-            <span class="ui:text-muted-foreground text-sm">
-              {$t('course.navItem.lessons.activities.player.retakes_off')}
-            </span>
-          {/if}
-        </div>
+        {#if allowRetakes}
+          <div class="mt-3 flex flex-wrap items-center gap-2">
+            <Button size="sm" onclick={startNewAttempt} loading={requestingAttempt}>
+              {$t('course.navItem.lessons.activities.player.new_attempt')}
+            </Button>
+            {#if retakesUnavailable}
+              <span class="ui:text-muted-foreground text-sm">
+                {$t('course.navItem.lessons.activities.player.retakes_off')}
+              </span>
+            {/if}
+          </div>
+        {/if}
       </Alert.Root>
     {/if}
 
     {#if showMenu && launch.units}
-      <ActivityPlayerModuleMenu
-        units={launch.units}
-        currentIdentifier={currentUnitIdentifier}
-        onSelect={(identifier) => void selectUnit(identifier)}
-      />
+      <div class="ui:text-muted-foreground text-sm">
+        {$t('course.navItem.lessons.activities.player.modules_complete', {
+          complete: launch.units.filter((unit) => unit.completed).length,
+          total: launch.units.length
+        })}
+      </div>
     {/if}
 
-    {#if useNewWindow}
-      <Empty
-        title={$t('course.navItem.lessons.activities.player.window_title')}
-        description={$t('course.navItem.lessons.activities.player.window_body')}
-        icon={PackageIcon}
-        variant="page"
-      />
-      <div class="flex justify-center">
-        <Button size="sm" onclick={openInNewWindow}>
-          {$t('course.navItem.lessons.activities.player.open_window')}
-        </Button>
-      </div>
-    {:else}
-      <div bind:this={frameWrap} class="ui:bg-background relative w-full overflow-hidden rounded-lg border">
+    <div
+      bind:this={frameWrap}
+      onmousemove={pokeNav}
+      ontouchstart={pokeNav}
+      class="ui:bg-background relative w-full overflow-hidden rounded-lg border {isImmersive
+        ? 'flex flex-col border-0'
+        : ''} {isFullscreen ? 'h-full rounded-none' : ''} {isFocusMode
+        ? 'ui:z-modal fixed inset-0 p-2 sm:p-4'
+        : ''} {isImmersive && !navVisible ? 'cursor-none' : ''}"
+    >
+      {#if showMenu && launch.units}
+        <ActivityPlayerModuleNav
+          units={launch.units}
+          currentIdentifier={currentUnitIdentifier}
+          onSelect={(identifier) => void selectUnit(identifier)}
+          onPrevious={previousModule}
+          onNext={nextModule}
+          overlay={isImmersive}
+          overlayVisible={navVisible}
+          portalTarget={isImmersive ? frameWrap : null}
+          showExit={isImmersive}
+          onExit={toggleFullscreen}
+        />
+      {/if}
+      <div class={isImmersive ? 'min-h-0 flex-1' : ''}>
         {#if displayedPlayerUrl}
           {#key displayedPlayerUrl}
             <iframe
               src={displayedPlayerUrl}
               title={activityApi.activity?.title ?? ''}
-              class="aspect-video w-full"
+              class={isImmersive ? 'h-full w-full' : 'aspect-video w-full'}
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
               allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
               data-testid="activity-player-frame"
             ></iframe>
           {/key}
           {#if !playerReady && !didNotConnect && !terminated}
-            <Skeleton class="absolute inset-0 aspect-video w-full" />
+            <Skeleton class="absolute inset-0 h-full w-full" />
           {/if}
         {:else}
-          <Skeleton class="aspect-video w-full" />
+          <Skeleton class={isImmersive ? 'h-full w-full' : 'aspect-video w-full'} />
         {/if}
         {#if didNotConnect}
           <div class="flex flex-col items-center gap-3 p-8 text-center">
@@ -419,9 +517,17 @@
           </div>
         {/if}
       </div>
+    </div>
+    {#if !isImmersive}
       <div class="flex items-center justify-between gap-2">
         <span class="ui:text-muted-foreground text-xs">
-          {$t('course.navItem.lessons.activities.player.autosave_hint')}
+          {#if launch.mode === 'preview'}
+            {$t('course.navItem.lessons.activities.player.preview_body')}
+          {:else if launch.mode === 'review'}
+            {$t('course.navItem.lessons.activities.player.review_body')}
+          {:else}
+            {$t('course.navItem.lessons.activities.player.autosave_hint')}
+          {/if}
         </span>
         <Button
           size="sm"
@@ -429,11 +535,7 @@
           onclick={toggleFullscreen}
           aria-label={$t('course.navItem.lessons.activities.player.fullscreen')}
         >
-          {#if isFullscreen}
-            <MinimizeIcon size={14} />
-          {:else}
-            <MaximizeIcon size={14} />
-          {/if}
+          <MaximizeIcon size={14} />
         </Button>
       </div>
     {/if}

@@ -7,12 +7,12 @@ export const ZActivityKind = z.enum(ACTIVITY_KINDS);
 export const ZActivityCreate = z.object({
   kind: ZActivityKind,
   sectionId: z.string().optional(),
-  title: z.string().min(1)
+  title: z.string().optional().default('')
 });
 export type TActivityCreate = z.infer<typeof ZActivityCreate>;
 
 export const ZActivityUpdate = z.object({
-  title: z.string().min(1).optional(),
+  title: z.string().optional(),
   instructions: z.string().optional(),
   isUnlocked: z.boolean().optional()
 });

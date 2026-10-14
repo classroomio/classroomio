@@ -1,4 +1,5 @@
-import { createWriteStream } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { createReadStream, createWriteStream } from 'node:fs';
 import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -21,6 +22,7 @@ import {
 import {
   bulkInsertPackageUnits,
   deletePackageUnitsByVersion,
+  deletePackageVersionsByIds,
   getAssetById,
   getCurrentPackageVersion,
   getPackageVersionById,
@@ -30,11 +32,12 @@ import {
   updatePackageVersion
 } from '@cio/db/queries';
 import { ZActivityPackagePayload, type TActivityPackagePayload } from '@cio/jobs/payloads/activity-package';
-import type { TNewContentPackageUnit } from '@cio/db/types';
+import type { TContentPackageVersion, TNewContentPackageUnit } from '@cio/db/types';
 
 import { getS3Client } from '../../config/storage';
 import { HeadObjectCommand } from '@aws-sdk/client-s3';
 import {
+  deleteObjectFromBucket,
   downloadObjectToTempFile,
   safeUnlink,
   scormBucket,
@@ -46,6 +49,9 @@ import { log } from '../../utils/logger';
 
 const SCORM_CONTENT_CACHE_CONTROL = 'public, max-age=604800, immutable';
 const MANIFEST_MAX_BYTES = 10 * 1024 * 1024;
+const LMS_API_SCAN_MAX_FILES = 100;
+const LMS_API_SCAN_MAX_BYTES = 512 * 1024;
+const LMS_API_PATTERN = /LMSInitialize|API_1484_11|pipwerks/i;
 const ZIP_MAGIC_LOCAL_FILE = [0x50, 0x4b, 0x03, 0x04];
 const ZIP_MAGIC_EMPTY_ARCHIVE = [0x50, 0x4b, 0x05, 0x06];
 const ZIP_MAGIC_SPANNED_ARCHIVE = [0x50, 0x4b, 0x07, 0x08];
@@ -164,10 +170,78 @@ async function failVersion(mediaJobId: string, versionId: string, code: string, 
 }
 
 interface ProcessScormResult {
+  unchanged: boolean;
   versionId: string;
   format: string;
   fileCount: number;
   extractedBytes: number;
+}
+
+async function hasLmsApiCalls(extractDir: string, entries: Entry[]): Promise<boolean> {
+  const candidates = entries
+    .filter((entry) => /\.(html?|js)$/i.test(entry.fileName) && entry.uncompressedSize <= LMS_API_SCAN_MAX_BYTES)
+    .slice(0, LMS_API_SCAN_MAX_FILES);
+
+  for (const entry of candidates) {
+    const name = normalizeZipPath(entry.fileName);
+    if (!name) continue;
+
+    try {
+      const text = await readFile(join(extractDir, name), 'utf-8');
+      if (LMS_API_PATTERN.test(text)) return true;
+    } catch {
+      continue;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Returns the hex SHA-256 of a file on disk.
+ */
+async function sha256OfFile(path: string): Promise<string> {
+  const hash = createHash('sha256');
+  await pipeline(createReadStream(path), hash);
+
+  return hash.digest('hex');
+}
+
+/**
+ * Discards an upload whose bytes match the current version: the version row
+ * goes, so its number is reused, and the job completes as unchanged pointing
+ * at the current version. The ZIP is removed last because an orphaned object
+ * is harmless while a half-finished job is not.
+ */
+async function discardDuplicateVersion(
+  mediaJobId: string,
+  bucket: string,
+  version: TContentPackageVersion,
+  currentVersion: TContentPackageVersion
+): Promise<ProcessScormResult> {
+  await deletePackageVersionsByIds([version.id]);
+  await updateMediaJob(mediaJobId, {
+    status: 'completed',
+    stage: 'unchanged',
+    progressPercent: 100,
+    result: { unchanged: true, versionId: currentVersion.id }
+  });
+
+  try {
+    await deleteObjectFromBucket(bucket, version.uploadKey);
+  } catch (error) {
+    log.warn('activity-package-duplicate-zip-left', { mediaJobId, key: version.uploadKey, error: errorMessage(error) });
+  }
+
+  log.info('activity-package-unchanged', { mediaJobId, currentVersionId: currentVersion.id });
+
+  return {
+    unchanged: true,
+    versionId: currentVersion.id,
+    format: currentVersion.format ?? '',
+    fileCount: currentVersion.fileCount ?? 0,
+    extractedBytes: currentVersion.extractedBytes ?? 0
+  };
 }
 
 /**
@@ -210,6 +284,12 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
     zipPath = await downloadObjectToTempFile(bucket, version.uploadKey, `${assetId}.zip`);
     const header = await readFile(zipPath).then((buffer) => buffer.subarray(0, 4));
     if (!hasZipMagicBytes(header)) throw new PackageError('not_a_zip');
+
+    const contentSha256 = await sha256OfFile(zipPath);
+    const currentVersion = await getCurrentPackageVersion(assetId);
+    if (currentVersion && currentVersion.id !== version.id && currentVersion.contentSha256 === contentSha256) {
+      return await discardDuplicateVersion(mediaJobId, bucket, version, currentVersion);
+    }
 
     const archive = await collectArchiveEntries(zipPath);
     zipfile = archive.zipfile;
@@ -276,6 +356,9 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
     await updateMediaJob(mediaJobId, { stage: 'reading manifest', progressPercent: 90 });
 
     await bulkInsertPackageUnits(mapUnitsToRows(parsed.units, version.id));
+    const scanDir = extractDir ?? '';
+    const connectsToLms = scanDir ? await hasLmsApiCalls(scanDir, archive.fileEntries) : true;
+    const warnings = connectsToLms ? parsed.warnings : [...parsed.warnings, 'no_lms_api_detected'];
     await updatePackageVersion(version.id, {
       status: 'ready',
       format: parsed.format,
@@ -287,9 +370,10 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
         format: parsed.format,
         unitCount: parsed.units.length
       },
-      warnings: parsed.warnings,
+      warnings,
       error: null,
       zipBytes,
+      contentSha256,
       extractedBytes,
       fileCount: archive.fileEntries.length,
       processingJobId: mediaJobId,
@@ -306,7 +390,7 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
       status: 'completed',
       stage: 'ready',
       progressPercent: 100,
-      result: { versionId: version.id, format: parsed.format, fileCount: archive.fileEntries.length }
+      result: { unchanged: false, versionId: version.id, format: parsed.format, fileCount: archive.fileEntries.length }
     });
 
     log.info('activity-package-done', {
@@ -315,7 +399,13 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
       format: parsed.format,
       fileCount: archive.fileEntries.length
     });
-    return { versionId: version.id, format: parsed.format, fileCount: archive.fileEntries.length, extractedBytes };
+    return {
+      unchanged: false,
+      versionId: version.id,
+      format: parsed.format,
+      fileCount: archive.fileEntries.length,
+      extractedBytes
+    };
   } catch (error) {
     if (error instanceof PackageError) {
       log.error('activity-package-rejected', { mediaJobId, code: error.code });

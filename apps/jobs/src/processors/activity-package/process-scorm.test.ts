@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { copyFile, mkdtemp } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -11,6 +13,7 @@ const state = vi.hoisted(() => ({
   currentFixture: '',
   headBytes: 6871 as number | null,
   uploadedKeys: [] as { bucket: string; key: string }[],
+  deletedKeys: [] as { bucket: string; key: string }[],
   uploadedBuffers: [] as { bucket: string; key: string; body: Buffer }[],
   insertedUnits: [] as Record<string, unknown>[],
   assetUpdates: [] as { assetId: string; patch: Record<string, unknown> }[],
@@ -58,6 +61,9 @@ vi.mock('../../utils/storage', async (importOriginal) => {
       await copyFile(state.currentFixture, localPath);
       return localPath;
     },
+    deleteObjectFromBucket: async (bucket: string, key: string) => {
+      state.deletedKeys.push({ bucket, key });
+    },
     uploadStreamToBucket: async (bucket: string, key: string) => {
       state.uploadedKeys.push({ bucket, key });
     },
@@ -84,6 +90,10 @@ vi.mock('@cio/db/queries', () => ({
     return values;
   },
   deletePackageUnitsByVersion: async () => 0,
+  deletePackageVersionsByIds: async (ids: string[]) => {
+    for (const id of ids) state.versions.delete(id);
+    return ids;
+  },
   getAssetById: async () => ({ ...baseAsset() }),
   getCurrentPackageVersion: async () => state.currentVersion,
   getPackageVersionById: async (id: string) => state.versions.get(id) ?? null,
@@ -128,6 +138,7 @@ describe('processScormPackage (PR 6)', () => {
     state.versions.clear();
     state.mediaJobs.clear();
     state.uploadedKeys.length = 0;
+    state.deletedKeys.length = 0;
     state.uploadedBuffers.length = 0;
     state.insertedUnits = [];
     state.assetUpdates = [];
@@ -166,6 +177,48 @@ describe('processScormPackage (PR 6)', () => {
 
     expect(state.mediaJobs.get(payload.mediaJobId)).toMatchObject({ status: 'completed' });
     expect(state.assetUpdates).toContainEqual({ assetId: payload.assetId, patch: { status: 'active' } });
+  });
+
+  it('records the SHA-256 of the uploaded ZIP', async () => {
+    await processScormPackage(payload);
+
+    const expected = createHash('sha256')
+      .update(readFileSync(fixturePath('scorm12-minimal.zip')))
+      .digest('hex');
+    expect((state.versions.get(payload.packageVersionId) as Record<string, unknown>).contentSha256).toBe(expected);
+  });
+
+  it('discards a ZIP identical to the current version as unchanged', async () => {
+    const sha = createHash('sha256')
+      .update(readFileSync(fixturePath('scorm12-minimal.zip')))
+      .digest('hex');
+    state.currentVersion = { id: 'current-version', assetId: payload.assetId, contentSha256: sha, isCurrent: true };
+
+    const result = await processScormPackage(payload);
+
+    expect(result).toMatchObject({ unchanged: true, versionId: 'current-version' });
+    expect(state.versions.has(payload.packageVersionId)).toBe(false);
+    expect(state.deletedKeys).toEqual([{ bucket: 'scorm', key: 'scorm/asset-1/v1.zip' }]);
+    expect(state.mediaJobs.get(payload.mediaJobId)).toMatchObject({
+      status: 'completed',
+      stage: 'unchanged',
+      result: { unchanged: true, versionId: 'current-version' }
+    });
+    expect(state.uploadedKeys).toHaveLength(0);
+    expect(state.insertedUnits).toHaveLength(0);
+  });
+
+  it('accepts a changed ZIP as a new version', async () => {
+    state.currentVersion = {
+      id: 'current-version',
+      assetId: payload.assetId,
+      contentSha256: 'f'.repeat(64),
+      isCurrent: true
+    };
+
+    await processScormPackage(payload);
+
+    expect((state.versions.get(payload.packageVersionId) as Record<string, unknown>).status).toBe('ready');
   });
 
   it('processes a three-module SCORM 2004 package', async () => {

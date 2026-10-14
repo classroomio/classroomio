@@ -22,6 +22,8 @@ export interface LaunchState {
   parentOrigin: string;
   parentOrigins?: string[];
   entry: string;
+  commitSeq: number;
+  mode: 'preview' | 'normal' | 'review';
   debug: boolean;
 }
 
@@ -30,7 +32,7 @@ const CLIENT_LMS_RULE_FLAGS = {
   mastery_override: false
 } as const;
 
-export function buildAdapterSettings(launchToken: string, debug: boolean): AdapterSettings {
+export function buildAdapterSettings(launchToken: string, debug: boolean, onCompleted?: () => void): AdapterSettings {
   return {
     autocommit: true,
     autocommitSeconds: 30,
@@ -40,7 +42,40 @@ export function buildAdapterSettings(launchToken: string, debug: boolean): Adapt
     terminateCommitPayloadField: 'terminate',
     selfReportSessionTime: false,
     logLevel: debug ? 1 : 4,
+    xhrResponseHandler: (xhr: XMLHttpRequest) => readCommitResponse(xhr, onCompleted),
     ...CLIENT_LMS_RULE_FLAGS
+  };
+}
+
+// scorm-again only forwards result and errorCode, so the completion flag is observed here.
+function readCommitResponse(
+  xhr: XMLHttpRequest,
+  onCompleted?: () => void
+): { result: string | boolean; errorCode: number } {
+  if (typeof xhr === 'undefined' || xhr.status < 200 || xhr.status > 299) {
+    return { result: false, errorCode: 101 };
+  }
+
+  let parsed: unknown = null;
+
+  try {
+    parsed = JSON.parse(xhr.responseText) as unknown;
+  } catch {
+    parsed = null;
+  }
+
+  if (parsed === null || typeof parsed !== 'object' || !('result' in parsed)) {
+    return { result: true, errorCode: 0 };
+  }
+
+  const body = parsed as { result: string | boolean; errorCode?: unknown; completedActivity?: unknown };
+
+  if (body.completedActivity === true) onCompleted?.();
+
+  return {
+    result: body.result,
+    errorCode:
+      typeof body.errorCode === 'number' ? body.errorCode : body.result === true || body.result === 'true' ? 0 : 101
   };
 }
 
@@ -57,6 +92,18 @@ export function createScormAdapter(format: ScormFormat, settings: AdapterSetting
   }
 
   throw new Error(`Unknown SCORM format: ${String(format)}`);
+}
+
+/**
+ * Continues the server sequence after a resume. The player numbers every
+ * commit from one, so a resumed module must start above the stored count.
+ */
+export function initializeCommitSequence(adapter: ScormAdapter, commitSeq: number): void {
+  const current = Number(commitSeq);
+
+  if (!Number.isFinite(current) || current < 0) return;
+
+  (adapter as unknown as { _commitSequence: number })._commitSequence = Math.floor(current);
 }
 
 /**

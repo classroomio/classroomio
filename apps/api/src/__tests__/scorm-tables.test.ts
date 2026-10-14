@@ -133,7 +133,6 @@ describe.skipIf(!hasDatabase)('scorm tables (PR 5 schema)', () => {
       expect(empty.assetId).toBeNull();
       expect(empty.completionRule).toBe('auto');
       expect(empty.allowRetakes).toBe(false);
-      expect(empty.launchMode).toBe('embedded');
 
       await expect(
         db.insert(schema.activityScorm).values({ activityId: fixture.activityId, assetId: fixture.assetId })

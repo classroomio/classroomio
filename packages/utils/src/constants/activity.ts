@@ -18,9 +18,13 @@ export const SCORM_COMPLETION_RULES = ['auto', 'completed', 'passed', 'score'] a
 
 export type TScormCompletionRule = (typeof SCORM_COMPLETION_RULES)[number];
 
-export const SCORM_LAUNCH_MODES = ['embedded', 'window'] as const;
+export const SCORM_MODULE_ORDERS = ['free', 'sequential'] as const;
 
-export type TScormLaunchMode = (typeof SCORM_LAUNCH_MODES)[number];
+export type TScormModuleOrder = (typeof SCORM_MODULE_ORDERS)[number];
+
+export const SCORM_COMPLETION_MODULES = ['all', 'graded_only'] as const;
+
+export type TScormCompletionModules = (typeof SCORM_COMPLETION_MODULES)[number];
 
 export const SCORM_ATTEMPT_CLOSE_REASONS = ['finished', 'replaced'] as const;
 

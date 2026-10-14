@@ -4,6 +4,7 @@ import {
   moduleOutcomeFromCmi,
   summarizeInteractions,
   type ScormCmi,
+  type ScormCompletionModules,
   type ScormModuleOutcome,
   type ScormPackageFormat,
   type ScormRuleSettings
@@ -36,8 +37,16 @@ import type {
   ActivityResultsSummary
 } from '../types';
 
-function ruleSettingsOf(settings: TScormSettings): { rule: ScormRuleSettings['rule']; minScorePercent: number | null } {
-  return { rule: settings.completionRule, minScorePercent: settings.minScorePercent ?? null };
+function ruleSettingsOf(settings: TScormSettings): {
+  rule: ScormRuleSettings['rule'];
+  minScorePercent: number | null;
+  completionModules: ScormCompletionModules;
+} {
+  return {
+    rule: settings.completionRule,
+    minScorePercent: settings.minScorePercent ?? null,
+    completionModules: settings.completionModules
+  };
 }
 
 function percent(fraction: number | null): number | null {
@@ -79,7 +88,8 @@ async function settingsOf(activityId: string): Promise<TScormSettings> {
     completionRule: details?.completionRule ?? 'auto',
     minScorePercent: details?.minScorePercent ?? null,
     allowRetakes: details?.allowRetakes ?? false,
-    launchMode: details?.launchMode ?? 'embedded'
+    moduleOrder: details?.moduleOrder ?? 'free',
+    completionModules: details?.completionModules ?? 'all'
   });
 }
 
@@ -97,9 +107,14 @@ export async function listScormResults(
 }> {
   const settings = await settingsOf(activityId);
   const rule = ruleSettingsOf(settings);
+  const rollup = {
+    rule: rule.rule,
+    minScorePercent: rule.minScorePercent,
+    completionModules: rule.completionModules
+  };
   const [summary, listed] = await Promise.all([
-    getScormResultsSummary(activityId, profileIds, { rule: rule.rule, minScorePercent: rule.minScorePercent }),
-    listScormLearnerResults(activityId, profileIds, { rule: rule.rule, minScorePercent: rule.minScorePercent }, paging)
+    getScormResultsSummary(activityId, profileIds, rollup),
+    listScormLearnerResults(activityId, profileIds, rollup, paging)
   ]);
 
   const learners = listed.rows.map((row): ActivityLearnerSummary => {
@@ -154,14 +169,6 @@ function pathOf(cmi: ScormCmi, path: string): unknown {
   return current;
 }
 
-function secondsBetween(startedAt: string | null, endedAt: string | null): number {
-  if (!startedAt || !endedAt) return 0;
-
-  const seconds = Math.round((new Date(endedAt).getTime() - new Date(startedAt).getTime()) / 1000);
-
-  return Number.isFinite(seconds) && seconds > 0 ? seconds : 0;
-}
-
 function numericOrNull(value: string | null): number | null {
   return value === null ? null : Number(value);
 }
@@ -182,7 +189,12 @@ export async function getScormLearnerDetail(activityId: string, profileId: strin
     const key = `${event.attemptId}|${event.unitId}`;
     const listed = eventsByAttemptUnit.get(key);
 
-    const entry: ActivityModuleEvent = { kind: event.kind, detail: event.detail, createdAt: event.createdAt };
+    const entry: ActivityModuleEvent = {
+      kind: event.kind,
+      detail: event.detail,
+      userAgent: event.userAgent,
+      createdAt: event.createdAt
+    };
 
     if (listed) {
       listed.push(entry);
@@ -235,16 +247,14 @@ export async function getScormLearnerDetail(activityId: string, profileId: strin
         success: outcome.success,
         hasPassMark: outcome.hasPassMark,
         scaledScorePercent: percent(outcome.scaledScore),
-        timeSpentSeconds: attempted
-          ? secondsBetween(row.tryStartedAt, row.terminatedAt ?? row.lastCommitAt ?? row.tryStartedAt)
-          : 0,
+        timeSpentSeconds: attempted ? row.timeSpentSeconds : 0,
         location: attempted ? textOf(pathOf(row.cmi, locationPath)) : null,
         exit: attempted ? textOf(pathOf(row.cmi, exitPath)) : null,
         lastCommitAt: row.lastCommitAt,
         interactions: attempted ? summarizeInteractions(row.cmi) : [],
         events: eventsByAttemptUnit.get(`${head.attemptId}|${row.unitId}`) ?? []
       });
-      if (attempted) moduleOutcomes.push(outcome);
+      moduleOutcomes.push(outcome);
     }
 
     modules.sort((left, right) => left.position - right.position);
@@ -292,7 +302,11 @@ export async function getResultsSummary(activityId: string, profileIds: string[]
   const settings = await settingsOf(activityId);
   const rule = ruleSettingsOf(settings);
 
-  return getScormResultsSummary(activityId, profileIds, { rule: rule.rule, minScorePercent: rule.minScorePercent });
+  return getScormResultsSummary(activityId, profileIds, {
+    rule: rule.rule,
+    minScorePercent: rule.minScorePercent,
+    completionModules: rule.completionModules
+  });
 }
 
 /**

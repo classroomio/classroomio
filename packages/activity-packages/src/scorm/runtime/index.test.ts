@@ -12,6 +12,9 @@ import {
   moduleOutcomeFromCmi,
   normalizeCmiShape,
   normalizeCommitCmi,
+  parseCommitSessionTime,
+  accumulateTryTime,
+  parseScormSessionTime,
   shouldRecordCommitEvent,
   statusAfterTerminate,
   summarizeInteractions,
@@ -302,6 +305,133 @@ describe('isScormRuleMet', () => {
     expect(isScormRuleMet({ rule: 'score', minScorePercent: 80 }, modules)).toBe(true);
     expect(isScormRuleMet({ rule: 'score', minScorePercent: 81 }, modules)).toBe(false);
     expect(isScormRuleMet({ rule: 'score', minScorePercent: 50 }, [outcome({ completion: 'completed' })])).toBe(false);
+  });
+});
+
+describe('parseScormSessionTime', () => {
+  it('parses SCORM 1.2 clock times', () => {
+    expect(parseScormSessionTime('01:30:15', 'scorm12')).toBe(5415);
+    expect(parseScormSessionTime('00:00:45.50', 'scorm12')).toBe(45);
+    expect(parseScormSessionTime('0000:00:00', 'scorm12')).toBe(0);
+    expect(parseScormSessionTime('  00:01:05  ', 'scorm12')).toBe(65);
+  });
+
+  it('rejects malformed 1.2 times', () => {
+    for (const bad of ['', '  ', 'abc', '1:2:3', '00:99:00', '00:00:60', 'PT45S', null, undefined, 45, {}]) {
+      expect(parseScormSessionTime(bad, 'scorm12')).toBeNull();
+    }
+  });
+
+  it('parses SCORM 2004 ISO-8601 durations', () => {
+    expect(parseScormSessionTime('PT1H30M15S', 'scorm2004_4')).toBe(5415);
+    expect(parseScormSessionTime('PT1H30M', 'scorm2004_4')).toBe(5400);
+    expect(parseScormSessionTime('PT45S', 'scorm2004_4')).toBe(45);
+    expect(parseScormSessionTime('P1DT2H', 'scorm2004_4')).toBe(93600);
+    expect(parseScormSessionTime('PT0.5S', 'scorm2004_4')).toBe(0);
+  });
+
+  it('rejects malformed 2004 durations', () => {
+    for (const bad of ['', 'P', 'PT', 'garbage', '01:30:15', null, undefined, 90]) {
+      expect(parseScormSessionTime(bad, 'scorm2004_4')).toBeNull();
+    }
+  });
+});
+
+describe('isScormRuleMet completionModules', () => {
+  const intro = () => outcome({ completion: 'completed' });
+  const content = () => outcome({ completion: 'completed' });
+  const quizPassed = () => outcome({ completion: 'completed', success: 'passed', hasPassMark: true, scaledScore: 0.9 });
+  const survey = () => outcome({ completion: 'incomplete' });
+  const mixed = () => [intro(), content(), quizPassed(), survey()];
+
+  it('requires every module by default', () => {
+    expect(isScormRuleMet({ rule: 'passed' }, mixed())).toBe(false);
+    expect(isScormRuleMet({ rule: 'completed' }, mixed())).toBe(false);
+    expect(isScormRuleMet({ rule: 'auto' }, mixed())).toBe(false);
+  });
+
+  it('ignores ungraded modules under graded_only', () => {
+    expect(isScormRuleMet({ rule: 'passed', completionModules: 'graded_only' }, mixed())).toBe(true);
+    expect(isScormRuleMet({ rule: 'completed', completionModules: 'graded_only' }, mixed())).toBe(true);
+    expect(isScormRuleMet({ rule: 'auto', completionModules: 'graded_only' }, mixed())).toBe(true);
+  });
+
+  it('fails when a graded module misses the rule', () => {
+    const failed = [
+      intro(),
+      content(),
+      outcome({ completion: 'completed', success: 'failed', hasPassMark: true }),
+      survey()
+    ];
+
+    expect(isScormRuleMet({ rule: 'passed', completionModules: 'graded_only' }, failed)).toBe(false);
+    expect(isScormRuleMet({ rule: 'auto', completionModules: 'graded_only' }, failed)).toBe(false);
+  });
+
+  it('treats score-only modules as graded', () => {
+    const modules = [intro(), outcome({ completion: 'completed', scaledScore: 0.7 }), survey()];
+
+    expect(isScormRuleMet({ rule: 'completed', completionModules: 'graded_only' }, modules)).toBe(true);
+    expect(isScormRuleMet({ rule: 'completed' }, modules)).toBe(false);
+  });
+
+  it('falls back to all modules when nothing is graded', () => {
+    expect(isScormRuleMet({ rule: 'passed', completionModules: 'graded_only' }, [])).toBe(false);
+
+    const ungraded = [intro(), content()];
+
+    expect(isScormRuleMet({ rule: 'completed', completionModules: 'graded_only' }, ungraded)).toBe(true);
+    expect(isScormRuleMet({ rule: 'completed', completionModules: 'graded_only' }, [...ungraded, survey()])).toBe(
+      false
+    );
+  });
+
+  it('averages the score rule over graded modules only', () => {
+    const low = [outcome({ completion: 'completed', scaledScore: 0.4 }), quizPassed(), survey()];
+
+    expect(isScormRuleMet({ rule: 'score', minScorePercent: 80, completionModules: 'graded_only' }, low)).toBe(false);
+
+    const high = [outcome({ completion: 'completed', scaledScore: 0.85 }), quizPassed(), survey()];
+
+    expect(isScormRuleMet({ rule: 'score', minScorePercent: 80, completionModules: 'graded_only' }, high)).toBe(true);
+    expect(isScormRuleMet({ rule: 'score', minScorePercent: 80 }, high)).toBe(false);
+  });
+});
+
+describe('parseCommitSessionTime', () => {
+  it('reads the version-specific session time field', () => {
+    expect(parseCommitSessionTime({ core: { session_time: '00:01:30' } }, 'scorm12')).toBe(90);
+    expect(parseCommitSessionTime({ session_time: 'PT2M' }, 'scorm2004_4')).toBe(120);
+  });
+
+  it('returns null when absent or malformed', () => {
+    expect(parseCommitSessionTime({}, 'scorm12')).toBeNull();
+    expect(parseCommitSessionTime({}, 'scorm2004_4')).toBeNull();
+    expect(parseCommitSessionTime({ core: { session_time: 'nope' } }, 'scorm12')).toBeNull();
+    expect(parseCommitSessionTime({ session_time: '00:01:30' }, 'scorm2004_4')).toBeNull();
+  });
+});
+
+describe('accumulateTryTime', () => {
+  it('prefers a valid package-reported session time, bounded', () => {
+    expect(accumulateTryTime(100, 400, 0, 60_000)).toBe(400);
+    expect(accumulateTryTime(0, 100_000, 0, 60_000)).toBe(8 * 3600);
+  });
+
+  it('never decreases past tracked time', () => {
+    expect(accumulateTryTime(3600, 1800, 0, 60_000)).toBe(3600);
+    expect(accumulateTryTime(100, 90, 0, 60_000)).toBe(100);
+  });
+
+  it('credits exact heartbeat time inside the active window', () => {
+    expect(accumulateTryTime(100, null, 1_000_000, 1_030_000)).toBe(130);
+    expect(accumulateTryTime(0, 0, 1_000_000, 1_030_000)).toBe(30);
+  });
+
+  it('caps dormant gaps and clock skew', () => {
+    expect(accumulateTryTime(100, null, 1_000_000, 4_600_000)).toBe(160);
+    expect(accumulateTryTime(100, null, 2_000_000, 1_000_000)).toBe(100);
+    expect(accumulateTryTime(8 * 3600 - 10, null, 1_000_000, 1_030_000)).toBe(8 * 3600);
   });
 });
 

@@ -58,6 +58,12 @@
   const sessionPhase = $derived(
     item.type === ContentType.Lesson ? getSessionIndicatorPhase(item, $liveSessionClock) : null
   );
+  const displayTitle = $derived(
+    title?.trim() ||
+      (item.type === ContentType.Activity
+        ? $t('course.navItem.lessons.add_content_options.activity_scorm_default_title')
+        : '')
+  );
 </script>
 
 {#if isEditing}
@@ -89,7 +95,7 @@
         )}
         data-sveltekit-preload-data={preloadOff ? 'off' : undefined}
       >
-        <span class={titleClass}>{title}</span>
+        <span class={titleClass}>{displayTitle}</span>
       </a>
 
       {#if showStatus}

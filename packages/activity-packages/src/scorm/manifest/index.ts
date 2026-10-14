@@ -3,7 +3,7 @@ import { PackageError } from '../../errors.js';
 
 export type ScormPackageFormat = 'scorm12' | 'scorm2004_2' | 'scorm2004_3' | 'scorm2004_4';
 export type ScormUnitType = 'sco' | 'asset';
-export type ScormPackageWarning = 'has_sequencing' | 'manifest_rebased' | 'href_case_fixed';
+export type ScormPackageWarning = 'has_sequencing' | 'manifest_rebased' | 'href_case_fixed' | 'no_lms_api_detected';
 
 export interface ScormUnitFormatDetails2004 {
   format: 'scorm2004';
@@ -13,6 +13,8 @@ export interface ScormUnitFormatDetails2004 {
 
 export interface ScormUnitFormatDetails12 {
   format: 'scorm12';
+  maxTimeAllowed?: string | null;
+  timeLimitAction?: string | null;
 }
 
 export type ScormUnitFormatDetails = ScormUnitFormatDetails2004 | ScormUnitFormatDetails12;
@@ -267,10 +269,6 @@ function readCompletionThreshold(item: unknown): number | null {
 }
 
 function readFormatDetails(item: unknown, format: ScormPackageFormat): ScormUnitFormatDetails {
-  if (format === 'scorm12') {
-    return { format: 'scorm12' };
-  }
-
   const maxTimeAllowed =
     findDescendants(item, 'maxtimeallowed')
       .map((node) => textOf(node))
@@ -279,6 +277,14 @@ function readFormatDetails(item: unknown, format: ScormPackageFormat): ScormUnit
     findDescendants(item, 'timelimitaction')
       .map((node) => textOf(node))
       .find((text) => text !== '') ?? null;
+
+  if (format === 'scorm12') {
+    return {
+      format: 'scorm12',
+      ...(maxTimeAllowed !== null ? { maxTimeAllowed } : {}),
+      ...(timeLimitAction !== null ? { timeLimitAction } : {})
+    };
+  }
 
   return { format: 'scorm2004', maxTimeAllowed, timeLimitAction };
 }
@@ -296,6 +302,7 @@ function collectUnits(
   resources: Map<string, unknown>,
   files: string[],
   prefix: string,
+  xmlBase: string,
   parentIdentifier: string | null,
   collector: UnitCollector,
   format: ScormPackageFormat
@@ -314,7 +321,7 @@ function collectUnits(
       const unitType = readScormType(resource);
       const resourceHref = readAttrText(resource, 'href');
       const resourceBase = readAttrText(resource, 'xml:base');
-      const combinedHref = isAbsoluteUrl(resourceHref) ? resourceHref : `${resourceBase}${resourceHref}`;
+      const combinedHref = isAbsoluteUrl(resourceHref) ? resourceHref : `${xmlBase}${resourceBase}${resourceHref}`;
 
       if (!resourceHref) {
         throw new PackageError('missing_launch', { identifier, identifierref });
@@ -362,7 +369,7 @@ function collectUnits(
 
     const children = asArray(item['item'] as unknown);
     if (children.length > 0) {
-      collectUnits(children, resources, files, prefix, identifier || parentIdentifier, collector, format);
+      collectUnits(children, resources, files, prefix, xmlBase, identifier || parentIdentifier, collector, format);
     }
   }
 }
@@ -421,9 +428,8 @@ export function parseScormManifest(xml: string, files: string[], prefix = ''): P
     | Record<string, unknown>
     | undefined;
 
-  const resourceNodes = asArray(
-    (manifest['resources'] as Record<string, unknown> | undefined)?.['resource'] as unknown
-  );
+  const resourcesNode = manifest['resources'] as Record<string, unknown> | undefined;
+  const resourceNodes = asArray(resourcesNode?.['resource'] as unknown);
   const resources = new Map<string, unknown>();
 
   for (const resource of resourceNodes) {
@@ -435,8 +441,9 @@ export function parseScormManifest(xml: string, files: string[], prefix = ''): P
 
   const collector: UnitCollector = { units: [], warnings: new Set(), hrefCaseFixed: false };
   const rootItems = organization ? asArray(organization['item'] as unknown) : [];
+  const xmlBase = `${readAttrText(manifest, 'xml:base')}${readAttrText(resourcesNode ?? {}, 'xml:base')}`;
 
-  collectUnits(rootItems, resources, files, prefix, null, collector, format);
+  collectUnits(rootItems, resources, files, prefix, xmlBase, null, collector, format);
 
   if (!collector.units.some((unit) => unit.unitType === 'sco')) {
     throw new PackageError('assets_only');

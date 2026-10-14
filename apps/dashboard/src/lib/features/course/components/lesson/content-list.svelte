@@ -497,6 +497,7 @@
             disabled={actionDisabled}
             {lockLabel}
             showLock={false}
+            showEdit={item.type !== ContentType.Activity}
             onEdit={() => {
               contentEditingStore.set(item.contentId);
               prevTitle = item.title;

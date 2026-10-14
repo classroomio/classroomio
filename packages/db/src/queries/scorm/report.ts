@@ -38,6 +38,12 @@ export interface ScormLearnerResultRow {
   modules: ScormResultModule[];
 }
 
+export interface ScormRollupSettings {
+  rule: string;
+  minScorePercent: number | null;
+  completionModules: string;
+}
+
 export interface ScormAttemptTryRow {
   attemptId: string;
   attemptNumber: number;
@@ -61,6 +67,7 @@ export interface ScormAttemptTryRow {
   tryStartedAt: string | null;
   lastCommitAt: string | null;
   terminatedAt: string | null;
+  timeSpentSeconds: number;
 }
 
 export interface ScormResultsSummary {
@@ -86,7 +93,7 @@ function profileList(profiles: string[]) {
  * the bound item settings, and per-learner totals. Both the paged list and
  * the summary build on it so they can never disagree.
  */
-function attemptRollupCte(activityId: string, profileIds: string[], rule: string, minScorePercent: number | null) {
+function attemptRollupCte(activityId: string, profileIds: string[], settings: ScormRollupSettings) {
   const outcome = scormTryOutcomeColumns({
     cmi: sql`t.cmi`,
     format: sql`v.format`,
@@ -119,9 +126,9 @@ function attemptRollupCte(activityId: string, profileIds: string[], rule: string
              ${outcome.success} AS success,
              ${outcome.scaledScore} AS scaled_score,
              ${outcome.hasPassMark} AS has_pass_mark,
-             EXTRACT(EPOCH FROM (COALESCE(t.terminated_at, t.last_commit_at, t.started_at) - t.started_at))::int AS try_seconds
+             COALESCE(t.time_spent_seconds, 0) AS try_seconds
       FROM learner_attempts la
-      JOIN content_package_unit u ON u.package_version_id = la.package_version_id AND u.unit_type = 'sco'
+      JOIN content_package_unit u ON u.package_version_id = la.package_version_id AND u.unit_type = 'sco' AND u.is_visible IS NOT FALSE
       LEFT JOIN ranked_tries t ON t.attempt_id = la.id AND t.unit_id = u.id AND t.rn = 1
       JOIN content_package_version v ON v.id = la.package_version_id
     ),
@@ -133,16 +140,36 @@ function attemptRollupCte(activityId: string, profileIds: string[], rule: string
              BOOL_OR(success = 'failed') AS any_failed,
              BOOL_OR(success = 'passed') AS any_passed,
              AVG(scaled_score) AS score_frac,
-             (COUNT(*) > 0 AND CASE ${rule}
-                WHEN 'completed' THEN COUNT(*) FILTER (WHERE completion = 'completed') = COUNT(*)
-                WHEN 'passed' THEN COUNT(*) FILTER (WHERE success = 'passed') = COUNT(*)
-                WHEN 'score' THEN COUNT(*) FILTER (WHERE completion = 'completed') = COUNT(*)
-                  AND AVG(scaled_score) IS NOT NULL
-                  AND AVG(scaled_score) * 100 >= COALESCE(${minScorePercent}, 100)
-                ELSE SUM(CASE WHEN (has_pass_mark OR success <> 'unknown')
-                  THEN CASE WHEN success = 'passed' THEN 1 ELSE 0 END
-                  ELSE CASE WHEN completion = 'completed' THEN 1 ELSE 0 END
-                END) = COUNT(*)
+             (COUNT(*) > 0 AND CASE
+                WHEN ${settings.completionModules} = 'graded_only'
+                  AND BOOL_OR(has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) THEN
+                  CASE ${settings.rule}
+                    WHEN 'completed' THEN COUNT(*) FILTER (WHERE (has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) AND completion = 'completed')
+                      = COUNT(*) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL)
+                    WHEN 'passed' THEN COUNT(*) FILTER (WHERE (has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) AND success = 'passed')
+                      = COUNT(*) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL)
+                    WHEN 'score' THEN COUNT(*) FILTER (WHERE (has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) AND completion = 'completed')
+                      = COUNT(*) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL)
+                      AND AVG(scaled_score) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) IS NOT NULL
+                      AND AVG(scaled_score) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL) * 100 >= COALESCE(${settings.minScorePercent}, 100)
+                    ELSE COUNT(*) FILTER (WHERE (has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL)
+                      AND CASE WHEN (has_pass_mark OR success <> 'unknown')
+                        THEN success = 'passed'
+                        ELSE completion = 'completed' END)
+                      = COUNT(*) FILTER (WHERE has_pass_mark OR success <> 'unknown' OR scaled_score IS NOT NULL)
+                  END
+                ELSE
+                  CASE ${settings.rule}
+                    WHEN 'completed' THEN COUNT(*) FILTER (WHERE completion = 'completed') = COUNT(*)
+                    WHEN 'passed' THEN COUNT(*) FILTER (WHERE success = 'passed') = COUNT(*)
+                    WHEN 'score' THEN COUNT(*) FILTER (WHERE completion = 'completed') = COUNT(*)
+                      AND AVG(scaled_score) IS NOT NULL
+                      AND AVG(scaled_score) * 100 >= COALESCE(${settings.minScorePercent}, 100)
+                    ELSE SUM(CASE WHEN (has_pass_mark OR success <> 'unknown')
+                      THEN CASE WHEN success = 'passed' THEN 1 ELSE 0 END
+                      ELSE CASE WHEN completion = 'completed' THEN 1 ELSE 0 END
+                    END) = COUNT(*)
+                  END
               END) AS rule_met
       FROM attempt_modules
       GROUP BY profile_id, attempt_id, attempt_number, launched_at, is_latest
@@ -166,7 +193,7 @@ function attemptRollupCte(activityId: string, profileIds: string[], rule: string
 export async function listScormLearnerResults(
   activityId: string,
   profileIds: string[],
-  settings: { rule: string; minScorePercent: number | null },
+  settings: ScormRollupSettings,
   paging: TScormResultsQuery,
   dbClient: DbOrTxClient = db
 ): Promise<{ rows: ScormLearnerResultRow[]; total: number }> {
@@ -187,7 +214,7 @@ export async function listScormLearnerResults(
     const offset = (paging.page - 1) * paging.limit;
 
     const result = await dbClient.execute(sql`
-      WITH ${attemptRollupCte(activityId, profileIds, settings.rule, settings.minScorePercent)},
+      WITH ${attemptRollupCte(activityId, profileIds, settings)},
       learner_rows AS (
         SELECT l.profile_id, p.fullname, p.email,
                (ac.is_complete IS TRUE) AS completed,
@@ -250,7 +277,7 @@ export async function listScormLearnerResults(
 export async function getScormResultsSummary(
   activityId: string,
   profileIds: string[],
-  settings: { rule: string; minScorePercent: number | null },
+  settings: ScormRollupSettings,
   dbClient: DbOrTxClient = db
 ): Promise<ScormResultsSummary> {
   try {
@@ -259,14 +286,14 @@ export async function getScormResultsSummary(
     }
 
     const result = await dbClient.execute(sql`
-      WITH ${attemptRollupCte(activityId, profileIds, settings.rule, settings.minScorePercent)},
+      WITH ${attemptRollupCte(activityId, profileIds, settings)},
       learner_marks AS (
         SELECT l.profile_id,
                (lt.attempts IS NOT NULL) AS started,
                (ac.is_complete IS TRUE) AS completed,
                (COALESCE(latest.rule_met, FALSE)
                  AND (${settings.rule} IN ('passed', 'score') OR COALESCE(latest.any_passed, FALSE))) AS passed,
-               latest.score_frac AS score_frac
+               lt.best_frac AS best_frac
         FROM learners l
         LEFT JOIN learner_totals lt ON lt.profile_id = l.profile_id
         LEFT JOIN activity_completion ac ON ac.activity_id = ${activityId} AND ac.profile_id = l.profile_id
@@ -276,7 +303,7 @@ export async function getScormResultsSummary(
              COUNT(*) FILTER (WHERE started)::int AS started,
              COUNT(*) FILTER (WHERE completed)::int AS completed,
              COUNT(*) FILTER (WHERE passed)::int AS passed,
-             ROUND((AVG(score_frac) * 100)::numeric, 1) AS average_score
+             ROUND((AVG(best_frac) * 100)::numeric, 1) AS average_score
       FROM learner_marks`);
 
     const row = (result as unknown as Array<Record<string, unknown>>)[0];
@@ -349,7 +376,7 @@ export async function getScormActivityStatsForProfile(
         SELECT la.activity_id, la.id AS attempt_id, (la.recency = 1) AS is_latest, la.started_at,
                AVG(${outcome.scaledScore}) AS score_frac
         FROM learner_attempts la
-        JOIN content_package_unit u ON u.package_version_id = la.package_version_id AND u.unit_type = 'sco'
+        JOIN content_package_unit u ON u.package_version_id = la.package_version_id AND u.unit_type = 'sco' AND u.is_visible IS NOT FALSE
         LEFT JOIN ranked_tries t ON t.attempt_id = la.id AND t.unit_id = u.id AND t.rn = 1
         JOIN content_package_version v ON v.id = la.package_version_id
         GROUP BY la.activity_id, la.id, la.recency, la.started_at
@@ -360,7 +387,7 @@ export async function getScormActivityStatsForProfile(
                MAX(s.score_frac) AS best_frac,
                MAX(s.score_frac) FILTER (WHERE s.is_latest) AS latest_frac,
                MAX(s.started_at) AS last_launched,
-               (SELECT COALESCE(SUM(EXTRACT(EPOCH FROM (COALESCE(t.terminated_at, t.last_commit_at, t.started_at) - t.started_at)))::int, 0)
+               (SELECT COALESCE(SUM(t.time_spent_seconds), 0)::int
                 FROM scorm_sco_attempt t
                 JOIN scorm_attempt a2 ON a2.id = t.attempt_id
                 WHERE a2.activity_id = act.activity_id AND a2.profile_id = ${profileId}) AS total_seconds
@@ -418,10 +445,11 @@ export async function getScormLearnerAttempts(
              u.passing_score_scaled,
              u.completion_threshold,
              COALESCE(t.cmi, '{}'::jsonb) AS cmi,
-             t.commit_seq, t.started_at AS try_started_at, t.last_commit_at, t.terminated_at
+             t.commit_seq, t.started_at AS try_started_at, t.last_commit_at, t.terminated_at,
+             COALESCE(t.time_spent_seconds, 0) AS time_spent_seconds
       FROM scorm_attempt a
       JOIN content_package_version v ON v.id = a.package_version_id
-      JOIN content_package_unit u ON u.package_version_id = a.package_version_id AND u.unit_type = 'sco'
+      JOIN content_package_unit u ON u.package_version_id = a.package_version_id AND u.unit_type = 'sco' AND u.is_visible IS NOT FALSE
       LEFT JOIN ranked_tries t ON t.attempt_id = a.id AND t.unit_id = u.id AND t.rn = 1
       WHERE a.activity_id = ${activityId} AND a.profile_id = ${profileId}
       ORDER BY a.attempt_number, u.position`);
@@ -448,7 +476,8 @@ export async function getScormLearnerAttempts(
       commitSeq: row['commit_seq'] === null ? null : Number(row['commit_seq']),
       tryStartedAt: row['try_started_at'] === null ? null : String(row['try_started_at']),
       lastCommitAt: row['last_commit_at'] === null ? null : String(row['last_commit_at']),
-      terminatedAt: row['terminated_at'] === null ? null : String(row['terminated_at'])
+      terminatedAt: row['terminated_at'] === null ? null : String(row['terminated_at']),
+      timeSpentSeconds: Number(row['time_spent_seconds'] ?? 0)
     }));
   } catch (error) {
     console.error('getScormLearnerAttempts error:', error);

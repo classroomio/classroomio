@@ -27,7 +27,6 @@ test('scorm course: create lands on the package with scorm navigation', async ({
 
   const title = `SCORM course ${Date.now()}`;
   await page.getByRole('button', { name: /next/i }).first().click();
-  await page.getByRole('button', { name: /next/i }).first().click();
 
   await page.getByLabel(/course name/i).fill(title);
   await page.getByLabel(/short description|description/i).fill('Created by the PR 12 regression spec.');

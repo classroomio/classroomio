@@ -2,12 +2,13 @@ import {
   buildAdapterSettings,
   createScormAdapter,
   exposeAdapter,
+  initializeCommitSequence,
   initializeEventName,
   type LaunchState
 } from './scorm/adapter';
 import type { Scorm12API } from 'scorm-again/scorm12';
 import type { Scorm2004API } from 'scorm-again/scorm2004';
-import { connectParentBridge, flushOnPageHide, watchForConnection } from './bridge';
+import { connectParentBridge, flushOnPageHide, notifyCompleted, watchForConnection } from './bridge';
 import { reportRuntimeEvent } from './runtime-event';
 
 /**
@@ -58,9 +59,22 @@ function mountPackageFrame(contentToken: string, launchPath: string): void {
 async function boot(): Promise<void> {
   const launchToken = readLaunchToken();
   const state = await fetchLaunchState(launchToken);
-  const adapter = createScormAdapter(state.format, buildAdapterSettings(launchToken, state.debug));
+  const parentOrigins =
+    state.parentOrigins && state.parentOrigins.length > 0 ? state.parentOrigins : state.parentOrigin;
+  const adapter = createScormAdapter(
+    state.format,
+    buildAdapterSettings(launchToken, state.debug, () => notifyCompleted(parentOrigins))
+  );
 
+  initializeCommitSequence(adapter, state.commitSeq ?? 0);
   adapter.loadFromJSON(state.cmi ?? {});
+  if (state.mode === 'review') {
+    if (state.format === 'scorm12') {
+      (adapter as Scorm12API).cmi.core.lesson_mode = 'review';
+    } else {
+      (adapter as Scorm2004API).cmi.mode = 'review';
+    }
+  }
   if (state.entry) {
     if (state.format === 'scorm12') {
       (adapter as Scorm12API).cmi.core.entry = state.entry;
@@ -69,20 +83,25 @@ async function boot(): Promise<void> {
     }
   }
   exposeAdapter(state.format, adapter);
-  const parentOrigins =
-    state.parentOrigins && state.parentOrigins.length > 0 ? state.parentOrigins : state.parentOrigin;
   connectParentBridge(adapter, state.format, parentOrigins);
   flushOnPageHide(adapter, state.format);
   adapter.on(initializeEventName(state.format), () => {
     void reportRuntimeEvent(launchToken, 'initialize');
   });
   mountPackageFrame(state.contentToken, state.launchPath);
-  setStatus('Running. Progress saves automatically.');
+  setStatus(
+    state.mode === 'review' ? 'Review mode. Nothing here is recorded.' : 'Running. Progress saves automatically.'
+  );
   const connected = await watchForConnection(adapter, state.format, parentOrigins);
 
   if (!connected) {
     setStatus('This package did not connect. Reload to try again.');
     void reportRuntimeEvent(launchToken, 'not_initialized');
+    adapter.on(initializeEventName(state.format), () => {
+      setStatus(
+        state.mode === 'review' ? 'Review mode. Nothing here is recorded.' : 'Running. Progress saves automatically.'
+      );
+    });
   }
 }
 

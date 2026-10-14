@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Option C · Status hero · SCORM package tab</title>
+<link rel="stylesheet" href="base.css" />
+<style>
+  .hero {
+    position: relative; overflow: hidden; padding: 22px; border-radius: calc(var(--radius) + 6px);
+    border: 1px solid var(--border);
+    background:
+      radial-gradient(120% 140% at 0% 0%, var(--primary-soft), transparent 55%),
+      radial-gradient(90% 120% at 100% 100%, var(--success-soft), transparent 60%),
+      var(--card);
+  }
+  .hero-row { display: flex; gap: 16px; align-items: center; }
+  .hero h2 { margin: 0; font-size: 19px; font-weight: 600; letter-spacing: -0.01em; }
+  .hero .sub { margin-top: 4px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .hero-actions { margin-left: auto; display: flex; gap: 8px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+  @media (max-width: 720px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+  .mini {
+    display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: var(--radius);
+    background: color-mix(in oklch, var(--background) 72%, transparent); backdrop-filter: blur(6px);
+    border: 1px solid var(--border); transition: transform .15s, box-shadow .15s;
+  }
+  .mini:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .mini .ic { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; background: var(--primary-soft); color: var(--primary); }
+  .mini .v { font-weight: 600; font-size: 16px; line-height: 1.2; }
+  .strip { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 10px 14px; border-radius: var(--radius); background: var(--warning-soft); }
+  .strip .grow { flex: 1; font-size: 13px; }
+  .strip svg { color: var(--warning); }
+  .tbl { margin-top: 20px; overflow: hidden; }
+  .tbl-h { display: flex; align-items: center; padding: 14px 18px; gap: 8px; }
+  .tbl-h h3 { margin: 0; font-size: 14px; font-weight: 600; }
+  .row { display: grid; grid-template-columns: 36px 1fr 90px 110px; align-items: center; padding: 11px 18px; border-top: 1px solid var(--border); gap: 8px; transition: background .15s; }
+  .row:hover { background: var(--muted); }
+  .row.th { padding-top: 8px; padding-bottom: 8px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-foreground); background: var(--muted); }
+  .row:hover.th { background: var(--muted); }
+  .row .n { color: var(--muted-foreground); font-variant-numeric: tabular-nums; }
+  .row .t { font-weight: 500; }
+  details { margin-top: 14px; }
+  details summary { cursor: pointer; font-weight: 500; display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: var(--radius); border: 1px solid var(--border); list-style: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary:hover { background: var(--muted); }
+  details[open] summary { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  details ul { margin: 0; padding: 12px 14px 12px 32px; border: 1px solid var(--border); border-top: 0; border-radius: 0 0 var(--radius) var(--radius); font-size: 13px; display: grid; gap: 6px; }
+</style>
+</head>
+<body>
+<div class="proto-bar">
+  <b>Option C · Status hero</b><span class="muted">Most visual — gradient hero, icon stat tiles, tabular modules, warnings tucked away</span>
+  <span class="sp"></span><a href="index.html">← All options</a><button class="btn btn-sm" data-theme>Toggle dark</button>
+</div>
+
+<div class="page">
+  <div class="page-title"><h1>Protecting patient information</h1></div>
+  <div class="utabs">
+    <div class="utab on">Package</div><div class="utab">Instructions</div>
+    <div class="utab">Results <span class="chip">41</span></div><div class="utab">Settings</div>
+  </div>
+
+  <div class="panel">
+    <div class="hero">
+      <div class="hero-row">
+        <span class="tile"><svg viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg></span>
+        <div>
+          <h2>hipaa-privacy-rule-storyline</h2>
+          <div class="sub"><span class="badge ok"><span class="dot"></span>Ready</span><span class="label">SCORM 2004 · 4th edition · Version 3</span></div>
+        </div>
+        <div class="hero-actions">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Upload new version</button>
+          <div class="menu">
+            <button class="btn" data-menu>Manage <svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
+            <div class="menu-pop">
+              <button class="menu-item"><svg viewBox="0 0 24 24"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></svg><span>Swap package<small>Replace with a different course</small></span></button>
+              <div class="menu-sep"></div>
+              <button class="menu-item danger"><svg viewBox="0 0 24 24"><path d="m18.84 12.25 1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71M5.17 11.75l-1.71 1.71a5 5 0 0 0 7.07 7.07l1.71-1.71M2 2l20 20"/></svg><span>Remove package<small>Keeps results</small></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tiles">
+        <div class="mini"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12ZM8.2 13.9 7 23l5-3 5 3-1.2-9.1"/></svg></span><div><div class="label">Pass mark</div><div class="v tnum">80%</div></div></div>
+        <div class="mini"><span class="ic"><svg viewBox="0 0 24 24"><path d="m12 2 10 5-10 5L2 7ZM2 12l10 5 10-5M2 17l10 5 10-5"/></svg></span><div><div class="label">Modules</div><div class="v tnum">3</div></div></div>
+        <div class="mini"><span class="ic"><svg viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7ZM14 2v6h6"/></svg></span><div><div class="label">Files</div><div class="v tnum">312</div></div></div>
+        <div class="mini"><span class="ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5M3 12a9 3 0 0 0 18 0"/></svg></span><div><div class="label">Size</div><div class="v tnum">48.2 MB</div></div></div>
+      </div>
+
+      <div class="strip">
+        <span class="pulse"></span>
+        <span class="grow"><b>12 learners</b> are part-way through version 2 and will finish on it.</span>
+        <button class="link">Move everyone to version 3</button>
+      </div>
+    </div>
+
+    <details>
+      <summary><svg viewBox="0 0 24 24" style="color:var(--warning)"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3ZM12 9v4M12 17h.01"/></svg>2 things to know about this package<svg viewBox="0 0 24 24" style="margin-left:auto"><path d="m6 9 6 6 6-6"/></svg></summary>
+      <ul>
+        <li>Two file names differ only in letter case (<code class="mono">Images/Logo.PNG</code>). We matched them automatically.</li>
+        <li>This package defines its own sequencing, so modules follow the order it sets.</li>
+      </ul>
+    </details>
+
+    <div class="card tbl">
+      <div class="tbl-h"><h3>Modules</h3><span class="label">Taken in package order</span></div>
+      <div class="row th"><span>#</span><span>Title</span><span>Type</span><span>Grading</span></div>
+      <div class="row"><span class="n">1</span><span class="t">Why privacy matters</span><span class="label">SCO</span><span class="label">Ungraded</span></div>
+      <div class="row"><span class="n">2</span><span class="t">What counts as protected information</span><span class="label">SCO</span><span class="label">Ungraded</span></div>
+      <div class="row"><span class="n">3</span><span class="t">Knowledge check</span><span class="label">SCO</span><span class="badge pri" style="justify-self:start">Pass at 80%</span></div>
+    </div>
+  </div>
+</div>
+<script src="base.js"></script>
+</body>
+</html>

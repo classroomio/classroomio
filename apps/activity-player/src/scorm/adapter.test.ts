@@ -3,6 +3,7 @@ import {
   buildAdapterSettings,
   createScormAdapter,
   exposeAdapter,
+  initializeCommitSequence,
   initializeEventName,
   terminateEventName
 } from './adapter';
@@ -74,5 +75,64 @@ describe('event names', () => {
     expect(initializeEventName('scorm2004')).toBe('Initialize');
     expect(terminateEventName('scorm12')).toBe('LMSFinish');
     expect(terminateEventName('scorm2004')).toBe('Terminate');
+  });
+});
+
+describe('commit response', () => {
+  function fakeXhr(status: number, responseText: string): XMLHttpRequest {
+    return { status, responseText } as XMLHttpRequest;
+  }
+
+  function responseHandler(
+    onCompleted?: () => void
+  ): (xhr: XMLHttpRequest) => { result: string | boolean; errorCode: number } {
+    const settings = buildAdapterSettings('t', false, onCompleted);
+
+    if (!settings || !settings.xhrResponseHandler) throw new Error('commit response handler is missing');
+
+    return settings.xhrResponseHandler;
+  }
+
+  it('forwards the scorm-again result shape', () => {
+    const handler = responseHandler();
+
+    expect(handler(fakeXhr(200, '{"result":true,"errorCode":0}'))).toEqual({ result: true, errorCode: 0 });
+    expect(handler(fakeXhr(200, '{"result":"true","errorCode":0}'))).toEqual({ result: 'true', errorCode: 0 });
+    expect(handler(fakeXhr(200, 'not json'))).toEqual({ result: true, errorCode: 0 });
+    expect(handler(fakeXhr(500, '{}'))).toEqual({ result: false, errorCode: 101 });
+  });
+
+  it('notifies when the server reports completion', () => {
+    const onCompleted = vi.fn();
+
+    responseHandler(onCompleted)(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":true}'));
+
+    expect(onCompleted).toHaveBeenCalledTimes(1);
+  });
+
+  it('stays silent without a completion flag', () => {
+    const onCompleted = vi.fn();
+
+    responseHandler(onCompleted)(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":false}'));
+
+    expect(onCompleted).not.toHaveBeenCalled();
+  });
+});
+
+describe('commit sequence', () => {
+  it('continues above the stored sequence after resume', () => {
+    const adapter = createScormAdapter('scorm12', buildAdapterSettings('t', false));
+
+    initializeCommitSequence(adapter, 14);
+
+    expect((adapter as unknown as { _commitSequence: number })._commitSequence).toBe(14);
+  });
+
+  it('ignores invalid sequence values', () => {
+    const adapter = createScormAdapter('scorm2004', buildAdapterSettings('t', false));
+
+    initializeCommitSequence(adapter, Number.NaN);
+
+    expect((adapter as unknown as { _commitSequence: number })._commitSequence).toBe(0);
   });
 });

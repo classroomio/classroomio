@@ -57,7 +57,8 @@ export async function createActivity(
     }
   }
 
-  const slug = await resolveItemSlug({ courseId, title: input.title });
+  const title = input.title ?? '';
+  const slug = await resolveItemSlug({ courseId, title });
   const order = await nextActivityOrder(courseId, input.sectionId ?? null);
 
   return db.transaction(async (tx) => {
@@ -67,7 +68,7 @@ export async function createActivity(
           courseId,
           sectionId: input.sectionId ?? null,
           kind: input.kind,
-          title: input.title,
+          title,
           slug,
           order,
           createdByProfileId: profileId ?? null

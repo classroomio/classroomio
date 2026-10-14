@@ -16,6 +16,15 @@ export const ZPackageParam = z.object({
 });
 export type TPackageParam = z.infer<typeof ZPackageParam>;
 
+export const ZPackageVersionCreate = z.object({
+  contentSha256: z
+    .string()
+    .regex(/^[a-f0-9]{64}$/i, 'contentSha256 must be a hex SHA-256 digest')
+    .transform((digest) => digest.toLowerCase())
+    .optional()
+});
+export type TPackageVersionCreate = z.infer<typeof ZPackageVersionCreate>;
+
 export const ZPackageVersionParam = z.object({
   assetId: z.string().min(1),
   versionId: z.string().min(1)

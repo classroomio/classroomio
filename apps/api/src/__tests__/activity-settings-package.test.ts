@@ -122,7 +122,7 @@ describe('course activity routes (PR 7)', () => {
     const response = await app.request('/course/course-1/activity/act-1/settings', {
       method: 'PUT',
       headers: HEADERS,
-      body: JSON.stringify({ completionRule: 'passed', allowRetakes: true, launchMode: 'embedded' })
+      body: JSON.stringify({ completionRule: 'passed', allowRetakes: true })
     });
 
     expect(response.status).toBe(200);
@@ -143,7 +143,7 @@ describe('course activity routes (PR 7)', () => {
     const response = await app.request('/course/course-1/activity/act-1/settings', {
       method: 'PUT',
       headers: HEADERS,
-      body: JSON.stringify({ completionRule: 'passed', allowRetakes: false, launchMode: 'embedded' })
+      body: JSON.stringify({ completionRule: 'passed', allowRetakes: false })
     });
 
     expect(response.status).toBe(403);

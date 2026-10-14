@@ -35,9 +35,9 @@ export const runtimeScormRouter = new Hono()
       if (!parsed.success) throw new AppError('Invalid commit payload', ErrorCodes.VALIDATION_ERROR, 400);
       const contentType = c.req.header('content-type') ?? '';
       const viaBeacon = contentType.includes('text/plain');
-      await commitScormAttempt(launchToken, parsed.data, viaBeacon, c.req.header('user-agent') ?? null);
+      const result = await commitScormAttempt(launchToken, parsed.data, viaBeacon, c.req.header('user-agent') ?? null);
 
-      return c.json({ result: true, errorCode: 0 }, 200);
+      return c.json({ result: true, errorCode: 0, completedActivity: result.completedActivity }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to save commit');
     }

@@ -31,7 +31,7 @@
 
   const hasScormAccess = $derived(licenseApi.hasAccess('scorm'));
   const isSelfHosted = PUBLIC_IS_SELFHOSTED === 'true';
-  const canProceed = $derived(title.trim().length > 0 && canCreate && hasScormAccess);
+  const canProceed = $derived(canCreate && hasScormAccess);
 
   $effect(() => {
     const nextCanProceed = canProceed;
@@ -122,7 +122,7 @@
     bind:value={title}
     autoFocus={true}
     className="w-full"
-    isRequired={true}
+    isRequired={false}
     placeholder={$t('course.navItem.lessons.add_content_options.activity_scorm_title_placeholder')}
   />
 {/if}

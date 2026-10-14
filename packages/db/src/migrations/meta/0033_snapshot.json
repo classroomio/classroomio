@@ -233,13 +233,21 @@
           "notNull": true,
           "default": false
         },
-        "launch_mode": {
-          "name": "launch_mode",
-          "type": "SCORM_LAUNCH_MODE",
+        "module_order": {
+          "name": "module_order",
+          "type": "SCORM_MODULE_ORDER",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
-          "default": "'embedded'"
+          "default": "'free'"
+        },
+        "completion_modules": {
+          "name": "completion_modules",
+          "type": "SCORM_COMPLETION_MODULES",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'all'"
         },
         "created_at": {
           "name": "created_at",
@@ -4303,6 +4311,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "content_sha256": {
+          "name": "content_sha256",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "extracted_bytes": {
           "name": "extracted_bytes",
           "type": "bigint",
@@ -4741,7 +4755,7 @@
           "type": "varchar",
           "primaryKey": false,
           "notNull": false,
-          "default": "'Welcome to this amazing course 🚀 '"
+          "default": "'Welcome to this amazing course \ud83d\ude80 '"
         },
         "id": {
           "name": "id",
@@ -13334,6 +13348,13 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
+        },
+        "time_spent_seconds": {
+          "name": "time_spent_seconds",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
         }
       },
       "indexes": {
@@ -15292,15 +15313,20 @@
       "schema": "public",
       "values": ["finished", "replaced"]
     },
+    "public.SCORM_COMPLETION_MODULES": {
+      "name": "SCORM_COMPLETION_MODULES",
+      "schema": "public",
+      "values": ["all", "graded_only"]
+    },
     "public.SCORM_COMPLETION_RULE": {
       "name": "SCORM_COMPLETION_RULE",
       "schema": "public",
       "values": ["auto", "completed", "passed", "score"]
     },
-    "public.SCORM_LAUNCH_MODE": {
-      "name": "SCORM_LAUNCH_MODE",
+    "public.SCORM_MODULE_ORDER": {
+      "name": "SCORM_MODULE_ORDER",
       "schema": "public",
-      "values": ["embedded", "window"]
+      "values": ["free", "sequential"]
     },
     "public.SCORM_SCO_ATTEMPT_STATUS": {
       "name": "SCORM_SCO_ATTEMPT_STATUS",

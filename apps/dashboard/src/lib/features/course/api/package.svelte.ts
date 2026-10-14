@@ -3,15 +3,15 @@ import { snackbar } from '$features/ui/snackbar/store';
 import { mapZodErrorsToTranslations } from '$lib/utils/validation/validation';
 import { ZPackageCreate } from '@cio/utils/validation/activity/package';
 import { ZActivityCoursesCreate } from '@cio/utils/validation/activity/course';
-import type { TPackageCreate } from '@cio/utils/validation/activity/package';
+import type { TPackageCreate, TPackageVersionCreate } from '@cio/utils/validation/activity/package';
 import type { TActivityCoursesCreate } from '@cio/utils/validation/activity/course';
 import type {
   CreatedPackageCourses,
   CreateCoursesFromPackagesRequest,
   CreatePackageData,
   CreatePackageRequest,
+  CreatePackageVersionData,
   CreatePackageVersionRequest,
-  DeletePackageRequest,
   GetPackageRequest,
   MakePackageVersionCurrentRequest,
   PackageDetails,
@@ -57,10 +57,10 @@ export class PackageApi extends BaseApiWithErrors {
     return created;
   }
 
-  async createVersion(assetId: string) {
-    let created: { version: CreatePackageData['version']; uploadUrl: string; uploadKey: string } | undefined;
+  async createVersion(assetId: string, fields: TPackageVersionCreate = {}) {
+    let created: CreatePackageVersionData | undefined;
     await this.execute<CreatePackageVersionRequest>({
-      requestFn: () => classroomio.activity.packages[':assetId'].versions.$post({ param: { assetId } }),
+      requestFn: () => classroomio.activity.packages[':assetId'].versions.$post({ param: { assetId }, json: fields }),
       logContext: 'creating package version',
       onSuccess: (response) => {
         if (response.data) {
@@ -135,23 +135,6 @@ export class PackageApi extends BaseApiWithErrors {
     });
 
     return details;
-  }
-
-  async remove(assetId: string) {
-    await this.execute<DeletePackageRequest>({
-      requestFn: () => classroomio.activity.packages[':assetId'].$delete({ param: { assetId } }),
-      logContext: 'deleting package',
-      onSuccess: () => {
-        snackbar.success('snackbar.activity.package_deleted');
-        this.success = true;
-        this.errors = {};
-      },
-      onError: (result) => {
-        if (typeof result === 'string') {
-          snackbar.error('snackbar.activity.delete_failed');
-        }
-      }
-    });
   }
 
   async createCourses(fields: TActivityCoursesCreate): Promise<CreatedPackageCourses | undefined> {

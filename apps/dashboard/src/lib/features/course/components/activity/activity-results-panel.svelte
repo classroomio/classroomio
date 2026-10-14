@@ -12,7 +12,7 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { activityApi } from '$features/course/api/activity.svelte';
   import { ExportMenu, TablePagination } from '$features/ui';
-  import { formatDuration, formatScorePercent } from '$features/course/utils/scorm-utils';
+  import { formatDuration, formatScorePercent, unitPassMark } from '$features/course/utils/scorm-utils';
   import type { ActivityResultsLearner } from '$features/course/utils/types';
   import type { TScormResultsQuery } from '@cio/utils/validation/activity/report';
   import type { ExportDocument } from '@cio/utils/export';
@@ -23,7 +23,7 @@
 
   const STATUS_BADGE_VARIANTS: Record<ActivityResultsLearner['status'], BadgeVariant> = {
     completed: 'success',
-    failed: 'destructive',
+    failed: 'warning',
     in_progress: 'secondary',
     not_started: 'outline'
   };
@@ -56,17 +56,36 @@
   const learners = $derived(activityApi.results ?? []);
   const pagination = $derived(activityApi.resultsPagination);
 
-  const summaryCards = $derived(
-    summary
-      ? [
-          { labelKey: `${T}.summary.enrolled`, value: String(summary.enrolled) },
-          { labelKey: `${T}.summary.started`, value: String(summary.started) },
-          { labelKey: `${T}.summary.completed`, value: String(summary.completed) },
-          { labelKey: `${T}.summary.passed`, value: String(summary.passed) },
-          { labelKey: `${T}.summary.average_score`, value: formatScorePercent(summary.averageScore) }
-        ]
-      : []
-  );
+  const graded = $derived.by(() => {
+    if ((summary?.averageScore ?? null) !== null) return true;
+
+    const editor = activityApi.editor;
+    if (!editor || !editor.available || !editor.package) return false;
+
+    return editor.package.units.some((unit) => unitPassMark(unit) !== null);
+  });
+
+  const summaryCards = $derived.by(() => {
+    if (!summary) return [];
+
+    const enrolled = summary.enrolled;
+    const inProgress = summary.started - summary.completed;
+    const notStarted = enrolled - summary.started;
+    const share = (count: number) => (enrolled > 0 ? ` · ${Math.round((count / enrolled) * 100)}%` : '');
+    const cards = [
+      { labelKey: `${T}.summary.enrolled`, value: String(enrolled) },
+      { labelKey: `${T}.summary.in_progress`, value: `${inProgress}${share(inProgress)}` },
+      { labelKey: `${T}.summary.completed`, value: `${summary.completed}${share(summary.completed)}` }
+    ];
+
+    if (graded) {
+      cards.push({ labelKey: `${T}.summary.average_score`, value: formatScorePercent(summary.averageScore) });
+    } else {
+      cards.push({ labelKey: `${T}.summary.not_started`, value: `${notStarted}${share(notStarted)}` });
+    }
+
+    return cards;
+  });
 
   $effect(() => {
     const organizationId = $currentOrg.id;
@@ -97,12 +116,17 @@
 
   async function exportDocument(): Promise<ExportDocument<ActivityResultsLearner>> {
     const total = pagination?.total ?? learners.length;
-    await activityApi.listResults(courseId, activityId, {
-      page: 1,
-      limit: Math.max(total, 1),
-      sort,
-      direction
-    });
+    const rows: ActivityResultsLearner[] = [];
+    const pages = Math.max(1, Math.ceil(total / 100));
+
+    for (let exportPage = 1; exportPage <= pages; exportPage += 1) {
+      await activityApi.listResults(courseId, activityId, { page: exportPage, limit: 100, sort, direction });
+      rows.push(...(activityApi.results ?? []));
+
+      if ((activityApi.results ?? []).length < 100) break;
+    }
+
+    await activityApi.listResults(courseId, activityId, { page, limit, sort, direction });
 
     return {
       filename: 'scorm-results',
@@ -133,15 +157,15 @@
           value: (row) => formatLaunched(row.lastLaunchedAt)
         }
       ],
-      rows: activityApi.results ?? []
+      rows
     };
   }
 </script>
 
 <div class="flex flex-col gap-4">
   {#if !summary}
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
-      {#each [0, 1, 2, 3, 4] as index (index)}
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {#each [0, 1, 2, 3] as index (index)}
         <Card.Root class="ui:py-3">
           <Card.Content class="flex flex-col gap-1">
             <Skeleton class="h-6 w-12" />
@@ -151,7 +175,7 @@
       {/each}
     </div>
   {:else}
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-5">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
       {#each summaryCards as card (card.labelKey)}
         <Card.Root class="ui:py-3">
           <Card.Content class="flex flex-col gap-1">

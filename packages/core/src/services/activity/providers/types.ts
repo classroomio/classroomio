@@ -4,7 +4,7 @@ import type { LaunchMode } from '@cio/activity-packages';
 import type { LicenseFeatureId } from '@cio/utils/license';
 import type { TActivityKind } from '@cio/utils/constants/activity';
 import type { TScormResultsQuery } from '@cio/utils/validation/activity/report';
-import type { TScormLaunchMode, TScormSettings } from '@cio/utils/validation/activity/scorm';
+import type { TScormSettings } from '@cio/utils/validation/activity/scorm';
 
 export interface ActivityProvider {
   kind: TActivityKind;
@@ -52,7 +52,12 @@ export type ActivityEditorData =
         versions: TContentPackageVersion[];
         currentVersion: TContentPackageVersion | null;
         units: TContentPackageUnit[];
-        attemptCounts: { inProgress: number; stale: number; staleVersionNumber: number | null };
+        attemptCounts: {
+          inProgress: number;
+          stale: number;
+          staleVersionNumber: number | null;
+          orphaned: number;
+        };
       } | null;
     };
 
@@ -71,8 +76,10 @@ export type ScormLaunchModule = {
   title: string;
   position: number;
   completed: boolean;
+  locked: boolean;
   scorePercent: number | null;
   status: 'not_attempted' | 'active' | 'suspended' | 'closed';
+  maxTimeAllowed: string | null;
 };
 
 export type ScormLaunchUnit = {
@@ -92,7 +99,6 @@ export type ActivityLaunchResult =
       playerUrl: string;
       mode: LaunchMode;
       expiresAt: string;
-      launchMode: TScormLaunchMode;
       unit: ScormLaunchUnit;
       units: ScormLaunchModule[];
       reviewOfArchivedVersion?: boolean;
@@ -156,6 +162,7 @@ export interface ActivityLearnerAttemptModule {
 export interface ActivityModuleEvent {
   kind: string;
   detail: Record<string, unknown>;
+  userAgent: string | null;
   createdAt: string;
 }
 

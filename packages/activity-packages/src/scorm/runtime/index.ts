@@ -5,6 +5,7 @@ export type ScormCmi = Record<string, unknown>;
 export type ScormCompletionValue = 'completed' | 'incomplete' | 'not_attempted' | 'unknown';
 export type ScormSuccessValue = 'passed' | 'failed' | 'unknown';
 export type ScormCompletionRule = 'auto' | 'completed' | 'passed' | 'score';
+export type ScormCompletionModules = 'all' | 'graded_only';
 export type ScormTryStatus = 'active' | 'suspended' | 'closed';
 
 export interface ScormModuleOutcome {
@@ -17,6 +18,7 @@ export interface ScormModuleOutcome {
 export interface ScormRuleSettings {
   rule: ScormCompletionRule;
   minScorePercent?: number | null;
+  completionModules?: ScormCompletionModules;
 }
 
 export interface ScormCommit {
@@ -534,6 +536,100 @@ function isModuleRuleMet(rule: Exclude<ScormCompletionRule, 'score'>, module: Sc
   return module.completion === 'completed';
 }
 
+const SCORM12_SESSION_TIME_PATTERN = /^(\d{2,4}):(\d{2}):(\d{2})(?:\.\d{1,2})?$/;
+const SCORM2004_DURATION_PATTERN =
+  /^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)D)?(?:T(?:(\d+)H)?(?:(\d+)M)?(?:(\d+(?:\.\d+)?)S)?)?$/;
+
+/**
+ * Parses a package-reported session time to whole seconds for SCORM 1.2
+ * `HH:MM:SS[.SS]` and SCORM 2004 ISO-8601 durations. Returns null when the
+ * value is missing or malformed.
+ */
+export function parseScormSessionTime(raw: unknown, format: ScormPackageFormat): number | null {
+  if (typeof raw !== 'string') {
+    return null;
+  }
+
+  const text = raw.trim();
+
+  if (text === '') {
+    return null;
+  }
+
+  if (format === 'scorm12') {
+    const match = SCORM12_SESSION_TIME_PATTERN.exec(text);
+
+    if (!match) {
+      return null;
+    }
+
+    const hours = Number(match[1]);
+    const minutes = Number(match[2]);
+    const seconds = Number(match[3]);
+
+    if (minutes > 59 || seconds > 59) {
+      return null;
+    }
+
+    return hours * 3600 + minutes * 60 + seconds;
+  }
+
+  const match = SCORM2004_DURATION_PATTERN.exec(text);
+
+  if (!match) {
+    return null;
+  }
+
+  if (match.slice(1).every((part) => part === undefined)) {
+    return null;
+  }
+
+  const total =
+    Number(match[1] ?? 0) * 365 * 86400 +
+    Number(match[2] ?? 0) * 30 * 86400 +
+    Number(match[3] ?? 0) * 86400 +
+    Number(match[4] ?? 0) * 3600 +
+    Number(match[5] ?? 0) * 60 +
+    Number(match[6] ?? 0);
+
+  return Number.isFinite(total) && total >= 0 ? Math.floor(total) : null;
+}
+
+export const MAX_SCORM_TRY_SECONDS = 8 * 3600;
+export const SCORM_HEARTBEAT_WINDOW_SECONDS = 300;
+export const SCORM_DORMANT_CREDIT_SECONDS = 60;
+
+/**
+ * Reads the package-reported session time from one commit's CMI. Returns
+ * null when absent or malformed.
+ */
+export function parseCommitSessionTime(cmi: ScormCmi, format: ScormPackageFormat): number | null {
+  const raw = format === 'scorm12' ? getPath(cmi, 'core.session_time') : getPath(cmi, 'session_time');
+
+  return parseScormSessionTime(raw, format);
+}
+
+/**
+ * Returns the try's updated active seconds. A valid package-reported session
+ * time wins, bounded to the try cap; otherwise credits bounded heartbeat
+ * time. Never decreases.
+ */
+export function accumulateTryTime(
+  currentSeconds: number,
+  sessionTimeSeconds: number | null,
+  lastActivityMs: number,
+  nowMs: number
+): number {
+  if (sessionTimeSeconds !== null && sessionTimeSeconds > 0) {
+    return Math.max(currentSeconds, Math.min(sessionTimeSeconds, MAX_SCORM_TRY_SECONDS));
+  }
+
+  const deltaSeconds = Math.max(0, Math.round((nowMs - lastActivityMs) / 1000));
+  const credited = deltaSeconds <= SCORM_HEARTBEAT_WINDOW_SECONDS ? deltaSeconds : SCORM_DORMANT_CREDIT_SECONDS;
+
+  return Math.min(currentSeconds + credited, MAX_SCORM_TRY_SECONDS);
+}
+
 /**
  * Returns whether an attempt meets the item's completion rule, given the
  * latest outcome of each launchable module.
@@ -543,16 +639,20 @@ export function isScormRuleMet(settings: ScormRuleSettings, modules: ScormModule
     return false;
   }
 
-  const { rule } = settings;
+  const { rule, completionModules = 'all' } = settings;
+  const graded = modules.filter(
+    (module) => module.hasPassMark || module.success !== 'unknown' || module.scaledScore !== null
+  );
+  const targets = completionModules === 'graded_only' && graded.length > 0 ? graded : modules;
 
   if (rule === 'score') {
-    const attemptScore = averageScaledScore(modules);
-    const everyModuleCompleted = modules.every((module) => module.completion === 'completed');
+    const attemptScore = averageScaledScore(targets);
+    const everyTargetCompleted = targets.every((module) => module.completion === 'completed');
 
-    return everyModuleCompleted && attemptScore !== null && attemptScore * 100 >= (settings.minScorePercent ?? 100);
+    return everyTargetCompleted && attemptScore !== null && attemptScore * 100 >= (settings.minScorePercent ?? 100);
   }
 
-  return modules.every((module) => isModuleRuleMet(rule, module));
+  return targets.every((module) => isModuleRuleMet(rule, module));
 }
 
 export interface ScormCommitOutcomeSnapshot {

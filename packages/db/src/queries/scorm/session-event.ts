@@ -16,6 +16,7 @@ export type ScormSessionEventRow = {
   unitId: string;
   kind: string;
   detail: Record<string, unknown>;
+  userAgent: string | null;
   createdAt: string;
 };
 
@@ -71,7 +72,7 @@ export async function listScormSessionEventsByLearner(
   try {
     const result = await dbClient.execute(sql`
       SELECT e.id, a.id AS attempt_id, t.unit_id,
-             e.kind, COALESCE(e.detail, '{}'::jsonb) AS detail, e.created_at
+             e.kind, COALESCE(e.detail, '{}'::jsonb) AS detail, e.user_agent, e.created_at
       FROM scorm_session_event e
       JOIN scorm_sco_attempt t ON t.id = e.sco_attempt_id
       JOIN scorm_attempt a ON a.id = t.attempt_id
@@ -84,6 +85,7 @@ export async function listScormSessionEventsByLearner(
       unitId: String(row['unit_id']),
       kind: String(row['kind']),
       detail: (row['detail'] ?? {}) as Record<string, unknown>,
+      userAgent: row['user_agent'] === null ? null : String(row['user_agent']),
       createdAt: String(row['created_at'])
     }));
   } catch (error) {

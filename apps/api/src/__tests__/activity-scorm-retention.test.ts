@@ -176,8 +176,8 @@ function suffix() {
   return `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
 }
 
-describe.skipIf(!hasDatabase)('scorm retention three-way rule', () => {
-  it('deletes a never-launched version with its ZIP and row', async () => {
+describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
+  it('keeps replaced versions, rows and files', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
     const current = suffix();
@@ -195,24 +195,25 @@ describe.skipIf(!hasDatabase)('scorm retention three-way rule', () => {
     try {
       const result = await runScormRetention(90, 30);
 
-      expect(result.versionsDeleted).toBe(1);
+      expect(result.versionsDeleted).toBe(0);
       expect(result.versionsArchived).toBe(0);
-      expect(storedObjects.has(`${first.contentPrefix}/sco.html`)).toBe(false);
-      expect(storedObjects.has(first.uploadKey)).toBe(false);
+      expect(result.objectsDeleted).toBe(0);
+      expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
+      expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
 
       const remaining = await db
         .select({ id: schema.contentPackageVersion.id })
         .from(schema.contentPackageVersion)
         .where(eq(schema.contentPackageVersion.assetId, fixture.assetId));
 
-      expect(remaining.map((row) => row.id)).not.toContain(first.id);
+      expect(remaining.map((row) => row.id)).toContain(first.id);
     } finally {
       storedObjects.clear();
       await cleanupRetentionFixture(fixture);
     }
   });
 
-  it('archives a launched version with closed attempts and keeps its ZIP', async () => {
+  it('keeps a replaced version with attempts and files', async () => {
     const { db } = await import('@db/drizzle');
     const schema = await import('@db/schema');
     const current = suffix();
@@ -259,17 +260,17 @@ describe.skipIf(!hasDatabase)('scorm retention three-way rule', () => {
       const result = await runScormRetention(90, 30);
 
       expect(result.versionsDeleted).toBe(0);
-      expect(result.versionsArchived).toBe(1);
-      expect(storedObjects.has(`${first.contentPrefix}/sco.html`)).toBe(false);
+      expect(result.versionsArchived).toBe(0);
+      expect(result.objectsDeleted).toBe(0);
+      expect(storedObjects.get(`${first.contentPrefix}/sco.html`)).toBe('<html>v1</html>');
       expect(storedObjects.get(first.uploadKey)).toBe('zip-bytes');
 
-      const [archived] = await db
+      const [kept] = await db
         .select()
         .from(schema.contentPackageVersion)
         .where(eq(schema.contentPackageVersion.id, first.id));
 
-      expect(archived?.status).toBe('archived');
-      expect(archived?.archivedAt).not.toBeNull();
+      expect(kept?.status).toBe('ready');
     } finally {
       storedObjects.clear();
       await cleanupRetentionFixture(fixture);

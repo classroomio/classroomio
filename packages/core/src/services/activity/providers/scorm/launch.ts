@@ -53,10 +53,14 @@ export function toRuleSettings(details: TActivityScorm): ScormRuleSettings {
     completionRule: details.completionRule,
     minScorePercent: details.minScorePercent,
     allowRetakes: details.allowRetakes,
-    launchMode: details.launchMode
+    completionModules: details.completionModules
   });
 
-  return { rule: parsed.completionRule, minScorePercent: parsed.minScorePercent };
+  return {
+    rule: parsed.completionRule,
+    minScorePercent: parsed.minScorePercent,
+    completionModules: parsed.completionModules
+  };
 }
 
 function toNumberOrNull(value: unknown): number | null {
@@ -132,7 +136,8 @@ function toLaunchModule(
   unit: TContentPackageUnit,
   latestTry: TScormScoAttempt | null,
   settings: ScormRuleSettings,
-  format: ScormPackageFormat
+  format: ScormPackageFormat,
+  locked: boolean
 ): ScormLaunchModule {
   const outcome = outcomeOf(unit, latestTry, format);
   const scaled = outcome.scaledScore;
@@ -142,21 +147,54 @@ function toLaunchModule(
     title: unit.title,
     position: unit.position,
     completed: latestTry ? isTickMet(settings.rule, outcome) : false,
+    locked,
     scorePercent: scaled === null ? null : Math.round(scaled * 100),
-    status: latestTry ? (latestTry.status as ScormLaunchModule['status']) : 'not_attempted'
+    status: latestTry ? (latestTry.status as ScormLaunchModule['status']) : 'not_attempted',
+    maxTimeAllowed: maxTimeAllowedOf(unit)
   };
 }
 
 function launchableUnits(units: TContentPackageUnit[]): TContentPackageUnit[] {
-  return units.filter((unit) => unit.unitType === 'sco').sort((left, right) => left.position - right.position);
+  return units
+    .filter((unit) => unit.unitType === 'sco' && unit.isVisible !== false)
+    .sort((left, right) => left.position - right.position);
+}
+
+function maxTimeAllowedOf(unit: TContentPackageUnit): string | null {
+  return 'maxTimeAllowed' in unit.formatDetails ? (unit.formatDetails.maxTimeAllowed ?? null) : null;
+}
+
+/**
+ * Identifiers past the first module that misses the rule tick, in manifest
+ * order. The first gap stays playable; free order never locks.
+ */
+export function lockedIdentifiers(
+  units: TContentPackageUnit[],
+  tries: Map<string, TScormScoAttempt>,
+  settings: ScormRuleSettings,
+  format: ScormPackageFormat,
+  sequential: boolean
+): Set<string> {
+  const locked = new Set<string>();
+
+  if (!sequential) return locked;
+
+  let seenGap = false;
+
+  for (const unit of launchableUnits(units)) {
+    if (seenGap) {
+      locked.add(unit.identifier);
+      continue;
+    }
+
+    if (!isTickMet(settings.rule, outcomeOf(unit, tries.get(unit.id) ?? null, format))) seenGap = true;
+  }
+
+  return locked;
 }
 
 function toLaunchUnit(unit: TContentPackageUnit): ScormLaunchUnit {
   return { identifier: unit.identifier, title: unit.title, href: unit.href, position: unit.position };
-}
-
-function launchModeOf(details: TActivityScorm): 'embedded' | 'window' {
-  return details.launchMode === 'window' ? 'window' : 'embedded';
 }
 
 interface LaunchHosts {
@@ -312,13 +350,17 @@ function pickUnit(
   unitIdentifier: string | undefined,
   tries: Map<string, TScormScoAttempt>,
   settings: ScormRuleSettings,
-  format: ScormPackageFormat
+  format: ScormPackageFormat,
+  sequential: boolean
 ): TContentPackageUnit {
   const launchable = launchableUnits(units);
 
   if (unitIdentifier) {
     const chosen = launchable.find((unit) => unit.identifier === unitIdentifier);
     if (!chosen) throw new AppError('Module not found', ErrorCodes.NOT_FOUND, 404);
+    if (sequential && lockedIdentifiers(units, tries, settings, format, true).has(chosen.identifier)) {
+      throw new AppError('This module is locked until the previous modules are complete', ErrorCodes.FORBIDDEN, 403);
+    }
 
     return chosen;
   }
@@ -396,8 +438,10 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
       title: candidate.title,
       position: candidate.position,
       completed: false,
+      locked: false,
       scorePercent: null,
-      status: 'not_attempted' as const
+      status: 'not_attempted' as const,
+      maxTimeAllowed: maxTimeAllowedOf(candidate)
     }));
 
     const playerUrl = `${hosts.contentHost}/activity/player/${launchToken}`;
@@ -407,7 +451,6 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
       playerUrl,
       mode: 'preview',
       expiresAt,
-      launchMode: launchModeOf(details),
       unit: toLaunchUnit(unit),
       units: modules
     };
@@ -456,12 +499,13 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
         : reviewUnits[0];
       if (!reviewUnit) throw new AppError('Module not found', ErrorCodes.NOT_FOUND, 404);
 
+      const reviewTries = await latestTriesByUnit(attempt.id, tx);
       const launchedReview: LaunchedModule = {
         attempt,
         versionId: reviewVersion.id,
         format: packageFormat(reviewVersion.format),
         unit: reviewUnit,
-        scoAttempt: null,
+        scoAttempt: reviewTries.get(reviewUnit.id) ?? null,
         review: true,
         reviewOfArchivedVersion: false,
         restartedAfterReplace: false
@@ -481,7 +525,8 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
       context.unitIdentifier,
       tries,
       settings,
-      format
+      format,
+      details.moduleOrder === 'sequential'
     );
     const scoAttempt = await resolveTry(attempt.id, unit.id, tx);
 
@@ -502,9 +547,12 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
   const triesByUnit = launched.reviewOfArchivedVersion
     ? new Map<string, TScormScoAttempt>()
     : await latestTriesByUnit(launched.attempt.id);
-  const menuUnits = launchableUnits(await listPackageUnitsByVersion(launched.versionId));
+  const versionUnits = await listPackageUnitsByVersion(launched.versionId);
+  const menuUnits = launchableUnits(versionUnits);
+  const sequentialMenu = !launched.review && details.moduleOrder === 'sequential';
+  const locked = lockedIdentifiers(versionUnits, triesByUnit, settings, launched.format, sequentialMenu);
   const modules = menuUnits.map((unit) =>
-    toLaunchModule(unit, triesByUnit.get(unit.id) ?? null, settings, launched.format)
+    toLaunchModule(unit, triesByUnit.get(unit.id) ?? null, settings, launched.format, locked.has(unit.identifier))
   );
 
   const mode: LaunchMode = launched.review ? 'review' : 'normal';
@@ -529,7 +577,6 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
     playerUrl,
     mode,
     expiresAt,
-    launchMode: launchModeOf(details),
     unit: toLaunchUnit(launched.unit),
     units: modules,
     ...(launched.reviewOfArchivedVersion ? { reviewOfArchivedVersion: true as const } : {}),

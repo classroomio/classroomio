@@ -234,7 +234,9 @@
     "scorm_gated": "Piani a pagamento",
     "scorm_upgrade_notice": "I corsi SCORM sono inclusi in ogni piano a pagamento. Effettua l'upgrade per crearne uno.",
     "scorm_upgrade_cta": "Visualizza i piani",
-    "scorm_license_notice": "I corsi SCORM richiedono una licenza enterprise su questo server."
+    "scorm_license_notice": "I corsi SCORM richiedono una licenza enterprise su questo server.",
+    "track_compliance_label": "Traccia come formazione di conformità",
+    "track_compliance_hint": "Aggiungi date di scadenza, rinnovi e promemoria"
   },
   "public_course": {
     "header": {
@@ -1574,14 +1576,12 @@
       "create_course_title_many": "Crea {count, plural, one {# corso} other {# corsi}} dai pacchetti",
       "create_course_description": "Creeremo un corso SCORM in bozza per ogni pacchetto. I relativi moduli rimarranno raggruppati in un menu sopra il pacchetto.",
       "course_nav_preview": "Navigazione corso SCORM: Pacchetto",
-      "course_type_self_paced": "Ritmo autonomo",
-      "course_type_self_paced_description": "Gli studenti seguono il pacchetto al proprio ritmo",
-      "course_type_compliance": "Conformità",
-      "course_type_compliance_description": "Formazione ricorrente con ripetizioni, promemoria e monitoraggio dei rinnovi",
       "course_title_label": "Titolo del corso",
       "course_title_label_for": "Titolo del corso per {title}",
       "create_course_confirm_single": "Crea corso",
-      "create_course_confirm_many": "Crea {count, plural, one {# corso} other {# corsi}}"
+      "create_course_confirm_many": "Crea {count, plural, one {# corso} other {# corsi}}",
+      "track_compliance_label": "Traccia come formazione di conformità",
+      "track_compliance_hint": "Aggiungi date di scadenza, rinnovi e promemoria"
     }
   },
   "tags_admin": {
@@ -2733,7 +2733,8 @@
           "activity_scorm_gated": "Piani a pagamento",
           "activity_scorm_upgrade_notice": "I pacchetti SCORM sono inclusi in ogni piano a pagamento. Esegui l'upgrade per aggiungere pacchetti ai tuoi corsi.",
           "activity_scorm_upgrade_cta": "Visualizza i piani",
-          "activity_scorm_license_notice": "I pacchetti SCORM richiedono una licenza enterprise su questo server. Gli utenti mantengono l'accesso ai pacchetti esistenti."
+          "activity_scorm_license_notice": "I pacchetti SCORM richiedono una licenza enterprise su questo server. Gli utenti mantengono l'accesso ai pacchetti esistenti.",
+          "activity_scorm_default_title": "Pacchetto SCORM"
         },
         "add_content_section_title_placeholder": "ad esempio, Modulo 1: Introduzione",
         "add_content_lesson_title_placeholder": "ad esempio, Iniziare con le variabili",
@@ -3707,15 +3708,20 @@
             "min_score": "Punteggio minimo (%)",
             "retakes": "Consenti di ripetere il tentativo",
             "retakes_helper": "I pacchetti completati si riaprono con un pulsante \"Avvia un nuovo tentativo\". Verrà considerato il punteggio migliore.",
-            "launch_mode": "Modalità di avvio",
-            "launch_embedded": "Nel corso",
-            "launch_window": "In una nuova finestra",
-            "save": "Impostazioni di salvataggio"
+            "module_order": "Ordine dei moduli",
+            "order_free": "Qualsiasi ordine",
+            "order_sequential": "In sequenza",
+            "module_order_helper": "L'opzione \"In sequenza\" blocca ogni modulo finché non viene completato quello precedente. I pacchetti senza regole di ordinamento funzionano allo stesso modo in entrambi i casi.",
+            "custom_threshold_hint": "Questo pacchetto non prevede un punteggio minimo per il superamento. Gli studenti lo completano terminando ogni modulo e ottenendo una media di almeno {score}%.",
+            "completion_modules": "Ambito di completamento",
+            "completion_modules_all": "Tutti i moduli",
+            "completion_modules_graded_only": "Solo moduli con valutazione",
+            "completion_modules_helper": "L'opzione \"Solo moduli con valutazione\" consente ai partecipanti di saltare sondaggi e glossari facoltativi. Il completamento è determinato esclusivamente dai moduli che prevedono una soglia di superamento o un punteggio registrato.",
+            "completion_modules_single_note": "Questo pacchetto contiene un unico modulo; pertanto, l'ambito di completamento non è applicabile."
           },
           "instructions": {
             "label": "Istruzioni per gli studenti",
-            "placeholder": "Cosa devono sapere gli studenti prima di aprire il pacchetto?",
-            "save": "Istruzioni per il salvataggio"
+            "placeholder": "Cosa devono sapere gli studenti prima di aprire il pacchetto?"
           },
           "package": {
             "drop_label": "Trascina qui il tuo file .zip SCORM",
@@ -3731,9 +3737,8 @@
             "remove": "Rimuovi",
             "remove_confirm_title": "Rimuovere questo pacchetto?",
             "remove_confirm_body": "Gli studenti perderanno l'accesso finché non allegherai un altro pacchetto. Il file rimarrà nel Gestore multimediale.",
-            "modules_title": "Questo pacchetto contiene {count, plurale, uno {# modulo} altri {# moduli}}",
+            "modules_title": "Questo pacchetto contiene {count, plural, one {# modulo} other {# moduli}}",
             "modules_hint": "Gli studenti selezionano i moduli da un menu sopra il pacchetto. La regola di completamento si applica a ciascun modulo.",
-            "sequencing_warning": "Le regole di sequenziamento di questo pacchetto vengono ignorate. Vengono applicate le impostazioni di progressione del corso.",
             "case_warning": "Alcuni nomi di file differiscono solo per la maiuscola/minuscola.",
             "rebased_warning": "Il file manifest è stato trovato all'interno di un'unica cartella di primo livello.",
             "version": "Versione {version}",
@@ -3782,14 +3787,47 @@
             "swap_confirm_title": "Vuoi sostituire il pacchetto con uno diverso?",
             "swap_confirm_body": "I partecipanti inizieranno il nuovo pacchetto dall'inizio. Il pacchetto attuale rimarrà nel Media Manager.",
             "swap_confirm_body_with_count": "{count, plural, one {# partecipante è} other {# partecipanti sono}} a metà percorso. Ricominceranno il nuovo pacchetto dall'inizio. Lo stato di completamento per i partecipanti che hanno già terminato questo pacchetto rimarrà invariato.",
-            "mismatch_title": "Sembra un corso diverso",
-            "mismatch_body": "I suoi moduli non corrispondono a quelli del pacchetto attuale. Se si tratta di un corso diverso, sostituisci il pacchetto invece di aggiungere una nuova versione.",
-            "swap_instead": "Sostituisci pacchetto",
-            "upload_anyway": "Carica comunque come nuova versione",
-            "same_file_title": "È già la versione attuale",
-            "same_file_body": "Questo file corrisponde alla versione attuale. Non è stata creata alcuna nuova versione.",
             "promote_confirm_title": "Partecipanti che hanno iniziato durante il caricamento",
-            "promote_confirm_body": "{count, plural, one {# partecipante ha iniziato} other {# partecipanti hanno iniziato}} mentre la nuova versione era in fase di elaborazione."
+            "promote_confirm_body": "{count, plural, one {# partecipante ha iniziato} other {# partecipanti hanno iniziato}} mentre la nuova versione era in fase di elaborazione.",
+            "no_lms_warning": "Questo pacchetto non sembra comunicare l'avanzamento a un LMS. Gli studenti possono visualizzare i contenuti, ma il completamento e i punteggi non possono essere tracciati automaticamente.",
+            "peek_checking": "Verifica del contenuto del pacchetto…",
+            "peek_match": "“{title}” · {count, plural, one {# modulo} other {# moduli}} — corrisponde al pacchetto corrente.",
+            "peek_swap_ok": "“{title}” · {count, plural, one {# modulo} other {# moduli}} — verrà allegato come nuovo pacchetto.",
+            "confirm_upgrade_anyway": "È una nuova versione di questo corso: carica comunque",
+            "confirm_swap_anyway": "Sostituisci comunque",
+            "unchanged": "Già aggiornato. Non è stata creata alcuna nuova versione.",
+            "peek_diff": "“{title}” · {count, plural, one {# modulo} other {# moduli}} — sembra un corso diverso. Se si tratta di una nuova versione di questo corso, conferma qui sotto. Altrimenti, sostituisci il pacchetto.",
+            "peek_same_course": "“{title}” · {count, plural, one {# modulo} other {# moduli}} — sembra lo stesso corso. Caricalo come nuova versione oppure conferma qui sotto per sostituirlo comunque.",
+            "peek_same_file": "Questo file è identico alla versione corrente. Non cambierà nulla.",
+            "peek_unknown": "Impossibile leggere il contenuto del pacchetto, quindi non è stato confrontato con il pacchetto corrente.",
+            "sequencing_ordered": "Questo pacchetto definisce un ordine dei moduli: ogni modulo si sblocca al completamento di quello precedente. Altre regole di sequenziamento, come i test preliminari e il rollup, vengono ignorate.",
+            "sequencing_unordered": "Questo pacchetto definisce un ordine dei moduli, ma attualmente gli studenti possono aprire i moduli in qualsiasi ordine. Imposta l'ordine dei moduli su \"In sequenza\" nelle Impostazioni per imporre tale ordine. Altre regole di sequenziamento, come i test preliminari e il rollup, vengono ignorate.",
+            "empty_title": "Nessun pacchetto caricato",
+            "empty_description": "Carica un pacchetto SCORM per iniziare a visualizzarlo e testarlo.",
+            "upload_package": "Carica pacchetto",
+            "version_history_title": "Cronologia delle versioni",
+            "version_history_count": "{count, plural, one {# versione} other {# versioni}}",
+            "version_current": "Attuale",
+            "revert_button": "Ripristina",
+            "revert_confirm_title": "Ripristinare la versione {version}?",
+            "revert_confirm_body": "D'ora in poi, i partecipanti utilizzeranno la versione {version}.",
+            "revert_confirm_body_with_count": "{count, plural, one {# partecipante sta} other {# partecipanti stanno}} attualmente utilizzando questo pacchetto. Ripristinando la versione {version}, questa diventerà il pacchetto attivo per i partecipanti.",
+            "revert_confirm_button": "Ripristina questa versione",
+            "stat_pass_mark": "Voto minimo per il superamento",
+            "none": "Nessuno",
+            "modules": "Moduli",
+            "manage": "Gestisci",
+            "swap_description": "Sostituisci con un corso diverso",
+            "remove_description": "Mantiene i risultati, si disconnette da questa attività",
+            "warnings_summary": "{count, plural, one {# cose da sapere su questo pacchetto} other {# cose da sapere su questo pacchetto}}",
+            "module_order_sequential": "Da seguire nell'ordine del pacchetto",
+            "module_order_free": "Apri in qualsiasi ordine",
+            "table_num": "#",
+            "table_title": "Titolo",
+            "table_type": "Tipo",
+            "table_grading": "Valutazione",
+            "graded_pass": "Superato con {score}%",
+            "ungraded": "Non valutato"
           },
           "gating": {
             "title": "La creazione di pacchetti SCORM è in pausa.",
@@ -3818,9 +3856,6 @@
             "review_body": "Nessun dato di questa sessione è stato salvato.",
             "new_attempt": "Avvia un nuovo tentativo",
             "retakes_off": "Per questo pacchetto è disabilitato il riavvio, quindi non è possibile avviare un nuovo tentativo.",
-            "window_title": "Questo pacchetto si aprirà in una nuova finestra.",
-            "window_body": "I tuoi progressi verranno salvati automaticamente finché la nuova finestra rimarrà aperta.",
-            "open_window": "Apri il pacchetto",
             "no_connection_title": "Impossibile connettersi al pacchetto",
             "no_connection_body": "Il pacchetto non ha mai richiamato il lettore del corso. Riesportalo utilizzando un'opzione di pubblicazione LMS o SCORM, oppure ricarica la pagina per riprovare.",
             "fullscreen": "Schermo intero",
@@ -3834,7 +3869,15 @@
             "archived_title": "Hai utilizzato una versione precedente di questo pacchetto",
             "archived_body": "I tuoi risultati rimangono invariati.",
             "restarted_title": "Questo contenuto è stato aggiornato",
-            "restarted_body": "Ricominceranno dall'inizio perché il pacchetto è cambiato."
+            "restarted_body": "Ricominceranno dall'inizio perché il pacchetto è cambiato.",
+            "prev_module": "Modulo precedente",
+            "module_position": "Modulo {current} di {total}",
+            "exit_fullscreen": "Esci dalla modalità a schermo intero",
+            "status_preview": "Anteprima",
+            "preview_title": "Modalità anteprima",
+            "preview_body": "Stai testando questa attività come istruttore. Nessuna delle tue azioni verrà registrata.",
+            "module_locked": "Completa prima i moduli precedenti",
+            "time_limit": "Suggerito: {time}"
           },
           "results": {
             "sheet": {
@@ -3865,7 +3908,9 @@
                 "error": "Errore",
                 "not_initialized": "Connessione non riuscita"
               },
-              "interaction_correct": "Corretto: {answer}"
+              "interaction_correct": "Corretto: {answer}",
+              "session_device": "Dispositivo utilizzato per la sessione",
+              "technical_details": "Dettagli tecnici"
             },
             "export": {
               "title": "Risultati SCORM"
@@ -3892,12 +3937,20 @@
             },
             "summary": {
               "enrolled": "Iscritto",
-              "started": "Avviato",
               "completed": "Completato",
-              "passed": "Superato",
-              "average_score": "Punteggio medio"
+              "average_score": "Punteggio medio",
+              "in_progress": "In corso",
+              "not_started": "Non iniziato"
             }
-          }
+          },
+          "header_unlocked": "Sbloccato",
+          "menu_delete": "Elimina attività",
+          "delete_confirm_body_with_count": "{count, plural, one {# studente ha} other {# studenti hanno}} completato parzialmente questo elemento. Eliminandolo, i loro progressi verranno rimossi.",
+          "menu_actions": "Altre azioni",
+          "single_activity_empty_title": "Nessun pacchetto aggiunto",
+          "single_activity_empty_description": "Carica un pacchetto SCORM per renderlo disponibile agli studenti di questo corso.",
+          "single_activity_empty_student_desc": "Questo corso non contiene ancora alcun contenuto.",
+          "add_package_button": "Aggiungi pacchetto"
         },
         "add_content_created_activity": "Il pacchetto SCORM è stato creato correttamente!",
         "add_content_create_another_activity": "Crea un altro pacchetto"

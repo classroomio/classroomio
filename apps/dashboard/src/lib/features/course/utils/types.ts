@@ -330,15 +330,17 @@ export type GetPackageSuccess = Extract<InferResponseType<GetPackageRequest>, { 
 export type PackageDetails = GetPackageSuccess['data'];
 
 export interface PackageFingerprint {
+  contentSha256: string | null;
   zipBytes: number | null;
+  manifestIdentifier: string | null;
   title: string | null;
-  scoIds: string[];
+  itemIds: string[];
 }
 
-export type DeletePackageRequest = (typeof classroomio.activity.packages)[':assetId']['$delete'];
-export type DeletePackageResponse = InferResponseType<DeletePackageRequest>;
-export type DeletePackageSuccess = Extract<InferResponseType<DeletePackageRequest>, { success: true }>;
-export type DeletePackageData = DeletePackageSuccess['data'];
+export interface PackageJobResult {
+  unchanged?: boolean;
+  versionId?: string;
+}
 
 export type CreateCoursesFromPackagesRequest = (typeof classroomio.activity.courses)['$post'];
 export type CreateCoursesFromPackagesResponse = InferResponseType<CreateCoursesFromPackagesRequest>;

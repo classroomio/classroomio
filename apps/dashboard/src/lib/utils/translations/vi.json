@@ -2758,7 +2758,8 @@
           "activity_scorm_gated": "Gói trả phí",
           "activity_scorm_upgrade_notice": "Gói SCORM được bao gồm trong mọi gói trả phí. Nâng cấp để thêm gói vào khóa học của bạn.",
           "activity_scorm_upgrade_cta": "Xem các gói",
-          "activity_scorm_license_notice": "Gói SCORM cần giấy phép doanh nghiệp trên máy chủ này. Người học vẫn có quyền truy cập vào các gói hiện có."
+          "activity_scorm_license_notice": "Gói SCORM cần giấy phép doanh nghiệp trên máy chủ này. Người học vẫn có quyền truy cập vào các gói hiện có.",
+          "activity_scorm_default_title": "Gói SCORM"
         },
         "add_lesson": {
           "button_title": "Thêm",
@@ -2918,15 +2919,20 @@
             "min_score": "Điểm tối thiểu (%)",
             "retakes": "Cho phép làm lại",
             "retakes_helper": "Các gói đã hoàn thành sẽ mở lại với nút Bắt đầu một lần thử mới. Điểm cao nhất sẽ được tính.",
-            "launch_mode": "Chế độ khởi chạy",
-            "launch_embedded": "Trong khóa học",
-            "launch_window": "Trong cửa sổ mới",
-            "save": "Lưu cài đặt"
+            "module_order": "Thứ tự mô-đun",
+            "order_free": "Bất kỳ thứ tự nào",
+            "order_sequential": "Theo trình tự",
+            "module_order_helper": "Theo trình tự sẽ khóa từng mô-đun cho đến khi mô-đun trước đó được hoàn thành. Các gói không có quy tắc thứ tự sẽ hoạt động giống nhau trong cả hai trường hợp.",
+            "custom_threshold_hint": "Gói học này không có điểm đậu. Người học hoàn thành khóa học bằng cách hoàn thành tất cả các mô-đun và đạt điểm trung bình ít nhất {score}%.",
+            "completion_modules": "Phạm vi hoàn thành",
+            "completion_modules_all": "Tất cả các mô-đun",
+            "completion_modules_graded_only": "Chỉ các mô-đun có chấm điểm",
+            "completion_modules_helper": "Tùy chọn \"Chỉ các mô-đun có chấm điểm\" cho phép người học bỏ qua các bài khảo sát và bảng thuật ngữ không bắt buộc. Chỉ những mô-đun có yêu cầu điểm đạt hoặc điểm số mới quyết định việc hoàn thành khóa học.",
+            "completion_modules_single_note": "Gói này chỉ có một mô-đun duy nhất, do đó phạm vi hoàn thành không áp dụng."
           },
           "instructions": {
             "label": "Hướng dẫn dành cho người học",
-            "placeholder": "Người học cần biết gì trước khi mở gói tài liệu?",
-            "save": "Lưu hướng dẫn"
+            "placeholder": "Người học cần biết gì trước khi mở gói tài liệu?"
           },
           "package": {
             "drop_label": "Kéo tệp .zip SCORM của bạn vào đây",
@@ -2944,7 +2950,6 @@
             "remove_confirm_body": "Người học sẽ mất quyền truy cập cho đến khi bạn đính kèm một gói khác. Tệp vẫn còn trong Trình quản lý phương tiện.",
             "modules_title": "Gói này có {count, plural, one {# mô-đun} other {# mô-đun}}.",
             "modules_hint": "Người học chọn mô-đun từ menu phía trên gói. Quy tắc hoàn thành áp dụng cho mỗi mô-đun.",
-            "sequencing_warning": "Các quy tắc sắp xếp trong gói này bị bỏ qua. Thay vào đó, cài đặt tiến trình khóa học của bạn sẽ được áp dụng.",
             "case_warning": "Một số tên tệp chỉ khác nhau về chữ hoa chữ thường.",
             "rebased_warning": "Tệp kê khai được tìm thấy bên trong một thư mục cấp cao nhất duy nhất.",
             "version": "Phiên bản {version}",
@@ -2993,14 +2998,47 @@
             "swap_confirm_title": "Thay thế bằng một gói nội dung khác?",
             "swap_confirm_body": "Người học sẽ bắt đầu gói nội dung mới từ đầu. Gói nội dung hiện tại vẫn được lưu trong Trình quản lý phương tiện (Media Manager).",
             "swap_confirm_body_with_count": "{count, plural, one {# người học đang} other {# người học đang}} học dở dang. Họ sẽ bắt đầu lại gói nội dung mới từ đầu. Trạng thái hoàn thành của những người học đã hoàn tất gói nội dung này sẽ được giữ nguyên.",
-            "mismatch_title": "Có vẻ đây là một khóa học khác",
-            "mismatch_body": "Các mô-đun của gói này không khớp với gói nội dung hiện tại. Nếu đây là một khóa học khác, hãy thay thế gói nội dung thay vì thêm phiên bản mới.",
-            "swap_instead": "Thay thế gói nội dung",
-            "upload_anyway": "Vẫn tải lên dưới dạng phiên bản mới",
-            "same_file_title": "Đã là phiên bản hiện tại",
-            "same_file_body": "Tệp này khớp với phiên bản hiện tại. Không có phiên bản mới nào được tạo.",
             "promote_confirm_title": "Người học đã bắt đầu trong quá trình tải lên",
-            "promote_confirm_body": "{count, plural, one {# người học đã bắt đầu} other {# người học đã bắt đầu}} trong khi phiên bản mới đang được xử lý."
+            "promote_confirm_body": "{count, plural, one {# người học đã bắt đầu} other {# người học đã bắt đầu}} trong khi phiên bản mới đang được xử lý.",
+            "no_lms_warning": "Gói này dường như không báo cáo tiến độ về hệ thống LMS. Người học có thể xem nội dung, nhưng trạng thái hoàn thành và điểm số không thể được theo dõi tự động.",
+            "peek_checking": "Đang kiểm tra nội dung gói…",
+            "peek_match": "“{title}” · {count, plural, one {# mô-đun} other {# mô-đun}} — khớp với gói hiện tại.",
+            "peek_swap_ok": "“{title}” · {count, plural, one {# mô-đun} other {# mô-đun}} — sẽ được đính kèm dưới dạng gói mới.",
+            "confirm_upgrade_anyway": "Đây là phiên bản mới của khóa học này — vẫn tải lên",
+            "confirm_swap_anyway": "Vẫn thay thế",
+            "unchanged": "Đã là phiên bản mới nhất. Không có phiên bản mới nào được tạo.",
+            "peek_diff": "“{title}” · {count, plural, one {# mô-đun} other {# mô-đun}} — đây có vẻ là một khóa học khác. Nếu đó là phiên bản mới của khóa học này, hãy xác nhận bên dưới. Nếu không, hãy đổi gói.",
+            "peek_same_course": "“{title}” · {count, plural, one {# mô-đun} other {# mô-đun}} — đây có vẻ là cùng một khóa học. Hãy tải lên dưới dạng phiên bản mới, hoặc xác nhận bên dưới để đổi.",
+            "peek_same_file": "Tệp này giống hệt với phiên bản hiện tại. Không có gì thay đổi.",
+            "peek_unknown": "Không thể đọc nội dung gói hàng, vì vậy nó không được so sánh với gói hàng hiện tại.",
+            "sequencing_ordered": "Gói này xác định thứ tự các mô-đun: mỗi mô-đun sẽ được mở khóa khi mô-đun trước đó hoàn tất. Các quy tắc trình tự khác, chẳng hạn như bài kiểm tra đầu vào và quy tắc tổng hợp kết quả (rollup), sẽ bị bỏ qua.",
+            "sequencing_unordered": "Gói này xác định thứ tự các mô-đun, nhưng hiện tại người học có thể mở các mô-đun theo bất kỳ thứ tự nào. Hãy đặt tùy chọn Thứ tự mô-đun (Module order) thành \"Theo trình tự\" (In sequence) trong phần Cài đặt để áp dụng quy tắc này. Các quy tắc trình tự khác, chẳng hạn như bài kiểm tra đầu vào và quy tắc tổng hợp kết quả, sẽ bị bỏ qua.",
+            "empty_title": "Chưa có gói nào được tải lên",
+            "empty_description": "Tải lên gói SCORM để bắt đầu xem và kiểm tra.",
+            "upload_package": "Tải lên gói",
+            "version_history_title": "Lịch sử phiên bản",
+            "version_history_count": "{count, plural, one {# phiên bản} other {# phiên bản}}",
+            "version_current": "Hiện tại",
+            "revert_button": "Khôi phục",
+            "revert_confirm_title": "Khôi phục về Phiên bản {version}?",
+            "revert_confirm_body": "Người học sẽ bắt đầu sử dụng Phiên bản {version} kể từ bây giờ.",
+            "revert_confirm_body_with_count": "{count, plural, one {# người học đang} other {# người học đang}} sử dụng gói này. Việc khôi phục về Phiên bản {version} sẽ biến nó thành gói đang hoạt động dành cho người học.",
+            "revert_confirm_button": "Khôi phục về phiên bản này",
+            "stat_pass_mark": "Điểm đạt",
+            "none": "Không có",
+            "modules": "Các mô-đun",
+            "manage": "Quản lý",
+            "swap_description": "Thay thế bằng một khóa học khác",
+            "remove_description": "Giữ lại kết quả, tách khỏi hoạt động này",
+            "warnings_summary": "{count, plural, one {# điều cần biết về gói này} other {# điều cần biết về gói này}}",
+            "module_order_sequential": "Được học theo thứ tự gói",
+            "module_order_free": "Mở theo bất kỳ thứ tự nào",
+            "table_num": "#",
+            "table_title": "Tiêu đề",
+            "table_type": "Loại",
+            "table_grading": "Chấm điểm",
+            "graded_pass": "Đạt với {score}%",
+            "ungraded": "Chưa chấm điểm"
           },
           "gating": {
             "title": "Tính năng tạo gói SCORM đang bị tạm dừng.",
@@ -3029,9 +3067,6 @@
             "review_body": "Không có gì trong phiên này được lưu.",
             "new_attempt": "Bắt đầu một lần thử mới",
             "retakes_off": "Không thể thi lại đối với gói này, vì vậy không thể bắt đầu một lần thử mới.",
-            "window_title": "Gói này sẽ mở trong một cửa sổ mới",
-            "window_body": "Tiến trình của bạn sẽ tự động được lưu trong khi cửa sổ mới vẫn mở.",
-            "open_window": "Mở gói",
             "no_connection_title": "Gói không kết nối được",
             "no_connection_body": "Gói chưa bao giờ gọi trình phát khóa học. Hãy xuất lại gói bằng tùy chọn xuất bản LMS hoặc SCORM, hoặc tải lại để thử lại.",
             "fullscreen": "Toàn màn hình",
@@ -3045,7 +3080,15 @@
             "archived_title": "Bạn đã sử dụng một phiên bản trước đó của gói này",
             "archived_body": "Kết quả của bạn không thay đổi.",
             "restarted_title": "Nội dung này đã được cập nhật",
-            "restarted_body": "Bạn sẽ bắt đầu lại từ đầu vì gói nội dung đã thay đổi."
+            "restarted_body": "Bạn sẽ bắt đầu lại từ đầu vì gói nội dung đã thay đổi.",
+            "prev_module": "Mô-đun trước",
+            "module_position": "Mô-đun {current} trên {total}",
+            "exit_fullscreen": "Thoát chế độ toàn màn hình",
+            "status_preview": "Xem trước",
+            "preview_title": "Chế độ xem trước",
+            "preview_body": "Bạn đang thử nghiệm hoạt động này với tư cách là người hướng dẫn. Không có gì bạn làm ở đây được ghi lại.",
+            "module_locked": "Hoàn thành các mô-đun trước trước",
+            "time_limit": "Gợi ý: {time}"
           },
           "results": {
             "sheet": {
@@ -3076,7 +3119,9 @@
                 "error": "Lỗi",
                 "not_initialized": "Không kết nối được"
               },
-              "interaction_correct": "Đáp án đúng: {answer}"
+              "interaction_correct": "Đáp án đúng: {answer}",
+              "session_device": "Thiết bị phiên học",
+              "technical_details": "Chi tiết kỹ thuật"
             },
             "export": {
               "title": "Kết quả SCORM"
@@ -3103,12 +3148,20 @@
             },
             "summary": {
               "enrolled": "Đã đăng ký",
-              "started": "Đã bắt đầu",
               "completed": "Đã hoàn thành",
-              "passed": "Đã đạt",
-              "average_score": "Điểm trung bình"
+              "average_score": "Điểm trung bình",
+              "in_progress": "Đang tiến hành",
+              "not_started": "Chưa bắt đầu"
             }
-          }
+          },
+          "header_unlocked": "Đã mở khóa",
+          "menu_delete": "Xóa hoạt động",
+          "delete_confirm_body_with_count": "{count, plural, other {# người học}} đang hoàn thành một phần của mục này. Việc xóa nó sẽ xóa tiến độ của họ.",
+          "menu_actions": "Các hành động khác",
+          "single_activity_empty_title": "Chưa có gói nào được thêm",
+          "single_activity_empty_description": "Tải lên gói SCORM để người học có thể sử dụng khóa học này.",
+          "single_activity_empty_student_desc": "Khóa học này chưa có nội dung nào.",
+          "add_package_button": "Thêm gói"
         },
         "add_content_created_activity": "Gói SCORM đã được tạo thành công!",
         "add_content_create_another_activity": "Tạo gói khác"
@@ -4022,14 +4075,12 @@
       "create_course_title_many": "Tạo {count, plural, one {# khóa học} other {# khóa học}} từ các gói",
       "create_course_description": "Chúng tôi sẽ tạo một khóa học SCORM nháp cho mỗi gói. Các mô-đun của gói sẽ được nhóm lại trong một menu nằm phía trên gói đó.",
       "course_nav_preview": "Điều hướng khóa học SCORM: Gói",
-      "course_type_self_paced": "Tự học theo tốc độ riêng",
-      "course_type_self_paced_description": "Học viên học gói nội dung theo tốc độ riêng của mình",
-      "course_type_compliance": "Tuân thủ quy định",
-      "course_type_compliance_description": "Đào tạo định kỳ bao gồm thi lại, nhắc nhở và theo dõi gia hạn",
       "course_title_label": "Tiêu đề khóa học",
       "course_title_label_for": "Tên khóa học cho {title}",
       "create_course_confirm_single": "Tạo khóa học",
-      "create_course_confirm_many": "Tạo {count, plural, one {# khóa học} other {# khóa học}}"
+      "create_course_confirm_many": "Tạo {count, plural, one {# khóa học} other {# khóa học}}",
+      "track_compliance_label": "Theo dõi như đào tạo tuân thủ",
+      "track_compliance_hint": "Thêm ngày đến hạn, gia hạn và nhắc nhở"
     }
   },
   "settings": {
@@ -5083,7 +5134,9 @@
     "scorm_gated": "Gói trả phí",
     "scorm_upgrade_notice": "Các khóa học SCORM được bao gồm trong mọi gói trả phí. Nâng cấp để tạo một khóa học.",
     "scorm_upgrade_cta": "Xem các gói dịch vụ",
-    "scorm_license_notice": "Các khóa học SCORM cần giấy phép doanh nghiệp trên máy chủ này."
+    "scorm_license_notice": "Các khóa học SCORM cần giấy phép doanh nghiệp trên máy chủ này.",
+    "track_compliance_label": "Theo dõi như đào tạo tuân thủ",
+    "track_compliance_hint": "Thêm ngày đến hạn, gia hạn và nhắc nhở"
   },
   "delete_modal": {
     "label": "Xóa",

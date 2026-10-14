@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Option A · Package card · SCORM package tab</title>
+<link rel="stylesheet" href="base.css" />
+<style>
+  .pkg { overflow: hidden; }
+  .pkg-top { display: flex; gap: 16px; align-items: flex-start; padding: 20px; }
+  .pkg-top h2 { margin: 0 0 8px; font-size: 18px; font-weight: 600; letter-spacing: -0.01em; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pkg-actions { margin-left: auto; display: flex; gap: 8px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border); background: var(--muted); }
+  .stat { padding: 14px 20px; border-right: 1px solid var(--border); }
+  .stat:last-child { border-right: 0; }
+  .stat .v { font-size: 17px; font-weight: 600; margin-top: 2px; }
+  .stat .v small { font-size: 12px; font-weight: 400; color: var(--muted-foreground); }
+  .section { margin-top: 24px; }
+  .section-h { display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px; }
+  .section-h h3 { margin: 0; font-size: 14px; font-weight: 600; }
+  .mods { list-style: none; margin: 0; padding: 0; overflow: hidden; }
+  .mod { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background .15s; }
+  .mod:last-child { border-bottom: 0; }
+  .mod:hover { background: var(--muted); }
+  .mod .n { width: 24px; height: 24px; border-radius: 7px; background: var(--primary-soft); color: var(--primary); display: grid; place-items: center; font-size: 12px; font-weight: 600; }
+  .mod .t { flex: 1; font-weight: 500; }
+  .warns { display: grid; gap: 8px; }
+  .warn { display: flex; gap: 10px; padding: 10px 14px; border-radius: var(--radius); background: var(--warning-soft); font-size: 13px; }
+  .warn svg { color: var(--warning); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="proto-bar">
+  <b>Option A · Package card</b><span class="muted">Closest to today — one clear card, stat strip, quiet actions in a menu</span>
+  <span class="sp"></span><a href="index.html">← All options</a><button class="btn btn-sm" data-theme>Toggle dark</button>
+</div>
+
+<div class="page">
+  <div class="page-title"><h1>Protecting patient information</h1></div>
+  <div class="utabs">
+    <div class="utab on">Package</div><div class="utab">Instructions</div>
+    <div class="utab">Results <span class="chip">41</span></div><div class="utab">Settings</div>
+  </div>
+
+  <div class="panel">
+    <div class="notice" style="margin-bottom:16px">
+      <span class="pulse"></span>
+      <span class="grow"><b>12 learners</b> are still on version 2. New attempts already use version 3.</span>
+      <button class="link">Move everyone to version 3</button>
+    </div>
+
+    <div class="card pkg">
+      <div class="pkg-top">
+        <span class="tile"><svg viewBox="0 0 24 24"><path d="m7.5 4.27 9 5.15M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/></svg></span>
+        <div>
+          <h2>hipaa-privacy-rule-storyline</h2>
+          <div class="badges">
+            <span class="badge sec">SCORM 2004 · 4th edition</span>
+            <span class="badge ok"><span class="dot"></span>Ready</span>
+            <span class="badge pri">Version 3 · current</span>
+          </div>
+        </div>
+        <div class="pkg-actions">
+          <button class="btn btn-primary"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Upload new version</button>
+          <div class="menu">
+            <button class="btn" data-menu aria-label="More"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+            <div class="menu-pop">
+              <button class="menu-item"><svg viewBox="0 0 24 24"><path d="m16 3 4 4-4 4M20 7H4M8 21l-4-4 4-4M4 17h16"/></svg><span>Swap package<small>Replace with a different course</small></span></button>
+              <div class="menu-sep"></div>
+              <button class="menu-item danger"><svg viewBox="0 0 24 24"><path d="m18.84 12.25 1.72-1.71a5 5 0 0 0-7.07-7.07l-1.72 1.71M5.17 11.75l-1.71 1.71a5 5 0 0 0 7.07 7.07l1.71-1.71M2 2l20 20"/></svg><span>Remove package<small>Keeps results, detaches from this activity</small></span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="label">Pass mark</div><div class="v tnum">80<small>%</small></div></div>
+        <div class="stat"><div class="label">Modules</div><div class="v tnum">3</div></div>
+        <div class="stat"><div class="label">Files</div><div class="v tnum">312</div></div>
+        <div class="stat"><div class="label">Size</div><div class="v tnum">48.2 <small>MB</small></div></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="warns">
+        <div class="warn"><svg viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3ZM12 9v4M12 17h.01"/></svg><span>Two file names differ only in letter case (<code class="mono">Images/Logo.PNG</code>). We matched them automatically.</span></div>
+        <div class="warn"><svg viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3ZM12 9v4M12 17h.01"/></svg><span>This package defines its own sequencing. Modules are taken in the order the package sets.</span></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-h"><h3>Modules</h3><span class="label">Learners can open these from the package menu</span></div>
+      <ul class="card mods">
+        <li class="mod"><span class="n">1</span><span class="t">Why privacy matters</span><span class="label">SCO</span></li>
+        <li class="mod"><span class="n">2</span><span class="t">What counts as protected information</span><span class="label">SCO</span></li>
+        <li class="mod"><span class="n">3</span><span class="t">Knowledge check</span><span class="badge pri">Graded</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script src="base.js"></script>
+</body>
+</html>

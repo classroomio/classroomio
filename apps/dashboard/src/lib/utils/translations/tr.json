@@ -234,7 +234,9 @@
     "scorm_gated": "Ücretli planlar",
     "scorm_upgrade_notice": "SCORM kursları her ücretli plana dahildir. Bir tane oluşturmak için yükseltme yapın.",
     "scorm_upgrade_cta": "Planları görüntüle",
-    "scorm_license_notice": "SCORM kursları için bu sunucuda kurumsal lisans gereklidir."
+    "scorm_license_notice": "SCORM kursları için bu sunucuda kurumsal lisans gereklidir.",
+    "track_compliance_label": "Uyumluluk eğitimi olarak izle",
+    "track_compliance_hint": "Son tarihleri, yenilemeleri ve hatırlatıcıları ekle"
   },
   "public_course": {
     "header": {
@@ -1584,14 +1586,12 @@
       "create_course_title_many": "Paketlerden {count, plural, one {# kurs} other {# kurs}} oluştur",
       "create_course_description": "Her bir paketle bir taslak SCORM kursu oluşturacağız. Paketin modülleri, paketin üzerindeki bir menüde bir arada yer alır.",
       "course_nav_preview": "SCORM kursu gezintisi: Paket",
-      "course_type_self_paced": "Kendi hızında ilerleme",
-      "course_type_self_paced_description": "Öğrenciler paketi kendi hızlarında tamamlarlar",
-      "course_type_compliance": "Uyum",
-      "course_type_compliance_description": "Tekrarlar, hatırlatıcılar ve yenileme takibi içeren periyodik eğitim",
       "course_title_label": "Kurs başlığı",
       "course_title_label_for": "{title} için kurs başlığı",
       "create_course_confirm_single": "Kurs oluştur",
-      "create_course_confirm_many": "{count, plural, one {# kurs} other {# kurs}} oluştur"
+      "create_course_confirm_many": "{count, plural, one {# kurs} other {# kurs}} oluştur",
+      "track_compliance_label": "Uyumluluk eğitimi olarak izle",
+      "track_compliance_hint": "Son tarihleri, yenilemeleri ve hatırlatıcıları ekle"
     }
   },
   "tags_admin": {
@@ -2741,7 +2741,8 @@
           "activity_scorm_gated": "Ücretli planlar",
           "activity_scorm_upgrade_notice": "SCORM paketleri her ücretli plana dahildir. Kurslarınıza paket eklemek için yükseltme yapın.",
           "activity_scorm_upgrade_cta": "Planları görüntüle",
-          "activity_scorm_license_notice": "Bu sunucuda SCORM paketleri için kurumsal lisans gereklidir. Öğrenciler mevcut paketlere erişimlerini korurlar."
+          "activity_scorm_license_notice": "Bu sunucuda SCORM paketleri için kurumsal lisans gereklidir. Öğrenciler mevcut paketlere erişimlerini korurlar.",
+          "activity_scorm_default_title": "SCORM paketi"
         },
         "add_content_section_title_placeholder": "ör., Modül 1: Giriş",
         "add_content_lesson_title_placeholder": "örn., Değişkenlere Başlarken",
@@ -3717,15 +3718,20 @@
             "min_score": "Minimum puan (%)",
             "retakes": "Tekrar denemeye izin ver",
             "retakes_helper": "Tamamlanan paketler \"Yeni bir deneme başlat\" düğmesiyle yeniden açılır. En iyi puan geçerlidir.",
-            "launch_mode": "Başlatma modu",
-            "launch_embedded": "Kurs içinde",
-            "launch_window": "Yeni bir pencerede",
-            "save": "Ayarları kaydet"
+            "module_order": "Modül sırası",
+            "order_free": "Herhangi bir sıra",
+            "order_sequential": "Sıralı",
+            "module_order_helper": "Sıralı seçeneği, bir önceki modül tamamlanana kadar her modülü kilitler. Sıralama kuralı olmayan paketler her iki şekilde de aynı şekilde oynanır.",
+            "custom_threshold_hint": "Bu pakette geçme notu bulunmamaktadır. Öğrenciler her modülü tamamlayarak ve ortalama en az {score}% puan alarak paketi tamamlarlar.",
+            "completion_modules": "Tamamlama kapsamı",
+            "completion_modules_all": "Tüm modüller",
+            "completion_modules_graded_only": "Yalnızca notlandırılan modüller",
+            "completion_modules_helper": "\"Yalnızca notlandırılan modüller\" seçeneği, öğrencilerin isteğe bağlı anketleri ve terim sözlüklerini atlamasına olanak tanır. Tamamlama koşulunu yalnızca geçer notu veya raporlanan bir puanı olan modüller belirler.",
+            "completion_modules_single_note": "Bu paket tek bir modülden oluşmaktadır; bu nedenle tamamlama kapsamı geçerli değildir."
           },
           "instructions": {
             "label": "Öğrenciler için talimatlar",
-            "placeholder": "Öğrenciler paketi açmadan önce neleri bilmelidir?",
-            "save": "Kaydetme talimatları"
+            "placeholder": "Öğrenciler paketi açmadan önce neleri bilmelidir?"
           },
           "package": {
             "drop_label": "SCORM .zip dosyanızı buraya bırakın",
@@ -3743,7 +3749,6 @@
             "remove_confirm_body": "Başka bir paket ekleyene kadar öğrenciler erişimlerini kaybeder. Dosya Medya Yöneticisinde kalır.",
             "modules_title": "Bu pakette {count, plural, one {# modül} other {# modül}} bulunmaktadır.",
             "modules_hint": "Öğrenciler, paketin üstündeki bir menüden modülleri seçerler. Tamamlama kuralı her modül için geçerlidir.",
-            "sequencing_warning": "Bu paketteki sıralama kuralları göz ardı edilir. Bunun yerine kurs ilerleme ayarlarınız geçerlidir.",
             "case_warning": "Bazı dosya adları yalnızca büyük/küçük harf bakımından farklılık gösterir.",
             "rebased_warning": "Manifest dosyası tek bir üst düzey klasörün içinde bulundu.",
             "version": "Sürüm {version}",
@@ -3792,14 +3797,47 @@
             "swap_confirm_title": "Farklı bir paketle değiştirilsin mi?",
             "swap_confirm_body": "Öğrenenler yeni pakete baştan başlayacak. Mevcut paket Medya Yöneticisi'nde kalmaya devam eder.",
             "swap_confirm_body_with_count": "{count, plural, one {# öğrenen} other {# öğrenen}} paketi kısmen tamamladı. Bu kişiler yeni pakete baştan başlayacak. Paketi tamamlamış olan öğrenenlerin durumu \"tamamlandı\" olarak kalır.",
-            "mismatch_title": "Bu farklı bir kursa benziyor",
-            "mismatch_body": "Modülleri mevcut paketle eşleşmiyor. Eğer farklı bir kurs ise, yeni bir sürüm eklemek yerine paketi değiştirin.",
-            "swap_instead": "Bunun yerine paketi değiştir",
-            "upload_anyway": "Yine de yeni sürüm olarak yükle",
-            "same_file_title": "Zaten mevcut sürüm",
-            "same_file_body": "Bu dosya mevcut sürümle eşleşiyor. Yeni bir sürüm oluşturulmadı.",
             "promote_confirm_title": "Yükleme sırasında başlayan öğrenenler oldu",
-            "promote_confirm_body": "Yeni sürüm işlenirken {count, plural, one {# öğrenen} other {# öğrenen}} başladı."
+            "promote_confirm_body": "Yeni sürüm işlenirken {count, plural, one {# öğrenen} other {# öğrenen}} başladı.",
+            "no_lms_warning": "Bu paket, bir LMS'e ilerleme durumu bildiriyor gibi görünmüyor. Öğrenenler içeriği görüntüleyebilir; ancak tamamlama durumu ve puanlar otomatik olarak takip edilemez.",
+            "peek_checking": "Paket içeriği kontrol ediliyor…",
+            "peek_match": "“{title}” · {count, plural, one {# modül} other {# modül}} — mevcut paketle eşleşiyor.",
+            "peek_swap_ok": "“{title}” · {count, plural, one {# modül} other {# modül}} — yeni bir paket olarak eklenecek.",
+            "confirm_upgrade_anyway": "Bu kursun yeni bir sürümü — yine de yükle",
+            "confirm_swap_anyway": "Yine de değiştir",
+            "unchanged": "Zaten güncel. Yeni bir sürüm oluşturulmadı.",
+            "peek_diff": "“{title}” · {count, plural, one {# modül} other {# modül}} — bu farklı bir kurs gibi görünüyor. Bu kursun yeni bir sürümü ise, aşağıda onaylayın. Aksi takdirde, paketi değiştirin.",
+            "peek_same_course": "“{title}” · {count, plural, one {# modül} other {# modül}} — bu aynı kurs gibi görünüyor. Bunun yerine yeni bir sürüm olarak yükleyin veya yine de değiştirmek için aşağıda onaylayın.",
+            "peek_same_file": "Bu dosya mevcut sürümle aynıdır. Hiçbir şey değişmeyecek.",
+            "peek_unknown": "Paket içeriği okunamadığı için mevcut paketle karşılaştırılmadı.",
+            "sequencing_ordered": "Bu paket bir modül sırası belirler: her bir modül, bir önceki tamamlandığında açılır. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
+            "sequencing_unordered": "Bu paket bir modül sırası belirler, ancak öğrenciler şu anda modülleri istedikleri sırayla açabilirler. Bu sıralamayı zorunlu kılmak için Ayarlar bölümünde Modül sırasını “Sırayla” (In sequence) olarak ayarlayın. Ön testler ve toplu sonuç hesaplama (rollup) gibi diğer sıralama kuralları dikkate alınmaz.",
+            "empty_title": "Paket yüklenmedi",
+            "empty_description": "Görüntülemeye ve test etmeye başlamak için bir SCORM paketi yükleyin.",
+            "upload_package": "Paket yükle",
+            "version_history_title": "Sürüm geçmişi",
+            "version_history_count": "{count, plural, one {# sürüm} other {# sürüm}}",
+            "version_current": "Mevcut",
+            "revert_button": "Geri yükle",
+            "revert_confirm_title": "{version} sürümüne geri dönülsün mü?",
+            "revert_confirm_body": "Öğrenenler bundan böyle {version} sürümünü almaya başlayacaklar.",
+            "revert_confirm_body_with_count": "Şu anda {count, plural, one {# öğrenen} other {# öğrenen}} bu paketi alıyor. {version} sürümüne geri dönmek, bu sürümü öğrenenler için etkin paket haline getirecektir.",
+            "revert_confirm_button": "Bu sürüme geri dön",
+            "stat_pass_mark": "Geçme notu",
+            "none": "Yok",
+            "modules": "Modüller",
+            "manage": "Yönet",
+            "swap_description": "Farklı bir kursla değiştir",
+            "remove_description": "Sonuçları saklar, bu etkinlikten ayrılır",
+            "warnings_summary": "{count, plural, one {# bu paket hakkında bilmeniz gerekenler} other {# bu paket hakkında bilmeniz gerekenler}}",
+            "module_order_sequential": "Paket sırasına göre alınır",
+            "module_order_free": "İstediğiniz sırayla açın",
+            "table_num": "#",
+            "table_title": "Başlık",
+            "table_type": "Tür",
+            "table_grading": "Notlandırma",
+            "graded_pass": "Geçme notu {score}%",
+            "ungraded": "Notlandırılmadı"
           },
           "gating": {
             "title": "SCORM oluşturma işlemi duraklatıldı.",
@@ -3828,9 +3866,6 @@
             "review_body": "Bu oturumda hiçbir şey kaydedilmedi.",
             "new_attempt": "Yeni bir deneme başlat",
             "retakes_off": "Bu paket için tekrar denemeler kapalı, bu nedenle yeni bir deneme başlatılamaz.",
-            "window_title": "Bu paket yeni bir pencerede açılır",
-            "window_body": "Yeni pencere açık kaldığı sürece ilerlemeniz otomatik olarak kaydedilir.",
-            "open_window": "Paketi aç",
             "no_connection_title": "Paket bağlanamadı",
             "no_connection_body": "Paket, ders oynatıcısını hiç çağırmadı. Bir LMS veya SCORM yayınlama seçeneğiyle yeniden dışa aktarın veya tekrar denemek için yeniden yükleyin.",
             "fullscreen": "Tam ekran",
@@ -3844,7 +3879,15 @@
             "archived_title": "Bu paketin daha önceki bir sürümünü aldınız",
             "archived_body": "Sonuçlarınız değişmedi.",
             "restarted_title": "Bu içerik güncellendi",
-            "restarted_body": "Paket değiştiği için baştan başlıyorsunuz."
+            "restarted_body": "Paket değiştiği için baştan başlıyorsunuz.",
+            "prev_module": "Önceki modül",
+            "module_position": "{total} modülden {current}. modül",
+            "exit_fullscreen": "Tam ekrandan çık",
+            "status_preview": "Önizleme",
+            "preview_title": "Önizleme modu",
+            "preview_body": "Bu etkinliği eğitmen olarak test ediyorsunuz. Burada yaptığınız hiçbir şey kaydedilmez.",
+            "module_locked": "Önceki modülleri önce tamamlayın",
+            "time_limit": "Önerilen: {time}"
           },
           "results": {
             "sheet": {
@@ -3875,7 +3918,9 @@
                 "error": "Hata",
                 "not_initialized": "Bağlanamadı"
               },
-              "interaction_correct": "Doğru: {answer}"
+              "interaction_correct": "Doğru: {answer}",
+              "session_device": "Oturum cihazı",
+              "technical_details": "Teknik detaylar"
             },
             "export": {
               "title": "SCORM sonuçları"
@@ -3902,12 +3947,20 @@
             },
             "summary": {
               "enrolled": "Kaydolundu",
-              "started": "Başlandı",
               "completed": "Tamamlandı",
-              "passed": "Geçildi",
-              "average_score": "Ortalama puan"
+              "average_score": "Ortalama puan",
+              "in_progress": "Devam ediyor",
+              "not_started": "Başlamadı"
             }
-          }
+          },
+          "header_unlocked": "Kilidi Açıldı",
+          "menu_delete": "Etkinliği Sil",
+          "delete_confirm_body_with_count": "{count, plural, one {# öğrenci} other {# öğrenci}} bu öğenin ortasında. Silmek, ilerlemelerini kaldırır.",
+          "menu_actions": "Diğer eylemler",
+          "single_activity_empty_title": "Henüz paket eklenmedi",
+          "single_activity_empty_description": "Bu kurstaki öğrencilerin kullanımına sunmak için bir SCORM paketi yükleyin.",
+          "single_activity_empty_student_desc": "Bu kursun henüz içeriği yok.",
+          "add_package_button": "Paket ekle"
         },
         "add_content_created_activity": "SCORM paketi başarıyla oluşturuldu!",
         "add_content_create_another_activity": "Başka bir paket oluştur"

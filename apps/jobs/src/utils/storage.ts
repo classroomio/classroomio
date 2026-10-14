@@ -1,4 +1,10 @@
-import { GetObjectCommand, HeadObjectCommand, NotFound, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  NotFound,
+  PutObjectCommand
+} from '@aws-sdk/client-s3';
 import { Readable } from 'node:stream';
 import { createWriteStream } from 'node:fs';
 import { mkdir, readFile, unlink } from 'node:fs/promises';
@@ -108,6 +114,10 @@ export async function uploadStreamToBucket(
       CacheControl: cacheControl
     })
   );
+}
+
+export async function deleteObjectFromBucket(bucket: string, key: string): Promise<void> {
+  await getS3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
 }
 
 export async function safeUnlink(filePath: string | undefined | null): Promise<void> {

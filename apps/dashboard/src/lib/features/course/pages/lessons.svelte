@@ -18,6 +18,11 @@
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { ContentType } from '@cio/utils/constants/content';
+  import { Button } from '@cio/ui/base/button';
+  import PackageIcon from '@lucide/svelte/icons/package';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import { RoleBasedSecurity } from '$features/ui';
+  import { openAddContentModal } from '$features/course/components/content/open-content-create';
 
   interface Props {
     courseId: string;
@@ -151,6 +156,25 @@
   {:else}
     <ContentList {reorder} />
   {/if}
+{:else if isSingleActivityCourse(courseApi.course)}
+  <Empty
+    title={$t('course.navItem.lessons.activities.single_activity_empty_title')}
+    description={$isOrgStudent
+      ? $t('course.navItem.lessons.activities.single_activity_empty_student_desc')
+      : $t('course.navItem.lessons.activities.single_activity_empty_description')}
+    icon={PackageIcon}
+    variant="page"
+    class="text-center"
+  >
+    {#if !$isOrgStudent}
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        <Button variant="secondary" onclick={() => openAddContentModal(courseId)}>
+          <PlusIcon size={16} />
+          {$t('course.navItem.lessons.activities.add_package_button')}
+        </Button>
+      </RoleBasedSecurity>
+    {/if}
+  </Empty>
 {:else}
   <Empty
     title={$t('course.navItem.lessons.body_header')}

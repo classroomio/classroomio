@@ -9,6 +9,7 @@
   import TrendingUpIcon from '@lucide/svelte/icons/trending-up';
   import GlobeIcon from '@lucide/svelte/icons/globe';
   import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+  import PackageIcon from '@lucide/svelte/icons/package';
 
   import { Button } from '@cio/ui/base/button';
   import { Progress } from '@cio/ui/base/progress';
@@ -185,15 +186,25 @@
     return `/courses/${id}${isLMS ? '/lessons?next=true' : ''}`;
   });
 
-  const typeBadge = $derived(
-    type && COURSE_TAG[type]
-      ? {
-          label: COURSE_TAG[type].label,
-          icon: COURSE_TAG[type].icon,
-          iconClass: COURSE_TAG[type].iconStyle
-        }
-      : undefined
-  );
+  const typeBadge = $derived.by(() => {
+    if (isSingleActivity && type !== 'COMPLIANCE') {
+      return {
+        label: $t('courses.course_card.scorm_course'),
+        icon: PackageIcon,
+        iconClass: 'custom ui:text-primary'
+      };
+    }
+
+    if (type && COURSE_TAG[type]) {
+      return {
+        label: COURSE_TAG[type].label,
+        icon: COURSE_TAG[type].icon,
+        iconClass: COURSE_TAG[type].iconStyle
+      };
+    }
+
+    return undefined;
+  });
 
   const visibilityBadge = $derived(
     type === 'PUBLIC'

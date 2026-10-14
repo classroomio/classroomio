@@ -1,12 +1,12 @@
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
-import { getActivityById } from '@cio/db/queries/activity';
+import { getActivityById, updateActivity } from '@cio/db/queries/activity';
 import { deleteAssetUsagesByTarget, createAssetUsage, getAssetById } from '@cio/db/queries/assets';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import { transferScormPackageAsset } from '../../../assets/asset-transfer';
 import { getCurrentPackageVersion, listPackageVersionsByAsset } from '@cio/db/queries/activity/package-version';
 import { listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import { getActivityScormByActivityId, upsertActivityScorm } from '@cio/db/queries/scorm';
-import { getActivityOpenAttemptCounts } from '@cio/db/queries/scorm/attempt';
+import { closeOpenAttemptsForActivity, getActivityOpenAttemptCounts } from '@cio/db/queries/scorm/attempt';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { LICENSE_FEATURE } from '@cio/utils/license';
 import { ACTIVITY_PACKAGE_SLOT } from '@cio/utils/validation/assets/assets';
@@ -36,8 +36,11 @@ import type {
 
 /**
  * Attaches a processed org package to an activity, replacing any previous
- * attachment. Throws when the asset is missing, foreign, or has no ready
- * current version.
+ * attachment. Pointing at a different package closes open attempts pinned
+ * to the old one: they can never resume, so they must not linger as
+ * in-progress. Re-attaching the attached package does nothing. Throws when
+ * the asset is missing, foreign, has no ready current version, or is
+ * byte-identical to the attached package.
  */
 export async function attachScormPackage(
   activityId: string,
@@ -53,7 +56,20 @@ export async function attachScormPackage(
     throw new AppError('Package has no ready version yet', ErrorCodes.VALIDATION_ERROR, 400);
 
   await db.transaction(async (tx) => {
-    await upsertActivityScorm({ activityId, assetId: asset.id }, tx);
+    const previous = await getActivityScormByActivityId(activityId, tx);
+    if (previous?.assetId === asset.id) return;
+
+    const previousCurrent = previous?.assetId ? await getCurrentPackageVersion(previous.assetId, tx) : null;
+    if (previousCurrent?.contentSha256 && previousCurrent.contentSha256 === current.contentSha256) {
+      throw new AppError('This package is identical to the attached one', ErrorCodes.CONFLICT, 409);
+    }
+
+    const sequenced = ((current.warnings ?? []) as string[]).includes('has_sequencing');
+
+    await upsertActivityScorm({ activityId, assetId: asset.id, moduleOrder: sequenced ? 'sequential' : 'free' }, tx);
+    if (previous?.assetId && previous.assetId !== asset.id) {
+      await closeOpenAttemptsForActivity(activityId, 'replaced', tx);
+    }
     await deleteAssetUsagesByTarget('activity', activityId, tx);
     await createAssetUsage(
       {
@@ -66,6 +82,14 @@ export async function attachScormPackage(
       },
       tx
     );
+
+    const activity = await getActivityById(activityId, tx);
+    if (activity && (!activity.title || activity.title.trim().length === 0)) {
+      const packageTitle = current.title || asset.title;
+      if (packageTitle) {
+        await updateActivity(activityId, { title: packageTitle }, tx);
+      }
+    }
   });
 }
 
@@ -108,7 +132,7 @@ export const scormProvider: ActivityProvider = {
       completionRule: details.completionRule,
       minScorePercent: details.minScorePercent,
       allowRetakes: details.allowRetakes,
-      launchMode: details.launchMode
+      moduleOrder: details.moduleOrder
     });
 
     if (!details.assetId) {
@@ -146,7 +170,7 @@ export const scormProvider: ActivityProvider = {
         completionRule: parsed.data.completionRule,
         minScorePercent: parsed.data.minScorePercent ?? null,
         allowRetakes: parsed.data.allowRetakes,
-        launchMode: parsed.data.launchMode
+        moduleOrder: parsed.data.moduleOrder
       },
       tx
     );
@@ -193,7 +217,7 @@ export const scormProvider: ActivityProvider = {
           completionRule: details.completionRule,
           minScorePercent: details.minScorePercent,
           allowRetakes: details.allowRetakes,
-          launchMode: details.launchMode
+          moduleOrder: details.moduleOrder
         },
         tx
       );
@@ -227,7 +251,7 @@ export const scormProvider: ActivityProvider = {
         completionRule: details.completionRule,
         minScorePercent: details.minScorePercent,
         allowRetakes: details.allowRetakes,
-        launchMode: details.launchMode
+        moduleOrder: details.moduleOrder
       },
       tx
     );

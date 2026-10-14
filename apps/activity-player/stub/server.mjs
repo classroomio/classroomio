@@ -246,6 +246,9 @@ const server = createServer(async (req, res) => {
         contentToken: CONTENT_TOKEN,
         launchPath: `${launch.name}/${launch.launch}`,
         parentOrigin: origin,
+        entry: 'ab-initio',
+        commitSeq: 0,
+        mode: 'normal',
         debug: url.searchParams.get('debug') === '1'
       }),
       'application/json; charset=utf-8'

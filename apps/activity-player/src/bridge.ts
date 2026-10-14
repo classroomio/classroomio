@@ -6,6 +6,7 @@ import { initializeEventName, terminateEventName, type ScormAdapter, type ScormF
 export type PlayerOutboundMessage =
   | { type: 'ready' }
   | { type: 'terminated'; navRequest: string | null }
+  | { type: 'completed' }
   | { type: 'did-not-connect' };
 
 export const DID_NOT_CONNECT_MS = 30_000;
@@ -58,6 +59,10 @@ export function connectParentBridge(
   postMessage({ type: 'ready' }, parentOrigin);
 }
 
+export function notifyCompleted(parentOrigin: string | string[]): void {
+  postMessage({ type: 'completed' }, parentOrigin);
+}
+
 function readNavRequest(adapter: ScormAdapter, format: ScormFormat): string | null {
   if (format === 'scorm12') {
     return null;
@@ -92,12 +97,18 @@ export function watchForConnection(
       return;
     }
 
+    let settled = false;
     const timer = window.setTimeout(() => {
+      settled = true;
       postMessage({ type: 'did-not-connect' }, parentOrigin);
       resolve(false);
     }, timeoutMs);
 
     adapter.on(initializeEventName(format), () => {
+      if (settled) {
+        postMessage({ type: 'ready' }, parentOrigin);
+      }
+
       window.clearTimeout(timer);
       resolve(true);
     });

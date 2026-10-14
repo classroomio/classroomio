@@ -77,7 +77,7 @@ You can move, lock and reorder a SCORM package like a lesson, and it follows the
 
 ### Creating a SCORM course
 
-Choose **New course → Upload a SCORM package**, pick Self-paced or Compliance, give it a title and upload the ZIP. The course navigation shows **Package** where other courses show Content. Learners click it to open the package. Certificates, compliance tracking, the landing page and People work as in any course.
+Choose **New course → Upload a SCORM package**, give it a title and upload the ZIP. Courses default to Self-paced; toggle compliance tracking for due dates and renewals. The course navigation shows **Package** where other courses show Content. Learners click it to open the package. Certificates, compliance tracking, the landing page and People work as in any course.
 
 To make several at once, open **Media Manager**, filter by SCORM package, choose **Select**, pick the packages and **Create courses**.
 
@@ -85,12 +85,12 @@ To add lessons or exercises later, open the course settings and choose **Convert
 
 ### What learners see
 
-The package opens in a large frame with a full-screen button. Packages with several modules show the modules above the frame, with a tick on each one finished; learners can open them in any order. Progress saves automatically. When the package reports that the learner finished or passed, the item is marked complete and the course moves on. Learners do not see a “Mark as complete” button on SCORM packages.
+The package opens in a large frame with a full-screen button. Packages with several modules show a module bar above the frame — previous/next buttons and a menu with a tick on each one finished; learners can open them in any order. In full screen the bar floats over the top and hides until the mouse moves. Progress saves automatically and the status updates without reloading. When the package reports that the learner finished or passed, the item is marked complete and the course moves on. Learners do not see a “Mark as complete” button on SCORM packages.
 
 ### Limits
 
 - Packages up to 500 MB by default.
-- SCORM 2004 sequencing rules (forced order between modules, pre-tests, rollup rules) are not enforced. ClassroomIO’s own course progression settings apply instead.
+- SCORM 2004 sequencing rules beyond simple module order (pre-tests, rollup rules) are not enforced. ClassroomIO’s own course progression settings apply instead.
 - SCORM packages are not available in Public courses, because those are taken without signing in. A course with SCORM packages can’t be switched to Public.
 - SCORM packages have instructions in one language and no comments.
 - Some packages stream their content from the vendor’s servers instead of carrying it in the ZIP (for example Rustici Dispatch packages and Elucidat’s default export). They work, but they report only what the vendor passes on, they need the vendor’s site to be reachable, and they stop working if your licence with the vendor ends.
@@ -169,15 +169,12 @@ These are recommendations from the research and the review rounds. Each needs a 
    - Retakes are opt-in per item. With retakes on, review mode offers **Start a new attempt**, and the best score counts. A new compliance cycle starts a new attempt either way.
 7. **Package size**: 500 MB default through `UPLOAD_MAX_SCORM_MB`. The worker checks the real object size; the browser’s figure is advisory only.
 8. **Packages with several modules**: one activity per package.
-   - A module menu above the player lists the launchable SCOs in manifest order. Learners can open them in any order.
+   - A module menu above the player lists the launchable SCOs in manifest order. **Module order** decides whether learners can open them in any order or must finish each before the next unlocks; locked modules show a lock and refuse direct launches server-side.
    - The completion rule applies to every module (§ Status Mapping and Completion Rules).
-   - Sequencing rules are ignored with a visible warning.
+   - Sequencing rules beyond simple order (pre-tests, rollup rules, attempt limits) are ignored with a visible warning.
    - Pinning a single module to its own item is deferred.
 9. **Public courses**: activities cannot be added to courses of type `PUBLIC`, and a course that has activities cannot be converted to `PUBLIC`. Anonymous play is a later project (it would mint the token from the public course tree as `mintPublicHlsCookie` does, save nothing on the server, and keep best-effort resume data in the content origin’s browser storage).
-10. **Retention** ([`schema-improvements.md`](./schema-improvements.md) § 1.6): 30 days after a package version stops being current, retention acts according to its history:
-    - never launched: it is deleted with its ZIP;
-    - launched, with every attempt closed: it is archived, meaning its extracted files are deleted and its ZIP and rows are kept;
-    - any attempt still open: it is kept until those attempts close.
+10. **Retention** ([`schema-improvements.md`](./schema-improvements.md) § 1.6): replaced package versions and their files are kept until an admin deletes the package. Only diagnostic session events age out (90 days).
     - Review of an attempt on an archived version opens the current version with empty run-time data and a banner.
     - Diagnostic events are deleted after 90 days, and only meaningful commits write one (§ 1.1 of that file).
 11. **SCORM courses**: a course **format**, not a course type.
@@ -302,7 +299,7 @@ These are recommendations from the research and the review rounds. Each needs a 
   - **Empty**: a `FileDropZone` that accepts `.zip`.
   - **Uploading**: a progress bar driven by the presigned PUT, with cancel. The page cannot be left while uploading without a confirmation, as in `add-document-modal.svelte`.
   - **Processing**: the `media_job` stage (validating, extracting, uploading files, reading manifest) and percentage through `JobPoller`. The admin can leave the page.
-  - **Ready**: title, SCORM version, file count, size, the pass mark when the manifest sets one, and the list of modules; warnings such as “sequencing rules ignored” or “file names differ in case”; buttons for **Preview**, **Replace package** and **Remove**.
+  - **Ready**: title, SCORM version, file count, size, the pass mark when the manifest sets one, and the list of modules; warnings such as sequencing order, file-name case, or missing LMS communication; buttons for **Upload new version**, **Swap package** and **Remove**. Switching the page to view mode plays the package without recording anything.
   - **Failed**: a specific, translated reason (no `imsmanifest.xml`, an xAPI or cmi5 package, unsupported version, file too large, unsafe file paths, launch file missing, a module that launches from another website, nothing to track because every resource is an asset) and a **Try another file** action.
   - **Plan lapsed or no license**: authoring controls are disabled with a banner that explains learners can still take the package and results stay available.
 - Packages with several modules show “This package has N modules” with the module list, and explain that learners pick modules from a menu above the package and that the completion rule applies to each module. A SCORM 2004 package with sequencing rules also shows “Sequencing rules are ignored”. Modules of type `asset` appear in the menu but don’t count toward the rule, because assets never talk to the API.
@@ -317,7 +314,7 @@ These are recommendations from the research and the review rounds. Each needs a 
 | Completion rule | Automatic, Completed, Passed, Minimum score | Automatic |
 | Minimum score | 0 to 100, shown only for Minimum score; compared with the average score of the modules that report one | 80 |
 | Retakes | Off, On | Off |
-| Launch mode | In the course, In a new window | In the course |
+| Module order | Any order, In sequence | Any order, except packages with sequencing rules default to In sequence on first attach |
 
 - Under the rule, a line says whether the package is graded: “This package has a pass mark of 80%, so students must pass it” or “This package has no pass mark, so students complete it by finishing it”.
 - Choosing **Passed** for a package with an ungraded module shows a warning: a module that never reports passed keeps the item from completing.
@@ -326,7 +323,8 @@ These are recommendations from the research and the review rounds. Each needs a 
 ### 3. Learner player (LMS)
 
 - The activity page requests a launch and renders a sandboxed iframe on the content domain, wider than the `max-w-3xl` learner column, with a full-screen button.
-- Packages with several modules show a **module menu** above the frame: one chip per launchable module with its title and a tick when it meets the rule, plus “N of M modules complete”. Learners can open any module. Switching ends the current module’s session, so its final save runs, then launches the chosen one. The page opens on the first module that hasn’t met the rule. On phones the chips scroll sideways.
+- Packages with several modules show a **module bar** above the frame: **Previous**, a **Module N of M · title** button opening the module menu (tick on each module that meets the rule, lock on modules the order keeps closed, plus “N of M modules complete”), and **Next**. With **Any order** learners can open any module; with **In sequence** each module unlocks as the previous one meets the rule. Switching ends the current module’s session, so its final save runs, then launches the chosen one. The page opens on the first module that hasn’t met the rule. In full screen the bar floats over the top edge and auto-hides until the mouse moves; it carries an exit-fullscreen button. Where the Fullscreen API is unavailable (iPhone Safari), a full-viewport focus mode offers the same bar.
+- Launches hand the package the learner’s id and name, the unit’s mastery score (SCORM 1.2) or scaled passing score (SCORM 2004), and the launch data from the manifest. Hidden modules (`isvisible="false"`) never appear in the menu and don’t count toward completion.
 - States:
   - **Not available yet**: the item has no ready package; a short notice, no frame.
   - **Loading**: skeleton frame until the player reports `ready`.
@@ -339,16 +337,16 @@ These are recommendations from the research and the review rounds. Each needs a 
   - **Expired**: shown when the 12-hour launch token expires, with **Reload**.
   - **Locked**: the existing `StudentContentLockedNotice` for teacher locks and sequential progression.
 - No “Mark as complete” control appears for activities, in the header (`content-navigation-actions.svelte`) or in the mobile bottom bar (`course-mobile-bottom-nav.svelte`).
-- On phones the player keeps the bottom padding so the fixed bottom bar and the Ask AI bar do not cover the package. New-window mode falls back to the course page on phones, because mobile browsers discard background windows.
+- On phones the player keeps the bottom padding so the fixed bottom bar and the Ask AI bar do not cover the package.
 - When a 2004 module sends `adl.nav.request = continue` and terminates, the page opens the next module, or offers the next course item after the last module.
 
 ### 4. Results and attempts (admin, tutor)
 
 - A **Results** tab on the SCORM item, modelled on the compliance records table:
-  - Summary: enrolled, started, completed, passed, average score.
-  - Table: student, status, pass or fail, score, best score, time spent, attempts, last launched. Sortable and paginated, with `ExportMenu` CSV. Score is the attempt score: the average of the modules that report one. Attempts counts attempts, not module tries.
+  - Summary: enrolled, in progress and completed as shares of enrolled, plus the average best score for graded packages (not-started count otherwise).
+  - Table: student, status, pass or fail, score, best score, time spent, attempts, last launched. Sortable and paginated, with `ExportMenu` CSV that pages through every learner and restores the table afterwards. Score is the attempt score: the average of the modules that report one. Attempts counts attempts, not module tries.
   - Empty state when nobody has launched yet.
-- A **student sheet** opens from a row: every attempt, and inside it every module try with its status, score, time, location and exit, the answers the package reported, and (phase 5) the diagnostic events. It has **Reset for this student**.
+- A **student sheet** opens from a row: every attempt, and inside it every module try with its status, score, time, location and exit, the answers the package reported, and the diagnostic events as a time-ordered timeline (session device plus a Technical-details collapse for raw payloads). Rule-met is evaluated over every module of the attempt, exactly as at commit time. It has **Reset for this student**.
 - The course student page (`/courses/[id]/people/[personId]`) lists SCORM items with status and score next to exercises.
 - Course progress reset (`reset-progress-dialog.svelte`) counts and clears activity completions and attempts.
 
@@ -357,12 +355,12 @@ These are recommendations from the research and the review rounds. Each needs a 
 - A SCORM filter in `media.svelte`. Cards show title, version, size, module count and where the package is used, through `asset_usages` with target `activity`.
 - Storage cards include SCORM packages: all versions’ ZIPs plus extracted files.
 - Deleting a package used by an activity is refused with a list of those items and their courses.
-- **Create course from package** on a package card opens a dialog with the course title (from the manifest), the course type (Self-paced or Compliance) and a preview of the SCORM course navigation. It creates a draft SCORM course.
+- **Create course from package** on a package card opens a dialog with the course title (from the manifest), a compliance-tracking switch, and a preview of the SCORM course navigation. It creates a draft SCORM course.
 - **Select** in the SCORM filter turns the cards into a selection. With packages selected, **Create N courses** opens the same dialog for all of them: one draft SCORM course per package, with one type for all. Processing or failed packages can’t be selected.
 
 ### 6. SCORM courses
 
-- **New course** (`new-course-modal.svelte`) starts with a choice: **Build a course** (today’s flow, unchanged) or **Upload a SCORM package** (with the plan or license pill). The SCORM path asks for Self-paced or Compliance, a title and a description. Creating it makes the course and its one empty SCORM activity in one transaction and lands on the Package page, where the upload starts, exactly as for a SCORM item added to a course.
+- **New course** (`new-course-modal.svelte`) starts with a choice: **Build a course** (today’s flow, unchanged) or **Upload a SCORM package** (with the plan or license pill). The SCORM path asks for a title and a description, with an optional compliance-tracking switch (Self-paced by default). Creating it makes the course and its one empty SCORM activity in one transaction and lands on the Package page, where the upload starts, exactly as for a SCORM item added to a course.
 - **Admin navigation**: **Package** sits where Content sits, with the package icon, and opens `/courses/[id]/activities/[activityId]`. Submissions, Marks and Attendance are hidden. The Package page is the package editor with its four tabs.
 - **Learner navigation**: News Feed (when the organization shows it), **Package**, Certificates. Package is a plain nav item: click to enter, no tree, no badges, nothing to expand. The footer’s Previous and Next buttons are hidden; the progress ring stays.
 - `/courses/[id]/lessons`, `?next=true` and **Continue** buttons on learner home go straight to the package.
@@ -512,7 +510,6 @@ export const contentPackageStatus = pgEnum('CONTENT_PACKAGE_STATUS', [...CONTENT
 export const contentPackageFormat = pgEnum('CONTENT_PACKAGE_FORMAT', [...CONTENT_PACKAGE_FORMATS]);
 export const contentPackageUnitType = pgEnum('CONTENT_PACKAGE_UNIT_TYPE', [...CONTENT_PACKAGE_UNIT_TYPES]);
 export const scormCompletionRule = pgEnum('SCORM_COMPLETION_RULE', [...SCORM_COMPLETION_RULES]);
-export const scormLaunchMode = pgEnum('SCORM_LAUNCH_MODE', [...SCORM_LAUNCH_MODES]);
 export const scormAttemptCloseReason = pgEnum('SCORM_ATTEMPT_CLOSE_REASON', [...SCORM_ATTEMPT_CLOSE_REASONS]);
 export const scormScoAttemptStatus = pgEnum('SCORM_SCO_ATTEMPT_STATUS', [...SCORM_SCO_ATTEMPT_STATUSES]);
 export const scormSessionEventKind = pgEnum('SCORM_SESSION_EVENT_KIND', [...SCORM_SESSION_EVENT_KINDS]);
@@ -767,7 +764,6 @@ export const activityScorm = pgTable(
     completionRule: scormCompletionRule('completion_rule').default('auto').notNull(),
     minScorePercent: integer('min_score_percent'),
     allowRetakes: boolean('allow_retakes').default(false).notNull(),
-    launchMode: scormLaunchMode('launch_mode').default('embedded').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -788,7 +784,7 @@ export const activityScorm = pgTable(
 );
 ```
 
-- `completionRule`: `auto`, `completed`, `passed`, `score`. `launchMode`: `embedded`, `window`.
+- `completionRule`: `auto`, `completed`, `passed`, `score`.
 - `onDelete('restrict')` on the asset makes “package in use” a database guarantee, not just a UI check.
 - The row is created with the activity. `asset_id` stays null until the first package is processed and attached, which is the editor’s Empty state. Like an empty lesson, the item counts in progress from the start; learners see “This package isn’t available yet”, and go-live readiness blocks publishing while any activity has no ready package.
 
@@ -1034,7 +1030,7 @@ Two tokens, both HMAC-SHA256 over a JSON payload with a shared `ACTIVITY_SIGNING
 | --- | --- |
 | `org` | Organization; selects the content subdomain |
 | `act` | Activity |
-| `att` | Module try (`scorm_sco_attempt`) the run-time endpoint may write; absent in preview and review |
+| `att` | Module try (`scorm_sco_attempt`) the run-time endpoint may write; absent in preview and archived review |
 | `sub` | Profile, for logging |
 | `unit` | Package unit, which pins the module and the package version |
 | `fmt` | Package format |
@@ -1191,7 +1187,7 @@ Course-scoped activity routes live with lessons and exercises in the course doma
 
 - `packages/utils/src/validation/activity/`:
   - `activity.ts`: `ZActivityCreate` (`kind`, `sectionId`, `title`), `ZActivityUpdate` (`title`, `instructions`, `isUnlocked`), `ZActivityAttachPackage` (`assetId`), `ZActivityParam`, `ZActivityLaunch` (`unitIdentifier?`, `newAttempt?`).
-  - `scorm.ts`: `ZScormSettings` (`completionRule`, `minScorePercent`, `allowRetakes`, `launchMode`), `ZScormCommit` (`seq`, `cmi`, `terminate`) with element and length limits, `ZScormRuntimeEvent` (`kind`, `detail`).
+  - `scorm.ts`: `ZScormSettings` (`completionRule`, `minScorePercent`, `allowRetakes`), `ZScormCommit` (`seq`, `cmi`, `terminate`) with element and length limits, `ZScormRuntimeEvent` (`kind`, `detail`).
   - `package.ts`: `ZPackageCreate` (`fileName`, `fileSize`, `title`), `ZPackageParam`, `ZPackageVersionParam`, `ZPackageMakeCurrent`.
   - `course.ts`: `ZActivityCoursesCreate` (`assetIds`, 1 to 20; `courseType`, `SELF_PACED` or `COMPLIANCE`; optional `titles` keyed by asset id).
   - `report.ts`: pagination and sort params.
@@ -1218,7 +1214,7 @@ Course-scoped activity routes live with lessons and exercises in the course doma
 - `packages/core/src/services/activity/packages.ts`: package create, process, replace, make current, delete.
 - `packages/core/src/services/activity/courses.ts`: SCORM courses from packages (one transaction per course; every package checked first; the whole request fails if any is not ready or not in the organization).
 - `packages/core/src/services/jobs/activity-package-jobs.ts`: create the `media_job` row and enqueue.
-- `packages/core/src/services/activity/retention.ts`: `runScormRetention` (90-day diagnostic-event delete; 30 days after replacement, never-launched versions deleted with ZIP and row, launched-and-closed versions archived with ZIP kept, open-attempt versions kept).
+- `packages/core/src/services/activity/retention.ts`: `runScormRetention` (90-day diagnostic-event delete only; replaced versions and files stay until the admin deletes the package).
 - `apps/api/src/services/activity/runtime-scorm.ts`: state, commit, and player event reporting.
 - `apps/api/src/services/activity/plan.ts`: `assertActivityKindAllowed` implementation (cloud plan, self-hosted license).
 - `apps/api/src/services/course/compliance.ts`: `syncComplianceProgressForMember` (PR 0b).
@@ -1382,7 +1378,7 @@ PR 14 diagnostics, PR 15 docs (help, self-hosted, licensing, OpenAPI), the compa
 
 **SCORM courses**
 
-29. **New course → Upload a SCORM package** creates a Self-paced or Compliance SCORM course, lands on its Package page ready for the upload, and its admin navigation shows Package instead of Content and hides Submissions, Marks and Attendance.
+29. **New course → Upload a SCORM package** creates a SCORM course (Self-paced unless compliance tracking is switched on), lands on its Package page ready for the upload, and its admin navigation shows Package instead of Content and hides Submissions, Marks and Attendance.
 30. A student in a SCORM course sees News Feed (when on), Package and Certificates; Package opens the player in one click; Continue and `?next=true` land on it.
 31. The server refuses new sections, lessons, exercises or a second activity in a SCORM course from every route, the public API, MCP and drafts.
 32. Creating courses from three packages in the Media Manager makes three draft SCORM courses.

@@ -1,8 +1,9 @@
 <script lang="ts">
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
+  import * as Field from '@cio/ui/base/field';
+  import { Switch } from '@cio/ui/base/switch';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
   import PackageIcon from '@lucide/svelte/icons/package';
 
   import { packageApi } from '$features/course/api/package.svelte';
@@ -24,32 +25,17 @@
 
   let { open = $bindable(false), packages = [], onCreated = () => {}, onOpenChange = () => {} }: Props = $props();
 
-  type CourseTypeOption = 'SELF_PACED' | 'COMPLIANCE';
-
-  let courseType = $state<CourseTypeOption>('SELF_PACED');
+  let trackCompliance = $state(false);
   let titles = $state<Record<string, string>>({});
   let isCreating = $state(false);
 
-  const typeOptions = $derived([
-    {
-      id: 'self-paced',
-      title: $t('media_manager.scorm.course_type_self_paced'),
-      description: $t('media_manager.scorm.course_type_self_paced_description'),
-      value: 'SELF_PACED' as CourseTypeOption
-    },
-    {
-      id: 'compliance',
-      title: $t('media_manager.scorm.course_type_compliance'),
-      description: $t('media_manager.scorm.course_type_compliance_description'),
-      value: 'COMPLIANCE' as CourseTypeOption
-    }
-  ]);
+  const courseType = $derived(trackCompliance ? ('COMPLIANCE' as const) : ('SELF_PACED' as const));
 
   function handleOpenChange(isOpen: boolean) {
     open = isOpen;
 
     if (isOpen) {
-      courseType = 'SELF_PACED';
+      trackCompliance = false;
       titles = Object.fromEntries(packages.map((entry) => [entry.assetId, entry.title]));
       isCreating = false;
     }
@@ -94,7 +80,15 @@
       <span class="font-medium">{$t('media_manager.scorm.course_nav_preview')}</span>
     </div>
 
-    <RadioOptionCardGroup options={typeOptions} bind:value={courseType} class="grid-cols-1 md:grid-cols-2" />
+    <Field.Group>
+      <Field.Set>
+        <Field.Field orientation="horizontal">
+          <Switch bind:checked={trackCompliance} />
+          <Field.Label>{$t('media_manager.scorm.track_compliance_label')}</Field.Label>
+        </Field.Field>
+        <Field.Description>{$t('media_manager.scorm.track_compliance_hint')}</Field.Description>
+      </Field.Set>
+    </Field.Group>
 
     <div class="space-y-3">
       {#each packages as entry (entry.assetId)}

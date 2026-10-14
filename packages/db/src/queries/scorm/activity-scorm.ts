@@ -52,7 +52,8 @@ export async function upsertActivityScorm(
           completionRule: data.completionRule,
           minScorePercent: data.minScorePercent,
           allowRetakes: data.allowRetakes,
-          launchMode: data.launchMode,
+          moduleOrder: data.moduleOrder,
+          completionModules: data.completionModules,
           updatedAt: new Date().toISOString()
         }
       })

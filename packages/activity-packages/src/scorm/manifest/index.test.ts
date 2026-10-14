@@ -197,6 +197,22 @@ describe('parseScormManifest structure', () => {
     }
   });
 
+  it('inherits xml:base from the manifest and resources elements', () => {
+    const xml = `<?xml version="1.0"?>
+<manifest identifier="M" xml:base="tenant/" xmlns="http://www.imsproject.org/xsd/imscp_rootv1p1p2" xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_rootv1p2">
+  <metadata><schema>ADL SCORM</schema><schemaversion>1.2</schemaversion></metadata>
+  <organizations default="ORG-1">
+    <organization identifier="ORG-1"><title>Based</title>
+      <item identifier="A" identifierref="R"><title>Module A</title></item>
+    </organization>
+  </organizations>
+  <resources xml:base="pkg/"><resource identifier="R" type="webcontent" adlcp:scormType="SCO" href="sco.html"><file href="sco.html"/></resource></resources>
+</manifest>`;
+    const parsed = parseScormManifest(xml, ['tenant/pkg/sco.html']);
+
+    expect(parsed.units[0].href).toBe('tenant/pkg/sco.html');
+  });
+
   it('fixes launch case with a warning', () => {
     const cased = readSource('scorm12-minimal').replace(/sco\.html/g, 'SCO.HTML');
     const parsed = parseScormManifest(cased, ['sco.html']);
@@ -273,6 +289,20 @@ describe('parseScormManifest structure', () => {
   </resource></resources>
 </manifest>`;
     expect(parseScormManifest(badMastery, ['sco.html']).units[0].masteryScoreRaw).toBeNull();
+  });
+
+  it('reads SCORM 1.2 maxtimeallowed and timelimitaction into formatDetails', () => {
+    const xml = manifestWith(
+      '<schemaversion>1.2</schemaversion>',
+      '<adlcp:maxtimeallowed>00:45:00</adlcp:maxtimeallowed><adlcp:timelimitaction>exit,message</adlcp:timelimitaction>'
+    );
+    const parsed = parseScormManifest(xml, ['sco.html']);
+
+    expect(parsed.units[0].formatDetails).toEqual({
+      format: 'scorm12',
+      maxTimeAllowed: '00:45:00',
+      timeLimitAction: 'exit,message'
+    });
   });
 });
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import * as Collapsible from '@cio/ui/base/collapsible';
   import * as Sheet from '@cio/ui/base/sheet';
   import * as Table from '@cio/ui/base/table';
   import { Badge, type BadgeVariant } from '@cio/ui/base/badge';
@@ -10,17 +11,27 @@
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import { activityApi } from '$features/course/api/activity.svelte';
-  import { formatDuration, formatScorePercent } from '$features/course/utils/scorm-utils';
+  import { describeUserAgent, formatDuration, formatScorePercent } from '$features/course/utils/scorm-utils';
   import type { ActivityLearnerAttempts } from '$features/course/utils/types';
 
   const T = 'course.navItem.lessons.activities.results.sheet';
 
   type Attempt = NonNullable<ActivityLearnerAttempts>['attempts'][number];
+  type TimelineEvent = Attempt['modules'][number]['events'][number] & { moduleTitle: string };
 
-  function attemptEvents(attempt: Attempt) {
-    return attempt.modules.flatMap((module) =>
-      module.events.map((event) => ({ ...event, moduleTitle: module.title || module.identifier }))
-    );
+  function attemptTimeline(attempt: Attempt): TimelineEvent[] {
+    return attempt.modules
+      .flatMap((module) => module.events.map((event) => ({ ...event, moduleTitle: module.title || module.identifier })))
+      .sort((left, right) => left.createdAt.localeCompare(right.createdAt));
+  }
+
+  function attemptDevice(timeline: TimelineEvent[]): string | null {
+    for (const event of timeline) {
+      const device = describeUserAgent(event.userAgent);
+      if (device) return device;
+    }
+
+    return null;
   }
 
   function eventDetailText(detail: Record<string, unknown>) {
@@ -52,7 +63,7 @@
 
   const SUCCESS_BADGE_VARIANTS: Record<string, BadgeVariant> = {
     passed: 'success',
-    failed: 'destructive',
+    failed: 'warning',
     unknown: 'outline'
   };
 
@@ -214,23 +225,48 @@
               </Table.Root>
             </div>
 
-            {#if attemptEvents(attempt).length > 0}
+            {#if attemptTimeline(attempt).length > 0}
+              {@const timeline = attemptTimeline(attempt)}
+              {@const device = attemptDevice(timeline)}
               <div class="ui:border-border border-t px-4 py-3">
                 <div class="text-xs font-semibold">{$t(`${T}.diagnostics_title`)}</div>
+                {#if device}
+                  <div class="ui:text-muted-foreground mt-0.5 text-xs">
+                    {$t(`${T}.session_device`, { device })}
+                  </div>
+                {/if}
                 <ul class="mt-1 space-y-1">
-                  {#each attemptEvents(attempt) as event, eventIndex (eventIndex)}
+                  {#each timeline as event, eventIndex (eventIndex)}
                     <li class="ui:text-muted-foreground text-xs">
                       <span class="font-medium">{event.moduleTitle}</span>
-                      {' · '}
+                      ·
                       {$t(`${T}.events.${event.kind}`)}
-                      {' · '}
+                      ·
                       <span class="ui:tabular-nums">{eventTimeText(event.createdAt)}</span>
-                      {#if eventDetailText(event.detail)}
-                        <div class="mt-0.5 font-mono break-all">{eventDetailText(event.detail)}</div>
-                      {/if}
                     </li>
                   {/each}
                 </ul>
+                <Collapsible.Root>
+                  <Collapsible.Trigger>
+                    {#snippet child({ props })}
+                      <Button {...props} variant="link" size="sm" class="mt-1 h-auto p-0 text-xs">
+                        {$t(`${T}.technical_details`)}
+                      </Button>
+                    {/snippet}
+                  </Collapsible.Trigger>
+                  <Collapsible.Content>
+                    <ul class="mt-1 space-y-1">
+                      {#each timeline as event, eventIndex (eventIndex)}
+                        {#if eventDetailText(event.detail)}
+                          <li class="ui:text-muted-foreground font-mono text-xs break-all">
+                            {eventTimeText(event.createdAt)} · {event.moduleTitle} ·
+                            {eventDetailText(event.detail)}
+                          </li>
+                        {/if}
+                      {/each}
+                    </ul>
+                  </Collapsible.Content>
+                </Collapsible.Root>
               </div>
             {/if}
           </div>

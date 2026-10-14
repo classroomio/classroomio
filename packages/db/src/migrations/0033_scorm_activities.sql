@@ -5,7 +5,8 @@ CREATE TYPE "public"."CONTENT_PACKAGE_UNIT_TYPE" AS ENUM('sco', 'asset');--> sta
 CREATE TYPE "public"."COURSE_FORMAT" AS ENUM('standard', 'single_activity');--> statement-breakpoint
 CREATE TYPE "public"."SCORM_ATTEMPT_CLOSE_REASON" AS ENUM('finished', 'replaced');--> statement-breakpoint
 CREATE TYPE "public"."SCORM_COMPLETION_RULE" AS ENUM('auto', 'completed', 'passed', 'score');--> statement-breakpoint
-CREATE TYPE "public"."SCORM_LAUNCH_MODE" AS ENUM('embedded', 'window');--> statement-breakpoint
+CREATE TYPE "public"."SCORM_COMPLETION_MODULES" AS ENUM('all', 'graded_only');--> statement-breakpoint
+CREATE TYPE "public"."SCORM_MODULE_ORDER" AS ENUM('free', 'sequential');--> statement-breakpoint
 CREATE TYPE "public"."SCORM_SCO_ATTEMPT_STATUS" AS ENUM('active', 'suspended', 'closed');--> statement-breakpoint
 CREATE TYPE "public"."SCORM_SESSION_EVENT_KIND" AS ENUM('launch', 'initialize', 'commit', 'terminate', 'beacon', 'error', 'not_initialized');--> statement-breakpoint
 CREATE TABLE "activity_completion" (
@@ -26,7 +27,8 @@ CREATE TABLE "activity_scorm" (
 	"completion_rule" "SCORM_COMPLETION_RULE" DEFAULT 'auto' NOT NULL,
 	"min_score_percent" integer,
 	"allow_retakes" boolean DEFAULT false NOT NULL,
-	"launch_mode" "SCORM_LAUNCH_MODE" DEFAULT 'embedded' NOT NULL,
+	"module_order" "SCORM_MODULE_ORDER" DEFAULT 'free' NOT NULL,
+	"completion_modules" "SCORM_COMPLETION_MODULES" DEFAULT 'all' NOT NULL,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "activity_scorm_min_score_check" CHECK ("activity_scorm"."min_score_percent" IS NULL OR "activity_scorm"."min_score_percent" BETWEEN 0 AND 100)
@@ -69,6 +71,7 @@ CREATE TABLE "content_package_version" (
 	"upload_key" text NOT NULL,
 	"content_prefix" text NOT NULL,
 	"zip_bytes" bigint,
+	"content_sha256" text,
 	"extracted_bytes" bigint,
 	"file_count" integer,
 	"processing_job_id" uuid,
@@ -121,7 +124,8 @@ CREATE TABLE "scorm_sco_attempt" (
 	"commit_seq" integer DEFAULT 0 NOT NULL,
 	"started_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"last_commit_at" timestamp with time zone,
-	"terminated_at" timestamp with time zone
+	"terminated_at" timestamp with time zone,
+	"time_spent_seconds" integer DEFAULT 0 NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "scorm_session_event" (

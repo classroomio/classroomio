@@ -44,6 +44,34 @@ export async function closeSupersededAttempts(
   }
 }
 
+/**
+ * Closes every open attempt for an activity. Used when the activity is
+ * pointed at a different package: those attempts can never resume, so
+ * leaving them open would misreport progress forever. Returns the number
+ * of attempts closed.
+ */
+export async function closeOpenAttemptsForActivity(
+  activityId: string,
+  reason: TScormAttemptCloseReason,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const closedAt = new Date().toISOString();
+    const closed = await dbClient
+      .update(schema.scormAttempt)
+      .set({ closedAt, closeReason: reason })
+      .where(and(eq(schema.scormAttempt.activityId, activityId), isNull(schema.scormAttempt.closedAt)))
+      .returning({ id: schema.scormAttempt.id });
+
+    return closed.length;
+  } catch (error) {
+    console.error('closeOpenAttemptsForActivity error:', error);
+    throw new Error(
+      `Failed to close open attempts for activity "${activityId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function countOpenAttemptsForVersion(
   packageVersionId: string,
   dbClient: DbOrTxClient = db
@@ -67,13 +95,14 @@ export interface ActivityOpenAttemptCounts {
   inProgress: number;
   stale: number;
   staleVersionNumber: number | null;
+  orphaned: number;
 }
 
 /**
- * Counts open attempts for an activity and how many sit on an older
- * version of the same package. Attempts pinned to a previous package
- * (after a swap) are excluded: they restart on next launch and no
- * admin action can move them.
+ * Counts open attempts for an activity. `inProgress` and `stale` cover
+ * only the current package: attempts pinned to a previous package
+ * (after a swap) restart on next launch whatever the admin chooses, so
+ * they are reported separately as `orphaned` for confirm dialogs.
  */
 export async function getActivityOpenAttemptCounts(
   activityId: string,
@@ -93,18 +122,17 @@ export async function getActivityOpenAttemptCounts(
       .leftJoin(schema.contentPackageVersion, eq(schema.contentPackageVersion.id, schema.scormAttempt.packageVersionId))
       .where(and(eq(schema.scormAttempt.activityId, activityId), isNull(schema.scormAttempt.closedAt)));
 
-    const staleRows =
-      currentVersionId && currentAssetId
-        ? open.filter((row) => row.packageVersionId !== currentVersionId && row.assetId === currentAssetId)
-        : [];
+    const sameAssetRows = currentAssetId ? open.filter((row) => row.assetId === currentAssetId) : [];
+    const staleRows = currentVersionId ? sameAssetRows.filter((row) => row.packageVersionId !== currentVersionId) : [];
     const staleVersionNumber =
       staleRows.length === 0 ? null : Math.min(...staleRows.map((row) => row.versionNumber ?? Number.MAX_SAFE_INTEGER));
 
     return {
-      inProgress: open.length,
+      inProgress: sameAssetRows.length,
       stale: staleRows.length,
       staleVersionNumber:
-        staleVersionNumber === null || staleVersionNumber === Number.MAX_SAFE_INTEGER ? null : staleVersionNumber
+        staleVersionNumber === null || staleVersionNumber === Number.MAX_SAFE_INTEGER ? null : staleVersionNumber,
+      orphaned: open.length - sameAssetRows.length
     };
   } catch (error) {
     console.error('getActivityOpenAttemptCounts error:', error);

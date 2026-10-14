@@ -14,11 +14,11 @@
   import { Button } from '@cio/ui/base/button';
   import * as Field from '@cio/ui/base/field';
   import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
+  import { Switch } from '@cio/ui/base/switch';
   import { t } from '$lib/utils/functions/translations';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { licenseApi } from '$features/license/api/license.svelte';
   import type { TCourseType } from '@cio/db/types';
-  import { SINGLE_ACTIVITY_COURSE_TYPES } from '@cio/utils/constants/course-format';
   import { courseApi } from '../api';
 
   type CoursePath = 'build' | 'scorm';
@@ -74,12 +74,8 @@
       isDisabled: false
     }
   ];
-  const scormTypeOptions = $derived(
-    typeOptions.filter((option) => (SINGLE_ACTIVITY_COURSE_TYPES as readonly string[]).includes(option.type))
-  );
-  const visibleTypeOptions = $derived(path === 'scorm' ? scormTypeOptions : typeOptions);
   const courseTypeOptionsForGroup = $derived(
-    visibleTypeOptions.map((o) => ({
+    typeOptions.map((o) => ({
       id: o.id,
       title: o.title,
       description: o.subtitle,
@@ -88,12 +84,9 @@
   );
 
   let type = $state(typeOptions[0].type);
+  let trackCompliance = $state(false);
 
-  $effect(() => {
-    if (path === 'scorm' && !(SINGLE_ACTIVITY_COURSE_TYPES as readonly string[]).includes(type)) {
-      type = SINGLE_ACTIVITY_COURSE_TYPES[0];
-    }
-  });
+  const scormType = $derived(trackCompliance ? ('COMPLIANCE' as TCourseType) : ('SELF_PACED' as TCourseType));
 
   const canCreateScorm = $derived(path !== 'scorm' || hasScormAccess);
 
@@ -101,6 +94,7 @@
     step = 0;
     path = 'build';
     type = typeOptions[0].type;
+    trackCompliance = false;
   }
 
   function onClose(redirectTo) {
@@ -124,7 +118,7 @@
       {
         title: $createCourseModal.title,
         description: $createCourseModal.description,
-        type,
+        type: path === 'scorm' ? scormType : type,
         ...(path === 'scorm' ? { format: 'single_activity' as const } : {})
       },
       (courseId, activityId) => {
@@ -178,7 +172,9 @@
         {@render course_path_selector()}
 
         <Dialog.Footer>
-          <Button onclick={() => (step = 1)} disabled={!path}>{$t('courses.new_course_modal.next')}</Button>
+          <Button onclick={() => (step = path === 'scorm' ? 2 : 1)} disabled={!path}>
+            {$t('courses.new_course_modal.next')}
+          </Button>
         </Dialog.Footer>
       </div>
     {:else if step === 1}
@@ -238,8 +234,20 @@
           initAIPrompt="Write a 30 word description for a course titled: {$createCourseModal.title}"
         />
 
+        {#if path === 'scorm'}
+          <Field.Group class="mb-4">
+            <Field.Set>
+              <Field.Field orientation="horizontal">
+                <Switch bind:checked={trackCompliance} />
+                <Field.Label>{$t('new_course_modal.track_compliance_label')}</Field.Label>
+              </Field.Field>
+              <Field.Description>{$t('new_course_modal.track_compliance_hint')}</Field.Description>
+            </Field.Set>
+          </Field.Group>
+        {/if}
+
         <Dialog.Footer>
-          <Button variant="outline" onclick={() => (step = 1)}>
+          <Button variant="outline" onclick={() => (step = path === 'scorm' ? 0 : 1)}>
             {$t('courses.new_course_modal.back')}
           </Button>
           <Button type="submit" disabled={courseApi.isLoading || !canCreateScorm} loading={courseApi.isLoading}>

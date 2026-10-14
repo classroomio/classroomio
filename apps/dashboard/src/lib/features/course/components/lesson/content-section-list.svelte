@@ -727,6 +727,7 @@
                   disabled={actionDisabled}
                   lockLabel={itemLockLabel}
                   showLock={false}
+                  showEdit={item.type !== ContentType.Activity}
                   onEdit={() => onEdit({ lessonId: item.contentId, lessonTitle: item.title })}
                   onSave={() => onSave({ lessonId: item.contentId }, item)}
                   onCancel={() => {

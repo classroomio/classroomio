@@ -43,11 +43,11 @@ When processing finishes, the tab shows the title, SCORM version, file count, si
 ![Ready package with version, modules, and actions](./images/add-a-scorm-package/package-ready.webp)
 
 - **This package has N modules** lists every launchable module in manifest order. Learners pick them from a menu above the package, in any order. The completion rule applies to each module.
-- A SCORM 2004 package with sequencing rules shows **Sequencing rules in this package are ignored. Your course progression settings apply instead.** ClassroomIO does not enforce forced order, pre-tests, or rollup rules between modules.
+- A SCORM 2004 package with sequencing rules shows which parts apply: with **Module order** set to **In sequence** (the default for such packages), each module unlocks as the previous one completes. Pre-tests, rollup rules, and attempt limits are still ignored.
 - Modules of type asset appear in the menu but never count toward completion, because assets never talk to the SCORM API.
 - **Some file names differ only in letter case** appears when a package built on Windows references files in the wrong case. ClassroomIO resolves them, but re-export with matching case when you can.
 
-Use **Preview** to open the package as a learner would, **Upload new version** for a revised export of the same course, **Swap package** for a different course, and **Remove** to detach the package from the item. The file stays in the Media Manager.
+Switch the page to view mode to play the package as a learner would — nothing is recorded. The buttons below the details hold **Upload new version** for a revised export of the same course and **Swap package** for a different course; **Remove** detaches the package from the item and the header deletes the item. The file stays in the Media Manager.
 
 If processing fails, the tab shows a specific reason — no `imsmanifest.xml`, an xAPI or cmi5 package, an unsupported version, a file that is too large, unsafe paths, a missing launch file, a module that launches from another website, or a package where nothing reports progress — with a **Try another file** action.
 
@@ -68,7 +68,7 @@ Choosing **Passed** for a package with an ungraded module shows a warning: a mod
 
 Why the Passed rule matters: with **Automatic**, a package that has no pass mark in its manifest counts as soon as it reports completed. A few packages report that at the end of the slides, before the quiz reports pass or fail. If learners complete before taking the quiz, set the rule to **Passed** for that package. With **Automatic**, a SCORM 1.2 quiz package whose manifest already has a mastery score does not complete on completed alone — it completes on a raw score at or above that score.
 
-The tab also holds **Allow retakes** and **Launch mode** (**In the course** or **In a new window**). With retakes on, a completed package reopens with a **Start a new attempt** button and ClassroomIO keeps the best score. Settings save automatically.
+The tab also holds **Allow retakes**. With retakes on, a completed package reopens with a **Start a new attempt** button and ClassroomIO keeps the best score. Settings save automatically.
 
 ### 5. Add instructions and publish
 
@@ -76,7 +76,7 @@ Use the **Instructions** tab for optional rich text shown to learners above the 
 
 ## What learners see
 
-The package opens in a large frame with a full-screen button. Packages with several modules show the modules above the frame, with a tick on each one finished and **N of M modules complete**. The page opens on the first module that has not met the rule.
+The package opens in a large frame with a full-screen button. Packages with several modules show a module bar above the frame — **Previous**, **Module N of M · title**, **Next** — opening a menu with a tick on each finished module and **N of M modules complete**. In full screen the bar floats over the top and hides until the mouse moves. The page opens on the first module that has not met the rule.
 
 Progress saves automatically. When the package reports that the learner finished or passed, the item is marked complete and the course moves on. Learners never see a **Mark as complete** button on SCORM packages.
 
@@ -87,9 +87,9 @@ Progress saves automatically. When the package reports that the learner finished
 
 ## Replace a package without losing progress
 
-**Upload new version** adds a new version of the same course. Learners in the middle of an attempt keep the old version until they finish — or restart them on the new version, per the choice shown when learners are part-way through. If learners start while the new version is processing, ClassroomIO asks again with fresh numbers before switching. Uploading the unchanged file is refused with **Already the current version**, and a file whose modules do not match warns that it looks like a different course, with an offer to swap instead.
+**Upload new version** adds a new version of the same course. After you pick a file, ClassroomIO reads its contents and says whether it matches the current package. A file that matches exactly disables uploading — it is already the current version. A file whose modules do not match disables uploading too, with an offer to swap instead. Learners in the middle of an attempt keep the old version until they finish — or restart them on the new version, per the choice shown when learners are part-way through. If learners start while the new version is processing, ClassroomIO asks again with fresh numbers before switching.
 
-**Swap package** attaches a different course as a new package. Learners part-way through restart it from the beginning on their next launch; learners who completed it stay completed. The previous package stays in the Media Manager with its results.
+**Swap package** attaches a different course as a new package. Picking a file shows what it contains; a file that matches the current course disables swapping, with an offer to upload a new version instead. In-progress attempts on the previous package close at once, and learners start the new package from the beginning on their next launch; learners who completed it stay completed. The previous package stays in the Media Manager with its results.
 
 When learners are still on an older version after an upgrade, the Package tab states how many and offers **Move them to this version** — the dialog states how many learners it affects.
 

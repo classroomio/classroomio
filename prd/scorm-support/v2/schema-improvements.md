@@ -81,7 +81,6 @@ Each of these columns is free text today, accepted by the database whatever the 
 | `CONTENT_PACKAGE_FORMAT` | `scorm12`, `scorm2004_2`, `scorm2004_3`, `scorm2004_4` | `content_package_version.format` |
 | `CONTENT_PACKAGE_UNIT_TYPE` | `sco`, `asset` | `content_package_unit.unit_type` |
 | `SCORM_COMPLETION_RULE` | `auto`, `completed`, `passed`, `score` | `activity_scorm.completion_rule` |
-| `SCORM_LAUNCH_MODE` | `embedded`, `window` | `activity_scorm.launch_mode` |
 | `SCORM_ATTEMPT_CLOSE_REASON` | `finished`, `replaced` | `scorm_attempt.close_reason` |
 | `SCORM_SCO_ATTEMPT_STATUS` | `active`, `suspended`, `closed` | `scorm_sco_attempt.status` |
 | `SCORM_SESSION_EVENT_KIND` | `launch`, `initialize`, `commit`, `terminate`, `beacon`, `error`, `not_initialized` | `scorm_session_event.kind` |
@@ -96,20 +95,12 @@ Keep `is_complete`:
 
 Add a CHECK constraint `activity_completion_complete_check`: `is_complete = (completed_at IS NOT NULL)`, so the two columns can never disagree.
 
-### 1.6 Package version retention: archive, don’t keep forever
+### 1.6 Package version retention: keep replaced versions, prune events only
 
-`scorm_attempt` points at the version it used and blocks that version’s deletion. The retention job (`listStaleUnpinnedPackageVersions`) therefore only removes versions nobody ever launched, so nearly every replaced version stays in storage forever. It also uses `updated_at` as a stand-in for “when this version was replaced”.
+`scorm_attempt` points at the version it used. Replaced versions and their files stay in storage until an admin deletes the package, matching every other asset kind — no background job deletes package files. Only diagnostic session events age out (90 days), bounded by the index on `created_at`.
 
-New rule, applied 30 days after a version stops being current:
-
-| The replaced version… | What retention does |
-| --- | --- |
-| was never launched | Deletes its extracted files, its original ZIP and its row (units cascade) |
-| was launched, and every attempt on it is closed | Deletes its extracted files only, keeps the ZIP and the rows, sets status `archived` and `archived_at` |
-| still has an open attempt | Keeps everything until those attempts close (**Move everyone** closes them) |
-
-- **Why keep the ZIP and rows:** results, interactions and module titles stay intact for audits, and the exact package a learner took can still be retrieved.
-- **New columns:** `replaced_at` is set in the same transaction that makes another version current. `archived_at` is set by retention.
+- `replaced_at` is set in the same transaction that makes another version current, as the audit trail for replace decisions.
+- Review and preview sessions write neither table.
 - **Review mode on an archived version** opens the current version with empty run-time data in review mode, with a banner: “You took an earlier version of this package. Your results are unchanged.” The attempt’s own data is never fed to a different version.
 - **Cross-organization transfer** copies only the current version. Attempts never transfer, so older versions have no use in another organization. Same-organization clones keep sharing the asset, as today.
 
@@ -132,7 +123,6 @@ export const contentPackageStatus = pgEnum('CONTENT_PACKAGE_STATUS', [...CONTENT
 export const contentPackageFormat = pgEnum('CONTENT_PACKAGE_FORMAT', [...CONTENT_PACKAGE_FORMATS]);
 export const contentPackageUnitType = pgEnum('CONTENT_PACKAGE_UNIT_TYPE', [...CONTENT_PACKAGE_UNIT_TYPES]);
 export const scormCompletionRule = pgEnum('SCORM_COMPLETION_RULE', [...SCORM_COMPLETION_RULES]);
-export const scormLaunchMode = pgEnum('SCORM_LAUNCH_MODE', [...SCORM_LAUNCH_MODES]);
 export const scormAttemptCloseReason = pgEnum('SCORM_ATTEMPT_CLOSE_REASON', [...SCORM_ATTEMPT_CLOSE_REASONS]);
 export const scormScoAttemptStatus = pgEnum('SCORM_SCO_ATTEMPT_STATUS', [...SCORM_SCO_ATTEMPT_STATUSES]);
 export const scormSessionEventKind = pgEnum('SCORM_SESSION_EVENT_KIND', [...SCORM_SESSION_EVENT_KINDS]);
@@ -173,7 +163,7 @@ check('activity_completion_complete_check', sql`${table.isComplete} = (${table.c
 - `formatDetails` typed `PackageUnitFormatDetails` = `{ format: 'scorm2004'; maxTimeAllowed: string | null; timeLimitAction: string | null } | { format: 'scorm12' }`
 - checks: `mastery_score_raw BETWEEN 0 AND 100`, `passing_score_scaled BETWEEN -1 AND 1`, `completion_threshold BETWEEN 0 AND 1` (each also allows null)
 
-**`activity_scorm`**: `completionRule: scormCompletionRule('completion_rule').default('auto').notNull()`, `launchMode: scormLaunchMode('launch_mode').default('embedded').notNull()`, and check `min_score_percent IS NULL OR min_score_percent BETWEEN 0 AND 100`.
+**`activity_scorm`**: `completionRule: scormCompletionRule('completion_rule').default('auto').notNull()`, and check `min_score_percent IS NULL OR min_score_percent BETWEEN 0 AND 100`. New-window launch was removed: the `launch_mode` column and `SCORM_LAUNCH_MODE` enum are gone.
 
 **`scorm_attempt`**: `closeReason: scormAttemptCloseReason('close_reason')`, and check `(closed_at IS NULL) = (close_reason IS NULL)`.
 
@@ -199,7 +189,7 @@ check('activity_completion_complete_check', sql`${table.isComplete} = (${table.c
 | File | Change |
 | --- | --- |
 | `src/constants/course-format.ts` | `COURSE_FORMAT_VALUES = ['standard', 'single_activity']`; `SINGLE_ACTIVITY_COURSE_TYPES = ['SELF_PACED', 'COMPLIANCE']`; `isTypeAllowedForFormat(format, type)` |
-| `src/constants/activity.ts` | Add `CONTENT_PACKAGE_STATUSES`, `CONTENT_PACKAGE_FORMATS`, `CONTENT_PACKAGE_UNIT_TYPES`, `SCORM_ATTEMPT_CLOSE_REASONS`, `SCORM_SCO_ATTEMPT_STATUSES`; move `SCORM_COMPLETION_RULES`, `SCORM_LAUNCH_MODES` and `SCORM_SESSION_EVENT_KINDS` here from `src/validation/activity/scorm.ts`, so `schema.ts` can import them; `scorm.ts` re-exports them |
+| `src/constants/activity.ts` | Add `CONTENT_PACKAGE_STATUSES`, `CONTENT_PACKAGE_FORMATS`, `CONTENT_PACKAGE_UNIT_TYPES`, `SCORM_ATTEMPT_CLOSE_REASONS`, `SCORM_SCO_ATTEMPT_STATUSES`; move `SCORM_COMPLETION_RULES` and `SCORM_SESSION_EVENT_KINDS` here from `src/validation/activity/scorm.ts`, so `schema.ts` can import them; `scorm.ts` re-exports them |
 | `src/validation/course/course-type.ts`, `src/validation/course/course.ts` | `ZCourseFormat` from the new values; create schema refines type with `isTypeAllowedForFormat`; update accepts only `single_activity → standard` |
 | `src/validation/course/template-sync.ts` | Checked: the `completionThreshold` handling (lines 10, 519, 623) is the course-certificate threshold (`SettingCertificate.threshold`), not the SCORM unit column — no change. Package changes are detected via `packageUpdatedAt`, not per-unit JSON (units are immutable per version, so any threshold change arrives as a new version) |
 | `src/validation/activity/scorm.ts` | `ZScormSessionEventDetail` with the 2 KB cap |

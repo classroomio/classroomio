@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Button } from '@cio/ui/base/button';
   import * as Field from '@cio/ui/base/field';
   import * as Select from '@cio/ui/base/select';
   import { Switch } from '@cio/ui/base/switch';
@@ -15,18 +14,33 @@
     activityId: string;
     settings: TScormSettings;
     hasPassMark: boolean;
+    passMark?: number | null;
+    moduleCount?: number;
     disabled?: boolean;
+    dirty?: boolean;
+    saving?: boolean;
     onSaved?: () => void;
   }
 
-  let { courseId, activityId, settings, hasPassMark, disabled = false, onSaved }: Props = $props();
+  let {
+    courseId,
+    activityId,
+    settings,
+    hasPassMark,
+    passMark = null,
+    moduleCount = 0,
+    disabled = false,
+    dirty = $bindable(false),
+    saving = $bindable(false),
+    onSaved
+  }: Props = $props();
 
   let loadedActivityId = $state('');
   let rule = $state<TScormSettings['completionRule']>('auto');
   let minScore = $state<number | null>(null);
   let allowRetakes = $state(false);
-  let launchMode = $state<TScormSettings['launchMode']>('embedded');
-  let saving = $state(false);
+  let moduleOrder = $state<TScormSettings['moduleOrder']>('free');
+  let completionModules = $state<TScormSettings['completionModules']>('all');
   let hasUnsavedChanges = $state(false);
 
   $effect(() => {
@@ -36,23 +50,26 @@
     rule = settings.completionRule;
     minScore = settings.minScorePercent ?? null;
     allowRetakes = settings.allowRetakes;
-    launchMode = settings.launchMode;
+    moduleOrder = settings.moduleOrder;
+    completionModules = settings.completionModules;
     hasUnsavedChanges = false;
   });
 
-  const dirty = $derived(
+  const formDirty = $derived(
     rule !== settings.completionRule ||
       (minScore ?? null) !== (settings.minScorePercent ?? null) ||
       allowRetakes !== settings.allowRetakes ||
-      launchMode !== settings.launchMode
+      moduleOrder !== settings.moduleOrder ||
+      completionModules !== settings.completionModules
   );
 
   $effect(() => {
-    hasUnsavedChanges = dirty && !disabled;
+    hasUnsavedChanges = formDirty && !disabled;
+    dirty = formDirty && !disabled;
   });
 
   async function saveSettings() {
-    if (!dirty || disabled || saving) return;
+    if (!formDirty || disabled || saving) return;
 
     saving = true;
     try {
@@ -60,7 +77,8 @@
         completionRule: rule,
         minScorePercent: rule === 'score' ? (minScore ?? 80) : null,
         allowRetakes,
-        launchMode
+        moduleOrder,
+        completionModules
       });
 
       if (activityApi.success) {
@@ -71,6 +89,18 @@
     } finally {
       saving = false;
     }
+  }
+
+  export function save(): Promise<void> {
+    return saveSettings();
+  }
+
+  export function discard(): void {
+    rule = settings.completionRule;
+    minScore = settings.minScorePercent ?? null;
+    allowRetakes = settings.allowRetakes;
+    moduleOrder = settings.moduleOrder;
+    completionModules = settings.completionModules;
   }
 </script>
 
@@ -127,6 +157,10 @@
       <p class="ui:text-muted-foreground text-sm">
         {#if hasPassMark}
           {$t('course.navItem.lessons.activities.settings.graded_hint', {
+            score: passMark ?? minScore ?? settings.minScorePercent ?? 80
+          })}
+        {:else if rule === 'score'}
+          {$t('course.navItem.lessons.activities.settings.custom_threshold_hint', {
             score: minScore ?? settings.minScorePercent ?? 80
           })}
         {:else}
@@ -139,6 +173,39 @@
           {$t('course.navItem.lessons.activities.settings.passed_warning')}
         </p>
       {/if}
+
+      <Field.Field>
+        <Field.Label>{$t('course.navItem.lessons.activities.settings.completion_modules')}</Field.Label>
+        <Select.Root
+          type="single"
+          value={completionModules}
+          disabled={disabled || moduleCount <= 1}
+          onValueChange={(value) => {
+            if (value === 'all' || value === 'graded_only') {
+              completionModules = value;
+            }
+          }}
+        >
+          <Select.Trigger class="w-full">
+            {$t(`course.navItem.lessons.activities.settings.completion_modules_${completionModules}`)}
+          </Select.Trigger>
+          <Select.Content>
+            <Select.Item value="all"
+              >{$t('course.navItem.lessons.activities.settings.completion_modules_all')}</Select.Item
+            >
+            <Select.Item value="graded_only"
+              >{$t('course.navItem.lessons.activities.settings.completion_modules_graded_only')}</Select.Item
+            >
+          </Select.Content>
+        </Select.Root>
+        <Field.Description>
+          {#if moduleCount <= 1}
+            {$t('course.navItem.lessons.activities.settings.completion_modules_single_note')}
+          {:else}
+            {$t('course.navItem.lessons.activities.settings.completion_modules_helper')}
+          {/if}
+        </Field.Description>
+      </Field.Field>
     </Field.Set>
 
     <Field.Separator />
@@ -153,32 +220,31 @@
       </p>
 
       <Field.Field>
-        <Field.Label>{$t('course.navItem.lessons.activities.settings.launch_mode')}</Field.Label>
+        <Field.Label>{$t('course.navItem.lessons.activities.settings.module_order')}</Field.Label>
         <Select.Root
           type="single"
-          value={launchMode}
+          value={moduleOrder}
           {disabled}
           onValueChange={(value) => {
-            if (value === 'embedded' || value === 'window') launchMode = value;
+            if (value === 'free' || value === 'sequential') {
+              moduleOrder = value;
+            }
           }}
         >
           <Select.Trigger class="w-full">
-            {$t(`course.navItem.lessons.activities.settings.launch_${launchMode}`)}
+            {$t(`course.navItem.lessons.activities.settings.order_${moduleOrder}`)}
           </Select.Trigger>
           <Select.Content>
-            <Select.Item value="embedded"
-              >{$t('course.navItem.lessons.activities.settings.launch_embedded')}</Select.Item
+            <Select.Item value="free">{$t('course.navItem.lessons.activities.settings.order_free')}</Select.Item>
+            <Select.Item value="sequential"
+              >{$t('course.navItem.lessons.activities.settings.order_sequential')}</Select.Item
             >
-            <Select.Item value="window">{$t('course.navItem.lessons.activities.settings.launch_window')}</Select.Item>
           </Select.Content>
         </Select.Root>
+        <Field.Description>
+          {$t('course.navItem.lessons.activities.settings.module_order_helper')}
+        </Field.Description>
       </Field.Field>
     </Field.Set>
   </Field.Group>
-
-  <div class="mt-6 flex justify-end">
-    <Button onclick={saveSettings} loading={saving} disabled={!dirty || disabled}>
-      {$t('course.navItem.lessons.activities.settings.save')}
-    </Button>
-  </div>
 </div>

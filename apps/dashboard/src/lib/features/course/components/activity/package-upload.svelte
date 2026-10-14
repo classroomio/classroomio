@@ -2,10 +2,13 @@
   import axios from 'axios';
   import { Button } from '@cio/ui/base/button';
   import { Label } from '@cio/ui/base/label';
+  import { Checkbox } from '@cio/ui/base/checkbox';
   import * as Dialog from '@cio/ui/base/dialog';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import { Progress } from '@cio/ui/base/progress';
   import * as Alert from '@cio/ui/base/alert';
+  import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
+  import InfoIcon from '@lucide/svelte/icons/info';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
   import { UnsavedChanges } from '$features/ui';
@@ -15,11 +18,14 @@
   import { t } from '$lib/utils/functions/translations';
   import { getResolvedUploadLimits } from '$lib/utils/config/upload-limits-context';
   import {
-    compareManifestSignature,
+    comparePackageIdentity,
+    formatPackageBytes,
+    sha256IfSameSize,
     packageErrorKey,
-    readScormManifestSignature
+    readScormManifestSignature,
+    type PackageIdentityVerdict
   } from '$features/course/utils/scorm-utils';
-  import type { PackageFingerprint } from '$features/course/utils/types';
+  import type { PackageFingerprint, PackageJobResult } from '$features/course/utils/types';
   import { onDestroy } from 'svelte';
 
   interface Props {
@@ -33,6 +39,7 @@
     onAttached?: (assetId: string) => void;
     onReplaced?: () => void;
     onSwapRequest?: () => void;
+    onUpgradeRequest?: () => void;
   }
 
   let {
@@ -45,7 +52,8 @@
     getFreshInProgressCount,
     onAttached,
     onReplaced,
-    onSwapRequest
+    onSwapRequest,
+    onUpgradeRequest
   }: Props = $props();
 
   type Phase = 'idle' | 'uploading' | 'processing' | 'failed';
@@ -56,8 +64,15 @@
   let stage = $state<string | null>(null);
   let errorKey = $state<string | null>(null);
   let replaceChoice = $state<'keep' | 'restart'>('keep');
-  let sameFile = $state(false);
-  let mismatchOpen = $state(false);
+  let peeking = $state(false);
+  let peek = $state<{
+    file: File;
+    verdict: 'same_file' | PackageIdentityVerdict;
+    contentSha256: string | null;
+    title: string | null;
+    count: number;
+  } | null>(null);
+  let acknowledgedFor = $state<{ file: File; mode: Props['mode'] } | null>(null);
   let promoteOpen = $state(false);
   let promoteCount = $state(0);
   let promoteResolver = $state<((choice: 'keep' | 'restart') => void) | null>(null);
@@ -89,16 +104,55 @@
     progress = 0;
     stage = null;
     errorKey = null;
-    sameFile = false;
-    mismatchOpen = false;
+    peek = null;
+    peeking = false;
+    acknowledgedFor = null;
     promoteOpen = false;
     promoteResolver = null;
   }
 
   function selectFile(next: File | null) {
     file = next;
-    sameFile = false;
     errorKey = null;
+    peek = null;
+    acknowledgedFor = null;
+    if (next && (mode === 'upgrade' || mode === 'swap') && currentFingerprint) void readPeek(next);
+  }
+
+  async function readPeek(target: File) {
+    peeking = true;
+    try {
+      const current = currentFingerprint!;
+      const contentSha256 = await sha256IfSameSize(target, current);
+      const sameFile = contentSha256 !== null && contentSha256 === current.contentSha256;
+      const signature = await readScormManifestSignature(target);
+      const verdict = sameFile ? 'same_file' : comparePackageIdentity(signature, current);
+      const result = { file: target, verdict, contentSha256, title: signature.title, count: signature.itemIds.length };
+      if (file === target) peek = result;
+
+      return result;
+    } finally {
+      if (file === target) peeking = false;
+    }
+  }
+
+  const identityMismatch = $derived(
+    !!file &&
+      peek?.file === file &&
+      ((mode === 'upgrade' && peek.verdict === 'different_course') ||
+        (mode === 'swap' && peek.verdict === 'same_course'))
+  );
+  const acknowledged = $derived(acknowledgedFor?.file === file && acknowledgedFor?.mode === mode);
+  const uploadBlocked = $derived(identityMismatch && !acknowledged);
+
+  function setAcknowledged(checked: boolean) {
+    acknowledgedFor = checked && file ? { file, mode } : null;
+  }
+
+  function finishUnchanged() {
+    snackbar.success('course.navItem.lessons.activities.package.unchanged');
+    reset();
+    onReplaced?.();
   }
 
   function handleRejected({ reason }: { reason: FileRejectedReason }) {
@@ -127,17 +181,13 @@
       return;
     }
 
-    if (mode === 'upgrade' && currentFingerprint) {
-      const signature = await readScormManifestSignature(selected);
-      const verdict = compareManifestSignature(signature, currentFingerprint, selected.size);
-      if (verdict === 'same_file') {
-        sameFile = true;
+    if ((mode === 'upgrade' || mode === 'swap') && currentFingerprint) {
+      const check = peek && peek.file === selected ? peek : await readPeek(selected);
+      if (check.verdict === 'same_file') {
+        finishUnchanged();
         return;
       }
-      if (verdict === 'different_course') {
-        mismatchOpen = true;
-        return;
-      }
+      if (uploadBlocked) return;
     }
 
     await proceedUpload();
@@ -147,11 +197,9 @@
     const selected = file;
     if (!selected || phase === 'uploading' || phase === 'processing') return;
 
-    mismatchOpen = false;
     phase = 'uploading';
     progress = 0;
     errorKey = null;
-    sameFile = false;
     abortController = new AbortController();
 
     try {
@@ -188,10 +236,6 @@
     promoteOpen = isOpen;
 
     if (!isOpen) resolvePromoteChoice('keep');
-  }
-
-  function handleMismatchOpenChange(isOpen: boolean) {
-    mismatchOpen = isOpen;
   }
 
   async function putZip(url: string, selected: File, signal: AbortSignal) {
@@ -239,8 +283,14 @@
   async function uploadNewVersion(selected: File, signal: AbortSignal) {
     if (!assetId) throw new Error('No package to replace');
 
-    const next = await packageApi.createVersion(assetId);
+    const contentSha256 = peek?.file === selected ? (peek.contentSha256 ?? undefined) : undefined;
+    const next = await packageApi.createVersion(assetId, { contentSha256 });
     if (!next) throw new Error('Failed to create package version');
+
+    if (!next.uploadUrl) {
+      finishUnchanged();
+      return;
+    }
 
     await putZip(next.uploadUrl, selected, signal);
     const jobId = await packageApi.process(assetId, next.version.id);
@@ -248,7 +298,12 @@
 
     await pollUntilDone(
       jobId,
-      async () => {
+      async (result) => {
+        if (result?.unchanged) {
+          finishUnchanged();
+          return;
+        }
+
         const freshCount = getFreshInProgressCount ? await getFreshInProgressCount() : inProgressCount;
         const restart =
           freshCount > 0 ? (await askPromoteChoice(freshCount)) === 'restart' : replaceChoice === 'restart';
@@ -263,7 +318,7 @@
 
   async function pollUntilDone(
     jobId: string,
-    onCompleted: () => Promise<void>,
+    onCompleted: (result: PackageJobResult | null) => Promise<void>,
     onFailed: () => Promise<void> = async () => {}
   ) {
     phase = 'processing';
@@ -273,13 +328,18 @@
       poller = new JobPoller<MediaJobEnvelope>({
         fetch: () => jobsApi.getMediaJob(jobId),
         onUpdate: (envelope) => {
-          const job = envelope.job as { status?: string; stage?: string | null; progressPercent?: number };
+          const job = envelope.job as {
+            status?: string;
+            stage?: string | null;
+            progressPercent?: number;
+            result?: PackageJobResult | null;
+          };
           stage = job.stage ?? null;
           if (typeof job.progressPercent === 'number') progress = job.progressPercent;
 
           if (job.status === 'completed') {
             stopPoller();
-            void onCompleted()
+            void onCompleted(job.result ?? null)
               .then(() => resolve())
               .catch((error) => {
                 console.error('Package finalize error:', error);
@@ -337,18 +397,11 @@
       </Alert.Root>
     {/if}
 
-    {#if sameFile}
-      <Alert.Root class="mb-4">
-        <Alert.Title>{$t('course.navItem.lessons.activities.package.same_file_title')}</Alert.Title>
-        <Alert.Description>{$t('course.navItem.lessons.activities.package.same_file_body')}</Alert.Description>
-      </Alert.Root>
-    {/if}
-
     {#if file}
       <div class="ui:border-border mb-4 flex items-center gap-3 rounded-lg border p-4">
         <div class="min-w-0 flex-1 text-left">
           <p class="ui:text-foreground truncate font-medium">{file.name}</p>
-          <p class="ui:text-muted-foreground text-sm">{(file.size / (1024 * 1024)).toFixed(1)} MB</p>
+          <p class="ui:text-muted-foreground text-sm">{formatPackageBytes(file.size)}</p>
         </div>
         <Button variant="outline" size="sm" onclick={() => selectFile(null)}>
           {$t('course.navItem.lessons.activities.package.retry')}
@@ -372,7 +425,80 @@
       </FileDropZone.Root>
     {/if}
 
-    {#if mode === 'upgrade' && inProgressCount > 0}
+    {#if (mode === 'upgrade' || mode === 'swap') && file}
+      {#if peeking && (!peek || peek.file !== file)}
+        <p class="ui:text-muted-foreground mt-4 text-xs">
+          {$t('course.navItem.lessons.activities.package.peek_checking')}
+        </p>
+      {:else if peek && peek.file === file}
+        <Alert.Root
+          variant={identityMismatch ? 'warning' : peek.verdict === 'same_file' ? 'information' : 'default'}
+          class="mt-4"
+          data-testid="activity-package-peek"
+        >
+          {#if identityMismatch}
+            <TriangleAlertIcon class="custom" />
+          {:else}
+            <InfoIcon class="custom" />
+          {/if}
+          <Alert.Description>
+            {#if peek.verdict === 'same_file'}
+              {$t('course.navItem.lessons.activities.package.peek_same_file')}
+            {:else if peek.verdict === 'unknown'}
+              {$t('course.navItem.lessons.activities.package.peek_unknown')}
+            {:else if mode === 'upgrade' && peek.verdict === 'different_course'}
+              {$t('course.navItem.lessons.activities.package.peek_diff', {
+                title: peek.title ?? file.name,
+                count: peek.count
+              })}
+            {:else if mode === 'swap' && peek.verdict === 'same_course'}
+              {$t('course.navItem.lessons.activities.package.peek_same_course', {
+                title: peek.title ?? file.name,
+                count: peek.count
+              })}
+            {:else if mode === 'swap'}
+              {$t('course.navItem.lessons.activities.package.peek_swap_ok', {
+                title: peek.title ?? file.name,
+                count: peek.count
+              })}
+            {:else}
+              {$t('course.navItem.lessons.activities.package.peek_match', {
+                title: peek.title ?? file.name,
+                count: peek.count
+              })}
+            {/if}
+          </Alert.Description>
+          {#if identityMismatch}
+            <div class="col-start-2 mt-3 flex flex-wrap items-center gap-4">
+              {#if mode === 'upgrade'}
+                <Button variant="outline" size="sm" onclick={() => onSwapRequest?.()}>
+                  {$t('course.navItem.lessons.activities.package.swap_package')}
+                </Button>
+              {:else}
+                <Button variant="outline" size="sm" onclick={() => onUpgradeRequest?.()}>
+                  {$t('course.navItem.lessons.activities.package.upload_new_version')}
+                </Button>
+              {/if}
+              <div class="flex items-center gap-2">
+                <Checkbox
+                  id="package-identity-confirm"
+                  checked={acknowledged}
+                  onCheckedChange={(checked) => setAcknowledged(checked === true)}
+                  data-testid="activity-package-identity-confirm"
+                />
+                <Label for="package-identity-confirm" class="text-sm font-normal">
+                  {mode === 'upgrade'
+                    ? $t('course.navItem.lessons.activities.package.confirm_upgrade_anyway')
+                    : $t('course.navItem.lessons.activities.package.confirm_swap_anyway')}
+                </Label>
+              </div>
+            </div>
+          {/if}
+        </Alert.Root>
+      {/if}
+    {/if}
+
+    {#if mode === 'upgrade' && inProgressCount > 0 && !(peek?.file === file && peek.verdict === 'same_file')}
       <div class="mt-4 space-y-2">
         <p class="text-sm font-medium">
           {$t('course.navItem.lessons.activities.package.replace_choice_title')}
@@ -406,7 +532,7 @@
 
     {#if file}
       <div class="mt-4 flex justify-end">
-        <Button onclick={startUpload} disabled={!file}>
+        <Button onclick={startUpload} disabled={!file || uploadBlocked}>
           {#if mode === 'attach'}
             {$t('course.navItem.lessons.add_content_create')}
           {:else if mode === 'upgrade'}
@@ -447,38 +573,6 @@
       {/if}
     </div>
   {/if}
-
-  <Dialog.Root open={mismatchOpen} onOpenChange={handleMismatchOpenChange}>
-    <Dialog.Content class="w-96 p-6">
-      <Dialog.Header class="p-2">
-        <Dialog.Title>{$t('course.navItem.lessons.activities.package.mismatch_title')}</Dialog.Title>
-        <Dialog.Description>
-          {$t('course.navItem.lessons.activities.package.mismatch_body')}
-        </Dialog.Description>
-      </Dialog.Header>
-      <div class="mt-6 flex items-center justify-between">
-        <Button
-          variant="outline"
-          size="sm"
-          onclick={() => {
-            mismatchOpen = false;
-            void proceedUpload();
-          }}
-        >
-          {$t('course.navItem.lessons.activities.package.upload_anyway')}
-        </Button>
-        <Button
-          size="sm"
-          onclick={() => {
-            mismatchOpen = false;
-            onSwapRequest?.();
-          }}
-        >
-          {$t('course.navItem.lessons.activities.package.swap_instead')}
-        </Button>
-      </div>
-    </Dialog.Content>
-  </Dialog.Root>
 
   <Dialog.Root open={promoteOpen} onOpenChange={handlePromoteOpenChange}>
     <Dialog.Content class="w-96 p-6">

@@ -5,6 +5,7 @@ import {
   DID_NOT_CONNECT_MS,
   connectParentBridge,
   flushOnPageHide,
+  notifyCompleted,
   watchForConnection,
   type PlayerOutboundMessage
 } from './bridge';
@@ -140,6 +141,45 @@ describe('terminate and navigation requests', () => {
     expect(seen).toEqual(['continue']);
   });
 
+  it('forwards every navigation request verbatim for the parent to interpret', () => {
+    for (const value of [
+      'continue',
+      'previous',
+      'exit',
+      'exitAll',
+      '_next_',
+      '_previous_',
+      'choice.{target=sco2}',
+      'choice.sco2'
+    ]) {
+      const parent = fakeTarget();
+      installWindow(null, parent);
+      const adapter = create2004();
+      const seen: Array<string | null> = [];
+
+      connectParentBridge(adapter, 'scorm2004', 'https://app.test', (navRequest) => seen.push(navRequest));
+      adapter.Initialize('');
+      adapter.SetValue('adl.nav.request', value);
+      adapter.Terminate('');
+
+      expect(postedTo(parent)).toContainEqual({ type: 'terminated', navRequest: value });
+      expect(seen).toEqual([value]);
+    }
+  });
+
+  it('trims whitespace around navigation requests', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+    const adapter = create2004();
+
+    connectParentBridge(adapter, 'scorm2004', 'https://app.test');
+    adapter.Initialize('');
+    adapter.SetValue('adl.nav.request', '  continue  ');
+    adapter.Terminate('');
+
+    expect(postedTo(parent)).toContainEqual({ type: 'terminated', navRequest: 'continue' });
+  });
+
   it('treats empty and _none_ navigation requests as absent', () => {
     for (const value of ['', '_none_']) {
       const parent = fakeTarget();
@@ -180,6 +220,18 @@ describe('terminate and navigation requests', () => {
     adapter.LMSFinish('');
 
     expect(postedTo(parent)).toContainEqual({ type: 'terminated', navRequest: null });
+  });
+});
+
+describe('completion', () => {
+  it('notifies the parent when the server reports completion', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+
+    notifyCompleted('https://app.test');
+
+    expect(postedTo(parent)).toEqual([{ type: 'completed' }]);
+    expect(targetOrigins(parent)).toEqual(['https://app.test']);
   });
 });
 

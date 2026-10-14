@@ -30,14 +30,12 @@ vi.mock('@cio/core/services/activity/packages', () => ({
   createScormPackageVersion: vi.fn(),
   processScormPackageVersion: vi.fn(),
   makeScormPackageVersionCurrent: vi.fn(),
-  getScormPackage: vi.fn(),
-  deleteScormPackage: vi.fn()
+  getScormPackage: vi.fn()
 }));
 
 import {
   createScormPackage,
   createScormPackageVersion,
-  deleteScormPackage,
   getScormPackage,
   makeScormPackageVersionCurrent,
   processScormPackageVersion
@@ -99,14 +97,59 @@ describe('activity packages routes (PR 6)', () => {
 
     const response = await app.request('/activity/packages/asset-1/versions', {
       method: 'POST',
-      headers: HEADERS
+      headers: HEADERS,
+      body: JSON.stringify({})
     });
 
     expect(response.status).toBe(201);
     const json = (await response.json()) as { success: boolean; data: typeof payload };
     expect(json.success).toBe(true);
     expect(json.data.version.versionNumber).toBe(2);
-    expect(createScormPackageVersion).toHaveBeenCalledWith(ORG_ID, 'asset-1', 'user-1');
+    expect(createScormPackageVersion).toHaveBeenCalledWith(ORG_ID, 'asset-1', 'user-1', {});
+  });
+
+  it('POST /activity/packages/:assetId/versions accepts a request without a body', async () => {
+    const app = buildApp();
+    vi.mocked(createScormPackageVersion).mockResolvedValue({ unchanged: false } as never);
+
+    const response = await app.request('/activity/packages/asset-1/versions', {
+      method: 'POST',
+      headers: { 'cio-org-id': ORG_ID }
+    });
+
+    expect(response.status).toBe(201);
+    expect(createScormPackageVersion).toHaveBeenCalledWith(ORG_ID, 'asset-1', 'user-1', {});
+  });
+
+  it('POST /activity/packages/:assetId/versions returns 200 when the declared digest is unchanged', async () => {
+    const app = buildApp();
+    const digest = 'A'.repeat(64);
+    const payload = { unchanged: true, version: { id: 'version-1' }, uploadUrl: null, uploadKey: null };
+    vi.mocked(createScormPackageVersion).mockResolvedValue(payload as never);
+
+    const response = await app.request('/activity/packages/asset-1/versions', {
+      method: 'POST',
+      headers: HEADERS,
+      body: JSON.stringify({ contentSha256: digest })
+    });
+
+    expect(response.status).toBe(200);
+    expect(createScormPackageVersion).toHaveBeenCalledWith(ORG_ID, 'asset-1', 'user-1', {
+      contentSha256: digest.toLowerCase()
+    });
+  });
+
+  it('POST /activity/packages/:assetId/versions rejects a malformed digest', async () => {
+    const app = buildApp();
+
+    const response = await app.request('/activity/packages/asset-1/versions', {
+      method: 'POST',
+      headers: HEADERS,
+      body: JSON.stringify({ contentSha256: 'not-a-digest' })
+    });
+
+    expect(response.status).toBe(400);
+    expect(createScormPackageVersion).not.toHaveBeenCalled();
   });
 
   it('POST /activity/packages/:assetId/versions/:versionId/process triggers extraction', async () => {
@@ -175,22 +218,6 @@ describe('activity packages routes (PR 6)', () => {
     expect(json.success).toBe(true);
     expect(json.data.usedBy).toHaveLength(1);
     expect(getScormPackage).toHaveBeenCalledWith(ORG_ID, 'asset-1');
-  });
-
-  it('DELETE /activity/packages/:assetId deletes the package', async () => {
-    const app = buildApp();
-    const payload = { id: 'asset-1' };
-    vi.mocked(deleteScormPackage).mockResolvedValue(payload as never);
-
-    const response = await app.request('/activity/packages/asset-1', {
-      method: 'DELETE',
-      headers: HEADERS
-    });
-
-    expect(response.status).toBe(200);
-    const json = (await response.json()) as { success: boolean; data: typeof payload };
-    expect(json.success).toBe(true);
-    expect(deleteScormPackage).toHaveBeenCalledWith(ORG_ID, 'asset-1');
   });
 
   it('returns 403 when plan gating fails', async () => {

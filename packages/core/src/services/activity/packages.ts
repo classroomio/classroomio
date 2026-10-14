@@ -16,7 +16,11 @@ import { getActivityById } from '@cio/db/queries/activity';
 import { closeSupersededAttempts } from '@cio/db/queries/scorm/attempt';
 import { listActivityScormByAssetId } from '@cio/db/queries/scorm/activity-scorm';
 import { hasActiveMediaJobForAsset } from '@cio/db/queries';
-import type { TPackageCreate, TPackageMakeCurrent } from '@cio/utils/validation/activity/package';
+import type {
+  TPackageCreate,
+  TPackageMakeCurrent,
+  TPackageVersionCreate
+} from '@cio/utils/validation/activity/package';
 import type { TAsset, TContentPackageUnit, TContentPackageVersion, TCourseActivity } from '@cio/db/types';
 
 import { getStorageConfig } from '../../config/storage';
@@ -109,16 +113,34 @@ export async function createScormPackage(
   return { asset: created.asset, version: created.version, uploadUrl, uploadKey: created.version.uploadKey };
 }
 
+export interface ScormPackageVersionPayload {
+  unchanged: boolean;
+  version: TContentPackageVersion;
+  uploadUrl: string | null;
+  uploadKey: string | null;
+}
+
 /**
- * Creates the next uploading version for a SCORM asset.
- * Returns the version and a presigned PUT URL for the ZIP.
+ * Creates the next uploading version for a SCORM asset with a presigned PUT
+ * URL for the ZIP. When the declared `contentSha256` matches the current
+ * version, nothing is created and the current version comes back with
+ * `unchanged: true`. The digest is only a hint: the worker hashes the real
+ * bytes and discards a duplicate whatever the caller declared.
  */
 export async function createScormPackageVersion(
   organizationId: string,
   assetId: string,
-  profileId: string
-): Promise<Omit<ScormPackagePayload, 'asset'>> {
+  profileId: string,
+  input: TPackageVersionCreate = {}
+): Promise<ScormPackageVersionPayload> {
   const asset = await getOrgScormAsset(organizationId, assetId);
+
+  if (input.contentSha256) {
+    const currentVersion = await getCurrentPackageVersion(asset.id);
+    if (currentVersion?.contentSha256 === input.contentSha256) {
+      return { unchanged: true, version: currentVersion, uploadUrl: null, uploadKey: null };
+    }
+  }
 
   const versionNumber = await getNextPackageVersionNumber(asset.id);
   const uploadKey = scormUploadKey(asset.id, versionNumber);
@@ -133,7 +155,7 @@ export async function createScormPackageVersion(
 
   const uploadUrl = await generateScormUploadPresignedUrl(uploadKey);
 
-  return { version, uploadUrl, uploadKey };
+  return { unchanged: false, version, uploadUrl, uploadKey };
 }
 
 export interface ScormProcessPayload {

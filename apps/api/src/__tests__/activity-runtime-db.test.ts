@@ -11,8 +11,10 @@ vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
 
 import { launchActivity } from '@cio/core/services/activity/activity';
 import { makeScormPackageVersionCurrent } from '@cio/core/services/activity/packages';
+import { attachScormPackage } from '@cio/core/services/activity/providers';
+import { createCoursesFromPackages } from '@cio/core/services/activity/courses';
 import { commitScormAttempt, getScormRuntimeState } from '@api/services/activity/runtime-scorm';
-import { ZScormCommit } from '@cio/utils/validation/activity/scorm';
+import { ZScormCommit, ZScormSettings } from '@cio/utils/validation/activity/scorm';
 import { AppError } from '@api/utils/errors';
 
 const hasDatabase = Boolean(
@@ -23,9 +25,13 @@ type UnitDef = {
   identifier: string;
   title: string;
   href: string;
+  isVisible?: boolean;
   masteryScoreRaw?: number | null;
   passingScoreScaled?: number | null;
   completionThreshold?: number | null;
+  formatDetails?:
+    | { format: 'scorm2004'; maxTimeAllowed: string | null; timeLimitAction: string | null }
+    | { format: 'scorm12'; maxTimeAllowed?: string | null; timeLimitAction?: string | null };
 };
 
 type FixtureOptions = {
@@ -37,6 +43,8 @@ type FixtureOptions = {
   compliance?: { retakeIntervalMonths: number } | null;
   withPlan?: boolean;
   allowRetakes?: boolean;
+  moduleOrder?: 'free' | 'sequential';
+  completionModules?: 'all' | 'graded_only';
 };
 
 type RuntimeFixture = {
@@ -63,7 +71,9 @@ async function createRuntimeFixture(suffix: string, options: FixtureOptions = {}
     certificate = null,
     compliance = null,
     withPlan = false,
-    allowRetakes = false
+    allowRetakes = false,
+    moduleOrder = 'free',
+    completionModules = 'all'
   } = options;
   const studentId = crypto.randomUUID();
 
@@ -131,7 +141,9 @@ async function createRuntimeFixture(suffix: string, options: FixtureOptions = {}
       contentPrefix: `scorm/rt-${suffix}/v1`
     })
     .returning();
-  await db.insert(schema.activityScorm).values({ activityId: activity.id, assetId: asset.id, allowRetakes });
+  await db
+    .insert(schema.activityScorm)
+    .values({ activityId: activity.id, assetId: asset.id, allowRetakes, moduleOrder, completionModules });
   const unitIds: Record<string, string> = {};
   let position = 0;
   for (const unit of units) {
@@ -144,9 +156,11 @@ async function createRuntimeFixture(suffix: string, options: FixtureOptions = {}
         position: position++,
         unitType: 'sco',
         href: unit.href,
+        isVisible: unit.isVisible ?? true,
         masteryScoreRaw: unit.masteryScoreRaw == null ? null : String(unit.masteryScoreRaw),
         passingScoreScaled: unit.passingScoreScaled == null ? null : String(unit.passingScoreScaled),
-        completionThreshold: unit.completionThreshold == null ? null : String(unit.completionThreshold)
+        completionThreshold: unit.completionThreshold == null ? null : String(unit.completionThreshold),
+        ...(unit.formatDetails ? { formatDetails: unit.formatDetails } : {})
       })
       .returning();
     unitIds[unit.identifier] = row.id;
@@ -215,6 +229,12 @@ describe('activity commit validation', () => {
     expect(ZScormCommit.safeParse({ cmi: {} }).success).toBe(false);
     expect(ZScormCommit.safeParse({ commitSequence: -1, cmi: {} }).success).toBe(false);
     expect(ZScormCommit.safeParse('not json').success).toBe(false);
+  });
+
+  it('defaults module order to free and accepts sequential', () => {
+    expect(ZScormSettings.parse({}).moduleOrder).toBe('free');
+    expect(ZScormSettings.parse({ moduleOrder: 'sequential' }).moduleOrder).toBe('sequential');
+    expect(ZScormSettings.safeParse({ moduleOrder: 'random' }).success).toBe(false);
   });
 });
 
@@ -298,6 +318,37 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
       expect(parentOrigins).toContain(`https://rt-${sfx}.myclassroomio.com`);
       expect(parentOrigins).toContain(state.parentOrigin);
       for (const origin of parentOrigins) expect(origin.startsWith('http')).toBe(true);
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('saves commits numbered above the stored sequence after resume', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const first = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!first.available) throw new Error('launch unavailable');
+
+      await commitScormAttempt(launchTokenOf(first.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_location': 'page-4', suspend_data: 'bookmark=3', 'core.exit': 'suspend' },
+        terminate: true
+      });
+
+      const second = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!second.available) throw new Error('launch unavailable');
+      const resumed = await getScormRuntimeState(launchTokenOf(second.playerUrl));
+      expect(resumed.commitSeq).toBe(1);
+
+      const saved = await commitScormAttempt(launchTokenOf(second.playerUrl), {
+        commitSequence: resumed.commitSeq + 1,
+        cmi: { 'core.lesson_location': 'page-5', suspend_data: 'bookmark=4' }
+      });
+      expect(saved.saved).toBe(true);
+
+      const reread = await getScormRuntimeState(launchTokenOf(second.playerUrl));
+      expect(reread.cmi).toMatchObject({ core: { lesson_location: 'page-5' } });
     } finally {
       await cleanupRuntimeFixture(fixture);
     }
@@ -392,18 +443,10 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
 
       const { db } = await import('@db/drizzle');
       const schema = await import('@db/schema');
-      const { updateScoAttempt } = await import('@cio/db/queries/scorm/sco-attempt');
-      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
-      const startedAt = new Date(Date.now() - 6 * 60 * 1000).toISOString();
-      const tries = await db
-        .select()
-        .from(schema.scormScoAttempt)
-        .where(eq(schema.scormScoAttempt.attemptId, attempts[0]!.id));
-      for (const row of tries) await updateScoAttempt(row.id, { startedAt });
 
       const result = await commitScormAttempt(token, {
         commitSequence: 1,
-        cmi: { 'core.lesson_status': 'completed' },
+        cmi: { 'core.lesson_status': 'completed', 'core.session_time': '00:06:00' },
         terminate: true
       });
       expect(result.completedActivity).toBe(true);
@@ -435,14 +478,6 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
 
       const { db } = await import('@db/drizzle');
       const schema = await import('@db/schema');
-      const { updateScoAttempt } = await import('@cio/db/queries/scorm/sco-attempt');
-      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
-      const startedAt = new Date(Date.now() - 6 * 60 * 1000).toISOString();
-      const tries = await db
-        .select()
-        .from(schema.scormScoAttempt)
-        .where(eq(schema.scormScoAttempt.attemptId, attempts[0]!.id));
-      for (const row of tries) await updateScoAttempt(row.id, { startedAt });
 
       const result = await commitScormAttempt(token, {
         commitSequence: 1,
@@ -450,7 +485,8 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
           'core.lesson_status': 'passed',
           'core.score.raw': '85',
           'core.score.min': '0',
-          'core.score.max': '100'
+          'core.score.max': '100',
+          'core.session_time': '00:06:00'
         },
         terminate: true
       });
@@ -510,7 +546,8 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
         commitSeq: 1,
         startedAt: iso(0),
         lastCommitAt: iso(360_000),
-        terminatedAt: iso(360_000)
+        terminatedAt: iso(360_000),
+        timeSpentSeconds: 360
       });
 
       const result = await syncComplianceProgressForMember(fixture.courseId, fixture.studentId, 'activity');
@@ -596,7 +633,11 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
       const relaunched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
       if (!relaunched.available) throw new Error('launch unavailable');
       const state = await getScormRuntimeState(launchTokenOf(relaunched.playerUrl));
-      expect(state.cmi).toEqual({});
+      expect(state.cmi).toMatchObject({
+        core: { student_id: fixture.studentId },
+        student_data: { mastery_score: '80' }
+      });
+      expect((state.cmi['core'] as Record<string, unknown>)['score']).toBeUndefined();
       expect(state.entry).toBe('ab-initio');
 
       const passResult = await commitScormAttempt(launchTokenOf(relaunched.playerUrl), {
@@ -642,7 +683,8 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
       if (!relaunched04.available) throw new Error('launch unavailable');
       const state04 = await getScormRuntimeState(launchTokenOf(relaunched04.playerUrl));
       expect(state04.entry).toBe('ab-initio');
-      expect(state04.cmi).toEqual({});
+      expect(state04.cmi).toMatchObject({ learner_id: fixture04.studentId });
+      expect(state04.cmi).not.toMatchObject({ completion_status: 'incomplete' });
     } finally {
       await cleanupRuntimeFixture(fixture12);
       await cleanupRuntimeFixture(fixture04);
@@ -835,6 +877,80 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
     }
   });
 
+  it('treats re-attaching the attached package as a no-op', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const first = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!first.available) throw new Error('launch unavailable');
+
+      await attachScormPackage(fixture.activityId, fixture.assetId, fixture.orgId, fixture.studentId);
+
+      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      expect(attempts).toHaveLength(1);
+      expect(attempts[0]?.closedAt).toBeNull();
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('refuses to swap in a package identical to the attached one', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const sha = 'a'.repeat(64);
+      await db
+        .update(schema.contentPackageVersion)
+        .set({ contentSha256: sha })
+        .where(eq(schema.contentPackageVersion.id, fixture.versionId));
+
+      const createOtherPackage = async (contentSha256: string) => {
+        const [otherAsset] = await db
+          .insert(schema.asset)
+          .values({ organizationId: fixture.orgId, kind: 'scorm', title: 'Other package zip' })
+          .returning();
+        const [otherVersion] = await db
+          .insert(schema.contentPackageVersion)
+          .values({
+            assetId: otherAsset!.id,
+            versionNumber: 1,
+            status: 'ready',
+            isCurrent: true,
+            format: 'scorm12',
+            uploadKey: `scorm/${otherAsset!.id}/v1.zip`,
+            contentPrefix: `scorm/${otherAsset!.id}/v1`,
+            contentSha256
+          })
+          .returning();
+
+        return { assetId: otherAsset!.id, versionId: otherVersion!.id };
+      };
+
+      const identical = await createOtherPackage(sha);
+      await expect(
+        attachScormPackage(fixture.activityId, identical.assetId, fixture.orgId, fixture.studentId)
+      ).rejects.toMatchObject({ statusCode: 409 });
+
+      const [unchanged] = await db
+        .select()
+        .from(schema.activityScorm)
+        .where(eq(schema.activityScorm.activityId, fixture.activityId));
+      expect(unchanged?.assetId).toBe(fixture.assetId);
+
+      const different = await createOtherPackage('b'.repeat(64));
+      await attachScormPackage(fixture.activityId, different.assetId, fixture.orgId, fixture.studentId);
+
+      const [swapped] = await db
+        .select()
+        .from(schema.activityScorm)
+        .where(eq(schema.activityScorm.activityId, fixture.activityId));
+      expect(swapped?.assetId).toBe(different.assetId);
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
   it('gives team previews that open nothing and save nothing', async () => {
     const fixture = await createRuntimeFixture(suffix());
     try {
@@ -852,7 +968,7 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
 
       const token = launchTokenOf(preview.playerUrl);
       const state = await getScormRuntimeState(token);
-      expect(state.cmi).toEqual({});
+      expect(state.cmi).toMatchObject({ core: { student_id: fixture.studentId } });
 
       const result = await commitScormAttempt(token, { commitSequence: 1, cmi: { suspend_data: 'x' } });
       expect(result.saved).toBe(false);
@@ -895,6 +1011,423 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
       }
     } finally {
       await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('leaves every module unlocked when order is free', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+
+      expect(launched.units.map((unit) => unit.locked)).toEqual([false, false]);
+
+      const direct = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'mod-2' }, context);
+      if (!direct.available) throw new Error('launch unavailable');
+      expect(direct.unit.identifier).toBe('mod-2');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('locks later modules until earlier ones complete when order is sequential', async () => {
+    const fixture = await createRuntimeFixture(suffix(), { moduleOrder: 'sequential' });
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+
+      expect(launched.unit.identifier).toBe('mod-1');
+      expect(launched.units.map((unit) => unit.locked)).toEqual([false, true]);
+
+      try {
+        await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'mod-2' }, context);
+        expect.unreachable('locked modules must throw');
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect((error as AppError).statusCode).toBe(403);
+      }
+
+      const completed = await commitScormAttempt(launchTokenOf(launched.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'completed' },
+        terminate: true
+      });
+      expect(completed.saved).toBe(true);
+
+      const reopened = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!reopened.available) throw new Error('launch unavailable');
+      expect(reopened.units.map((unit) => unit.locked)).toEqual([false, false]);
+      expect(reopened.unit.identifier).toBe('mod-2');
+
+      const direct = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'mod-2' }, context);
+      if (!direct.available) throw new Error('launch unavailable');
+      expect(direct.unit.identifier).toBe('mod-2');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('hides invisible modules from the menu and refuses to launch them', async () => {
+    const fixture = await createRuntimeFixture(suffix(), {
+      units: [
+        { identifier: 'mod-1', title: 'Module one', href: 'mod1.html' },
+        { identifier: 'hidden', title: 'Hidden helper', href: 'hidden.html', isVisible: false },
+        { identifier: 'mod-2', title: 'Module two', href: 'mod2.html' }
+      ]
+    });
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+
+      expect(launched.units.map((unit) => unit.identifier)).toEqual(['mod-1', 'mod-2']);
+
+      try {
+        await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'hidden' }, context);
+        expect.unreachable('hidden modules must throw');
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+      }
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('hands the package the learner identity and the unit pass mark', async () => {
+    const sfx = suffix();
+    const fixture = await createRuntimeFixture(sfx, {
+      units: [{ identifier: 'mod-1', title: 'Module one', href: 'mod1.html', masteryScoreRaw: 80 }]
+    });
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+
+      const state = await getScormRuntimeState(launchTokenOf(launched.playerUrl));
+      expect(state.cmi).toMatchObject({
+        core: { student_id: fixture.studentId, student_name: `${sfx}, Rt` },
+        student_data: { mastery_score: '80' }
+      });
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('hands 2004 packages the learner identity and the scaled pass mark', async () => {
+    const sfx = suffix();
+    const fixture = await createRuntimeFixture(sfx, {
+      format: 'scorm2004_4',
+      units: [{ identifier: 'mod-1', title: 'Module one', href: 'mod1.html', passingScoreScaled: 0.8 }]
+    });
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+
+      const state = await getScormRuntimeState(launchTokenOf(launched.playerUrl));
+      expect(state.cmi).toMatchObject({
+        learner_id: fixture.studentId,
+        learner_name: `${sfx}, Rt`,
+        scaled_passing_score: '0.8'
+      });
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('defaults sequential order for sequenced packages on first attach', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      await db
+        .update(schema.contentPackageVersion)
+        .set({ warnings: ['has_sequencing'] })
+        .where(eq(schema.contentPackageVersion.id, fixture.versionId));
+      await db
+        .update(schema.activityScorm)
+        .set({ assetId: null })
+        .where(eq(schema.activityScorm.activityId, fixture.activityId));
+
+      await attachScormPackage(fixture.activityId, fixture.assetId, fixture.orgId, fixture.studentId);
+
+      const [details] = await db
+        .select()
+        .from(schema.activityScorm)
+        .where(eq(schema.activityScorm.activityId, fixture.activityId));
+      expect(details?.assetId).toBe(fixture.assetId);
+      expect(details?.moduleOrder).toBe('sequential');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('defaults free order for packages without sequencing rules on first attach', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      await db
+        .update(schema.activityScorm)
+        .set({ assetId: null })
+        .where(eq(schema.activityScorm.activityId, fixture.activityId));
+
+      await attachScormPackage(fixture.activityId, fixture.assetId, fixture.orgId, fixture.studentId);
+
+      const [details] = await db
+        .select()
+        .from(schema.activityScorm)
+        .where(eq(schema.activityScorm.activityId, fixture.activityId));
+      expect(details?.moduleOrder).toBe('free');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('re-derives the order when swapping packages', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const [otherAsset] = await db
+        .insert(schema.asset)
+        .values({ organizationId: fixture.orgId, kind: 'scorm', title: 'Other package zip' })
+        .returning();
+      const [otherVersion] = await db
+        .insert(schema.contentPackageVersion)
+        .values({
+          assetId: otherAsset!.id,
+          versionNumber: 1,
+          status: 'ready',
+          isCurrent: true,
+          format: 'scorm12',
+          uploadKey: `scorm/${otherAsset!.id}/v1.zip`,
+          contentPrefix: `scorm/${otherAsset!.id}/v1`,
+          warnings: ['has_sequencing']
+        })
+        .returning();
+      if (!otherVersion) throw new Error('missing version');
+
+      await attachScormPackage(fixture.activityId, otherAsset!.id, fixture.orgId, fixture.studentId);
+
+      const [details] = await db
+        .select()
+        .from(schema.activityScorm)
+        .where(eq(schema.activityScorm.activityId, fixture.activityId));
+      expect(details?.assetId).toBe(otherAsset!.id);
+      expect(details?.moduleOrder).toBe('sequential');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('defaults the order from package warnings when creating courses from packages', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    let createdCourseId: string | null = null;
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      await db
+        .update(schema.contentPackageVersion)
+        .set({ warnings: ['has_sequencing'] })
+        .where(eq(schema.contentPackageVersion.id, fixture.versionId));
+
+      const created = await createCoursesFromPackages(fixture.orgId, fixture.studentId, {
+        assetIds: [fixture.assetId],
+        courseType: 'SELF_PACED',
+        titles: { [fixture.assetId]: 'Sequenced course' }
+      });
+      createdCourseId = created[0]?.id ?? null;
+      const createdActivityId = created[0]?.activityId ?? null;
+      if (!createdCourseId || !createdActivityId) throw new Error('course was not created');
+
+      const [details] = await db
+        .select()
+        .from(schema.activityScorm)
+        .where(eq(schema.activityScorm.activityId, createdActivityId));
+      expect(details?.moduleOrder).toBe('sequential');
+    } finally {
+      if (createdCourseId) {
+        const { db } = await import('@db/drizzle');
+        const schema = await import('@db/schema');
+        await db.delete(schema.courseNewsfeed).where(eq(schema.courseNewsfeed.courseId, createdCourseId));
+        await db.delete(schema.courseActivity).where(eq(schema.courseActivity.courseId, createdCourseId));
+        await db.delete(schema.course).where(eq(schema.course.id, createdCourseId));
+      }
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+});
+
+describe.skipIf(!hasDatabase)('scorm time tracking and limits (phase 4 step 3)', () => {
+  async function tryOf(activityId: string, profileId: string) {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    const attempts = await listAttempts(activityId, profileId);
+    const [row] = await db
+      .select()
+      .from(schema.scormScoAttempt)
+      .where(eq(schema.scormScoAttempt.attemptId, attempts[0]!.id));
+
+    return row;
+  }
+
+  it('persists package-reported session time and accumulates heartbeats', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+      const token = launchTokenOf(launched.playerUrl);
+
+      const starting = await getScormRuntimeState(token);
+      expect(starting.cmi['max_time_allowed']).toBeUndefined();
+
+      await commitScormAttempt(token, {
+        commitSequence: 1,
+        cmi: { 'core.session_time': '00:05:00' }
+      });
+      expect((await tryOf(fixture.activityId, fixture.studentId))?.timeSpentSeconds).toBe(300);
+
+      const second = await commitScormAttempt(token, { commitSequence: 2, cmi: {} });
+      expect(second.saved).toBe(true);
+      const tracked = (await tryOf(fixture.activityId, fixture.studentId))?.timeSpentSeconds ?? 0;
+      expect(tracked).toBeGreaterThanOrEqual(300);
+      expect(tracked).toBeLessThan(360);
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('caps dormant gaps at one heartbeat instead of wall-clock time', async () => {
+    const fixture = await createRuntimeFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+      const token = launchTokenOf(launched.playerUrl);
+
+      await commitScormAttempt(token, {
+        commitSequence: 1,
+        cmi: { 'core.session_time': '00:05:00' }
+      });
+
+      const dormantSince = new Date(Date.now() - 2 * 3600 * 1000).toISOString();
+      const stored = await tryOf(fixture.activityId, fixture.studentId);
+      await db
+        .update(schema.scormScoAttempt)
+        .set({ lastCommitAt: dormantSince })
+        .where(eq(schema.scormScoAttempt.id, stored!.id));
+
+      await commitScormAttempt(token, { commitSequence: 2, cmi: {} });
+      expect((await tryOf(fixture.activityId, fixture.studentId))?.timeSpentSeconds).toBe(360);
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('initializes 2004 launch CMI with manifest time limits', async () => {
+    const fixture = await createRuntimeFixture(suffix(), {
+      format: 'scorm2004_4',
+      units: [
+        {
+          identifier: 'mod-1',
+          title: 'Module one',
+          href: 'mod1.html',
+          formatDetails: { format: 'scorm2004', maxTimeAllowed: 'PT45M', timeLimitAction: 'continue,no message' }
+        }
+      ]
+    });
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+
+      const state = await getScormRuntimeState(launchTokenOf(launched.playerUrl));
+      expect(state.cmi['max_time_allowed']).toBe('PT45M');
+      expect(state.cmi['time_limit_action']).toBe('continue,no message');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('initializes 1.2 launch CMI with manifest time limits in student_data', async () => {
+    const fixture = await createRuntimeFixture(suffix(), {
+      format: 'scorm12',
+      units: [
+        {
+          identifier: 'mod-1',
+          title: 'Module one',
+          href: 'mod1.html',
+          formatDetails: { format: 'scorm12', maxTimeAllowed: '00:45:00', timeLimitAction: 'exit,message' }
+        }
+      ]
+    });
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+
+      const state = await getScormRuntimeState(launchTokenOf(launched.playerUrl));
+      const studentData = state.cmi['student_data'] as Record<string, unknown>;
+      expect(studentData).toBeDefined();
+      expect(studentData['max_time_allowed']).toBe('00:45:00');
+      expect(studentData['time_limit_action']).toBe('exit,message');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('completes on graded modules only when completion scope is graded_only', async () => {
+    const units = [
+      { identifier: 'mod-1', title: 'Intro', href: 'mod1.html' },
+      { identifier: 'mod-2', title: 'Quiz', href: 'mod2.html', masteryScoreRaw: 80 },
+      { identifier: 'mod-3', title: 'Survey', href: 'mod3.html' }
+    ];
+    const scoped = await createRuntimeFixture(suffix(), { units, completionModules: 'graded_only' });
+    const unscoped = await createRuntimeFixture(suffix(), { units });
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+
+      for (const fixture of [scoped, unscoped]) {
+        const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+        const intro = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'mod-1' }, context);
+        if (!intro.available) throw new Error('launch unavailable');
+        await commitScormAttempt(launchTokenOf(intro.playerUrl), {
+          commitSequence: 1,
+          cmi: { 'core.lesson_status': 'completed' },
+          terminate: true
+        });
+
+        const quiz = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'mod-2' }, context);
+        if (!quiz.available) throw new Error('launch unavailable');
+        const finished = await commitScormAttempt(launchTokenOf(quiz.playerUrl), {
+          commitSequence: 1,
+          cmi: { 'core.score.raw': '90' },
+          terminate: true
+        });
+
+        const [completion] = await db
+          .select()
+          .from(schema.activityCompletion)
+          .where(eq(schema.activityCompletion.activityId, fixture.activityId));
+
+        if (fixture === scoped) {
+          expect(finished.completedActivity).toBe(true);
+          expect(completion?.isComplete).toBe(true);
+        } else {
+          expect(finished.completedActivity).toBe(false);
+          expect(completion?.isComplete).not.toBe(true);
+        }
+      }
+    } finally {
+      await cleanupRuntimeFixture(scoped);
+      await cleanupRuntimeFixture(unscoped);
     }
   });
 });

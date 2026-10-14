@@ -234,7 +234,9 @@
     "scorm_gated": "Paid plans",
     "scorm_upgrade_notice": "SCORM courses are included in every paid plan. Upgrade to create one.",
     "scorm_upgrade_cta": "View plans",
-    "scorm_license_notice": "SCORM courses need an enterprise license on this server."
+    "scorm_license_notice": "SCORM courses need an enterprise license on this server.",
+    "track_compliance_label": "Track as compliance training",
+    "track_compliance_hint": "Add due dates, renewals and reminders"
   },
   "public_course": {
     "header": {
@@ -1574,14 +1576,12 @@
       "create_course_title_many": "Create {count, plural, one {# course} other {# courses}} from packages",
       "create_course_description": "We’ll create a draft SCORM course with each package. Its modules stay together in a menu above the package.",
       "course_nav_preview": "SCORM course navigation: Package",
-      "course_type_self_paced": "Self-paced",
-      "course_type_self_paced_description": "Students take the package at their own pace",
-      "course_type_compliance": "Compliance",
-      "course_type_compliance_description": "Recurring training with retakes, reminders, and renewal tracking",
       "course_title_label": "Course title",
       "course_title_label_for": "Course title for {title}",
       "create_course_confirm_single": "Create course",
-      "create_course_confirm_many": "Create {count, plural, one {# course} other {# courses}}"
+      "create_course_confirm_many": "Create {count, plural, one {# course} other {# courses}}",
+      "track_compliance_label": "Track as compliance training",
+      "track_compliance_hint": "Add due dates, renewals and reminders"
     }
   },
   "tags_admin": {
@@ -2736,7 +2736,8 @@
           "activity_scorm_gated": "Paid plans",
           "activity_scorm_upgrade_notice": "SCORM packages are included in every paid plan. Upgrade to add packages to your courses.",
           "activity_scorm_upgrade_cta": "View plans",
-          "activity_scorm_license_notice": "SCORM packages need an enterprise license on this server. Learners keep access to existing packages."
+          "activity_scorm_license_notice": "SCORM packages need an enterprise license on this server. Learners keep access to existing packages.",
+          "activity_scorm_default_title": "SCORM package"
         },
         "add_content_section_title_placeholder": "e.g., Module 1: Introduction",
         "add_content_lesson_title_placeholder": "e.g., Getting Started with Variables",
@@ -3703,10 +3704,10 @@
           "results": {
             "summary": {
               "enrolled": "Enrolled",
-              "started": "Started",
               "completed": "Completed",
-              "passed": "Passed",
-              "average_score": "Average score"
+              "average_score": "Average score",
+              "in_progress": "In progress",
+              "not_started": "Not started"
             },
             "table": {
               "student": "Student",
@@ -3759,7 +3760,9 @@
                 "beacon": "Saved on exit",
                 "error": "Error",
                 "not_initialized": "Did not connect"
-              }
+              },
+              "session_device": "Session device",
+              "technical_details": "Technical details"
             }
           },
           "results_placeholder_title": "No results yet",
@@ -3798,23 +3801,39 @@
             "swap_confirm_title": "Swap to a different package?",
             "swap_confirm_body": "Learners will start the new package from the beginning. The current package stays in the Media Manager.",
             "swap_confirm_body_with_count": "{count, plural, one {# learner is} other {# learners are}} part-way through. They will restart on the new package from the beginning. Learners who completed this package stay completed.",
-            "mismatch_title": "This looks like a different course",
-            "mismatch_body": "Its modules do not match the current package. If it is a different course, swap the package instead of adding a new version.",
-            "swap_instead": "Swap package instead",
-            "upload_anyway": "Upload as a new version anyway",
-            "same_file_title": "Already the current version",
-            "same_file_body": "This file matches the current version. No new version was created.",
             "promote_confirm_title": "Learners started during the upload",
             "promote_confirm_body": "{count, plural, one {# learner started} other {# learners started}} while the new version was processing.",
             "modules_title": "This package has {count, plural, one {# module} other {# modules}}",
             "modules_hint": "Learners pick modules from a menu above the package. The completion rule applies to each module.",
-            "sequencing_warning": "Sequencing rules in this package are ignored. Your course progression settings apply instead.",
             "case_warning": "Some file names differ only in letter case.",
             "rebased_warning": "The manifest was found inside a single top-level folder.",
             "version": "Version {version}",
+            "version_history_title": "Version history",
+            "version_history_count": "{count, plural, one {# version} other {# versions}}",
+            "version_current": "Current",
+            "revert_button": "Restore",
+            "revert_confirm_title": "Revert to Version {version}?",
+            "revert_confirm_body": "Learners will start taking Version {version} from now on.",
+            "revert_confirm_body_with_count": "{count, plural, one {# learner is} other {# learners are}} currently taking this package. Reverting to Version {version} makes it the active package for learners.",
+            "revert_confirm_button": "Revert to this version",
             "files": "Files",
             "size": "Size",
             "pass_mark": "Pass mark {score}%",
+            "stat_pass_mark": "Pass mark",
+            "none": "None",
+            "modules": "Modules",
+            "manage": "Manage",
+            "swap_description": "Replace with a different course",
+            "remove_description": "Keeps results, detaches from this activity",
+            "warnings_summary": "{count, plural, one {# thing to know about this package} other {# things to know about this package}}",
+            "module_order_sequential": "Taken in package order",
+            "module_order_free": "Open in any order",
+            "table_num": "#",
+            "table_title": "Title",
+            "table_type": "Type",
+            "table_grading": "Grading",
+            "graded_pass": "Pass at {score}%",
+            "ungraded": "Ungraded",
             "errors": {
               "missing_manifest": "No imsmanifest.xml was found. Re-export the package for an LMS.",
               "xapi_package": "This is an xAPI (Tin Can) package. Re-export it as SCORM.",
@@ -3841,12 +3860,27 @@
               "processing": "Processing",
               "ready": "Ready",
               "failed": "Failed"
-            }
+            },
+            "no_lms_warning": "This package does not appear to report progress to an LMS. Learners can view the content, but completion and scores cannot be tracked automatically.",
+            "peek_checking": "Checking package contents…",
+            "peek_match": "“{title}” · {count, plural, one {# module} other {# modules}} — matches the current package.",
+            "peek_diff": "“{title}” · {count, plural, one {# module} other {# modules}} — this looks like a different course. If it is a new version of this course, confirm below. Otherwise, swap the package.",
+            "peek_same_course": "“{title}” · {count, plural, one {# module} other {# modules}} — this looks like the same course. Upload it as a new version instead, or confirm below to swap anyway.",
+            "peek_same_file": "This file is identical to the current version. Nothing will change.",
+            "confirm_upgrade_anyway": "It is a new version of this course — upload anyway",
+            "confirm_swap_anyway": "Swap anyway",
+            "unchanged": "Already up to date. No new version was created.",
+            "peek_swap_ok": "“{title}” · {count, plural, one {# module} other {# modules}} — will be attached as a new package.",
+            "peek_unknown": "Could not read the package contents, so it was not compared with the current package.",
+            "empty_title": "No package uploaded",
+            "empty_description": "Upload a SCORM package to start viewing and testing it.",
+            "upload_package": "Upload package",
+            "sequencing_ordered": "This package defines a module order: each module unlocks as the previous one completes. Other sequencing rules, like pre-tests and rollup, are ignored.",
+            "sequencing_unordered": "This package defines a module order, but learners can currently open modules in any order. Set Module order to “In sequence” in Settings to enforce it. Other sequencing rules, like pre-tests and rollup, are ignored."
           },
           "instructions": {
             "label": "Instructions for learners",
-            "placeholder": "What should learners know before they open the package?",
-            "save": "Save instructions"
+            "placeholder": "What should learners know before they open the package?"
           },
           "settings": {
             "completion_rule": "Completion rule",
@@ -3861,10 +3895,16 @@
             "min_score": "Minimum score (%)",
             "retakes": "Allow retakes",
             "retakes_helper": "Completed packages reopen with a Start a new attempt button. Best score counts.",
-            "launch_mode": "Launch mode",
-            "launch_embedded": "In the course",
-            "launch_window": "In a new window",
-            "save": "Save settings"
+            "module_order": "Module order",
+            "order_free": "Any order",
+            "order_sequential": "In sequence",
+            "module_order_helper": "In sequence locks each module until the previous one is complete. Packages without ordering rules play the same either way.",
+            "completion_modules": "Completion scope",
+            "completion_modules_all": "All modules",
+            "completion_modules_graded_only": "Graded modules only",
+            "completion_modules_helper": "Graded modules only lets learners skip optional surveys and glossaries. Only modules with a pass mark or a reported score gate completion.",
+            "completion_modules_single_note": "This package has a single module, so completion scope does not apply.",
+            "custom_threshold_hint": "This package sets no pass mark. Learners complete it by finishing every module and averaging at least {score}%."
           },
           "player": {
             "modules_complete": "{complete} of {total} modules complete",
@@ -3886,11 +3926,8 @@
             "restarted_body": "You are starting from the beginning because the package changed.",
             "new_attempt": "Start a new attempt",
             "retakes_off": "Retakes are off for this package, so a new attempt cannot be started.",
-            "window_title": "This package opens in a new window",
-            "window_body": "Your progress saves automatically while the new window stays open.",
-            "open_window": "Open package",
             "no_connection_title": "The package did not connect",
-            "no_connection_body": "The package never called the course player. Re-export it with an LMS or SCORM publishing option, or reload to try again.",
+            "no_connection_body": "This content is taking longer than expected to start. Reload to try again. If this keeps happening, contact your instructor.",
             "fullscreen": "Full screen",
             "complete_title": "Package complete",
             "complete_body": "Your results were recorded.",
@@ -3898,8 +3935,24 @@
             "module_complete_title": "Module complete",
             "module_complete_body": "Your progress was saved. Open the next module to keep going.",
             "next_module": "Next module",
-            "autosave_hint": "Progress saves automatically."
-          }
+            "autosave_hint": "Progress saves automatically.",
+            "prev_module": "Previous module",
+            "module_position": "Module {current} of {total}",
+            "exit_fullscreen": "Exit full screen",
+            "status_preview": "Preview",
+            "preview_title": "Preview mode",
+            "preview_body": "You are testing this activity as an instructor. Nothing you do here is recorded.",
+            "module_locked": "Complete the previous modules first",
+            "time_limit": "Suggested: {time}"
+          },
+          "header_unlocked": "Unlocked",
+          "single_activity_empty_title": "No package added yet",
+          "single_activity_empty_description": "Upload a SCORM package to make it available to learners in this course.",
+          "single_activity_empty_student_desc": "This course does not have any content yet.",
+          "add_package_button": "Add package",
+          "menu_delete": "Delete activity",
+          "delete_confirm_body_with_count": "{count, plural, one {# learner is} other {# learners are}} part-way through this item. Deleting it removes their progress.",
+          "menu_actions": "More actions"
         }
       },
       "attendance": {

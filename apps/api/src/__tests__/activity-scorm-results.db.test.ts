@@ -140,7 +140,7 @@ type TypedUnitSeed = {
   passingScoreScaled?: string | null;
   completionThreshold?: string | null;
   formatDetails?:
-    | { format: 'scorm12' }
+    | { format: 'scorm12'; maxTimeAllowed?: string | null; timeLimitAction?: string | null }
     | { format: 'scorm2004'; maxTimeAllowed: string | null; timeLimitAction: string | null };
 };
 
@@ -833,7 +833,8 @@ describe.skipIf(!hasDatabase)('scorm results and reset', () => {
           commitSeq: 2,
           startedAt: iso(0),
           lastCommitAt: iso(150_000),
-          terminatedAt: iso(150_000)
+          terminatedAt: iso(150_000),
+          timeSpentSeconds: 150
         },
         {
           attemptId: second!.id,
@@ -843,7 +844,8 @@ describe.skipIf(!hasDatabase)('scorm results and reset', () => {
           commitSeq: 1,
           startedAt: iso(200_000),
           lastCommitAt: iso(260_000),
-          terminatedAt: iso(260_000)
+          terminatedAt: iso(260_000),
+          timeSpentSeconds: 60
         }
       ]);
 
@@ -856,6 +858,322 @@ describe.skipIf(!hasDatabase)('scorm results and reset', () => {
       expect(empty).toBeNull();
     } finally {
       await cleanupResultsFixture(ids);
+    }
+  });
+
+  it('evaluates graded_only in SQL exactly like the TypeScript rule', { timeout: 30000 }, async () => {
+    const ids = await createResultsFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { listScormLearnerResults } = await import('@cio/db/queries/scorm/report');
+      const { isScormRuleMet, moduleOutcomeFromCmi } = await import('@cio/activity-packages');
+
+      await db
+        .update(schema.activityScorm)
+        .set({ completionModules: 'graded_only' })
+        .where(eq(schema.activityScorm.activityId, ids.activityId));
+
+      const [attempt] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: ids.activityId,
+          profileId: ids.profileId,
+          packageVersionId: ids.versionId,
+          attemptNumber: 1
+        })
+        .returning();
+      await db.insert(schema.scormScoAttempt).values({
+        attemptId: attempt!.id,
+        unitId: ids.unitIds[0]!,
+        status: 'closed',
+        cmi: { core: { lesson_status: 'passed', score: { raw: '90' } } },
+        commitSeq: 2,
+        lastCommitAt: new Date().toISOString(),
+        terminatedAt: new Date().toISOString(),
+        timeSpentSeconds: 150
+      });
+
+      const outcomes = [
+        moduleOutcomeFromCmi({ core: { lesson_status: 'passed', score: { raw: '90' } } }, 'scorm12', {
+          masteryScoreRaw: 80,
+          passingScoreScaled: null
+        }),
+        { completion: 'not_attempted', success: 'unknown', hasPassMark: false, scaledScore: null }
+      ] as Parameters<typeof isScormRuleMet>[1];
+
+      const scoped = await listScormLearnerResults(
+        ids.activityId,
+        [ids.profileId],
+        { rule: 'auto', minScorePercent: null, completionModules: 'graded_only' },
+        { page: 1, limit: 20, sort: 'name', direction: 'asc' }
+      );
+      expect(scoped.rows[0]?.latestRuleMet).toBe(true);
+      expect(scoped.rows[0]?.timeSpentSeconds).toBe(150);
+      expect(isScormRuleMet({ rule: 'auto', completionModules: 'graded_only' }, outcomes)).toBe(true);
+
+      await db
+        .update(schema.activityScorm)
+        .set({ completionModules: 'all' })
+        .where(eq(schema.activityScorm.activityId, ids.activityId));
+
+      const unscoped = await listScormLearnerResults(
+        ids.activityId,
+        [ids.profileId],
+        { rule: 'auto', minScorePercent: null, completionModules: 'all' },
+        { page: 1, limit: 20, sort: 'name', direction: 'asc' }
+      );
+      expect(unscoped.rows[0]?.latestRuleMet).toBe(false);
+      expect(isScormRuleMet({ rule: 'auto', completionModules: 'all' }, outcomes)).toBe(false);
+    } finally {
+      await cleanupResultsFixture(ids);
+    }
+  });
+
+  it('counts score-only modules as graded but completes them by completion', { timeout: 30000 }, async () => {
+    const ids = await createResultsFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { listScormLearnerResults } = await import('@cio/db/queries/scorm/report');
+      const { isScormRuleMet } = await import('@cio/activity-packages');
+
+      await db
+        .update(schema.activityScorm)
+        .set({ completionModules: 'graded_only' })
+        .where(eq(schema.activityScorm.activityId, ids.activityId));
+
+      const [attempt] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: ids.activityId,
+          profileId: ids.profileId,
+          packageVersionId: ids.versionId,
+          attemptNumber: 1
+        })
+        .returning();
+      await db.insert(schema.scormScoAttempt).values([
+        {
+          attemptId: attempt!.id,
+          unitId: ids.unitIds[0]!,
+          status: 'closed',
+          cmi: { core: { lesson_status: 'passed', score: { raw: '90' } } },
+          commitSeq: 2,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString(),
+          timeSpentSeconds: 150
+        },
+        {
+          attemptId: attempt!.id,
+          unitId: ids.unitIds[1]!,
+          status: 'closed',
+          cmi: { core: { lesson_status: 'completed', score: { raw: '70' } } },
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString(),
+          timeSpentSeconds: 60
+        }
+      ]);
+
+      const settings = { rule: 'auto', minScorePercent: null, completionModules: 'graded_only' } as const;
+      const paging = { page: 1, limit: 20, sort: 'name', direction: 'asc' } as const;
+      const outcomes = [
+        { completion: 'completed', success: 'passed', hasPassMark: true, scaledScore: 0.9 },
+        { completion: 'completed', success: 'unknown', hasPassMark: false, scaledScore: 0.7 }
+      ] as Parameters<typeof isScormRuleMet>[1];
+
+      const completed = await listScormLearnerResults(ids.activityId, [ids.profileId], settings, paging);
+      expect(completed.rows[0]?.latestRuleMet).toBe(true);
+      expect(isScormRuleMet({ rule: 'auto', completionModules: 'graded_only' }, outcomes)).toBe(true);
+
+      await db
+        .update(schema.scormScoAttempt)
+        .set({ cmi: { core: { lesson_status: 'incomplete', score: { raw: '70' } } } })
+        .where(eq(schema.scormScoAttempt.unitId, ids.unitIds[1]!));
+
+      const incomplete = await listScormLearnerResults(ids.activityId, [ids.profileId], settings, paging);
+      expect(incomplete.rows[0]?.latestRuleMet).toBe(false);
+      expect(
+        isScormRuleMet({ rule: 'auto', completionModules: 'graded_only' }, [
+          outcomes[0]!,
+          { completion: 'incomplete', success: 'unknown', hasPassMark: false, scaledScore: 0.7 }
+        ])
+      ).toBe(false);
+    } finally {
+      await cleanupResultsFixture(ids);
+    }
+  });
+
+  it('falls back to all modules when graded_only finds nothing graded', { timeout: 30000 }, async () => {
+    const ids = await createTypedFixture(suffix(), 'scorm12', [
+      { identifier: 'PLAIN-A', title: 'Plain A', href: 'a.html', formatDetails: { format: 'scorm12' } },
+      { identifier: 'PLAIN-B', title: 'Plain B', href: 'b.html', formatDetails: { format: 'scorm12' } }
+    ]);
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { listScormLearnerResults } = await import('@cio/db/queries/scorm/report');
+      const { isScormRuleMet } = await import('@cio/activity-packages');
+
+      await db
+        .update(schema.activityScorm)
+        .set({ completionModules: 'graded_only' })
+        .where(eq(schema.activityScorm.activityId, ids.activityId));
+
+      const [attempt] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: ids.activityId,
+          profileId: ids.profileId,
+          packageVersionId: ids.versionId,
+          attemptNumber: 1
+        })
+        .returning();
+      await db.insert(schema.scormScoAttempt).values([
+        {
+          attemptId: attempt!.id,
+          unitId: ids.unitIds[0]!,
+          status: 'closed',
+          cmi: { core: { lesson_status: 'completed' } },
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString(),
+          timeSpentSeconds: 45
+        },
+        {
+          attemptId: attempt!.id,
+          unitId: ids.unitIds[1]!,
+          status: 'closed',
+          cmi: { core: { lesson_status: 'incomplete' } },
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString(),
+          timeSpentSeconds: 30
+        }
+      ]);
+
+      const outcomes = [
+        { completion: 'completed', success: 'unknown', hasPassMark: false, scaledScore: null },
+        { completion: 'incomplete', success: 'unknown', hasPassMark: false, scaledScore: null }
+      ] as Parameters<typeof isScormRuleMet>[1];
+      const paging = { page: 1, limit: 20, sort: 'name', direction: 'asc' } as const;
+
+      const blocked = await listScormLearnerResults(
+        ids.activityId,
+        [ids.profileId],
+        { rule: 'auto', minScorePercent: null, completionModules: 'graded_only' },
+        paging
+      );
+      expect(blocked.rows[0]?.latestRuleMet).toBe(false);
+      expect(blocked.rows[0]?.timeSpentSeconds).toBe(75);
+      expect(isScormRuleMet({ rule: 'auto', completionModules: 'graded_only' }, outcomes)).toBe(false);
+
+      await db
+        .update(schema.scormScoAttempt)
+        .set({ cmi: { core: { lesson_status: 'completed' } } })
+        .where(eq(schema.scormScoAttempt.unitId, ids.unitIds[1]!));
+
+      const finished = await listScormLearnerResults(
+        ids.activityId,
+        [ids.profileId],
+        { rule: 'auto', minScorePercent: null, completionModules: 'graded_only' },
+        paging
+      );
+      expect(finished.rows[0]?.latestRuleMet).toBe(true);
+      expect(
+        isScormRuleMet({ rule: 'auto', completionModules: 'graded_only' }, [
+          outcomes[0]!,
+          { completion: 'completed', success: 'unknown', hasPassMark: false, scaledScore: null }
+        ])
+      ).toBe(true);
+    } finally {
+      await cleanupResultsFixture(ids);
+    }
+  });
+
+  it('averages the score rule over graded modules only, in SQL and TypeScript', { timeout: 60000 }, async () => {
+    const seeds = [
+      { identifier: 'QUIZ', title: 'Quiz', href: 'quiz.html', masteryScoreRaw: '80' },
+      { identifier: 'PLAIN', title: 'Plain', href: 'plain.html' }
+    ];
+    const passing = await createTypedFixture(suffix(), 'scorm12', seeds);
+    const failing = await createTypedFixture(suffix(), 'scorm12', seeds);
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { listScormLearnerResults } = await import('@cio/db/queries/scorm/report');
+      const { isScormRuleMet } = await import('@cio/activity-packages');
+
+      const paging = { page: 1, limit: 20, sort: 'name', direction: 'asc' } as const;
+      const settings = { rule: 'score', minScorePercent: 80, completionModules: 'graded_only' };
+
+      for (const ids of [passing, failing]) {
+        await db
+          .update(schema.activityScorm)
+          .set({ completionRule: 'score', minScorePercent: 80, completionModules: 'graded_only' })
+          .where(eq(schema.activityScorm.activityId, ids.activityId));
+      }
+
+      const seedAttempt = async (ids: ResultsFixture, quizScore: string, plainCmi: Record<string, unknown> | null) => {
+        const [attempt] = await db
+          .insert(schema.scormAttempt)
+          .values({
+            activityId: ids.activityId,
+            profileId: ids.profileId,
+            packageVersionId: ids.versionId,
+            attemptNumber: 1
+          })
+          .returning();
+        await db.insert(schema.scormScoAttempt).values({
+          attemptId: attempt!.id,
+          unitId: ids.unitIds[0]!,
+          status: 'closed',
+          cmi: { core: { lesson_status: 'completed', score: { raw: quizScore } } },
+          commitSeq: 1,
+          lastCommitAt: new Date().toISOString(),
+          terminatedAt: new Date().toISOString(),
+          timeSpentSeconds: 120
+        });
+        if (plainCmi) {
+          await db.insert(schema.scormScoAttempt).values({
+            attemptId: attempt!.id,
+            unitId: ids.unitIds[1]!,
+            status: 'closed',
+            cmi: plainCmi,
+            commitSeq: 1,
+            lastCommitAt: new Date().toISOString(),
+            terminatedAt: new Date().toISOString(),
+            timeSpentSeconds: 60
+          });
+        }
+      };
+
+      await seedAttempt(passing, '90', null);
+      const passingOutcomes = [
+        { completion: 'completed', success: 'unknown', hasPassMark: true, scaledScore: 0.9 },
+        { completion: 'not_attempted', success: 'unknown', hasPassMark: false, scaledScore: null }
+      ] as Parameters<typeof isScormRuleMet>[1];
+
+      const passed = await listScormLearnerResults(passing.activityId, [passing.profileId], settings, paging);
+      expect(passed.rows[0]?.latestRuleMet).toBe(true);
+      expect(
+        isScormRuleMet({ rule: 'score', minScorePercent: 80, completionModules: 'graded_only' }, passingOutcomes)
+      ).toBe(true);
+
+      await seedAttempt(failing, '70', { core: { lesson_status: 'completed' } });
+      const failingOutcomes = [
+        { completion: 'completed', success: 'unknown', hasPassMark: true, scaledScore: 0.7 },
+        { completion: 'completed', success: 'unknown', hasPassMark: false, scaledScore: null }
+      ] as Parameters<typeof isScormRuleMet>[1];
+
+      const failed = await listScormLearnerResults(failing.activityId, [failing.profileId], settings, paging);
+      expect(failed.rows[0]?.latestRuleMet).toBe(false);
+      expect(
+        isScormRuleMet({ rule: 'score', minScorePercent: 80, completionModules: 'graded_only' }, failingOutcomes)
+      ).toBe(false);
+    } finally {
+      await cleanupResultsFixture(passing);
+      await cleanupResultsFixture(failing);
     }
   });
 

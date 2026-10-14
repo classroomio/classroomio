@@ -33,8 +33,9 @@ import {
   CONTENT_PACKAGE_STATUSES,
   CONTENT_PACKAGE_UNIT_TYPES,
   SCORM_ATTEMPT_CLOSE_REASONS,
+  SCORM_COMPLETION_MODULES,
   SCORM_COMPLETION_RULES,
-  SCORM_LAUNCH_MODES,
+  SCORM_MODULE_ORDERS,
   SCORM_SCO_ATTEMPT_STATUSES,
   SCORM_SESSION_EVENT_KINDS
 } from '@cio/utils/constants/activity';
@@ -53,7 +54,8 @@ export const contentPackageStatus = pgEnum('CONTENT_PACKAGE_STATUS', [...CONTENT
 export const contentPackageFormat = pgEnum('CONTENT_PACKAGE_FORMAT', [...CONTENT_PACKAGE_FORMATS]);
 export const contentPackageUnitType = pgEnum('CONTENT_PACKAGE_UNIT_TYPE', [...CONTENT_PACKAGE_UNIT_TYPES]);
 export const scormCompletionRule = pgEnum('SCORM_COMPLETION_RULE', [...SCORM_COMPLETION_RULES]);
-export const scormLaunchMode = pgEnum('SCORM_LAUNCH_MODE', [...SCORM_LAUNCH_MODES]);
+export const scormCompletionModules = pgEnum('SCORM_COMPLETION_MODULES', [...SCORM_COMPLETION_MODULES]);
+export const scormModuleOrder = pgEnum('SCORM_MODULE_ORDER', [...SCORM_MODULE_ORDERS]);
 export const scormAttemptCloseReason = pgEnum('SCORM_ATTEMPT_CLOSE_REASON', [...SCORM_ATTEMPT_CLOSE_REASONS]);
 export const scormScoAttemptStatus = pgEnum('SCORM_SCO_ATTEMPT_STATUS', [...SCORM_SCO_ATTEMPT_STATUSES]);
 export const scormSessionEventKind = pgEnum('SCORM_SESSION_EVENT_KIND', [...SCORM_SESSION_EVENT_KINDS]);
@@ -4536,7 +4538,7 @@ export type PackageWarningCode = string;
 
 export type PackageUnitFormatDetails =
   | { format: 'scorm2004'; maxTimeAllowed: string | null; timeLimitAction: string | null }
-  | { format: 'scorm12' };
+  | { format: 'scorm12'; maxTimeAllowed?: string | null; timeLimitAction?: string | null };
 
 export type ScormCmiState = Record<string, unknown>;
 
@@ -4560,6 +4562,7 @@ export const contentPackageVersion = pgTable(
     uploadKey: text('upload_key').notNull(),
     contentPrefix: text('content_prefix').notNull(),
     zipBytes: bigint('zip_bytes', { mode: 'number' }),
+    contentSha256: text('content_sha256'),
     extractedBytes: bigint('extracted_bytes', { mode: 'number' }),
     fileCount: integer('file_count'),
     processingJobId: uuid('processing_job_id'),
@@ -4652,7 +4655,8 @@ export const activityScorm = pgTable(
     completionRule: scormCompletionRule('completion_rule').default('auto').notNull(),
     minScorePercent: integer('min_score_percent'),
     allowRetakes: boolean('allow_retakes').default(false).notNull(),
-    launchMode: scormLaunchMode('launch_mode').default('embedded').notNull(),
+    moduleOrder: scormModuleOrder('module_order').default('free').notNull(),
+    completionModules: scormCompletionModules('completion_modules').default('all').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
@@ -4729,7 +4733,8 @@ export const scormScoAttempt = pgTable(
     commitSeq: integer('commit_seq').default(0).notNull(),
     startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
     lastCommitAt: timestamp('last_commit_at', { withTimezone: true, mode: 'string' }),
-    terminatedAt: timestamp('terminated_at', { withTimezone: true, mode: 'string' })
+    terminatedAt: timestamp('terminated_at', { withTimezone: true, mode: 'string' }),
+    timeSpentSeconds: integer('time_spent_seconds').default(0).notNull()
   },
   (table) => [
     foreignKey({

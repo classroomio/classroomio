@@ -84,13 +84,18 @@
   {@const isLockedForStudent = $isCourseLearnerView && (isContentLocked || contentItem.accessible === false)}
   {@const sessionPhase =
     contentItem.type === ContentType.Lesson ? getSessionIndicatorPhase(contentItem, $liveSessionClock) : null}
+  {@const itemTitle =
+    contentItem.title?.trim() ||
+    (contentItem.type === ContentType.Activity
+      ? $t('course.navItem.lessons.add_content_options.activity_scorm_default_title')
+      : '')}
   <Sidebar.MenuSubItem>
     <Sidebar.MenuSubButton isActive={isContentItemInPath(contentItem.id, currentPath)}>
       {#snippet child({ props })}
         <a
           href={resolve(getContentRoute(id, contentItem), {})}
           aria-disabled={isLockedForStudent}
-          title={contentItem.title}
+          title={itemTitle}
           data-sidebar-content-id={contentItem.id}
           class="flex w-full items-center gap-2 {isLockedForStudent ? 'cursor-not-allowed opacity-50' : ''}"
           onclick={(event) => {
@@ -107,7 +112,7 @@
           {...props}
         >
           <CourseContentIcon type={contentItem.type} size={14} />
-          <span class="flex-1 truncate">{contentItem.title}</span>
+          <span class="flex-1 truncate">{itemTitle}</span>
           <div class="ml-auto flex items-center gap-1">
             {#if contentItem.isComplete}
               <span class="shrink-0">

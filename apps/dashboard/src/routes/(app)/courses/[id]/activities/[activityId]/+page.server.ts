@@ -7,7 +7,7 @@ export const load = async ({ params, cookies }) => {
   const activityId = params.activityId || '';
 
   if (!courseId || !activityId) {
-    return { courseId, activityId, activity: null };
+    return { courseId, activityId, activity: null, editor: null };
   }
 
   const result = await safeServerApi<GetActivitySuccess>(() =>
@@ -16,11 +16,12 @@ export const load = async ({ params, cookies }) => {
       getApiHeaders(cookies)
     )
   );
-  const activity = result.ok ? result.body.data : null;
+  const data = result.ok ? result.body.data : null;
 
   return {
     courseId,
     activityId,
-    activity: activity
+    activity: data?.activity ?? null,
+    editor: data?.editor ?? null
   };
 };
