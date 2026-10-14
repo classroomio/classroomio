@@ -301,170 +301,299 @@ export function createDeterministicTarGz(files) {
   return zlib.gzipSync(tarBuf, { mtime: 0 });
 }
 
+export function packageSinglePlugin(pluginDir) {
+  const manifestPath = path.join(pluginDir, 'plugin.json');
+  if (!fs.existsSync(manifestPath)) {
+    throw new Error(`plugin.json not found in ${pluginDir}`);
+  }
+  const manifestRaw = fs.readFileSync(manifestPath, 'utf8');
+  const manifest = JSON.parse(manifestRaw);
+
+  const validation = validateManifest(manifest);
+  if (!validation.valid) {
+    throw new Error(
+      `Invalid manifest in ${path.relative(process.cwd(), pluginDir)}:\n${validation.errors.map((e) => `  - ${e}`).join('\n')}`
+    );
+  }
+
+  const filesToPackage = [];
+
+  // 1. plugin.json
+  filesToPackage.push({
+    path: 'plugin.json',
+    content: Buffer.from(manifestRaw, 'utf8'),
+    mode: 0o644
+  });
+
+  // 2. assets
+  if (manifest.icon?.resource) {
+    const iconPath = path.join(pluginDir, manifest.icon.resource);
+    if (fs.existsSync(iconPath)) {
+      filesToPackage.push({
+        path: manifest.icon.resource,
+        content: fs.readFileSync(iconPath),
+        mode: 0o644
+      });
+    } else {
+      console.warn(`Warning: Icon file not found at ${manifest.icon.resource}`);
+    }
+  }
+
+  // 3. UI assets
+  if (manifest.runtime?.ui) {
+    const distDir = path.join(pluginDir, 'dist');
+    if (!fs.existsSync(distDir)) {
+      console.log(`Building UI assets for ${manifest.id}...`);
+      const build = spawnSync('npm', ['run', 'build'], { cwd: pluginDir, stdio: 'inherit' });
+      if (build.status !== 0) {
+        throw new Error(`Build failed for ${manifest.id}`);
+      }
+    }
+
+    if (!fs.existsSync(distDir)) {
+      throw new Error(`Error: ${manifest.id} did not produce a dist directory at ${distDir}`);
+    }
+
+    for (const file of filesUnder(distDir)) {
+      filesToPackage.push({
+        path: `dist/${file.relativePath}`,
+        content: fs.readFileSync(file.absolutePath),
+        mode: 0o644
+      });
+    }
+  }
+
+  // 4. inventory.json
+  const inventory = {
+    schemaVersion: 1,
+    pluginId: manifest.id,
+    version: manifest.version,
+    generatedAt: new Date().toISOString(),
+    files: filesToPackage.map((f) => ({
+      path: f.path,
+      size: f.content.length,
+      digest: digestBuffer(f.content)
+    }))
+  };
+
+  const inventoryBuffer = Buffer.from(JSON.stringify(inventory, null, 2) + '\n', 'utf8');
+  filesToPackage.push({
+    path: 'inventory.json',
+    content: inventoryBuffer,
+    mode: 0o644
+  });
+
+  const tarGzBuffer = createDeterministicTarGz(filesToPackage);
+  const artifactDigest = digestBuffer(tarGzBuffer);
+  const archiveFileName = `${manifest.id}-${manifest.version}.tar.gz`;
+  const slug = manifest.slug || manifest.id.replace(/^([a-z0-9_-]+\.)+/i, '');
+
+  return {
+    manifest,
+    slug,
+    filesToPackage,
+    inventory: inventory.files,
+    tarGzBuffer,
+    artifactDigest,
+    archiveFileName
+  };
+}
+
 function printUsage() {
   console.log(`
 ClassroomIO Plugin CLI (cio-plugin)
 
 Usage:
-  cio-plugin validate [path]   Validate plugin.json manifest
-  cio-plugin pack [path]       Build and package canonical immutable plugin tarball (.tar.gz)
-  cio-plugin digest <path>     Compute deterministic SHA-256 digest of a directory or file
-  cio-plugin init [name]       Scaffold a new ClassroomIO plugin starter
+  cio-plugin validate [path]           Validate plugin.json manifest
+  cio-plugin pack [path]               Build and package canonical immutable plugin tarball (.tar.gz)
+  cio-plugin publish [path] [options]  Publish plugin package to ClassroomIO registry
+  cio-plugin status <submissionId>     Check status of a plugin submission
+  cio-plugin digest <path>             Compute deterministic SHA-256 digest of a directory or file
+  cio-plugin init [name]               Scaffold a new ClassroomIO plugin starter
+
+Publish Options:
+  --host <url>     ClassroomIO API host (default: $CLASSROOMIO_API_URL or http://localhost:3000)
+  --token <token>  Publisher API token (default: $CLASSROOMIO_TOKEN)
+  --lane <lane>    Release lane: first-party | private | community (default: auto-detected)
+  --org <orgId>    Organization ID (required for private plugins)
 
 Examples:
   npx cio-plugin validate
   npx cio-plugin pack ./my-plugin
+  npx cio-plugin publish ./my-plugin --host http://localhost:3000
+  npx cio-plugin status 3fa85f64-5717-4562-b3fc-2c963f66afa6
   npx cio-plugin init my-awesome-plugin
   npx cio-plugin digest ./dist
 `);
 }
 
-const args = process.argv.slice(2);
-const command = args[0] || 'pack';
-const targetArg = args[1] || '.';
-
-if (command === '--help' || command === '-h' || command === 'help') {
-  printUsage();
-  process.exit(0);
-}
-
-if (command === 'digest') {
-  const target = path.resolve(process.cwd(), targetArg);
-  if (!fs.existsSync(target)) {
-    console.error(`Error: File or directory not found: ${target}`);
-    process.exit(1);
-  }
-  const isDir = fs.statSync(target).isDirectory();
-  const digest = isDir ? digestDirectory(target) : digestFile(target);
-  console.log(digest);
-  process.exit(0);
-}
-
-if (command === 'validate') {
-  const targetDir = path.resolve(process.cwd(), targetArg);
-  const manifestPath = fs.existsSync(path.join(targetDir, 'plugin.json'))
-    ? path.join(targetDir, 'plugin.json')
-    : path.resolve(process.cwd(), 'plugin.json');
-
-  if (!fs.existsSync(manifestPath)) {
-    console.error(`Error: plugin.json not found at ${manifestPath}`);
-    process.exit(1);
-  }
-
-  try {
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    const result = validateManifest(manifest);
-    if (!result.valid) {
-      console.error(`\n✖ Manifest validation failed with ${result.errors.length} issue(s):`);
-      for (const err of result.errors) {
-        console.error(`  - ${err}`);
+function parseCliArgs(rawArgs) {
+  const options = { _: [] };
+  for (let i = 0; i < rawArgs.length; i++) {
+    const arg = rawArgs[i];
+    if (arg.startsWith('--')) {
+      const key = arg.slice(2);
+      const next = rawArgs[i + 1];
+      if (next && !next.startsWith('--')) {
+        options[key] = next;
+        i++;
+      } else {
+        options[key] = true;
       }
+    } else {
+      options._.push(arg);
+    }
+  }
+  return options;
+}
+
+export async function runCli(argv = process.argv.slice(2)) {
+  const cliOptions = parseCliArgs(argv);
+  const command = cliOptions._[0] || (cliOptions.help || cliOptions.h ? 'help' : 'pack');
+  const targetArg = cliOptions._[1] || '.';
+
+  if (cliOptions.help || cliOptions.h || command === 'help' || command === '--help' || command === '-h') {
+    printUsage();
+    process.exit(0);
+  }
+
+  if (command === 'digest') {
+    const target = path.resolve(process.cwd(), targetArg);
+    if (!fs.existsSync(target)) {
+      console.error(`Error: File or directory not found: ${target}`);
       process.exit(1);
     }
-    console.log(`✓ Valid plugin manifest: ${manifest.id}@${manifest.version} (${manifest.name})`);
+    const isDir = fs.statSync(target).isDirectory();
+    const digest = isDir ? digestDirectory(target) : digestFile(target);
+    console.log(digest);
     process.exit(0);
-  } catch (err) {
-    console.error(`Error parsing plugin.json: ${err.message}`);
-    process.exit(1);
-  }
-}
-
-if (command === 'init') {
-  const pluginName = targetArg === '.' ? 'my-classroomio-plugin' : targetArg;
-  const targetDir = path.resolve(process.cwd(), pluginName);
-
-  if (fs.existsSync(targetDir) && fs.readdirSync(targetDir).length > 0) {
-    console.error(`Error: Target directory "${targetDir}" is not empty.`);
-    process.exit(1);
   }
 
-  fs.mkdirSync(targetDir, { recursive: true });
-  fs.mkdirSync(path.join(targetDir, 'src'), { recursive: true });
-  fs.mkdirSync(path.join(targetDir, 'assets'), { recursive: true });
+  if (command === 'validate') {
+    const targetDir = path.resolve(process.cwd(), targetArg);
+    const manifestPath = fs.existsSync(path.join(targetDir, 'plugin.json'))
+      ? path.join(targetDir, 'plugin.json')
+      : path.resolve(process.cwd(), 'plugin.json');
 
-  const slug = pluginName
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '-')
-    .replace(/^-+|-+$/g, '');
-  const pluginId = `com.example.${slug}`;
+    if (!fs.existsSync(manifestPath)) {
+      console.error(`Error: plugin.json not found at ${manifestPath}`);
+      process.exit(1);
+    }
 
-  const manifest = {
-    $schema: 'https://classroomio.com/schemas/plugin-manifest.v1.json',
-    manifestVersion: 1,
-    id: pluginId,
-    slug,
-    name: pluginName
-      .split(/[-_]/)
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' '),
-    version: '1.0.0',
-    description: 'A custom plugin extension for ClassroomIO.',
-    publisher: 'Community Developer',
-    icon: { resource: 'assets/icon.svg' },
-    license: 'MIT',
-    engines: {
-      classroomio: '>=1.0.0',
-      pluginApi: '1.0.0'
-    },
-    runtime: {
-      ui: {
-        entrypoints: {
-          main: {
-            renderMode: 'custom',
-            resource: 'dist/index.html'
+    try {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const result = validateManifest(manifest);
+      if (!result.valid) {
+        console.error(`\n✖ Manifest validation failed with ${result.errors.length} issue(s):`);
+        for (const err of result.errors) {
+          console.error(`  - ${err}`);
+        }
+        process.exit(1);
+      }
+      console.log(`✓ Valid plugin manifest: ${manifest.id}@${manifest.version} (${manifest.name})`);
+      process.exit(0);
+    } catch (err) {
+      console.error(`Error parsing plugin.json: ${err.message}`);
+      process.exit(1);
+    }
+  }
+
+  if (command === 'init') {
+    const pluginName = targetArg === '.' ? 'my-classroomio-plugin' : targetArg;
+    const targetDir = path.resolve(process.cwd(), pluginName);
+
+    if (fs.existsSync(targetDir) && fs.readdirSync(targetDir).length > 0) {
+      console.error(`Error: Target directory "${targetDir}" is not empty.`);
+      process.exit(1);
+    }
+
+    fs.mkdirSync(targetDir, { recursive: true });
+    fs.mkdirSync(path.join(targetDir, 'src'), { recursive: true });
+    fs.mkdirSync(path.join(targetDir, 'assets'), { recursive: true });
+
+    const slug = pluginName
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/^-+|-+$/g, '');
+    const pluginId = `com.example.${slug}`;
+
+    const manifest = {
+      $schema: 'https://classroomio.com/schemas/plugin-manifest.v1.json',
+      manifestVersion: 1,
+      id: pluginId,
+      slug,
+      name: pluginName
+        .split(/[-_]/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' '),
+      version: '1.0.0',
+      description: 'A custom plugin extension for ClassroomIO.',
+      publisher: 'Community Developer',
+      icon: { resource: 'assets/icon.svg' },
+      license: 'MIT',
+      engines: {
+        classroomio: '>=1.0.0',
+        pluginApi: '1.0.0'
+      },
+      runtime: {
+        ui: {
+          entrypoints: {
+            main: {
+              renderMode: 'custom',
+              resource: 'dist/index.html'
+            }
           }
         }
+      },
+      permissions: {
+        required: ['course.metadata:read'],
+        optional: []
+      },
+      contributes: {
+        pages: [
+          {
+            id: 'main-page',
+            entrypoint: 'main',
+            title: 'Plugin Main Page'
+          }
+        ],
+        navigation: [
+          {
+            id: `${slug}-nav`,
+            title: 'Plugin App',
+            location: 'organization.settings',
+            page: 'main-page'
+          }
+        ]
+      },
+      dataPolicy: {
+        storesCustomerData: false,
+        retentionAfterUninstallDays: 0
       }
-    },
-    permissions: {
-      required: ['course.metadata:read'],
-      optional: []
-    },
-    contributes: {
-      pages: [
-        {
-          id: 'main-page',
-          entrypoint: 'main',
-          title: 'Plugin Main Page'
-        }
-      ],
-      navigation: [
-        {
-          id: `${slug}-nav`,
-          title: 'Plugin App',
-          location: 'organization.settings',
-          page: 'main-page'
-        }
-      ]
-    },
-    dataPolicy: {
-      storesCustomerData: false,
-      retentionAfterUninstallDays: 0
-    }
-  };
+    };
 
-  const packageJson = {
-    name: slug,
-    version: '1.0.0',
-    private: true,
-    type: 'module',
-    scripts: {
-      dev: 'vite',
-      build: 'vite build',
-      preview: 'vite preview',
-      validate: 'cio-plugin validate',
-      pack: 'cio-plugin pack'
-    },
-    dependencies: {
-      '@classroomio/plugin-sdk': '^1.0.0'
-    },
-    devDependencies: {
-      typescript: '^5.5.2',
-      vite: '^5.4.0'
-    }
-  };
+    const packageJson = {
+      name: slug,
+      version: '1.0.0',
+      private: true,
+      type: 'module',
+      scripts: {
+        dev: 'vite',
+        build: 'vite build',
+        preview: 'vite preview',
+        validate: 'cio-plugin validate',
+        pack: 'cio-plugin pack'
+      },
+      dependencies: {
+        '@classroomio/plugin-sdk': '^1.0.0'
+      },
+      devDependencies: {
+        typescript: '^5.5.2',
+        vite: '^5.4.0'
+      }
+    };
 
-  const indexHtml = `<!DOCTYPE html>
+    const indexHtml = `<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -481,12 +610,12 @@ if (command === 'init') {
 </html>
 `;
 
-  const mainTs = `import { createClassroomIOPluginClient } from '@classroomio/plugin-sdk';
+    const mainTs = `import { createClassroomIOPluginClient } from '@classroomio/plugin-sdk';
 
 console.log('ClassroomIO Plugin initialized');
 `;
 
-  const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <rect width="18" height="18" x="3" y="3" rx="2" />
   <path d="M7 7h10" />
   <path d="M7 12h10" />
@@ -494,179 +623,253 @@ console.log('ClassroomIO Plugin initialized');
 </svg>
 `;
 
-  fs.writeFileSync(path.join(targetDir, 'plugin.json'), `${JSON.stringify(manifest, null, 2)}\n`);
-  fs.writeFileSync(path.join(targetDir, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
-  fs.writeFileSync(path.join(targetDir, 'index.html'), indexHtml);
-  fs.writeFileSync(path.join(targetDir, 'src/main.ts'), mainTs);
-  fs.writeFileSync(path.join(targetDir, 'assets/icon.svg'), iconSvg);
-  fs.writeFileSync(path.join(targetDir, '.gitignore'), `node_modules/\ndist/\n.plugin-artifacts/\n*.tar.gz\n`);
+    fs.writeFileSync(path.join(targetDir, 'plugin.json'), `${JSON.stringify(manifest, null, 2)}\n`);
+    fs.writeFileSync(path.join(targetDir, 'package.json'), `${JSON.stringify(packageJson, null, 2)}\n`);
+    fs.writeFileSync(path.join(targetDir, 'index.html'), indexHtml);
+    fs.writeFileSync(path.join(targetDir, 'src/main.ts'), mainTs);
+    fs.writeFileSync(path.join(targetDir, 'assets/icon.svg'), iconSvg);
+    fs.writeFileSync(path.join(targetDir, '.gitignore'), `node_modules/\ndist/\n.plugin-artifacts/\n*.tar.gz\n`);
 
-  console.log(`\n✓ Scaffolded ClassroomIO plugin starter in ${path.relative(process.cwd(), targetDir) || '.'}`);
-  console.log(`\nNext steps:`);
-  console.log(`  cd ${pluginName}`);
-  console.log(`  npm install`);
-  console.log(`  npm run dev`);
-  console.log(`  npx cio-plugin pack\n`);
-  process.exit(0);
-}
-
-if (command === 'pack' || command === 'build') {
-  const rootDir = path.resolve(process.cwd(), targetArg);
-  const outputRoot = path.join(rootDir, '.plugin-artifacts');
-
-  const singleManifest = path.join(rootDir, 'plugin.json');
-  let pluginDirs = [];
-
-  if (fs.existsSync(singleManifest)) {
-    pluginDirs = [rootDir];
-  } else {
-    pluginDirs = fs
-      .readdirSync(rootDir, { withFileTypes: true })
-      .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(rootDir, entry.name, 'plugin.json')))
-      .map((entry) => path.join(rootDir, entry.name));
+    console.log(`\n✓ Scaffolded ClassroomIO plugin starter in ${path.relative(process.cwd(), targetDir) || '.'}`);
+    console.log(`\nNext steps:`);
+    console.log(`  cd ${pluginName}`);
+    console.log(`  npm install`);
+    console.log(`  npm run dev`);
+    console.log(`  npx cio-plugin pack\n`);
+    process.exit(0);
   }
 
-  if (pluginDirs.length === 0) {
-    console.error(`Error: No plugin.json found in ${rootDir} or its direct subdirectories.`);
-    process.exit(1);
-  }
+  if (command === 'pack' || command === 'build') {
+    const rootDir = path.resolve(process.cwd(), targetArg);
+    const outputRoot = path.join(rootDir, '.plugin-artifacts');
 
-  const releases = [];
+    const singleManifest = path.join(rootDir, 'plugin.json');
+    let pluginDirs = [];
 
-  for (const pluginDir of pluginDirs) {
-    const manifestPath = path.join(pluginDir, 'plugin.json');
-    const manifestRaw = fs.readFileSync(manifestPath, 'utf8');
-    const manifest = JSON.parse(manifestRaw);
+    if (fs.existsSync(singleManifest)) {
+      pluginDirs = [rootDir];
+    } else {
+      pluginDirs = fs
+        .readdirSync(rootDir, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(rootDir, entry.name, 'plugin.json')))
+        .map((entry) => path.join(rootDir, entry.name));
+    }
 
-    const validation = validateManifest(manifest);
-    if (!validation.valid) {
-      console.error(`\n✖ Invalid manifest in ${path.relative(process.cwd(), pluginDir)}:`);
-      for (const err of validation.errors) {
-        console.error(`  - ${err}`);
-      }
+    if (pluginDirs.length === 0) {
+      console.error(`Error: No plugin.json found in ${rootDir} or its direct subdirectories.`);
       process.exit(1);
     }
 
-    console.log(`Packaging ${manifest.id}@${manifest.version}...`);
+    const releases = [];
 
-    const filesToPackage = [];
+    for (const pluginDir of pluginDirs) {
+      try {
+        console.log(`Packaging plugin in ${path.relative(process.cwd(), pluginDir) || '.'}...`);
+        const pkg = packageSinglePlugin(pluginDir);
 
-    // 1. plugin.json
-    filesToPackage.push({
-      path: 'plugin.json',
-      content: Buffer.from(manifestRaw, 'utf8'),
-      mode: 0o644
-    });
+        const pluginOutputDir = path.join(outputRoot, pkg.manifest.id, pkg.manifest.version);
+        fs.mkdirSync(pluginOutputDir, { recursive: true });
 
-    // 2. assets (e.g. icon if present outside dist)
-    if (manifest.icon?.resource) {
-      const iconPath = path.join(pluginDir, manifest.icon.resource);
-      if (fs.existsSync(iconPath)) {
-        filesToPackage.push({
-          path: manifest.icon.resource,
-          content: fs.readFileSync(iconPath),
-          mode: 0o644
+        const archivePath = path.join(pluginOutputDir, pkg.archiveFileName);
+        fs.writeFileSync(archivePath, pkg.tarGzBuffer);
+
+        const unpackedDir = path.join(pluginOutputDir, pkg.artifactDigest);
+        fs.rmSync(unpackedDir, { recursive: true, force: true });
+        fs.mkdirSync(unpackedDir, { recursive: true });
+
+        for (const f of pkg.filesToPackage) {
+          const destPath = path.join(unpackedDir, f.path);
+          fs.mkdirSync(path.dirname(destPath), { recursive: true });
+          fs.writeFileSync(destPath, f.content);
+        }
+
+        releases.push({
+          pluginId: pkg.manifest.id,
+          slug: pkg.slug,
+          version: pkg.manifest.version,
+          artifactDigest: pkg.artifactDigest,
+          archive: path.relative(rootDir, archivePath),
+          manifest: pkg.manifest,
+          inventory: pkg.inventory,
+          artifactDirectory: path.relative(rootDir, unpackedDir)
         });
-      } else {
-        console.warn(`Warning: Icon file not found at ${manifest.icon.resource}`);
+
+        console.log(`✓ Built canonical package: ${pkg.archiveFileName} (${pkg.artifactDigest})`);
+        console.log(`  Included ${pkg.filesToPackage.length} files in archive`);
+      } catch (err) {
+        console.error(`\n✖ ${err.message}`);
+        process.exit(1);
       }
     }
 
-    // 3. UI assets in dist/ if runtime.ui declared
-    if (manifest.runtime?.ui) {
-      const distDir = path.join(pluginDir, 'dist');
-      if (!fs.existsSync(distDir)) {
-        console.log(`Building UI assets for ${manifest.id}...`);
-        const build = spawnSync('npm', ['run', 'build'], { cwd: pluginDir, stdio: 'inherit' });
-        if (build.status !== 0) {
-          console.error(`Build failed for ${manifest.id}`);
-          process.exit(build.status ?? 1);
-        }
-      }
+    fs.mkdirSync(outputRoot, { recursive: true });
+    fs.writeFileSync(path.join(outputRoot, 'release-index.json'), `${JSON.stringify({ releases }, null, 2)}\n`);
+    console.log(
+      `\nSuccessfully packed ${releases.length} plugin release(s) into ${path.relative(process.cwd(), outputRoot)}`
+    );
+    process.exit(0);
+  }
 
-      if (!fs.existsSync(distDir)) {
-        console.error(`Error: ${manifest.id} did not produce a dist directory at ${distDir}`);
+  if (command === 'publish' || command === 'submit') {
+    const targetDir = path.resolve(process.cwd(), targetArg === 'publish' || targetArg === 'submit' ? '.' : targetArg);
+    const host = (cliOptions.host || process.env.CLASSROOMIO_API_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const token = cliOptions.token || process.env.CLASSROOMIO_TOKEN || '';
+    const orgId = cliOptions.org || cliOptions.organizationId;
+
+    let pkg;
+    try {
+      pkg = packageSinglePlugin(targetDir);
+    } catch (err) {
+      console.error(`\n✖ ${err.message}`);
+      process.exit(1);
+    }
+
+    const lane =
+      cliOptions.lane ||
+      (pkg.manifest.id.startsWith('com.classroomio.') ? 'first-party' : orgId ? 'private' : 'community');
+
+    console.log(`\nSubmitting ${pkg.manifest.id}@${pkg.manifest.version} to ${host} (lane: ${lane})...`);
+
+    try {
+      // 1. Create intent
+      const intentHeaders = { 'Content-Type': 'application/json' };
+      if (token) intentHeaders['Authorization'] = `Bearer ${token}`;
+
+      const intentBody = {
+        pluginId: pkg.manifest.id,
+        version: pkg.manifest.version,
+        releaseLane: lane,
+        artifactDigest: pkg.artifactDigest,
+        ...(orgId && { organizationId: orgId })
+      };
+
+      const intentRes = await fetch(`${host}/plugins/submissions/intent`, {
+        method: 'POST',
+        headers: intentHeaders,
+        body: JSON.stringify(intentBody)
+      });
+
+      if (!intentRes.ok) {
+        const errText = await intentRes.text();
+        console.error(`\n✖ Submission intent failed (${intentRes.status}): ${errText}`);
         process.exit(1);
       }
 
-      for (const file of filesUnder(distDir)) {
-        filesToPackage.push({
-          path: `dist/${file.relativePath}`,
-          content: fs.readFileSync(file.absolutePath),
-          mode: 0o644
-        });
+      const intentJson = await intentRes.json();
+      const { submission, uploadUrl } = intentJson.data;
+      console.log(`✓ Created submission intent (ID: ${submission.id})`);
+
+      // 2. Upload archive to quarantine
+      console.log(`Uploading archive package (${(pkg.tarGzBuffer.length / 1024).toFixed(1)} KB)...`);
+      const fullUploadUrl = uploadUrl.startsWith('http') ? uploadUrl : `${host}${uploadUrl}`;
+      const uploadRes = await fetch(fullUploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/gzip' },
+        body: pkg.tarGzBuffer
+      });
+
+      if (!uploadRes.ok) {
+        const errText = await uploadRes.text();
+        console.error(`\n✖ Archive upload failed (${uploadRes.status}): ${errText}`);
+        process.exit(1);
       }
+      console.log(`✓ Quarantined package archive uploaded successfully`);
+
+      // 3. Finalize submission
+      console.log(`Validating archive integrity and manifest on registry...`);
+      const completeHeaders = {};
+      if (token) completeHeaders['Authorization'] = `Bearer ${token}`;
+
+      const completeRes = await fetch(`${host}/plugins/submissions/${submission.id}/complete`, {
+        method: 'POST',
+        headers: completeHeaders
+      });
+
+      if (!completeRes.ok) {
+        const errText = await completeRes.text();
+        console.error(`\n✖ Finalization failed (${completeRes.status}): ${errText}`);
+        process.exit(1);
+      }
+
+      const completeJson = await completeRes.json();
+      const finalSub = completeJson.data.submission;
+
+      console.log(`\n========================================================`);
+      if (finalSub.status === 'approved') {
+        console.log(`✓ Plugin ${pkg.manifest.id}@${pkg.manifest.version} published and approved!`);
+        console.log(`  Release Lane: ${finalSub.releaseLane}`);
+        console.log(`  Digest:       ${finalSub.artifactDigest}`);
+      } else if (finalSub.status === 'in_review') {
+        console.log(`✓ Plugin submitted to marketplace review queue!`);
+        console.log(`  Submission ID: ${finalSub.id}`);
+        console.log(`  Status:        ${finalSub.status}`);
+        console.log(`  Track status:  npx cio-plugin status ${finalSub.id} --host ${host}`);
+      } else {
+        console.log(`Submission status: ${finalSub.status}`);
+      }
+      console.log(`========================================================\n`);
+      process.exit(0);
+    } catch (err) {
+      console.error(`\n✖ Network error during publish: ${err.message}`);
+      process.exit(1);
     }
-
-    // 4. Generate inventory.json
-    const inventory = {
-      schemaVersion: 1,
-      pluginId: manifest.id,
-      version: manifest.version,
-      generatedAt: new Date().toISOString(),
-      files: filesToPackage.map((f) => {
-        return {
-          path: f.path,
-          size: f.content.length,
-          digest: digestBuffer(f.content)
-        };
-      })
-    };
-
-    const inventoryBuffer = Buffer.from(JSON.stringify(inventory, null, 2) + '\n', 'utf8');
-    filesToPackage.push({
-      path: 'inventory.json',
-      content: inventoryBuffer,
-      mode: 0o644
-    });
-
-    // 5. Generate deterministic tar.gz
-    const tarGzBuffer = createDeterministicTarGz(filesToPackage);
-    const artifactDigest = digestBuffer(tarGzBuffer);
-    const archiveFileName = `${manifest.id}-${manifest.version}.tar.gz`;
-
-    // 6. Write to output directory
-    const pluginOutputDir = path.join(outputRoot, manifest.id, manifest.version);
-    fs.mkdirSync(pluginOutputDir, { recursive: true });
-
-    const archivePath = path.join(pluginOutputDir, archiveFileName);
-    fs.writeFileSync(archivePath, tarGzBuffer);
-
-    // Also extract for local dev backwards compatibility
-    const unpackedDir = path.join(pluginOutputDir, artifactDigest);
-    fs.rmSync(unpackedDir, { recursive: true, force: true });
-    fs.mkdirSync(unpackedDir, { recursive: true });
-
-    for (const f of filesToPackage) {
-      const destPath = path.join(unpackedDir, f.path);
-      fs.mkdirSync(path.dirname(destPath), { recursive: true });
-      fs.writeFileSync(destPath, f.content);
-    }
-
-    const slug = manifest.slug || manifest.id.replace(/^([a-z0-9_-]+\.)+/i, '');
-
-    releases.push({
-      pluginId: manifest.id,
-      slug,
-      version: manifest.version,
-      artifactDigest,
-      archive: path.relative(rootDir, archivePath),
-      manifest,
-      inventory: inventory.files,
-      artifactDirectory: path.relative(rootDir, unpackedDir)
-    });
-
-    console.log(`✓ Built canonical package: ${archiveFileName} (${artifactDigest})`);
-    console.log(`  Included ${filesToPackage.length} files in archive`);
   }
 
-  fs.mkdirSync(outputRoot, { recursive: true });
-  fs.writeFileSync(path.join(outputRoot, 'release-index.json'), `${JSON.stringify({ releases }, null, 2)}\n`);
-  console.log(
-    `\nSuccessfully packed ${releases.length} plugin release(s) into ${path.relative(process.cwd(), outputRoot)}`
-  );
-  process.exit(0);
+  if (command === 'status') {
+    const submissionId = targetArg;
+    if (!submissionId || submissionId === '.') {
+      console.error(`Error: Submission ID is required. Example: cio-plugin status <submissionId>`);
+      process.exit(1);
+    }
+
+    const host = (cliOptions.host || process.env.CLASSROOMIO_API_URL || 'http://localhost:3000').replace(/\/$/, '');
+    const token = cliOptions.token || process.env.CLASSROOMIO_TOKEN || '';
+
+    try {
+      const headers = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch(`${host}/plugins/submissions/${submissionId}`, { headers });
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error(`Error (${res.status}): ${errText}`);
+        process.exit(1);
+      }
+
+      const json = await res.json();
+      const sub = json.data;
+
+      console.log(`\nSubmission Details:`);
+      console.log(`  ID:           ${sub.id}`);
+      console.log(`  Plugin:       ${sub.pluginId}@${sub.version}`);
+      console.log(`  Lane:         ${sub.releaseLane}`);
+      console.log(`  Status:       ${sub.status}`);
+      console.log(`  Digest:       ${sub.artifactDigest}`);
+      if (sub.reviewNotes) {
+        console.log(`  Review Notes: ${sub.reviewNotes}`);
+      }
+      console.log(`  Submitted:    ${sub.createdAt}`);
+      console.log(`  Updated:      ${sub.updatedAt}\n`);
+      process.exit(0);
+    } catch (err) {
+      console.error(`\n✖ Network error checking status: ${err.message}`);
+      process.exit(1);
+    }
+  }
+
+  printUsage();
+  process.exit(1);
 }
 
-printUsage();
-process.exit(1);
+const isMain =
+  process.argv[1] &&
+  (process.argv[1] === new URL(import.meta.url).pathname ||
+    process.argv[1].endsWith('cio-plugin.mjs') ||
+    process.argv[1].endsWith('cio-plugin'));
+
+if (isMain) {
+  runCli().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
