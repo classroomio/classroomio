@@ -48,7 +48,7 @@ export function getLessonsRoute(courseId, lessonId?: string, base?: string) {
 export function getActiveCourseNavKey(pathname: string, courseId: string): string | null {
   if (!courseId) return null;
 
-  const normalized = pathname.replace(PATH_VISIT_PREFIX_RE, `/${ROUTES.COURSES}`);
+  const normalized = pathname.replace(PATH_VISIT_PREFIX_RE, `/${ROUTES.COURSES}/`);
   const base = `/${ROUTES.COURSES}/${courseId}`;
   if (!normalized.startsWith(base)) return null;
 
