@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Weekly course leaderboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@500;600&amp;display=swap">
+<style>
+body{margin:0;background:#ffffff}
+a{color:oklch(0.488 0.243 264.376)}a:hover{color:oklch(0.42 0.22 264.376)}
+</style>
+</helmet>
+<div style="font-family: 'Geist', ui-sans-serif, system-ui, sans-serif; color: oklch(0.145 0 0); background: #ffffff; min-height: 100vh; display: flex; flex-wrap: wrap; align-items: stretch">
+
+  <nav aria-label="Learner navigation" style="flex: 1 1 232px; max-width: 100%; box-sizing: border-box; background: oklch(0.985 0 0); border-right: 1px solid oklch(0.922 0 0); padding: 16px 12px; display: flex; flex-direction: column; gap: 4px">
+    <div style="display: flex; align-items: center; gap: 10px; padding: 6px 8px 14px">
+      <div style="width: 32px; height: 32px; border-radius: 8px; background: oklch(0.488 0.243 264.376); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px">U</div>
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 14px; font-weight: 600">Udemy Test</span>
+        <span style="font-size: 12px; color: oklch(0.45 0 0)">Learner</span>
+      </div>
+    </div>
+    <a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><path d="M9 22V12h6v10"></path></svg>Home</a>
+    <a href="Lesson.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>My learning</a>
+    <a href="Achievements.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>Achievements</a>
+    <a href="Leaderboard.dc.html" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; background: oklch(0.94 0 0); color: oklch(0.145 0 0); font-size: 14px; font-weight: 500; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>Leaderboard</a>
+    <a href="#" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>Exercises</a>
+    <a href="#" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg>Community</a>
+    <a href="#" style="display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 0 10px; border-radius: 8px; color: oklch(0.3 0 0); font-size: 14px; text-decoration: none">
+      <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"></rect><path d="M7 9h10"></path><path d="M7 13h6"></path><path d="m15 18 1.5 3 1.5-3"></path></svg>Certificates</a>
+    <div style="margin-top: auto; padding: 12px 8px 4px; border-top: 1px solid oklch(0.922 0 0); display: flex; align-items: center; gap: 10px">
+      <div style="width: 32px; height: 32px; border-radius: 999px; background: oklch(0.9 0.05 264); color: oklch(0.35 0.15 264); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px">AL</div>
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 13px; font-weight: 600">Ada Lovelace</span>
+        <span style="font-size: 12px; color: oklch(0.45 0 0)">Level 7 · 1,420 XP</span>
+      </div>
+    </div>
+  </nav>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 48px">
+    <div style="max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+      <header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <h1 style="margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.02em">Leaderboard</h1>
+          <p style="margin: 0; font-size: 15px; color: oklch(0.45 0 0)">XP earned this week · Oct 12–18 · resets Monday</p>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+          <label for="lb-course" style="font-size: 13px; color: oklch(0.4 0 0)">Course</label>
+          <select id="lb-course" style="font: inherit; font-size: 14px; height: 38px; padding: 0 10px; border-radius: 8px; border: 1px solid oklch(0.922 0 0); background: #ffffff">
+            <option>Modern Web Development with React</option>
+            <option>Data Science with Python and Pandas</option>
+            <option>Getting started with MVC</option>
+          </select>
+        </div>
+      </header>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+        <section aria-label="Rankings" style="flex: 999 1 480px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+          <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 12px; border-radius: 14px; border: 1px solid oklch(0.922 0 0); background: oklch(0.985 0 0)">
+              <div style="width: 48px; height: 48px; border-radius: 999px; background: oklch(0.92 0.04 300); color: oklch(0.4 0.14 300); display: flex; align-items: center; justify-content: center; font-weight: 600">MR</div>
+              <span style="font-size: 14px; font-weight: 600">Maya R.</span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; color: oklch(0.4 0 0)">365 XP</span>
+              <span style="font-size: 12px; font-weight: 700; color: oklch(0.45 0 0)">2nd</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 26px 12px; border-radius: 14px; border: 1px solid oklch(0.666 0.179 58.318 / 0.5); background: linear-gradient(180deg, oklch(0.666 0.179 58.318 / 0.1), #ffffff)">
+              <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="oklch(0.6 0.16 58)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+              <div style="width: 56px; height: 56px; border-radius: 999px; background: oklch(0.92 0.05 150); color: oklch(0.4 0.12 150); display: flex; align-items: center; justify-content: center; font-weight: 600">CO</div>
+              <span style="font-size: 15px; font-weight: 600">Chidi O.</span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; color: oklch(0.4 0 0)">410 XP</span>
+              <span style="font-size: 12px; font-weight: 700; color: oklch(0.47 0.137 46)">1st</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 12px; border-radius: 14px; border: 1px solid oklch(0.922 0 0); background: oklch(0.985 0 0)">
+              <div style="width: 48px; height: 48px; border-radius: 999px; background: oklch(0.93 0.04 30); color: oklch(0.45 0.13 30); display: flex; align-items: center; justify-content: center; font-weight: 600">TA</div>
+              <span style="font-size: 14px; font-weight: 600">Tomi A.</span>
+              <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; color: oklch(0.4 0 0)">220 XP</span>
+              <span style="font-size: 12px; font-weight: 700; color: oklch(0.45 0 0)">3rd</span>
+            </div>
+          </div>
+
+          <ol start="4" style="list-style: none; margin: 0; padding: 0; border: 1px solid oklch(0.922 0 0); border-radius: 12px; overflow: hidden">
+            <sc-for list="{{rows}}" as="row" hint-placeholder-count="7">
+              <li style="{{row.rowStyle}}">
+                <span style="width: 28px; font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; font-weight: 600; color: oklch(0.45 0 0)">{{row.rank}}</span>
+                <span style="{{row.avatarStyle}}" aria-hidden="true">{{row.initials}}</span>
+                <span style="flex: 1; display: flex; flex-direction: column; gap: 1px; min-width: 0">
+                  <span style="font-size: 14px; font-weight: 500">{{row.name}}</span>
+                  <span style="font-size: 12px; color: oklch(0.45 0 0)">{{row.detail}}</span>
+                </span>
+                <span style="font-family: 'Geist Mono', ui-monospace, monospace; font-size: 13px; font-weight: 600">{{row.xp}} XP</span>
+              </li>
+            </sc-for>
+          </ol>
+          <p style="margin: 0; font-size: 13px; color: oklch(0.45 0 0)">Showing 10 of 38 learners. Names are first name + initial; only people in this course can see this list.</p>
+        </section>
+
+        <aside style="flex: 1 1 300px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <section aria-labelledby="privacy-h" style="border: 1px solid oklch(0.922 0 0); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px">
+            <h2 id="privacy-h" style="margin: 0; font-size: 15px; font-weight: 600">Your visibility</h2>
+            <div style="display: flex; align-items: center; gap: 12px">
+              <button type="button" role="switch" aria-checked="{{visibleAria}}" aria-labelledby="vis-label" onClick="{{toggleVisible}}" style="{{switchStyle}}">
+                <span style="{{knobStyle}}"></span>
+              </button>
+              <span id="vis-label" style="font-size: 14px">Show me on leaderboards</span>
+            </div>
+            <p style="margin: 0; font-size: 13px; color: oklch(0.45 0 0); line-height: 1.5">{{visibilityHelp}}</p>
+          </section>
+
+          <section aria-labelledby="earn-h" style="border: 1px solid oklch(0.922 0 0); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+            <h2 id="earn-h" style="margin: 0; font-size: 15px; font-weight: 600">How to earn XP here</h2>
+            <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 13px">
+              <li style="display: flex; justify-content: space-between; gap: 12px"><span>Complete a lesson</span><span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">+20</span></li>
+              <li style="display: flex; justify-content: space-between; gap: 12px"><span>Submit an exercise on time</span><span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">+10</span></li>
+              <li style="display: flex; justify-content: space-between; gap: 12px"><span>First-attempt score bonus</span><span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">up to +30</span></li>
+              <li style="display: flex; justify-content: space-between; gap: 12px"><span>Attend a live session</span><span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">+15</span></li>
+              <li style="display: flex; justify-content: space-between; gap: 12px"><span>Course milestone (25/50/75%)</span><span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">+25</span></li>
+              <li style="display: flex; justify-content: space-between; gap: 12px"><span>Finish the course</span><span style="font-family: 'Geist Mono', ui-monospace, monospace; font-weight: 600">+100</span></li>
+            </ul>
+            <span style="font-size: 12px; color: oklch(0.45 0 0)">Values set by Udemy Test.</span>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":960}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { visible: true };
+  }
+  renderVals() {
+    const visible = this.state.visible;
+    const avatar = (hue) => 'width: 32px; height: 32px; border-radius: 999px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; background: oklch(0.93 0.04 ' + hue + '); color: oklch(0.42 0.13 ' + hue + ');';
+    const data = [
+      { rank: 4, name: 'Ada L.', initials: 'AL', xp: 180, hue: 264, detail: '6 lessons · 1 live session', me: true },
+      { rank: 5, name: 'Ben K.', initials: 'BK', xp: 160, hue: 200, detail: '5 lessons · 1 exercise' },
+      { rank: 6, name: 'Sofia M.', initials: 'SM', xp: 145, hue: 330, detail: '4 lessons · 1 exercise' },
+      { rank: 7, name: 'Kwame D.', initials: 'KD', xp: 120, hue: 90, detail: '6 lessons' },
+      { rank: 8, name: 'Lena P.', initials: 'LP', xp: 95, hue: 20, detail: '3 lessons · 1 live session' },
+      { rank: 9, name: 'Raj S.', initials: 'RS', xp: 80, hue: 170, detail: '4 lessons' },
+      { rank: 10, name: 'Hana T.', initials: 'HT', xp: 60, hue: 280, detail: '3 lessons' }
+    ];
+    const rows = data.map((row, index) => ({
+      rank: '#' + row.rank,
+      name: row.me ? (visible ? 'You' : 'You (only you can see this row)') : row.name,
+      initials: row.initials,
+      xp: row.xp,
+      detail: row.detail,
+      avatarStyle: avatar(row.hue),
+      rowStyle: 'display: flex; align-items: center; gap: 12px; padding: 12px 16px;' + (index > 0 ? ' border-top: 1px solid oklch(0.922 0 0);' : '') + (row.me ? ' background: oklch(0.488 0.243 264.376 / 0.07);' : '')
+    }));
+    return {
+      rows: rows,
+      visibleAria: visible ? 'true' : 'false',
+      visibilityHelp: visible
+        ? 'Classmates in this course see your first name, initial and weekly XP. Turn this off any time — you keep earning XP and badges.'
+        : 'You are hidden. Classmates see one fewer name; you still see your own rank and keep earning XP.',
+      toggleVisible: () => this.setState({ visible: !visible }),
+      switchStyle: 'width: 44px; height: 26px; flex-shrink: 0; border-radius: 999px; border: 0; padding: 3px; cursor: pointer; display: flex; transition: background 150ms;' + (visible ? ' background: oklch(0.488 0.243 264.376); justify-content: flex-end;' : ' background: oklch(0.85 0 0); justify-content: flex-start;'),
+      knobStyle: 'width: 20px; height: 20px; border-radius: 999px; background: #ffffff; box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);'
+    };
+  }
+}
+</script>
+</body>
+</html>
