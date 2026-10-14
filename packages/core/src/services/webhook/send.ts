@@ -33,12 +33,19 @@ export async function sendWebhookRequest(input: TWebhookSendInput): Promise<TWeb
     durationMs: Date.now() - startedAt
   });
 
+  const timeoutMessage = `Request timed out after ${WEBHOOK_REQUEST_TIMEOUT_MS / 1000} seconds`;
+  let resolveTimer: NodeJS.Timeout | undefined;
   let target: Awaited<ReturnType<typeof resolveWebhookTarget>>;
 
   try {
-    target = await resolveWebhookTarget(input.url, input.policy);
+    const resolveDeadline = new Promise<never>((_, reject) => {
+      resolveTimer = setTimeout(() => reject(new Error(timeoutMessage)), WEBHOOK_REQUEST_TIMEOUT_MS);
+    });
+    target = await Promise.race([resolveWebhookTarget(input.url, input.policy), resolveDeadline]);
   } catch (error) {
     return failure(error instanceof Error ? error.message : 'Failed to resolve payload URL');
+  } finally {
+    clearTimeout(resolveTimer);
   }
 
   const transport = input.url.protocol === 'https:' ? https : http;
@@ -92,10 +99,11 @@ export async function sendWebhookRequest(input: TWebhookSendInput): Promise<TWeb
       }
     );
 
+    const remainingMs = Math.max(0, WEBHOOK_REQUEST_TIMEOUT_MS - (Date.now() - startedAt));
     const deadline = setTimeout(() => {
       request.destroy();
-      settle(failure(`Request timed out after ${WEBHOOK_REQUEST_TIMEOUT_MS / 1000} seconds`));
-    }, WEBHOOK_REQUEST_TIMEOUT_MS);
+      settle(failure(timeoutMessage));
+    }, remainingMs);
 
     request.on('error', (error) => settle(failure(error.message)));
     request.end(input.body);
