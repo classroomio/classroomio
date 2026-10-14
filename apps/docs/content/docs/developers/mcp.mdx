@@ -536,6 +536,8 @@ Expected tool sequence:
 Use this direct path when the live course only needs section ordering or lesson or exercise moves between sections.
 It avoids the full draft round-trip for simple structural changes.
 
+Courses with grouping enabled can mix sections and standalone lessons or exercises. Sections and standalone items share one top-level `order`; items within a section have their own sibling order. Pass `sectionId: null` to move an item outside its section. Omitted fields retain their current values. Include sections and items in one request to save a mixed reorder atomically.
+
 ### Flow 7: Add exercises to a live course
 
 User says:

@@ -2845,7 +2845,8 @@
         "add_content_later": "Später",
         "add_content_add_to_section": "Inhalte hinzufügen",
         "expand_content": "Inhalte erweitern",
-        "collapse_content": "Inhalt reduzieren"
+        "collapse_content": "Inhalt reduzieren",
+        "outside_section": "Außerhalb eines Abschnitts"
       },
       "news_feed": {
         "heading": "Newsfeed",

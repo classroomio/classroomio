@@ -2845,7 +2845,8 @@
         "add_content_later": "Senere",
         "add_content_add_to_section": "Tilføj indhold",
         "expand_content": "Udvid indhold",
-        "collapse_content": "Skjul indholdet"
+        "collapse_content": "Skjul indholdet",
+        "outside_section": "Uden for en sektion"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",

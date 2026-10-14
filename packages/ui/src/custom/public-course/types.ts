@@ -41,6 +41,7 @@ export interface PublicCourseSidebarItem {
 }
 
 export interface PublicCourseSidebarSection {
+  standalone?: boolean;
   id: string;
   title: string;
   items: PublicCourseSidebarItem[];

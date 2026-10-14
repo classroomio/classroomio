@@ -1,3 +1,4 @@
+import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
 import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
@@ -60,7 +61,7 @@ function buildOrderedTrackableItems(
   isContentGroupingEnabled: boolean
 ): Omit<TrackableContentItem, 'isComplete'>[] {
   const content = buildCourseContent(contentRows, isContentGroupingEnabled);
-  const orderedItems = content.grouped ? content.sections.flatMap((section) => section.items) : content.items;
+  const orderedItems = flattenNavigableItems(content);
 
   return toTrackableContentItems(orderedItems as CourseContentItem[]).map(({ id, type, title }) => ({
     id,

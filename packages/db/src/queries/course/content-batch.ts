@@ -142,6 +142,11 @@ export async function applyCourseContentBulkUpdates(
     }
 
     if (exerciseSectionUpdates.length > 0) {
+      exerciseSet.lessonId = sql`case ${exercise.id} ${sql.join(
+        exerciseSectionUpdates.map((update) => sql`when ${update.id} then NULL::uuid`),
+        sql` `
+      )} else ${exercise.lessonId} end`;
+      exerciseSet.courseId = sql`COALESCE(${exercise.courseId}, (SELECT course_id FROM lesson WHERE lesson.id = ${exercise.lessonId}))`;
       exerciseSet.sectionId = sql`case ${exercise.id} ${sql.join(
         exerciseSectionUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
         sql` `

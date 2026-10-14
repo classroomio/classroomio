@@ -2845,7 +2845,8 @@
         "add_content_later": "Để sau",
         "add_content_add_to_section": "Thêm nội dung",
         "expand_content": "Mở rộng nội dung",
-        "collapse_content": "Thu gọn nội dung"
+        "collapse_content": "Thu gọn nội dung",
+        "outside_section": "Ngoài một phần"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

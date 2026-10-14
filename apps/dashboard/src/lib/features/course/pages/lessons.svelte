@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getCourseOutline } from '@cio/utils/functions/course-content';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { Empty } from '@cio/ui/custom/empty';
@@ -127,7 +128,13 @@
   {/if}
 
   {#if contentData.grouped}
-    <ContentSectionList {reorder} />
+    {#each getCourseOutline(contentData) as entry (entry.id)}
+      {#if entry.kind === 'section'}
+        <ContentSectionList {reorder} sectionId={entry.section.id} />
+      {:else}
+        <ContentList standaloneItem={entry.item} />
+      {/if}
+    {/each}
   {:else}
     <ContentList {reorder} />
   {/if}

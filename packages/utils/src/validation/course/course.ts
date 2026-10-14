@@ -201,15 +201,6 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
     sectionIds.add(section.id);
   });
 
-  const sectionOrders = data.sections?.map((section) => section.order).sort((a, b) => a - b);
-  if (sectionOrders && sectionOrders.some((order, index) => order !== index + 1)) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      path: ['sections'],
-      message: 'Section orders must be a contiguous 1-based sequence (1, 2, 3, ...)'
-    });
-  }
-
   const itemKeys = new Set<string>();
   const itemsBySection = new Map<string, { orders: number[]; total: number; withOrder: number }>();
   data.items?.forEach((item, index) => {
@@ -242,17 +233,21 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
     itemKeys.add(itemKey);
   });
 
-  for (const [, entry] of itemsBySection) {
-    if (entry.withOrder > 0 && entry.withOrder === entry.total) {
-      const sorted = [...entry.orders].sort((a, b) => a - b);
-      if (sorted.some((order, index) => order !== index + 1)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['items'],
-          message: 'Item orders within each section must be a contiguous 1-based sequence (1, 2, 3, ...)'
-        });
-      }
+  const rootOrders = [...(data.sections?.map((section) => section.order) ?? [])];
+  for (const [sectionId, entry] of itemsBySection) {
+    if (entry.withOrder !== entry.total) continue;
+
+    if (sectionId === '__unsectioned__') {
+      rootOrders.push(...entry.orders);
+      continue;
     }
+
+    if (new Set(entry.orders).size !== entry.orders.length) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['items'], message: 'Sibling orders must be unique' });
+    }
+  }
+  if (new Set(rootOrders).size !== rootOrders.length) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['items'], message: 'Top-level orders must be unique' });
   }
 });
 export type TCourseContentReorder = z.infer<typeof ZCourseContentReorder>;

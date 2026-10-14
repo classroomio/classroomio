@@ -1,3 +1,4 @@
+import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { getMarksByCourseId, type Mark } from '@cio/db/queries/mark';
 import { getCourseMember, getCourseMembers, type CourseMemberWithProfile } from '@cio/db/queries/course/people';
@@ -131,7 +132,7 @@ function flattenCourseContentItems(course: Awaited<ReturnType<typeof getCourseWi
 
   const isGrouping = course.metadata?.isContentGroupingEnabled ?? true;
   const content = buildCourseContent(course.contentItems, isGrouping);
-  return content.grouped ? (content.sections ?? []).flatMap((section) => section.items ?? []) : (content.items ?? []);
+  return flattenNavigableItems(content);
 }
 
 /**

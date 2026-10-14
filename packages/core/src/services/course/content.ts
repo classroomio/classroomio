@@ -60,7 +60,17 @@ async function getCourseContentMap(courseId: string) {
 async function assertCourseContentItems(courseId: string, items: TCourseContentUpdate['items']) {
   const contentMap = await getCourseContentMap(courseId);
 
+  const destinationSections = await getCourseSectionsByCourseId(courseId);
+  const destinationSectionIds = new Set(destinationSections.map((section) => section.id));
   items.forEach((item) => {
+    if (item.sectionId && !destinationSectionIds.has(item.sectionId)) {
+      throw new AppError(
+        'Destination section does not belong to this course',
+        ErrorCodes.COURSE_SECTION_NOT_FOUND,
+        404
+      );
+    }
+
     const key = buildContentKey({ id: item.id, type: item.type });
 
     if (!contentMap.has(key)) {
