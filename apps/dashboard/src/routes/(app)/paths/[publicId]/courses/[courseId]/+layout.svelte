@@ -81,8 +81,8 @@
   });
 
   onMount(() => {
-    if (!learnerPathStore.hasLoaded) {
-      learnerPathStore.listEnrolled();
+    if ($profile.id && $currentOrg.id) {
+      learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id);
     }
   });
 

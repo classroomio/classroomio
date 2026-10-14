@@ -60,7 +60,7 @@
     if (!$profile.id || !$currentOrg.id) return;
 
     const courseId = courseApi.course?.id;
-    if (courseId) learnerPathStore.loadPathContext(courseId);
+    if (courseId) learnerPathStore.loadPathContext(courseId, page.params.publicId as string | undefined);
   });
 
   function handleViewCourseSite() {

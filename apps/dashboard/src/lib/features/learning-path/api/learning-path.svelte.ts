@@ -17,7 +17,8 @@ import type {
   PathListFilters,
   PublicLearningPathDetail,
   UpdateLearningPathData,
-  UpdateLearningPathRequest
+  UpdateLearningPathRequest,
+  PublicLearningPathItem
 } from '../utils/types';
 import { enrolledApi } from '$features/lms/api/enrolled.svelte';
 import type { EnrolledPath, GetPathJourneyRequest, PathJourney } from '$features/lms/utils/types';
@@ -366,6 +367,12 @@ class LearnerPathStore extends BaseApiWithErrors {
   // Learner-facing state
   enrolledPaths = $state<EnrolledPath[]>([]);
   hasLoaded = $state(false);
+  // Which org+profile the learner state was loaded for. Cleared on reset.
+  private loadedScope: { orgId: string; profileId: string } | null = null;
+
+  // Latest journey/detail request ids. Late responses from older requests are ignored.
+  private journeyRequestSeq = 0;
+  private publicDetailRequestSeq = 0;
 
   // Selected path journey for the detail page
   selectedJourney = $state<PathJourney | null>(null);
@@ -420,12 +427,58 @@ class LearnerPathStore extends BaseApiWithErrors {
   async listEnrolled(): Promise<void> {
     this.isLoading = true;
     try {
-      await enrolledApi.fetchEnrolled({ status: 'all', limit: 50 });
-      this.enrolledPaths = enrolledApi.items.flatMap((item) => (item.kind === 'learning_path' ? [item.data] : []));
+      // The enrolled feed mixes courses and paths: follow every page and keep
+      // the paths, so older paths are not lost behind recent course activity.
+      const collected: EnrolledPath[] = [];
+      let page = 1;
+      let totalPages = 1;
+      do {
+        await enrolledApi.fetchEnrolled({ status: 'all', limit: 50, page });
+        const items = enrolledApi.items;
+        collected.push(...items.flatMap((item) => (item.kind === 'learning_path' ? [item.data] : [])));
+        totalPages = enrolledApi.pagination?.totalPages ?? 1;
+        page += 1;
+      } while (page <= totalPages);
+      this.enrolledPaths = collected;
       this.hasLoaded = true;
     } finally {
       this.isLoading = false;
     }
+  }
+
+  /**
+   * Loads enrolled paths + certificates for an org+profile, resetting any
+   * state from a previously-viewed org. Pages call this instead of checking
+   * hasLoaded themselves, so org switches always refetch.
+   */
+  async ensureLoadedFor(orgId: string, profileId: string): Promise<void> {
+    const scope = this.loadedScope;
+    if (scope && scope.orgId === orgId && scope.profileId === profileId && this.hasLoaded) return;
+
+    this.resetLearnerState();
+    this.loadedScope = { orgId, profileId };
+    await this.listEnrolled();
+    await this.listCertificates();
+  }
+
+  /** Drops all learner state (org switch, logout). Callers reload on demand. */
+  resetLearnerState(): void {
+    this.enrolledPaths = [];
+    this.hasLoaded = false;
+    this.loadedScope = null;
+    this.selectedJourney = null;
+    this.selectedJourneyLoaded = false;
+    this.explorePaths = [];
+    this.catalogPaths = [];
+    this.pathCertificates = [];
+    this.publicPathDetail = null;
+    this.pathContext = null;
+    this.journeyCache.clear();
+  }
+
+  /** Drops cached journeys so lock/progress reads refetch after completions. */
+  invalidateJourneyCache(): void {
+    this.journeyCache.clear();
   }
 
   getPath(idOrPublicId: string): EnrolledPath | null {
@@ -454,9 +507,12 @@ class LearnerPathStore extends BaseApiWithErrors {
   async ensureSelectedPath(pathId: string): Promise<PathJourney | null> {
     if (!pathId) return null;
 
+    const requestSeq = ++this.journeyRequestSeq;
     this.selectedJourneyLoaded = false;
     try {
       const journey = await this.fetchJourney(pathId);
+      if (requestSeq !== this.journeyRequestSeq) return null;
+
       this.selectedJourney = journey;
 
       return journey;
@@ -485,9 +541,10 @@ class LearnerPathStore extends BaseApiWithErrors {
   /**
    * Resolves the path widget for an open course from real journey data.
    * Stays null when the course is in none of the student's enrolled paths
-   * (plain courses render no widget). First matching path wins.
+   * (plain courses render no widget). When the caller knows which path the
+   * student came from (path-mirror URLs), that path wins over first match.
    */
-  async loadPathContext(courseId: string): Promise<void> {
+  async loadPathContext(courseId: string, preferredPublicId?: string): Promise<void> {
     this.pathContext = null;
     if (!courseId) return;
 
@@ -499,7 +556,14 @@ class LearnerPathStore extends BaseApiWithErrors {
       }
     }
 
-    for (const path of this.enrolledPaths) {
+    const orderedPaths =
+      preferredPublicId && this.enrolledPaths.some((path) => path.publicId === preferredPublicId)
+        ? [...this.enrolledPaths].sort(
+            (a, b) => Number(b.publicId === preferredPublicId) - Number(a.publicId === preferredPublicId)
+          )
+        : this.enrolledPaths;
+
+    for (const path of orderedPaths) {
       let journey: PathJourney | null = null;
       try {
         journey = await this.fetchJourney(path.id);
@@ -635,6 +699,7 @@ class LearnerPathStore extends BaseApiWithErrors {
     this.publicPathDetail = null;
     if (!slug || !organizationId) return;
 
+    const requestSeq = ++this.publicDetailRequestSeq;
     this.isLoadingPublicPathDetail = true;
     try {
       const response = await this.execute<GetPublicLearningPathRequest>({
@@ -642,6 +707,8 @@ class LearnerPathStore extends BaseApiWithErrors {
           classroomio['learning-path'].public[':slug'].$get({ param: { slug }, query: { organizationId } }),
         logContext: 'loading public path detail'
       });
+      if (requestSeq !== this.publicDetailRequestSeq) return;
+
       this.publicPathDetail = response?.data ?? null;
     } finally {
       this.isLoadingPublicPathDetail = false;
@@ -649,6 +716,7 @@ class LearnerPathStore extends BaseApiWithErrors {
   }
 
   clearPublicPathDetail(): void {
+    this.publicDetailRequestSeq += 1;
     this.publicPathDetail = null;
   }
 }

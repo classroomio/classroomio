@@ -7,7 +7,9 @@
   import BookOpenIcon from '@lucide/svelte/icons/book-open';
   import XIcon from '@lucide/svelte/icons/x';
   import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
+  import { getPublicPathPageUrl } from '$features/learning-path/utils/path-preview';
   import getCurrencyFormatter from '$lib/utils/functions/getCurrencyFormatter';
   import pluralize from 'pluralize';
 
@@ -20,6 +22,7 @@
     courseCount: number;
     cost?: number | null;
     currency?: string | null;
+    selfEnrollment?: boolean | null;
     href: string;
     enrolled: boolean;
   }
@@ -33,6 +36,8 @@
 
   const cost = $derived(path.cost ?? 0);
   const isFree = $derived(cost <= 0);
+  const selfEnrollmentAllowed = $derived(path.selfEnrollment !== false);
+  const publicSiteUrl = $derived(path.slug ? getPublicPathPageUrl(path.slug) : '');
   const formatter = $derived(getCurrencyFormatter(path.currency ?? 'USD'));
   const detail = $derived(learnerPathStore.publicPathDetail);
   const detailCourses = $derived(detail?.courses ?? []);
@@ -53,6 +58,8 @@
     if (enrolled) {
       open = false;
       goto(path.href);
+    } else {
+      snackbar.error('course.navItem.certificates.unexpected_error');
     }
   }
 </script>
@@ -132,18 +139,28 @@
 
     <Dialog.Footer class="flex shrink-0 flex-row items-center justify-between border-t px-6 py-4 sm:justify-between">
       <div>
-        <p class="text-lg font-bold">
-          {formatter.format(cost)}
-          {#if isFree}
-            <span class="text-sm font-normal">
-              ({$t('course.navItem.landing_page.pricing_section.free')})
-            </span>
-          {/if}
-        </p>
+        {#if selfEnrollmentAllowed}
+          <p class="text-lg font-bold">
+            {formatter.format(cost)}
+            {#if isFree}
+              <span class="text-sm font-normal">
+                ({$t('course.navItem.landing_page.pricing_section.free')})
+              </span>
+            {/if}
+          </p>
+        {:else}
+          <p class="ui:text-muted-foreground text-sm">
+            {$t('course.navItem.landing_page.pricing_section.not_accepting')}
+          </p>
+        {/if}
       </div>
 
       {#if path.enrolled}
         <Button href={path.href}>{$t('explore.view_learning_path')}</Button>
+      {:else if !selfEnrollmentAllowed}
+        <Button disabled>{$t('learningPath.detail.enroll')}</Button>
+      {:else if !isFree && publicSiteUrl}
+        <Button href={publicSiteUrl}>{$t('course.navItem.landing_page.pricing_section.buy')}</Button>
       {:else}
         <Button onclick={handleEnroll} disabled={learnerPathStore.isLoading}>
           {$t('learningPath.detail.enroll')}

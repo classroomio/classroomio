@@ -88,13 +88,14 @@
         const dueTime = exercise.due_by ? new Date(exercise.due_by).getTime() : NaN;
         const isOverdue = !submitted && Number.isFinite(dueTime) && dueTime < now;
         const state = submitted ? 'submitted' : isOverdue ? 'overdue' : 'open';
+        const dueLabel = exercise.due_by ? dueDateFormatter.format(new Date(exercise.due_by)) : '';
 
         return {
           id: exercise.id,
           title: exercise.title,
           course: exercise.lesson?.course?.title ?? '',
           statusKey: statusKeyByState[state] ?? 'dashboard.exercise_status_not_submitted',
-          dueLabel: exercise.due_by ? dueDateFormatter.format(new Date(exercise.due_by)) : '',
+          dueLabel,
           isOverdue
         };
       })
@@ -174,12 +175,9 @@
     coursesApi.getRecommendedCourses({ limit: 3 });
     lmsExercisesApi.fetchLMSExercises($currentOrg.id);
     enrolledApi.fetchEnrolled({ status: 'all', limit: 100 });
-    if (!learnerPathStore.hasLoaded) {
-      learnerPathStore.listEnrolled().finally(() => {
-        learnerPathStore.loadExplorePaths();
-      });
-      learnerPathStore.listCertificates();
-    }
+    learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id).finally(() => {
+      learnerPathStore.loadExplorePaths();
+    });
   });
 
   function getCourseCompletedItems(course: EnrolledCourse) {

@@ -38,9 +38,7 @@
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    if (!learnerPathStore.hasLoaded) {
-      learnerPathStore.listEnrolled();
-    }
+    learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id);
     learnerPathStore.loadCatalogPaths();
     coursesApi.getRecommendedCourses({ limit: 24 });
   });
@@ -61,7 +59,8 @@
       coverImage: path.coverImage ?? undefined,
       courseCount: path.courseCount ?? 0,
       cost: path.cost ?? 0,
-      currency: path.currency ?? undefined
+      currency: path.currency ?? undefined,
+      selfEnrollment: path.selfEnrollment ?? undefined
     }))
   );
 
@@ -183,6 +182,7 @@
       courseCount: path.courseCount,
       cost: path.cost,
       currency: path.currency ?? null,
+      selfEnrollment: path.selfEnrollment ?? null,
       href: path.href,
       enrolled: false
     };

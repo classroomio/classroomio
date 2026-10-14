@@ -30,11 +30,7 @@
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    if (!learnerPathStore.hasLoaded) {
-      learnerPathStore.listEnrolled();
-      learnerPathStore.listCertificates();
-    }
-    coursesApi.getEnrolledCourses({ nonPathOnly: true });
+    learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id);
   });
 
   const isLoading = $derived(learnerPathStore.isLoading && learnerPathStore.enrolledPaths.length === 0);
