@@ -11,6 +11,7 @@ import {
   ZEnrolledCoursesQuery,
   ZGetAudienceQuery,
   ZGetCoursesBySiteName,
+  ZGetEarnedCertificates,
   ZGetEnrolled,
   ZGetOrgSetup,
   ZGetOrganizationCoursesQuery,
@@ -56,6 +57,7 @@ import {
   getPublicLearningPaths,
   getRecommendedCourses,
   getUserAnalytics,
+  getUserEarnedCertificates,
   getUserEnrolledCourses,
   getUserEnrolled,
   removeAudienceMember,
@@ -64,7 +66,6 @@ import {
   updateOrg,
   updateOrgPlan
 } from '@api/services/organization';
-import { listMyPathCertificatesService } from '@api/services/learning-path/certificate';
 
 import { Hono } from '@api/utils/hono';
 import { ROLE } from '@cio/utils/constants';
@@ -645,21 +646,30 @@ export const organizationRouter = new Hono()
     }
   })
   /**
-   * GET /organization/learning-paths/certificates
-   * Gets the caller's downloadable learning path certificates in an organization (used in lms
-   * Certificates, alongside course certificates from /courses/enrolled)
+   * GET /organization/certificates
+   * Gets one page of the caller's downloadable certificates in an organization, newest first
+   * (used in lms Certificates). Each item is `{ kind: 'course' | 'learning_path', data }`.
    * Requires authentication and organization membership
    */
-  .get('/learning-paths/certificates', authMiddleware, orgMemberMiddleware, async (c) => {
+  .get('/certificates', authMiddleware, orgMemberMiddleware, zValidator('query', ZGetEarnedCertificates), async (c) => {
     try {
       const user = c.get('user')!;
       const orgId = c.req.header('cio-org-id')!;
+      const query = c.req.valid('query');
 
-      const certificates = await listMyPathCertificatesService(orgId, user.id);
+      const { items, total } = await getUserEarnedCertificates(orgId, user.id, query);
+      const totalPages = Math.ceil(total / query.limit);
 
-      return c.json({ success: true, data: certificates }, 200);
+      return c.json(
+        {
+          success: true,
+          data: items,
+          pagination: { page: query.page, limit: query.limit, total, totalPages }
+        },
+        200
+      );
     } catch (error) {
-      return handleError(c, error, 'Failed to fetch learning path certificates');
+      return handleError(c, error, 'Failed to fetch certificates');
     }
   })
   /**
