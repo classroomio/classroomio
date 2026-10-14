@@ -92,5 +92,6 @@ FROM (
   UNION ALL
   SELECT "user_id", "updated_at" AS "seen_at" FROM "session" WHERE "impersonated_by" IS NULL
 ) AS "session_activity"
+WHERE "seen_at" IS NOT NULL
 GROUP BY "user_id", "seen_at"::date
 ON CONFLICT ("user_id", "logged_in_date") DO NOTHING;
