@@ -507,7 +507,8 @@
     "empty_description": "Schließe einen Kurs ab, um dein erstes Zertifikat zu verdienen. Deine erworbenen Zertifikate werden hier angezeigt.",
     "no_results_title": "Keine Zertifikate gefunden",
     "no_results_description": "Versuche einen anderen Suchbegriff.",
-    "go_to_my_learning": "Zu Mein Lernen"
+    "go_to_my_learning": "Zu Mein Lernen",
+    "retry": "Erneut versuchen"
   },
   "lms_navigation": {
     "home": "Dashboard",

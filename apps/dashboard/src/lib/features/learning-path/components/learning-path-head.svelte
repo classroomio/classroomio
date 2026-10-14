@@ -1,5 +1,9 @@
 <script lang="ts">
   import { Button } from '@cio/ui/base/button';
+  import { ComboButton } from '@cio/ui/custom/combo-button';
+  import DownloadIcon from '@lucide/svelte/icons/download';
+  import ImageIcon from '@lucide/svelte/icons/image';
+  import { learnerPathStore } from '../api/learning-path.svelte';
   import { LearningPathBadge, LearningPathProgress, DEFAULT_COURSE_BANNER_IMAGE } from '@cio/ui';
   import { locale, t } from '$lib/utils/functions/translations';
   import BookIcon from '@lucide/svelte/icons/book-open';
@@ -9,6 +13,7 @@
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-right';
 
   interface Props {
+    pathId: string;
     name: string;
     description: string;
     coverGradient?: string;
@@ -29,6 +34,7 @@
   const isComplete = (completed: number, count: number) => count > 0 && completed === count;
 
   let {
+    pathId,
     name,
     description,
     coverGradient = 'linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.623 0.214 259.815))',
@@ -125,19 +131,43 @@
               {nextCourseTitle}
             {/if}
           </p>
-          <Button
-            href={enrollHref}
-            variant={isComplete(coursesCompleted, courseCount) ? 'outline' : 'default'}
-            size="default"
-            class="shrink-0"
-          >
-            {isComplete(coursesCompleted, courseCount)
-              ? $t('learningPath.detail.view_certificate')
-              : coursesCompleted === 0
-                ? $t('learningPath.hero.start_learning')
-                : $t('learningPath.hero.continue_learning')}
-            <ArrowUpRightIcon class="size-4" />
-          </Button>
+          {#if isComplete(coursesCompleted, courseCount) && learnerPathStore.hasPathCertificate(pathId)}
+            <ComboButton
+              label={$t('course.navItem.certificates.download_certificate')}
+              menuLabel={$t('course.navItem.certificates.download_certificate')}
+              testId="path-head-certificate-download"
+              loading={learnerPathStore.isDownloadingCertificate}
+              onSelect={() => learnerPathStore.downloadCertificate(pathId, name, 'pdf')}
+              items={[
+                {
+                  id: 'pdf',
+                  label: $t('course.navItem.certificates.editor.download_pdf'),
+                  icon: DownloadIcon,
+                  onSelect: () => learnerPathStore.downloadCertificate(pathId, name, 'pdf')
+                },
+                {
+                  id: 'png',
+                  label: $t('course.navItem.certificates.editor.download_png'),
+                  icon: ImageIcon,
+                  onSelect: () => learnerPathStore.downloadCertificate(pathId, name, 'png')
+                }
+              ]}
+            />
+          {:else}
+            <Button
+              href={enrollHref}
+              variant={isComplete(coursesCompleted, courseCount) ? 'outline' : 'default'}
+              size="default"
+              class="shrink-0"
+            >
+              {isComplete(coursesCompleted, courseCount)
+                ? $t('learningPath.detail.view_certificate')
+                : coursesCompleted === 0
+                  ? $t('learningPath.hero.start_learning')
+                  : $t('learningPath.hero.continue_learning')}
+              <ArrowUpRightIcon class="size-4" />
+            </Button>
+          {/if}
         </div>
       </div>
     {:else}

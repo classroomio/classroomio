@@ -507,7 +507,8 @@
     "empty_description": "Gennemfør et kursus for at opnå dit første certifikat. Dine opnåede certifikater vises her.",
     "no_results_title": "Ingen certifikater fundet",
     "no_results_description": "Prøv et andet søgeord.",
-    "go_to_my_learning": "Gå til Min Læring"
+    "go_to_my_learning": "Gå til Min Læring",
+    "retry": "Prøv igen"
   },
   "lms_navigation": {
     "home": "Dashboard",

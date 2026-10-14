@@ -507,7 +507,8 @@
     "empty_description": "Terminez un cours pour obtenir votre premier certificat. Vos certificats obtenus apparaîtront ici.",
     "no_results_title": "Aucun certificat trouvé",
     "no_results_description": "Essayez un autre terme de recherche.",
-    "go_to_my_learning": "Aller à Mon apprentissage"
+    "go_to_my_learning": "Aller à Mon apprentissage",
+    "retry": "Réessayer"
   },
   "lms_navigation": {
     "home": "Tableau de bord",

@@ -507,7 +507,8 @@
     "empty_description": "Completa un curso para obtener tu primer certificado. Tus certificados obtenidos aparecerán aquí.",
     "no_results_title": "No se encontraron certificados",
     "no_results_description": "Prueba con otro término de búsqueda.",
-    "go_to_my_learning": "Ir a Mi aprendizaje"
+    "go_to_my_learning": "Ir a Mi aprendizaje",
+    "retry": "Intentar de nuevo"
   },
   "lms_navigation": {
     "home": "Panel",

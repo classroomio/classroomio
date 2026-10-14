@@ -75,7 +75,7 @@
 {:else}
   <LearningPathCard
     isCertificateView
-    href={`/paths/${certificate.data.publicId}`}
+    href={`/lms/paths/${certificate.data.publicId ?? certificate.data.id}`}
     name={certificate.data.name}
     description={certificate.data.description}
     coverImage={certificate.data.coverImage ?? undefined}

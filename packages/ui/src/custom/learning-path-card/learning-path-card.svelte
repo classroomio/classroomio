@@ -219,19 +219,21 @@
         {description}
       </p>
 
-      <div class="ui:flex ui:items-center ui:gap-3 ui:text-xs ui:text-muted-foreground">
-        <span class="ui:inline-flex ui:items-center ui:gap-1">
-          <BookIcon class="ui:size-3.5" />
-          {courseCount}
-          {courseCount === 1 ? labels.course : labels.courses}
-        </span>
-        {#if showCertificateBadge}
+      {#if surface !== 'certificate'}
+        <div class="ui:flex ui:items-center ui:gap-3 ui:text-xs ui:text-muted-foreground">
           <span class="ui:inline-flex ui:items-center ui:gap-1">
-            <CertificateIcon class="ui:size-3.5" />
-            {labels.certificateEarned}
+            <BookIcon class="ui:size-3.5" />
+            {courseCount}
+            {courseCount === 1 ? labels.course : labels.courses}
           </span>
-        {/if}
-      </div>
+          {#if showCertificateBadge}
+            <span class="ui:inline-flex ui:items-center ui:gap-1">
+              <CertificateIcon class="ui:size-3.5" />
+              {labels.certificateEarned}
+            </span>
+          {/if}
+        </div>
+      {/if}
 
       {#if showEarnedAt}
         <p class="ui:text-xs ui:text-muted-foreground">

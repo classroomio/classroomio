@@ -22,7 +22,7 @@ import type {
 } from '../utils/types';
 import { enrolledApi } from '$features/lms/api/enrolled.svelte';
 import type { EnrolledPath, GetPathJourneyRequest, PathJourney } from '$features/lms/utils/types';
-import type { MyPathCertificate, ListMyPathCertificatesRequest } from '$features/lms/utils/types';
+import type { EarnedPathCertificate, GetEarnedCertificatesRequest } from '$features/lms/utils/types';
 import type { CourseInPathContext, CourseInPathNode } from '../components/types';
 import {
   ZCreateLearningPath,
@@ -363,6 +363,17 @@ export class LearningPathApi extends BaseApiWithErrors {
 
 export const learningPathApi = /* @__PURE__ */ new LearningPathApi();
 
+function isNotPathMemberError(result: unknown): boolean {
+  if (typeof result !== 'object' || result === null) return false;
+
+  const body = result as { code?: unknown; error?: unknown };
+  return (
+    body.code === 'UNAUTHORIZED' &&
+    typeof body.error === 'string' &&
+    body.error.includes('member of this learning path')
+  );
+}
+
 class LearnerPathStore extends BaseApiWithErrors {
   // Learner-facing state
   enrolledPaths = $state<EnrolledPath[]>([]);
@@ -380,6 +391,8 @@ class LearnerPathStore extends BaseApiWithErrors {
   // Guards redirects that must only fire for definitively-unenrolled paths.
   selectedJourneyLoaded = $state(false);
 
+  selectedJourneyForbidden = $state(false);
+
   // Explore strip rows, loaded on demand by the Explore page
   explorePaths = $state<ExplorePathItem[]>([]);
 
@@ -387,7 +400,7 @@ class LearnerPathStore extends BaseApiWithErrors {
   catalogPaths = $state<PublicLearningPathItem[]>([]);
 
   // Certificates the caller can download, for completed-path cards
-  pathCertificates = $state<MyPathCertificate[]>([]);
+  pathCertificates = $state<EarnedPathCertificate[]>([]);
 
   // Public detail (with courses) for the explore preview modal
   publicPathDetail = $state<PublicLearningPathDetail | null>(null);
@@ -468,6 +481,7 @@ class LearnerPathStore extends BaseApiWithErrors {
     this.loadedScope = null;
     this.selectedJourney = null;
     this.selectedJourneyLoaded = false;
+    this.selectedJourneyForbidden = false;
     this.explorePaths = [];
     this.catalogPaths = [];
     this.pathCertificates = [];
@@ -493,15 +507,26 @@ class LearnerPathStore extends BaseApiWithErrors {
   }
 
   hasPathCertificate(pathId: string): boolean {
-    return this.pathCertificates.some((certificate) => certificate.learningPathId === pathId);
+    return this.pathCertificates.some((certificate) => certificate.id === pathId);
   }
 
   async listCertificates(): Promise<void> {
-    const response = await this.execute<ListMyPathCertificatesRequest>({
-      requestFn: () => classroomio.organization['learning-paths'].certificates.$get({}),
-      logContext: 'loading path certificates'
-    });
-    this.pathCertificates = response?.data ?? [];
+    // The unified certificates feed mixes courses and paths: follow every
+    // page and keep the paths, so the check works with many certificates.
+    const collected: EarnedPathCertificate[] = [];
+    let page = 1;
+    let totalPages = 1;
+    do {
+      const response = await this.execute<GetEarnedCertificatesRequest>({
+        requestFn: () => classroomio.organization.certificates.$get({ query: { page: String(page), limit: '50' } }),
+        logContext: 'loading path certificates'
+      });
+      const items = response?.data ?? [];
+      collected.push(...items.flatMap((item) => (item.kind === 'learning_path' ? [item.data] : [])));
+      totalPages = response?.pagination?.totalPages ?? 1;
+      page += 1;
+    } while (page <= totalPages);
+    this.pathCertificates = collected;
   }
 
   async ensureSelectedPath(pathId: string): Promise<PathJourney | null> {
@@ -509,8 +534,9 @@ class LearnerPathStore extends BaseApiWithErrors {
 
     const requestSeq = ++this.journeyRequestSeq;
     this.selectedJourneyLoaded = false;
+    this.selectedJourneyForbidden = false;
     try {
-      const journey = await this.fetchJourney(pathId);
+      const journey = await this.fetchJourney(pathId, requestSeq);
       if (requestSeq !== this.journeyRequestSeq) return null;
 
       this.selectedJourney = journey;
@@ -521,13 +547,20 @@ class LearnerPathStore extends BaseApiWithErrors {
     }
   }
 
-  private async fetchJourney(pathId: string): Promise<PathJourney | null> {
+  private async fetchJourney(pathId: string, requestSeq?: number): Promise<PathJourney | null> {
     const cached = this.journeyCache.get(pathId);
     if (cached) return cached;
 
     const response = await this.execute<GetPathJourneyRequest>({
       requestFn: () => classroomio['learning-path'][':pathId'].journey.$get({ param: { pathId } }),
-      logContext: 'loading learning path journey'
+      logContext: 'loading learning path journey',
+      onError: (result) => {
+        if (requestSeq !== undefined && requestSeq !== this.journeyRequestSeq) return;
+
+        if (isNotPathMemberError(result)) {
+          this.selectedJourneyForbidden = true;
+        }
+      }
     });
     const journey = response?.data ?? null;
     if (!journey) return null;

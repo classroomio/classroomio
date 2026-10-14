@@ -26,6 +26,7 @@
     if ($currentOrg.id) {
       catalogRequested = true;
       learnerPathStore.loadCatalogPaths();
+      learnerPathStore.listCertificates();
     }
   });
 
@@ -86,15 +87,21 @@
     return getStudentCourseContinuePath(course.courseId, journey?.path.publicId ?? authPathId);
   }
 
-  // Enrollment lives in the explore preview modal now: unenrolled visitors
-  // are sent back to explore instead of enrolling from this page. Only
-  // redirect once the journey request settled — the catalog resolves first
-  // and would otherwise bounce freshly-enrolled students away.
   $effect(() => {
-    if (loadSettled && learnerPathStore.selectedJourneyLoaded && !journey && previewPath) {
+    if (
+      loadSettled &&
+      learnerPathStore.selectedJourneyLoaded &&
+      learnerPathStore.selectedJourneyForbidden &&
+      !journey &&
+      previewPath
+    ) {
       goto('/lms/explore');
     }
   });
+
+  function retryJourney() {
+    learnerPathStore.ensureSelectedPath(authPathId);
+  }
 </script>
 
 {#if !journey && !loadSettled}
@@ -102,9 +109,23 @@
     <Spinner />
   </div>
 {:else if previewPath}
-  <div class="flex min-h-64 items-center justify-center">
-    <Spinner />
-  </div>
+  {#if learnerPathStore.selectedJourneyLoaded && !learnerPathStore.selectedJourneyForbidden}
+    <Empty
+      icon={PathIcon}
+      title={$t('learningPath.workspace.load_failed_title')}
+      description={$t('learningPath.workspace.load_failed_description')}
+    >
+      {#snippet children()}
+        <Button onclick={retryJourney} disabled={learnerPathStore.isLoading}>
+          {$t('certificates.retry')}
+        </Button>
+      {/snippet}
+    </Empty>
+  {:else}
+    <div class="flex min-h-64 items-center justify-center">
+      <Spinner />
+    </div>
+  {/if}
 {:else if !journey}
   <Empty
     icon={PathIcon}
@@ -117,6 +138,7 @@
   </Empty>
 {:else}
   <LearningPathHead
+    pathId={path.id}
     name={path.name}
     description={path.description ?? ''}
     coverImage={path.coverImage ?? undefined}
