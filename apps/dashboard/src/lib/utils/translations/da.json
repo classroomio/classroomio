@@ -4331,7 +4331,11 @@
       "actions_menu": "Tokengodkendelseshandlinger"
     },
     "teams": {
-      "page_subtitle": "Inviter teammedlemmer og styr, hvem der hjælper med at drive denne organisation."
+      "page_subtitle": "Inviter teammedlemmer og styr, hvem der hjælper med at drive denne organisation.",
+      "permission": {
+        "title": "Du har ikke tilladelse til at se denne side",
+        "description": "Kun organisationsadministratorer kan se og administrere teamet. Kontakt en administrator, hvis du har brug for adgang."
+      }
     },
     "ai_credits": {
       "sub_title": "AI-credits",

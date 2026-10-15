@@ -848,7 +848,11 @@
       "actions_menu": "Azioni di autenticazione del token"
     },
     "teams": {
-      "page_subtitle": "Invita i compagni di squadra e controlla chi aiuta a gestire questa organizzazione."
+      "page_subtitle": "Invita i compagni di squadra e controlla chi aiuta a gestire questa organizzazione.",
+      "permission": {
+        "title": "Non hai il permesso di visualizzare questa pagina",
+        "description": "Solo gli amministratori dell’organizzazione possono visualizzare e gestire il team. Contatta un amministratore se hai bisogno di accedere."
+      }
     },
     "auth": {
       "page_subtitle": "Controlla la registrazione, l'accesso, l'SSO e l'accesso basato su token per questa organizzazione.",

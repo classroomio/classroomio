@@ -4331,7 +4331,11 @@
       "actions_menu": "Hành động xác thực mã thông báo"
     },
     "teams": {
-      "page_subtitle": "Mời đồng đội và kiểm soát ai giúp vận hành tổ chức này."
+      "page_subtitle": "Mời đồng đội và kiểm soát ai giúp vận hành tổ chức này.",
+      "permission": {
+        "title": "Bạn không có quyền xem trang này",
+        "description": "Chỉ quản trị viên tổ chức mới có thể xem và quản lý nhóm. Hãy liên hệ với quản trị viên nếu bạn cần quyền truy cập."
+      }
     },
     "ai_credits": {
       "sub_title": "Tín dụng AI",

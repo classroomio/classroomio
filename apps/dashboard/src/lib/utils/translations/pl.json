@@ -4331,7 +4331,11 @@
       "actions_menu": "Akcje uwierzytelniania tokenu"
     },
     "teams": {
-      "page_subtitle": "Zaproś współpracowników i kontroluj, kto pomaga zarządzać tą organizacją."
+      "page_subtitle": "Zaproś współpracowników i kontroluj, kto pomaga zarządzać tą organizacją.",
+      "permission": {
+        "title": "Nie masz uprawnień do wyświetlania tej strony",
+        "description": "Tylko administratorzy organizacji mogą wyświetlać zespół i nim zarządzać. Jeśli potrzebujesz dostępu, skontaktuj się z administratorem."
+      }
     },
     "ai_credits": {
       "sub_title": "Kredyty AI",

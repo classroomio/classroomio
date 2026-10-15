@@ -4331,7 +4331,11 @@
       "actions_menu": "Token-Authentifizierungsaktionen"
     },
     "teams": {
-      "page_subtitle": "Laden Sie Teammitglieder ein und steuern Sie, wer diese Organisation mitbetreibt."
+      "page_subtitle": "Laden Sie Teammitglieder ein und steuern Sie, wer diese Organisation mitbetreibt.",
+      "permission": {
+        "title": "Du hast keine Berechtigung, diese Seite anzuzeigen",
+        "description": "Nur Organisationsadministratoren können das Team anzeigen und verwalten. Wende dich an einen Administrator, wenn du Zugriff benötigst."
+      }
     },
     "ai_credits": {
       "sub_title": "KI-Credits",

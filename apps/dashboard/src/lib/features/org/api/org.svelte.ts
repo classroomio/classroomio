@@ -938,9 +938,9 @@ class OrgApi extends BaseApiWithErrors {
 
   linkInvite = $state<OrgLinkInvite>(null);
 
-  async getLinkInvite() {
+  async getLinkInvite(roleId: number) {
     return this.execute<GetLinkInviteRequest>({
-      requestFn: () => classroomio.organization['link-invite'].$get(),
+      requestFn: () => classroomio.organization['link-invite'].$get({ query: { roleId: roleId.toString() } }),
       logContext: 'fetching link invite',
       onSuccess: (response) => {
         this.linkInvite = response.data;
@@ -963,9 +963,9 @@ class OrgApi extends BaseApiWithErrors {
     });
   }
 
-  async toggleLinkInvite(isRevoked: boolean) {
+  async toggleLinkInvite(roleId: number, isRevoked: boolean) {
     return this.execute<ToggleLinkInviteRequest>({
-      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { isRevoked } }),
+      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { roleId, isRevoked } }),
       logContext: 'toggling link invite',
       onSuccess: (response) => {
         this.linkInvite = response.data;

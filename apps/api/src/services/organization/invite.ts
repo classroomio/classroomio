@@ -537,47 +537,55 @@ export async function acceptOrganizationInvite(token: string, user: TAuthUser, c
 const LINK_INVITE_FAR_FUTURE_MS = 100 * 365 * 24 * 60 * 60 * 1000;
 
 /**
- * Returns the current org link invite if one already exists, otherwise creates one.
- * One link invite per org — subsequent calls return the same record.
+ * Returns a reusable link for the requested organization role.
  */
 export async function getOrCreateLinkInvite(orgId: string, roleId: number, profileId: string) {
   if (roleId !== ROLE.ADMIN && roleId !== ROLE.TUTOR) {
     throw new AppError('Invalid organization role for link invite', ErrorCodes.VALIDATION_ERROR, 400, 'roleId');
   }
 
-  const existing = await getOrgLinkInvite(orgId);
+  let wasCreated = false;
+  const invite = await db.transaction(async (transaction) => {
+    await lockOrganizationForUpdate(orgId, transaction);
 
-  if (existing) {
-    const token = (existing.metadata as Record<string, unknown>)?.token as string | undefined;
-    return { id: existing.id, token: token ?? '', roleId: existing.roleId, isRevoked: existing.isRevoked };
+    const existing = await getOrgLinkInvite(orgId, roleId, transaction);
+    if (existing) return existing;
+
+    const token = generateToken();
+    const tokenHash = hashToken(token);
+    const expiresAt = new Date(Date.now() + LINK_INVITE_FAR_FUTURE_MS).toISOString();
+
+    const created = await createLinkInvite(
+      {
+        organizationId: orgId,
+        roleId,
+        tokenHash,
+        createdByProfileId: profileId,
+        expiresAt,
+        metadata: { token, source: 'ORG_SETTINGS_LINK_INVITE' }
+      },
+      transaction
+    );
+    wasCreated = true;
+    return created;
+  });
+
+  if (wasCreated) {
+    await recordOrganizationInviteAudit(invite.id, orgId, 'CREATED', {
+      actorProfileId: profileId,
+      metadata: { roleId, type: 'LINK' }
+    });
   }
 
-  const token = generateToken();
-  const tokenHash = hashToken(token);
-  const expiresAt = new Date(Date.now() + LINK_INVITE_FAR_FUTURE_MS).toISOString();
-
-  const invite = await createLinkInvite({
-    organizationId: orgId,
-    roleId,
-    tokenHash,
-    createdByProfileId: profileId,
-    expiresAt,
-    metadata: { token, source: 'ORG_SETTINGS_LINK_INVITE' }
-  });
-
-  await recordOrganizationInviteAudit(invite.id, orgId, 'CREATED', {
-    actorProfileId: profileId,
-    metadata: { roleId, type: 'LINK' }
-  });
-
-  return { id: invite.id, token, roleId: invite.roleId, isRevoked: invite.isRevoked };
+  const token = (invite.metadata as Record<string, unknown>)?.token as string | undefined;
+  return { id: invite.id, token: token ?? '', roleId: invite.roleId, isRevoked: invite.isRevoked };
 }
 
 /**
- * Returns current link invite for the org (for GET endpoint — returns null if none created yet).
+ * Returns the active link for the requested organization role, if one exists.
  */
-export async function fetchOrgLinkInvite(orgId: string) {
-  const row = await getOrgLinkInvite(orgId);
+export async function fetchOrgLinkInvite(orgId: string, roleId: number) {
+  const row = await getOrgLinkInvite(orgId, roleId);
 
   if (!row) return null;
 
@@ -588,8 +596,8 @@ export async function fetchOrgLinkInvite(orgId: string) {
 /**
  * Enables or disables the org link invite (toggle isRevoked).
  */
-export async function toggleOrgLinkInvite(orgId: string, isRevoked: boolean, profileId: string) {
-  const updated = await setLinkInviteRevoked(orgId, isRevoked, profileId);
+export async function toggleOrgLinkInvite(orgId: string, roleId: number, isRevoked: boolean, profileId: string) {
+  const updated = await setLinkInviteRevoked(orgId, roleId, isRevoked, profileId);
 
   if (!updated) {
     throw new AppError('Link invite not found', ErrorCodes.NOT_FOUND, 404);

@@ -4331,7 +4331,11 @@
       "actions_menu": "Acciones de autenticación de token"
     },
     "teams": {
-      "page_subtitle": "Invita a compañeros de equipo y controla quién ayuda a administrar esta organización."
+      "page_subtitle": "Invita a compañeros de equipo y controla quién ayuda a administrar esta organización.",
+      "permission": {
+        "title": "No tienes permiso para ver esta página",
+        "description": "Solo los administradores de la organización pueden ver y gestionar el equipo. Contacta con un administrador si necesitas acceso."
+      }
     },
     "ai_credits": {
       "sub_title": "Créditos de IA",

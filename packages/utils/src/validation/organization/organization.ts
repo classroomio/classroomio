@@ -246,7 +246,12 @@ export const ZCreateLinkInvite = z.object({
 
 export type TCreateLinkInvite = z.infer<typeof ZCreateLinkInvite>;
 
+export const ZGetLinkInvite = z.object({
+  roleId: z.coerce.number().int().positive()
+});
+
 export const ZToggleLinkInvite = z.object({
+  roleId: z.number().int().positive(),
   isRevoked: z.boolean()
 });
 

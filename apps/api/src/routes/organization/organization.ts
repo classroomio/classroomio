@@ -12,6 +12,7 @@ import {
   ZBulkAudienceAction,
   ZGetAudienceQuery,
   ZGetCoursesBySiteName,
+  ZGetLinkInvite,
   ZGetOrgSetup,
   ZGetOrganizationCoursesQuery,
   ZGetOrganizations,
@@ -221,12 +222,13 @@ export const organizationRouter = new Hono()
   })
   /**
    * GET /organization/link-invite
-   * Returns the current org link invite (null if none created yet)
+   * Returns the active link for the requested role (null if none exists)
    */
-  .get('/link-invite', authMiddleware, orgAdminMiddleware, async (c) => {
+  .get('/link-invite', authMiddleware, orgAdminMiddleware, zValidator('query', ZGetLinkInvite), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
-      const data = await fetchOrgLinkInvite(orgId);
+      const { roleId } = c.req.valid('query');
+      const data = await fetchOrgLinkInvite(orgId, roleId);
       return c.json({ success: true, data }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to fetch link invite');
@@ -234,7 +236,7 @@ export const organizationRouter = new Hono()
   })
   /**
    * POST /organization/link-invite
-   * Get-or-create the org link invite
+   * Get or create a link for the requested role
    */
   .post('/link-invite', authMiddleware, orgAdminMiddleware, zValidator('json', ZCreateLinkInvite), async (c) => {
     try {
@@ -249,14 +251,14 @@ export const organizationRouter = new Hono()
   })
   /**
    * PATCH /organization/link-invite
-   * Enable or disable the org link invite
+   * Enable or disable the requested role's link
    */
   .patch('/link-invite', authMiddleware, orgAdminMiddleware, zValidator('json', ZToggleLinkInvite), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;
       const user = c.get('user')!;
-      const { isRevoked } = c.req.valid('json');
-      const data = await toggleOrgLinkInvite(orgId, isRevoked, user.id);
+      const { roleId, isRevoked } = c.req.valid('json');
+      const data = await toggleOrgLinkInvite(orgId, roleId, isRevoked, user.id);
       return c.json({ success: true, data }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to update link invite');

@@ -77,12 +77,21 @@ vi.mock('@api/services/course/compliance', () => ({
   ensureComplianceEnrollmentRecordsForProfiles: vi.fn()
 }));
 
-import { acceptLinkInvite, acceptOrganizationInvite } from '@api/services/organization/invite';
+import {
+  acceptLinkInvite,
+  acceptOrganizationInvite,
+  fetchOrgLinkInvite,
+  getOrCreateLinkInvite,
+  toggleOrgLinkInvite
+} from '@api/services/organization/invite';
 import { scheduleCourseRoleReconcile } from '@cio/core/services/organization/course-roles';
 import {
   claimPendingOrganizationInvite,
+  createLinkInvite,
+  getOrgLinkInvite,
   getOrgLinkInviteWithOrg,
   lockOrganizationForUpdate,
+  setLinkInviteRevoked,
   selectOrganizationInviteWithOrgByTokenHash,
   selectOrganizationMemberByOrgAndNormalizedEmail,
   selectOrganizationMemberByOrgAndProfile,
@@ -161,5 +170,100 @@ describe('acceptLinkInvite course-role reconciliation', () => {
       10,
       expect.objectContaining({ roleId: ROLE.TUTOR })
     );
+  });
+});
+
+describe('team link invite roles', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(getOrgLinkInvite).mockImplementation(async (_orgId, roleId) => {
+      if (roleId !== ROLE.TUTOR) return null;
+
+      return {
+        id: 'teacher-invite',
+        roleId: ROLE.TUTOR,
+        isRevoked: false,
+        metadata: { token: 'teacher-token' }
+      } as never;
+    });
+    vi.mocked(createLinkInvite).mockImplementation(
+      async (data) =>
+        ({
+          ...data,
+          id: 'new-invite',
+          isRevoked: false
+        }) as never
+    );
+  });
+
+  it('reuses the selected role link without changing other roles', async () => {
+    const invite = await getOrCreateLinkInvite(ORG_ID, ROLE.TUTOR, USER.id);
+
+    expect(invite.token).toBe('teacher-token');
+    expect(invite.roleId).toBe(ROLE.TUTOR);
+    expect(getOrgLinkInvite).toHaveBeenCalledWith(ORG_ID, ROLE.TUTOR, expect.anything());
+    expect(createLinkInvite).not.toHaveBeenCalled();
+    expect(setLinkInviteRevoked).not.toHaveBeenCalled();
+  });
+
+  it('creates an admin link while preserving the teacher link', async () => {
+    const adminInvite = await getOrCreateLinkInvite(ORG_ID, ROLE.ADMIN, USER.id);
+    const teacherInvite = await getOrCreateLinkInvite(ORG_ID, ROLE.TUTOR, USER.id);
+
+    expect(adminInvite.roleId).toBe(ROLE.ADMIN);
+    expect(adminInvite.token).not.toBe('teacher-token');
+    expect(teacherInvite.token).toBe('teacher-token');
+    expect(createLinkInvite).toHaveBeenCalledOnce();
+    expect(createLinkInvite).toHaveBeenCalledWith(expect.objectContaining({ roleId: ROLE.ADMIN }), expect.anything());
+    expect(setLinkInviteRevoked).not.toHaveBeenCalled();
+    expect(vi.mocked(lockOrganizationForUpdate).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(getOrgLinkInvite).mock.invocationCallOrder[0]
+    );
+    expect(vi.mocked(getOrgLinkInvite).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(createLinkInvite).mock.invocationCallOrder[0]
+    );
+  });
+
+  it('reuses both existing links when switching roles', async () => {
+    const adminLink = {
+      id: 'admin-invite',
+      roleId: ROLE.ADMIN,
+      isRevoked: false,
+      metadata: { token: 'admin-token' }
+    };
+    vi.mocked(getOrgLinkInvite).mockImplementation(async (_orgId, roleId) => {
+      if (roleId === ROLE.ADMIN) return adminLink as never;
+
+      return {
+        id: 'teacher-invite',
+        roleId: ROLE.TUTOR,
+        isRevoked: false,
+        metadata: { token: 'teacher-token' }
+      } as never;
+    });
+
+    const adminInvite = await getOrCreateLinkInvite(ORG_ID, ROLE.ADMIN, USER.id);
+    const teacherInvite = await getOrCreateLinkInvite(ORG_ID, ROLE.TUTOR, USER.id);
+
+    expect(adminInvite.token).toBe('admin-token');
+    expect(teacherInvite.token).toBe('teacher-token');
+    expect(createLinkInvite).not.toHaveBeenCalled();
+    expect(setLinkInviteRevoked).not.toHaveBeenCalled();
+  });
+
+  it('looks up and revokes only the selected role link', async () => {
+    vi.mocked(setLinkInviteRevoked).mockResolvedValue({
+      id: 'admin-invite',
+      roleId: ROLE.ADMIN,
+      isRevoked: true,
+      metadata: { token: 'admin-token' }
+    } as never);
+
+    await fetchOrgLinkInvite(ORG_ID, ROLE.TUTOR);
+    const adminInvite = await toggleOrgLinkInvite(ORG_ID, ROLE.ADMIN, true, USER.id);
+
+    expect(getOrgLinkInvite).toHaveBeenCalledWith(ORG_ID, ROLE.TUTOR);
+    expect(setLinkInviteRevoked).toHaveBeenCalledWith(ORG_ID, ROLE.ADMIN, true, USER.id);
+    expect(adminInvite.roleId).toBe(ROLE.ADMIN);
   });
 });

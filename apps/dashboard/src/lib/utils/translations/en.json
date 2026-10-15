@@ -848,6 +848,10 @@
       "actions_menu": "Token auth actions"
     },
     "teams": {
+      "permission": {
+        "title": "You don’t have permission to view this page",
+        "description": "Only organization administrators can view and manage the team. Contact an administrator if you need access."
+      },
       "page_subtitle": "Invite teammates and control who helps run this organization."
     },
     "auth": {

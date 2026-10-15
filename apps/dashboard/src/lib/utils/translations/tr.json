@@ -763,7 +763,11 @@
       "actions_menu": "Token kimlik doğrulama eylemleri"
     },
     "teams": {
-      "page_subtitle": "Ekip arkadaşlarınızı davet edin ve bu organizasyonun yönetilmesine kimin yardımcı olacağını kontrol edin."
+      "page_subtitle": "Ekip arkadaşlarınızı davet edin ve bu organizasyonun yönetilmesine kimin yardımcı olacağını kontrol edin.",
+      "permission": {
+        "title": "Bu sayfayı görüntüleme izniniz yok",
+        "description": "Yalnızca kuruluş yöneticileri ekibi görüntüleyebilir ve yönetebilir. Erişime ihtiyacınız varsa bir yöneticiyle iletişime geçin."
+      }
     },
     "auth": {
       "page_subtitle": "Bu kuruluş için kaydolma, oturum açma, SSO ve jeton tabanlı erişimi kontrol edin.",
