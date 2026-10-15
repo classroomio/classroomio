@@ -2,17 +2,18 @@
   <img alt="ClassroomIO is a no-code tool that allows you build and scale your online bootcamp with ease." src="https://raw.githubusercontent.com/classroomio/classroomio/main/apps/website/static/classroomio-opengraph-image.jpg" />
   <h1 align="center">ClassroomIO.com</h1>
   <p align="center">
-    The Open Source Learning Management System for Companies
+  The Customer Training Platform Built for Business Growth.
     <br />
     <a href="https://classroomio.com">Website</a>  |  <a href="https://dub.sh/ciodiscord">Join Discord community</a>
   </p>
 </a>
 
-## ✨ About ClassroomIO.com
+## ✨ About ClassroomIO
 
-<img alt="ClassroomIO Courses page" src="https://assets.cdn.clsrio.com/www/home/ai-course-builder.jpeg" />
+<img width="3248" height="1999" alt="image" src="https://github.com/user-attachments/assets/290d663a-5a52-4705-8f1b-615427695717" />
 
-ClassroomIO is an  intelligent customer Training platform that helps SaaS companies use education to grow their business. Create high-quality learning experiences faster, deliver them across your customer journey, and use AI to scale customer education.
+
+ClassroomIO is an intelligent customer Training platform that helps SaaS companies use education to grow their business. Create high-quality learning experiences faster, deliver them across your customer journey, and use AI to scale customer education.
 
 ## Who It's For
 
@@ -59,6 +60,10 @@ For what's coming next, see the [public roadmap](https://classroomio.com/roadmap
 - [PostgreSQL](https://www.postgresql.org/)
 - [Better Auth](https://www.better-auth.com/)
 - [TailwindCSS](https://tailwindcss.com/?ref=classroomio.com)
+
+
+<img width="3440" height="2192" alt="image" src="https://github.com/user-attachments/assets/e5093e8a-a1bc-4cc9-80fc-675fa37af677" />
+
 
 ## Get a Demo
 
