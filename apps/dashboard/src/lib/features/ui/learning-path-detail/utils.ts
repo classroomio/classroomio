@@ -46,7 +46,45 @@ function buildLabels(detail: LearningPathDetail): LearningPathLandingPageLabels 
     enrollFreeLabel: t.get('public_learning_paths.detail.enroll_free'),
     enrollLabel: (cost: number, currency: string) =>
       t.get('public_learning_paths.detail.enroll_label', { cost, currency }),
-    viewAllLabel: t.get('public_learning_paths.detail.view_all')
+    viewAllLabel: t.get('public_learning_paths.detail.view_all'),
+    taughtByTwoLabel: (first: string, second: string) =>
+      t.get('public_learning_paths.detail.taught_by_two', { first, second }),
+    taughtByManyLabel: (names: string, count: number) =>
+      t.get('public_learning_paths.detail.taught_by_many', { names, count }),
+    featuresCoursesLine: (courseCount: number) =>
+      t.get('public_learning_paths.detail.features_courses_line', { courseCount }),
+    featuresContentLine: (lessons: number, exercises: number) =>
+      t.get('public_learning_paths.detail.features_content_line', { lessons, exercises }),
+    featuresCertificateLine: t.get('public_learning_paths.detail.features_certificate_line'),
+    featuresMilestoneLine: t.get('public_learning_paths.detail.features_milestone_line'),
+    featuresAccessLine: t.get('public_learning_paths.detail.features_access_line'),
+    saveVsIndividualLabel: (amount: string) => t.get('public_learning_paths.detail.save_vs_individual', { amount }),
+    statCoursesLabel: t.get('public_learning_paths.detail.stat_courses'),
+    statEnrolledLabel: t.get('public_learning_paths.detail.stat_enrolled'),
+    statCertificateLabel: t.get('public_learning_paths.detail.stat_certificate'),
+    statBeginnerLabel: t.get('public_learning_paths.detail.stat_beginner'),
+    statOnCompletionLabel: t.get('public_learning_paths.detail.stat_on_completion'),
+    statNoExperienceLabel: t.get('public_learning_paths.detail.stat_no_experience'),
+    statReviewsLabel: (count: number) => t.get('public_learning_paths.detail.stat_reviews', { count }),
+    fullPathLabel: t.get('public_learning_paths.detail.full_path'),
+    savePercentLabel: (percent: number) => t.get('public_learning_paths.detail.save_percent', { percent }),
+    socialProofLabel: (students: number, rating: number, reviews: number) =>
+      t.get('public_learning_paths.detail.social_proof', { students, rating, reviews }),
+    enrollWithCostLabel: (cost: string) => t.get('public_learning_paths.detail.enroll_with_cost', { cost }),
+    seriesHeadingCount: (count: number) => t.get('public_learning_paths.detail.series_heading_count', { count }),
+    seriesCourseLabel: (index: number) => t.get('public_learning_paths.detail.series_course', { index }),
+    seriesLessonsCount: (count: number) => t.get('public_learning_paths.detail.series_lessons', { count }),
+    seriesOutcomesHeading: t.get('public_learning_paths.detail.series_outcomes_heading'),
+    showOutlineLabel: t.get('public_learning_paths.detail.show_outline'),
+    hideOutlineLabel: t.get('public_learning_paths.detail.hide_outline'),
+    previewLabel: t.get('public_learning_paths.detail.preview_badge')
+  };
+}
+
+function pathHeroTotals(detail: LearningPathDetail): { lessons: number; exercises: number } {
+  return {
+    lessons: detail.series.reduce((sum, course) => sum + (course.lessonCount ?? 0), 0),
+    exercises: detail.series.reduce((sum, course) => sum + (course.exerciseCount ?? 0), 0)
   };
 }
 
@@ -71,6 +109,7 @@ export function buildLearningPathLandingPageProps(
     detail.pricing?.originalCost ??
     (detail.metadata?.discount ? Math.round(detail.cost / (1 - detail.metadata.discount / 100)) : undefined);
   const originalCost = showDiscount ? computedOriginalCost : undefined;
+  const heroTotals = pathHeroTotals(detail);
 
   return {
     theme: landing.theme,
@@ -87,6 +126,8 @@ export function buildLearningPathLandingPageProps(
       currency: detail.currency,
       originalCost,
       courseCount: detail.courseCount,
+      totalLessons: heroTotals.lessons,
+      totalExercises: heroTotals.exercises,
       totalStudents: detail.totalStudents,
       rating: detail.rating,
       reviewsCount: detail.reviewsCount,

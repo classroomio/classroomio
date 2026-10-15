@@ -49,16 +49,34 @@
   const instructorsText = $derived.by(() => {
     if (!hero.instructors || hero.instructors.length === 0) return null;
     const names = hero.instructors.map((i) => i.name);
-    if (names.length <= 2) return `Taught by ${names.join(' and ')}`;
-    return `Taught by ${names.slice(0, 2).join(', ')} + ${names.length - 2} more`;
+    if (names.length === 1) return names[0];
+    if (names.length === 2) {
+      return labels?.taughtByTwoLabel?.(names[0], names[1]) ?? `Taught by ${names.join(' and ')}`;
+    }
+    const shownNames = names.slice(0, 2).join(', ');
+    const remainingCount = names.length - 2;
+    return (
+      labels?.taughtByManyLabel?.(shownNames, remainingCount) ?? `Taught by ${shownNames} + ${remainingCount} more`
+    );
   });
 
   const defaultFeatures = $derived([
-    `All ${hero.courseCount ?? 5} courses, unlocked in order`,
-    '52 lessons · 13 exercises · 1 capstone',
-    hero.hasCertificate ? 'Path certificate on completion' : 'Verified path milestone completion',
-    'Lifetime access, learn at your pace'
+    labels?.featuresCoursesLine?.(hero.courseCount ?? 5) ?? `All ${hero.courseCount ?? 5} courses, unlocked in order`,
+    labels?.featuresContentLine?.(hero.totalLessons ?? 52, hero.totalExercises ?? 13) ??
+      `${hero.totalLessons ?? 52} lessons · ${hero.totalExercises ?? 13} exercises · 1 capstone`,
+    hero.hasCertificate
+      ? (labels?.featuresCertificateLine ?? 'Path certificate on completion')
+      : (labels?.featuresMilestoneLine ?? 'Verified path milestone completion'),
+    labels?.featuresAccessLine ?? 'Lifetime access, learn at your pace'
   ]);
+
+  const savingsDisplay = $derived(
+    savingsAmount == null
+      ? null
+      : hero.currency === 'USD' || !hero.currency
+        ? `$${savingsAmount}`
+        : `${hero.currency} ${savingsAmount}`
+  );
 
   const features = $derived(hero.features && hero.features.length > 0 ? hero.features : defaultFeatures);
 </script>
@@ -130,13 +148,13 @@
             href={safeHref(hero.primaryAction?.href ?? '#pricing')}
             class="ui:inline-flex ui:items-center ui:justify-center ui:px-6 ui:py-3.5 ui:text-base ui:font-semibold ui:text-[var(--landing-accent-fg)] ui:bg-[var(--landing-accent)] ui:[border-radius:var(--landing-radius-button)] ui:hover:opacity-95 ui:transition-all ui:shadow-md"
           >
-            {hero.primaryAction?.label ?? `Enroll · ${costDisplay}`}
+            {hero.primaryAction?.label ?? labels?.enrollWithCostLabel?.(costDisplay) ?? `Enroll · ${costDisplay}`}
           </a>
-          {#if savingsAmount}
+          {#if savingsAmount && savingsDisplay}
             <span
               class="ui:inline-flex ui:items-center ui:px-3 ui:py-2 ui:text-xs ui:font-semibold ui:bg-[var(--landing-accent)]/10 ui:text-[var(--landing-accent)]"
             >
-              Save ${savingsAmount} vs individual courses
+              {labels?.saveVsIndividualLabel?.(savingsDisplay) ?? `Save $${savingsAmount} vs individual courses`}
             </span>
           {/if}
         </div>
@@ -150,7 +168,7 @@
               {hero.courseCount ?? 5}
             </span>
             <span class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:uppercase ui:tracking-wider ui:mt-0.5">
-              courses in series
+              {labels?.statCoursesLabel ?? 'courses in series'}
             </span>
           </div>
 
@@ -159,16 +177,20 @@
               {hero.totalStudents ?? 942}
             </span>
             <span class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:uppercase ui:tracking-wider ui:mt-0.5">
-              enrolled
+              {labels?.statEnrolledLabel ?? 'enrolled'}
             </span>
           </div>
 
           <div class="ui:flex ui:flex-col">
             <span class="ui:text-2xl ui:font-semibold ui:text-[var(--landing-fg)]">
-              {hero.hasCertificate ? 'Certificate' : 'Beginner'}
+              {hero.hasCertificate
+                ? (labels?.statCertificateLabel ?? 'Certificate')
+                : (labels?.statBeginnerLabel ?? 'Beginner')}
             </span>
             <span class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:uppercase ui:tracking-wider ui:mt-0.5">
-              {hero.hasCertificate ? 'on completion' : 'no prior exp.'}
+              {hero.hasCertificate
+                ? (labels?.statOnCompletionLabel ?? 'on completion')
+                : (labels?.statNoExperienceLabel ?? 'no prior exp.')}
             </span>
           </div>
 
@@ -178,7 +200,7 @@
               <span>{hero.rating ?? 4.7}</span>
             </span>
             <span class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:uppercase ui:tracking-wider ui:mt-0.5">
-              {hero.reviewsCount ?? 213} reviews
+              {labels?.statReviewsLabel?.(hero.reviewsCount ?? 213) ?? `${hero.reviewsCount ?? 213} reviews`}
             </span>
           </div>
         </div>
@@ -191,7 +213,7 @@
         >
           <div>
             <span class="ui:text-xs ui:font-semibold ui:uppercase ui:tracking-widest ui:text-[var(--landing-fg-muted)]">
-              Full path
+              {labels?.fullPathLabel ?? 'Full path'}
             </span>
             <div class="ui:flex ui:items-baseline ui:gap-3 ui:mt-2">
               <span
@@ -206,7 +228,7 @@
                 <span
                   class="ui:text-xs ui:font-semibold ui:px-2 ui:py-0.5 ui:bg-[var(--landing-accent)]/10 ui:text-[var(--landing-accent)]"
                 >
-                  Save {savingsPercent}%
+                  {labels?.savePercentLabel?.(savingsPercent) ?? `Save ${savingsPercent}%`}
                 </span>
               {/if}
             </div>
@@ -229,7 +251,8 @@
               {labels?.enrollPathLabel ?? 'Enroll in this path'}
             </a>
             <p class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:text-center">
-              {hero.totalStudents ?? 942} already enrolled · {hero.rating ?? 4.7} ★ from {hero.reviewsCount ?? 213} reviews
+              {labels?.socialProofLabel?.(hero.totalStudents ?? 942, hero.rating ?? 4.7, hero.reviewsCount ?? 213) ??
+                `${hero.totalStudents ?? 942} already enrolled · ${hero.rating ?? 4.7} ★ from ${hero.reviewsCount ?? 213} reviews`}
             </p>
           </div>
         </div>

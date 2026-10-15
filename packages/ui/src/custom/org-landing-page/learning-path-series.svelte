@@ -29,7 +29,9 @@
       <div class={t.sectionHeader}>
         <span class={t.eyebrow}>{labels?.seriesEyebrow ?? 'Series · take in order'}</span>
         <h2 class={t.heading}>
-          {labels?.seriesHeading ?? `${series.length} courses in this path`}
+          {labels?.seriesHeading ??
+            labels?.seriesHeadingCount?.(series.length) ??
+            `${series.length} courses in this path`}
         </h2>
         <p class={t.body}>
           {labels?.seriesLead ?? 'Each course unlocks the next once you finish its lessons and exercises.'}
@@ -58,7 +60,9 @@
                 <span
                   class="ui:inline-block ui:text-xs ui:sm:text-sm ui:text-[var(--landing-fg-muted)] ui:mt-1 ui:font-mono"
                 >
-                  Course {index + 1} · {course.lessonCount ?? course.lessonOutlines.length} lessons
+                  {labels?.seriesCourseLabel?.(index + 1) ?? `Course ${index + 1}`} · {labels?.seriesLessonsCount?.(
+                    course.lessonCount ?? course.lessonOutlines.length
+                  ) ?? `${course.lessonCount ?? course.lessonOutlines.length} lessons`}
                 </span>
                 {#if course.description}
                   <p class="ui:text-sm ui:text-[var(--landing-fg-muted)] ui:mt-2 ui:leading-relaxed">
@@ -74,7 +78,7 @@
                 <span
                   class="ui:text-xs ui:font-semibold ui:uppercase ui:tracking-wider ui:text-[var(--landing-fg-muted)] ui:block ui:mb-3"
                 >
-                  What you'll learn
+                  {labels?.seriesOutcomesHeading ?? "What you'll learn"}
                 </span>
                 <ul
                   class="ui:grid ui:grid-cols-1 ui:sm:grid-cols-2 ui:gap-2 ui:text-xs ui:sm:text-sm ui:text-[var(--landing-fg)]"
@@ -97,7 +101,11 @@
                   onclick={() => toggleCourse(course.id)}
                   class="ui:flex ui:items-center ui:gap-2 ui:text-xs ui:sm:text-sm ui:font-semibold ui:text-[var(--landing-accent)] ui:hover:underline ui:cursor-pointer"
                 >
-                  <span>{expandedCourses[course.id] ? 'Hide lesson outline' : 'Show lesson outline'}</span>
+                  <span
+                    >{expandedCourses[course.id]
+                      ? (labels?.hideOutlineLabel ?? 'Hide lesson outline')
+                      : (labels?.showOutlineLabel ?? 'Show lesson outline')}</span
+                  >
                   {#if expandedCourses[course.id]}
                     <ChevronUpIcon class="ui:size-4" />
                   {:else}
@@ -124,7 +132,7 @@
                             <span
                               class="ui:px-2 ui:py-0.5 ui:text-[11px] ui:font-medium ui:bg-[var(--landing-accent)]/10 ui:text-[var(--landing-accent)] ui:[border-radius:var(--landing-radius-pill)]"
                             >
-                              Preview
+                              {labels?.previewLabel ?? 'Preview'}
                             </span>
                           {:else if lesson.gated}
                             <span
