@@ -309,7 +309,10 @@ describe('team link invite roles', () => {
     const adminInvite = await toggleOrgLinkInvite(ORG_ID, ROLE.ADMIN, true, USER.id);
 
     expect(getOrgLinkInvite).toHaveBeenCalledWith(ORG_ID, ROLE.TUTOR);
-    expect(setLinkInviteRevoked).toHaveBeenCalledWith(ORG_ID, ROLE.ADMIN, true, USER.id);
+    expect(setLinkInviteRevoked).toHaveBeenCalledWith(ORG_ID, ROLE.ADMIN, true, USER.id, expect.anything());
+    expect(vi.mocked(lockOrganizationForUpdate).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(setLinkInviteRevoked).mock.invocationCallOrder[0]
+    );
     expect(adminInvite.roleId).toBe(ROLE.ADMIN);
   });
 });

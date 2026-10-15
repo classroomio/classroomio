@@ -641,7 +641,11 @@ export async function fetchOrgLinkInvite(orgId: string, roleId: number) {
  * Enables or disables the org link invite (toggle isRevoked).
  */
 export async function toggleOrgLinkInvite(orgId: string, roleId: number, isRevoked: boolean, profileId: string) {
-  const updated = await setLinkInviteRevoked(orgId, roleId, isRevoked, profileId);
+  const updated = await db.transaction(async (transaction) => {
+    await lockOrganizationForUpdate(orgId, transaction);
+
+    return setLinkInviteRevoked(orgId, roleId, isRevoked, profileId, transaction);
+  });
 
   if (!updated) {
     throw new AppError('Link invite not found', ErrorCodes.NOT_FOUND, 404);
