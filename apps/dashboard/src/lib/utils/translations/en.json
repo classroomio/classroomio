@@ -880,7 +880,8 @@
       "preview_tabs": {
         "label": "Preview page",
         "home": "Home",
-        "course": "Course"
+        "course": "Course",
+        "learning_path": "Learning Path"
       },
       "editor": {
         "save": "Save",
@@ -1456,6 +1457,74 @@
     "catalog_empty": {
       "title": "No courses published yet",
       "description": "Check back soon for new courses."
+    }
+  },
+  "public_learning_paths": {
+    "heading": "Learning Paths",
+    "subtitle": "Guided multi-course tracks with one enrollment, ordered courses, and a certificate at the end.",
+    "search_placeholder": "Search learning paths...",
+    "clear_search": "Clear search",
+    "label": "Learning Path",
+    "certificate_label": "Certificate",
+    "free_label": "Free",
+    "course_count_label": "{count} courses",
+    "enrolled_label": "{count} enrolled",
+    "navigation_failed": "Couldn't load the page. Please try again.",
+    "empty": {
+      "title": "No learning paths found",
+      "description": "Try clearing your search or check back later."
+    },
+    "detail": {
+      "about_heading": "What you'll learn",
+      "about_lead": "Practical, project-first skills — every course ends with something you built.",
+      "skills_heading": "Skills you'll gain",
+      "series_heading": "Course series",
+      "series_eyebrow": "Series · take in order",
+      "series_lead": "Each course unlocks the next once you finish its lessons and exercises.",
+      "rating_label": "Rated {rating} out of 5",
+      "certificate_heading": "Certificate",
+      "certificate_issuer": "Issued by",
+      "certificate_validity": "Validity",
+      "instructors_heading": "Instructors",
+      "instructors_lead": "The tutors behind the courses in this path.",
+      "reviews_heading": "Reviews",
+      "reviews_lead": "From people who finished the path.",
+      "faq_heading": "Frequently asked questions",
+      "no_faq": "No questions yet.",
+      "pricing_heading": "Enrollment",
+      "pricing_eyebrow": "Enrollment",
+      "enroll_path": "Enroll in this path",
+      "locked_label": "Locked",
+      "unlocked_label": "Unlocked",
+      "enroll_free": "Enroll free",
+      "enroll_label": "Enroll for {currency} {cost}",
+      "view_all": "View all learning paths",
+      "taught_by_two": "Taught by {first} and {second}",
+      "taught_by_many": "Taught by {names} + {count} more",
+      "features_courses_line": "All {courseCount} courses, unlocked in order",
+      "features_content_line": "{lessons} lessons · {exercises} exercises · 1 capstone",
+      "features_certificate_line": "Path certificate on completion",
+      "features_milestone_line": "Verified path milestone completion",
+      "features_access_line": "Lifetime access, learn at your pace",
+      "save_vs_individual": "Save {amount} vs individual courses",
+      "stat_courses": "courses in series",
+      "stat_enrolled": "enrolled",
+      "stat_certificate": "Certificate",
+      "stat_beginner": "Beginner",
+      "stat_on_completion": "on completion",
+      "stat_no_experience": "no prior exp.",
+      "stat_reviews": "{count} reviews",
+      "full_path": "Full path",
+      "save_percent": "Save {percent}%",
+      "social_proof": "{students} already enrolled · {rating} ★ from {reviews} reviews",
+      "enroll_with_cost": "Enroll · {cost}",
+      "series_heading_count": "{count} courses in this path",
+      "series_course": "Course {index}",
+      "series_lessons": "{count} lessons",
+      "series_outcomes_heading": "What you'll learn",
+      "show_outline": "Show lesson outline",
+      "hide_outline": "Hide lesson outline",
+      "preview_badge": "Preview"
     }
   },
   "org_navigation": {
@@ -2203,6 +2272,7 @@
     },
     "sidebar": {
       "back_to_course": "Back to course",
+      "back_to_path": "Back to path",
       "compliance": {
         "title": "Compliance",
         "due_date": "Due",
@@ -4636,7 +4706,14 @@
     "paths_empty_title": "No paths found",
     "paths_empty_description": "Try a different search or clear your filters.",
     "courses_empty_title": "No courses match your search",
-    "courses_empty_description": "Try a different search term."
+    "courses_empty_description": "Try a different search term.",
+    "courses_browse_empty_title": "No courses yet",
+    "courses_browse_empty_description": "Courses created in this org will show up here.",
+    "paths_browse_empty_title": "No learning paths yet",
+    "paths_browse_empty_description": "Learning paths created in this org will show up here.",
+    "paths_all_enrolled_title": "You are enrolled in all paths",
+    "paths_all_enrolled_description": "You joined every published learning path. Continue learning from My Learning.",
+    "paths_all_enrolled_action": "Go to My Learning"
   },
   "snackbar": {
     "success": "Success",
@@ -5625,7 +5702,7 @@
       "course": "Course"
     },
     "progress": {
-      "label": "progress"
+      "label": "Progress"
     },
     "ribbon": {
       "part_of": "is part of",
@@ -5636,6 +5713,8 @@
       "next_course_position": "Course {position}",
       "unlocks_after_finish": "Unlocks when you finish this course — {lessons} lessons & {exercises} exercises to go.",
       "locked": "Locked",
+      "go_to_course": "Go to course",
+      "go_to_next_course": "Go to next course",
       "path_complete": "Path complete — all courses finished. Great work!"
     },
     "status": {
@@ -5719,7 +5798,9 @@
       "path_not_found_title": "Path not found",
       "path_not_found_description": "This learning path may have been unpublished or removed.",
       "library_no_results_title": "Nothing matches your filters",
-      "library_no_results_description": "Try a different filter or clear them to see everything."
+      "library_no_results_description": "Try a different filter or clear them to see everything.",
+      "library_empty_title": "Nothing here yet",
+      "library_empty_description": "Courses you're taking and paths you've joined will show up here."
     },
     "my_learning": {
       "heading": "My Learning",
@@ -6387,6 +6468,9 @@
       "description": "You are about to see what a student will see when they enroll in this learning path",
       "copy_link": "Copy link",
       "go_to_lms": "Go to LMS"
+    },
+    "preview": {
+      "courses_heading": "Courses in this path"
     }
   }
 }

@@ -211,6 +211,8 @@
       "section_update_failed": "पाठ्यक्रम अनुभाग अद्यतन करने में विफल",
       "sections_reordered": "पाठ्यक्रम अनुभागों को सफलतापूर्वक पुनः व्यवस्थित किया गया",
       "sections_reorder_failed": "पाठ्यक्रम अनुभागों को पुन: व्यवस्थित करने में विफल",
+      "lessons_reordered": "पाठों को सफलतापूर्वक पुनः व्यवस्थित किया गया",
+      "lessons_reorder_failed": "पाठों को पुन: व्यवस्थित करने में विफल",
       "comment_fetch_failed": "पाठ टिप्पणियाँ लाने में विफल",
       "load_more_comments_failed": "अधिक टिप्पणियाँ लोड करने में विफल",
       "comment_add_failed": "टिप्पणी जोड़ने में विफल",
@@ -304,7 +306,11 @@
         "all_content_already_unlocked": "सभी सामग्री पहले से अनलॉक है",
         "content_grouping_enabled": "सामग्री समूहीकरण सक्षम",
         "content_grouping_disabled": "सामग्री समूहीकरण अक्षम",
-        "link_generated": "पाठ्यक्रम लिंक सफलतापूर्वक अपडेट किया गया"
+        "link_generated": "पाठ्यक्रम लिंक सफलतापूर्वक अपडेट किया गया",
+        "converted_to_public": "पाठ्यक्रम सफलतापूर्वक सार्वजनिक में परिवर्तित हो गया"
+      },
+      "info": {
+        "conversion_blocked": "सार्वजनिक करने की प्रक्रिया पूरी करने के लिए नीचे दिए गए प्रश्नों के उत्तर दें।"
       }
     },
     "people": {
@@ -466,10 +472,24 @@
         "post_created": "पोस्ट सफलतापूर्वक बनाई गई",
         "post_updated": "पोस्ट सफलतापूर्वक अपडेट की गई"
       }
+    },
+    "report": {
+      "success": "धन्यवाद। हम इस रिपोर्ट की समीक्षा करेंगे।",
+      "error": "रिपोर्ट जमा नहीं हो सकी। कृपया फिर से प्रयास करें।",
+      "already_submitted": "आप पहले ही इसकी रिपोर्ट कर चुके हैं।"
     }
   },
   "explore": {
-    "heading": "अन्वेषण करें"
+    "heading": "अन्वेषण करें",
+    "empty_heading": "कोई पाठ्यक्रम उपलब्ध नहीं है",
+    "empty_description": "वर्तमान में कोई प्रकाशित पाठ्यक्रम उपलब्ध नहीं है",
+    "courses_browse_empty_title": "अभी कोई पाठ्यक्रम नहीं",
+    "courses_browse_empty_description": "इस संगठन में बनाए गए पाठ्यक्रम यहाँ दिखेंगे।",
+    "paths_browse_empty_title": "अभी कोई लर्निंग पाथ नहीं",
+    "paths_browse_empty_description": "इस संगठन में बनाए गए लर्निंग पाथ यहाँ दिखेंगे।",
+    "paths_all_enrolled_title": "आप सभी पाथ में नामांकित हैं",
+    "paths_all_enrolled_description": "आप सभी प्रकाशित लर्निंग पाथ से जुड़ गए हैं। माई लर्निंग से सीखना जारी रखें।",
+    "paths_all_enrolled_action": "माई लर्निंग पर जाएं"
   },
   "exercises": {
     "heading": "व्यायाम",
@@ -500,7 +520,8 @@
     "empty_description": "अपना पहला प्रमाणपत्र अर्जित करने के लिए एक पाठ्यक्रम पूरा करें। आपके अर्जित प्रमाणपत्र यहाँ दिखाई देंगे।",
     "no_results_title": "कोई प्रमाणपत्र नहीं मिला",
     "no_results_description": "कोई अलग खोज शब्द आज़माएँ।",
-    "go_to_my_learning": "मेरी सीख पर जाएँ"
+    "go_to_my_learning": "मेरी सीख पर जाएँ",
+    "retry": "पुनः प्रयास करें"
   },
   "lms_navigation": {
     "home": "डैशबोर्ड",
@@ -1047,7 +1068,48 @@
         "generate_link": "नया लिंक जनरेट करें",
         "open_link": "नए टैब में लिंक खोलें",
         "copy_link": "लिंक कॉपी करें",
-        "certificate_deadline_required_description": "अनुपालन पाठ्यक्रमों के लिए छात्रों के नामांकन से पहले प्रमाणपत्र जमा करने की अंतिम तिथि आवश्यक है। कृपया प्रकाशित करने से पहले पाठ्यक्रम सेटिंग में अंतिम तिथि निर्धारित करें।"
+        "certificate_deadline_required_description": "अनुपालन पाठ्यक्रमों के लिए छात्रों के नामांकन से पहले प्रमाणपत्र जमा करने की अंतिम तिथि आवश्यक है। कृपया प्रकाशित करने से पहले पाठ्यक्रम सेटिंग में अंतिम तिथि निर्धारित करें।",
+        "remove": "हटाओ",
+        "setup_landing_page": "लैंडिंग पृष्ठ सेटअप करें",
+        "general_card_title": "सामान्य",
+        "content_card_title": "सामग्री",
+        "access_card_title": "पहुँच",
+        "question_in_exercise": "\"{exercise}\" में",
+        "fix_question": "संपादित करें",
+        "convert_to_public_blocked_desc": "सार्वजनिक पाठ्यक्रम में अभ्यासों को ब्राउज़र में स्वचालित रूप से ग्रेड किया जाता है, यही कारण है कि हम केवल ऑटो-ग्रेडेबल प्रश्नों का समर्थन करते हैं। इस पाठ्यक्रम को सार्वजनिक में परिवर्तित करने से पहले निम्नलिखित प्रश्नों को हटा दें या बदल दें:",
+        "fix_in_exercise": "व्यायाम में सुधार करें",
+        "cancel_conversion": "रूपांतरण रद्द करें",
+        "public_conversion": {
+          "banner_title": "पाठ्यक्रम को सार्वजनिक में परिवर्तित करना",
+          "exercise_fixed": "यह एक्सरसाइज तैयार है",
+          "back_to_settings": "सेटिंग्स पर वापस जाएँ",
+          "complete_conversion": "पूर्ण सार्वजनिक रूपांतरण",
+          "jump_to": "पर जाएँ",
+          "blocks_public_conversion": "नॉन-ऑटोग्रेडेबल",
+          "blocks_public_conversion_desc": "सार्वजनिक पाठ्यक्रम केवल ऑटो-ग्रेडेबल प्रश्नों का समर्थन करते हैं। रूपांतरण के साथ आगे बढ़ने के लिए इस प्रश्न का प्रकार बदलें या इसे हटा दें।",
+          "blocks_public_conversion_title": "सार्वजनिक पाठ्यक्रमों में मैन्युअल ग्रेडिंग समर्थित नहीं है।",
+          "aria_label": "सार्वजनिक पाठ्यक्रम रूपांतरण प्रगति",
+          "all_exercises_fixed": "सभी {total} अभ्यास हल हो गए",
+          "ready_to_convert": "रूपांतरण के लिए तैयार!",
+          "questions_left_other_singular": "· अन्य अभ्यासों में {count} प्रश्न शेष हैं",
+          "questions_left_other_plural": "· अन्य अभ्यासों में {count} प्रश्न शेष हैं",
+          "progress_summary_singular": "{resolved}/{total} हल हो गए · {remaining} प्रश्न शेष हैं",
+          "progress_summary_plural": "{resolved}/{total} हल हो गए · {remaining} प्रश्न शेष हैं",
+          "next_exercise": "अगला: {exercise}",
+          "next": "अगला",
+          "question_fallback": "प्रश्न {number}",
+          "question_count_singular": "{count} प्रश्न",
+          "question_count_plural": "{count} प्रश्न",
+          "exercise_count_singular": "{count} अभ्यास",
+          "exercise_count_plural": "{count} अभ्यास",
+          "exercises_fixed": "{resolved}/{total} हल हो गए",
+          "questions_left_singular": "हल हो गए · {count} प्रश्न शेष",
+          "questions_left_plural": "हल हो गए · {count} प्रश्न शेष"
+        },
+        "fix": "हल करना",
+        "save_changes_to_fix_questions": "प्रश्नों के उत्तर देने से पहले अपने असंरक्षित परिवर्तनों को सहेज लें।",
+        "allow_markdown_export": "शिक्षार्थियों को पाठ पृष्ठ Markdown के रूप में कॉपी करने दें",
+        "allow_markdown_export_description": "सक्षम होने पर, सार्वजनिक पाठ पृष्ठ एक पेज कॉपी करें बटन दिखाते हैं जो पाठ सामग्री (वीडियो छोड़कर) को Markdown के रूप में निर्यात करता है। यह प्रत्येक अनलॉक पाठ के लिए एक सार्वजनिक Markdown URL भी प्रकाशित करता है।"
       },
       "analytics": {
         "title": "विश्लेषिकी"
@@ -1614,7 +1676,9 @@
           "comment_btn": "टिप्पणी करें",
           "cancel_btn": "रद्द करें",
           "load_more_btn": "और अधिक लोड करें",
-          "comment_error": "टिप्पणी पोस्ट करने में विफल. कृपया पुन: प्रयास करें।"
+          "comment_error": "टिप्पणी पोस्ट करने में विफल. कृपया पुन: प्रयास करें।",
+          "edit": "संपादित करें",
+          "delete": "हटाएँ"
         },
         "exercises": {
           "heading": "सभी व्यायाम",
@@ -2360,7 +2424,87 @@
             "slide": {
               "title": "फिसल पट्टी",
               "slide_link": "स्लाइड लिंक",
-              "helper_message": "आप Google स्लाइड या Canva प्रेजेंटेशन को एम्बेड कर सकते हैं"
+              "helper_message": "आप Google स्लाइड या Canva प्रेजेंटेशन को एम्बेड कर सकते हैं",
+              "button": "स्लाइड जोड़ें",
+              "remove_slide": "स्लाइड हटाएँ",
+              "menu_aria": "स्लाइड क्रियाएँ",
+              "empty_title": "अभी कोई स्लाइड नहीं",
+              "empty_description": "Google Slides, Canva, PowerPoint, Keynote, Figma, Prezi, Pitch, Gamma, SlideShare या Beautiful.ai एम्बेड करें",
+              "add_slide": {
+                "title": "स्लाइड जोड़ें",
+                "search": "प्लेटफ़ॉर्म खोजें",
+                "empty_prompt": "चरण-दर-चरण निर्देश देखने और एम्बेड कोड पेस्ट करने के लिए प्लेटफ़ॉर्म चुनें।",
+                "embed_code": "एम्बेड कोड पेस्ट करें",
+                "embed_placeholder": "यहाँ पूरा iframe एम्बेड कोड पेस्ट करें",
+                "how_to_embed": "कैसे एम्बेड करें",
+                "preview": "पूर्वावलोकन",
+                "embed_ready": "एम्बेड तैयार",
+                "invalid_embed": "इस प्लेटफ़ॉर्म का पूरा iframe एम्बेड कोड पेस्ट करें।",
+                "unsupported": "यह एम्बेड किसी ऐसे प्लेटफ़ॉर्म से है जिसे हम अभी समर्थित नहीं करते।"
+              },
+              "platforms": {
+                "google-slides": {
+                  "hint": "File → Share → Publish to web → Embed",
+                  "step_1": "Open your deck and choose File → Share → Publish to web.",
+                  "step_2": "Switch to the Embed tab and click Publish.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "canva": {
+                  "hint": "Share → More → Embed",
+                  "step_1": "Above the editor, click Share → More.",
+                  "step_2": "Choose Embed and confirm (this makes the design public).",
+                  "step_3": "Copy the HTML embed code and paste it here."
+                },
+                "powerpoint": {
+                  "hint": "PowerPoint for the web → File → Share → Embed",
+                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
+                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
+                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                },
+                "keynote": {
+                  "hint": "Collaborate → Copy Link, then embed",
+                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
+                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "figma": {
+                  "hint": "Share a Figma Slides file and copy the embed",
+                  "step_1": "Open your Figma Slides file and enable link sharing.",
+                  "step_2": "Copy the embed code for the /slides or /deck file.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "prezi": {
+                  "hint": "Share → Embed",
+                  "step_1": "From the dashboard, open Share on your presentation.",
+                  "step_2": "Click Embed and copy the code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "pitch": {
+                  "hint": "Share externally → Copy embed code",
+                  "step_1": "Click Share → Share externally and create a public link.",
+                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "gamma": {
+                  "hint": "Share → enable public access → copy iframe",
+                  "step_1": "Open Share and toggle Allow public access.",
+                  "step_2": "Copy the generated iframe embed code.",
+                  "step_3": "Paste the iframe embed code here."
+                },
+                "slideshare": {
+                  "hint": "Share → Embed under the deck",
+                  "step_1": "Open the public deck on slideshare.net.",
+                  "step_2": "Click Share under the viewer and open the Embed tab.",
+                  "step_3": "Copy the iframe embed code and paste it here."
+                },
+                "beautiful": {
+                  "hint": "Sharing Settings → Public → Get Embed Code",
+                  "step_1": "Open Sharing Settings and switch the deck to Public.",
+                  "step_2": "Click Get Embed Code.",
+                  "step_3": "Paste the iframe embed code here."
+                }
+              },
+              "frame_title": "{platform} ({index} में से {total})"
             },
             "note": {
               "title": "नोट",
@@ -2445,7 +2589,9 @@
             "watch_videos_helper": "केवल अपलोड किए गए वीडियो लागू किए जा सकते हैं। YouTube और बाहरी एम्बेड ट्रैक नहीं हो सकते।",
             "watch_videos_empty": "देखने की निगरानी के लिए वीडियो टैब में अपलोड किया वीडियो जोड़ें।",
             "watch_videos_required": "वीडियो देखने के नियम के लिए कम से कम एक वीडियो चुनें।",
-            "students_only_note": "ये नियम केवल छात्रों पर लागू होते हैं। शिक्षक स्वतंत्र रूप से पूर्वावलोकन और नेविगेट कर सकते हैं।"
+            "students_only_note": "ये नियम केवल छात्रों पर लागू होते हैं। शिक्षक स्वतंत्र रूप से पूर्वावलोकन और नेविगेट कर सकते हैं।",
+            "watch_videos_no_uploads_title": "इस पाठ में कोई वीडियो अपलोड नहीं किया गया",
+            "watch_videos_learn_more": "और अधिक जानें"
           }
         },
         "watch_progress": {
@@ -2498,7 +2644,16 @@
           "link_copied": "लिंक कॉपी किया गया"
         },
         "student_share_your_knowledge": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
-        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।"
+        "student_body_content": "इस कोर्स में अभी तक कोई पाठ नहीं जोड़ा गया है। कृपया बाद में दोबारा देखें।",
+        "add_content_created_section": "सेक्शन सफलतापूर्वक बन गया है!",
+        "add_content_created_lesson": "पाठ सफलतापूर्वक बन गया है!",
+        "add_content_created_exercise": "अभ्यास सफलतापूर्वक बन गया है!",
+        "add_content_create_another_section": "एक और सेक्शन बनाएँ",
+        "add_content_create_another_lesson": "एक और पाठ बनाएँ",
+        "add_content_create_another_exercise": "एक और अभ्यास बनाएँ",
+        "add_content_open_now": "अभी खोलें",
+        "add_content_later": "बाद में",
+        "add_content_add_to_section": "सामग्री जोड़ें"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",
@@ -2685,7 +2840,8 @@
         "label": "कोर्स सामग्री नेविगेशन",
         "previous": "पिछला",
         "next": "अगला"
-      }
+      },
+      "back_to_path": "पथ पर वापस जाएं"
     },
     "navItems": {
       "nav_news_feed": "समाचार फ़ीड",
@@ -2957,6 +3113,7 @@
     "progress": "प्रगति",
     "pick_up_where_you_left_off": "वहीं से शुरू करें जहां आपने छोड़ा था",
     "get_your_certificate": "अपना प्रमाणपत्र प्राप्त करें",
+    "course_awaits_you": "{title} आपकी प्रतीक्षा कर रहा है",
     "learning_awaits_you": "आपका अगला कोर्स आपका इंतजार कर रहा है",
     "my_certificate": "मेरा प्रमाणपत्र",
     "lms_today_progress": "आप अपने सीखने के माध्यम से {progress}% कर रहे हैं - हर कदम मायने रखता है।",
@@ -3313,6 +3470,7 @@
     },
     "filters": {
       "search_placeholder": "संपत्ति खोजें",
+      "apply": "आवेदन करें",
       "status_options": {
         "all": "सभी स्थितियाँ",
         "active": "सक्रिय",
@@ -3755,7 +3913,8 @@
       "preview_tabs": {
         "label": "पूर्वावलोकन पृष्ठ",
         "home": "घर",
-        "course": "पाठ्यक्रम"
+        "course": "पाठ्यक्रम",
+        "learning_path": "सीखने का पथ"
       }
     },
     "organization": {
@@ -4135,6 +4294,9 @@
       "command_palette": {
         "title": "कमांड पैलेट",
         "description": "अपने संगठन में खोजें और नेविगेट करें",
+        "placeholder": "पाठ्यक्रम, समूह, सीखने के रास्ते, विजेट, छात्र, टैग, सेटिंग्स खोजें...",
+        "org_placeholder": "पाठ्यक्रम, समूह, सीखने के रास्ते, विजेट, छात्र, टैग, सेटिंग्स खोजें...",
+        "lms_placeholder": "अपने पाठ्यक्रम, समूह, सीखने के रास्ते और सीखने वाले पृष्ठ खोजें...",
         "lms_description": "अपने शिक्षण कार्यक्षेत्र को खोजें और नेविगेट करें",
         "empty": "कोई परिणाम नहीं मिला",
         "loading": "खोज रहे हैं...",
@@ -4151,10 +4313,7 @@
           "students": "छात्र",
           "settings": "सेटिंग्स",
           "cohorts": "कोहोर्ट"
-        },
-        "placeholder": "पाठ्यक्रम, समूह, सीखने के रास्ते, विजेट, छात्र, टैग, सेटिंग्स खोजें...",
-        "org_placeholder": "पाठ्यक्रम, समूह, सीखने के रास्ते, विजेट, छात्र, टैग, सेटिंग्स खोजें...",
-        "lms_placeholder": "अपने पाठ्यक्रम, समूह, सीखने के रास्ते और सीखने वाले पृष्ठ खोजें..."
+        }
       }
     },
     "cancel": "रद्द करें",
@@ -4994,6 +5153,30 @@
     "header": {
       "explore_courses": "पाठ्यक्रमों का अन्वेषण करें",
       "sign_in": "साइन इन करें"
+    },
+    "copy_page": {
+      "copy": "पृष्ठ कॉपी करें",
+      "copied": "कॉपी हो गया",
+      "view_as_markdown": "Markdown के रूप में देखें",
+      "open_in_chatgpt": "ChatGPT में खोलें",
+      "open_in_claude": "Claude में खोलें",
+      "more_actions": "पृष्ठ कॉपी करने की और क्रियाएँ",
+      "copy_failed": "इस पाठ को Markdown के रूप में कॉपी नहीं किया जा सका"
+    },
+    "outline": {
+      "label": "इस पृष्ठ पर"
+    },
+    "rail": {
+      "copy_as_markdown": "Markdown के रूप में कॉपी करें",
+      "open_in_chat": "चैट में खोलें"
+    },
+    "share": {
+      "label": "सोशल मीडिया पर शेयर करें",
+      "facebook": "Facebook",
+      "linkedin": "LinkedIn",
+      "x": "X",
+      "instagram": "Instagram",
+      "instagram_copied": "लिंक कॉपी हो गया। इसे Instagram में पेस्ट करें।"
     }
   },
   "account": {
@@ -5440,5 +5623,791 @@
     "format_json": "JSON",
     "copied": "क्लिपबोर्ड पर कॉपी किया गया",
     "copy_failed": "क्लिपबोर्ड पर कॉपी नहीं किया जा सका"
+  },
+  "report": {
+    "menu": "रिपोर्ट करें",
+    "title": "सामग्री की रिपोर्ट करें",
+    "description": "बताएँ कि क्या गलत है। हमारी टीम इस रिपोर्ट की समीक्षा करेगी।",
+    "reason_label": "कारण",
+    "reason_placeholder": "एक कारण चुनें",
+    "reason_required": "कृपया एक कारण चुनें",
+    "details_label": "अतिरिक्त विवरण",
+    "details_placeholder": "कोई भी संदर्भ जोड़ें जो समीक्षा में मदद करे (वैकल्पिक)",
+    "submit": "रिपोर्ट जमा करें",
+    "cancel": "रद्द करें",
+    "reasons": {
+      "spam": "स्पैम",
+      "harassment": "उत्पीड़न या धमकाना",
+      "hate_speech": "घृणा भाषण",
+      "sexual_content": "यौन सामग्री",
+      "violence": "हिंसा या धमकियाँ",
+      "misinformation": "गलत जानकारी",
+      "privacy": "गोपनीयता उल्लंघन",
+      "other": "अन्य"
+    }
+  },
+  "public_learning_paths": {
+    "heading": "सीखने के रास्ते",
+    "search_placeholder": "सीखने के रास्ते खोजें...",
+    "clear_search": "स्पष्ट खोज",
+    "label": "सीखने का पथ",
+    "certificate_label": "प्रमाणपत्र",
+    "free_label": "निःशुल्क",
+    "course_count_label": "{count} पाठ्यक्रम",
+    "empty": {
+      "title": "सीखने का कोई मार्ग नहीं मिला",
+      "description": "अपनी खोज साफ़ करने का प्रयास करें या बाद में दोबारा जाँचें।"
+    },
+    "detail": {
+      "series_heading": "कोर्स श्रृंखला",
+      "rating_label": "{rating} में से {rating} रेटेड",
+      "certificate_heading": "प्रमाणपत्र",
+      "certificate_issuer": "जारीकर्ता",
+      "certificate_validity": "वैधता",
+      "instructors_heading": "प्रशिक्षक",
+      "reviews_heading": "समीक्षाएँ",
+      "faq_heading": "अक्सर पूछे जाने वाले प्रश्न",
+      "no_faq": "अभी तक कोई प्रश्न नहीं।",
+      "locked_label": "लॉक है",
+      "unlocked_label": "अनलॉक है",
+      "enroll_free": "मुफ्त में नामांकन करें",
+      "enroll_label": "{currency} {cost} में नामांकन करें",
+      "view_all": "सभी लर्निंग पथ देखें",
+      "about_heading": "आप क्या सीखेंगे",
+      "about_lead": "व्यावहारिक, प्रोजेक्ट-आधारित कौशल — हर कोर्स किसी ऐसी चीज़ के साथ समाप्त होता है जिसे आपने बनाया है।",
+      "skills_heading": "आप जो कौशल प्राप्त करेंगे",
+      "series_eyebrow": "शृंखला · क्रम से करें",
+      "series_lead": "पाठ और अभ्यास पूरे करते ही हर कोर्स अगला कोर्स अनलॉक करता है।",
+      "instructors_lead": "इस पाथ के कोर्स के पीछे के ट्यूटर।",
+      "reviews_lead": "उन लोगों से जिन्होंने यह पाथ पूरा किया।",
+      "pricing_heading": "नामांकन",
+      "pricing_eyebrow": "नामांकन",
+      "enroll_path": "इस पाथ में नामांकन करें",
+      "taught_by_two": "{first} और {second} द्वारा पढ़ाया गया",
+      "taught_by_many": "{names} + {count} अन्य द्वारा पढ़ाया गया",
+      "features_courses_line": "सभी {courseCount} कोर्स, क्रम से अनलॉक",
+      "features_content_line": "{lessons} पाठ · {exercises} अभ्यास · 1 कैपस्टोन",
+      "features_certificate_line": "पूरा होने पर पाथ प्रमाणपत्र",
+      "features_milestone_line": "सत्यापित पाथ माइलस्टोन पूर्णता",
+      "features_access_line": "आजीवन एक्सेस, अपनी गति से सीखें",
+      "save_vs_individual": "अलग-अलग कोर्स की तुलना में {amount} बचाएं",
+      "stat_courses": "शृंखला में कोर्स",
+      "stat_enrolled": "नामांकित",
+      "stat_certificate": "प्रमाणपत्र",
+      "stat_beginner": "शुरुआती",
+      "stat_on_completion": "पूरा होने पर",
+      "stat_no_experience": "बिना पूर्व अनुभव",
+      "stat_reviews": "{count} समीक्षाएं",
+      "full_path": "पूरा पाथ",
+      "save_percent": "{percent}% बचाएं",
+      "social_proof": "{students} पहले से नामांकित · {reviews} समीक्षाओं में से {rating} ★",
+      "enroll_with_cost": "नामांकन · {cost}",
+      "series_heading_count": "इस पाथ में {count} कोर्स",
+      "series_course": "कोर्स {index}",
+      "series_lessons": "{count} पाठ",
+      "series_outcomes_heading": "आप क्या सीखेंगे",
+      "show_outline": "पाठ की रूपरेखा दिखाएं",
+      "hide_outline": "पाठ की रूपरेखा छिपाएं",
+      "preview_badge": "पूर्वावलोकन"
+    },
+    "enrolled_label": "{count} नामांकित",
+    "subtitle": "एक नामांकन, ऑर्डर किए गए पाठ्यक्रम और अंत में एक प्रमाणपत्र के साथ निर्देशित बहु-पाठ्यक्रम ट्रैक।",
+    "navigation_failed": "पेज लोड नहीं हो सका। कृपया पुनः प्रयास करें।"
+  },
+  "learningPath": {
+    "admin": {
+      "active_paths": "सक्रिय पथ",
+      "completion": "पूर्णता",
+      "completion_rate": "पूर्णता दर",
+      "completions": "पूर्णता",
+      "continue_setup": "सेटअप जारी रखें",
+      "create_course": "नया पाठ्यक्रम",
+      "create_path": "पथ बनाएँ",
+      "enrolled_learners": "नामांकित शिक्षार्थी",
+      "filter_all": "सभी",
+      "heading": "लर्निंग पाथ",
+      "learners": "शिक्षार्थी",
+      "manage": "प्रबंधित करें",
+      "new_path_name": "नया शिक्षण पथ",
+      "search": "पथ खोजें…",
+      "subtitle": "अपने कोर्स को निर्देशित यात्राओं में समूहित करें जिन्हें शिक्षार्थी क्रम से पूरा करते हैं।",
+      "untitled_path": "शीर्षकहीन पथ",
+      "updated": "अद्यतन"
+    },
+    "analytics": {
+      "empty": "अभी तक कोई डेटा नहीं. छात्रों का नामांकन करें और वे यहां दिखना शुरू हो जाएंगे।",
+      "empty_desc": "इस पथ में छात्रों का नामांकन करें और उनकी प्रगति यहां दिखाई देगी।",
+      "export": {
+        "status": "स्थिति"
+      },
+      "funnel": {
+        "biggest_drop": "सबसे बड़ी गिरावट",
+        "certificates": "{count} {count, plural, =1 {प्रमाणपत्र} other {प्रमाणपत्र}} प्रदान किए गए",
+        "completed": "पूरा हुआ",
+        "drop": "{count} {count, plural, =1 {छात्र} other {छात्र}} कोर्स {n} के बाद हटा दिए गए",
+        "in_progress": "प्रगति पर है",
+        "subtitle": "कितने छात्र क्रम से प्रत्येक पाठ्यक्रम तक पहुंचे और पूरा किया।",
+        "title": "कोर्स फ़नल"
+      },
+      "member": {
+        "courses_title": "इस पथ में पाठ्यक्रम",
+        "export": "सीएसवी निर्यात करें",
+        "progress_label": "पथ प्रगति",
+        "remove": "पथ से हटाओ",
+        "status": {
+          "completed": "पूरा हुआ",
+          "in_progress": "प्रगति पर है",
+          "locked": "ताला लगा दिया",
+          "not_started": "शुरू नहीं हुआ"
+        }
+      },
+      "stat": {
+        "active": "सक्रिय छात्र",
+        "active_desc": "पिछले 14 दिनों में काम किया",
+        "avg_time": "औसत समाप्त करने का समय",
+        "avg_time_days": "{value} दिन",
+        "avg_time_desc": "पूर्णता के पार",
+        "avg_time_weeks": "{value} सप्ताह",
+        "completion_desc": "{total} में से {completed} पूर्ण",
+        "completion_rate": "पूर्णता दर",
+        "enrolled_desc": "इस महीने +{count}",
+        "learners": "छात्र",
+        "pending_line": "{count} {count, plural, one {लंबित निमंत्रण} other {लंबित निमंत्रण}}",
+        "team_desc": "{count, plural, one {# ट्यूटर पथ टीम में} other {# ट्यूटर पथ टीम में}}"
+      },
+      "stuck": {
+        "badge": "{count} अटक गई",
+        "empty": "फिलहाल कोई भी छात्र फंसा नहीं है. जबरदस्त प्रगति!",
+        "empty_desc": "जब छात्र फंस जाएंगे, तो वे यहां दिखेंगे।",
+        "exercise_desc": "{count} {count, plural, =1 {छात्र} other {छात्र}} का यह अभ्यास 2 सप्ताह से अधिक समय से चल रहा है।",
+        "exercise_prefix": "अभ्यास:",
+        "lesson_desc": "{count} {count, plural, =1 {छात्र} other {छात्र}} इस पाठ पर रुक गए।",
+        "lesson_prefix": "पाठ:",
+        "showing": "{total} में से {start} से {end} आइटम दिखाए जा रहे हैं",
+        "subtitle": "पाठ और अभ्यास अभी अधिकांश विद्यार्थियों को रोक रहे हैं।",
+        "table": {
+          "course": "पाठ्यक्रम",
+          "item": "आइटम"
+        },
+        "title": "जहां छात्र फंसे हुए हैं"
+      },
+      "students": {
+        "courses_completed": "पूर्ण किए गए पाठ्यक्रम",
+        "subtitle": "प्रति छात्र पथ प्रगति, वर्तमान पाठ्यक्रम और नामांकन तिथि।",
+        "title": "विद्यार्थी प्रगति अवलोकन"
+      },
+      "subtitle": "विद्यार्थी किस प्रकार पथ पर आगे बढ़ रहे हैं।",
+      "title": "विश्लेषिकी"
+    },
+    "badge": {
+      "course": "पाठ्यक्रम",
+      "learning_path": "शिक्षण मार्ग"
+    },
+    "builder": {
+      "add_course_button": "पथ में पाठ्यक्रम जोड़ें",
+      "drag_hint": "क्रम बदलने के लिए खींचें",
+      "empty_description": "एक संरचित अनुक्रम के माध्यम से छात्रों का मार्गदर्शन करने के लिए पाठ्यक्रम जोड़ें। ऐड बटन पर क्लिक करके प्रारंभ करें।",
+      "empty_title": "इस शिक्षण पथ में अभी तक कोई पाठ्यक्रम नहीं है",
+      "end_reorder": "पुनः क्रम समाप्त करें",
+      "exercises_count": "{count} {count, plural, =1 {अभ्यास} other {अभ्यास}}",
+      "lessons_count": "{count} {count, plural, =1 {पाठ} other {पाठ}}",
+      "open_course": "पाठ्यक्रम खोलें",
+      "remove_course": "पथ से हटाएं",
+      "start_reorder": "पुन: व्यवस्थित करें",
+      "subtitle": "कोर्स जोड़ें और छात्रों के आगे बढ़ने के क्रम को निर्धारित करने के लिए ड्रैग करें।",
+      "title": "कोर्स",
+      "unlock_rule_desc": "प्रत्येक पाठ्यक्रम तब तक लॉक रहता है जब तक छात्र पिछले पाठ्यक्रम के पाठ और अभ्यास पूरे नहीं कर लेता। किसी भी क्रम में पढ़ने की अनुमति देने के लिए इसे बंद करें।",
+      "unlock_rule_title": "क्रम से पाठ्यक्रम अनलॉक करें"
+    },
+    "card": {
+      "actions_menu_aria": "पथ क्रियाएँ",
+      "badge": "शिक्षण मार्ग",
+      "certificate_earned": "प्राप्त प्रमाण पत्र",
+      "course": "पाठ्यक्रम",
+      "courses": "पाठ्यक्रम",
+      "exercise": "व्यायाम",
+      "exercises": "व्यायाम",
+      "lesson": "सबक",
+      "lessons": "सबक",
+      "of": "का",
+      "published": "प्रकाशित",
+      "unpublished": "अप्रकाशित",
+      "updated_at": "अद्यतन किया गया {date}",
+      "view_certificate": "प्रमाणपत्र देखें"
+    },
+    "certificate": {
+      "allow": "छात्रों को प्रमाणपत्र डाउनलोड करने की अनुमति दें",
+      "awarded_count": "{count, plural, =0 {अभी तक कोई प्रमाणपत्र नहीं दिया गया} =1 {अब तक 1 प्रमाणपत्र दिया गया} other {अब तक # प्रमाणपत्र दिए गए}}",
+      "editor": {
+        "title": "प्रमाणपत्र डिज़ाइन"
+      },
+      "email_message_label": "ईमेल संदेश",
+      "email_message_placeholder": "उदा. लर्निंग पाथ पूरा करने पर बधाई!",
+      "title": "प्रमाणपत्र"
+    },
+    "context_menu": {
+      "delete": "हटाएँ",
+      "invite": "आमंत्रित करें",
+      "open": "खुला",
+      "share": "साझा करें",
+      "view_as_student": "छात्र के रूप में देखें"
+    },
+    "course": {
+      "completed_label": "पूरा हो गया",
+      "continue_course": "कोर्स जारी रखें",
+      "explore_more_tagline": "आपके मौजूदा कोर्स के आधार पर कुछ कोर्स चुने गए हैं।",
+      "explore_more_title": "और कोर्स देखें",
+      "part_of": "इसका हिस्सा",
+      "review_course": "कोर्स की समीक्षा करें",
+      "type_compliance": "अनुपालन",
+      "type_live_class": "लाइव क्लास",
+      "type_public": "सार्वजनिक",
+      "type_self_paced": "स्वयं गतिमान",
+      "view_course": "कोर्स देखें",
+      "view_more": "और देखें"
+    },
+    "courses": {
+      "exercises": "अभ्यास",
+      "lessons": "पाठ"
+    },
+    "courses_builder": {
+      "add_course": "पाठ्यक्रम जोड़ें",
+      "add_course_picker_label": "जोड़ने के लिए एक पाठ्यक्रम चुनें",
+      "count": "इस पथ में {count} पाठ्यक्रम हैं",
+      "course_exercises": "अभ्यास",
+      "course_lessons": "पाठ",
+      "drag_hint": "क्रम बदलने के लिए खींचें",
+      "empty": "अभी कोई पाठ्यक्रम नहीं है - शुरू करने के लिए एक जोड़ें।",
+      "heading": "पाठ्यक्रम",
+      "move_down": "नीचे ले जाएं",
+      "move_up": "ऊपर ले जाएं",
+      "no_courses_available": "अब और पाठ्यक्रम उपलब्ध नहीं हैं",
+      "remove_course": "पथ से हटाएं",
+      "sequential_description": "प्रत्येक पाठ्यक्रम तब तक लॉक रहता है जब तक कोई छात्र पिछले पाठ्यक्रम के पाठ और अभ्यास पूरे नहीं कर लेता।",
+      "sequential_label": "क्रमानुसार पाठ्यक्रम अनलॉक करें",
+      "subtitle": "पाठ्यक्रम जोड़ें और छात्रों के आगे बढ़ने का क्रम निर्धारित करने के लिए खींचें।"
+    },
+    "detail": {
+      "all_courses_complete": "सभी पाठ्यक्रम पूर्ण",
+      "certificate_earned": "प्रमाणपत्र प्राप्त हुआ",
+      "certificate_hint": "अपना प्रमाणपत्र अनलॉक करने और डाउनलोड करने के लिए सभी {count} पाठ्यक्रम पूरे करें।",
+      "certificate_on_completion": "सभी पाठ्यक्रम पूरे करने पर प्रमाणपत्र प्राप्त करें।",
+      "course_heading": "पथ पाठ्यक्रम",
+      "courses_complete": "पूर्ण पाठ्यक्रम",
+      "enroll": "नामांकन करें",
+      "exercises": "अभ्यास",
+      "hours": "~{count} घंटे",
+      "lessons": "पाठ",
+      "review": "समीक्षा करें",
+      "sequential": "अगला पाठ्यक्रम अनलॉक करने के लिए प्रत्येक पाठ्यक्रम को पूरा करें।",
+      "unlock_hint": "प्रत्येक पाठ्यक्रम तब अनलॉक होता है जब आप उससे पहले वाले पाठ्यक्रम के सभी पाठ और अभ्यास पूरे कर लेते हैं।",
+      "unlocks_after": "इसके बाद अनलॉक होगा",
+      "view_certificate": "प्रमाणपत्र देखें"
+    },
+    "empty": {
+      "back_to_paths": "सीखने के रास्तों पर वापस जाएँ",
+      "description": "यहां आपको वे संरचित पाठ्यक्रम दिखाई देंगे जिनमें आपने नामांकन किया है। क्रमबद्ध तरीके से सीखना शुरू करने के लिए कैटलॉग से एक पाठ्यक्रम में नामांकन करें।",
+      "library_no_results_description": "सब कुछ देखने के लिए एक अलग फ़िल्टर आज़माएँ या उन्हें साफ़ करें।",
+      "library_no_results_title": "आपके फ़िल्टर से कुछ भी मेल नहीं खाता",
+      "path_not_found_description": "यह शिक्षण मार्ग अप्रकाशित या हटा दिया गया हो सकता है।",
+      "path_not_found_title": "पथ नहीं मिला",
+      "title": "अभी तक कोई लर्निंग पाथ उपलब्ध नहीं हैं।",
+      "library_empty_title": "अभी यहाँ कुछ नहीं",
+      "library_empty_description": "आप जो पाठ्यक्रम कर रहे हैं और जिन शिक्षण मार्ग में शामिल हुए हैं, वे यहाँ दिखेंगे।"
+    },
+    "enrollment": {
+      "completed": "पुरा होना।",
+      "in_progress": "प्रगति पर है",
+      "lessons_label": "पाठ",
+      "locked": "बंद",
+      "not_started": "शुरू नहीं"
+    },
+    "explore": {
+      "tagline": "ऐसे ट्रैक जो आपको और आगे ले जाएंगे।",
+      "title": "और भी रास्ते तलाशें",
+      "view_more": "और देखें",
+      "view_path": "पथ देखें"
+    },
+    "hero": {
+      "continue_learning": "सीखते रहें",
+      "courses_completed": "पूरे किए गए कोर्स",
+      "currently_learning": "वर्तमान में सीख रहा हूँ",
+      "start_learning": "सीखना शुरू करें",
+      "up_next": "आगे",
+      "view_path": "पथ देखें"
+    },
+    "hub": {
+      "placeholder_description": "सीखने का पूरा अनुभव एलएमएस में रहता है। इस पथ को जारी रखने के लिए माई लर्निंग खोलें।",
+      "placeholder_title": "सीखने का पथ पूर्वावलोकन"
+    },
+    "landing": {
+      "access": {
+        "description": "नियंत्रित करता है कि गैर-नामांकित आगंतुक सार्वजनिक पथ पृष्ठ पर कितनी सामग्री देख सकते हैं।",
+        "preview_desc": "आगंतुकों को बिना नामांकन के प्रत्येक पाठ्यक्रम के पहले पाठ का पूर्वावलोकन करने की अनुमति दें।",
+        "preview_title": "पूर्वावलोकन",
+        "syllabus_desc": "पाठ शीर्षकों और लॉक संकेतकों के साथ पूरा पाठ्यक्रम दिखाएं।",
+        "syllabus_title": "पाठ्यचर्या (अनुशंसित)",
+        "teaser_desc": "केवल पाठ्यक्रम शीर्षक और उच्च-स्तरीय परिणाम दिखाएं।",
+        "teaser_title": "टीज़र",
+        "title": "आगंतुक पहुंच"
+      },
+      "certificate": {
+        "title": "प्रमाणपत्र",
+        "upload_template": "प्रमाणपत्र टेम्पलेट"
+      },
+      "description": {
+        "title": "विवरण"
+      },
+      "display_section": "अनुभाग दिखाएं",
+      "faqs": {
+        "add": "प्रश्न जोड़ें",
+        "answer": "उत्तर",
+        "answer_placeholder": "आपको प्रत्येक कोर्स के सभी पाठ और अभ्यास पूरे करने होंगे।",
+        "question": "प्रश्न",
+        "question_placeholder": "इस पथ को पूरा करने के लिए क्या आवश्यक है?",
+        "title": "अक्सर पूछे जाने वाले प्रश्न",
+        "untitled": "शीर्षकहीन प्रश्न"
+      },
+      "goals": {
+        "title": "लक्ष्य"
+      },
+      "header": {
+        "description_label": "विवरण",
+        "description_placeholder": "छात्र क्या हासिल करेंगे इसका एक व्यापक अवलोकन...",
+        "title": "हेडर",
+        "title_label": "शीर्षक",
+        "title_placeholder": "जैसे फुलस्टैक वेब डेवलपमेंट"
+      },
+      "hero": {
+        "headline": "शीर्षक",
+        "headline_placeholder": "उदा. सीनियर फुलस्टैक इंजीनियर बनें",
+        "subheadline": "उपशीर्षक",
+        "subheadline_placeholder": "उदा. प्रोजेक्ट-आधारित शिक्षा के माध्यम से आधुनिक फ्रंटएंड, बैकएंड और डिप्लॉयमेंट में महारत हासिल करें।",
+        "title": "हीरो"
+      },
+      "instructors": {
+        "about": "प्रशिक्षक के बारे में",
+        "about_placeholder": "प्रशिक्षक के बारे में संक्षिप्त जानकारी",
+        "add": "प्रशिक्षक जोड़ें",
+        "auto_populated_note": "प्रशिक्षक स्वचालित रूप से इस पथ में शामिल पाठ्यक्रमों से एकत्रित किए जाते हैं।",
+        "courses_note": "{count, plural, =0 {अभी तक कोई पाठ्यक्रम नहीं जोड़ा गया} =1 {इस पथ के 1 पाठ्यक्रम से लिया गया} other {इस पथ के सभी # पाठ्यक्रमों से लिया गया}}",
+        "default_role": "कोर्स प्रशिक्षक",
+        "min_one_required": "कम से कम एक प्रशिक्षक आवश्यक है",
+        "name": "प्रशिक्षक का नाम",
+        "name_placeholder": "आपकी कंपनी का नाम",
+        "no_tutors_found": "कोई प्रशिक्षक नहीं मिला",
+        "remove": "प्रशिक्षक हटाएं",
+        "role": "प्रशिक्षक की भूमिका",
+        "role_placeholder": "जैसे लीड प्रशिक्षक · फ्रंटएंड",
+        "title": "प्रशिक्षक",
+        "total": "कोर्स की संख्या",
+        "untitled": "बिना शीर्षक प्रशिक्षक",
+        "upload": "प्रशिक्षक लोगो"
+      },
+      "page_builder": "पेज बिल्डर",
+      "preview": "पूर्वावलोकन",
+      "pricing": {
+        "cost": "लागत",
+        "currency": "मुद्रा",
+        "discount": "छूट",
+        "enable_paid": "भुगतान सक्षम करें",
+        "gift": "उपहार के बारे में",
+        "gift_on_completion": "समापन पर उपहार",
+        "no": "नहीं",
+        "payment": "भुगतान लिंक",
+        "payment_helper": "स्ट्राइप, लेमन स्क्वीज़ी या कोई भुगतान लिंक",
+        "payment_invalid_url": "कृपया एक मान्य URL दर्ज करें",
+        "payment_required": "भुगतान लिंक आवश्यक है",
+        "percent": "छूट प्रतिशत",
+        "percentage_helper": "प्रतिशत में %",
+        "title": "मूल्य निर्धारण",
+        "yes": "हाँ"
+      },
+      "requirement": {
+        "title": "आवश्यकता"
+      },
+      "reviews": {
+        "add_reviews": "समीक्षाएं जोड़ें",
+        "avatar_placeholder": "https://...",
+        "avatar_url": "अवतार छवि URL",
+        "clear_rating": "रेटिंग साफ़ करें",
+        "description": "विवरण",
+        "description_placeholder": "इस लर्निंग पथ ने मुझे आवश्यक कौशल और आत्मविश्वास दिया।",
+        "fullname": "पूरा नाम",
+        "name_placeholder": "Jane Doe",
+        "rating": "रेटिंग",
+        "rating_placeholder": "वैकल्पिक (1-5)",
+        "title": "समीक्षाएं",
+        "untitled": "बिना शीर्षक समीक्षा"
+      },
+      "save": "परिवर्तन सहेजें",
+      "skills": {
+        "help": "जोड़ने के लिए Enter दबाएं। ये आपकी लैंडिंग पेज पर चिप्स के रूप में दिखेंगे।",
+        "placeholder": "उदा. TypeScript, Docker, PostgreSQL",
+        "title": "कौशल"
+      },
+      "testimonials": {
+        "add": "प्रशंसापत्र जोड़ें",
+        "name": "नाम",
+        "quote": "उद्धरण",
+        "role": "भूमिका / पद",
+        "title": "प्रशंसापत्र",
+        "untitled": "शीर्षकहीन प्रशंसापत्र"
+      }
+    },
+    "landing_editor": {
+      "access_preview": "पाठ्यक्रम + पूर्वावलोकन पाठ",
+      "access_preview_description": "पूरी रूपरेखा, साथ ही पूर्वावलोकन के रूप में चिह्नित पाठ निःशुल्क खोले जा सकते हैं।",
+      "access_syllabus": "पूर्ण पाठ्यक्रम",
+      "access_syllabus_description": "आगंतुक प्रत्येक पाठ्यक्रम और उसकी पाठ रूपरेखा देख सकते हैं, लेकिन उसकी विषयवस्तु नहीं।",
+      "access_teaser": "केवल टीज़र",
+      "access_teaser_description": "पथ विवरण, पाठ्यक्रम शीर्षक और मूल्य — पाठ का विवरण नहीं।",
+      "heading": "लैंडिंग पृष्ठ",
+      "headline": "शीर्षक",
+      "preview_public_page": "सार्वजनिक पृष्ठ का पूर्वावलोकन करें",
+      "show_faqs": "अक्सर पूछे जाने वाले प्रश्न देखें",
+      "show_instructors": "प्रशिक्षकों को दिखाएँ",
+      "show_testimonials": "प्रशंसापत्र दिखाएँ",
+      "subheadline": "उपशीर्षक",
+      "subtitle": "सार्वजनिक पथ पृष्ठ /path/{slug} पर आगंतुकों को क्या दिखाई देता है, इसे नियंत्रित करें।",
+      "visitor_access": "आगंतुक क्या देख सकते हैं"
+    },
+    "legacy": {
+      "subtitle": "संरचित पाठ्यक्रम जिनमें आप नामांकित हैं।",
+      "title": "सीखने के मार्ग"
+    },
+    "listing": {
+      "card": {
+        "courses_count": "{count} {count, plural, =1 {कोर्स} other {कोर्स}}",
+        "learners_count": "{count} {count, plural, =1 {छात्र} other {छात्र}}"
+      },
+      "create_path": "लर्निंग पाथ बनाएँ",
+      "empty": {
+        "create_path": "लर्निंग पाथ बनाएँ",
+        "description": "कई कोर्सों को माइलस्टोन ट्रैकिंग, गेटिंग और वैकल्पिक पूर्णता प्रमाणपत्र के साथ एक क्रमबद्ध अनुक्रम में बंडल करें।",
+        "no_matches_description": "अपने फ़िल्टर साफ़ करने या अपनी खोज क्वेरी बदलने का प्रयास करें।",
+        "no_matches_title": "कोई भी शिक्षण पथ आपके सक्रिय फ़िल्टर से मेल नहीं खाता",
+        "title": "अपना पहला लर्निंग पाथ बनाएँ"
+      },
+      "filters": {
+        "all": "सभी",
+        "clear_all": "सभी साफ़ करें",
+        "enrollment_1_49": "1–49",
+        "enrollment_50_plus": "50+",
+        "group_completion": "पूर्णता दर",
+        "group_enrollment": "नामांकन",
+        "group_status": "स्थिति",
+        "high": "उच्च (75%+)",
+        "low": "कम (25% से कम)",
+        "medium": "मध्यम (25–75%)",
+        "no_learners": "अभी तक कोई छात्र नहीं",
+        "published": "प्रकाशित",
+        "sort_courses": "पाठ्यक्रम",
+        "sort_date_created": "दिनांक निर्मित",
+        "sort_last_updated_at": "अंतिम बार अद्यतन किया गया",
+        "sort_published": "प्रकाशित",
+        "title": "फ़िल्टर",
+        "unpublished": "अप्रकाशित"
+      },
+      "load_error_title": "सीखने के पथ लोड करने में विफल",
+      "load_more": "और अधिक लोड करें",
+      "subtitle": "संरचित शिक्षण अनुभव बनाएं और प्रबंधित करें जो छात्रों को कई पाठ्यक्रमों के माध्यम से मार्गदर्शन करता है।",
+      "title": "सीखने के पथ",
+      "toolbar": {
+        "grid_view": "ग्रिड दृश्य",
+        "list_view": "सूची दृश्य",
+        "search_placeholder": "सीखने के रास्ते खोजें…"
+      }
+    },
+    "modals": {
+      "add_courses": {
+        "cancel": "रद्द करें",
+        "load_failed": "पाठ्यक्रम लोड करने में विफल.",
+        "no_courses": "जोड़ने के लिए कोई पाठ्यक्रम उपलब्ध नहीं है।",
+        "no_matches": "आपकी खोज से कोई पाठ्यक्रम मेल नहीं खाता।",
+        "pagination_status": "{totalPages} का पेज {page}",
+        "retry": "पुनः प्रयास करें",
+        "search_placeholder": "पाठ्यक्रम खोजें…",
+        "select_courses": "पाठ्यक्रम चुनें",
+        "submit": "{count} {count, plural, =1 {पाठ्यक्रम} other {पाठ्यक्रम}} जोड़ें",
+        "submitting": "पाठ्यक्रम जोड़े जा रहे हैं…",
+        "title": "पाथ में पाठ्यक्रम जोड़ें"
+      },
+      "create": {
+        "cancel": "रद्द करें",
+        "desc_label": "विवरण",
+        "desc_placeholder": "छात्र क्या हासिल करेंगे इसका एक संक्षिप्त सारांश...",
+        "failed": "सीखने का मार्ग बनाने में विफल",
+        "name_label": "पाथ का नाम",
+        "name_placeholder": "उदाहरण: फुलस्टैक वेब डेवलपमेंट",
+        "submit": "लर्निंग पाथ बनाएं",
+        "title": "लर्निंग पाथ बनाएँ"
+      }
+    },
+    "my_learning": {
+      "course_paths_description": "किसी शिक्षण मार्ग का हिस्सा बनने वाले पाठ्यक्रम यह दर्शाते हैं कि वे किस मार्ग से संबंधित हैं।",
+      "course_paths_title": "पाठ्यक्रम पथ",
+      "courses_subtitle": "आपने जो भी कोर्स शुरू किया है, चाहे वह कहीं भी हो।",
+      "courses_title": "मेरे पाठ्यक्रम",
+      "currently_learning": "वर्तमान में सीख रहा हूँ",
+      "heading": "मेरी सीख",
+      "heading_courses": "मेरे पाठ्यक्रम",
+      "heading_learning_paths": "सीखने के मार्ग",
+      "paths_title": "सीखने के मार्ग",
+      "subtitle": "अपने द्वारा किए जा रहे पाठ्यक्रमों और पाठों को ट्रैक करें।"
+    },
+    "not_permitted": {
+      "body": "दुर्भाग्य से आपके पास इस शिक्षण पथ तक पहुंच नहीं है।",
+      "button": "घर जाओ",
+      "header": "कोई अनुमति नहीं"
+    },
+    "people": {
+      "add": "जोड़ें",
+      "badge": {
+        "certificate_earned": "प्रमाणपत्र अर्जित किया",
+        "not_started": "शुरू नहीं हुआ"
+      },
+      "change_role_to_student": "विद्यार्थी बनाओ",
+      "change_role_to_tutor": "ट्यूटर बनाओ",
+      "delete_profile": "हटाएं",
+      "empty": "अभी तक किसी छात्र ने नामांकन नहीं कराया है. आरंभ करने के लिए छात्रों को जोड़ें.",
+      "filter": {
+        "all": "सबकी प्रगति",
+        "completed": "पूरा हुआ",
+        "in_progress": "प्रगति पर है",
+        "not_started": "शुरू नहीं हुआ"
+      },
+      "info_banner": "किसी छात्र को इस पथ में जोड़ने से उन्हें सभी {count} {count, plural, =1 {पाठ्यक्रम} other {पाठ्यक्रमों}} में स्वचालित रूप से नामांकित किया जाता है। उन्हें हटाने से उनकी पाठ्यक्रम तक पहुंच और प्रगति बरकरार रहती है।",
+      "info_title": "पथ नामांकन के बारे में",
+      "invite": {
+        "bulk_description": "अल्पविराम या नई पंक्तियों से अलग किए गए ईमेल पते दर्ज करें।",
+        "bulk_submit": "छात्रों को जोड़ें",
+        "bulk_title": "ईमेल द्वारा आमंत्रित करें",
+        "title": "छात्रों को पथ में जोड़ें"
+      },
+      "invite_modal": {
+        "bulk_enroll_backgrounded": "नामांकन अभी भी पृष्ठभूमि में चल रहा है। परिणाम देखने के लिए लोगों को रिफ्रेश करें।",
+        "bulk_enroll_failed": "पृष्ठभूमि नामांकन विफल रहा",
+        "bulk_enroll_lost": "पृष्ठभूमि नामांकन का खोया हुआ ट्रैक",
+        "bulk_enroll_partial": "नामांकित {enrolled} सदस्य ({invited} आमंत्रित, {failed} विफल)",
+        "bulk_enroll_queued": "पृष्ठभूमि में {count} सदस्यों का नामांकन किया जा रहा है...",
+        "bulk_enroll_success": "नामांकित {enrolled} सदस्य ({invited} आमंत्रित)",
+        "finish": "ख़त्म करो",
+        "invite": "शिक्षकों को आमंत्रित करें",
+        "invite_students": "छात्रों को आमंत्रित करें",
+        "loading": "जोड़ा जा रहा है…",
+        "student_limit_reached": "आप अपनी छात्र सीमा तक पहुंच गए हैं। अधिक छात्र जोड़ने के लिए अपग्रेड करें।"
+      },
+      "last_login_at": "अंतिम लॉगिन",
+      "no_results": "कोई भी छात्र आपकी खोज से मेल नहीं खाता.",
+      "remove": {
+        "cancel": "रद्द करें",
+        "confirm": "क्या आप वाकई इस शिक्षण पथ से {name} को हटाना चाहते हैं? वे अपने पाठ्यक्रम तक पहुंच और प्रगति बनाए रखेंगे।",
+        "confirm_non_student": "क्या आप वाकई {name} को इस पथ से हटाना चाहते हैं? उनकी इस पथ को प्रबंधित करने की पहुंच समाप्त हो जाएगी।",
+        "title": "विद्यार्थी को हटाओ",
+        "title_non_student": "सदस्य हटाएं",
+        "yes": "हटाओ"
+      },
+      "search_placeholder": "नाम या ईमेल से खोजें...",
+      "subtitle": "{count} {count, plural, =1 {छात्र} other {छात्र}} इस पथ में नामांकित हैं",
+      "table": {
+        "actions": "क्रियाएँ",
+        "current_course": "वर्तमान पाठ्यक्रम",
+        "enrolled": "नामांकित",
+        "learner": "छात्र",
+        "progress": "पथ प्रगति"
+      },
+      "title": "लोग",
+      "view": "देखें",
+      "you": "आप"
+    },
+    "progress": {
+      "label": "प्रगति"
+    },
+    "ribbon": {
+      "course_n_of_total": "{position} का कोर्स {total}",
+      "locked": "ताला लगा दिया",
+      "next_course_position": "कोर्स {position}",
+      "next_in_path": "आपके पथ में अगला",
+      "part_of": "हिस्सा है",
+      "path_complete": "पथ पूर्ण - सभी पाठ्यक्रम समाप्त। महान काम!",
+      "path_label": "सीखने का पथ",
+      "unlocks_after_finish": "जब आप इस कोर्स को पूरा कर लेंगे तो अनलॉक हो जाएगा - {lessons} पाठ और {exercises} अभ्यास।",
+      "view_path": "पथ देखें",
+      "go_to_next_course": "अगले कोर्स पर जाएं",
+      "go_to_course": "कोर्स पर जाएं"
+    },
+    "row": {
+      "completed": "पुरा होना।"
+    },
+    "settings": {
+      "cover_image": {
+        "alt": "पथ आवरण",
+        "desc": "यदि आप कोई जोड़ते हैं, तो वह कम से कम 280 x 200 होनी चाहिए।",
+        "legend": "कवर छवि",
+        "replace": "बदलें",
+        "reset": "रीसेट करें"
+      },
+      "danger": {
+        "delete_button": "लर्निंग पाथ हटाएं",
+        "delete_description": "क्या आप वाकई \"{name}\" को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+        "delete_title": "लर्निंग पथ हटाएं",
+        "desc": "इस लर्निंग पाथ और इसके सभी संबंधित डेटा को स्थायी रूप से हटाएं।",
+        "legend": "खतरा क्षेत्र"
+      },
+      "general": {
+        "copy_link": "लिंक कॉपी करें",
+        "desc": "इस लर्निंग पाथ के बारे में बुनियादी विवरण।",
+        "description_label": "विवरण",
+        "description_placeholder": "छात्र क्या हासिल करेंगे इसका संक्षिप्त सारांश...",
+        "description_required": "विवरण आवश्यक है",
+        "generate_link": "नया लिंक बनाएं",
+        "legend": "सामान्य जानकारी",
+        "link": "पथ लिंक",
+        "name_label": "पथ का नाम",
+        "name_placeholder": "उदा. फुलस्टैक वेब डेवलपमेंट",
+        "name_required": "पथ का नाम आवश्यक है",
+        "open_link": "नए टैब में लिंक खोलें",
+        "setup_landing_for_link": "पथ लिंक पाने के लिए लैंडिंग पेज सेट करें"
+      },
+      "progression": {
+        "desc": "नियंत्रित करें कि क्या छात्र सभी पाठ्यक्रमों तक पहुंच सकते हैं या उन्हें क्रम से पूरा करना होगा।",
+        "free": "मुक्त — सभी पाठ्यक्रम उपलब्ध हैं",
+        "legend": "विद्यार्थी प्रगति",
+        "sequential": "क्रमिक — अगले को अनलॉक करने के लिए पिछले पाठ्यक्रम पूरे करें"
+      },
+      "publishing": {
+        "desc": "इस लर्निंग पाथ को छात्रों के लिए दृश्यमान बनाएं।",
+        "legend": "प्रकाशन",
+        "published": "प्रकाशित",
+        "unpublished": "अप्रकाशित"
+      },
+      "self_enrollment": {
+        "access": "बंद होने पर, छात्र केवल आमंत्रण लिंक के माध्यम से या {people} से जोड़े जाने पर ही शामिल हो सकते हैं।",
+        "access_people": "लोग",
+        "disabled": "अक्षम",
+        "enabled": "सक्षम",
+        "legend": "छात्र अपना नामांकन करा सकते हैं"
+      },
+      "title": "सेटिंग्स",
+      "welcome_email": {
+        "desc": "नामांकन के बाद छात्रों को प्राप्त होने वाले ईमेल को अनुकूलित करें। एक व्यक्तिगत नोट, निर्देश, या एक लाइव सत्र लिंक जोड़ें।",
+        "legend": "स्वागत ईमेल",
+        "placeholder": "नामांकन के समय छात्रों को मिलने वाला स्वागत संदेश लिखें..."
+      }
+    },
+    "setup": {
+      "activate_now": "अभी सक्रिय करें",
+      "done": "हो गया",
+      "launch_desc": "पाठ्यक्रमों का ऑर्डर करें, मूल्य निर्धारित करें, लैंडिंग पेज को बेहतर बनाएं और सक्रिय करें।",
+      "launch_title": "लॉन्च करने के लिए {count} {count, plural, =1 {चरण} other {चरण}} शेष हैं",
+      "progress": "{total} में से {completed} पूर्ण",
+      "reorder_action": "पुन: व्यवस्थित करें",
+      "step_courses_action": "कोर्स जोड़ें",
+      "step_courses_desc": "इस शिक्षण पथ में शामिल पाठ्यक्रम चुनें।",
+      "step_courses_title": "पाठ्यक्रम जोड़ें",
+      "step_landing_action": "अनुकूलित करें",
+      "step_landing_desc": "सार्वजनिक कोर्स पेज पर लक्ष्य, कौशल, प्रशिक्षक, समीक्षाएं और अक्सर पूछे जाने वाले प्रश्न देखें।",
+      "step_landing_title": "अपने लैंडिंग पेज को अनुकूलित करें",
+      "step_name_action": "विवरण संपादित करें",
+      "step_name_desc": "पथ को एक स्पष्ट, परिणाम-आधारित नाम और एक संक्षिप्त सारांश दें।",
+      "step_name_title": "अपने पथ का नाम और विवरण दें",
+      "step_order_action": "क्रम निर्धारित करें",
+      "step_order_desc": "पाठ्यक्रमों को उस क्रम में खींचें जिस क्रम में छात्रों को उन्हें पूरा करना चाहिए।",
+      "step_order_title": "कोर्स का क्रम निर्धारित करें",
+      "step_price_action": "कीमत निर्धारित करें",
+      "step_price_desc": "पथ को एक बंडल के रूप में मूल्यांकित करें - छात्र बचत बनाम व्यक्तिगत पाठ्यक्रम देखते हैं।",
+      "step_price_title": "अपनी कीमत निर्धारित करें",
+      "step_publish_action": "प्रकाशित करें",
+      "step_publish_desc": "पथ प्रकाशित करें ताकि यह आपके लैंडिंग पृष्ठ और एलएमएस पर दिखाई दे।",
+      "step_publish_title": "पथ प्रकाशित करें",
+      "subtitle": "अपने विद्यार्थियों के लिए {name} लॉन्च करने के लिए इन चरणों को पूरा करें।",
+      "summary": "पाठ्यक्रमों का ऑर्डर, मूल्य निर्धारण और सक्रिय होने पर पथ लाइव हो जाता है।",
+      "title": "अपना पथ सेट करें"
+    },
+    "snackbar": {
+      "certificate_saved": "प्रमाणपत्र सेटिंग्स सहेजी गईं",
+      "course_added": "पाठ्यक्रम जोड़ा गया",
+      "course_removed": "पाठ्यक्रम हटा दिया गया",
+      "courses_added": "पाठ्यक्रम जोड़े गए",
+      "created": "सीखने का रास्ता बनाया गया",
+      "delete_failed": "सीखने का पथ हटाने में विफल",
+      "deleted": "सीखने का पथ हटा दिया गया",
+      "landing_save_failed": "लैंडिंग पेज सहेजने में विफल",
+      "landing_saved": "लैंडिंग पृष्ठ अद्यतन किया गया",
+      "link_generated": "आमंत्रण लिंक बनाया गया और क्लिपबोर्ड पर कॉपी किया गया",
+      "member_removed": "छात्र को रास्ते से हटा दिया गया",
+      "member_role_updated": "सदस्य भूमिका अद्यतन की गई",
+      "members_add_partial": "{added} जोड़ा गया, {invited} आमंत्रित किया गया, {notAdded} जोड़ा नहीं जा सका",
+      "reordered": "पाठ्यक्रम क्रम अद्यतन किया गया",
+      "settings_saved": "लर्निंग पथ सेटिंग्स अपडेट की गईं",
+      "tutor_removed": "ट्यूटर को पथ से हटाया गया",
+      "updated": "सीखने का पथ अद्यतन किया गया"
+    },
+    "status": {
+      "active": "सक्रिय",
+      "archived": "संग्रहीत",
+      "draft": "मसौदा"
+    },
+    "toolbar": {
+      "all": "सभी",
+      "clear_all": "सभी साफ करें",
+      "difficulty": "कठिनाई स्तर",
+      "difficulty_advanced": "उन्नत",
+      "difficulty_any": "कोई भी",
+      "difficulty_beginner": "शुरुआती",
+      "difficulty_intermediate": "मध्यवर्ती",
+      "filters": "फिल्टर",
+      "grid_view": "जालक दृश्य",
+      "list_view": "लिस्ट व्यू",
+      "results": "परिणाम",
+      "search": "खोज",
+      "status": "स्थिति"
+    },
+    "view_as_student": {
+      "copy_link": "लिंक कॉपी करें",
+      "description": "आप यह देखने वाले हैं कि इस लर्निंग पथ में दाखिला लेने पर छात्र क्या देखेगा",
+      "go_to_lms": "LMS पर जाएं",
+      "title": "यह आपको स्टूडेंट LMS पर रीडायरेक्ट करेगा।"
+    },
+    "view_path_site": {
+      "cancel": "रद्द करें",
+      "publish_path": "पथ प्रकाशित करें",
+      "unpublished_description": "साइट देखने से पहले आपको यह शिक्षण पथ प्रकाशित करना चाहिए",
+      "unpublished_title": "अपना सीखने का मार्ग प्रकाशित करें"
+    },
+    "workspace": {
+      "back_to_paths": "लर्निंग पाथ पर वापस जाएं",
+      "coming_soon": {
+        "description": "यह वर्कस्पेस टैब चरण 3 में उपलब्ध होगा। इस रिलीज़ में कोर्स प्रबंधन और सेटअप पूरी तरह से काम कर रहे हैं।",
+        "title": "{tab} — जल्द ही आ रहा है"
+      },
+      "copy_path_url": "पाथ यूआरएल कॉपी करें",
+      "finish_setup": "सेटअप पूरा करें · {percent}%",
+      "load_failed_description": "अपना कनेक्शन जांचें और पुनः प्रयास करें।",
+      "load_failed_title": "इस शिक्षण पथ को लोड नहीं किया जा सका",
+      "loading_description": "कृपया तब तक प्रतीक्षा करें जब तक हम आपका शिक्षण पथ डेटा लोड न कर दें।",
+      "loading_title": "सीखने का पथ लोड हो रहा है...",
+      "not_found_description": "आप जिस लर्निंग पाथ को खोज रहे हैं वह मौजूद नहीं है या हटा दिया गया है।",
+      "not_found_title": "लर्निंग पाथ नहीं मिला",
+      "preview_missing_slug": "पूर्वावलोकन करने से पहले पथ स्लग बनाएं और सहेजें।",
+      "publish_failed": "लर्निंग पाथ प्रकाशित करने में विफल",
+      "publish_path": "पथ प्रकाशित करें",
+      "published": "लर्निंग पाथ प्रकाशित हो चुकी है।",
+      "tabs": {
+        "analytics": "विश्लेषण",
+        "certificate": "प्रमाणपत्र",
+        "courses": "पाठ्यक्रम",
+        "landing": "लैंडिंग पृष्ठ",
+        "people": "लोग",
+        "settings": "सेटिंग्स",
+        "setup": "स्थापित करना"
+      },
+      "url_copied": "शिक्षण पथ URL को क्लिपबोर्ड पर कॉपी किया गया",
+      "view_path_site": "पथ साइट देखें"
+    },
+    "preview": {
+      "courses_heading": "इस पाथ के पाठ्यक्रम"
+    }
   }
 }

@@ -6,6 +6,7 @@ export { default as Backdrop } from './backdrop.svelte';
 export { default as CloseButton } from './close-btn.svelte';
 export { default as CodeSnippet } from './code-snippet.svelte';
 export { default as CourseLandingPage } from './course-landing-page/course-landing-page.svelte';
+export { default as LearningPathDetail } from './learning-path-detail/learning-path-detail.svelte';
 export { default as ComingSoon } from './coming-soon.svelte';
 export { default as Confetti } from './confetti/confetti.svelte';
 export { default as DeleteModal } from './delete-modal.svelte';

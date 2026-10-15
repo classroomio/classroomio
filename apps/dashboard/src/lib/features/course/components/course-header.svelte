@@ -9,6 +9,7 @@
   import { Waves } from '@cio/ui/custom/animation';
   import { page } from '$app/state';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import { isStudentExperience, isCourseLearnerView } from '$lib/utils/store/app';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { getCourseProgress } from '$features/course/utils/content';
@@ -46,8 +47,6 @@
     })
   );
 
-  const pathContext = $derived(learnerPathStore.getCoursePathContext(courseApi.course?.id, courseApi.course?.title));
-
   let viewAsStudentOpen = $state(false);
   let viewCourseSiteUnpublishedOpen = $state(false);
 
@@ -55,6 +54,13 @@
     if (!siteName) return;
 
     setupProgressApi.fetchSetupProgress(siteName);
+  });
+
+  $effect(() => {
+    if (!$profile.id || !$currentOrg.id) return;
+
+    const courseId = courseApi.course?.id;
+    if (courseId) learnerPathStore.loadPathContext(courseId, page.params.publicId as string | undefined);
   });
 
   function handleViewCourseSite() {
@@ -86,7 +92,7 @@
       <Separator orientation="vertical" />
     </div>
 
-    <div class="flex w-[60%] min-w-0 flex-1 flex-col justify-center gap-0.5">
+    <div class="flex w-[60%] min-w-0 flex-col justify-center gap-0.5">
       <div class="flex min-w-0 items-center gap-2">
         <p class="max-w-xs truncate text-sm font-medium">
           {activeNavKey ? $t(activeNavKey) : ''}
@@ -100,12 +106,12 @@
           <CoursePublishBadge {isPublished} />
         {/if}
 
-        {#if $isCourseLearnerView && pathContext}
+        {#if $isCourseLearnerView && learnerPathStore.pathContext}
           <CourseInPathWidget
-            pathName={pathContext.pathName}
-            pathHref={pathContext.pathHref}
-            nodes={pathContext.nodes}
-            currentPosition={pathContext.currentPosition}
+            pathName={learnerPathStore.pathContext.pathName}
+            pathHref={learnerPathStore.pathContext.pathHref}
+            nodes={learnerPathStore.pathContext.nodes}
+            currentPosition={learnerPathStore.pathContext.currentPosition}
           />
         {/if}
       </div>

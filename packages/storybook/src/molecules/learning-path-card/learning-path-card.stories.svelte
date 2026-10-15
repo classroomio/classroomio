@@ -112,6 +112,40 @@
   {/snippet}
 </Story>
 
+<Story name="Admin — with overlay and footer">
+  {#snippet template()}
+    <div class="w-80">
+      <LearningPathCard
+        href="/paths/1GlQpMod"
+        name="Full-Stack Web Development Career Path"
+        description="Master HTML, CSS, JavaScript, React, and Node.js by building real-world applications step by step."
+        coverGradient={COVER_GRADIENT}
+        courseCount={8}
+        totalHours={42}
+        status="ACTIVE"
+        isAdmin
+        {labels}
+      >
+        {#snippet overlay()}
+          <button
+            type="button"
+            aria-label="Path actions"
+            class="rounded-md bg-white/90 px-2 py-1 text-xs font-semibold"
+          >
+            •••
+          </button>
+        {/snippet}
+        {#snippet footer()}
+          <div class="flex w-full items-center justify-between">
+            <span class="text-xs font-semibold text-emerald-600">Published</span>
+            <span class="text-xs text-gray-500">12 learners</span>
+          </div>
+        {/snippet}
+      </LearningPathCard>
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Explore — view path CTA">
   {#snippet template()}
     <div class="w-80">

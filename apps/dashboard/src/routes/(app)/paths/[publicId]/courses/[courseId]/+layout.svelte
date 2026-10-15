@@ -1,0 +1,316 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
+  import * as Sidebar from '@cio/ui/base/sidebar';
+  import { Empty } from '@cio/ui/custom/empty';
+  import { Spinner } from '@cio/ui/base/spinner';
+  import { CourseSidebar } from '$features/course/components/sidebar';
+  import { CourseHeader } from '$features/course/components';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
+  import type { Course } from '$features/course/types';
+  import { Button } from '@cio/ui/base/button';
+  import { Confetti, NotPermittedModal } from '$features/ui';
+  import { courseApi } from '$features/course/api';
+  import ContentCreateModal from '$features/course/components/content/content-create-modal.svelte';
+  import CourseCompletionModal from '$features/course/components/ceritficate/course-completion-modal.svelte';
+  import CopyCourseModal from '$features/course/components/copy-course-modal.svelte';
+  import { aiAssistantPanelDefinition, ContentAskAiBar, AI_ASSISTANT_PANEL_ID } from '$features/ai-assistant';
+  import {
+    getContentAskAiBarWidthClass,
+    isCourseContentLockedForStudent
+  } from '$features/ai-assistant/utils/content-ask-ai-bar';
+  import { initialChatPrompt, openAiAssistant } from '$features/ai-assistant/utils/store';
+  import { sidePanel, SidePanelRail } from '$features/side-panel';
+  import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
+  import { transcriptPanelDefinition } from '$features/course/components/lesson/video/transcript-panel-definition';
+  import { get } from 'svelte/store';
+  import { page } from '$app/state';
+  import { profile } from '$lib/utils/store/user';
+  import { currentOrg, isOrgAdmin } from '$lib/utils/store/org';
+  import { isCourseLearnerView, isOrgStudent } from '$lib/utils/store/app';
+  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
+  import { CourseMobileBottomNav } from '$features/course/components/mobile';
+  import { getCourseProgress } from '$features/course/utils/content';
+  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
+  import { t } from '$lib/utils/functions/translations';
+  import { ContentType } from '@cio/utils/constants/content';
+  import type { CourseMember } from '$features/course/utils/types';
+  import {
+    COURSE_SIDEBAR_DEFAULT_WIDTH,
+    COURSE_SIDEBAR_MAX_WIDTH,
+    COURSE_SIDEBAR_MIN_WIDTH,
+    COURSE_SIDEBAR_STORAGE_KEY
+  } from '$features/course/components/sidebar/constants';
+
+  if (IS_AI_ENABLED) {
+    sidePanel.register(aiAssistantPanelDefinition);
+  }
+
+  sidePanel.register(transcriptPanelDefinition);
+
+  interface Props {
+    children?: import('svelte').Snippet;
+    data: {
+      course?: Course;
+      courseId: string;
+      publicId: string;
+      exerciseId?: string;
+    };
+  }
+
+  let { children, data }: Props = $props();
+  const currentPath = $derived(page.url.pathname);
+  let sidebarWidth = $state(COURSE_SIDEBAR_DEFAULT_WIDTH);
+  let hasLoadedSidebarWidth = $state(false);
+  let sidebarProviderElement = $state<HTMLDivElement | null>(null);
+
+  // Initialize course store on the client (fetch once, then reuse store data).
+  $effect(() => {
+    if (!data.courseId || !$profile.id) return;
+
+    if (data.course) {
+      courseApi.setCourse(data.course, $profile.id);
+      return;
+    }
+
+    courseApi.ensureCourse(data.courseId, $profile.id);
+  });
+
+  const isCourseReady = $derived.by(() => {
+    return courseApi.course?.id === data.courseId && !!courseApi.group.id;
+  });
+
+  onMount(() => {
+    if ($profile.id && $currentOrg.id) {
+      learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id);
+    }
+  });
+
+  // Path-visit access: warm the journey for the URL path, then enforce the
+  // locked rules (no access -> My Learning, locked course -> path hub).
+  let journeyRequestedFor = $state<string | null>(null);
+  let journeySettled = $state(false);
+
+  $effect(() => {
+    if (!data.publicId || journeyRequestedFor === data.publicId) return;
+
+    journeyRequestedFor = data.publicId;
+    journeySettled = false;
+    void learnerPathStore.ensureSelectedPath(data.publicId).finally(() => {
+      if (journeyRequestedFor === data.publicId) journeySettled = true;
+    });
+  });
+
+  $effect(() => {
+    if (!journeySettled || !$isOrgStudent) return;
+
+    const journey = learnerPathStore.selectedJourney;
+    const matches = journey && (journey.path.publicId === data.publicId || journey.path.id === data.publicId);
+    if (!matches) {
+      goto('/lms/mylearning');
+      return;
+    }
+
+    const current = journey.courses.find((course) => course.courseId === data.courseId);
+    if (current && !current.isUnlocked) {
+      goto(`/lms/paths/${data.publicId}`);
+    }
+  });
+
+  const user: CourseMember | undefined = $derived(
+    courseApi.group.people.find((person) => person.profileId === $profile.id)
+  );
+  const canCheck = $derived(!!$profile.id && isCourseReady);
+
+  const isForbidden = $derived.by(() => {
+    if (courseApi.isForbidden) return true;
+    if (!isCourseReady || !canCheck) return false;
+
+    if ($isOrgAdmin === null) return false;
+
+    return !$isOrgAdmin && !user;
+  });
+
+  // Fall back to the `/org/*` placeholder only while the org is still loading; the org layout
+  // swaps `*` for the current siteName once it resolves.
+  const forbiddenHref = $derived.by(() => {
+    if ($isCourseLearnerView) return '/lms/mylearning';
+
+    const siteName = $currentOrg.siteName;
+
+    return siteName ? `/org/${siteName}` : '/org/*';
+  });
+
+  function handleForbiddenGo() {
+    goto(forbiddenHref);
+  }
+
+  const isExercisePage = $derived(!!data.exerciseId);
+
+  const lessonId = $derived(page.params.lessonId as string | undefined);
+  const exerciseId = $derived((page.params.exerciseId as string | undefined) ?? data.exerciseId);
+  const isLessonOrExercisePage = $derived(Boolean(lessonId || exerciseId));
+  const isLessonEditMode = $derived(page.url.searchParams.get('mode') === 'edit');
+
+  const contentAskAiBarWidthClass = $derived(getContentAskAiBarWidthClass({ lessonId, isLessonEditMode }));
+
+  const isContentLockedForStudent = $derived(
+    isCourseContentLockedForStudent(
+      courseApi.course,
+      lessonId ?? exerciseId,
+      lessonId ? ContentType.Lesson : exerciseId ? ContentType.Exercise : null
+    )
+  );
+
+  const showContentAskAiBar = $derived(
+    isCourseReady &&
+      isLessonOrExercisePage &&
+      IS_AI_ENABLED &&
+      !($isCourseLearnerView && isContentLockedForStudent) &&
+      sidePanel.activePanelId !== AI_ASSISTANT_PANEL_ID
+  );
+
+  const courseProgress = $derived(getCourseProgress(courseApi.course));
+  const showMobileBottomNav = $derived(
+    isCourseMobileBottomNavVisible({
+      isCourseLearnerView: $isCourseLearnerView,
+      isMobile: isMobileStore.current,
+      isLessonOrExercisePage,
+      courseProgress
+    })
+  );
+
+  const contentAskAiBarBottomClass = $derived(showMobileBottomNav ? 'bottom-24' : 'bottom-4');
+  const contentAskAiBarExpandedBottomClass = $derived(showMobileBottomNav ? 'bottom-24' : 'bottom-0');
+
+  function clampSidebarWidth(width: number) {
+    return Math.min(COURSE_SIDEBAR_MAX_WIDTH, Math.max(COURSE_SIDEBAR_MIN_WIDTH, width));
+  }
+
+  function handleSidebarWidthChange(width: number) {
+    sidebarWidth = clampSidebarWidth(width);
+  }
+
+  function handleSidebarWidthPreview(width: number) {
+    sidebarProviderElement?.style.setProperty('--sidebar-width', `${width}px`);
+  }
+
+  function handleSidePanelWidthPreview(width: number) {
+    sidebarProviderElement?.style.setProperty('--side-panel-width', `${width}px`);
+  }
+
+  onMount(() => {
+    try {
+      const storedWidth = Number(localStorage.getItem(COURSE_SIDEBAR_STORAGE_KEY));
+
+      if (Number.isFinite(storedWidth)) {
+        sidebarWidth = clampSidebarWidth(storedWidth);
+      }
+    } catch {
+      // localStorage unavailable
+    }
+
+    hasLoadedSidebarWidth = true;
+
+    if (IS_AI_ENABLED && get(initialChatPrompt)) {
+      openAiAssistant();
+    }
+  });
+
+  $effect(() => {
+    if (!hasLoadedSidebarWidth) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(COURSE_SIDEBAR_STORAGE_KEY, String(Math.round(sidebarWidth)));
+    } catch {
+      // localStorage unavailable
+    }
+  });
+</script>
+
+<svelte:head>
+  <title>{courseApi.course?.title || 'ClassroomIO Course'}</title>
+</svelte:head>
+
+<NotPermittedModal
+  open={isForbidden}
+  entityType="course"
+  buttonText={$isCourseLearnerView ? $t('common.back_to_my_learning') : $t('course.not_permitted.button')}
+  onAction={handleForbiddenGo}
+/>
+
+<Sidebar.Provider
+  bind:ref={sidebarProviderElement}
+  data-sveltekit-preload-data="off"
+  style={`--sidebar-width: ${sidebarWidth}px; --side-panel-width: ${sidePanel.width}px;`}
+>
+  <CourseSidebar
+    path={currentPath}
+    id={data.courseId}
+    {isCourseReady}
+    {sidebarWidth}
+    onSidebarWidthPreview={handleSidebarWidthPreview}
+    onSidebarWidthChange={handleSidebarWidthChange}
+  />
+
+  <Sidebar.Inset class="min-w-0 flex-1 {showMobileBottomNav ? 'pb-24' : ''}">
+    <CourseHeader />
+    <ContentCreateModal />
+    <CourseCompletionModal />
+    <CopyCourseModal />
+
+    {#if isForbidden}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        <Empty title={$t('course.not_permitted.header')} description={$t('course.not_permitted.body')} variant="page">
+          <div class="mt-4 flex justify-center">
+            <Button onclick={handleForbiddenGo} variant="outline">
+              {$isCourseLearnerView ? $t('common.back_to_my_learning') : $t('course.not_permitted.button')}
+            </Button>
+          </div>
+        </Empty>
+      </div>
+    {:else if courseApi.isNotFound}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center p-6">
+        <Empty title={$t('course.not_found.header')} description={$t('course.not_found.body')} variant="page">
+          <div class="mt-4 flex justify-center">
+            <Button onclick={handleForbiddenGo} variant="outline">
+              {$isCourseLearnerView ? $t('common.back_to_my_learning') : $t('course.not_permitted.button')}
+            </Button>
+          </div>
+        </Empty>
+      </div>
+    {:else if !isCourseReady}
+      <div class="mx-auto flex h-[calc(100vh-56px)] w-full items-center justify-center">
+        <Empty
+          title="Loading course…"
+          description="Please wait while we load your course data."
+          icon={Spinner}
+          iconClass="h-8 w-8"
+          variant="page"
+        />
+      </div>
+    {:else}
+      {#if isExercisePage}
+        <Confetti />
+      {/if}
+
+      {@render children?.()}
+
+      {#if showContentAskAiBar}
+        <ContentAskAiBar
+          class={contentAskAiBarWidthClass}
+          bottomClass={contentAskAiBarBottomClass}
+          expandedBottomClass={contentAskAiBarExpandedBottomClass}
+        />
+      {/if}
+
+      {#if showMobileBottomNav}
+        <CourseMobileBottomNav courseId={data.courseId} path={currentPath} />
+      {/if}
+    {/if}
+  </Sidebar.Inset>
+
+  <SidePanelRail onWidthPreview={handleSidePanelWidthPreview} />
+</Sidebar.Provider>
