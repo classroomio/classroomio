@@ -9,7 +9,9 @@ import {
   getPluginVersion,
   getPluginVersionById,
   getUserInstallation,
+  listAllOrganizationIds,
   listOrganizationInstallations,
+  listPluginVersions,
   recordPluginAuditEvent,
   reinstallInstallation,
   replaceInstallationGrants,
@@ -100,7 +102,7 @@ export interface InstallPluginParams {
   ownerType: TPluginOwnerType;
   organizationId?: string;
   userId?: string;
-  installedByProfileId: string;
+  installedByProfileId?: string;
   settings?: Record<string, unknown>;
   allowDowngrade?: boolean;
 }
@@ -389,6 +391,7 @@ export async function changeOrgApproval(
 export interface ResolvedPluginContribution {
   installationId: string;
   pluginId: string;
+  pluginSlug?: string;
   version: string;
   contributionId: string;
   target: string;
@@ -512,6 +515,7 @@ export async function resolveOrgContributions(
         resolved.push({
           installationId: inst.id,
           pluginId: inst.pluginId,
+          pluginSlug: inst.plugin?.slug ?? undefined,
           version: manifest.version ?? '1.0.0',
           contributionId: slot.id,
           target: slot.target,
@@ -541,6 +545,7 @@ export async function resolveOrgContributions(
         resolved.push({
           installationId: inst.id,
           pluginId: inst.pluginId,
+          pluginSlug: inst.plugin?.slug ?? undefined,
           version: manifest.version ?? '1.0.0',
           contributionId: action.id,
           target: action.target,
@@ -565,6 +570,7 @@ export async function resolveOrgContributions(
         resolved.push({
           installationId: inst.id,
           pluginId: inst.pluginId,
+          pluginSlug: inst.plugin?.slug ?? undefined,
           version: manifest.version ?? '1.0.0',
           contributionId: navigationItem.id,
           target: navigationItem.location,
@@ -588,6 +594,7 @@ export async function resolveOrgContributions(
         resolved.push({
           installationId: inst.id,
           pluginId: inst.pluginId,
+          pluginSlug: inst.plugin?.slug ?? undefined,
           version: manifest.version ?? '1.0.0',
           contributionId: page.id,
           target: 'plugin.page',
@@ -601,4 +608,46 @@ export async function resolveOrgContributions(
   }
 
   return resolved;
+}
+
+export async function devInstallPlugin(params: {
+  pluginId: string;
+  version?: string;
+  organizationId?: string;
+}): Promise<{ installedOrgs: string[]; version: string }> {
+  const pluginRecord = await getPluginByIdOrSlug(params.pluginId);
+  if (!pluginRecord) {
+    throw new AppError('Plugin not found', 'PLUGIN_NOT_FOUND', 404);
+  }
+
+  const versions = await listPluginVersions(pluginRecord.id);
+  const targetVersion = params.version
+    ? versions.find((v) => v.version === params.version)
+    : (versions.find((v) => v.reviewStatus === 'approved') ?? versions[0]);
+
+  if (!targetVersion) {
+    throw new AppError('No suitable version found for plugin', 'PLUGIN_VERSION_NOT_FOUND', 404);
+  }
+
+  const orgIds = params.organizationId ? [params.organizationId] : await listAllOrganizationIds();
+  const installedOrgs: string[] = [];
+
+  for (const orgId of orgIds) {
+    const existing = await getOrganizationInstallation(orgId, pluginRecord.id);
+    if (!existing || existing.status === 'uninstalled') {
+      await installPlugin({
+        pluginId: pluginRecord.id,
+        version: targetVersion.version,
+        ownerType: 'organization',
+        organizationId: orgId
+      });
+      const installed = await getOrganizationInstallation(orgId, pluginRecord.id);
+      if (installed) {
+        await updateOrgApprovalStatusQuery(installed.id, 'approved');
+      }
+      installedOrgs.push(orgId);
+    }
+  }
+
+  return { installedOrgs, version: targetVersion.version };
 }

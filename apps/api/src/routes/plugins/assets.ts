@@ -66,44 +66,37 @@ async function resolvePluginDirectory(pluginId: string): Promise<ResolvedPlugin 
     return cached;
   }
 
-  const currentWorkingDirectory = process.cwd();
-  const repositoryRootCandidates = [currentWorkingDirectory, path.resolve(currentWorkingDirectory, '../..')];
-  const envPath = process.env.OFFICIAL_PLUGINS_PATH ? [path.resolve(process.env.OFFICIAL_PLUGINS_PATH)] : [];
-  const pluginRoots = [
-    ...envPath,
-    path.resolve(currentWorkingDirectory, '../../../classroomio-plugins'),
-    path.resolve(currentWorkingDirectory, '../../classroomio-plugins'),
-    path.resolve(currentWorkingDirectory, '../classroomio-plugins'),
-    ...repositoryRootCandidates.map((repositoryRoot) => path.resolve(repositoryRoot, '../classroomio-plugins')),
-    ...repositoryRootCandidates.map((repositoryRoot) => path.resolve(repositoryRoot, 'classroomio-plugins')),
-    ...repositoryRootCandidates.map((repositoryRoot) => path.resolve(repositoryRoot, 'official-plugins'))
-  ];
+  const liveDevPath = process.env.PLUGINS_DEV_PATH || process.env.OFFICIAL_PLUGINS_PATH;
+  if (!liveDevPath) {
+    return null;
+  }
 
-  for (const basePluginsPath of pluginRoots) {
-    if (!existsSync(basePluginsPath)) continue;
+  const basePluginsPath = path.resolve(liveDevPath);
+  if (!existsSync(basePluginsPath)) {
+    return null;
+  }
 
-    const entries = await readdir(basePluginsPath, { withFileTypes: true });
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
+  const entries = await readdir(basePluginsPath, { withFileTypes: true });
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
 
-      const manifestPath = path.join(basePluginsPath, entry.name, 'plugin.json');
-      if (!existsSync(manifestPath)) continue;
+    const manifestPath = path.join(basePluginsPath, entry.name, 'plugin.json');
+    if (!existsSync(manifestPath)) continue;
 
-      try {
-        const manifestRaw = await readFile(manifestPath, 'utf-8');
-        const manifest = JSON.parse(manifestRaw) as { id?: string };
-        if (manifest.id === pluginId) {
-          const resolved = {
-            dir: path.join(basePluginsPath, entry.name),
-            manifest
-          };
-          pluginCache.set(pluginId, resolved);
+    try {
+      const manifestRaw = await readFile(manifestPath, 'utf-8');
+      const manifest = JSON.parse(manifestRaw) as { id?: string };
+      if (manifest.id === pluginId) {
+        const resolved = {
+          dir: path.join(basePluginsPath, entry.name),
+          manifest
+        };
+        pluginCache.set(pluginId, resolved);
 
-          return resolved;
-        }
-      } catch {
-        continue;
+        return resolved;
       }
+    } catch {
+      continue;
     }
   }
 
@@ -117,15 +110,14 @@ function resolveArtifactDirectory(pluginId: string, version: string, digest: str
     ...configuredRoot,
     path.resolve(currentWorkingDirectory, '.plugin-artifacts'),
     path.resolve(currentWorkingDirectory, '../.plugin-artifacts'),
-    path.resolve(currentWorkingDirectory, '../../.plugin-artifacts'),
-    path.resolve(currentWorkingDirectory, '../../../classroomio-plugins/.plugin-artifacts'),
-    path.resolve(currentWorkingDirectory, '../../classroomio-plugins/.plugin-artifacts'),
-    path.resolve(currentWorkingDirectory, '../classroomio-plugins/.plugin-artifacts')
+    path.resolve(currentWorkingDirectory, '../../.plugin-artifacts')
   ];
 
   for (const artifactRoot of artifactRoots) {
     const releaseDirectory = path.resolve(artifactRoot, pluginId, version, digest);
-    if (existsSync(releaseDirectory)) return releaseDirectory;
+    if (existsSync(releaseDirectory)) {
+      return releaseDirectory;
+    }
   }
 
   return null;

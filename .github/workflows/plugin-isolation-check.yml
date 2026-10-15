@@ -3,8 +3,6 @@ name: Plugin artifacts verification
 on:
   pull_request:
     paths:
-      - 'scripts/build-plugin-artifacts.mjs'
-      - 'scripts/verify-plugin-artifacts.mjs'
       - 'packages/plugin-sdk/**'
       - 'packages/plugin-design/**'
       - 'packages/certificate-kit/**'
@@ -12,8 +10,6 @@ on:
   push:
     branches: [main]
     paths:
-      - 'scripts/build-plugin-artifacts.mjs'
-      - 'scripts/verify-plugin-artifacts.mjs'
       - 'packages/plugin-sdk/**'
       - 'packages/plugin-design/**'
       - 'packages/certificate-kit/**'
@@ -38,13 +34,16 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @classroomio/plugin-sdk build
       - run: pnpm install --frozen-lockfile
         working-directory: classroomio-plugins
-      - run: pnpm plugins:build-artifacts
-      - run: pnpm plugins:verify-artifacts
+      - run: node ../packages/plugin-sdk/bin/cio-plugin.mjs build --all
+        working-directory: classroomio-plugins
+      - run: node ../packages/plugin-sdk/bin/cio-plugin.mjs verify
+        working-directory: classroomio-plugins
       - uses: actions/upload-artifact@v4
         with:
           name: official-plugin-artifacts
-          path: .plugin-artifacts/
+          path: classroomio-plugins/.plugin-artifacts/
           if-no-files-found: error
           retention-days: 7

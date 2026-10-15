@@ -106,7 +106,7 @@ export async function reinstallInstallation(
   installationId: string,
   data: {
     pluginVersionId: string;
-    installedByProfileId: string;
+    installedByProfileId?: string | null;
     settings?: Record<string, unknown>;
   }
 ): Promise<TPluginInstallation | null> {
@@ -185,4 +185,9 @@ export async function updateOrgApprovalStatus(
     .returning();
 
   return row ?? null;
+}
+
+export async function listAllOrganizationIds(): Promise<string[]> {
+  const rows = await db.select({ id: schema.organization.id }).from(schema.organization);
+  return rows.map((r) => r.id);
 }

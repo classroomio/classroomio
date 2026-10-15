@@ -3,7 +3,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { createDeterministicTarGz, packageSinglePlugin, validateManifest } from '../bin/cio-plugin.mjs';
+import {
+  buildAllPlugins,
+  createDeterministicTarGz,
+  packageSinglePlugin,
+  validateManifest,
+  verifyArtifacts
+} from '../bin/cio-plugin.mjs';
 
 describe('Plugin CLI (cio-plugin)', () => {
   const validManifest = {
@@ -72,5 +78,21 @@ describe('Plugin CLI (cio-plugin)', () => {
 
     const hasInventory = pkg.filesToPackage.some((f) => f.path === 'inventory.json');
     expect(hasInventory).toBe(true);
+  });
+
+  it('builds and verifies all plugin artifacts in a multi-plugin directory', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-multi-'));
+    const pluginA = path.join(tempDir, 'plugin-a');
+    fs.mkdirSync(pluginA, { recursive: true });
+    fs.writeFileSync(path.join(pluginA, 'plugin.json'), JSON.stringify(validManifest));
+
+    const buildResult = buildAllPlugins(tempDir);
+    expect(buildResult.releases).toHaveLength(1);
+    expect(fs.existsSync(path.join(tempDir, '.plugin-artifacts', 'release-index.json'))).toBe(true);
+
+    const verifyResult = verifyArtifacts(tempDir);
+    expect(verifyResult.valid).toBe(true);
+    expect(verifyResult.count).toBe(1);
+    expect(verifyResult.errors).toHaveLength(0);
   });
 });
