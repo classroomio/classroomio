@@ -212,14 +212,16 @@ export const ZCourseContentReorder = ZCourseContentReorderBase.superRefine((data
       });
     }
 
-    const sectionId = item.sectionId ?? '__unsectioned__';
-    const entry = itemsBySection.get(sectionId) ?? { orders: [], total: 0, withOrder: 0 };
-    entry.total += 1;
-    if (item.order !== undefined) {
-      entry.orders.push(item.order);
-      entry.withOrder += 1;
+    if (item.sectionId !== undefined) {
+      const sectionId = item.sectionId ?? '__unsectioned__';
+      const entry = itemsBySection.get(sectionId) ?? { orders: [], total: 0, withOrder: 0 };
+      entry.total += 1;
+      if (item.order !== undefined) {
+        entry.orders.push(item.order);
+        entry.withOrder += 1;
+      }
+      itemsBySection.set(sectionId, entry);
     }
-    itemsBySection.set(sectionId, entry);
 
     const itemKey = `${item.type}:${item.id}`;
     if (itemKeys.has(itemKey)) {

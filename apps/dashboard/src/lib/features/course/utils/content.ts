@@ -120,7 +120,9 @@ export function getMentionableContent(course: Course | null): MentionableContent
 
   for (const entry of getCourseOutline(content)) {
     if (entry.kind === 'item') {
-      result.push({ id: entry.item.id, title: entry.item.title, type: entry.item.type as CourseContentType });
+      if (NAVIGABLE_CONTENT_TYPES.includes(entry.item.type as (typeof NAVIGABLE_CONTENT_TYPES)[number])) {
+        result.push({ id: entry.item.id, title: entry.item.title, type: entry.item.type as CourseContentType });
+      }
       continue;
     }
 

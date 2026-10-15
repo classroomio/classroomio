@@ -66,4 +66,13 @@ describe('mixed course outlines', () => {
     });
     expect(result.success).toBe(false);
   });
+
+  it('allows order-only updates when the existing parent is omitted', () => {
+    const result = ZCourseContentReorder.safeParse({
+      sections: [{ id: 'settings', order: 1 }],
+      items: [{ id: 'settings-lesson', type: 'LESSON', order: 1 }]
+    });
+
+    expect(result.success).toBe(true);
+  });
 });

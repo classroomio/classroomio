@@ -11,10 +11,12 @@
   import { openAddContentModal } from '$features/course/components/content/open-content-create';
   import { courseApi } from '$features/course/api';
   import { profile } from '$lib/utils/store/user';
+  import { getCourseContent } from '$features/course/utils/content';
 
   let { data } = $props();
 
   let reorder = $state(false);
+  const contentData = $derived(getCourseContent(courseApi.course));
 
   function addContent() {
     if (!data.courseId) {
@@ -35,9 +37,11 @@
     <Page.Action>
       <div class="flex w-full justify-end gap-2">
         <RoleBasedSecurity allowedRoles={[1, 2]}>
-          <Button variant="outline" onclick={() => (reorder = !reorder)} disabled={!!$contentEditingStore}>
-            {$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
-          </Button>
+          {#if !contentData.grouped}
+            <Button variant="outline" onclick={() => (reorder = !reorder)} disabled={!!$contentEditingStore}>
+              {$t(`course.navItem.lessons.add_lesson.${reorder ? 'end_reorder' : 'start_reorder'}`)}
+            </Button>
+          {/if}
           <Tooltip.Provider>
             <Tooltip.Root>
               <Tooltip.Trigger>
