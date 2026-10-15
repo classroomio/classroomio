@@ -5,6 +5,7 @@ import { db, type DbOrTxClient } from '@db/drizzle';
 import * as schema from '../../schema';
 import { complianceCycleIsCompleteSql, courseIsCompleteSql } from '../course/learner-progress';
 import { isExerciseCompletedSql } from '../course/progression';
+import { pathCourseIsActiveSql } from './learning-path-course';
 
 export interface TCourseCompletionStats {
   totalLessons: number;
@@ -137,13 +138,7 @@ export async function getPathCourseFunnelStats(
           isNull(schema.learningPathMember.removedAt)
         )
       )
-      .where(
-        and(
-          eq(schema.learningPathCourse.learningPathId, learningPathId),
-          isNull(schema.learningPathCourse.removedAt),
-          eq(schema.course.status, 'ACTIVE')
-        )
-      )
+      .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
       .groupBy(
         schema.learningPathCourse.id,
         schema.learningPathCourse.courseId,

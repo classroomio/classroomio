@@ -5,12 +5,16 @@
  */
 import { describe, expect, it } from 'vitest';
 
+import { sql } from 'drizzle-orm';
+
 import {
   addPathCourses,
   hasDatabase,
   insertCourse,
   insertOrganization,
   insertPath,
+  insertProfile,
+  joinPath,
   withRollback
 } from './fixtures/learner-db';
 
@@ -57,6 +61,35 @@ describe.skipIf(!hasDatabase)('learning-path course helpers (database)', () => {
       await expect(
         reorderLearningPathCourses(path.pathId, [last.courseId, deleted.courseId, first.courseId], tx)
       ).rejects.toThrow();
+    });
+  }, 30000);
+
+  it('queue a path for progress reconcile when one of its courses is deleted', async () => {
+    await withRollback(async (tx) => {
+      const { listMembersForProgressReconcile } = await import('@cio/db/queries/learning-path');
+
+      const orgId = await insertOrganization(tx, 'Org');
+      const ada = await insertProfile(tx, 'ada');
+      const bob = await insertProfile(tx, 'bob');
+      const untouchedPath = await insertPath(tx, orgId, 'Untouched');
+      const changedPath = await insertPath(tx, orgId, 'Changed');
+      const untouched = await insertCourse(tx, orgId, 'Untouched course', { lessons: 0 });
+      const deleted = await insertCourse(tx, orgId, 'Deleted course', { lessons: 0, status: 'DELETED' });
+      await tx.execute(sql`UPDATE course SET updated_at = '2026-01-01T00:00:00Z' WHERE id = ${untouched.courseId}`);
+      await tx.execute(sql`UPDATE course SET updated_at = '2026-10-10T00:00:00Z' WHERE id = ${deleted.courseId}`);
+      await addPathCourses(tx, untouchedPath.pathId, [untouched.courseId]);
+      await addPathCourses(tx, changedPath.pathId, [deleted.courseId]);
+      await joinPath(tx, untouchedPath.pathId, ada, '2026-01-01T00:00:00Z', { status: 'IN_PROGRESS' });
+      await joinPath(tx, changedPath.pathId, bob, '2026-01-01T00:00:00Z', { status: 'IN_PROGRESS' });
+
+      const members = await listMembersForProgressReconcile(
+        { activeSinceIso: '2099-01-01T00:00:00Z', contentChangedSinceIso: '2026-10-01T00:00:00Z' },
+        tx
+      );
+      const pathIds = members.map((member) => member.learningPathId);
+
+      expect(pathIds).toContain(changedPath.pathId);
+      expect(pathIds).not.toContain(untouchedPath.pathId);
     });
   }, 30000);
 });

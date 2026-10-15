@@ -16,6 +16,7 @@ import type {
 import * as schema from '../../schema';
 import type { TLearningPath, TNewLearningPath } from '../../types';
 import { toContainsPattern } from '@db/utils/like-pattern';
+import { pathCourseIsActiveSql } from './learning-path-course';
 
 export interface TLearningPathWithCounts extends TLearningPath {
   courseCount: number;
@@ -112,18 +113,16 @@ export interface TPaginatedLearningPaths {
 }
 
 /**
- * Course count for the outer `learning_path` row: links not soft-removed, to
- * courses not deleted, the same courses `getCourseIdsInPath` returns.
+ * Course count for the outer `learning_path` row: the courses
+ * `pathCourseIsActiveSql` keeps, the same ones `getCourseIdsInPath` returns.
  */
 export function pathCourseCountSql() {
   return sql<number>`(
     SELECT COUNT(*)::int
     FROM ${schema.learningPathCourse}
-    JOIN ${schema.course}
-      ON ${qualified(schema.course.id)} = ${qualified(schema.learningPathCourse.courseId)}
-      AND ${qualified(schema.course.status)} = 'ACTIVE'
+    JOIN ${schema.course} ON ${qualified(schema.course.id)} = ${qualified(schema.learningPathCourse.courseId)}
     WHERE ${qualified(schema.learningPathCourse.learningPathId)} = ${qualified(schema.learningPath.id)}
-      AND ${qualified(schema.learningPathCourse.removedAt)} IS NULL
+      AND ${pathCourseIsActiveSql()}
   )`;
 }
 

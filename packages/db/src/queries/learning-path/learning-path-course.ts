@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { INSTRUCTOR_ROLE_LABEL, ROLE } from '@cio/utils/constants';
@@ -24,6 +24,19 @@ export interface TLearningPathCourseDetail {
     role?: string;
     imgUrl?: string;
   } | null;
+}
+
+/**
+ * Whether a path's course link counts as part of the path: the link is not
+ * soft-removed and its course is not deleted. Every query that lists, counts,
+ * orders or completes a path's courses filters on this, so they cannot
+ * disagree. Needs `course` joined to `learning_path_course`; raw queries pass
+ * their aliases, query-builder ones use the table names.
+ */
+export function pathCourseIsActiveSql(
+  aliases: { link: SQL; course: SQL } = { link: sql`${schema.learningPathCourse}`, course: sql`${schema.course}` }
+): SQL<boolean> {
+  return sql<boolean>`(${aliases.link}.removed_at IS NULL AND ${aliases.course}.status = 'ACTIVE')`;
 }
 
 /**
@@ -72,13 +85,7 @@ export async function listLearningPathCourses(
       })
       .from(schema.learningPathCourse)
       .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
-      .where(
-        and(
-          eq(schema.learningPathCourse.learningPathId, learningPathId),
-          isNull(schema.learningPathCourse.removedAt),
-          eq(schema.course.status, 'ACTIVE')
-        )
-      )
+      .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
       .orderBy(asc(schema.learningPathCourse.order));
 
     const missingGroupIds = [
@@ -333,8 +340,8 @@ export async function reorderLearningPathCourses(
   dbClient: DbOrTxClient = db
 ): Promise<void> {
   const applyReorder = async (client: DbOrTxClient): Promise<void> => {
-    const existingRows = await client
-      .select({ courseId: schema.learningPathCourse.courseId, courseStatus: schema.course.status })
+    const liveLinks = await client
+      .select({ courseId: schema.learningPathCourse.courseId, isActive: pathCourseIsActiveSql() })
       .from(schema.learningPathCourse)
       .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
       .where(
@@ -342,9 +349,9 @@ export async function reorderLearningPathCourses(
       )
       .orderBy(asc(schema.learningPathCourse.order));
 
-    const existingIds = existingRows.filter((row) => row.courseStatus === 'ACTIVE').map((row) => row.courseId);
-    const deletedCourseIds = existingRows.filter((row) => row.courseStatus !== 'ACTIVE').map((row) => row.courseId);
-    const orderedCourseIds = [...courseIds, ...deletedCourseIds];
+    const existingIds = liveLinks.filter((link) => link.isActive).map((link) => link.courseId);
+    const inactiveCourseIds = liveLinks.filter((link) => !link.isActive).map((link) => link.courseId);
+    const orderedCourseIds = [...courseIds, ...inactiveCourseIds];
     const existingSet = new Set(existingIds);
     const submittedSet = new Set(courseIds);
 
@@ -394,13 +401,7 @@ export async function getCourseIdsInPath(learningPathId: string, dbClient: DbOrT
       .select({ courseId: schema.learningPathCourse.courseId })
       .from(schema.learningPathCourse)
       .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
-      .where(
-        and(
-          eq(schema.learningPathCourse.learningPathId, learningPathId),
-          isNull(schema.learningPathCourse.removedAt),
-          eq(schema.course.status, 'ACTIVE')
-        )
-      )
+      .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
       .orderBy(asc(schema.learningPathCourse.order));
 
     return rows.map((r) => r.courseId);
@@ -429,8 +430,7 @@ export async function isCourseInPath(
         and(
           eq(schema.learningPathCourse.learningPathId, learningPathId),
           eq(schema.learningPathCourse.courseId, courseId),
-          isNull(schema.learningPathCourse.removedAt),
-          eq(schema.course.status, 'ACTIVE')
+          pathCourseIsActiveSql()
         )
       )
       .limit(1);

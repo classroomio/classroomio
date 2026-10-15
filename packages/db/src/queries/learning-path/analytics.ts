@@ -7,6 +7,7 @@ import { startOfCurrentMonthUtc } from '@cio/utils/functions';
 import * as schema from '../../schema';
 import type { TLearningPathMemberWithProfile } from './learning-path-member';
 import { countPendingPathLearners } from './learning-path-member';
+import { pathCourseIsActiveSql } from './learning-path-course';
 import { submissionMeetsCompletionPolicySql } from '../course/progression';
 
 /** Lookback window for "active learner" and "stuck" activity checks. */
@@ -102,13 +103,7 @@ export async function getPathAnalyticsSummary(
         .select({ courseId: schema.learningPathCourse.courseId })
         .from(schema.learningPathCourse)
         .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
-        .where(
-          and(
-            eq(schema.learningPathCourse.learningPathId, learningPathId),
-            isNull(schema.learningPathCourse.removedAt),
-            eq(schema.course.status, 'ACTIVE')
-          )
-        )
+        .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
     ]);
 
     const enrolled = Number(enrolledRows[0]?.count ?? 0);
@@ -254,13 +249,7 @@ export async function getPathCourseFunnelWithDropoff(
           isNull(schema.learningPathMember.removedAt)
         )
       )
-      .where(
-        and(
-          eq(schema.learningPathCourse.learningPathId, learningPathId),
-          isNull(schema.learningPathCourse.removedAt),
-          eq(schema.course.status, 'ACTIVE')
-        )
-      )
+      .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
       .groupBy(
         schema.learningPathCourse.id,
         schema.learningPathCourse.courseId,
@@ -439,8 +428,7 @@ export async function getStuckItems(
           AND lpmc.status = 'IN_PROGRESS'
           AND lpmc.started_at <= ${thresholdDate.toISOString()}
         JOIN learning_path_course lpc ON lpc.id = lpmc.learning_path_course_id
-          AND lpc.removed_at IS NULL
-        JOIN course c ON c.id = lpc.course_id
+        JOIN course c ON c.id = lpc.course_id AND ${pathCourseIsActiveSql({ link: sql`lpc`, course: sql`c` })}
         WHERE lpm.learning_path_id = ${learningPathId}
           AND lpm.removed_at IS NULL
           AND lpm.role_id = ${ROLE.STUDENT}

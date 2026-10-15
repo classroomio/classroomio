@@ -13,6 +13,7 @@ import {
   learnerCourseProgressCtes
 } from '../course/learner-progress';
 import { isUpcomingSessionLessonSql } from '../course/session';
+import { pathCourseIsActiveSql } from '../learning-path/learning-path-course';
 import { toContainsPattern } from '@db/utils/like-pattern';
 
 export type TEnrolledKind = 'course' | 'learning_path';
@@ -121,9 +122,8 @@ function enrolledFeedSql(orgId: string, profileId: string): SQL {
     path_courses AS (
       SELECT mp.learning_path_id, lpc.course_id, c.title
       FROM member_paths mp
-      JOIN ${schema.learningPathCourse} lpc
-        ON lpc.learning_path_id = mp.learning_path_id AND lpc.removed_at IS NULL
-      JOIN ${schema.course} c ON c.id = lpc.course_id AND c.status = 'ACTIVE'
+      JOIN ${schema.learningPathCourse} lpc ON lpc.learning_path_id = mp.learning_path_id
+      JOIN ${schema.course} c ON c.id = lpc.course_id AND ${pathCourseIsActiveSql({ link: sql`lpc`, course: sql`c` })}
     ),
     granted_courses AS (
       SELECT ceg.course_id, MIN(ceg.granted_at) AS enrolled_at

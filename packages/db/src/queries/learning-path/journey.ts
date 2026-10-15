@@ -10,6 +10,9 @@ import {
   latestComplianceCte,
   learnerCourseProgressCtes
 } from '../course/learner-progress';
+import { pathCourseIsActiveSql } from './learning-path-course';
+
+const PATH_COURSE_ALIASES = { link: sql`lpc`, course: sql`c` };
 
 export type TPathJourneyCourseStatus = 'LOCKED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
@@ -97,8 +100,8 @@ export async function getPathJourney(
       WITH tracked_courses AS (
         SELECT lpc.course_id, lpc."order", lpc.added_at
         FROM ${schema.learningPathCourse} lpc
-        JOIN ${schema.course} c ON c.id = lpc.course_id AND c.status = 'ACTIVE'
-        WHERE lpc.learning_path_id = ${pathId} AND lpc.removed_at IS NULL
+        JOIN ${schema.course} c ON c.id = lpc.course_id
+        WHERE lpc.learning_path_id = ${pathId} AND ${pathCourseIsActiveSql(PATH_COURSE_ALIASES)}
       ),
       ${learnerCourseProgressCtes(profileId)},
       ${latestComplianceCte(profileId)},
@@ -246,9 +249,8 @@ export async function getLearnerPathSummaries(
       tracked_courses AS (
         SELECT DISTINCT lpc.course_id
         FROM member_paths mp
-        JOIN ${schema.learningPathCourse} lpc
-          ON lpc.learning_path_id = mp.learning_path_id AND lpc.removed_at IS NULL
-        JOIN ${schema.course} c ON c.id = lpc.course_id AND c.status = 'ACTIVE'
+        JOIN ${schema.learningPathCourse} lpc ON lpc.learning_path_id = mp.learning_path_id
+        JOIN ${schema.course} c ON c.id = lpc.course_id AND ${pathCourseIsActiveSql(PATH_COURSE_ALIASES)}
       ),
       ${learnerCourseProgressCtes(input.profileId)},
       ${latestComplianceCte(input.profileId)}
@@ -262,9 +264,10 @@ export async function getLearnerPathSummaries(
           exercisesTotal: sql`cp.exercises_total`
         })}) AS is_complete
       FROM member_paths mp
-      LEFT JOIN ${schema.learningPathCourse} lpc
-        ON lpc.learning_path_id = mp.learning_path_id AND lpc.removed_at IS NULL
-      LEFT JOIN ${schema.course} c ON c.id = lpc.course_id AND c.status = 'ACTIVE'
+      LEFT JOIN (
+        ${schema.learningPathCourse} lpc
+        JOIN ${schema.course} c ON c.id = lpc.course_id AND ${pathCourseIsActiveSql(PATH_COURSE_ALIASES)}
+      ) ON lpc.learning_path_id = mp.learning_path_id
       LEFT JOIN course_progress cp ON cp.course_id = lpc.course_id
       LEFT JOIN latest_compliance lc ON lc.course_id = lpc.course_id
       LEFT JOIN ${schema.groupmember} gm ON gm.group_id = c.group_id AND gm.profile_id = ${input.profileId}

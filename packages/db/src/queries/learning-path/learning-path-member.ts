@@ -14,6 +14,7 @@ import type {
 } from '../../types';
 import { TPathMembersQuery } from '@cio/utils';
 import { toContainsPattern } from '@db/utils/like-pattern';
+import { pathCourseIsActiveSql } from './learning-path-course';
 
 export interface TLearningPathMemberWithProfile extends TLearningPathMember {
   fullName?: string | null;
@@ -508,8 +509,7 @@ export async function getPathMemberDetail(
         and(
           eq(schema.learningPathMemberCourse.learningPathMemberId, member.id),
           eq(schema.learningPathCourse.learningPathId, learningPathId),
-          isNull(schema.learningPathCourse.removedAt),
-          eq(schema.course.status, 'ACTIVE')
+          pathCourseIsActiveSql()
         )
       )
       .orderBy(schema.learningPathCourse.order);
@@ -819,8 +819,10 @@ export interface TProgressReconcileMember {
 /**
  * Unfinished students whose learning-path progress cache may have drifted
  * without an event: those active or enrolled since `activeSinceIso`, and every
- * unfinished student of a path whose course lessons or exercises were created
- * or edited since `contentChangedSinceIso`. Completed members are left alone so
+ * unfinished student of a path whose courses changed since
+ * `contentChangedSinceIso`: a course edited or deleted (deleting one can
+ * complete the path), or a lesson or exercise in an active course created or
+ * edited. Completed members are left alone so
  * a later content edit never takes a finished path away.
  */
 export async function listMembersForProgressReconcile(
@@ -841,18 +843,25 @@ export async function listMembersForProgressReconcile(
           OR EXISTS (
             SELECT 1
             FROM ${schema.learningPathCourse} lpc
+            JOIN ${schema.course} c ON c.id = lpc.course_id
             WHERE lpc.learning_path_id = lpm.learning_path_id
               AND lpc.removed_at IS NULL
               AND (
-                EXISTS (
-                  SELECT 1 FROM ${schema.lesson} l
-                  WHERE l.course_id = lpc.course_id
-                    AND GREATEST(l.created_at, l.updated_at) >= ${contentChangedSinceIso}
-                )
-                OR EXISTS (
-                  SELECT 1 FROM ${schema.exercise} ex
-                  WHERE ex.course_id = lpc.course_id
-                    AND GREATEST(ex.created_at, ex.updated_at) >= ${contentChangedSinceIso}
+                c.updated_at >= ${contentChangedSinceIso}
+                OR (
+                  ${pathCourseIsActiveSql({ link: sql`lpc`, course: sql`c` })}
+                  AND (
+                    EXISTS (
+                      SELECT 1 FROM ${schema.lesson} l
+                      WHERE l.course_id = lpc.course_id
+                        AND GREATEST(l.created_at, l.updated_at) >= ${contentChangedSinceIso}
+                    )
+                    OR EXISTS (
+                      SELECT 1 FROM ${schema.exercise} ex
+                      WHERE ex.course_id = lpc.course_id
+                        AND GREATEST(ex.created_at, ex.updated_at) >= ${contentChangedSinceIso}
+                    )
+                  )
                 )
               )
           )
