@@ -4335,6 +4335,11 @@
       "permission": {
         "title": "Você não tem permissão para ver esta página",
         "description": "Somente administradores da organização podem visualizar e gerenciar a equipe. Entre em contato com um administrador se precisar de acesso."
+      },
+      "invite": {
+        "confirm_title": "Convidar alunos para a equipe?",
+        "confirm_description": "Estas pessoas já são alunos desta organização: {emails}. Deseja convidá-las como {role}? A função delas só mudará após aceitarem o convite.",
+        "existing": "Estas pessoas já fazem parte da equipe: {members}. Use o seletor de função em Membros da equipe para alterar a função delas."
       }
     },
     "ai_credits": {

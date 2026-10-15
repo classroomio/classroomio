@@ -852,6 +852,11 @@
       "permission": {
         "title": "Non hai il permesso di visualizzare questa pagina",
         "description": "Solo gli amministratori dell’organizzazione possono visualizzare e gestire il team. Contatta un amministratore se hai bisogno di accedere."
+      },
+      "invite": {
+        "confirm_title": "Invitare gli studenti nel team?",
+        "confirm_description": "Queste persone sono già studenti di questa organizzazione: {emails}. Vuoi invitarle come {role}? Il loro ruolo cambierà solo dopo aver accettato l’invito.",
+        "existing": "Queste persone fanno già parte del team: {members}. Usa il selettore del ruolo in Membri del team per modificare il loro ruolo."
       }
     },
     "auth": {

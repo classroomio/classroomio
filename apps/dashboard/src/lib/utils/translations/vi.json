@@ -4335,6 +4335,11 @@
       "permission": {
         "title": "Bạn không có quyền xem trang này",
         "description": "Chỉ quản trị viên tổ chức mới có thể xem và quản lý nhóm. Hãy liên hệ với quản trị viên nếu bạn cần quyền truy cập."
+      },
+      "invite": {
+        "confirm_title": "Mời học viên vào nhóm?",
+        "confirm_description": "Những người này đã là học viên trong tổ chức: {emails}. Bạn có muốn mời họ với vai trò {role} không? Vai trò của họ chỉ thay đổi sau khi họ chấp nhận lời mời.",
+        "existing": "Những người này đã có trong nhóm: {members}. Hãy dùng bộ chọn vai trò trong danh sách thành viên nhóm để thay đổi vai trò của họ."
       }
     },
     "ai_credits": {

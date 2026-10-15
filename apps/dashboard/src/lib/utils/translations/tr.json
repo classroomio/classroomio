@@ -767,6 +767,11 @@
       "permission": {
         "title": "Bu sayfayı görüntüleme izniniz yok",
         "description": "Yalnızca kuruluş yöneticileri ekibi görüntüleyebilir ve yönetebilir. Erişime ihtiyacınız varsa bir yöneticiyle iletişime geçin."
+      },
+      "invite": {
+        "confirm_title": "Öğrenciler ekibe davet edilsin mi?",
+        "confirm_description": "Bu kişiler zaten bu kuruluşta öğrenci: {emails}. Onları {role} rolüyle davet etmek istiyor musunuz? Rolleri yalnızca daveti kabul ettiklerinde değişir.",
+        "existing": "Bu kişiler zaten ekipte: {members}. Rollerini değiştirmek için Ekip üyeleri bölümündeki rol seçiciyi kullanın."
       }
     },
     "auth": {

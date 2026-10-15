@@ -205,16 +205,17 @@ export const organizationRouter = new Hono()
     try {
       const orgId = c.req.header('cio-org-id')!;
       const user = c.get('user')!;
-      const { emails, roleId } = c.req.valid('json');
+      const { emails, roleId, confirmedStudentEmails } = c.req.valid('json');
 
-      const members = await inviteTeamMembers(orgId, emails, roleId, user.id);
+      const result = await inviteTeamMembers(orgId, emails, roleId, user.id, confirmedStudentEmails);
+      const status = result.requiresConfirmation || result.existingTeamMembers.length > 0 ? 200 : 201;
 
       return c.json(
         {
           success: true,
-          data: members
+          data: result
         },
-        201
+        status
       );
     } catch (error) {
       return handleError(c, error, 'Failed to invite team members');

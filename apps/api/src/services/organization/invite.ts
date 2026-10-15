@@ -1,6 +1,5 @@
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import {
-  checkEmailsExistInOrg,
   claimPendingOrganizationInvite,
   createOrganizationInvite,
   createOrganizationInviteAudit,
@@ -9,6 +8,7 @@ import {
   createLinkInvite,
   getActivePendingOrgInviteForEmail,
   getOrganizationById,
+  getOrganizationMembersByNormalizedEmails,
   getOrganizationInviteByTokenHash,
   lockOrganizationForUpdate,
   getOrgLinkInvite,
@@ -276,11 +276,21 @@ async function enrollOrganizationInviteUser(
   return enrolledCount;
 }
 
-/**
- * Creates secure organization role invites from org settings.
- * Invites are role-aware and tokenized; legacy payload links are not used.
- */
-export async function inviteTeamMembers(orgId: string, emails: string[], roleId: number, invitedByProfileId: string) {
+type TeamInviteResult = {
+  requiresConfirmation: boolean;
+  studentEmails: string[];
+  existingTeamMembers: { email: string; roleId: number }[];
+  queuedCount: number;
+  failedEmails: string[];
+};
+
+export async function inviteTeamMembers(
+  orgId: string,
+  emails: string[],
+  roleId: number,
+  invitedByProfileId: string,
+  confirmedStudentEmails: string[] = []
+): Promise<TeamInviteResult> {
   if (roleId !== ROLE.ADMIN && roleId !== ROLE.TUTOR) {
     throw new AppError('Invalid organization role for invite', ErrorCodes.VALIDATION_ERROR, 400, 'roleId');
   }
@@ -291,22 +301,29 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
   }
 
   const normalizedEmails = normalizeEmails(emails);
-  const existingEmails = await checkEmailsExistInOrg(orgId, normalizedEmails);
-  const emailsToInvite = normalizedEmails.filter((email) => !existingEmails.includes(email));
+  const existingMembers = await getOrganizationMembersByNormalizedEmails(orgId, normalizedEmails);
+  const membersByEmail = new Map(existingMembers.map((member) => [member.normalizedEmail, member]));
+  const studentEmails = normalizedEmails.filter((email) => membersByEmail.get(email)?.roleId === ROLE.STUDENT);
+  const existingTeamMembers = normalizedEmails.flatMap((email) => {
+    const member = membersByEmail.get(email);
+    if (!member || member.roleId === ROLE.STUDENT) return [];
 
-  if (emailsToInvite.length === 0) {
-    return [];
+    return [{ email, roleId: member.roleId }];
+  });
+  const confirmedStudents = new Set(normalizeEmails(confirmedStudentEmails));
+  const requiresConfirmation = studentEmails.some((email) => !confirmedStudents.has(email));
+
+  if (existingTeamMembers.length > 0 || requiresConfirmation) {
+    return { requiresConfirmation, studentEmails, existingTeamMembers, queuedCount: 0, failedEmails: [] };
   }
 
-  const members = await createOrganizationMembers(
-    emailsToInvite.map((email) => ({
-      organizationId: orgId,
-      email,
-      roleId,
-      verified: false
-    }))
-  );
+  const newEmails = normalizedEmails.filter((email) => !membersByEmail.has(email));
+  if (newEmails.length > 0) {
+    const newMembers = newEmails.map((email) => ({ organizationId: orgId, email, roleId, verified: false }));
+    await createOrganizationMembers(newMembers);
+  }
 
+  const emailsToInvite = normalizedEmails;
   const revokedInvites = await revokeActiveOrganizationInvitesByEmails(orgId, emailsToInvite, invitedByProfileId);
   await Promise.all(
     revokedInvites.map((invite) =>
@@ -322,11 +339,19 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
   const roleName = getRoleLabel(roleId);
   const inviterProfile = invitedByProfileId ? await getProfileById(invitedByProfileId) : null;
   const inviterName = inviterProfile?.fullname?.trim() || undefined;
+  const expiryLabel = getExpiryLabel(expiresAt);
+  const branding = buildEmailBranding(organization);
+  const from = buildEmailFromName(`${organization.name} (via ClassroomIO.com)`);
+  const subject = sanitizeEmailSubject(`You have been invited to join ${organization.name} on ClassroomIO`);
+  const failedEmails = new Set<string>();
+  let queuedCount = 0;
 
   for (const email of emailsToInvite) {
+    let emailQueued = false;
     try {
       const token = generateToken();
       const tokenHash = hashToken(token);
+      const previousRoleId = membersByEmail.get(email)?.roleId ?? null;
 
       const invite = await createOrganizationInvite({
         organizationId: orgId,
@@ -337,7 +362,8 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
         expiresAt,
         isRevoked: false,
         metadata: {
-          source: 'ORG_SETTINGS_TEAM_INVITE'
+          source: 'ORG_SETTINGS_TEAM_INVITE',
+          previousRoleId
         }
       });
 
@@ -346,6 +372,7 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
         targetEmail: email,
         metadata: {
           roleId,
+          previousRoleId,
           roleName,
           expiresAt
         }
@@ -362,14 +389,17 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
             orgSiteName: organization.siteName,
             roleName,
             inviterName,
-            expiresAt: getExpiryLabel(expiresAt),
+            expiresAt: expiryLabel,
             inviteLink,
-            branding: buildEmailBranding(organization)
+            branding
           },
-          from: buildEmailFromName(`${organization.name} (via ClassroomIO.com)`),
-          subject: sanitizeEmailSubject(`You have been invited to join ${organization.name} on ClassroomIO`),
+          from,
+          subject,
           idempotencyKey: `org-invite-teacher:${invite.id}`
         });
+
+        emailQueued = true;
+        queuedCount += 1;
 
         // Record EMAIL_SENT optimistically — the worker retries up to 5 times,
         // and a final failure flips the email_delivery row to `failed` for
@@ -380,6 +410,12 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
           targetEmail: email
         });
       } catch (emailError) {
+        if (emailQueued) {
+          console.error(`Failed to audit queued org invite for ${email}:`, emailError);
+          continue;
+        }
+
+        failedEmails.add(email);
         const message = emailError instanceof Error ? emailError.message : 'Unknown email error';
 
         await recordOrganizationInviteAudit(invite.id, orgId, 'EMAIL_FAILED', {
@@ -390,10 +426,18 @@ export async function inviteTeamMembers(orgId: string, emails: string[], roleId:
       }
     } catch (error) {
       console.error(`Failed to create org invite for ${email}:`, error);
+      if (!emailQueued) failedEmails.add(email);
     }
   }
 
-  return members;
+  const failedEmailList = [...failedEmails];
+  return {
+    requiresConfirmation: false,
+    studentEmails,
+    existingTeamMembers,
+    queuedCount,
+    failedEmails: failedEmailList
+  };
 }
 
 /**

@@ -223,7 +223,8 @@ export const ZTestStudentEmailTemplate = z.object({
 
 export const ZInviteTeamMembers = z.object({
   emails: z.array(z.string().email()).min(1).max(50),
-  roleId: z.number().int().positive()
+  roleId: z.number().int().positive(),
+  confirmedStudentEmails: z.array(z.string().email()).max(50).default([])
 });
 
 export type TInviteTeamMembers = z.infer<typeof ZInviteTeamMembers>;
