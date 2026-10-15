@@ -10,7 +10,7 @@ import {
   latestComplianceCte,
   learnerCourseProgressCtes
 } from '../course/learner-progress';
-import { pathCourseIsActiveSql } from './learning-path-course';
+import { pathCourseIsActiveSql, pathCoursePositionSql } from './learning-path-course';
 
 const PATH_COURSE_ALIASES = { link: sql`lpc`, course: sql`c` };
 
@@ -255,7 +255,7 @@ export async function getLearnerPathSummaries(
       ${learnerCourseProgressCtes(input.profileId)},
       ${latestComplianceCte(input.profileId)}
       SELECT mp.learning_path_id AS path_id, mp.public_id, mp.path_name, mp.member_status,
-        c.id AS course_id, c.title AS course_title, lpc."order" AS course_order,
+        c.id AS course_id, c.title AS course_title, ${pathCoursePositionSql(sql`lpc`)} AS course_order,
         (${courseRecordedIsCompleteSql({
           courseType: sql`c.type::text`,
           memberCompletedAt: sql`gm.completed_at`,

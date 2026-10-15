@@ -14,7 +14,7 @@ import type {
 } from '../../types';
 import { TPathMembersQuery } from '@cio/utils';
 import { toContainsPattern } from '@db/utils/like-pattern';
-import { pathCourseIsActiveSql } from './learning-path-course';
+import { pathCourseIsActiveSql, pathCoursePositionSql } from './learning-path-course';
 
 export interface TLearningPathMemberWithProfile extends TLearningPathMember {
   fullName?: string | null;
@@ -387,7 +387,7 @@ export async function listLearningPathMembers(
           avatarUrl: schema.profile.avatarUrl,
           profileEmail: schema.profile.email,
           currentCourseTitle: schema.course.title,
-          currentCourseOrder: schema.learningPathCourse.order
+          currentCourseOrder: pathCoursePositionSql()
         })
         .from(schema.learningPathMember)
         .leftJoin(schema.profile, eq(schema.learningPathMember.profileId, schema.profile.id))
@@ -399,7 +399,7 @@ export async function listLearningPathMembers(
             isNull(schema.learningPathCourse.removedAt)
           )
         )
-        .leftJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
+        .leftJoin(schema.course, and(eq(schema.learningPathCourse.courseId, schema.course.id), pathCourseIsActiveSql()))
         .where(and(...whereConditions))
         .orderBy(
           asc(schema.learningPathMember.roleId),
@@ -459,7 +459,7 @@ export async function getPathMemberDetail(
         avatarUrl: schema.profile.avatarUrl,
         profileEmail: schema.profile.email,
         currentCourseTitle: schema.course.title,
-        currentCourseOrder: schema.learningPathCourse.order
+        currentCourseOrder: pathCoursePositionSql()
       })
       .from(schema.learningPathMember)
       .leftJoin(schema.profile, eq(schema.learningPathMember.profileId, schema.profile.id))
@@ -471,7 +471,7 @@ export async function getPathMemberDetail(
           isNull(schema.learningPathCourse.removedAt)
         )
       )
-      .leftJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
+      .leftJoin(schema.course, and(eq(schema.learningPathCourse.courseId, schema.course.id), pathCourseIsActiveSql()))
       .where(
         and(
           eq(schema.learningPathMember.id, member.id),
@@ -488,7 +488,7 @@ export async function getPathMemberDetail(
         learningPathCourseId: schema.learningPathCourse.id,
         courseId: schema.learningPathCourse.courseId,
         title: schema.course.title,
-        order: schema.learningPathCourse.order,
+        order: sql<number>`${pathCoursePositionSql()}`,
         status: schema.learningPathMemberCourse.status,
         progressPercent: schema.learningPathMemberCourse.progressPercent,
         lessonsCompleted: schema.learningPathMemberCourse.lessonsCompleted,

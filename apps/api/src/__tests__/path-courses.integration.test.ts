@@ -92,4 +92,49 @@ describe.skipIf(!hasDatabase)('learning-path course helpers (database)', () => {
       expect(pathIds).not.toContain(untouchedPath.pathId);
     });
   }, 30000);
+
+  it('number courses by position among active ones, skipping a deleted course', async () => {
+    await withRollback(async (tx) => {
+      const { getPathCourseFunnelStats, listLearningPathCourses, listLearningPathMembers } = await import(
+        '@cio/db/queries/learning-path'
+      );
+
+      const orgId = await insertOrganization(tx, 'Org');
+      const ada = await insertProfile(tx, 'ada');
+      const bob = await insertProfile(tx, 'bob');
+      const path = await insertPath(tx, orgId, 'Data Science');
+      const first = await insertCourse(tx, orgId, 'First', { lessons: 1 });
+      const deleted = await insertCourse(tx, orgId, 'Deleted', { lessons: 1, status: 'DELETED' });
+      const last = await insertCourse(tx, orgId, 'Last', { lessons: 1 });
+      await addPathCourses(tx, path.pathId, [first.courseId, deleted.courseId, last.courseId]);
+      const adaMember = await joinPath(tx, path.pathId, ada, '2026-01-01T00:00:00Z', { status: 'IN_PROGRESS' });
+      const bobMember = await joinPath(tx, path.pathId, bob, '2026-01-02T00:00:00Z', { status: 'IN_PROGRESS' });
+      await tx.execute(
+        sql`UPDATE learning_path_member SET current_course_id = ${last.courseId} WHERE id = ${adaMember}`
+      );
+      await tx.execute(
+        sql`UPDATE learning_path_member SET current_course_id = ${deleted.courseId} WHERE id = ${bobMember}`
+      );
+
+      const courses = await listLearningPathCourses(path.pathId, tx);
+      const funnel = await getPathCourseFunnelStats(path.pathId, tx);
+      const members = await listLearningPathMembers(path.pathId, { page: 1, limit: 20 }, tx);
+      const current = (memberId: string) => {
+        const member = members.data.find((row) => row.id === memberId);
+
+        return [member?.currentCourseTitle ?? null, member?.currentCourseOrder ?? null];
+      };
+
+      expect(courses.map((course) => [course.title, course.order])).toEqual([
+        ['First', 1],
+        ['Last', 2]
+      ]);
+      expect(funnel.map((course) => [course.title, course.order])).toEqual([
+        ['First', 1],
+        ['Last', 2]
+      ]);
+      expect(current(adaMember)).toEqual(['Last', 2]);
+      expect(current(bobMember)).toEqual([null, null]);
+    });
+  }, 30000);
 });

@@ -5,7 +5,7 @@ import { db, type DbOrTxClient } from '@db/drizzle';
 import * as schema from '../../schema';
 import { complianceCycleIsCompleteSql, courseIsCompleteSql } from '../course/learner-progress';
 import { isExerciseCompletedSql } from '../course/progression';
-import { pathCourseIsActiveSql } from './learning-path-course';
+import { pathCourseIsActiveSql, pathCoursePositionSql } from './learning-path-course';
 
 export interface TCourseCompletionStats {
   totalLessons: number;
@@ -119,7 +119,7 @@ export async function getPathCourseFunnelStats(
         learningPathCourseId: schema.learningPathCourse.id,
         courseId: schema.learningPathCourse.courseId,
         title: schema.course.title,
-        order: schema.learningPathCourse.order,
+        order: sql<number>`${pathCoursePositionSql()}`,
         completedCount: count(schema.learningPathMember.id)
       })
       .from(schema.learningPathCourse)
