@@ -3490,6 +3490,7 @@
         "last_login_at": "Last Login At",
         "enrolled_at": "Enrolled At",
         "certificate_earned": "Certificate earned",
+        "completed": "Completed",
         "not_started": "Not started",
         "role": "Role",
         "action": "Action",

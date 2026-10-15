@@ -33,11 +33,11 @@ describe('GET /organization/enrolled', () => {
     mocks.getUserEnrolled.mockResolvedValue({
       items: [{ kind: 'learning_path', data: { id: 'path-1' } }],
       total: 25,
-      counts: { inProgress: 20, completed: 5 }
+      counts: { notStarted: 5, inProgress: 20 }
     });
   });
 
-  it('defaults to the first page of 12 across both tabs and returns the envelope', async () => {
+  it('defaults to the first page of 12 and returns the envelope', async () => {
     const response = await requestEnrolled();
     const body = await response.json();
 
@@ -45,36 +45,43 @@ describe('GET /organization/enrolled', () => {
     expect(mocks.getUserEnrolled).toHaveBeenCalledWith('org-1', 'profile-1', {
       page: 1,
       limit: 12,
-      status: 'all'
+      status: 'all',
+      kind: 'all'
     });
     expect(body).toEqual({
       success: true,
       data: [{ kind: 'learning_path', data: { id: 'path-1' } }],
       pagination: { page: 1, limit: 12, total: 25, totalPages: 3 },
-      counts: { inProgress: 20, completed: 5 }
+      counts: { notStarted: 5, inProgress: 20 }
     });
   });
 
-  it('passes page, limit, status and a trimmed search through', async () => {
-    const response = await requestEnrolled('?page=3&limit=10&status=completed&search=%20excel%20');
+  it('passes page, limit, status, kind and a trimmed search through', async () => {
+    const response = await requestEnrolled('?page=3&limit=10&status=in_progress&kind=course&search=%20excel%20');
     const body = await response.json();
 
     expect(mocks.getUserEnrolled).toHaveBeenCalledWith('org-1', 'profile-1', {
       page: 3,
       limit: 10,
-      status: 'completed',
+      status: 'in_progress',
+      kind: 'course',
       search: 'excel'
     });
     expect(body.pagination).toEqual({ page: 3, limit: 10, total: 25, totalPages: 3 });
   });
 
-  it.each(['?limit=51', '?limit=0', '?page=0', '?page=abc', '?status=archived', `?search=${'x'.repeat(201)}`])(
-    'rejects %s',
-    async (query) => {
-      const response = await requestEnrolled(query);
+  it.each([
+    '?limit=51',
+    '?limit=0',
+    '?page=0',
+    '?page=abc',
+    '?status=archived',
+    '?kind=cohort',
+    `?search=${'x'.repeat(201)}`
+  ])('rejects %s', async (query) => {
+    const response = await requestEnrolled(query);
 
-      expect(response.status).toBe(400);
-      expect(mocks.getUserEnrolled).not.toHaveBeenCalled();
-    }
-  );
+    expect(response.status).toBe(400);
+    expect(mocks.getUserEnrolled).not.toHaveBeenCalled();
+  });
 });

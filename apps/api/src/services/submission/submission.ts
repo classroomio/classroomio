@@ -44,7 +44,7 @@ import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
-import { evaluateCourseCertification } from '@api/services/course/completion';
+import { evaluateAndRecordCourseCompletion } from '@api/services/course/completion';
 import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
 
@@ -61,27 +61,43 @@ async function triggerCertificationIfExerciseComplete(
 
   const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
 
-  void syncCourseProgressInLearningPaths(courseId, profile.id).catch((syncError) => {
-    console.error('Failed to sync learning path progress after exercise submission:', syncError);
-  });
+  if (!isComplete) {
+    void syncCourseProgressInLearningPaths(courseId, profile.id).catch((syncError) => {
+      console.error('Failed to sync learning path progress after exercise submission:', syncError);
+    });
 
-  if (!isComplete) return;
+    return;
+  }
 
-  void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
-    console.error('Failed to evaluate course certification after exercise submission:', certError);
-  });
+  // Record completion before syncing paths: a course counts as done on a path
+  // by its recorded completion, so the sync must see the write above.
+  void evaluateAndRecordCourseCompletion(courseId, profile.id)
+    .catch((certError) => {
+      console.error('Failed to evaluate course certification after exercise submission:', certError);
+    })
+    .finally(() => {
+      void syncCourseProgressInLearningPaths(courseId, profile.id).catch((syncError) => {
+        console.error('Failed to sync learning path progress after exercise submission:', syncError);
+      });
+    });
 }
 
 /**
  * Grading or deleting a submission can complete or reopen a course without a
  * learner action, so re-derive the learning-path cache without recording
- * learner activity. Fire-and-forget: the submission change is already saved.
+ * learner activity. Evaluates certification first: a grade can satisfy the
+ * final-exercise rule, and a course counts as done on a path by its recorded
+ * completion, so the sync must see the write. Fire-and-forget: the
+ * submission change is already saved.
  */
 function syncLearningPathsAfterSubmissionChange(courseId: string, groupMemberId: string): void {
   void (async () => {
     const profile = await getProfileByGroupMemberId(groupMemberId);
     if (!profile?.id) return;
 
+    await evaluateAndRecordCourseCompletion(courseId, profile.id).catch((certError) => {
+      console.error('Failed to evaluate course certification after a submission change:', certError);
+    });
     await syncCourseProgressInLearningPaths(courseId, profile.id, undefined, { recordActivity: false });
   })().catch((syncError) => {
     console.error('Failed to sync learning path progress after a submission change:', syncError);

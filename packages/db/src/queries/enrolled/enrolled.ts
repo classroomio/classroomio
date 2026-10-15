@@ -1,17 +1,25 @@
 import * as schema from '@db/schema';
 
-import { and, asc, desc, eq, ilike, not, sql, type SQL } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, ilike, lte, not, sql, type SQL } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TStudentCourse } from '../course/course';
-import { learnerCourseProgressCtes } from '../course/learner-progress';
+import {
+  complianceCycleIsCompleteSql,
+  courseIsCompleteSql,
+  courseRecordedIsCompleteSql,
+  latestComplianceCte,
+  learnerCourseProgressCtes
+} from '../course/learner-progress';
 import { isUpcomingSessionLessonSql } from '../course/session';
 import { toContainsPattern } from '@db/utils/like-pattern';
 
 export type TEnrolledKind = 'course' | 'learning_path';
 
-export type TEnrolledStatus = 'all' | 'in_progress' | 'completed';
+export type TEnrolledKindFilter = 'all' | TEnrolledKind;
+
+export type TEnrolledStatus = 'all' | 'not_started' | 'in_progress';
 
 /**
  * Progress shared by both row kinds. Items are a course's lessons and
@@ -22,7 +30,7 @@ export interface TEnrolledStats {
   progress: number;
   completedItems: number;
   totalItems: number;
-  /** Drives the Complete tab. Courses follow `isStudentCourseComplete`, paths `evaluatePathCompletion`. */
+  /** Recorded completion (see `feedRowIsCompleteSql`). Completed rows leave the feed for `getEarnedCertificates`. */
   isComplete: boolean;
   /** The learner's latest lesson completion change or submission. Null before either. */
   lastProgressAt: string | null;
@@ -46,10 +54,14 @@ export type TEnrolledItem = { kind: 'course'; data: TEnrolledCourse } | { kind: 
 
 export interface TEnrolledPage {
   items: TEnrolledItem[];
-  /** Rows matching the search and status filters, for pagination. */
+  /** Rows matching the search, status and kind filters, for pagination. */
   total: number;
-  /** Rows matching the search filter, split by completion, for the tab labels. */
-  counts: { inProgress: number; completed: number };
+  /**
+   * Tab totals under the search and kind filters: not-started and
+   * in-progress rows. Completed rows are never returned, so they are
+   * not counted.
+   */
+  counts: { notStarted: number; inProgress: number };
 }
 
 interface GetEnrolledOptions {
@@ -58,8 +70,31 @@ interface GetEnrolledOptions {
   limit: number;
   page: number;
   status?: TEnrolledStatus;
+  kind?: TEnrolledKindFilter;
   /** Case-insensitive match on course titles, and on path names or the titles of their courses. */
   search?: string;
+}
+
+/**
+ * Whether a feed row is complete. Uses the completion that was saved, not
+ * live progress, so finished work leaves My Learning for the Certificates
+ * page. The one item on both is a compliance course whose certificate
+ * lapsed: due again here, listed as expired there. A path is complete when its member status is
+ * `COMPLETED`; a course follows `courseIsCompleteSql`. Reads the row's
+ * `kind`, `member_status`, `course_type`, `completed_at` and
+ * `compliance_complete`.
+ */
+function feedRowIsCompleteSql(): SQL {
+  const courseIsComplete = courseIsCompleteSql({
+    courseType: sql`course_type`,
+    memberCompletedAt: sql`completed_at`,
+    complianceCycleComplete: sql`compliance_complete`
+  });
+
+  return sql`CASE
+    WHEN kind = 'learning_path' THEN member_status = 'COMPLETED'
+    ELSE ${courseIsComplete}
+  END`;
 }
 
 /**
@@ -67,12 +102,14 @@ interface GetEnrolledOptions {
  * course they take on their own (a live grant, outside every path they are
  * in, and not `enrollOnlyInLearningPath`). Progress is read at query time from
  * `lesson_completion` and `submission`, so joining or leaving a path moves the
- * same completed work between the path row and the course row.
+ * same completed work between the path row and the course row. A path's
+ * completed-courses count is what completion evaluation recorded, like the
+ * journey and the completion cache.
  */
 function enrolledFeedSql(orgId: string, profileId: string): SQL {
   return sql`
     WITH member_paths AS (
-      SELECT lpm.learning_path_id, lp.name, lpm.enrolled_at, lpm.completed_at
+      SELECT lpm.learning_path_id, lp.name, lpm.enrolled_at, lpm.completed_at, lpm.status AS member_status
       FROM ${schema.learningPathMember} lpm
       JOIN ${schema.learningPath} lp ON lp.id = lpm.learning_path_id
       WHERE lpm.profile_id = ${profileId}
@@ -105,13 +142,7 @@ function enrolledFeedSql(orgId: string, profileId: string): SQL {
       SELECT course_id FROM granted_courses
     ),
     ${learnerCourseProgressCtes(profileId)},
-    latest_compliance AS (
-      -- The learner's current compliance cycle per course, read once by profile.
-      SELECT DISTINCT ON (ccr.course_id) ccr.course_id, ccr.status, ccr.cycle_number, ccr.due_date, ccr.valid_until
-      FROM ${schema.courseCompletionRecord} ccr
-      WHERE ccr.profile_id = ${profileId}
-      ORDER BY ccr.course_id, ccr.cycle_number DESC
-    ),
+    ${latestComplianceCte(profileId)},
     feed_rows AS (
       SELECT 'learning_path' AS kind,
         mp.learning_path_id AS item_id,
@@ -120,12 +151,14 @@ function enrolledFeedSql(orgId: string, profileId: string): SQL {
         NULL AS course_type,
         mp.enrolled_at,
         mp.completed_at,
-        -- Mirrors getCourseCompletionStatsForProfile: a course is complete when every
-        -- lesson and every exercise is, and a course with none of either counts.
-        (COUNT(cp.course_id) FILTER (
-          WHERE (cp.lessons_total = 0 OR cp.lessons_completed >= cp.lessons_total)
-            AND (cp.exercises_total = 0 OR cp.exercises_completed >= cp.exercises_total)
-        ))::int AS completed_items,
+        mp.member_status::text AS member_status,
+        (COUNT(pc.course_id) FILTER (WHERE ${courseRecordedIsCompleteSql({
+          courseType: sql`pc_course.type::text`,
+          memberCompletedAt: sql`pc_member.completed_at`,
+          complianceCycleComplete: complianceCycleIsCompleteSql(sql`pc_compliance`),
+          lessonsTotal: sql`cp.lessons_total`,
+          exercisesTotal: sql`cp.exercises_total`
+        })}))::int AS completed_items,
         COUNT(cp.course_id)::int AS total_items,
         NULL::int AS lessons_total,
         NULL::int AS lessons_completed,
@@ -135,17 +168,23 @@ function enrolledFeedSql(orgId: string, profileId: string): SQL {
         NULL AS compliance_status,
         NULL::int AS compliance_cycle_number,
         NULL::timestamptz AS compliance_due_date,
-        NULL::timestamptz AS compliance_valid_until
+        NULL::timestamptz AS compliance_valid_until,
+        NULL::boolean AS compliance_complete
       FROM member_paths mp
       LEFT JOIN path_courses pc ON pc.learning_path_id = mp.learning_path_id
       LEFT JOIN course_progress cp ON cp.course_id = pc.course_id
-      GROUP BY mp.learning_path_id, mp.name, mp.enrolled_at, mp.completed_at
+      LEFT JOIN ${schema.course} pc_course ON pc_course.id = pc.course_id
+      LEFT JOIN ${schema.groupmember} pc_member
+        ON pc_member.group_id = pc_course.group_id AND pc_member.profile_id = ${profileId}
+      LEFT JOIN latest_compliance pc_compliance ON pc_compliance.course_id = pc.course_id
+      GROUP BY mp.learning_path_id, mp.name, mp.enrolled_at, mp.completed_at, mp.member_status
       UNION ALL
       SELECT 'course',
         gc.course_id,
         c.title,
         c.type::text,
         gc.enrolled_at,
+        gm.completed_at,
         NULL,
         (cp.lessons_completed + cp.exercises_completed)::int,
         (cp.lessons_total + cp.exercises_total)::int,
@@ -157,10 +196,12 @@ function enrolledFeedSql(orgId: string, profileId: string): SQL {
         lc.status,
         lc.cycle_number,
         lc.due_date,
-        lc.valid_until
+        lc.valid_until,
+        ${complianceCycleIsCompleteSql(sql`lc`)}
       FROM granted_courses gc
       JOIN ${schema.course} c ON c.id = gc.course_id
       JOIN course_progress cp ON cp.course_id = gc.course_id
+      LEFT JOIN ${schema.groupmember} gm ON gm.group_id = c.group_id AND gm.profile_id = ${profileId}
       LEFT JOIN latest_compliance lc ON lc.course_id = gc.course_id
     ),
     scored_rows AS (
@@ -186,13 +227,7 @@ function enrolledFeedSql(orgId: string, profileId: string): SQL {
       exercises_total AS feed_exercises_total,
       exercises_completed AS feed_exercises_completed,
       progress AS feed_progress,
-      CASE
-        -- evaluatePathCompletion: every course in the path is complete.
-        WHEN kind = 'learning_path' THEN total_items > 0 AND completed_items = total_items
-        -- isStudentCourseComplete: compliance courses complete on the cycle status, the rest at 100%.
-        WHEN course_type = 'COMPLIANCE' THEN COALESCE(compliance_status IN ('compliant', 'waived'), false)
-        ELSE progress >= 100
-      END AS feed_is_complete,
+      ${feedRowIsCompleteSql()} AS feed_is_complete,
       last_progress_at AS feed_last_progress_at,
       compliance_status AS feed_compliance_status,
       compliance_cycle_number AS feed_compliance_cycle_number,
@@ -221,13 +256,13 @@ function feedOrderBy(columns: TFeedOrderColumns): SQL[] {
  * One page of the student's courses and learning paths in an organization,
  * most recently active first.
  *
- * Runs as a single statement: the feed CTE computes progress for every row
- * (the sort and the completion tabs need it), then only the requested page is
- * joined to its course or path details. Totals come from a one-row CTE the
- * page is left-joined onto, so a page past the end still reports them.
+ * Runs as a single statement: the feed CTE computes progress for every row,
+ * then only the requested page is joined to its course or path details.
+ * Totals come from a one-row CTE the page is left-joined onto, so a page
+ * past the end still reports them.
  */
 export async function getEnrolled(
-  { orgId, profileId, limit, page, status = 'all', search }: GetEnrolledOptions,
+  { orgId, profileId, limit, page, status = 'all', kind = 'all', search }: GetEnrolledOptions,
   dbClient: DbOrTxClient = db
 ): Promise<TEnrolledPage> {
   try {
@@ -256,15 +291,28 @@ export async function getEnrolled(
 
     const trimmedSearch = search?.trim();
     const matchesSearch = trimmedSearch ? ilike(feed.searchText, toContainsPattern(trimmedSearch)) : undefined;
+    const excludeCompleted = not(feed.isComplete);
+    const matchesNotStarted = and(excludeCompleted, lte(feed.progress, 0));
+    const matchesInProgress = and(excludeCompleted, gt(feed.progress, 0));
     const matchesStatus =
-      status === 'completed' ? eq(feed.isComplete, true) : status === 'in_progress' ? not(feed.isComplete) : undefined;
+      status === 'not_started' ? matchesNotStarted : status === 'in_progress' ? matchesInProgress : excludeCompleted;
+    const matchesKind =
+      kind === 'course'
+        ? eq(feed.kind, 'course')
+        : kind === 'learning_path'
+          ? eq(feed.kind, 'learning_path')
+          : undefined;
 
     const feedTotals = dbClient.$with('enrolled_totals').as(
       dbClient
         .select({
-          total: sql<number>`(COUNT(*) FILTER (WHERE ${matchesStatus ?? sql`true`}))::int`.as('feed_total'),
-          inProgress: sql<number>`(COUNT(*) FILTER (WHERE NOT ${feed.isComplete}))::int`.as('feed_in_progress'),
-          completed: sql<number>`(COUNT(*) FILTER (WHERE ${feed.isComplete}))::int`.as('feed_completed')
+          total: sql<number>`(COUNT(*) FILTER (WHERE ${and(matchesStatus, matchesKind)}))::int`.as('feed_total'),
+          notStarted: sql<number>`(COUNT(*) FILTER (WHERE ${and(matchesNotStarted, matchesKind)}))::int`.as(
+            'feed_not_started'
+          ),
+          inProgress: sql<number>`(COUNT(*) FILTER (WHERE ${and(matchesInProgress, matchesKind)}))::int`.as(
+            'feed_in_progress'
+          )
         })
         .from(feed)
         .where(matchesSearch)
@@ -274,7 +322,7 @@ export async function getEnrolled(
       dbClient
         .select()
         .from(feed)
-        .where(and(matchesSearch, matchesStatus))
+        .where(and(matchesSearch, matchesStatus, matchesKind))
         .orderBy(...feedOrderBy(feed))
         .limit(limit)
         .offset((page - 1) * limit)
@@ -305,8 +353,8 @@ export async function getEnrolled(
       .with(feed, feedTotals, feedPage)
       .select({
         total: feedTotals.total,
+        notStartedCount: feedTotals.notStarted,
         inProgressCount: feedTotals.inProgress,
-        completedCount: feedTotals.completed,
         kind: feedPage.kind,
         enrolledAt: feedPage.enrolledAt,
         completedAt: feedPage.completedAt,
@@ -389,6 +437,7 @@ export async function getEnrolled(
             progressRate: row.lessonsCompleted ?? 0,
             exercisesCompleted: row.exercisesCompleted ?? 0,
             certificateEarnedAt: row.certificateEarnedAt ?? null,
+            completedAt: row.completedAt ?? null,
             complianceStatus: row.complianceStatus,
             complianceCycleNumber: row.complianceCycleNumber,
             complianceDueDate: row.complianceDueDate,
@@ -416,7 +465,7 @@ export async function getEnrolled(
     return {
       items,
       total: totals?.total ?? 0,
-      counts: { inProgress: totals?.inProgressCount ?? 0, completed: totals?.completedCount ?? 0 }
+      counts: { notStarted: totals?.notStartedCount ?? 0, inProgress: totals?.inProgressCount ?? 0 }
     };
   } catch (error) {
     console.error('getEnrolled error:', error);

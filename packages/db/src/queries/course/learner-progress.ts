@@ -78,3 +78,79 @@ export function learnerCourseProgressCtes(profileId: string): SQL {
     )
   `;
 }
+
+/**
+ * Whether a compliance cycle row counts as done: waived by an admin, or
+ * completed with its validity window still open. Reads `status`,
+ * `completed_at` and `valid_until` off the given cycle alias. Deliberately
+ * ignores the other status labels: the reminder scan relabels cycles (today
+ * only unfinished ones, as `expiring_soon` and later), and a completed cycle
+ * stays done until its certificate lapses whatever label it carries.
+ */
+export function complianceCycleIsCompleteSql(cycle: SQL): SQL {
+  return sql`(${cycle}.status = 'waived' OR (${cycle}.completed_at IS NOT NULL AND ${cycle}.valid_until > now()))`;
+}
+
+/**
+ * Whether a learner completed a course, as completion evaluation recorded it.
+ * Compliance courses complete on the current cycle, per
+ * {@link complianceCycleIsCompleteSql}, so a renewal or a lapsed certificate
+ * reopens them. Every other course completes once `groupmember.completed_at`
+ * is set, which only `evaluateCourseCertification` writes, from the same rule
+ * that gates the certificate. Single source of truth for course completion in
+ * learner lists: never recompute it from live progress.
+ */
+export function courseIsCompleteSql(columns: {
+  courseType: SQL;
+  memberCompletedAt: SQL;
+  complianceCycleComplete: SQL;
+}): SQL {
+  return sql`CASE
+    WHEN ${columns.courseType} = 'COMPLIANCE' THEN COALESCE(${columns.complianceCycleComplete}, false)
+    ELSE ${columns.memberCompletedAt} IS NOT NULL
+  END`;
+}
+
+/**
+ * The learner's current compliance cycle per course. Ends with
+ * `latest_compliance (course_id, status, cycle_number, due_date, valid_until,
+ * completed_at)`.
+ */
+export function latestComplianceCte(profileId: string): SQL {
+  return sql`
+    latest_compliance AS (
+      SELECT DISTINCT ON (ccr.course_id)
+        ccr.course_id, ccr.status, ccr.cycle_number, ccr.due_date, ccr.valid_until, ccr.completed_at
+      FROM ${schema.courseCompletionRecord} ccr
+      WHERE ccr.profile_id = ${profileId}
+      ORDER BY ccr.course_id, ccr.cycle_number DESC
+    )
+  `;
+}
+
+/**
+ * Whether a course counts as done toward a learning path, as completion
+ * evaluation recorded it. Wraps {@link courseIsCompleteSql} over the course
+ * type, the member's `completed_at` and their current compliance cycle, with
+ * one carve-out: a course with no lessons and no exercises counts as done.
+ * The certification rule requires content, so an empty standard course can
+ * never record completion; without the exemption it would brick every path
+ * that holds one. Reads the caller's column aliases. Mirrors
+ * `getCourseCompletionStatsForProfile`, which path completion uses; path
+ * progress and journey views must use this, never live counts.
+ */
+export function courseRecordedIsCompleteSql(columns: {
+  courseType: SQL;
+  memberCompletedAt: SQL;
+  complianceCycleComplete: SQL;
+  lessonsTotal: SQL;
+  exercisesTotal: SQL;
+}): SQL {
+  const recorded = courseIsCompleteSql({
+    courseType: columns.courseType,
+    memberCompletedAt: columns.memberCompletedAt,
+    complianceCycleComplete: columns.complianceCycleComplete
+  });
+
+  return sql`(${recorded} OR (COALESCE(${columns.lessonsTotal}, 0) + COALESCE(${columns.exercisesTotal}, 0) = 0))`;
+}

@@ -1,13 +1,15 @@
 import * as schema from '@db/schema';
 
-import { and, eq, inArray, or } from 'drizzle-orm';
+import { and, eq, inArray, or, sql } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
+import { complianceCycleIsCompleteSql, courseIsCompleteSql } from './learner-progress';
 import { submissionMeetsCompletionPolicySql } from './progression';
 
 export type StudentCourseMembership = {
   groupMemberId: string;
   certificateEarnedAt: string | null;
+  completedAt: string | null;
 };
 
 export type CourseTrackableContentCounts = {
@@ -82,7 +84,8 @@ export async function getBatchStudentCourseMembership(
       .select({
         profileId: schema.groupmember.profileId,
         groupMemberId: schema.groupmember.id,
-        certificateEarnedAt: schema.groupmember.certificateEarnedAt
+        certificateEarnedAt: schema.groupmember.certificateEarnedAt,
+        completedAt: schema.groupmember.completedAt
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -93,7 +96,8 @@ export async function getBatchStudentCourseMembership(
 
       membershipMap.set(row.profileId, {
         groupMemberId: row.groupMemberId,
-        certificateEarnedAt: row.certificateEarnedAt ?? null
+        certificateEarnedAt: row.certificateEarnedAt ?? null,
+        completedAt: row.completedAt ?? null
       });
     }
 
@@ -102,6 +106,71 @@ export async function getBatchStudentCourseMembership(
     console.error('getBatchStudentCourseMembership error:', error);
     throw new Error(
       `Failed to get batch student course membership: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Whether each student completed a course, as completion evaluation recorded
+ * it. Computed with `courseIsCompleteSql` over the member's `completed_at`
+ * and their current compliance cycle (highest `cycle_number`, the same row
+ * `latestComplianceCte` picks), so the teacher roster and the learner feed
+ * can never disagree. Returns false for profiles with no membership row.
+ */
+export async function getBatchCourseIsComplete(
+  courseId: string,
+  profileIds: string[],
+  dbClient: DbOrTxClient = db
+): Promise<Map<string, boolean>> {
+  const completionMap = new Map<string, boolean>(profileIds.map((profileId) => [profileId, false]));
+
+  if (profileIds.length === 0) {
+    return completionMap;
+  }
+
+  try {
+    const isComplete = courseIsCompleteSql({
+      courseType: sql`(SELECT c2.type::text FROM ${schema.course} c2 WHERE c2.id = ${courseId})`,
+      memberCompletedAt: sql`m.member_completed_at`,
+      complianceCycleComplete: complianceCycleIsCompleteSql(sql`lc`)
+    });
+
+    const profileList = sql.join(
+      profileIds.map((profileId) => sql`${profileId}`),
+      sql`, `
+    );
+    const rows = await dbClient.execute<{ profile_id: string; is_complete: boolean }>(sql`
+      WITH latest_compliance AS (
+        SELECT DISTINCT ON (ccr.profile_id)
+          ccr.profile_id, ccr.status, ccr.completed_at, ccr.valid_until
+        FROM ${schema.courseCompletionRecord} ccr
+        WHERE ccr.course_id = ${courseId}
+          AND ccr.profile_id IN (${profileList})
+        ORDER BY ccr.profile_id, ccr.cycle_number DESC
+      ),
+      members AS (
+        SELECT gm.profile_id AS profile_id, gm.completed_at AS member_completed_at
+        FROM ${schema.groupmember} gm
+        JOIN ${schema.course} c ON c.group_id = gm.group_id
+        WHERE c.id = ${courseId}
+          AND gm.profile_id IN (${profileList})
+      )
+      SELECT m.profile_id, ${isComplete} AS is_complete
+      FROM members m
+      LEFT JOIN latest_compliance lc ON lc.profile_id = m.profile_id
+    `);
+
+    for (const row of rows) {
+      if (!row.profile_id) continue;
+
+      completionMap.set(row.profile_id, row.is_complete ?? false);
+    }
+
+    return completionMap;
+  } catch (error) {
+    console.error('getBatchCourseIsComplete error:', error);
+    throw new Error(
+      `Failed to get batch course completion: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

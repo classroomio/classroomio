@@ -10,8 +10,7 @@ import { EnrolledListResponseSchema } from './docs';
 export const v1EnrolledRouter = new Hono().get(
   '/',
   describeRoute({
-    description:
-      "List the API key creator's own enrolled courses and learning paths. `counts` splits the search-filtered rows into in-progress vs completed for the tab labels.",
+    description: "List the API key creator's own enrolled courses and learning paths.",
     tags: ['Public API Enrolled'],
     responses: {
       200: {

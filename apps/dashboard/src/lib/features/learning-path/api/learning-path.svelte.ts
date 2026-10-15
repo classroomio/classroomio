@@ -6,7 +6,6 @@ import type {
   CreateLearningPathRequest,
   DeleteLearningPathRequest,
   GetLearningPathDetailRequest,
-
   LearningPathDetail,
   LearningPathWithEnrollment,
   LearningPathSummary,
@@ -408,7 +407,8 @@ class LearnerPathStore {
     this.isLoading = true;
     try {
       await sleep(150);
-      this.enrolledPaths = getMockPathsForUser();
+      const enrolledPaths = getMockPathsForUser();
+      this.enrolledPaths = enrolledPaths.filter((enrolledPath) => enrolledPath.enrollment?.state !== 'COMPLETED');
     } finally {
       this.isLoading = false;
       this.hasLoaded = true;

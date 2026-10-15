@@ -97,6 +97,23 @@ export async function earnCourseCertificate(tx: DbOrTxClient, groupMemberId: str
   await tx.execute(sql`UPDATE groupmember SET certificate_earned_at = ${earnedAt} WHERE id = ${groupMemberId}`);
 }
 
+/** Records the course completion that `evaluateAndRecordCourseCompletion` writes once the learner meets the rule. */
+export async function recordCourseCompletion(tx: DbOrTxClient, groupMemberId: string, completedAt: string) {
+  await tx.execute(sql`UPDATE groupmember SET completed_at = ${completedAt} WHERE id = ${groupMemberId}`);
+}
+
+export async function insertComplianceCycle(
+  tx: DbOrTxClient,
+  cycle: { courseId: string; groupMemberId: string; profileId: string; cycleNumber: number; status: string },
+  options: { completedAt?: string; validUntil?: string } = {}
+) {
+  await tx.execute(sql`
+    INSERT INTO course_completion_record
+      (course_id, group_member_id, profile_id, cycle_number, status, due_date, completed_at, valid_until)
+    VALUES (${cycle.courseId}, ${cycle.groupMemberId}, ${cycle.profileId}, ${cycle.cycleNumber}, ${cycle.status},
+      '2026-12-01T00:00:00Z', ${options.completedAt ?? null}, ${options.validUntil ?? null})`);
+}
+
 export async function insertGrant(
   tx: DbOrTxClient,
   grant: { groupMemberId: string; courseId: string; profileId: string; source: string; grantedAt: string },
@@ -175,13 +192,13 @@ export async function joinPath(
   pathId: string,
   profileId: string,
   enrolledAt: string,
-  options: { status?: string; removedAt?: string; roleId?: number } = {}
+  options: { status?: string; completedAt?: string; removedAt?: string; roleId?: number } = {}
 ) {
   const memberId = randomUUID();
   await tx.execute(sql`
-    INSERT INTO learning_path_member (id, learning_path_id, profile_id, role_id, enrolled_at, status, removed_at)
+    INSERT INTO learning_path_member (id, learning_path_id, profile_id, role_id, enrolled_at, status, completed_at, removed_at)
     VALUES (${memberId}, ${pathId}, ${profileId}, ${options.roleId ?? STUDENT}, ${enrolledAt}, ${options.status ?? 'NOT_STARTED'},
-      ${options.removedAt ?? null})`);
+      ${options.completedAt ?? null}, ${options.removedAt ?? null})`);
 
   return memberId;
 }

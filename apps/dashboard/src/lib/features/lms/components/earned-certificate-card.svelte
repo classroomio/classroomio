@@ -82,7 +82,7 @@
     courseCount={certificate.data.courseCount}
     progressPercent={100}
     coursesCompleted={certificate.data.courseCount}
-    certificateEarned
+    certificateEarned={certificate.data.certificateAvailable}
     certificateEarnedAt={certificate.data.earnedAt}
     labels={learningPathCardLabels}
   />

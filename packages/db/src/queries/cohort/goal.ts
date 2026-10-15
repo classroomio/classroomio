@@ -2,7 +2,9 @@ import * as schema from '@db/schema';
 
 import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
+
+import { complianceCycleIsCompleteSql, courseIsCompleteSql } from '../course/learner-progress';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -369,52 +371,53 @@ export async function getLatestCompletionRecordsForProfilesAndCourses(
 }
 
 /**
- * Fallback completion source for non-compliance courses: a learner is considered
- * "done" with a course when every lesson in the course has a `lesson_completion`
- * row marked completed. Returns set of (profileId, courseId) keys that match.
+ * `profileId:courseId` keys for every listed course each learner completed,
+ * as completion evaluation recorded it: `courseIsCompleteSql` over the
+ * member's `completed_at` and their current compliance cycle. The same rule
+ * the certificates list, My Learning and the People page read.
  */
-export async function getNonComplianceCourseCompletions(
+export async function getRecordedCourseCompletions(
   profileIds: string[],
-  courseIds: string[]
+  courseIds: string[],
+  dbClient: DbOrTxClient = db
 ): Promise<Set<string>> {
   if (profileIds.length === 0 || courseIds.length === 0) return new Set();
 
   try {
-    const rows = await db
-      .select({
-        profileId: schema.lessonCompletion.profileId,
-        courseId: schema.lesson.courseId,
-        totalLessons: sql<number>`COUNT(DISTINCT ${schema.lesson.id})::int`.as('totalLessons'),
-        completedLessons: sql<number>`
-          COUNT(DISTINCT CASE
-            WHEN ${schema.lessonCompletion.isComplete} = true THEN ${schema.lessonCompletion.lessonId}
-            ELSE NULL
-          END)::int
-        `.as('completedLessons')
-      })
-      .from(schema.lesson)
-      .leftJoin(
-        schema.lessonCompletion,
-        and(
-          eq(schema.lessonCompletion.lessonId, schema.lesson.id),
-          inArray(schema.lessonCompletion.profileId, profileIds)
-        )
-      )
-      .where(inArray(schema.lesson.courseId, courseIds))
-      .groupBy(schema.lessonCompletion.profileId, schema.lesson.courseId);
+    const courseIsComplete = courseIsCompleteSql({
+      courseType: sql`c.type::text`,
+      memberCompletedAt: sql`gm.completed_at`,
+      complianceCycleComplete: complianceCycleIsCompleteSql(sql`current_cycle`)
+    });
+    const listedCourseIds = sql.join(
+      courseIds.map((courseId) => sql`${courseId}`),
+      sql`, `
+    );
+    const listedProfileIds = sql.join(
+      profileIds.map((profileId) => sql`${profileId}`),
+      sql`, `
+    );
 
-    const completed = new Set<string>();
-    for (const row of rows) {
-      if (!row.profileId || !row.courseId) continue;
-      if (row.totalLessons > 0 && row.completedLessons >= row.totalLessons) {
-        completed.add(`${row.profileId}:${row.courseId}`);
-      }
-    }
+    const rows = await dbClient.execute<{ profile_id: string; course_id: string }>(sql`
+      SELECT gm.profile_id, c.id AS course_id
+      FROM ${schema.course} c
+      JOIN ${schema.groupmember} gm ON gm.group_id = c.group_id AND gm.profile_id IN (${listedProfileIds})
+      LEFT JOIN LATERAL (
+        SELECT ccr.status, ccr.completed_at, ccr.valid_until
+        FROM ${schema.courseCompletionRecord} ccr
+        WHERE ccr.course_id = c.id AND ccr.profile_id = gm.profile_id
+        ORDER BY ccr.cycle_number DESC
+        LIMIT 1
+      ) current_cycle ON true
+      WHERE c.id IN (${listedCourseIds}) AND ${courseIsComplete}
+    `);
 
-    return completed;
+    return new Set(rows.map((row) => `${row.profile_id}:${row.course_id}`));
   } catch (error) {
-    console.error('getNonComplianceCourseCompletions error:', error);
-    throw new Error(`Failed to load lesson completions: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('getRecordedCourseCompletions error:', error);
+    throw new Error(
+      `Failed to load recorded course completions: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

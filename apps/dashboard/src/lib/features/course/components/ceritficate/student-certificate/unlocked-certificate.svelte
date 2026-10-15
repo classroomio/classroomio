@@ -18,6 +18,7 @@
   let isLoading = $state(false);
   let isPngLoading = $state(false);
   let isCourseComplete = $state(false);
+  let canDownloadCertificate = $state(false);
   let evaluation = $state<CertificationEvaluationData | null>(null);
 
   let courseId = $derived(courseApi.course?.id ?? '');
@@ -42,7 +43,7 @@
   }
 
   const downLoadCertificate = async () => {
-    if (!isCourseComplete || !courseId) return;
+    if (!canDownloadCertificate || !courseId) return;
 
     isLoading = true;
     try {
@@ -64,7 +65,7 @@
   };
 
   const downloadCertificateImage = async () => {
-    if (!isCourseComplete || !courseId) return;
+    if (!canDownloadCertificate || !courseId) return;
 
     isPngLoading = true;
     try {
@@ -91,8 +92,8 @@
     const res = await courseApi.getCertificationEvaluation(courseId);
     if (res?.data) {
       evaluation = res.data;
-      const hasEarned = res.data.certificateEarnedAt != null;
-      isCourseComplete = hasEarned || !!res.data.eligibleForCertificate;
+      isCourseComplete = res.data.completedAt != null;
+      canDownloadCertificate = res.data.certificateEarnedAt != null;
 
       if (res.data.isNewCompletion && courseId) {
         updateCourseCompletionModal(courseId, 'eligible', res.data);
@@ -145,11 +146,16 @@
       {/if}
     </div>
     <div class="flex flex-wrap items-center justify-center gap-2">
-      <Button onclick={downLoadCertificate} disabled={!isCourseComplete} loading={isLoading}>
+      <Button onclick={downLoadCertificate} disabled={!canDownloadCertificate} loading={isLoading}>
         <DownloadIcon size={16} />
         {$t('course.navItem.certificates.download_certificate')}
       </Button>
-      <Button variant="outline" onclick={downloadCertificateImage} disabled={!isCourseComplete} loading={isPngLoading}>
+      <Button
+        variant="outline"
+        onclick={downloadCertificateImage}
+        disabled={!canDownloadCertificate}
+        loading={isPngLoading}
+      >
         <ImageIcon size={16} />
         {$t('course.navItem.certificates.download_image')}
       </Button>

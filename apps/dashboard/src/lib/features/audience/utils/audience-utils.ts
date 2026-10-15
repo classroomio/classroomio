@@ -1,6 +1,8 @@
 import type { BadgeVariant } from '@cio/ui/base/badge';
 import { calDateDiff } from '$lib/utils/functions/date';
 import type { OrganizationAudienceMemberStatus } from '$features/org/utils/types';
+import { isComplianceCycleComplete } from '$features/course/utils/compliance-utils';
+import type { AudienceAnalyticsCourse } from './types';
 import { t } from '$lib/utils/functions/translations';
 
 /** `null` when absent, so the caller can render a translated "Never". */
@@ -112,4 +114,19 @@ export function formatLastSeen(lastSeen: string | null | undefined): string {
 
   const years = Math.floor(seconds / 31536000);
   return t.get('analytics.years_ago', { count: years });
+}
+
+/**
+ * Whether a teacher-facing analytics row counts its course as complete: what
+ * completion evaluation recorded (`completedAt`, already on the analytics
+ * course from `getEnrolledCourses`), or the current compliance cycle for
+ * compliance courses. Live lesson counts only drive the progress figures,
+ * never this flag.
+ */
+export function isAudienceCourseComplete(course: AudienceAnalyticsCourse): boolean {
+  if (course.type === 'COMPLIANCE') {
+    return isComplianceCycleComplete(course.complianceStatus, course.complianceValidUntil);
+  }
+
+  return 'completedAt' in course && course.completedAt != null;
 }

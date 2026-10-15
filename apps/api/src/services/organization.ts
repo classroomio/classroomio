@@ -15,6 +15,7 @@ import {
   createOrganizationPlan,
   deleteOrganizationAudienceMember,
   deleteOrganizationMember,
+  getActiveOrganizationMemberIdByOrgAndProfile,
   getActiveOrganizationPlan,
   getFirstOrganizationWithPlans,
   getLatestOrgInvitesByEmails,
@@ -610,8 +611,8 @@ export async function getUserEnrolledCourses(orgId: string, userId: string, opti
  *
  * @param orgId - The organization ID
  * @param userId - Student's profile ID
- * @param query - Page, limit, completion status and title search
- * @returns Page of `{ kind, data }` rows, the filtered total and per-tab counts
+ * @param query - Page, limit, status, kind and title search
+ * @returns Page of `{ kind, data }` rows and the filtered total
  */
 export async function getUserEnrolled(orgId: string, userId: string, query: TGetEnrolled) {
   try {
@@ -627,9 +628,16 @@ export async function getUserEnrolled(orgId: string, userId: string, query: TGet
 }
 
 /**
- * Gets one page of the certificates the user can download in an organization,
- * newest first: course certificates and learning path certificates as
- * `{ kind, data }` rows. Empty when the org plan does not include certificates.
+ * Gets one page of every completed course and learning path in an
+ * organization, most recently completed first. The list is intentionally
+ * wider than the endpoint name: it returns all completed work, not only
+ * issued certificates, using the completion that certificate issuance
+ * records. A lapsed compliance certificate stays listed with `isExpired`.
+ * Each `{ kind, data }` row carries `certificateAvailable`, saying whether
+ * the download guards would allow it right now. Throws 403 once the
+ * caller's org membership is deactivated: the session's cached org roles
+ * can still admit them for up to an hour, and `orgMemberMiddleware` refuses
+ * them the same way after that.
  *
  * @param orgId - The organization ID
  * @param userId - Student's profile ID
@@ -638,10 +646,14 @@ export async function getUserEnrolled(orgId: string, userId: string, query: TGet
  */
 export async function getUserEarnedCertificates(orgId: string, userId: string, query: TGetEarnedCertificates) {
   try {
-    const certificatesEnabled = await orgHasCertificatesEnabled(orgId);
-    if (!certificatesEnabled) return { items: [], total: 0 };
+    const [activeOrgMemberId, certificatesEnabled] = await Promise.all([
+      getActiveOrganizationMemberIdByOrgAndProfile(orgId, userId),
+      orgHasCertificatesEnabled(orgId)
+    ]);
 
-    return await getEarnedCertificates({ orgId, profileId: userId, ...query });
+    if (!activeOrgMemberId) throw new AppError('UNAUTHORIZED', ErrorCodes.UNAUTHORIZED, 403);
+
+    return await getEarnedCertificates({ orgId, profileId: userId, certificatesEnabled, ...query });
   } catch (error) {
     if (error instanceof AppError) throw error;
     throw new AppError(

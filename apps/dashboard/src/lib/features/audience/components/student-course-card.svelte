@@ -7,6 +7,7 @@
 
   import { t } from '$lib/utils/functions/translations';
   import type { AudienceAnalyticsCourse } from '../utils/types';
+  import { isAudienceCourseComplete } from '../utils/audience-utils';
 
   let {
     course
@@ -15,7 +16,7 @@
   } = $props();
 
   function isComplete(c: AudienceAnalyticsCourse): boolean {
-    return c.lessons_count > 0 && c.lessons_completed === c.lessons_count;
+    return isAudienceCourseComplete(c);
   }
 
   function gradeLabel(grade: number | null): string {

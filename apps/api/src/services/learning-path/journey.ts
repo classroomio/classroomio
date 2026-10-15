@@ -53,9 +53,9 @@ export function summarizeJourney(courses: TJourneyCourseLike[]): TJourneySummary
 
 /**
  * A learner's path hub and in-course stepper: the path, every course in order
- * with live progress and lock state, the course to continue, and the
- * certificate when it can be downloaded. Progress is read live, like the
- * enrolled feed, so the hub and My Learning always agree; nothing is written.
+ * with live progress and lock state, the course to continue, and whether the
+ * certificate can be downloaded. Progress is read live, like the enrolled feed,
+ * so the hub and My Learning always agree; nothing is written.
  *
  * `member` is the membership the route middleware resolved. Org admins pass
  * through that middleware without one, so an admin who is also enrolled is
@@ -75,7 +75,6 @@ export async function getPathJourneyService(
 
     const journey = await getPathJourney({
       pathId: path.id,
-      memberId: activeMember.id,
       profileId,
       sequentialUnlock: path.sequentialUnlock
     });
@@ -92,7 +91,7 @@ export async function getPathJourneyService(
     } = summarizeJourney(journey.courses);
 
     const certificateEnabled = await isPathCertificateEnabled(path);
-    const certificate = certificateEnabled && activeMember.status === 'COMPLETED' ? journey.certificate : null;
+    const certificateAvailable = isComplete && certificateEnabled;
 
     return {
       path: {
@@ -115,7 +114,7 @@ export async function getPathJourneyService(
       lastProgressAt: journey.lastProgressAt,
       courses: journey.courses,
       certificateEnabled,
-      certificate
+      certificateAvailable
     };
   } catch (error) {
     throwAsInternal(error, 'Failed to get learning path journey');
