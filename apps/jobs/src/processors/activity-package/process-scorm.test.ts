@@ -168,7 +168,7 @@ describe('processScormPackage (PR 6)', () => {
     const keys = state.uploadedKeys.map((entry) => entry.key);
     expect(keys).toContain('scorm/asset-1/v1/sco.html');
     expect(keys).toContain('scorm/asset-1/v1/imsmanifest.xml');
-    const indexUpload = state.uploadedBuffers.find((entry) => entry.key === 'scorm/asset-1/v1/index.json');
+    const indexUpload = state.uploadedBuffers.find((entry) => entry.key === 'scorm/asset-1/v1.index.json');
     expect(indexUpload).toBeDefined();
     const indexListing: unknown = JSON.parse(indexUpload!.body.toString('utf-8'));
     expect(Array.isArray(indexListing)).toBe(true);

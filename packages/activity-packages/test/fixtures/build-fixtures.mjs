@@ -16,7 +16,8 @@ const packages = [
   'vendor-rise-style',
   'reject-external-launch',
   'reject-assets-only',
-  'scorm-timer-test'
+  'scorm-timer-test',
+  'scorm2004-timer'
 ];
 
 /**

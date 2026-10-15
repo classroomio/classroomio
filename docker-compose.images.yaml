@@ -198,6 +198,7 @@ services:
       CSP_FRAME_SRC_DOMAINS: ${CSP_FRAME_SRC_DOMAINS:-}
       CSP_FONT_SRC_DOMAINS: ${CSP_FONT_SRC_DOMAINS:-}
       CSP_MEDIA_SRC_DOMAINS: ${CSP_MEDIA_SRC_DOMAINS:-}
+      SCORM_CONTENT_ORIGIN: ${SCORM_CONTENT_ORIGIN:-}
       # Upload size limits (megabytes). Unset = built-in defaults — see .env.example.
       UPLOAD_MAX_DOCUMENT_MB: ${UPLOAD_MAX_DOCUMENT_MB:-}
       UPLOAD_MAX_IMAGE_MB: ${UPLOAD_MAX_IMAGE_MB:-}

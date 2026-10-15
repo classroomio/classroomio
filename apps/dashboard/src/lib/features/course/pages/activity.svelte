@@ -4,6 +4,7 @@
   import { page } from '$app/state';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { untrack } from 'svelte';
+  import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import * as Alert from '@cio/ui/base/alert';
   import * as Dialog from '@cio/ui/base/dialog';
@@ -31,7 +32,7 @@
   import ActivityVersionHistory from '$features/course/components/activity/activity-version-history.svelte';
   import { ContentNavigationActions } from '$features/course/components/lesson';
   import HistoryIcon from '@lucide/svelte/icons/history';
-  import { unitPassMark } from '$features/course/utils/scorm-utils';
+  import { getActivityStatusPill, unitPassMark } from '$features/course/utils/scorm-utils';
   import { getOrderedNavigableContent, getCourseProgress } from '$features/course/utils/content';
   import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
@@ -104,6 +105,16 @@
     )
   );
 
+  const launch = $derived(activityApi.launchResult);
+  const availableLaunch = $derived(launch && launch.available ? launch : null);
+  const isActivityComplete = $derived(currentNavigableItem?.isComplete ?? false);
+  const statusPill = $derived(
+    getActivityStatusPill({
+      launch: availableLaunch,
+      isComplete: isActivityComplete
+    })
+  );
+
   const editorData = $derived(activityApi.editor);
   const scormEditor = $derived(editorData && editorData.available ? editorData : null);
   const attachedPackage = $derived(scormEditor?.package ?? null);
@@ -130,6 +141,7 @@
   $effect(() => {
     if (activityId !== loadedActivityId) {
       loadedActivityId = activityId;
+      activityApi.launchResult = null;
       syncedActivityId = null;
       replaceMode = null;
       deleteOpen = false;
@@ -470,6 +482,9 @@
   <Page.Action>
     <div class="flex items-center gap-2">
       {#if mode === MODES.view && $isCourseLearnerView}
+        {#if statusPill}
+          <Badge variant={statusPill.variant}>{$t(statusPill.label)}</Badge>
+        {/if}
         <ContentNavigationActions {activityId} {courseId} showPrevNext={!showMobileBottomNav} />
       {/if}
 
@@ -512,11 +527,7 @@
 
 <Page.Body>
   {#snippet child()}
-    <div
-      class={`overflow-x-hidden pb-6 ${
-        mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full max-w-4xl lg:max-w-5xl'
-      }`}
-    >
+    <div class={`overflow-x-hidden pb-4 ${mode === MODES.edit ? 'lg:w-full xl:w-11/12' : 'mx-auto w-full'}`}>
       {#if $isCourseLearnerView}
         <ActivityPlayer {courseId} {activityId} />
       {:else if mode === MODES.view}

@@ -13,6 +13,7 @@ import {
   formatScorePercent,
   formatScormVersion,
   formatTimeLimit,
+  getActivityStatusPill,
   sha256IfSameSize,
   parsePlayerMessage,
   readScormManifestSignature,
@@ -387,5 +388,94 @@ describe('formatTimeLimit', () => {
     expect(formatTimeLimit('00:99:99')).toBeNull();
     expect(formatTimeLimit('PT0S')).toBeNull();
     expect(formatTimeLimit('invalid')).toBeNull();
+  });
+});
+
+describe('getActivityStatusPill', () => {
+  it('returns null when launch is preview', () => {
+    expect(
+      getActivityStatusPill({
+        launch: { mode: 'preview', units: [] },
+        isComplete: false
+      })
+    ).toBeNull();
+    expect(
+      getActivityStatusPill({
+        launch: { mode: 'preview', units: [] },
+        isComplete: true
+      })
+    ).toBeNull();
+  });
+
+  it('returns completed pill when activity is marked complete', () => {
+    expect(
+      getActivityStatusPill({
+        launch: { mode: 'normal', units: [] },
+        isComplete: true
+      })
+    ).toEqual({
+      variant: 'default',
+      label: 'course.navItem.lessons.activities.player.status_completed'
+    });
+    expect(
+      getActivityStatusPill({
+        launch: null,
+        isComplete: true
+      })
+    ).toEqual({
+      variant: 'default',
+      label: 'course.navItem.lessons.activities.player.status_completed'
+    });
+  });
+
+  it('returns null when launch is missing and not complete', () => {
+    expect(
+      getActivityStatusPill({
+        launch: null,
+        isComplete: false
+      })
+    ).toBeNull();
+  });
+
+  it('returns review pill when launch mode is review', () => {
+    expect(
+      getActivityStatusPill({
+        launch: { mode: 'review', units: [] },
+        isComplete: false
+      })
+    ).toEqual({
+      variant: 'secondary',
+      label: 'course.navItem.lessons.activities.player.status_review'
+    });
+  });
+
+  it('returns not passed pill when any unit has score but incomplete', () => {
+    expect(
+      getActivityStatusPill({
+        launch: {
+          mode: 'normal',
+          units: [{ completed: false, scorePercent: 45 }]
+        },
+        isComplete: false
+      })
+    ).toEqual({
+      variant: 'secondary',
+      label: 'course.navItem.lessons.activities.player.status_not_passed'
+    });
+  });
+
+  it('returns in progress pill by default when launched', () => {
+    expect(
+      getActivityStatusPill({
+        launch: {
+          mode: 'normal',
+          units: [{ completed: false, scorePercent: null }]
+        },
+        isComplete: false
+      })
+    ).toEqual({
+      variant: 'secondary',
+      label: 'course.navItem.lessons.activities.player.status_in_progress'
+    });
   });
 });

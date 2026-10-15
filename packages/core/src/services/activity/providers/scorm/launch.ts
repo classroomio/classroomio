@@ -306,37 +306,16 @@ async function resolveAttempt(
 
   if (!shouldCreate && latest) return { attempt: latest, review: true, restartedAfterReplace: false };
 
-  try {
-    const created = await createScormAttempt(
-      { activityId, profileId, packageVersionId: current.id, attemptNumber },
-      tx
-    );
+  const created = await createScormAttempt({ activityId, profileId, packageVersionId: current.id, attemptNumber }, tx);
 
-    return { attempt: created, review: false, restartedAfterReplace: restartedAfterReplace && attemptNumber > 1 };
-  } catch (error) {
-    if (!isUniqueConstraintViolation(error)) throw error;
-
-    const raced = await getOpenScormAttempt(activityId, profileId, tx);
-    if (!raced) throw error;
-
-    return { attempt: raced, review: false, restartedAfterReplace: false };
-  }
+  return { attempt: created, review: false, restartedAfterReplace: restartedAfterReplace && attemptNumber > 1 };
 }
 
 async function resolveTry(attemptId: string, unitId: string, tx: DbOrTxClient): Promise<TScormScoAttempt> {
   const open = await getOpenScoAttempt(attemptId, unitId, tx);
   if (open) return open;
 
-  try {
-    return await createScoAttempt({ attemptId, unitId }, tx);
-  } catch (error) {
-    if (!isUniqueConstraintViolation(error)) throw error;
-
-    const raced = await getOpenScoAttempt(attemptId, unitId, tx);
-    if (!raced) throw error;
-
-    return raced;
-  }
+  return createScoAttempt({ attemptId, unitId }, tx);
 }
 
 async function latestTriesByUnit(
@@ -462,93 +441,104 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
     };
   }
 
-  const launched = await db.transaction(async (tx) => {
-    const { attempt, review, restartedAfterReplace } = await resolveAttempt(
-      context.activityId,
-      context.courseId,
-      context.profileId,
-      current,
-      details.allowRetakes,
-      context.newAttempt ?? false,
-      tx
-    );
+  const runLaunch = () =>
+    db.transaction(async (tx) => {
+      const { attempt, review, restartedAfterReplace } = await resolveAttempt(
+        context.activityId,
+        context.courseId,
+        context.profileId,
+        current,
+        details.allowRetakes,
+        context.newAttempt ?? false,
+        tx
+      );
 
-    if (review) {
-      const reviewVersion = await getPackageVersionById(attempt.packageVersionId, tx);
-      if (!reviewVersion) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
+      if (review) {
+        const reviewVersion = await getPackageVersionById(attempt.packageVersionId, tx);
+        if (!reviewVersion) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
 
-      if (reviewVersion.status === 'archived') {
-        const currentLaunchable = launchableUnits(await listPackageUnitsByVersion(current.id, tx));
-        const archivedUnit = context.unitIdentifier
-          ? (currentLaunchable.find((candidate) => candidate.identifier === context.unitIdentifier) ??
-            currentLaunchable[0])
-          : currentLaunchable[0];
-        if (!archivedUnit) throw new AppError('Package has no launchable modules', ErrorCodes.VALIDATION_ERROR, 400);
+        if (reviewVersion.status === 'archived') {
+          const currentLaunchable = launchableUnits(await listPackageUnitsByVersion(current.id, tx));
+          const archivedUnit = context.unitIdentifier
+            ? (currentLaunchable.find((candidate) => candidate.identifier === context.unitIdentifier) ??
+              currentLaunchable[0])
+            : currentLaunchable[0];
+          if (!archivedUnit) throw new AppError('Package has no launchable modules', ErrorCodes.VALIDATION_ERROR, 400);
 
-        const launchedArchived: LaunchedModule = {
+          const launchedArchived: LaunchedModule = {
+            attempt,
+            versionId: current.id,
+            format: packageFormat(current.format),
+            unit: archivedUnit,
+            scoAttempt: null,
+            review: true,
+            reviewOfArchivedVersion: true,
+            restartedAfterReplace: false
+          };
+
+          return launchedArchived;
+        }
+
+        const reviewUnits = launchableUnits(await listPackageUnitsByVersion(reviewVersion.id, tx));
+        const reviewUnit = context.unitIdentifier
+          ? (reviewUnits.find((candidate) => candidate.identifier === context.unitIdentifier) ?? null)
+          : reviewUnits[0];
+        if (!reviewUnit) throw new AppError('Module not found', ErrorCodes.NOT_FOUND, 404);
+
+        const reviewTries = await latestTriesByUnit(attempt.id, tx);
+        const launchedReview: LaunchedModule = {
           attempt,
-          versionId: current.id,
-          format: packageFormat(current.format),
-          unit: archivedUnit,
-          scoAttempt: null,
+          versionId: reviewVersion.id,
+          format: packageFormat(reviewVersion.format),
+          unit: reviewUnit,
+          scoAttempt: reviewTries.get(reviewUnit.id) ?? null,
           review: true,
-          reviewOfArchivedVersion: true,
+          reviewOfArchivedVersion: false,
           restartedAfterReplace: false
         };
 
-        return launchedArchived;
+        return launchedReview;
       }
 
-      const reviewUnits = launchableUnits(await listPackageUnitsByVersion(reviewVersion.id, tx));
-      const reviewUnit = context.unitIdentifier
-        ? (reviewUnits.find((candidate) => candidate.identifier === context.unitIdentifier) ?? null)
-        : reviewUnits[0];
-      if (!reviewUnit) throw new AppError('Module not found', ErrorCodes.NOT_FOUND, 404);
+      const pinned =
+        attempt.packageVersionId === current.id ? current : await getPackageVersionById(attempt.packageVersionId, tx);
+      if (!pinned) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
 
-      const reviewTries = await latestTriesByUnit(attempt.id, tx);
-      const launchedReview: LaunchedModule = {
+      const tries = await latestTriesByUnit(attempt.id, tx);
+      const format = packageFormat(pinned.format);
+      const unit = pickUnit(
+        await listPackageUnitsByVersion(pinned.id, tx),
+        context.unitIdentifier,
+        tries,
+        settings,
+        format,
+        details.moduleOrder === 'sequential'
+      );
+      const scoAttempt = await resolveTry(attempt.id, unit.id, tx);
+
+      const launchedTry: LaunchedModule = {
         attempt,
-        versionId: reviewVersion.id,
-        format: packageFormat(reviewVersion.format),
-        unit: reviewUnit,
-        scoAttempt: reviewTries.get(reviewUnit.id) ?? null,
-        review: true,
+        versionId: pinned.id,
+        format,
+        unit,
+        scoAttempt,
+        review: false,
         reviewOfArchivedVersion: false,
-        restartedAfterReplace: false
+        restartedAfterReplace
       };
 
-      return launchedReview;
-    }
+      return launchedTry;
+    });
 
-    const pinned =
-      attempt.packageVersionId === current.id ? current : await getPackageVersionById(attempt.packageVersionId, tx);
-    if (!pinned) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
+  let launched: LaunchedModule;
 
-    const tries = await latestTriesByUnit(attempt.id, tx);
-    const format = packageFormat(pinned.format);
-    const unit = pickUnit(
-      await listPackageUnitsByVersion(pinned.id, tx),
-      context.unitIdentifier,
-      tries,
-      settings,
-      format,
-      details.moduleOrder === 'sequential'
-    );
-    const scoAttempt = await resolveTry(attempt.id, unit.id, tx);
+  try {
+    launched = await runLaunch();
+  } catch (error) {
+    if (!isUniqueConstraintViolation(error)) throw error;
 
-    const launchedTry: LaunchedModule = {
-      attempt,
-      versionId: pinned.id,
-      format,
-      unit,
-      scoAttempt,
-      review: false,
-      reviewOfArchivedVersion: false,
-      restartedAfterReplace
-    };
-
-    return launchedTry;
-  });
+    launched = await runLaunch();
+  }
 
   const triesByUnit = launched.reviewOfArchivedVersion
     ? new Map<string, TScormScoAttempt>()

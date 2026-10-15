@@ -16,6 +16,7 @@ Hand-written packages plus vendor notes. Rebuild with `node test/fixtures/build-
 | `reject-external-launch`  | 2004 4th | 1, rejected | n/a                                                                | n/a                             | 2     | 1,233 B      | 856 B   | n/a        | n/a                                                              |
 | `reject-assets-only`      | 2004 4th | 0, rejected | n/a                                                                | n/a                             | 2     | 1,230 B      | 847 B   | n/a        | n/a                                                              |
 | `scorm-timer-test`        | 1.2/2004 | 1           | `normal`, `suspend`, or `time-out` on expiry                       | none                            | 2     | 27,828 B     | 6,994 B | none       | pass mark 80 (quiz); tests active timer, countdown, session time |
+| `scorm2004-timer`         | 2004 4th | 1           | `normal`, `suspend`, or `time-out` on expiry                       | none                            | 2     | 4,950 B      | 2,164 B | none       | minNormalizedMeasure 0.8; 2004 timer counterpart (PT2M0S maxTimeAllowed, launch data) |
 
 The two rejection fixtures are negative tests: `reject-external-launch` has a SCO whose `href` is absolute `https://` and must fail with the external-content error; `reject-assets-only` has only `asset` resources and must fail with the nothing-to-track error.
 

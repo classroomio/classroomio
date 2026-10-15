@@ -66,7 +66,7 @@ export function getStorageConfig(): StorageConfig {
       bucketVideos: BUCKET_DEFAULTS.VIDEOS,
       bucketDocuments: BUCKET_DEFAULTS.DOCUMENTS,
       bucketMedia: BUCKET_DEFAULTS.MEDIA,
-      bucketScorm: BUCKET_DEFAULTS.SCORM,
+      bucketScorm: env.OBJECT_STORAGE_BUCKET_SCORM || BUCKET_DEFAULTS.SCORM,
       mediaPublicBaseUrl: env.CLOUDFLARE_IMAGE_BUCKET_DOMAIN || null
     };
   } else {

@@ -186,14 +186,7 @@ export function isoWeekIndex(date: Date): number {
 
   day.setUTCDate(day.getUTCDate() - weekday + 3);
 
-  const firstThursday = new Date(Date.UTC(day.getUTCFullYear(), 0, 4));
-  const firstWeekday = (firstThursday.getUTCDay() + 6) % 7;
-
-  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstWeekday + 3);
-
-  const week = 1 + Math.round((day.getTime() - firstThursday.getTime()) / (7 * 24 * 60 * 60 * 1000));
-
-  return day.getUTCFullYear() * 53 + week;
+  return Math.floor(day.getTime() / (7 * 24 * 60 * 60 * 1000));
 }
 
 /**

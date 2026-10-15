@@ -342,4 +342,20 @@ describe('parseScormManifest entities', () => {
     expect(parsed.title).toBe('ClassroomIO Timed Assessment & Session Tracker');
     expect(parsed.units[0].title).toBe('Timed Quiz & Live Session Timer Test');
   });
+
+  it('reads the 2004 timer fields: pass mark, launch data and time limit', () => {
+    const parsed = parseScormManifest(readSource('scorm2004-timer'), ['index.html']);
+
+    expect(parsed.format).toBe('scorm2004_4');
+    expect(parsed.title).toBe('ClassroomIO SCORM 2004 timer fixture');
+    expect(parsed.units).toHaveLength(1);
+    expect(parsed.units[0]).toMatchObject({
+      unitType: 'sco',
+      href: 'index.html',
+      passingScoreScaled: 0.8,
+      launchData: 'timer_duration=120',
+      formatDetails: { format: 'scorm2004', maxTimeAllowed: 'PT2M0S', timeLimitAction: 'exit,message' }
+    });
+    expect(parsed.warnings).toContain('has_sequencing');
+  });
 });

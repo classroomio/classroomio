@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { createReadStream, createWriteStream } from 'node:fs';
-import { mkdir, mkdtemp, readFile, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, open } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { pipeline } from 'node:stream/promises';
@@ -72,6 +72,18 @@ export function hasZipMagicBytes(header: Uint8Array): boolean {
   );
 }
 
+async function readZipHeader(zipPath: string): Promise<Uint8Array> {
+  const handle = await open(zipPath, 'r');
+  try {
+    const buffer = Buffer.alloc(4);
+    await handle.read(buffer, 0, 4, 0);
+
+    return new Uint8Array(buffer.buffer, buffer.byteOffset, 4);
+  } finally {
+    await handle.close();
+  }
+}
+
 export function mapUnitsToRows(units: ScormPackageUnit[], packageVersionId: string): TNewContentPackageUnit[] {
   return units.map((unit) => ({
     packageVersionId,
@@ -95,6 +107,18 @@ export function resolveScormLimitMb(env: NodeJS.ProcessEnv = process.env): numbe
   const parsed = Number(env.UPLOAD_MAX_SCORM_MB);
 
   return Number.isFinite(parsed) && parsed > 0 ? parsed : 500;
+}
+
+function isMissingObjectError(error: unknown): boolean {
+  const name = (error as { name?: string })?.name;
+  const code = (error as { Code?: string })?.Code;
+
+  if (name === 'NotFound' || name === 'NoSuchKey' || name === 'NoSuchBucket') return true;
+  if (code === 'NotFound' || code === 'NoSuchKey' || code === 'NoSuchBucket') return true;
+
+  const status = (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+
+  return status === 404;
 }
 
 function isSymlink(entry: Entry): boolean {
@@ -262,6 +286,30 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
 
   await throwIfCancelRequested(mediaJobId);
   await updateMediaJob(mediaJobId, { status: 'running', stage: 'validating', progressPercent: 5 });
+
+  const liveVersion = await getCurrentPackageVersion(assetId);
+  if (liveVersion && liveVersion.id === version.id && version.status === 'ready') {
+    await updateMediaJob(mediaJobId, {
+      status: 'completed',
+      stage: 'ready',
+      progressPercent: 100,
+      result: {
+        unchanged: false,
+        versionId: version.id,
+        format: version.format ?? '',
+        fileCount: version.fileCount ?? 0
+      }
+    });
+
+    return {
+      unchanged: false,
+      versionId: version.id,
+      format: version.format ?? '',
+      fileCount: version.fileCount ?? 0,
+      extractedBytes: version.extractedBytes ?? 0
+    };
+  }
+
   await updatePackageVersion(version.id, { status: 'processing', error: null });
   await deletePackageUnitsByVersion(version.id);
 
@@ -272,9 +320,15 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
   let extractDir: string | undefined;
   let zipfile: yauzl.ZipFile | undefined;
   try {
-    const head = await getS3Client()
-      .send(new HeadObjectCommand({ Bucket: bucket, Key: version.uploadKey }))
-      .catch(() => null);
+    let head;
+    try {
+      head = await getS3Client().send(new HeadObjectCommand({ Bucket: bucket, Key: version.uploadKey }));
+    } catch (error) {
+      if (!isMissingObjectError(error)) throw error;
+
+      throw new PackageError('upload_missing', { key: version.uploadKey });
+    }
+
     if (!head || typeof head.ContentLength !== 'number')
       throw new PackageError('upload_missing', { key: version.uploadKey });
 
@@ -282,7 +336,7 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
     if (zipBytes > zipLimitBytes) throw new PackageError('file_too_large', { bytes: zipBytes });
 
     zipPath = await downloadObjectToTempFile(bucket, version.uploadKey, `${assetId}.zip`);
-    const header = await readFile(zipPath).then((buffer) => buffer.subarray(0, 4));
+    const header = await readZipHeader(zipPath);
     if (!hasZipMagicBytes(header)) throw new PackageError('not_a_zip');
 
     const contentSha256 = await sha256OfFile(zipPath);
@@ -348,7 +402,7 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
       if (uploaded % 100 === 0) await throwIfCancelRequested(mediaJobId);
     }
 
-    const indexKey = `${version.contentPrefix}/index.json`;
+    const indexKey = `${version.contentPrefix}.index.json`;
     const indexBody = Buffer.from(JSON.stringify(archive.names));
     await uploadBufferToBucket(bucket, indexKey, indexBody, 'application/json; charset=utf-8');
 

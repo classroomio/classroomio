@@ -121,9 +121,12 @@ export async function createScoAttempt(
     return created;
   } catch (error) {
     console.error('createScoAttempt error:', error);
-    throw new Error(
+    const wrapped = new Error(
       `Failed to create SCORM module try for attempt "${values.attemptId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+    (wrapped as { cause?: unknown }).cause = error;
+
+    throw wrapped;
   }
 }
 

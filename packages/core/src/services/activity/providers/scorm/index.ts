@@ -194,6 +194,7 @@ export const scormProvider: ActivityProvider = {
       },
       tx
     );
+    await updateActivity(activityId, {}, tx);
   },
   async launch(context: ActivityLaunchContext): Promise<ActivityLaunchResult> {
     return launchScormActivity(context);

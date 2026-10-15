@@ -342,6 +342,8 @@ export async function commitScormAttempt(
     const chain = await lockScoAttemptChain(scoAttemptId, tx);
     if (!chain) return { unknownTry: true as const };
 
+    if (chain.attempt.closedAt !== null) throw new AppError('Attempt is closed', ErrorCodes.NOT_FOUND, 410);
+
     const activityId = chain.attempt.activityId;
     const profileId = chain.attempt.profileId;
     if (commit.seq <= chain.scoAttempt.commitSeq)
@@ -415,6 +417,7 @@ export async function commitScormAttempt(
       return {
         saved: true,
         completedActivity: false,
+        ruleMet: false,
         progressChanged,
         activityId,
         profileId,
@@ -430,6 +433,7 @@ export async function commitScormAttempt(
       return {
         saved: true,
         completedActivity: false,
+        ruleMet: false,
         progressChanged,
         activityId,
         profileId,
@@ -444,6 +448,7 @@ export async function commitScormAttempt(
     return {
       saved: true,
       completedActivity,
+      ruleMet: true,
       progressChanged,
       activityId,
       profileId,
@@ -462,13 +467,20 @@ export async function commitScormAttempt(
     throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
   }
 
-  if (result.completedActivity) {
+  if ('ruleMet' in result && result.ruleMet) {
     const snapshot = await getComplianceSnapshot(result.activityId, result.profileId);
     await runActivityCompletionSideEffects(result.activityId, result.profileId, snapshot?.minutes);
   }
 
   if (!result.saved && 'rejected' in result && result.rejected) {
     await recordRuntimeEventBestEffort(scoAttemptId, 'error', { reason: 'stale_sequence', seq: commit.seq }, userAgent);
+
+    try {
+      const snapshot = await getComplianceSnapshot(result.activityId, result.profileId);
+      await runActivityCompletionSideEffects(result.activityId, result.profileId, snapshot?.minutes);
+    } catch (error) {
+      console.error('scormCompletionRetry error:', error);
+    }
 
     return { saved: false, completedActivity: false, progressChanged: false };
   }

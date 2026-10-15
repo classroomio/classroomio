@@ -1015,6 +1015,27 @@ export async function publishCourseImportDraftToExistingCourseService(
     const preferredLocale = draft.course.locale as TLocale;
     const bannerImageUrl = await resolvePublishBannerImage(courseTitle, overrides);
 
+    if (syncMode === 'replace') {
+      const [preSections, preActivities] = await Promise.all([
+        listCourseSections(course.id),
+        getActivitiesByCourseId(course.id)
+      ]);
+      const draftSectionIds = new Set(draft.sections.map((section) => section.externalId));
+      const removedWithPackages = preSections.filter(
+        (section) =>
+          !draftSectionIds.has(section.id) && preActivities.some((activity) => activity.sectionId === section.id)
+      );
+
+      if (removedWithPackages.length > 0) {
+        const names = removedWithPackages.map((section) => `"${section.title}"`).join(', ');
+        throw new AppError(
+          `Cannot remove ${names} because ${removedWithPackages.length === 1 ? 'it still holds' : 'they still hold'} packages`,
+          ErrorCodes.ACTIVITY_SECTION_REMOVED,
+          409
+        );
+      }
+    }
+
     await updateCourse(course.id, {
       title: courseTitle,
       description: courseDescription,

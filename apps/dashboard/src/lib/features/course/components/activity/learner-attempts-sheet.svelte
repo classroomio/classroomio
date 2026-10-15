@@ -93,19 +93,22 @@
     const organizationId = $currentOrg.id;
     if (!open || !organizationId || !courseId || !activityId || !profileId) return;
 
+    confirmingReset = false;
+
     const key = [courseId, activityId, profileId, organizationId].join('|');
     if (key === loadedKey) return;
 
     loadedKey = key;
-    confirmingReset = false;
     void activityApi.getLearnerAttempts(courseId, activityId, profileId);
   });
 
   function handleOpenChange(next: boolean) {
     open = next;
+    confirmingReset = false;
 
     if (!next) {
-      confirmingReset = false;
+      loadedKey = '';
+      activityApi.learnerAttempts = null;
     }
   }
 
@@ -117,11 +120,17 @@
       return;
     }
 
-    await activityApi.resetLearner(courseId, activityId, profileId);
+    try {
+      await activityApi.resetLearner(courseId, activityId, profileId);
 
-    if (activityApi.success) {
-      open = false;
-      await onReset();
+      if (activityApi.success) {
+        handleOpenChange(false);
+        await onReset();
+      } else {
+        confirmingReset = false;
+      }
+    } catch {
+      confirmingReset = false;
     }
   }
 </script>

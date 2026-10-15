@@ -2,22 +2,18 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { onDestroy, onMount } from 'svelte';
-  import { Badge } from '@cio/ui/base/badge';
   import { Button } from '@cio/ui/base/button';
   import * as Alert from '@cio/ui/base/alert';
   import { Empty } from '@cio/ui/custom/empty';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import MaximizeIcon from '@lucide/svelte/icons/maximize';
   import PackageIcon from '@lucide/svelte/icons/package';
   import { ContentType } from '@cio/utils/constants/content';
   import { activityApi, courseApi } from '$features/course/api';
-  import ContentNavigationActions from '$features/course/components/lesson/content-navigation-actions.svelte';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
   import ActivityPlayerModuleNav from '$features/course/components/activity/activity-player-module-nav.svelte';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { getCourseProgress, getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
-  import { isCourseMobileBottomNavVisible } from '$features/course/utils/mobile-bottom-nav';
   import { openCourseCompletionIfDone } from '$features/course/utils/toggle-lesson-completion';
   import { isTrustedPlayerMessage, parsePlayerMessage } from '$features/course/utils/scorm-utils';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -84,37 +80,11 @@
     return new Date(availableLaunch.expiresAt).getTime() <= now;
   });
 
-  const activityComplete = $derived.by(() => {
-    const item = getOrderedNavigableContent(courseApi.course).find(
-      (entry) => entry.type === ContentType.Activity && entry.id === activityId
-    );
-
-    return item?.isComplete ?? false;
-  });
-
-  const pill = $derived.by(() => {
-    if (availableLaunch?.mode === 'preview') return 'preview';
-    if (activityComplete) return 'completed';
-    if (availableLaunch?.mode === 'review') return 'review';
-    if ((availableLaunch?.units ?? []).some((unit) => !unit.completed && unit.scorePercent !== null)) {
-      return 'not_passed';
-    }
-
-    return 'in_progress';
-  });
-
-  const pillLabel = $derived(`course.navItem.lessons.activities.player.status_${pill}`);
-
   const modulesComplete = $derived.by(() => {
     if (!availableLaunch) return false;
 
     return availableLaunch.units.length > 0 && availableLaunch.units.every((unit) => unit.completed);
   });
-
-  const currentUnit = $derived(
-    availableLaunch?.units.find((unit) => unit.identifier === currentUnitIdentifier) ?? null
-  );
-  const showModuleCompleteCallout = $derived(terminated || (currentUnit?.completed ?? false));
 
   const nextCourseItem = $derived.by(() => {
     const items = getOrderedNavigableContent(courseApi.course);
@@ -122,15 +92,6 @@
 
     return index === -1 ? null : (items[index + 1] ?? null);
   });
-
-  const showMobileBottomNav = $derived(
-    isCourseMobileBottomNavVisible({
-      isCourseLearnerView: $isCourseLearnerView,
-      isMobile: isMobileStore.current,
-      isContentPage: true,
-      courseProgress: getCourseProgress(courseApi.course)
-    })
-  );
 
   const instructions = $derived((activityApi.activity?.instructions as string | null) ?? null);
 
@@ -386,14 +347,7 @@
   });
 </script>
 
-<div class="mb-20 flex w-full flex-col gap-4 pb-10">
-  <div class="flex flex-wrap items-center justify-between gap-2">
-    <ContentNavigationActions {courseId} {activityId} showPrevNext={!showMobileBottomNav} />
-    {#if availableLaunch}
-      <Badge variant={pill === 'completed' ? 'default' : 'secondary'}>{$t(pillLabel)}</Badge>
-    {/if}
-  </div>
-
+<div class="mb-6 flex w-full flex-col gap-4 pb-2">
   {#if lockReason}
     <StudentContentLockedNotice reason={lockReason} contentType={ContentType.Activity} />
   {:else if activityApi.launching && !launch}
@@ -578,22 +532,6 @@
             </Button>
           </div>
         {/if}
-      </Alert.Root>
-    {:else if showModuleCompleteCallout}
-      <Alert.Root>
-        <Alert.Title>{$t('course.navItem.lessons.activities.player.module_complete_title')}</Alert.Title>
-        <Alert.Description>{$t('course.navItem.lessons.activities.player.module_complete_body')}</Alert.Description>
-        <div class="mt-3">
-          <Button
-            size="sm"
-            onclick={() => {
-              const next = nextIncompleteModule();
-              if (next) void selectUnit(next.identifier);
-            }}
-          >
-            {$t('course.navItem.lessons.activities.player.next_module')}
-          </Button>
-        </div>
       </Alert.Root>
     {/if}
   {/if}

@@ -267,9 +267,12 @@ export async function createScormAttempt(
     return created;
   } catch (error) {
     console.error('createScormAttempt error:', error);
-    throw new Error(
+    const wrapped = new Error(
       `Failed to create SCORM attempt for activity "${values.activityId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
+    (wrapped as { cause?: unknown }).cause = error;
+
+    throw wrapped;
   }
 }
 

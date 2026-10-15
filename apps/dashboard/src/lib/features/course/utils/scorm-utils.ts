@@ -470,3 +470,48 @@ export function isTrustedPlayerMessage(eventOrigin: string, playerUrl: string): 
 
   return contentOrigin !== null && eventOrigin === contentOrigin;
 }
+
+export type ActivityStatusPill = {
+  variant: 'default' | 'secondary';
+  label: string;
+};
+
+/**
+ * Derives the status pill variant and translation key for a learner's
+ * activity attempt. Returns null for previews or unlaunched attempts.
+ */
+export function getActivityStatusPill(input: {
+  launch: { mode?: string; units?: Array<{ completed?: boolean; scorePercent?: number | null }> } | null;
+  isComplete: boolean;
+}): ActivityStatusPill | null {
+  const { launch, isComplete } = input;
+  if (launch?.mode === 'preview') return null;
+
+  if (isComplete) {
+    return {
+      variant: 'default',
+      label: 'course.navItem.lessons.activities.player.status_completed'
+    };
+  }
+
+  if (!launch) return null;
+
+  if (launch.mode === 'review') {
+    return {
+      variant: 'secondary',
+      label: 'course.navItem.lessons.activities.player.status_review'
+    };
+  }
+
+  if ((launch.units ?? []).some((unit) => !unit.completed && unit.scorePercent !== null)) {
+    return {
+      variant: 'secondary',
+      label: 'course.navItem.lessons.activities.player.status_not_passed'
+    };
+  }
+
+  return {
+    variant: 'secondary',
+    label: 'course.navItem.lessons.activities.player.status_in_progress'
+  };
+}

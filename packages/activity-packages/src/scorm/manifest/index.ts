@@ -217,6 +217,36 @@ function splitHrefSuffix(href: string): { path: string; suffix: string } {
   return { path: href.slice(0, index), suffix: href.slice(index) };
 }
 
+function normalizeHrefPath(rawPath: string): string | null {
+  let decoded = rawPath;
+
+  try {
+    decoded = decodeURIComponent(rawPath);
+  } catch {
+    decoded = rawPath;
+  }
+
+  const forward = decoded.replace(/\\/g, '/').normalize('NFC');
+  const trimmed = forward.startsWith('/') ? forward.slice(1) : forward;
+  const segments = trimmed.split('/');
+  const resolved: string[] = [];
+
+  for (const segment of segments) {
+    if (segment === '' || segment === '.') continue;
+
+    if (segment === '..') {
+      if (resolved.length === 0) return null;
+
+      resolved.pop();
+      continue;
+    }
+
+    resolved.push(segment);
+  }
+
+  return resolved.join('/');
+}
+
 interface UnitCollector {
   units: ScormPackageUnit[];
   warnings: Set<ScormPackageWarning>;
@@ -333,7 +363,12 @@ function collectUnits(
       }
 
       const { path: hrefPath, suffix } = splitHrefSuffix(combinedHref);
-      const storagePath = `${prefix}${hrefPath}`;
+      const normalizedHref = normalizeHrefPath(hrefPath);
+      if (normalizedHref === null) {
+        throw new PackageError('missing_launch', { identifier, href: combinedHref });
+      }
+
+      const storagePath = `${prefix}${normalizedHref}`;
       const exact = files.includes(storagePath);
       const fallback = exact ? storagePath : files.find((name) => name.toLowerCase() === storagePath.toLowerCase());
 

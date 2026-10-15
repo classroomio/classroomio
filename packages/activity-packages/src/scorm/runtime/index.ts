@@ -34,10 +34,16 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
+function isUnsafeSegment(segment: string): boolean {
+  return segment === '__proto__' || segment === 'constructor' || segment === 'prototype';
+}
+
 function getPath(cmi: ScormCmi, path: string): unknown {
   let current: unknown = cmi;
 
   for (const segment of path.split('.')) {
+    if (isUnsafeSegment(segment)) return undefined;
+
     if (Array.isArray(current) && /^\d+$/.test(segment)) {
       current = current[Number(segment)];
     } else if (isPlainObject(current)) {
@@ -52,6 +58,11 @@ function getPath(cmi: ScormCmi, path: string): unknown {
 
 function setPath(target: Record<string, unknown>, path: string, value: unknown): void {
   const segments = path.split('.');
+
+  for (const segment of segments) {
+    if (isUnsafeSegment(segment)) throw new PackageError('invalid_commit', { reason: 'unsafe_key' });
+  }
+
   let current: Record<string, unknown> | unknown[] = target;
 
   for (let index = 0; index < segments.length - 1; index += 1) {
@@ -103,6 +114,8 @@ function normalizeValue(value: unknown): unknown {
   const out: ScormCmi = {};
 
   for (const [key, entry] of Object.entries(value)) {
+    if (isUnsafeSegment(key)) throw new PackageError('invalid_commit', { reason: 'unsafe_key' });
+
     if (key.includes('.')) {
       setPath(out, key, normalizeValue(entry));
     } else {
@@ -243,6 +256,8 @@ function mergeValues(stored: unknown, incoming: unknown): unknown {
     const merged: ScormCmi = { ...stored };
 
     for (const [key, value] of Object.entries(incoming)) {
+      if (isUnsafeSegment(key)) continue;
+
       merged[key] = key in merged ? mergeValues(merged[key], value) : value;
     }
 
