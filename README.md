@@ -20,7 +20,7 @@ ClassroomIO is an intelligent customer Training platform that helps SaaS compani
 | Use Case | What You Can Do |
 |---|---|
 | **Customer Education** | Help customers understand your product, learn key features, complete onboarding, and get more value from your platform. |
-| **Partner Enablement** | Train resellers, implementation partners, and distributors on your products, processes, and standards. |
+| **Partner Training** | Train resellers, implementation partners, and distributors on your products, processes, and standards. |
 | **Employee Training** | Onboard employees, deliver internal training, and manage compliance and certification programs. |
 
 ### Key Features
