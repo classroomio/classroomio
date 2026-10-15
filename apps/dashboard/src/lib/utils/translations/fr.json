@@ -4331,7 +4331,16 @@
       "actions_menu": "Actions d'authentification par jeton"
     },
     "teams": {
-      "page_subtitle": "Invitez des collègues et contrôlez qui aide à gérer cette organisation."
+      "page_subtitle": "Invitez des collègues et contrôlez qui aide à gérer cette organisation.",
+      "permission": {
+        "title": "Vous n’avez pas l’autorisation de consulter cette page",
+        "description": "Seuls les administrateurs de l’organisation peuvent consulter et gérer l’équipe. Contactez un administrateur si vous avez besoin d’un accès."
+      },
+      "invite": {
+        "confirm_title": "Inviter des étudiants dans l’équipe ?",
+        "confirm_description": "Ces personnes sont déjà des étudiants de cette organisation : {emails}. Voulez-vous les inviter en tant que {role} ? Leur rôle ne changera qu’après acceptation de l’invitation.",
+        "existing": "Ces personnes font déjà partie de l’équipe : {members}. Utilisez le sélecteur de rôle dans Membres de l’équipe pour modifier leur rôle."
+      }
     },
     "ai_credits": {
       "sub_title": "Crédits IA",

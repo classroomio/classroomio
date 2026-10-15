@@ -4331,7 +4331,16 @@
       "actions_menu": "Akcje uwierzytelniania tokenu"
     },
     "teams": {
-      "page_subtitle": "Zaproś współpracowników i kontroluj, kto pomaga zarządzać tą organizacją."
+      "page_subtitle": "Zaproś współpracowników i kontroluj, kto pomaga zarządzać tą organizacją.",
+      "permission": {
+        "title": "Nie masz uprawnień do wyświetlania tej strony",
+        "description": "Tylko administratorzy organizacji mogą wyświetlać zespół i nim zarządzać. Jeśli potrzebujesz dostępu, skontaktuj się z administratorem."
+      },
+      "invite": {
+        "confirm_title": "Zaprosić uczniów do zespołu?",
+        "confirm_description": "Te osoby są już uczniami w tej organizacji: {emails}. Czy wysłać im zaproszenie z rolą {role}? Ich rola zmieni się dopiero po zaakceptowaniu zaproszenia.",
+        "existing": "Te osoby są już w zespole: {members}. Aby zmienić ich rolę, użyj wyboru roli na liście członków zespołu."
+      }
     },
     "ai_credits": {
       "sub_title": "Kredyty AI",

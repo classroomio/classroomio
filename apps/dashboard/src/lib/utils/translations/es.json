@@ -4331,7 +4331,16 @@
       "actions_menu": "Acciones de autenticación de token"
     },
     "teams": {
-      "page_subtitle": "Invita a compañeros de equipo y controla quién ayuda a administrar esta organización."
+      "page_subtitle": "Invita a compañeros de equipo y controla quién ayuda a administrar esta organización.",
+      "permission": {
+        "title": "No tienes permiso para ver esta página",
+        "description": "Solo los administradores de la organización pueden ver y gestionar el equipo. Contacta con un administrador si necesitas acceso."
+      },
+      "invite": {
+        "confirm_title": "¿Invitar a estudiantes al equipo?",
+        "confirm_description": "Estas personas ya son estudiantes de esta organización: {emails}. ¿Quieres invitarlas como {role}? Su rol solo cambiará cuando acepten la invitación.",
+        "existing": "Ya forman parte del equipo: {members}. Usa el selector de rol en Miembros del equipo para cambiar su rol."
+      }
     },
     "ai_credits": {
       "sub_title": "Créditos de IA",

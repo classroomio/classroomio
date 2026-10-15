@@ -848,7 +848,16 @@
       "actions_menu": "Token auth actions"
     },
     "teams": {
-      "page_subtitle": "Invite teammates and control who helps run this organization."
+      "permission": {
+        "title": "You don’t have permission to view this page",
+        "description": "Only organization administrators can view and manage the team. Contact an administrator if you need access."
+      },
+      "page_subtitle": "Invite teammates and control who helps run this organization.",
+      "invite": {
+        "confirm_title": "Invite Students to the team?",
+        "confirm_description": "These people are already Students in this organization: {emails}. Send them an invitation to become {role}? Their role will change only after they accept.",
+        "existing": "Already on the team: {members}. Use the role control in Team members to change their role."
+      }
     },
     "auth": {
       "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org.",

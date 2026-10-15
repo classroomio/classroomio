@@ -4331,7 +4331,16 @@
       "actions_menu": "Token-Authentifizierungsaktionen"
     },
     "teams": {
-      "page_subtitle": "Laden Sie Teammitglieder ein und steuern Sie, wer diese Organisation mitbetreibt."
+      "page_subtitle": "Laden Sie Teammitglieder ein und steuern Sie, wer diese Organisation mitbetreibt.",
+      "permission": {
+        "title": "Du hast keine Berechtigung, diese Seite anzuzeigen",
+        "description": "Nur Organisationsadministratoren können das Team anzeigen und verwalten. Wende dich an einen Administrator, wenn du Zugriff benötigst."
+      },
+      "invite": {
+        "confirm_title": "Studierende ins Team einladen?",
+        "confirm_description": "Diese Personen sind bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rolle ändert sich erst, wenn sie die Einladung annehmen.",
+        "existing": "Bereits im Team: {members}. Ändere ihre Rolle über die Rollenauswahl unter Teammitglieder."
+      }
     },
     "ai_credits": {
       "sub_title": "KI-Credits",

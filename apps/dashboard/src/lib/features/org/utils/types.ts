@@ -99,6 +99,10 @@ export type LoginActivityData = LoginActivitySuccess['data'];
 export type InviteTeamRequest = (typeof classroomio.organization)['team']['invite']['$post'];
 export type InviteTeamSuccess = Extract<InferResponseType<InviteTeamRequest>, { success: true }>;
 export type InviteTeamData = InviteTeamSuccess['data'];
+export type TeamInviteConfirmation = Pick<InferRequestType<InviteTeamRequest>['json'], 'emails' | 'roleId'> & {
+  organizationId: string;
+  studentEmails: InviteTeamData['studentEmails'];
+};
 
 export type DeleteTeamRequest = (typeof classroomio.organization)['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamRequest>, { success: true }>;
