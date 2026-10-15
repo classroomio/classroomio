@@ -167,7 +167,7 @@ export async function getPathJourney(
       const exercisesTotal = row.exercises_total ?? 0;
       const exercisesCompleted = row.exercises_completed ?? 0;
       const isComplete = Boolean(row.is_complete);
-      const isUnlocked = Boolean(row.is_unlocked);
+      const isUnlocked = Boolean(row.is_unlocked) || isComplete;
       const progress = toCourseProgress(lessonsCompleted + exercisesCompleted, lessonsTotal + exercisesTotal);
 
       return [

@@ -31,6 +31,8 @@ export type CourseInPathState = 'COMPLETED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'L
 export interface CourseInPathNode {
   title: string;
   state: CourseInPathState;
+  courseId: string;
+  href: string;
 }
 
 export interface CourseInPathNextInfo {

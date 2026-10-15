@@ -34,18 +34,18 @@
   }
 </script>
 
-<a
-  href={pathHref}
-  onclick={onClick}
-  title={`${pathName} — ${$t('learningPath.ribbon.view_path')}`}
+<div
   class="ui:bg-primary/10 ui:border-primary/25 ui:hover:border-primary/50 ui:max-w-full hidden min-w-9 items-center gap-2 overflow-hidden rounded-full border px-2.5 py-1 transition-colors md:inline-flex"
 >
-  <span
+  <a
+    href={pathHref}
+    onclick={onClick}
+    title={`${pathName} — ${$t('learningPath.ribbon.view_path')}`}
     class="ui:text-primary inline-flex shrink-0 items-center gap-1 text-[10px] font-semibold tracking-[0.06em] whitespace-nowrap uppercase"
   >
     <PathIcon size={14} strokeWidth={2.2} />
     <span class="hidden lg:inline">{$t('learningPath.ribbon.path_label')}</span>
-  </span>
+  </a>
 
   <div class="ui:overflow-hidden flex min-w-0 items-center">
     {#each nodes as node, index (index)}
@@ -57,27 +57,42 @@
         ></span>
       {/if}
 
-      <span
-        class="flex size-[20px] shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold {dotClass(
-          node,
-          index
-        )}"
-        title={node.title}
-      >
-        {#if index === safeCurrentIndex}
-          {index + 1}
-        {:else if node.state === 'COMPLETED'}
-          <CheckIcon class="size-2.5" strokeWidth={3} />
-        {:else if node.state === 'LOCKED'}
+      {#if node.state === 'LOCKED'}
+        <span
+          class="flex size-[20px] shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold {dotClass(
+            node,
+            index
+          )}"
+          title={node.title}
+        >
           <LockIcon class="size-2.5" />
-        {:else}
-          {index + 1}
-        {/if}
-      </span>
+        </span>
+      {:else}
+        <a
+          href={node.href}
+          class="ui:hover:border-primary flex size-[20px] shrink-0 cursor-pointer items-center justify-center rounded-full border text-[10px] font-semibold transition-colors {dotClass(
+            node,
+            index
+          )}"
+          title={node.title}
+          aria-label={node.title}
+        >
+          {#if index === safeCurrentIndex}
+            {index + 1}
+          {:else if node.state === 'COMPLETED'}
+            <CheckIcon class="size-2.5" strokeWidth={3} />
+          {:else}
+            {index + 1}
+          {/if}
+        </a>
+      {/if}
     {/each}
 
-    <span class="tnum ui:text-foreground ui:min-w-0 ml-2 truncate text-[11px] font-medium whitespace-nowrap">
+    <a
+      href={pathHref}
+      class="tnum ui:text-foreground ui:min-w-0 ml-2 truncate text-[11px] font-medium whitespace-nowrap"
+    >
       {positionLabel}
-    </span>
+    </a>
   </div>
-</a>
+</div>

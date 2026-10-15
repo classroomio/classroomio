@@ -612,7 +612,9 @@ class LearnerPathStore extends BaseApiWithErrors {
       const current = journey.courses[position];
       const nodes: CourseInPathNode[] = journey.courses.map((course) => ({
         title: course.title,
-        state: course.status
+        state: course.status,
+        courseId: course.courseId,
+        href: getStudentCourseContinuePath(course.courseId, journey.path.publicId ?? journey.path.id)
       }));
       const nextCourse = journey.courses
         .filter((course) => course.position > current.position && !course.isComplete)
