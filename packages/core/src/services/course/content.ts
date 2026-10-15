@@ -44,7 +44,7 @@ function normalizeDeleteItems<TItem extends { id: string; type: string }>(items:
   return [...exercises, ...lessons];
 }
 
-async function getCourseContentMap(courseId: string) {
+async function assertCourseContentItems(courseId: string, items: TCourseContentUpdate['items']) {
   const contentItems = await getCourseContentItems(courseId);
   const contentMap = new Map<string, CourseContentItemRow>();
 
@@ -53,12 +53,6 @@ async function getCourseContentMap(courseId: string) {
       contentMap.set(buildContentKey(item), item);
     }
   });
-
-  return contentMap;
-}
-
-async function assertCourseContentItems(courseId: string, items: TCourseContentUpdate['items']) {
-  const contentMap = await getCourseContentMap(courseId);
 
   const destinationSections = await getCourseSectionsByCourseId(courseId);
   const destinationSectionIds = new Set(destinationSections.map((section) => section.id));
@@ -85,6 +79,8 @@ async function assertCourseContentItems(courseId: string, items: TCourseContentU
       throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
     }
   });
+
+  return contentItems;
 }
 
 async function assertCourseSections(courseId: string, sections: NonNullable<TCourseContentReorder['sections']>) {
@@ -104,6 +100,38 @@ function mapContentBatchError(error: unknown): AppError | null {
   }
 
   return null;
+}
+
+function assertEffectiveRootOrders(contentItems: CourseContentItemRow[], payload: TCourseContentReorder) {
+  const sectionUpdates = new Map(payload.sections?.map((section) => [section.id, section.order]) ?? []);
+  const itemUpdates = new Map(payload.items?.map((item) => [buildContentKey(item), item]) ?? []);
+  const rootOrders: number[] = [];
+
+  contentItems.forEach((contentItem) => {
+    if (contentItem.type === ContentType.Section) {
+      const effectiveOrder = sectionUpdates.get(contentItem.id) ?? contentItem.order;
+      if (effectiveOrder !== null) {
+        rootOrders.push(effectiveOrder);
+      }
+
+      return;
+    }
+
+    const itemUpdate = itemUpdates.get(buildContentKey(contentItem));
+    const effectiveSectionId = itemUpdate?.sectionId === undefined ? contentItem.sectionId : itemUpdate.sectionId;
+    if (effectiveSectionId !== null) {
+      return;
+    }
+
+    const effectiveOrder = itemUpdate?.order ?? contentItem.order;
+    if (effectiveOrder !== null) {
+      rootOrders.push(effectiveOrder);
+    }
+  });
+
+  if (new Set(rootOrders).size !== rootOrders.length) {
+    throw new AppError('Top-level orders must be unique', ErrorCodes.VALIDATION_ERROR, 400);
+  }
 }
 
 async function transactionWithContentBatch<TResult>(runner: (tx: DbOrTxClient) => Promise<TResult>): Promise<TResult> {
@@ -157,9 +185,8 @@ export async function reorderCourseContent(
       await assertCourseSections(courseId, payload.sections);
     }
 
-    if (payload.items?.length) {
-      await assertCourseContentItems(courseId, payload.items);
-    }
+    const contentItems = await assertCourseContentItems(courseId, payload.items ?? []);
+    assertEffectiveRootOrders(contentItems, payload);
 
     return await transactionWithContentBatch(async (tx) => {
       const updatedSections = payload.sections?.length ? await applyCourseSectionOrderUpdates(tx, payload.sections) : 0;
