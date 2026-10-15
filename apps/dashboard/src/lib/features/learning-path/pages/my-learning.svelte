@@ -14,115 +14,71 @@
   import { currentOrg } from '$lib/utils/store/org';
   import { getStudentCourseProgressPercent, isStudentCourseComplete } from '$features/course/utils/compliance-utils';
   import { learnerPathStore } from '../api/learning-path.svelte';
-  import { getMockPathById } from '../utils/mock-data';
-  import type { LearningPathWithEnrollment, PathDifficulty } from '../utils/types';
+  import type { EnrolledPath } from '$features/lms/utils/types';
   import type { CourseLibraryItem, CourseStatus, LearningPathView } from '../components/types';
   import CurrentlyLearningHero from '../components/currently-learning-hero.svelte';
   import LearningPathRow from '../components/learning-path-row.svelte';
   import LibraryToolbar from '../components/library-toolbar.svelte';
   import CourseLibraryRow from '../components/course-library-row.svelte';
 
-  type LibraryEntry = { kind: 'path'; path: LearningPathWithEnrollment } | { kind: 'course'; item: CourseLibraryItem };
+  type LibraryEntry = { kind: 'path'; path: EnrolledPath } | { kind: 'course'; item: CourseLibraryItem };
 
   let status = $state<CourseStatus | 'ALL'>('ALL');
-  let difficulty = $state<PathDifficulty | 'ALL'>('ALL');
   let view = $state<LearningPathView>('grid');
-
-  const COURSE_DIFFICULTIES: PathDifficulty[] = ['Beginner', 'Intermediate', 'Advanced'];
-
-  function difficultyForId(id: string): PathDifficulty {
-    const sum = Array.from(id).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return COURSE_DIFFICULTIES[sum % COURSE_DIFFICULTIES.length];
-  }
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    if (!learnerPathStore.hasLoaded) {
-      learnerPathStore.listEnrolled();
-    }
-    coursesApi.getEnrolledCourses();
+    learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id);
   });
 
   const isLoading = $derived(learnerPathStore.isLoading && learnerPathStore.enrolledPaths.length === 0);
 
-  const pathCompletionProgress = $derived((path: LearningPathWithEnrollment) => {
-    const enrollment = path.enrollment;
-    const done = enrollment?.coursesCompleted ?? 0;
-    const total = enrollment?.totalCourses ?? 0;
-
+  const pathCompletionProgress = $derived((path: EnrolledPath) => {
     return {
-      progressPercent: enrollment?.progressPercent ?? 0,
-      coursesCompleted: done,
-      courseCount: total
+      progressPercent: path.progress,
+      coursesCompleted: path.completedItems,
+      courseCount: path.totalItems
     };
   });
 
   const filteredPaths = $derived(
     learnerPathStore.enrolledPaths.filter((path) => {
-      if (status !== 'ALL' && path.enrollment?.state !== status) return false;
-      if (difficulty !== 'ALL' && path.difficulty !== difficulty) return false;
+      if (status !== 'ALL' && learnerPathStore.getPathStatus(path) !== status) return false;
 
       return true;
     })
   );
 
-  const pathCourseItems = $derived.by<CourseLibraryItem[]>(() =>
-    learnerPathStore.enrolledPaths.flatMap((path) => {
-      const mockPath = getMockPathById(path.id);
+  const standaloneCourseItems = $derived.by<CourseLibraryItem[]>(() =>
+    coursesApi.enrolledCourses.map((course) => {
+      const progressPercent = isStudentCourseComplete(course) ? 100 : getStudentCourseProgressPercent(course);
+      const state: CourseStatus = isStudentCourseComplete(course)
+        ? 'COMPLETED'
+        : progressPercent > 0
+          ? 'IN_PROGRESS'
+          : 'NOT_STARTED';
 
-      return learnerPathStore.getPathCourses(path).map((course) => ({
-        id: course.courseId,
+      return {
+        id: course.id,
         title: course.title,
-        description: mockPath?.courses.find((item) => item.id === course.courseId)?.description ?? '',
-        coverGradient: course.coverGradient,
-        coverImage: course.coverImage,
-        difficulty: path.difficulty,
-        status: (course.state === 'LOCKED' ? 'NOT_STARTED' : course.state) as CourseStatus,
-        progressPercent: course.progressPercent,
-        partOfPath: { id: path.id, name: path.name, href: `/lms/paths/${path.id}` },
-        href: `/courses/${course.courseId}/lessons?next=true`,
-        lessonCount: course.lessonCount,
-        exerciseCount: course.exerciseCount,
-        courseType: course.courseType
-      }));
+        description: course.description ?? '',
+        coverImage: course.logo || undefined,
+        status: state,
+        progressPercent,
+        progressRate: course.progressRate ?? 0,
+        partOfPath: null,
+        href: `/courses/${course.id}/lessons?next=true`,
+        lessonCount: course.lessonCount ?? undefined,
+        exerciseCount: course.exerciseCount ?? undefined,
+        courseType: course.type ?? undefined
+      };
     })
   );
-
-  const standaloneCourseItems = $derived.by<CourseLibraryItem[]>(() =>
-    coursesApi.enrolledCourses
-      .filter((course) => !pathCourseItems.some((item) => item.id === course.id))
-      .map((course) => {
-        const progressPercent = isStudentCourseComplete(course) ? 100 : getStudentCourseProgressPercent(course);
-        const state: CourseStatus = isStudentCourseComplete(course)
-          ? 'COMPLETED'
-          : progressPercent > 0
-            ? 'IN_PROGRESS'
-            : 'NOT_STARTED';
-
-        return {
-          id: course.id,
-          title: course.title,
-          description: course.description ?? '',
-          coverImage: course.logo || undefined,
-          difficulty: difficultyForId(course.id),
-          status: state,
-          progressPercent,
-          partOfPath: null,
-          href: `/courses/${course.id}/lessons?next=true`,
-          lessonCount: course.lessonCount ?? undefined,
-          exerciseCount: course.exerciseCount ?? undefined,
-          courseType: course.type ?? undefined
-        };
-      })
-  );
-
-  const allCourseItems = $derived([...pathCourseItems, ...standaloneCourseItems]);
 
   const filteredCourses = $derived(
     standaloneCourseItems.filter((item) => {
       if (status !== 'ALL' && item.status !== status) return false;
-      if (difficulty !== 'ALL' && item.difficulty !== difficulty) return false;
 
       return true;
     })
@@ -138,14 +94,18 @@
   const activePath = $derived(learnerPathStore.activePath);
 
   const activeCourse = $derived(
-    allCourseItems
+    standaloneCourseItems
       .filter((item) => item.status === 'IN_PROGRESS')
       .sort((a, b) => b.progressPercent - a.progressPercent)[0] ?? null
   );
 
   const heroType = $derived.by<'path' | 'course' | null>(() => {
+    const activePathCompleted = activePath ? learnerPathStore.getPathStatus(activePath) === 'COMPLETED' : false;
+
     if (activePath && activeCourse) {
-      const pathProgress = activePath.enrollment?.progressPercent ?? 0;
+      if (activePathCompleted) return 'course';
+
+      const pathProgress = activePath.progress ?? 0;
       return pathProgress >= activeCourse.progressPercent ? 'path' : 'course';
     }
     if (activePath) return 'path';
@@ -156,17 +116,9 @@
   const courseLessonsLabel = $derived.by(() => {
     if (!activeCourse) return '';
 
-    const path = learnerPathStore.enrolledPaths.find((enrolled) =>
-      learnerPathStore.getPathCourses(enrolled).some((c) => c.courseId === activeCourse.id)
-    );
-
-    if (!path) return '';
-
-    const course = path.courses.find((c) => c.id === activeCourse.id);
-    if (!course) return '';
-
-    const done = course.lessonsCompleted;
-    const total = course.lessonCount;
+    const done = activeCourse.progressRate ?? 0;
+    const total = activeCourse.lessonCount ?? 0;
+    if (!total) return '';
 
     return `${done} ${$t('learningPath.card.of')} ${total} ${$t('learningPath.enrollment.lessons_label')}`;
   });
@@ -224,13 +176,13 @@
       </div>
       <CurrentlyLearningHero
         variant="path"
+        pathId={activePath.id}
         name={activePath.name}
-        coverGradient={activePath.coverGradient}
         coverImage={activePath.coverImage}
         courseCount={pathCompletionProgress(activePath).courseCount}
         progressPercent={pathCompletionProgress(activePath).progressPercent}
         coursesCompleted={pathCompletionProgress(activePath).coursesCompleted}
-        href={`/lms/paths/${activePath.id}`}
+        href={`/lms/paths/${activePath.publicId ?? activePath.id}`}
       />
     </section>
   {:else if heroType === 'course' && activeCourse}
@@ -242,10 +194,7 @@
         variant="course"
         title={activeCourse.title}
         href={activeCourse.href}
-        coverGradient={activeCourse.coverGradient}
         coverImage={activeCourse.coverImage}
-        partOfPathName={activeCourse.partOfPath?.name}
-        pathHref={activeCourse.partOfPath?.href}
         progressPercent={activeCourse.progressPercent}
         lessonsLabel={courseLessonsLabel}
       />
@@ -255,7 +204,7 @@
   {#if hasAnyItem}
     <section>
       <div class="mb-4">
-        <LibraryToolbar bind:status bind:difficulty bind:view />
+        <LibraryToolbar bind:status bind:view />
       </div>
 
       {#if combinedItems.length === 0}
@@ -270,15 +219,14 @@
             {#if entry.kind === 'path'}
               <LearningPathCard
                 isLMS
-                href={`/lms/paths/${entry.path.id}`}
+                href={`/lms/paths/${entry.path.publicId ?? entry.path.id}`}
                 name={entry.path.name}
-                description={entry.path.description}
-                coverGradient={entry.path.coverGradient}
+                description={entry.path.description ?? ''}
                 coverImage={entry.path.coverImage}
                 courseCount={pathCompletionProgress(entry.path).courseCount}
                 progressPercent={pathCompletionProgress(entry.path).progressPercent}
                 coursesCompleted={pathCompletionProgress(entry.path).coursesCompleted}
-                certificateEarned={Boolean(entry.path.enrollment?.certificateId)}
+                certificateEarned={learnerPathStore.hasPathCertificate(entry.path.id)}
                 labels={learningPathCardLabels}
               />
             {:else}
@@ -292,7 +240,6 @@
                 visibilityBadge={toCourseCardBadge(getCourseVisibilityBadgeMeta(entry.item.courseType), $t)}
                 status={entry.item.status}
                 progressPercent={entry.item.progressPercent}
-                partOfPath={entry.item.partOfPath}
                 lessonCount={entry.item.lessonCount}
                 exerciseCount={entry.item.exerciseCount}
                 labels={courseCardLabels}
@@ -301,30 +248,28 @@
           {/each}
         </div>
       {:else}
-        <div class="flex flex-col gap-3 divide-y rounded-md border">
+        <div class="flex flex-col divide-y rounded-md border">
           {#each combinedItems as entry (entry.kind === 'path' ? entry.path.id : entry.item.id)}
             {#if entry.kind === 'path'}
               <LearningPathRow
-                href={`/lms/paths/${entry.path.id}`}
+                pathId={entry.path.id}
+                href={`/lms/paths/${entry.path.publicId ?? entry.path.id}`}
                 name={entry.path.name}
-                description={entry.path.description}
-                coverGradient={entry.path.coverGradient}
+                description={entry.path.description ?? ''}
                 coverImage={entry.path.coverImage}
                 courseCount={pathCompletionProgress(entry.path).courseCount}
                 progressPercent={pathCompletionProgress(entry.path).progressPercent}
                 coursesCompleted={pathCompletionProgress(entry.path).coursesCompleted}
-                certificateEarned={Boolean(entry.path.enrollment?.certificateId)}
+                certificateEarned={learnerPathStore.hasPathCertificate(entry.path.id)}
               />
             {:else}
               <CourseLibraryRow
                 href={entry.item.href}
                 title={entry.item.title}
                 description={entry.item.description}
-                coverGradient={entry.item.coverGradient}
                 coverImage={entry.item.coverImage}
                 status={entry.item.status}
                 progressPercent={entry.item.progressPercent}
-                partOfPath={entry.item.partOfPath}
                 lessonCount={entry.item.lessonCount}
                 exerciseCount={entry.item.exerciseCount}
                 courseType={entry.item.courseType}
@@ -337,6 +282,10 @@
   {/if}
 
   {#if !hasAnyItem}
-    <Empty icon={PathIcon} title={$t('learningPath.empty.title')} description={$t('learningPath.empty.description')} />
+    <Empty
+      icon={PathIcon}
+      title={$t('learningPath.empty.library_empty_title')}
+      description={$t('learningPath.empty.library_empty_description')}
+    />
   {/if}
 {/if}

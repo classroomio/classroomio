@@ -1,12 +1,8 @@
-export type LearningPathStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
-
 export type LearningPathCourseState = 'LOCKED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
 
 export type VisitorAccess = 'teaser' | 'syllabus' | 'preview';
 
 export type PathDifficulty = 'Beginner' | 'Intermediate' | 'Advanced';
-
-export type PathDurationBucket = 'Under 4h' | '4-10h' | '10h+';
 
 export interface LearningPathInstructor {
   id: string;
@@ -55,67 +51,6 @@ export interface LearningPathExerciseOutlineItem {
   isPreview: boolean;
 }
 
-export interface LearningPathCourse {
-  id: string;
-  title: string;
-  description: string;
-  order: number;
-  slug?: string;
-  coverImage?: string;
-  coverGradient?: string;
-  courseType?: string;
-  lessonCount: number;
-  exerciseCount: number;
-  lessonsCompleted: number;
-  exercisesCompleted: number;
-  lessons?: LearningPathLessonOutlineItem[];
-  exercises?: LearningPathExerciseOutlineItem[];
-  outcomeBullets: string[];
-  durationHours: number;
-  cost: number;
-}
-
-export interface LearningPathMember {
-  id: string;
-  pathId: string;
-  profileId: string;
-  name: string;
-  email: string;
-  avatarUrl?: string;
-  role: 'ADMIN' | 'TUTOR' | 'STUDENT';
-  enrolledAt: string;
-  completedAt?: string | null;
-  certificateIssuedAt?: string | null;
-  certificateId?: string | null;
-}
-
-export interface LearningPath {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  coverImage?: string;
-  coverGradient?: string;
-  status: LearningPathStatus;
-  cost: number;
-  currency: string;
-  showSavings: boolean;
-  sequentialUnlock: boolean;
-  selfEnrollment: boolean;
-  autoEnroll: boolean;
-  certificateEnabled: boolean;
-  certificateTitle: string;
-  certificateIssuer: string;
-  difficulty: PathDifficulty;
-  createdByProfileId: string;
-  createdAt: string;
-  updatedAt: string;
-  landing: LearningPathLanding;
-  instructors: LearningPathInstructor[];
-  courses: LearningPathCourse[];
-  members: LearningPathMember[];
-}
-
 export type LearningPathCourseProgress = {
   courseId: string;
   courseIndex: number;
@@ -133,24 +68,6 @@ export type LearningPathCourseProgress = {
   coverImage?: string;
   courseType?: string;
 };
-
-export type LearningPathEnrollment = {
-  pathId: string;
-  memberId: string;
-  enrolledAt: string;
-  completedAt?: string | null;
-  certificateIssuedAt?: string | null;
-  certificateId?: string | null;
-  progressPercent: number;
-  coursesCompleted: number;
-  totalCourses: number;
-  currentCourse: LearningPathCourseProgress | null;
-  state: 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
-};
-
-export interface LearningPathWithEnrollment extends LearningPath {
-  enrollment?: LearningPathEnrollment | null;
-}
 
 export interface FilterOption {
   value: string;
@@ -181,6 +98,24 @@ export type GetLearningPathDetailRequest = (typeof classroomio)['learning-path']
 export type UpdateLearningPathRequest = (typeof classroomio)['learning-path'][':pathId']['$put'];
 export type DeleteLearningPathRequest = (typeof classroomio)['learning-path'][':pathId']['$delete'];
 export type EnrollInLearningPathRequest = (typeof classroomio)['learning-path'][':pathId']['enroll']['$post'];
+export type ListPublicLearningPathsRequest = (typeof classroomio.organization)['learning-paths']['public']['$get'];
+export type ListPublicLearningPathsSuccess = Extract<
+  InferResponseType<ListPublicLearningPathsRequest>,
+  { success: true }
+>;
+export type PublicLearningPathItem = ListPublicLearningPathsSuccess['data']['learningPaths'][number];
+export type GetPublicLearningPathRequest = (typeof classroomio)['learning-path']['public'][':slug']['$get'];
+export type GetPublicLearningPathSuccess = Extract<InferResponseType<GetPublicLearningPathRequest>, { success: true }>;
+export type PublicLearningPathDetail = GetPublicLearningPathSuccess['data'];
+export type PublicLearningPathDetailCourse = PublicLearningPathDetail['courses'][number];
+export type ExplorePathItem = {
+  id: string;
+  name: string;
+  description: string;
+  coverImage?: string | null;
+  courseCount: number;
+  href: string;
+};
 export type AddPathCoursesRequest = (typeof classroomio)['learning-path'][':pathId']['courses']['$post'];
 export type ReorderPathCoursesRequest = (typeof classroomio)['learning-path'][':pathId']['courses']['order']['$put'];
 export type RemovePathCourseRequest =

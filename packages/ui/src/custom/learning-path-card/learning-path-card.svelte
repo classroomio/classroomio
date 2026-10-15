@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { Badge, type BadgeVariant } from '../../base/badge';
   import { Button } from '../../base/button';
   import LearningPathBadge from './learning-path-badge.svelte';
@@ -38,8 +39,8 @@
     coverImage?: string;
     courseCount: number;
     totalHours?: number;
-    progressPercent: number;
-    coursesCompleted: number;
+    progressPercent?: number;
+    coursesCompleted?: number;
     certificateEarned?: boolean;
     certificateEarnedAt?: string | null;
     status?: LearningPathCardStatus;
@@ -50,6 +51,10 @@
     isAdmin?: boolean;
     isCertificateView?: boolean;
     onExploreClick?: () => void;
+    /** Admin action menu (e.g. edit/delete dropdown), rendered over the cover */
+    overlay?: Snippet;
+    /** Extra row below the action row (e.g. publish badge + learner counts) */
+    footer?: Snippet;
     labels: LearningPathCardLabels;
   }
 
@@ -61,8 +66,8 @@
     coverImage,
     courseCount,
     totalHours,
-    progressPercent,
-    coursesCompleted,
+    progressPercent = 0,
+    coursesCompleted = 0,
     certificateEarned = false,
     certificateEarnedAt,
     status = 'ACTIVE',
@@ -73,6 +78,8 @@
     isAdmin = false,
     isCertificateView = false,
     onExploreClick,
+    overlay,
+    footer,
     labels
   }: Props = $props();
 
@@ -147,13 +154,13 @@
 <div class="ui:group/stack ui:relative ui:mx-auto ui:w-full">
   <!-- Stacked card underlay -->
   <div
-    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:transition-all ui:duration-300 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2 ui:group-hover/stack:bg-primary/65"
+    class="ui:pointer-events-none ui:absolute ui:inset-0 ui:-translate-x-1.5 ui:translate-y-1.5 ui:rounded-sm ui:border ui:border-border ui:transition-all ui:duration-300 ui:group-hover/stack:-translate-x-2 ui:group-hover/stack:translate-y-2 ui:group-hover/stack:border-primary/65"
     aria-hidden="true"
   ></div>
 
   <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
   <div
-    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:group-hover/stack:translate-x-0.5 ui:group-hover/stack:-translate-y-0.5"
+    class="ui:relative ui:flex ui:flex-col ui:overflow-hidden ui:rounded-sm ui:border ui:bg-card ui:transition-colors ui:group-hover/stack:translate-x-0.5 ui:group-hover/stack:-translate-y-0.5 ui:group-hover/stack:border-primary/65"
     onclick={isExploreClickable ? handleCardClick : undefined}
     onkeydown={isExploreClickable
       ? (e) => {
@@ -193,6 +200,11 @@
         onCover
         class="ui:rounded-sm ui:border-none ui:absolute ui:top-3 ui:left-3"
       />
+      {#if overlay}
+        <div class="ui:absolute ui:top-3 ui:right-3 ui:z-20" onclick={(event) => event.stopPropagation()}>
+          {@render overlay()}
+        </div>
+      {/if}
     </div>
 
     <!-- Body -->
@@ -207,19 +219,21 @@
         {description}
       </p>
 
-      <div class="ui:flex ui:items-center ui:gap-3 ui:text-xs ui:text-muted-foreground">
-        <span class="ui:inline-flex ui:items-center ui:gap-1">
-          <BookIcon class="ui:size-3.5" />
-          {courseCount}
-          {courseCount === 1 ? labels.course : labels.courses}
-        </span>
-        {#if showCertificateBadge}
+      {#if surface !== 'certificate'}
+        <div class="ui:flex ui:items-center ui:gap-3 ui:text-xs ui:text-muted-foreground">
           <span class="ui:inline-flex ui:items-center ui:gap-1">
-            <CertificateIcon class="ui:size-3.5" />
-            {labels.certificateEarned}
+            <BookIcon class="ui:size-3.5" />
+            {courseCount}
+            {courseCount === 1 ? labels.course : labels.courses}
           </span>
-        {/if}
-      </div>
+          {#if showCertificateBadge}
+            <span class="ui:inline-flex ui:items-center ui:gap-1">
+              <CertificateIcon class="ui:size-3.5" />
+              {labels.certificateEarned}
+            </span>
+          {/if}
+        </div>
+      {/if}
 
       {#if showEarnedAt}
         <p class="ui:text-xs ui:text-muted-foreground">
@@ -284,6 +298,9 @@
           </Button>
         {/if}
       </div>
+      {#if footer}
+        <div class="ui:relative ui:z-10 ui:mt-2">{@render footer()}</div>
+      {/if}
     </div>
   </div>
 </div>

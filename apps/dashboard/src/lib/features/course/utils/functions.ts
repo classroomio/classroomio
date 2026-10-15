@@ -3,6 +3,21 @@ import type { CourseMembers, SubmissionAnswer } from './types';
 import type { AnswerData } from '@cio/question-types';
 import type { Question } from '../types';
 import { ROUTES } from './constants';
+import { page } from '$app/state';
+
+const PATH_VISIT_PREFIX_RE = /^\/paths\/([^/]+)\/courses(?:\/|$)/;
+
+export function getPathPublicIdFromPath(pathname: string = page.url.pathname): string | null {
+  const match = pathname.match(PATH_VISIT_PREFIX_RE);
+
+  return match ? match[1] : null;
+}
+
+export function getCourseRouteBase(pathname: string = page.url.pathname): string {
+  const publicId = getPathPublicIdFromPath(pathname);
+
+  return publicId ? `/paths/${publicId}/courses` : `/${ROUTES.COURSES}`;
+}
 
 export function getGroupMemberId(people: CourseMembers, profileId: string): string | undefined {
   const groupMember = people.find((person) => person.profileId === profileId);
@@ -10,8 +25,8 @@ export function getGroupMemberId(people: CourseMembers, profileId: string): stri
   return groupMember?.id;
 }
 
-export function getNavItemRoute(courseId, routeId?: string) {
-  const path = `/${ROUTES.COURSES}/${courseId}`;
+export function getNavItemRoute(courseId, routeId?: string, base?: string) {
+  const path = `${base ?? getCourseRouteBase()}/${courseId}`;
 
   if (!routeId) {
     return path;
@@ -20,8 +35,8 @@ export function getNavItemRoute(courseId, routeId?: string) {
   return `${path}/${routeId}`;
 }
 
-export function getLessonsRoute(courseId, lessonId?: string) {
-  const path = getNavItemRoute(courseId, ROUTES.LESSONS);
+export function getLessonsRoute(courseId, lessonId?: string, base?: string) {
+  const path = getNavItemRoute(courseId, ROUTES.LESSONS, base);
 
   if (!lessonId) {
     return path;
@@ -33,10 +48,11 @@ export function getLessonsRoute(courseId, lessonId?: string) {
 export function getActiveCourseNavKey(pathname: string, courseId: string): string | null {
   if (!courseId) return null;
 
+  const normalized = pathname.replace(PATH_VISIT_PREFIX_RE, `/${ROUTES.COURSES}/`);
   const base = `/${ROUTES.COURSES}/${courseId}`;
-  if (!pathname.startsWith(base)) return null;
+  if (!normalized.startsWith(base)) return null;
 
-  const rest = pathname.slice(base.length).replace(/^\//, '');
+  const rest = normalized.slice(base.length).replace(/^\//, '');
   const segment = rest.split('/')[0];
 
   if (!segment) return 'course.navItems.nav_news_feed';

@@ -1,45 +1,81 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { onMount } from 'svelte';
   import { Spinner } from '@cio/ui/base/spinner';
   import { Empty } from '@cio/ui/custom/empty';
   import { Button } from '@cio/ui/base/button';
   import { PathIcon } from '@cio/ui/custom/moving-icons';
   import { t } from '$lib/utils/functions/translations';
   import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
+  import { currentOrg } from '$lib/utils/store/org';
   import { learnerPathStore } from '../api/learning-path.svelte';
-  import { getMockPathById, getCourseProgressList } from '../utils/mock-data';
+  import type { LearningPathCourseProgress } from '../utils/types';
   import LearningPathHead from '../components/learning-path-head.svelte';
   import PathStepper from '../components/path-stepper.svelte';
 
   const authPathId = $derived(page.params.id);
 
-  onMount(() => {
+  let journeyRequestedFor = $state<string | null>(null);
+  let catalogRequested = $state(false);
+
+  $effect(() => {
+    if (!authPathId) return;
+
+    journeyRequestedFor = authPathId;
     learnerPathStore.ensureSelectedPath(authPathId);
+    if ($currentOrg.id) {
+      catalogRequested = true;
+      learnerPathStore.loadCatalogPaths();
+      learnerPathStore.listCertificates();
+    }
   });
 
-  const path = $derived(learnerPathStore.getPath(authPathId) ?? getMockPathById(authPathId));
+  const journey = $derived(learnerPathStore.selectedJourney);
+  const path = $derived(journey?.path ?? null);
 
-  const totalHours = $derived((path?.courses ?? []).reduce((acc, course) => acc + course.durationHours, 0));
-  const courses = $derived(path ? getCourseProgressList(path) : []);
-  const coursesCompleted = $derived(courses.filter((course) => course.state === 'COMPLETED').length);
-  const progressPercent = $derived(
-    path && path.courses.length > 0 ? Math.round((coursesCompleted / path.courses.length) * 100) : 0
+  const loadSettled = $derived(journeyRequestedFor === authPathId && catalogRequested && !learnerPathStore.isLoading);
+
+  const previewPath = $derived(
+    journey
+      ? null
+      : (learnerPathStore.catalogPaths.find((item) => item.id === authPathId || item.publicId === authPathId) ?? null)
   );
+
+  const courses = $derived<LearningPathCourseProgress[]>(
+    (journey?.courses ?? []).map((course, index) => ({
+      courseId: course.courseId,
+      courseIndex: index,
+      order: course.position || index + 1,
+      title: course.title,
+      state: course.status,
+      progressPercent: course.progress,
+      lessonCount: course.lessonsTotal,
+      exerciseCount: course.exercisesTotal,
+      lessonsCompleted: course.lessonsCompleted,
+      exercisesCompleted: course.exercisesCompleted,
+      durationHours: 0,
+      slug: course.slug ?? undefined,
+      coverImage: course.coverImage || course.logo || undefined
+    }))
+  );
+  const coursesCompleted = $derived(journey?.completedCourses ?? 0);
+  const courseCount = $derived(journey?.totalCourses ?? 0);
+  const progressPercent = $derived(journey?.progress ?? 0);
   const currentCourse = $derived(
-    courses.find((course) => course.state === 'IN_PROGRESS') ??
+    courses.find((course) => course.courseId === journey?.currentCourseId) ??
+      courses.find((course) => course.state === 'IN_PROGRESS') ??
       courses.find((course) => course.state === 'NOT_STARTED') ??
       courses[0] ??
       null
   );
-  const certificateEarned = $derived(Boolean(path?.enrollment?.certificateId));
+  const certificateEarned = $derived(journey?.certificate != null);
 
   const headCtaHref = $derived.by(() => {
-    if (coursesCompleted === path?.courses.length && path && path.courses.length > 0) {
+    if (courseCount > 0 && coursesCompleted === courseCount) {
       return '/lms/certificates';
     }
     if (currentCourse) {
-      return getStudentCourseContinuePath(currentCourse.courseId);
+      return getStudentCourseContinuePath(currentCourse.courseId, journey?.path.publicId ?? authPathId);
     }
     return `/lms/paths/${authPathId}`;
   });
@@ -48,15 +84,49 @@
     const course = courses.find((c) => c.order === order);
     if (!course) return '/lms/mylearning';
 
-    return getStudentCourseContinuePath(course.courseId);
+    return getStudentCourseContinuePath(course.courseId, journey?.path.publicId ?? authPathId);
+  }
+
+  $effect(() => {
+    if (
+      loadSettled &&
+      learnerPathStore.selectedJourneyLoaded &&
+      learnerPathStore.selectedJourneyForbidden &&
+      !journey &&
+      previewPath
+    ) {
+      goto('/lms/explore');
+    }
+  });
+
+  function retryJourney() {
+    learnerPathStore.ensureSelectedPath(authPathId);
   }
 </script>
 
-{#if learnerPathStore.isLoading && !path}
+{#if !journey && !loadSettled}
   <div class="flex min-h-64 items-center justify-center">
     <Spinner />
   </div>
-{:else if !path}
+{:else if previewPath}
+  {#if learnerPathStore.selectedJourneyLoaded && !learnerPathStore.selectedJourneyForbidden}
+    <Empty
+      icon={PathIcon}
+      title={$t('learningPath.workspace.load_failed_title')}
+      description={$t('learningPath.workspace.load_failed_description')}
+    >
+      {#snippet children()}
+        <Button onclick={retryJourney} disabled={learnerPathStore.isLoading}>
+          {$t('certificates.retry')}
+        </Button>
+      {/snippet}
+    </Empty>
+  {:else}
+    <div class="flex min-h-64 items-center justify-center">
+      <Spinner />
+    </div>
+  {/if}
+{:else if !journey}
   <Empty
     icon={PathIcon}
     title={$t('learningPath.empty.path_not_found_title')}
@@ -68,14 +138,14 @@
   </Empty>
 {:else}
   <LearningPathHead
+    pathId={path.id}
     name={path.name}
-    description={path.description}
-    coverGradient={path.coverGradient}
-    coverImage={path.coverImage}
-    courseCount={path.courses.length}
-    {totalHours}
+    description={path.description ?? ''}
+    coverImage={path.coverImage ?? undefined}
+    {courseCount}
+    totalHours={0}
     sequentialUnlock={path.sequentialUnlock}
-    certificateEnabled={path.certificateEnabled}
+    certificateEnabled={journey.certificateEnabled}
     {progressPercent}
     {coursesCompleted}
     nextCourseTitle={currentCourse?.title}
@@ -98,8 +168,9 @@
   <PathStepper
     {courses}
     {courseHref}
-    certificateEnabled={path.certificateEnabled}
-    certificateTitle={path.certificateTitle}
+    publicId={journey?.path.publicId ?? authPathId}
+    certificateEnabled={journey.certificateEnabled}
+    certificateTitle={path.name}
     {certificateEarned}
   />
 {/if}

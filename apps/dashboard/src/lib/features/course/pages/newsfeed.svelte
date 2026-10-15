@@ -1,11 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { NewsFeedLoader, NewsFeedCard, NewFeedModal } from '$features/course/components/newsfeed';
   import { courseApi } from '$features/course/api';
   import { RoleBasedSecurity } from '$features/ui';
   import { snackbar } from '$features/ui/snackbar/store';
   import { newsfeedApi } from '$features/course/api';
+  import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrg } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
@@ -136,7 +138,7 @@
 <RoleBasedSecurity
   allowedRoles={getPageRoles($currentOrg)}
   onDenied={() => {
-    goto(`/courses/${courseId}/lessons?next=true`);
+    goto(resolve(getStudentCourseContinuePath(courseId), {}));
   }}
 >
   <RoleBasedSecurity allowedRoles={getPageRoles($currentOrg)}>

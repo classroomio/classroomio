@@ -49,6 +49,7 @@ function course(courseId: string, isComplete: boolean): TPathJourneyCourse {
     description: '',
     slug: null,
     logo: '',
+    coverImage: '',
     type: 'SELF_PACED',
     status: isComplete ? 'COMPLETED' : 'NOT_STARTED',
     isUnlocked: true,

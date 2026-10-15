@@ -440,6 +440,7 @@ export async function listPublicLearningPaths(
             coverImage: schema.learningPath.coverImage,
             cost: schema.learningPath.cost,
             currency: schema.learningPath.currency,
+            selfEnrollment: schema.learningPath.selfEnrollment,
             landingPage: schema.learningPath.landingPage,
             courseCount: courseCountSql
           })

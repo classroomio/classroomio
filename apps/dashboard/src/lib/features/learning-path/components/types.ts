@@ -15,9 +15,10 @@ export interface CourseLibraryItem {
   description: string;
   coverGradient?: string;
   coverImage?: string;
-  difficulty: PathDifficulty;
+  difficulty?: PathDifficulty;
   status: CourseStatus;
   progressPercent: number;
+  progressRate?: number;
   partOfPath: CourseLibraryPathRef | null;
   href: string;
   lessonCount?: number;
@@ -30,16 +31,22 @@ export type CourseInPathState = 'COMPLETED' | 'NOT_STARTED' | 'IN_PROGRESS' | 'L
 export interface CourseInPathNode {
   title: string;
   state: CourseInPathState;
+  courseId: string;
+  href: string;
 }
 
 export interface CourseInPathNextInfo {
   position: number;
   title: string;
+  courseId: string;
+  isUnlocked: boolean;
+  href: string;
   remainingLessons: number;
   remainingExercises: number;
 }
 
 export interface CourseInPathContext {
+  courseId: string;
   pathName: string;
   pathHref: string;
   nodes: CourseInPathNode[];
