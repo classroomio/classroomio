@@ -6,12 +6,14 @@ import type { TPathJourneyCourse } from '@cio/db/queries/learning-path';
 const mocks = vi.hoisted(() => ({
   getMemberByPathAndProfile: vi.fn(),
   getPathJourney: vi.fn(),
+  getLearningPathCertificate: vi.fn(),
   orgHasCertificatesEnabled: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/learning-path', () => ({
   getMemberByPathAndProfile: mocks.getMemberByPathAndProfile,
-  getPathJourney: mocks.getPathJourney
+  getPathJourney: mocks.getPathJourney,
+  getLearningPathCertificate: mocks.getLearningPathCertificate
 }));
 
 vi.mock('@api/utils/plan-features', () => ({
@@ -68,6 +70,7 @@ describe('getPathJourneyService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.orgHasCertificatesEnabled.mockResolvedValue(true);
+    mocks.getLearningPathCertificate.mockResolvedValue({ certificateId: 'CERT-1' });
   });
 
   it('summarises live course completion the way evaluatePathCompletion does', async () => {
@@ -153,6 +156,17 @@ describe('getPathJourneyService', () => {
     expect(journey.certificateEnabled).toBe(false);
     expect(journey.certificateAvailable).toBe(false);
     expect(mocks.orgHasCertificatesEnabled).not.toHaveBeenCalled();
+  });
+
+  it('reports the certificate unavailable until one is issued, as the download guard requires', async () => {
+    mocks.getLearningPathCertificate.mockResolvedValue(null);
+    mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true)]));
+
+    const journey = await getPathJourneyService(path, member, 'ada');
+
+    expect(journey.isComplete).toBe(true);
+    expect(journey.certificateAvailable).toBe(false);
+    expect(mocks.getLearningPathCertificate).toHaveBeenCalledWith('member-1');
   });
 
   it('reports the certificate unavailable while the path is still in progress', async () => {

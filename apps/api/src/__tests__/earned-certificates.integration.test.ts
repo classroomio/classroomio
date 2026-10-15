@@ -166,7 +166,11 @@ describe.skipIf(!hasDatabase)('getEarnedCertificates (database)', () => {
       await takeCourse("Bob's course", { profileId: bob });
       await takeCourse('Access revoked', { grantRevokedAt: '2026-09-10T00:00:00Z' });
 
-      await completePath('Data Science', { completedAt: '2026-09-10T00:00:00Z', courseIds: [excel.courseId] });
+      const retired = await takeCourse('Retired course', { courseStatus: 'DELETED', completedAt: null });
+      await completePath('Data Science', {
+        completedAt: '2026-09-10T00:00:00Z',
+        courseIds: [excel.courseId, retired.courseId]
+      });
       await completePath('Path download off', { downloadable: false, completedAt: '2026-09-03T00:00:00Z' });
       await completePath('Certificate revoked', { certificate: 'revoked', completedAt: '2026-09-02T00:00:00Z' });
       await completePath('Left the path', { memberRemovedAt: '2026-09-10T00:00:00Z' });

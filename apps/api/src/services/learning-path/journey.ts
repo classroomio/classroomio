@@ -1,6 +1,6 @@
 import { AppError, ErrorCodes, throwAsInternal } from '@api/utils/errors';
 import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
-import { getMemberByPathAndProfile, getPathJourney } from '@cio/db/queries/learning-path';
+import { getLearningPathCertificate, getMemberByPathAndProfile, getPathJourney } from '@cio/db/queries/learning-path';
 import type { TLearningPath, TLearningPathMember } from '@cio/db/types';
 
 type TPathJourneyStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'COMPLETED';
@@ -91,7 +91,7 @@ export async function getPathJourneyService(
     } = summarizeJourney(journey.courses);
 
     const certificateEnabled = await isPathCertificateEnabled(path);
-    const certificateAvailable = isComplete && certificateEnabled;
+    const certificateAvailable = certificateEnabled && (await hasIssuedPathCertificate(activeMember));
 
     return {
       path: {
@@ -119,6 +119,20 @@ export async function getPathJourneyService(
   } catch (error) {
     throwAsInternal(error, 'Failed to get learning path journey');
   }
+}
+
+/**
+ * Whether the member can download the path certificate now, by the download
+ * guard's rule: a `COMPLETED` membership holding an issued certificate. A path
+ * completed before the plan included certificates has none until progress
+ * sync issues it.
+ */
+async function hasIssuedPathCertificate(member: TLearningPathMember): Promise<boolean> {
+  if (member.status !== 'COMPLETED') return false;
+
+  const issued = await getLearningPathCertificate(member.id);
+
+  return !!issued;
 }
 
 /**

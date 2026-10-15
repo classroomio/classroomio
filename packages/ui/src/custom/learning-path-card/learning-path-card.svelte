@@ -92,7 +92,9 @@
 
   const done = $derived(certificateEarned || (coursesCompleted === courseCount && courseCount > 0));
 
-  const showCertificateBadge = $derived((surface === 'lms' || surface === 'certificate') && done);
+  const showCertificateBadge = $derived(
+    (surface === 'lms' && done) || (surface === 'certificate' && certificateEarned)
+  );
   const showProgress = $derived(surface === 'lms');
   const showStatusBadge = $derived(surface === 'admin');
   const showEarnedAt = $derived(surface === 'certificate' && !!certificateEarnedAt);
@@ -109,9 +111,9 @@
         ? status === 'DRAFT'
           ? labels.adminContinueSetup
           : labels.adminManage
-        : surface === 'certificate' || (surface === 'lms' && done)
+        : (surface === 'certificate' && certificateEarned) || (surface === 'lms' && done)
           ? labels.viewCertificate
-          : surface === 'explore' || surface === 'landing'
+          : surface === 'explore' || surface === 'landing' || surface === 'certificate'
             ? labels.viewPath
             : coursesCompleted === 0
               ? labels.startLearning

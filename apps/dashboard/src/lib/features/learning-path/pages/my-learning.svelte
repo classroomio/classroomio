@@ -59,7 +59,7 @@
   });
 
   const filteredPaths = $derived(
-    learnerPathStore.enrolledPaths.filter((path) => {
+    learnerPathStore.unfinishedPaths.filter((path) => {
       if (status !== 'ALL' && path.enrollment?.state !== status) return false;
       if (difficulty !== 'ALL' && path.difficulty !== difficulty) return false;
 
@@ -68,7 +68,7 @@
   );
 
   const pathCourseItems = $derived.by<CourseLibraryItem[]>(() =>
-    learnerPathStore.enrolledPaths.flatMap((path) => {
+    learnerPathStore.unfinishedPaths.flatMap((path) => {
       const mockPath = getMockPathById(path.id);
 
       return learnerPathStore.getPathCourses(path).map((course) => ({
@@ -133,7 +133,7 @@
     ...filteredCourses.map((item) => ({ kind: 'course' as const, item }))
   ]);
 
-  const hasAnyItem = $derived(learnerPathStore.enrolledPaths.length > 0 || standaloneCourseItems.length > 0);
+  const hasAnyItem = $derived(learnerPathStore.unfinishedPaths.length > 0 || standaloneCourseItems.length > 0);
 
   const activePath = $derived(learnerPathStore.activePath);
 

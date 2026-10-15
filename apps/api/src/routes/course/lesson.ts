@@ -31,7 +31,7 @@ import {
   upsertLessonCompletionService
 } from '@api/services/lesson';
 import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
-import { evaluateAndRecordCourseCompletion } from '@api/services/course/completion';
+import { recordCourseCompletionFromProgress } from '@api/services/course/progress-completion';
 import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { ContentType } from '@cio/utils/constants';
 
@@ -276,7 +276,7 @@ export const lessonRouter = new Hono()
           // Record completion before syncing paths: a course counts as done
           // on a path by its recorded completion, so the sync must see the
           // write above.
-          void evaluateAndRecordCourseCompletion(courseId, user.id)
+          void recordCourseCompletionFromProgress(courseId, user.id)
             .catch((certError) => {
               console.error('Failed to evaluate course certification after lesson completion:', certError);
             })
@@ -349,7 +349,7 @@ export const lessonRouter = new Hono()
           // Record completion before syncing paths: a course counts as done
           // on a path by its recorded completion, so the sync must see the
           // write above. Same ordering as the lesson toggle.
-          void evaluateAndRecordCourseCompletion(courseId, user.id)
+          void recordCourseCompletionFromProgress(courseId, user.id)
             .catch((certError) => {
               console.error('Failed to evaluate course certification after video watch:', certError);
             })

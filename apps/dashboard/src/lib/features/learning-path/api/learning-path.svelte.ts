@@ -382,6 +382,8 @@ class LearnerPathStore {
 
   completedPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state === 'COMPLETED'));
 
+  unfinishedPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state !== 'COMPLETED'));
+
   notStartedPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state === 'NOT_STARTED'));
 
   inProgressPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state === 'IN_PROGRESS'));
@@ -407,8 +409,7 @@ class LearnerPathStore {
     this.isLoading = true;
     try {
       await sleep(150);
-      const enrolledPaths = getMockPathsForUser();
-      this.enrolledPaths = enrolledPaths.filter((enrolledPath) => enrolledPath.enrollment?.state !== 'COMPLETED');
+      this.enrolledPaths = getMockPathsForUser();
     } finally {
       this.isLoading = false;
       this.hasLoaded = true;
