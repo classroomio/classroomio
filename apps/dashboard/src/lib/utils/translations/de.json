@@ -2436,64 +2436,64 @@
               },
               "platforms": {
                 "google-slides": {
-                  "hint": "File → Share → Publish to web → Embed",
-                  "step_1": "Open your deck and choose File → Share → Publish to web.",
-                  "step_2": "Switch to the Embed tab and click Publish.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Datei → Freigeben → Im Web veröffentlichen → Einbetten",
+                  "step_1": "Öffne deine Präsentation und wähle Datei → Freigeben → Im Web veröffentlichen.",
+                  "step_2": "Wechsle zum Tab Einbetten und klicke auf Veröffentlichen.",
+                  "step_3": "Kopiere den iframe-Einbettungscode und füge ihn hier ein."
                 },
                 "canva": {
-                  "hint": "Share → More → Embed",
-                  "step_1": "Above the editor, click Share → More.",
-                  "step_2": "Choose Embed and confirm (this makes the design public).",
-                  "step_3": "Copy the HTML embed code and paste it here."
+                  "hint": "Teilen → Mehr → Einbetten",
+                  "step_1": "Klicke über dem Editor auf Teilen → Mehr.",
+                  "step_2": "Wähle Einbetten und bestätige (dadurch wird das Design öffentlich).",
+                  "step_3": "Kopiere den HTML-Einbettungscode und füge ihn hier ein."
                 },
                 "powerpoint": {
-                  "hint": "PowerPoint for the web → File → Share → Embed",
-                  "step_1": "Save the deck to OneDrive, then open it in PowerPoint for the web.",
-                  "step_2": "Choose File → Share → Embed and pick your dimensions.",
-                  "step_3": "Copy the iframe embed code and paste it here. We size the player ourselves."
+                  "hint": "PowerPoint für Web → Datei → Freigeben → Einbetten",
+                  "step_1": "Speichere die Präsentation in OneDrive und öffne sie dann in PowerPoint für Web.",
+                  "step_2": "Wähle Datei → Freigeben → Einbetten und lege die Größe fest.",
+                  "step_3": "Kopiere den iframe-Einbettungscode und füge ihn hier ein. Die Player-Größe übernehmen wir."
                 },
                 "keynote": {
-                  "hint": "Collaborate → Copy Link, then embed",
-                  "step_1": "Click Collaborate and set access to Anyone with the link · View only.",
-                  "step_2": "Copy the iCloud link, then get the embed code for your website.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Zusammenarbeiten → Link kopieren, dann einbetten",
+                  "step_1": "Klicke auf Zusammenarbeiten und setze den Zugriff auf Jeder mit Link · Nur ansehen.",
+                  "step_2": "Kopiere den iCloud-Link und hole dir den Einbettungscode für deine Website.",
+                  "step_3": "Füge den iframe-Einbettungscode hier ein."
                 },
                 "figma": {
-                  "hint": "Share a Figma Slides file and copy the embed",
-                  "step_1": "Open your Figma Slides file and enable link sharing.",
-                  "step_2": "Copy the embed code for the /slides or /deck file.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Figma-Slides-Datei teilen und Einbettung kopieren",
+                  "step_1": "Öffne deine Figma-Slides-Datei und aktiviere die Linkfreigabe.",
+                  "step_2": "Kopiere den Einbettungscode für die /slides- oder /deck-Datei.",
+                  "step_3": "Füge den iframe-Einbettungscode hier ein."
                 },
                 "prezi": {
-                  "hint": "Share → Embed",
-                  "step_1": "From the dashboard, open Share on your presentation.",
-                  "step_2": "Click Embed and copy the code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Teilen → Einbetten",
+                  "step_1": "Öffne in der Übersicht bei deiner Präsentation Teilen.",
+                  "step_2": "Klicke auf Einbetten und kopiere den Code.",
+                  "step_3": "Füge den iframe-Einbettungscode hier ein."
                 },
                 "pitch": {
-                  "hint": "Share externally → Copy embed code",
-                  "step_1": "Click Share → Share externally and create a public link.",
-                  "step_2": "Open the link Options (⋯) and choose Copy embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Extern teilen → Einbettungscode kopieren",
+                  "step_1": "Klicke auf Teilen → Extern teilen und erstelle einen öffentlichen Link.",
+                  "step_2": "Öffne die Link-Optionen (⋯) und wähle Einbettungscode kopieren.",
+                  "step_3": "Füge den iframe-Einbettungscode hier ein."
                 },
                 "gamma": {
-                  "hint": "Share → enable public access → copy iframe",
-                  "step_1": "Open Share and toggle Allow public access.",
-                  "step_2": "Copy the generated iframe embed code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Teilen → Öffentlichen Zugriff aktivieren → Iframe kopieren",
+                  "step_1": "Öffne Teilen und aktiviere Öffentlicher Zugriff.",
+                  "step_2": "Kopiere den erzeugten iframe-Einbettungscode.",
+                  "step_3": "Füge den iframe-Einbettungscode hier ein."
                 },
                 "slideshare": {
-                  "hint": "Share → Embed under the deck",
-                  "step_1": "Open the public deck on slideshare.net.",
-                  "step_2": "Click Share under the viewer and open the Embed tab.",
-                  "step_3": "Copy the iframe embed code and paste it here."
+                  "hint": "Teilen → Einbetten unter dem Deck",
+                  "step_1": "Öffne das öffentliche Deck auf slideshare.net.",
+                  "step_2": "Klicke unter dem Viewer auf Teilen und öffne den Tab Einbetten.",
+                  "step_3": "Kopiere den iframe-Einbettungscode und füge ihn hier ein."
                 },
                 "beautiful": {
-                  "hint": "Sharing Settings → Public → Get Embed Code",
-                  "step_1": "Open Sharing Settings and switch the deck to Public.",
-                  "step_2": "Click Get Embed Code.",
-                  "step_3": "Paste the iframe embed code here."
+                  "hint": "Freigabeeinstellungen → Öffentlich → Einbettungscode abrufen",
+                  "step_1": "Öffne die Freigabeeinstellungen und schalte das Deck auf Öffentlich.",
+                  "step_2": "Klicke auf Einbettungscode abrufen.",
+                  "step_3": "Füge den iframe-Einbettungscode hier ein."
                 }
               },
               "frame_title": "{platform} ({index} von {total})"
@@ -5658,9 +5658,20 @@
       "unlocked_label": "Entsperrt",
       "enroll_free": "Kostenlos einschreiben",
       "enroll_label": "Einschreiben für {currency} {cost}",
-      "view_all": "Alle Lernpfade anzeigen"
+      "view_all": "Alle Lernpfade anzeigen",
+      "about_heading": "Was du lernst",
+      "about_lead": "Praktische, projektorientierte Fähigkeiten – jeder Kurs endet mit etwas, das du gebaut hast.",
+      "skills_heading": "Fähigkeiten, die du erwirbst",
+      "series_eyebrow": "Serie · der Reihe nach",
+      "series_lead": "Jeder Kurs schaltet den nächsten frei, sobald du seine Lektionen und Übungen abschließt.",
+      "instructors_lead": "Die Tutoren hinter den Kursen in diesem Pfad.",
+      "reviews_lead": "Von Personen, die den Pfad abgeschlossen haben.",
+      "pricing_heading": "Einschreibung",
+      "pricing_eyebrow": "Einschreibung",
+      "enroll_path": "Melde dich für diesen Pfad an"
     },
     "enrolled_label": "{count} eingeschrieben",
-    "subtitle": "Geführte Mehrkurs-Kurse mit einer Einschreibung, bestellten Kursen und einem Zertifikat am Ende."
+    "subtitle": "Geführte Mehrkurs-Kurse mit einer Einschreibung, bestellten Kursen und einem Zertifikat am Ende.",
+    "navigation_failed": "Seite konnte nicht geladen werden. Bitte versuche es erneut."
   }
 }

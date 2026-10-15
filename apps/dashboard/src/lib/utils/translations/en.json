@@ -1372,6 +1372,7 @@
     "free_label": "Free",
     "course_count_label": "{count} courses",
     "enrolled_label": "{count} enrolled",
+    "navigation_failed": "Couldn't load the page. Please try again.",
     "empty": {
       "title": "No learning paths found",
       "description": "Try clearing your search or check back later."

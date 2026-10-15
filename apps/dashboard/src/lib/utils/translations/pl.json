@@ -5658,9 +5658,20 @@
       "unlocked_label": "Odblokowane",
       "enroll_free": "Zapisz się za darmo",
       "enroll_label": "Zapisz się za {currency} {cost}",
-      "view_all": "Zobacz wszystkie ścieżki nauki"
+      "view_all": "Zobacz wszystkie ścieżki nauki",
+      "about_heading": "Czego się nauczysz",
+      "about_lead": "Praktyczne umiejętności oparte na projektach — każdy kurs kończy się czymś, co zbudowałeś.",
+      "skills_heading": "Umiejętności, które zdobędziesz",
+      "series_eyebrow": "Seria · realizuj po kolei",
+      "series_lead": "Każdy kurs odblokowuje kolejny po ukończeniu jego lekcji i ćwiczeń.",
+      "instructors_lead": "Tutorzy prowadzący kursy w tej ścieżce.",
+      "reviews_lead": "Od osób, które ukończyły ścieżkę.",
+      "pricing_heading": "Zapisy",
+      "pricing_eyebrow": "Zapisy",
+      "enroll_path": "Zapisz się na tę ścieżkę"
     },
     "enrolled_label": "{count} zarejestrowanych",
-    "subtitle": "Wielokursowe ścieżki z przewodnikiem z jedną rejestracją, zamówionymi kursami i certyfikatem na końcu."
+    "subtitle": "Wielokursowe ścieżki z przewodnikiem z jedną rejestracją, zamówionymi kursami i certyfikatem na końcu.",
+    "navigation_failed": "Nie udało się załadować strony. Spróbuj ponownie."
   }
 }

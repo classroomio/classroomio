@@ -5658,9 +5658,20 @@
       "unlocked_label": "Desbloqueado",
       "enroll_free": "Inscríbete gratis",
       "enroll_label": "Inscríbete por {currency} {cost}",
-      "view_all": "Ver todas las rutas de aprendizaje"
+      "view_all": "Ver todas las rutas de aprendizaje",
+      "about_heading": "Lo que aprenderás",
+      "about_lead": "Habilidades prácticas orientadas a proyectos: cada curso termina con algo que has construido.",
+      "skills_heading": "Habilidades que obtendrás",
+      "series_eyebrow": "Serie · en orden",
+      "series_lead": "Cada curso desbloquea el siguiente cuando terminas sus lecciones y ejercicios.",
+      "instructors_lead": "Los tutores detrás de los cursos de esta ruta.",
+      "reviews_lead": "De personas que terminaron la ruta.",
+      "pricing_heading": "Inscripción",
+      "pricing_eyebrow": "Inscripción",
+      "enroll_path": "Inscríbete en esta ruta"
     },
     "enrolled_label": "{count} inscritos",
-    "subtitle": "Pistas guiadas de varios cursos con una sola inscripción, cursos ordenados y un certificado al finalizar."
+    "subtitle": "Pistas guiadas de varios cursos con una sola inscripción, cursos ordenados y un certificado al finalizar.",
+    "navigation_failed": "No se pudo cargar la página. Inténtalo de nuevo."
   }
 }

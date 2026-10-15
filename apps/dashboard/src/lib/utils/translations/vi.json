@@ -5658,9 +5658,20 @@
       "unlocked_label": "Đã mở khóa",
       "enroll_free": "Đăng ký miễn phí",
       "enroll_label": "Đăng ký với giá {currency} {cost}",
-      "view_all": "Xem tất cả lộ trình học tập"
+      "view_all": "Xem tất cả lộ trình học tập",
+      "about_heading": "Những gì bạn sẽ học",
+      "about_lead": "Kỹ năng thực tế theo dự án — mỗi khóa học kết thúc bằng thứ bạn đã xây dựng.",
+      "skills_heading": "Kỹ năng bạn sẽ đạt được",
+      "series_eyebrow": "Chuỗi · học theo thứ tự",
+      "series_lead": "Mỗi khóa học mở khóa khóa tiếp theo khi bạn hoàn thành bài học và bài tập của nó.",
+      "instructors_lead": "Các giảng viên đứng sau các khóa học trong lộ trình này.",
+      "reviews_lead": "Từ những người đã hoàn thành lộ trình.",
+      "pricing_heading": "Ghi danh",
+      "pricing_eyebrow": "Ghi danh",
+      "enroll_path": "Ghi danh vào lộ trình này"
     },
     "enrolled_label": "{count} đã đăng ký",
-    "subtitle": "Các khóa học có nhiều khóa học có hướng dẫn chỉ với một lần đăng ký, các khóa học được đặt hàng và chứng chỉ ở cuối."
+    "subtitle": "Các khóa học có nhiều khóa học có hướng dẫn chỉ với một lần đăng ký, các khóa học được đặt hàng và chứng chỉ ở cuối.",
+    "navigation_failed": "Không tải được trang. Vui lòng thử lại."
   }
 }

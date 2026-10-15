@@ -5,6 +5,7 @@
   import { SvelteURLSearchParams } from 'svelte/reactivity';
 
   import { t } from '$lib/utils/functions/translations';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { user } from '$lib/utils/store/user';
 
   import { PoweredBy } from '$features/ui';
@@ -71,11 +72,15 @@
     const query = params.toString();
     const suffix = query ? `?${query}` : '';
 
-    await goto(resolve(`/learning-paths${suffix}`, {}), {
-      keepFocus: true,
-      noScroll: true,
-      invalidateAll: true
-    });
+    try {
+      await goto(resolve(`/learning-paths${suffix}`, {}), {
+        keepFocus: true,
+        noScroll: true,
+        invalidateAll: true
+      });
+    } catch {
+      snackbar.error('public_learning_paths.navigation_failed');
+    }
   }
 
   async function goToPage(nextPage: number) {
@@ -94,7 +99,11 @@
     const query = params.toString();
     const suffix = query ? `?${query}` : '';
 
-    await goto(resolve(`/learning-paths${suffix}`, {}), { invalidateAll: true });
+    try {
+      await goto(resolve(`/learning-paths${suffix}`, {}), { invalidateAll: true });
+    } catch {
+      snackbar.error('public_learning_paths.navigation_failed');
+    }
   }
 
   let searchDebounce: ReturnType<typeof setTimeout>;

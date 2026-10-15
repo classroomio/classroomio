@@ -5658,9 +5658,20 @@
       "unlocked_label": "Åbent",
       "enroll_free": "Tilmeld dig gratis",
       "enroll_label": "Tilmeld dig for {currency} {cost}",
-      "view_all": "Vis alle læringsforløb"
+      "view_all": "Vis alle læringsforløb",
+      "about_heading": "Hvad du lærer",
+      "about_lead": "Praktiske, projektorienterede færdigheder – hvert kursus slutter med noget, du har bygget.",
+      "skills_heading": "Færdigheder, du får",
+      "series_eyebrow": "Serie · tag i rækkefølge",
+      "series_lead": "Hvert kursus låser op for det næste, når du afslutter dets lektioner og øvelser.",
+      "instructors_lead": "Tutorne bag kurserne i denne sti.",
+      "reviews_lead": "Fra personer, der har afsluttet stien.",
+      "pricing_heading": "Tilmelding",
+      "pricing_eyebrow": "Tilmelding",
+      "enroll_path": "Tilmeld dig denne sti"
     },
     "enrolled_label": "{count} tilmeldt",
-    "subtitle": "Guidede multi-kursus spor med én tilmelding, bestilte kurser og et certifikat til sidst."
+    "subtitle": "Guidede multi-kursus spor med én tilmelding, bestilte kurser og et certifikat til sidst.",
+    "navigation_failed": "Siden kunne ikke indlæses. Prøv igen."
   }
 }

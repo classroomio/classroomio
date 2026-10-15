@@ -67,9 +67,10 @@ export function buildLearningPathLandingPageProps(
 
   const showDiscount = Boolean(detail.metadata?.discount && detail.metadata?.showDiscount);
 
-  const originalCost =
+  const computedOriginalCost =
     detail.pricing?.originalCost ??
     (detail.metadata?.discount ? Math.round(detail.cost / (1 - detail.metadata.discount / 100)) : undefined);
+  const originalCost = showDiscount ? computedOriginalCost : undefined;
 
   return {
     theme: landing.theme,

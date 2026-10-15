@@ -5658,9 +5658,20 @@
       "unlocked_label": "Desbloqueado",
       "enroll_free": "Inscreva-se gratuitamente",
       "enroll_label": "Inscreva-se por {currency} {cost}",
-      "view_all": "Ver todos os caminhos de aprendizagem"
+      "view_all": "Ver todos os caminhos de aprendizagem",
+      "about_heading": "O que você vai aprender",
+      "about_lead": "Habilidades práticas orientadas a projetos — cada curso termina com algo que você construiu.",
+      "skills_heading": "Habilidades que você vai adquirir",
+      "series_eyebrow": "Série · em ordem",
+      "series_lead": "Cada curso desbloqueia o próximo quando você conclui suas lições e exercícios.",
+      "instructors_lead": "Os tutores por trás dos cursos desta trilha.",
+      "reviews_lead": "De pessoas que concluíram a trilha.",
+      "pricing_heading": "Inscrição",
+      "pricing_eyebrow": "Inscrição",
+      "enroll_path": "Inscreva-se nesta trilha"
     },
     "enrolled_label": "{count} inscritos",
-    "subtitle": "Faixas guiadas de vários cursos com uma inscrição, cursos solicitados e um certificado no final."
+    "subtitle": "Faixas guiadas de vários cursos com uma inscrição, cursos solicitados e um certificado no final.",
+    "navigation_failed": "Não foi possível carregar a página. Tente novamente."
   }
 }

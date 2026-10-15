@@ -5658,9 +5658,20 @@
       "unlocked_label": "Déverrouillé",
       "enroll_free": "Inscrire gratuitement",
       "enroll_label": "S'inscrire pour {currency} {cost}",
-      "view_all": "Voir tous les parcours d'apprentissage"
+      "view_all": "Voir tous les parcours d'apprentissage",
+      "about_heading": "Ce que vous allez apprendre",
+      "about_lead": "Des compétences pratiques orientées projets — chaque cours se termine par quelque chose que vous avez construit.",
+      "skills_heading": "Compétences acquises",
+      "series_eyebrow": "Série · dans l’ordre",
+      "series_lead": "Chaque cours débloque le suivant une fois ses leçons et exercices terminés.",
+      "instructors_lead": "Les tuteurs derrière les cours de ce parcours.",
+      "reviews_lead": "De personnes qui ont terminé le parcours.",
+      "pricing_heading": "Inscription",
+      "pricing_eyebrow": "Inscription",
+      "enroll_path": "Inscrivez-vous à ce parcours"
     },
     "enrolled_label": "{count} inscrits",
-    "subtitle": "Parcours guidés à plusieurs cours avec une seule inscription, des cours commandés et un certificat à la fin."
+    "subtitle": "Parcours guidés à plusieurs cours avec une seule inscription, des cours commandés et un certificat à la fin.",
+    "navigation_failed": "Impossible de charger la page. Veuillez réessayer."
   }
 }
