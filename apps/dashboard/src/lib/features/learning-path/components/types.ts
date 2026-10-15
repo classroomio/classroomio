@@ -36,11 +36,15 @@ export interface CourseInPathNode {
 export interface CourseInPathNextInfo {
   position: number;
   title: string;
+  courseId: string;
+  isUnlocked: boolean;
+  href: string;
   remainingLessons: number;
   remainingExercises: number;
 }
 
 export interface CourseInPathContext {
+  courseId: string;
   pathName: string;
   pathHref: string;
   nodes: CourseInPathNode[];

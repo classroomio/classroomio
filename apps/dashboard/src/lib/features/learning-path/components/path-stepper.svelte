@@ -83,14 +83,18 @@
       <article
         class={cn(
           'mb-1 flex flex-1 gap-4 rounded-xl border p-4 transition-colors',
+          'relative',
           isLocked(course) ? 'opacity-75' : 'ui:hover:border-primary/40',
           isCurrent(course) ? 'ui:border-primary/30' : ''
         )}
       >
+        {#if !isLocked(course)}
+          <a href={resolveCourseHref(course)} aria-hidden="true" tabindex="-1" class="absolute inset-0 z-[1]"></a>
+        {/if}
         <a
           href={isLocked(course) ? undefined : resolveCourseHref(course)}
           class={cn(
-            'ui:bg-card relative flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg',
+            'ui:bg-card relative z-10 flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-lg',
             isLocked(course) && 'pointer-events-none'
           )}
           aria-label={course.title}
@@ -147,7 +151,7 @@
             {/if}
           </div>
 
-          <a href={isLocked(course) ? undefined : resolveCourseHref(course)} class="mt-1 w-fit">
+          <a href={isLocked(course) ? undefined : resolveCourseHref(course)} class="relative z-10 mt-1 w-fit">
             <h3 class="text-sm leading-snug font-semibold {isLocked(course) ? '' : 'ui:hover:text-primary'}">
               {course.title}
             </h3>
@@ -196,7 +200,7 @@
           {/if}
         </div>
 
-        <div class="flex shrink-0 flex-col items-end justify-between py-0.5">
+        <div class="relative z-10 flex shrink-0 flex-col items-end justify-between py-0.5">
           {#if isCurrent(course)}
             <Button href={resolveCourseHref(course)} variant="default" size="sm">
               {course.progressPercent > 0

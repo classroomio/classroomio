@@ -21,6 +21,7 @@ import type {
   PublicLearningPathItem
 } from '../utils/types';
 import { enrolledApi } from '$features/lms/api/enrolled.svelte';
+import { getStudentCourseContinuePath } from '$features/course/utils/student-course-navigation';
 import type { EnrolledPath, GetPathJourneyRequest, PathJourney } from '$features/lms/utils/types';
 import type { EarnedPathCertificate, GetEarnedCertificatesRequest } from '$features/lms/utils/types';
 import type { CourseInPathContext, CourseInPathNode } from '../components/types';
@@ -618,6 +619,7 @@ class LearnerPathStore extends BaseApiWithErrors {
         .sort((a, b) => a.position - b.position)[0];
 
       this.pathContext = {
+        courseId,
         pathName: journey.path.name,
         pathHref: `/lms/paths/${journey.path.publicId ?? journey.path.id}`,
         nodes,
@@ -626,6 +628,9 @@ class LearnerPathStore extends BaseApiWithErrors {
           ? {
               position: nextCourse.position,
               title: nextCourse.title,
+              courseId: nextCourse.courseId,
+              isUnlocked: nextCourse.isUnlocked,
+              href: getStudentCourseContinuePath(nextCourse.courseId, journey.path.publicId ?? journey.path.id),
               remainingLessons: Math.max(0, nextCourse.lessonsTotal - nextCourse.lessonsCompleted),
               remainingExercises: Math.max(0, nextCourse.exercisesTotal - nextCourse.exercisesCompleted)
             }

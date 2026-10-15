@@ -5644,6 +5644,8 @@
       "next_course_position": "Course {position}",
       "unlocks_after_finish": "Unlocks when you finish this course — {lessons} lessons & {exercises} exercises to go.",
       "locked": "Locked",
+      "go_to_course": "Go to course",
+      "go_to_next_course": "Go to next course",
       "path_complete": "Path complete — all courses finished. Great work!"
     },
     "status": {

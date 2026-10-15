@@ -5969,7 +5969,9 @@
       "path_complete": "Ruta completa: todos los cursos terminados. ¡Gran trabajo!",
       "path_label": "Ruta de aprendizaje",
       "unlocks_after_finish": "Se desbloquea cuando terminas este curso: quedan {lessons} lecciones y {exercises} ejercicios.",
-      "view_path": "Ver ruta"
+      "view_path": "Ver ruta",
+      "go_to_next_course": "Ir al siguiente curso",
+      "go_to_course": "Ir al curso"
     },
     "row": {
       "completed": "Completada"

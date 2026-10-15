@@ -5969,7 +5969,9 @@
       "path_complete": "Pfad abgeschlossen – alle Kurse abgeschlossen. Tolle Arbeit!",
       "path_label": "Lernpfad",
       "unlocks_after_finish": "Wird freigeschaltet, wenn Sie diesen Kurs abgeschlossen haben – {lessons} Lektionen und {exercises} Übungen zum Mitnehmen.",
-      "view_path": "Pfad anzeigen"
+      "view_path": "Pfad anzeigen",
+      "go_to_next_course": "Zum nächsten Kurs",
+      "go_to_course": "Zum Kurs"
     },
     "row": {
       "completed": "Abgeschlossen"

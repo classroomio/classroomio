@@ -5969,7 +5969,9 @@
       "path_complete": "पथ पूर्ण - सभी पाठ्यक्रम समाप्त। महान काम!",
       "path_label": "सीखने का पथ",
       "unlocks_after_finish": "जब आप इस कोर्स को पूरा कर लेंगे तो अनलॉक हो जाएगा - {lessons} पाठ और {exercises} अभ्यास।",
-      "view_path": "पथ देखें"
+      "view_path": "पथ देखें",
+      "go_to_next_course": "अगले कोर्स पर जाएं",
+      "go_to_course": "कोर्स पर जाएं"
     },
     "row": {
       "completed": "पुरा होना।"

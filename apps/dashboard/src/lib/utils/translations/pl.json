@@ -5969,7 +5969,9 @@
       "path_complete": "Ścieżka ukończona — ukończono wszystkie kursy. Świetna praca!",
       "path_label": "Ścieżka edukacyjna",
       "unlocks_after_finish": "Odblokowuje się po ukończeniu tego kursu — pozostało jeszcze {lessons} lekcji i {exercises} ćwiczeń.",
-      "view_path": "Wyświetl ścieżkę"
+      "view_path": "Wyświetl ścieżkę",
+      "go_to_next_course": "Przejdź do następnego kursu",
+      "go_to_course": "Przejdź do kursu"
     },
     "row": {
       "completed": "Ukończono"

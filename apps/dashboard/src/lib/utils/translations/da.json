@@ -5969,7 +5969,9 @@
       "path_complete": "Sti færdig - alle kurser afsluttet. Flot arbejde!",
       "path_label": "Læringsvej",
       "unlocks_after_finish": "Låser op, når du er færdig med dette kursus — {lessons} lektioner og {exercises} øvelser tilbage.",
-      "view_path": "Se sti"
+      "view_path": "Se sti",
+      "go_to_next_course": "Gå til næste kursus",
+      "go_to_course": "Gå til kursus"
     },
     "row": {
       "completed": "Afsluttet"

@@ -5969,7 +5969,9 @@
       "path_complete": "Đường dẫn hoàn thành - tất cả các khóa học đã kết thúc. Công việc tuyệt vời!",
       "path_label": "Lộ trình học",
       "unlocks_after_finish": "Mở khóa khi bạn hoàn thành khóa học này — còn có {lessons} bài học & {exercises} bài tập.",
-      "view_path": "Xem lộ trình"
+      "view_path": "Xem lộ trình",
+      "go_to_next_course": "Đến khóa học tiếp theo",
+      "go_to_course": "Đến khóa học"
     },
     "row": {
       "completed": "Đã hoàn thành"

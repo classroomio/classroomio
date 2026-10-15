@@ -5969,7 +5969,9 @@
       "path_complete": "Caminho concluído – todos os cursos concluídos. Ótimo trabalho!",
       "path_label": "Caminho de aprendizagem",
       "unlocks_after_finish": "Desbloqueia quando você termina este curso — {lessons} lições e {exercises} exercícios restantes.",
-      "view_path": "Caminho de visualização"
+      "view_path": "Caminho de visualização",
+      "go_to_next_course": "Ir para o próximo curso",
+      "go_to_course": "Ir para o curso"
     },
     "row": {
       "completed": "Concluído"

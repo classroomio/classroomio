@@ -5969,7 +5969,9 @@
       "path_complete": "Chemin terminé : tous les cours sont terminés. Excellent travail !",
       "path_label": "Parcours d'apprentissage",
       "unlocks_after_finish": "Se débloque lorsque vous terminez ce cours : {lessons} leçons et {exercises} exercices à suivre.",
-      "view_path": "Chemin d'affichage"
+      "view_path": "Chemin d'affichage",
+      "go_to_next_course": "Aller au cours suivant",
+      "go_to_course": "Aller au cours"
     },
     "row": {
       "completed": "Complété"
