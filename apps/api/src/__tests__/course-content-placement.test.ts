@@ -26,10 +26,11 @@ import { updateCourseContent, reorderCourseContent } from '@cio/core/services/co
 
 beforeEach(() => {
   vi.clearAllMocks();
-  queries.sections.mockResolvedValue([{ id: 'settings', courseId: 'course' }]);
+  queries.sections.mockResolvedValue([{ id: 'settings', courseId: 'course', order: 2 }]);
   queries.content.mockResolvedValue([
-    { id: 'intro', type: 'LESSON', sectionId: null },
-    { id: 'quiz', type: 'EXERCISE', sectionId: 'settings' }
+    { id: 'settings', type: 'SECTION', sectionId: null, order: 2 },
+    { id: 'intro', type: 'LESSON', sectionId: null, order: 1 },
+    { id: 'quiz', type: 'EXERCISE', sectionId: 'settings', order: 1 }
   ]);
   queries.updateItems.mockResolvedValue({ updatedItems: 2, updatedLessons: 1, updatedExercises: 1 });
   queries.updateSections.mockResolvedValue(1);
@@ -68,6 +69,26 @@ describe('course content placement', () => {
         items: [{ id: 'foreign-item', type: 'LESSON', sectionId: 'settings', order: 1 }]
       })
     ).rejects.toThrow('Lesson does not belong to this course');
+    expect(queries.updateItems).not.toHaveBeenCalled();
+  });
+
+  it('uses the existing parent when validating an order-only update', async () => {
+    await reorderCourseContent('course', {
+      sections: [{ id: 'settings', order: 2 }],
+      items: [{ id: 'quiz', type: 'EXERCISE', order: 1 }]
+    });
+
+    expect(queries.updateSections).toHaveBeenCalled();
+    expect(queries.updateItems).toHaveBeenCalled();
+  });
+
+  it('rejects an order-only update that collides at the root', async () => {
+    await expect(
+      reorderCourseContent('course', {
+        items: [{ id: 'intro', type: 'LESSON', order: 2 }]
+      })
+    ).rejects.toThrow('Top-level orders must be unique');
+
     expect(queries.updateItems).not.toHaveBeenCalled();
   });
 });

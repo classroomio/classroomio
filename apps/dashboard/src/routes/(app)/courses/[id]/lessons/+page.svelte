@@ -18,6 +18,13 @@
   let reorder = $state(false);
   const contentData = $derived(getCourseContent(courseApi.course));
 
+  $effect(() => {
+    const activeCourseId = courseApi.course?.id;
+    if (activeCourseId !== data.courseId || contentData.grouped) {
+      reorder = false;
+    }
+  });
+
   function addContent() {
     if (!data.courseId) {
       return;
