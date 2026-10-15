@@ -92,7 +92,8 @@
 
   const done = $derived(certificateEarned || (coursesCompleted === courseCount && courseCount > 0));
 
-  const showCertificateBadge = $derived((surface === 'lms' || surface === 'certificate') && done);
+  const offersCertificate = $derived(surface === 'certificate' || (surface === 'lms' && done));
+  const showCertificateBadge = $derived(offersCertificate && certificateEarned);
   const showProgress = $derived(surface === 'lms');
   const showStatusBadge = $derived(surface === 'admin');
   const showEarnedAt = $derived(surface === 'certificate' && !!certificateEarnedAt);
@@ -101,7 +102,7 @@
 
   const ctaVariant = 'outline';
 
-  const ctaHref = $derived(surface === 'lms' && done ? '/lms/certificates' : href);
+  const ctaHref = $derived(surface === 'lms' && certificateEarned ? '/lms/certificates' : href);
 
   const ctaLabelText = $derived(
     ctaLabel ??
@@ -109,7 +110,7 @@
         ? status === 'DRAFT'
           ? labels.adminContinueSetup
           : labels.adminManage
-        : surface === 'certificate' || (surface === 'lms' && done)
+        : offersCertificate
           ? labels.viewCertificate
           : surface === 'explore' || surface === 'landing'
             ? labels.viewPath
@@ -119,6 +120,7 @@
   );
 
   const showCtaArrow = $derived(surface !== 'lms');
+  const showCta = $derived(!offersCertificate || certificateEarned);
 
   const statusBadgeLabel = $derived(
     status === 'DRAFT' ? labels.statusDraft : status === 'ACTIVE' ? labels.statusActive : labels.statusArchived
@@ -265,7 +267,7 @@
               {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
             </Button>
           </div>
-        {:else}
+        {:else if showCta}
           <Button
             href={isExploreClickable ? undefined : ctaHref}
             variant={ctaVariant}

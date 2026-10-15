@@ -24,6 +24,7 @@ import {
   insertProfile,
   issuePathCertificate,
   joinPath,
+  recordCourseCompletion,
   submit,
   withRollback
 } from './fixtures/learner-db';
@@ -41,10 +42,13 @@ type Row = [
 ];
 
 /**
- * Ada's Data Science path, in order: Excel (3/3 lessons and its exercise, so
- * complete), Python (1/4 lessons, exercise open, so 20%), a deleted course,
- * SQL (untouched), and Blank (no content, so complete but behind SQL). A
- * course removed from the path and Bob's progress never show.
+ * Ada's Data Science path, in order: Excel (3/3 lessons and its exercise,
+ * with its completion recorded, so complete), Python (1/4 lessons, exercise
+ * open, so 20%), a deleted course, SQL (untouched), and Blank (no content,
+ * so complete but behind SQL). A course removed from the path and Bob's
+ * progress never show. A path course counts as done by its recorded
+ * completion, so Excel is complete because its completion was recorded, not
+ * merely because its content is done.
  */
 async function seedScenario(tx: DbOrTxClient) {
   const ada = await insertProfile(tx, 'ada');
@@ -72,6 +76,7 @@ async function seedScenario(tx: DbOrTxClient) {
   await completeLessons(tx, courses.excel.lessonIds, ada, '2026-09-10T00:00:00Z');
   const excelExercise = await insertExercise(tx, courses.excel.courseId);
   await submit(tx, { exerciseId: excelExercise, groupMemberId: excelMember, createdAt: '2026-09-12T00:00:00Z' });
+  await recordCourseCompletion(tx, excelMember, '2026-09-12T00:00:00Z');
   await completeLessons(tx, courses.python.lessonIds.slice(0, 1), ada, '2026-09-20T00:00:00Z');
   const pythonExercise = await insertExercise(tx, courses.python.courseId);
 
@@ -102,18 +107,14 @@ async function withScenario(test: (tx: DbOrTxClient, scenario: Scenario) => Prom
   });
 }
 
-async function readJourney(
-  tx: DbOrTxClient,
-  journey: { pathId: string; memberId: string; profileId: string },
-  sequentialUnlock = true
-) {
+async function readJourney(tx: DbOrTxClient, journey: { pathId: string; profileId: string }, sequentialUnlock = true) {
   const { getPathJourney } = await import('@cio/db/queries/learning-path');
 
   return getPathJourney({ ...journey, sequentialUnlock }, tx);
 }
 
 function readScenarioJourney(tx: DbOrTxClient, scenario: Scenario, sequentialUnlock = true) {
-  const journey = { pathId: scenario.dataScience.pathId, memberId: scenario.memberId, profileId: scenario.ada };
+  const journey = { pathId: scenario.dataScience.pathId, profileId: scenario.ada };
 
   return readJourney(tx, journey, sequentialUnlock);
 }
@@ -153,7 +154,6 @@ describe.skipIf(!hasDatabase)('getPathJourney (database)', () => {
         null
       ]);
       expect(toIso(journey.lastProgressAt)).toBe('2026-09-20T00:00:00.000Z');
-      expect(journey.certificate).toBeNull();
     });
   }, 30000);
 
@@ -178,6 +178,7 @@ describe.skipIf(!hasDatabase)('getPathJourney (database)', () => {
         groupMemberId: scenario.pythonMember,
         createdAt: '2026-09-29T08:00:00Z'
       });
+      await recordCourseCompletion(tx, scenario.pythonMember, '2026-09-29T08:00:00Z');
 
       const journey = await readScenarioJourney(tx, scenario);
 
@@ -191,11 +192,11 @@ describe.skipIf(!hasDatabase)('getPathJourney (database)', () => {
     });
   }, 30000);
 
-  it("returns the member's valid certificate, and still answers for a path with no courses", async () => {
+  it('still answers for a path with no courses', async () => {
     await withScenario(async (tx, scenario) => {
       const emptyPath = await insertPath(tx, scenario.orgId, 'Empty');
       const emptyMemberId = await joinPath(tx, emptyPath.pathId, scenario.ada, '2026-09-01T00:00:00Z');
-      const certificateId = await issuePathCertificate(tx, {
+      await issuePathCertificate(tx, {
         pathId: emptyPath.pathId,
         memberId: emptyMemberId,
         profileId: scenario.ada,
@@ -204,27 +205,10 @@ describe.skipIf(!hasDatabase)('getPathJourney (database)', () => {
 
       const empty = await readJourney(tx, {
         pathId: emptyPath.pathId,
-        memberId: emptyMemberId,
         profileId: scenario.ada
       });
       expect(empty.courses).toEqual([]);
       expect(empty.lastProgressAt).toBeNull();
-      expect([empty.certificate?.certificateId, toIso(empty.certificate?.issuedAt ?? null)]).toEqual([
-        certificateId,
-        '2026-09-15T00:00:00.000Z'
-      ]);
-
-      await issuePathCertificate(
-        tx,
-        {
-          pathId: scenario.dataScience.pathId,
-          memberId: scenario.memberId,
-          profileId: scenario.ada,
-          issuedAt: '2026-09-15T00:00:00Z'
-        },
-        { status: 'revoked', revokedAt: '2026-09-20T00:00:00Z' }
-      );
-      expect((await readScenarioJourney(tx, scenario)).certificate).toBeNull();
     });
   }, 30000);
 });

@@ -42,9 +42,7 @@ export async function toggleLessonCompletion(courseId: string, lessonId: string)
 
   const certificationEvaluation = await courseApi.getCertificationEvaluation(courseId);
   if (certificationEvaluation?.data) {
-    const hasCompletedCourse = Boolean(
-      certificationEvaluation.data.eligibleForCertificate || certificationEvaluation.data.certificateEarnedAt
-    );
+    const hasCompletedCourse = Boolean(certificationEvaluation.data.completedAt);
     updateCourseCompletionModal(
       courseId,
       hasCompletedCourse ? 'eligible' : 'not-eligible',

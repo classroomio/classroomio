@@ -54,13 +54,30 @@ export function getStudentCourseComplianceStatus(course: StudentEnrolledCourse):
   return course.complianceStatus as StudentComplianceStatus;
 }
 
+/**
+ * Whether the current compliance cycle counts as done: waived, or completed
+ * and still inside its validity window, whatever its status label. A cycle
+ * only gets `validUntil` when it completes. Mirrors `complianceCycleIsCompleteSql`.
+ */
+export function isComplianceCycleComplete(
+  complianceStatus: string | null | undefined,
+  validUntil: string | null | undefined,
+  now: Date = new Date()
+): boolean {
+  if (complianceStatus === 'waived') return true;
+  if (!validUntil) return false;
+
+  return new Date(validUntil).getTime() > now.getTime();
+}
+
 export function isStudentCourseComplete(course: StudentEnrolledCourse) {
   if (course.type === 'COMPLIANCE') {
-    const complianceStatus = getStudentCourseComplianceStatus(course);
-    return complianceStatus === 'compliant' || complianceStatus === 'waived';
+    const validUntil = 'complianceValidUntil' in course ? course.complianceValidUntil : null;
+
+    return isComplianceCycleComplete(getStudentCourseComplianceStatus(course), validUntil);
   }
 
-  return getCourseContentProgress(course) >= 100;
+  return 'completedAt' in course && course.completedAt != null;
 }
 
 export function getStudentCourseProgressPercent(course: StudentEnrolledCourse) {
@@ -76,7 +93,7 @@ export function getStudentCourseComplianceDate(course: StudentEnrolledCourse) {
   const validUntil = 'complianceValidUntil' in course ? (course.complianceValidUntil ?? null) : null;
   const dueDate = 'complianceDueDate' in course ? (course.complianceDueDate ?? null) : null;
 
-  if ((complianceStatus === 'compliant' || complianceStatus === 'waived') && validUntil) {
+  if (validUntil && isComplianceCycleComplete(complianceStatus, validUntil)) {
     return {
       labelKey: 'courses.course_card.valid_until',
       value: validUntil

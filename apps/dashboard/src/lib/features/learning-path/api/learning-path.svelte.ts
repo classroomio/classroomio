@@ -6,7 +6,6 @@ import type {
   CreateLearningPathRequest,
   DeleteLearningPathRequest,
   GetLearningPathDetailRequest,
-
   LearningPathDetail,
   LearningPathWithEnrollment,
   LearningPathSummary,
@@ -382,6 +381,8 @@ class LearnerPathStore {
   });
 
   completedPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state === 'COMPLETED'));
+
+  unfinishedPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state !== 'COMPLETED'));
 
   notStartedPaths = $derived(this.enrolledPaths.filter((path) => path.enrollment?.state === 'NOT_STARTED'));
 

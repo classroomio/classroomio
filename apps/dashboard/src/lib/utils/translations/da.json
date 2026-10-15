@@ -1307,6 +1307,7 @@
         "last_login_at": "Sidste login",
         "enrolled_at": "Tilmeldt",
         "certificate_earned": "Certifikat opnået",
+        "completed": "Afsluttet",
         "not_started": "Ikke startet",
         "role": "Rolle",
         "action": "Handling",

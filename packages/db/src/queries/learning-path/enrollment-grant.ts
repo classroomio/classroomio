@@ -372,8 +372,8 @@ function extractTotalCount(completed: unknown): number {
  * role-based and intentionally grant-less. Idempotent by construction (the
  * anti-join skips rows that already have a grant), so re-running is always safe.
  *
- * Intended to run inside the merge-time migration (or via
- * `pnpm db:backfill-course-enrollment-grants`), not on any hot path.
+ * Run by `db:setup` on every start through the essential seed (or by hand
+ * via `pnpm db:backfill-course-enrollment-grants`), not on any hot path.
  * Returns the number of grants inserted.
  */
 export async function backfillMissingCourseEnrollmentGrants(

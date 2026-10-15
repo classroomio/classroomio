@@ -25,7 +25,7 @@ describe('v1 enrolled service', () => {
     mocks.getUserEnrolled.mockResolvedValue({
       items: [{ kind: 'course', data: { id: 'course-1' } }],
       total: 25,
-      counts: { inProgress: 20, completed: 5 }
+      counts: { notStarted: 5, inProgress: 20 }
     });
   });
 
@@ -33,40 +33,46 @@ describe('v1 enrolled service', () => {
     const result = await listEnrolledService(ORG_ID, ACTOR_ID, {
       page: 1,
       limit: 20,
-      status: 'all'
+      status: 'all',
+      kind: 'all'
     });
 
     expect(mocks.getOrganizationMemberRoleId).toHaveBeenCalledWith(ORG_ID, ACTOR_ID);
     expect(mocks.getUserEnrolled).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, {
       page: 1,
       limit: 20,
-      status: 'all'
+      status: 'all',
+      kind: 'all'
     });
     expect(result).toEqual({
       data: [{ kind: 'course', data: { id: 'course-1' } }],
       pagination: { page: 1, limit: 20, total: 25, totalPages: 2 },
-      counts: { inProgress: 20, completed: 5 }
+      counts: { notStarted: 5, inProgress: 20 }
     });
   });
 
-  it('passes status and trimmed search through to the feed', async () => {
+  it('passes status, kind and trimmed search through to the feed', async () => {
     await listEnrolledService(ORG_ID, ACTOR_ID, {
       page: 3,
       limit: 10,
-      status: 'completed',
+      status: 'in_progress',
+      kind: 'course',
       search: 'excel'
     });
 
     expect(mocks.getUserEnrolled).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, {
       page: 3,
       limit: 10,
-      status: 'completed',
+      status: 'in_progress',
+      kind: 'course',
       search: 'excel'
     });
   });
 
   it('requires an automation actor', async () => {
-    await expect(listEnrolledService(ORG_ID, null, { page: 1, limit: 20, status: 'all' })).rejects.toMatchObject({
+    await expect(
+      listEnrolledService(ORG_ID, null, { page: 1, limit: 20, status: 'all', kind: 'all' })
+    ).rejects.toMatchObject({
       statusCode: 401
     });
     expect(mocks.getUserEnrolled).not.toHaveBeenCalled();
@@ -75,7 +81,9 @@ describe('v1 enrolled service', () => {
   it('rejects actors outside the organization', async () => {
     mocks.getOrganizationMemberRoleId.mockResolvedValue(null);
 
-    await expect(listEnrolledService(ORG_ID, ACTOR_ID, { page: 1, limit: 20, status: 'all' })).rejects.toMatchObject({
+    await expect(
+      listEnrolledService(ORG_ID, ACTOR_ID, { page: 1, limit: 20, status: 'all', kind: 'all' })
+    ).rejects.toMatchObject({
       statusCode: 403
     });
     expect(mocks.getUserEnrolled).not.toHaveBeenCalled();

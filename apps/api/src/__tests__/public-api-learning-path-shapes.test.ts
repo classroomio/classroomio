@@ -143,7 +143,7 @@ describe('v1 learning-path responses match the routes', () => {
     const result = {
       data: [],
       pagination: PAGINATION,
-      counts: { inProgress: 0, completed: 0 }
+      counts: { notStarted: 0, inProgress: 0 }
     } satisfies Partial<Result<typeof listEnrolledService>>;
 
     expect(ZPublicApiEnrolledListResponse.parse({ success: true, ...result })).toBeTruthy();

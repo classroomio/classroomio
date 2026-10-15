@@ -42,6 +42,7 @@ type LearnerProgressPlan = {
   lessonsCompleted: number;
   exercisesCompleted: number;
   certificateEarnedAtDaysAgo: number | null;
+  completedAtDaysAgo: number | null;
   lastLoginDaysAgo: number | null;
   enrolledDaysAgo: number;
 };
@@ -67,6 +68,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 0,
       exercisesCompleted: 0,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: null,
       lastLoginDaysAgo: null,
       enrolledDaysAgo: 3
     }
@@ -81,6 +83,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 0,
       exercisesCompleted: 0,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: null,
       lastLoginDaysAgo: 0,
       enrolledDaysAgo: 14
     }
@@ -95,6 +98,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 1,
       exercisesCompleted: 0,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: null,
       lastLoginDaysAgo: 2,
       enrolledDaysAgo: 21
     }
@@ -109,6 +113,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 1,
       exercisesCompleted: 1,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: null,
       lastLoginDaysAgo: 5,
       enrolledDaysAgo: 30
     }
@@ -123,6 +128,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 2,
       exercisesCompleted: 1,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: null,
       lastLoginDaysAgo: 10,
       enrolledDaysAgo: 45
     }
@@ -137,6 +143,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 2,
       exercisesCompleted: 2,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: null,
       lastLoginDaysAgo: 20,
       enrolledDaysAgo: 60
     }
@@ -151,6 +158,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 3,
       exercisesCompleted: 2,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: null,
       lastLoginDaysAgo: 1,
       enrolledDaysAgo: 75
     }
@@ -165,6 +173,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 3,
       exercisesCompleted: 3,
       certificateEarnedAtDaysAgo: 7,
+      completedAtDaysAgo: 7,
       lastLoginDaysAgo: 7,
       enrolledDaysAgo: 90
     }
@@ -179,6 +188,7 @@ const REACT_LEARNERS: ReactLearnerSeed[] = [
       lessonsCompleted: 3,
       exercisesCompleted: 3,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: 3,
       lastLoginDaysAgo: 3,
       enrolledDaysAgo: 100
     }
@@ -315,7 +325,9 @@ export async function seedReactCoursePeopleProgress({
     certificateEarnedAt:
       learner.progress.certificateEarnedAtDaysAgo === null
         ? null
-        : isoDaysFromNow(now, -learner.progress.certificateEarnedAtDaysAgo)
+        : isoDaysFromNow(now, -learner.progress.certificateEarnedAtDaysAgo),
+    completedAt:
+      learner.progress.completedAtDaysAgo === null ? null : isoDaysFromNow(now, -learner.progress.completedAtDaysAgo)
   }));
 
   const existingStudentMember = await db
@@ -375,6 +387,7 @@ export async function seedReactCoursePeopleProgress({
       lessonsCompleted: 2,
       exercisesCompleted: 2,
       certificateEarnedAtDaysAgo: null,
+      completedAtDaysAgo: null,
       lastLoginDaysAgo: 4,
       enrolledDaysAgo: 50
     }

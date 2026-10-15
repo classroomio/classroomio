@@ -1307,6 +1307,7 @@
         "last_login_at": "Последний вход",
         "enrolled_at": "Зачислен",
         "certificate_earned": "Сертификат получен",
+        "completed": "Завершено",
         "not_started": "Не начато",
         "role": "Роль",
         "action": "Действие",

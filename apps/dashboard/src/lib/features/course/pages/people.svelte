@@ -424,6 +424,20 @@
                           />
                         </div>
                       </Badge>
+                    {:else if person.stage.kind === 'completed'}
+                      <Badge
+                        variant="outline"
+                        class="max-w-[200px] border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300"
+                      >
+                        <div class="flex min-w-0 items-center gap-1">
+                          <CheckIcon class="size-3.5 shrink-0" />
+                          <TruncatedWithTooltip
+                            text={$t('course.navItem.people.completed')}
+                            maxWidth="100%"
+                            class="text-emerald-700 dark:text-emerald-300"
+                          />
+                        </div>
+                      </Badge>
                     {:else if person.stage.kind === 'not_started'}
                       <Badge variant="outline" class="ui:bg-muted ui:text-muted-foreground max-w-[200px]">
                         <TruncatedWithTooltip

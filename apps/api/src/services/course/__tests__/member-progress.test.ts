@@ -17,40 +17,33 @@ describe('deriveCourseMemberStage', () => {
     { id: 'exercise-1', type: ContentType.Exercise, title: 'Exercise 1', isComplete: false }
   ];
 
-  it('returns certificate_earned when certificate was earned', () => {
+  it('returns certificate_earned when completion is recorded, even below 100%', () => {
     const stage = deriveCourseMemberStage({
-      progressPercent: 50,
-      certificateEarnedAt: '2026-01-01T00:00:00.000Z',
+      isComplete: true,
+      certificateAvailable: true,
+      progressPercent: 80,
       contentItems
     });
 
     expect(stage).toEqual({ kind: 'certificate_earned' });
   });
 
-  it('returns certificate_earned when progress is 100%', () => {
+  it('returns completed when completion is recorded but no certificate exists', () => {
     const stage = deriveCourseMemberStage({
+      isComplete: true,
+      certificateAvailable: false,
+      progressPercent: 80,
+      contentItems
+    });
+
+    expect(stage).toEqual({ kind: 'completed' });
+  });
+
+  it('does not return certificate_earned at 100% without a recorded completion', () => {
+    const stage = deriveCourseMemberStage({
+      isComplete: false,
+      certificateAvailable: true,
       progressPercent: 100,
-      certificateEarnedAt: null,
-      contentItems
-    });
-
-    expect(stage).toEqual({ kind: 'certificate_earned' });
-  });
-
-  it('returns not_started when progress is 0%', () => {
-    const stage = deriveCourseMemberStage({
-      progressPercent: 0,
-      certificateEarnedAt: null,
-      contentItems
-    });
-
-    expect(stage).toEqual({ kind: 'not_started' });
-  });
-
-  it('returns the first incomplete content item as the current stage', () => {
-    const stage = deriveCourseMemberStage({
-      progressPercent: 33,
-      certificateEarnedAt: null,
       contentItems
     });
 
@@ -62,15 +55,48 @@ describe('deriveCourseMemberStage', () => {
     });
   });
 
-  it('returns certificate_earned when all content items are complete', () => {
+  it('returns not_started when progress is 0% and nothing is recorded', () => {
+    const stage = deriveCourseMemberStage({
+      isComplete: false,
+      certificateAvailable: true,
+      progressPercent: 0,
+      contentItems
+    });
+
+    expect(stage).toEqual({ kind: 'not_started' });
+  });
+
+  it('returns the first incomplete content item as the current stage', () => {
+    const stage = deriveCourseMemberStage({
+      isComplete: false,
+      certificateAvailable: true,
+      progressPercent: 33,
+      contentItems
+    });
+
+    expect(stage).toEqual({
+      kind: 'content',
+      position: 2,
+      title: 'Lesson 2',
+      contentType: 'lesson'
+    });
+  });
+
+  it('points at the last item when all content is done but completion is not recorded', () => {
     const completedItems = contentItems.map((item) => ({ ...item, isComplete: true }));
 
     const stage = deriveCourseMemberStage({
-      progressPercent: 99,
-      certificateEarnedAt: null,
+      isComplete: false,
+      certificateAvailable: true,
+      progressPercent: 100,
       contentItems: completedItems
     });
 
-    expect(stage).toEqual({ kind: 'certificate_earned' });
+    expect(stage).toEqual({
+      kind: 'content',
+      position: 3,
+      title: 'Exercise 1',
+      contentType: 'exercise'
+    });
   });
 });

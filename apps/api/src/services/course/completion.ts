@@ -15,7 +15,7 @@ import {
   getCourseProgress as getCourseProgressQuery,
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
-import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
+import { claimMemberCertificateEarned, claimMemberCourseCompleted } from '@cio/db/queries/course/people';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { orgHasCertificatesEnabled } from '@api/utils/plan-features';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
@@ -204,14 +204,64 @@ async function buildCertificationEvaluation(
   };
 }
 
+type TCourseCompletionClaim = {
+  completedAt: string | null;
+  isFirstCompletion: boolean;
+};
+
 /**
- * Evaluates certification eligibility. On first eligibility, persists
- * `certificateEarnedAt` and fires the completion email (non-blocking).
+ * Records the learner's first completion of the course, on every plan.
+ * Completion is the certification rule (`eligibleForCertificate`); once
+ * recorded it stays, like an earned certificate. `isFirstCompletion` is true
+ * only for the call that wrote it.
  */
-export async function evaluateCourseCertification(
+async function claimCourseCompletion(
+  progress: Awaited<ReturnType<typeof getCourseProgressQuery>>,
+  evaluation: CourseCompletionEvaluation
+): Promise<TCourseCompletionClaim> {
+  if (progress.completedAt || !evaluation.eligibleForCertificate || !progress.groupMemberId) {
+    return { completedAt: progress.completedAt, isFirstCompletion: false };
+  }
+
+  const completedAt = new Date().toISOString();
+  const isFirstCompletion = await claimMemberCourseCompleted(progress.groupMemberId, completedAt);
+
+  return { completedAt, isFirstCompletion };
+}
+
+/**
+ * Records completion for a learner who already meets the certification rule,
+ * with no certificate, email or analytics event. For backfilling completions
+ * that predate `groupmember.completed_at`. Returns true when this call
+ * recorded one.
+ */
+export async function backfillCourseCompletion(courseId: string, profileId: string): Promise<boolean> {
+  const [progress, courseRow] = await Promise.all([
+    getCourseProgressQuery(courseId, profileId),
+    getCourseCertificationRow(courseId)
+  ]);
+
+  if (!courseRow) return false;
+
+  const evaluation = await buildCertificationEvaluation(courseId, profileId, courseRow, progress);
+  const { isFirstCompletion } = await claimCourseCompletion(progress, evaluation);
+
+  return isFirstCompletion;
+}
+
+/**
+ * Evaluates certification eligibility. On first eligibility, records the
+ * completion on any plan. A completed learner earns the certificate once the
+ * org plan includes certificates, which persists `certificateEarnedAt` and
+ * fires the completion email (non-blocking). `isNewCompletion` is true only
+ * for the call that earned the certificate. `completedAt` is the recorded
+ * course completion (null until the rule is first met) and is the flag
+ * dashboard completion UI reads.
+ */
+export async function evaluateAndRecordCourseCompletion(
   courseId: string,
   profileId: string
-): Promise<CourseCompletionEvaluation & { isNewCompletion: boolean }> {
+): Promise<CourseCompletionEvaluation & { completedAt: string | null; isNewCompletion: boolean }> {
   const [progress, courseRow] = await Promise.all([
     getCourseProgressQuery(courseId, profileId),
     getCourseCertificationRow(courseId)
@@ -222,11 +272,21 @@ export async function evaluateCourseCertification(
   }
 
   const evaluation = await buildCertificationEvaluation(courseId, profileId, courseRow, progress);
+  const { completedAt, isFirstCompletion } = await claimCourseCompletion(progress, evaluation);
+
+  if (isFirstCompletion) {
+    trackServerEvent({
+      eventType: SERVER_EVENTS.COURSE_COMPLETED,
+      userId: profileId,
+      courseId,
+      props: { path: 'standard', completedAt }
+    });
+  }
 
   let certificateEarnedAt = evaluation.certificateEarnedAt;
   let isNewCompletion = false;
 
-  if (evaluation.eligibleForCertificate && !certificateEarnedAt && progress.groupMemberId) {
+  if (completedAt && !certificateEarnedAt && progress.groupMemberId) {
     const certificatesEnabled = await orgHasCertificatesEnabled(courseRow.orgId);
 
     if (certificatesEnabled) {
@@ -247,13 +307,6 @@ export async function evaluateCourseCertification(
           earnedAt
         });
 
-        trackServerEvent({
-          eventType: SERVER_EVENTS.COURSE_COMPLETED,
-          userId: profileId,
-          courseId,
-          props: { path: 'standard', earnedAt }
-        });
-
         if (courseRow.certificate?.isDownloadable) {
           trackServerEvent({
             eventType: SERVER_EVENTS.CERTIFICATE_ISSUED,
@@ -266,14 +319,14 @@ export async function evaluateCourseCertification(
     }
   }
 
-  return { ...evaluation, certificateEarnedAt, isNewCompletion };
+  return { ...evaluation, certificateEarnedAt, completedAt, isNewCompletion };
 }
 
 /**
  * Server-side guard for PDF certificate download (must match dashboard eligibility).
  */
 export async function assertCertificateDownloadAllowed(courseId: string, profileId: string): Promise<void> {
-  const evaluation = await evaluateCourseCertification(courseId, profileId);
+  const evaluation = await evaluateAndRecordCourseCompletion(courseId, profileId);
 
   const [courseRow] = await getCourseById(courseId);
 

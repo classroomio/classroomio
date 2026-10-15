@@ -1307,6 +1307,7 @@
         "last_login_at": "Letzte Anmeldung",
         "enrolled_at": "Eingeschrieben am",
         "certificate_earned": "Zertifikat erhalten",
+        "completed": "Abgeschlossen",
         "not_started": "Nicht gestartet",
         "role": "Rolle",
         "action": "Aktion",
