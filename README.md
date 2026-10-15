@@ -12,40 +12,43 @@
 
 <img alt="ClassroomIO Courses page" src="https://assets.cdn.clsrio.com/www/home/ai-course-builder.jpeg" />
 
-ClassroomIO is an open source LMS for companies. Run compliance/employee training, customer education, and partner certification cohorts — all from one platform. Self-host it on your own infrastructure or use the cloud version.
+ClassroomIO is an  intelligent customer Training platform that helps SaaS companies use education to grow their business. Create high-quality learning experiences faster, deliver them across your customer journey, and use AI to scale customer education.
 
-### Who It's For
+## Who It's For
 
-| Use Case | What You Get |
+| Use Case | What You Can Do |
 |---|---|
-| **Compliance Training** | Deadline tracking, renewals & retake intervals, grace periods, waivers, certificates with custom IDs |
-| **Customer Education** | Branded academy portal, cohorts (cohorts with goals), AI lesson tutor, multilingual content |
-| **Partner Training** | Partner workspaces, branded certificates, custom domains, embeddable widgets, multilingual support |
+| **Customer Education** | Help customers understand your product, learn key features, complete onboarding, and get more value from your platform. |
+| **Partner Enablement** | Train resellers, implementation partners, and distributors on your products, processes, and standards. |
+| **Employee Training** | Onboard employees, deliver internal training, and manage compliance and certification programs. |
 
 ### Key Features
 
-**Course & Content**
-- **Course management** — unlimited courses, lessons, exercises, grading, and certificates
-- **Cohorts** — group courses into cohorts with goals, team management, and progress tracking
-- **AI Course Builder** — generate outlines, lesson content, and assignments (Gemini, GPT-4o, Claude)
-- **AI Lesson Tutor** — in-lesson AI assistant that helps learners as they study
+### 1. Create
 
-**Compliance & Certification**
-- **Compliance tracking** — status, deadlines, grace periods, renewals, and waivers
-- **Certificates** — issue branded certificates with custom IDs
+- **Build Courses:** Create courses faster with AI-powered course creation tools.
+- **Cohorts:** Group learners into organized learning groups and track their progress through training programs.
+- **Certifications:** Issue branded certificates to recognize learners who complete courses or meet training requirements.
+- **Team Collaboration:** Add team members to your academy and work together to manage learners, assign courses, and coordinate training.
+- **Multiple Languages:** Deliver learning experiences in 10+ languages for learners globally.
 
-**Learner & Org Experience**
-- **Multi-org & multi-teacher** — invite teachers, assign courses, manage multiple organizations
-- **Student dashboard** — learners access all courses, assignments, and progress in one place
-- **Multilingual** — deliver content in 10+ languages
+### 2. Distribute
 
-**Integrations & Developer Tools**
-- **REST API + Webhooks** — enroll users, trigger automations, receive events (`certificate.issued`, `enrollment.completed`, and more)
-- **MCP server** — `@classroomio/mcp` on npm for AI-native integrations
-- **Embeddable widget** — embed your course catalog on any website
+- **Branded Customer Academies:** Launch branded learning academies on custom domains.
+- **Manage Organizations:** Manage multiple organizations and their learning environments.
+- **Learner Dashboard:** Give learners one place to access courses, assignments, and track progress.
+- **Learning Paths:** Guide learners through structured learning experiences.
+- **Embedded Learning:** Embed videos, slides, and documents directly into your courses to give learners a seamless learning experience.
+- **REST API & Webhooks:** Connect ClassroomIO to your existing systems, access learning data, and trigger workflows across your tools.
+- **Zapier Integration:** Connect ClassroomIO with your favourite tools and automate workflows across your existing apps.
 
-**Platform**
-- **Fully open source** — self-host the entire stack on your own servers
+  ### 3. Intelligence
+
+**AI Lesson Tutor:** Learners get access to an AI assistant that explains concepts, answers questions, and summarizes course material to help them learn with confidence.
+
+**MCP Server:** Connect ClassroomIO with your favourite AI tools and coding agents to create courses and interact with your learning platform.
+
+**AI-Powered Workflows:** Use AI integrations to streamline course creation and learning operations.
 
 For what's coming next, see the [public roadmap](https://classroomio.com/roadmap).
 
