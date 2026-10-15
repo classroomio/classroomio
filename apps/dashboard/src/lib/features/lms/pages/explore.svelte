@@ -1,139 +1,316 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { browser } from '$app/environment';
+  import { Spinner } from '@cio/ui/base/spinner';
+  import { Button } from '@cio/ui/base/button';
+  import { Empty } from '@cio/ui/custom/empty';
+  import { PathIcon } from '@cio/ui/custom/moving-icons';
+  import { Search } from '@cio/ui/custom/search';
+  import { CourseCard, LearningPathCard, type CourseCardLabels, type LearningPathCardLabels } from '@cio/ui';
+  import { t } from '$lib/utils/functions/translations';
   import { profile } from '$lib/utils/store/user';
   import { currentOrg } from '$lib/utils/store/org';
-  import { t } from '$lib/utils/functions/translations';
-  import { CoursesPage } from '$features/course/pages';
-  import { courseMetaDeta } from '$features/course/utils/store';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
   import { coursesApi } from '$features/course/api';
-  import type { RecommendedCourses } from '$features/course/types';
-  import { CourseSortBy, DEFAULT_COURSE_SORT, parseCourseSortValue } from '$features/course/utils/constants';
-  import CoursePreviewModal from '$features/lms/components/course-preview-modal.svelte';
-  import * as Pagination from '@cio/ui/base/pagination';
+  import CourseFilterPopover, { type FilterGroup } from '$features/course/components/course-filter-popover.svelte';
+  import CoursePreviewModal, { type CoursePreviewCourse } from '$features/lms/components/course-preview-modal.svelte';
+  import PathPreviewModal, { type PathPreviewItem } from '$features/lms/components/path-preview-modal.svelte';
 
-  const EXPLORE_LIMIT = 12;
+  type ContentTypeFilter = 'ALL' | 'paths' | 'courses';
 
-  let searchValue = $state('');
-  let sortKey = $state<CourseSortBy>(DEFAULT_COURSE_SORT);
-  let selectedCourse = $state<RecommendedCourses[number] | null>(null);
-  let previewOpen = $state(false);
-  let currentPage = $state(1);
-
-  $effect(() => {
-    if (!browser) return;
-    void sortKey;
-    localStorage.setItem('classroomio_filter_course_key', sortKey);
-  });
-
-  const filteredExploreCourses: RecommendedCourses = $derived.by(() => {
-    const coursesFiltered = coursesApi.recommendedCourses.filter((course) => {
-      if (!searchValue || course.title.toLowerCase().includes(searchValue.toLowerCase())) {
-        return true;
-      }
-
-      return false;
-    });
-
-    if (sortKey === CourseSortBy.DateCreated) {
-      return coursesFiltered.sort(
-        (a, b) => new Date(a.createdAt ?? '').getTime() - new Date(b.createdAt ?? '').getTime()
-      );
-    } else if (sortKey === CourseSortBy.LastUpdatedAt) {
-      return coursesFiltered.sort((a, b) => {
-        const aUpdatedAt = new Date(a.updatedAt ?? a.createdAt ?? '').getTime();
-        const bUpdatedAt = new Date(b.updatedAt ?? b.createdAt ?? '').getTime();
-
-        return bUpdatedAt - aUpdatedAt;
-      });
-    } else if (sortKey === CourseSortBy.Published) {
-      return coursesFiltered.sort((a, b) => Number(b.isPublished) - Number(a.isPublished));
-    } else if (sortKey === CourseSortBy.Lessons) {
-      return coursesFiltered.sort((a, b) => (b.lessonCount ?? 0) - (a.lessonCount ?? 0));
-    }
-
-    return coursesFiltered;
-  });
-
-  const pagination = $derived(coursesApi.recommendedCoursesPagination);
-
-  function fetchPage(page: number) {
-    currentPage = page;
-    coursesApi.getRecommendedCourses({ limit: EXPLORE_LIMIT, page });
+  interface ExploreCourseCard {
+    id: string;
+    title: string;
+    description: string;
+    coverImage?: string;
+    lessonCount: number;
+    exerciseCount: number;
+    href: string;
+    slug?: string;
+    cost: number;
   }
 
-  $effect(() => {
-    if (searchValue) {
-      currentPage = 1;
-    }
-  });
-
-  onMount(() => {
-    const courseView = localStorage.getItem('courseView') as 'grid' | 'list' | null;
-
-    if (courseView) {
-      $courseMetaDeta.view = courseView;
-    }
-
-    sortKey = parseCourseSortValue(localStorage.getItem('classroomio_filter_course_key'));
-  });
+  let searchValue = $state('');
+  let contentType = $state<ContentTypeFilter>('ALL');
+  let selectedCourse = $state<CoursePreviewCourse | null>(null);
+  let previewOpen = $state(false);
+  let selectedPath = $state<PathPreviewItem | null>(null);
+  let pathPreviewOpen = $state(false);
 
   $effect(() => {
     if (!$profile.id || !$currentOrg.id) return;
 
-    coursesApi.getRecommendedCourses({ limit: EXPLORE_LIMIT, page: currentPage });
+    learnerPathStore.ensureLoadedFor($currentOrg.id, $profile.id);
+    learnerPathStore.loadCatalogPaths();
+    coursesApi.getRecommendedCourses({ limit: 24 });
   });
+
+  const enrolledIds = $derived(new Set(learnerPathStore.enrolledPaths.flatMap((path) => [path.id, path.publicId])));
+
+  const catalogPaths = $derived(
+    learnerPathStore.catalogPaths.filter((path) => !enrolledIds.has(path.id) && !enrolledIds.has(path.publicId))
+  );
+
+  const pathItems = $derived(
+    catalogPaths.map((path) => ({
+      id: path.id,
+      href: `/lms/paths/${path.publicId ?? path.id}`,
+      slug: path.slug ?? null,
+      name: path.name,
+      description: path.description ?? '',
+      coverImage: path.coverImage ?? undefined,
+      courseCount: path.courseCount ?? 0,
+      cost: path.cost ?? 0,
+      currency: path.currency ?? undefined,
+      selfEnrollment: path.selfEnrollment ?? undefined
+    }))
+  );
+
+  const courseItems = $derived.by((): ExploreCourseCard[] => {
+    return coursesApi.recommendedCourses.map(
+      (course): ExploreCourseCard => ({
+        id: course.id,
+        title: course.title,
+        description: course.description ?? '',
+        coverImage: course.logo || undefined,
+        lessonCount: course.lessonCount ?? 0,
+        exerciseCount: course.exerciseCount ?? 0,
+        href: '/lms/explore',
+        slug: course.slug ?? undefined,
+        cost: course.cost ?? 0
+      })
+    );
+  });
+
+  const matchesSearch = (text: string) => !searchValue || text.toLowerCase().includes(searchValue.toLowerCase());
+
+  const filteredPaths = $derived(pathItems.filter((path) => matchesSearch(`${path.name} ${path.description}`)));
+
+  const filteredCourses = $derived(courseItems.filter((course) => matchesSearch(course.title)));
+
+  const showPathsSection = $derived(contentType !== 'courses');
+  const showCoursesSection = $derived(contentType !== 'paths');
+
+  const isSearchingOrFiltering = $derived(searchValue.trim() !== '' || contentType !== 'ALL');
+
+  const selected = $derived<Record<string, string>>({ contentType });
+
+  const hasActiveFilters = $derived(contentType !== 'ALL');
+
+  const groups = $derived<FilterGroup[]>([
+    {
+      id: 'contentType',
+      label: $t('explore.content_type'),
+      options: [
+        { value: 'ALL', label: $t('explore.content_type_all') },
+        { value: 'paths', label: $t('learningPath.badge.learning_path') },
+        { value: 'courses', label: $t('learningPath.badge.course') }
+      ]
+    }
+  ]);
+
+  const pathLabels = $derived<LearningPathCardLabels>({
+    badge: $t('learningPath.badge.learning_path'),
+    course: $t('learningPath.card.course'),
+    courses: $t('learningPath.card.courses'),
+    certificateEarned: $t('learningPath.card.certificate_earned'),
+    adminContinueSetup: $t('learningPath.admin.continue_setup'),
+    adminManage: $t('learningPath.admin.manage'),
+    viewCertificate: $t('learningPath.card.view_certificate'),
+    viewPath: $t('explore.view_learning_path'),
+    startLearning: $t('learningPath.hero.start_learning'),
+    continueLearning: $t('learningPath.hero.continue_learning'),
+    statusDraft: $t('learningPath.status.draft'),
+    statusActive: $t('learningPath.status.active'),
+    statusArchived: $t('learningPath.status.archived'),
+    progressLabel: $t('learningPath.progress.label'),
+    of: $t('learningPath.card.of'),
+    coursesCompleted: $t('learningPath.hero.courses_completed'),
+    earnedOn: $t('certificates.earned_on')
+  });
+
+  const courseLabels = $derived<CourseCardLabels>({
+    courseBadge: $t('learningPath.badge.course'),
+    lesson: $t('learningPath.card.lesson'),
+    lessons: $t('learningPath.card.lessons'),
+    exercise: $t('learningPath.card.exercise'),
+    exercises: $t('learningPath.card.exercises'),
+    completedLabel: $t('learningPath.course.completed_label'),
+    progressLabel: $t('learningPath.progress.label'),
+    earnedOn: $t('certificates.earned_on'),
+    partOf: $t('learningPath.course.part_of'),
+    learnMore: $t('courses.course_card.learn_more'),
+    continueCourse: $t('courses.course_card.continue_course'),
+    reviewCourse: $t('learningPath.course.review_course'),
+    viewCertificate: $t('certificates.view_certificate'),
+    manage: $t('learningPath.admin.manage'),
+    published: $t('courses.course_card.published'),
+    unpublished: $t('courses.course_card.unpublished'),
+    students: $t('courses.course_card.students')
+  });
+
+  function handleFilterChange(groupId: string, value: string) {
+    if (groupId === 'contentType') contentType = value as ContentTypeFilter;
+  }
+
+  function clearFilters() {
+    contentType = 'ALL';
+  }
+
+  function openCoursePreview(course: ExploreCourseCard) {
+    selectedCourse = {
+      id: course.id,
+      title: course.title,
+      description: course.description,
+      logo: course.coverImage ?? null,
+      slug: course.slug,
+      lessonCount: course.lessonCount,
+      exerciseCount: course.exerciseCount,
+      cost: course.cost,
+      currency: 'USD',
+      metadata: { allowSelfEnrollment: true },
+      type: 'PUBLIC'
+    };
+    previewOpen = true;
+  }
+
+  function openPathPreview(path: (typeof pathItems)[number]) {
+    selectedPath = {
+      id: path.id,
+      slug: path.slug,
+      name: path.name,
+      description: path.description,
+      coverImage: path.coverImage ?? null,
+      courseCount: path.courseCount,
+      cost: path.cost,
+      currency: path.currency ?? null,
+      selfEnrollment: path.selfEnrollment ?? null,
+      href: path.href,
+      enrolled: false
+    };
+    pathPreviewOpen = true;
+  }
 </script>
 
-<CoursesPage
-  courses={filteredExploreCourses}
-  emptyTitle={$t('explore.empty_heading')}
-  emptyDescription={$t('explore.empty_description')}
-  isExplore={true}
-  isLMS={true}
-  isLoading={coursesApi.isLoading}
-  bind:searchValue
-  bind:sortKey
-  onCardClick={(course) => {
-    selectedCourse = course as RecommendedCourses[number];
-    previewOpen = true;
-  }}
-/>
+{#if learnerPathStore.isLoading}
+  <div class="flex min-h-64 items-center justify-center">
+    <Spinner />
+  </div>
+{:else}
+  <div class="mb-2 flex flex-wrap items-center justify-end gap-3">
+    <Search
+      class="max-w-sm flex-1 border md:w-2/3"
+      placeholder={$t('explore.search_placeholder')}
+      bind:value={searchValue}
+    />
+    <CourseFilterPopover
+      sortOptions={[]}
+      {groups}
+      selectedGroups={selected}
+      onGroupChange={handleFilterChange}
+      {hasActiveFilters}
+      onClearFilters={clearFilters}
+    />
+  </div>
 
-{#if pagination && pagination.totalPages > 1}
-  <Pagination.Root
-    count={pagination.total}
-    perPage={pagination.limit}
-    page={currentPage}
-    onPageChange={fetchPage}
-    class="mt-6"
-  >
-    {#snippet children({ pages, currentPage: activePage })}
-      <Pagination.Content>
-        <Pagination.Item>
-          <Pagination.PrevButton />
-        </Pagination.Item>
-        {#each pages as pageItem (pageItem.key)}
-          {#if pageItem.type === 'ellipsis'}
-            <Pagination.Item>
-              <Pagination.Ellipsis />
-            </Pagination.Item>
-          {:else}
-            <Pagination.Item>
-              <Pagination.Link page={pageItem} isActive={activePage === pageItem.value}>
-                {pageItem.value}
-              </Pagination.Link>
-            </Pagination.Item>
-          {/if}
-        {/each}
-        <Pagination.Item>
-          <Pagination.NextButton />
-        </Pagination.Item>
-      </Pagination.Content>
-    {/snippet}
-  </Pagination.Root>
+  {#if showCoursesSection}
+    <section class="mt-2">
+      <div class="mb-3 flex items-center gap-2">
+        <h2 class="text-base font-semibold">{$t('explore.section_courses')}</h2>
+        <span
+          class="ui:text-muted-foreground ui:bg-muted inline-flex min-w-[22px] items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold"
+        >
+          {filteredCourses.length}
+        </span>
+      </div>
+
+      {#if filteredCourses.length === 0}
+        <Empty
+          icon={PathIcon}
+          title={isSearchingOrFiltering ? $t('explore.courses_empty_title') : $t('explore.courses_browse_empty_title')}
+          description={isSearchingOrFiltering
+            ? $t('explore.courses_empty_description')
+            : $t('explore.courses_browse_empty_description')}
+        />
+      {:else}
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {#each filteredCourses as course}
+            <CourseCard
+              href={course.href}
+              title={course.title}
+              description={course.description}
+              coverImage={course.coverImage}
+              lessonCount={course.lessonCount}
+              exerciseCount={course.exerciseCount}
+              isExplore={true}
+              onExploreClick={() => openCoursePreview(course)}
+              labels={courseLabels}
+            />
+          {/each}
+        </div>
+      {/if}
+    </section>
+  {/if}
+
+  {#if showPathsSection}
+    <section class="mt-4">
+      <div class="mb-3 flex items-center gap-2">
+        <h2 class="text-base font-semibold">{$t('explore.section_paths')}</h2>
+        <span
+          class="ui:text-muted-foreground ui:bg-muted inline-flex min-w-[22px] items-center justify-center rounded-full px-1.5 py-0.5 text-[11px] font-semibold"
+        >
+          {filteredPaths.length}
+        </span>
+      </div>
+
+      {#if filteredPaths.length === 0}
+        {#if isSearchingOrFiltering}
+          <Empty
+            icon={PathIcon}
+            title={$t('explore.paths_empty_title')}
+            description={$t('explore.paths_empty_description')}
+          />
+        {:else if learnerPathStore.catalogPaths.length === 0}
+          <Empty
+            icon={PathIcon}
+            title={$t('explore.paths_browse_empty_title')}
+            description={$t('explore.paths_browse_empty_description')}
+          />
+        {:else}
+          <Empty
+            icon={PathIcon}
+            title={$t('explore.paths_all_enrolled_title')}
+            description={$t('explore.paths_all_enrolled_description')}
+          >
+            {#snippet children()}
+              <Button href="/lms/mylearning">{$t('explore.paths_all_enrolled_action')}</Button>
+            {/snippet}
+          </Empty>
+        {/if}
+      {:else}
+        <div class="grid grid-cols-1 gap-4 px-2 md:grid-cols-3">
+          {#each filteredPaths as path}
+            <LearningPathCard
+              href={path.href}
+              name={path.name}
+              description={path.description}
+              coverImage={path.coverImage}
+              courseCount={path.courseCount}
+              progressPercent={0}
+              coursesCompleted={0}
+              isExplore={true}
+              onExploreClick={() => openPathPreview(path)}
+              labels={pathLabels}
+            />
+          {/each}
+        </div>
+      {/if}
+    </section>
+  {/if}
 {/if}
 
 {#if selectedCourse}
   <CoursePreviewModal course={selectedCourse} bind:open={previewOpen} />
+{/if}
+
+{#if selectedPath}
+  <PathPreviewModal path={selectedPath} bind:open={pathPreviewOpen} />
 {/if}

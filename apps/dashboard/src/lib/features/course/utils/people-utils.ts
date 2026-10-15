@@ -2,7 +2,15 @@ import dayjs from 'dayjs';
 import type { CourseMember, ListPeopleQuery, ListPeopleRequestQuery } from '$features/course/utils/types';
 import { ROLE } from '@cio/utils/constants';
 
-export type CourseMemberStage = NonNullable<CourseMember['stage']>;
+/**
+ * The member shape that carries progress fields (progress percent, stage,
+ * last login and enrollment date). Only student rows with an account hold
+ * meaningful values there, whatever the API sends for other roles, so
+ * consumers must narrow with `isStudentMember` before reading them.
+ */
+type CourseMemberWithProgress = Extract<CourseMember, { progressPercent: number }>;
+
+export type CourseMemberStage = NonNullable<CourseMemberWithProgress['stage']>;
 
 export const DEFAULT_PEOPLE_PAGE_SIZE = 20;
 
@@ -28,7 +36,8 @@ export function formatPeopleShortDate(value: string | null | undefined): string 
   return date.format('MMM D, YYYY');
 }
 
-export function isStudentMember(member: CourseMember): boolean {
+/** Narrows to a student with an account, the only member whose progress fields are meaningful. */
+export function isStudentMember(member: CourseMember): member is CourseMemberWithProgress {
   return member.roleId === ROLE.STUDENT && !!member.profileId;
 }
 

@@ -42,6 +42,26 @@ export function generateLmsBreadcrumbs(
   }
 
   if (!matchedNavItem) {
+    // Path detail pages live under /lms/paths/:id but belong to My Learning.
+    // Mirror the community-post pattern: My Learning crumb + dynamic title.
+    if (firstSegment === 'paths' && pathSegments[1]) {
+      const myLearning = navItems.find((item) => item.path === '/mylearning');
+      if (myLearning) {
+        breadcrumbs.push({
+          label: t(myLearning.title),
+          href: myLearning.url
+        });
+      }
+      if (pageData?.breadcrumb) {
+        breadcrumbs.push({
+          label: pageData.breadcrumb,
+          href: pathname
+        });
+      }
+
+      return breadcrumbs;
+    }
+
     // Try to match by checking if pathname matches the item path
     for (const item of navItems) {
       const fullItemPath = `/lms${item.path}`;

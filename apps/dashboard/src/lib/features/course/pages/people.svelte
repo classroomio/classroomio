@@ -17,9 +17,12 @@
   import { Progress } from '@cio/ui/base/progress';
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { ComingSoon, RoleBasedSecurity, TablePagination, UpgradeBanner } from '$features/ui';
-  import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
-  import InvitationModal from '$features/course/components/people/invitation-modal.svelte';
+  import { TruncatedWithTooltip } from '$features/ui';
+  import InvitationModal from '$features/people/components/invitation-modal.svelte';
   import GrantAccessModal from '$features/course/components/people/grant-access-modal.svelte';
+  import { ALL_SOURCES_FILTER, toPeopleSourceFilter } from '$features/course/utils/people-source-utils';
+  import PeopleSourceCell from '$features/course/components/people/people-source-cell.svelte';
+  import PeopleSourceSelect from '$features/course/components/people/people-source-select.svelte';
   import DeleteConfirmation from '$features/course/components/people/delete-confirmation.svelte';
   import { isStudentLimitReached } from '$lib/utils/store/org';
 
@@ -46,7 +49,10 @@
     obscureMemberEmail
   } from '$features/course/utils/people-utils';
 
-  let member: { id?: string; email?: string; profile?: { email: string } } = $state({});
+  /** Fields the delete dialog reads from the row it targets. */
+  type MemberDeleteTarget = Partial<Pick<CourseMember, 'id' | 'email' | 'profile'>>;
+
+  let member = $state<MemberDeleteTarget>({});
   let filterBy: string = $state(`${ROLES[0].value}`);
   let searchValue = $state('');
   let copiedEmail = $state<string | null>(null);
@@ -54,6 +60,7 @@
   let pagination = $state<CourseMembersPagination | null>(null);
   let currentPage = $state(1);
   let isLoadingMembers = $state(false);
+  let sourceFilter: string = $state(ALL_SOURCES_FILTER);
   let membersRequestId = 0;
   let searchDebounceTimeout: ReturnType<typeof setTimeout> | null = null;
   let loadedCourseId: string | null = null;
@@ -64,11 +71,14 @@
 
     try {
       const roleId = filterBy === ALL_ROLES_FILTER ? undefined : Number(filterBy);
+      // TODO(#1226): the URL-backed query carries `source`; drop this and `sourceFilter` when resolving.
+      const source = toPeopleSourceFilter(sourceFilter);
       const response = await peopleApi.list(courseId, {
         page,
         limit: DEFAULT_PEOPLE_PAGE_SIZE,
         search: searchValue.trim() || undefined,
-        roleId
+        roleId,
+        source
       });
       if (requestId !== membersRequestId) return;
 
@@ -166,6 +176,16 @@
     return profile ? profile.email : email;
   }
 
+  // TODO(#1226): delete with <PeopleSourceSelect>; the popover patches `source` into the URL query instead.
+  /**
+   * Handles the legacy source-select change: stores the filter and reloads page 1.
+   * Kept until the URL-backed roster merges.
+   */
+  function handleSourceChange(value: string) {
+    sourceFilter = value;
+    reloadFirstPage();
+  }
+
   function gotoPerson(person: CourseMember) {
     if (!person.profileId) return;
 
@@ -228,6 +248,8 @@
 
 <section class="space-y-2">
   <div class="flex flex-col items-center justify-end gap-2 md:flex-row">
+    <!-- TODO(#1226): interim control; the roster filter popover takes over (see people-source-utils.ts). -->
+    <PeopleSourceSelect bind:value={sourceFilter} onValueChange={handleSourceChange} />
     <Search
       placeholder={$t('course.navItem.people.search')}
       bind:value={searchValue}
@@ -255,6 +277,8 @@
         <Table.Header>
           <Table.Row>
             <Table.Head>{$t('course.navItem.people.learner')}</Table.Head>
+            <!-- TODO(#1226): becomes a `tableColumns` entry (no sortKey) right after the learner column. -->
+            <Table.Head>{$t('course.navItem.people.source')}</Table.Head>
             <Table.Head>{$t('course.navItem.people.progress')}</Table.Head>
             <Table.Head class="max-w-[220px]">{$t('course.navItem.people.stage')}</Table.Head>
             <Table.Head>{$t('course.navItem.people.last_login_at')}</Table.Head>
@@ -265,13 +289,13 @@
         <Table.Body>
           {#if isLoadingMembers && memberRows.length === 0}
             <Table.Row>
-              <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
+              <Table.Cell colspan={7} class="ui:text-muted-foreground py-8 text-center text-sm">
                 {$t('course.navItem.people.invite_modal.loading')}
               </Table.Cell>
             </Table.Row>
           {:else if memberRows.length === 0}
             <Table.Row>
-              <Table.Cell colspan={6} class="ui:text-muted-foreground py-8 text-center text-sm">
+              <Table.Cell colspan={7} class="ui:text-muted-foreground py-8 text-center text-sm">
                 {$t('course.search.empty')}
               </Table.Cell>
             </Table.Row>
@@ -361,6 +385,8 @@
                   {/if}
                 </Table.Cell>
 
+                <PeopleSourceCell member={person} />
+
                 <Table.Cell class="min-w-[140px]">
                   {#if isStudentMember(person)}
                     {@const progressPercent = getMemberProgressPercent(person) ?? 0}
@@ -439,7 +465,9 @@
 
                 <Table.Cell class="min-w-[110px]">
                   <span class="ui:text-muted-foreground text-sm">
-                    {formatPeopleShortDate(person.enrolledAt ?? person.createdAt)}
+                    {formatPeopleShortDate(
+                      isStudentMember(person) ? (person.enrolledAt ?? person.createdAt) : person.createdAt
+                    )}
                   </span>
                 </Table.Cell>
 

@@ -10,6 +10,7 @@
   import { t } from '$lib/utils/functions/translations';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { getCourseContent } from '$features/course/utils/content';
+  import { getCourseRouteBase } from '$features/course/utils/functions';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
 
@@ -47,15 +48,16 @@
     if (!canResolveNext || isFetching || query.get('next') !== 'true') return;
 
     hasHandledNext = true;
+    const base = getCourseRouteBase();
     const incompleteContent = getFirstIncompleteNavigableContent(courseApi.course);
     if (incompleteContent) {
       if (incompleteContent.type === ContentType.Lesson) {
-        goto(`/courses/${courseId}/lessons/${incompleteContent.id}`);
+        goto(`${base}/${courseId}/lessons/${incompleteContent.id}`);
       } else {
-        goto(`/courses/${courseId}/exercises/${incompleteContent.id}`);
+        goto(`${base}/${courseId}/exercises/${incompleteContent.id}`);
       }
     } else {
-      goto(`/courses/${courseId}/lessons`);
+      goto(`${base}/${courseId}/lessons`);
     }
   });
 

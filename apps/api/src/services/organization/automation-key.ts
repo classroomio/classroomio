@@ -28,7 +28,9 @@ const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKeyScope[]
     'course:write',
     'course:tag:write',
     'course:exercise:read',
-    'course:exercise:write'
+    'course:exercise:write',
+    'learning_path:read',
+    'learning_path:write'
   ],
   api: ['public_api:*'],
   zapier: ['public_api:*']

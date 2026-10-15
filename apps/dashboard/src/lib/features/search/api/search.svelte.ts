@@ -8,6 +8,7 @@ import type {
   SearchScope
 } from '../utils/types';
 import { BaseApi, classroomio } from '$lib/utils/services/api';
+import { getPathHubRoute } from '$features/learning-path/utils/routes';
 
 const SEARCH_DEBOUNCE_MS = 200;
 
@@ -15,6 +16,7 @@ function emptyResults(): GroupedSearchResults {
   return {
     course: [],
     cohort: [],
+    learning_path: [],
     widget: [],
     tag: [],
     audience: [],
@@ -124,6 +126,25 @@ class SearchApi extends BaseApi {
   }
 }
 
+/**
+ * Maps path search rows to command-palette items.
+ * The URL stays the hub for both roles: staff get the builder and learners get
+ * the hub content through the dual-role `/paths/[publicId]` route.
+ */
+function mapPathSearchItems(
+  paths: Array<{ id: string; name: string; description?: string | null; publicId: string }> | undefined
+): SearchResultItem[] {
+  return (paths ?? []).map(
+    (path): SearchResultItem => ({
+      kind: 'learning_path',
+      id: path.id,
+      title: path.name,
+      subtitle: summarize(path.description),
+      url: getPathHubRoute(path.publicId)
+    })
+  );
+}
+
 function mapSearchResults(data: SearchOrgData, currentOrgPath: string): GroupedSearchResults {
   const results = emptyResults();
 
@@ -146,6 +167,8 @@ function mapSearchResults(data: SearchOrgData, currentOrgPath: string): GroupedS
       url: `/cohorts/${cohort.id}/courses`
     })
   );
+
+  results.learning_path = mapPathSearchItems(data.paths);
 
   results.widget = data.widgets.map(
     (widget): SearchResultItem => ({
@@ -202,6 +225,8 @@ function mapLmsSearchResults(data: SearchLmsData): GroupedSearchResults {
       url: `/cohorts/${cohort.id}/courses`
     })
   );
+
+  results.learning_path = mapPathSearchItems(data.paths);
 
   return results;
 }

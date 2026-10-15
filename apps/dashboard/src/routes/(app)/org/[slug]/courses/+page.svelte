@@ -101,7 +101,7 @@
     updateFiltersUrl();
     isFiltering = true;
     try {
-      await coursesApi.getOrgCourses(nextTags);
+      await coursesApi.getOrgCourses({ tagSlugs: nextTags });
     } finally {
       isFiltering = false;
     }

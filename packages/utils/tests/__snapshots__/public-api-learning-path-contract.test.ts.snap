@@ -1,0 +1,646 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API learning path contracts > snapshots the generated JSON schemas 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": {},
+  "properties": {
+    "data": {
+      "items": {
+        "additionalProperties": {},
+        "properties": {
+          "completionRate": {
+            "type": "number",
+          },
+          "completionsCount": {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "cost": {
+            "type": "number",
+          },
+          "courseCount": {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "coverImage": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "currency": {
+            "type": "string",
+          },
+          "description": {
+            "type": "string",
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "isPublished": {
+            "type": "boolean",
+          },
+          "memberCount": {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "name": {
+            "type": "string",
+          },
+          "organizationId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "publicId": {
+            "type": "string",
+          },
+          "selfEnrollment": {
+            "type": "boolean",
+          },
+          "sequentialUnlock": {
+            "type": "boolean",
+          },
+          "slug": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "status": {
+            "type": "string",
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+        },
+        "required": [
+          "id",
+          "publicId",
+          "organizationId",
+          "name",
+          "slug",
+          "description",
+          "coverImage",
+          "isPublished",
+          "cost",
+          "currency",
+          "sequentialUnlock",
+          "selfEnrollment",
+          "status",
+          "createdAt",
+          "updatedAt",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "pagination": {
+      "additionalProperties": {},
+      "properties": {
+        "limit": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "page": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "total": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "totalPages": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "totalPages",
+      ],
+      "type": "object",
+    },
+    "success": {
+      "const": true,
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "success",
+    "data",
+    "pagination",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API learning path contracts > snapshots the generated JSON schemas 2`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": {},
+  "properties": {
+    "data": {
+      "additionalProperties": {},
+      "properties": {
+        "completionRate": {
+          "type": "number",
+        },
+        "completionsCount": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "cost": {
+          "type": "number",
+        },
+        "courseCount": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "courseIds": {
+          "items": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "courses": {
+          "items": {
+            "additionalProperties": {},
+            "properties": {
+              "courseId": {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              "exercisesCount": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer",
+              },
+              "id": {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              "learningPathId": {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              "lessonsCount": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer",
+              },
+              "order": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer",
+              },
+              "title": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "learningPathId",
+              "courseId",
+              "order",
+              "title",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "coverImage": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "createdAt": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "currency": {
+          "type": "string",
+        },
+        "description": {
+          "type": "string",
+        },
+        "id": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        "isPublished": {
+          "type": "boolean",
+        },
+        "memberCount": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "name": {
+          "type": "string",
+        },
+        "organizationId": {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        "publicId": {
+          "type": "string",
+        },
+        "selfEnrollment": {
+          "type": "boolean",
+        },
+        "sequentialUnlock": {
+          "type": "boolean",
+        },
+        "slug": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "status": {
+          "type": "string",
+        },
+        "updatedAt": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+      },
+      "required": [
+        "id",
+        "publicId",
+        "organizationId",
+        "name",
+        "slug",
+        "description",
+        "coverImage",
+        "isPublished",
+        "cost",
+        "currency",
+        "sequentialUnlock",
+        "selfEnrollment",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "courseIds",
+        "courses",
+      ],
+      "type": "object",
+    },
+    "success": {
+      "const": true,
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "success",
+    "data",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API learning path contracts > snapshots the generated JSON schemas 3`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": {},
+  "properties": {
+    "data": {
+      "items": {
+        "additionalProperties": {},
+        "properties": {
+          "avatarUrl": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "enrolledAt": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "fullName": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "profileEmail": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "profileId": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "roleId": {
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "status": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "profileId",
+          "email",
+          "roleId",
+          "status",
+          "enrolledAt",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "pagination": {
+      "additionalProperties": {},
+      "properties": {
+        "limit": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "page": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "total": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "totalPages": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "totalPages",
+      ],
+      "type": "object",
+    },
+    "success": {
+      "const": true,
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "success",
+    "data",
+    "pagination",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API learning path contracts > snapshots the generated JSON schemas 4`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": {},
+  "properties": {
+    "counts": {
+      "additionalProperties": {},
+      "properties": {
+        "completed": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "inProgress": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "inProgress",
+        "completed",
+      ],
+      "type": "object",
+    },
+    "data": {
+      "items": {
+        "oneOf": [
+          {
+            "additionalProperties": {},
+            "properties": {
+              "data": {
+                "additionalProperties": {},
+                "properties": {
+                  "id": {
+                    "type": "string",
+                  },
+                  "title": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "id",
+                ],
+                "type": "object",
+              },
+              "kind": {
+                "const": "course",
+                "type": "string",
+              },
+            },
+            "required": [
+              "kind",
+              "data",
+            ],
+            "type": "object",
+          },
+          {
+            "additionalProperties": {},
+            "properties": {
+              "data": {
+                "additionalProperties": {},
+                "properties": {
+                  "id": {
+                    "type": "string",
+                  },
+                  "name": {
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "id",
+                ],
+                "type": "object",
+              },
+              "kind": {
+                "const": "learning_path",
+                "type": "string",
+              },
+            },
+            "required": [
+              "kind",
+              "data",
+            ],
+            "type": "object",
+          },
+        ],
+      },
+      "type": "array",
+    },
+    "pagination": {
+      "additionalProperties": {},
+      "properties": {
+        "limit": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "page": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "total": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+        "totalPages": {
+          "maximum": 9007199254740991,
+          "minimum": -9007199254740991,
+          "type": "integer",
+        },
+      },
+      "required": [
+        "page",
+        "limit",
+        "total",
+        "totalPages",
+      ],
+      "type": "object",
+    },
+    "success": {
+      "const": true,
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "success",
+    "data",
+    "pagination",
+    "counts",
+  ],
+  "type": "object",
+}
+`;

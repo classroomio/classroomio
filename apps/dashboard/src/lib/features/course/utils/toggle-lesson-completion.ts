@@ -1,5 +1,6 @@
 import { ContentType } from '@cio/utils/constants/content';
 import { courseApi, lessonApi } from '$features/course/api';
+import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
 import {
   closeCourseCompletionModal,
   openCourseCompletionModal,
@@ -21,6 +22,9 @@ export async function toggleLessonCompletion(courseId: string, lessonId: string)
     snackbar.error('snackbar.lessons.error.try_later');
     return false;
   }
+
+  // Lesson progress feeds path unlocks: drop cached journeys so they refetch.
+  learnerPathStore.invalidateJourneyCache();
 
   snackbar.success(
     isComplete ? 'snackbar.lessons.success.complete_marked' : 'snackbar.lessons.success.complete_unmarked'

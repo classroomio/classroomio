@@ -11,3 +11,4 @@ export * from './newsfeed.svelte';
 export * from './people.svelte';
 export * from './presign.svelte';
 export * from './submission.svelte';
+export * from './course-picker.svelte';

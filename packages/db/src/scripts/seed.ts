@@ -3,12 +3,13 @@ import 'dotenv/config';
 import { seedAccount } from '@db/utils/seed/account';
 import { seedCompliance } from '@db/utils/seed/compliance';
 import { MVC_SECTION_ID, PANDAS_SECTION_ID, REACT_SECTION_ID, seedCourseSections } from '@db/utils/seed/courseSection';
-import { seedCourses } from '@db/utils/seed/course';
+import { EARLY_ADOPTER_COURSE_ID, seedCourses } from '@db/utils/seed/course';
 import { seedExercise } from '@db/utils/seed/exercise';
 import { seedExerciseTemplates } from '@db/utils/seed/exerciseTemplate';
 import { seedGroup } from '@db/utils/seed/group';
 import { seedGroupmembers } from '@db/utils/seed/groupmember';
 import { seedLearnerLifecycle } from '@db/utils/seed/learnerLifecycle';
+import { seedLearningPaths } from '@db/utils/seed/learningPath';
 import { type LessonTemplate, seedLessons } from '@db/utils/seed/lesson';
 import { seedNewsfeedThreads } from '@db/utils/seed/newsfeedThreads';
 import { seedOrganization } from '@db/utils/seed/organization';
@@ -21,6 +22,10 @@ import { seedReactCoursePeopleProgress } from '@db/utils/seed/reactCoursePeopleP
 import { seedRoles } from '@db/utils/seed/role';
 import { seedSubmissions } from '@db/utils/seed/submission';
 import { seedUsers } from '@db/utils/seed/users';
+import {
+  backfillCohortCourseEnrollmentGrants,
+  backfillMissingCourseEnrollmentGrants
+} from '@db/queries/learning-path/enrollment-grant';
 import usersData from '../../users.json';
 
 // Constants for IDs used across multiple seed functions
@@ -62,6 +67,7 @@ const orderedSeeds = [
   'compliance',
   'react-people-progress',
   'learner-lifecycle',
+  'learning-paths',
   'newsfeed-threads'
 ] as const;
 
@@ -101,20 +107,28 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
       'exercises',
       'questions',
       'react-people-progress',
-      'learner-lifecycle'
+      'learner-lifecycle',
+      'learning-paths'
     ]
   },
   'coursera-test': {
     organizationId: ENTERPRISE_ORG_ID,
     userIds: [ENTERPRISE_ADMIN_USER_ID, ENTERPRISE_STUDENT_USER_ID],
     groupIds: [],
-    seedNames: [...COMMON_ORGANIZATION_SEEDS, 'organization-plan', 'compliance', 'newsfeed-threads']
+    seedNames: [...COMMON_ORGANIZATION_SEEDS, 'organization-plan', 'compliance', 'learning-paths', 'newsfeed-threads']
   },
   'skillshare-test': {
     organizationId: EARLY_ADOPTER_ORG_ID,
     userIds: [EARLY_ADOPTER_ADMIN_USER_ID, EARLY_ADOPTER_STUDENT_USER_ID],
     groupIds: [EARLY_ADOPTER_GROUP_ID],
-    seedNames: [...COMMON_ORGANIZATION_SEEDS, 'organization-plan', 'groups', 'group-members', 'courses']
+    seedNames: [
+      ...COMMON_ORGANIZATION_SEEDS,
+      'organization-plan',
+      'groups',
+      'group-members',
+      'courses',
+      'learning-paths'
+    ]
   }
 };
 
@@ -201,6 +215,8 @@ Flags:
   --compliance               Seed compliance demo data (coursera-test org)
   --newsfeed-threads         Seed nested newsfeed comment threads (coursera-test org)
   --react-people-progress    Seed React course students with varied progress (udemy-test)
+  --learner-lifecycle        Seed the learner lifecycle roster (udemy-test)
+  --learning-paths           Seed learning paths, members, progress caches and grants (all course orgs)
   --help, -h                  Show this help message
 
 Examples:
@@ -362,6 +378,26 @@ const seedFunctions = {
       reactCourseId: REACT_COURSE_ID
     });
   },
+  'learning-paths': async () => {
+    console.log('📝 Seeding learning paths...');
+    await seedLearningPaths({
+      testOrgId: TEST_ORG_ID,
+      adminUserId: ADMIN_USER_ID,
+      mvcCourseId: MVC_COURSE_ID,
+      reactCourseId: REACT_COURSE_ID,
+      pandasCourseId: PANDAS_COURSE_ID,
+      existingStudentUserId: STUDENT_USER_ID,
+      enterpriseOrgId: ENTERPRISE_ORG_ID,
+      enterpriseAdminUserId: ENTERPRISE_ADMIN_USER_ID,
+      enterpriseStudentUserId: ENTERPRISE_STUDENT_USER_ID,
+      earlyAdopterOrgId: EARLY_ADOPTER_ORG_ID,
+      earlyAdopterAdminUserId: EARLY_ADOPTER_ADMIN_USER_ID,
+      earlyAdopterStudentUserId: EARLY_ADOPTER_STUDENT_USER_ID,
+      earlyAdopterGroupId: EARLY_ADOPTER_GROUP_ID,
+      earlyAdopterCourseId: EARLY_ADOPTER_COURSE_ID,
+      selectedOrganizationId: selectedOrganizationConfig?.organizationId
+    });
+  },
   'newsfeed-threads': async () => {
     console.log('📝 Seeding nested newsfeed threads (coursera-test)...');
     await seedNewsfeedThreads({ enterpriseOrgId: ENTERPRISE_ORG_ID });
@@ -411,6 +447,16 @@ async function seed() {
       }
 
       await seedFunctions[seedName]();
+    }
+
+    // The seeds write groupmember rows without grants; backfill so
+    // student@test.com keeps access on a fresh database.
+    try {
+      const cohortInserted = await backfillCohortCourseEnrollmentGrants();
+      const importInserted = await backfillMissingCourseEnrollmentGrants();
+      console.log(`🔑 Backfilled ${cohortInserted} COHORT and ${importInserted} IMPORT course enrollment grants.`);
+    } catch (error) {
+      console.error('⚠️  Grant backfill after seed failed:', error);
     }
 
     console.log('✅ Seed completed successfully!');

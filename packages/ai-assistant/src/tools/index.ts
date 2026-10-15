@@ -20,7 +20,13 @@ import {
   askTemplateQuestionsSchema,
   fetchDocumentationUrlSchema
 } from './teacher';
-import { listCourseOutlineSchema, readLessonSchema, readExerciseSchema, searchCourseSchema } from './student';
+import {
+  listCourseOutlineSchema,
+  readLessonSchema,
+  readExerciseSchema,
+  searchCourseSchema,
+  getStudentLearningPathsSchema
+} from './student';
 
 export {
   LANDING_PAGE_COURSE_DESCRIPTION_PLAIN_HINT,
@@ -65,7 +71,8 @@ const studentTools: ToolRegistry = {
   [ToolName.LIST_COURSE_OUTLINE]: listCourseOutlineSchema,
   [ToolName.READ_LESSON]: readLessonSchema,
   [ToolName.READ_EXERCISE]: readExerciseSchema,
-  [ToolName.SEARCH_COURSE]: searchCourseSchema
+  [ToolName.SEARCH_COURSE]: searchCourseSchema,
+  [ToolName.GET_STUDENT_LEARNING_PATHS]: getStudentLearningPathsSchema
 };
 
 /**
@@ -107,6 +114,7 @@ export {
   askTemplateQuestionsSchema,
   fetchDocumentationUrlSchema,
   listCourseOutlineSchema,
+  getStudentLearningPathsSchema,
   readLessonSchema,
   readExerciseSchema,
   searchCourseSchema

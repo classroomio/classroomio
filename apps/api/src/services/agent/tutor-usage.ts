@@ -15,6 +15,7 @@ import {
 } from '@cio/db/queries/agent';
 
 import { AppError } from '@api/utils/errors';
+import { startOfCurrentMonthUtc, startOfPreviousMonthUtc, startOfLast90DaysUtc } from '@cio/utils/functions';
 import { getEffectiveAiTutorSettings } from './tutor-config';
 import { enforceTokenBalance } from '@cio/core/services/agent/usage';
 
@@ -28,21 +29,6 @@ export function isCapEnforced(): boolean {
   const raw = process.env.AI_TUTOR_CAP_ENFORCED;
   if (raw == null) return false;
   return raw === '1' || raw.toLowerCase() === 'true';
-}
-
-function startOfCurrentMonthUtc(): Date {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0));
-}
-
-function startOfPreviousMonthUtc(): Date {
-  const now = new Date();
-  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1, 0, 0, 0, 0));
-}
-
-function startOfLast90DaysUtc(): Date {
-  const now = new Date();
-  return new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
 }
 
 export function resolveTutorPeriod(period: 'current' | 'previous' | 'last90'): { start: Date; end?: Date } {

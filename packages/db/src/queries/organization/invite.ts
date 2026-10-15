@@ -7,12 +7,16 @@ import type {
 } from '@db/types';
 import * as schema from '@db/schema';
 
-import { and, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, inArray, isNull, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
-export async function createOrganizationInvite(values: TNewOrganizationInvite): Promise<TOrganizationInvite> {
+/** Inserts one organization invite. Accepts a transaction client. */
+export async function createOrganizationInvite(
+  values: TNewOrganizationInvite,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite> {
   try {
-    const [created] = await db.insert(schema.organizationInvite).values(values).returning();
+    const [created] = await dbClient.insert(schema.organizationInvite).values(values).returning();
 
     if (!created) {
       throw new Error('Failed to create organization invite');
@@ -27,13 +31,17 @@ export async function createOrganizationInvite(values: TNewOrganizationInvite): 
   }
 }
 
-export async function createOrganizationInvites(values: TNewOrganizationInvite[]): Promise<TOrganizationInvite[]> {
+/** Inserts several organization invites in one statement. Accepts a transaction client. */
+export async function createOrganizationInvites(
+  values: TNewOrganizationInvite[],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInvite).values(values).returning();
+    return await dbClient.insert(schema.organizationInvite).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInvites error:', error);
     throw new Error(
@@ -62,14 +70,15 @@ export async function createOrganizationInviteAudit(
 }
 
 export async function createOrganizationInviteAudits(
-  values: TNewOrganizationInviteAudit[]
+  values: TNewOrganizationInviteAudit[],
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationInviteAudit[]> {
   if (values.length === 0) {
     return [];
   }
 
   try {
-    return await db.insert(schema.organizationInviteAudit).values(values).returning();
+    return await dbClient.insert(schema.organizationInviteAudit).values(values).returning();
   } catch (error) {
     console.error('createOrganizationInviteAudits error:', error);
     throw new Error(
@@ -112,6 +121,102 @@ export async function revokeActiveOrganizationInvitesByEmails(
     console.error('revokeExistingOrganizationInvites error:', error);
     throw new Error(
       `Failed to revoke existing organization invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Takes a transaction-scoped advisory lock per (org, email), in sorted order.
+ * `FOR UPDATE` cannot lock rows that do not exist yet, so two concurrent
+ * first-time invites for the same address would otherwise both insert a live
+ * invite. Must run inside a transaction; locks release on commit/rollback.
+ */
+export async function lockOrganizationInviteEmails(
+  organizationId: string,
+  emails: string[],
+  dbClient: DbOrTxClient
+): Promise<void> {
+  const normalized = [...new Set(emails.map((email) => email.toLowerCase().trim()))].filter(Boolean).sort();
+
+  try {
+    for (const email of normalized) {
+      await dbClient.execute(sql`SELECT pg_advisory_xact_lock(hashtext(${`${organizationId}:${email}`}))`);
+    }
+  } catch (error) {
+    console.error('lockOrganizationInviteEmails error:', error);
+    throw new Error(
+      `Failed to lock organization invite emails: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Active (unrevoked, unaccepted, unexpired) invites for the given emails,
+ * locked FOR UPDATE so concurrent supersede runs serialize on the same rows
+ * instead of creating duplicate live invites.
+ */
+export async function getActiveOrganizationInvitesByEmails(
+  organizationId: string,
+  emails: string[],
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
+  const normalized = [...new Set(emails.map((email) => email.toLowerCase().trim()))].filter(Boolean);
+
+  if (normalized.length === 0) {
+    return [];
+  }
+
+  try {
+    return await dbClient
+      .select()
+      .from(schema.organizationInvite)
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          inArray(schema.organizationInvite.email, normalized),
+          eq(schema.organizationInvite.isRevoked, false),
+          isNull(schema.organizationInvite.acceptedAt),
+          gt(schema.organizationInvite.expiresAt, sql`NOW()`)
+        )
+      )
+      .orderBy(asc(schema.organizationInvite.id))
+      .for('update');
+  } catch (error) {
+    console.error('getActiveOrganizationInvitesByEmails error:', error);
+    throw new Error(
+      `Failed to get active organization invites: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Revokes the given invite rows (used when superseding them with a merged
+ * invite). Returns the revoked rows.
+ */
+export async function revokeOrganizationInvitesByIds(
+  inviteIds: string[],
+  revokedByProfileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite[]> {
+  if (inviteIds.length === 0) {
+    return [];
+  }
+
+  try {
+    return await dbClient
+      .update(schema.organizationInvite)
+      .set({
+        isRevoked: true,
+        revokedByProfileId,
+        revokedAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      })
+      .where(inArray(schema.organizationInvite.id, inviteIds))
+      .returning();
+  } catch (error) {
+    console.error('revokeOrganizationInvitesByIds error:', error);
+    throw new Error(
+      `Failed to revoke organization invites: ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

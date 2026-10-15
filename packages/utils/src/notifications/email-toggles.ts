@@ -73,8 +73,10 @@ export const EMAIL_TOGGLE_MAP = {
   sessionUpdated: 'session',
   studentCourseWelcome: 'enrollmentWelcome',
   studentCohortWelcome: 'enrollmentWelcome',
+  studentLearningPathWelcome: 'enrollmentWelcome',
   teacherCourseWelcome: 'enrollmentWelcome',
-  studentCourseCompletion: 'courseCompletion'
+  studentCourseCompletion: 'courseCompletion',
+  studentLearningPathCompletion: 'courseCompletion'
 } as const satisfies Record<string, EmailNotificationToggleKey>;
 
 export type ToggleableEmailId = keyof typeof EMAIL_TOGGLE_MAP;

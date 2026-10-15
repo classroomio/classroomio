@@ -27,6 +27,7 @@ import {
   deleteCohortNewsfeedService,
   getEnrolledCohorts,
   getCohort,
+  listAddableCohortCoursesService,
   listOrgCohorts,
   listCohortCourses,
   listCohortMembers,
@@ -45,6 +46,7 @@ import {
   toggleInviteLinkForResource
 } from '@api/services/invite-link';
 import { ZToggleInviteLink } from '@cio/utils/validation/invite-link';
+import { ZAddableCoursesQuery } from '@cio/utils/validation/course';
 import {
   archiveGoal,
   createGoal,
@@ -215,9 +217,10 @@ export const cohortRouter = new Hono()
     zValidator('json', ZAddCohortMembers),
     async (c) => {
       try {
+        const user = c.get('user')!;
         const { cohortId } = c.req.valid('param');
         const data = c.req.valid('json');
-        const result = await addCohortMembers(cohortId, data);
+        const result = await addCohortMembers(cohortId, data, user.id);
         return c.json({ success: true, data: result }, 201);
       } catch (error) {
         return handleError(c, error, 'Failed to add cohort members');
@@ -399,6 +402,30 @@ export const cohortRouter = new Hono()
       return handleError(c, error, 'Failed to list cohort courses');
     }
   })
+
+  /**
+   * GET /cohort/:cohortId/available-courses
+   * Pages the courses the cohort can still add (add-courses picker)
+   */
+  .get(
+    '/:cohortId/available-courses',
+    authMiddleware,
+    cohortTeamMemberMiddleware,
+    zValidator('param', ZCohortParam),
+    zValidator('query', ZAddableCoursesQuery),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+        const { cohortId } = c.req.valid('param');
+        const query = c.req.valid('query');
+        const result = await listAddableCohortCoursesService(cohortId, user.id, query);
+
+        return c.json({ success: true, data: result.items, pagination: result.pagination }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to list available courses');
+      }
+    }
+  )
 
   /**
    * POST /cohort/:cohortId/courses

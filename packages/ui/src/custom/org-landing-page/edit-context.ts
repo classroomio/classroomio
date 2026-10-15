@@ -9,7 +9,8 @@ import type { Component } from 'svelte';
  *
  * Org sections: hero, navigation, callout, embed, links, footer, courses.
  * Course sections: header (course hero), requirement, description, goals,
- * certificate, curriculum, chips (skills/tools), instructor, reviews, pricing.
+ * certificate, curriculum, skills (path) / chips (skills/tools, course),
+ * instructor (course) / instructors (path), reviews, pricing.
  */
 export type LandingSectionKey =
   | 'hero'
@@ -27,8 +28,12 @@ export type LandingSectionKey =
   | 'curriculum'
   | 'chips'
   | 'instructor'
+  | 'instructors'
   | 'reviews'
-  | 'pricing';
+  | 'pricing'
+  | 'access'
+  | 'faqs'
+  | 'skills';
 
 export interface LandingPageEditContext {
   /** Reactive read of the currently selected section (or null if none). */

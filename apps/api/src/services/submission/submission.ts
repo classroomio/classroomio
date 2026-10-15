@@ -45,6 +45,7 @@ import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
+import { syncCourseProgressInLearningPaths } from '@api/services/learning-path';
 import { isExerciseCompletedForMember } from '@cio/db/queries/course/progression';
 
 type SubmissionGradingState = 'queued' | 'processing' | 'awaiting_manual' | 'completed' | 'failed';
@@ -59,10 +60,31 @@ async function triggerCertificationIfExerciseComplete(
   if (!profile?.id) return;
 
   const isComplete = await isExerciseCompletedForMember(exerciseId, groupMemberId);
+
+  void syncCourseProgressInLearningPaths(courseId, profile.id).catch((syncError) => {
+    console.error('Failed to sync learning path progress after exercise submission:', syncError);
+  });
+
   if (!isComplete) return;
 
   void evaluateCourseCertification(courseId, profile.id).catch((certError) => {
     console.error('Failed to evaluate course certification after exercise submission:', certError);
+  });
+}
+
+/**
+ * Grading or deleting a submission can complete or reopen a course without a
+ * learner action, so re-derive the learning-path cache without recording
+ * learner activity. Fire-and-forget: the submission change is already saved.
+ */
+function syncLearningPathsAfterSubmissionChange(courseId: string, groupMemberId: string): void {
+  void (async () => {
+    const profile = await getProfileByGroupMemberId(groupMemberId);
+    if (!profile?.id) return;
+
+    await syncCourseProgressInLearningPaths(courseId, profile.id, undefined, { recordActivity: false });
+  })().catch((syncError) => {
+    console.error('Failed to sync learning path progress after a submission change:', syncError);
   });
 }
 
@@ -789,6 +811,7 @@ export async function updateSubmissionService(submissionId: string, data: TSubmi
 
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+      syncLearningPathsAfterSubmissionChange(updated.courseId, updated.submittedBy);
     }
 
     return updated;
@@ -890,6 +913,7 @@ export async function updateSubmissionGradesBatch(
 
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
+      syncLearningPathsAfterSubmissionChange(updated.courseId, updated.submittedBy);
     }
 
     return updated;
@@ -921,6 +945,10 @@ export async function deleteSubmissionService(submissionId: string): Promise<TSu
     const deleted = await deleteSubmission(submissionId);
     if (!deleted) {
       throw new AppError('Failed to delete submission', ErrorCodes.INTERNAL_ERROR, 500);
+    }
+
+    if (deleted.courseId && deleted.submittedBy) {
+      syncLearningPathsAfterSubmissionChange(deleted.courseId, deleted.submittedBy);
     }
 
     return deleted;

@@ -8,11 +8,15 @@ import {
   ZCreateOrganization,
   ZAudienceExportQuery,
   ZBulkAudienceAction,
+  ZEnrolledCoursesQuery,
   ZGetAudienceQuery,
   ZGetCoursesBySiteName,
+  ZGetEarnedCertificates,
+  ZGetEnrolled,
   ZGetOrgSetup,
   ZGetOrganizationCoursesQuery,
   ZGetOrganizations,
+  ZGetLearningPathsBySiteName,
   ZGetUserAnalytics,
   ZImportAudienceMembers,
   ZInviteTeamMembers,
@@ -50,9 +54,12 @@ import {
   getOrganizationNavCounts,
   getOrganizationsWithFilters,
   getPublicCourses,
+  getPublicLearningPaths,
   getRecommendedCourses,
   getUserAnalytics,
+  getUserEarnedCertificates,
   getUserEnrolledCourses,
+  getUserEnrolled,
   removeAudienceMember,
   removeTeamMember,
   reorderOrgCourses,
@@ -534,6 +541,29 @@ export const organizationRouter = new Hono()
     }
   })
   /**
+   * GET /organization/learning-paths/public
+   * Gets published learning paths for an organization (public landing page)
+   * Query params: siteName (string), search (string, optional), page/limit (optional)
+   * No authentication required - returns only published paths
+   */
+  .get('/learning-paths/public', zValidator('query', ZGetLearningPathsBySiteName), async (c) => {
+    try {
+      const { siteName, search, page, limit } = c.req.valid('query');
+      const pagination = page !== undefined || limit !== undefined ? { page, limit } : undefined;
+      const result = await getPublicLearningPaths(siteName, search || undefined, pagination);
+
+      return c.json(
+        {
+          success: true,
+          data: result
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch public learning paths');
+    }
+  })
+  /**
    * POST /organization/courses/reorder
    * Persists the manual display order of organization courses (landing page + public catalog)
    * Requires authentication and organization administrator privileges (or automation key with `course:write`)
@@ -561,22 +591,85 @@ export const organizationRouter = new Hono()
    * Gets enrolled courses for a user in an organization (used in lms)
    * Requires authentication and organization membership
    */
-  .get('/courses/enrolled', authMiddleware, orgMemberMiddleware, async (c) => {
+  .get(
+    '/courses/enrolled',
+    authMiddleware,
+    orgMemberMiddleware,
+    zValidator('query', ZEnrolledCoursesQuery),
+    async (c) => {
+      try {
+        const user = c.get('user')!;
+
+        const orgId = c.req.header('cio-org-id')!;
+        const { nonPathOnly } = c.req.valid('query');
+        const result = await getUserEnrolledCourses(orgId, user.id, { nonPathOnly });
+
+        return c.json(
+          {
+            success: true,
+            data: result
+          },
+          200
+        );
+      } catch (error) {
+        return handleError(c, error, 'Failed to fetch courses');
+      }
+    }
+  )
+  /**
+   * GET /organization/enrolled
+   * Gets one page of the caller's courses and learning paths in an organization, most recently
+   * active first (used in lms). Each item is `{ kind: 'course' | 'learning_path', data }`.
+   * `status` filters by completion (My Learning tabs) and `counts` carries both tab totals.
+   * Requires authentication and organization membership
+   */
+  .get('/enrolled', authMiddleware, orgMemberMiddleware, zValidator('query', ZGetEnrolled), async (c) => {
     try {
       const user = c.get('user')!;
-
       const orgId = c.req.header('cio-org-id')!;
-      const result = await getUserEnrolledCourses(orgId, user.id);
+      const query = c.req.valid('query');
+
+      const { items, total, counts } = await getUserEnrolled(orgId, user.id, query);
+      const totalPages = Math.ceil(total / query.limit);
 
       return c.json(
         {
           success: true,
-          data: result
+          data: items,
+          pagination: { page: query.page, limit: query.limit, total, totalPages },
+          counts
         },
         200
       );
     } catch (error) {
-      return handleError(c, error, 'Failed to fetch courses');
+      return handleError(c, error, 'Failed to fetch enrolled');
+    }
+  })
+  /**
+   * GET /organization/certificates
+   * Gets one page of the caller's downloadable certificates in an organization, newest first
+   * (used in lms Certificates). Each item is `{ kind: 'course' | 'learning_path', data }`.
+   * Requires authentication and organization membership
+   */
+  .get('/certificates', authMiddleware, orgMemberMiddleware, zValidator('query', ZGetEarnedCertificates), async (c) => {
+    try {
+      const user = c.get('user')!;
+      const orgId = c.req.header('cio-org-id')!;
+      const query = c.req.valid('query');
+
+      const { items, total } = await getUserEarnedCertificates(orgId, user.id, query);
+      const totalPages = Math.ceil(total / query.limit);
+
+      return c.json(
+        {
+          success: true,
+          data: items,
+          pagination: { page: query.page, limit: query.limit, total, totalPages }
+        },
+        200
+      );
+    } catch (error) {
+      return handleError(c, error, 'Failed to fetch certificates');
     }
   })
   /**

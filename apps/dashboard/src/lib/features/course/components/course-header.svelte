@@ -9,6 +9,7 @@
   import { Waves } from '@cio/ui/custom/animation';
   import { page } from '$app/state';
   import { currentOrg, currentOrgDomain } from '$lib/utils/store/org';
+  import { profile } from '$lib/utils/store/user';
   import { isStudentExperience, isCourseLearnerView } from '$lib/utils/store/app';
   import { isMobileStore } from '@cio/ui/hooks/is-mobile.svelte';
   import { getCourseProgress } from '$features/course/utils/content';
@@ -16,6 +17,8 @@
   import SparklesIcon from '@lucide/svelte/icons/sparkles';
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
+  import { CourseInPathWidget } from '$features/learning-path/components';
   import { getActiveCourseNavKey } from '$features/course/utils/functions';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
@@ -53,6 +56,13 @@
     setupProgressApi.fetchSetupProgress(siteName);
   });
 
+  $effect(() => {
+    if (!$profile.id || !$currentOrg.id) return;
+
+    const courseId = courseApi.course?.id;
+    if (courseId) learnerPathStore.loadPathContext(courseId, page.params.publicId as string | undefined);
+  });
+
   function handleViewCourseSite() {
     const course = courseApi.course;
     if (!course?.id) {
@@ -82,7 +92,7 @@
       <Separator orientation="vertical" />
     </div>
 
-    <div class="flex w-[60%] min-w-0 flex-1 flex-col justify-center gap-0.5">
+    <div class="flex w-[60%] min-w-0 flex-col justify-center gap-0.5">
       <div class="flex min-w-0 items-center gap-2">
         <p class="max-w-xs truncate text-sm font-medium">
           {activeNavKey ? $t(activeNavKey) : ''}
@@ -94,6 +104,15 @@
 
         {#if showCoursePublishBadge}
           <CoursePublishBadge {isPublished} />
+        {/if}
+
+        {#if $isCourseLearnerView && learnerPathStore.pathContext}
+          <CourseInPathWidget
+            pathName={learnerPathStore.pathContext.pathName}
+            pathHref={learnerPathStore.pathContext.pathHref}
+            nodes={learnerPathStore.pathContext.nodes}
+            currentPosition={learnerPathStore.pathContext.currentPosition}
+          />
         {/if}
       </div>
     </div>

@@ -78,3 +78,22 @@ export function getDashboardBaseUrl(org?: DashboardOrg): string {
 export function getAppBaseUrl(): string {
   return getDashboardBaseUrl();
 }
+
+/**
+ * Learner-facing organization invite link (`/invite/:token` on the org's
+ * public site). Single home for the `${base}/invite/${token}` construction
+ * previously duplicated across audience imports and learning-path invites.
+ * Token is URL-encoded; the org decides the host via `getDashboardBaseUrl`.
+ */
+export function buildOrgInviteLink(token: string, org?: DashboardOrg): string {
+  return `${getDashboardBaseUrl(org)}/invite/${encodeURIComponent(token)}`;
+}
+
+/**
+ * Staff team-invite link (`/invite/:token` on the admin app). Same route as
+ * the learner link but intentionally a different host: staff sign in on the
+ * admin app, not the org public site. Do not merge the two.
+ */
+export function buildTeamInviteLink(token: string): string {
+  return `${getAppBaseUrl()}/invite/${encodeURIComponent(token)}`;
+}

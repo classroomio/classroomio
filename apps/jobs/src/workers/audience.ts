@@ -2,8 +2,16 @@ import './../bootstrap';
 
 import { Worker } from 'bullmq';
 
-import { JOB_NAMES, QUEUE_NAMES, ZAudienceBulkActionPayload, createRedisConnection } from '@cio/jobs';
+import {
+  JOB_NAMES,
+  QUEUE_NAMES,
+  ZAudienceBulkActionPayload,
+  ZPathBulkEnrollPayload,
+  createRedisConnection
+} from '@cio/jobs';
 import { runQueuedAudienceBulkAction } from '@cio/core/services/organization/audience-bulk';
+import { runQueuedPathBulkEnroll } from '@cio/core/services/learning-path/bulk-enroll';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 
 import { errorMessage } from '../utils/cancel';
 import { log } from '../utils/logger';
@@ -13,6 +21,32 @@ const connection = createRedisConnection();
 const worker = new Worker(
   QUEUE_NAMES.audience,
   async (job) => {
+    if (job.name === JOB_NAMES.audience.pathBulkEnroll) {
+      const data = ZPathBulkEnrollPayload.parse(job.data ?? {});
+
+      log.info('path-bulk-enroll-start', {
+        bullmqJobId: job.id,
+        organizationId: data.organizationId,
+        pathId: data.pathId,
+        requested: data.members.length
+      });
+
+      const result = await runQueuedPathBulkEnroll(data);
+
+      log.info('path-bulk-enroll-done', {
+        bullmqJobId: job.id,
+        pathId: data.pathId,
+        requested: result.requested,
+        enrolled: result.enrolled,
+        invited: result.invited,
+        failed: result.failed.length
+      });
+
+      // Returned as the job's completion value, so the status endpoint can
+      // hand the client the same summary the synchronous path reports.
+      return result;
+    }
+
     if (job.name !== JOB_NAMES.audience.bulkAction) {
       throw new Error(`Unknown audience job: ${job.name}`);
     }
@@ -27,6 +61,10 @@ const worker = new Worker(
     });
 
     const result = await runQueuedAudienceBulkAction(data);
+
+    if (data.action === 'delete' && result.succeeded > 0) {
+      void invalidateOrgStats(data.organizationId).catch(() => {});
+    }
 
     log.info('audience-bulk-action-done', {
       bullmqJobId: job.id,

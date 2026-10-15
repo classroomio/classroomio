@@ -149,6 +149,13 @@ Current tools:
 - `create_course_exercise`
 - `create_course_exercise_from_template`
 - `update_course_exercise`
+- `list_org_learning_paths`
+- `get_learning_path`
+- `create_learning_path`
+- `add_learning_path_courses`
+- `update_learning_path_landing_page`
+- `reorder_learning_path_courses`
+- `remove_learning_path_course`
 
 ## Draft Model
 
@@ -423,6 +430,13 @@ Exercise tools use the live course directly:
 - `create_course_exercise`
 - `create_course_exercise_from_template`
 - `update_course_exercise`
+- `list_org_learning_paths`
+- `get_learning_path`
+- `create_learning_path`
+- `add_learning_path_courses`
+- `update_learning_path_landing_page`
+- `reorder_learning_path_courses`
+- `remove_learning_path_course`
 
 Supported `questionTypeId` values for exercise payloads:
 
@@ -442,6 +456,26 @@ Supported `questionTypeId` values for exercise payloads:
 - `14` `THUMBS` - Thumbs up/down (open-ended poll with customizable Yes/No labels; no correct answer)
 
 `TRUE_FALSE` is auto-graded with `settings.correctValue` (boolean) and fixed True/False labels for factual statements. `THUMBS` is open-ended (not auto-graded): two customizable Yes/No-style options with thumbs icons for sentiment or poll-style questions — do not set `settings.correctValue`. `MATCHING` and `HOTSPOT` are disabled and must not be used.
+
+## Learning path tools
+
+Path tools accept UUIDs or 8-character public IDs anywhere a path ID goes.
+
+| Tool | Access | Notes |
+| --- | --- | --- |
+| `list_org_learning_paths` | read | paged (`page`, `limit`, `search`); returns `{ data, pagination }` |
+| `get_learning_path` | read | metadata, ordered course IDs, curriculum |
+| `create_learning_path` | write | always created **unpublished**; publish from the dashboard |
+| `add_learning_path_courses` | write | links courses; existing STUDENT members are granted them |
+| `update_learning_path_landing_page` | write, idempotent | landing page copy only |
+| `reorder_learning_path_courses` | write, idempotent | full ordered course ID list |
+| `remove_learning_path_course` | destructive | unlinks the course; members keep direct access |
+
+Scopes: `learning_path:read` for reads, `learning_path:write` for writes.
+
+Who the key acts as: the API key creator must be an org admin or a tutor assigned to the path, otherwise 403. Creating a path is org-admin only. Listing shows org admins every path and tutors only the paths assigned to them. Keys never escalate past their creator's org role.
+
+Covered: listing, detail, create, course add/remove/reorder, landing page copy. Not covered: path members, publishing, pricing, certificates, analytics. Use the dashboard for those.
 
 ## Operational Notes
 

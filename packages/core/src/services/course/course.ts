@@ -19,8 +19,10 @@ import {
   getCourseOrgAdminAccess,
   getCourseProgramAccess,
   getGroupMemberIdByCourseAndProfile,
+  getGroupMemberIdByGroupAndProfile,
   insertGroupMembersOnConflictDoNothing
 } from '@cio/db/queries/group';
+import { grantCourseAccess } from '@cio/db/queries/learning-path';
 import {
   getLastLogin,
   getLastSeenForUserIds,
@@ -123,6 +125,20 @@ export async function ensureProgramCourseAccess(courseId: string, profileId: str
       ],
       tx
     );
+
+    const groupMemberId = await getGroupMemberIdByGroupAndProfile(access.courseGroupId, profileId, tx);
+
+    if (groupMemberId) {
+      await grantCourseAccess(
+        {
+          groupmemberId: groupMemberId,
+          courseId,
+          profileId,
+          source: 'PROGRAM'
+        },
+        tx
+      );
+    }
   });
 
   if (access.roleId === ROLE.STUDENT) {

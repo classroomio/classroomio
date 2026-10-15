@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { CERTIFICATE_TEMPLATE_IDS } from '@cio/certificates';
+
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES, ALLOWED_DOCUMENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
@@ -56,7 +58,7 @@ export type TCourseDownloadParam = z.infer<typeof ZCourseDownloadParam>;
 
 /**
  * Per-course certificate design. Stored on `course.certificate.design`.
- * The 5 supported template ids match `@cio/certificates`.
+ * Template ids are owned by `@cio/certificates`.
  */
 export const ZCertificateSignatory = z.object({
   name: z.string().max(80).default(''),
@@ -66,7 +68,7 @@ export const ZCertificateSignatory = z.object({
 });
 export type TCertificateSignatory = z.infer<typeof ZCertificateSignatory>;
 
-export const ZCertificateTemplateId = z.enum(['classique', 'brutalist', 'noir', 'poster', 'minimal']);
+export const ZCertificateTemplateId = z.enum(CERTIFICATE_TEMPLATE_IDS);
 export type TCertificateTemplateId = z.infer<typeof ZCertificateTemplateId>;
 
 export const ZCertificateDesign = z.object({
@@ -275,7 +277,8 @@ export const ZCourseCreateBase = z.object({
   description: z.string().min(1),
   type: ZCourseType,
   organizationId: z.string().min(1),
-  compliance: ZComplianceSettings.optional()
+  compliance: ZComplianceSettings.optional(),
+  enrollOnlyInLearningPath: z.boolean().optional()
 });
 
 export const ZCourseCreate = ZCourseCreateBase.refine(
@@ -502,7 +505,8 @@ export const ZCourseUpdateBase = z.object({
   certificate: ZCertificationSettings.optional(),
   tagIds: z.array(z.uuid()).max(100).optional(),
   compliance: ZComplianceSettings.optional(),
-  callout: ZCourseCalloutInput.optional()
+  callout: ZCourseCalloutInput.optional(),
+  enrollOnlyInLearningPath: z.boolean().optional()
 });
 
 export const ZCourseUpdate = ZCourseUpdateBase.refine(
@@ -563,3 +567,15 @@ export const ZCourseUserAnalyticsQuery = z.object({
     .transform((value) => value === 'true')
 });
 export type TCourseUserAnalyticsQuery = z.infer<typeof ZCourseUserAnalyticsQuery>;
+
+/**
+ * Query for the "add courses" pickers (cohort and learning path). The server
+ * pages, searches and excludes ineligible courses, so a page holds only
+ * courses the matching add call will accept.
+ */
+export const ZAddableCoursesQuery = z.object({
+  search: z.string().trim().max(200).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20)
+});
+export type TAddableCoursesQuery = z.infer<typeof ZAddableCoursesQuery>;

@@ -80,7 +80,7 @@
       <div class="ui:w-2/4" onclick={(e) => e.stopPropagation()}>
         <InputField bind:value={label} placeholder="Your option" className="ui:ml-1" type="text" {onchange} />
       </div>
-    {:else}
+    {:else if label}
       <span class="ui:ml-2 ui:dark:text-white ui:text-sm">{label}</span>
     {/if}
 
@@ -98,7 +98,9 @@
 {:else}
   <label class={rowClass}>
     <Checkbox {name} {value} {disabled} bind:checked data-testid={testId} />
-    <span class="ui:ml-2 ui:dark:text-white ui:text-sm">{label}</span>
+    {#if label}
+      <span class="ui:ml-2 ui:dark:text-white ui:text-sm">{label}</span>
+    {/if}
 
     {@render children?.()}
   </label>

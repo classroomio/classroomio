@@ -26,6 +26,8 @@
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
   import LessonVersionHistory from '$features/course/components/lesson/lesson-version-history.svelte';
   import { courseApi, lessonApi } from '$features/course/api';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
+  import { CourseInPathNext } from '$features/learning-path/components';
   import { isHtmlValueEmpty } from '$lib/utils/functions/toHtml';
   import { lessonVideoUpload, lessonDocUpload } from '$features/course/components/lesson/store';
   import { t } from '$lib/utils/functions/translations';
@@ -134,6 +136,13 @@
   const lessonSlug = $derived(lessonApi.lesson?.slug ?? '');
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
   const isLiveSessionLesson = $derived(Boolean(lessonApi.lesson?.callUrl && lessonApi.lesson?.lessonAt));
+
+  $effect(() => {
+    if (!$profile.id || !$currentOrg.id) return;
+
+    const courseId = courseApi.course?.id;
+    if (courseId) learnerPathStore.loadPathContext(courseId, $page.params.publicId as string | undefined);
+  });
 
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
     const params = new SvelteURLSearchParams($page.url.searchParams);
@@ -656,6 +665,14 @@
             {$t('course.navItem.lessons.materials.get_started')}
           </Button>
         </Empty>
+      {/if}
+
+      {#if $isCourseLearnerView && learnerPathStore.pathContext && mode === MODES.view}
+        <CourseInPathNext
+          pathHref={learnerPathStore.pathContext.pathHref}
+          next={learnerPathStore.pathContext.next}
+          isPathComplete={learnerPathStore.pathContext.isPathComplete}
+        />
       {/if}
     </div>
   {/snippet}

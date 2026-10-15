@@ -3,6 +3,7 @@
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import * as FileDropZone from '@cio/ui/custom/file-drop-zone';
   import type { FileRejectedReason } from '@cio/ui/custom/file-drop-zone';
+  import * as Alert from '@cio/ui/base/alert';
   import * as RadioGroup from '@cio/ui/base/radio-group';
   import * as Field from '@cio/ui/base/field';
   import * as Table from '@cio/ui/base/table';
@@ -37,6 +38,7 @@
   interface Course {
     id: string;
     title: string;
+    enrollOnlyInLearningPath?: boolean;
   }
 
   interface Cohort {
@@ -44,9 +46,15 @@
     name: string;
   }
 
+  interface Path {
+    id: string;
+    name: string;
+  }
+
   interface Props {
     courses: Course[];
     cohorts: Cohort[];
+    paths: Path[];
     /**
      * Reported upward so the route can put the step's actions in the page
      * header, where every other page keeps them. The route owns `Page.Header`,
@@ -56,7 +64,7 @@
     controls?: ImportControls | null;
   }
 
-  let { courses, cohorts, controls = $bindable(null) }: Props = $props();
+  let { courses, cohorts, paths, controls = $bindable(null) }: Props = $props();
 
   type Step = 'upload' | 'preview' | 'result';
 
@@ -68,11 +76,14 @@
   let unknownColumns = $state<string[]>([]);
   let resultRows = $state<AudienceImportResultRows>([]);
   let importedCount = $state(0);
+  let skippedPathOnlyCourseNames = $state<string[]>([]);
 
   let courseAccessMode = $state('none');
   let cohortAccessMode = $state('none');
+  let pathAccessMode = $state('none');
   let selectedCourseIds = new SvelteSet<string>();
   let selectedCohortIds = new SvelteSet<string>();
+  let selectedPathIds = new SvelteSet<string>();
   let sendEmail = $state(true);
   let isSubmitting = $state(false);
 
@@ -87,6 +98,11 @@
   function toggleCohort(cohortId: string) {
     if (selectedCohortIds.has(cohortId)) selectedCohortIds.delete(cohortId);
     else selectedCohortIds.add(cohortId);
+  }
+
+  function togglePath(pathId: string) {
+    if (selectedPathIds.has(pathId)) selectedPathIds.delete(pathId);
+    else selectedPathIds.add(pathId);
   }
 
   function parseInto(text: string, name: string | null) {
@@ -139,8 +155,10 @@
         recipients,
         allCourses: courseAccessMode === 'all',
         allCohorts: cohortAccessMode === 'all',
+        allPaths: pathAccessMode === 'all',
         courseIds: courseAccessMode === 'select' ? [...selectedCourseIds] : undefined,
         cohortIds: cohortAccessMode === 'select' ? [...selectedCohortIds] : undefined,
+        pathIds: pathAccessMode === 'select' ? [...selectedPathIds] : undefined,
         sendEmail
       });
 
@@ -148,6 +166,7 @@
 
       resultRows = result.data.rows ?? [];
       importedCount = result.data.imported ?? 0;
+      skippedPathOnlyCourseNames = result.data.skippedPathOnlyCourseNames ?? [];
       step = 'result';
     } finally {
       isSubmitting = false;
@@ -163,6 +182,7 @@
     unknownColumns = [];
     resultRows = [];
     importedCount = 0;
+    skippedPathOnlyCourseNames = [];
   }
 
   // Writes only; nothing here reads `controls`, so this cannot loop.
@@ -301,7 +321,11 @@
           listClass="max-h-40"
           heading={$t('audience.assign.select_courses')}
           emptyMessage={$t('audience.import.select_courses_placeholder')}
-          items={courses.map((c) => ({ id: c.id, label: c.title || c.id }))}
+          items={courses.map((c) => ({
+            id: c.id,
+            label: c.title || c.id,
+            description: c.enrollOnlyInLearningPath ? $t('audience.path_only_badge') : undefined
+          }))}
           isSelected={(id) => selectedCourseIds.has(id)}
           onToggle={toggleCourse}
           namePrefix="import-course"
@@ -339,10 +363,51 @@
         />
       {/if}
     </div>
+
+    <div class="space-y-3">
+      <Label class="text-sm font-medium">{$t('audience.import.path_access')}</Label>
+      <RadioGroup.Root bind:value={pathAccessMode} class="space-y-2">
+        <div class="flex items-center gap-2">
+          <RadioGroup.Item value="none" id="path-none" />
+          <Label for="path-none" class="font-normal">{$t('audience.import.no_paths')}</Label>
+        </div>
+        <div class="flex items-center gap-2">
+          <RadioGroup.Item value="all" id="path-all" />
+          <Label for="path-all" class="font-normal">{$t('audience.import.all_paths')}</Label>
+        </div>
+        <div class="flex items-center gap-2">
+          <RadioGroup.Item value="select" id="path-select" />
+          <Label for="path-select" class="font-normal">{$t('audience.import.select_paths')}</Label>
+        </div>
+      </RadioGroup.Root>
+
+      {#if pathAccessMode === 'select'}
+        <MultiSelectList
+          class="ml-6"
+          listClass="max-h-40"
+          heading={$t('audience.import.select_paths')}
+          emptyMessage={$t('audience.import.select_paths_placeholder')}
+          items={paths.map((p) => ({ id: p.id, label: p.name || p.id }))}
+          isSelected={(id) => selectedPathIds.has(id)}
+          onToggle={togglePath}
+          namePrefix="import-path"
+        />
+      {/if}
+    </div>
   </div>
 {:else}
   <div class="space-y-6 pb-10">
     <p class="text-sm font-medium">{$t('audience.import.result_heading', { count: importedCount })}</p>
+
+    {#if skippedPathOnlyCourseNames.length > 0}
+      <Alert.Callout
+        variant="warning"
+        title={$t('audience.import.skipped_path_only_title', { count: skippedPathOnlyCourseNames.length })}
+        description={$t('audience.import.skipped_path_only_description', {
+          names: skippedPathOnlyCourseNames.join(', ')
+        })}
+      />
+    {/if}
 
     <div class="max-h-80 overflow-auto rounded-md border">
       <Table.Root>

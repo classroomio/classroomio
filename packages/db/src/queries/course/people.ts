@@ -1,10 +1,11 @@
 import * as schema from '@db/schema';
+import { latestGrantSourceColumns, sourceCondition, type CoursePeopleSourceFilter } from './people-source';
 
 import { TGroupmember, TNewGroupmember } from '@db/types';
 import { and, asc, count, eq, ilike, isNull, or } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 
 export type CourseMemberWithProfile = TGroupmember & {
   profile: {
@@ -14,11 +15,18 @@ export type CourseMemberWithProfile = TGroupmember & {
     avatarUrl: string | null;
     email: string | null;
   } | null;
+  /** Latest non-revoked grant source for this membership, if the grant ledger has one. */
+  enrollmentSource: string | null;
+  /** Learning path publicId when the latest grant came from one, for team deep-links. */
+  enrollmentSourcePathPublicId: string | null;
+  /** Cohort id when the latest grant came from one, for team deep-links. */
+  enrollmentSourceCohortId: string | null;
 };
 
 export interface PaginatedCourseMembersOptions {
   page: number;
   limit: number;
+  source?: CoursePeopleSourceFilter;
   search?: string;
   roleId?: number;
 }
@@ -35,11 +43,17 @@ function mapCourseMemberRows(
   rows: Array<{
     member: TGroupmember;
     profile: CourseMemberWithProfile['profile'];
+    enrollmentSource: string | null;
+    enrollmentSourcePathPublicId: string | null;
+    enrollmentSourceCohortId: string | null;
   }>
 ): CourseMemberWithProfile[] {
   return rows.map((row) => ({
     ...row.member,
-    profile: row.profile || null
+    profile: row.profile || null,
+    enrollmentSource: row.enrollmentSource,
+    enrollmentSourcePathPublicId: row.enrollmentSourcePathPublicId,
+    enrollmentSourceCohortId: row.enrollmentSourceCohortId
   }));
 }
 
@@ -60,7 +74,8 @@ export async function getCourseMembers(courseId: string): Promise<CourseMemberWi
           username: schema.profile.username,
           avatarUrl: schema.profile.avatarUrl,
           email: schema.profile.email
-        }
+        },
+        ...latestGrantSourceColumns(courseId)
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -79,10 +94,14 @@ export async function getCourseMembers(courseId: string): Promise<CourseMemberWi
  */
 export async function getPaginatedCourseMembers(
   courseId: string,
-  { page, limit, search, roleId }: PaginatedCourseMembersOptions
+  { page, limit, search, roleId, source }: PaginatedCourseMembersOptions
 ): Promise<PaginatedCourseMembersResult> {
   try {
     const conditions = [eq(schema.course.id, courseId)];
+
+    if (source) {
+      conditions.push(sourceCondition(courseId, source));
+    }
 
     if (roleId) {
       conditions.push(eq(schema.groupmember.roleId, roleId));
@@ -111,6 +130,7 @@ export async function getPaginatedCourseMembers(
     const total = Number(countRow?.count ?? 0);
     const rows = await db
       .select({
+        ...latestGrantSourceColumns(courseId),
         member: schema.groupmember,
         profile: {
           id: schema.profile.id,
@@ -151,21 +171,11 @@ export async function getPaginatedCourseMembers(
  */
 export async function getCourseMember(
   courseId: string,
-  memberId: string
-): Promise<
-  | (TGroupmember & {
-      profile: {
-        id: string;
-        fullname: string | null;
-        username: string | null;
-        avatarUrl: string | null;
-        email: string | null;
-      } | null;
-    })
-  | null
-> {
+  memberId: string,
+  dbClient: DbOrTxClient = db
+): Promise<CourseMemberWithProfile | null> {
   try {
-    const result = await db
+    const result = await dbClient
       .select({
         member: schema.groupmember,
         profile: {
@@ -174,7 +184,8 @@ export async function getCourseMember(
           username: schema.profile.username,
           avatarUrl: schema.profile.avatarUrl,
           email: schema.profile.email
-        }
+        },
+        ...latestGrantSourceColumns(courseId)
       })
       .from(schema.groupmember)
       .innerJoin(schema.course, eq(schema.course.groupId, schema.groupmember.groupId))
@@ -188,7 +199,10 @@ export async function getCourseMember(
 
     return {
       ...result[0].member,
-      profile: result[0].profile || null
+      profile: result[0].profile || null,
+      enrollmentSource: result[0].enrollmentSource,
+      enrollmentSourcePathPublicId: result[0].enrollmentSourcePathPublicId,
+      enrollmentSourceCohortId: result[0].enrollmentSourceCohortId
     };
   } catch (error) {
     console.error('getCourseMember error:', error);
@@ -276,15 +290,20 @@ export async function getCourseTeachers(options: {
  */
 export async function addCourseMember(
   courseId: string,
-  memberData: { profileId?: string; roleId: number; email?: string }
+  memberData: { profileId?: string; roleId: number; email?: string },
+  dbClient: DbOrTxClient = db
 ): Promise<TGroupmember> {
+  if (!memberData.profileId && !memberData.email) {
+    throw new Error('Cannot add course member without a profileId or email');
+  }
+
   try {
     const groupId = await getCourseGroupId(courseId);
     if (!groupId) {
       throw new Error('Course group not found');
     }
 
-    const [newMember] = await db
+    const [newMember] = await dbClient
       .insert(schema.groupmember)
       .values({
         groupId,
@@ -310,24 +329,35 @@ export async function addCourseMember(
  * @param courseId Course ID
  * @param memberId Member ID
  * @param data Partial member data to update
- * @returns Updated member
+ * @param dbClient Optional transaction client
+ * @param expectedRoleId When set, only updates while the stored role still matches
+ * @returns Updated member, or null when missing or the role no longer matches
  */
 export async function updateCourseMember(
   courseId: string,
   memberId: string,
-  data: Partial<TGroupmember>
+  data: Partial<TGroupmember>,
+  dbClient: DbOrTxClient = db,
+  expectedRoleId?: number
 ): Promise<TGroupmember | null> {
   try {
     // Verify member belongs to course
-    const member = await getCourseMember(courseId, memberId);
+    const member = await getCourseMember(courseId, memberId, dbClient);
     if (!member) {
       return null;
     }
 
-    const [updated] = await db
+    // Compare-and-set on the role when the caller decided grants from it.
+    const conditions = [eq(schema.groupmember.id, memberId)];
+
+    if (expectedRoleId !== undefined) {
+      conditions.push(eq(schema.groupmember.roleId, expectedRoleId));
+    }
+
+    const [updated] = await dbClient
       .update(schema.groupmember)
       .set(data)
-      .where(eq(schema.groupmember.id, memberId))
+      .where(and(...conditions))
       .returning();
 
     return updated || null;
@@ -343,15 +373,19 @@ export async function updateCourseMember(
  * @param memberId Member ID
  * @returns Deleted member or null if not found
  */
-export async function deleteCourseMember(courseId: string, memberId: string): Promise<TGroupmember | null> {
+export async function deleteCourseMember(
+  courseId: string,
+  memberId: string,
+  dbClient: DbOrTxClient = db
+): Promise<TGroupmember | null> {
   try {
     // Verify member belongs to course
-    const member = await getCourseMember(courseId, memberId);
+    const member = await getCourseMember(courseId, memberId, dbClient);
     if (!member) {
       return null;
     }
 
-    const [deleted] = await db.delete(schema.groupmember).where(eq(schema.groupmember.id, memberId)).returning();
+    const [deleted] = await dbClient.delete(schema.groupmember).where(eq(schema.groupmember.id, memberId)).returning();
 
     return deleted || null;
   } catch (error) {

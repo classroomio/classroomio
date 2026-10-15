@@ -45,8 +45,10 @@ export const ZImportAudienceMembers = z
     recipientCsv: z.string().max(25000).optional(),
     courseIds: z.array(z.string().uuid()).optional(),
     cohortIds: z.array(z.string().uuid()).optional(),
+    pathIds: z.array(z.string().uuid()).optional(),
     allCourses: z.boolean().optional().default(false),
     allCohorts: z.boolean().optional().default(false),
+    allPaths: z.boolean().optional().default(false),
     sendEmail: z.boolean().default(true)
   })
   .refine((data) => Boolean(data.recipients?.length) || Boolean(data.recipientCsv?.trim()), {

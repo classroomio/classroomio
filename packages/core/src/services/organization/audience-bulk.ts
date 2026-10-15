@@ -6,8 +6,11 @@ import {
   type OrganizationMemberStatus,
   bulkDeleteOrganizationAudienceMembers,
   bulkUpdateOrganizationMemberStatus,
+  deleteCohortMembershipsForOrgProfiles,
   deleteGroupMembershipsForOrgProfiles,
+  deleteProgramMembershipsForOrgProfiles,
   getBulkAudienceMembersByIds,
+  softRemoveLearningPathMembershipsForOrgProfiles,
   recordOrganizationMemberAudit,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
@@ -117,6 +120,9 @@ async function deleteMembers(
 
   if (profileIds.length > 0) {
     await deleteGroupMembershipsForOrgProfiles(orgId, profileIds, tx);
+    await deleteCohortMembershipsForOrgProfiles(orgId, profileIds, tx);
+    await deleteProgramMembershipsForOrgProfiles(orgId, profileIds, tx);
+    await softRemoveLearningPathMembershipsForOrgProfiles(orgId, profileIds, tx);
   }
 
   const deletedIds = await bulkDeleteOrganizationAudienceMembers(orgId, memberIds, tx);

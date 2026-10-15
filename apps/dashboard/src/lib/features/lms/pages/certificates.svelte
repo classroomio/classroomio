@@ -1,70 +1,99 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
   import { Button } from '@cio/ui/base/button';
   import { Empty } from '@cio/ui/custom/empty';
   import { Search } from '@cio/ui/custom/search';
-  import { CourseCardList, CourseCardLoader } from '$features/course/components';
-  import { coursesApi } from '$features/course/api';
-  import { profile } from '$lib/utils/store/user';
+  import { CourseCardLoader } from '$features/course/components';
+  import { TablePagination } from '$features/ui';
   import { currentOrg } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
-  import type { UserEnrolledCourses } from '$features/course/types';
+  import { DebouncedSearch } from '$lib/utils/functions/debounced-search.svelte';
+  import { earnedCertificatesApi } from '../api';
+  import EarnedCertificateCard from '../components/earned-certificate-card.svelte';
 
-  let searchValue = $state('');
+  const PAGE_SIZE = 12;
 
-  const earnedCertificates = $derived.by(() => {
-    const courses = coursesApi.enrolledCourses.filter((course) => course.certificateEarnedAt != null);
+  let currentPage = $state(1);
+  let loadedOrgId = '';
 
-    return [...courses].sort((leftCourse, rightCourse) => {
-      const leftDate = leftCourse.certificateEarnedAt ? new Date(leftCourse.certificateEarnedAt).getTime() : 0;
-      const rightDate = rightCourse.certificateEarnedAt ? new Date(rightCourse.certificateEarnedAt).getTime() : 0;
-
-      return rightDate - leftDate;
-    });
-  });
-
-  const filteredCertificates = $derived.by(() => {
-    const query = searchValue.trim().toLowerCase();
-
-    if (!query) {
-      return earnedCertificates;
+  const search = new DebouncedSearch({
+    onApply: () => {
+      currentPage = 1;
+      loadCertificates();
     }
-
-    return earnedCertificates.filter((course) => {
-      const title = course.title?.toLowerCase() ?? '';
-      const description = course.description?.toLowerCase() ?? '';
-
-      return title.includes(query) || description.includes(query);
-    });
   });
+
+  const certificates = $derived(earnedCertificatesApi.items);
+  const totalCertificates = $derived(earnedCertificatesApi.pagination?.total ?? 0);
+  const hasSearch = $derived(search.applied !== '');
+
+  function loadCertificates() {
+    void earnedCertificatesApi.fetchCertificates({
+      page: currentPage,
+      limit: PAGE_SIZE,
+      search: search.applied || undefined
+    });
+  }
+
+  function handlePageChange(nextPage: number) {
+    currentPage = nextPage;
+    loadCertificates();
+  }
 
   $effect(() => {
-    if (!$profile.id || !$currentOrg.id) return;
+    const organizationId = $currentOrg.id;
+    if (!organizationId || organizationId === loadedOrgId) return;
 
-    coursesApi.getEnrolledCourses();
+    loadedOrgId = organizationId;
+    currentPage = 1;
+    loadCertificates();
+  });
+
+  onDestroy(() => {
+    search.destroy();
   });
 </script>
 
-<div class="space-y-4">
-  <Search bind:value={searchValue} placeholder={$t('certificates.search')} />
+<div class="space-y-4 px-2">
+  <Search
+    value={search.draft}
+    onValueChange={(nextValue) => search.input(nextValue)}
+    placeholder={$t('certificates.search')}
+  />
 
-  {#if coursesApi.isLoading}
-    <section class="cards-container">
-      <CourseCardLoader />
-      <CourseCardLoader />
-      <CourseCardLoader />
-    </section>
-  {:else if filteredCertificates.length === 0}
+  {#if earnedCertificatesApi.loadFailed}
+    <Empty title={$t('certificates.load_error_title')} description={$t('certificates.load_error_description')}>
+      <Button onclick={loadCertificates} disabled={earnedCertificatesApi.isLoading}>{$t('certificates.retry')}</Button>
+    </Empty>
+  {:else if !certificates}
+    <div class="grid w-full grid-cols-1 justify-items-center gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {#each [0, 1, 2] as index (index)}
+        <CourseCardLoader />
+      {/each}
+    </div>
+  {:else if certificates.length === 0}
     <Empty
-      title={searchValue.trim() ? $t('certificates.no_results_title') : $t('certificates.empty_title')}
-      description={searchValue.trim()
-        ? $t('certificates.no_results_description')
-        : $t('certificates.empty_description')}
+      title={hasSearch ? $t('certificates.no_results_title') : $t('certificates.empty_title')}
+      description={hasSearch ? $t('certificates.no_results_description') : $t('certificates.empty_description')}
     >
-      {#if !searchValue.trim()}
+      {#if !hasSearch}
         <Button href="/lms/mylearning">{$t('certificates.go_to_my_learning')}</Button>
       {/if}
     </Empty>
   {:else}
-    <CourseCardList courses={filteredCertificates as UserEnrolledCourses} isLMS={true} isCertificateView={true} />
+    <div class="grid w-full grid-cols-1 justify-items-center gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {#each certificates as certificate (`${certificate.kind}:${certificate.data.id}`)}
+        <EarnedCertificateCard {certificate} />
+      {/each}
+    </div>
+
+    {#if totalCertificates > PAGE_SIZE}
+      <TablePagination
+        count={totalCertificates}
+        perPage={PAGE_SIZE}
+        page={currentPage}
+        onPageChange={handlePageChange}
+      />
+    {/if}
   {/if}
 </div>

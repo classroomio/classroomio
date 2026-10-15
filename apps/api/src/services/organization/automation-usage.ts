@@ -16,6 +16,10 @@ import {
   getMcpAutomationLimits,
   type TMcpToolName
 } from '@cio/utils/plans';
+import {
+  startOfCurrentMonthUtc as getBillingPeriodStart,
+  startOfNextMonthUtc as getBillingPeriodEnd
+} from '@cio/utils/functions';
 
 export type OrganizationAutomationUsageSummary = {
   type: TOrganizationApiKeyType;
@@ -31,14 +35,6 @@ export type OrganizationAutomationUsageSummary = {
     createdAt: string;
   }>;
 };
-
-function getBillingPeriodStart(date: Date = new Date()) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1, 0, 0, 0, 0));
-}
-
-function getBillingPeriodEnd(date: Date = new Date()) {
-  return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 1, 0, 0, 0, 0));
-}
 
 function getMinuteWindowStart(date: Date = new Date()) {
   return new Date(date.getTime() - 60_000);

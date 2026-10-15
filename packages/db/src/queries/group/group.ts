@@ -1,10 +1,11 @@
 import * as schema from '@db/schema';
 
 import { TNewGroup, TNewGroupmember } from '@db/types';
-import { and, asc, eq, inArray, isNotNull, isNull, or } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNotNull, isNull, or, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 
 import { ROLE } from '@cio/utils/constants';
+import { membershipKey } from '@cio/utils';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 export async function createGroup(values: TNewGroup, dbClient: DbOrTxClient = db) {
@@ -17,6 +18,10 @@ export async function createGroup(values: TNewGroup, dbClient: DbOrTxClient = db
 }
 
 export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxClient = db) {
+  if (!values.profileId && !values.email) {
+    throw new Error('Cannot add group member without a profileId or email');
+  }
+
   try {
     return dbClient.insert(schema.groupmember).values(values).returning();
   } catch (error) {
@@ -27,6 +32,12 @@ export async function addGroupMember(values: TNewGroupmember, dbClient: DbOrTxCl
 
 export async function addGroupMembers(values: TNewGroupmember[], dbClient: DbOrTxClient = db) {
   if (values.length === 0) return [];
+  for (const member of values) {
+    if (!member.profileId && !member.email) {
+      throw new Error('Cannot add group member without a profileId or email');
+    }
+  }
+
   try {
     return dbClient.insert(schema.groupmember).values(values).returning();
   } catch (error) {
@@ -50,7 +61,11 @@ export async function getExistingGroupMembers(
       .from(schema.groupmember)
       .where(and(inArray(schema.groupmember.groupId, groupIds), inArray(schema.groupmember.profileId, profileIds)));
 
-    return new Set(rows.map((r) => `${r.groupId}:${r.profileId}`));
+    return new Set(
+      rows
+        .filter((row): row is { groupId: string; profileId: string } => Boolean(row.groupId && row.profileId))
+        .map((r) => membershipKey(r.groupId, r.profileId))
+    );
   } catch (error) {
     console.error('getExistingGroupMembers error:', error);
     throw new Error(
@@ -76,7 +91,7 @@ export async function enrollUsersInCourseGroups(
   const emailByProfile = new Map(users.map((u) => [u.profileId, u.email]));
 
   const toInsert = pairs
-    .filter((p) => !existingSet.has(`${p.groupId}:${p.profileId}`))
+    .filter((p) => !existingSet.has(membershipKey(p.groupId, p.profileId)))
     .map((p) => ({
       groupId: p.groupId,
       roleId,
@@ -142,13 +157,51 @@ export const isUserCourseMember = async (
  *
  * Designed for middleware use, to avoid multiple DB queries.
  */
-export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
+export interface CourseAccessContext {
+  /**
+   * Whether the user has active access to the course (as an active member of any role,
+   * or as an active organization admin).
+   */
+  isMember: boolean;
+  /**
+   * Whether the user is part of the teaching team (Tutor or Course Admin in the group,
+   * or an active organization admin).
+   */
+  isTeamMemberOrAdmin: boolean;
+  /**
+   * Whether the user holds any unrevoked enrollment grant for the course, of any
+   * source. This is the grant-ledger counterpart to `isMember`: rows and grants
+   * converge once the backfill has run, but during the transition either may
+   * exist without the other.
+   */
+  hasLiveGrant: boolean;
+}
+
+/**
+ * Resolves a user's course access context: whether they are an active member (any role)
+ * and whether they are a team member (Tutor/Admin) or Org Admin.
+ *
+ * Checks active org membership where applicable.
+ * Designed for middleware use, to avoid multiple sequential DB queries.
+ */
+export const getCourseMemberAccess = async (
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<CourseAccessContext> => {
   const orgMembership = alias(schema.organizationmember, 'org_membership');
 
-  const result = await db
+  const result = await dbClient
     .select({
       groupMemberId: schema.groupmember.id,
-      orgMemberId: schema.organizationmember.id
+      roleId: schema.groupmember.roleId,
+      orgAdminId: schema.organizationmember.id,
+      hasLiveGrant: sql<boolean>`EXISTS (
+        SELECT 1 FROM ${schema.courseEnrollmentGrant} ceg
+        WHERE ceg.course_id = ${courseId}
+          AND ceg.profile_id = ${profileId}
+          AND ceg.revoked_at IS NULL
+      )`.as('hasLiveGrant')
     })
     .from(schema.course)
     .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -182,7 +235,19 @@ export const isUserCourseMemberOrOrgAdmin = async (courseId: string, profileId: 
     )
     .limit(1);
 
-  return result.length > 0;
+  if (result.length === 0) {
+    return { isMember: false, isTeamMemberOrAdmin: false, hasLiveGrant: false };
+  }
+
+  const row = result[0];
+  const isOrgAdmin = Boolean(row.orgAdminId);
+  const isTeam = row.roleId === ROLE.ADMIN || row.roleId === ROLE.TUTOR;
+
+  return {
+    isMember: true,
+    isTeamMemberOrAdmin: isOrgAdmin || isTeam,
+    hasLiveGrant: row.hasLiveGrant ?? false
+  };
 };
 
 /**
@@ -206,56 +271,14 @@ export const getUserCourseRole = async (courseId: string, profileId: string): Pr
  * Checks if a user is either:
  * - a team member (ADMIN or TUTOR) of the course's group, OR
  * - an ADMIN of the organization that owns the course's group.
- *
- * Requires live, `ACTIVE` org membership, as `isUserCourseMemberOrOrgAdmin` does.
- *
- * This is designed for middleware use to avoid doing multiple DB queries.
  */
-export const isCourseTeamMemberOrOrgAdmin = async (courseId: string, profileId: string): Promise<boolean> => {
-  const orgMembership = alias(schema.organizationmember, 'org_membership');
-
-  const result = await db
-    .select({
-      groupMemberId: schema.groupmember.id,
-      orgMemberId: schema.organizationmember.id
-    })
-    .from(schema.course)
-    .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
-    .leftJoin(
-      schema.groupmember,
-      and(
-        eq(schema.groupmember.groupId, schema.group.id),
-        eq(schema.groupmember.profileId, profileId),
-        or(eq(schema.groupmember.roleId, ROLE.ADMIN), eq(schema.groupmember.roleId, ROLE.TUTOR))
-      )
-    )
-    .leftJoin(
-      schema.organizationmember,
-      and(
-        eq(schema.organizationmember.organizationId, schema.group.organizationId),
-        eq(schema.organizationmember.profileId, profileId),
-        eq(schema.organizationmember.roleId, ROLE.ADMIN),
-        eq(schema.organizationmember.status, 'ACTIVE')
-      )
-    )
-    .leftJoin(
-      orgMembership,
-      and(
-        eq(orgMembership.organizationId, schema.group.organizationId),
-        eq(orgMembership.profileId, profileId),
-        eq(orgMembership.status, 'ACTIVE')
-      )
-    )
-    .where(
-      and(
-        eq(schema.course.id, courseId),
-        or(isNull(schema.group.organizationId), isNotNull(orgMembership.id)),
-        or(isNotNull(schema.groupmember.id), isNotNull(schema.organizationmember.id))
-      )
-    )
-    .limit(1);
-
-  return result.length > 0;
+export const isCourseTeamMemberOrOrgAdmin = async (
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> => {
+  const { isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, profileId, dbClient);
+  return isTeamMemberOrAdmin;
 };
 
 /**
@@ -410,23 +433,39 @@ export const getGroupMemberIdByCourseAndProfile = async (
   return result.length > 0 ? result[0].id : null;
 };
 
+/**
+ * Returns the membership row id and role for a profile in a group.
+ * Used by re-join paths to restore a grant only for STUDENT members.
+ */
+export async function getGroupMemberByGroupAndProfile(
+  groupId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<{ id: string; roleId: number } | null> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.groupmember.id, roleId: schema.groupmember.roleId })
+      .from(schema.groupmember)
+      .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, profileId)))
+      .limit(1);
+
+    return row ?? null;
+  } catch (error) {
+    console.error('getGroupMemberByGroupAndProfile error:', error);
+    throw new Error(`Failed to resolve group membership: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Returns the groupmember id for a profile in a group, or null when absent. */
 export async function getGroupMemberIdByGroupAndProfile(
   groupId: string,
   profileId: string,
   dbClient: DbOrTxClient = db
 ): Promise<string | null> {
-  try {
-    const [row] = await dbClient
-      .select({ id: schema.groupmember.id })
-      .from(schema.groupmember)
-      .where(and(eq(schema.groupmember.groupId, groupId), eq(schema.groupmember.profileId, profileId)))
-      .limit(1);
+  // getGroupMemberByGroupAndProfile already logs and wraps its errors.
+  const member = await getGroupMemberByGroupAndProfile(groupId, profileId, dbClient);
 
-    return row?.id ?? null;
-  } catch (error) {
-    console.error('getGroupMemberIdByGroupAndProfile error:', error);
-    throw new Error(`Failed to resolve group membership: ${error instanceof Error ? error.message : 'Unknown error'}`);
-  }
+  return member?.id ?? null;
 }
 
 export async function insertGroupMembersOnConflictDoNothing(
@@ -434,6 +473,11 @@ export async function insertGroupMembersOnConflictDoNothing(
   dbClient: DbOrTxClient = db
 ): Promise<void> {
   if (values.length === 0) return;
+  for (const member of values) {
+    if (!member.profileId && !member.email) {
+      throw new Error('Cannot add group member without a profileId or email');
+    }
+  }
 
   try {
     await dbClient.insert(schema.groupmember).values(values).onConflictDoNothing();

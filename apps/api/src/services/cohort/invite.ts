@@ -27,7 +27,8 @@ export async function inviteStudentsToCohort(
       cohortIds: [cohortId],
       sendEmail: data.sendEmail,
       allCourses: false,
-      allCohorts: false
+      allCohorts: false,
+      allPaths: false
     },
     invitedByProfileId
   );

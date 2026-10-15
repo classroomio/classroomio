@@ -45,7 +45,7 @@
   </Page.Header>
   <Page.Body>
     {#snippet child()}
-      <ImportAudiencePage courses={data.courses} cohorts={data.cohorts} bind:controls />
+      <ImportAudiencePage courses={data.courses} cohorts={data.cohorts} paths={data.paths} bind:controls />
     {/snippet}
   </Page.Body>
 </Page.Root>

@@ -1,9 +1,11 @@
 import * as schema from '@db/schema';
 
-import { and, count, desc, eq, isNull } from 'drizzle-orm';
+import { and, count, desc, eq, isNull, not, sql, type SQL } from 'drizzle-orm';
 
-import { db } from '@db/drizzle';
+import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TNewOrganizationApiKey, TOrganizationApiKey, TOrganizationApiKeyType } from '@db/types';
+
+import { normalizeBackfillOrgId } from '../backfill';
 
 export const createOrganizationApiKey = async (data: TNewOrganizationApiKey): Promise<TOrganizationApiKey> => {
   try {
@@ -147,5 +149,74 @@ export const rotateOrganizationApiKeyIfActive = async (
   } catch (error) {
     console.error('rotateOrganizationApiKeyIfActive error:', error);
     throw new Error('Failed to rotate organization API key');
+  }
+};
+
+export type OrganizationApiKeyScopeBackfill = {
+  type: TOrganizationApiKeyType;
+  /** Only keys holding every one of these scopes are widened, so narrower custom keys are left alone. */
+  requiredScopes: string[];
+  scopesToAdd: string[];
+  organizationId?: string;
+};
+
+function buildScopeBackfillWhere(backfill: OrganizationApiKeyScopeBackfill): SQL | undefined {
+  const requiredScopesJson = JSON.stringify(backfill.requiredScopes);
+  const scopesToAddJson = JSON.stringify(backfill.scopesToAdd);
+  const organizationId = normalizeBackfillOrgId(backfill.organizationId);
+
+  return and(
+    eq(schema.organizationApiKey.type, backfill.type),
+    sql`${schema.organizationApiKey.scopes} @> ${requiredScopesJson}::jsonb`,
+    not(sql`${schema.organizationApiKey.scopes} @> ${scopesToAddJson}::jsonb`),
+    organizationId ? eq(schema.organizationApiKey.organizationId, organizationId) : undefined
+  );
+}
+
+export const countOrganizationApiKeysMissingScopes = async (
+  backfill: OrganizationApiKeyScopeBackfill,
+  dbClient: DbOrTxClient = db
+): Promise<number> => {
+  try {
+    const [row] = await dbClient
+      .select({ total: count() })
+      .from(schema.organizationApiKey)
+      .where(buildScopeBackfillWhere(backfill));
+
+    return row?.total ?? 0;
+  } catch (error) {
+    console.error('countOrganizationApiKeysMissingScopes error:', error);
+    throw new Error('Failed to count organization API keys missing scopes');
+  }
+};
+
+/**
+ * Adds `scopesToAdd` to every matching key. Scopes a key already holds are
+ * removed before appending, so a partially widened key gets no duplicates.
+ */
+export const addScopesToOrganizationApiKeys = async (
+  backfill: OrganizationApiKeyScopeBackfill,
+  dbClient: DbOrTxClient = db
+): Promise<number> => {
+  try {
+    const scopesToAddJson = JSON.stringify(backfill.scopesToAdd);
+    const scopesToAddArray = sql.join(
+      backfill.scopesToAdd.map((scope) => sql`${scope}`),
+      sql`, `
+    );
+
+    const rows = await dbClient
+      .update(schema.organizationApiKey)
+      .set({
+        scopes: sql`(${schema.organizationApiKey.scopes} - ARRAY[${scopesToAddArray}]::text[]) || ${scopesToAddJson}::jsonb`,
+        updatedAt: new Date().toISOString()
+      })
+      .where(buildScopeBackfillWhere(backfill))
+      .returning({ id: schema.organizationApiKey.id });
+
+    return rows.length;
+  } catch (error) {
+    console.error('addScopesToOrganizationApiKeys error:', error);
+    throw new Error('Failed to add scopes to organization API keys');
   }
 };

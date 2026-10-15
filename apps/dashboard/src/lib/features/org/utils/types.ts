@@ -82,6 +82,16 @@ export type OrgPublicCourses = OrgPublicCoursesData['courses'];
 export type ReorderOrgCoursesRequest = (typeof classroomio.organization.courses)['reorder']['$post'];
 export type ReorderOrgCoursesBody = InferRequestType<ReorderOrgCoursesRequest>;
 
+// Org Public Learning Paths types
+export type GetOrgPublicLearningPathsRequest = (typeof classroomio.organization)['learning-paths']['public']['$get'];
+export type OrgPublicLearningPathsResponse = InferResponseType<GetOrgPublicLearningPathsRequest> | null;
+export type OrgPublicLearningPathsSuccess = Extract<
+  InferResponseType<GetOrgPublicLearningPathsRequest>,
+  { success: true }
+>;
+export type OrgPublicLearningPathsData = OrgPublicLearningPathsSuccess['data'];
+export type OrgPublicLearningPaths = OrgPublicLearningPathsData['learningPaths'];
+
 // dashboard analytics types
 export type GetDashStatsRequest = typeof classroomio.dash.stats.$get;
 export type DashStatsResponse = InferResponseType<GetDashStatsRequest> | null;

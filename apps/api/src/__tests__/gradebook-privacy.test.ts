@@ -42,6 +42,9 @@ function member(
     createdAt: null,
     certificateEarnedAt: null,
     certificationEmailSentAt: null,
+    enrollmentSource: null,
+    enrollmentSourcePathPublicId: null,
+    enrollmentSourceCohortId: null,
     profile: {
       id: overrides.profileId ?? 'profile',
       fullname: 'Student',

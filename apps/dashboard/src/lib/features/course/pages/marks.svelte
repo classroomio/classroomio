@@ -6,7 +6,7 @@
   import * as Tooltip from '@cio/ui/base/tooltip';
   import { t } from '$lib/utils/functions/translations';
   import { calculateStudentAverage, type MarksPageData, type ExerciseInfo } from '$features/course/utils/marks-utils';
-  import TruncatedWithTooltip from '$features/course/components/truncated-with-tooltip.svelte';
+  import { TruncatedWithTooltip } from '$features/ui';
 
   interface Props {
     marksData: MarksPageData | null;

@@ -50,7 +50,8 @@ export const JOB_NAMES = {
     run: 'run'
   },
   audience: {
-    bulkAction: 'bulk-action'
+    bulkAction: 'bulk-action',
+    pathBulkEnroll: 'path-bulk-enroll'
   },
   maintenance: {
     retentionCompact: 'retention-compact',
@@ -60,6 +61,8 @@ export const JOB_NAMES = {
     analyticsDailyRollup: 'analytics-daily-rollup',
     assetStorageCleanup: 'asset-storage-cleanup',
     courseRoleReconcile: 'course-role-reconcile',
-    memberActivityReconcile: 'member-activity-reconcile'
+    memberActivityReconcile: 'member-activity-reconcile',
+    learningPathProgressSync: 'learning-path-progress-sync',
+    learningPathProgressReconcile: 'learning-path-progress-reconcile'
   }
 } as const;

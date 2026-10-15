@@ -10,11 +10,25 @@
   import { getLmsNavigationItems } from './lms-navigation';
   import { generateLmsBreadcrumbs } from './lms-breadcrumb';
   import { currentCommunityQuestion } from '$features/community/utils/store';
+  import { learnerPathStore } from '$features/learning-path/api/learning-path.svelte';
 
   const navItems = $derived(getLmsNavigationItems($currentOrg, $t, page.url.pathname));
 
   // Get breadcrumb title from store for LMS community posts
   const breadcrumbTitle = $derived($currentCommunityQuestion.title);
+
+  // Path detail title from the loaded journey when on a /lms/paths/:id route
+  const pathDetailTitle = $derived.by(() => {
+    const journey = learnerPathStore.selectedJourney;
+    if (!journey) return '';
+
+    const routeId = page.params.id;
+    if (journey.path.publicId !== routeId && journey.path.id !== routeId) return '';
+
+    return journey.path.name;
+  });
+
+  const resolvedTitle = $derived(breadcrumbTitle || pathDetailTitle);
 
   const breadcrumbs = $derived(
     generateLmsBreadcrumbs(
@@ -22,7 +36,7 @@
       page.url.search,
       navItems,
       $t,
-      breadcrumbTitle ? { breadcrumb: breadcrumbTitle } : undefined
+      resolvedTitle ? { breadcrumb: resolvedTitle } : undefined
     )
   );
 

@@ -77,10 +77,19 @@ export const createProfileHook = async (user: User, _request?: Request) => {
       verifiedAt
     });
     console.debug('newProfile', newProfile);
-
-    // Run SSO provisioning hook for JIT org membership (email-domain match)
-    await ssoProvisioningHook(user);
   } catch (error) {
     console.error('Error creating profile for user:', error);
+
+    return;
+  }
+
+  // JIT org membership (email-domain match). Logged separately so a provisioning
+  // failure is not mistaken for a profile failure. Acceptance and enrollment
+  // share one transaction, so a failure leaves the invite pending; token
+  // exchange retries ensureOrgMembership on the next exchange.
+  try {
+    await ssoProvisioningHook(user);
+  } catch (error) {
+    console.error('ssoProvisioningHook error:', { userId: user.id, error });
   }
 };

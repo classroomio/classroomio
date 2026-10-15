@@ -1,8 +1,9 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
-import { isUserCourseMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { ErrorCodes, handleError } from '@api/utils/errors';
+import { getCourseMemberAccess } from '@cio/db/queries/group';
 import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
+import { assertCourseNotLockedForStudent } from '@api/services/learning-path';
 
 /**
  * Middleware to check if the authenticated user is a member of a course's group
@@ -11,19 +12,21 @@ import { ensureProgramCourseAccess } from '@cio/core/services/course/course';
  */
 export const courseMemberMiddleware = async (c: Context, next: Next) => {
   try {
-    const user = c.get('user');
+    const user = c.get('user') as { id: string } | undefined;
+
     if (!user) {
       return c.json(
         {
           success: false,
           error: 'Unauthorized',
-          code: 'UNAUTHORIZED'
+          code: ErrorCodes.UNAUTHORIZED
         },
         401
       );
     }
 
     const courseId = c.req.param('courseId') || c.req.query('courseId');
+
     if (!courseId) {
       return c.json(
         {
@@ -35,13 +38,21 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       );
     }
 
-    const isAllowed = await isUserCourseMemberOrOrgAdmin(courseId, user.id);
-    if (isAllowed) {
+    const { hasLiveGrant, isTeamMemberOrAdmin } = await getCourseMemberAccess(courseId, user.id);
+
+    if (hasLiveGrant || isTeamMemberOrAdmin) {
+      if (!isTeamMemberOrAdmin) {
+        await assertCourseNotLockedForStudent(courseId, user.id);
+      }
+
       return next();
     }
 
     const backfilledFromProgram = await ensureProgramCourseAccess(courseId, user.id);
+
     if (backfilledFromProgram) {
+      await assertCourseNotLockedForStudent(courseId, user.id);
+
       return next();
     }
 
@@ -54,14 +65,6 @@ export const courseMemberMiddleware = async (c: Context, next: Next) => {
       403
     );
   } catch (error) {
-    console.error('Error in courseMemberMiddleware:', error);
-    return c.json(
-      {
-        success: false,
-        error: 'Failed to verify course membership',
-        code: 'COURSE_MEMBER_CHECK_FAILED'
-      },
-      500
-    );
+    return handleError(c, error, 'Failed to verify course membership', 'COURSE_MEMBER_CHECK_FAILED');
   }
 };

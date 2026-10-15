@@ -8,7 +8,15 @@ import {
   applyAudienceBulkActionToMembers
 } from '@cio/core/services/organization/audience-bulk';
 import { db } from '@cio/db/drizzle';
-import { QUEUE_NAMES, enqueueAudienceBulkAction, getQueue, getQueueJobEnvelope, type JobEnvelope } from '@cio/jobs';
+import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
+import {
+  JOB_NAMES,
+  QUEUE_NAMES,
+  enqueueAudienceBulkAction,
+  getQueue,
+  getQueueJobEnvelope,
+  type JobEnvelope
+} from '@cio/jobs';
 import {
   type OrganizationMemberStatus,
   bulkUpdateOrganizationMemberStatus,
@@ -247,6 +255,10 @@ export async function applyBulkAudienceAction(
       actorProfileId
     );
 
+    if (data.action === 'delete' && outcome.succeeded > 0) {
+      void invalidateOrgStats(orgId).catch(() => {});
+    }
+
     return toCompletedResult(orgId, actorProfileId, data.action, outcome);
   } catch (error) {
     throw toAppError(error);
@@ -325,7 +337,7 @@ export async function getBulkAudienceActionStatus(orgId: string, jobId: string, 
   const job = await getQueue(QUEUE_NAMES.audience).getJob(jobId);
   const payloadOrgId = (job?.data as { organizationId?: string } | undefined)?.organizationId;
 
-  if (!job || payloadOrgId !== orgId) {
+  if (!job || job.name !== JOB_NAMES.audience.bulkAction || payloadOrgId !== orgId) {
     throw new AppError('Bulk action not found', ErrorCodes.NOT_FOUND, 404);
   }
 

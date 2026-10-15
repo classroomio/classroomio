@@ -42,16 +42,32 @@
   const INVITE_MODAL = 'course.navItem.people.invite_modal';
 
   function getTutors(team: OrgTeamMember[]) {
-    const existingTutorIds = new Set(
+    const existingTutorProfileIds = new Set(
       cohortApi.members
         .filter((member) => Number(member.roleId) === ROLE.TUTOR || Number(member.roleId) === ROLE.ADMIN)
         .map((member) => member.profileId)
         .filter((profileId): profileId is string => Boolean(profileId))
     );
+    const existingTutorEmails = new Set(
+      cohortApi.members
+        .filter((member) => Number(member.roleId) === ROLE.TUTOR || Number(member.roleId) === ROLE.ADMIN)
+        .map((member) => (member.profile?.email ?? member.email)?.toLowerCase())
+        .filter((email): email is string => Boolean(email))
+    );
 
     return team
       .filter((teamMember) => teamMember.verified)
-      .filter((teamMember) => !existingTutorIds.has(teamMember.profileId))
+      .filter((teamMember) => {
+        if (teamMember.profileId && existingTutorProfileIds.has(teamMember.profileId)) {
+          return false;
+        }
+
+        if (teamMember.email && existingTutorEmails.has(teamMember.email.toLowerCase())) {
+          return false;
+        }
+
+        return true;
+      })
       .map((teamMember) => ({
         id: teamMember.id,
         text: teamMember.fullname,

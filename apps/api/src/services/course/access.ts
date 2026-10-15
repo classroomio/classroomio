@@ -2,6 +2,7 @@ import { ContentType } from '@cio/utils/constants';
 import { assertStudentCanAccessContent } from '@cio/core/services/course/progression';
 import { getCourseById, getCourseProgress } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
+import { assertCourseNotLockedForStudent } from '@api/services/learning-path';
 
 const DEFAULT_CONTENT_GROUPING = true;
 
@@ -11,6 +12,8 @@ export async function assertEnrolledStudentContentAccess(params: {
   contentId: string;
   type: ContentType.Lesson | ContentType.Exercise;
 }): Promise<void> {
+  await assertCourseNotLockedForStudent(params.courseId, params.profileId);
+
   const [courseRow, progress, contentItems] = await Promise.all([
     getCourseById(params.courseId),
     getCourseProgress(params.courseId, params.profileId),

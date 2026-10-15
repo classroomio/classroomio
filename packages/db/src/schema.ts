@@ -22,6 +22,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
+import type { CertificateTemplateId } from '@cio/certificates';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import { sql } from 'drizzle-orm';
@@ -370,7 +371,7 @@ export const groupAttendance = pgTable(
       columns: [table.studentId],
       foreignColumns: [groupmember.id],
       name: 'group_attendance_student_id_fkey'
-    })
+    }).onDelete('cascade')
   ]
 );
 
@@ -562,7 +563,7 @@ export const lessonComment = pgTable(
       columns: [table.groupmemberId],
       foreignColumns: [groupmember.id],
       name: 'lesson_comment_groupmember_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.lessonId],
       foreignColumns: [lesson.id],
@@ -637,7 +638,7 @@ export const submission = pgTable(
       columns: [table.submittedBy],
       foreignColumns: [groupmember.id],
       name: 'submission_submitted_by_fkey'
-    }),
+    }).onDelete('set null'),
     index('idx_submission_submitted_by_exercise_id').on(table.submittedBy, table.exerciseId)
   ]
 );
@@ -756,7 +757,7 @@ export const course = pgTable(
     bannerImage: text('banner_image'),
     isPublished: boolean('is_published').default(false),
     /** Independent enroll blocked. Do not revoke grants that already exist. */
-    requiresLearningPath: boolean('requires_learning_path').default(false).notNull(),
+    enrollOnlyInLearningPath: boolean('enroll_only_in_learning_path').default(false).notNull(),
     /** Manual display position on public surfaces; NULL = not curated (sorts by createdAt DESC). */
     displayOrder: integer('display_order'),
     certificate: jsonb().default({}).$type<{
@@ -765,7 +766,7 @@ export const course = pgTable(
       theme?: string;
       /** Atelier-era certificate design. Source of truth for new courses. */
       design?: {
-        templateId: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
+        templateId: CertificateTemplateId;
         accentColor: string;
         subtitle?: string;
         descriptionOverride?: string;
@@ -950,7 +951,7 @@ export const appsPoll = pgTable(
       columns: [table.authorId],
       foreignColumns: [groupmember.id],
       name: 'apps_poll_authorId_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.courseId],
       foreignColumns: [course.id],
@@ -1219,7 +1220,7 @@ export const appsPollSubmission = pgTable(
       columns: [table.selectedById],
       foreignColumns: [groupmember.id],
       name: 'apps_poll_submission_selected_by_id_fkey'
-    })
+    }).onDelete('set null')
   ]
 );
 
@@ -1651,7 +1652,11 @@ export const lessonCompletion = pgTable(
       foreignColumns: [profile.id],
       name: 'lesson_completion_profile_id_fkey'
     }),
-    unique('unique_lesson_profile').on(table.lessonId, table.profileId)
+    unique('unique_lesson_profile').on(table.lessonId, table.profileId),
+    // Profile-first lookups (e.g. the enrolled feed reading a learner's
+    // completions across many courses). The unique constraint above leads with
+    // lesson_id and cannot serve that access pattern.
+    index('idx_lesson_completion_profile_lesson').on(table.profileId, table.lessonId)
   ]
 );
 
@@ -1756,7 +1761,7 @@ export const courseNewsfeed = pgTable(
       columns: [table.authorId],
       foreignColumns: [groupmember.id],
       name: 'course_newsfeed_author_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.courseId],
       foreignColumns: [course.id],
@@ -1788,7 +1793,7 @@ export const courseNewsfeedComment = pgTable(
       columns: [table.authorId],
       foreignColumns: [groupmember.id],
       name: 'course_newsfeed_comment_author_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.courseNewsfeedId],
       foreignColumns: [courseNewsfeed.id],
@@ -2065,7 +2070,9 @@ export const question = pgTable(
       columns: [table.questionTypeId],
       foreignColumns: [questionType.id],
       name: 'question_question_type_id_fkey'
-    })
+    }),
+    // The 'passed' completion policy sums an exercise's question points per submission.
+    index('idx_question_exercise_id').on(table.exerciseId)
   ]
 );
 
@@ -2087,7 +2094,7 @@ export const questionAnswer = pgTable(
     openAnswer: text('open_answer'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     questionId: bigint('question_id', { mode: 'number' }).notNull(),
-    groupMemberId: uuid('group_member_id').notNull(),
+    groupMemberId: uuid('group_member_id'),
     submissionId: uuid('submission_id'),
     // You can use { mode: "bigint" } if numbers are exceeding js number limitations
     point: bigint({ mode: 'number' }).default(sql`'0'`)
@@ -2097,7 +2104,7 @@ export const questionAnswer = pgTable(
       columns: [table.groupMemberId],
       foreignColumns: [groupmember.id],
       name: 'question_answer_group_member_id_fkey'
-    }),
+    }).onDelete('set null'),
     foreignKey({
       columns: [table.questionId],
       foreignColumns: [question.id],
@@ -3267,7 +3274,7 @@ export const cohortMember = pgTable(
   ]
 );
 
-export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT']);
+export const inviteLinkResourceType = pgEnum('INVITE_LINK_RESOURCE_TYPE', ['COURSE', 'COHORT', 'LEARNING_PATH']);
 
 /**
  * Permanent, revocable share links for resource invites (course, cohort, ...).
@@ -3284,6 +3291,7 @@ export const inviteLink = pgTable(
     resourceType: inviteLinkResourceType('resource_type').notNull(),
     courseId: uuid('course_id'),
     cohortId: uuid('cohort_id'),
+    learningPathId: uuid('learning_path_id'),
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
     /** Raw token, kept so staff can re-copy the link. */
     token: text().notNull(),
@@ -3318,6 +3326,11 @@ export const inviteLink = pgTable(
       name: 'invite_link_cohort_id_fkey'
     }).onDelete('cascade'),
     foreignKey({
+      columns: [table.learningPathId],
+      foreignColumns: [learningPath.id],
+      name: 'invite_link_learning_path_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
       columns: [table.roleId],
       foreignColumns: [role.id],
       name: 'invite_link_role_id_fkey'
@@ -3326,11 +3339,13 @@ export const inviteLink = pgTable(
     // One link per (resource, role); NULLs are distinct so the two never collide.
     unique('invite_link_course_id_role_id_unique').on(table.courseId, table.roleId),
     unique('invite_link_cohort_id_role_id_unique').on(table.cohortId, table.roleId),
+    unique('invite_link_learning_path_id_role_id_unique').on(table.learningPathId, table.roleId),
     check(
       'invite_link_resource_target_check',
       sql`(
-        (${table.resourceType} = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL)
-        OR (${table.resourceType} = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL)
+        (${table.resourceType}::text = 'COURSE' AND ${table.courseId} IS NOT NULL AND ${table.cohortId} IS NULL AND ${table.learningPathId} IS NULL)
+        OR (${table.resourceType}::text = 'COHORT' AND ${table.cohortId} IS NOT NULL AND ${table.courseId} IS NULL AND ${table.learningPathId} IS NULL)
+        OR (${table.resourceType}::text = 'LEARNING_PATH' AND ${table.learningPathId} IS NOT NULL AND ${table.courseId} IS NULL AND ${table.cohortId} IS NULL)
       )`
     ),
     index('idx_invite_link_organization_id').on(table.organizationId)
@@ -3493,8 +3508,6 @@ export const cohortGoalAssignment = pgTable(
 
 // ─── Learning Paths ──────────────────────────────────────────────────────────
 
-export const learningPathDifficulty = pgEnum('LEARNING_PATH_DIFFICULTY', ['BEGINNER', 'INTERMEDIATE', 'ADVANCED']);
-
 export const learningPathMemberStatus = pgEnum('LEARNING_PATH_MEMBER_STATUS', [
   'NOT_STARTED',
   'IN_PROGRESS',
@@ -3508,6 +3521,8 @@ export const learningPathCourseStatus = pgEnum('LEARNING_PATH_COURSE_STATUS', [
   'COMPLETED'
 ]);
 
+export const learningPathCertificateStatus = pgEnum('LEARNING_PATH_CERTIFICATE_STATUS', ['valid', 'revoked']);
+
 export const learningPath = pgTable(
   'learning_path',
   {
@@ -3519,46 +3534,77 @@ export const learningPath = pgTable(
     publicId: varchar('public_id', { length: 8 }).notNull(),
     organizationId: uuid('organization_id').notNull(),
     name: varchar().notNull(),
-    slug: varchar().notNull(),
-    description: text(),
+    slug: varchar(),
+    status: text().default('ACTIVE').notNull(),
+    description: text().notNull(),
     coverImage: text('cover_image'),
     isPublished: boolean('is_published').default(false).notNull(),
-    difficulty: learningPathDifficulty(),
-    estimatedDurationMinutes: integer('estimated_duration_minutes'),
     cost: bigint({ mode: 'number' })
       .default(sql`'0'`)
       .notNull(),
     currency: varchar().default('USD').notNull(),
-    showSavings: boolean('show_savings').default(true).notNull(),
     sequentialUnlock: boolean('sequential_unlock').default(true).notNull(),
     selfEnrollment: boolean('self_enrollment').default(true).notNull(),
-    autoEnroll: boolean('auto_enroll').default(true).notNull(),
-    certificateEnabled: boolean('certificate_enabled').default(true).notNull(),
-    certificateTitle: text('certificate_title'),
-    certificateIssuer: text('certificate_issuer'),
-    certificateDesign: jsonb('certificate_design').default({}).$type<{
-      templateId?: 'classique' | 'brutalist' | 'noir' | 'poster' | 'minimal';
-      accentColor?: string;
-      subtitle?: string;
-      descriptionOverride?: string;
-      signatories?: { name: string; role: string; enabled?: boolean; signatureUrl?: string }[];
-      /** `{seq}` / `{year}` / `{month}`; defaults to `LP-XXXX-XXXX`. */
-      idFormat?: string;
+    certificate: jsonb().default({}).$type<{
+      isDownloadable?: boolean;
+      theme?: string;
+      design?: {
+        templateId?: CertificateTemplateId;
+        accentColor?: string;
+        subtitle?: string;
+        descriptionOverride?: string;
+        signatories?: { name: string; role: string; enabled?: boolean; signatureUrl?: string }[];
+        /** `{seq}` / `{year}` / `{month}`; defaults to `N° {seq}`. */
+        idFormat?: string;
+      };
+      emailMessage?: string | null;
     }>(),
-    /** Copy only. Testimonial/FAQ `id` keys are list keys, not FKs. */
+    welcomeEmailMessage: text('welcome_email_message'),
+    /** Copy only. FAQ `id` keys are list keys, not FKs. */
     landingPage: jsonb('landing_page').default({}).$type<{
-      headline?: string;
-      subheadline?: string;
+      title?: string;
+      description?: string;
+      requirements?: string;
+      showRequirements?: boolean;
+      showDescription?: boolean;
       visitorAccess?: 'teaser' | 'syllabus' | 'preview';
-      outcomes?: string[];
+      goals?: string;
+      showGoals?: boolean;
       skills?: string[];
-      showInstructors?: boolean;
-      showTestimonials?: boolean;
-      testimonials?: { id: string; name: string; role?: string; avatarUrl?: string; quote: string }[];
+      instructors?: Array<{
+        id?: string | number;
+        name: string;
+        role?: string;
+        avatarUrl?: string;
+        imgUrl?: string;
+        description?: string;
+        bio?: string;
+        coursesNo?: string | number;
+        courseNo?: string | number;
+      }>;
+      reviews?: Array<{
+        id: number;
+        hide: boolean;
+        name: string;
+        avatar_url: string;
+        rating: number | null;
+        created_at: number;
+        description: string;
+      }>;
+      showCertificate?: boolean;
+      certificateTemplateUrl?: string;
+      paymentEnabled?: boolean;
+      paymentLink?: string;
+      showDiscount?: boolean;
+      discount?: number;
+      reward?: {
+        show: boolean;
+        description?: string;
+      };
       showFaqs?: boolean;
       faqs?: { id: string; question: string; answer: string }[];
       showRating?: boolean;
-      rating?: { average: number; count: number };
+      rating?: { average: number; count: number } | null;
     }>(),
     /** Set when the teacher first confirms course order; not derivable from other columns. */
     courseOrderSetAt: timestamp('course_order_set_at', { withTimezone: true, mode: 'string' }),
@@ -3578,7 +3624,11 @@ export const learningPath = pgTable(
       name: 'learning_path_created_by_profile_id_fkey'
     }),
     unique('learning_path_public_id_unique').on(table.publicId),
-    unique('learning_path_organization_id_slug_unique').on(table.organizationId, table.slug),
+    // Partial index (not a plain unique constraint) so soft-deleted rows keep
+    // their slug without blocking reuse.
+    uniqueIndex('idx_learning_path_org_slug_active')
+      .on(table.organizationId, table.slug)
+      .where(sql`${table.status} != 'DELETED'`),
     index('idx_learning_path_organization_id').on(table.organizationId),
     index('idx_learning_path_organization_id_is_published').on(table.organizationId, table.isPublished)
   ]
@@ -3595,8 +3645,9 @@ export const learningPathCourse = pgTable(
     courseId: uuid('course_id').notNull(),
     /** Not unique: reorder rewrites every row in one transaction. */
     order: integer().notNull(),
-    outcomes: jsonb().default([]).$type<string[]>(),
-    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+    addedAt: timestamp('added_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    /** Soft-remove so member progress cache survives course removal. */
+    removedAt: timestamp('removed_at', { withTimezone: true, mode: 'string' })
   },
   (table) => [
     foreignKey({
@@ -3623,7 +3674,7 @@ export const learningPathMember = pgTable(
       .primaryKey()
       .notNull(),
     learningPathId: uuid('learning_path_id').notNull(),
-    profileId: uuid('profile_id'),
+    profileId: uuid('profile_id').notNull(),
     email: text(),
     roleId: bigint('role_id', { mode: 'number' }).notNull(),
     enrolledAt: timestamp('enrolled_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -3647,7 +3698,7 @@ export const learningPathMember = pgTable(
       columns: [table.profileId],
       foreignColumns: [profile.id],
       name: 'learning_path_member_profile_id_fkey'
-    }).onDelete('cascade'),
+    }),
     foreignKey({
       columns: [table.roleId],
       foreignColumns: [role.id],
@@ -3659,9 +3710,16 @@ export const learningPathMember = pgTable(
       name: 'learning_path_member_current_course_id_fkey'
     }).onDelete('set null'),
     unique('learning_path_member_path_id_profile_id_unique').on(table.learningPathId, table.profileId),
-    unique('learning_path_member_path_id_email_unique').on(table.learningPathId, table.email),
+    // Partial (not a plain unique constraint) so soft-deleted members can
+    // re-enroll or be re-invited without colliding on email.
+    uniqueIndex('idx_learning_path_member_path_email_active')
+      .on(table.learningPathId, table.email)
+      .where(sql`${table.removedAt} IS NULL`),
     index('idx_learning_path_member_learning_path_id').on(table.learningPathId),
-    index('idx_learning_path_member_profile_id').on(table.profileId)
+    index('idx_learning_path_member_profile_id').on(table.profileId),
+    index('idx_learning_path_member_path_role_status')
+      .on(table.learningPathId, table.roleId, table.status)
+      .where(sql`${table.removedAt} IS NULL`)
   ]
 );
 
@@ -3720,7 +3778,7 @@ export const learningPathCertificateIssue = pgTable(
     title: text().notNull(),
     issuer: text(),
     issuedAt: timestamp('issued_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
-    status: varchar().default('valid').notNull(),
+    status: learningPathCertificateStatus().default('valid').notNull(),
     revokedAt: timestamp('revoked_at', { withTimezone: true, mode: 'string' }),
     fileUrl: text('file_url')
   },
@@ -3739,7 +3797,7 @@ export const learningPathCertificateIssue = pgTable(
       columns: [table.profileId],
       foreignColumns: [profile.id],
       name: 'learning_path_certificate_issue_profile_id_fkey'
-    }).onDelete('cascade'),
+    }),
     unique('learning_path_certificate_issue_certificate_id_key').on(table.certificateId),
     unique('learning_path_certificate_issue_member_id_key').on(table.learningPathMemberId),
     index('idx_learning_path_certificate_issue_profile_id').on(table.profileId),
@@ -3810,13 +3868,16 @@ export const courseEnrollmentGrant = pgTable(
     }).onDelete('set null'),
     // NULLS NOT DISTINCT: two SELF_ENROLL grants (NULL cohort/path) must collide.
     unique('course_enrollment_grant_source_unique')
-      .on(table.groupmemberId, table.source, table.cohortId, table.learningPathId)
+      .on(table.groupmemberId, table.courseId, table.source, table.cohortId, table.learningPathId)
       .nullsNotDistinct(),
     index('idx_course_enrollment_grant_course_id_source').on(table.courseId, table.source),
     index('idx_course_enrollment_grant_groupmember_id').on(table.groupmemberId),
     index('idx_course_enrollment_grant_cohort_id_course_id').on(table.cohortId, table.courseId),
     index('idx_course_enrollment_grant_learning_path_id_course_id').on(table.learningPathId, table.courseId),
-    index('idx_course_enrollment_grant_profile_id').on(table.profileId)
+    index('idx_course_enrollment_grant_profile_id').on(table.profileId),
+    index('idx_course_enrollment_grant_lp_profile_revoked')
+      .on(table.learningPathId, table.profileId)
+      .where(sql`${table.revokedAt} IS NULL`)
   ]
 );
 

@@ -144,6 +144,11 @@ pnpm seed --organizations --organization-members --organization-plan
 | `--exercises`            | Exercises                                              |
 | `--questions`            | Questions                                              |
 | `--templates`            | Exercise templates                                     |
+| `--compliance`           | Compliance demo data (coursera-test org)               |
+| `--newsfeed-threads`     | Nested newsfeed comment threads (coursera-test org)    |
+| `--react-people-progress`| React course students with varied progress (udemy-test)|
+| `--learner-lifecycle`    | Learner lifecycle roster (udemy-test)                  |
+| `--learning-paths`       | Learning paths, members, progress caches and grants    |
 
 ### Demo accounts
 

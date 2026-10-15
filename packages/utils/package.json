@@ -89,6 +89,7 @@
     "zod": "^4.1.8"
   },
   "dependencies": {
+    "@cio/certificates": "workspace:*",
     "@cio/question-types": "workspace:*",
     "@cio/tsconfig": "workspace:*"
   },
