@@ -71,7 +71,7 @@
     totalStudents?: number;
     isPublished?: boolean;
     certificateEarnedAt?: string | null;
-    /** Certificate surface: whether a certificate can be viewed. Hides the CTA when false. */
+    /** Certificate surface: a certificate can be viewed. The CTA shows only when true. */
     certificateAvailable?: boolean;
     partOfPath?: { name: string; href: string } | null;
     compliance?: CourseCardCompliance | null;
@@ -106,7 +106,7 @@
     totalStudents,
     isPublished = false,
     certificateEarnedAt,
-    certificateAvailable = true,
+    certificateAvailable = false,
     partOfPath = null,
     compliance = null,
     isLMS = false,

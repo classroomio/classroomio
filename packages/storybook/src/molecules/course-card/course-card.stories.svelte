@@ -182,6 +182,7 @@
         description="Build fast, interactive user interfaces with React, hooks, and modern JavaScript tooling."
         coverGradient={COVER_GRADIENT}
         certificateEarnedAt="2026-05-14T10:00:00.000Z"
+        certificateAvailable
         status="COMPLETED"
         isLMS
         isCertificateView
@@ -200,7 +201,6 @@
         description="Build fast, interactive user interfaces with React, hooks, and modern JavaScript tooling."
         coverGradient={COVER_GRADIENT}
         certificateEarnedAt="2026-05-14T10:00:00.000Z"
-        certificateAvailable={false}
         status="COMPLETED"
         isLMS
         isCertificateView

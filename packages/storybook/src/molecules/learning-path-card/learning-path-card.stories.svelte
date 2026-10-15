@@ -72,6 +72,24 @@
   {/snippet}
 </Story>
 
+<Story name="LMS completed, no certificate">
+  {#snippet template()}
+    <div class="w-80">
+      <LearningPathCard
+        href="/paths/Ab12Cd34"
+        name="Full-Stack Web Development Career Path"
+        description="Master HTML, CSS, JavaScript, React, and Node.js by building real-world applications step by step."
+        coverGradient={COVER_GRADIENT}
+        courseCount={8}
+        progressPercent={100}
+        coursesCompleted={8}
+        isLMS
+        {labels}
+      />
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Admin — draft">
   {#snippet template()}
     <div class="w-80">

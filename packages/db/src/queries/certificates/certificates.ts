@@ -6,6 +6,7 @@ import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { toContainsPattern } from '@db/utils/like-pattern';
 import { complianceCycleIsCompleteSql, courseIsCompleteSql, latestComplianceCte } from '../course/learner-progress';
+import { pathCourseCountSql } from '../learning-path/learning-path';
 
 export interface TEarnedCourseCertificate {
   id: string;
@@ -154,12 +155,7 @@ function completedWorkCtes({ orgId, profileId, certificatesEnabled }: GetEarnedC
         learning_path.cover_image,
         NULL AS course_type,
         learning_path.public_id,
-        (
-          SELECT COUNT(*)::int
-          FROM ${schema.learningPathCourse} lpc
-          JOIN ${schema.course} path_course ON path_course.id = lpc.course_id AND path_course.status = 'ACTIVE'
-          WHERE lpc.learning_path_id = learning_path.id AND lpc.removed_at IS NULL
-        ) AS course_count,
+        ${pathCourseCountSql()} AS course_count,
         ci.certificate_id,
         lpm.completed_at AS earned_at,
         (${certificatesEnabled}

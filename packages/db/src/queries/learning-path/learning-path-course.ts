@@ -28,7 +28,7 @@ export interface TLearningPathCourseDetail {
 
 /**
  * Lists active courses in a learning path in order, joined with course details and item counts.
- * Soft-removed rows are excluded; their progress cache is preserved for re-adds.
+ * Soft-removed rows and deleted courses are excluded; their progress cache is preserved for re-adds.
  */
 export async function listLearningPathCourses(
   learningPathId: string,
@@ -73,7 +73,11 @@ export async function listLearningPathCourses(
       .from(schema.learningPathCourse)
       .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
       .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
+        and(
+          eq(schema.learningPathCourse.learningPathId, learningPathId),
+          isNull(schema.learningPathCourse.removedAt),
+          eq(schema.course.status, 'ACTIVE')
+        )
       )
       .orderBy(asc(schema.learningPathCourse.order));
 
@@ -375,15 +379,21 @@ export async function reorderLearningPathCourses(
 }
 
 /**
- * Returns ordered list of active course UUIDs in a learning path.
+ * Returns ordered list of active course UUIDs in a learning path: links not
+ * soft-removed, to courses not deleted. Path completion requires exactly these.
  */
 export async function getCourseIdsInPath(learningPathId: string, dbClient: DbOrTxClient = db): Promise<string[]> {
   try {
     const rows = await dbClient
       .select({ courseId: schema.learningPathCourse.courseId })
       .from(schema.learningPathCourse)
+      .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
       .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
+        and(
+          eq(schema.learningPathCourse.learningPathId, learningPathId),
+          isNull(schema.learningPathCourse.removedAt),
+          eq(schema.course.status, 'ACTIVE')
+        )
       )
       .orderBy(asc(schema.learningPathCourse.order));
 

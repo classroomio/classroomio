@@ -218,6 +218,7 @@
   isLMS={!!isLMS}
   isExplore={!!isExplore}
   isCertificateView={!!isCertificateView}
+  certificateAvailable={!!certificateEarnedAt}
   isOnLandingPage={!!isOnLandingPage}
   {labels}
   onExploreClick={isExploreClickable ? onExploreClick : undefined}

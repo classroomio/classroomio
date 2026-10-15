@@ -112,12 +112,16 @@ export interface TPaginatedLearningPaths {
 }
 
 /**
- * Course count for the outer `learning_path` row.
+ * Course count for the outer `learning_path` row: links not soft-removed, to
+ * courses not deleted, the same courses `getCourseIdsInPath` returns.
  */
 export function pathCourseCountSql() {
   return sql<number>`(
     SELECT COUNT(*)::int
     FROM ${schema.learningPathCourse}
+    JOIN ${schema.course}
+      ON ${qualified(schema.course.id)} = ${qualified(schema.learningPathCourse.courseId)}
+      AND ${qualified(schema.course.status)} = 'ACTIVE'
     WHERE ${qualified(schema.learningPathCourse.learningPathId)} = ${qualified(schema.learningPath.id)}
       AND ${qualified(schema.learningPathCourse.removedAt)} IS NULL
   )`;
