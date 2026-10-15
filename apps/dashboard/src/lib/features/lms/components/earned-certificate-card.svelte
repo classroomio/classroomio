@@ -70,6 +70,7 @@
     {visibilityBadge}
     status="COMPLETED"
     certificateEarnedAt={certificate.data.earnedAt}
+    certificateAvailable={certificate.data.certificateAvailable}
     labels={courseCardLabels}
   />
 {:else}

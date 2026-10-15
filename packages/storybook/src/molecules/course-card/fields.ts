@@ -11,5 +11,6 @@ export const FIELDS = [
   'isExplore',
   'isAdmin',
   'isOnLandingPage',
-  'isCertificateView'
+  'isCertificateView',
+  'certificateAvailable'
 ] as string[];
