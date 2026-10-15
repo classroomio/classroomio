@@ -508,7 +508,8 @@ export async function getPathMemberDetail(
         and(
           eq(schema.learningPathMemberCourse.learningPathMemberId, member.id),
           eq(schema.learningPathCourse.learningPathId, learningPathId),
-          isNull(schema.learningPathCourse.removedAt)
+          isNull(schema.learningPathCourse.removedAt),
+          eq(schema.course.status, 'ACTIVE')
         )
       )
       .orderBy(schema.learningPathCourse.order);

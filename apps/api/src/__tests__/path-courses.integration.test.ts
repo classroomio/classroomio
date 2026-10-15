@@ -35,4 +35,28 @@ describe.skipIf(!hasDatabase)('learning-path course helpers (database)', () => {
       expect(courses.map((course) => course.courseId)).toEqual([first.courseId, last.courseId]);
     });
   }, 30000);
+
+  it('reorder the active courses of a path that links a deleted course, and treat it as not in the path', async () => {
+    await withRollback(async (tx) => {
+      const { getCourseIdsInPath, isCourseInPath, reorderLearningPathCourses } = await import(
+        '@cio/db/queries/learning-path'
+      );
+
+      const orgId = await insertOrganization(tx, 'Org');
+      const path = await insertPath(tx, orgId, 'Data Science');
+      const first = await insertCourse(tx, orgId, 'First', { lessons: 1 });
+      const deleted = await insertCourse(tx, orgId, 'Deleted', { lessons: 1, status: 'DELETED' });
+      const last = await insertCourse(tx, orgId, 'Last', { lessons: 1 });
+      await addPathCourses(tx, path.pathId, [first.courseId, deleted.courseId, last.courseId]);
+
+      await reorderLearningPathCourses(path.pathId, [last.courseId, first.courseId], tx);
+
+      expect(await getCourseIdsInPath(path.pathId, tx)).toEqual([last.courseId, first.courseId]);
+      expect(await isCourseInPath(path.pathId, first.courseId, tx)).toBe(true);
+      expect(await isCourseInPath(path.pathId, deleted.courseId, tx)).toBe(false);
+      await expect(
+        reorderLearningPathCourses(path.pathId, [last.courseId, deleted.courseId, first.courseId], tx)
+      ).rejects.toThrow();
+    });
+  }, 30000);
 });

@@ -138,7 +138,11 @@ export async function getPathCourseFunnelStats(
         )
       )
       .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
+        and(
+          eq(schema.learningPathCourse.learningPathId, learningPathId),
+          isNull(schema.learningPathCourse.removedAt),
+          eq(schema.course.status, 'ACTIVE')
+        )
       )
       .groupBy(
         schema.learningPathCourse.id,

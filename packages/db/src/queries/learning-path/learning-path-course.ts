@@ -322,8 +322,10 @@ export async function removeCourseFromPath(
 /**
  * Reorders courses in a learning path to match the array order.
  * Validates the submission is an exact permutation of the path's active
- * courses, then applies all order changes atomically. Safe to call inside an
- * outer transaction (reuses the provided client) or standalone.
+ * courses (the ones `getCourseIdsInPath` returns), then applies all order
+ * changes atomically. Links to deleted courses keep their relative order
+ * after the active ones. Safe to call inside an outer transaction (reuses the
+ * provided client) or standalone.
  */
 export async function reorderLearningPathCourses(
   learningPathId: string,
@@ -332,13 +334,17 @@ export async function reorderLearningPathCourses(
 ): Promise<void> {
   const applyReorder = async (client: DbOrTxClient): Promise<void> => {
     const existingRows = await client
-      .select({ courseId: schema.learningPathCourse.courseId })
+      .select({ courseId: schema.learningPathCourse.courseId, courseStatus: schema.course.status })
       .from(schema.learningPathCourse)
+      .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
       .where(
         and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-      );
+      )
+      .orderBy(asc(schema.learningPathCourse.order));
 
-    const existingIds = existingRows.map((row) => row.courseId);
+    const existingIds = existingRows.filter((row) => row.courseStatus === 'ACTIVE').map((row) => row.courseId);
+    const deletedCourseIds = existingRows.filter((row) => row.courseStatus !== 'ACTIVE').map((row) => row.courseId);
+    const orderedCourseIds = [...courseIds, ...deletedCourseIds];
     const existingSet = new Set(existingIds);
     const submittedSet = new Set(courseIds);
 
@@ -353,7 +359,7 @@ export async function reorderLearningPathCourses(
     }
 
     const orderCase = sql<number>`(CASE ${schema.learningPathCourse.courseId} ${sql.join(
-      courseIds.map((courseId, index) => sql`WHEN ${courseId} THEN ${index + 1}::integer`),
+      orderedCourseIds.map((courseId, index) => sql`WHEN ${courseId} THEN ${index + 1}::integer`),
       sql` `
     )} END)::integer`;
 
@@ -363,7 +369,7 @@ export async function reorderLearningPathCourses(
       .where(
         and(
           eq(schema.learningPathCourse.learningPathId, learningPathId),
-          inArray(schema.learningPathCourse.courseId, courseIds)
+          inArray(schema.learningPathCourse.courseId, orderedCourseIds)
         )
       );
   };
@@ -418,11 +424,13 @@ export async function isCourseInPath(
     const [row] = await dbClient
       .select({ id: schema.learningPathCourse.id })
       .from(schema.learningPathCourse)
+      .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
       .where(
         and(
           eq(schema.learningPathCourse.learningPathId, learningPathId),
           eq(schema.learningPathCourse.courseId, courseId),
-          isNull(schema.learningPathCourse.removedAt)
+          isNull(schema.learningPathCourse.removedAt),
+          eq(schema.course.status, 'ACTIVE')
         )
       )
       .limit(1);

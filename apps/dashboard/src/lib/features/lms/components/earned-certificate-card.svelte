@@ -62,7 +62,9 @@
 {#if certificate.kind === 'course'}
   <CourseCard
     isCertificateView
-    href={`/courses/${certificate.data.id}/certificates`}
+    href={certificate.data.certificateAvailable
+      ? `/courses/${certificate.data.id}/certificates`
+      : `/courses/${certificate.data.id}`}
     title={certificate.data.title}
     description={certificate.data.description}
     coverImage={certificate.data.logo || undefined}

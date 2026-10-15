@@ -101,8 +101,13 @@ export async function getPathAnalyticsSummary(
       dbClient
         .select({ courseId: schema.learningPathCourse.courseId })
         .from(schema.learningPathCourse)
+        .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
         .where(
-          and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
+          and(
+            eq(schema.learningPathCourse.learningPathId, learningPathId),
+            isNull(schema.learningPathCourse.removedAt),
+            eq(schema.course.status, 'ACTIVE')
+          )
         )
     ]);
 
@@ -250,7 +255,11 @@ export async function getPathCourseFunnelWithDropoff(
         )
       )
       .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
+        and(
+          eq(schema.learningPathCourse.learningPathId, learningPathId),
+          isNull(schema.learningPathCourse.removedAt),
+          eq(schema.course.status, 'ACTIVE')
+        )
       )
       .groupBy(
         schema.learningPathCourse.id,
