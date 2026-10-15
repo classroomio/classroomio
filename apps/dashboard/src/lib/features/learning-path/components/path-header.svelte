@@ -8,6 +8,7 @@
   import { Button } from '@cio/ui/base/button';
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrgDomain } from '$lib/utils/store/org';
   import { t } from '$lib/utils/functions/translations';
   import CoursePublishBadge from '$features/course/components/course-publish-badge.svelte';
@@ -49,10 +50,15 @@
     return '';
   });
 
-  function handleFinishSetup() {
+  async function handleFinishSetup() {
     if (isOnSetupPage) return;
 
-    void goto(`${basePath}/setup`);
+    try {
+      await goto(`${basePath}/setup`);
+    } catch (error) {
+      console.error('Failed to open learning path setup:', error);
+      snackbar.error('learningPath.snackbar.setup_open_failed');
+    }
   }
 
   function handleViewSite() {
