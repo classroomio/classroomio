@@ -1,0 +1,55 @@
+/*
+ * motion.css — the prototype's motion tokens and its one entrance.
+ *
+ * Staggered entrances use `--i` on the element. The design system's own motion (machines, the
+ * block skyline) lives in machines.js / visuals.js and brings its own timing. Everything here is
+ * switched off under prefers-reduced-motion, which shows the finished state, delays included, so
+ * nobody waits on an empty screen.
+ */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --dur-2: 300ms;
+  --dur-3: 520ms;
+  --dur-4: 820ms;
+  --stagger: 70ms;
+}
+
+.m-rise,
+.m-fade {
+  animation-duration: var(--dur-3);
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: backwards;
+  animation-delay: calc(var(--i, 0) * var(--stagger));
+}
+.m-rise {
+  animation-name: m-rise;
+}
+.m-fade {
+  animation-name: m-fade;
+}
+@keyframes m-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+@keyframes m-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
