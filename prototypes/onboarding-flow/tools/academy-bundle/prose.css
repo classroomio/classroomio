@@ -1,0 +1,134 @@
+
+/* article typography of lessons, from apps/dashboard/src/app.css (.prose) */
+.prose {
+  color: var(--foreground);
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  @apply scroll-m-20 tracking-tight text-balance;
+  color: var(--foreground);
+}
+
+.prose h1 {
+  @apply my-2 text-4xl font-normal;
+}
+
+.prose h2 {
+  @apply my-2 text-3xl font-normal transition-colors;
+}
+
+.prose h2:first-child {
+  @apply mt-0;
+}
+
+.prose h3 {
+  @apply my-2 text-2xl font-normal;
+}
+
+.prose h4 {
+  @apply my-2 text-xl font-normal;
+}
+
+.prose p,
+.prose li,
+.prose blockquote {
+  @apply leading-relaxed;
+}
+
+.prose p {
+  @apply mb-1;
+}
+
+.prose a {
+  @apply font-medium underline underline-offset-4;
+  color: var(--primary);
+}
+
+.prose blockquote {
+  @apply mt-6 border-s-2 ps-6 italic;
+  border-inline-start-color: var(--border);
+}
+
+.prose ul,
+.prose ol {
+  @apply my-6 ms-6 p-0;
+}
+
+.prose ul {
+  @apply list-disc;
+}
+
+.prose ol {
+  @apply list-decimal;
+}
+
+.prose li {
+  @apply mt-2;
+}
+
+.prose table {
+  @apply my-6 w-full border-collapse;
+}
+
+.prose thead tr,
+.prose tbody tr {
+  @apply m-0 border-t p-0;
+  border-top-color: var(--border);
+}
+
+.prose tbody tr:nth-child(even) {
+  background: var(--muted);
+}
+
+.prose th,
+.prose td {
+  @apply border px-4 py-2 text-start;
+  border-color: var(--border);
+}
+
+.prose th {
+  @apply font-bold;
+}
+
+.prose th[align='center'],
+.prose td[align='center'] {
+  @apply text-center;
+}
+
+.prose th[align='right'],
+.prose td[align='right'] {
+  @apply text-end;
+}
+
+.prose hr {
+  @apply my-6 border-t;
+  border-top-color: var(--border);
+}
+
+.prose pre {
+  @apply my-4 overflow-auto rounded-lg p-4;
+  background-color: var(--muted);
+}
+
+.dark .prose pre {
+  background-color: color-mix(in oklch, var(--muted) 30%, transparent);
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 text-sm;
+  font-family: 'JetBrains Mono', monospace, Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono';
+  color: inherit;
+}
+
+.prose code:not(pre code) {
+  @apply rounded px-1.5 py-0.5 text-sm font-semibold;
+  background-color: var(--muted);
+}
+
+.prose img {
+  @apply rounded-md;
+}
+

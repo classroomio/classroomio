@@ -1,0 +1,235 @@
+/* Five treatments of the dashboard preview on the org details (stage 3) screen. 1440×900 PNGs. */
+html,
+body {
+  width: 1440px;
+  height: 900px;
+  overflow: hidden;
+  margin: 0;
+}
+.o {
+  width: 1440px;
+  height: 900px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+.o-top {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 28px;
+  border-bottom: 1px solid var(--border);
+  flex: none;
+}
+.o-top .rail {
+  width: 260px;
+}
+.o-top .sp {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.o-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+.o h1 {
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  margin: 0 0 6px;
+}
+.o .lede {
+  color: var(--muted-foreground);
+  font-size: 14.5px;
+  line-height: 1.55;
+  margin: 0;
+}
+.k {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.scale {
+  transform-origin: 0 0;
+}
+.pv {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--background);
+  box-shadow: var(--shadow-md);
+  position: relative;
+}
+.o .biz-card {
+  padding: 14px 16px 16px;
+}
+.o .biz-card.focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+}
+.o .biz-form {
+  gap: 10px;
+}
+.o .textarea {
+  min-height: 64px;
+}
+.o .goal {
+  padding: 8px 10px;
+}
+.callout {
+  position: absolute;
+  z-index: 6;
+  background: var(--foreground);
+  color: var(--background);
+  font-size: 12.5px;
+  font-weight: 550;
+  padding: 7px 11px;
+  border-radius: 9px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  box-shadow: 0 10px 24px -8px rgb(0 0 0 / 0.5);
+  white-space: nowrap;
+}
+.callout.soft {
+  background: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+.hl {
+  position: absolute;
+  z-index: 5;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 2px var(--primary),
+    0 0 0 9999px rgb(255 255 255 / 0.6);
+  pointer-events: none;
+}
+.dark .hl {
+  box-shadow:
+    0 0 0 2px var(--primary),
+    0 0 0 9999px rgb(0 0 0 / 0.5);
+}
+.ghost {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+}
+.gen {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+  border: 1px dashed var(--border);
+  color: var(--muted-foreground);
+  background: var(--background);
+}
+.mine {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--success-soft);
+  color: var(--success);
+}
+.meter {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 16px;
+  background: var(--card);
+}
+.ring {
+  width: 54px;
+  height: 54px;
+  position: relative;
+  flex: none;
+}
+.ring svg {
+  position: absolute;
+  inset: 0;
+}
+.ring b {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+}
+.pip {
+  position: absolute;
+  right: 26px;
+  bottom: 26px;
+  width: 470px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.5);
+  overflow: hidden;
+  z-index: 8;
+}
+.pip-h {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--muted);
+  font-size: 12.5px;
+}
+.drawer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 330px;
+  background: var(--muted);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -20px 40px -24px rgb(0 0 0 / 0.3);
+  z-index: 8;
+}
+.drawer-h {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 28px;
+}
+.handle {
+  width: 44px;
+  height: 4px;
+  border-radius: 99px;
+  background: var(--border);
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  margin-left: -22px;
+}
+.conn {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+.tagc {
+  position: absolute;
+  z-index: 6;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 4px 9px;
+  border-radius: 99px;
+  white-space: nowrap;
+}

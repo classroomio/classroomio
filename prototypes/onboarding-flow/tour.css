@@ -1,0 +1,123 @@
+.tour-spot {
+  position: fixed;
+  z-index: 300;
+  border-radius: 10px;
+  box-shadow:
+    0 0 0 2px var(--blue-500),
+    0 0 0 9999px rgba(23, 20, 15, 0.55);
+  pointer-events: none;
+  transition:
+    top 220ms ease,
+    left 220ms ease,
+    width 220ms ease,
+    height 220ms ease;
+}
+
+.tour-pop {
+  position: fixed;
+  z-index: 310;
+  width: 300px;
+  max-width: calc(100vw - 24px);
+  padding: 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.78);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  color: var(--popover-foreground);
+  box-shadow: 0 12px 32px rgba(23, 20, 15, 0.22);
+  font-family: var(--font-sans);
+}
+
+.tour-count {
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--blue-700);
+}
+
+.tour-pop h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.tour-pop p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.tour-hint {
+  display: block;
+  margin: -4px 0 12px;
+  font-size: 12px;
+  color: var(--blue-700);
+}
+
+.tour-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tour-spacer {
+  flex: 1;
+}
+
+.tour-pop.compact {
+  right: 12px;
+  width: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-spot {
+    transition: none;
+  }
+}
+
+.tour-welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 330;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(23, 20, 15, 0.55);
+}
+
+.tour-welcome-card {
+  width: 420px;
+  max-width: 100%;
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  font-family: var(--font-sans);
+}
+
+.tour-welcome-card h3 {
+  margin: 0 0 6px;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.tour-welcome-card p {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+
+.tour-welcome-card ul {
+  margin: 0 0 16px;
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+}

@@ -1,0 +1,3 @@
+@import '../../../../packages/ui/src/index.css';
+
+@source './**/*.{svelte,ts}';

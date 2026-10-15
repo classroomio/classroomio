@@ -1,0 +1,173 @@
+/* Public academy pages (catalog, course landing page, enrol) and the learner app. New classes use the pa- prefix. */
+html {
+  background: #fff;
+}
+body.pa-public {
+  margin: 0;
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* production PoweredBy (features/ui/powered-by.svelte), free plan */
+.pa-powered {
+  position: fixed;
+  right: 36px;
+  bottom: 56px;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid #f3f4f6;
+  border-radius: 6px;
+  background: #fff;
+  color: #000;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: all 0.5s;
+}
+.pa-powered img {
+  height: 24px;
+}
+.pa-powered:hover {
+  border-color: #2563eb;
+  background: #2563eb;
+  color: #fff;
+}
+@media (max-width: 640px) {
+  .pa-powered {
+    right: 12px;
+    bottom: 12px;
+  }
+}
+
+.pa-previewbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  padding: 8px 16px;
+  background: #fef3c7;
+  color: #78350f;
+  font-size: 13px;
+  text-align: center;
+}
+.pa-previewbar a {
+  margin-left: 8px;
+  font-weight: 600;
+  color: inherit;
+}
+
+/* lesson and exercise rich text: the dashboard's .prose (apps/dashboard/src/app.css) as plain CSS */
+.prose {
+  color: var(--foreground);
+  line-height: 1.7;
+}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin: 0.5rem 0;
+  color: var(--foreground);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  scroll-margin-top: 5rem;
+}
+.prose h1 {
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+}
+.prose h2 {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+.prose h2:first-child {
+  margin-top: 0;
+}
+.prose h3 {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+.prose h4 {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+.prose p {
+  margin: 1rem 0;
+}
+.prose li {
+  margin: 0.25rem 0;
+}
+.prose a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+.prose blockquote {
+  margin: 1rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--border);
+  color: var(--muted-foreground);
+}
+.prose ul,
+.prose ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+.prose th,
+.prose td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+.prose th {
+  font-weight: 600;
+}
+.prose hr {
+  margin: 1.5rem 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+}
+.prose pre {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: var(--muted);
+  font-size: 0.875rem;
+}
+.prose pre code {
+  font-family: ui-monospace, 'Geist Mono', Consolas, Monaco, monospace;
+  color: inherit;
+}
+.prose code:not(pre code) {
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+  background: var(--muted);
+  font-size: 0.875em;
+}
+.prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+body.pa-app {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}

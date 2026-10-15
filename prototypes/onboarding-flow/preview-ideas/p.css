@@ -1,0 +1,567 @@
+/* Five directions for the customise-step dashboard preview. Static 1440×900, rendered to PNG. */
+html,
+body {
+  width: 1440px;
+  height: 900px;
+  overflow: hidden;
+  margin: 0;
+}
+.d2 {
+  width: 1440px;
+  height: 900px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+}
+.d2-top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 28px;
+  border-bottom: 1px solid var(--border);
+  flex: none;
+  background: var(--background);
+  z-index: 5;
+}
+.d2-top .rail {
+  width: 220px;
+}
+.d2-top .sp {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.d2-body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+.lbl-sm {
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* the real dashboard, at a fixed native size */
+.d2-dash {
+  width: 1180px;
+  height: 740px;
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  background: var(--background);
+  overflow: hidden;
+  position: relative;
+  color: var(--foreground);
+}
+.d2-dash .sidebar {
+  position: static;
+  height: 100%;
+  overflow: hidden;
+  padding: 12px 8px;
+}
+.d2-dash .nav-item {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+.d2-main {
+  padding: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+.d2-dtop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.d2-dtop .crumb {
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+.d2-dbody {
+  padding: 18px 22px;
+}
+.d2-dbody h2 {
+  font-size: 19px;
+  font-weight: 620;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+.d2-dbody .course-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.d2-dbody .course-cover {
+  height: 78px;
+}
+.d2-dbody .course-pad p {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* scaled content */
+.scale {
+  transform-origin: 0 0;
+}
+
+/* A · laptop + phone */
+.a-stage {
+  height: 100%;
+  padding-top: 44px !important;
+  background: radial-gradient(
+    800px 380px at 50% 0%,
+    color-mix(in oklab, var(--primary) 12%, var(--muted)),
+    var(--muted)
+  );
+  padding: 22px 40px 0;
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: flex-start;
+}
+.laptop {
+  width: 900px;
+  flex: none;
+}
+.laptop-screen {
+  width: 900px;
+  height: 574px;
+  border: 10px solid #18181b;
+  border-bottom-width: 14px;
+  border-radius: 16px 16px 4px 4px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.5);
+}
+.laptop-base {
+  width: 1000px;
+  height: 12px;
+  margin: 0 -50px;
+  background: linear-gradient(#d4d4d8, #a1a1aa);
+  border-radius: 0 0 14px 14px;
+}
+.phone {
+  width: 250px;
+  height: 520px;
+  border: 9px solid #18181b;
+  border-radius: 34px;
+  overflow: hidden;
+  background: #fff;
+  position: relative;
+  flex: none;
+  margin-top: 30px;
+  box-shadow: 0 30px 60px -24px rgb(0 0 0 / 0.5);
+}
+.phone .qz-cells {
+  grid-template-columns: 1fr;
+}
+.phone .qz-links {
+  display: none;
+}
+.phone .qz-hero {
+  padding: 26px 20px 12px;
+}
+.phone .qz-hero h1 {
+  font-size: 30px;
+}
+.phone .qz-nav {
+  padding: 12px 16px;
+}
+.phone .qz-toolbar {
+  padding: 10px 16px;
+}
+.phone .qz-search {
+  width: 100%;
+}
+.cap {
+  position: absolute;
+  top: -26px;
+  left: 0;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.bar-dock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--card);
+  border-top: 1px solid var(--border);
+  padding: 10px 28px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.tile {
+  width: 118px;
+  flex: none;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--background);
+  position: relative;
+}
+.tile.on {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.tile img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  object-position: top;
+}
+.tile b {
+  display: block;
+  font-size: 12px;
+  padding: 4px 8px 6px;
+  font-weight: 600;
+}
+.tile .tag {
+  top: 5px;
+  left: 5px;
+  font-size: 9.5px;
+  padding: 1px 7px;
+}
+
+/* B · tool rail */
+.b-wrap {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 72px 300px 1fr;
+}
+.b-rail {
+  border-right: 1px solid var(--border);
+  padding: 14px 8px;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  background: var(--sidebar);
+}
+.b-tool {
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  padding: 10px 4px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+.b-tool.on {
+  background: color-mix(in oklab, var(--primary) 12%, transparent);
+  color: var(--primary);
+  font-weight: 600;
+}
+.b-panel {
+  border-right: 1px solid var(--border);
+  padding: 22px 20px;
+  background: var(--card);
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.b-panel h3 {
+  font-size: 16px;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.b-stage {
+  background: var(--muted);
+  padding: 22px;
+  overflow: hidden;
+}
+.b-stage .frame {
+  width: 1000px;
+  height: 700px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  background: var(--background);
+}
+.sw {
+  width: 30px;
+  height: 30px;
+  border-radius: 99px;
+  background: var(--c);
+  display: inline-block;
+}
+.sw.on {
+  box-shadow:
+    0 0 0 2px var(--card),
+    0 0 0 4px var(--c);
+}
+
+/* C · surfaces */
+.c-wrap {
+  height: 100%;
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 0;
+}
+.c-main {
+  padding: 18px 26px 0;
+  background: var(--muted);
+}
+.c-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.c-tab {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+.c-tab.on {
+  background: var(--foreground);
+  color: var(--background);
+  font-weight: 550;
+}
+.c-frame {
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 0 0;
+  background: var(--background);
+  overflow: hidden;
+  height: 740px;
+  box-shadow: var(--shadow-md);
+}
+.c-side {
+  border-left: 1px solid var(--border);
+  padding: 18px 16px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  background: var(--card);
+}
+.c-thumb {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--background);
+}
+.c-thumb.on {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+.c-thumb .in {
+  height: 92px;
+  overflow: hidden;
+  position: relative;
+}
+.c-thumb b {
+  display: block;
+  font-size: 12.5px;
+  padding: 6px 10px 8px;
+}
+.lesson {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  grid-template-rows: auto 1fr;
+  height: 100%;
+}
+.lesson-nav {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 22px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+}
+.lesson-video {
+  margin: 20px;
+  border-radius: 12px;
+  height: 330px;
+  background: linear-gradient(135deg, #0f172a, color-mix(in oklab, var(--primary) 70%, #0f172a));
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+.lesson-list {
+  border-left: 1px solid var(--border);
+  padding: 16px;
+  display: grid;
+  gap: 4px;
+  align-content: start;
+  font-size: 13px;
+}
+.lesson-list div {
+  padding: 8px 10px;
+  border-radius: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.lesson-list .on {
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+/* D · before / after */
+.d-stage {
+  height: 100%;
+  background: var(--muted);
+  padding: 16px 28px 0;
+  position: relative;
+}
+.d-frame {
+  position: relative;
+  width: 1384px;
+  height: 640px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+.d-layer {
+  position: absolute;
+  inset: 0;
+}
+.d-layer .scale {
+  transform: scale(1.17);
+}
+.d-after {
+  clip-path: inset(0 0 0 52%);
+}
+.d-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 52%;
+  width: 3px;
+  background: var(--foreground);
+}
+.d-handle i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 99px;
+  background: var(--foreground);
+  color: var(--background);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 8px 20px rgb(0 0 0 / 0.4);
+  font-style: normal;
+}
+.d-chip {
+  position: absolute;
+  bottom: 16px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgb(0 0 0 / 0.72);
+  color: #fff;
+  z-index: 3;
+}
+
+/* E · hotspots */
+.e-stage {
+  height: 100%;
+  padding: 14px 24px 0;
+  background: var(--muted);
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 18px;
+}
+.e-frame {
+  border: 1px solid var(--border);
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  height: 830px;
+}
+.pin {
+  position: absolute;
+  width: 26px;
+  height: 26px;
+  border-radius: 99px;
+  background: var(--foreground);
+  color: var(--background);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow:
+    0 0 0 5px rgb(255 255 255 / 0.85),
+    0 6px 14px rgb(0 0 0 / 0.35);
+  z-index: 4;
+}
+.pin.done {
+  background: var(--success);
+}
+.pin.live {
+  background: var(--primary);
+  animation: none;
+  box-shadow:
+    0 0 0 5px color-mix(in oklab, var(--primary) 35%, white),
+    0 6px 14px rgb(0 0 0 / 0.35);
+}
+.hotpop {
+  position: absolute;
+  z-index: 6;
+  width: 300px;
+  background: var(--popover);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.45);
+  display: grid;
+  gap: 10px;
+}
+.hotpop b {
+  font-size: 14px;
+}
+.e-list {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.e-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card);
+  font-size: 13px;
+}
+.e-item.on {
+  border-color: var(--primary);
+  background: color-mix(in oklab, var(--primary) 6%, var(--card));
+}
+.e-item i {
+  width: 22px;
+  height: 22px;
+  border-radius: 99px;
+  background: var(--muted);
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  flex: none;
+}
+.e-item.done i {
+  background: var(--success);
+  color: #fff;
+}

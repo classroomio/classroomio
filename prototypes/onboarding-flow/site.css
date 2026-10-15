@@ -1,0 +1,120 @@
+/* Admin layer over the real landing page. Everything is namespaced .ad-* and uses literal brand
+ * values, because site/ui.css (the production Tailwind build) owns the tokens on this page. */
+:root {
+  --ad-ink: #17140f;
+  --ad-ink-500: #6b6152;
+  --ad-paper: #fdfbf7;
+  --ad-sand: #e3dacc;
+  --ad-sand-200: #f1eee7;
+  --ad-blue: #0233bd;
+  --ad-blue-100: #eef2ff;
+  --ad-blue-300: #adc3ff;
+}
+.ad-toast,
+.ad-none {
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  color: var(--ad-ink);
+}
+.ad-eyebrow {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ad-ink-500);
+}
+.ad-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  z-index: 300;
+  max-width: min(520px, calc(100vw - 32px));
+  padding: 11px 16px;
+  border-radius: 10px;
+  background: var(--ad-ink);
+  color: #fff;
+  font-size: 13.5px;
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  pointer-events: none;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+.ad-toast.on {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ad-toast {
+    transition: none;
+  }
+}
+
+.ad-link {
+  color: var(--ad-blue);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ad-none {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 120px 24px;
+  font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  color: var(--ad-ink);
+}
+.ad-none h1 {
+  margin: 0;
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+}
+.ad-none p {
+  margin: 0;
+  color: var(--ad-ink-500);
+  line-height: 1.55;
+}
+.ad-none .ad-eyebrow {
+  font-size: 11px;
+}
+
+.ad-edit-cta {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+  padding: 10px 16px;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #fff;
+  font: 600 14px/1 'Geist', system-ui, sans-serif;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.25);
+}
+
+.ad-edit-cta:hover {
+  background: #1e293b;
+}
+
+.ad-edit-cta:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.ad-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: var(--ad-blue);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+}

@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+@import './prose.css';
+
+@source './**/*.{svelte,ts}';
+
+@custom-variant dark (&:where(.dark, .dark *));

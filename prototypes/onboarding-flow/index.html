@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Onboarding flow prototype map</title>
+    <link rel="stylesheet" href="fonts/geist.css" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="onboarding.css" />
+    <link rel="stylesheet" href="motion.css" />
+    <link rel="stylesheet" href="brand.css" />
+    <style>
+      .page { max-width: 880px; margin: 0 auto; padding: 56px 24px 90px; }
+      h1 { font-size: 32px; font-weight: 600; letter-spacing: -0.03em; margin: 8px 0 10px; }
+      .lead { color: var(--muted-foreground); font-size: 15px; max-width: 70ch; margin: 0 0 14px; line-height: 1.65; }
+      .lead b { color: var(--foreground); font-weight: 500; }
+      .eyebrow { font-size: 11.5px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--primary); }
+      .sec { font-size: 12.5px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted-foreground); margin: 40px 0 14px; display: flex; align-items: center; gap: 10px; }
+      .sec::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+      .shot { padding: 16px 17px 17px; transition: border-color 0.15s, box-shadow 0.15s; display: block; }
+      .shot:hover { border-color: var(--ring); box-shadow: var(--shadow-md); }
+      .shot .n { font-size: 11px; font-weight: 600; color: var(--muted-foreground); letter-spacing: 0.05em; text-transform: uppercase; }
+      .shot .t { font-size: 14.5px; font-weight: 600; letter-spacing: -0.01em; margin: 4px 0 5px; }
+      .shot .d { font-size: 12.5px; color: var(--muted-foreground); margin: 0; line-height: 1.55; }
+      .loop { display: grid; gap: 2px; margin: 0 0 8px; }
+      .loop .row { display: flex; gap: 12px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+      .loop .row:last-child { border-bottom: none; }
+      .loop .k { font-size: 11px; font-weight: 600; color: var(--muted-foreground); width: 84px; flex-shrink: 0; letter-spacing: 0.05em; text-transform: uppercase; }
+      .loop .v span { color: var(--muted-foreground); }
+      .foot { margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 13.5px; line-height: 1.75; }
+      .foot b { color: var(--foreground); font-weight: 500; }
+      code { background: var(--muted); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+      @media (max-width: 820px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 16px">
+        <div>
+          <span class="eyebrow">ClassroomIO · Prototype</span>
+          <h1>Onboarding, end to end</h1>
+        </div>
+      </div>
+
+      <p class="lead">
+        A new customer-education lead signs up, tells ClassroomIO about their business, and lands on a Courses page
+        that is <b>already branded and already has starter courses</b>. The flow ends on that landing page, as visitors
+        would see it, with a short list of what to do next.
+      </p>
+
+      <p class="lead">
+        Built on the ClassroomIO brand system: one blue (#0233BD) on warm paper and sand, Geist and Geist Mono, the
+        notch block as the signature shape, and the system's own Machine illustrations and block loader.
+        <a class="text-primary" href="design-options.html"><b>Earlier explorations are in the design options.</b></a>
+      </p>
+
+      <div class="loop">
+        <div class="row"><span class="k">Stage 1</span><span class="v">Create your account <span>with a Machine illustration and a sand testimonial card</span></span></div>
+        <div class="row"><span class="k">Stage 2</span><span class="v">Verify your email <span>by link, not a code, as the app does today</span></span></div>
+        <div class="row"><span class="k">Stage 3</span><span class="v">Your business <span>an accordion that opens each section for you (outcome, company, team, how customers learn today, then an optional "How did you hear about us?"), with a workspace block stack that grows beside it</span></span></div>
+        <div class="row"><span class="k">Prepare</span><span class="v">Your drafted courses and path drop in as blocks <span>simulated, and labelled as such</span></span></div>
+        <div class="row"><span class="k">Stage 4</span><span class="v">Customise your portal <span>a docked strip of the real eleven themes and a brand colour pill; paid themes open the pricing card</span></span></div>
+        <div class="row"><span class="k">Then</span><span class="v">One dismissible integrations modal (MCP, Public API, Webhooks, HubSpot), then the academy's own landing page with a Next steps panel</span></div>
+      </div>
+
+      <div class="sec">Screens</div>
+      <div class="grid">
+        <a class="card shot" href="flow.html">
+          <div class="n">Interactive · start here</div>
+          <div class="t">Sign-up, business, customise</div>
+          <p class="d">The journey. Back never loses an answer; free themes apply instantly; any premium click opens the five-plan pricing card, with a way out.</p>
+        </a>
+        <a class="card shot" href="site.html">
+          <div class="n">Destination</div>
+          <div class="t">Your academy + next steps</div>
+          <p class="d">The real landing page with the user's colour and theme, an admin bar, Edit points, a note while the catalog is empty and a Next steps panel. Publish the starter courses and they appear on the page.</p>
+        </a>
+        <a class="card shot" href="landing-editor.html">
+          <div class="n">Editing</div>
+          <div class="t">Landing page settings</div>
+          <p class="d">Where Edit lands: section list, Hero and Navigation forms, a live preview of the real page and the Save bar.</p>
+        </a>
+        <a class="card shot" href="courses.html">
+          <div class="n">Reachable from the admin bar</div>
+          <div class="t">Courses page</div>
+          <p class="d">The real Courses page with the starter courses: open one to edit it, publish, delete, search, switch view.</p>
+        </a>
+        <a class="card shot" href="design-options.html">
+          <div class="n">Review · 25 mockups</div>
+          <div class="t">Design options</div>
+          <p class="d">Five directions for each of the five post-verification screens, on the real tokens and chrome, with the selected one and why.</p>
+        </a>
+        <a class="card shot" href="step3-ideas-2/index.html">
+          <div class="n">Review · 5 mockups</div>
+          <div class="t">Step 3 ideas, round two</div>
+          <p class="d">Five brand-system layouts for the business step, each carrying all six production questions.</p>
+        </a>
+        <a class="card shot" href="workspace-ideas/index.html">
+          <div class="n">Review · 5 mockups</div>
+          <div class="t">Workspace setup, five directions</div>
+          <p class="d">Editorial, floating canvas, asymmetric split, product-native preview and spontaneous composition for the name and address screen. The fourth is built into the flow.</p>
+        </a>
+        <a class="card shot" href="states.html">
+          <div class="n">Gallery</div>
+          <div class="t">Edge states</div>
+          <p class="d">Validation, preparation failure, premium cards, unparseable colour, and what each integration status really means.</p>
+        </a>
+      </div>
+
+      <div class="sec">What is real and what is not</div>
+      <p class="lead" style="font-size: 14px">
+        Theme names, descriptions, preview images and the free/paid split are the real picker's
+        (<code>landingpage.svelte</code>, <code>FREE_LANDING_PAGE_THEMES</code>). The five-plan pricing is the product owner's
+        proposal (<code>README.md</code> § Pricing), not what ships today. Integrations show what the dashboard actually ships: only MCP and
+        the Public API exist.
+        <b>No website is fetched, no model is called, no checkout runs and no credentials are collected.</b>
+      </p>
+
+      <div class="foot">
+        <b>Where the thinking lives</b><br />
+        Notes, data sources, corrections and open questions: <code>README.md</code> (next to this file)<br />
+        AI bootstrap spec: <code>prd/onboarding-ai-bootstrap/README.md</code> · Platform showcase: <code>prd/onboarding-platform-showcase/README.md</code>
+      </div>
+    </div>
+
+    <script src="proto.js"></script>
+    <script>
+      window.proto.initTheme();
+    </script>
+  </body>
+</html>
