@@ -9,7 +9,8 @@ export const LICENSE_FEATURE = {
   TOKEN_AUTH: 'token-auth',
   NO_TRACKING: 'no-tracking',
   CUSTOM_DOMAIN: 'custom-domain',
-  CUSTOM_BRANDING: 'custom-branding'
+  CUSTOM_BRANDING: 'custom-branding',
+  SCORM: 'scorm'
 } as const;
 
 export type LicenseFeatureId = (typeof LICENSE_FEATURE)[keyof typeof LICENSE_FEATURE];
