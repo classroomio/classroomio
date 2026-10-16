@@ -7,7 +7,8 @@ import {
 
 import type { Context, MiddlewareHandler } from 'hono';
 import { RedisRateLimiter, type RateLimitResult } from '@api/utils/redis/limiter';
-import { userKeyGenerator } from '../utils/redis/key-generators';
+import { userKeyGenerator, activityRuntimeKeyGenerator } from '../utils/redis/key-generators';
+import { isActivityContentPath } from '@cio/core/config/activity-content';
 import { env } from '@cio/core/config/env';
 import { logRedisUnavailableOnce, redis } from '@cio/core/utils/redis/redis';
 
@@ -158,6 +159,8 @@ function shouldSkipRateLimit(c: Context): boolean {
 
   if (c.req.path.startsWith('/public-api/')) return true;
 
+  if (isActivityContentPath(c.req.path)) return true;
+
   return c.req.path === '/api/auth/get-session';
 }
 
@@ -165,4 +168,12 @@ function shouldSkipRateLimit(c: Context): boolean {
 export default createRateLimiter({
   maxRequests: defaultMaxRequests,
   skip: shouldSkipRateLimit
+});
+
+/**
+ * Run-time limiter: 60 requests per minute per module try.
+ */
+export const activityRuntimeRateLimiter = createRateLimiter({
+  maxRequests: 60,
+  keyGenerator: activityRuntimeKeyGenerator
 });

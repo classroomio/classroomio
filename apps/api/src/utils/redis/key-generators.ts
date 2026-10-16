@@ -102,6 +102,23 @@ export const ipKeyGenerator = (c: Context): string => {
 };
 
 /**
+ * Rate limit key for SCORM run-time commits: one bucket per verified learner
+ * try. Falls back to IP only when claims are missing so rotating raw tokens
+ * cannot create fresh buckets.
+ */
+export const activityRuntimeKeyGenerator = (c: Context): string => {
+  const claims = c.get('runtimeClaims') as { sub?: string; att?: string; unit?: string } | undefined;
+  const ip = extractClientIp(c);
+  if (claims?.sub) {
+    const tryId = claims.att ?? claims.unit ?? 'preview';
+
+    return `activity-runtime:${claims.sub}:${tryId}:ip:${ip}`;
+  }
+
+  return `activity-runtime:unverified:ip:${ip}`;
+};
+
+/**
  * Generate rate limit key for specific endpoints
  */
 export const endpointKeyGenerator =
