@@ -42,7 +42,7 @@ const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawS
 export function registerCourseSubmissionTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_course_submissions',
-    `List learners' exercise submissions for a course, newest first, without their answers. Filter by exerciseId, memberId (a course member id) or gradingState (queued, processing, awaiting_manual, completed, failed). Use get_course_submission to read answers. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+    `List students' exercise submissions for a course, newest first, without their answers. Filter by exerciseId, memberId (a course member id) or gradingState (queued, processing, awaiting_manual, completed, failed). Use get_course_submission to read answers. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
     shape(ZListCourseSubmissionsToolInput),
     READ_ONLY,
     async (args) => {
@@ -53,7 +53,7 @@ export function registerCourseSubmissionTools(server: McpServer, apiClient: Clas
 
   server.tool(
     'get_course_submission',
-    `Get one submission with the learner's answers and the points given for each. File and video answers include a short-lived download URL. Pair it with get_course_exercise to see the questions and correct answers. ${COURSE_TEAM_RULE}`,
+    `Get one submission with the student's answers and the points given for each. File and video answers include a short-lived download URL. Pair it with get_course_exercise to see the questions and correct answers. ${COURSE_TEAM_RULE}`,
     shape(ZGetCourseSubmissionToolInput),
     READ_ONLY,
     async (args) => {
@@ -64,7 +64,7 @@ export function registerCourseSubmissionTools(server: McpServer, apiClient: Clas
 
   server.tool(
     'grade_course_submission',
-    `Grade a submission: set the points for each answer (questionId from get_course_exercise), the total, and optional feedback, and mark it completed. The learner is emailed when it first becomes graded. Grading it again overwrites the grades. ${COURSE_TEAM_RULE}`,
+    `Grade a submission: set the points for each answer (questionId from get_course_exercise), the total, and optional feedback, and mark it completed. The student is emailed when it first becomes graded. Grading it again overwrites the grades. ${COURSE_TEAM_RULE}`,
     shape(ZGradeCourseSubmissionToolInput),
     UPDATE,
     async (args) => {
@@ -75,7 +75,7 @@ export function registerCourseSubmissionTools(server: McpServer, apiClient: Clas
 
   server.tool(
     'update_course_submission',
-    `Change a submission's gradingState or feedback without grading it (use grade_course_submission to grade). Allowed moves: queued → processing → completed, awaiting_manual or failed; awaiting_manual → completed; failed → queued. The learner is emailed when the state changes. ${COURSE_TEAM_RULE}`,
+    `Change a submission's gradingState or feedback without grading it (use grade_course_submission to grade). Allowed moves: queued → processing → completed, awaiting_manual or failed; awaiting_manual → completed; failed → queued. The student is emailed when the state changes. ${COURSE_TEAM_RULE}`,
     shape(ZUpdateCourseSubmissionToolInput),
     UPDATE,
     async (args) => {
@@ -86,7 +86,7 @@ export function registerCourseSubmissionTools(server: McpServer, apiClient: Clas
 
   server.tool(
     'delete_course_submission',
-    `Permanently delete a submission and its answers so the learner can submit again. This is a hard delete and cannot be undone. ${COURSE_TEAM_RULE}`,
+    `Permanently delete a submission and its answers so the student can submit again. This is a hard delete and cannot be undone. ${COURSE_TEAM_RULE}`,
     shape(ZDeleteCourseSubmissionToolInput),
     DESTRUCTIVE,
     async (args) => {

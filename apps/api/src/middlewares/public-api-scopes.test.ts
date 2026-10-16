@@ -93,8 +93,8 @@ describe('publicApiScopesMiddleware', () => {
   const LESSON_COMPLETION = '/public-api/v1/courses/c1/members/m1/lessons/l1/completion';
   const EXERCISE_SUBMISSIONS = '/public-api/v1/courses/c1/members/m1/exercises/e1/submissions';
 
-  it('lets course:learner:write reach only the learner routes', async () => {
-    const app = buildApp(['course:learner:write']);
+  it('lets course:student:write reach only the student routes', async () => {
+    const app = buildApp(['course:student:write']);
 
     expect((await app.request(LESSON_COMPLETION, { method: 'PUT' })).status).toBe(200);
     expect((await app.request(EXERCISE_SUBMISSIONS, { method: 'POST' })).status).toBe(201);
@@ -102,7 +102,7 @@ describe('publicApiScopesMiddleware', () => {
   });
 
   it.each([['course:member:write'], ['course:submission:write']])(
-    'keeps a %s key out of the learner routes',
+    'keeps a %s key out of the student routes',
     async (scope) => {
       const app = buildApp([scope]);
 

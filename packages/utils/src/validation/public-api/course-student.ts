@@ -2,20 +2,20 @@ import * as z from 'zod';
 
 import { ZPublicApiCourseMemberParam } from './course-member';
 
-export const ZPublicApiCourseLearnerLessonParam = ZPublicApiCourseMemberParam.extend({
+export const ZPublicApiCourseStudentLessonParam = ZPublicApiCourseMemberParam.extend({
   lessonId: z.string().uuid()
 });
-export type TPublicApiCourseLearnerLessonParam = z.infer<typeof ZPublicApiCourseLearnerLessonParam>;
+export type TPublicApiCourseStudentLessonParam = z.infer<typeof ZPublicApiCourseStudentLessonParam>;
 
-export const ZPublicApiSetLearnerLessonCompletion = z.object({
+export const ZPublicApiSetStudentLessonCompletion = z.object({
   isComplete: z.boolean().describe('true records the lesson as completed; false undoes it.')
 });
-export type TPublicApiSetLearnerLessonCompletion = z.infer<typeof ZPublicApiSetLearnerLessonCompletion>;
+export type TPublicApiSetStudentLessonCompletion = z.infer<typeof ZPublicApiSetStudentLessonCompletion>;
 
-export const ZPublicApiCourseLearnerExerciseParam = ZPublicApiCourseMemberParam.extend({
+export const ZPublicApiCourseStudentExerciseParam = ZPublicApiCourseMemberParam.extend({
   exerciseId: z.string().uuid()
 });
-export type TPublicApiCourseLearnerExerciseParam = z.infer<typeof ZPublicApiCourseLearnerExerciseParam>;
+export type TPublicApiCourseStudentExerciseParam = z.infer<typeof ZPublicApiCourseStudentExerciseParam>;
 
 const ANSWER_FORMATS = [
   'True/false: "true" or "false".',
@@ -32,7 +32,7 @@ const ANSWER_FORMATS = [
   'Star rating: {"type":"STAR","value":4}.'
 ].join(' ');
 
-export const ZPublicApiCreateLearnerSubmission = z.object({
+export const ZPublicApiCreateStudentSubmission = z.object({
   answers: z
     .array(
       z.object({
@@ -54,4 +54,4 @@ export const ZPublicApiCreateLearnerSubmission = z.object({
       'One entry per answered question. File-upload and video-recording questions cannot be answered through the API.'
     )
 });
-export type TPublicApiCreateLearnerSubmission = z.infer<typeof ZPublicApiCreateLearnerSubmission>;
+export type TPublicApiCreateStudentSubmission = z.infer<typeof ZPublicApiCreateStudentSubmission>;

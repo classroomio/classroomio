@@ -10,10 +10,10 @@ import { getLessonById } from '@cio/db/queries/lesson';
 import { hasSubmission } from '@cio/db/queries/submission';
 import { ContentType, ROLE } from '@cio/utils/constants';
 import type {
-  TPublicApiCourseLearnerExerciseParam,
-  TPublicApiCourseLearnerLessonParam,
-  TPublicApiCreateLearnerSubmission,
-  TPublicApiSetLearnerLessonCompletion
+  TPublicApiCourseStudentExerciseParam,
+  TPublicApiCourseStudentLessonParam,
+  TPublicApiCreateStudentSubmission,
+  TPublicApiSetStudentLessonCompletion
 } from '@cio/utils/validation/public-api';
 import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
 import { evaluateCourseCertification } from '@api/services/course/completion';
@@ -27,10 +27,10 @@ import { toPublicSubmission } from './submissions';
 const UPLOAD_QUESTION_TYPES = new Set(['FILE_UPLOAD', 'VIDEO_RECORDING']);
 
 /**
- * The key's creator must be course team or org admin, as on the dashboard's grading routes. The learner must be a
- * student of this course with an account. Returns the learner both ways the internal services identify them.
+ * The key's creator must be course team or org admin, as on the dashboard's grading routes. The student must be a
+ * student of this course with an account. Returns the student both ways the internal services identify them.
  */
-async function resolveLearner(orgId: string, actorId: string | null, courseId: string, memberId: string) {
+async function resolveStudent(orgId: string, actorId: string | null, courseId: string, memberId: string) {
   await assertCourseBelongsToOrganization(orgId, courseId);
   await assertCourseTeamMemberOrOrgAdmin(courseId, actorId);
 
@@ -50,7 +50,7 @@ async function resolveLearner(orgId: string, actorId: string | null, courseId: s
   return { memberId: member.id, profileId: member.profileId };
 }
 
-type LearnerAnswer = TPublicApiCreateLearnerSubmission['answers'][number];
+type StudentAnswer = TPublicApiCreateStudentSubmission['answers'][number];
 
 function invalidAnswer(questionId: number, reason: string) {
   return new AppError(`Question ${questionId}: ${reason}`, ErrorCodes.VALIDATION_ERROR, 400);
@@ -58,9 +58,9 @@ function invalidAnswer(questionId: number, reason: string) {
 
 /**
  * createSubmissionService saves the submission before it reads the answers, so a bad answer would leave an empty
- * submission behind and use up the learner's attempt. Every answer is decoded here first, the same way.
+ * submission behind and use up the student's attempt. Every answer is decoded here first, the same way.
  */
-function assertAnswerIsValid(answer: LearnerAnswer, question: ExerciseQuestionModel) {
+function assertAnswerIsValid(answer: StudentAnswer, question: ExerciseQuestionModel) {
   if (UPLOAD_QUESTION_TYPES.has(question.questionType)) {
     throw invalidAnswer(answer.questionId, 'needs a file or video upload, which the API does not support');
   }
@@ -92,13 +92,13 @@ function assertAnswerIsValid(answer: LearnerAnswer, question: ExerciseQuestionMo
   }
 }
 
-export async function setLearnerLessonCompletionService(
+export async function setStudentLessonCompletionService(
   orgId: string,
   actorId: string | null,
-  params: TPublicApiCourseLearnerLessonParam,
-  payload: TPublicApiSetLearnerLessonCompletion
+  params: TPublicApiCourseStudentLessonParam,
+  payload: TPublicApiSetStudentLessonCompletion
 ) {
-  const learner = await resolveLearner(orgId, actorId, params.courseId, params.memberId);
+  const student = await resolveStudent(orgId, actorId, params.courseId, params.memberId);
 
   const lesson = await getLessonById(params.lessonId);
   if (!lesson || lesson.courseId !== params.courseId) {
@@ -107,39 +107,39 @@ export async function setLearnerLessonCompletionService(
 
   await assertEnrolledStudentContentAccess({
     courseId: params.courseId,
-    profileId: learner.profileId,
+    profileId: student.profileId,
     contentId: params.lessonId,
     type: ContentType.Lesson
   });
 
-  const completion = await upsertLessonCompletionService(params.lessonId, learner.profileId, payload.isComplete);
+  const completion = await upsertLessonCompletionService(params.lessonId, student.profileId, payload.isComplete);
 
   if (payload.isComplete) {
-    void evaluateCourseCertification(params.courseId, learner.profileId).catch((certError) => {
+    void evaluateCourseCertification(params.courseId, student.profileId).catch((certError) => {
       console.error('Failed to evaluate course certification after lesson completion:', certError);
     });
   }
 
   return {
     lessonId: params.lessonId,
-    memberId: learner.memberId,
+    memberId: student.memberId,
     isComplete: completion.isComplete ?? false,
     updatedAt: completion.updatedAt ?? null
   };
 }
 
-export async function createLearnerSubmissionService(
+export async function createStudentSubmissionService(
   orgId: string,
   actorId: string | null,
-  params: TPublicApiCourseLearnerExerciseParam,
-  payload: TPublicApiCreateLearnerSubmission
+  params: TPublicApiCourseStudentExerciseParam,
+  payload: TPublicApiCreateStudentSubmission
 ) {
-  const learner = await resolveLearner(orgId, actorId, params.courseId, params.memberId);
+  const student = await resolveStudent(orgId, actorId, params.courseId, params.memberId);
   const exercise = await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
 
   await assertEnrolledStudentContentAccess({
     courseId: params.courseId,
-    profileId: learner.profileId,
+    profileId: student.profileId,
     contentId: params.exerciseId,
     type: ContentType.Exercise
   });
@@ -176,14 +176,14 @@ export async function createLearnerSubmissionService(
     assertAnswerIsValid(answer, question);
   }
 
-  if (!exercise.allowMultipleAttempts && (await hasSubmission(params.exerciseId, learner.memberId))) {
+  if (!exercise.allowMultipleAttempts && (await hasSubmission(params.exerciseId, student.memberId))) {
     throw new AppError('This exercise allows only one submission', ErrorCodes.CONFLICT, 409);
   }
 
   const submission = await createSubmissionService(
     params.courseId,
     params.exerciseId,
-    learner.memberId,
+    student.memberId,
     payload.answers
   );
 

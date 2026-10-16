@@ -285,7 +285,7 @@ describe('gradeCourseSubmissionService', () => {
     expect(updateSubmissionGradesBatch).not.toHaveBeenCalled();
   });
 
-  it('returns 400 for a question the learner did not answer, without saving', async () => {
+  it('returns 400 for a question the student did not answer, without saving', async () => {
     vi.mocked(getQuestionsByExerciseIds).mockResolvedValue([{ id: 7 }, { id: 8 }] as never);
     vi.mocked(getQuestionAnswersBySubmissionId).mockResolvedValue([{ questionId: 7 }] as never);
 

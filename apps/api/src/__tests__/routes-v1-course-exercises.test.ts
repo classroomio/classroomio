@@ -26,7 +26,7 @@ vi.mock('@api/services/v1/courses/exercises', () => ({
   getCourseExerciseService: vi.fn(),
   updateCourseExerciseService: vi.fn(),
   deleteCourseExerciseService: vi.fn(),
-  notifyCourseExerciseLearnersService: vi.fn(),
+  notifyCourseExerciseStudentsService: vi.fn(),
   getCourseExerciseNotifyStatusService: vi.fn()
 }));
 vi.mock('@api/services/v1/courses/submissions', () => ({
@@ -208,7 +208,7 @@ describe('v1 course exercise routes', () => {
   });
 
   it('queues a notification with 202 and reads its status', async () => {
-    vi.mocked(exercises.notifyCourseExerciseLearnersService).mockResolvedValue({ jobId: 'job-1' });
+    vi.mocked(exercises.notifyCourseExerciseStudentsService).mockResolvedValue({ jobId: 'job-1' });
     vi.mocked(exercises.getCourseExerciseNotifyStatusService).mockResolvedValue({ jobId: 'job-1' } as never);
 
     const queued = await request(`${EXERCISE}/notify`, { method: 'POST' });

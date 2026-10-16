@@ -21,9 +21,9 @@ vi.mock('@api/services/organization/automation-key', () => ({
   touchOrganizationApiKeyLastUsedService: vi.fn()
 }));
 
-vi.mock('@api/services/v1/courses/learner', () => ({
-  setLearnerLessonCompletionService: vi.fn(),
-  createLearnerSubmissionService: vi.fn()
+vi.mock('@api/services/v1/courses/student', () => ({
+  setStudentLessonCompletionService: vi.fn(),
+  createStudentSubmissionService: vi.fn()
 }));
 vi.mock('@api/services/v1/courses/members', () => ({
   listCourseMembersService: vi.fn(),
@@ -35,7 +35,7 @@ vi.mock('@api/services/v1/courses/members', () => ({
   getCourseMemberAnalyticsService: vi.fn()
 }));
 
-import * as learner from '@api/services/v1/courses/learner';
+import * as student from '@api/services/v1/courses/student';
 import * as members from '@api/services/v1/courses/members';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { v1Router } from '@api/routes/v1';
@@ -50,7 +50,7 @@ const SUBMISSIONS = `${MEMBER}/exercises/${EXERCISE_ID}/submissions`;
 
 const app = new Hono().route('/public-api/v1', v1Router);
 
-const request = (path: string, init: RequestInit = {}, scopes = ['course:learner:write']) => {
+const request = (path: string, init: RequestInit = {}, scopes = ['course:student:write']) => {
   mocks.authenticate.mockResolvedValue({
     id: 'api-key',
     organizationId: 'org-1',
@@ -71,15 +71,15 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-describe('v1 learner activity routes', () => {
+describe('v1 student activity routes', () => {
   it('sets a lesson completion for the member in the path', async () => {
     const completion = { lessonId: LESSON_ID, memberId: MEMBER_ID, isComplete: true, updatedAt: '2026-01-02' };
-    vi.mocked(learner.setLearnerLessonCompletionService).mockResolvedValue(completion);
+    vi.mocked(student.setStudentLessonCompletionService).mockResolvedValue(completion);
 
     const response = await request(COMPLETION, send('PUT', { isComplete: true }));
 
     expect(response.status).toBe(200);
-    expect(learner.setLearnerLessonCompletionService).toHaveBeenCalledWith(
+    expect(student.setStudentLessonCompletionService).toHaveBeenCalledWith(
       'org-1',
       'actor-1',
       { courseId: COURSE_ID, memberId: MEMBER_ID, lessonId: LESSON_ID },
@@ -89,13 +89,13 @@ describe('v1 learner activity routes', () => {
   });
 
   it('submits an exercise for the member in the path and returns 201', async () => {
-    vi.mocked(learner.createLearnerSubmissionService).mockResolvedValue({ id: 'submission-1' } as never);
+    vi.mocked(student.createStudentSubmissionService).mockResolvedValue({ id: 'submission-1' } as never);
     const payload = { answers: [{ questionId: 7, optionId: 70 }] };
 
     const response = await request(SUBMISSIONS, send('POST', payload));
 
     expect(response.status).toBe(201);
-    expect(learner.createLearnerSubmissionService).toHaveBeenCalledWith(
+    expect(student.createStudentSubmissionService).toHaveBeenCalledWith(
       'org-1',
       'actor-1',
       { courseId: COURSE_ID, memberId: MEMBER_ID, exerciseId: EXERCISE_ID },
@@ -116,8 +116,8 @@ describe('v1 learner activity routes', () => {
     const response = await request(path, init);
 
     expect(response.status).toBe(400);
-    expect(learner.setLearnerLessonCompletionService).not.toHaveBeenCalled();
-    expect(learner.createLearnerSubmissionService).not.toHaveBeenCalled();
+    expect(student.setStudentLessonCompletionService).not.toHaveBeenCalled();
+    expect(student.createStudentSubmissionService).not.toHaveBeenCalled();
   });
 
   it.each([['course:member:write'], ['course:submission:write']])(
@@ -128,13 +128,13 @@ describe('v1 learner activity routes', () => {
 
       expect(completion.status).toBe(403);
       expect(submission.status).toBe(403);
-      expect(learner.setLearnerLessonCompletionService).not.toHaveBeenCalled();
-      expect(learner.createLearnerSubmissionService).not.toHaveBeenCalled();
+      expect(student.setStudentLessonCompletionService).not.toHaveBeenCalled();
+      expect(student.createStudentSubmissionService).not.toHaveBeenCalled();
     }
   );
 
   it('passes a service error through with its status', async () => {
-    vi.mocked(learner.createLearnerSubmissionService).mockRejectedValue(
+    vi.mocked(student.createStudentSubmissionService).mockRejectedValue(
       new AppError('This exercise allows only one submission', ErrorCodes.CONFLICT, 409)
     );
 
@@ -154,13 +154,13 @@ describe('v1 learner activity routes', () => {
   });
 });
 
-describe('v1 learner activity OpenAPI spec', () => {
+describe('v1 student activity OpenAPI spec', () => {
   it('lists both routes with their method and path params', async () => {
     const spec = await generateSpecs(app);
     const paths = spec.paths ?? {};
     const prefix = '/public-api/v1/courses/{courseId}/members/{memberId}';
 
-    expect(paths[`${prefix}/lessons/{lessonId}/completion`]?.put?.tags).toEqual(['Learner Activity']);
-    expect(paths[`${prefix}/exercises/{exerciseId}/submissions`]?.post?.tags).toEqual(['Learner Activity']);
+    expect(paths[`${prefix}/lessons/{lessonId}/completion`]?.put?.tags).toEqual(['Student Activity']);
+    expect(paths[`${prefix}/exercises/{exerciseId}/submissions`]?.post?.tags).toEqual(['Student Activity']);
   });
 });

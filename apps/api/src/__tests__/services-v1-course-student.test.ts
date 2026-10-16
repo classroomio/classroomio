@@ -36,14 +36,14 @@ import { evaluateCourseCertification } from '@api/services/course/completion';
 import { upsertLessonCompletionService } from '@api/services/lesson';
 import { createSubmissionService } from '@api/services/submission';
 import { assertExerciseBelongsToCourse } from '@api/services/v1/courses/exercises';
-import { createLearnerSubmissionService, setLearnerLessonCompletionService } from '@api/services/v1/courses/learner';
+import { createStudentSubmissionService, setStudentLessonCompletionService } from '@api/services/v1/courses/student';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 
 const ORG_ID = 'org-1';
 const ACTOR_ID = 'actor-1';
 const COURSE_ID = 'course-1';
 const MEMBER_ID = 'member-1';
-const LEARNER_PROFILE_ID = 'learner-profile-1';
+const STUDENT_PROFILE_ID = 'student-profile-1';
 const LESSON_ID = 'lesson-1';
 const EXERCISE_ID = 'exercise-1';
 const lessonParams = { courseId: COURSE_ID, memberId: MEMBER_ID, lessonId: LESSON_ID };
@@ -61,10 +61,10 @@ const mockQuestions = (...questions: TestQuestion[]) =>
   } as never);
 
 const submitAnswers = (submitted: Array<{ questionId: number; optionId?: number; answer?: string }>) =>
-  createLearnerSubmissionService(ORG_ID, ACTOR_ID, exerciseParams, { answers: submitted });
+  createStudentSubmissionService(ORG_ID, ACTOR_ID, exerciseParams, { answers: submitted });
 
-const complete = () => setLearnerLessonCompletionService(ORG_ID, ACTOR_ID, lessonParams, { isComplete: true });
-const submit = () => createLearnerSubmissionService(ORG_ID, ACTOR_ID, exerciseParams, { answers });
+const complete = () => setStudentLessonCompletionService(ORG_ID, ACTOR_ID, lessonParams, { isComplete: true });
+const submit = () => createStudentSubmissionService(ORG_ID, ACTOR_ID, exerciseParams, { answers });
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -73,7 +73,7 @@ beforeEach(() => {
   vi.mocked(getCourseMember).mockResolvedValue({
     id: MEMBER_ID,
     roleId: ROLE.STUDENT,
-    profileId: LEARNER_PROFILE_ID
+    profileId: STUDENT_PROFILE_ID
   } as never);
   vi.mocked(getLessonById).mockResolvedValue({ id: LESSON_ID, courseId: COURSE_ID } as never);
   vi.mocked(upsertLessonCompletionService).mockResolvedValue({ isComplete: true, updatedAt: '2026-01-02' } as never);
@@ -92,7 +92,7 @@ beforeEach(() => {
 describe.each([
   ['lesson completion', complete],
   ['exercise submission', submit]
-])('who may act for a learner: %s', (_name, call) => {
+])('who may act for a student: %s', (_name, call) => {
   const expectNothingWritten = () => {
     expect(upsertLessonCompletionService).not.toHaveBeenCalled();
     expect(createSubmissionService).not.toHaveBeenCalled();
@@ -107,9 +107,9 @@ describe.each([
 
   it('returns 401 without an actor', async () => {
     await expect(
-      setLearnerLessonCompletionService(ORG_ID, null, lessonParams, { isComplete: true })
+      setStudentLessonCompletionService(ORG_ID, null, lessonParams, { isComplete: true })
     ).rejects.toMatchObject({ statusCode: 401 });
-    await expect(createLearnerSubmissionService(ORG_ID, null, exerciseParams, { answers })).rejects.toMatchObject({
+    await expect(createStudentSubmissionService(ORG_ID, null, exerciseParams, { answers })).rejects.toMatchObject({
       statusCode: 401
     });
     expectNothingWritten();
@@ -134,7 +134,7 @@ describe.each([
     vi.mocked(getCourseMember).mockResolvedValue({
       id: MEMBER_ID,
       roleId: ROLE.TUTOR,
-      profileId: LEARNER_PROFILE_ID
+      profileId: STUDENT_PROFILE_ID
     } as never);
 
     await expect(call()).rejects.toMatchObject({ statusCode: 400 });
@@ -148,31 +148,31 @@ describe.each([
     expectNothingWritten();
   });
 
-  it("applies the learner's own content access, not the key creator's", async () => {
+  it("applies the student's own content access, not the key creator's", async () => {
     vi.mocked(assertEnrolledStudentContentAccess).mockRejectedValue(
       new AppError('Content is locked', ErrorCodes.VALIDATION_ERROR, 403)
     );
 
     await expect(call()).rejects.toMatchObject({ statusCode: 403 });
     expect(assertEnrolledStudentContentAccess).toHaveBeenCalledWith(
-      expect.objectContaining({ courseId: COURSE_ID, profileId: LEARNER_PROFILE_ID })
+      expect.objectContaining({ courseId: COURSE_ID, profileId: STUDENT_PROFILE_ID })
     );
     expectNothingWritten();
   });
 });
 
-describe('setLearnerLessonCompletionService', () => {
-  it('completes the lesson as the learner and evaluates the certificate', async () => {
+describe('setStudentLessonCompletionService', () => {
+  it('completes the lesson as the student and evaluates the certificate', async () => {
     const result = await complete();
 
     expect(assertEnrolledStudentContentAccess).toHaveBeenCalledWith({
       courseId: COURSE_ID,
-      profileId: LEARNER_PROFILE_ID,
+      profileId: STUDENT_PROFILE_ID,
       contentId: LESSON_ID,
       type: ContentType.Lesson
     });
-    expect(upsertLessonCompletionService).toHaveBeenCalledWith(LESSON_ID, LEARNER_PROFILE_ID, true);
-    expect(evaluateCourseCertification).toHaveBeenCalledWith(COURSE_ID, LEARNER_PROFILE_ID);
+    expect(upsertLessonCompletionService).toHaveBeenCalledWith(LESSON_ID, STUDENT_PROFILE_ID, true);
+    expect(evaluateCourseCertification).toHaveBeenCalledWith(COURSE_ID, STUDENT_PROFILE_ID);
     expect(result).toEqual({ lessonId: LESSON_ID, memberId: MEMBER_ID, isComplete: true, updatedAt: '2026-01-02' });
   });
 
@@ -186,9 +186,9 @@ describe('setLearnerLessonCompletionService', () => {
   it('undoes a completion without evaluating the certificate', async () => {
     vi.mocked(upsertLessonCompletionService).mockResolvedValue({ isComplete: false, updatedAt: '2026-01-03' } as never);
 
-    const result = await setLearnerLessonCompletionService(ORG_ID, ACTOR_ID, lessonParams, { isComplete: false });
+    const result = await setStudentLessonCompletionService(ORG_ID, ACTOR_ID, lessonParams, { isComplete: false });
 
-    expect(upsertLessonCompletionService).toHaveBeenCalledWith(LESSON_ID, LEARNER_PROFILE_ID, false);
+    expect(upsertLessonCompletionService).toHaveBeenCalledWith(LESSON_ID, STUDENT_PROFILE_ID, false);
     expect(evaluateCourseCertification).not.toHaveBeenCalled();
     expect(result.isComplete).toBe(false);
   });
@@ -201,14 +201,14 @@ describe('setLearnerLessonCompletionService', () => {
   });
 });
 
-describe('createLearnerSubmissionService', () => {
-  it('submits as the learner through the dashboard service', async () => {
+describe('createStudentSubmissionService', () => {
+  it('submits as the student through the dashboard service', async () => {
     const result = await submit();
 
     expect(assertExerciseBelongsToCourse).toHaveBeenCalledWith(COURSE_ID, EXERCISE_ID);
     expect(assertEnrolledStudentContentAccess).toHaveBeenCalledWith({
       courseId: COURSE_ID,
-      profileId: LEARNER_PROFILE_ID,
+      profileId: STUDENT_PROFILE_ID,
       contentId: EXERCISE_ID,
       type: ContentType.Exercise
     });

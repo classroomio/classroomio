@@ -96,7 +96,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'delete_course_exercise',
-    `Permanently delete an exercise from a live course. This is a hard delete, not an archive: its questions and every learner submission for it are deleted too, and it cannot be undone. ${COURSE_TEAM_RULE}`,
+    `Permanently delete an exercise from a live course. This is a hard delete, not an archive: its questions and every student submission for it are deleted too, and it cannot be undone. ${COURSE_TEAM_RULE}`,
     shape(ZDeleteCourseExerciseToolInput),
     DESTRUCTIVE,
     async (args) => {

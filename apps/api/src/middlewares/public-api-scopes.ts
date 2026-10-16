@@ -5,7 +5,7 @@ import { ErrorCodes } from '@api/utils/errors';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
-const COURSE_LEARNER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/members\/[^/]+\/(?:lessons|exercises)(?:\/|$)/;
+const COURSE_STUDENT_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/members\/[^/]+\/(?:lessons|exercises)(?:\/|$)/;
 const COURSE_MEMBER_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/(?:members|invites)(?:\/|$)/;
 const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certificates?(?:\/|$)/;
 const COURSE_EXERCISE_PATH = /^(?:\/public-api\/v1)?\/(?:courses\/[^/]+\/exercises|exercise-templates)(?:\/|$)/;
@@ -35,8 +35,8 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
     return 'analytics:read';
   }
 
-  if (COURSE_LEARNER_PATH.test(path)) {
-    return 'course:learner:write';
+  if (COURSE_STUDENT_PATH.test(path)) {
+    return 'course:student:write';
   }
 
   if (COURSE_MEMBER_PATH.test(path)) {

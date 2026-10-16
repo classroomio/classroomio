@@ -173,14 +173,14 @@ These tools act as the person who created the key:
 
 `delete_course_exercise` and `delete_course_submission` are hard deletes. Deleting an exercise also deletes every submission for it.
 
-`grade_course_submission` sets the points per answer, the total, and feedback, and marks the submission completed. `update_course_submission` only changes the grading state or feedback. The learner is emailed when the state changes, as in the dashboard. `notify_course_exercise` emails every course member and returns a `jobId` for `get_course_exercise_notify_status`; each call sends the emails again.
+`grade_course_submission` sets the points per answer, the total, and feedback, and marks the submission completed. `update_course_submission` only changes the grading state or feedback. The student is emailed when the state changes, as in the dashboard. `notify_course_exercise` emails every course member and returns a `jobId` for `get_course_exercise_notify_status`; each call sends the emails again.
 
 List tools (`list_course_exercises`, `list_exercise_templates`, `list_course_submissions`, `get_course_marks`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
 
 What the tools cover compared with the dashboard:
 
 - Covered: creating, editing, deleting, and notifying about exercises (including exercise sections and templates), reviewing and grading submissions, and the gradebook.
-- Not covered, on purpose: learner actions (submitting an exercise, recording video answers). A key acts as its creator, an admin or tutor, and must not submit on a learner's behalf.
+- Not covered, on purpose: student actions (submitting an exercise, recording video answers). A key acts as its creator, an admin or tutor, and must not submit on a student's behalf.
 - Covered by other tools: moving or reordering exercises (`reorder_course_content`) and unlocking one (`isUnlocked` on `update_course_exercise`).
 
 ## Auth Model
@@ -533,7 +533,7 @@ Expected tool sequence:
 1. Agent calls `list_course_exercises` if it needs current context.
 2. Agent calls `create_course_exercise` for a brand new exercise, or with a `templateId` from `list_exercise_templates`.
 3. Agent calls `get_course_exercise`, then `update_course_exercise` for later revisions.
-4. Agent calls `notify_course_exercise` if the user wants learners emailed.
+4. Agent calls `notify_course_exercise` if the user wants students emailed.
 
 Use this direct path when the course is already live and the change is exercise-specific.
 

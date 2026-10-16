@@ -32,7 +32,7 @@ export const v1CourseSubmissionsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List learner submissions for a course's exercises, newest first. Filter by exerciseId, memberId (a course member id) or gradingState. Answers are not included; fetch a single submission for them. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `List student submissions for a course's exercises, newest first. Filter by exerciseId, memberId (a course member id) or gradingState. Answers are not included; fetch a single submission for them. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
@@ -63,7 +63,7 @@ export const v1CourseSubmissionsRouter = new Hono()
   .get(
     '/:submissionId',
     describeRoute({
-      description: `Get a submission with the learner's answers and the points given for each. File and video answers include a short-lived download URL. ${COURSE_TEAM_RULE}`,
+      description: `Get a submission with the student's answers and the points given for each. File and video answers include a short-lived download URL. ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Submission returned successfully', itemResponse(ZPublicApiCourseSubmissionDetailResponse)),
@@ -90,7 +90,7 @@ export const v1CourseSubmissionsRouter = new Hono()
   .put(
     '/:submissionId/grades',
     describeRoute({
-      description: `Grade a submission: set the points for each answer, the total and optional feedback, and mark it completed, like saving grades in the dashboard. questionIds must belong to the submission's exercise. The learner is emailed when the submission first becomes graded. Grading an already completed submission again updates the grades. ${COURSE_TEAM_RULE}`,
+      description: `Grade a submission: set the points for each answer, the total and optional feedback, and mark it completed, like saving grades in the dashboard. questionIds must belong to the submission's exercise. The student is emailed when the submission first becomes graded. Grading an already completed submission again updates the grades. ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Submission graded successfully', SubmissionResponse),
@@ -123,7 +123,7 @@ export const v1CourseSubmissionsRouter = new Hono()
   .patch(
     '/:submissionId',
     describeRoute({
-      description: `Change a submission's grading state or feedback without grading it. To grade, use PUT /courses/{courseId}/submissions/{submissionId}/grades. The learner is emailed when the state changes. ${GRADING_STATES_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Change a submission's grading state or feedback without grading it. To grade, use PUT /courses/{courseId}/submissions/{submissionId}/grades. The student is emailed when the state changes. ${GRADING_STATES_NOTE} ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Submission updated successfully', SubmissionResponse),
@@ -156,7 +156,7 @@ export const v1CourseSubmissionsRouter = new Hono()
   .delete(
     '/:submissionId',
     describeRoute({
-      description: `Permanently delete a submission and its answers, so the learner can submit again. This is a hard delete and cannot be undone. ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete a submission and its answers, so the student can submit again. This is a hard delete and cannot be undone. ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Submission deleted successfully', SubmissionResponse),

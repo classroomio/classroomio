@@ -31,7 +31,7 @@ vi.mock('@api/services/v1/courses/exercises', () => ({
   getCourseExerciseService: vi.fn(),
   updateCourseExerciseService: vi.fn(),
   deleteCourseExerciseService: vi.fn(),
-  notifyCourseExerciseLearnersService: vi.fn(),
+  notifyCourseExerciseStudentsService: vi.fn(),
   getCourseExerciseNotifyStatusService: vi.fn()
 }));
 vi.mock('@api/services/v1/courses/submissions', () => ({
@@ -100,7 +100,7 @@ beforeEach(() => {
   vi.mocked(exercises.getCourseExerciseService).mockResolvedValue({} as never);
   vi.mocked(exercises.updateCourseExerciseService).mockResolvedValue({} as never);
   vi.mocked(exercises.deleteCourseExerciseService).mockResolvedValue({} as never);
-  vi.mocked(exercises.notifyCourseExerciseLearnersService).mockResolvedValue({ jobId: 'job-1' });
+  vi.mocked(exercises.notifyCourseExerciseStudentsService).mockResolvedValue({ jobId: 'job-1' });
   vi.mocked(exercises.getCourseExerciseNotifyStatusService).mockResolvedValue({} as never);
   vi.mocked(templates.listExerciseTemplatesService).mockResolvedValue(PAGE as never);
   vi.mocked(templates.getExerciseTemplateService).mockResolvedValue({} as never);

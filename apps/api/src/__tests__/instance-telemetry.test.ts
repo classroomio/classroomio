@@ -39,7 +39,7 @@ describe('sendInstanceTelemetry', () => {
       orgCount: 1,
       studentCount: 240,
       publishedCourseCount: 12,
-      activeLearnerCount: 85
+      activeStudentCount: 85
     });
     isFeatureLicensed.mockResolvedValue(false);
     fetchMock.mockResolvedValue({ ok: true, status: 200 });
@@ -90,7 +90,7 @@ describe('sendInstanceTelemetry', () => {
         org_count: 1,
         student_count: 240,
         published_course_count: 12,
-        active_learner_count: 85
+        active_student_count: 85
       }
     });
     expect(markInstanceFirstReported).toHaveBeenCalledWith('instance-1');

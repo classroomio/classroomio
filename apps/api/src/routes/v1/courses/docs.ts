@@ -59,9 +59,9 @@ export const submissionForbiddenResponses = {
   marks: forbidden('course:submission:read', MEMBER_FORBIDDEN)
 };
 
-export const learnerForbiddenResponse = forbidden(
-  'course:learner:write',
-  `${TEAM_FORBIDDEN}, or the content is still locked for the learner`
+export const studentForbiddenResponse = forbidden(
+  'course:student:write',
+  `${TEAM_FORBIDDEN}, or the content is still locked for the student`
 );
 
 export const mcpRateLimitResponse = {

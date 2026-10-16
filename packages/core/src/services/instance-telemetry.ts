@@ -39,7 +39,7 @@ export async function sendInstanceTelemetry(): Promise<InstanceTelemetryResult> 
     org_count: counts.orgCount,
     student_count: counts.studentCount,
     published_course_count: counts.publishedCourseCount,
-    active_learner_count: counts.activeLearnerCount
+    active_student_count: counts.activeStudentCount
   };
 
   const response = await fetch(POSTHOG_CAPTURE_URL, {

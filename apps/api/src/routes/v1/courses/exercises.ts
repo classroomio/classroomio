@@ -17,7 +17,7 @@ import {
   getCourseExerciseNotifyStatusService,
   getCourseExerciseService,
   listCourseExercisesService,
-  notifyCourseExerciseLearnersService,
+  notifyCourseExerciseStudentsService,
   updateCourseExerciseService
 } from '@api/services/v1/courses/exercises';
 
@@ -157,7 +157,7 @@ export const v1CourseExercisesRouter = new Hono()
   .delete(
     '/:exerciseId',
     describeRoute({
-      description: `Permanently delete an exercise. This is a hard delete: its questions and every learner submission for it are deleted too, and it cannot be undone. ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete an exercise. This is a hard delete: its questions and every student submission for it are deleted too, and it cannot be undone. ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Exercise deleted successfully', itemResponse(ZPublicApiCourseExerciseResponse)),
@@ -200,7 +200,7 @@ export const v1CourseExercisesRouter = new Hono()
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
-        const result = await notifyCourseExerciseLearnersService(orgId, actorId, c.req.valid('param'));
+        const result = await notifyCourseExerciseStudentsService(orgId, actorId, c.req.valid('param'));
 
         return c.json({ success: true, data: result }, 202);
       } catch (error) {

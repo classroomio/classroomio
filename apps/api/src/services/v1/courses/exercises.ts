@@ -421,7 +421,7 @@ export async function deleteCourseExerciseService(
   return toPublicExercise(exercise);
 }
 
-export async function notifyCourseExerciseLearnersService(
+export async function notifyCourseExerciseStudentsService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseExerciseParam

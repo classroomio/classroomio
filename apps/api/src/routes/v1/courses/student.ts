@@ -1,22 +1,22 @@
 import {
-  ZPublicApiCourseLearnerExerciseParam,
-  ZPublicApiCourseLearnerLessonParam,
+  ZPublicApiCourseStudentExerciseParam,
+  ZPublicApiCourseStudentLessonParam,
   ZPublicApiCourseSubmissionResponse,
-  ZPublicApiCreateLearnerSubmission,
-  ZPublicApiLearnerLessonCompletionResponse,
-  ZPublicApiSetLearnerLessonCompletion
+  ZPublicApiCreateStudentSubmission,
+  ZPublicApiStudentLessonCompletionResponse,
+  ZPublicApiSetStudentLessonCompletion
 } from '@cio/utils/validation/public-api';
-import { createLearnerSubmissionService, setLearnerLessonCompletionService } from '@api/services/v1/courses/learner';
+import { createStudentSubmissionService, setStudentLessonCompletionService } from '@api/services/v1/courses/student';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
-import { COURSE_TEAM_RULE, learnerForbiddenResponse, mcpRateLimitResponse } from './docs';
+import { COURSE_TEAM_RULE, studentForbiddenResponse, mcpRateLimitResponse } from './docs';
 
-const TAG = 'Learner Activity';
+const TAG = 'Student Activity';
 
-export const v1CourseLearnerRouter = new Hono()
+export const v1CourseStudentRouter = new Hono()
   .put(
     '/lessons/:lessonId/completion',
     describeRoute({
@@ -25,26 +25,26 @@ export const v1CourseLearnerRouter = new Hono()
       responses: {
         200: jsonResponse(
           'Completion saved. Sending the same body twice gives the same result. Completing a lesson also checks whether the student has now earned the course certificate.',
-          itemResponse(ZPublicApiLearnerLessonCompletionResponse)
+          itemResponse(ZPublicApiStudentLessonCompletionResponse)
         ),
         400: {
           description:
             'Invalid path or body, the member is not a student, or the lesson completes on video watch and cannot be completed by hand'
         },
         401: errorResponses.unauthorized,
-        403: learnerForbiddenResponse,
+        403: studentForbiddenResponse,
         404: { description: 'Course, member or lesson not found, or the course is not published' },
         409: { description: 'The member has not accepted their invite yet' },
         429: mcpRateLimitResponse
       }
     }),
-    validator('param', ZPublicApiCourseLearnerLessonParam),
-    validator('json', ZPublicApiSetLearnerLessonCompletion),
+    validator('param', ZPublicApiCourseStudentLessonParam),
+    validator('json', ZPublicApiSetStudentLessonCompletion),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
-        const completion = await setLearnerLessonCompletionService(
+        const completion = await setStudentLessonCompletionService(
           orgId,
           actorId,
           c.req.valid('param'),
@@ -72,7 +72,7 @@ export const v1CourseLearnerRouter = new Hono()
             'Invalid path or body, the member is not a student, an answer breaks a question rule, or a question needs a file or video upload'
         },
         401: errorResponses.unauthorized,
-        403: learnerForbiddenResponse,
+        403: studentForbiddenResponse,
         404: { description: 'Course, member, exercise or question not found, or the course is not published' },
         409: {
           description:
@@ -81,13 +81,13 @@ export const v1CourseLearnerRouter = new Hono()
         429: mcpRateLimitResponse
       }
     }),
-    validator('param', ZPublicApiCourseLearnerExerciseParam),
-    validator('json', ZPublicApiCreateLearnerSubmission),
+    validator('param', ZPublicApiCourseStudentExerciseParam),
+    validator('json', ZPublicApiCreateStudentSubmission),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
-        const submission = await createLearnerSubmissionService(
+        const submission = await createStudentSubmissionService(
           orgId,
           actorId,
           c.req.valid('param'),

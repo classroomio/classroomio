@@ -9,7 +9,7 @@ export type InstanceUsageCounts = {
   orgCount: number;
   studentCount: number;
   publishedCourseCount: number;
-  activeLearnerCount: number;
+  activeStudentCount: number;
 };
 
 /**
@@ -48,7 +48,7 @@ const countRows = async (query: Promise<{ count: number }[]>): Promise<number> =
 };
 
 /**
- * Install-wide totals for the self-hosted usage ping. Active learners are students
+ * Install-wide totals for the self-hosted usage ping. Active students are students
  * who did anything in the last 30 days.
  */
 export const getInstanceUsageCounts = async (dbClient: DbOrTxClient = db): Promise<InstanceUsageCounts> => {
@@ -60,7 +60,7 @@ export const getInstanceUsageCounts = async (dbClient: DbOrTxClient = db): Promi
   );
 
   try {
-    const [orgCount, studentCount, publishedCourseCount, activeLearnerCount] = await Promise.all([
+    const [orgCount, studentCount, publishedCourseCount, activeStudentCount] = await Promise.all([
       countRows(dbClient.select({ count }).from(schema.organization)),
       countRows(dbClient.select({ count }).from(schema.organizationmember).where(isActiveStudent)),
       countRows(
@@ -77,7 +77,7 @@ export const getInstanceUsageCounts = async (dbClient: DbOrTxClient = db): Promi
       )
     ]);
 
-    return { orgCount, studentCount, publishedCourseCount, activeLearnerCount };
+    return { orgCount, studentCount, publishedCourseCount, activeStudentCount };
   } catch (error) {
     console.error('getInstanceUsageCounts error:', error);
     throw new Error('Failed to count instance usage');

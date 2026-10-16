@@ -4,16 +4,16 @@ import { v1CourseCertificateRouter, v1CourseCertificatesRouter } from './certifi
 import { v1CourseRouter } from './course';
 import { v1CourseExercisesRouter } from './exercises';
 import { v1CourseInvitesRouter } from './invites';
-import { v1CourseLearnerRouter } from './learner';
 import { v1CourseLessonsRouter } from './lessons';
 import { v1CourseMarksRouter } from './marks';
 import { v1CourseMembersRouter } from './members';
+import { v1CourseStudentRouter } from './student';
 import { v1CourseSubmissionsRouter } from './submissions';
 
 export const v1CoursesRouter = new Hono()
   .route('/:courseId/analytics', v1CourseAnalyticsRouter)
   .route('/', v1CourseRouter)
-  .route('/:courseId/members/:memberId', v1CourseLearnerRouter)
+  .route('/:courseId/members/:memberId', v1CourseStudentRouter)
   .route('/:courseId/members', v1CourseMembersRouter)
   .route('/:courseId/invites', v1CourseInvitesRouter)
   .route('/:courseId/certificate', v1CourseCertificateRouter)

@@ -45,7 +45,7 @@ export const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKey
     'media:write',
     'course:submission:read',
     'course:submission:write',
-    'course:learner:write',
+    'course:student:write',
     'audience:read',
     'audience:write',
     'team:read',

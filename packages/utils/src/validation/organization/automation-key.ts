@@ -23,7 +23,7 @@ export const ZOrganizationApiKeyScope = z.enum([
   'media:write',
   'course:submission:read',
   'course:submission:write',
-  'course:learner:write',
+  'course:student:write',
   'audience:read',
   'audience:write',
   'team:read',

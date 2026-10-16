@@ -72,7 +72,7 @@ import {
   getCourseExerciseNotifyStatusService,
   getCourseExerciseService,
   listCourseExercisesService,
-  notifyCourseExerciseLearnersService,
+  notifyCourseExerciseStudentsService,
   updateCourseExerciseService
 } from '@api/services/v1/courses/exercises';
 import { getExerciseTemplateService, listExerciseTemplatesService } from '@api/services/v1/exercise-templates/template';
@@ -596,11 +596,11 @@ describe('getCourseExerciseService', () => {
   });
 });
 
-describe('notifyCourseExerciseLearnersService', () => {
+describe('notifyCourseExerciseStudentsService', () => {
   it('queues the dashboard notification job for the exercise', async () => {
     vi.mocked(notifyCourseExerciseService).mockResolvedValue({ jobId: 'job-1' });
 
-    const result = await notifyCourseExerciseLearnersService(ORG_ID, ACTOR_ID, exerciseParams);
+    const result = await notifyCourseExerciseStudentsService(ORG_ID, ACTOR_ID, exerciseParams);
 
     expect(notifyCourseExerciseService).toHaveBeenCalledWith(COURSE_ID, EXERCISE_ID);
     expect(result).toEqual({ jobId: 'job-1' });
