@@ -125,6 +125,30 @@ describe('parent messaging', () => {
   });
 });
 
+describe('package connection', () => {
+  it('posts initialized when a 1.2 package initializes', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+    const adapter = create12();
+
+    connectParentBridge(adapter, 'scorm12', 'https://app.test');
+    adapter.LMSInitialize('');
+
+    expect(postedTo(parent)).toEqual([{ type: 'ready' }, { type: 'initialized' }]);
+  });
+
+  it('posts initialized when a 2004 package initializes', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+    const adapter = create2004();
+
+    connectParentBridge(adapter, 'scorm2004', 'https://app.test');
+    adapter.Initialize('');
+
+    expect(postedTo(parent)).toEqual([{ type: 'ready' }, { type: 'initialized' }]);
+  });
+});
+
 describe('terminate and navigation requests', () => {
   it('reports the 2004 navigation request captured at SetValue time', () => {
     const parent = fakeTarget();

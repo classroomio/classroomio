@@ -3950,6 +3950,7 @@
             "preview_title": "Preview mode",
             "preview_body": "You are testing this activity as an instructor. Nothing you do here is recorded.",
             "module_locked": "Complete the previous modules first",
+            "loading": "Loading package…",
             "time_limit": "Suggested: {time}"
           },
           "header_unlocked": "Unlocked",

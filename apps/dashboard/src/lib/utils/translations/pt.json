@@ -3075,7 +3075,8 @@
             "preview_title": "Modo de visualização",
             "preview_body": "Você está testando esta atividade como instrutor. Nada do que você fizer aqui será gravado.",
             "module_locked": "Conclua os módulos anteriores primeiro",
-            "time_limit": "Sugestão: {time}"
+            "time_limit": "Sugestão: {time}",
+            "loading": "Carregando pacote…"
           },
           "results": {
             "sheet": {

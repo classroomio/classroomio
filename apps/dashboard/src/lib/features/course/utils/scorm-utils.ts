@@ -424,6 +424,7 @@ export function unitPassMark(unit: { masteryScoreRaw?: unknown; passingScoreScal
 
 export type PlayerInboundMessage =
   | { type: 'ready' }
+  | { type: 'initialized' }
   | { type: 'terminated'; navRequest: string | null }
   | { type: 'completed' }
   | { type: 'progress' }
@@ -439,6 +440,7 @@ export function parsePlayerMessage(data: unknown): PlayerInboundMessage | null {
 
   const record = data as Record<string, unknown>;
   if (record['type'] === 'ready') return { type: 'ready' };
+  if (record['type'] === 'initialized') return { type: 'initialized' };
   if (record['type'] === 'completed') return { type: 'completed' };
   if (record['type'] === 'progress') return { type: 'progress' };
   if (record['type'] === 'did-not-connect') return { type: 'did-not-connect' };

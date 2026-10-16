@@ -6,7 +6,7 @@ SCORM player page served from the content origin. Skeleton state: the `scorm-aga
 
 - `src/main.ts` — bootstrap: launch token from `/activity/player/:token`, launch state fetch, adapter creation, `loadFromJSON`, parent bridge, `pagehide` flush, package iframe, did-not-connect handling.
 - `src/scorm/adapter.ts` — `scorm-again` wrapper: settings, adapter creation, `window.API` / `window.API_1484_11` exposure, event names.
-- `src/bridge.ts` — activity-page messages (`ready`, `terminated` with `adl.nav.request`, `did-not-connect`) to the exact parent origin, plus the `pagehide` flush for packages that never terminate.
+- `src/bridge.ts` — activity-page messages (`ready`, `initialized`, `terminated` with `adl.nav.request`, `did-not-connect`) to the exact parent origin, plus the `pagehide` flush for packages that never terminate.
 - `stub/server.mjs` — zero-dependency stub content origin. Serves the built player at the production paths, extracted fixtures as package files, and stub launch-state/commit endpoints.
 
 ## Run
@@ -48,7 +48,8 @@ The player posts the following JSON events to all authorized parent origins (`pa
 
 | Event | Shape | Description |
 | --- | --- | --- |
-| `ready` | `{ "type": "ready" }` | Emitted once the player boots, initializes the SCORM adapter, and mounts the package iframe. The embedding page can hide its loading skeleton or spinner. |
+| `ready` | `{ "type": "ready" }` | Emitted once the player boots, initializes the SCORM adapter, and mounts the package iframe. The embedding page knows the player booted; its loading skeleton stays until `initialized`. |
+| `initialized` | `{ "type": "initialized" }` | Emitted when the package calls `LMSInitialize` / `Initialize`. The embedding page hides its loading skeleton. |
 | `terminated` | `{ "type": "terminated", "navRequest": string \| null }` | Emitted when the SCORM module calls `LMSFinish` (1.2) or `Terminate` (2004). For SCORM 2004, `navRequest` contains the target requested via `adl.nav.request` (`_next_`, `_previous_`, target module identifier, or `null`). The embedding page uses this to trigger completion or advance to the next item. |
 | `did-not-connect` | `{ "type": "did-not-connect" }` | Emitted if the package does not call `LMSInitialize` / `Initialize` within 30 seconds (`DID_NOT_CONNECT_MS`). The embedding page can display a warning banner. |
 
@@ -62,7 +63,7 @@ When implementing the dashboard listener in `C/components/activity/activity-play
 
 1. Attach a message listener: `window.addEventListener('message', handlePlayerMessage)`.
 2. **Always validate `event.origin`**: Compare `event.origin` against the expected content origin (`contentHost` / `SCORM_CONTENT_DOMAIN`) and discard messages from untrusted origins.
-3. Handle `ready`: Dismiss initial loading state / skeleton.
+3. Handle `ready`: the player booted — keep the loading state. Handle `initialized`: the package connected — dismiss the loading skeleton.
 4. Handle `terminated`: Check if all modules meet the completion rule (via `openCourseCompletionIfDone`), reload attempt stats, or navigate per `event.data.navRequest`.
 5. Handle `did-not-connect`: Show troubleshooting hint if the package failed to connect.
 6. Clean up: Remove the event listener on component unmount (`onDestroy`).

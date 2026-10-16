@@ -54,6 +54,14 @@ function setStatus(text: string): void {
   }
 }
 
+function hideLoading(): void {
+  const loading = document.getElementById('loading');
+
+  if (loading) {
+    loading.hidden = true;
+  }
+}
+
 function mountPackageFrame(contentToken: string, launchPath: string): void {
   const frame = document.getElementById('package-frame');
 
@@ -100,6 +108,7 @@ async function boot(): Promise<void> {
   connectParentBridge(adapter, state.format, parentOrigins);
   flushOnPageHide(adapter, state.format);
   adapter.on(initializeEventName(state.format), () => {
+    hideLoading();
     void reportRuntimeEvent(launchToken, 'initialize');
   });
   mountPackageFrame(state.contentToken, state.launchPath);
@@ -109,6 +118,7 @@ async function boot(): Promise<void> {
   const connected = await watchForConnection(adapter, state.format, parentOrigins);
 
   if (!connected) {
+    hideLoading();
     setStatus('This package did not connect. Reload to try again.');
     void reportRuntimeEvent(launchToken, 'not_initialized');
     adapter.on(initializeEventName(state.format), () => {
@@ -122,6 +132,7 @@ async function boot(): Promise<void> {
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   boot().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : 'unknown error';
+    hideLoading();
     setStatus(`This package did not connect: ${message}`);
     notifyBootError(message);
 

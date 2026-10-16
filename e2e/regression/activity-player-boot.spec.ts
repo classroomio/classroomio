@@ -52,6 +52,7 @@ test.describe('activity player boot against the stub content origin', () => {
 
     await scoFrame.getByRole('button', { name: 'Initialize' }).click();
     await expect(scoFrame.locator('#log')).toContainText('LMSInitialize -> true');
+    await expect(events).toContainText('"initialized"');
 
     await scoFrame.getByRole('button', { name: 'Commit' }).click();
 

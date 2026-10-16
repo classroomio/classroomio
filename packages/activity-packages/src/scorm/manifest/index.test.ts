@@ -78,6 +78,15 @@ describe('parseScormManifest fixtures', () => {
     expect(parsed.units[0].formatDetails).toEqual({ format: 'scorm12' });
   });
 
+  it('parses a SCO with outbound references without warnings', () => {
+    const parsed = parseScormManifest(readSource('scorm12-external-refs'), ['sco.html']);
+
+    expect(parsed.format).toBe('scorm12');
+    expect(parsed.units).toHaveLength(1);
+    expect(parsed.units[0]).toMatchObject({ identifier: 'ITEM-1', unitType: 'sco', href: 'sco.html' });
+    expect(parsed.warnings).toEqual([]);
+  });
+
   it('rejects external launches and asset-only manifests', () => {
     try {
       parseScormManifest(readSource('reject-external-launch'), ['sco.html']);

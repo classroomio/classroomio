@@ -5,6 +5,7 @@ import { initializeEventName, terminateEventName, type ScormAdapter, type ScormF
 
 export type PlayerOutboundMessage =
   | { type: 'ready' }
+  | { type: 'initialized' }
   | { type: 'terminated'; navRequest: string | null }
   | { type: 'completed' }
   | { type: 'progress' }
@@ -56,6 +57,10 @@ export function connectParentBridge(
   adapter.on(terminateEventName(format), () => {
     postMessage({ type: 'terminated', navRequest }, parentOrigin);
     onTerminated?.(navRequest);
+  });
+
+  adapter.on(initializeEventName(format), () => {
+    postMessage({ type: 'initialized' }, parentOrigin);
   });
 
   postMessage({ type: 'ready' }, parentOrigin);

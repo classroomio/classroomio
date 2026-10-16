@@ -7,6 +7,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import MaximizeIcon from '@lucide/svelte/icons/maximize';
+  import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
   import MinimizeIcon from '@lucide/svelte/icons/minimize';
   import PackageIcon from '@lucide/svelte/icons/package';
   import { ContentType } from '@cio/utils/constants/content';
@@ -35,6 +36,7 @@
   let currentUnitIdentifier = $state<string | null>(null);
   let displayedPlayerUrl = $state<string | null>(null);
   let playerReady = $state(false);
+  let contentReady = $state(false);
   let terminated = $state(false);
   let didNotConnect = $state(false);
   let requestingAttempt = $state(false);
@@ -103,6 +105,7 @@
   async function runLaunch(input: { unitIdentifier?: string; newAttempt?: boolean }) {
     launchedFor = `${courseId}:${activityId}`;
     playerReady = false;
+    contentReady = false;
     terminated = false;
     didNotConnect = false;
     bootFailed = false;
@@ -132,6 +135,7 @@
   async function handleTerminated(navRequest: string | null) {
     terminated = true;
     playerReady = false;
+    contentReady = false;
     await refreshProgressAndMaybeComplete(availableLaunch?.mode !== 'preview');
     await activityApi.refreshProgress(courseId, activityId);
 
@@ -165,6 +169,11 @@
 
     if (message.type === 'ready') {
       playerReady = true;
+      didNotConnect = false;
+      bootFailed = false;
+    } else if (message.type === 'initialized') {
+      playerReady = true;
+      contentReady = true;
       didNotConnect = false;
       bootFailed = false;
     } else if (message.type === 'boot-error') {
@@ -309,8 +318,10 @@
         currentUnitIdentifier = result.unit.identifier;
         displayedPlayerUrl = result.playerUrl;
         playerReady = false;
+        contentReady = false;
         terminated = false;
         didNotConnect = false;
+        bootFailed = false;
         retakesUnavailable = false;
       } else {
         retakesUnavailable = true;
@@ -499,7 +510,7 @@
               src={displayedPlayerUrl}
               title={activityApi.activity?.title ?? ''}
               class={isImmersive ? 'h-full w-full' : 'aspect-video w-full'}
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
               allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
               data-testid="activity-player-frame"
             ></iframe>
@@ -514,8 +525,16 @@
               }}
             ></div>
           {/if}
-          {#if !playerReady && !didNotConnect && !terminated && !bootFailed}
-            <Skeleton class="absolute inset-0 h-full w-full" />
+          {#if !contentReady && !didNotConnect && !terminated && !bootFailed}
+            <div class="absolute inset-0" role="status">
+              <Skeleton class="h-full w-full" />
+              <div class="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                <LoaderCircleIcon size={28} class="ui:text-muted-foreground animate-spin motion-reduce:animate-none" />
+                <p class="ui:text-muted-foreground text-sm">
+                  {$t('course.navItem.lessons.activities.player.loading')}
+                </p>
+              </div>
+            </div>
           {/if}
         {:else}
           <Skeleton class={isImmersive ? 'h-full w-full' : 'aspect-video w-full'} />

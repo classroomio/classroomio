@@ -8,6 +8,7 @@ const sourcesDir = join(root, 'sources');
 
 const packages = [
   'scorm12-minimal',
+  'scorm12-external-refs',
   'scorm2004-minimal',
   'scorm2004-three-modules',
   'scorm12-quiz-mastery',

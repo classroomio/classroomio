@@ -3075,7 +3075,8 @@
             "preview_title": "Forhåndsvisningstilstand",
             "preview_body": "Du tester denne aktivitet som instruktør. Intet af hvad du gør her, registreres.",
             "module_locked": "Færdiggør de foregående moduler først",
-            "time_limit": "Anbefalet: {time}"
+            "time_limit": "Anbefalet: {time}",
+            "loading": "Indlæser pakke…"
           },
           "results": {
             "sheet": {

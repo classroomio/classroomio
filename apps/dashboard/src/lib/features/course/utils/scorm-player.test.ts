@@ -3,8 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { contentOriginOf, isTrustedPlayerMessage, parsePlayerMessage } from './scorm-utils';
 
 describe('player message protocol', () => {
-  it('parses the three player events and drops anything else', () => {
+  it('parses the player events and drops anything else', () => {
     expect(parsePlayerMessage({ type: 'ready' })).toEqual({ type: 'ready' });
+    expect(parsePlayerMessage({ type: 'initialized' })).toEqual({ type: 'initialized' });
     expect(parsePlayerMessage({ type: 'did-not-connect' })).toEqual({ type: 'did-not-connect' });
     expect(parsePlayerMessage({ type: 'terminated', navRequest: 'continue' })).toEqual({
       type: 'terminated',

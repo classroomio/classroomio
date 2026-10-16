@@ -3075,7 +3075,8 @@
             "preview_title": "Vorschaumodus",
             "preview_body": "Sie testen diese Aktivität als Dozent/in. Ihre Aktionen werden nicht aufgezeichnet.",
             "module_locked": "Schließen Sie zuerst die vorherigen Module ab.",
-            "time_limit": "Empfohlen: {time}"
+            "time_limit": "Empfohlen: {time}",
+            "loading": "Paket wird geladen…"
           },
           "results": {
             "sheet": {

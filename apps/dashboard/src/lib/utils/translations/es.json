@@ -3075,7 +3075,8 @@
             "preview_title": "Modo de vista previa",
             "preview_body": "Estás probando esta actividad como instructor. Nada de lo que hagas aquí se registrará.",
             "module_locked": "Completa primero los módulos anteriores.",
-            "time_limit": "Sugerido: {time}"
+            "time_limit": "Sugerido: {time}",
+            "loading": "Cargando paquete…"
           },
           "results": {
             "sheet": {

@@ -11,6 +11,7 @@ Hand-written fixtures are original works for this repository. Third-party packag
 - `vendor-storyline-style.zip` — synthetic Storyline-shaped 1.2 quiz (`index_lms.html` entry point, `adlcp:masteryscore` 80, a 4-second self-generated ffmpeg test-pattern MP4 with a 440 Hz tone) that exercises vendor launch filenames without proprietary exports.
 - `vendor-rise-style.zip` — synthetic Rise-shaped 2004 lesson (`indexapi.html` entry point, many small stub assets) that exercises multi-file layouts without proprietary exports.
 - `reject-external-launch.zip` — SCO whose launch URL is absolute `https://`; import must reject it.
+- `scorm12-external-refs.zip` — same API exerciser as `scorm12-minimal` plus in-SCO outbound references (YouTube iframe, externally hosted MP4, CDN script, webfont stylesheet, outbound anchors); the launch stays relative so import must accept it.
 - `reject-assets-only.zip` — manifest with only `asset` resources; import must reject it.
 
 ## In git (third-party, CC BY 3.0)

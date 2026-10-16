@@ -3871,7 +3871,8 @@
             "preview_title": "Modalità anteprima",
             "preview_body": "Stai testando questa attività come istruttore. Nessuna delle tue azioni verrà registrata.",
             "module_locked": "Completa prima i moduli precedenti",
-            "time_limit": "Suggerito: {time}"
+            "time_limit": "Suggerito: {time}",
+            "loading": "Caricamento del pacchetto in corso…"
           },
           "results": {
             "sheet": {

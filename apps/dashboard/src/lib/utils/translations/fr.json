@@ -3075,7 +3075,8 @@
             "preview_title": "Mode aperçu",
             "preview_body": "Vous testez cette activité en tant que formateur. Aucune de vos actions n'est enregistrée.",
             "module_locked": "Terminez d'abord les modules précédents.",
-            "time_limit": "Suggéré : {time}"
+            "time_limit": "Suggéré : {time}",
+            "loading": "Chargement du paquet…"
           },
           "results": {
             "sheet": {

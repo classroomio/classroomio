@@ -3075,7 +3075,8 @@
             "preview_title": "Chế độ xem trước",
             "preview_body": "Bạn đang thử nghiệm hoạt động này với tư cách là người hướng dẫn. Không có gì bạn làm ở đây được ghi lại.",
             "module_locked": "Hoàn thành các mô-đun trước trước",
-            "time_limit": "Gợi ý: {time}"
+            "time_limit": "Gợi ý: {time}",
+            "loading": "Đang tải gói hàng…"
           },
           "results": {
             "sheet": {

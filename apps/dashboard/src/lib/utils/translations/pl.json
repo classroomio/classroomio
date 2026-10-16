@@ -3075,7 +3075,8 @@
             "preview_title": "Tryb podglądu",
             "preview_body": "Testujesz tę aktywność jako instruktor. Żadne Twoje działania nie są rejestrowane.",
             "module_locked": "Najpierw ukończ poprzednie moduły.",
-            "time_limit": "Sugerowane: {time}"
+            "time_limit": "Sugerowane: {time}",
+            "loading": "Ładowanie pakietu…"
           },
           "results": {
             "sheet": {
