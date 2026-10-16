@@ -211,12 +211,18 @@ describe.skipIf(!hasDatabase)('scorm tables (PR 5 schema)', () => {
         .returning();
       expect(event.detail).toEqual({});
 
-      await expect(
-        db.delete(schema.contentPackageVersion).where(eq(schema.contentPackageVersion.id, version.id))
-      ).rejects.toThrow();
-      await expect(
-        db.delete(schema.contentPackageUnit).where(eq(schema.contentPackageUnit.id, unit.id))
-      ).rejects.toThrow();
+      await db.delete(schema.contentPackageVersion).where(eq(schema.contentPackageVersion.id, version.id));
+
+      const remainingAttempts = await db
+        .select()
+        .from(schema.scormAttempt)
+        .where(eq(schema.scormAttempt.id, attempt.id));
+      const remainingTries = await db
+        .select()
+        .from(schema.scormScoAttempt)
+        .where(eq(schema.scormScoAttempt.id, scoAttempt.id));
+      expect(remainingAttempts).toEqual([]);
+      expect(remainingTries).toEqual([]);
     } finally {
       await cleanupScormFixture(fixture);
     }

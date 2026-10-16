@@ -1,9 +1,31 @@
 import 'dotenv/config';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { eq } from 'drizzle-orm';
 
 import { ContentType, ROLE } from '@cio/utils/constants';
+
+vi.mock('@cio/core/config/storage', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@cio/core/config/storage')>();
+
+  return {
+    ...original,
+    getStorageConfig: () => ({
+      endpoint: 'http://storage.test',
+      region: 'auto',
+      accessKeyId: 'test',
+      secretAccessKey: 'test',
+      forcePathStyle: true,
+      bucketVideos: 'videos',
+      bucketDocuments: 'documents',
+      bucketMedia: 'media',
+      bucketScorm: 'scorm',
+      mediaPublicBaseUrl: null,
+      presignUploadExpiresSeconds: 900,
+      presignDownloadExpiresSeconds: 900
+    })
+  };
+});
 
 const hasDatabase = Boolean(
   process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || process.env.PGBOUNCER_DATABASE_URL

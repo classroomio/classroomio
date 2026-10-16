@@ -36,11 +36,18 @@ vi.mock('@cio/core/config/storage', async (importOriginal) => {
     ...original,
     getS3Client: () => storage.client,
     getStorageConfig: () => ({
-      ...original.getStorageConfig(),
+      endpoint: 'http://storage.test',
+      region: 'auto',
+      accessKeyId: 'test',
+      secretAccessKey: 'test',
+      forcePathStyle: true,
       bucketVideos: 'videos',
       bucketDocuments: 'documents',
       bucketMedia: 'media',
-      bucketScorm: 'scorm'
+      bucketScorm: 'scorm',
+      mediaPublicBaseUrl: null,
+      presignUploadExpiresSeconds: 900,
+      presignDownloadExpiresSeconds: 900
     })
   };
 });
