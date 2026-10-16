@@ -99,7 +99,7 @@ function projectLegacyStatusId(gradingState: SubmissionGradingState): number {
   return GRADING_STATE_TO_LEGACY_STATUS[gradingState];
 }
 
-function resolveSubmissionGradingState(submission: Partial<TSubmission>): SubmissionGradingState {
+export function resolveSubmissionGradingState(submission: Partial<TSubmission>): SubmissionGradingState {
   const rawState = typeof submission.gradingState === 'string' ? submission.gradingState : '';
   if (rawState && rawState in GRADING_STATE_TO_LEGACY_STATUS) {
     return rawState as SubmissionGradingState;
@@ -122,6 +122,22 @@ function resolveOverallStatusFromTypenames(typenames: string[]): SubmissionOvera
   if (hasManual && hasAuto) return 'hybrid';
   if (hasManual) return 'manual_required';
   return 'auto_graded';
+}
+
+/** The stored overall status, or the one the exercise's question types imply when none is stored. */
+export function resolveSubmissionOverallStatus(
+  storedOverallStatus: unknown,
+  questionTypeIds: number[]
+): SubmissionOverallStatus {
+  if (
+    storedOverallStatus === 'auto_graded' ||
+    storedOverallStatus === 'manual_required' ||
+    storedOverallStatus === 'hybrid'
+  ) {
+    return storedOverallStatus;
+  }
+
+  return resolveOverallStatusFromQuestionTypeIds(questionTypeIds);
 }
 
 function resolveOverallStatusFromQuestionTypeIds(questionTypeIds: number[]): SubmissionOverallStatus {
@@ -389,6 +405,9 @@ export async function listSubmissionsForGrading(courseId: string) {
       isEarly: boolean;
       feedback: string | null;
       submittedAt: string;
+      createdAt: string | null;
+      memberId: string | null;
+      total: number | null;
       exercise: {
         id: string;
         title: string;
@@ -469,6 +488,9 @@ export async function listSubmissionsForGrading(courseId: string) {
         isEarly,
         feedback: submission.feedback,
         submittedAt,
+        createdAt: submission.createdAt ?? null,
+        memberId: submission.submittedBy ?? null,
+        total: submission.total ?? null,
         exercise: {
           id: submission.exercise.id,
           title: submission.exercise.title
