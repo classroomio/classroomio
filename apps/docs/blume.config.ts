@@ -21,6 +21,7 @@ const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
       'Course Certificates'
     ]
   },
+  { label: 'Tags', tags: ['Tags'] },
   {
     label: 'Cohorts',
     tags: [

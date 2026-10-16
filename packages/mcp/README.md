@@ -56,6 +56,12 @@ Current tools:
 - `update_course_draft`
 - `tag_course_draft`
 - `tag_courses`
+- `list_tags`
+- `create_tag`
+- `update_tag`
+- `create_tag_group`
+- `update_tag_group`
+- `set_course_tags`
 - `publish_course_draft`
 - `publish_course_draft_to_existing_course`
 - `list_course_members`
@@ -156,7 +162,7 @@ Course member and invite tools call the public API (`/public-api/v1/courses/:id/
 
 Course member and invite tools act as the person who created the API key, with the same rule as the dashboard's People and Invites pages: the key creator must be a tutor/admin of the course or an org admin. Adding a member by `profileId` or email requires that person to already be in the organization; adding someone already in the course fails with 409.
 
-Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, and analytics routes. The course/draft tools above call other, internal-only endpoints and use their own scopes.
+Cohort tools call the public API (`/public-api/v1/cohorts/...`) and need the key's `cohort:read` (reads) and `cohort:write` (everything else) scopes, which MCP keys have by default. Analytics tools call `/public-api/v1/analytics/...` and `/public-api/v1/courses/{courseId}/analytics/...` and need `analytics:read`, also on by default. MCP keys don't get `public_api:*`, so the only public API routes they can reach are the cohort, course member and invite, course certificate, analytics and tag routes, plus a course update that sends only `tagIds`. The course/draft tools above call other, internal-only endpoints and use their own scopes.
 
 Cohort tools act as the person who created the API key and follow the same rules as the dashboard:
 
@@ -521,7 +527,9 @@ Tagging tools use:
 - `mode: "merge" | "replace"`
 - `groupName` optional, defaults to `Automation`
 
-The API creates missing tags automatically when needed.
+Missing tags are created automatically. `tag_course_draft` stores the names on the draft, and publishing creates the tags. `tag_courses` uses the public API: it reads tags from `/public-api/v1/tags`, creates any that are missing there, then sets each course's tags with `PUT /public-api/v1/courses/{courseId}` and `tagIds`. It needs `course:read` and `course:tag:write`, which MCP keys have by default, and the key creator must be an org admin. Each course it tags costs one credit, plus one for each tag or group it has to create.
+
+The other tag tools map one-to-one to the public tag endpoints: `list_tags` (free, needs `course:read` and an org-member key creator), and `create_tag`, `update_tag`, `create_tag_group`, `update_tag_group` and `set_course_tags` (one credit each, need `course:tag:write` and an org-admin key creator). `set_course_tags` replaces a course's tags with the ids you send, so `[]` removes them all.
 
 Exercise tools use the live course directly:
 

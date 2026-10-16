@@ -97,6 +97,21 @@ export async function assertOrgTeamMember(orgId: string, actorId: string | null)
 }
 
 /**
+ * Mirrors `orgMemberMiddleware` for the key's creator: the actor must hold any role in the org.
+ * Throws 401 without an actor and 403 otherwise.
+ */
+export async function assertOrgMember(orgId: string, actorId: string | null): Promise<void> {
+  assertAutomationActor(actorId);
+
+  const roleId = await getOrganizationMemberRoleId(orgId, actorId);
+  if (roleId !== null) {
+    return;
+  }
+
+  throw new AppError('Automation actor must be an organization member', ErrorCodes.UNAUTHORIZED, 403);
+}
+
+/**
  * Mirrors `orgAdminMiddleware` for the key's creator: the actor must be an org admin.
  * Throws 401 without an actor and 403 otherwise.
  */

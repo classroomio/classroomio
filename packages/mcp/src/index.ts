@@ -12,6 +12,7 @@ import { registerCohortTools } from './tools/cohorts';
 import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseDraftTools } from './tools/course-drafts';
 import { registerCourseMemberTools } from './tools/course-members';
+import { registerTagTools } from './tools/tags';
 
 async function main() {
   const config = getConfig();
@@ -30,6 +31,7 @@ async function main() {
   registerCourseMemberTools(server, apiClient);
   registerCourseCertificateTools(server, apiClient);
   registerAnalyticsTools(server, apiClient);
+  registerTagTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

@@ -19,3 +19,5 @@ export * from './course-member-responses';
 export * from './course-responses';
 export * from './lesson';
 export * from './pagination';
+export * from './tag';
+export * from './tag-responses';

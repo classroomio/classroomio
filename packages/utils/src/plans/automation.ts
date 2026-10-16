@@ -84,7 +84,13 @@ export const MCP_TOOL_CREDIT_COST = {
   list_compliance_learners: 0,
   get_learner_analytics: 0,
   get_course_analytics: 0,
-  list_course_analytics_students: 0
+  list_course_analytics_students: 0,
+  list_tags: 0,
+  create_tag: 1,
+  update_tag: 1,
+  create_tag_group: 1,
+  update_tag_group: 1,
+  set_course_tags: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -184,7 +190,8 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_compliance_learners' ||
     toolName === 'get_learner_analytics' ||
     toolName === 'get_course_analytics' ||
-    toolName === 'list_course_analytics_students'
+    toolName === 'list_course_analytics_students' ||
+    toolName === 'list_tags'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }
