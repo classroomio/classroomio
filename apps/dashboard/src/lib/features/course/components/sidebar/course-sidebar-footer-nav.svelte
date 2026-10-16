@@ -15,6 +15,7 @@
   import { getStudentContentLockTitleKey } from '$features/course/utils/content-lock-utils';
   import { ContentType } from '@cio/utils/constants/content';
   import { t } from '$lib/utils/functions/translations';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
@@ -27,6 +28,7 @@
 
   let { courseId, path, class: className = '' }: Props = $props();
 
+  const isSingleActivity = $derived(isSingleActivityCourse(courseApi.course));
   const courseProgress = $derived(getCourseProgress(courseApi.course));
   const previousItem = $derived(getPreviousNavigableContent(courseApi.course, path));
   const nextItem = $derived(getNextIncompleteNavigableContent(courseApi.course, path));
@@ -36,8 +38,11 @@
       return null;
     }
 
-    const targetType = target.type === ContentType.Lesson ? ContentType.Lesson : ContentType.Exercise;
-    return getStudentContentLockReason(courseApi.course, target.id, targetType);
+    if (target.type === ContentType.Section) {
+      return null;
+    }
+
+    return getStudentContentLockReason(courseApi.course, target.id, target.type);
   }
 
   function goToContent(target: CourseContentItem | null) {
@@ -66,31 +71,33 @@
 </script>
 
 <div class={className}>
-  <nav class="flex gap-2 px-3 py-2.5" aria-label={$t('course.sidebar.footer_nav.label')}>
-    <Button
-      size="sm"
-      variant="outline"
-      class="flex-1"
-      onclick={() => goToContent(previousItem)}
-      disabled={isPreviousDisabled}
-      title={previousLockReason ? $t(getStudentContentLockTitleKey(previousLockReason)) : undefined}
-    >
-      <ChevronLeftIcon size={16} />
-      {$t('course.sidebar.footer_nav.previous')}
-    </Button>
+  {#if !isSingleActivity}
+    <nav class="flex gap-2 px-3 py-2.5" aria-label={$t('course.sidebar.footer_nav.label')}>
+      <Button
+        size="sm"
+        variant="outline"
+        class="flex-1"
+        onclick={() => goToContent(previousItem)}
+        disabled={isPreviousDisabled}
+        title={previousLockReason ? $t(getStudentContentLockTitleKey(previousLockReason)) : undefined}
+      >
+        <ChevronLeftIcon size={16} />
+        {$t('course.sidebar.footer_nav.previous')}
+      </Button>
 
-    <Button
-      size="sm"
-      variant="default"
-      class="flex-1"
-      onclick={() => goToContent(nextItem)}
-      disabled={isNextDisabled}
-      title={nextLockReason ? $t(getStudentContentLockTitleKey(nextLockReason)) : undefined}
-    >
-      {$t('course.sidebar.footer_nav.next')}
-      <ChevronRightIcon size={16} />
-    </Button>
-  </nav>
+      <Button
+        size="sm"
+        variant="default"
+        class="flex-1"
+        onclick={() => goToContent(nextItem)}
+        disabled={isNextDisabled}
+        title={nextLockReason ? $t(getStudentContentLockTitleKey(nextLockReason)) : undefined}
+      >
+        {$t('course.sidebar.footer_nav.next')}
+        <ChevronRightIcon size={16} />
+      </Button>
+    </nav>
+  {/if}
 
   <p class="ui:text-muted-foreground truncate px-3 pb-2 text-[11px]">
     {$t('course.sidebar.progress.lessons', {
@@ -100,6 +107,10 @@
       · {$t('course.sidebar.progress.exercises', {
         completed: courseProgress.exercisesComplete,
         total: courseProgress.exercisesTotal
+      })}{/if}{#if courseProgress.activitiesTotal > 0}
+      · {$t('course.sidebar.progress.activities', {
+        completed: courseProgress.activitiesComplete,
+        total: courseProgress.activitiesTotal
       })}{/if}
   </p>
 

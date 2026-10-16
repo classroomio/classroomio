@@ -22,6 +22,9 @@
       : Math.round((userCourseAnalytics.completedExercises / userCourseAnalytics.totalExercises) * 100)
   );
 
+  let activitiesCompleted = $derived(userCourseAnalytics.activitiesCompleted ?? 0);
+  let activitiesCount = $derived(userCourseAnalytics.activitiesCount ?? 0);
+
   function gradeLabel(grade: number | null): string {
     return grade === null ? '—' : `${grade}%`;
   }
@@ -63,6 +66,12 @@
         {userCourseAnalytics.completedExercises}/{userCourseAnalytics.totalExercises}
       </span>
     </div>
+    {#if activitiesCount > 0}
+      <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
+        <span class="ui:text-muted-foreground">{$t('analytics.activities')}</span>
+        <span class="ui:tabular-nums font-medium">{activitiesCompleted}/{activitiesCount}</span>
+      </div>
+    {/if}
     <div class="flex items-center justify-between gap-3 py-1.5 text-sm">
       <span class="ui:text-muted-foreground">{$t('analytics.assignment_completion')}</span>
       <span class="ui:tabular-nums font-medium">{exerciseCompletion}%</span>

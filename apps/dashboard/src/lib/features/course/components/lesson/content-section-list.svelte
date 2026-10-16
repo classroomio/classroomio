@@ -16,7 +16,7 @@
   import formatDate from '$lib/utils/functions/formatDate';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgStudent } from '$lib/utils/store/app';
-  import { contentApi, courseApi, exerciseApi, lessonApi } from '$features/course/api';
+  import { activityApi, contentApi, courseApi, exerciseApi, lessonApi } from '$features/course/api';
   import { snackbar } from '$features/ui/snackbar/store';
   import { profile } from '$lib/utils/store/user';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
@@ -159,7 +159,7 @@
 
     const contentUpdates: Array<{
       id: string;
-      type: ContentType.Lesson | ContentType.Exercise;
+      type: ContentType.Lesson | ContentType.Exercise | ContentType.Activity;
       order: number;
       sectionId?: string | null;
     }> = [];
@@ -169,7 +169,11 @@
       const updatedItems = section.items.map((item, index) => {
         const order = index + 1;
 
-        if (item.type === ContentType.Lesson || item.type === ContentType.Exercise) {
+        if (
+          item.type === ContentType.Lesson ||
+          item.type === ContentType.Exercise ||
+          item.type === ContentType.Activity
+        ) {
           if (item.order !== order || item.sectionId !== normalizedSectionId) {
             contentUpdates.push({
               id: item.contentId,
@@ -267,7 +271,8 @@
         item,
         courseId,
         lessonApi,
-        exerciseApi
+        exerciseApi,
+        activityApi
       });
     }
 
@@ -329,7 +334,8 @@
       item,
       courseId,
       lessonApi,
-      exerciseApi
+      exerciseApi,
+      activityApi
     });
 
     if (wasDeleted && profileId) {
@@ -360,7 +366,7 @@
       courseId,
       updatedItems.map((item) => ({
         id: item.contentId,
-        type: item.type as ContentType.Lesson | ContentType.Exercise,
+        type: item.type as ContentType.Lesson | ContentType.Exercise | ContentType.Activity,
         isUnlocked: nextIsUnlocked
       }))
     );
@@ -386,7 +392,15 @@
       return `/courses/${courseApi.course?.id}/lessons/${item.contentId}`;
     }
 
-    return `/courses/${courseApi.course?.id}/exercises/${item.contentId}`;
+    if (item.type === ContentType.Exercise) {
+      return `/courses/${courseApi.course?.id}/exercises/${item.contentId}`;
+    }
+
+    if (item.type === ContentType.Activity) {
+      return `/courses/${courseApi.course?.id}/activities/${item.contentId}`;
+    }
+
+    return '#';
   }
 
   function openExternalUrl(url: string) {
@@ -423,7 +437,8 @@
         item,
         courseId,
         lessonApi,
-        exerciseApi
+        exerciseApi,
+        activityApi
       });
       errors = lockErrors;
       if (Object.keys(lockErrors).length === 0) {
@@ -685,6 +700,29 @@
                   </div>
                 {/snippet}
               </ContentRow>
+            {:else if item.type === ContentType.Activity}
+              <ContentRow
+                {item}
+                bind:title={item.title}
+                isLocked={itemLocked}
+                href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
+                isEditing={isEditingItem}
+                {errors}
+              >
+                {#snippet meta()}
+                  <div class="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    <span class={metaChipClass}>SCORM</span>
+
+                    {#if isStudentView}
+                      <span class={metaChipClass}>
+                        {item.isComplete
+                          ? $t('course.navItem.lessons.complete')
+                          : $t('course.navItem.lessons.incomplete')}
+                      </span>
+                    {/if}
+                  </div>
+                {/snippet}
+              </ContentRow>
             {/if}
 
             <div class="ml-3 flex min-w-fit items-start gap-2">
@@ -738,6 +776,7 @@
                   disabled={actionDisabled}
                   lockLabel={itemLockLabel}
                   showLock={false}
+                  showEdit={item.type !== ContentType.Activity}
                   onEdit={() => onEdit({ lessonId: item.contentId, lessonTitle: item.title })}
                   onSave={() => onSave({ lessonId: item.contentId }, item)}
                   onCancel={() => {

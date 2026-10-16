@@ -4,10 +4,11 @@ import FileTextIcon from '@lucide/svelte/icons/file-text';
 import FileVideoIcon from '@lucide/svelte/icons/file-video';
 import ImageIcon from '@lucide/svelte/icons/image';
 import Music2Icon from '@lucide/svelte/icons/music-2';
+import PackageIcon from '@lucide/svelte/icons/package';
 
 import type { AssetKindFilter, AssetStatusFilter } from './types';
 
-export const ASSET_KIND_OPTIONS: AssetKindFilter[] = ['all', 'video', 'document', 'image', 'audio', 'other'];
+export const ASSET_KIND_OPTIONS: AssetKindFilter[] = ['all', 'video', 'document', 'image', 'audio', 'scorm', 'other'];
 
 export const ASSET_STATUS_OPTIONS: AssetStatusFilter[] = ['all', 'active', 'archived'];
 
@@ -16,6 +17,7 @@ export const KIND_ICON_MAP: Record<string, Component> = {
   document: FileTextIcon,
   image: ImageIcon,
   audio: Music2Icon,
+  scorm: PackageIcon,
   other: FileIcon
 };
 

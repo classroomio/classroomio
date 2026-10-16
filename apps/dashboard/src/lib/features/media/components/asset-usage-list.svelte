@@ -16,6 +16,10 @@
   function lessonHref(courseId: string, lessonId: string) {
     return resolve(`/courses/${courseId}/lessons/${lessonId}`, {});
   }
+
+  function activityHref(courseId: string, activityId: string) {
+    return resolve(`/courses/${courseId}/activities/${activityId}`, {});
+  }
 </script>
 
 <div class="max-h-[420px] overflow-auto rounded-lg border">
@@ -46,6 +50,17 @@
           >
             <ExternalLinkIcon size={14} class="mr-1.5" />
             {$t('media_manager.usage.go_to_lesson')}
+          </Button>
+        {:else if usage.targetType === 'activity' && usage.courseId}
+          <Button
+            variant="outline"
+            size="sm"
+            class="shrink-0"
+            href={activityHref(usage.courseId!, usage.targetId)}
+            onclick={() => onNavigate()}
+          >
+            <ExternalLinkIcon size={14} class="mr-1.5" />
+            {$t('media_manager.usage.go_to_package')}
           </Button>
         {/if}
       </div>

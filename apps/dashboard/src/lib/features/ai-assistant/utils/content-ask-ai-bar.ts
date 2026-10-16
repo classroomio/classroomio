@@ -5,7 +5,7 @@ import { ContentType } from '@cio/utils/constants/content';
 function findContentItem(
   course: Course | null,
   contentId: string,
-  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise
+  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | typeof ContentType.Activity
 ): CourseContentItem | undefined {
   const content = getCourseContent(course);
   const items = content.grouped ? content.sections.flatMap((section) => section.items) : content.items;
@@ -18,7 +18,7 @@ export type StudentContentLockReason = 'teacher_locked' | 'progression_locked';
 export function getStudentContentLockReason(
   course: Course | null,
   contentId: string | undefined,
-  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | null
+  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | typeof ContentType.Activity | null
 ): StudentContentLockReason | null {
   if (!contentId || !contentType) {
     return null;
@@ -44,7 +44,7 @@ export function getStudentContentLockReason(
 export function isCourseContentLockedForStudent(
   course: Course | null,
   contentId: string | undefined,
-  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | null
+  contentType: typeof ContentType.Lesson | typeof ContentType.Exercise | typeof ContentType.Activity | null
 ): boolean {
   return getStudentContentLockReason(course, contentId, contentType) !== null;
 }

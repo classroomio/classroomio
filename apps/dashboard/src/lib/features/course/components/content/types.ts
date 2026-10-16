@@ -6,7 +6,7 @@ import type { ContentType } from '@cio/utils/constants/content';
  * from the refreshed outline.
  */
 export interface CreatedContent {
-  /** Created section, lesson, or exercise ID */
+  /** Created section, lesson, exercise, or activity ID */
   id: string;
   /** Created title, used as the success heading */
   title: string;
