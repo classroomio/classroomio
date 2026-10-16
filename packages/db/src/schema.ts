@@ -1991,6 +1991,23 @@ export const earlyAdopterClaim = pgTable(
   ]
 );
 
+/**
+ * Single row holding this install's anonymous ID, reported in self-hosted usage pings.
+ */
+export const instance = pgTable(
+  'instance',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    singleton: boolean().default(true).notNull(),
+    firstReportedAt: timestamp('first_reported_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('instance_singleton_key').on(table.singleton),
+    check('instance_singleton_check', sql`${table.singleton}`)
+  ]
+);
+
 export const lessonLanguage = pgTable(
   'lesson_language',
   {

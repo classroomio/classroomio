@@ -19,7 +19,7 @@ import type { TProfile } from '@cio/db/types';
 import type { TUpdateProfile } from '@cio/utils/validation/account';
 import { countOrgTemplates } from '@cio/db/queries/course';
 import { env } from '@cio/core/config/env';
-import { getLicenseStatus } from '@api/services/license';
+import { getLicenseStatus } from '@cio/core/services/license';
 
 export type GetAccountDataResult = {
   profile: TProfile;

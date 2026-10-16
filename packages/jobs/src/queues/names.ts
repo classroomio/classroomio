@@ -65,6 +65,7 @@ export const JOB_NAMES = {
     assetStorageCleanup: 'asset-storage-cleanup',
     courseRoleReconcile: 'course-role-reconcile',
     memberActivityReconcile: 'member-activity-reconcile',
-    earlyAdopterClaimReminder: 'early-adopter-claim-reminder'
+    earlyAdopterClaimReminder: 'early-adopter-claim-reminder',
+    instanceTelemetry: 'instance-telemetry'
   }
 } as const;
