@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { env, getOrCreateInstance, getInstanceUsageCounts, markInstanceFirstReported, isFeatureLicensed } = vi.hoisted(
+const { env, getOrCreateInstance, getInstanceUsageCounts, markInstanceFirstReported, getLicenseStatus } = vi.hoisted(
   () => ({
     env: {} as Record<string, string | undefined>,
     getOrCreateInstance: vi.fn(),
     getInstanceUsageCounts: vi.fn(),
     markInstanceFirstReported: vi.fn(),
-    isFeatureLicensed: vi.fn()
+    getLicenseStatus: vi.fn()
   })
 );
 
@@ -16,7 +16,7 @@ vi.mock('@cio/db/queries/instance', () => ({
   getInstanceUsageCounts,
   markInstanceFirstReported
 }));
-vi.mock('@cio/core/services/license', () => ({ isFeatureLicensed }));
+vi.mock('@cio/core/services/license', () => ({ getLicenseStatus }));
 
 import { sendInstanceTelemetry } from '@cio/core/services/instance-telemetry';
 
@@ -41,7 +41,7 @@ describe('sendInstanceTelemetry', () => {
       publishedCourseCount: 12,
       activeStudentCount: 85
     });
-    isFeatureLicensed.mockResolvedValue(false);
+    getLicenseStatus.mockResolvedValue({ valid: true, features: [] });
     fetchMock.mockResolvedValue({ ok: true, status: 200 });
     vi.stubGlobal('fetch', fetchMock);
   });
@@ -62,17 +62,31 @@ describe('sendInstanceTelemetry', () => {
 
   it('sends nothing when the license includes no-tracking', async () => {
     env.LICENSE_KEY = 'key';
-    isFeatureLicensed.mockResolvedValue(true);
+    getLicenseStatus.mockResolvedValue({ valid: true, features: ['no-tracking'] });
 
     await expect(sendInstanceTelemetry()).resolves.toEqual({ sent: false, reason: 'no-tracking-license' });
-    expect(isFeatureLicensed).toHaveBeenCalledWith('no-tracking');
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('sends nothing when the license cannot be verified', async () => {
+    env.LICENSE_KEY = 'key';
+    getLicenseStatus.mockResolvedValue({ valid: false, features: [] });
+
+    await expect(sendInstanceTelemetry()).resolves.toEqual({ sent: false, reason: 'license-unverified' });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('sends with a verified license that allows tracking', async () => {
+    env.LICENSE_KEY = 'key';
+
+    await expect(sendInstanceTelemetry()).resolves.toEqual({ sent: true, trigger: 'first_start' });
+    expect(fetchMock).toHaveBeenCalledOnce();
   });
 
   it('skips the license server when no key is set', async () => {
     await sendInstanceTelemetry();
 
-    expect(isFeatureLicensed).not.toHaveBeenCalled();
+    expect(getLicenseStatus).not.toHaveBeenCalled();
     expect(fetchMock).toHaveBeenCalledOnce();
   });
 

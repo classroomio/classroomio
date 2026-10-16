@@ -54,7 +54,7 @@ an `instance_started` event so we can count how many instances are running. It c
 
 No names, emails, domains or course content are sent. To turn it off, set
 `CIO_TELEMETRY_DISABLED=true` on the jobs service and restart it. A license with the `no-tracking`
-feature also turns it off.
+feature also turns it off, and if a license key is set but can't be verified, nothing is sent.
 
 ## How licensing works
 

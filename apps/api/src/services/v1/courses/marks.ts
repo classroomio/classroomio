@@ -26,18 +26,21 @@ export async function getCourseMarksService(
   const rows = students
     .map((student) => {
       const gradedPoints = gradedPointsByExerciseId[student.id] ?? {};
+      const fullname = student.profile?.fullname ?? null;
+      const email = student.profile?.email ?? student.email ?? null;
+      const marks = exercises.map((exercise) => ({
+        exerciseId: exercise.id,
+        exerciseTitle: exercise.title,
+        maxPoints: exercise.points,
+        points: gradedPoints[exercise.id] ?? null
+      }));
 
       return {
         memberId: student.id,
         profileId: student.profileId,
-        fullname: student.profile?.fullname ?? null,
-        email: student.profile?.email ?? student.email ?? null,
-        marks: exercises.map((exercise) => ({
-          exerciseId: exercise.id,
-          exerciseTitle: exercise.title,
-          maxPoints: exercise.points,
-          points: gradedPoints[exercise.id] ?? null
-        }))
+        fullname,
+        email,
+        marks
       };
     })
     .sort((a, b) => (a.fullname ?? '').localeCompare(b.fullname ?? '') || a.memberId.localeCompare(b.memberId));

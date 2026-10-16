@@ -2,7 +2,7 @@ import { getInstanceUsageCounts, getOrCreateInstance, markInstanceFirstReported 
 import { LICENSE_FEATURE } from '@cio/utils';
 
 import { env } from '../config/env';
-import { isFeatureLicensed } from './license';
+import { getLicenseStatus } from './license';
 
 const POSTHOG_CAPTURE_URL = 'https://eu.i.posthog.com/capture/';
 const POSTHOG_KEY = 'phc_JfdHOZ6v0cVlGELBYx1Tmoen2nxNOrAzvgvrPA6Ksov';
@@ -23,9 +23,13 @@ export async function sendInstanceTelemetry(): Promise<InstanceTelemetryResult> 
   if (env.PUBLIC_IS_SELFHOSTED !== 'true') return { sent: false, reason: 'not-selfhosted' };
   if (env.CIO_TELEMETRY_DISABLED === 'true') return { sent: false, reason: 'disabled' };
 
+  // A failed license check looks the same as an invalid license, so with a key set we only send on a confirmed license.
   const hasLicenseKey = !!env.LICENSE_KEY?.trim();
-  const noTracking = hasLicenseKey && (await isFeatureLicensed(LICENSE_FEATURE.NO_TRACKING));
-  if (noTracking) return { sent: false, reason: 'no-tracking-license' };
+  if (hasLicenseKey) {
+    const license = await getLicenseStatus();
+    if (!license.valid) return { sent: false, reason: 'license-unverified' };
+    if (license.features.includes(LICENSE_FEATURE.NO_TRACKING)) return { sent: false, reason: 'no-tracking-license' };
+  }
 
   const instance = await getOrCreateInstance();
   const counts = await getInstanceUsageCounts();

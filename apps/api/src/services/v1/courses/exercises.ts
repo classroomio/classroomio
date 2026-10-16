@@ -56,35 +56,58 @@ function toPublicExercise(exercise: TExercise) {
   };
 }
 
+type ExerciseDetailQuestion = NonNullable<ExerciseDetail['questions']>[number];
+type ExerciseDetailOption = ExerciseDetailQuestion['options'][number];
+type ExerciseDetailSection = NonNullable<ExerciseDetail['sections']>[number];
+
+function toPublicOption(option: ExerciseDetailOption) {
+  return {
+    id: Number(option.id),
+    label: option.label,
+    value: option.value,
+    isCorrect: option.isCorrect,
+    settings: option.settings ?? {}
+  };
+}
+
+function toPublicQuestion(question: ExerciseDetailQuestion) {
+  const options = question.options.map(toPublicOption);
+
+  return {
+    id: Number(question.id),
+    name: question.name,
+    question: question.title,
+    questionTypeId: question.questionTypeId,
+    points: question.points,
+    order: question.order,
+    settings: question.settings ?? {},
+    exerciseSectionId: question.exerciseSectionId ?? null,
+    options
+  };
+}
+
+function toPublicSection(section: ExerciseDetailSection) {
+  const questionIds = section.questions.map((question) => Number(question.id));
+
+  return {
+    id: section.id,
+    title: section.title,
+    description: section.description,
+    order: section.order,
+    colorTheme: section.colorTheme,
+    afterBehavior: section.afterBehavior,
+    questionIds
+  };
+}
+
 function toPublicExerciseDetail(exercise: ExerciseDetail) {
+  const questions = (exercise.questions ?? []).map(toPublicQuestion);
+  const sections = (exercise.sections ?? []).map(toPublicSection);
+
   return {
     ...toPublicExercise(exercise),
-    questions: (exercise.questions ?? []).map((question) => ({
-      id: Number(question.id),
-      name: question.name,
-      question: question.title,
-      questionTypeId: question.questionTypeId,
-      points: question.points,
-      order: question.order,
-      settings: question.settings ?? {},
-      exerciseSectionId: question.exerciseSectionId ?? null,
-      options: question.options.map((option) => ({
-        id: Number(option.id),
-        label: option.label,
-        value: option.value,
-        isCorrect: option.isCorrect,
-        settings: option.settings ?? {}
-      }))
-    })),
-    sections: (exercise.sections ?? []).map((section) => ({
-      id: section.id,
-      title: section.title,
-      description: section.description,
-      order: section.order,
-      colorTheme: section.colorTheme,
-      afterBehavior: section.afterBehavior,
-      questionIds: section.questions.map((question) => Number(question.id))
-    }))
+    questions,
+    sections
   };
 }
 
@@ -241,8 +264,6 @@ function assertEditedQuestionOptionsValid(current: ExerciseDetail, payload: TPub
   }
 }
 
-type StoredQuestion = NonNullable<ExerciseDetail['questions']>[number];
-type StoredOption = StoredQuestion['options'][number];
 type InternalQuestion = NonNullable<TExerciseUpdate['questions']>[number];
 type InternalOption = NonNullable<InternalQuestion['options']>[number];
 
@@ -250,12 +271,68 @@ function toStoredSettings(settings: unknown): Record<string, unknown> | undefine
   return (settings as Record<string, unknown> | null) ?? undefined;
 }
 
-function toInternalOption(option: StoredOption): InternalOption {
+function toInternalOption(option: ExerciseDetailOption): InternalOption {
   return {
     id: Number(option.id),
     label: option.label ?? '',
     isCorrect: option.isCorrect,
     settings: toStoredSettings(option.settings)
+  };
+}
+
+type PublicQuestionUpdate = NonNullable<TPublicApiUpdateCourseExercise['questions']>[number];
+type PublicOptionUpdate = NonNullable<PublicQuestionUpdate['options']>[number];
+
+function toInternalSentOption(
+  { delete: isOptionDeleted, ...option }: PublicOptionUpdate,
+  storedOptionById: Map<number, ExerciseDetailOption>,
+  deletedAt: string
+): InternalOption {
+  const storedOption = option.id ? storedOptionById.get(option.id) : undefined;
+  const label = option.label ?? storedOption?.label ?? '';
+  const isCorrect = option.isCorrect ?? storedOption?.isCorrect ?? false;
+  const settings = option.settings ?? toStoredSettings(storedOption?.settings);
+
+  return {
+    id: option.id,
+    label,
+    isCorrect,
+    settings,
+    deletedAt: isOptionDeleted ? deletedAt : undefined
+  };
+}
+
+function toInternalQuestion(
+  { delete: isDeleted, options, ...question }: PublicQuestionUpdate,
+  storedQuestionById: Map<number, ExerciseDetailQuestion>,
+  deletedAt: string
+): InternalQuestion {
+  const stored = question.id ? storedQuestionById.get(question.id) : undefined;
+  const storedOptionById = new Map((stored?.options ?? []).map((option) => [Number(option.id), option]));
+  const sentOptionIds = new Set((options ?? []).map((option) => option.id));
+
+  const keptOptions =
+    stored && !isDeleted
+      ? stored.options.filter((option) => !sentOptionIds.has(Number(option.id))).map(toInternalOption)
+      : [];
+  const sentOptions = options?.map((option) => toInternalSentOption(option, storedOptionById, deletedAt));
+  const mergedOptions = sentOptions || keptOptions.length > 0 ? [...keptOptions, ...(sentOptions ?? [])] : undefined;
+
+  const title = question.question ?? stored?.title ?? '';
+  const points = question.points ?? stored?.points ?? 1;
+  const settings = question.settings ?? toStoredSettings(stored?.settings);
+  // The core check that every question sits in a sent section reads only the request, so keep the saved section.
+  const exerciseSectionId =
+    question.exerciseSectionId !== undefined ? question.exerciseSectionId : (stored?.exerciseSectionId ?? undefined);
+
+  return {
+    ...question,
+    question: title,
+    points,
+    settings,
+    exerciseSectionId,
+    deletedAt: isDeleted ? deletedAt : undefined,
+    options: mergedOptions
   };
 }
 
@@ -268,39 +345,11 @@ function toInternalUpdate(payload: TPublicApiUpdateCourseExercise, current: Exer
   const deletedAt = new Date().toISOString();
   const { questions, ...fields } = payload;
   const storedQuestionById = new Map((current.questions ?? []).map((question) => [Number(question.id), question]));
+  const internalQuestions = questions?.map((question) => toInternalQuestion(question, storedQuestionById, deletedAt));
 
   return {
     ...fields,
-    questions: questions?.map(({ delete: isDeleted, options, ...question }) => {
-      const stored = question.id ? storedQuestionById.get(question.id) : undefined;
-      const storedOptionById = new Map((stored?.options ?? []).map((option) => [Number(option.id), option]));
-      const sentOptionIds = new Set((options ?? []).map((option) => option.id));
-
-      const keptOptions =
-        stored && !isDeleted
-          ? stored.options.filter((option) => !sentOptionIds.has(Number(option.id))).map(toInternalOption)
-          : [];
-      const sentOptions = options?.map(({ delete: isOptionDeleted, ...option }): InternalOption => {
-        const storedOption = option.id ? storedOptionById.get(option.id) : undefined;
-
-        return {
-          id: option.id,
-          label: option.label ?? storedOption?.label ?? '',
-          isCorrect: option.isCorrect ?? storedOption?.isCorrect ?? false,
-          settings: option.settings ?? toStoredSettings(storedOption?.settings),
-          deletedAt: isOptionDeleted ? deletedAt : undefined
-        };
-      });
-
-      return {
-        ...question,
-        question: question.question ?? stored?.title ?? '',
-        points: question.points ?? stored?.points ?? 1,
-        settings: question.settings ?? toStoredSettings(stored?.settings),
-        deletedAt: isDeleted ? deletedAt : undefined,
-        options: sentOptions || keptOptions.length > 0 ? [...keptOptions, ...(sentOptions ?? [])] : undefined
-      };
-    })
+    questions: internalQuestions
   };
 }
 

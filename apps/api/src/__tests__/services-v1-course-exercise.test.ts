@@ -566,6 +566,17 @@ describe('updateCourseExerciseService partial edits', () => {
     expect(sent.options?.find((option) => option.id === 100)).toMatchObject({ label: 'A', isCorrect: true });
   });
 
+  it('keeps the stored section when an edit sends sections but omits the question section', async () => {
+    const sent = await internalQuestion({
+      sections: [
+        { id: SECTION_ID, title: 'Part 1 renamed', order: 0, colorTheme: 'blue', afterBehavior: { action: 'continue' } }
+      ],
+      questions: [{ id: 10, question: 'New title' }]
+    });
+
+    expect(sent.exerciseSectionId).toBe(SECTION_ID);
+  });
+
   it('uses the settings the caller sends over the stored ones', async () => {
     const sent = await internalQuestion({ questions: [{ id: 10, settings: { tolerance: 1 } }] });
 
