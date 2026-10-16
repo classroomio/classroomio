@@ -873,10 +873,7 @@ export const course = pgTable(
     uniqueIndex('course_seed_key_unique')
       .on(table.seedKey)
       .where(sql`${table.seedKey} is not null`),
-    check(
-      'course_format_type_check',
-      sql`${table.format} = 'standard' OR ${table.type} IN (${sql.raw(SINGLE_ACTIVITY_COURSE_TYPES.map((type) => `'${type}'`).join(', '))})`
-    )
+    check('course_format_type_check', sql`${table.format} = 'standard' OR ${table.type} = 'SELF_PACED'`)
   ]
 );
 

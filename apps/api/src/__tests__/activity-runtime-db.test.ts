@@ -423,6 +423,13 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
         .from(schema.groupmember)
         .where(eq(schema.groupmember.profileId, fixture.studentId));
       expect(members[0]?.certificateEarnedAt).not.toBeNull();
+
+      const laterSave = await commitScormAttempt(launchTokenOf(second.playerUrl), {
+        commitSequence: 2,
+        cmi: { 'core.session_time': '00:03:00' }
+      });
+      expect(laterSave.saved).toBe(true);
+      expect(laterSave.completedActivity).toBe(false);
     } finally {
       await cleanupRuntimeFixture(fixture);
     }

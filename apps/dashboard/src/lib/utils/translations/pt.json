@@ -3076,7 +3076,10 @@
             "preview_body": "Você está testando esta atividade como instrutor. Nada do que você fizer aqui será gravado.",
             "module_locked": "Conclua os módulos anteriores primeiro",
             "time_limit": "Sugestão: {time}",
-            "loading": "Carregando pacote…"
+            "loading": "Carregando pacote…",
+            "module_complete_title": "Módulo concluído",
+            "dismiss": "Fechar",
+            "fullscreen_video_hint": "Os vídeos aqui não podem ser exibidos em tela cheia enquanto a atividade estiver em tela cheia."
           },
           "results": {
             "sheet": {

@@ -440,7 +440,9 @@ export async function commitScormAttempt(
     const chain = await lockScoAttemptChain(scoAttemptId, tx);
     if (!chain) return { unknownTry: true as const };
 
-    if (chain.attempt.closedAt !== null) throw new AppError('Attempt is closed', ErrorCodes.NOT_FOUND, 410);
+    if (chain.attempt.closedAt !== null && chain.attempt.closeReason !== 'finished') {
+      throw new AppError('Attempt is closed', ErrorCodes.NOT_FOUND, 410);
+    }
 
     const activityId = chain.attempt.activityId;
     const profileId = chain.attempt.profileId;
@@ -516,6 +518,19 @@ export async function commitScormAttempt(
       },
       tx
     );
+
+    if (chain.attempt.closeReason === 'finished') {
+      return {
+        saved: true,
+        completedActivity: false,
+        ruleMet: false,
+        progressChanged,
+        activityId,
+        profileId,
+        rejected: false as const,
+        shouldRecord
+      };
+    }
 
     const details = await getActivityScormByActivityId(activityId, tx);
     if (!details)

@@ -200,8 +200,8 @@ describe('itemBlocksProgression', () => {
     expect(itemBlocksProgression(ContentType.Activity)).toBe(true);
   });
 
-  it('throws on unknown content types', () => {
-    expect(() => itemBlocksProgression('UNKNOWN' as never)).toThrow();
+  it('handles unknown content types safely without throwing during rolling deploys', () => {
+    expect(itemBlocksProgression('UNKNOWN' as never)).toBe(false);
   });
 });
 

@@ -3076,7 +3076,10 @@
             "preview_body": "Vous testez cette activité en tant que formateur. Aucune de vos actions n'est enregistrée.",
             "module_locked": "Terminez d'abord les modules précédents.",
             "time_limit": "Suggéré : {time}",
-            "loading": "Chargement du paquet…"
+            "loading": "Chargement du paquet…",
+            "module_complete_title": "Module complet",
+            "dismiss": "Fermer",
+            "fullscreen_video_hint": "Ici, les vidéos ne peuvent pas passer en plein écran lorsque l'activité est déjà en plein écran."
           },
           "results": {
             "sheet": {

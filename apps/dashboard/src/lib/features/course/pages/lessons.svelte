@@ -107,7 +107,7 @@
   </div>
 {:else if contentLength > 0}
   <div
-    class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+    class="mb-5 grid grid-cols-1 gap-3 {activitiesTotal > 0 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-3'}"
     role="region"
     aria-label={t.get('course.navItem.lessons.heading_v2')}
   >
@@ -132,13 +132,15 @@
       </div>
       <p class="text-2xl font-semibold tabular-nums">{exercisesTotal}</p>
     </div>
-    <div class="ui:border-border flex flex-col gap-1 rounded-lg border px-4 py-3">
-      <div class="ui:text-muted-foreground flex items-center gap-2 text-xs font-medium">
-        <CourseContentIcon type={ContentType.Activity} size={14} />
-        <span>{$t('course.navItem.lessons.stats.activities')}</span>
+    {#if activitiesTotal > 0}
+      <div class="ui:border-border flex flex-col gap-1 rounded-lg border px-4 py-3">
+        <div class="ui:text-muted-foreground flex items-center gap-2 text-xs font-medium">
+          <CourseContentIcon type={ContentType.Activity} size={14} />
+          <span>{$t('course.navItem.lessons.stats.activities')}</span>
+        </div>
+        <p class="text-2xl font-semibold tabular-nums">{activitiesTotal}</p>
       </div>
-      <p class="text-2xl font-semibold tabular-nums">{activitiesTotal}</p>
-    </div>
+    {/if}
   </div>
 
   {#if isLiveCourse && !reorder}

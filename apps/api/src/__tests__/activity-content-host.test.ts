@@ -25,6 +25,12 @@ describe('activity content host gate', () => {
     expect(response.status).toBe(404);
   });
 
+  it('lets app routes through on local org subdomains in development', async () => {
+    const response = await buildApp().request('/course/123', { headers: { host: 'acme.localhost' } });
+
+    expect(response.status).toBe(200);
+  });
+
   it('allows content, player and runtime paths on the content host', async () => {
     const app = buildApp();
 

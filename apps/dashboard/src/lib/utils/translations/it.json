@@ -3872,7 +3872,10 @@
             "preview_body": "Stai testando questa attività come istruttore. Nessuna delle tue azioni verrà registrata.",
             "module_locked": "Completa prima i moduli precedenti",
             "time_limit": "Suggerito: {time}",
-            "loading": "Caricamento del pacchetto in corso…"
+            "loading": "Caricamento del pacchetto in corso…",
+            "module_complete_title": "Modulo completato",
+            "dismiss": "Chiudi",
+            "fullscreen_video_hint": "Qui i video non possono essere visualizzati a schermo intero mentre l'attività è a schermo intero."
           },
           "results": {
             "sheet": {

@@ -11,7 +11,6 @@ import {
 } from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
 import { ContentType } from '@cio/utils/constants/content';
-import { assertNever } from '@cio/utils/functions/assert-never';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
   createAgentRunEvent,
@@ -980,7 +979,7 @@ export function buildAgentTools(
                   await verifyActivityBelongsToCourse(item.id, courseId);
                   break;
                 default:
-                  assertNever(item.type);
+                  break;
               }
 
               if (item.sectionId) {

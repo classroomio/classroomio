@@ -14,7 +14,6 @@
   import { Button } from '@cio/ui/base/button';
   import * as Field from '@cio/ui/base/field';
   import { RadioOptionCardGroup } from '@cio/ui/custom/radio-option-card';
-  import { Switch } from '@cio/ui/base/switch';
   import { t } from '$lib/utils/functions/translations';
   import { openUpgradeModal } from '$lib/utils/store/upgrade-modal';
   import { licenseApi } from '$features/license/api/license.svelte';
@@ -84,9 +83,6 @@
   );
 
   let type = $state(typeOptions[0].type);
-  let trackCompliance = $state(false);
-
-  const scormType = $derived(trackCompliance ? ('COMPLIANCE' as TCourseType) : ('SELF_PACED' as TCourseType));
 
   const canCreateScorm = $derived(path !== 'scorm' || hasScormAccess);
 
@@ -94,7 +90,6 @@
     step = 0;
     path = 'build';
     type = typeOptions[0].type;
-    trackCompliance = false;
   }
 
   function onClose(redirectTo) {
@@ -118,7 +113,7 @@
       {
         title: $createCourseModal.title,
         description: $createCourseModal.description,
-        type: path === 'scorm' ? scormType : type,
+        type: path === 'scorm' ? ('SELF_PACED' as TCourseType) : type,
         ...(path === 'scorm' ? { format: 'single_activity' as const } : {})
       },
       (courseId, activityId) => {
@@ -167,7 +162,7 @@
     <Dialog.Header>
       <Dialog.Title>{$t('courses.new_course_modal.heading')}</Dialog.Title>
     </Dialog.Header>
-    {#if step === 0}
+    {#if hasScormAccess && step === 0}
       <div class="my-4 space-y-4">
         {@render course_path_selector()}
 
@@ -177,12 +172,14 @@
           </Button>
         </Dialog.Footer>
       </div>
-    {:else if step === 1}
+    {:else if (!hasScormAccess && step === 0) || (hasScormAccess && step === 1)}
       <div class="my-4 space-y-4">
         {@render course_type_selector()}
 
         <Dialog.Footer class="flex justify-between">
-          <Button variant="outline" onclick={() => (step = 0)}>{$t('courses.new_course_modal.back')}</Button>
+          {#if hasScormAccess}
+            <Button variant="outline" onclick={() => (step = 0)}>{$t('courses.new_course_modal.back')}</Button>
+          {/if}
           <Button onclick={() => (step = 2)} disabled={!type}>{$t('courses.new_course_modal.next')}</Button>
         </Dialog.Footer>
       </div>
@@ -234,20 +231,8 @@
           initAIPrompt="Write a 30 word description for a course titled: {$createCourseModal.title}"
         />
 
-        {#if path === 'scorm'}
-          <Field.Group class="mb-4">
-            <Field.Set>
-              <Field.Field orientation="horizontal">
-                <Switch bind:checked={trackCompliance} />
-                <Field.Label>{$t('new_course_modal.track_compliance_label')}</Field.Label>
-              </Field.Field>
-              <Field.Description>{$t('new_course_modal.track_compliance_hint')}</Field.Description>
-            </Field.Set>
-          </Field.Group>
-        {/if}
-
         <Dialog.Footer>
-          <Button variant="outline" onclick={() => (step = path === 'scorm' ? 0 : 1)}>
+          <Button variant="outline" onclick={() => (step = !hasScormAccess ? 0 : path === 'scorm' ? 0 : 1)}>
             {$t('courses.new_course_modal.back')}
           </Button>
           <Button type="submit" disabled={courseApi.isLoading || !canCreateScorm} loading={courseApi.isLoading}>

@@ -3076,7 +3076,10 @@
             "preview_body": "Estás probando esta actividad como instructor. Nada de lo que hagas aquí se registrará.",
             "module_locked": "Completa primero los módulos anteriores.",
             "time_limit": "Sugerido: {time}",
-            "loading": "Cargando paquete…"
+            "loading": "Cargando paquete…",
+            "module_complete_title": "Módulo completo",
+            "dismiss": "Cerrar",
+            "fullscreen_video_hint": "Aquí los vídeos no pueden reproducirse en pantalla completa mientras la actividad esté en pantalla completa."
           },
           "results": {
             "sheet": {

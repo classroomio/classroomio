@@ -1,6 +1,5 @@
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { ContentType } from '@cio/utils/constants';
-import { assertNever } from '@cio/utils/functions/assert-never';
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import { db } from '@cio/db/drizzle';
 import { applyCourseContentBulkUpdates, applyCourseSectionOrderUpdates } from '@cio/db/queries/course/content-batch';
@@ -100,7 +99,7 @@ async function getCourseContentMap(courseId: string) {
       case ContentType.Section:
         break;
       default:
-        assertNever(item.type);
+        break;
     }
   });
 
@@ -305,7 +304,7 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
             case ContentType.Section:
               throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
             default:
-              return assertNever(item.type);
+              continue;
           }
         }
 

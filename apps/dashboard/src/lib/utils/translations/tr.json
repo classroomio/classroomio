@@ -3882,7 +3882,10 @@
             "preview_body": "Bu etkinliği eğitmen olarak test ediyorsunuz. Burada yaptığınız hiçbir şey kaydedilmez.",
             "module_locked": "Önceki modülleri önce tamamlayın",
             "time_limit": "Önerilen: {time}",
-            "loading": "Paket yükleniyor…"
+            "loading": "Paket yükleniyor…",
+            "module_complete_title": "Modül tamamlandı",
+            "dismiss": "Kapat",
+            "fullscreen_video_hint": "Buradaki videolar, etkinlik tam ekran modundayken tam ekran moduna geçemez."
           },
           "results": {
             "sheet": {

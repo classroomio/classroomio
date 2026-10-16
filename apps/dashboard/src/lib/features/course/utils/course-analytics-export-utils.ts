@@ -32,17 +32,27 @@ export function buildCourseAnalyticsExportDocument(
   courseTitle: string,
   headers: CourseAnalyticsExportHeaders
 ): ExportDocument<StudentOverview> {
-  return {
-    filename: `${courseTitle}-analytics-${new Date().toISOString().slice(0, 10)}`,
-    title: courseTitle,
-    subtitle: `${headers.progress}: ${analytics.lessonCompletionRate ?? 0}% · ${headers.averageGrade}: ${analytics.averageGrade ?? 0}%`,
-    columns: [
-      { key: 'name', header: headers.name, value: (row) => row.profile?.fullname ?? '' },
-      { key: 'email', header: headers.email, value: (row) => row.profile?.email ?? '' },
-      { key: 'lessonsCompleted', header: headers.lessonsCompleted, value: (row) => row.lessonsCompleted ?? 0 },
-      { key: 'lessons', header: headers.lessons, value: (row) => row.totalLessons ?? 0 },
-      { key: 'exercisesSubmitted', header: headers.exercisesSubmitted, value: (row) => row.exercisesSubmitted ?? 0 },
-      { key: 'exercises', header: headers.exercises, value: (row) => row.totalExercises ?? 0 },
+  const hasActivities =
+    (typeof (analytics as { totalActivities?: number }).totalActivities === 'number' &&
+      (analytics as { totalActivities?: number }).totalActivities! > 0) ||
+    (analytics.students ?? []).some(
+      (s) => 'totalActivities' in s && typeof s.totalActivities === 'number' && s.totalActivities > 0
+    );
+
+  const columns: ExportDocument<StudentOverview>['columns'] = [
+    { key: 'name', header: headers.name, value: (row) => row.profile?.fullname ?? '' },
+    { key: 'email', header: headers.email, value: (row) => row.profile?.email ?? '' },
+    { key: 'lessonsCompleted', header: headers.lessonsCompleted, value: (row) => row.lessonsCompleted ?? 0 },
+    { key: 'lessons', header: headers.lessons, value: (row) => row.totalLessons ?? 0 },
+    { key: 'exercisesSubmitted', header: headers.exercisesSubmitted, value: (row) => row.exercisesSubmitted ?? 0 },
+    { key: 'exercises', header: headers.exercises, value: (row) => row.totalExercises ?? 0 },
+    { key: 'progress', header: headers.progress, value: (row) => `${row.progressPercentage ?? 0}%` },
+    { key: 'averageGrade', header: headers.averageGrade, value: (row) => `${row.averageGrade ?? 0}%` },
+    { key: 'lastSeen', header: headers.lastSeen, value: (row) => formatLastSeen(row.lastSeen) }
+  ];
+
+  if (hasActivities) {
+    columns.push(
       {
         key: 'packagesCompleted',
         header: headers.packagesCompleted,
@@ -53,11 +63,15 @@ export function buildCourseAnalyticsExportDocument(
         key: 'packages',
         header: headers.packages,
         value: (row) => ('totalActivities' in row && typeof row.totalActivities === 'number' ? row.totalActivities : 0)
-      },
-      { key: 'progress', header: headers.progress, value: (row) => `${row.progressPercentage ?? 0}%` },
-      { key: 'averageGrade', header: headers.averageGrade, value: (row) => `${row.averageGrade ?? 0}%` },
-      { key: 'lastSeen', header: headers.lastSeen, value: (row) => formatLastSeen(row.lastSeen) }
-    ],
+      }
+    );
+  }
+
+  return {
+    filename: `${courseTitle}-analytics-${new Date().toISOString().slice(0, 10)}`,
+    title: courseTitle,
+    subtitle: `${headers.progress}: ${analytics.lessonCompletionRate ?? 0}% · ${headers.averageGrade}: ${analytics.averageGrade ?? 0}%`,
+    columns,
     rows: analytics.students ?? []
   };
 }

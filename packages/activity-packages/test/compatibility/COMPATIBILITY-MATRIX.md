@@ -8,9 +8,9 @@ Browser coverage: `e2e/regression/scorm-compatibility.spec.ts` boots every in-gi
 
 ## Axes
 
-Run every row below in Chrome, Edge, Firefox, Safari on macOS and iOS, and Chrome on Android; embedded and new-window launch modes; on a tenant subdomain (`*.myclassroomio.com`) and a verified custom domain; as an item in a standard course and as a SCORM course.
+Run every row below in Chrome, Edge, Firefox, Safari on macOS and iOS, and Chrome on Android; embedded player launch; on a tenant subdomain (`*.myclassroomio.com`) and a verified custom domain; as an item in a standard course and as a SCORM course.
 
-`anc` in the launch and content tokens carries the allowed parent origins for the run, so the same package build covers the tenant-subdomain and custom-domain legs without a second upload. New-window mode falls back to the course page on phones because mobile browsers discard background windows.
+`anc` in the launch and content tokens carries the allowed parent origins for the run, so the same package build covers the tenant-subdomain and custom-domain legs without a second upload.
 
 ## Sources
 
@@ -21,7 +21,7 @@ Run every row below in Chrome, Edge, Firefox, Safari on macOS and iOS, and Chrom
 | Adapt Learning (in git, GPL-3.0) | Yes | 4th | A single-page app with suspend data, using the pipwerks wrapper | Local: build from `adapt_authoring`, export both editions into `test/fixtures/vendor/`, then run the matrix spec |
 | Articulate Storyline 360 | Yes | 2nd to 4th | Large compressed suspend data, resume prompt, video, the mastery score in 1.2 quiz manifests; launch file `index_lms.html` | Synthetic `vendor-storyline-style` fixture automated; full vendor export manual, local-only |
 | Articulate Rise 360 | Yes | Yes | Responsive layout, many small files; launch file `indexapi.html` | Synthetic `vendor-rise-style` fixture automated; full vendor export manual, local-only |
-| iSpring Suite | Yes | Yes | Slide conversions, new-window options | Manual, local-only vendor export |
+| iSpring Suite | Yes | Yes | Slide conversions | Manual, local-only vendor export |
 | Elucidat | Yes | 2nd to 4th | The default export streams content from Elucidat | Manual, local-only vendor export |
 | Adobe Captivate | Yes | Check | Quizzes, interactions, mastery score | Manual, local-only vendor export |
 
@@ -51,4 +51,4 @@ Two checks stay out of CI by design and run as one-command scripts instead:
 
 ## Course placement
 
-Standard-course items and SCORM courses launch and complete the same package identically. `apps/api/src/__tests__/activity-course-format-parity.test.ts` proves it database-backed (skipped without `DATABASE_URL`, like the other runtime suites): one fixture per format, same launch mode and unit, same passing commit, same `activity_completion` row.
+Standard-course items and SCORM courses launch and complete the same package identically. `apps/api/src/__tests__/activity-course-format-parity.test.ts` proves it database-backed (skipped without `DATABASE_URL`, like the other runtime suites): one fixture per format, same unit, same passing commit, same `activity_completion` row.

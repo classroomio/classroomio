@@ -1,5 +1,4 @@
 import { ContentType } from '@cio/utils/constants/content';
-import { assertNever } from '@cio/utils/functions/assert-never';
 
 export type ContentActionItem = {
   type: ContentType;
@@ -78,9 +77,9 @@ export async function toggleLock({
       await activityApi.update(courseId, item.contentId, payload);
       return normalizeErrors(activityApi.errors);
     case ContentType.Section:
-      throw new Error(`Unexpected content type: ${item.type}`);
+      return [];
     default:
-      return assertNever(item.type);
+      return [];
   }
 }
 
@@ -110,9 +109,9 @@ export async function saveContent({
       await activityApi.update(courseId, item.contentId, payload);
       return normalizeErrors(activityApi.errors);
     case ContentType.Section:
-      throw new Error(`Unexpected content type: ${item.type}`);
+      return [];
     default:
-      return assertNever(item.type);
+      return [];
   }
 }
 
@@ -140,8 +139,8 @@ export async function deleteContent({
       await activityApi.delete(courseId, item.contentId);
       return Boolean(activityApi.success);
     case ContentType.Section:
-      throw new Error(`Unexpected content type: ${item.type}`);
+      return false;
     default:
-      return assertNever(item.type);
+      return false;
   }
 }

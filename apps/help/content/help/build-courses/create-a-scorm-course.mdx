@@ -4,7 +4,7 @@ description: Turn one SCORM package, or several at once, into a course that is j
 last_reviewed: '2026-10-11'
 ---
 
-To create a SCORM course, choose **New course → Upload a SCORM package**, pick Self-paced or Compliance, give it a title, and upload the ZIP. The course navigation shows **Package** where other courses show Content. Certificates, compliance tracking, the landing page, and People work as in any course.
+To create a SCORM course, choose **New course → Upload a SCORM package**, give it a title, and upload the ZIP. The course navigation shows **Package** where other courses show Content. Certificates, the landing page, and People work as in any course.
 
 ![New course dialog with the Upload a SCORM package option](./images/create-a-scorm-course/overview.webp)
 
@@ -14,7 +14,7 @@ To create a SCORM course, choose **New course → Upload a SCORM package**, pick
 On ClassroomIO Cloud, SCORM courses are included in every paid plan. On the Free plan the **Upload a SCORM package** option shows a **Paid plans** pill and opens the upgrade modal. On a self-hosted server it needs an enterprise license key that includes SCORM.
 :::
 
-A SCORM course holds exactly one SCORM package and no sections or lessons. It is Self-paced or Compliance — Live class and Public do not apply to a single package. To add lessons or exercises later, convert it to a standard course. That step cannot be undone.
+A SCORM course holds exactly one SCORM package and no sections or lessons. It is Self-paced — Live class, Public, and Compliance do not apply to a single package. To add lessons, exercises, or compliance tracking later, convert it to a standard course. That step cannot be undone.
 
 ## Create one SCORM course
 
@@ -28,7 +28,7 @@ Choose **Upload a SCORM package**. On the Free plan it shows **Paid plans** with
 
 ### 2. Enter the course details
 
-Pick the course type — Self-paced or Compliance — then a title and a description. Creating the course makes the course and its one empty SCORM activity in one step, and lands on the Package page where the upload starts, exactly as for a SCORM item added to a course.
+Enter the title and short description. Creating the course makes the course and its one empty SCORM activity in one step, and lands on the Package page where the upload starts, exactly as for a SCORM item added to a course.
 
 ### 3. Upload the package
 
@@ -36,21 +36,21 @@ On the Package page, drop your ZIP on **Drop your SCORM .zip here** and wait whi
 
 ## Create several courses at once
 
-To make several SCORM courses at once, open the **Media Manager**, filter by SCORM package, choose **Select**, pick the packages, and choose **Create N courses**. The dialog shows the course title from each manifest and one course type for all of them. It creates one draft SCORM course per package. Processing or failed packages cannot be selected.
+To make several SCORM courses at once, open the **Media Manager**, filter by SCORM package, choose **Select**, pick the packages, and choose **Create N courses**. The dialog shows the course title from each manifest. It creates one draft SCORM course per package. Processing or failed packages cannot be selected.
 
 ![Media Manager SCORM filter with Select and Create courses](./images/create-a-scorm-course/media-manager-bulk.webp)
 
-You can also open **Create course from package** on a single package card. It shows the course title from the manifest, the course type, and a preview of the SCORM course navigation.
+You can also open **Create course from package** on a single package card. It shows the course title from the manifest and a preview of the SCORM course navigation.
 
 ## What a SCORM course looks like
 
-- **Admin navigation:** **Package** sits where Content sits, with the package icon, and opens the package editor with its Package, Instructions, Results, and Settings tabs. Submissions, Marks, and Attendance are hidden. Everything else — News Feed, Certificates, Analytics, Compliance, Landing Page, People, AI Tutor, Settings — stays.
+- **Admin navigation:** **Package** sits where Content sits, with the package icon, and opens the package editor with its Package, Instructions, Results, and Settings tabs. Submissions, Marks, Attendance, and Compliance are hidden. Everything else — News Feed, Certificates, Analytics, Landing Page, People, AI Tutor, Settings — stays.
 - **Learner navigation:** News Feed (when the organization shows it), **Package**, and Certificates. Package is a plain nav item: click to enter, nothing to expand. The module menu lives on the package page. The footer's Previous and Next buttons are hidden; the progress ring stays.
 - **Entry:** the course page, **Continue** buttons on learner home, and `?next=true` all go straight to the package.
 - **Landing page:** the curriculum shows the package with its title, module count, and module titles.
 - **Course cards and rows:** show **SCORM · N modules** instead of lesson and exercise counts.
 
-Course progress, certificates, and compliance need no special case: the course has one item, and it is the package. A Compliance SCORM course records score, attempts, and time from the package in the compliance record. For high-stakes certification, end the course with a ClassroomIO exercise as the graded step — the score comes from the package itself, as with every SCORM platform.
+Course progress and certificates need no special case: the course has one item, and it is the package. For recurring compliance training or high-stakes certification, build a standard course with a ClassroomIO exercise as the graded step — the score comes from the package itself, as with every SCORM platform.
 
 ## Convert to a standard course
 

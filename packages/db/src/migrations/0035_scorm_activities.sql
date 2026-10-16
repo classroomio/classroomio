@@ -171,4 +171,4 @@ CREATE UNIQUE INDEX "scorm_sco_attempt_open_key" ON "scorm_sco_attempt" USING bt
 CREATE INDEX "idx_scorm_sco_attempt_attempt_id" ON "scorm_sco_attempt" USING btree ("attempt_id","unit_id","started_at");--> statement-breakpoint
 CREATE INDEX "idx_scorm_session_event_sco_attempt_created" ON "scorm_session_event" USING btree ("sco_attempt_id","created_at");--> statement-breakpoint
 CREATE INDEX "idx_scorm_session_event_created_at" ON "scorm_session_event" USING btree ("created_at");--> statement-breakpoint
-ALTER TABLE "course" ADD CONSTRAINT "course_format_type_check" CHECK ("course"."format" = 'standard' OR "course"."type" IN ('SELF_PACED', 'COMPLIANCE'));
+ALTER TABLE "course" ADD CONSTRAINT "course_format_type_check" CHECK ("course"."format" = 'standard' OR "course"."type" = 'SELF_PACED');

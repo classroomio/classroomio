@@ -4,8 +4,13 @@ import { Scorm2004API } from 'scorm-again/scorm2004';
 import {
   DID_NOT_CONNECT_MS,
   connectParentBridge,
+  finishRunningModule,
   flushOnPageHide,
+  notifyBootError,
   notifyCompleted,
+  notifyFullscreenUnavailable,
+  requestExitImmersive,
+  requestNavigation,
   watchForConnection,
   type PlayerOutboundMessage
 } from './bridge';
@@ -20,6 +25,7 @@ interface FakeWindow {
   parent: FakeTarget | object | null;
   listeners: Map<string, Array<() => void>>;
   addEventListener: (type: string, callback: () => void) => void;
+  removeEventListener: (type: string, callback: () => void) => void;
   setTimeout: (callback: () => void, ms: number) => unknown;
   clearTimeout: (id: unknown) => void;
 }
@@ -38,6 +44,12 @@ function installWindow(opener: FakeTarget | null, parent: FakeTarget | object | 
       const existing = listeners.get(type) ?? [];
       existing.push(callback);
       listeners.set(type, existing);
+    },
+    removeEventListener: (type: string, callback: () => void) => {
+      listeners.set(
+        type,
+        (listeners.get(type) ?? []).filter((registered) => registered !== callback)
+      );
     },
     setTimeout: (callback: () => void, ms: number) => setTimeout(callback, ms),
     clearTimeout: (id: unknown) => clearTimeout(id as NodeJS.Timeout)
@@ -344,6 +356,111 @@ describe('pagehide flush', () => {
     adapter.Initialize('');
     adapter.Terminate('');
     pagehide(fakeWindow);
+
+    expect(terminate).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('module sessions', () => {
+  const channel = { origins: ['https://app.test', 'https://acme.test'], session: 3 };
+
+  it('tags every message with the session number', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+
+    connectParentBridge(create12(), 'scorm12', channel);
+    notifyCompleted(channel);
+
+    expect(postedTo(parent)).toEqual([
+      { type: 'ready', session: 3 },
+      { type: 'ready', session: 3 },
+      { type: 'completed', session: 3 },
+      { type: 'completed', session: 3 }
+    ]);
+    expect(targetOrigins(parent)).toEqual([
+      'https://app.test',
+      'https://acme.test',
+      'https://app.test',
+      'https://acme.test'
+    ]);
+  });
+
+  it('asks the embedder to open another module', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+
+    requestNavigation('https://app.test', 'next', null);
+    requestNavigation('https://app.test', 'select', 'module-2');
+
+    expect(postedTo(parent)).toEqual([
+      { type: 'nav', action: 'next', identifier: null },
+      { type: 'nav', action: 'select', identifier: 'module-2' }
+    ]);
+  });
+
+  it('asks the embedder to leave its fullscreen or full-window mode', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+
+    requestExitImmersive('https://app.test');
+
+    expect(postedTo(parent)).toEqual([{ type: 'exit-immersive' }]);
+  });
+
+  it('reports when the player could not take fullscreen', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+
+    notifyFullscreenUnavailable({ origins: ['https://app.test'], session: 1 });
+
+    expect(postedTo(parent)).toEqual([{ type: 'fullscreen-unavailable', session: 1 }]);
+  });
+
+  it('includes the session in boot errors when known', () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+
+    notifyBootError('Launch state request failed: 401', 2);
+
+    expect(postedTo(parent)).toEqual([{ type: 'boot-error', error: 'Launch state request failed: 401', session: 2 }]);
+    expect(targetOrigins(parent)).toEqual(['*']);
+  });
+
+  it('stops watching for a connection once aborted', async () => {
+    const parent = fakeTarget();
+    installWindow(null, parent);
+    const controller = new AbortController();
+
+    const pending = watchForConnection(create12(), 'scorm12', channel, 20, controller.signal);
+    controller.abort();
+    await new Promise((resolve) => setTimeout(resolve, 40));
+
+    await expect(pending).resolves.toBe(false);
+    expect(postedTo(parent)).toEqual([]);
+  });
+
+  it('stops flushing on page hide once the module ended', () => {
+    const fakeWindow = installWindow(null, fakeTarget());
+    const adapter = create12();
+    const finish = vi.spyOn(adapter, 'LMSFinish');
+
+    const stop = flushOnPageHide(adapter, 'scorm12');
+    adapter.LMSInitialize('');
+    stop();
+    for (const callback of fakeWindow.listeners.get('pagehide') ?? []) callback();
+
+    expect(finish).not.toHaveBeenCalled();
+  });
+
+  it('finishes a running module on demand, once', () => {
+    installWindow(null, fakeTarget());
+    const adapter = create2004();
+    const terminate = vi.spyOn(adapter, 'Terminate');
+
+    finishRunningModule(adapter, 'scorm2004');
+    adapter.Initialize('');
+    finishRunningModule(adapter, 'scorm2004');
+    finishRunningModule(adapter, 'scorm2004');
 
     expect(terminate).toHaveBeenCalledTimes(1);
   });

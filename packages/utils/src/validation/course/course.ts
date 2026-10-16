@@ -322,7 +322,7 @@ export const ZCourseCreate = ZCourseCreateBase.refine(
     path: ['compliance']
   }
 ).refine((data) => isTypeAllowedForFormat(data.format, data.type), {
-  message: 'Single-activity courses must be Self-paced or Compliance',
+  message: 'Single-activity courses must be Self-paced',
   path: ['type']
 });
 export type TCourseCreate = z.infer<typeof ZCourseCreate>;

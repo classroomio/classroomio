@@ -26,7 +26,6 @@
   import ContentRow from './content-row.svelte';
   import ContentActions from './content-actions.svelte';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
-  import { assertNever } from '@cio/utils/functions/assert-never';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
 
   const flipDurationMs = 300;
@@ -206,7 +205,7 @@
       return `/courses/${courseApi.course?.id}/activities/${item.contentId}`;
     }
 
-    return assertNever(item.type as never);
+    return '#';
   }
 
   function formatMetaDate(value?: string | null): string {

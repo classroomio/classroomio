@@ -16,28 +16,30 @@
     analytics: AudienceAnalytics;
   } = $props();
 
-  function getCourseTotals(c: AudienceAnalyticsCourse): { total: number; completed: number } {
+  function isComplete(c: AudienceAnalyticsCourse): boolean {
     const record = c as Record<string, unknown>;
     const asNumber = (value: unknown) => (typeof value === 'number' ? value : 0);
-    const total =
-      asNumber(record.lessons_count ?? record.lessonCount) +
-      asNumber(record.exercises_count ?? record.exerciseCount) +
-      asNumber(record.activities_count ?? record.activityCount);
-    const completed =
-      asNumber(record.lessons_completed ?? record.progressRate) +
-      asNumber(record.exercises_completed ?? record.exercisesCompleted) +
-      asNumber(record.activities_completed ?? record.activitiesCompleted);
+    const lessonsCount = asNumber(record.lessons_count ?? record.lessonCount);
+    const lessonsCompleted = asNumber(record.lessons_completed ?? record.progressRate);
+    const activitiesCount = asNumber(record.activities_count ?? record.activityCount);
+    const activitiesCompleted = asNumber(record.activities_completed ?? record.activitiesCompleted);
 
-    return { total, completed };
+    const totalRequired = lessonsCount + activitiesCount;
+    if (totalRequired === 0) return false;
+
+    const lessonsDone = lessonsCount === 0 || lessonsCompleted >= lessonsCount;
+    const activitiesDone = activitiesCount === 0 || activitiesCompleted >= activitiesCount;
+    return lessonsDone && activitiesDone;
   }
 
-  function isComplete(course: AudienceAnalyticsCourse): boolean {
-    const { total, completed } = getCourseTotals(course);
-    return total > 0 && completed >= total;
-  }
-
-  function hasStarted(course: AudienceAnalyticsCourse): boolean {
-    return getCourseTotals(course).completed > 0;
+  function hasStarted(c: AudienceAnalyticsCourse): boolean {
+    const record = c as Record<string, unknown>;
+    const asNumber = (value: unknown) => (typeof value === 'number' ? value : 0);
+    return (
+      asNumber(record.lessons_completed ?? record.progressRate) > 0 ||
+      asNumber(record.exercises_completed ?? record.exercisesCompleted) > 0 ||
+      asNumber(record.activities_completed ?? record.activitiesCompleted) > 0
+    );
   }
 
   let completedCourses = $derived(analytics.courses.filter(isComplete).length);

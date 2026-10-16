@@ -6,19 +6,27 @@
   import * as Alert from '@cio/ui/base/alert';
   import { Empty } from '@cio/ui/custom/empty';
   import { Skeleton } from '@cio/ui/base/skeleton';
-  import MaximizeIcon from '@lucide/svelte/icons/maximize';
   import LoaderCircleIcon from '@lucide/svelte/icons/loader-circle';
-  import MinimizeIcon from '@lucide/svelte/icons/minimize';
+  import MaximizeIcon from '@lucide/svelte/icons/maximize';
   import PackageIcon from '@lucide/svelte/icons/package';
   import { ContentType } from '@cio/utils/constants/content';
   import { activityApi, courseApi } from '$features/course/api';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
-  import ActivityPlayerModuleNav from '$features/course/components/activity/activity-player-module-nav.svelte';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { getCourseProgress, getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
   import { sanitizeHtml } from '$lib/utils/functions/sanitize-html';
   import { openCourseCompletionIfDone } from '$features/course/utils/toggle-lesson-completion';
-  import { isTrustedPlayerMessage, parsePlayerMessage } from '$features/course/utils/scorm-utils';
+  import {
+    buildPlayerUiState,
+    contentOriginOf,
+    isTrustedPlayerMessage,
+    launchTokenFromPlayerUrl,
+    parsePlayerMessage,
+    playerFrameHeight,
+    playerMessageSession,
+    readPlayerTheme,
+    supportsFullscreenDelegation
+  } from '$features/course/utils/scorm-utils';
   import { snackbar } from '$features/ui/snackbar/store';
   import { currentOrg } from '$lib/utils/store/org';
   import { isCourseLearnerView } from '$lib/utils/store/app';
@@ -41,18 +49,15 @@
   let didNotConnect = $state(false);
   let requestingAttempt = $state(false);
   let retakesUnavailable = $state(false);
-  let isFullscreen = $state(false);
-  let isFocusMode = $state(false);
-  let navVisible = $state(true);
-  let isMenuOpen = $state(false);
+  let hostMode = $state<'fullscreen' | 'full-window' | null>(null);
+  let playerConnected = $state(false);
+  let playerSession = $state(0);
+  let themeVersion = $state(0);
   let now = $state(Date.now());
   let frameWrap = $state<HTMLElement | null>(null);
   let playerFrame = $state<HTMLIFrameElement | null>(null);
   let bootFailed = $state(false);
   let expiryTimer: ReturnType<typeof setInterval> | null = null;
-  let idleTimer: ReturnType<typeof setTimeout> | null = null;
-
-  const isImmersive = $derived(isFullscreen || isFocusMode);
 
   const launch = $derived(activityApi.launchResult);
   const availableLaunch = $derived(launch && launch.available ? launch : null);
@@ -72,6 +77,8 @@
   );
   const units = $derived(availableLaunch?.units ?? []);
   const showMenu = $derived(units.length > 1);
+  const isImmersive = $derived(hostMode !== null);
+  const frameHeight = $derived(playerFrameHeight(showMenu));
   const allowRetakes = $derived(
     activityApi.editor && activityApi.editor.available ? (activityApi.editor.settings.allowRetakes ?? false) : false
   );
@@ -92,6 +99,16 @@
     return availableLaunch.units.length > 0 && availableLaunch.units.every((unit) => unit.completed);
   });
 
+  const currentUnit = $derived(
+    (availableLaunch?.units ?? []).find((unit) => unit.identifier === currentUnitIdentifier) ?? null
+  );
+
+  const nextIncomplete = $derived(nextIncompleteModule());
+
+  const showModuleDonePanel = $derived(
+    showMenu && !modulesComplete && Boolean(currentUnit?.completed) && terminated && Boolean(nextIncomplete)
+  );
+
   const nextCourseItem = $derived.by(() => {
     const items = getOrderedNavigableContent(courseApi.course);
     const index = items.findIndex((entry) => entry.type === ContentType.Activity && entry.id === activityId);
@@ -102,22 +119,58 @@
   const instructions = $derived((activityApi.activity?.instructions as string | null) ?? null);
   const safeInstructions = $derived(instructions ? sanitizeHtml(instructions) : null);
 
-  async function runLaunch(input: { unitIdentifier?: string; newAttempt?: boolean }) {
-    launchedFor = `${courseId}:${activityId}`;
+  function resetPlayerState() {
     playerReady = false;
     contentReady = false;
     terminated = false;
     didNotConnect = false;
     bootFailed = false;
     retakesUnavailable = false;
+  }
+
+  function showPlayer(playerUrl: string) {
+    playerConnected = false;
+    playerSession = 0;
+    displayedPlayerUrl = playerUrl;
+  }
+
+  async function runLaunch(input: { unitIdentifier?: string; newAttempt?: boolean }) {
+    launchedFor = `${courseId}:${activityId}`;
+    resetPlayerState();
     const result = await activityApi.launch(courseId, activityId, input);
 
     if (result && result.available) {
       currentUnitIdentifier = result.unit.identifier;
-      displayedPlayerUrl = result.playerUrl;
+      showPlayer(result.playerUrl);
     }
 
     return result;
+  }
+
+  function postToPlayer(message: Record<string, unknown>) {
+    const origin = displayedPlayerUrl ? contentOriginOf(displayedPlayerUrl) : null;
+    if (!origin) return;
+
+    playerFrame?.contentWindow?.postMessage(message, origin);
+  }
+
+  async function launchUnitInPlayer(identifier: string) {
+    resetPlayerState();
+    const result = await activityApi.launch(courseId, activityId, { unitIdentifier: identifier });
+    if (!result || !result.available) return;
+
+    currentUnitIdentifier = result.unit.identifier;
+    const launchToken = launchTokenFromPlayerUrl(result.playerUrl);
+    const sameOrigin =
+      displayedPlayerUrl !== null && contentOriginOf(result.playerUrl) === contentOriginOf(displayedPlayerUrl);
+
+    if (!launchToken || !sameOrigin || !playerFrame?.contentWindow) {
+      showPlayer(result.playerUrl);
+      return;
+    }
+
+    playerSession += 1;
+    postToPlayer({ type: 'load-launch', launchToken, session: playerSession });
   }
 
   async function refreshProgressAndMaybeComplete(openCompletion = true) {
@@ -167,10 +220,31 @@
     const message = parsePlayerMessage(event.data);
     if (!message) return;
 
+    if (playerMessageSession(event.data) !== playerSession) {
+      if (message.type === 'completed' || message.type === 'progress' || message.type === 'terminated') {
+        void activityApi.refreshProgress(courseId, activityId);
+        void refreshProgressAndMaybeComplete(availableLaunch?.mode !== 'preview');
+      }
+      return;
+    }
+
     if (message.type === 'ready') {
       playerReady = true;
+      playerConnected = true;
       didNotConnect = false;
       bootFailed = false;
+      postToPlayer({ type: 'host-immersive', mode: hostMode });
+    } else if (message.type === 'nav') {
+      if (message.action === 'previous') previousModule();
+      else if (message.action === 'next') nextModule();
+      else if (message.action === 'select') void selectUnit(message.identifier);
+    } else if (message.type === 'exit-immersive') {
+      exitImmersive();
+    } else if (message.type === 'fullscreen-unavailable') {
+      setHostMode('full-window');
+    } else if (message.type === 'content-loaded') {
+      playerReady = true;
+      contentReady = true;
     } else if (message.type === 'initialized') {
       playerReady = true;
       contentReady = true;
@@ -188,35 +262,6 @@
     else void handleTerminated(message.navRequest);
   }
 
-  function onFullscreenChange() {
-    isFullscreen = Boolean(document.fullscreenElement);
-
-    if (isFullscreen) pokeNav();
-    else {
-      navVisible = true;
-      clearIdleTimer();
-    }
-  }
-
-  function clearIdleTimer() {
-    if (idleTimer) clearTimeout(idleTimer);
-    idleTimer = null;
-  }
-
-  function pokeNav() {
-    navVisible = true;
-    clearIdleTimer();
-
-    if (isImmersive && !isMenuOpen) idleTimer = setTimeout(() => (navVisible = false), 2500);
-  }
-
-  $effect(() => {
-    if (isMenuOpen) {
-      navVisible = true;
-      clearIdleTimer();
-    }
-  });
-
   $effect(() => {
     const url = displayedPlayerUrl;
     if (!url || playerReady || terminated || didNotConnect || bootFailed) return;
@@ -228,41 +273,79 @@
     return () => clearTimeout(timer);
   });
 
-  function setFocusMode(next: boolean) {
-    isFocusMode = next;
-    document.documentElement.style.overflow = next ? 'hidden' : '';
+  function setHostMode(next: 'fullscreen' | 'full-window' | null) {
+    hostMode = next;
+    document.documentElement.style.overflow = next === 'full-window' ? 'hidden' : '';
+    postToPlayer({ type: 'host-immersive', mode: next });
+  }
 
-    if (next) pokeNav();
-    else {
-      navVisible = true;
-      clearIdleTimer();
+  function exitImmersive() {
+    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
+    if (hostMode === 'full-window') setHostMode(null);
+  }
+
+  function delegateFullscreenToPlayer(): boolean {
+    const origin = displayedPlayerUrl ? contentOriginOf(displayedPlayerUrl) : null;
+    const target = playerFrame?.contentWindow;
+    if (!origin || !target) return false;
+
+    try {
+      target.postMessage({ type: 'request-fullscreen' }, {
+        targetOrigin: origin,
+        delegate: 'fullscreen'
+      } as WindowPostMessageOptions);
+      return true;
+    } catch {
+      return false;
     }
   }
 
   async function toggleFullscreen() {
-    if (document.fullscreenElement) {
-      await document.exitFullscreen().catch(() => {});
-      return;
-    }
-
-    if (isFocusMode) {
-      setFocusMode(false);
+    if (isImmersive) {
+      exitImmersive();
       return;
     }
 
     if (!frameWrap) return;
 
-    if (typeof frameWrap.requestFullscreen !== 'function' || document.fullscreenEnabled === false) {
-      setFocusMode(true);
+    if (!document.fullscreenEnabled || typeof frameWrap.requestFullscreen !== 'function') {
+      setHostMode('full-window');
       return;
     }
+
+    if (playerConnected && supportsFullscreenDelegation(navigator) && delegateFullscreenToPlayer()) return;
 
     try {
       await frameWrap.requestFullscreen();
     } catch {
-      setFocusMode(true);
+      setHostMode('full-window');
     }
   }
+
+  function onFullscreenChange() {
+    if (document.fullscreenElement === frameWrap) setHostMode('fullscreen');
+    else if (hostMode === 'fullscreen') setHostMode(null);
+  }
+
+  function handleImmersiveKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Escape' || hostMode !== 'full-window') return;
+
+    setHostMode(null);
+  }
+
+  $effect(() => {
+    if (!playerConnected || !availableLaunch) return;
+
+    void themeVersion;
+    const styles = frameWrap ? getComputedStyle(frameWrap) : null;
+    const theme = styles ? readPlayerTheme((property) => styles.getPropertyValue(property)) : {};
+    const ui = buildPlayerUiState(
+      { units: availableLaunch.units, currentIdentifier: currentUnitIdentifier, theme },
+      (key, values) => $t(key, values)
+    );
+
+    postToPlayer({ type: 'player-ui', ui });
+  });
 
   async function selectUnit(identifier: string) {
     if (identifier === currentUnitIdentifier && playerReady && !terminated) return;
@@ -273,6 +356,12 @@
     }
 
     currentUnitIdentifier = identifier;
+
+    if (playerConnected && !bootFailed) {
+      await launchUnitInPlayer(identifier);
+      return;
+    }
+
     await runLaunch({ unitIdentifier: identifier });
   }
 
@@ -316,13 +405,8 @@
 
       if (result && result.available && result.mode === 'normal') {
         currentUnitIdentifier = result.unit.identifier;
-        displayedPlayerUrl = result.playerUrl;
-        playerReady = false;
-        contentReady = false;
-        terminated = false;
-        didNotConnect = false;
-        bootFailed = false;
-        retakesUnavailable = false;
+        resetPlayerState();
+        showPlayer(result.playerUrl);
       } else {
         retakesUnavailable = true;
       }
@@ -343,7 +427,15 @@
 
   onMount(() => {
     window.addEventListener('message', handleMessage);
+    window.addEventListener('keydown', handleImmersiveKeydown);
     document.addEventListener('fullscreenchange', onFullscreenChange);
+    const themeObserver = new MutationObserver(() => {
+      themeVersion += 1;
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'style', 'data-theme']
+    });
     const onVisible = () => {
       now = Date.now();
     };
@@ -355,7 +447,9 @@
 
     return () => {
       window.removeEventListener('message', handleMessage);
+      window.removeEventListener('keydown', handleImmersiveKeydown);
       document.removeEventListener('fullscreenchange', onFullscreenChange);
+      themeObserver.disconnect();
       window.removeEventListener('focus', onVisible);
       document.removeEventListener('visibilitychange', onVisible);
       if (expiryTimer) clearInterval(expiryTimer);
@@ -363,9 +457,8 @@
   });
 
   onDestroy(() => {
-    clearIdleTimer();
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
-    if (isFocusMode) setFocusMode(false);
+    if (hostMode === 'full-window') document.documentElement.style.overflow = '';
   });
 
   $effect(() => {
@@ -467,64 +560,27 @@
 
     <div
       bind:this={frameWrap}
-      onmousemove={pokeNav}
-      ontouchstart={pokeNav}
-      class="ui:bg-background relative w-full overflow-hidden rounded-lg border {isImmersive
-        ? 'flex flex-col border-0'
-        : ''} {isFullscreen ? 'h-full rounded-none' : ''} {isFocusMode
-        ? 'ui:z-modal fixed inset-0 p-2 sm:p-4'
-        : ''} {isImmersive && !navVisible ? 'cursor-none' : ''}"
+      class="ui:bg-background w-full overflow-hidden {hostMode === 'full-window'
+        ? 'ui:z-modal fixed inset-0 flex flex-col'
+        : hostMode === 'fullscreen'
+          ? 'flex h-full flex-col'
+          : 'relative rounded-lg border'}"
     >
-      {#if showMenu && launch.units}
-        <ActivityPlayerModuleNav
-          units={launch.units}
-          currentIdentifier={currentUnitIdentifier}
-          onSelect={(identifier) => void selectUnit(identifier)}
-          onPrevious={previousModule}
-          onNext={nextModule}
-          overlay={isImmersive}
-          overlayVisible={navVisible}
-          portalTarget={isImmersive ? frameWrap : null}
-          showExit={isImmersive}
-          onExit={toggleFullscreen}
-          bind:menuOpen={isMenuOpen}
-        />
-      {/if}
-      <div class={isImmersive ? 'relative min-h-0 flex-1' : 'relative'}>
-        {#if isImmersive && !showMenu}
-          <div class="absolute top-2 right-2 z-50">
-            <Button
-              size="sm"
-              variant="secondary"
-              onclick={toggleFullscreen}
-              aria-label={$t('course.navItem.lessons.activities.player.exit_fullscreen')}
-            >
-              <MinimizeIcon size={14} />
-            </Button>
-          </div>
-        {/if}
+      <div class="@container relative {isImmersive ? 'min-h-0 flex-1' : ''}">
         {#if displayedPlayerUrl}
           {#key displayedPlayerUrl}
             <iframe
               bind:this={playerFrame}
               src={displayedPlayerUrl}
               title={activityApi.activity?.title ?? ''}
-              class={isImmersive ? 'h-full w-full' : 'aspect-video w-full'}
+              class="block w-full {isImmersive ? 'h-full' : ''}"
+              style:height={isImmersive ? null : frameHeight}
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"
               allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+              allowfullscreen
               data-testid="activity-player-frame"
             ></iframe>
           {/key}
-          {#if isMenuOpen}
-            <div
-              class="absolute inset-0 z-40 bg-transparent"
-              role="presentation"
-              tabindex="-1"
-              onclick={() => {
-                isMenuOpen = false;
-              }}
-            ></div>
-          {/if}
           {#if !contentReady && !didNotConnect && !terminated && !bootFailed}
             <div class="absolute inset-0" role="status">
               <Skeleton class="h-full w-full" />
@@ -537,7 +593,7 @@
             </div>
           {/if}
         {:else}
-          <Skeleton class={isImmersive ? 'h-full w-full' : 'aspect-video w-full'} />
+          <Skeleton class="block w-full" style="height: {isImmersive ? '100%' : frameHeight}" />
         {/if}
         {#if bootFailed}
           <div class="flex flex-col items-center gap-3 p-8 text-center">
@@ -585,7 +641,22 @@
       </div>
     {/if}
 
-    {#if modulesComplete}
+    {#if showModuleDonePanel && nextIncomplete}
+      <Alert.Root>
+        <Alert.Title>{$t('course.navItem.lessons.activities.player.module_complete_title')}</Alert.Title>
+        <Alert.Description>
+          {$t('course.navItem.lessons.activities.player.modules_complete', {
+            complete: (availableLaunch?.units ?? []).filter((unit) => unit.completed).length,
+            total: (availableLaunch?.units ?? []).length
+          })}
+        </Alert.Description>
+        <div class="mt-3">
+          <Button size="sm" onclick={() => void selectUnit(nextIncomplete.identifier)}>
+            {$t('course.navItem.lessons.activities.player.next_module')}
+          </Button>
+        </div>
+      </Alert.Root>
+    {:else if modulesComplete}
       <Alert.Root>
         <Alert.Title>{$t('course.navItem.lessons.activities.player.complete_title')}</Alert.Title>
         <Alert.Description>{$t('course.navItem.lessons.activities.player.complete_body')}</Alert.Description>

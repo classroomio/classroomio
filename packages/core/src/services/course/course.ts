@@ -332,7 +332,7 @@ export async function createCourse(
     const description = sanitizeHtml(data.description);
 
     if (!isTypeAllowedForFormat(data.format, data.type)) {
-      throw new AppError('Single-activity courses must be Self-paced or Compliance', ErrorCodes.VALIDATION_ERROR, 400);
+      throw new AppError('Single-activity courses must be Self-paced', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
     const result = await db.transaction(async (tx) => {
@@ -487,11 +487,7 @@ export async function updateCourse(
 
     if (currentCourse.format === 'single_activity' && data.type !== undefined) {
       if (!data.type || !isTypeAllowedForFormat(currentCourse.format, data.type)) {
-        throw new AppError(
-          'Single-activity courses must be Self-paced or Compliance',
-          ErrorCodes.VALIDATION_ERROR,
-          400
-        );
+        throw new AppError('Single-activity courses must be Self-paced', ErrorCodes.VALIDATION_ERROR, 400);
       }
     }
 

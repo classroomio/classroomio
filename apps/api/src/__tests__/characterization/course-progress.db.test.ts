@@ -333,7 +333,7 @@ describe.skipIf(!hasDatabase)('characterization: course progress calculations (z
         [fixture.studentOneProfileId, fixture.studentTwoProfileId],
         [fixture.courseId]
       );
-      expect(partial.has(`${fixture.studentOneProfileId}:${fixture.courseId}`)).toBe(true);
+      expect(partial.has(`${fixture.studentOneProfileId}:${fixture.courseId}`)).toBe(false);
       expect(partial.has(`${fixture.studentTwoProfileId}:${fixture.courseId}`)).toBe(false);
 
       const { db } = await import('@db/drizzle');

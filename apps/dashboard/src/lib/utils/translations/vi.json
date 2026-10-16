@@ -3076,7 +3076,10 @@
             "preview_body": "Bạn đang thử nghiệm hoạt động này với tư cách là người hướng dẫn. Không có gì bạn làm ở đây được ghi lại.",
             "module_locked": "Hoàn thành các mô-đun trước trước",
             "time_limit": "Gợi ý: {time}",
-            "loading": "Đang tải gói hàng…"
+            "loading": "Đang tải gói hàng…",
+            "module_complete_title": "Mô-đun đã hoàn thành",
+            "dismiss": "Đóng",
+            "fullscreen_video_hint": "Video ở đây không thể hiển thị toàn màn hình khi hoạt động đang ở chế độ toàn màn hình."
           },
           "results": {
             "sheet": {

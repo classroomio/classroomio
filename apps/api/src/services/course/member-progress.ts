@@ -1,6 +1,5 @@
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
-import { assertNever } from '@cio/utils/functions/assert-never';
 import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
 import { getCourseById } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
@@ -56,7 +55,7 @@ function toTrackableContentItems(contentItems: CourseContentItem[]): TrackableCo
       case ContentType.Section:
         break;
       default:
-        assertNever(item.type);
+        break;
     }
   }
 
@@ -101,7 +100,10 @@ function buildStudentTrackableItems(
           isComplete: completedActivityIds.has(item.id)
         };
       default:
-        return assertNever(item.type);
+        return {
+          ...item,
+          isComplete: false
+        };
     }
   });
 }
@@ -115,7 +117,7 @@ function contentTypeLabel(type: TrackableContentItem['type']): 'lesson' | 'exerc
     case ContentType.Activity:
       return 'activity';
     default:
-      return assertNever(type);
+      return 'lesson';
   }
 }
 

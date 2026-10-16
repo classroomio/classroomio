@@ -14,19 +14,30 @@
     course: AudienceAnalyticsCourse;
   } = $props();
 
-  function getCourseTotals(c: AudienceAnalyticsCourse): { total: number; completed: number } {
+  function isComplete(c: AudienceAnalyticsCourse): boolean {
     const record = c as Record<string, unknown>;
     const asNumber = (value: unknown) => (typeof value === 'number' ? value : 0);
-    const total =
-      asNumber(record.lessons_count ?? record.lessonCount) +
-      asNumber(record.exercises_count ?? record.exerciseCount) +
-      asNumber(record.activities_count ?? record.activityCount);
-    const completed =
-      asNumber(record.lessons_completed ?? record.progressRate) +
-      asNumber(record.exercises_completed ?? record.exercisesCompleted) +
-      asNumber(record.activities_completed ?? record.activitiesCompleted);
+    const lessonsCount = asNumber(record.lessons_count ?? record.lessonCount);
+    const lessonsCompleted = asNumber(record.lessons_completed ?? record.progressRate);
+    const activitiesCount = asNumber(record.activities_count ?? record.activityCount);
+    const activitiesCompleted = asNumber(record.activities_completed ?? record.activitiesCompleted);
 
-    return { total, completed };
+    const totalRequired = lessonsCount + activitiesCount;
+    if (totalRequired === 0) return false;
+
+    const lessonsDone = lessonsCount === 0 || lessonsCompleted >= lessonsCount;
+    const activitiesDone = activitiesCount === 0 || activitiesCompleted >= activitiesCount;
+    return lessonsDone && activitiesDone;
+  }
+
+  function hasStarted(c: AudienceAnalyticsCourse): boolean {
+    const record = c as Record<string, unknown>;
+    const asNumber = (value: unknown) => (typeof value === 'number' ? value : 0);
+    return (
+      asNumber(record.lessons_completed ?? record.progressRate) > 0 ||
+      asNumber(record.exercises_completed ?? record.exercisesCompleted) > 0 ||
+      asNumber(record.activities_completed ?? record.activitiesCompleted) > 0
+    );
   }
 
   function getActivityCounts(c: AudienceAnalyticsCourse): { completed: number; total: number } {
@@ -47,17 +58,12 @@
     return { completed, total };
   }
 
-  function isComplete(c: AudienceAnalyticsCourse): boolean {
-    const { total, completed } = getCourseTotals(c);
-    return total > 0 && completed >= total;
-  }
-
   function gradeLabel(grade: number | null): string {
     return grade === null ? '—' : `${grade}%`;
   }
 
   const activityCounts = $derived(getActivityCounts(course));
-  const courseCompletedItems = $derived(getCourseTotals(course).completed);
+  const started = $derived(hasStarted(course));
 </script>
 
 <Card.Root class="ui:gap-0 ui:overflow-hidden ui:py-0">
@@ -79,7 +85,7 @@
             <CircleCheckIcon class="custom" />
             {$t('analytics.completed')}
           </Badge>
-        {:else if courseCompletedItems === 0}
+        {:else if !started}
           <Badge variant="outline">{$t('audience.user_analytics.not_started')}</Badge>
         {:else}
           <Badge variant="secondary">{$t('audience.user_analytics.in_progress')}</Badge>

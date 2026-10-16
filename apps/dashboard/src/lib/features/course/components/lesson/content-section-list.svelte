@@ -27,7 +27,6 @@
   import ContentRow from './content-row.svelte';
   import ContentActions from './content-actions.svelte';
   import SectionHeader from './section-header.svelte';
-  import { assertNever } from '@cio/utils/functions/assert-never';
   import { deleteContent, saveContent, toggleLock } from './content-action-helpers';
   import { isSelfPacedLikeCourse } from '$features/course/utils/compliance-utils';
 
@@ -369,7 +368,7 @@
       return `/courses/${courseApi.course?.id}/activities/${item.contentId}`;
     }
 
-    return assertNever(item.type as never);
+    return '#';
   }
 
   function openExternalUrl(url: string) {

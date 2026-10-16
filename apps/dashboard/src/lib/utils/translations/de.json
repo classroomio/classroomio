@@ -3076,7 +3076,10 @@
             "preview_body": "Sie testen diese Aktivität als Dozent/in. Ihre Aktionen werden nicht aufgezeichnet.",
             "module_locked": "Schließen Sie zuerst die vorherigen Module ab.",
             "time_limit": "Empfohlen: {time}",
-            "loading": "Paket wird geladen…"
+            "loading": "Paket wird geladen…",
+            "module_complete_title": "Modul abgeschlossen",
+            "dismiss": "Schließen",
+            "fullscreen_video_hint": "Videos können hier nicht im Vollbildmodus angezeigt werden, während die Aktivität im Vollbildmodus ist."
           },
           "results": {
             "sheet": {

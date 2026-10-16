@@ -124,8 +124,8 @@ describe('createCourse with format single_activity', () => {
     expect(result.activityId).toBe('act-1');
   });
 
-  it('refuses LIVE_CLASS and PUBLIC types for single-activity courses', async () => {
-    for (const type of ['LIVE_CLASS', 'PUBLIC'] as const) {
+  it('refuses LIVE_CLASS, PUBLIC and COMPLIANCE types for single-activity courses', async () => {
+    for (const type of ['LIVE_CLASS', 'PUBLIC', 'COMPLIANCE'] as const) {
       await expect(
         createCourse('profile-1', {
           title: 'Package course',
@@ -162,8 +162,8 @@ describe('updateCourse single-activity guards', () => {
     vi.mocked(updateCourseQuery).mockResolvedValue({ ...singleActivityCourse, title: 'Renamed' } as never);
   });
 
-  it('refuses LIVE_CLASS and PUBLIC types in a single-activity course', async () => {
-    for (const type of ['LIVE_CLASS', 'PUBLIC'] as const) {
+  it('refuses LIVE_CLASS, PUBLIC and COMPLIANCE types in a single-activity course', async () => {
+    for (const type of ['LIVE_CLASS', 'PUBLIC', 'COMPLIANCE'] as const) {
       await expect(updateCourse('course-1', { type } as never)).rejects.toMatchObject({ statusCode: 400 });
     }
 

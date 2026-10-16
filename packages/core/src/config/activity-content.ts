@@ -99,7 +99,7 @@ export function isActivityContentHost(host: string | null): boolean {
   if (hostname.length > contentDomain.length + 1 && hostname.endsWith(`.${contentDomain}`)) return true;
 
   if (env.NODE_ENV !== 'production') {
-    if (hostname.length > '.localhost'.length && hostname.endsWith('.localhost')) return true;
+    if (hostname === 'content.localhost' || hostname.endsWith('.content.localhost')) return true;
   }
 
   return false;

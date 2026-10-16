@@ -1,23 +1,33 @@
-import {
-  buildAdapterSettings,
-  createScormAdapter,
-  exposeAdapter,
-  initializeCommitSequence,
-  initializeEventName,
-  type LaunchState
-} from './scorm/adapter';
-import type { Scorm12API } from 'scorm-again/scorm12';
-import type { Scorm2004API } from 'scorm-again/scorm2004';
-import {
-  connectParentBridge,
-  flushOnPageHide,
-  notifyBootError,
-  notifyCompleted,
-  notifyProgress,
-  watchForConnection
-} from './bridge';
 import { installLargeBeaconFetchFallback } from './beacon-fallback';
+import {
+  notifyBootError,
+  notifyFullscreenUnavailable,
+  requestExitImmersive,
+  requestNavigation,
+  type ParentChannel,
+  type PlayerNavAction
+} from './bridge';
+import {
+  canRequestFullscreen,
+  enterFullscreen,
+  exitFullscreen,
+  fullscreenElementOf,
+  nestsFullscreenNatively,
+  onFullscreenChange
+} from './fullscreen';
+import { forEachSameOriginWindow, hasUnreroutableVideo, installFullscreenReroute } from './fullscreen-reroute';
+import {
+  DEFAULT_LABELS,
+  parseDashboardMessage,
+  type HostImmersiveMode,
+  type PlayerUiLabels,
+  type PlayerUiState
+} from './inbound';
+import { createNotice } from './notice';
+import { readablePackageWindow } from './package-frame';
 import { reportRuntimeEvent } from './runtime-event';
+import { startSession, type PlayerSession, type SessionHooks } from './session';
+import { applyTheme, createToolbar } from './toolbar';
 
 /**
  * Extracts the launch token from a player pathname. Throws when absent.
@@ -32,115 +42,240 @@ export function parseLaunchToken(pathname: string): string {
   return decodeURIComponent(match[1]);
 }
 
-function readLaunchToken(): string {
-  return parseLaunchToken(window.location.pathname);
+function requireElement<T extends HTMLElement>(id: string): T {
+  const element = document.getElementById(id);
+
+  if (!element) throw new Error(`Player markup is missing #${id}`);
+
+  return element as T;
 }
 
-async function fetchLaunchState(launchToken: string): Promise<LaunchState> {
-  const response = await fetch(`/activity/scorm/runtime/${encodeURIComponent(launchToken)}/state`);
+const HOST_EXIT_TIMEOUT_MS = 2000;
 
-  if (!response.ok) {
-    throw new Error(`Launch state request failed: ${response.status}`);
-  }
-
-  return (await response.json()) as LaunchState;
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'unknown error';
 }
 
-function setStatus(text: string): void {
-  const status = document.getElementById('status');
-
-  if (status) {
-    status.textContent = text;
-  }
-}
-
-function hideLoading(): void {
-  const loading = document.getElementById('loading');
-
-  if (loading) {
-    loading.hidden = true;
-  }
-}
-
-function mountPackageFrame(contentToken: string, launchPath: string): void {
-  const frame = document.getElementById('package-frame');
-
-  if (!(frame instanceof HTMLIFrameElement)) {
-    throw new Error('Package frame is missing');
-  }
-
-  frame.src = `/activity/content/${encodeURIComponent(contentToken)}/${launchPath}`;
-}
-
-async function boot(): Promise<void> {
+function boot(): void {
   installLargeBeaconFetchFallback();
-  const launchToken = readLaunchToken();
-  const state = await fetchLaunchState(launchToken);
-  const parentOrigins =
-    state.parentOrigins && state.parentOrigins.length > 0 ? state.parentOrigins : state.parentOrigin;
-  const adapter = createScormAdapter(
-    state.format,
-    buildAdapterSettings(
-      launchToken,
-      state.debug,
-      () => notifyCompleted(parentOrigins),
-      () => notifyProgress(parentOrigins)
-    )
-  );
 
-  initializeCommitSequence(adapter, state.commitSeq ?? 0);
-  adapter.loadFromJSON(state.cmi ?? {});
-  if (state.mode === 'review') {
-    if (state.format === 'scorm12') {
-      (adapter as Scorm12API).cmi.core.lesson_mode = 'review';
-    } else {
-      (adapter as Scorm2004API).cmi.mode = 'review';
-    }
-  }
-  if (state.entry) {
-    if (state.format === 'scorm12') {
-      (adapter as Scorm12API).cmi.core.entry = state.entry;
-    } else {
-      (adapter as Scorm2004API).cmi.entry = state.entry;
-    }
-  }
-  exposeAdapter(state.format, adapter);
-  connectParentBridge(adapter, state.format, parentOrigins);
-  flushOnPageHide(adapter, state.format);
-  adapter.on(initializeEventName(state.format), () => {
-    hideLoading();
-    void reportRuntimeEvent(launchToken, 'initialize');
-  });
-  mountPackageFrame(state.contentToken, state.launchPath);
-  setStatus(
-    state.mode === 'review' ? 'Review mode. Nothing here is recorded.' : 'Running. Progress saves automatically.'
-  );
-  const connected = await watchForConnection(adapter, state.format, parentOrigins);
+  const frame = requireElement<HTMLIFrameElement>('package-frame');
+  const loading = requireElement<HTMLElement>('loading');
+  const loadingText = requireElement<HTMLElement>('loading-text');
+  const nestsNatively = nestsFullscreenNatively(navigator);
+  const preparedDocuments = new WeakSet<Document>();
 
-  if (!connected) {
-    hideLoading();
-    setStatus('This package did not connect. Reload to try again.');
-    void reportRuntimeEvent(launchToken, 'not_initialized');
-    adapter.on(initializeEventName(state.format), () => {
-      setStatus(
-        state.mode === 'review' ? 'Review mode. Nothing here is recorded.' : 'Running. Progress saves automatically.'
-      );
+  let ui: PlayerUiState | null = null;
+  let current: PlayerSession | null = null;
+  let channel: ParentChannel | null = null;
+  let hostMode: HostImmersiveMode = null;
+  let hostExitWaiters: (() => void)[] = [];
+  let videoHintShown = false;
+  let sessionQueue: Promise<void> = Promise.resolve();
+
+  const labels = (): PlayerUiLabels => ui?.labels ?? DEFAULT_LABELS;
+  const isPlayerFullscreen = () => fullscreenElementOf(document) !== null;
+  const isFullscreenLike = () => isPlayerFullscreen() || hostMode === 'fullscreen';
+  const showLoading = () => {
+    loading.hidden = false;
+  };
+  const hideLoading = () => {
+    loading.hidden = true;
+  };
+
+  const navigate = (action: PlayerNavAction, identifier: string | null) => {
+    if (channel) requestNavigation(channel, action, identifier);
+  };
+
+  const exitImmersive = () => {
+    if (isPlayerFullscreen()) {
+      void exitFullscreen(document).catch(() => undefined);
+      return;
+    }
+
+    if (hostMode && channel) requestExitImmersive(channel);
+  };
+
+  const leaveHostFullscreen = () =>
+    new Promise<void>((resolve) => {
+      if (hostMode !== 'fullscreen' || !channel) {
+        resolve();
+        return;
+      }
+
+      hostExitWaiters.push(resolve);
+      requestExitImmersive(channel);
+      setTimeout(resolve, HOST_EXIT_TIMEOUT_MS);
     });
+
+  const leaveFullscreenForPackage = () => (isPlayerFullscreen() ? exitFullscreen(document) : leaveHostFullscreen());
+
+  const takeFullscreen = () => {
+    const root = document.documentElement;
+
+    if (!canRequestFullscreen(document, root)) {
+      if (channel) notifyFullscreenUnavailable(channel);
+      return;
+    }
+
+    void enterFullscreen(root).catch(() => {
+      if (channel) notifyFullscreenUnavailable(channel);
+    });
+  };
+
+  const toolbar = createToolbar(document, {
+    previous: () => navigate('previous', null),
+    next: () => navigate('next', null),
+    select: (identifier) => navigate('select', identifier),
+    exitImmersive
+  });
+  const notice = createNotice(document);
+
+  const updateImmersive = () => toolbar.setImmersive(isPlayerFullscreen() || hostMode !== null);
+
+  const maybeShowVideoHint = () => {
+    if (nestsNatively || videoHintShown || !isFullscreenLike()) return;
+
+    const packageWindow = readablePackageWindow(frame);
+    if (!packageWindow || !hasUnreroutableVideo(packageWindow.document)) return;
+
+    const copy = labels();
+    videoHintShown = true;
+    notice.show({
+      message: copy.videoFullscreenHint,
+      actionLabel: copy.exitFullscreen,
+      dismissLabel: copy.dismiss,
+      onAction: exitImmersive
+    });
+  };
+
+  const handleEscape = (event: KeyboardEvent) => {
+    if (event.key !== 'Escape' || event.defaultPrevented || hostMode !== 'full-window' || !channel) return;
+
+    requestExitImmersive(channel);
+  };
+
+  const preparePackageWindow = () => {
+    const packageWindow = readablePackageWindow(frame);
+    if (!packageWindow) return;
+
+    if (!preparedDocuments.has(packageWindow.document)) {
+      preparedDocuments.add(packageWindow.document);
+      forEachSameOriginWindow(packageWindow, (win) => {
+        installFullscreenReroute(win, {
+          shouldReroute: () => !nestsNatively && isFullscreenLike(),
+          leaveFullscreen: leaveFullscreenForPackage
+        });
+        toolbar.watchActivity(win.document);
+        win.document.addEventListener('keydown', handleEscape);
+      });
+    }
+
+    maybeShowVideoHint();
+  };
+
+  const reportBootFailure = (error: unknown, launchToken: string | null, session: number) => {
+    const message = errorMessage(error);
+
+    hideLoading();
+    toolbar.setStatus(labels().loadFailed);
+    notifyBootError(message, session);
+
+    if (launchToken) void reportRuntimeEvent(launchToken, 'error', { message: message.slice(0, 500) });
+  };
+
+  const sessionHooks = (session: number): SessionHooks => ({
+    frame,
+    session,
+    onContentVisible: hideLoading,
+    onPackageParsed: preparePackageWindow,
+    onStatus: (status) => toolbar.setStatus(status === 'not-connected' ? labels().didNotConnect : null)
+  });
+
+  const loadLaunch = (launchToken: string, session: number) => {
+    sessionQueue = sessionQueue.then(async () => {
+      const previous = current;
+      current = null;
+
+      toolbar.closeMenu();
+      toolbar.setStatus(null);
+      notice.hide();
+      showLoading();
+
+      if (previous) await previous.end();
+
+      try {
+        current = await startSession(launchToken, sessionHooks(session));
+        channel = current.channel;
+      } catch (error) {
+        reportBootFailure(error, launchToken, session);
+      }
+    });
+  };
+
+  window.addEventListener('message', (event) => {
+    if (!channel || !channel.origins.includes(event.origin)) return;
+    if (event.source !== window.parent && event.source !== window.opener) return;
+
+    const message = parseDashboardMessage(event.data);
+    if (!message) return;
+
+    if (message.type === 'player-ui') {
+      ui = message.ui;
+      applyTheme(document, ui.theme);
+      toolbar.render(ui);
+      loadingText.textContent = ui.labels.loading;
+      return;
+    }
+
+    if (message.type === 'host-immersive') {
+      hostMode = message.mode;
+      updateImmersive();
+
+      if (hostMode !== 'fullscreen') {
+        const waiters = hostExitWaiters;
+        hostExitWaiters = [];
+        waiters.forEach((resolve) => resolve());
+      }
+
+      if (isFullscreenLike()) maybeShowVideoHint();
+      else notice.hide();
+      return;
+    }
+
+    if (message.type === 'request-fullscreen') {
+      takeFullscreen();
+      return;
+    }
+
+    loadLaunch(message.launchToken, message.session);
+  });
+
+  onFullscreenChange(document, () => {
+    updateImmersive();
+
+    if (isFullscreenLike()) maybeShowVideoHint();
+    else notice.hide();
+  });
+  document.addEventListener('keydown', handleEscape);
+  frame.addEventListener('load', preparePackageWindow);
+
+  let launchToken: string;
+
+  try {
+    launchToken = parseLaunchToken(window.location.pathname);
+  } catch (error) {
+    reportBootFailure(error, null, 0);
+    return;
   }
+
+  loadLaunch(launchToken, 0);
 }
 
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-  boot().catch((error: unknown) => {
-    const message = error instanceof Error ? error.message : 'unknown error';
-    hideLoading();
-    setStatus(`This package did not connect: ${message}`);
-    notifyBootError(message);
-
-    try {
-      const launchToken = parseLaunchToken(window.location.pathname);
-      void reportRuntimeEvent(launchToken, 'error', { message: message.slice(0, 500) });
-    } catch {
-      return;
-    }
-  });
+  try {
+    boot();
+  } catch (error) {
+    notifyBootError(errorMessage(error), 0);
+  }
 }

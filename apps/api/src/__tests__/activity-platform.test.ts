@@ -37,7 +37,7 @@ describe('activity platform contracts (dark)', () => {
   it('accepts valid activity payloads and rejects bad kinds', () => {
     expect(ZActivityCreate.safeParse({ kind: 'scorm', title: 'Package' }).success).toBe(true);
     expect(ZActivityCreate.safeParse({ kind: 'cmi5', title: 'Package' }).success).toBe(false);
-    expect(ZActivityCreate.safeParse({ kind: 'scorm', title: '' }).success).toBe(false);
+    expect(ZActivityCreate.safeParse({ kind: 'scorm', title: '' }).success).toBe(true);
     expect(ZActivityUpdate.safeParse({ title: 'Renamed', instructions: '<p>Hi</p>', isUnlocked: false }).success).toBe(
       true
     );

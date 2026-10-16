@@ -85,9 +85,7 @@ const saasDefaults = {
     'https://www.beautiful.ai',
     'https://beautiful.ai',
     'https://widget.userjot.com',
-    'https://*.classroomio-content.com',
-    'http://content.localhost:3004',
-    'http://content.localhost:3002'
+    'https://*.classroomio-content.com'
   ],
   fontSrc: ['https://fonts.gstatic.com', 'https://cdn.plyr.io'],
   mediaSrc: ['https:']

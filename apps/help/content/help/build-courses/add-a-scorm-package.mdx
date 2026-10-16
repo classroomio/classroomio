@@ -22,7 +22,7 @@ SCORM packages cannot be added to `PUBLIC` courses, because those are taken with
 
 ### 1. Create the SCORM item
 
-Open the course, choose **Add content → SCORM package**, and enter a package title such as `Workplace safety induction`. The item opens in the package editor with four tabs: **Package**, **Instructions**, **Results**, and **Settings**. There is no language picker or version history.
+Open the course, choose **Add content → SCORM package**, and enter a package title such as `Workplace safety induction`. The item opens in the package editor with four tabs: **Package**, **Instructions**, **Results**, and **Settings**. SCORM items use a single language rather than the multi-language tabs of standard lessons; package versions are tracked on the Package tab.
 
 ![Add content menu with SCORM package highlighted](./images/add-a-scorm-package/add-content-option.webp)
 
@@ -68,7 +68,7 @@ Choosing **Passed** for a package with an ungraded module shows a warning: a mod
 
 Why the Passed rule matters: with **Automatic**, a package that has no pass mark in its manifest counts as soon as it reports completed. A few packages report that at the end of the slides, before the quiz reports pass or fail. If learners complete before taking the quiz, set the rule to **Passed** for that package. With **Automatic**, a SCORM 1.2 quiz package whose manifest already has a mastery score does not complete on completed alone — it completes on a raw score at or above that score.
 
-The tab also holds **Allow retakes**. With retakes on, a completed package reopens with a **Start a new attempt** button and ClassroomIO keeps the best score. Settings save automatically.
+The tab also holds **Allow retakes**. With retakes on, a completed package reopens with a **Start a new attempt** button and ClassroomIO keeps the best score. Remember to click **Save changes** on the bar at the bottom to apply your settings.
 
 ### 5. Add instructions and publish
 
@@ -93,7 +93,7 @@ Progress saves automatically. When the package reports that the learner finished
 
 When learners are still on an older version after an upgrade, the Package tab states how many and offers **Move them to this version** — the dialog states how many learners it affects.
 
-Unpinned package versions are deleted 30 days after replacement. The original ZIP of each version is kept for reprocessing.
+Previous package versions remain stored in your storage so historical learner attempts stay intact and can be reviewed. The original ZIP of each version is kept for reprocessing.
 
 ## Packages that stream content from elsewhere
 

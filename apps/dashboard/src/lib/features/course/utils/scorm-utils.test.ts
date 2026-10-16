@@ -5,6 +5,7 @@ import { readFileSync } from 'node:fs';
 import { deflateRawSync } from 'node:zlib';
 
 import {
+  buildPlayerUiState,
   comparePackageIdentity,
   completionRuleLabel,
   describeUserAgent,
@@ -15,8 +16,13 @@ import {
   formatTimeLimit,
   getActivityStatusPill,
   sha256IfSameSize,
+  launchTokenFromPlayerUrl,
   parsePlayerMessage,
+  playerFrameHeight,
+  playerMessageSession,
+  readPlayerTheme,
   readScormManifestSignature,
+  supportsFullscreenDelegation,
   unitPassMark,
   type ScormManifestSignature
 } from './scorm-utils';
@@ -319,6 +325,7 @@ describe('comparePackageIdentity', () => {
 describe('parsePlayerMessage', () => {
   it('parses player lifecycle messages', () => {
     expect(parsePlayerMessage({ type: 'ready' })).toEqual({ type: 'ready' });
+    expect(parsePlayerMessage({ type: 'content-loaded' })).toEqual({ type: 'content-loaded' });
     expect(parsePlayerMessage({ type: 'completed' })).toEqual({ type: 'completed' });
     expect(parsePlayerMessage({ type: 'progress' })).toEqual({ type: 'progress' });
     expect(parsePlayerMessage({ type: 'did-not-connect' })).toEqual({ type: 'did-not-connect' });
@@ -331,6 +338,126 @@ describe('parsePlayerMessage', () => {
   it('rejects unknown messages', () => {
     expect(parsePlayerMessage(null)).toBeNull();
     expect(parsePlayerMessage({ type: 'unknown' })).toBeNull();
+  });
+
+  it('parses module navigation requests from the player nav', () => {
+    expect(parsePlayerMessage({ type: 'nav', action: 'next', identifier: null })).toEqual({
+      type: 'nav',
+      action: 'next',
+      identifier: null
+    });
+    expect(parsePlayerMessage({ type: 'nav', action: 'previous' })).toEqual({
+      type: 'nav',
+      action: 'previous',
+      identifier: null
+    });
+    expect(parsePlayerMessage({ type: 'nav', action: 'select', identifier: 'module-2' })).toEqual({
+      type: 'nav',
+      action: 'select',
+      identifier: 'module-2'
+    });
+  });
+
+  it('rejects malformed navigation requests', () => {
+    expect(parsePlayerMessage({ type: 'nav', action: 'select' })).toBeNull();
+    expect(parsePlayerMessage({ type: 'nav', action: 'select', identifier: '' })).toBeNull();
+    expect(parsePlayerMessage({ type: 'nav', action: 'exitAll' })).toBeNull();
+  });
+
+  it('parses the player fullscreen messages', () => {
+    expect(parsePlayerMessage({ type: 'exit-immersive' })).toEqual({ type: 'exit-immersive' });
+    expect(parsePlayerMessage({ type: 'fullscreen-unavailable' })).toEqual({ type: 'fullscreen-unavailable' });
+  });
+});
+
+describe('playerMessageSession', () => {
+  it('reads the session number and defaults to the first module', () => {
+    expect(playerMessageSession({ type: 'ready', session: 4 })).toBe(4);
+    expect(playerMessageSession({ type: 'ready' })).toBe(0);
+    expect(playerMessageSession({ type: 'ready', session: -1 })).toBe(0);
+    expect(playerMessageSession({ type: 'ready', session: '2' })).toBe(0);
+    expect(playerMessageSession(null)).toBe(0);
+  });
+});
+
+describe('launchTokenFromPlayerUrl', () => {
+  it('extracts the token from a player URL', () => {
+    expect(launchTokenFromPlayerUrl('https://org.classroomio-content.com/activity/player/eyJ.abc')).toBe('eyJ.abc');
+    expect(launchTokenFromPlayerUrl('http://content.localhost:3002/activity/player/a%2Fb')).toBe('a/b');
+  });
+
+  it('returns null for anything else', () => {
+    expect(launchTokenFromPlayerUrl('https://app.test/activity/content/abc/index.html')).toBeNull();
+    expect(launchTokenFromPlayerUrl('not a url')).toBeNull();
+  });
+});
+
+describe('playerFrameHeight', () => {
+  it('adds the module toolbar only for multi-module packages', () => {
+    expect(playerFrameHeight(true)).toBe('calc(100cqw * 9 / 16 + 2.5rem)');
+    expect(playerFrameHeight(false)).toBe('calc(100cqw * 9 / 16)');
+  });
+});
+
+describe('supportsFullscreenDelegation', () => {
+  it('is true only where user agent client hints exist', () => {
+    expect(supportsFullscreenDelegation({ userAgentData: {} } as unknown as Navigator)).toBe(true);
+    expect(supportsFullscreenDelegation({} as Navigator)).toBe(false);
+  });
+});
+
+describe('readPlayerTheme', () => {
+  it('collects the theme tokens that have values', () => {
+    const values: Record<string, string> = {
+      '--background': ' oklch(1 0 0) ',
+      '--primary': 'oklch(0.488 0.243 264.376)',
+      '--radius': '0.625rem'
+    };
+
+    expect(readPlayerTheme((property) => values[property] ?? '')).toEqual({
+      background: 'oklch(1 0 0)',
+      primary: 'oklch(0.488 0.243 264.376)',
+      radius: '0.625rem'
+    });
+  });
+});
+
+describe('buildPlayerUiState', () => {
+  const translate = (key: string, values?: Record<string, string | number>) =>
+    values ? `${key} ${JSON.stringify(values)}` : key;
+  const prefix = 'course.navItem.lessons.activities.player';
+  const units = [
+    { identifier: 'm1', title: 'Intro', completed: true, locked: false, maxTimeAllowed: null },
+    { identifier: 'm2', title: 'Quiz', completed: false, locked: false, maxTimeAllowed: '00:30:00' },
+    { identifier: 'm3', title: 'Wrap-up', completed: false, locked: true, maxTimeAllowed: null }
+  ];
+
+  it('describes the open module with translated labels', () => {
+    const ui = buildPlayerUiState({ units, currentIdentifier: 'm2', theme: { primary: 'blue' } }, translate);
+
+    expect(ui.units).toEqual([
+      { identifier: 'm1', title: 'Intro', completed: true, locked: false },
+      { identifier: 'm2', title: 'Quiz', completed: false, locked: false },
+      { identifier: 'm3', title: 'Wrap-up', completed: false, locked: true }
+    ]);
+    expect(ui.currentIdentifier).toBe('m2');
+    expect(ui.timeLimit).toBe('30m');
+    expect(ui.theme).toEqual({ primary: 'blue' });
+    expect(ui.labels.position).toBe(`${prefix}.module_position {"current":2,"total":3}`);
+    expect(ui.labels.complete).toBe(`${prefix}.modules_complete {"complete":1,"total":3}`);
+    expect(ui.labels.timeLimit).toBe(`${prefix}.time_limit {"time":"30m"}`);
+    expect(ui.labels.previous).toBe(`${prefix}.prev_module`);
+    expect(ui.labels.videoFullscreenHint).toBe(`${prefix}.fullscreen_video_hint`);
+    expect(ui.labels.dismiss).toBe(`${prefix}.dismiss`);
+  });
+
+  it('leaves position and time limit empty when no module is open', () => {
+    const ui = buildPlayerUiState({ units, currentIdentifier: 'missing', theme: {} }, translate);
+
+    expect(ui.currentIdentifier).toBeNull();
+    expect(ui.timeLimit).toBeNull();
+    expect(ui.labels.position).toBe('');
+    expect(ui.labels.timeLimit).toBe('');
   });
 });
 
@@ -449,12 +576,12 @@ describe('getActivityStatusPill', () => {
     });
   });
 
-  it('returns not passed pill when any unit has score but incomplete', () => {
+  it('returns not passed pill when any unit has failed status', () => {
     expect(
       getActivityStatusPill({
         launch: {
           mode: 'normal',
-          units: [{ completed: false, scorePercent: 45 }]
+          units: [{ completed: false, scorePercent: 45, status: 'failed' }]
         },
         isComplete: false
       })
@@ -464,12 +591,27 @@ describe('getActivityStatusPill', () => {
     });
   });
 
+  it('returns in progress pill when unit has score but has not failed', () => {
+    expect(
+      getActivityStatusPill({
+        launch: {
+          mode: 'normal',
+          units: [{ completed: false, scorePercent: 45, status: 'incomplete' }]
+        },
+        isComplete: false
+      })
+    ).toEqual({
+      variant: 'secondary',
+      label: 'course.navItem.lessons.activities.player.status_in_progress'
+    });
+  });
+
   it('returns in progress pill by default when launched', () => {
     expect(
       getActivityStatusPill({
         launch: {
           mode: 'normal',
-          units: [{ completed: false, scorePercent: null }]
+          units: [{ completed: false, scorePercent: null, status: 'not_attempted' }]
         },
         isComplete: false
       })

@@ -50,6 +50,14 @@
       currentPage = 1;
     }
   });
+
+  const hasActivities = $derived(
+    students.some(
+      (s) =>
+        ('totalActivities' in s && typeof s.totalActivities === 'number' && s.totalActivities > 0) ||
+        ('activitiesCompleted' in s && typeof s.activitiesCompleted === 'number' && s.activitiesCompleted > 0)
+    )
+  );
 </script>
 
 {#if students.length === 0}
@@ -61,7 +69,7 @@
 {:else}
   <!-- Responsive Table -->
   <div class="ui:border-border relative max-h-[min(480px,70vh)] overflow-auto rounded-md border">
-    <Table.Root class="min-w-[940px]">
+    <Table.Root class={hasActivities ? 'min-w-[940px]' : 'min-w-[800px]'}>
       <Table.Header class="ui:bg-muted/80 sticky top-0 z-10 backdrop-blur-sm">
         <Table.Row>
           <Table.Head class="ui:bg-muted/95 sticky top-0 left-0 z-20 min-w-[200px] px-4 py-3 backdrop-blur-sm">
@@ -69,7 +77,9 @@
           </Table.Head>
           <Table.Head class="min-w-[150px] px-4 py-3">{$t('analytics.lessons_completed')}</Table.Head>
           <Table.Head class="min-w-[140px] px-4 py-3">{$t('analytics.exercises_submitted')}</Table.Head>
-          <Table.Head class="min-w-[140px] px-4 py-3">{$t('analytics.packages_completed')}</Table.Head>
+          {#if hasActivities}
+            <Table.Head class="min-w-[140px] px-4 py-3">{$t('analytics.packages_completed')}</Table.Head>
+          {/if}
           <Table.Head class="min-w-[120px] px-4 py-3">{$t('analytics.average_grade')}</Table.Head>
           <Table.Head class="min-w-[120px] px-4 py-3">{$t('analytics.last_seen')}</Table.Head>
           <Table.Head class="min-w-[120px] px-4 py-3">{$t('analytics.actions')}</Table.Head>
@@ -111,17 +121,19 @@
             </Table.Cell>
             <Table.Cell class="min-w-[140px] px-4 py-3">
               <span class="ui:text-foreground text-sm font-medium">
-                {student.exercisesSubmitted} out of {student.totalExercises}
+                {student.exercisesSubmitted}/{student.totalExercises}
               </span>
             </Table.Cell>
-            <Table.Cell class="min-w-[140px] px-4 py-3">
-              <span class="ui:text-foreground text-sm font-medium">
-                {'activitiesCompleted' in student ? (student.activitiesCompleted ?? 0) : 0} out of {'totalActivities' in
-                student
-                  ? (student.totalActivities ?? 0)
-                  : 0}
-              </span>
-            </Table.Cell>
+            {#if hasActivities}
+              <Table.Cell class="min-w-[140px] px-4 py-3">
+                <span class="ui:text-foreground text-sm font-medium">
+                  {'activitiesCompleted' in student ? (student.activitiesCompleted ?? 0) : 0}/{'totalActivities' in
+                  student
+                    ? (student.totalActivities ?? 0)
+                    : 0}
+                </span>
+              </Table.Cell>
+            {/if}
             <Table.Cell class="min-w-[120px] px-4 py-3">
               <Badge
                 class={student.averageGrade >= 80

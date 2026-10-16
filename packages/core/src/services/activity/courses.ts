@@ -102,23 +102,12 @@ async function createPackageCourse(
     {
       title: ready.title,
       description,
-      type: courseType,
+      type: 'SELF_PACED',
       format: 'single_activity',
       groupId: newGroup.id,
       slug,
       isPublished: false,
-      status: 'ACTIVE',
-      ...(courseType === 'COMPLIANCE'
-        ? {
-            compliance: {
-              retakeIntervalMonths: 12,
-              gracePeriodDays: 14,
-              reminderDaysBefore: [30, 7, 1],
-              isMandatory: true,
-              passingScore: 80
-            }
-          }
-        : {})
+      status: 'ACTIVE'
     },
     tx
   );

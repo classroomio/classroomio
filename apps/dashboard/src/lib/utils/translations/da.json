@@ -3076,7 +3076,10 @@
             "preview_body": "Du tester denne aktivitet som instruktør. Intet af hvad du gør her, registreres.",
             "module_locked": "Færdiggør de foregående moduler først",
             "time_limit": "Anbefalet: {time}",
-            "loading": "Indlæser pakke…"
+            "loading": "Indlæser pakke…",
+            "module_complete_title": "Modul færdigt",
+            "dismiss": "Luk",
+            "fullscreen_video_hint": "Videoer her kan ikke vises i fuld skærm, mens aktiviteten er i fuld skærm."
           },
           "results": {
             "sheet": {

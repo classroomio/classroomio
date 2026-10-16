@@ -46,7 +46,7 @@ const HEADERS = {
 };
 
 describe('ZActivityCoursesCreate', () => {
-  it('accepts one to twenty packages with a course type', () => {
+  it('accepts one to twenty packages with SELF_PACED course type', () => {
     const assetIds = Array.from(
       { length: 20 },
       (_, index) => `00000000-0000-4000-8000-${String(index).padStart(12, '0')}`
@@ -58,10 +58,11 @@ describe('ZActivityCoursesCreate', () => {
     expect(
       ZActivityCoursesCreate.safeParse({
         assetIds,
-        courseType: 'COMPLIANCE',
+        courseType: 'SELF_PACED',
         titles: { [assetIds[0]]: 'Safety' }
       }).success
     ).toBe(true);
+    expect(ZActivityCoursesCreate.safeParse({ assetIds: assetIds.slice(0, 1) }).success).toBe(true);
   });
 
   it('rejects an empty list, more than twenty packages and other course types', () => {
@@ -71,6 +72,7 @@ describe('ZActivityCoursesCreate', () => {
     expect(ZActivityCoursesCreate.safeParse({ assetIds: [], courseType: 'SELF_PACED' }).success).toBe(false);
     expect(ZActivityCoursesCreate.safeParse({ assetIds: many, courseType: 'SELF_PACED' }).success).toBe(false);
     expect(ZActivityCoursesCreate.safeParse({ assetIds: [assetId], courseType: 'LIVE_CLASS' }).success).toBe(false);
+    expect(ZActivityCoursesCreate.safeParse({ assetIds: [assetId], courseType: 'COMPLIANCE' }).success).toBe(false);
     expect(ZActivityCoursesCreate.safeParse({ assetIds: ['not-a-uuid'], courseType: 'SELF_PACED' }).success).toBe(
       false
     );
@@ -280,7 +282,7 @@ describe.skipIf(!hasDatabase)('createCoursesFromPackages', () => {
       await expect(
         createReal(organization.id, userId, {
           assetIds: [ready.asset.id, processing.asset.id],
-          courseType: 'COMPLIANCE'
+          courseType: 'SELF_PACED'
         })
       ).rejects.toThrow(/ready version/);
       const after = await db.select({ id: schema.course.id }).from(schema.course);

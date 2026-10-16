@@ -1,4 +1,8 @@
-# SCORM Support PRD
+# SCORM Support PRD (v1 — Superseded)
+
+> [!CAUTION]
+> **SUPERSEDED ARCHITECTURE**
+> This v1 PRD modelled SCORM packages as an extension of lessons (`item.type === 'lesson'`). It has been superseded by the v2 activity architecture, where SCORM packages are first-class activities (`ContentType.Activity`) with dedicated runtime tables, content tokens, and single-activity course format support.
 
 ## Purpose
 

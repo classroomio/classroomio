@@ -138,6 +138,18 @@ export function exposeAdapter(format: ScormFormat, adapter: ScormAdapter): void 
   window.API_1484_11 = adapter as Scorm2004API;
 }
 
+/**
+ * Removes the API a finished module exposed, so the next module can expose its own.
+ */
+export function unexposeAdapter(format: ScormFormat): void {
+  if (format === 'scorm12') {
+    delete window.API;
+    return;
+  }
+
+  delete window.API_1484_11;
+}
+
 export function initializeEventName(format: ScormFormat): string {
   return format === 'scorm12' ? 'LMSInitialize' : 'Initialize';
 }

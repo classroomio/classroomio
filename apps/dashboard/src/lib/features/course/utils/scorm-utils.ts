@@ -424,12 +424,17 @@ export function unitPassMark(unit: { masteryScoreRaw?: unknown; passingScoreScal
 
 export type PlayerInboundMessage =
   | { type: 'ready' }
+  | { type: 'content-loaded' }
   | { type: 'initialized' }
   | { type: 'terminated'; navRequest: string | null }
   | { type: 'completed' }
   | { type: 'progress' }
   | { type: 'did-not-connect' }
-  | { type: 'boot-error'; error: string | null };
+  | { type: 'boot-error'; error: string | null }
+  | { type: 'nav'; action: 'previous' | 'next'; identifier: null }
+  | { type: 'nav'; action: 'select'; identifier: string }
+  | { type: 'exit-immersive' }
+  | { type: 'fullscreen-unavailable' };
 
 /**
  * Parses a message posted by the activity player. Returns null for anything
@@ -440,6 +445,7 @@ export function parsePlayerMessage(data: unknown): PlayerInboundMessage | null {
 
   const record = data as Record<string, unknown>;
   if (record['type'] === 'ready') return { type: 'ready' };
+  if (record['type'] === 'content-loaded') return { type: 'content-loaded' };
   if (record['type'] === 'initialized') return { type: 'initialized' };
   if (record['type'] === 'completed') return { type: 'completed' };
   if (record['type'] === 'progress') return { type: 'progress' };
@@ -454,8 +460,34 @@ export function parsePlayerMessage(data: unknown): PlayerInboundMessage | null {
 
     return { type: 'terminated', navRequest: typeof navRequest === 'string' && navRequest ? navRequest : null };
   }
+  if (record['type'] === 'nav') {
+    const action = record['action'];
+    const identifier = record['identifier'];
+
+    if (action === 'previous' || action === 'next') return { type: 'nav', action, identifier: null };
+    if (action === 'select' && typeof identifier === 'string' && identifier) {
+      return { type: 'nav', action, identifier };
+    }
+
+    return null;
+  }
+  if (record['type'] === 'exit-immersive') return { type: 'exit-immersive' };
+  if (record['type'] === 'fullscreen-unavailable') return { type: 'fullscreen-unavailable' };
 
   return null;
+}
+
+/**
+ * Returns the session a player message belongs to. The dashboard numbers
+ * each module it loads into a running player; messages without a number
+ * come from the player's first module.
+ */
+export function playerMessageSession(data: unknown): number {
+  if (typeof data !== 'object' || data === null) return 0;
+
+  const session = (data as Record<string, unknown>)['session'];
+
+  return typeof session === 'number' && Number.isInteger(session) && session >= 0 ? session : 0;
 }
 
 /**
@@ -477,6 +509,145 @@ export function isTrustedPlayerMessage(eventOrigin: string, playerUrl: string): 
   const contentOrigin = contentOriginOf(playerUrl);
 
   return contentOrigin !== null && eventOrigin === contentOrigin;
+}
+
+/**
+ * Returns the launch token in a player URL (`…/activity/player/:token`), or
+ * null when the URL is not a player URL.
+ */
+export function launchTokenFromPlayerUrl(playerUrl: string): string | null {
+  try {
+    const match = new URL(playerUrl).pathname.match(/\/activity\/player\/([^/]+)$/);
+
+    return match ? decodeURIComponent(match[1]) : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Height of the player frame: a 16:9 package area, plus the player's
+ * module toolbar (`--toolbar-height` in apps/activity-player/index.html)
+ * for multi-module packages. Needs an inline-size container ancestor for `cqw`.
+ */
+export function playerFrameHeight(hasModuleNav: boolean): string {
+  return hasModuleNav ? 'calc(100cqw * 9 / 16 + 2.5rem)' : 'calc(100cqw * 9 / 16)';
+}
+
+/**
+ * True for Chromium browsers, which can hand fullscreen to the player frame
+ * (`postMessage` with `delegate: 'fullscreen'`). The player then owns
+ * fullscreen, so videos inside packages can nest their own fullscreen.
+ */
+export function supportsFullscreenDelegation(navigatorLike: Navigator): boolean {
+  return 'userAgentData' in navigatorLike;
+}
+
+export const PLAYER_THEME_TOKENS = [
+  'background',
+  'foreground',
+  'popover',
+  'popover-foreground',
+  'primary',
+  'primary-foreground',
+  'secondary',
+  'secondary-foreground',
+  'muted',
+  'muted-foreground',
+  'accent',
+  'accent-foreground',
+  'border',
+  'ring',
+  'radius'
+] as const;
+
+/**
+ * Collects the theme tokens the player styles itself with. `readToken`
+ * returns a custom property's computed value; empty values are left out.
+ */
+export function readPlayerTheme(readToken: (property: string) => string): Record<string, string> {
+  const theme: Record<string, string> = {};
+
+  for (const token of PLAYER_THEME_TOKENS) {
+    const value = readToken(`--${token}`).trim();
+    if (value) theme[token] = value;
+  }
+
+  return theme;
+}
+
+export type PlayerUiUnitInput = {
+  identifier: string;
+  title: string;
+  completed: boolean;
+  locked: boolean;
+  maxTimeAllowed?: string | null;
+};
+
+export type PlayerUiLabels = {
+  previous: string;
+  next: string;
+  menu: string;
+  position: string;
+  complete: string;
+  locked: string;
+  exitFullscreen: string;
+  timeLimit: string;
+  loading: string;
+  didNotConnect: string;
+  loadFailed: string;
+  videoFullscreenHint: string;
+  dismiss: string;
+};
+
+export type PlayerUiState = {
+  units: { identifier: string; title: string; completed: boolean; locked: boolean }[];
+  currentIdentifier: string | null;
+  timeLimit: string | null;
+  labels: PlayerUiLabels;
+  theme: Record<string, string>;
+};
+
+export type PlayerUiTranslate = (key: string, values?: Record<string, string | number>) => string;
+
+const PLAYER_LABEL_PREFIX = 'course.navItem.lessons.activities.player';
+
+/**
+ * Builds the state the activity player renders its module nav from: the
+ * modules, which one is open, translated copy and theme colors.
+ */
+export function buildPlayerUiState(
+  input: { units: PlayerUiUnitInput[]; currentIdentifier: string | null; theme: Record<string, string> },
+  translate: PlayerUiTranslate
+): PlayerUiState {
+  const label = (key: string, values?: Record<string, string | number>) =>
+    translate(`${PLAYER_LABEL_PREFIX}.${key}`, values);
+  const currentIndex = input.units.findIndex((unit) => unit.identifier === input.currentIdentifier);
+  const currentUnit = currentIndex >= 0 ? input.units[currentIndex] : null;
+  const timeLimit = formatTimeLimit(currentUnit?.maxTimeAllowed);
+  const completedCount = input.units.filter((unit) => unit.completed).length;
+
+  return {
+    units: input.units.map(({ identifier, title, completed, locked }) => ({ identifier, title, completed, locked })),
+    currentIdentifier: currentUnit ? currentUnit.identifier : null,
+    timeLimit,
+    labels: {
+      previous: label('prev_module'),
+      next: label('next_module'),
+      menu: label('module_menu'),
+      position: currentUnit ? label('module_position', { current: currentIndex + 1, total: input.units.length }) : '',
+      complete: label('modules_complete', { complete: completedCount, total: input.units.length }),
+      locked: label('module_locked'),
+      exitFullscreen: label('exit_fullscreen'),
+      timeLimit: timeLimit ? label('time_limit', { time: timeLimit }) : '',
+      loading: label('loading'),
+      didNotConnect: label('no_connection_title'),
+      loadFailed: label('load_failed_title'),
+      videoFullscreenHint: label('fullscreen_video_hint'),
+      dismiss: label('dismiss')
+    },
+    theme: input.theme
+  };
 }
 
 export type ActivityStatusPill = {
@@ -511,7 +682,7 @@ export function getActivityStatusPill(input: {
     };
   }
 
-  if ((launch.units ?? []).some((unit) => !unit.completed && unit.scorePercent !== null)) {
+  if ((launch.units ?? []).some((unit) => unit.status === 'failed')) {
     return {
       variant: 'secondary',
       label: 'course.navItem.lessons.activities.player.status_not_passed'

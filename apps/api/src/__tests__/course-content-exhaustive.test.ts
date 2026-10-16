@@ -18,6 +18,8 @@ function navigableItem(overrides: Partial<CourseContentItem> = {}): CourseConten
     isComplete: false,
     lessonAt: null,
     callUrl: null,
+    sessionDurationMinutes: null,
+    recordingUrl: null,
     hasNoteContent: true,
     hasSlideContent: false,
     videosCount: 0,
@@ -32,10 +34,14 @@ function navigableItem(overrides: Partial<CourseContentItem> = {}): CourseConten
 }
 
 describe('applyCourseContentBulkUpdates unknown types', () => {
-  it('throws instead of silently dropping an unknown content type', async () => {
-    await expect(
-      applyCourseContentBulkUpdates({} as never, [{ id: 'item-1', type: 'UNKNOWN', order: 1 }] as never)
-    ).rejects.toThrow('Unexpected value');
+  it('gracefully ignores unknown content types without throwing during rolling deploys', async () => {
+    const result = await applyCourseContentBulkUpdates(
+      {} as never,
+      [{ id: 'item-1', type: 'UNKNOWN', order: 1 }] as never
+    );
+    expect(result.updatedLessons).toBe(0);
+    expect(result.updatedExercises).toBe(0);
+    expect(result.updatedActivities).toBe(0);
   });
 
   it('routes activities to the activity update instead of the unknown-type guard', async () => {
@@ -122,7 +128,7 @@ describe('annotateNavigableAccess unknown types', () => {
     expect(unblocked.get('lesson-2')).toEqual({ accessible: true, lockReason: null });
   });
 
-  it('throws instead of treating an unknown content type as complete', () => {
+  it('handles unknown content types safely without throwing during rolling deploys', () => {
     expect(() =>
       annotateNavigableAccess({
         navigableItems: [navigableItem({ id: 'item-1', type: 'UNKNOWN' as never })],
@@ -131,6 +137,6 @@ describe('annotateNavigableAccess unknown types', () => {
         completedLessonIds: new Set(),
         completedExerciseIds: new Set()
       })
-    ).toThrow();
+    ).not.toThrow();
   });
 });

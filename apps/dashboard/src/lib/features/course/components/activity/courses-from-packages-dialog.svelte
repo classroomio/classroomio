@@ -2,7 +2,6 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
   import * as Field from '@cio/ui/base/field';
-  import { Switch } from '@cio/ui/base/switch';
   import { InputField } from '@cio/ui/custom/input-field';
   import PackageIcon from '@lucide/svelte/icons/package';
 
@@ -25,17 +24,15 @@
 
   let { open = $bindable(false), packages = [], onCreated = () => {}, onOpenChange = () => {} }: Props = $props();
 
-  let trackCompliance = $state(false);
   let titles = $state<Record<string, string>>({});
   let isCreating = $state(false);
 
-  const courseType = $derived(trackCompliance ? ('COMPLIANCE' as const) : ('SELF_PACED' as const));
+  const courseType = 'SELF_PACED' as const;
 
   function handleOpenChange(isOpen: boolean) {
     open = isOpen;
 
     if (isOpen) {
-      trackCompliance = false;
       titles = Object.fromEntries(packages.map((entry) => [entry.assetId, entry.title]));
       isCreating = false;
     }
@@ -87,18 +84,6 @@
       <PackageIcon size={16} class="shrink-0" />
       <span class="font-medium">{$t('media_manager.scorm.course_nav_preview')}</span>
     </div>
-
-    <Field.Group>
-      <Field.Set>
-        <Field.Field orientation="horizontal">
-          <Switch id="courses-from-packages-compliance" bind:checked={trackCompliance} />
-          <Field.Label for="courses-from-packages-compliance"
-            >{$t('media_manager.scorm.track_compliance_label')}</Field.Label
-          >
-        </Field.Field>
-        <Field.Description>{$t('media_manager.scorm.track_compliance_hint')}</Field.Description>
-      </Field.Set>
-    </Field.Group>
 
     <div class="space-y-3">
       {#each packages as entry (entry.assetId)}

@@ -3076,7 +3076,10 @@
             "preview_body": "Testujesz tę aktywność jako instruktor. Żadne Twoje działania nie są rejestrowane.",
             "module_locked": "Najpierw ukończ poprzednie moduły.",
             "time_limit": "Sugerowane: {time}",
-            "loading": "Ładowanie pakietu…"
+            "loading": "Ładowanie pakietu…",
+            "module_complete_title": "Moduł ukończony",
+            "dismiss": "Zamknij",
+            "fullscreen_video_hint": "Filmów nie można wyświetlać w trybie pełnoekranowym, gdy aktywność jest w tym trybie."
           },
           "results": {
             "sheet": {

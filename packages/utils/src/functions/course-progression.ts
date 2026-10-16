@@ -1,5 +1,4 @@
 import { ContentType } from '../constants/content';
-import { assertNever } from './assert-never';
 
 export type ProgressionLockReason = 'teacher_locked' | 'progression_blocked';
 
@@ -65,9 +64,8 @@ export function itemBlocksProgression(type?: ContentType, completionPolicy?: str
       return activityBlocksProgression();
     case ContentType.Section:
     case undefined:
-      return false;
     default:
-      return assertNever(type);
+      return false;
   }
 }
 

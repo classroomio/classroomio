@@ -1,6 +1,5 @@
 import { ContentType, ROLE } from '@cio/utils/constants';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
-import { assertNever } from '@cio/utils/functions/assert-never';
 import {
   computeProgressionAccess,
   flattenNavigableItems,
@@ -61,7 +60,7 @@ export function annotateNavigableAccess(params: {
         case ContentType.Section:
           return true;
         default:
-          return assertNever(item.type);
+          return false;
       }
     },
     getCompletionPolicy: (item) => {
