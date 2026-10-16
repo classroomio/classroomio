@@ -30,7 +30,9 @@ import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '@
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
 import { Hono } from '@api/utils/hono';
+import { assertActivityKindAllowed } from '@api/services/activity/plan';
 import { attendanceRouter } from '@api/routes/course/attendance';
+import { activityRouter } from '@api/routes/course/activity';
 import { courseAiTutorRouter } from '@api/routes/course/ai-tutor';
 import { liveSessionReminderRouter } from '@api/routes/course/live-session-reminder';
 import { authMiddleware } from '@api/middlewares/auth';
@@ -146,6 +148,10 @@ export const courseRouter = new Hono()
     try {
       const user = c.get('user')!;
       const validatedData = c.req.valid('json');
+
+      if (validatedData.format === 'single_activity') {
+        await assertActivityKindAllowed(validatedData.organizationId, 'scorm');
+      }
 
       const result = await createCourse(user.id, validatedData);
 
@@ -660,6 +666,7 @@ export const courseRouter = new Hono()
   .route('/katex', katexRouter)
   .route('/:courseId/payment-request', paymentRequestRouter)
   .route('/:courseId/content', contentRouter)
+  .route('/:courseId/activity', activityRouter)
   .route('/:courseId/compliance', complianceRouter)
   .route('/:courseId/section', sectionRouter)
   .route('/:courseId/lesson', lessonRouter)

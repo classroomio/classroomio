@@ -265,3 +265,41 @@ export async function generateDocumentUploadPresignedUrl(fileKey: string, conten
   const config = getStorageConfig();
   return generateUploadPresignedUrl(fileKey, config.bucketDocuments, contentType);
 }
+
+export const SCORM_UPLOAD_CONTENT_TYPE = 'application/zip';
+
+/**
+ * Generates a presigned PUT URL for a SCORM package ZIP in the private scorm bucket.
+ */
+export async function generateScormUploadPresignedUrl(fileKey: string): Promise<string> {
+  const config = getStorageConfig();
+  return generateUploadPresignedUrl(fileKey, config.bucketScorm, SCORM_UPLOAD_CONTENT_TYPE);
+}
+
+/**
+ * Returns the byte size of an object, or null when it does not exist.
+ */
+export async function headS3ObjectSize(bucket: string, key: string): Promise<number | null> {
+  try {
+    const output = await getS3Client().send(new HeadObjectCommand({ Bucket: bucket, Key: key }));
+    return typeof output.ContentLength === 'number' ? output.ContentLength : null;
+  } catch (error) {
+    const status = (error as { $metadata?: { httpStatusCode?: number } }).$metadata?.httpStatusCode;
+    const name = (error as { name?: string }).name;
+    if (status === 404 || name === 'NotFound' || name === 'NoSuchKey') return null;
+
+    throw error;
+  }
+}
+
+/**
+ * Streams an object, optionally a byte range, for workers that process uploads without buffering them.
+ */
+export async function getS3ObjectStream(bucket: string, key: string, range?: string): Promise<ReadableStream> {
+  const output = await getS3Client().send(
+    new GetObjectCommand({ Bucket: bucket, Key: key, ...(range ? { Range: range } : {}) })
+  );
+  if (!output.Body) throw new Error(`S3 object ${bucket}/${key} returned no body`);
+
+  return output.Body as ReadableStream;
+}
