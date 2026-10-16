@@ -3,6 +3,7 @@ import {
   countCourseStudents,
   countOrgTemplates,
   canUseCourseTemplate,
+  getActivitiesByCourseId,
   getCourseById,
   getCourseOrganizationId,
   getCourseSectionsByCourseId,
@@ -132,10 +133,11 @@ function templatePreviewSettings(template: {
 
 export async function getCourseTemplatePreview(templateId: string, orgId: string) {
   const { template, global, curated } = await requireUsableTemplate(templateId, orgId);
-  const [sections, lessons, exercises, highlights] = await Promise.all([
+  const [sections, lessons, exercises, activities, highlights] = await Promise.all([
     getCourseSectionsByCourseId(templateId),
     getLessonsByCourseId(templateId),
     getExercisesByCourseId(templateId),
+    getActivitiesByCourseId(templateId),
     global ? listTemplateHighlights([templateId]) : Promise.resolve([])
   ]);
   const questions =
@@ -151,6 +153,11 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
     title: exercise.title,
     questionCount: questionCountByExercise.get(exercise.id) ?? 0
   });
+  const toPreviewActivity = (activity: (typeof activities)[number]) => ({
+    id: activity.id,
+    title: activity.title,
+    kind: activity.kind
+  });
   const byOrder = <T extends { order: number }>(items: T[]) =>
     items.slice().sort((left, right) => left.order - right.order);
 
@@ -159,11 +166,13 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
     title: string | null;
     lessons: ReturnType<typeof toPreviewLesson>[];
     exercises: ReturnType<typeof toPreviewExercise>[];
+    activities: ReturnType<typeof toPreviewActivity>[];
   };
   type PreviewRootEntry =
     | { kind: 'section'; rank: 0; order: number; section: (typeof sections)[number] }
     | { kind: 'lesson'; rank: 1; order: number; lesson: (typeof lessons)[number] }
-    | { kind: 'exercise'; rank: 2; order: number; exercise: (typeof exercises)[number] };
+    | { kind: 'exercise'; rank: 2; order: number; exercise: (typeof exercises)[number] }
+    | { kind: 'activity'; rank: 3; order: number; activity: (typeof activities)[number] };
 
   const rootEntries: PreviewRootEntry[] = [
     ...sections.map((section) => ({ kind: 'section' as const, rank: 0 as const, order: section.order, section })),
@@ -172,7 +181,10 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
       .map((lesson) => ({ kind: 'lesson' as const, rank: 1 as const, order: lesson.order, lesson })),
     ...exercises
       .filter((exercise) => !exercise.sectionId)
-      .map((exercise) => ({ kind: 'exercise' as const, rank: 2 as const, order: exercise.order, exercise }))
+      .map((exercise) => ({ kind: 'exercise' as const, rank: 2 as const, order: exercise.order, exercise })),
+    ...activities
+      .filter((activity) => !activity.sectionId)
+      .map((activity) => ({ kind: 'activity' as const, rank: 3 as const, order: activity.order, activity }))
   ].sort((left, right) => left.order - right.order || left.rank - right.rank);
 
   const outline: PreviewBlock[] = [];
@@ -184,22 +196,34 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
       const sectionExercises = byOrder(exercises.filter((exercise) => exercise.sectionId === sectionId)).map(
         toPreviewExercise
       );
+      const sectionActivities = byOrder(activities.filter((activity) => activity.sectionId === sectionId)).map(
+        toPreviewActivity
+      );
       standaloneBlock = null;
-      outline.push({ id: sectionId, title: entry.section.title, lessons: sectionLessons, exercises: sectionExercises });
+      outline.push({
+        id: sectionId,
+        title: entry.section.title,
+        lessons: sectionLessons,
+        exercises: sectionExercises,
+        activities: sectionActivities
+      });
       continue;
     }
 
     const lessonAfterExercise = entry.kind === 'lesson' && (standaloneBlock?.exercises.length ?? 0) > 0;
     if (!standaloneBlock || lessonAfterExercise) {
-      const firstItemId = entry.kind === 'lesson' ? entry.lesson.id : entry.exercise.id;
-      standaloneBlock = { id: `standalone-${firstItemId}`, title: null, lessons: [], exercises: [] };
+      const firstItemId =
+        entry.kind === 'lesson' ? entry.lesson.id : entry.kind === 'exercise' ? entry.exercise.id : entry.activity.id;
+      standaloneBlock = { id: `standalone-${firstItemId}`, title: null, lessons: [], exercises: [], activities: [] };
       outline.push(standaloneBlock);
     }
 
     if (entry.kind === 'lesson') {
       standaloneBlock.lessons.push(toPreviewLesson(entry.lesson));
-    } else {
+    } else if (entry.kind === 'exercise') {
       standaloneBlock.exercises.push(toPreviewExercise(entry.exercise));
+    } else {
+      standaloneBlock.activities.push(toPreviewActivity(entry.activity));
     }
   }
 
@@ -214,7 +238,8 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
     counts: {
       sections: sections.length,
       lessons: lessons.length,
-      exercises: exercises.length
+      exercises: exercises.length,
+      activities: activities.length
     },
     highlights: highlights.map((highlight) => ({
       title: highlight.title,

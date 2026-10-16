@@ -99,6 +99,24 @@ export async function shiftExerciseOrders(
   }
 }
 
+export async function shiftActivityOrders(
+  courseId: string,
+  sectionId: string | null,
+  fromOrder: number,
+  dbClient: DbOrTxClient = db
+) {
+  try {
+    const parent = sectionId ? eq(schema.courseActivity.sectionId, sectionId) : isNull(schema.courseActivity.sectionId);
+    await dbClient
+      .update(schema.courseActivity)
+      .set({ order: sql`${schema.courseActivity.order} + 1` })
+      .where(and(eq(schema.courseActivity.courseId, courseId), parent, gte(schema.courseActivity.order, fromOrder)));
+  } catch (error) {
+    console.error('shiftActivityOrders error:', error);
+    throw new Error(`Failed to shift activity order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 export async function deleteExerciseChildren(exerciseId: string, dbClient: DbOrTxClient = db) {
   try {
     const questions = await dbClient

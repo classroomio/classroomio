@@ -170,6 +170,7 @@ export function buildWidgetPayload(input: BuildWidgetPayloadInput): TWidgetPaylo
       price: course.price ?? 'Free',
       lessonCount: course.lessonCount,
       exerciseCount: course.exerciseCount ?? 0,
+      activityCount: course.activityCount ?? 0,
       rating: null,
       ratingCount: 0,
       courseType: course.courseType,
