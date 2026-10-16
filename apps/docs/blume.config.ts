@@ -248,7 +248,8 @@ export default defineConfig({
               '/self-hosted/configuration/csp',
               '/self-hosted/configuration/integrations',
               '/self-hosted/configuration/ai',
-              '/self-hosted/enterprise'
+              '/self-hosted/enterprise',
+              '/self-hosted/scorm'
             ]
           },
           {

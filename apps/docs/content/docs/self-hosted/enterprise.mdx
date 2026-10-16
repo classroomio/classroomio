@@ -1,6 +1,6 @@
 ---
 title: Enterprise & licensing
-description: What a ClassroomIO enterprise license unlocks on self-hosted — SSO, token auth, no-tracking — and how LICENSE_KEY validation works.
+description: What a ClassroomIO enterprise license unlocks on self-hosted — SSO, token auth, no-tracking, SCORM — and how LICENSE_KEY validation works.
 ---
 
 ClassroomIO is [open core](/self-hosted/101#how-licensing-works): the complete LMS is free to
@@ -14,9 +14,12 @@ everything else still works, so leave `LICENSE_KEY` unset until you need one of 
 | **SSO** | Single Sign-On with OIDC (Okta, Azure AD, and more). See [Enterprise SSO setup](https://classroomio.com/help/integrations/enterprise-sso-setup). |
 | **Token auth** | Issue signed tokens to log users in from your own app. Setup: [Token Auth](/developers/token-auth). |
 | **No-tracking** | Disables product analytics in the dashboard (PostHog, Umami), third-party embeds, and the [anonymous usage ping](/self-hosted/101#self-hosted-vs-cloud). Without this feature, self-hosted mode already disables error reporting and the feedback widget, but not product analytics. |
+| **SCORM** | Upload and run SCORM 1.2 and 2004 packages as course items or SCORM courses. Setup: [SCORM packages](/self-hosted/scorm). Only authoring is gated — playback, results, export, reset, and delete keep working without it. |
 
 Without a valid license, the SSO and token-auth APIs return `403 FEATURE_REQUIRES_LICENSE` and
-their settings are hidden in the dashboard UI.
+their settings are hidden in the dashboard UI. SCORM authoring routes return `403` with
+`UPGRADE_REQUIRED` or `FEATURE_REQUIRES_LICENSE`, while existing SCORM items still launch, save,
+and report.
 
 ## Setting `LICENSE_KEY`
 

@@ -14,6 +14,7 @@ import {
   reconcileMemberLastActive
 } from '@cio/db/queries/organization';
 import { buildEarlyAdopterClaimUrl, deriveEarlyAdopterClaimToken } from '@cio/core/services/early-adopter/claim-token';
+import { runScormRetention } from '@cio/core/services/activity/retention';
 import { capAutoLessonVersionsPerLanguage, pruneAutoLessonVersions } from '@cio/db/queries/lesson/version';
 import {
   JOB_NAMES,
@@ -28,6 +29,7 @@ import {
   ZMemberActivityReconcilePayload,
   ZRetentionCompactPayload,
   ZWebhookRetentionPayload,
+  ZScormRetentionPayload,
   createRedisConnection,
   enqueueEmailSend,
   enqueueWebhookDelivery
@@ -138,6 +140,18 @@ const worker = new Worker(
       const updated = await reconcileMemberLastActive(data.lookbackDays);
       log.info('member-activity-reconcile-done', { updated, lookbackDays: data.lookbackDays });
       return { updated };
+    }
+
+    if (job.name === JOB_NAMES.maintenance.scormRetention) {
+      const data = ZScormRetentionPayload.parse(job.data ?? {});
+      const result = await runScormRetention(data.eventOlderThanDays);
+      log.info('scorm-retention-done', {
+        eventsDeleted: result.eventsDeleted,
+        versionsDeleted: result.versionsDeleted,
+        versionsArchived: result.versionsArchived,
+        objectsDeleted: result.objectsDeleted
+      });
+      return result;
     }
 
     if (job.name === JOB_NAMES.maintenance.analyticsDailyRollup) {
@@ -297,6 +311,16 @@ async function registerSchedulers(): Promise<void> {
     log.info('webhook-sweep-scheduler-registered', {
       name: JOB_NAMES.maintenance.webhookSweep,
       everyMs: MEDIA_JOB_REAP_INTERVAL_MS
+    });
+
+    await maintenanceQueue.upsertJobScheduler(
+      'scorm-retention-scheduler',
+      { every: 86_400_000 },
+      { name: JOB_NAMES.maintenance.scormRetention, data: {} }
+    );
+    log.info('scorm-retention-scheduler-registered', {
+      name: JOB_NAMES.maintenance.scormRetention,
+      everyMs: 86_400_000
     });
   } catch (err) {
     log.error('maintenance-scheduler-register-failed', { error: errorMessage(err) });

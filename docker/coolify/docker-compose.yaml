@@ -69,11 +69,13 @@ services:
         echo "s3.bucket.create -name videos" | weed shell -master=storage:9333
         echo "s3.bucket.create -name documents" | weed shell -master=storage:9333
         echo "s3.bucket.create -name media" | weed shell -master=storage:9333
+        echo "s3.bucket.create -name scorm" | weed shell -master=storage:9333
         # weed shell exits 0 even when a create fails, so confirm each bucket exists.
         echo s3.bucket.list | weed shell -master=storage:9333 > /tmp/buckets 2>&1
         grep -q "^[[:space:]]*videos[[:space:]]" /tmp/buckets &&
           grep -q "^[[:space:]]*documents[[:space:]]" /tmp/buckets &&
-          grep -q "^[[:space:]]*media[[:space:]]" /tmp/buckets
+          grep -q "^[[:space:]]*media[[:space:]]" /tmp/buckets &&
+          grep -q "^[[:space:]]*scorm[[:space:]]" /tmp/buckets
 
   api:
     image: classroomio/api:${CIO_VERSION:-latest}
@@ -99,6 +101,9 @@ services:
       - OBJECT_STORAGE_SECRET_ACCESS_KEY=$SERVICE_PASSWORD_STORAGE
       - OBJECT_STORAGE_FORCE_PATH_STYLE=true
       - OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=$SERVICE_URL_STORAGE/media
+      - OBJECT_STORAGE_BUCKET_SCORM=scorm
+      - SCORM_CONTENT_ORIGIN=${SCORM_CONTENT_ORIGIN}
+      - ACTIVITY_SIGNING_SECRET=$SERVICE_HEX_64_ACTIVITYSIGNING
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USER=${SMTP_USER}
@@ -126,6 +131,7 @@ services:
       - PRIVATE_SERVER_KEY=$SERVICE_HEX_64_PRIVATESERVER
       - CSP_MEDIA_SRC_DOMAINS=$SERVICE_URL_STORAGE
       - CSP_CONNECT_SRC_DOMAINS=$SERVICE_URL_STORAGE
+      - SCORM_CONTENT_ORIGIN=${SCORM_CONTENT_ORIGIN}
 
   jobs:
     image: classroomio/jobs:${CIO_VERSION:-latest}
@@ -150,6 +156,7 @@ services:
       - OBJECT_STORAGE_BUCKET_VIDEOS=videos
       - OBJECT_STORAGE_BUCKET_DOCUMENTS=documents
       - OBJECT_STORAGE_BUCKET_MEDIA=media
+      - OBJECT_STORAGE_BUCKET_SCORM=scorm
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USER=${SMTP_USER}

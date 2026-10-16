@@ -1,4 +1,10 @@
-import { GetObjectCommand, HeadObjectCommand, NotFound, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  NotFound,
+  PutObjectCommand
+} from '@aws-sdk/client-s3';
 import { Readable } from 'node:stream';
 import { createWriteStream } from 'node:fs';
 import { mkdir, readFile, unlink } from 'node:fs/promises';
@@ -86,6 +92,34 @@ export async function uploadBufferToBucket(
   );
 }
 
+/**
+ * Streams a local file to object storage without reading it into memory,
+ * so large extracted package files keep worker memory flat.
+ */
+export async function uploadStreamToBucket(
+  bucket: string,
+  key: string,
+  localPath: string,
+  contentType: string,
+  cacheControl?: string
+): Promise<void> {
+  const { createReadStream } = await import('node:fs');
+
+  await getS3Client().send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: createReadStream(localPath),
+      ContentType: contentType,
+      CacheControl: cacheControl
+    })
+  );
+}
+
+export async function deleteObjectFromBucket(bucket: string, key: string): Promise<void> {
+  await getS3Client().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
+}
+
 export async function safeUnlink(filePath: string | undefined | null): Promise<void> {
   if (!filePath) return;
 
@@ -102,4 +136,8 @@ export function videosBucket(): string {
 
 export function mediaBucket(): string {
   return getStorageConfig().bucketMedia;
+}
+
+export function scormBucket(): string {
+  return getStorageConfig().bucketScorm;
 }

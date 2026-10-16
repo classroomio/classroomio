@@ -37,6 +37,15 @@
  */
 
 import { embedResponseHeaders, injectApiUrl, needsApiUrlInjection, resolveEmbedObjectKey } from './embed-assets';
+import {
+  contentDomainOf,
+  forwardActivityToApiUpstream,
+  handleActivityContentRequest,
+  hostnameFromHost,
+  isActivityContentPath,
+  isActivityPlayerOrRuntimePath,
+  isContentHost
+} from './activity-content';
 
 interface Env {
   DASHBOARD_UPSTREAM_HOST: string;
@@ -48,10 +57,16 @@ interface Env {
   API_URL: string;
   /** HMAC-SHA256 secret shared with the API to sign cio_hls tokens. */
   HLS_SIGNING_SECRET: string;
+  /** HMAC-SHA256 secret shared with the API to sign activity content tokens. */
+  ACTIVITY_SIGNING_SECRET: string;
+  /** Registrable content domain (e.g. classroomio-content.com). */
+  SCORM_CONTENT_DOMAIN?: string;
   /** R2 bucket binding for the videos bucket (HLS manifests + segments + audio). */
   VIDEOS_BUCKET: R2Bucket;
   /** R2 bucket binding for static assets (embed scripts under `embeds/`). */
   ASSETS_BUCKET: R2Bucket;
+  /** R2 bucket binding for the private scorm bucket (extracted package files). */
+  SCORM_BUCKET: R2Bucket;
 }
 
 // PostHog first-party proxy: requests to /ingest/* are forwarded to PostHog EU.
@@ -290,6 +305,30 @@ export default {
     // Public embed scripts — served from the R2 `assets` bucket (no Render hop).
     if (originalHost === env.EMBED_HOST) {
       return handleEmbedAssetRequest(request, env);
+    }
+
+    const contentDomain = contentDomainOf(env);
+    const contentHostname = hostnameFromHost(originalHost);
+
+    // Package files are served only from the content domain. A content path on
+    // any other host is rejected here so it never reaches an upstream.
+    if (isActivityContentPath(url.pathname)) {
+      if (!isContentHost(contentHostname, contentDomain)) {
+        return new Response('Not Found', { status: 404 });
+      }
+
+      return handleActivityContentRequest(request, env);
+    }
+
+    // The content host serves only player, run-time and content paths. Player
+    // and run-time traffic is forwarded to the API upstream; everything else
+    // on this host does not exist.
+    if (isContentHost(contentHostname, contentDomain)) {
+      if (isActivityPlayerOrRuntimePath(url.pathname)) {
+        return forwardActivityToApiUpstream(request, env, originalHost);
+      }
+
+      return new Response('Not Found', { status: 404 });
     }
 
     // HLS playback served directly from R2 — Render is never in the bytestream.

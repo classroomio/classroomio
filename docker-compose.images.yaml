@@ -91,7 +91,7 @@ services:
       - /bin/sh
       - -c
       - |
-        set -- "$$OBJECT_STORAGE_BUCKET_VIDEOS" "$$OBJECT_STORAGE_BUCKET_DOCUMENTS" "$$OBJECT_STORAGE_BUCKET_MEDIA"
+        set -- "$$OBJECT_STORAGE_BUCKET_VIDEOS" "$$OBJECT_STORAGE_BUCKET_DOCUMENTS" "$$OBJECT_STORAGE_BUCKET_MEDIA" "$$OBJECT_STORAGE_BUCKET_SCORM"
         for bucket in "$$@"; do
           echo "s3.bucket.create -name $$bucket" | weed shell -master=storage:9333
         done
@@ -104,6 +104,7 @@ services:
       OBJECT_STORAGE_BUCKET_VIDEOS: ${OBJECT_STORAGE_BUCKET_VIDEOS:-videos}
       OBJECT_STORAGE_BUCKET_DOCUMENTS: ${OBJECT_STORAGE_BUCKET_DOCUMENTS:-documents}
       OBJECT_STORAGE_BUCKET_MEDIA: ${OBJECT_STORAGE_BUCKET_MEDIA:-media}
+      OBJECT_STORAGE_BUCKET_SCORM: ${OBJECT_STORAGE_BUCKET_SCORM:-scorm}
     profiles:
       - storage
 
@@ -153,6 +154,10 @@ services:
       OBJECT_STORAGE_SECRET_ACCESS_KEY: ${OBJECT_STORAGE_SECRET_ACCESS_KEY:-}
       OBJECT_STORAGE_FORCE_PATH_STYLE: ${OBJECT_STORAGE_FORCE_PATH_STYLE:-true}
       OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL: ${OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL:-}
+      OBJECT_STORAGE_BUCKET_SCORM: ${OBJECT_STORAGE_BUCKET_SCORM:-scorm}
+      SCORM_CONTENT_ORIGIN: ${SCORM_CONTENT_ORIGIN:-}
+      SCORM_CONTENT_DOMAIN: ${SCORM_CONTENT_DOMAIN:-}
+      ACTIVITY_SIGNING_SECRET: ${ACTIVITY_SIGNING_SECRET:-}
       # Auth secrets — required. ./classroomio.sh generates them into .env; if you run
       # compose directly, set strong values yourself — the stack refuses to start otherwise.
       PRIVATE_SERVER_KEY: ${PRIVATE_SERVER_KEY:?set a strong PRIVATE_SERVER_KEY in .env}
@@ -166,6 +171,7 @@ services:
       UPLOAD_MAX_VIDEO_MB: ${UPLOAD_MAX_VIDEO_MB:-}
       UPLOAD_MAX_EXERCISE_FILE_MB: ${UPLOAD_MAX_EXERCISE_FILE_MB:-}
       UPLOAD_MAX_AGENT_DOCUMENT_MB: ${UPLOAD_MAX_AGENT_DOCUMENT_MB:-}
+      UPLOAD_MAX_SCORM_MB: ${UPLOAD_MAX_SCORM_MB:-}
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?set a strong BETTER_AUTH_SECRET in .env}
       SKIP_DB_SETUP: ${SKIP_DB_SETUP:-}
     restart: unless-stopped
@@ -194,6 +200,7 @@ services:
       CSP_FRAME_SRC_DOMAINS: ${CSP_FRAME_SRC_DOMAINS:-}
       CSP_FONT_SRC_DOMAINS: ${CSP_FONT_SRC_DOMAINS:-}
       CSP_MEDIA_SRC_DOMAINS: ${CSP_MEDIA_SRC_DOMAINS:-}
+      SCORM_CONTENT_ORIGIN: ${SCORM_CONTENT_ORIGIN:-}
       # Upload size limits (megabytes). Unset = built-in defaults — see .env.example.
       UPLOAD_MAX_DOCUMENT_MB: ${UPLOAD_MAX_DOCUMENT_MB:-}
       UPLOAD_MAX_IMAGE_MB: ${UPLOAD_MAX_IMAGE_MB:-}
@@ -202,6 +209,7 @@ services:
       UPLOAD_MAX_AGENT_DOCUMENT_MB: ${UPLOAD_MAX_AGENT_DOCUMENT_MB:-}
       UPLOAD_MAX_LANDING_IMAGE_MB: ${UPLOAD_MAX_LANDING_IMAGE_MB:-}
       UPLOAD_MAX_THUMBNAIL_MB: ${UPLOAD_MAX_THUMBNAIL_MB:-}
+      UPLOAD_MAX_SCORM_MB: ${UPLOAD_MAX_SCORM_MB:-}
     restart: unless-stopped
 
   # Background worker (BullMQ). Drains the Redis queue: video processing, transcription,
@@ -233,6 +241,8 @@ services:
       OBJECT_STORAGE_BUCKET_VIDEOS: ${OBJECT_STORAGE_BUCKET_VIDEOS:-videos}
       OBJECT_STORAGE_BUCKET_DOCUMENTS: ${OBJECT_STORAGE_BUCKET_DOCUMENTS:-documents}
       OBJECT_STORAGE_BUCKET_MEDIA: ${OBJECT_STORAGE_BUCKET_MEDIA:-media}
+      OBJECT_STORAGE_BUCKET_SCORM: ${OBJECT_STORAGE_BUCKET_SCORM:-scorm}
+      UPLOAD_MAX_SCORM_MB: ${UPLOAD_MAX_SCORM_MB:-}
       # Email (worker sends invites, notifications, etc.).
       SMTP_HOST: ${SMTP_HOST:-}
       SMTP_PORT: ${SMTP_PORT:-}
