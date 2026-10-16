@@ -118,8 +118,14 @@ export type TPublicApiEnrolledItem = z.infer<typeof ZPublicApiEnrolledItem>;
 
 export const ZPublicApiEnrolledCounts = z
   .object({
-    notStarted: z.number().int(),
-    inProgress: z.number().int()
+    byStatus: z.object({
+      notStarted: z.number().int(),
+      inProgress: z.number().int()
+    }),
+    byKind: z.object({
+      course: z.number().int(),
+      learningPath: z.number().int()
+    })
   })
   .passthrough();
 export type TPublicApiEnrolledCounts = z.infer<typeof ZPublicApiEnrolledCounts>;

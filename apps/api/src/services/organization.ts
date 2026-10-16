@@ -612,7 +612,7 @@ export async function getUserEnrolledCourses(orgId: string, userId: string, opti
  * @param orgId - The organization ID
  * @param userId - Student's profile ID
  * @param query - Page, limit, status, kind and title search
- * @returns Page of `{ kind, data }` rows and the filtered total
+ * @returns Page of `{ kind, data }` rows, the filtered total and counts
  */
 export async function getUserEnrolled(orgId: string, userId: string, query: TGetEnrolled) {
   try {

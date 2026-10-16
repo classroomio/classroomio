@@ -33,7 +33,10 @@ describe('GET /organization/enrolled', () => {
     mocks.getUserEnrolled.mockResolvedValue({
       items: [{ kind: 'learning_path', data: { id: 'path-1' } }],
       total: 25,
-      counts: { notStarted: 5, inProgress: 20 }
+      counts: {
+        byStatus: { notStarted: 5, inProgress: 20 },
+        byKind: { course: 20, learningPath: 5 }
+      }
     });
   });
 
@@ -52,7 +55,10 @@ describe('GET /organization/enrolled', () => {
       success: true,
       data: [{ kind: 'learning_path', data: { id: 'path-1' } }],
       pagination: { page: 1, limit: 12, total: 25, totalPages: 3 },
-      counts: { notStarted: 5, inProgress: 20 }
+      counts: {
+        byStatus: { notStarted: 5, inProgress: 20 },
+        byKind: { course: 20, learningPath: 5 }
+      }
     });
   });
 
