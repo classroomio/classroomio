@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="CIO-SCORM2004-THREE" version="1"
+  xmlns="http://www.imsglobal.org/xsd/imscp_v1p1"
+  xmlns:adlcp="http://www.adlnet.org/xsd/adlcp_v1p3"
+  xmlns:imsss="http://www.imsglobal.org/xsd/imsss"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsglobal.org/xsd/imscp_v1p1 imscp_v1p1.xsd http://www.adlnet.org/xsd/adlcp_v1p3 adlcp_v1p3.xsd http://www.imsglobal.org/xsd/imsss imsss_v1p0.xsd">
+  <metadata>
+    <schema>ADL SCORM</schema>
+    <schemaversion>2004 4th Edition</schemaversion>
+  </metadata>
+  <organizations default="ORG-1">
+    <organization identifier="ORG-1">
+      <title>ClassroomIO three-module fixture</title>
+      <item identifier="ITEM-1" identifierref="RES-1">
+        <title>Welcome</title>
+      </item>
+      <item identifier="ITEM-2" identifierref="RES-2">
+        <title>Core concepts</title>
+      </item>
+      <item identifier="ITEM-3" identifierref="RES-3">
+        <title>Final quiz</title>
+        <imsss:objectives>
+          <imsss:primaryObjective satisfiedByMeasure="true" objectiveID="PRIMARY-QUIZ">
+            <imsss:minNormalizedMeasure>0.8</imsss:minNormalizedMeasure>
+          </imsss:primaryObjective>
+        </imsss:objectives>
+      </item>
+    </organization>
+  </organizations>
+  <resources>
+    <resource identifier="RES-1" type="webcontent" adlcp:scormType="sco" href="module1.html">
+      <file href="module1.html"/>
+    </resource>
+    <resource identifier="RES-2" type="webcontent" adlcp:scormType="sco" href="module2.html">
+      <file href="module2.html"/>
+    </resource>
+    <resource identifier="RES-3" type="webcontent" adlcp:scormType="sco" href="module3-quiz.html">
+      <file href="module3-quiz.html"/>
+    </resource>
+  </resources>
+</manifest>

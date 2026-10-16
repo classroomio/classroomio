@@ -1,0 +1,32 @@
+{
+  "name": "@cio/activity-packages",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Pure helpers for packaged course content: SCORM manifest parsing, ZIP checks, run-time rules and activity tokens.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build:fixtures": "node test/fixtures/build-fixtures.mjs",
+    "spike:player": "node spike/player/server.mjs",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@cio/tsconfig": "workspace:*",
+    "typescript": "^5.5.2",
+    "vitest": "^1.6.1"
+  },
+  "dependencies": {
+    "fast-xml-parser": "5.11.1"
+  }
+}
