@@ -20,6 +20,8 @@ export * from './course-member';
 export * from './course-member-responses';
 export * from './course-responses';
 export * from './course-submission';
+export * from './course-learner';
+export * from './course-learner-responses';
 export * from './exercise-template';
 export * from './lesson';
 export * from './pagination';

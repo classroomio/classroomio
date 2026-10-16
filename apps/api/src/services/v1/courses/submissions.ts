@@ -25,7 +25,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin, toPublicApiPagination } from '../shared';
 import { assertExerciseBelongsToCourse } from './exercises';
 
-function toPublicSubmission(submission: TSubmission) {
+export function toPublicSubmission(submission: TSubmission) {
   return {
     id: submission.id,
     courseId: submission.courseId,

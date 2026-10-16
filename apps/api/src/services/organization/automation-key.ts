@@ -44,7 +44,8 @@ export const DEFAULT_SCOPES: Record<TOrganizationApiKeyType, TOrganizationApiKey
     'analytics:read',
     'media:write',
     'course:submission:read',
-    'course:submission:write'
+    'course:submission:write',
+    'course:learner:write'
   ],
   api: ['public_api:*'],
   zapier: ['public_api:*']

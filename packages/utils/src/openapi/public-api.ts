@@ -175,6 +175,10 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PUT /public-api/v1/courses/{courseId}/submissions/{submissionId}/grades': 'Grade a submission',
   'PATCH /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Update a submission',
   'DELETE /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Delete a submission',
+  'PUT /public-api/v1/courses/{courseId}/members/{memberId}/lessons/{lessonId}/completion':
+    'Set lesson completion for a learner',
+  'POST /public-api/v1/courses/{courseId}/members/{memberId}/exercises/{exerciseId}/submissions':
+    'Submit an exercise for a learner',
   'GET /public-api/v1/courses/{courseId}/marks': 'Get course marks',
   'GET /public-api/v1/courses/{courseId}/members': 'List course members',
   'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
@@ -241,6 +245,7 @@ const OPERATION_TAGS = [
   { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
   { name: 'Course Submissions', description: 'Review and grade exercise submissions.' },
   { name: 'Course Marks', description: 'Read the course gradebook.' },
+  { name: 'Learner Activity', description: 'Record lesson completions and exercise submissions for a learner.' },
   { name: 'Cohorts', description: 'Create and manage cohorts.' },
   { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
   { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },
