@@ -32,7 +32,7 @@ is on the [Architecture](/self-hosted/architecture) page; what hardware they nee
 | Your data | Hosted by ClassroomIO | Stays on your infrastructure |
 | Updates | Automatic | You choose when ([pin a version](/self-hosted/configuration/versions)) |
 | Organizations | Multiple per account, plan-based feature tiers | Single organization with all core features |
-| Enterprise features (SSO, token auth, no-tracking) | On the Enterprise plan | Via a [license key](/self-hosted/enterprise) |
+| Enterprise features (SSO, token auth, no-tracking, SCORM) | On the Enterprise plan | Via a [license key](/self-hosted/enterprise) |
 
 Self-hosted mode is controlled by one flag, `PUBLIC_IS_SELFHOSTED=true`, which is already set in
 the shipped Docker configuration. It locks the instance to a single organization with the full core
@@ -49,7 +49,7 @@ ClassroomIO is **open core** under the [AGPL-3.0 license](https://github.com/cla
 - **Everything an LMS needs is free:** courses, students, uploads, video, AI features,
   communities, certificates. No seat limits, no artificial caps. You never need a license key to
   run a complete platform.
-- **A small set of enterprise features** (SSO, token auth, and no-tracking mode) are gated behind
+- **A small set of enterprise features** (SSO, token auth, no-tracking mode, and SCORM packages) are gated behind
   a paid `LICENSE_KEY`. They exist so organizations with compliance requirements can fund the
   project. Details on the [Enterprise & licensing](/self-hosted/enterprise) page.
 
@@ -69,6 +69,6 @@ same build you already run, so you never migrate editions.
     Every environment variable the stack reads.
   </Card>
   <Card title="Enterprise & licensing" href="/self-hosted/enterprise" icon="id-card">
-    SSO, token auth, no-tracking, and how license validation works.
+    SSO, token auth, no-tracking, SCORM, and how license validation works.
   </Card>
 </CardGroup>

@@ -221,6 +221,20 @@ ensure_secure_betterauth_secret() {
   fi
 }
 
+ensure_activity_signing_secret() {
+  if [[ ! -f "${ENV_FILE}" ]]; then
+    touch "${ENV_FILE}"
+  fi
+
+  local secret
+  secret="$(get_env_value ACTIVITY_SIGNING_SECRET)"
+
+  if is_insecure_token_value "${secret}"; then
+    upsert_env_value ACTIVITY_SIGNING_SECRET "$(generate_secure_token)"
+    echo "Generated secure ACTIVITY_SIGNING_SECRET in .env"
+  fi
+}
+
 is_local_origin() {
   local value="$1"
   case "${value}" in
@@ -455,6 +469,7 @@ prepare_env_and_secrets() {
   refresh_stale_compose_file
   ensure_secure_auth_tokens
   ensure_secure_betterauth_secret
+  ensure_activity_signing_secret
   ensure_storage_env
 }
 

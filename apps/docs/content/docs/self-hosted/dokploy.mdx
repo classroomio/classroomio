@@ -174,9 +174,22 @@ shared [Configuration](/self-hosted/configuration) section:
     Google OAuth, Unsplash, OpenAI.
   </Card>
   <Card title="Enterprise & licensing" href="/self-hosted/enterprise" icon="id-card">
-    `LICENSE_KEY` for Enterprise features.
+    `LICENSE_KEY` for Enterprise features, including SCORM.
+  </Card>
+  <Card title="SCORM packages" href="/self-hosted/scorm" icon="package">
+    `SCORM_CONTENT_ORIGIN`, `ACTIVITY_SIGNING_SECRET`, and the SCORM content hostname.
   </Card>
 </CardGroup>
+
+### SCORM content hostname (optional)
+
+SCORM packages are served from a separate content hostname. Add one DNS **A record** for
+`content.yourdomain.com`, add it as a Dokploy domain routed to the `api` service, and set
+`SCORM_CONTENT_ORIGIN=https://content.yourdomain.com` plus `ACTIVITY_SIGNING_SECRET`
+(`openssl rand -hex 32`). `OBJECT_STORAGE_BUCKET_SCORM` defaults to `scorm`;
+`UPLOAD_MAX_SCORM_MB` defaults to 500 (set the same value wherever the API and dashboard read
+env). Without `SCORM_CONTENT_ORIGIN` the feature stays off. See
+[SCORM packages](/self-hosted/scorm).
 
 :::warning[The storage volume is your durability boundary]
 If you use the bundled store, give its volume **persistent storage** in Dokploy and route a storage
