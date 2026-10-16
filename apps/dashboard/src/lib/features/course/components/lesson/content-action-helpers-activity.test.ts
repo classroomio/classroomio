@@ -31,14 +31,20 @@ describe('content actions with activities', () => {
     expect(activityApi.delete).toHaveBeenCalledWith('c1', 'a1');
   });
 
-  it('throws for unknown content types instead of mistaking them for exercises', async () => {
+  it('ignores unknown content types instead of mistaking them for exercises or throwing', async () => {
     const lessonApi = mockApi();
     const exerciseApi = mockApi();
     const activityApi = mockApi();
     const item = { type: 'UNKNOWN', contentId: 'x' } as never;
 
-    await expect(saveContent({ item, courseId: 'c1', lessonApi, exerciseApi, activityApi })).rejects.toThrow();
-    await expect(toggleLock({ item, courseId: 'c1', lessonApi, exerciseApi, activityApi })).rejects.toThrow();
-    await expect(deleteContent({ item, courseId: 'c1', lessonApi, exerciseApi, activityApi })).rejects.toThrow();
+    expect(await saveContent({ item, courseId: 'c1', lessonApi, exerciseApi, activityApi })).toEqual({});
+    expect(await toggleLock({ item, courseId: 'c1', lessonApi, exerciseApi, activityApi })).toEqual({});
+    expect(await deleteContent({ item, courseId: 'c1', lessonApi, exerciseApi, activityApi })).toBe(false);
+    expect(exerciseApi.update).not.toHaveBeenCalled();
+    expect(exerciseApi.delete).not.toHaveBeenCalled();
+    expect(lessonApi.update).not.toHaveBeenCalled();
+    expect(lessonApi.delete).not.toHaveBeenCalled();
+    expect(activityApi.update).not.toHaveBeenCalled();
+    expect(activityApi.delete).not.toHaveBeenCalled();
   });
 });

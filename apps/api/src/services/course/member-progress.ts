@@ -1,6 +1,5 @@
 import { ROLE } from '@cio/utils/constants';
 import { ContentType } from '@cio/utils/constants/content';
-import { assertNever } from '@cio/utils/functions';
 import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
 import { getCourseById } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
@@ -118,7 +117,7 @@ function contentTypeLabel(type: TrackableContentItem['type']): 'lesson' | 'exerc
     case ContentType.Activity:
       return 'activity';
     default:
-      return assertNever(type);
+      return 'lesson';
   }
 }
 

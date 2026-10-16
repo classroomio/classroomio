@@ -1,5 +1,4 @@
 import { ContentType } from '@cio/utils/constants/content';
-import { assertNever } from '@cio/utils/functions';
 
 export type ContentActionItem = {
   type: ContentType;
@@ -80,7 +79,7 @@ export async function toggleLock({
     case ContentType.Section:
       return {};
     default:
-      return assertNever(item.type);
+      return {};
   }
 }
 
@@ -112,7 +111,7 @@ export async function saveContent({
     case ContentType.Section:
       return {};
     default:
-      return assertNever(item.type);
+      return {};
   }
 }
 
@@ -142,6 +141,6 @@ export async function deleteContent({
     case ContentType.Section:
       return false;
     default:
-      return assertNever(item.type);
+      return false;
   }
 }

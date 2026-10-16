@@ -74,13 +74,13 @@ describe('deriveCourseMemberStage', () => {
     expect(stage).toEqual({ kind: 'certificate_earned' });
   });
 
-  it('throws on an unknown content type instead of falling back to lesson', () => {
-    expect(() =>
-      deriveCourseMemberStage({
-        progressPercent: 33,
-        certificateEarnedAt: null,
-        contentItems: [{ id: 'item-1', type: 'UNKNOWN', title: 'Package', isComplete: false }] as never
-      })
-    ).toThrow();
+  it('falls back to lesson for an unknown content type instead of throwing', () => {
+    const stage = deriveCourseMemberStage({
+      progressPercent: 33,
+      certificateEarnedAt: null,
+      contentItems: [{ id: 'item-1', type: 'UNKNOWN', title: 'Package', isComplete: false }] as never
+    });
+
+    expect(stage).toEqual({ kind: 'content', position: 1, title: 'Package', contentType: 'lesson' });
   });
 });
