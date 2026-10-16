@@ -9,6 +9,27 @@ import { snackbar } from '$features/ui/snackbar/store';
 import { getOrderedNavigableContent } from './content';
 import { updateLessonCompletionInCourseContent } from './content-completion';
 
+export async function openCourseCompletionIfDone(courseId: string): Promise<void> {
+  const updatedItems = getOrderedNavigableContent(courseApi.course);
+  const allComplete = updatedItems.length > 0 && updatedItems.every((item) => item.isComplete);
+
+  if (!allComplete) {
+    return;
+  }
+
+  openCourseCompletionModal(courseId);
+
+  const certificationEvaluation = await courseApi.getCertificationEvaluation(courseId);
+  if (certificationEvaluation?.data) {
+    const hasCompletedCourse = Boolean(
+      certificationEvaluation.data.eligibleForCertificate || certificationEvaluation.data.certificateEarnedAt
+    );
+    updateCourseCompletionModal(courseId, hasCompletedCourse ? 'eligible' : 'not-eligible', certificationEvaluation.data);
+  } else {
+    closeCourseCompletionModal();
+  }
+}
+
 export async function toggleLessonCompletion(courseId: string, lessonId: string): Promise<boolean> {
   const navigableContentItems = getOrderedNavigableContent(courseApi.course);
   const lesson = navigableContentItems.find((item) => item.type === ContentType.Lesson && item.id === lessonId);
@@ -30,27 +51,8 @@ export async function toggleLessonCompletion(courseId: string, lessonId: string)
     courseApi.course = updateLessonCompletionInCourseContent(courseApi.course, lessonId, isComplete);
   }
 
-  const updatedItems = getOrderedNavigableContent(courseApi.course);
-  const allComplete = isComplete && updatedItems.length > 0 && updatedItems.every((item) => item.isComplete);
-
-  if (!allComplete) {
-    return true;
-  }
-
-  openCourseCompletionModal(courseId);
-
-  const certificationEvaluation = await courseApi.getCertificationEvaluation(courseId);
-  if (certificationEvaluation?.data) {
-    const hasCompletedCourse = Boolean(
-      certificationEvaluation.data.eligibleForCertificate || certificationEvaluation.data.certificateEarnedAt
-    );
-    updateCourseCompletionModal(
-      courseId,
-      hasCompletedCourse ? 'eligible' : 'not-eligible',
-      certificationEvaluation.data
-    );
-  } else {
-    closeCourseCompletionModal();
+  if (isComplete) {
+    await openCourseCompletionIfDone(courseId);
   }
 
   return true;

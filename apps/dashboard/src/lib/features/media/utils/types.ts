@@ -82,5 +82,5 @@ export type RegenerateAssetThumbnailRequest =
 export type RegenerateAssetThumbnailResponse = InferResponseType<RegenerateAssetThumbnailRequest>;
 export type RegenerateAssetThumbnailSuccess = Extract<RegenerateAssetThumbnailResponse, { success: true }>;
 
-export type AssetKindFilter = 'all' | 'video' | 'document' | 'image' | 'audio' | 'other';
+export type AssetKindFilter = 'all' | 'video' | 'document' | 'image' | 'audio' | 'scorm' | 'other';
 export type AssetStatusFilter = 'all' | 'active' | 'archived';

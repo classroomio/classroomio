@@ -15,7 +15,8 @@
     const items = section.items ?? [];
     return {
       lessons: items.filter((item) => item.type === ContentType.Lesson).length,
-      exercises: items.filter((item) => item.type === ContentType.Exercise).length
+      exercises: items.filter((item) => item.type === ContentType.Exercise).length,
+      activities: items.filter((item) => item.type === ContentType.Activity).length
     };
   });
 
@@ -75,7 +76,11 @@
     <div class="flex w-4/6 items-center gap-2">
       <CourseContentIcon type={ContentType.Section} size={16} />
       <p class="text-sm">{section.title}</p>
-      <ContentCountBadges lessons={sectionCount.lessons} exercises={sectionCount.exercises} />
+      <ContentCountBadges
+        lessons={sectionCount.lessons}
+        exercises={sectionCount.exercises}
+        activities={sectionCount.activities}
+      />
     </div>
   {/if}
 

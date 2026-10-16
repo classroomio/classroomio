@@ -17,6 +17,8 @@
   import { setupProgressApi } from '$features/setup/api/setup-progress.svelte';
   import { courseApi } from '$features/course/api';
   import { getActiveCourseNavKey } from '$features/course/utils/functions';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
+  import { ContentType } from '@cio/utils/constants/content';
   import { toggleAiAssistant } from '$features/ai-assistant/utils/store';
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { openCoursePreview } from '$features/course/utils/course-preview';
@@ -32,15 +34,30 @@
   const siteName = $derived($currentOrg.siteName);
   const showCoursePublishBadge = $derived(!$isStudentExperience);
   const isPublicCourse = $derived(courseApi.course?.type === 'PUBLIC');
-  const activeNavKey = $derived(getActiveCourseNavKey(page.url.pathname, courseApi.course?.id ?? ''));
+  const singleActivityKind = $derived.by(() => {
+    const course = courseApi.course;
+    if (!isSingleActivityCourse(course) || !course?.content) return null;
+
+    const items = course.content.grouped
+      ? course.content.sections.flatMap((section) => section.items)
+      : course.content.items;
+    const kind = (items.find((item) => item.type === ContentType.Activity) as { activityKind?: unknown } | undefined)
+      ?.activityKind;
+
+    return typeof kind === 'string' ? kind : null;
+  });
+  const activeNavKey = $derived(
+    getActiveCourseNavKey(page.url.pathname, courseApi.course?.id ?? '', courseApi.course, singleActivityKind)
+  );
   const isPublished = $derived(courseApi.course?.isPublished ?? false);
   const lessonId = $derived(page.params.lessonId as string | undefined);
   const exerciseId = $derived(page.params.exerciseId as string | undefined);
+  const activityId = $derived(page.params.activityId as string | undefined);
   const showMobileBottomNav = $derived(
     isCourseMobileBottomNavVisible({
       isCourseLearnerView: $isCourseLearnerView,
       isMobile: isMobileStore.current,
-      isLessonOrExercisePage: Boolean(lessonId || exerciseId),
+      isContentPage: Boolean(lessonId || exerciseId || activityId),
       courseProgress: getCourseProgress(courseApi.course)
     })
   );

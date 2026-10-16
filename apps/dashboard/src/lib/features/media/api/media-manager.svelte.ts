@@ -1,4 +1,5 @@
 import { presignApi } from '$features/course/api/presign.svelte';
+import { packageApi } from '$features/course/api/package.svelte';
 import { BaseApiWithErrors, classroomio } from '$lib/utils/services/api';
 import type {
   AssetStorageSummary,
@@ -392,6 +393,10 @@ export class MediaApi extends BaseApiWithErrors {
       forPlayback?: boolean;
     } = {}
   ): Promise<string | null> {
+    if (asset.kind === 'scorm') {
+      return packageApi.getDownloadUrl(asset.id);
+    }
+
     if (asset.provider !== 'upload' || !asset.storageKey) {
       return asset.sourceUrl ?? null;
     }

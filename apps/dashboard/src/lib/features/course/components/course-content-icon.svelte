@@ -14,7 +14,8 @@
     // For now, I don't think sections need a different color. If there is a good reason for it, we can uncomment this.
     // [ContentType.Section]: 'text-violet-600 dark:text-violet-400',
     [ContentType.Lesson]: 'text-sky-600 dark:text-sky-400',
-    [ContentType.Exercise]: 'text-green-600 dark:text-green-400'
+    [ContentType.Exercise]: 'text-green-600 dark:text-green-400',
+    [ContentType.Activity]: 'text-amber-600 dark:text-amber-400'
   } as const;
 
   let { type, size = 14, className = '', isHovered = false }: Props = $props();

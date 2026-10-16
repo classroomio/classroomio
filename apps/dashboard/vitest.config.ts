@@ -27,7 +27,15 @@ export default defineConfig({
         replacement: `${path.resolve(currentDir, '../../packages/question-types/src')}/$1`
       },
       { find: /^@cio\/utils$/, replacement: path.resolve(currentDir, '../../packages/utils/src/index.ts') },
-      { find: /^@cio\/utils\/(.*)$/, replacement: `${path.resolve(currentDir, '../../packages/utils/src')}/$1` }
+      { find: /^@cio\/utils\/(.*)$/, replacement: `${path.resolve(currentDir, '../../packages/utils/src')}/$1` },
+      {
+        find: /^@cio\/certificates$/,
+        replacement: path.resolve(currentDir, '../../packages/certificates/src/index.ts')
+      },
+      {
+        find: /^@cio\/certificates\/(.*)$/,
+        replacement: `${path.resolve(currentDir, '../../packages/certificates/src')}/$1`
+      }
     ]
   },
   test: {

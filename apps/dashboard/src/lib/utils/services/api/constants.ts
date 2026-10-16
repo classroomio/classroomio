@@ -15,10 +15,5 @@ export const DEFAULT_CONFIG: Required<ApiClientConfig> = {
   onNetworkError: async (error: Error) => {
     console.error('Network error:', error);
   },
-  onResponse: async (response: Response) => {
-    // Default: log response for debugging
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`API Response: ${response.status} ${response.statusText}`);
-    }
-  }
+  onResponse: async () => {}
 };
