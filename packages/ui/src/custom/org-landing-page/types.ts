@@ -40,6 +40,9 @@ export type CourseItem = {
   currency?: string;
   lessonCount?: number;
   exerciseCount?: number;
+  activityCount?: number;
+  format?: string | null;
+  moduleCount?: number | null;
   totalStudents?: number;
   metadata?: {
     discount?: number;
@@ -195,6 +198,8 @@ export interface OrgLandingPageLabels {
   lessonsLabel?: (count: number) => string;
   /** Plural-aware exercise-count label. Default: `${count} exercises` / `1 exercise`. */
   exercisesLabel?: (count: number) => string;
+  /** Plural-aware package-count label. Default: `${count} packages` / `1 package`. */
+  activitiesLabel?: (count: number) => string;
   /** Plural-aware enrolled-students label. Default: `${count} enrolled`. */
   enrolledLabel?: (count: number) => string;
   /** Eyebrow for the Resources/Links section. Default per template (typically "Resources"). */
@@ -233,13 +238,21 @@ export interface OrgLandingPageLabels {
   terminalEnrollLabel?: string;
 }
 
-export type CourseCurriculumItemKind = 'lesson' | 'exercise';
+export type CourseCurriculumItemKind = 'lesson' | 'exercise' | 'activity';
 
 export type CourseCurriculumLesson = {
   id: string;
   title: string;
   durationMinutes?: number;
   kind?: CourseCurriculumItemKind;
+  modules?: Array<{ id: string; title: string }>;
+};
+
+export type CourseCurriculumActivity = {
+  id: string;
+  title: string;
+  activityKind?: string;
+  modules?: Array<{ id: string; title: string }>;
 };
 
 export type CourseCurriculumSection = {
@@ -247,9 +260,11 @@ export type CourseCurriculumSection = {
   title: string;
   lessons: CourseCurriculumLesson[];
   exerciseCount?: number;
-  /** Rows to list, lessons and exercises in course order. Falls back to `lessons`. */
+  /** Rows to list, lessons, exercises and activities in course order. Falls back to `lessons`. */
   items?: CourseCurriculumLesson[];
-  /** Marks a lesson or exercise outside any section, shown as its own module with no rows. */
+  activities?: CourseCurriculumActivity[];
+  activityCount?: number;
+  /** Marks content outside any section, shown as its own module with no rows. */
   standalone?: CourseCurriculumItemKind;
 };
 
@@ -344,6 +359,7 @@ export interface CourseLandingPageLabels {
   standaloneLessonLabel?: string;
   /** Type label on a module that is a single exercise outside any section. Default: "Exercise". */
   standaloneExerciseLabel?: string;
+  activitiesLabel?: (count: number) => string;
   lecturePrefix?: (index: number) => string;
   infoRequirementsHeading?: string;
   infoRequirementsEyebrow?: string;
@@ -380,6 +396,8 @@ export interface CourseLandingPageLabels {
   lessonDurationLabel?: (minutes: number) => string;
   /** Row label for the exercise count in a facts table. Default: "Exercises". */
   factExercisesLabel?: string;
+  /** Row label for the package count in a facts table. Default: "Packages". */
+  factPackagesLabel?: string;
   /** Value shown when a course includes a certificate. Default: "Included". */
   factIncludedLabel?: string;
 }

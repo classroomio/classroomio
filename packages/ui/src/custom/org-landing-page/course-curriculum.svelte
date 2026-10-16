@@ -6,6 +6,7 @@
   import ChevronUpIcon from '@lucide/svelte/icons/chevron-up';
   import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
+  import PackageIcon from '@lucide/svelte/icons/package';
 
   interface Props {
     variant: OrgLandingPageTheme;
@@ -49,10 +50,22 @@
     return labels?.exercisesLabel?.(count) ?? `${count} ${count === 1 ? 'exercise' : 'exercises'}`;
   }
 
-  function standaloneLabel(kind: 'lesson' | 'exercise'): string {
+  function standaloneLabel(kind: 'lesson' | 'exercise' | 'activity'): string {
     if (kind === 'exercise') return labels?.standaloneExerciseLabel ?? 'Exercise';
+    if (kind === 'activity') return labels?.activitiesLabel?.(1) ?? 'Package';
 
     return labels?.standaloneLessonLabel ?? 'Lesson';
+  }
+
+  function activitiesLabel(count: number): string {
+    return labels?.activitiesLabel?.(count) ?? `${count} ${count === 1 ? 'package' : 'packages'}`;
+  }
+
+  function sectionMeta(lessons: number, exercises?: number, activities?: number): string {
+    const parts = [lessonsLabel(lessons)];
+    if (exercises) parts.push(exercisesLabel(exercises));
+    if (activities) parts.push(activitiesLabel(activities));
+    return parts.join(' · ');
   }
 
   const firstSectionId = $derived(curriculum.sections.find((section) => !section.standalone)?.id);
@@ -77,6 +90,8 @@
     <span class={t.curriculumLessonPrefix}>{lecturePrefix(itemIdx)}</span>
     {#if item.kind === 'exercise'}
       <ListChecksIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
+    {:else if item.kind === 'activity'}
+      <PackageIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
     {:else}
       <CircleCheckIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
     {/if}
@@ -87,6 +102,14 @@
       </span>
     {/if}
   </div>
+  {#if item.kind === 'activity'}
+    {#each item.modules ?? [] as module, moduleIdx (module.id)}
+      <div class={t.curriculumLessonRow}>
+        <span class={t.curriculumLessonPrefix}>{lecturePrefix(moduleIdx)}</span>
+        <span class={t.curriculumLessonTitle}>{module.title}</span>
+      </div>
+    {/each}
+  {/if}
 {/snippet}
 
 <EditableLandingSection sectionKey="curriculum">
@@ -126,9 +149,11 @@
                     <span class={t.curriculumModuleTitle}>{section.title}</span>
                   </span>
                   <span class={t.curriculumModuleMeta}>
-                    {lessonsLabel(section.lessons.length)}{section.exerciseCount
-                      ? ` · ${exercisesLabel(section.exerciseCount)}`
-                      : ''}
+                    {sectionMeta(
+                      section.lessons.length,
+                      section.exerciseCount,
+                      section.activityCount ?? section.activities?.length
+                    )}
                   </span>
                 </button>
                 {#if expanded[section.id]}
@@ -162,9 +187,11 @@
                   {#if section.standalone}
                     {standaloneLabel(section.standalone)}
                   {:else}
-                    {lessonsLabel(section.lessons.length)}{section.exerciseCount
-                      ? ` · ${exercisesLabel(section.exerciseCount)}`
-                      : ''}
+                    {sectionMeta(
+                      section.lessons.length,
+                      section.exerciseCount,
+                      section.activityCount ?? section.activities?.length
+                    )}
                   {/if}
                 </span>
               </div>
