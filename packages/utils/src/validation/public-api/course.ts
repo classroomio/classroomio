@@ -20,8 +20,14 @@ export const ZPublicApiCreateCourse = ZCourseCreateBase.omit({
 });
 export type TPublicApiCreateCourse = z.infer<typeof ZPublicApiCreateCourse>;
 
-export const ZPublicApiUpdateCourse = ZCourseUpdateBase.omit({
-  tagIds: true
+export const ZPublicApiUpdateCourse = ZCourseUpdateBase.extend({
+  tagIds: z
+    .array(z.string().uuid())
+    .max(100)
+    .optional()
+    .describe(
+      "Replaces the course's tags. Send [] to remove them all. Keys without public_api:* (MCP keys) may only send this field."
+    )
 }).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
   message: 'Compliance settings are required when changing a course to COMPLIANCE',
   path: ['compliance']

@@ -12,6 +12,12 @@ import { MCP_TOOL_CREDIT_COST, type TAutomationUsageCategory, type TMcpToolName 
 type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
+  // MCP keys can only send tagIds here.
+  '/public-api/v1/courses/:courseId': { PUT: 'set_course_tags' },
+  '/public-api/v1/tags': { GET: 'list_tags', POST: 'create_tag' },
+  '/public-api/v1/tags/:tagId': { PUT: 'update_tag' },
+  '/public-api/v1/tags/groups': { POST: 'create_tag_group' },
+  '/public-api/v1/tags/groups/:groupId': { PUT: 'update_tag_group' },
   '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
   '/public-api/v1/courses/:courseId/members/:memberId': {
     GET: 'get_course_member',

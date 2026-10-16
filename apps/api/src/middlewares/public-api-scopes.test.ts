@@ -27,7 +27,11 @@ function buildApp(scopes: string[]) {
     .get('/courses/:courseId/students', (c) => c.json({ success: true }))
     .get('/courses/:courseId', (c) => c.json({ success: true }))
     .post('/assets', (c) => c.json({ success: true }, 201))
-    .get('/assets', (c) => c.json({ success: true }));
+    .get('/assets', (c) => c.json({ success: true }))
+    .get('/tags', (c) => c.json({ success: true }))
+    .post('/tags', (c) => c.json({ success: true }, 201))
+    .put('/tags/groups/:groupId', (c) => c.json({ success: true }))
+    .put('/courses/:courseId/members/:memberId', (c) => c.json({ success: true }));
 
   return new Hono().route('/public-api/v1', v1Router);
 }
@@ -106,6 +110,25 @@ describe('publicApiScopesMiddleware', () => {
     const app = buildApp(COHORT_SCOPES);
 
     expect((await app.request('/public-api/v1/assets', { method: 'POST' })).status).toBe(403);
+  });
+
+  it('lets course:read list tags but not write them', async () => {
+    const app = buildApp(['course:read']);
+
+    expect((await app.request('/public-api/v1/tags')).status).toBe(200);
+    expect((await app.request('/public-api/v1/tags', { method: 'POST' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1', { method: 'PUT' })).status).toBe(403);
+  });
+
+  it('lets course:tag:write write tags and reach course update, but not course read, delete or members', async () => {
+    const app = buildApp(['course:tag:write']);
+
+    expect((await app.request('/public-api/v1/tags', { method: 'POST' })).status).toBe(201);
+    expect((await app.request('/public-api/v1/tags/groups/g1', { method: 'PUT' })).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses/c1', { method: 'PUT' })).status).toBe(200);
+    expect((await app.request('/public-api/v1/courses/c1')).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1', { method: 'DELETE' })).status).toBe(403);
+    expect((await app.request('/public-api/v1/courses/c1/members/m1', { method: 'PUT' })).status).toBe(403);
   });
 
   it('lets a public_api:* key create an asset upload', async () => {

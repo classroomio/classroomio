@@ -4,7 +4,7 @@ vi.mock('@cio/core/services/course/course', () => ({
   createCourse: vi.fn(),
   deleteCourse: vi.fn(),
   getCourse: vi.fn(),
-  updateCourse: vi.fn()
+  updateCourse: vi.fn().mockResolvedValue({ course: {}, conversionOffenders: null })
 }));
 
 vi.mock('@api/services/course-import/course-import', () => ({
@@ -15,7 +15,12 @@ vi.mock('@api/services/course-import/course-import', () => ({
 
 vi.mock('@api/services/organization', () => ({ getOrganizationCourses: vi.fn() }));
 vi.mock('@api/services/course/people', () => ({ listCourseMembers: vi.fn() }));
-vi.mock('@api/services/v1/shared', () => ({ assertCourseBelongsToOrganization: vi.fn() }));
+vi.mock('@api/services/v1/shared', () => ({
+  assertAutomationActor: vi.fn(),
+  assertCourseBelongsToOrganization: vi.fn()
+}));
+vi.mock('@api/services/course/update-course', () => ({ updateCourseWithTags: vi.fn() }));
+vi.mock('@cio/db/queries/tag', () => ({ getCourseTagsForOrganization: vi.fn().mockResolvedValue([]) }));
 vi.mock('@api/services/course/certificate-plan', () => ({ assertCertificateChangeAllowed: vi.fn() }));
 
 import { updateCourse } from '@cio/core/services/course/course';
@@ -34,7 +39,7 @@ describe('updatePublicApiCourseService certificate plan', () => {
   it('checks the certificate change against the plan before updating the course', async () => {
     const certificate = { isDownloadable: true };
 
-    await updatePublicApiCourseService(ORG_ID, params, { certificate });
+    await updatePublicApiCourseService(ORG_ID, 'actor-1', params, { certificate });
 
     expect(assertCertificateChangeAllowed).toHaveBeenCalledWith('course-1', certificate);
     expect(updateCourse).toHaveBeenCalledWith('course-1', { certificate });
@@ -46,7 +51,7 @@ describe('updatePublicApiCourseService certificate plan', () => {
     );
 
     await expect(
-      updatePublicApiCourseService(ORG_ID, params, { certificate: { isDownloadable: true } })
+      updatePublicApiCourseService(ORG_ID, 'actor-1', params, { certificate: { isDownloadable: true } })
     ).rejects.toMatchObject({ statusCode: 403, code: ErrorCodes.UPGRADE_REQUIRED });
     expect(updateCourse).not.toHaveBeenCalled();
   });

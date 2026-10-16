@@ -1,0 +1,1122 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public tag contract > ZPublicApiCourseTagResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "color": {
+      "type": "string",
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "name": {
+      "type": "string",
+    },
+    "slug": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "id",
+    "name",
+    "slug",
+    "color",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiCreateTag 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "color": {
+      "enum": [
+        "#EF4444",
+        "#F97316",
+        "#F59E0B",
+        "#84CC16",
+        "#22C55E",
+        "#14B8A6",
+        "#06B6D4",
+        "#3B82F6",
+        "#8B5CF6",
+        "#EC4899",
+      ],
+      "type": "string",
+    },
+    "description": {
+      "maxLength": 240,
+      "type": "string",
+    },
+    "groupId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "name",
+    "groupId",
+    "color",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiCreateTagGroup 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "description": {
+      "maxLength": 240,
+      "type": "string",
+    },
+    "name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "type": "string",
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer",
+    },
+  },
+  "required": [
+    "name",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiTagGroupParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "groupId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "groupId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiTagGroupResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "createdAt": {
+      "type": "string",
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "name": {
+      "type": "string",
+    },
+    "order": {
+      "type": "number",
+    },
+    "organizationId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "slug": {
+      "type": "string",
+    },
+    "updatedAt": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "id",
+    "organizationId",
+    "name",
+    "slug",
+    "description",
+    "order",
+    "createdAt",
+    "updatedAt",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiTagGroupWithTagsResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "createdAt": {
+      "type": "string",
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "name": {
+      "type": "string",
+    },
+    "order": {
+      "type": "number",
+    },
+    "organizationId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "slug": {
+      "type": "string",
+    },
+    "tags": {
+      "items": {
+        "properties": {
+          "color": {
+            "type": "string",
+          },
+          "courseCount": {
+            "description": "Active courses that carry this tag",
+            "type": "number",
+          },
+          "createdAt": {
+            "type": "string",
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "groupId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+          "organizationId": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "slug": {
+            "description": "Used by the tags filter on the course list",
+            "type": "string",
+          },
+          "updatedAt": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "organizationId",
+          "groupId",
+          "name",
+          "slug",
+          "description",
+          "color",
+          "createdAt",
+          "updatedAt",
+          "courseCount",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "updatedAt": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "id",
+    "organizationId",
+    "name",
+    "slug",
+    "description",
+    "order",
+    "createdAt",
+    "updatedAt",
+    "tags",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiTagParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "tagId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "tagId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiTagResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "color": {
+      "type": "string",
+    },
+    "createdAt": {
+      "type": "string",
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "groupId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "name": {
+      "type": "string",
+    },
+    "organizationId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "slug": {
+      "description": "Used by the tags filter on the course list",
+      "type": "string",
+    },
+    "updatedAt": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "id",
+    "organizationId",
+    "groupId",
+    "name",
+    "slug",
+    "description",
+    "color",
+    "createdAt",
+    "updatedAt",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiTagsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "description": "Only return the tags assigned to this course",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiUpdateCourseResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "bannerImage": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "callout": {
+      "anyOf": [
+        {
+          "properties": {
+            "animation": {
+              "enum": [
+                "waves",
+                "dotted",
+                "none",
+              ],
+              "type": "string",
+            },
+            "buttonLabel": {
+              "type": "string",
+            },
+            "buttonUrl": {
+              "type": "string",
+            },
+            "description": {
+              "type": "string",
+            },
+            "title": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "title",
+            "description",
+            "buttonLabel",
+            "buttonUrl",
+          ],
+          "type": "object",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "certificate": {
+      "anyOf": [
+        {
+          "additionalProperties": {},
+          "properties": {
+            "deadline": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "design": {
+              "properties": {
+                "accentColor": {
+                  "type": "string",
+                },
+                "descriptionOverride": {
+                  "type": "string",
+                },
+                "idFormat": {
+                  "type": "string",
+                },
+                "signatories": {
+                  "items": {
+                    "properties": {
+                      "enabled": {
+                        "type": "boolean",
+                      },
+                      "name": {
+                        "type": "string",
+                      },
+                      "role": {
+                        "type": "string",
+                      },
+                      "signatureUrl": {
+                        "type": "string",
+                      },
+                    },
+                    "required": [
+                      "name",
+                      "role",
+                    ],
+                    "type": "object",
+                  },
+                  "type": "array",
+                },
+                "subtitle": {
+                  "type": "string",
+                },
+                "templateId": {
+                  "enum": [
+                    "classique",
+                    "brutalist",
+                    "noir",
+                    "poster",
+                    "minimal",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "templateId",
+                "accentColor",
+              ],
+              "type": "object",
+            },
+            "emailMessage": {
+              "anyOf": [
+                {
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "exerciseMinScorePercent": {
+              "anyOf": [
+                {
+                  "type": "number",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "isDownloadable": {
+              "type": "boolean",
+            },
+            "requiredExerciseId": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "theme": {
+              "description": "Deprecated; use design.templateId",
+              "type": "string",
+            },
+            "threshold": {
+              "type": "number",
+            },
+          },
+          "type": "object",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "compliance": {
+      "anyOf": [
+        {
+          "additionalProperties": {},
+          "properties": {
+            "framework": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "HIPAA",
+                    "OSHA",
+                    "SOX",
+                    "GDPR",
+                    "PCI_DSS",
+                    "FERPA",
+                    "ISO",
+                    "CUSTOM",
+                  ],
+                  "type": "string",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "gracePeriodDays": {
+              "type": "number",
+            },
+            "isMandatory": {
+              "type": "boolean",
+            },
+            "maxRetakeAttempts": {
+              "anyOf": [
+                {
+                  "type": "number",
+                },
+                {
+                  "type": "null",
+                },
+              ],
+            },
+            "passingScore": {
+              "type": "number",
+            },
+            "reminderDaysBefore": {
+              "items": {
+                "type": "number",
+              },
+              "type": "array",
+            },
+            "retakeIntervalMonths": {
+              "type": "number",
+            },
+          },
+          "required": [
+            "retakeIntervalMonths",
+          ],
+          "type": "object",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "cost": {
+      "anyOf": [
+        {
+          "type": "number",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "createdAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "currency": {
+      "type": "string",
+    },
+    "description": {
+      "type": "string",
+    },
+    "displayOrder": {
+      "anyOf": [
+        {
+          "type": "number",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "groupId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "isPublished": {
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "isTemplate": {
+      "type": "boolean",
+    },
+    "logo": {
+      "description": "Deprecated; use bannerImage",
+      "type": "string",
+    },
+    "metadata": {
+      "additionalProperties": {},
+      "properties": {
+        "aiTutor": {
+          "additionalProperties": {},
+          "description": "Per-course AI tutor overrides",
+          "propertyNames": {
+            "type": "string",
+          },
+          "type": "object",
+        },
+        "allowMarkdownExport": {
+          "type": "boolean",
+        },
+        "allowNewStudent": {
+          "description": "Deprecated; use allowSelfEnrollment",
+          "type": "boolean",
+        },
+        "allowSelfEnrollment": {
+          "type": "boolean",
+        },
+        "certificate": {
+          "properties": {
+            "templateUrl": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "templateUrl",
+          ],
+          "type": "object",
+        },
+        "commentsEnabled": {
+          "type": "boolean",
+        },
+        "description": {
+          "type": "string",
+        },
+        "discount": {
+          "type": "number",
+        },
+        "goals": {
+          "type": "string",
+        },
+        "grading": {
+          "type": "boolean",
+        },
+        "instructor": {
+          "properties": {
+            "coursesNo": {
+              "type": "number",
+            },
+            "description": {
+              "type": "string",
+            },
+            "imgUrl": {
+              "type": "string",
+            },
+            "name": {
+              "type": "string",
+            },
+            "role": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "name",
+            "role",
+            "description",
+            "imgUrl",
+          ],
+          "type": "object",
+        },
+        "isContentGroupingEnabled": {
+          "type": "boolean",
+        },
+        "lessonDownload": {
+          "type": "boolean",
+        },
+        "lessonTabsOrder": {
+          "items": {
+            "properties": {
+              "id": {
+                "type": "number",
+              },
+              "name": {
+                "type": "string",
+              },
+            },
+            "required": [
+              "id",
+              "name",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "liveSessionReminderOffsetsMinutes": {
+          "items": {
+            "type": "number",
+          },
+          "type": "array",
+        },
+        "paymentEnabled": {
+          "type": "boolean",
+        },
+        "paymentLink": {
+          "type": "string",
+        },
+        "progressionMode": {
+          "enum": [
+            "free",
+            "sequential",
+          ],
+          "type": "string",
+        },
+        "requirements": {
+          "type": "string",
+        },
+        "reviews": {
+          "items": {
+            "properties": {
+              "avatar_url": {
+                "type": "string",
+              },
+              "created_at": {
+                "type": "number",
+              },
+              "description": {
+                "type": "string",
+              },
+              "hide": {
+                "type": "boolean",
+              },
+              "id": {
+                "type": "number",
+              },
+              "name": {
+                "type": "string",
+              },
+              "rating": {
+                "type": "number",
+              },
+            },
+            "required": [
+              "id",
+              "hide",
+              "name",
+              "avatar_url",
+              "rating",
+              "created_at",
+              "description",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
+        "reward": {
+          "properties": {
+            "description": {
+              "type": "string",
+            },
+            "show": {
+              "type": "boolean",
+            },
+          },
+          "required": [
+            "show",
+          ],
+          "type": "object",
+        },
+        "sectionDisplay": {
+          "additionalProperties": {
+            "type": "boolean",
+          },
+          "propertyNames": {
+            "type": "string",
+          },
+          "type": "object",
+        },
+        "sessionTimezone": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+        "showDiscount": {
+          "type": "boolean",
+        },
+        "skills": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "tools": {
+          "items": {
+            "type": "string",
+          },
+          "type": "array",
+        },
+        "videoUrl": {
+          "type": "string",
+        },
+        "welcomeEmailMessage": {
+          "anyOf": [
+            {
+              "type": "string",
+            },
+            {
+              "type": "null",
+            },
+          ],
+        },
+      },
+      "type": "object",
+    },
+    "overview": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "publicForAll": {
+      "type": "boolean",
+    },
+    "seedKey": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "slug": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "status": {
+      "description": "ACTIVE, or DELETED once the course is deleted",
+      "type": "string",
+    },
+    "tags": {
+      "description": "The tags on the course after the update",
+      "items": {
+        "properties": {
+          "color": {
+            "type": "string",
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "name": {
+            "type": "string",
+          },
+          "slug": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+          "slug",
+          "color",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "templateId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "title": {
+      "type": "string",
+    },
+    "type": {
+      "anyOf": [
+        {
+          "enum": [
+            "SELF_PACED",
+            "LIVE_CLASS",
+            "COMPLIANCE",
+            "PUBLIC",
+          ],
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "updatedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+  },
+  "required": [
+    "id",
+    "title",
+    "description",
+    "overview",
+    "createdAt",
+    "updatedAt",
+    "groupId",
+    "isTemplate",
+    "templateId",
+    "publicForAll",
+    "seedKey",
+    "logo",
+    "slug",
+    "metadata",
+    "cost",
+    "currency",
+    "bannerImage",
+    "isPublished",
+    "displayOrder",
+    "certificate",
+    "compliance",
+    "status",
+    "type",
+    "callout",
+    "tags",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiUpdateTag 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "color": {
+      "enum": [
+        "#EF4444",
+        "#F97316",
+        "#F59E0B",
+        "#84CC16",
+        "#22C55E",
+        "#14B8A6",
+        "#06B6D4",
+        "#3B82F6",
+        "#8B5CF6",
+        "#EC4899",
+      ],
+      "type": "string",
+    },
+    "description": {
+      "maxLength": 240,
+      "type": "string",
+    },
+    "groupId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public tag contract > ZPublicApiUpdateTagGroup 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "description": {
+      "maxLength": 240,
+      "type": "string",
+    },
+    "name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "type": "string",
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;

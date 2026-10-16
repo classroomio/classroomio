@@ -4,6 +4,7 @@ import type {
   TAutomationDraftTagAssignment,
   TAutomationDraftTagParam
 } from '@cio/utils/validation/tag';
+import { pickTagColor, slugifyTagValue } from '@cio/utils/validation/tag';
 import type { TCourseContentReorder, TCourseLandingPageUpdate, TCourseUpdateParam } from '@cio/utils/validation/course';
 import type {
   TCourseImportCourseParam,
@@ -48,6 +49,11 @@ import type {
   TPublicApiPaginationQuery,
   TPublicApiSetCohortInviteLinkRevoked,
   TPublicApiSetCohortReaction,
+  TPublicApiCreateTag,
+  TPublicApiCreateTagGroup,
+  TPublicApiTagsQuery,
+  TPublicApiUpdateTag,
+  TPublicApiUpdateTagGroup,
   TPublicApiUpdateCohort,
   TPublicApiUpdateCohortGoal,
   TPublicApiUpdateCohortMember,
@@ -86,6 +92,9 @@ type PaginatedResponse<T> = {
     totalPages: number;
   };
 };
+
+type TCourseTag = { id: string; name: string; slug: string; color: string };
+type TTagGroup = { id: string; slug: string; tags: TCourseTag[] };
 
 type RequestOptions = {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -243,13 +252,91 @@ export class ClassroomIoApiClient {
     });
   }
 
+  /** Matches tags by slug, creating missing ones (and their group) before setting each course's tagIds. */
   async tagCourses(payload: TAutomationCourseTagAssignment) {
-    return this.request<
-      Array<{ courseId: string; tags: Array<{ id: string; name: string; slug: string; color: string }> }>
-    >('/organization/tags/courses/assign', {
+    const groupName = payload.groupName?.trim() || 'Automation';
+    const groups = await this.listAllTagGroups();
+    const tagIds = await this.ensureTagIds(groups, payload.tagNames, groupName);
+    const results: Array<{ courseId: string; tags: TCourseTag[] }> = [];
+
+    for (const courseId of new Set(payload.courseIds)) {
+      const existingIds =
+        payload.mode === 'merge'
+          ? (await this.listAllTagGroups(courseId)).flatMap((group) => group.tags.map((tag) => tag.id))
+          : [];
+      const course = await this.setCourseTags(courseId, [...new Set([...existingIds, ...tagIds])]);
+
+      results.push({ courseId, tags: course.tags });
+    }
+
+    return results;
+  }
+
+  async setCourseTags(courseId: string, tagIds: string[]) {
+    return this.request<{ tags: TCourseTag[] }>(`/public-api/v1/courses/${encodeURIComponent(courseId)}`, {
       method: 'PUT',
-      body: payload
+      body: { tagIds }
     });
+  }
+
+  async createTag(payload: TPublicApiCreateTag) {
+    return this.request<{ id: string }>('/public-api/v1/tags', { method: 'POST', body: payload });
+  }
+
+  async updateTag(tagId: string, payload: TPublicApiUpdateTag) {
+    return this.request(`/public-api/v1/tags/${encodeURIComponent(tagId)}`, { method: 'PUT', body: payload });
+  }
+
+  async createTagGroup(payload: TPublicApiCreateTagGroup) {
+    return this.request<{ id: string }>('/public-api/v1/tags/groups', { method: 'POST', body: payload });
+  }
+
+  async updateTagGroup(groupId: string, payload: TPublicApiUpdateTagGroup) {
+    return this.request(`/public-api/v1/tags/groups/${encodeURIComponent(groupId)}`, { method: 'PUT', body: payload });
+  }
+
+  async listTags(query: Partial<TPublicApiTagsQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    if (query.page) searchParams.set('page', String(query.page));
+    if (query.limit) searchParams.set('limit', String(query.limit));
+    if (query.courseId) searchParams.set('courseId', query.courseId);
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated<TTagGroup[]>(`/public-api/v1/tags${querySuffix}`, { method: 'GET' });
+  }
+
+  private async listAllTagGroups(courseId?: string) {
+    const groups: TTagGroup[] = [];
+
+    for (let page = 1; ; page++) {
+      const result = await this.listTags({ page, limit: 100, courseId });
+      groups.push(...result.data);
+
+      if (page >= result.pagination.totalPages) return groups;
+    }
+  }
+
+  private async ensureTagIds(groups: TTagGroup[], tagNames: string[], groupName: string) {
+    const tagsBySlug = new Map(groups.flatMap((group) => group.tags.map((tag) => [tag.slug, tag.id] as const)));
+    let groupId = groups.find((group) => group.slug === slugifyTagValue(groupName))?.id;
+    const tagIds = new Set<string>();
+
+    for (const rawName of tagNames) {
+      const name = rawName.trim();
+      const slug = slugifyTagValue(name);
+      const existingId = tagsBySlug.get(slug);
+      if (existingId) {
+        tagIds.add(existingId);
+        continue;
+      }
+
+      groupId ??= (await this.createTagGroup({ name: groupName })).id;
+      const created = await this.createTag({ name, groupId, color: pickTagColor(name) });
+      tagsBySlug.set(slug, created.id);
+      tagIds.add(created.id);
+    }
+
+    return [...tagIds];
   }
 
   async getCourseCertificate(courseId: string) {

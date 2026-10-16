@@ -10,6 +10,8 @@ const COURSE_CERTIFICATE_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/certifi
 const ANALYTICS_PATH = /^(?:\/public-api\/v1)?(?:\/analytics|\/courses\/[^/]+\/analytics)(?:\/|$)/;
 const COURSE_LESSON_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/lessons(?:\/|$)/;
 const MEDIA_PATH = /^(?:\/public-api\/v1)?\/assets(?:\/|$)/;
+const TAG_PATH = /^(?:\/public-api\/v1)?\/tags(?:\/|$)/;
+const COURSE_ITEM_PATH = /^(?:\/public-api\/v1)?\/courses\/[^/]+\/?$/;
 
 export function getPublicApiRouteScope(method: string, path: string): TOrganizationApiKeyScope | null {
   const isRead = method === 'GET' || method === 'HEAD';
@@ -38,6 +40,15 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
   // falls through to null and is refused rather than opened by a write scope.
   if (MEDIA_PATH.test(path)) {
     return method === 'GET' || method === 'HEAD' ? null : 'media:write';
+  }
+
+  if (TAG_PATH.test(path)) {
+    return isRead ? 'course:read' : 'course:tag:write';
+  }
+
+  // The handler limits these keys to a tagIds-only body; every other course field still needs public_api:*.
+  if (COURSE_ITEM_PATH.test(path) && method === 'PUT') {
+    return 'course:tag:write';
   }
 
   return null;

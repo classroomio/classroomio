@@ -289,7 +289,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'tag_courses',
-    'Assign tags directly to one or more live courses by name. Default mode is merge, so existing tags are preserved unless replace is requested.',
+    'Assign tags to one or more live courses by name, creating missing tags (in groupName, default "Automation"); the key creator must be an org admin. Default mode is merge, so existing tags are kept unless replace is requested.',
     tagCoursesShape,
     async (args) => {
       const payload = ZAutomationCourseTagAssignment.parse(args);

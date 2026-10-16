@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`, and the tag endpoints (\`/tags/**\`) through \`course:read\` and \`course:tag:write\`. With \`course:tag:write\` they can also call \`PUT /courses/{courseId}\`, but only with a body that holds just \`tagIds\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -212,7 +212,12 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/analytics/compliance/learners': 'List compliance status per learner',
   'GET /public-api/v1/analytics/learners/{profileId}': "Get a learner's analytics",
   'GET /public-api/v1/courses/{courseId}/analytics': 'Get course analytics',
-  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics'
+  'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics',
+  'GET /public-api/v1/tags': 'List tag groups and tags',
+  'POST /public-api/v1/tags': 'Create a tag',
+  'PUT /public-api/v1/tags/{tagId}': 'Update a tag',
+  'POST /public-api/v1/tags/groups': 'Create a tag group',
+  'PUT /public-api/v1/tags/groups/{groupId}': 'Update a tag group'
 };
 
 // Scalar groups operations under these tags.
@@ -228,7 +233,8 @@ const OPERATION_TAGS = [
   { name: 'Cohort Newsfeed', description: 'Post, comment, and react on a cohort newsfeed.' },
   { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
   { name: 'Cohort Invites', description: 'Invite people to a cohort.' },
-  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' }
+  { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' },
+  { name: 'Tags', description: 'Create tag groups and tags. Set them on a course with tagIds on the course update.' }
 ];
 
 function applySummariesToOperations(paths: Record<string, unknown>) {

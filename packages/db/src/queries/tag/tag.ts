@@ -3,6 +3,9 @@ import { and, asc, count, eq, ilike, inArray, sql } from 'drizzle-orm';
 
 import * as schema from '@db/schema';
 import { db, type DbOrTxClient } from '@db/drizzle';
+import { slugifyTagValue } from '@cio/utils/validation/tag';
+
+export { slugifyTagValue };
 
 export interface TTagWithCourseCount extends TTag {
   courseCount: number;
@@ -41,18 +44,6 @@ export type TSearchOrgTag =
 
 interface GetTagGroupsWithTagsOptions {
   onlyPublishedCourses?: boolean;
-}
-
-export function slugifyTagValue(value: string): string {
-  const slug = value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-|-$/g, '');
-
-  return slug || 'tag';
 }
 
 async function ensureUniqueSlug(baseSlug: string, exists: (slug: string) => Promise<boolean>): Promise<string> {

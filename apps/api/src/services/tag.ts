@@ -25,8 +25,7 @@ import {
   updateTagGroup
 } from '@cio/db/queries/tag';
 import { getOrgIdBySiteName, isUserOrgAdmin } from '@cio/db/queries/organization';
-import { TAG_COLOR_OPTIONS, type TTagColor } from '@cio/utils/validation/tag';
-import { slugifyTagValue } from '@cio/db/queries/tag';
+import { pickTagColor, slugifyTagValue } from '@cio/utils/validation/tag';
 import type { DbOrTxClient } from '@cio/db/drizzle';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -43,11 +42,6 @@ function normalizeOptionalText(value: string | undefined): string | null | undef
 
 function normalizeAutomationTagNames(tagNames: string[]) {
   return Array.from(new Map(tagNames.map((name) => [name.trim().toLowerCase(), name.trim()])).values()).filter(Boolean);
-}
-
-function pickTagColor(name: string): TTagColor {
-  const seed = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  return TAG_COLOR_OPTIONS[seed % TAG_COLOR_OPTIONS.length] as TTagColor;
 }
 
 async function ensureAutomationTagGroup(orgId: string, groupName: string) {

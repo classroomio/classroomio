@@ -16,6 +16,23 @@ export const TAG_COLOR_OPTIONS = [
 export const ZTagColor = z.enum(TAG_COLOR_OPTIONS);
 export type TTagColor = z.infer<typeof ZTagColor>;
 
+export function slugifyTagValue(value: string): string {
+  const slug = value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  return slug || 'tag';
+}
+
+export function pickTagColor(name: string): TTagColor {
+  const seed = Array.from(name).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return TAG_COLOR_OPTIONS[seed % TAG_COLOR_OPTIONS.length] as TTagColor;
+}
+
 export const ZTagGroupParam = z.object({
   groupId: z.uuid()
 });
