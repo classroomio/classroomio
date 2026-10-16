@@ -1,5 +1,5 @@
-import { generateSlug } from '@cio/utils/functions';
 import { learningPathApi } from '../api';
+import { generatePathSlug } from './path-slug';
 import type { LearningPathDetail } from './types';
 
 export type PublishPathResult = { ok: true; slug: string } | { ok: false; reason: 'failed' };
@@ -16,7 +16,7 @@ export async function publishPath(path: LearningPathDetail | null | undefined): 
   }
 
   const trimmedSlug = path.slug?.trim();
-  const slug = trimmedSlug ? trimmedSlug : generateSlug(path.name, { appendTimestamp: true });
+  const slug = trimmedSlug ? trimmedSlug : generatePathSlug(path.name);
   const pathPublicId = path.publicId ?? path.id;
 
   const updated = await learningPathApi.update(pathPublicId, { isPublished: true, slug }, { showSuccessToast: false });
