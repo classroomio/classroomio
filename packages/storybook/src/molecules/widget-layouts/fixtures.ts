@@ -37,6 +37,7 @@ function makeCourse(
     price: partial.price ?? 'Free',
     lessonCount: partial.lessonCount ?? 12,
     exerciseCount: partial.exerciseCount ?? 4,
+    activityCount: partial.activityCount ?? 0,
     rating: partial.rating ?? 4.4,
     ratingCount: partial.ratingCount ?? 38,
     courseType: partial.courseType,

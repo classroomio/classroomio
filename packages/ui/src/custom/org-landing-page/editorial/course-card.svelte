@@ -23,6 +23,9 @@
 
   const courseTypeMeta = $derived(getCourseTypeLandingMeta(course));
   const resolvedLessonsLabel = $derived(labels?.lessonsLabel ?? defaultLessonsLabel);
+  const resolvedActivitiesLabel = $derived(
+    labels?.activitiesLabel ?? ((count: number) => `${count} ${count === 1 ? 'package' : 'packages'}`)
+  );
   const resolvedEnrolledLabel = $derived(labels?.enrolledLabel ?? defaultEnrolledLabel);
 
   const thumbBg = $derived(
@@ -84,12 +87,18 @@
       {course.description}
     </p>
 
-    {#if course.lessonCount || course.totalStudents || course.level}
+    {#if course.lessonCount || course.activityCount || course.totalStudents || course.level}
       <div
         class="ui:flex ui:flex-wrap ui:items-center ui:gap-x-3 ui:gap-y-1 ui:text-[12.5px] ui:mb-4 ui:text-[var(--landing-fg-muted)]"
       >
         {#if course.lessonCount}
           <span>{resolvedLessonsLabel(course.lessonCount)}</span>
+        {/if}
+        {#if course.activityCount}
+          {#if course.lessonCount}
+            <span aria-hidden="true">·</span>
+          {/if}
+          <span>{resolvedActivitiesLabel(course.activityCount)}</span>
         {/if}
         {#if course.level}
           {#if course.lessonCount}

@@ -48,6 +48,17 @@
     return labels?.exercisesLabel?.(count) ?? `${count} ${count === 1 ? 'exercise' : 'exercises'}`;
   }
 
+  function activitiesLabel(count: number): string {
+    return labels?.activitiesLabel?.(count) ?? `${count} ${count === 1 ? 'package' : 'packages'}`;
+  }
+
+  function sectionMeta(lessons: number, exercises?: number, activities?: number): string {
+    const parts = [lessonsLabel(lessons)];
+    if (exercises) parts.push(exercisesLabel(exercises));
+    if (activities) parts.push(activitiesLabel(activities));
+    return parts.join(' · ');
+  }
+
   // Accordion state — first section open by default.
   let expanded = $state<Record<string, boolean>>({});
   $effect(() => {
@@ -91,9 +102,11 @@
                   <span class={t.curriculumModuleTitle}>{section.title}</span>
                 </span>
                 <span class={t.curriculumModuleMeta}>
-                  {lessonsLabel(section.lessons.length)}{section.exerciseCount
-                    ? ` · ${exercisesLabel(section.exerciseCount)}`
-                    : ''}
+                  {sectionMeta(
+                    section.lessons.length,
+                    section.exerciseCount,
+                    section.activityCount ?? section.activities?.length
+                  )}
                 </span>
               </button>
               {#if expanded[section.id]}
@@ -109,6 +122,19 @@
                         </span>
                       {/if}
                     </div>
+                  {/each}
+                  {#each section.activities ?? [] as activity (activity.id)}
+                    <div class={t.curriculumLessonRow}>
+                      <span class={t.curriculumLessonPrefix}>◆</span>
+                      <CircleCheckIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
+                      <span class={t.curriculumLessonTitle}>{activity.title}</span>
+                    </div>
+                    {#each activity.modules ?? [] as module, moduleIdx (module.id)}
+                      <div class={t.curriculumLessonRow}>
+                        <span class={t.curriculumLessonPrefix}>{lecturePrefix(moduleIdx)}</span>
+                        <span class={t.curriculumLessonTitle}>{module.title}</span>
+                      </div>
+                    {/each}
                   {/each}
                 </div>
               {/if}
@@ -132,9 +158,11 @@
                   <h3 class={t.curriculumModuleTitle}>{section.title}</h3>
                 </div>
                 <span class={t.curriculumModuleMeta}>
-                  {lessonsLabel(section.lessons.length)}{section.exerciseCount
-                    ? ` · ${exercisesLabel(section.exerciseCount)}`
-                    : ''}
+                  {sectionMeta(
+                    section.lessons.length,
+                    section.exerciseCount,
+                    section.activityCount ?? section.activities?.length
+                  )}
                 </span>
               </div>
               <div class="ui:flex ui:flex-col">
@@ -149,6 +177,19 @@
                       </span>
                     {/if}
                   </div>
+                {/each}
+                {#each section.activities ?? [] as activity (activity.id)}
+                  <div class={t.curriculumLessonRow}>
+                    <span class={t.curriculumLessonPrefix}>◆</span>
+                    <CircleCheckIcon class={`${t.curriculumLessonIcon} ui:size-4`} />
+                    <span class={t.curriculumLessonTitle}>{activity.title}</span>
+                  </div>
+                  {#each activity.modules ?? [] as module, moduleIdx (module.id)}
+                    <div class={t.curriculumLessonRow}>
+                      <span class={t.curriculumLessonPrefix}>{lecturePrefix(moduleIdx)}</span>
+                      <span class={t.curriculumLessonTitle}>{module.title}</span>
+                    </div>
+                  {/each}
                 {/each}
               </div>
             </div>

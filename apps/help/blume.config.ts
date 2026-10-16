@@ -290,6 +290,21 @@ export default defineConfig({
             ]
           },
           {
+            label: 'Use SCORM packages',
+            display: 'group',
+            collapsed: true,
+            items: [
+              {
+                label: 'Add a SCORM package to a course',
+                root: '/build-courses/add-a-scorm-package'
+              },
+              {
+                label: 'Create a SCORM course',
+                root: '/build-courses/create-a-scorm-course'
+              }
+            ]
+          },
+          {
             label: 'Configure course settings',
             display: 'group',
             collapsed: true,
@@ -823,6 +838,10 @@ export default defineConfig({
               {
                 label: 'View submissions and completion data',
                 root: '/analytics-and-reporting/view-submissions-and-completion-data'
+              },
+              {
+                label: 'Review SCORM results',
+                root: '/analytics-and-reporting/review-scorm-results'
               }
             ]
           },

@@ -695,6 +695,14 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
     const courseCurrency = typeof courseRecord.currency === 'string' ? courseRecord.currency : undefined;
     const lessonCount = typeof courseRecord.lessonCount === 'number' ? courseRecord.lessonCount : undefined;
     const exerciseCount = typeof courseRecord.exerciseCount === 'number' ? courseRecord.exerciseCount : undefined;
+    const activityCount = typeof courseRecord.activityCount === 'number' ? courseRecord.activityCount : undefined;
+    const format = typeof courseRecord.format === 'string' ? courseRecord.format : undefined;
+    const moduleCount =
+      typeof courseRecord.moduleCount === 'number'
+        ? courseRecord.moduleCount
+        : typeof courseRecord.totalModules === 'number'
+          ? courseRecord.totalModules
+          : undefined;
     const totalStudents = typeof courseRecord.totalStudents === 'number' ? courseRecord.totalStudents : undefined;
     const image = typeof courseRecord.image === 'string' ? courseRecord.image : undefined;
     const bannerImage = resolveCourseBannerImage({
@@ -725,6 +733,9 @@ export function mapPublicCoursesToLandingPageCourses(courses: OrgPublicCourses):
       currency: courseCurrency,
       lessonCount,
       exerciseCount,
+      activityCount,
+      format,
+      moduleCount,
       totalStudents,
       metadata: metadataRecord
         ? {
@@ -755,6 +766,7 @@ export function buildOrgLandingPageLabels(): OrgLandingPageProps['labels'] {
     startCourseLabel: t.get('course.navItem.landing_page.start_course'),
     lessonsLabel: (count) => t.get('courses.course_card.lessons_count', { count }),
     exercisesLabel: (count) => t.get('courses.course_card.exercises_count', { count }),
+    activitiesLabel: (count) => t.get('courses.course_card.activities_count', { count }),
     enrolledLabel: (count) => t.get('audience.learner_count', { count }),
     resourcesEyebrow: t.get('settings.landing_page.editor.sections.links'),
     embedEyebrow: t.get('settings.landing_page.editor.sections.embed'),
