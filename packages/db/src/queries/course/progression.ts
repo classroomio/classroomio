@@ -77,6 +77,26 @@ export function submissionMeetsCompletionPolicySql(
   )`;
 }
 
+export type ActivityAlias = 'course_activity' | 'activity';
+
+/**
+ * Single source of truth for whether an activity counts as done.
+ */
+export function isActivityCompletedSql(
+  activityAlias: ActivityAlias | string,
+  profileId: string | SQL<string>
+): SQL<boolean> {
+  const activity = sql.raw(activityAlias);
+
+  return sql<boolean>`EXISTS (
+    SELECT 1
+    FROM ${schema.activityCompletion}
+    WHERE ${schema.activityCompletion.activityId} = ${activity}.id
+      AND ${schema.activityCompletion.profileId} = ${profileId}
+      AND ${schema.activityCompletion.isComplete} = true
+  )`;
+}
+
 export type LessonProgressionPolicy = {
   id: string;
   completionPolicy: string;
@@ -168,6 +188,42 @@ export async function getCompletedExerciseIdsForMember(courseId: string, groupMe
   } catch (error) {
     console.error('getCompletedExerciseIdsForMember error:', error);
     throw new Error(`Failed to get completed exercises: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+export type ActivityProgressionPolicy = {
+  id: string;
+  isUnlocked: boolean | null;
+};
+
+export async function getActivityProgressionPolicies(courseId: string): Promise<ActivityProgressionPolicy[]> {
+  try {
+    return db
+      .select({
+        id: schema.courseActivity.id,
+        isUnlocked: schema.courseActivity.isUnlocked
+      })
+      .from(schema.courseActivity)
+      .where(eq(schema.courseActivity.courseId, courseId));
+  } catch (error) {
+    console.error('getActivityProgressionPolicies error:', error);
+    throw new Error(
+      `Failed to get activity progression policies: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export async function getCompletedActivityIdsForProfile(courseId: string, profileId: string): Promise<Set<string>> {
+  try {
+    const rows = await db
+      .select({ id: schema.courseActivity.id })
+      .from(schema.courseActivity)
+      .where(and(eq(schema.courseActivity.courseId, courseId), isActivityCompletedSql('course_activity', profileId)));
+
+    return new Set(rows.map((row) => row.id));
+  } catch (error) {
+    console.error('getCompletedActivityIdsForProfile error:', error);
+    throw new Error(`Failed to get completed activities: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

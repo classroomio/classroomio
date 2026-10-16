@@ -15,6 +15,13 @@ import type {
   TCourseSectionUpdate
 } from '@cio/utils/validation/course/section';
 import { updateUngroupedExercisesSectionId } from '@cio/db/queries/exercise/exercise';
+import { ContentType } from '@cio/utils/constants';
+import { assertCourseAcceptsContent } from './content';
+import {
+  countActivitiesInSection,
+  getActivitiesBySectionId,
+  updateUngroupedActivitiesSectionId
+} from '@cio/db/queries/activity';
 import { db } from '@cio/db/drizzle';
 import { claimSectionOrder } from './root-order';
 
@@ -26,6 +33,8 @@ import { claimSectionOrder } from './root-order';
  */
 export async function createCourseSection(courseId: string, data: TCourseSectionCreate): Promise<TCourseSection> {
   try {
+    await assertCourseAcceptsContent(courseId, ContentType.Section);
+
     const [section] = await db.transaction(async (tx) => {
       const order = await claimSectionOrder(courseId, data.order, null, tx);
       return createCourseSections([{ ...data, order, courseId }], tx);
@@ -55,8 +64,10 @@ export async function createCourseSection(courseId: string, data: TCourseSection
 export async function promoteUngroupedSection(
   courseId: string,
   data: TCourseSectionPromoteUngrouped
-): Promise<{ section: TCourseSection; movedLessons: number; movedExercises: number }> {
+): Promise<{ section: TCourseSection; movedLessons: number; movedExercises: number; movedActivities: number }> {
   try {
+    await assertCourseAcceptsContent(courseId, ContentType.Section);
+
     const existingSections = await getCourseSectionsByCourseId(courseId);
     const nextOrder = Math.max(...existingSections.map((section) => section.order ?? 0), 0) + 1;
 
@@ -76,19 +87,21 @@ export async function promoteUngroupedSection(
         throw new AppError('Failed to create course section', ErrorCodes.INTERNAL_ERROR, 500);
       }
 
-      const [movedLessons, movedExercises] = await Promise.all([
+      const [movedLessons, movedExercises, movedActivities] = await Promise.all([
         updateUngroupedLessonsSectionId(courseId, section.id, tx),
-        updateUngroupedExercisesSectionId(courseId, section.id, tx)
+        updateUngroupedExercisesSectionId(courseId, section.id, tx),
+        updateUngroupedActivitiesSectionId(courseId, section.id, tx)
       ]);
 
-      if (movedLessons + movedExercises === 0) {
+      if (movedLessons + movedExercises + movedActivities === 0) {
         throw new AppError('No ungrouped content found', ErrorCodes.VALIDATION_ERROR, 400);
       }
 
       return {
         section,
         movedLessons,
-        movedExercises
+        movedExercises,
+        movedActivities
       };
     });
   } catch (error) {
@@ -182,6 +195,18 @@ export async function deleteCourseSectionService(sectionId: string): Promise<TCo
     const section = await getCourseSectionById(sectionId);
     if (!section) {
       throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+    }
+
+    const activityCount = await countActivitiesInSection(sectionId);
+    if (activityCount > 0) {
+      const activities = await getActivitiesBySectionId(sectionId);
+      const names = activities.map((activity) => activity.title).join(', ');
+
+      throw new AppError(
+        `This section holds ${activityCount} SCORM ${activityCount === 1 ? 'item' : 'items'} (${names}). Move or delete them first.`,
+        ErrorCodes.SECTION_HAS_ACTIVITIES,
+        409
+      );
     }
 
     const deleted = await deleteCourseSection(sectionId);

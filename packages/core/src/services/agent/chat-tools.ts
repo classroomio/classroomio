@@ -5,6 +5,7 @@ import { CoursePlanSchema, getCourseTemplate } from '@cio/ai-assistant';
 import { ADD_QUESTIONS_TOOL_DESCRIPTION, UPDATE_QUESTIONS_BINARY_TYPES_HINT } from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
 import { assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
+import { ContentType } from '@cio/utils/constants/content';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
   createAgentRunEvent,
@@ -34,6 +35,7 @@ import { updateCourseLandingPageService } from '../course/landing-page';
 import { getCourseGoLiveReadiness, publishCourseWhenReady } from '../course/go-live-readiness';
 import {
   assertValidUuid,
+  verifyActivityBelongsToCourse,
   verifyExerciseBelongsToCourse,
   verifyLessonBelongsToCourse,
   verifySectionBelongsToCourse
@@ -456,7 +458,7 @@ export function buildAgentTools(
   return {
     get_course_structure: tool({
       description:
-        'Get the full course structure including sections, lessons, and exercises as a tree. The courseId is automatically set — do not pass it.',
+        'Get the full course structure including sections, lessons, exercises and activities as a tree. The courseId is automatically set — do not pass it.',
       inputSchema: emptyParam,
       execute: async () => {
         return executeAgentTool('get_course_structure', { orgId, userId, courseId }, async () => {
@@ -919,7 +921,7 @@ export function buildAgentTools(
 
     reorder_content: tool({
       description:
-        'Reorder sections, lessons, or exercises in this course. Can change the order of sections, change the order of lessons/exercises within a section, or move items between sections. Use get_course_structure first to see current order, and copy item IDs exactly from that response. Never rewrite or guess UUIDs.',
+        'Reorder sections, lessons, exercises or activities in this course. Can change the order of sections, change the order of lessons/exercises/activities within a section, or move items between sections. Use get_course_structure first to see current order, and copy item IDs exactly from that response. Never rewrite or guess UUIDs.',
       inputSchema: reorderContentParam,
       execute: async (args) => {
         return executeAgentTool('reorder_content', { orgId, userId, courseId, args }, async () => {
@@ -931,10 +933,18 @@ export function buildAgentTools(
 
           if (args.items) {
             for (const item of args.items) {
-              if (item.type === 'LESSON') {
-                await verifyLessonBelongsToCourse(item.id, courseId);
-              } else {
-                await verifyExerciseBelongsToCourse(item.id, courseId);
+              switch (item.type) {
+                case ContentType.Lesson:
+                  await verifyLessonBelongsToCourse(item.id, courseId);
+                  break;
+                case ContentType.Exercise:
+                  await verifyExerciseBelongsToCourse(item.id, courseId);
+                  break;
+                case ContentType.Activity:
+                  await verifyActivityBelongsToCourse(item.id, courseId);
+                  break;
+                default:
+                  break;
               }
 
               if (item.sectionId) {

@@ -1,7 +1,8 @@
 import { db, type DbOrTxClient } from '@db/drizzle';
-import { TAsset, TCourse, TCourseSection, TLesson } from '@db/types';
+import { TAsset, TCourse, TCourseActivity, TCourseSection, TLesson } from '@db/types';
 import {
   addGroupMember,
+  createActivities,
   createCourse,
   createCourseSections,
   createExerciseSections,
@@ -15,6 +16,7 @@ import {
   createAssetUsage,
   deleteAssetUsagesByTargetSlots,
   getActiveAssetBySourceUrl,
+  getActivitiesByCourseId,
   getAssetsByIds,
   getCourseById,
   getCourseOrganizationId,
@@ -31,8 +33,10 @@ import {
 } from '@db/queries';
 
 import { ROLE } from '@cio/utils/constants';
+import type { TActivityKind } from '@cio/utils/constants/activity';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { transferUploadedAsset, withAssetStorageRollback } from '@cio/core/services/assets/asset-transfer';
+import { ACTIVITY_PROVIDERS } from '@cio/core/services/activity/providers';
 
 const ASSET_ID_PATTERN = /[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/gi;
 
@@ -169,6 +173,8 @@ async function copyAsset(
 ): Promise<[string, string][]> {
   if (asset.organizationId === organizationId) return [];
 
+  if (asset.kind === 'scorm') return [];
+
   if (asset.provider === 'upload') {
     const transfer = await transferUploadedAsset(asset, organizationId, userId, dbClient);
     return transfer.replacements;
@@ -246,6 +252,7 @@ async function cloneCourseWithClient(
   const oldSections = await getCourseSectionsByCourseId(courseId, tx);
   const oldLessons = await getLessonsByCourseId(courseId, tx);
   const oldExercises = await getExercisesByCourseId(courseId, {}, tx);
+  const oldActivities = await getActivitiesByCourseId(courseId, tx);
   const oldLessonIds = oldLessons.map((lesson) => lesson.id);
   const oldExerciseIds = oldExercises.map((exercise) => exercise.id);
   const oldLessonLanguages = oldLessonIds.length > 0 ? await getLessonLanguagesByLessonIds(oldLessonIds, tx) : [];
@@ -265,7 +272,8 @@ async function cloneCourseWithClient(
             oldExercises,
             oldExerciseSections,
             oldQuestions,
-            oldOptions
+            oldOptions,
+            oldActivities
           }),
           targetOrgId!,
           options.userId,
@@ -306,7 +314,8 @@ async function cloneCourseWithClient(
       compliance: courseCopy.compliance,
       callout: courseCopy.callout,
       status: courseCopy.status,
-      type: courseCopy.type
+      type: courseCopy.type,
+      format: courseCopy.format
     },
     tx
   );
@@ -516,6 +525,43 @@ async function cloneCourseWithClient(
     await createOptions(optionsToCreate, tx);
   }
 
+  const activityCopies = replaceAssetIds(oldActivities, assetIds);
+  const newActivities: TCourseActivity[] =
+    activityCopies.length > 0
+      ? await createActivities(
+          activityCopies.map((activity) => ({
+            kind: activity.kind,
+            title: activity.title,
+            instructions: activity.instructions,
+            slug: activity.slug,
+            order: activity.order,
+            isUnlocked: activity.isUnlocked,
+            sectionId: activity.sectionId ? (sectionMap.get(activity.sectionId) ?? null) : null,
+            courseId: newCourse.id,
+            sourceId: options.setSourceIds ? activity.id : null,
+            sourceSyncedAt: options.setSourceIds ? syncedAt : null,
+            createdByProfileId: options.userId
+          })),
+          tx
+        )
+      : [];
+
+  for (const [index, oldActivity] of oldActivities.entries()) {
+    const created = newActivities[index];
+    if (!created) continue;
+
+    const provider = ACTIVITY_PROVIDERS[oldActivity.kind as TActivityKind];
+    if (!provider) {
+      throw new Error(`Unknown activity kind "${oldActivity.kind}"`);
+    }
+
+    await provider.copy(
+      { activityId: oldActivity.id, organizationId: sourceOrgId ?? null },
+      { activityId: created.id, organizationId: targetOrgId ?? null, userId: options.userId },
+      tx
+    );
+  }
+
   if (options.setSourceIds) {
     const stampedAt = new Date().toISOString();
     await stampCopiedTemplateUnits(
@@ -523,6 +569,7 @@ async function cloneCourseWithClient(
         sectionIds: newSections.map((section) => section.id),
         lessonIds: newLessons.map((lesson) => lesson.id),
         exerciseIds: newExercises.map((exercise) => exercise.id),
+        activityIds: newActivities.map((activity) => activity.id),
         syncedAt: stampedAt
       },
       tx

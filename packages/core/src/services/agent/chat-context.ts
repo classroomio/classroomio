@@ -2,6 +2,7 @@ import { AppError } from '@cio/utils/errors';
 import { getDocumentText } from './document';
 import { redis } from '../../utils/redis/redis';
 import {
+  getActivityCourseBinding,
   getCourseSectionBinding,
   getExerciseCourseBinding,
   getLessonCourseBinding,
@@ -16,7 +17,7 @@ type ResourceOwnershipRow = {
 };
 
 function buildResourceOwnershipError(params: {
-  resourceType: 'Lesson' | 'Exercise' | 'Section';
+  resourceType: 'Lesson' | 'Exercise' | 'Section' | 'Activity';
   resourceId: string;
   courseId: string;
   resource?: ResourceOwnershipRow;
@@ -24,10 +25,13 @@ function buildResourceOwnershipError(params: {
   const { resourceType, resourceId, resource } = params;
 
   if (!resource) {
-    const createTool = resourceType === 'Lesson' ? 'create_lesson' : 'create_exercise';
+    const createTool =
+      resourceType === 'Lesson' ? 'create_lesson' : resourceType === 'Exercise' ? 'create_exercise' : null;
 
     return new AppError(
-      `${resourceType} ${resourceId} does not exist in this course. Do NOT take IDs from the plan card — it contains no IDs. If you have not yet created this ${resourceType.toLowerCase()} in this run, call ${createTool} first and use the id it returns. Otherwise call get_course_structure to fetch the real id, then retry. Never invent or guess IDs.`,
+      createTool
+        ? `${resourceType} ${resourceId} does not exist in this course. Do NOT take IDs from the plan card — it contains no IDs. If you have not yet created this ${resourceType.toLowerCase()} in this run, call ${createTool} first and use the id it returns. Otherwise call get_course_structure to fetch the real id, then retry. Never invent or guess IDs.`
+        : `${resourceType} ${resourceId} does not exist in this course. Activities cannot be created through tools — call get_course_structure to fetch the real id, then retry. Never invent or guess IDs.`,
       'RESOURCE_NOT_IN_COURSE',
       403
     );
@@ -45,7 +49,7 @@ function buildResourceOwnershipError(params: {
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export function assertValidUuid(
-  resourceType: 'Lesson' | 'Exercise' | 'Section' | 'ExerciseSection',
+  resourceType: 'Lesson' | 'Exercise' | 'Section' | 'ExerciseSection' | 'Activity',
   value: string
 ): void {
   if (!UUID_REGEX.test(value)) {
@@ -98,6 +102,21 @@ export async function verifySectionBelongsToCourse(sectionId: string, courseId: 
       resourceId: sectionId,
       courseId,
       resource: section
+    });
+  }
+}
+
+export async function verifyActivityBelongsToCourse(activityId: string, courseId: string): Promise<void> {
+  assertValidUuid('Activity', activityId);
+
+  const activity = await getActivityCourseBinding(activityId);
+
+  if (!activity || activity.courseId !== courseId) {
+    throw buildResourceOwnershipError({
+      resourceType: 'Activity',
+      resourceId: activityId,
+      courseId,
+      resource: activity
     });
   }
 }

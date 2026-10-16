@@ -95,6 +95,19 @@ export function buildStudentContextMessage(context: AgentContext): string {
     lines.push(header);
   }
 
+  if (context.activityId) {
+    const header = context.activityTitle
+      ? `Current activity: "${context.activityTitle}" (ID: ${context.activityId})`
+      : `Current activity ID: ${context.activityId}`;
+    lines.push(header);
+
+    if (context.activityInstructions) {
+      lines.push(
+        `Current activity instructions:\n\n<activity_instructions>\n${context.activityInstructions}\n</activity_instructions>`
+      );
+    }
+  }
+
   if (context.studentSubmission) {
     lines.push(
       `Current learner submission result:\n\n<student_submission>\n${JSON.stringify(context.studentSubmission)}\n</student_submission>`

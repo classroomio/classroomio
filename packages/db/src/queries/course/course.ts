@@ -18,7 +18,7 @@ import type { TCourseType } from '@cio/utils/constants/course-type';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { contentWriteBumpsTimestamp } from './content-timestamp';
 import { getCourseContentItems, type CourseContentItemRow } from './content';
-import { isExerciseCompletedSql } from './progression';
+import { isActivityCompletedSql, isExerciseCompletedSql } from './progression';
 import { getUpcomingSessionsForCourseIds, type CourseUpcomingSession } from './session';
 import { resolveCourseBannerImage } from '@cio/utils/functions';
 
@@ -39,6 +39,25 @@ function withResolvedCourseBannerImage<T extends { bannerImage: string | null; l
 export interface TBaseCourse extends TCourse {
   lessonCount: number;
   exerciseCount: number;
+  activityCount: number;
+  moduleCount: number;
+}
+
+/**
+ * Launchable SCORM modules in the current package versions of a course's
+ * activities. Zero for courses without packages.
+ */
+function scormModuleCountSql() {
+  return sql<number>`(
+    SELECT COUNT(*)::bigint
+    FROM ${schema.contentPackageUnit} AS cpu
+    INNER JOIN ${schema.contentPackageVersion} AS cpv ON cpv.id = cpu.package_version_id
+    INNER JOIN ${schema.activityScorm} AS ascm ON ascm.asset_id = cpv.asset_id
+    INNER JOIN ${schema.courseActivity} AS ca2 ON ca2.id = ascm.activity_id
+    WHERE ${eq(sql`ca2.course_id`, schema.course.id)}
+    AND cpv.is_current = true
+    AND cpu.unit_type = 'sco'
+  )`.as('module_count');
 }
 
 /**
@@ -57,6 +76,7 @@ export interface TAdminCourse extends TBaseCourse {
 export interface TStudentCourse extends TBaseCourse {
   progressRate: number;
   exercisesCompleted: number;
+  activitiesCompleted: number;
   certificateEarnedAt: string | null;
   complianceStatus: string | null;
   complianceCycleNumber: number | null;
@@ -117,12 +137,20 @@ export const getPublishedCoursesBySiteName = async (
       WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
     )`.as('exercise_count');
 
+    const activityCountSql = sql<number>`(
+      SELECT COUNT(*)::bigint
+      FROM ${schema.courseActivity} as ca
+      WHERE ${eq(sql`ca.course_id`, schema.course.id)}
+    )`.as('activity_count');
+
     const result = limit
       ? await db
           .select({
             course: schema.course,
             lessonCount: sql<number>`COUNT(${schema.lesson.id})`.as('lesson_count'),
-            exerciseCount: exerciseCountSql
+            exerciseCount: exerciseCountSql,
+            activityCount: activityCountSql,
+            moduleCount: scormModuleCountSql()
           })
           .from(schema.course)
           .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -137,7 +165,9 @@ export const getPublishedCoursesBySiteName = async (
           .select({
             course: schema.course,
             lessonCount: sql<number>`COUNT(${schema.lesson.id})`.as('lesson_count'),
-            exerciseCount: exerciseCountSql
+            exerciseCount: exerciseCountSql,
+            activityCount: activityCountSql,
+            moduleCount: scormModuleCountSql()
           })
           .from(schema.course)
           .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -150,7 +180,9 @@ export const getPublishedCoursesBySiteName = async (
     return result.map((row) => ({
       ...withResolvedCourseBannerImage(row.course),
       lessonCount: Number(row.lessonCount),
-      exerciseCount: Number(row.exerciseCount)
+      exerciseCount: Number(row.exerciseCount),
+      activityCount: Number(row.activityCount),
+      moduleCount: Number(row.moduleCount)
     }));
   } catch (error) {
     console.error('getCoursesBySiteName error:', error);
@@ -647,6 +679,8 @@ export async function getCourseProgress(
   lessonsCompleted: number;
   exercisesCount: number;
   exercisesCompleted: number;
+  activitiesCount: number;
+  activitiesCompleted: number;
   groupMemberId: string | null;
   roleId: number | null;
   certificateEarnedAt: string | null;
@@ -673,6 +707,8 @@ export async function getCourseProgress(
         lessonsCompleted: 0,
         exercisesCount: 0,
         exercisesCompleted: 0,
+        activitiesCount: 0,
+        activitiesCompleted: 0,
         groupMemberId: null,
         roleId: null,
         certificateEarnedAt: null,
@@ -685,46 +721,63 @@ export async function getCourseProgress(
     const certificateEarnedAt = groupMemberResult[0].certificateEarnedAt ?? null;
     const certificationEmailSentAt = groupMemberResult[0].certificationEmailSentAt ?? null;
 
-    const [lessons, completedLessons, exercises, [completedRow]] = await Promise.all([
-      db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
+    const [lessons, completedLessons, exercises, [completedRow], activities, [completedActivitiesRow]] =
+      await Promise.all([
+        db.select({ id: schema.lesson.id }).from(schema.lesson).where(eq(schema.lesson.courseId, courseId)),
 
-      db
-        .select({ id: schema.lessonCompletion.id })
-        .from(schema.lessonCompletion)
-        .innerJoin(schema.lesson, eq(schema.lessonCompletion.lessonId, schema.lesson.id))
-        .where(
-          and(
-            eq(schema.lesson.courseId, courseId),
-            eq(schema.lessonCompletion.profileId, profileId),
-            eq(schema.lessonCompletion.isComplete, true)
+        db
+          .select({ id: schema.lessonCompletion.id })
+          .from(schema.lessonCompletion)
+          .innerJoin(schema.lesson, eq(schema.lessonCompletion.lessonId, schema.lesson.id))
+          .where(
+            and(
+              eq(schema.lesson.courseId, courseId),
+              eq(schema.lessonCompletion.profileId, profileId),
+              eq(schema.lessonCompletion.isComplete, true)
+            )
+          ),
+
+        db
+          .select({ id: schema.exercise.id })
+          .from(schema.exercise)
+          .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+          .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))),
+
+        db
+          .select({
+            exercisesCompleted: sql<number>`count(*)::int`
+          })
+          .from(schema.exercise)
+          .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
+          .where(
+            and(
+              or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
+              isExerciseCompletedSql('exercise', { groupMemberId })
+            )
+          ),
+
+        db
+          .select({ id: schema.courseActivity.id })
+          .from(schema.courseActivity)
+          .where(eq(schema.courseActivity.courseId, courseId)),
+
+        db
+          .select({
+            activitiesCompleted: sql<number>`count(*)::int`
+          })
+          .from(schema.courseActivity)
+          .where(
+            and(eq(schema.courseActivity.courseId, courseId), isActivityCompletedSql('course_activity', profileId))
           )
-        ),
-
-      db
-        .select({ id: schema.exercise.id })
-        .from(schema.exercise)
-        .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-        .where(or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId))),
-
-      db
-        .select({
-          exercisesCompleted: sql<number>`count(*)::int`
-        })
-        .from(schema.exercise)
-        .leftJoin(schema.lesson, eq(schema.exercise.lessonId, schema.lesson.id))
-        .where(
-          and(
-            or(eq(schema.exercise.courseId, courseId), eq(schema.lesson.courseId, courseId)),
-            isExerciseCompletedSql('exercise', { groupMemberId })
-          )
-        )
-    ]);
+      ]);
 
     return {
       lessonsCount: lessons.length,
       lessonsCompleted: completedLessons.length,
       exercisesCount: exercises.length,
       exercisesCompleted: completedRow?.exercisesCompleted ?? 0,
+      activitiesCount: activities.length,
+      activitiesCompleted: completedActivitiesRow?.activitiesCompleted ?? 0,
       groupMemberId,
       roleId,
       certificateEarnedAt,
@@ -957,7 +1010,13 @@ export const getOrgCourses = async ({
           FROM ${schema.exercise} as ex
           LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
           WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
-        )`.as('exercise_count')
+        )`.as('exercise_count'),
+        activityCount: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.courseActivity} as ca
+          WHERE ${eq(sql`ca.course_id`, schema.course.id)}
+        )`.as('activity_count'),
+        moduleCount: scormModuleCountSql()
       })
       .from(schema.course)
       .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
@@ -983,7 +1042,9 @@ export const getOrgCourses = async ({
         ...withResolvedCourseBannerImage(row.course),
         lessonCount: Number(row.lessonCount),
         totalStudents: Number(row.studentCount),
-        exerciseCount: Number(row.exerciseCount)
+        exerciseCount: Number(row.exerciseCount),
+        activityCount: Number(row.activityCount),
+        moduleCount: Number(row.moduleCount)
       })),
       total,
       page,
@@ -1156,6 +1217,17 @@ export const getEnrolledCourses = async ({
             isExerciseCompletedSql('ex', { profileId })
           )}
         )`.as('exercises_completed'),
+        activityCount: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.courseActivity} as ca
+          WHERE ${eq(sql`ca.course_id`, schema.course.id)}
+        )`.as('activity_count'),
+        moduleCount: scormModuleCountSql(),
+        activitiesCompleted: sql<number>`(
+          SELECT COUNT(*)::bigint
+          FROM ${schema.courseActivity} as ca
+          WHERE ${and(eq(sql`ca.course_id`, schema.course.id), isActivityCompletedSql('ca', profileId))}
+        )`.as('activities_completed'),
         certificateEarnedAt: schema.groupmember.certificateEarnedAt,
         complianceStatus: schema.courseCompletionRecord.status,
         complianceCycleNumber: schema.courseCompletionRecord.cycleNumber,
@@ -1214,6 +1286,9 @@ export const getEnrolledCourses = async ({
       progressRate: Number(row.progressRate),
       exerciseCount: Number(row.exerciseCount),
       exercisesCompleted: Number(row.exercisesCompleted),
+      activityCount: Number(row.activityCount),
+      activitiesCompleted: Number(row.activitiesCompleted),
+      moduleCount: Number(row.moduleCount),
       certificateEarnedAt: row.certificateEarnedAt ?? null,
       complianceStatus: row.complianceStatus ?? null,
       complianceCycleNumber: row.complianceCycleNumber ?? null,
@@ -1275,7 +1350,13 @@ export const getExploreCourses = async ({
         FROM ${schema.exercise} as ex
         LEFT JOIN ${schema.lesson} as el ON el.id = ex.lesson_id
         WHERE ${or(eq(sql`ex.course_id`, schema.course.id), eq(sql`el.course_id`, schema.course.id))}
-      )`.as('exercise_count')
+      )`.as('exercise_count'),
+      activityCount: sql<number>`(
+        SELECT COUNT(*)::bigint
+        FROM ${schema.courseActivity} as ca
+        WHERE ${eq(sql`ca.course_id`, schema.course.id)}
+      )`.as('activity_count'),
+      moduleCount: scormModuleCountSql()
     };
 
     const baseSelect = db
@@ -1310,7 +1391,9 @@ export const getExploreCourses = async ({
       data: rows.map((row) => ({
         ...withResolvedCourseBannerImage(row.course),
         lessonCount: Number(row.lessonCount),
-        exerciseCount: Number(row.exerciseCount)
+        exerciseCount: Number(row.exerciseCount),
+        activityCount: Number(row.activityCount),
+        moduleCount: Number(row.moduleCount)
       })),
       total: Number(countRows[0]?.total ?? 0)
     };

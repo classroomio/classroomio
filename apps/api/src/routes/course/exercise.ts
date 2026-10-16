@@ -1,4 +1,4 @@
-import { ErrorCodes, handleError } from '@api/utils/errors';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
 import {
   ZExerciseCreate,
   ZExerciseFromTemplate,
@@ -21,7 +21,10 @@ import {
   updateExerciseService
 } from '@cio/core/services/exercise/exercise';
 import { fetchAllTemplatesMetadata, fetchTemplateById, fetchTemplatesByTag } from '@api/services/exercise/template';
-import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
+import { getGroupMemberIdByCourseAndProfile } from '@cio/db/queries/group';
+import { getExerciseById } from '@cio/db/queries/exercise';
+import { getLessonById } from '@cio/db/queries/lesson';
+import { getCourseSectionById } from '@cio/db/queries/course';
 import {
   completeVideoRecordingUpload,
   getVideoRecordingPlaybackUrl,
@@ -43,6 +46,7 @@ import {
 } from '@api/middlewares/course-grader';
 import { courseMemberMiddleware } from '@api/middlewares/course-member';
 import { courseMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-member-or-automation-key';
+import { courseTeamMemberOrAutomationKeyMiddleware } from '@api/middlewares/course-team-member-or-automation-key';
 import { assertMcpAutomationUsageAllowed, recordMcpAutomationUsage } from '@api/services/organization/automation-usage';
 import { createSubmissionService, listExerciseSubmissionsOverview } from '@api/services/submission';
 import { assertEnrolledStudentContentAccess, assertEnrolledStudentCourseAccess } from '@api/services/course/access';
@@ -162,10 +166,11 @@ export const exerciseRouter = new Hono()
   .post(
     '/',
     authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:write']),
+    courseTeamMemberOrAutomationKeyMiddleware(['course:exercise:write']),
     zValidator('json', ZExerciseCreate),
     async (c) => {
       try {
+        const courseId = c.req.param('courseId')!;
         const data = c.req.valid('json');
         const automationKey = c.get('automationKey');
 
@@ -173,11 +178,25 @@ export const exerciseRouter = new Hono()
           await assertMcpAutomationUsageAllowed(automationKey, 'create_course_exercise');
         }
 
-        const exercise = await createExercise(data);
+        if (data.sectionId) {
+          const section = await getCourseSectionById(data.sectionId);
+          if (!section || section.courseId !== courseId) {
+            throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+          }
+        }
+
+        if (data.lessonId) {
+          const lesson = await getLessonById(data.lessonId);
+          if (!lesson || lesson.courseId !== courseId) {
+            throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+          }
+        }
+
+        const exercise = await createExercise({ ...data, courseId });
 
         if (automationKey?.type === 'mcp') {
           await recordMcpAutomationUsage(automationKey, 'create_course_exercise', {
-            courseId: c.req.param('courseId')!,
+            courseId,
             exerciseId: exercise.id
           });
         }
@@ -196,7 +215,7 @@ export const exerciseRouter = new Hono()
   .post(
     '/from-template',
     authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:write']),
+    courseTeamMemberOrAutomationKeyMiddleware(['course:exercise:write']),
     zValidator('json', ZExerciseFromTemplate),
     async (c) => {
       try {
@@ -206,6 +225,20 @@ export const exerciseRouter = new Hono()
 
         if (automationKey?.type === 'mcp') {
           await assertMcpAutomationUsageAllowed(automationKey, 'create_course_exercise_from_template');
+        }
+
+        if (sectionId) {
+          const section = await getCourseSectionById(sectionId);
+          if (!section || section.courseId !== courseId) {
+            throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+          }
+        }
+
+        if (lessonId) {
+          const lesson = await getLessonById(lessonId);
+          if (!lesson || lesson.courseId !== courseId) {
+            throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
+          }
         }
 
         // Fetch template from database
@@ -237,7 +270,7 @@ export const exerciseRouter = new Hono()
   .put(
     '/:exerciseId',
     authOrAutomationKeyMiddleware,
-    courseMemberOrAutomationKeyMiddleware(['course:exercise:write']),
+    courseTeamMemberOrAutomationKeyMiddleware(['course:exercise:write']),
     zValidator('param', ZExerciseGetParam),
     zValidator('json', ZExerciseUpdate),
     async (c) => {
@@ -245,25 +278,35 @@ export const exerciseRouter = new Hono()
         const { exerciseId } = c.req.valid('param');
         const data = c.req.valid('json');
         const courseId = c.req.param('courseId')!;
-        const user = c.get('user');
         const automationKey = c.get('automationKey');
 
         if (automationKey?.type === 'mcp') {
           await assertMcpAutomationUsageAllowed(automationKey, 'update_course_exercise');
         }
 
-        if (!automationKey && user && data.isUnlocked !== undefined) {
-          const isAuthorized = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
+        const existing = await getExerciseById(exerciseId);
+        if (!existing) {
+          throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+        }
 
-          if (!isAuthorized) {
-            return c.json(
-              {
-                success: false,
-                error: 'Unauthorized',
-                code: ErrorCodes.UNAUTHORIZED
-              },
-              403
-            );
+        const existingLessonId = existing.lessonId;
+        const existingLesson = existingLessonId ? await getLessonById(existingLessonId) : null;
+        const existingCourseId = existing.courseId ?? existingLesson?.courseId ?? null;
+        if (existingCourseId !== courseId) {
+          throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
+        }
+
+        if (data.sectionId) {
+          const section = await getCourseSectionById(data.sectionId);
+          if (!section || section.courseId !== courseId) {
+            throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+          }
+        }
+
+        if (data.lessonId) {
+          const lesson = await getLessonById(data.lessonId);
+          if (!lesson || lesson.courseId !== courseId) {
+            throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
           }
         }
 
@@ -279,17 +322,23 @@ export const exerciseRouter = new Hono()
       }
     }
   )
-  .delete('/:exerciseId', authMiddleware, courseMemberMiddleware, zValidator('param', ZExerciseGetParam), async (c) => {
-    try {
-      const courseId = c.req.param('courseId')!;
-      const { exerciseId } = c.req.valid('param');
-      const exercise = await deleteExerciseForCourseService(courseId, exerciseId);
+  .delete(
+    '/:exerciseId',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('param', ZExerciseGetParam),
+    async (c) => {
+      try {
+        const courseId = c.req.param('courseId')!;
+        const { exerciseId } = c.req.valid('param');
+        const exercise = await deleteExerciseForCourseService(courseId, exerciseId);
 
-      return c.json({ success: true, data: exercise }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to delete exercise');
+        return c.json({ success: true, data: exercise }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to delete exercise');
+      }
     }
-  })
+  )
   // Exercise Submission routes
   .post(
     '/:exerciseId/submission',

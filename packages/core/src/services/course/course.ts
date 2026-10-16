@@ -27,9 +27,14 @@ import {
   getUserExercisesStats
 } from '@cio/db/queries/analytics/analytics';
 import { getStudentCourseProgressImpactCounts } from '@cio/db/queries/course/reset-progress';
+import { getBatchActivityCompletionsForCourse } from '@cio/db/queries/course/member-progress';
+import { getActivitiesByCourseId } from '@cio/db/queries/activity';
+import { getScormActivityStatsForProfile } from '@cio/db/queries/scorm/report';
+import { listScormUnitSummariesForActivities } from '@cio/db/queries/activity/package-unit';
 import { getCourseGroupId } from '@cio/db/queries/course/people';
 
 import { ContentType, ROLE, resolveLiveSessionReminderOffsets } from '@cio/utils/constants';
+import { isTypeAllowedForFormat } from '@cio/utils/constants/course-format';
 import { isPublishedComplianceMissingDeadline, resolveCourseCertificateDeadline } from '@cio/utils/functions';
 import type { TCourse } from '@cio/db/types';
 import type { DbOrTxClient } from '@cio/db/drizzle';
@@ -42,6 +47,8 @@ import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { skipRemovedOffsetReminderDeliveries } from '@cio/db/queries/course/live-session-reminder';
+import { updateExercise, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
+import { updateActivitiesSectionId } from '@cio/db/queries/activity';
 import { getProfileById } from '@cio/db/queries/auth';
 import {
   countActiveStudents,
@@ -50,16 +57,21 @@ import {
   insertOrganizationMembersOnConflictDoNothing
 } from '@cio/db/queries/organization';
 import { getStudentLimit } from '@cio/utils/plans';
+import { createActivities } from '@cio/db/queries/activity';
+import { ACTIVITY_PROVIDERS } from '../activity/providers';
+import { resolveItemSlug } from './slug';
 import { env } from '../../config/env';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { annotateCourseContentWithProgression } from './progression';
 import { buildCourseContent, calcPercentageWithRounding, DEFAULT_CONTENT_GROUPING, type CourseContent } from './utils';
-import { getPublicConversionOffenders } from './public-course-guard';
+import { assertNoActivitiesForPublicConversion, getPublicConversionOffenders } from './public-course-guard';
 
 export interface UpdateCourseResult {
   course: TCourse;
   conversionOffenders?: NonAutoGradableQuestionOffender[] | null;
 }
+
+const DEFAULT_SECTION_TITLE = 'First Section [edit me]';
 
 /**
  * Whether a *new* student would be turned away from this org right now
@@ -197,6 +209,30 @@ function sanitizeCourseCertificate(certificate: TCourse['certificate'] | undefin
 }
 
 /**
+ * Fills launchable module summaries onto activity content items. Courses
+ * without activities skip the lookup entirely.
+ */
+async function attachActivityModules(content: CourseContent): Promise<void> {
+  const items = content.grouped ? content.sections.flatMap((section) => section.items) : content.items;
+  const activityIds = items.filter((item) => item.type === ContentType.Activity).map((item) => item.id);
+  if (activityIds.length === 0) return;
+
+  const summaries = await listScormUnitSummariesForActivities(activityIds);
+  const byActivity = new Map<string, { identifier: string; title: string; position: number }[]>();
+  for (const summary of summaries) {
+    const list = byActivity.get(summary.activityId) ?? [];
+    list.push({ identifier: summary.identifier, title: summary.title, position: summary.position });
+    byActivity.set(summary.activityId, list);
+  }
+
+  for (const item of items) {
+    if (item.type === ContentType.Activity) {
+      item.modules = byActivity.get(item.id) ?? [];
+    }
+  }
+}
+
+/**
  * Gets a course by ID or slug with all related data
  * @param courseId Course ID (optional if slug provided)
  * @param slug Course slug (optional if courseId provided)
@@ -234,6 +270,8 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
           isContentGroupingEnabled
         })
       : buildCourseContent(course.contentItems, isContentGroupingEnabled);
+
+    await attachActivityModules(content);
 
     const { contentItems, org: courseOrg, ...rest } = course;
 
@@ -285,9 +323,13 @@ export async function getCourse(courseId?: string, slug?: string, profileId?: st
 export async function createCourse(
   profileId: string,
   data: TCourseCreate
-): Promise<{ course: TCourse; groupId: string; memberId: string }> {
+): Promise<{ course: TCourse; groupId: string; memberId: string; activityId: string | null }> {
   try {
     const description = sanitizeHtml(data.description);
+
+    if (!isTypeAllowedForFormat(data.format, data.type)) {
+      throw new AppError('Single-activity courses must be Self-paced', ErrorCodes.VALIDATION_ERROR, 400);
+    }
 
     const result = await db.transaction(async (tx) => {
       const [newGroup] = await createGroup(
@@ -308,6 +350,7 @@ export async function createCourse(
           title: data.title,
           description,
           type: data.type,
+          format: data.format ?? 'standard',
           groupId: newGroup.id,
           compliance: data.compliance ? sanitizeUnknownStrings(data.compliance) : undefined
         },
@@ -342,10 +385,36 @@ export async function createCourse(
         tx
       );
 
+      let activityId: string | null = null;
+      if (newCourse.format === 'single_activity') {
+        const slug = await resolveItemSlug({ courseId: newCourse.id, title: data.title });
+        const [activity] = await createActivities(
+          [
+            {
+              courseId: newCourse.id,
+              sectionId: null,
+              kind: 'scorm',
+              title: data.title,
+              slug,
+              order: 1,
+              createdByProfileId: profileId
+            }
+          ],
+          tx
+        );
+        if (!activity) {
+          throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
+        }
+
+        await ACTIVITY_PROVIDERS.scorm.createDetails(activity.id, {}, tx);
+        activityId = activity.id;
+      }
+
       return {
         course: newCourse,
         groupId: newGroup.id,
-        memberId: newMember.id
+        memberId: newMember.id,
+        activityId
       };
     });
 
@@ -408,6 +477,16 @@ export async function updateCourse(
       throw new AppError('Course not found', ErrorCodes.COURSE_NOT_FOUND, 404);
     }
 
+    if (data.format !== undefined && data.format !== 'standard') {
+      throw new AppError('A course cannot be converted to a single-activity course', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
+    if (currentCourse.format === 'single_activity' && data.type !== undefined) {
+      if (!data.type || !isTypeAllowedForFormat(currentCourse.format, data.type)) {
+        throw new AppError('Single-activity courses must be Self-paced', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
     if (data.cost !== undefined || data.metadata !== undefined) {
       const nextCost = data.cost === undefined ? (currentCourse.cost ?? 0) : (data.cost ?? 0);
       const nextMetadata = sanitizedData.metadata ?? currentCourse.metadata;
@@ -430,6 +509,10 @@ export async function updateCourse(
       if (offenders.length > 0) {
         conversionOffenders = offenders;
         delete sanitizedData.type;
+      }
+
+      if (data.type === 'PUBLIC' && currentCourse.type !== 'PUBLIC') {
+        await assertNoActivitiesForPublicConversion(courseId, dbClient);
       }
     }
 
@@ -464,6 +547,56 @@ export async function updateCourse(
     if (data.metadata?.liveSessionReminderOffsetsMinutes !== undefined) {
       const keptOffsets = resolveLiveSessionReminderOffsets(updated.metadata?.liveSessionReminderOffsetsMinutes);
       await skipRemovedOffsetReminderDeliveries(courseId, keptOffsets, dbClient);
+    }
+
+    const isContentGroupingEnabled = (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) === true;
+
+    if (isContentGroupingEnabled) {
+      const courseWithRelations = dbClient === db ? await getCourseWithRelations(courseId) : null;
+      const contentItems =
+        dbClient === db
+          ? courseWithRelations?.contentItems
+          : await getCourseContentItems(courseId, undefined, dbClient);
+
+      if (contentItems) {
+        const hasSections = contentItems.some((item) => item.type === ContentType.Section);
+        const hasUngroupedItems = contentItems.some(
+          (item) =>
+            (item.type === ContentType.Lesson ||
+              item.type === ContentType.Exercise ||
+              item.type === ContentType.Activity) &&
+            item.sectionId === null
+        );
+
+        if (!hasSections && hasUngroupedItems) {
+          const createSectionAndMoveContent = async (transactionClient: DbOrTxClient) => {
+            const [section] = await createCourseSections(
+              [
+                {
+                  title: DEFAULT_SECTION_TITLE,
+                  order: 1,
+                  courseId
+                }
+              ],
+              transactionClient
+            );
+
+            if (!section) {
+              throw new AppError('Failed to create course section', ErrorCodes.COURSE_SECTION_NOT_FOUND, 500);
+            }
+
+            await updateLessonsSectionId(courseId, section.id, transactionClient);
+            await updateExercisesSectionId(courseId, section.id, transactionClient);
+            await updateActivitiesSectionId(courseId, section.id, transactionClient);
+          };
+
+          if (dbClient === db) {
+            await db.transaction((tx) => createSectionAndMoveContent(tx));
+          } else {
+            await createSectionAndMoveContent(dbClient);
+          }
+        }
+      }
     }
 
     if (data.status !== undefined) {
@@ -552,6 +685,14 @@ export async function buildCourseStudentAnalytics(
     (student): student is TCourseAnalyticsMember & { profileId: string } => student.profileId !== null
   );
   const lastSeenByProfileId = await getLastSeenForUserIds(studentsWithProfile.map((student) => student.profileId));
+  const [courseActivities, activityCompletionsByProfileId] = await Promise.all([
+    getActivitiesByCourseId(courseId),
+    getBatchActivityCompletionsForCourse(
+      courseId,
+      studentsWithProfile.map((student) => student.profileId)
+    )
+  ]);
+  const totalActivities = courseActivities.length;
 
   const studentAnalytics = await Promise.all(
     studentsWithProfile.map(async (student) => {
@@ -574,12 +715,13 @@ export async function buildCourseStudentAnalytics(
 
         const lessonsCompleted = courseProgress.lessonsCompleted || 0;
         const totalLessons = courseProgress.lessonsCount || 0;
-        // Lessons and exercises together, matching `calcCourseProgress` in
-        // the dashboard and the audience roster. Counting lessons alone
+        const activitiesCompleted = activityCompletionsByProfileId.get(student.profileId)?.size ?? 0;
+        // Lessons, exercises and activities together, matching `calcCourseProgress`
+        // in the dashboard and the audience roster. Counting lessons alone
         // reported a learner who had submitted nothing as fully complete.
         const progressPercentage = calcPercentageWithRounding(
-          lessonsCompleted + completedExercises,
-          totalLessons + totalExercises
+          lessonsCompleted + completedExercises + activitiesCompleted,
+          totalLessons + totalExercises + totalActivities
         );
         const lastSeen = lastSeenByProfileId.get(student.profileId) ?? undefined;
 
@@ -594,6 +736,8 @@ export async function buildCourseStudentAnalytics(
           totalLessons,
           exercisesSubmitted: completedExercises,
           totalExercises,
+          activitiesCompleted,
+          totalActivities,
           averageGrade,
           lastSeen,
           progressPercentage
@@ -635,11 +779,16 @@ export async function getCourseAnalytics(courseId: string) {
     const lessons = course.contentItems.filter((item) => item.type === ContentType.Lesson);
     const exercises = course.contentItems.filter((item) => item.type === ContentType.Exercise);
 
-    const validStudentAnalytics = await buildCourseStudentAnalytics(courseId, students);
+    const [validStudentAnalytics, courseActivities] = await Promise.all([
+      buildCourseStudentAnalytics(courseId, students),
+      getActivitiesByCourseId(courseId)
+    ]);
+    const totalActivities = courseActivities.length;
 
     // Calculate aggregated metrics
     let lessonCompletionRate = 0;
     let exerciseCompletionRate = 0;
+    let activityCompletionRate = 0;
     let averageGrade = 0;
 
     if (validStudentAnalytics.length > 0) {
@@ -656,6 +805,14 @@ export async function getCourseAnalytics(courseId: string) {
         }, 0) / validStudentAnalytics.length
       );
 
+      activityCompletionRate = Math.round(
+        validStudentAnalytics.reduce((sum, student) => {
+          const completionRate =
+            student.totalActivities > 0 ? (student.activitiesCompleted / student.totalActivities) * 100 : 0;
+          return sum + completionRate;
+        }, 0) / validStudentAnalytics.length
+      );
+
       averageGrade = Math.round(
         validStudentAnalytics.reduce((sum, student) => sum + student.averageGrade, 0) / validStudentAnalytics.length
       );
@@ -666,8 +823,10 @@ export async function getCourseAnalytics(courseId: string) {
       totalStudents: students.length,
       totalLessons: lessons.length,
       totalExercises: exercises.length,
+      totalActivities,
       lessonCompletionRate,
       exerciseCompletionRate,
+      activityCompletionRate,
       averageGrade,
       students: validStudentAnalytics
     };
@@ -717,6 +876,26 @@ export async function getUserCourseAnalytics(
       throw new AppError('Failed to fetch course analytics data', ErrorCodes.INTERNAL_ERROR, 500);
     }
 
+    const courseActivities = await getActivitiesByCourseId(courseId);
+    const activityStats = await getScormActivityStatsForProfile(
+      courseActivities.map((activity) => activity.id),
+      userId
+    );
+    const userActivitiesStats = courseActivities.map((activity) => {
+      const stat = activityStats.find((entry) => entry.activityId === activity.id);
+
+      return {
+        id: activity.id,
+        title: activity.title,
+        kind: activity.kind,
+        isComplete: stat?.completed ?? false,
+        attempts: stat?.attempts ?? 0,
+        scorePercent: stat?.scorePercent ?? null,
+        bestScorePercent: stat?.bestScorePercent ?? null,
+        lastLaunchedAt: stat?.lastLaunchedAt ?? null
+      };
+    });
+
     // Calculate metrics. Only graded submissions produce a grade — exercises
     // the student has not submitted, or submitted but not yet graded, are
     // absence and must not drag the grade toward zero (em-dash, never a 0).
@@ -731,7 +910,12 @@ export async function getUserCourseAnalytics(
     const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : null;
 
     const completedLessons = lessons.filter((lesson) => lesson.completed);
-    const progressPercentage = calcPercentageWithRounding(completedLessons.length, lessons.length);
+    const activitiesCompleted = courseProgress.activities_completed || 0;
+    const activitiesCount = courseProgress.activities_count || 0;
+    const progressPercentage = calcPercentageWithRounding(
+      completedLessons.length + activitiesCompleted,
+      lessons.length + activitiesCount
+    );
 
     const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
     const totalExercises = courseProgress.exercises_count || 0;
@@ -771,10 +955,13 @@ export async function getUserCourseAnalytics(
       },
       averageGrade,
       userExercisesStats,
+      userActivitiesStats,
       totalExercises,
       completedExercises,
       lessonsCompleted,
       lessonsCount,
+      activitiesCompleted,
+      activitiesCount,
       progressPercentage,
       progressImpact
     };

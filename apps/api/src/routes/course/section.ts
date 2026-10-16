@@ -1,7 +1,8 @@
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
-import { courseMemberMiddleware } from '@api/middlewares/course-member';
-import { handleError } from '@api/utils/errors';
+import { courseTeamMemberMiddleware } from '@api/middlewares/course-team-member';
+import { AppError, ErrorCodes, handleError } from '@api/utils/errors';
+import { getCourseSectionById, getCourseSectionsByCourseId } from '@cio/db/queries/course';
 import {
   createCourseSection,
   deleteCourseSectionService,
@@ -19,7 +20,7 @@ import {
 import { zValidator } from '@hono/zod-validator';
 
 export const sectionRouter = new Hono()
-  .post('/', authMiddleware, courseMemberMiddleware, zValidator('json', ZCourseSectionCreate), async (c) => {
+  .post('/', authMiddleware, courseTeamMemberMiddleware, zValidator('json', ZCourseSectionCreate), async (c) => {
     try {
       const courseId = c.req.param('courseId')!;
       const data = c.req.valid('json');
@@ -34,7 +35,7 @@ export const sectionRouter = new Hono()
   .post(
     '/promote-ungrouped',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('json', ZCourseSectionPromoteUngrouped),
     async (c) => {
       try {
@@ -52,13 +53,19 @@ export const sectionRouter = new Hono()
   .put(
     '/:sectionId',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZCourseSectionGetParam),
     zValidator('json', ZCourseSectionUpdate),
     async (c) => {
       try {
+        const courseId = c.req.param('courseId')!;
         const { sectionId } = c.req.valid('param');
         const data = c.req.valid('json');
+
+        const existing = await getCourseSectionById(sectionId);
+        if (!existing || existing.courseId !== courseId) {
+          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+        }
 
         const section = await updateCourseSectionService(sectionId, data);
 
@@ -71,11 +78,18 @@ export const sectionRouter = new Hono()
   .delete(
     '/:sectionId',
     authMiddleware,
-    courseMemberMiddleware,
+    courseTeamMemberMiddleware,
     zValidator('param', ZCourseSectionGetParam),
     async (c) => {
       try {
+        const courseId = c.req.param('courseId')!;
         const { sectionId } = c.req.valid('param');
+
+        const existing = await getCourseSectionById(sectionId);
+        if (!existing || existing.courseId !== courseId) {
+          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+        }
+
         const section = await deleteCourseSectionService(sectionId);
 
         return c.json({ success: true, data: section }, 200);
@@ -84,14 +98,28 @@ export const sectionRouter = new Hono()
       }
     }
   )
-  .post('/reorder', authMiddleware, courseMemberMiddleware, zValidator('json', ZCourseSectionReorder), async (c) => {
-    try {
-      const { sections } = c.req.valid('json');
+  .post(
+    '/reorder',
+    authMiddleware,
+    courseTeamMemberMiddleware,
+    zValidator('json', ZCourseSectionReorder),
+    async (c) => {
+      try {
+        const courseId = c.req.param('courseId')!;
+        const { sections } = c.req.valid('json');
 
-      const updated = await reorderCourseSections(sections);
+        const courseSections = await getCourseSectionsByCourseId(courseId);
+        const courseSectionIds = new Set(courseSections.map((section) => section.id));
+        const ownsEverySection = sections.every((section) => courseSectionIds.has(section.id));
+        if (!ownsEverySection) {
+          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+        }
 
-      return c.json({ success: true, data: updated }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to reorder course sections');
+        const updated = await reorderCourseSections(sections);
+
+        return c.json({ success: true, data: updated }, 200);
+      } catch (error) {
+        return handleError(c, error, 'Failed to reorder course sections');
+      }
     }
-  });
+  );

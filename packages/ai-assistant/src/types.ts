@@ -41,6 +41,9 @@ export interface AgentContext {
   lessonContent?: string;
   exerciseId?: string;
   exerciseTitle?: string;
+  activityId?: string;
+  activityTitle?: string;
+  activityInstructions?: string;
   studentSubmission?: unknown;
   documentId?: string;
   documentText?: string;

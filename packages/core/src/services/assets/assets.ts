@@ -20,6 +20,7 @@ import type {
   TYouTubeMetadataQuery,
   TVimeoMetadataQuery
 } from '@cio/utils/validation/assets';
+import { ACTIVITY_PACKAGE_SLOT } from '@cio/utils/validation/assets';
 import type { TTranscriptResponse, TUpdateTranscript } from '@cio/utils/validation/media';
 import {
   assetUsageExistsForTarget,
@@ -40,7 +41,12 @@ import {
   listAssetUsagesByAsset,
   updateAsset
 } from '@cio/db/queries/assets';
-import { getLessonNavInfoByIds, getMediaTranscriptByAsset, updateMediaTranscriptContent } from '@cio/db/queries';
+import {
+  getActivityNavInfoByIds,
+  getLessonNavInfoByIds,
+  getMediaTranscriptByAsset,
+  updateMediaTranscriptContent
+} from '@cio/db/queries';
 
 import {
   deleteFromS3,
@@ -518,6 +524,10 @@ export async function createAssetFromUploadService(
 
 export async function createAndAttachAssetService(orgId: string, profileId: string, input: TAssetCreateAndAttach) {
   try {
+    if (input.attach.slotType === ACTIVITY_PACKAGE_SLOT) {
+      throw new AppError('Attach a package through the activity service', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
     const assetValues = buildAssetValues(orgId, profileId, input.asset);
     const usageValues = {
       organizationId: orgId,
@@ -678,6 +688,10 @@ async function buildAssetStorageCleanupPayload(asset: TAsset): Promise<TAssetSto
     { bucket: config.bucketMedia, prefix: `transcripts/${asset.id}/` }
   ];
 
+  if (asset.kind === 'scorm') {
+    prefixes.push({ bucket: config.bucketScorm, prefix: `scorm/${asset.id}/` });
+  }
+
   const keys: TAssetStorageCleanupPayload['keys'] = [];
   if (asset.provider === 'upload' && asset.storageKey) {
     const bucket = asset.kind === 'document' ? config.bucketDocuments : config.bucketVideos;
@@ -723,18 +737,41 @@ export async function purgeAssetStorage(payload: TAssetStorageCleanupPayload): P
 async function resolveLiveAssetUsages(orgId: string, assetId: string) {
   const usages = await listAssetUsagesByAsset(assetId, orgId);
   const lessonIds = usages.filter((usage) => usage.targetType === 'lesson').map((usage) => usage.targetId);
-  const navById = new Map((await getLessonNavInfoByIds(lessonIds)).map((nav) => [nav.id, nav]));
+  const activityIds = usages.filter((usage) => usage.targetType === 'activity').map((usage) => usage.targetId);
+  const lessonNavById = new Map((await getLessonNavInfoByIds(lessonIds)).map((nav) => [nav.id, nav]));
+  const activityNavById = new Map((await getActivityNavInfoByIds(activityIds)).map((nav) => [nav.id, nav]));
 
   return usages
-    .filter((usage) => usage.targetType !== 'lesson' || navById.has(usage.targetId))
+    .filter((usage) => {
+      if (usage.targetType === 'lesson') {
+        return lessonNavById.has(usage.targetId);
+      }
+
+      if (usage.targetType === 'activity') {
+        return activityNavById.has(usage.targetId);
+      }
+
+      return true;
+    })
     .map((usage) => {
-      const nav = usage.targetType === 'lesson' ? navById.get(usage.targetId) : undefined;
+      if (usage.targetType === 'activity') {
+        const activityNav = activityNavById.get(usage.targetId);
+
+        return {
+          ...usage,
+          courseId: activityNav?.courseId ?? null,
+          targetTitle: activityNav?.activityTitle ?? null,
+          courseTitle: activityNav?.courseTitle ?? null
+        };
+      }
+
+      const lessonNav = usage.targetType === 'lesson' ? lessonNavById.get(usage.targetId) : undefined;
 
       return {
         ...usage,
-        courseId: nav?.courseId ?? null,
-        targetTitle: nav?.lessonTitle ?? null,
-        courseTitle: nav?.courseTitle ?? null
+        courseId: lessonNav?.courseId ?? null,
+        targetTitle: lessonNav?.lessonTitle ?? null,
+        courseTitle: lessonNav?.courseTitle ?? null
       };
     });
 }
@@ -816,6 +853,10 @@ export async function getAssetUsageGraphService(orgId: string, assetId: string) 
 export async function attachAssetService(orgId: string, assetId: string, profileId: string, input: TAssetAttach) {
   try {
     await getAssetService(orgId, assetId);
+
+    if (input.slotType === ACTIVITY_PACKAGE_SLOT) {
+      throw new AppError('Attach a package through the activity service', ErrorCodes.VALIDATION_ERROR, 400);
+    }
 
     const alreadyAttached = await assetUsageExistsForTarget(assetId, orgId, input.targetType, input.targetId);
     if (alreadyAttached) {

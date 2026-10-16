@@ -28,6 +28,7 @@ export const ZAgentChatBody = z.object({
     .object({
       lessonId: z.string().uuid().optional(),
       exerciseId: z.string().uuid().optional(),
+      activityId: z.string().uuid().optional(),
       documentId: z.string().optional()
     })
     .optional()
