@@ -3,7 +3,12 @@ import { PackageError } from '../../errors.js';
 
 export type ScormPackageFormat = 'scorm12' | 'scorm2004_2' | 'scorm2004_3' | 'scorm2004_4';
 export type ScormUnitType = 'sco' | 'asset';
-export type ScormPackageWarning = 'has_sequencing' | 'manifest_rebased' | 'href_case_fixed' | 'no_lms_api_detected';
+export type ScormPackageWarning =
+  | 'has_sequencing'
+  | 'has_prerequisites'
+  | 'manifest_rebased'
+  | 'href_case_fixed'
+  | 'no_lms_api_detected';
 
 export interface ScormUnitFormatDetails2004 {
   format: 'scorm2004';
@@ -161,7 +166,7 @@ function detectFormat(manifest: Record<string, unknown>): ScormPackageFormat {
   const schemaVersion = textOf(metadata['schemaversion']).trim();
 
   if (schemaVersion) {
-    if (/^1\.2$/.test(schemaVersion)) {
+    if (/\b1\.2\b/.test(schemaVersion)) {
       return 'scorm12';
     }
 
@@ -251,6 +256,7 @@ interface UnitCollector {
   units: ScormPackageUnit[];
   warnings: Set<ScormPackageWarning>;
   hrefCaseFixed: boolean;
+  hasPrerequisites: boolean;
 }
 
 function readScormType(resource: unknown): ScormUnitType {
@@ -294,6 +300,16 @@ function readCompletionThreshold(item: unknown): number | null {
     if (parsed !== null && parsed >= 0 && parsed <= 1) {
       return parsed;
     }
+
+    const fromAttr = parseScoreNumber(textOf(readAttr(threshold, 'minprogressmeasure')));
+    if (fromAttr !== null && fromAttr >= 0 && fromAttr <= 1) {
+      return fromAttr;
+    }
+  }
+
+  const itemAttr = parseScoreNumber(textOf(readAttr(item, 'minprogressmeasure')));
+  if (itemAttr !== null && itemAttr >= 0 && itemAttr <= 1) {
+    return itemAttr;
   }
 
   return null;
@@ -347,6 +363,10 @@ function collectUnits(
     const identifier = readAttrText(item, 'identifier');
     const identifierref = readAttrText(item, 'identifierref');
     const resource = identifierref ? resources.get(identifierref) : undefined;
+
+    if (readSubtreeText(item, 'prerequisites')) {
+      collector.hasPrerequisites = true;
+    }
 
     if (resource && typeof resource === 'object') {
       const unitType = readScormType(resource);
@@ -475,7 +495,7 @@ export function parseScormManifest(xml: string, files: string[], prefix = ''): P
     }
   }
 
-  const collector: UnitCollector = { units: [], warnings: new Set(), hrefCaseFixed: false };
+  const collector: UnitCollector = { units: [], warnings: new Set(), hrefCaseFixed: false, hasPrerequisites: false };
   const rootItems = organization ? asArray(organization['item'] as unknown) : [];
   const xmlBase = `${readAttrText(manifest, 'xml:base')}${readAttrText(resourcesNode ?? {}, 'xml:base')}`;
 
@@ -489,6 +509,10 @@ export function parseScormManifest(xml: string, files: string[], prefix = ''): P
 
   if (findDescendants(organizations ?? {}, 'sequencing').length > 0) {
     warnings.push('has_sequencing');
+  }
+
+  if (collector.hasPrerequisites) {
+    warnings.push('has_prerequisites');
   }
 
   if (prefix !== '') {

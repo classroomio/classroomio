@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TActivityCompletion, TCourseActivity, TNewActivityCompletion, TNewCourseActivity } from '@db/types';
-import { and, db, eq, inArray, isNull, ne } from '@db/drizzle';
+import { and, db, eq, gte, inArray, isNull, ne } from '@db/drizzle';
 
 import type { DbOrTxClient } from '@db/drizzle';
 
@@ -207,20 +207,25 @@ export async function getActivitiesBySectionId(
 export async function getActivityCompletionsByProfile(
   activityIds: string[],
   profileId: string,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  completedSinceIso: string | null = null
 ): Promise<string[]> {
   if (activityIds.length === 0) return [];
   try {
+    const conditions = [
+      inArray(schema.activityCompletion.activityId, activityIds),
+      eq(schema.activityCompletion.profileId, profileId),
+      eq(schema.activityCompletion.isComplete, true)
+    ];
+
+    if (completedSinceIso !== null) {
+      conditions.push(gte(schema.activityCompletion.completedAt, completedSinceIso));
+    }
+
     const rows = await dbClient
       .select({ activityId: schema.activityCompletion.activityId })
       .from(schema.activityCompletion)
-      .where(
-        and(
-          inArray(schema.activityCompletion.activityId, activityIds),
-          eq(schema.activityCompletion.profileId, profileId),
-          eq(schema.activityCompletion.isComplete, true)
-        )
-      );
+      .where(and(...conditions));
     return rows.map((row) => row.activityId);
   } catch (error) {
     console.error('getActivityCompletionsByProfile error:', error);
@@ -294,6 +299,39 @@ export async function upsertActivityCompletion(
     console.error('upsertActivityCompletion error:', error);
     throw new Error(
       `Failed to upsert activity completion: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Clears a learner's completion for the given activities, e.g. when a
+ * tightened completion rule no longer counts their latest attempt. Runs
+ * inside the caller's transaction. Returns the number of rows cleared.
+ */
+export async function clearActivityCompletions(
+  activityIds: string[],
+  profileId: string,
+  tx: DbOrTxClient
+): Promise<number> {
+  if (activityIds.length === 0) return 0;
+  try {
+    const cleared = await tx
+      .update(schema.activityCompletion)
+      .set({ isComplete: false, completedAt: null, updatedAt: new Date().toISOString() })
+      .where(
+        and(
+          inArray(schema.activityCompletion.activityId, activityIds),
+          eq(schema.activityCompletion.profileId, profileId),
+          eq(schema.activityCompletion.isComplete, true)
+        )
+      )
+      .returning({ id: schema.activityCompletion.id });
+
+    return cleared.length;
+  } catch (error) {
+    console.error('clearActivityCompletions error:', error);
+    throw new Error(
+      `Failed to clear activity completions for profile "${profileId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

@@ -102,14 +102,20 @@ export const ipKeyGenerator = (c: Context): string => {
 };
 
 /**
- * Rate limit key for SCORM run-time commits: one bucket per launch token.
- * The token is per launch, so this is effectively per module try.
+ * Rate limit key for SCORM run-time commits: one bucket per verified learner
+ * try. Falls back to IP only when claims are missing so rotating raw tokens
+ * cannot create fresh buckets.
  */
 export const activityRuntimeKeyGenerator = (c: Context): string => {
-  const match = /\/activity\/scorm\/runtime\/([^/]+)/.exec(c.req.path);
-  const token = match?.[1] ?? 'unknown';
+  const claims = c.get('runtimeClaims') as { sub?: string; att?: string; unit?: string } | undefined;
+  const ip = extractClientIp(c);
+  if (claims?.sub) {
+    const tryId = claims.att ?? claims.unit ?? 'preview';
 
-  return `activity-runtime:${token}:ip:${extractClientIp(c)}`;
+    return `activity-runtime:${claims.sub}:${tryId}:ip:${ip}`;
+  }
+
+  return `activity-runtime:unverified:ip:${ip}`;
 };
 
 /**

@@ -2929,7 +2929,6 @@
           },
           "package": {
             "drop_label": "Kéo tệp .zip SCORM của bạn vào đây",
-            "drop_hint": "Tối đa {size}. Quá trình xử lý có thể mất vài phút; bạn có thể rời khỏi trang.",
             "wrong_type": "Chỉ có thể tải lên các tệp .zip dưới dạng gói SCORM.",
             "too_large": "Tệp này lớn hơn {size}.",
             "uploading": "Đang tải lên {progress}%",
@@ -3026,7 +3025,9 @@
             "details": "Chi tiết",
             "version_label": "Phiên bản",
             "remove_package": "Gỡ bỏ gói",
-            "launchable_count": "{count, plural, one {# mục có thể khởi chạy} other {# mục có thể khởi chạy}}"
+            "launchable_count": "{count, plural, one {# mục có thể khởi chạy} other {# mục có thể khởi chạy}}",
+            "drop_hint": "Lên đến {size}. Giữ trang này mở cho đến khi gói được đính kèm.",
+            "prerequisites_warning": "Gói này giới hạn các mô-đun dựa trên các điều kiện tiên quyết. Chúng được thực thi theo thứ tự mô-đun tuần tự; các quy tắc điều kiện tiên quyết chi tiết hơn sẽ bị bỏ qua."
           },
           "gating": {
             "title": "Tính năng tạo gói SCORM đang bị tạm dừng.",
@@ -3103,11 +3104,23 @@
                 "terminate": "Đã hoàn tất",
                 "beacon": "Đã lưu khi thoát",
                 "error": "Lỗi",
-                "not_initialized": "Không kết nối được"
+                "not_initialized": "Không kết nối được",
+                "duplicate": "Lưu trùng lặp bị bỏ qua"
               },
               "interaction_correct": "Đáp án đúng: {answer}",
-              "session_device": "Thiết bị phiên học",
-              "technical_details": "Chi tiết kỹ thuật"
+              "technical_details": "Chi tiết kỹ thuật",
+              "session_device": "Thiết bị phiên: {device}",
+              "module_success": {
+                "passed": "Đã đậu",
+                "failed": "thất bại",
+                "unknown": "Không xác định"
+              },
+              "module_completion": {
+                "completed": "Đã hoàn thành",
+                "incomplete": "Chưa hoàn thành",
+                "not_attempted": "Chưa thử",
+                "unknown": "Không xác định"
+              }
             },
             "export": {
               "title": "Kết quả SCORM"
@@ -3149,7 +3162,8 @@
           "add_package_button": "Thêm gói"
         },
         "add_content_created_activity": "Gói SCORM đã được tạo thành công!",
-        "add_content_create_another_activity": "Tạo gói khác"
+        "add_content_create_another_activity": "Tạo gói khác",
+        "view": "Xem"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",

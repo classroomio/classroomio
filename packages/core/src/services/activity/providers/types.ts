@@ -25,7 +25,7 @@ export interface ActivityProvider {
     activityId: string,
     profileIds: string[],
     paging?: TScormResultsQuery
-  ): Promise<ActivityLearnerSummary[]>;
+  ): Promise<{ learners: ActivityLearnerSummary[]; summary: ActivityResultsSummary; total: number }>;
   getResultsSummary(activityId: string, profileIds: string[]): Promise<ActivityResultsSummary>;
   getLearnerDetail(activityId: string, profileId: string): Promise<ActivityLearnerDetail>;
   /** Deletes the kind's learner state for these activities and this profile, inside the caller's transaction. */

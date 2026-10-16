@@ -99,6 +99,7 @@ describe('parseScormManifest versions', () => {
   it('detects every edition from schemaversion', () => {
     const cases: Array<[string, string]> = [
       ['<schemaversion>1.2</schemaversion>', 'scorm12'],
+      ['<schemaversion>SCORM 1.2</schemaversion>', 'scorm12'],
       ['<schemaversion>CAM 1.3</schemaversion>', 'scorm2004_2'],
       ['<schemaversion>2004 2nd Edition</schemaversion>', 'scorm2004_2'],
       ['<schemaversion>2004 3rd Edition</schemaversion>', 'scorm2004_3'],
@@ -303,6 +304,31 @@ describe('parseScormManifest structure', () => {
       maxTimeAllowed: '00:45:00',
       timeLimitAction: 'exit,message'
     });
+  });
+
+  it('reads 4th-edition threshold attributes', () => {
+    const onItem = manifestWith('<schemaversion>2004 4th Edition</schemaversion>', '').replace(
+      '<item identifier="ITEM-1" identifierref="RES-1">',
+      '<item identifier="ITEM-1" identifierref="RES-1" adlcp:minProgressMeasure="0.75">'
+    );
+    expect(parseScormManifest(onItem, ['sco.html']).units[0].completionThreshold).toBe(0.75);
+
+    const onElement = manifestWith(
+      '<schemaversion>2004 4th Edition</schemaversion>',
+      '<adlcp:completionThreshold adlcp:minProgressMeasure="0.6"/>'
+    );
+    expect(parseScormManifest(onElement, ['sco.html']).units[0].completionThreshold).toBe(0.6);
+  });
+
+  it('flags packages that declare prerequisites', () => {
+    const plain = parseScormManifest(manifestWith('<schemaversion>1.2</schemaversion>'), ['sco.html']);
+    expect(plain.warnings).not.toContain('has_prerequisites');
+
+    const gated = manifestWith(
+      '<schemaversion>1.2</schemaversion>',
+      '<prerequisites type="aicc_script">ITEM-1</prerequisites>'
+    );
+    expect(parseScormManifest(gated, ['sco.html']).warnings).toContain('has_prerequisites');
   });
 });
 

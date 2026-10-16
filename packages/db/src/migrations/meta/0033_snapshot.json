@@ -158,7 +158,23 @@
           "default": "now()"
         }
       },
-      "indexes": {},
+      "indexes": {
+        "activity_completion_profile_id_idx": {
+          "name": "activity_completion_profile_id_idx",
+          "columns": [
+            {
+              "expression": "profile_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {
         "activity_completion_activity_id_fkey": {
           "name": "activity_completion_activity_id_fkey",
@@ -5135,6 +5151,21 @@
           ],
           "isUnique": false,
           "where": "\"course_activity\".\"source_id\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "course_activity_section_id_idx": {
+          "name": "course_activity_section_id_idx",
+          "columns": [
+            {
+              "expression": "section_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -13237,6 +13268,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "scorm_attempt_profile_id_idx": {
+          "name": "scorm_attempt_profile_id_idx",
+          "columns": [
+            {
+              "expression": "profile_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -13264,7 +13310,7 @@
           "tableTo": "content_package_version",
           "columnsFrom": ["package_version_id"],
           "columnsTo": ["id"],
-          "onDelete": "restrict",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -13424,7 +13470,7 @@
           "tableTo": "content_package_unit",
           "columnsFrom": ["unit_id"],
           "columnsTo": ["id"],
-          "onDelete": "restrict",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

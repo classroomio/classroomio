@@ -21,7 +21,8 @@ vi.mock('@cio/db/queries/activity/package-version', () => ({
 }));
 
 vi.mock('@cio/db/queries/activity/package-unit', () => ({
-  listPackageUnitsByVersion: vi.fn()
+  listPackageUnitsByVersion: vi.fn(),
+  getPackageVersionUnitSummaries: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/activity', () => ({
@@ -49,10 +50,6 @@ vi.mock('@cio/core/utils/s3', () => ({
   headS3ObjectSize: vi.fn()
 }));
 
-vi.mock('@cio/core/services/assets/assets', () => ({
-  deleteAssetService: vi.fn()
-}));
-
 vi.mock('@cio/core/services/jobs/activity-package-jobs', () => ({
   startActivityPackageJob: vi.fn()
 }));
@@ -67,20 +64,18 @@ import {
   setCurrentPackageVersion,
   updatePackageVersion
 } from '@cio/db/queries/activity/package-version';
-import { listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
+import { getPackageVersionUnitSummaries, listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import { getActivityById } from '@cio/db/queries/activity';
 import { closeSupersededAttempts } from '@cio/db/queries/scorm/attempt';
 import { listActivityScormByAssetId } from '@cio/db/queries/scorm/activity-scorm';
 import { hasActiveMediaJobForAsset } from '@cio/db/queries';
 import { generateScormUploadPresignedUrl, headS3ObjectSize } from '@cio/core/utils/s3';
-import { deleteAssetService } from '@cio/core/services/assets/assets';
 import { startActivityPackageJob } from '@cio/core/services/jobs/activity-package-jobs';
 import { AppError } from '@api/utils/errors';
 import type { TAsset, TNewContentPackageVersion, TContentPackageVersion } from '@cio/db/types';
 import {
   createScormPackage,
   createScormPackageVersion,
-  deleteScormPackage,
   getScormPackage,
   makeScormPackageVersionCurrent,
   processScormPackageVersion,
@@ -124,6 +119,7 @@ describe('activity package services (PR 6)', () => {
     vi.mocked(listPackageVersionsByAsset).mockResolvedValue([{ ...versionFixture }] as never);
     vi.mocked(getCurrentPackageVersion).mockResolvedValue({ ...versionFixture, status: 'ready' } as never);
     vi.mocked(listPackageUnitsByVersion).mockResolvedValue([]);
+    vi.mocked(getPackageVersionUnitSummaries).mockResolvedValue([]);
     vi.mocked(setCurrentPackageVersion).mockImplementation(
       async (versionId: string) => ({ ...versionFixture, id: versionId, status: 'ready', isCurrent: true }) as never
     );
@@ -136,7 +132,6 @@ describe('activity package services (PR 6)', () => {
     vi.mocked(hasActiveMediaJobForAsset).mockResolvedValue(false);
     vi.mocked(generateScormUploadPresignedUrl).mockResolvedValue('https://upload.example/put');
     vi.mocked(headS3ObjectSize).mockResolvedValue(1024);
-    vi.mocked(deleteAssetService).mockResolvedValue({ ...assetFixture } as never);
     vi.mocked(startActivityPackageJob).mockResolvedValue({ id: 'job-1', status: 'queued', stage: 'queued' } as never);
   });
 
@@ -212,6 +207,16 @@ describe('activity package services (PR 6)', () => {
     expect(result.jobId).toBe('job-1');
   });
 
+  it('marks the version failed when queueing the job throws', async () => {
+    vi.mocked(startActivityPackageJob).mockRejectedValueOnce(new Error('redis down'));
+
+    await expect(processScormPackageVersion(ORG_ID, 'asset-1', 'version-1', PROFILE_ID)).rejects.toThrow();
+    expect(vi.mocked(updatePackageVersion)).toHaveBeenCalledWith(
+      'version-1',
+      expect.objectContaining({ status: 'failed', error: expect.objectContaining({ code: 'ENQUEUE_FAILED' }) })
+    );
+  });
+
   it('refuses to process a missing upload or a busy asset', async () => {
     vi.mocked(headS3ObjectSize).mockResolvedValue(null);
     await expect(processScormPackageVersion(ORG_ID, 'asset-1', 'version-1', PROFILE_ID)).rejects.toBeInstanceOf(
@@ -259,26 +264,13 @@ describe('activity package services (PR 6)', () => {
       courseId: 'course-1',
       title: 'Package item'
     } as never);
+    vi.mocked(getPackageVersionUnitSummaries).mockResolvedValue([
+      { versionId: 'version-1', unitCount: 2, firstPassMark: 80 }
+    ]);
 
     const details = await getScormPackage(ORG_ID, 'asset-1');
     expect(details.versions).toHaveLength(1);
+    expect(details.versionStats).toEqual([{ versionId: 'version-1', unitCount: 2, firstPassMark: 80 }]);
     expect(details.usedBy).toEqual([{ activityId: 'activity-1', courseId: 'course-1', title: 'Package item' }]);
-  });
-
-  it('refuses to delete a package in use and deletes a free one', async () => {
-    vi.mocked(listActivityScormByAssetId).mockResolvedValue([
-      { activityId: 'activity-1', assetId: 'asset-1' }
-    ] as never);
-    vi.mocked(getActivityById).mockResolvedValue({
-      id: 'activity-1',
-      courseId: 'course-1',
-      title: 'Package item'
-    } as never);
-    await expect(deleteScormPackage(ORG_ID, 'asset-1')).rejects.toMatchObject({ code: 'ASSET_IN_USE' });
-
-    vi.mocked(listActivityScormByAssetId).mockResolvedValue([]);
-    const deleted = await deleteScormPackage(ORG_ID, 'asset-1');
-    expect(deleted.id).toBe('asset-1');
-    expect(vi.mocked(deleteAssetService)).toHaveBeenCalledWith(ORG_ID, 'asset-1');
   });
 });

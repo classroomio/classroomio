@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import yauzl, { type Entry } from 'yauzl';
 import { UnrecoverableError } from 'bullmq';
+import { db } from '@cio/db/drizzle';
 import {
   PackageError,
   SCORM_ZIP_LIMITS,
@@ -85,22 +86,36 @@ async function readZipHeader(zipPath: string): Promise<Uint8Array> {
 }
 
 export function mapUnitsToRows(units: ScormPackageUnit[], packageVersionId: string): TNewContentPackageUnit[] {
-  return units.map((unit) => ({
-    packageVersionId,
-    identifier: unit.identifier,
-    parentIdentifier: unit.parentIdentifier,
-    title: unit.title,
-    position: unit.position,
-    unitType: unit.unitType,
-    href: unit.href,
-    parameters: unit.parameters,
-    masteryScoreRaw: unit.masteryScoreRaw === null ? null : String(unit.masteryScoreRaw),
-    passingScoreScaled: unit.passingScoreScaled === null ? null : String(unit.passingScoreScaled),
-    completionThreshold: unit.completionThreshold === null ? null : String(unit.completionThreshold),
-    launchData: unit.launchData,
-    formatDetails: { ...unit.formatDetails },
-    isVisible: unit.isVisible
-  }));
+  const used = new Set<string>();
+
+  return units.map((unit, index) => {
+    const fallback = unit.identifier || `item-${index + 1}`;
+    let identifier = fallback;
+
+    if (used.has(identifier)) {
+      let counter = 2;
+      while (used.has(`${fallback}-dup${counter}`)) counter += 1;
+      identifier = `${fallback}-dup${counter}`;
+    }
+    used.add(identifier);
+
+    return {
+      packageVersionId,
+      identifier,
+      parentIdentifier: unit.parentIdentifier,
+      title: unit.title,
+      position: unit.position,
+      unitType: unit.unitType,
+      href: unit.href,
+      parameters: unit.parameters,
+      masteryScoreRaw: unit.masteryScoreRaw === null ? null : String(unit.masteryScoreRaw),
+      passingScoreScaled: unit.passingScoreScaled === null ? null : String(unit.passingScoreScaled),
+      completionThreshold: unit.completionThreshold === null ? null : String(unit.completionThreshold),
+      launchData: unit.launchData,
+      formatDetails: { ...unit.formatDetails },
+      isVisible: unit.isVisible
+    };
+  });
 }
 
 export function resolveScormLimitMb(env: NodeJS.ProcessEnv = process.env): number {
@@ -130,6 +145,30 @@ async function readEntryBuffer(zipfile: yauzl.ZipFile, entry: Entry): Promise<Bu
   const chunks: Buffer[] = [];
 
   for await (const chunk of stream) chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
+
+  return Buffer.concat(chunks);
+}
+
+/**
+ * Reads one ZIP entry aborted past `maxBytes`, so a crafted manifest entry
+ * cannot balloon worker memory before the size check runs.
+ */
+async function readEntryBufferCapped(zipfile: yauzl.ZipFile, entry: Entry, maxBytes: number): Promise<Buffer> {
+  const stream = await zipfile.openReadStreamPromise(entry);
+  const chunks: Buffer[] = [];
+  let total = 0;
+
+  for await (const chunk of stream) {
+    const buffer = typeof chunk === 'string' ? Buffer.from(chunk) : (chunk as Buffer);
+    total += buffer.length;
+
+    if (total > maxBytes) {
+      stream.destroy();
+      throw new PackageError('file_too_large', { bytes: total });
+    }
+
+    chunks.push(buffer);
+  }
 
   return Buffer.concat(chunks);
 }
@@ -201,9 +240,12 @@ interface ProcessScormResult {
   extractedBytes: number;
 }
 
-async function hasLmsApiCalls(extractDir: string, entries: Entry[]): Promise<boolean> {
+async function hasLmsApiCalls(extractDir: string, entries: Entry[], launchPaths: string[]): Promise<boolean> {
+  const launchSet = new Set(launchPaths.map((href) => href.split(/[?#]/)[0]));
+  const rank = (entry: Entry) => (launchSet.has(normalizeZipPath(entry.fileName)) ? 0 : 1);
   const candidates = entries
     .filter((entry) => /\.(html?|js)$/i.test(entry.fileName) && entry.uncompressedSize <= LMS_API_SCAN_MAX_BYTES)
+    .sort((left, right) => rank(left) - rank(right))
     .slice(0, LMS_API_SCAN_MAX_FILES);
 
   for (const entry of candidates) {
@@ -358,8 +400,7 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
 
     const manifestEntry = archive.fileEntries.find((entry) => normalizeZipPath(entry.fileName) === manifestLookup.path);
     if (!manifestEntry) throw new PackageError('missing_manifest');
-    const manifestBuffer = await readEntryBuffer(zipfile, manifestEntry);
-    if (manifestBuffer.length > MANIFEST_MAX_BYTES) throw new PackageError('invalid_xml');
+    const manifestBuffer = await readEntryBufferCapped(zipfile, manifestEntry, MANIFEST_MAX_BYTES);
     const parsed: ParsedScormPackage = parseScormManifest(
       manifestBuffer.toString('utf-8'),
       archive.names,
@@ -409,42 +450,65 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
     await throwIfCancelRequested(mediaJobId);
     await updateMediaJob(mediaJobId, { stage: 'reading manifest', progressPercent: 90 });
 
-    await bulkInsertPackageUnits(mapUnitsToRows(parsed.units, version.id));
+    await throwIfCancelRequested(mediaJobId);
+    await updateMediaJob(mediaJobId, { stage: 'reading manifest', progressPercent: 90 });
+
+    const unitRows = mapUnitsToRows(parsed.units, version.id);
     const scanDir = extractDir ?? '';
-    const connectsToLms = scanDir ? await hasLmsApiCalls(scanDir, archive.fileEntries) : true;
+    const launchPaths = parsed.units.map((unit) => unit.href);
+    const connectsToLms = scanDir ? await hasLmsApiCalls(scanDir, archive.fileEntries, launchPaths) : true;
     const warnings = connectsToLms ? parsed.warnings : [...parsed.warnings, 'no_lms_api_detected'];
-    await updatePackageVersion(version.id, {
-      status: 'ready',
-      format: parsed.format,
-      manifestIdentifier: parsed.manifestIdentifier,
-      title: parsed.title,
-      manifest: {
-        identifier: parsed.manifestIdentifier,
-        title: parsed.title,
-        format: parsed.format,
-        unitCount: parsed.units.length
-      },
-      warnings,
-      error: null,
-      zipBytes,
-      contentSha256,
-      extractedBytes,
-      fileCount: archive.fileEntries.length,
-      processingJobId: mediaJobId,
-      processedAt: new Date().toISOString()
-    });
 
-    const current = await getCurrentPackageVersion(assetId);
-    if (!current) {
-      await setCurrentPackageVersion(version.id);
-      await updateAsset(assetId, asset.organizationId, { status: 'active' });
-    }
+    await db.transaction(async (tx) => {
+      await bulkInsertPackageUnits(unitRows, tx);
+      await updatePackageVersion(
+        version.id,
+        {
+          status: 'ready',
+          format: parsed.format,
+          manifestIdentifier: parsed.manifestIdentifier,
+          title: parsed.title,
+          manifest: {
+            identifier: parsed.manifestIdentifier,
+            title: parsed.title,
+            format: parsed.format,
+            unitCount: parsed.units.length
+          },
+          warnings,
+          error: null,
+          zipBytes,
+          contentSha256,
+          extractedBytes,
+          fileCount: archive.fileEntries.length,
+          processingJobId: mediaJobId,
+          processedAt: new Date().toISOString()
+        },
+        tx
+      );
 
-    await updateMediaJob(mediaJobId, {
-      status: 'completed',
-      stage: 'ready',
-      progressPercent: 100,
-      result: { unchanged: false, versionId: version.id, format: parsed.format, fileCount: archive.fileEntries.length }
+      const current = await getCurrentPackageVersion(assetId, tx);
+      if (!current) {
+        await setCurrentPackageVersion(version.id, tx);
+        await updateAsset(assetId, asset.organizationId, { status: 'active', byteSize: zipBytes }, tx);
+      } else {
+        await updateAsset(assetId, asset.organizationId, { byteSize: zipBytes }, tx);
+      }
+
+      await updateMediaJob(
+        mediaJobId,
+        {
+          status: 'completed',
+          stage: 'ready',
+          progressPercent: 100,
+          result: {
+            unchanged: false,
+            versionId: version.id,
+            format: parsed.format,
+            fileCount: archive.fileEntries.length
+          }
+        },
+        tx
+      );
     });
 
     log.info('activity-package-done', {

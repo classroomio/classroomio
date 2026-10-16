@@ -1825,6 +1825,7 @@ export const courseActivity = pgTable(
     }).onDelete('set null'),
     index('idx_course_activity_course_id').on(table.courseId),
     index('idx_course_activity_course_slug').on(table.courseId, table.slug),
+    index('course_activity_section_id_idx').on(table.sectionId),
     index('course_activity_source_id_idx')
       .on(table.sourceId)
       .where(sql`${table.sourceId} is not null`)
@@ -1857,6 +1858,7 @@ export const activityCompletion = pgTable(
       name: 'activity_completion_profile_id_fkey'
     }).onDelete('cascade'),
     unique('activity_completion_activity_profile_key').on(table.activityId, table.profileId),
+    index('activity_completion_profile_id_idx').on(table.profileId),
     check('activity_completion_complete_check', sql`${table.isComplete} = (${table.completedAt} IS NOT NULL)`)
   ]
 );
@@ -4709,12 +4711,13 @@ export const scormAttempt = pgTable(
       columns: [table.packageVersionId],
       foreignColumns: [contentPackageVersion.id],
       name: 'scorm_attempt_package_version_id_fkey'
-    }).onDelete('restrict'),
+    }).onDelete('cascade'),
     unique('scorm_attempt_activity_profile_number_key').on(table.activityId, table.profileId, table.attemptNumber),
     uniqueIndex('scorm_attempt_open_key')
       .on(table.activityId, table.profileId)
       .where(sql`${table.closedAt} is null`),
     index('idx_scorm_attempt_activity_id').on(table.activityId),
+    index('scorm_attempt_profile_id_idx').on(table.profileId),
     check('scorm_attempt_close_reason_check', sql`(${table.closedAt} IS NULL) = (${table.closeReason} IS NULL)`)
   ]
 );
@@ -4746,7 +4749,7 @@ export const scormScoAttempt = pgTable(
       columns: [table.unitId],
       foreignColumns: [contentPackageUnit.id],
       name: 'scorm_sco_attempt_unit_id_fkey'
-    }).onDelete('restrict'),
+    }).onDelete('cascade'),
     uniqueIndex('scorm_sco_attempt_open_key')
       .on(table.attemptId, table.unitId)
       .where(sql`${table.status} in ('active', 'suspended')`),

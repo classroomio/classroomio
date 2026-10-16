@@ -5,6 +5,7 @@ import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TScormSessionEvent } from '@db/types';
 import {
   SCORM_SESSION_EVENT_KINDS,
+  SCORM_SESSION_EVENT_USER_AGENT_MAX_LENGTH,
   ZScormSessionEventDetail,
   ZScormSessionEventUserAgent,
   type TScormSessionEventKind
@@ -39,7 +40,11 @@ export async function recordScormSessionEvent(
     throw new Error(`SCORM session event detail exceeds 2 KB for try "${scoAttemptId}"`);
   }
 
-  const userAgentResult = ZScormSessionEventUserAgent.safeParse(userAgent);
+  const truncatedAgent =
+    typeof userAgent === 'string' && userAgent.length > SCORM_SESSION_EVENT_USER_AGENT_MAX_LENGTH
+      ? userAgent.slice(0, SCORM_SESSION_EVENT_USER_AGENT_MAX_LENGTH)
+      : userAgent;
+  const userAgentResult = ZScormSessionEventUserAgent.safeParse(truncatedAgent);
   if (!userAgentResult.success) {
     throw new Error(`SCORM session event user agent exceeds 512 characters for try "${scoAttemptId}"`);
   }

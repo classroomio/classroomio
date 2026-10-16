@@ -12,6 +12,7 @@ export interface ActivityLaunchClaims {
   mode: LaunchMode;
   anc: string[];
   exp: number;
+  typ?: string;
 }
 
 export interface ContentTokenClaims {
@@ -152,7 +153,8 @@ export async function mintLaunchToken(
     fmt: input.fmt,
     mode: input.mode,
     anc: [...input.anc].sort(),
-    exp: Math.floor(nowMs / 1000) + LAUNCH_TOKEN_TTL_SECONDS
+    exp: Math.floor(nowMs / 1000) + LAUNCH_TOKEN_TTL_SECONDS,
+    typ: 'launch'
   };
 
   return signToken(claims as unknown as Record<string, unknown>, secret);
@@ -160,7 +162,10 @@ export async function mintLaunchToken(
 
 /**
  * Verifies a launch token and returns its claims. Throws `expired_token`
- * past expiry, `invalid_token` otherwise.
+ * past expiry, `invalid_token` otherwise — including a present-but-foreign
+ * `typ`, so launch tokens can never pass as another token kind. Tokens
+ * minted before the type claim existed carry no `typ` and stay valid until
+ * they expire naturally.
  */
 export async function verifyLaunchToken(
   token: string,
@@ -171,6 +176,10 @@ export async function verifyLaunchToken(
 
   if (typeof claims.exp !== 'number' || claims.exp * 1000 <= nowMs) {
     throw new PackageError('expired_token');
+  }
+
+  if (claims.typ !== undefined && claims.typ !== 'launch') {
+    throw new PackageError('invalid_token', { reason: 'wrong_type' });
   }
 
   return claims;

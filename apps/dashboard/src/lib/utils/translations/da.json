@@ -2929,7 +2929,6 @@
           },
           "package": {
             "drop_label": "Slip din SCORM .zip her",
-            "drop_hint": "Op til {size}. Behandlingen kan tage et par minutter; du kan forlade siden.",
             "wrong_type": "Kun .zip-filer kan uploades som SCORM-pakker.",
             "too_large": "Denne fil er større end {size}.",
             "uploading": "Uploader {progress}%",
@@ -3026,7 +3025,9 @@
             "details": "Detaljer",
             "version_label": "Version",
             "remove_package": "Fjern pakke",
-            "launchable_count": "{count, plural, one {# element, der kan startes} other {# elementer, der kan startes}}"
+            "launchable_count": "{count, plural, one {# element, der kan startes} other {# elementer, der kan startes}}",
+            "drop_hint": "Op til {size}. Hold denne side åben, indtil pakken er vedhæftet.",
+            "prerequisites_warning": "Denne pakke kontrollerer moduler bag forudsætninger. De håndhæves i sekventiel modulrækkefølge; finere forudsætningsregler ignoreres."
           },
           "gating": {
             "title": "SCORM-redigering er sat på pause.",
@@ -3103,11 +3104,23 @@
                 "terminate": "Afsluttet",
                 "beacon": "Gemt ved afslutning",
                 "error": "Fejl",
-                "not_initialized": "Kunne ikke oprette forbindelse"
+                "not_initialized": "Kunne ikke oprette forbindelse",
+                "duplicate": "Dublet lagring ignoreret"
               },
               "interaction_correct": "Korrekt: {answer}",
-              "session_device": "Sessionsenhed",
-              "technical_details": "Tekniske detaljer"
+              "technical_details": "Tekniske detaljer",
+              "session_device": "Sessionsenhed: {device}",
+              "module_success": {
+                "passed": "Bestået",
+                "failed": "Mislykkedes",
+                "unknown": "Ukendt"
+              },
+              "module_completion": {
+                "completed": "Afsluttet",
+                "incomplete": "Ufuldstændig",
+                "not_attempted": "Ikke forsøgt",
+                "unknown": "Ukendt"
+              }
             },
             "export": {
               "title": "SCORM-resultater"
@@ -3149,7 +3162,8 @@
           "add_package_button": "Tilføj pakke"
         },
         "add_content_created_activity": "SCORM-pakken er blevet oprettet!",
-        "add_content_create_another_activity": "Opret en anden pakke"
+        "add_content_create_another_activity": "Opret en anden pakke",
+        "view": "Vis"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",

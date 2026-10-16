@@ -7,6 +7,7 @@
   import { Empty } from '@cio/ui/custom/empty';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import MaximizeIcon from '@lucide/svelte/icons/maximize';
+  import MinimizeIcon from '@lucide/svelte/icons/minimize';
   import PackageIcon from '@lucide/svelte/icons/package';
   import { ContentType } from '@cio/utils/constants/content';
   import { activityApi, courseApi } from '$features/course/api';
@@ -14,6 +15,7 @@
   import ActivityPlayerModuleNav from '$features/course/components/activity/activity-player-module-nav.svelte';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
   import { getCourseProgress, getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
+  import { sanitizeHtml } from '$lib/utils/functions/sanitize-html';
   import { openCourseCompletionIfDone } from '$features/course/utils/toggle-lesson-completion';
   import { isTrustedPlayerMessage, parsePlayerMessage } from '$features/course/utils/scorm-utils';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -43,6 +45,8 @@
   let isMenuOpen = $state(false);
   let now = $state(Date.now());
   let frameWrap = $state<HTMLElement | null>(null);
+  let playerFrame = $state<HTMLIFrameElement | null>(null);
+  let bootFailed = $state(false);
   let expiryTimer: ReturnType<typeof setInterval> | null = null;
   let idleTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -94,12 +98,14 @@
   });
 
   const instructions = $derived((activityApi.activity?.instructions as string | null) ?? null);
+  const safeInstructions = $derived(instructions ? sanitizeHtml(instructions) : null);
 
   async function runLaunch(input: { unitIdentifier?: string; newAttempt?: boolean }) {
     launchedFor = `${courseId}:${activityId}`;
     playerReady = false;
     terminated = false;
     didNotConnect = false;
+    bootFailed = false;
     retakesUnavailable = false;
     const result = await activityApi.launch(courseId, activityId, input);
 
@@ -127,7 +133,7 @@
     terminated = true;
     playerReady = false;
     await refreshProgressAndMaybeComplete(availableLaunch?.mode !== 'preview');
-    await activityApi.launch(courseId, activityId, {});
+    await activityApi.refreshProgress(courseId, activityId);
 
     if (!navRequest || navRequest === '_none_' || navRequest === 'exit' || navRequest === 'exitAll') {
       return;
@@ -152,6 +158,7 @@
   function handleMessage(event: MessageEvent) {
     const url = availableLaunch?.playerUrl ?? null;
     if (!url || !isTrustedPlayerMessage(event.origin, url)) return;
+    if (event.source !== playerFrame?.contentWindow) return;
 
     const message = parsePlayerMessage(event.data);
     if (!message) return;
@@ -159,6 +166,10 @@
     if (message.type === 'ready') {
       playerReady = true;
       didNotConnect = false;
+      bootFailed = false;
+    } else if (message.type === 'boot-error') {
+      bootFailed = true;
+      playerReady = false;
     } else if (message.type === 'completed') {
       void activityApi.refreshProgress(courseId, activityId);
       void refreshProgressAndMaybeComplete(availableLaunch?.mode !== 'preview');
@@ -195,6 +206,17 @@
       navVisible = true;
       clearIdleTimer();
     }
+  });
+
+  $effect(() => {
+    const url = displayedPlayerUrl;
+    if (!url || playerReady || terminated || didNotConnect || bootFailed) return;
+
+    const timer = setTimeout(() => {
+      if (!playerReady && !terminated && !didNotConnect) bootFailed = true;
+    }, 8000);
+
+    return () => clearTimeout(timer);
   });
 
   function setFocusMode(next: boolean) {
@@ -342,7 +364,6 @@
     if (lockReason) return;
     if (launchedFor === `${courseId}:${activityId}`) return;
 
-    void courseApi.refreshCourse(courseId, profileId);
     void runLaunch({});
   });
 </script>
@@ -380,8 +401,8 @@
       <Button size="sm" onclick={reloadPlayer}>{$t('course.navItem.lessons.activities.player.reload')}</Button>
     </div>
   {:else}
-    {#if instructions}
-      <div class="ui:text-muted-foreground text-sm">{@html instructions}</div>
+    {#if safeInstructions}
+      <div class="ui:text-muted-foreground text-sm">{@html safeInstructions}</div>
     {/if}
 
     {#if launch.mode === 'preview'}
@@ -459,13 +480,26 @@
         />
       {/if}
       <div class={isImmersive ? 'relative min-h-0 flex-1' : 'relative'}>
+        {#if isImmersive && !showMenu}
+          <div class="absolute top-2 right-2 z-50">
+            <Button
+              size="sm"
+              variant="secondary"
+              onclick={toggleFullscreen}
+              aria-label={$t('course.navItem.lessons.activities.player.exit_fullscreen')}
+            >
+              <MinimizeIcon size={14} />
+            </Button>
+          </div>
+        {/if}
         {#if displayedPlayerUrl}
           {#key displayedPlayerUrl}
             <iframe
+              bind:this={playerFrame}
               src={displayedPlayerUrl}
               title={activityApi.activity?.title ?? ''}
               class={isImmersive ? 'h-full w-full' : 'aspect-video w-full'}
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals allow-downloads"
               allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
               data-testid="activity-player-frame"
             ></iframe>
@@ -480,11 +514,22 @@
               }}
             ></div>
           {/if}
-          {#if !playerReady && !didNotConnect && !terminated}
+          {#if !playerReady && !didNotConnect && !terminated && !bootFailed}
             <Skeleton class="absolute inset-0 h-full w-full" />
           {/if}
         {:else}
           <Skeleton class={isImmersive ? 'h-full w-full' : 'aspect-video w-full'} />
+        {/if}
+        {#if bootFailed}
+          <div class="flex flex-col items-center gap-3 p-8 text-center">
+            <p class="text-sm font-medium">{$t('course.navItem.lessons.activities.player.load_failed_title')}</p>
+            <p class="ui:text-muted-foreground text-sm">
+              {$t('course.navItem.lessons.activities.player.load_failed_body')}
+            </p>
+            <Button size="sm" variant="outline" onclick={reloadPlayer}>
+              {$t('course.navItem.lessons.activities.player.reload')}
+            </Button>
+          </div>
         {/if}
         {#if didNotConnect}
           <div class="flex flex-col items-center gap-3 p-8 text-center">

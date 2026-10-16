@@ -3735,7 +3735,6 @@
           },
           "package": {
             "drop_label": "SCORM .zip dosyanızı buraya bırakın",
-            "drop_hint": "En fazla {size}. İşlem birkaç dakika sürebilir; sayfadan ayrılabilirsiniz.",
             "wrong_type": "SCORM paketleri olarak yalnızca .zip dosyaları yüklenebilir.",
             "too_large": "Bu dosya {size}'dan daha büyük.",
             "uploading": "Yükleniyor %{progress}",
@@ -3832,7 +3831,9 @@
             "details": "Ayrıntılar",
             "version_label": "Sürüm",
             "remove_package": "Paketi kaldır",
-            "launchable_count": "{count, plural, one {# başlatılabilir öğe} other {# başlatılabilir öğe}}"
+            "launchable_count": "{count, plural, one {# başlatılabilir öğe} other {# başlatılabilir öğe}}",
+            "drop_hint": "{size} kadar. Paket eklenene kadar bu sayfayı açık tutun.",
+            "prerequisites_warning": "Bu paket, modülleri ön koşullar arkasına yerleştirir. Bu ön koşullar, sıralı modül sırasına göre uygulanır; daha ayrıntılı ön koşul kuralları göz ardı edilir."
           },
           "gating": {
             "title": "SCORM oluşturma işlemi duraklatıldı.",
@@ -3909,11 +3910,23 @@
                 "terminate": "Tamamlandı",
                 "beacon": "Çıkışta kaydedildi",
                 "error": "Hata",
-                "not_initialized": "Bağlanamadı"
+                "not_initialized": "Bağlanamadı",
+                "duplicate": "Yinelenen kaydetme göz ardı edildi"
               },
               "interaction_correct": "Doğru: {answer}",
-              "session_device": "Oturum cihazı",
-              "technical_details": "Teknik detaylar"
+              "technical_details": "Teknik detaylar",
+              "session_device": "Oturum cihazı: {device}",
+              "module_success": {
+                "passed": "Geçti",
+                "failed": "Başarısız",
+                "unknown": "Bilinmiyor"
+              },
+              "module_completion": {
+                "completed": "Tamamlandı",
+                "incomplete": "Tamamlanmamış",
+                "not_attempted": "Denenmedi",
+                "unknown": "Bilinmiyor"
+              }
             },
             "export": {
               "title": "SCORM sonuçları"
@@ -3955,7 +3968,8 @@
           "add_package_button": "Paket ekle"
         },
         "add_content_created_activity": "SCORM paketi başarıyla oluşturuldu!",
-        "add_content_create_another_activity": "Başka bir paket oluştur"
+        "add_content_create_another_activity": "Başka bir paket oluştur",
+        "view": "Görünüm"
       },
       "attendance": {
         "title": "Attendance",

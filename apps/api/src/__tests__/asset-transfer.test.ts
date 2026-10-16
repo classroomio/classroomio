@@ -298,6 +298,7 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
           storage.objects.add(`scorm:scorm/${source.id}/v1/sco.html`);
           storage.objects.add(`scorm:scorm/${source.id}/v2.zip`);
           storage.objects.add(`scorm:scorm/${source.id}/v2/sco.html`);
+          storage.objects.add(`scorm:scorm/${source.id}/v2.index.json`);
 
           const transfer = await transferScormPackageAsset(source, targetOrg.id, profile.id, tx);
 
@@ -342,6 +343,7 @@ describe.skipIf(!hasDatabase)('cross-org asset transfer', () => {
 
           expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1.zip`)).toBe(true);
           expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1/sco.html`)).toBe(true);
+          expect(storage.objects.has(`scorm:scorm/${transfer.asset.id}/v1.index.json`)).toBe(true);
 
           throw rollback;
         })

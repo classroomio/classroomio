@@ -12,6 +12,7 @@ import type {
   CreatePackageRequest,
   CreatePackageVersionData,
   CreatePackageVersionRequest,
+  GetPackageDownloadRequest,
   GetPackageRequest,
   MakePackageVersionCurrentRequest,
   PackageDetails,
@@ -135,6 +136,22 @@ export class PackageApi extends BaseApiWithErrors {
     });
 
     return details;
+  }
+
+  async getDownloadUrl(assetId: string): Promise<string | null> {
+    let url: string | null = null;
+    await this.execute<GetPackageDownloadRequest>({
+      requestFn: () => classroomio.activity.packages[':assetId'].download.$get({ param: { assetId } }),
+      logContext: 'building package download',
+      onSuccess: (response) => {
+        if (response.data) url = response.data.url;
+      },
+      onError: () => {
+        snackbar.error('snackbar.media_manager.download_failed');
+      }
+    });
+
+    return url;
   }
 
   async createCourses(fields: TActivityCoursesCreate): Promise<CreatedPackageCourses | undefined> {

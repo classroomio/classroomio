@@ -84,6 +84,10 @@ vi.mock('../../utils/logger', () => ({
   log: { info: () => {}, warn: () => {}, error: () => {} }
 }));
 
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: async (fn: (tx: unknown) => unknown) => fn({}) }
+}));
+
 vi.mock('@cio/db/queries', () => ({
   bulkInsertPackageUnits: async (values: Record<string, unknown>[]) => {
     state.insertedUnits = values;
@@ -176,7 +180,10 @@ describe('processScormPackage (PR 6)', () => {
     for (const entry of indexListing as unknown[]) expect(typeof entry).toBe('string');
 
     expect(state.mediaJobs.get(payload.mediaJobId)).toMatchObject({ status: 'completed' });
-    expect(state.assetUpdates).toContainEqual({ assetId: payload.assetId, patch: { status: 'active' } });
+    expect(state.assetUpdates).toContainEqual({
+      assetId: payload.assetId,
+      patch: { status: 'active', byteSize: 6871 }
+    });
   });
 
   it('records the SHA-256 of the uploaded ZIP', async () => {
@@ -336,5 +343,28 @@ describe('processScormPackage (PR 6)', () => {
     ]);
     expect(resolveScormLimitMb({} as NodeJS.ProcessEnv)).toBe(500);
     expect(resolveScormLimitMb({ UPLOAD_MAX_SCORM_MB: '100' } as NodeJS.ProcessEnv)).toBe(100);
+  });
+
+  it('dedupes repeated unit identifiers instead of violating the unique key', () => {
+    const rows = mapUnitsToRows(
+      ['ITEM-1', 'ITEM-1', 'ITEM-1'].map((identifier, index) => ({
+        identifier,
+        parentIdentifier: null,
+        title: `Module ${index + 1}`,
+        position: index,
+        unitType: 'sco' as const,
+        href: `sco-${index + 1}.html`,
+        parameters: null,
+        masteryScoreRaw: null,
+        passingScoreScaled: null,
+        completionThreshold: null,
+        launchData: null,
+        formatDetails: { format: 'scorm12' } as const,
+        isVisible: true
+      })),
+      'version-1'
+    );
+
+    expect(rows.map((row) => row.identifier)).toEqual(['ITEM-1', 'ITEM-1-dup2', 'ITEM-1-dup3']);
   });
 });

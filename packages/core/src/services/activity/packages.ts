@@ -11,7 +11,7 @@ import {
   setCurrentPackageVersion,
   updatePackageVersion
 } from '@cio/db/queries/activity/package-version';
-import { listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
+import { listPackageUnitsByVersion, getPackageVersionUnitSummaries } from '@cio/db/queries/activity/package-unit';
 import { getActivityById } from '@cio/db/queries/activity';
 import { closeSupersededAttempts } from '@cio/db/queries/scorm/attempt';
 import { listActivityScormByAssetId } from '@cio/db/queries/scorm/activity-scorm';
@@ -24,9 +24,9 @@ import type {
 import type { TAsset, TContentPackageUnit, TContentPackageVersion, TCourseActivity } from '@cio/db/types';
 
 import { getStorageConfig } from '../../config/storage';
-import { generateScormUploadPresignedUrl, headS3ObjectSize } from '../../utils/s3';
-import { deleteAssetService } from '../assets/assets';
+import { generateDownloadPresignedUrls, generateScormUploadPresignedUrl, headS3ObjectSize } from '../../utils/s3';
 import { startActivityPackageJob } from '../jobs/activity-package-jobs';
+import { isRedisConfigured } from '@cio/jobs';
 
 export function scormUploadKey(assetId: string, versionNumber: number): string {
   return `scorm/${assetId}/v${versionNumber}.zip`;
@@ -189,14 +189,34 @@ export async function processScormPackageVersion(
   const hasActive = await hasActiveMediaJobForAsset(asset.id, organizationId);
   if (hasActive) throw new AppError('A package job is already running for this asset', ErrorCodes.CONFLICT, 409);
 
+  if (!isRedisConfigured())
+    throw new AppError(
+      'Package processing needs a job queue, which is not configured on this server',
+      ErrorCodes.INTERNAL_ERROR,
+      503
+    );
+
   await updatePackageVersion(version.id, { status: 'processing' });
 
-  const job = await startActivityPackageJob({
-    organizationId,
-    assetId: asset.id,
-    packageVersionId: version.id,
-    triggeredByProfileId: profileId
-  });
+  let job;
+  try {
+    job = await startActivityPackageJob({
+      organizationId,
+      assetId: asset.id,
+      packageVersionId: version.id,
+      triggeredByProfileId: profileId
+    });
+  } catch (error) {
+    await updatePackageVersion(version.id, {
+      status: 'failed',
+      error: {
+        code: 'ENQUEUE_FAILED',
+        message: error instanceof Error ? error.message : 'Failed to queue package processing'
+      },
+      processedAt: new Date().toISOString()
+    });
+    throw error;
+  }
 
   const updated = await updatePackageVersion(version.id, { processingJobId: job.id });
 
@@ -249,6 +269,7 @@ export interface ScormPackageDetails {
   versions: TContentPackageVersion[];
   currentVersion: TContentPackageVersion | null;
   units: TContentPackageUnit[];
+  versionStats: Array<{ versionId: string; unitCount: number; firstPassMark: number | null }>;
   usedBy: ScormPackageUsage[];
 }
 
@@ -263,11 +284,12 @@ export async function getScormPackage(organizationId: string, assetId: string): 
   const currentVersion = await getCurrentPackageVersion(asset.id);
 
   const units = currentVersion ? await listPackageUnitsByVersion(currentVersion.id) : [];
+  const versionStats = await getPackageVersionUnitSummaries(asset.id);
 
   const usages = await listActivityScormByAssetId(asset.id);
   const usedBy = await resolvePackageUsages(usages.map((usage) => usage.activityId));
 
-  return { asset, versions, currentVersion, units, usedBy };
+  return { asset, versions, currentVersion, units, versionStats, usedBy };
 }
 
 async function resolvePackageUsages(activityIds: string[]): Promise<ScormPackageUsage[]> {
@@ -284,24 +306,18 @@ async function resolvePackageUsages(activityIds: string[]): Promise<ScormPackage
 }
 
 /**
- * Deletes a package asset and, through the asset service, its storage prefix.
- * Throws 409 while an activity uses the package.
+ * Returns a short-lived download URL for the current version's ZIP. Throws
+ * when the asset is missing or has no ready version yet.
  */
-export async function deleteScormPackage(organizationId: string, assetId: string): Promise<TAsset> {
+export async function getScormPackageDownloadUrl(organizationId: string, assetId: string): Promise<{ url: string }> {
   const asset = await getOrgScormAsset(organizationId, assetId);
+  const current = await getCurrentPackageVersion(asset.id);
+  if (!current || current.status !== 'ready')
+    throw new AppError('Package has no ready version yet', ErrorCodes.VALIDATION_ERROR, 400);
 
-  const usedBy = await resolvePackageUsages(
-    (await listActivityScormByAssetId(asset.id)).map((usage) => usage.activityId)
-  );
-  if (usedBy.length > 0)
-    throw new AppError(
-      `Package is used by ${usedBy.map((usage) => usage.title).join(', ')}`,
-      ErrorCodes.ASSET_IN_USE,
-      409
-    );
+  const urls = await generateDownloadPresignedUrls([current.uploadKey], getStorageConfig().bucketScorm);
+  const url = urls[current.uploadKey];
+  if (!url) throw new AppError('Package file is not available', ErrorCodes.NOT_FOUND, 404);
 
-  const deleted = await deleteAssetService(organizationId, asset.id);
-  if (!deleted) throw new AppError('Package not found', ErrorCodes.NOT_FOUND, 404);
-
-  return deleted;
+  return { url };
 }

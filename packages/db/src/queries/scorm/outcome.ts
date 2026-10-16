@@ -50,7 +50,7 @@ export function scormTryOutcomeColumns(input: ScormTryOutcomeInput): ScormTryOut
   const max12 = safeNumericText(sql<string>`${cmi}->'core'->'score'->>'max'`);
   const scaled12 = sql<
     number | null
-  >`CASE WHEN ${raw12} IS NULL THEN NULL WHEN ${min12} IS NOT NULL AND ${max12} IS NOT NULL AND ${max12} > ${min12} THEN (${raw12} - ${min12}) / (${max12} - ${min12}) ELSE ${raw12} / 100 END`;
+  >`CASE WHEN ${raw12} IS NULL THEN NULL WHEN ${max12} IS NOT NULL AND ${max12} > 0 AND ${max12} > COALESCE(${min12}, 0) THEN (${raw12} - COALESCE(${min12}, 0)) / (${max12} - COALESCE(${min12}, 0)) ELSE ${raw12} / 100 END`;
   const scaled2004 = safeNumericText(sql<string>`${cmi}->'score'->>'scaled'`);
   const scaledScore = sql<number | null>`CASE WHEN ${is12} THEN (${scaled12}) ELSE (${scaled2004}) END`;
 

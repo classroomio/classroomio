@@ -332,6 +332,11 @@ export type GetPackageResponse = InferResponseType<GetPackageRequest> | null;
 export type GetPackageSuccess = Extract<InferResponseType<GetPackageRequest>, { success: true }>;
 export type PackageDetails = GetPackageSuccess['data'];
 
+export type GetPackageDownloadRequest = (typeof classroomio.activity.packages)[':assetId']['download']['$get'];
+export type GetPackageDownloadResponse = InferResponseType<GetPackageDownloadRequest>;
+export type GetPackageDownloadSuccess = Extract<GetPackageDownloadResponse, { success: true }>;
+export type PackageDownloadData = GetPackageDownloadSuccess['data'];
+
 export interface PackageFingerprint {
   contentSha256: string | null;
   zipBytes: number | null;

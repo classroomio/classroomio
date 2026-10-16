@@ -1,17 +1,33 @@
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
-import { getActivityById, updateActivity } from '@cio/db/queries/activity';
+import {
+  clearActivityCompletions,
+  getActivityById,
+  markActivityCompleteOnce,
+  updateActivity
+} from '@cio/db/queries/activity';
 import { deleteAssetUsagesByTarget, createAssetUsage, getAssetById } from '@cio/db/queries/assets';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import { transferScormPackageAsset } from '../../../assets/asset-transfer';
-import { getCurrentPackageVersion, listPackageVersionsByAsset } from '@cio/db/queries/activity/package-version';
+import {
+  getCurrentPackageVersion,
+  getPackageVersionById,
+  listPackageVersionsByAsset
+} from '@cio/db/queries/activity/package-version';
 import { listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import { getActivityScormByActivityId, upsertActivityScorm } from '@cio/db/queries/scorm';
-import { closeOpenAttemptsForActivity, getActivityOpenAttemptCounts } from '@cio/db/queries/scorm/attempt';
+import {
+  closeOpenAttemptsForActivity,
+  getActivityOpenAttemptCounts,
+  getLatestScormAttempt,
+  listAttemptProfileIdsByActivity
+} from '@cio/db/queries/scorm/attempt';
+import { listLatestScoAttemptsByAttempt } from '@cio/db/queries/scorm/sco-attempt';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { LICENSE_FEATURE } from '@cio/utils/license';
 import { ACTIVITY_PACKAGE_SLOT } from '@cio/utils/validation/assets/assets';
-import { ZScormSettings } from '@cio/utils/validation/activity/scorm';
-import { getScormModuleProgress, launchScormActivity } from './launch';
+import { ZScormSettings, type TScormSettings } from '@cio/utils/validation/activity/scorm';
+import { isScormRuleMet } from '@cio/activity-packages';
+import { attemptModuleOutcomes, getScormModuleProgress, launchScormActivity, packageFormat } from './launch';
 import {
   getComplianceSnapshot as fetchComplianceSnapshot,
   getLearnerDetail as fetchLearnerDetail,
@@ -76,7 +92,8 @@ export async function attachScormPackage(
       throw new AppError('This package is identical to the attached one', ErrorCodes.CONFLICT, 409);
     }
 
-    const sequenced = ((current.warnings ?? []) as string[]).includes('has_sequencing');
+    const packageWarnings = (current.warnings ?? []) as string[];
+    const sequenced = packageWarnings.includes('has_sequencing') || packageWarnings.includes('has_prerequisites');
 
     await upsertActivityScorm({ activityId, assetId: asset.id, moduleOrder: sequenced ? 'sequential' : 'free' }, tx);
     if (previous?.assetId && previous.assetId !== asset.id) {
@@ -134,6 +151,46 @@ async function resolvePackagePayload(assetId: string) {
   return { versions, currentVersion, units };
 }
 
+/**
+ * Re-evaluates every learner's latest attempt against new completion settings
+ * and flips their activity completion to match, so the table, badges and
+ * summary agree after a rule change. Learners whose attempt version is gone
+ * keep their flag. Course-level compliance records are untouched.
+ */
+async function recomputeActivityCompletions(
+  activityId: string,
+  settings: TScormSettings,
+  tx: DbOrTxClient
+): Promise<void> {
+  const rule = {
+    rule: settings.completionRule,
+    minScorePercent: settings.minScorePercent,
+    completionModules: settings.completionModules
+  };
+  const profileIds = await listAttemptProfileIdsByActivity(activityId, tx);
+
+  for (const profileId of profileIds) {
+    const latest = await getLatestScormAttempt(activityId, profileId, tx);
+    if (!latest) continue;
+
+    const version = await getPackageVersionById(latest.packageVersionId, tx);
+    if (!version) continue;
+
+    const format = packageFormat(version.format);
+    const units = await listPackageUnitsByVersion(version.id, tx);
+    const tries = await listLatestScoAttemptsByAttempt(latest.id, tx);
+    const triesByUnit = new Map(tries.map((row) => [row.unitId, row]));
+    const outcomes = attemptModuleOutcomes(units, triesByUnit, format);
+    if (outcomes.length === 0) continue;
+
+    if (isScormRuleMet(rule, outcomes)) {
+      await markActivityCompleteOnce(activityId, profileId, tx);
+    } else {
+      await clearActivityCompletions([activityId], profileId, tx);
+    }
+  }
+}
+
 export const scormProvider: ActivityProvider = {
   kind: 'scorm',
   licenseFeature: LICENSE_FEATURE.SCORM,
@@ -152,7 +209,8 @@ export const scormProvider: ActivityProvider = {
       completionRule: details.completionRule,
       minScorePercent: details.minScorePercent,
       allowRetakes: details.allowRetakes,
-      moduleOrder: details.moduleOrder
+      moduleOrder: details.moduleOrder,
+      completionModules: details.completionModules
     });
 
     if (!details.assetId) {
@@ -190,11 +248,13 @@ export const scormProvider: ActivityProvider = {
         completionRule: parsed.data.completionRule,
         minScorePercent: parsed.data.minScorePercent ?? null,
         allowRetakes: parsed.data.allowRetakes,
-        moduleOrder: parsed.data.moduleOrder
+        moduleOrder: parsed.data.moduleOrder,
+        completionModules: parsed.data.completionModules
       },
       tx
     );
     await updateActivity(activityId, {}, tx);
+    await recomputeActivityCompletions(activityId, parsed.data, tx);
   },
   async launch(context: ActivityLaunchContext): Promise<ActivityLaunchResult> {
     return launchScormActivity(context);
@@ -206,8 +266,8 @@ export const scormProvider: ActivityProvider = {
     activityId: string,
     profileIds: string[],
     paging?: TScormResultsQuery
-  ): Promise<ActivityLearnerSummary[]> {
-    const { learners } = await fetchLearnerSummaries(
+  ): Promise<{ learners: ActivityLearnerSummary[]; summary: ActivityResultsSummary; total: number }> {
+    return fetchLearnerSummaries(
       activityId,
       profileIds,
       paging ?? {
@@ -217,8 +277,6 @@ export const scormProvider: ActivityProvider = {
         direction: 'asc'
       }
     );
-
-    return learners;
   },
   async getResultsSummary(activityId: string, profileIds: string[]): Promise<ActivityResultsSummary> {
     return fetchResultsSummary(activityId, profileIds);
@@ -241,7 +299,8 @@ export const scormProvider: ActivityProvider = {
           completionRule: details.completionRule,
           minScorePercent: details.minScorePercent,
           allowRetakes: details.allowRetakes,
-          moduleOrder: details.moduleOrder
+          moduleOrder: details.moduleOrder,
+          completionModules: details.completionModules
         },
         tx
       );
@@ -275,7 +334,8 @@ export const scormProvider: ActivityProvider = {
         completionRule: details.completionRule,
         minScorePercent: details.minScorePercent,
         allowRetakes: details.allowRetakes,
-        moduleOrder: details.moduleOrder
+        moduleOrder: details.moduleOrder,
+        completionModules: details.completionModules
       },
       tx
     );

@@ -1,6 +1,8 @@
 import { db } from '@cio/db/drizzle';
+import { getActivityById, upsertActivityCompletion } from '@cio/db/queries/activity/activity';
+import { getComplianceCycleStartIso } from '@cio/db/queries/course/compliance';
 import { getActivityScormByActivityId } from '@cio/db/queries/scorm';
-import { getPackageVersionById } from '@cio/db/queries/activity/package-version';
+import { getPackageVersionById, getCurrentPackageVersion } from '@cio/db/queries/activity/package-version';
 import { getPackageUnitById, listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import { closeScormAttempt, getScormAttemptById } from '@cio/db/queries/scorm/attempt';
 import { recordScormSessionEvent } from '@cio/db/queries/scorm/session-event';
@@ -22,6 +24,7 @@ import {
   moduleOutcomeFromCmi,
   normalizeCommitCmi,
   parseCommitSessionTime,
+  parseCommitTotalTime,
   scormLaunchUrl,
   shouldRecordCommitEvent,
   statusAfterTerminate,
@@ -142,6 +145,7 @@ export async function getScormRuntimeState(
     const profile = await getProfileById(claims.sub);
     const outcomeUnit = toOutcomeUnit(unit);
     const timeLimits = timeLimitsOf(unit.formatDetails);
+    const review = claims.mode === 'review';
     const launchCmi = withLearnerFields(
       withLaunchData({}, unit.launchData),
       playerFormat(version.format),
@@ -152,26 +156,38 @@ export async function getScormRuntimeState(
 
     return {
       format: playerFormat(version.format),
-      cmi: launchCmi,
+      cmi: review
+        ? withReviewFields(launchCmi, playerFormat(version.format), {
+            completionThreshold: completionThresholdOf(unit.formatDetails)
+          })
+        : launchCmi,
       contentToken,
       launchPath: scormLaunchUrl(unit.href, unit.parameters),
       parentOrigin,
       parentOrigins,
-      entry: 'ab-initio',
+      entry: review ? '' : 'ab-initio',
       commitSeq: 0,
-      mode: 'preview',
+      mode: review ? 'review' : 'preview',
       debug: false
     };
   }
 
   const scoAttempt = await getScoAttemptById(claims.att);
-  if (!scoAttempt) throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
+  if (!scoAttempt) {
+    if (claims.mode !== 'review') throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
+
+    return mockReviewState(claims, secret);
+  }
 
   const unit = await getPackageUnitById(scoAttempt.unitId);
   if (!unit || unit.id !== claims.unit) throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
 
   const attempt = await getScormAttemptById(scoAttempt.attemptId);
-  if (!attempt) throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
+  if (!attempt) {
+    if (claims.mode !== 'review') throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
+
+    return mockReviewState(claims, secret);
+  }
 
   const version = await getPackageVersionById(attempt.packageVersionId);
   if (!version) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
@@ -188,24 +204,74 @@ export async function getScormRuntimeState(
   const profile = await getProfileById(claims.sub);
   const outcomeUnit = toOutcomeUnit(unit);
   const timeLimits = timeLimitsOf(unit.formatDetails);
+  const format = playerFormat(version.format);
   const launchCmi = withLearnerFields(
     withLaunchData(stored, unit.launchData),
-    playerFormat(version.format),
+    format,
     claims.sub,
     profile?.fullname ?? null,
     { ...outcomeUnit, ...timeLimits }
   );
+  const review = claims.mode === 'review';
 
   return {
-    format: playerFormat(version.format),
-    cmi: launchCmi,
+    format,
+    cmi: review
+      ? withReviewFields(launchCmi, format, { completionThreshold: completionThresholdOf(unit.formatDetails) })
+      : launchCmi,
     contentToken,
     launchPath: scormLaunchUrl(unit.href, unit.parameters),
     parentOrigin,
     parentOrigins,
     entry: entryOf(scoAttempt.status ?? 'active', stored, scoAttempt.commitSeq ?? 0),
     commitSeq: scoAttempt.commitSeq ?? 0,
-    mode: claims.mode === 'review' ? 'review' : 'normal',
+    mode: review ? 'review' : 'normal',
+    debug: false
+  };
+}
+
+/**
+ * Builds read-only review state for a module with no surviving try (reset or
+ * deleted attempt). Resolves against the activity's current package version.
+ */
+async function mockReviewState(claims: ActivityLaunchClaims, secret: string): Promise<ScormRuntimeState> {
+  const activityRow = await getActivityById(claims.act);
+  const details = activityRow ? await getActivityScormByActivityId(activityRow.id) : null;
+  const current = details?.assetId ? await getCurrentPackageVersion(details.assetId) : null;
+  const mockUnit = await getPackageUnitById(claims.unit);
+
+  if (!activityRow || !current || !mockUnit || mockUnit.packageVersionId !== current.id) {
+    throw new AppError('Attempt not found', ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const contentToken = await mintContentToken(
+    { org: claims.org, prefix: current.contentPrefix, anc: claims.anc },
+    secret
+  );
+  const parentOrigin = await resolveParentOrigin(claims);
+  const parentOrigins = claims.anc && claims.anc.length > 0 ? claims.anc : [parentOrigin];
+  const profile = await getProfileById(claims.sub);
+  const outcomeUnit = toOutcomeUnit(mockUnit);
+  const timeLimits = timeLimitsOf(mockUnit.formatDetails);
+  const format = playerFormat(current.format);
+  const launchCmi = withLearnerFields(
+    withLaunchData({}, mockUnit.launchData),
+    format,
+    claims.sub,
+    profile?.fullname ?? null,
+    { ...outcomeUnit, ...timeLimits }
+  );
+
+  return {
+    format,
+    cmi: withReviewFields(launchCmi, format, { completionThreshold: completionThresholdOf(mockUnit.formatDetails) }),
+    contentToken,
+    launchPath: scormLaunchUrl(mockUnit.href, mockUnit.parameters),
+    parentOrigin,
+    parentOrigins,
+    entry: '',
+    commitSeq: 0,
+    mode: 'review',
     debug: false
   };
 }
@@ -239,6 +305,37 @@ function timeLimitsOf(formatDetails: TContentPackageUnit['formatDetails']): {
     maxTimeAllowed: 'maxTimeAllowed' in formatDetails ? (formatDetails.maxTimeAllowed ?? null) : null,
     timeLimitAction: 'timeLimitAction' in formatDetails ? (formatDetails.timeLimitAction ?? null) : null
   };
+}
+
+function completionThresholdOf(formatDetails: TContentPackageUnit['formatDetails']): number | null {
+  const raw = 'completionThreshold' in formatDetails ? formatDetails.completionThreshold : null;
+  const parsed = typeof raw === 'number' ? raw : typeof raw === 'string' && raw.trim() !== '' ? Number(raw) : NaN;
+
+  return Number.isFinite(parsed) ? (parsed as number) : null;
+}
+
+/**
+ * Marks launch CMI as non-creditable review state and hands the package its
+ * completion threshold, so review runs can never count as attempts.
+ */
+function withReviewFields(
+  cmi: ScormCmi,
+  format: 'scorm12' | 'scorm2004',
+  unit: { completionThreshold: number | null }
+): ScormCmi {
+  if (format === 'scorm12') {
+    const current = typeof cmi['core'] === 'object' && cmi['core'] !== null ? cmi['core'] : {};
+
+    return { ...cmi, core: { ...(current as Record<string, unknown>), credit: 'no-credit' } };
+  }
+
+  const next: ScormCmi = { ...cmi, credit: 'no-credit' };
+
+  if (unit.completionThreshold !== null && next['completion_threshold'] === undefined) {
+    next['completion_threshold'] = String(unit.completionThreshold);
+  }
+
+  return next;
 }
 
 function withLearnerFields(
@@ -303,6 +400,7 @@ export interface ScormCommitResult {
   saved: boolean;
   completedActivity: boolean;
   progressChanged: boolean;
+  rejected?: boolean;
 }
 
 /**
@@ -319,7 +417,7 @@ export async function commitScormAttempt(
   const { claims } = await resolveClaims(launchToken);
 
   if (claims.mode !== 'normal' || !claims.att)
-    return { saved: false, completedActivity: false, progressChanged: false };
+    return { saved: false, completedActivity: false, progressChanged: false, rejected: false };
 
   const scoAttemptId = claims.att;
   let commit;
@@ -396,9 +494,16 @@ export async function commitScormAttempt(
     const nowMs = Date.now();
     const now = new Date(nowMs).toISOString();
     const sessionTimeSeconds = parseCommitSessionTime(commit.cmi, format);
+    const totalTimeSeconds = parseCommitTotalTime(merged, format);
     const lastActivityMs = new Date(chain.scoAttempt.lastCommitAt ?? chain.scoAttempt.startedAt).getTime();
     const currentTimeSpent = chain.scoAttempt.timeSpentSeconds ?? 0;
-    const nextTimeSpent = accumulateTryTime(currentTimeSpent, sessionTimeSeconds, lastActivityMs, nowMs);
+    const nextTimeSpent = accumulateTryTime(
+      currentTimeSpent,
+      sessionTimeSeconds,
+      lastActivityMs,
+      nowMs,
+      totalTimeSeconds
+    );
     await updateScoAttempt(
       chain.scoAttempt.id,
       {
@@ -445,6 +550,18 @@ export async function commitScormAttempt(
     await closeScormAttempt(chain.attempt.id, 'finished', tx);
     const completedActivity = await completeActivityOnce(activityId, profileId, tx);
 
+    if (!completedActivity) {
+      const completedCourse = await getActivityById(activityId, tx);
+      const cycleStart =
+        completedCourse?.courseId != null
+          ? await getComplianceCycleStartIso(completedCourse.courseId, profileId, tx)
+          : null;
+
+      if (cycleStart !== null && chain.attempt.startedAt >= cycleStart) {
+        await upsertActivityCompletion({ activityId, profileId, isComplete: true }, tx);
+      }
+    }
+
     return {
       saved: true,
       completedActivity,
@@ -475,14 +592,7 @@ export async function commitScormAttempt(
   if (!result.saved && 'rejected' in result && result.rejected) {
     await recordRuntimeEventBestEffort(scoAttemptId, 'error', { reason: 'stale_sequence', seq: commit.seq }, userAgent);
 
-    try {
-      const snapshot = await getComplianceSnapshot(result.activityId, result.profileId);
-      await runActivityCompletionSideEffects(result.activityId, result.profileId, snapshot?.minutes);
-    } catch (error) {
-      console.error('scormCompletionRetry error:', error);
-    }
-
-    return { saved: false, completedActivity: false, progressChanged: false };
+    return { saved: false, completedActivity: false, progressChanged: false, rejected: true };
   }
 
   if (result.saved && 'shouldRecord' in result && result.shouldRecord) {
@@ -495,7 +605,12 @@ export async function commitScormAttempt(
     await recordRuntimeEventBestEffort(scoAttemptId, kind, detail, userAgent);
   }
 
-  return { saved: result.saved, completedActivity: result.completedActivity, progressChanged: result.progressChanged };
+  return {
+    saved: result.saved,
+    completedActivity: result.completedActivity,
+    progressChanged: result.progressChanged,
+    rejected: 'rejected' in result ? result.rejected : false
+  };
 }
 
 /**

@@ -193,7 +193,7 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      const result = await runScormRetention(90, 30);
+      const result = await runScormRetention(90);
 
       expect(result.versionsDeleted).toBe(0);
       expect(result.versionsArchived).toBe(0);
@@ -257,7 +257,7 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      const result = await runScormRetention(90, 30);
+      const result = await runScormRetention(90);
 
       expect(result.versionsDeleted).toBe(0);
       expect(result.versionsArchived).toBe(0);
@@ -299,7 +299,7 @@ describe.skipIf(!hasDatabase)('scorm retention keeps package files', () => {
     storedObjects.set(first.uploadKey, 'zip-bytes');
 
     try {
-      const result = await runScormRetention(90, 30);
+      const result = await runScormRetention(90);
 
       expect(result.versionsDeleted).toBe(0);
       expect(result.versionsArchived).toBe(0);

@@ -17,6 +17,9 @@ import type { TCourseActivity } from '@cio/db/types';
 import type { TActivityKind } from '@cio/utils/constants/activity';
 import type { TActivityCreate, TActivityUpdate } from '@cio/utils/validation/activity';
 import type { TScormResultsQuery } from '@cio/utils/validation/activity/report';
+import { getActivityScormByActivityId } from '@cio/db/queries/scorm/activity-scorm';
+import { sanitizeHtml } from '../../utils/sanitize-html';
+import { ZScormSettings } from '@cio/utils/validation/activity/scorm';
 import { ACTIVITY_PROVIDERS } from './providers';
 import type {
   ActivityEditorData,
@@ -116,8 +119,34 @@ export async function getActivityWithEditorData(
   if (!provider) throw new AppError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
 
   const editor = await provider.getEditorData(activityId);
+  const sanitizedInstructions = activity.instructions ? sanitizeHtml(activity.instructions) : activity.instructions;
 
-  return { activity, editor };
+  return { activity: { ...activity, instructions: sanitizedInstructions }, editor };
+}
+
+/**
+ * Returns only the public fields a learner needs: sanitized instructions and
+ * the retake flag. Never exposes package versions, hashes or learner counts.
+ */
+export async function getActivityForStudent(
+  courseId: string,
+  activityId: string
+): Promise<{ activity: TCourseActivity; editor: ActivityEditorData }> {
+  const activity = await getActivity(courseId, activityId);
+  const details = await getActivityScormByActivityId(activityId);
+  const settings = ZScormSettings.parse({
+    completionRule: details?.completionRule ?? 'auto',
+    minScorePercent: details?.minScorePercent ?? null,
+    allowRetakes: details?.allowRetakes ?? false,
+    moduleOrder: details?.moduleOrder ?? 'free',
+    completionModules: details?.completionModules ?? 'all'
+  });
+  const sanitizedInstructions = activity.instructions ? sanitizeHtml(activity.instructions) : activity.instructions;
+
+  return {
+    activity: { ...activity, instructions: sanitizedInstructions },
+    editor: { available: true, kind: 'scorm', settings, package: null }
+  };
 }
 
 /**
@@ -191,10 +220,14 @@ export async function updateActivityService(
   input: TActivityUpdate
 ): Promise<TCourseActivity> {
   await getActivity(courseId, activityId);
+  const sanitizedInstructions =
+    input.instructions !== undefined && input.instructions !== null
+      ? sanitizeHtml(input.instructions)
+      : input.instructions;
 
   const updated = await updateActivity(activityId, {
     ...(input.title !== undefined ? { title: input.title } : {}),
-    ...(input.instructions !== undefined ? { instructions: input.instructions } : {}),
+    ...(input.instructions !== undefined ? { instructions: sanitizedInstructions } : {}),
     ...(input.isUnlocked !== undefined ? { isUnlocked: input.isUnlocked } : {})
   });
   if (!updated) {
@@ -281,12 +314,9 @@ export async function getActivityResults(
 ): Promise<{ summary: ActivityResultsSummary; learners: ActivityLearnerSummary[]; total: number }> {
   const activity = await getActivity(courseId, activityId);
   const provider = providerFor(activity);
-  const [learners, summary] = await Promise.all([
-    provider.listLearnerSummaries(activityId, studentProfileIds, paging),
-    provider.getResultsSummary(activityId, studentProfileIds)
-  ]);
+  const { learners, summary, total } = await provider.listLearnerSummaries(activityId, studentProfileIds, paging);
 
-  return { summary, learners, total: studentProfileIds.length };
+  return { summary, learners, total };
 }
 
 /**

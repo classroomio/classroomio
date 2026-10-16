@@ -58,6 +58,7 @@ describe('launch tokens', () => {
 
     expect(claims.exp - NOW / 1000).toBe(12 * 60 * 60);
     expect(claims.att).toBe('t1');
+    expect(claims.typ).toBe('launch');
 
     try {
       await verifyLaunchToken(token, SECRET, NOW + 12 * 60 * 60 * 1000 + 1000);
@@ -65,6 +66,46 @@ describe('launch tokens', () => {
     } catch (error) {
       expect((error as PackageError).code).toBe('expired_token');
     }
+  });
+
+  it('rejects foreign token types but honors pre-type tokens', async () => {
+    const foreign = await signToken(
+      {
+        org: 'o1',
+        act: 'a1',
+        sub: 'p1',
+        unit: 'u1',
+        fmt: 'scorm12',
+        mode: 'normal',
+        anc: [],
+        exp: Math.floor(NOW / 1000) + 3600,
+        typ: 'content'
+      },
+      SECRET
+    );
+
+    try {
+      await verifyLaunchToken(foreign, SECRET, NOW);
+      expect.unreachable();
+    } catch (error) {
+      expect((error as PackageError).code).toBe('invalid_token');
+    }
+
+    const legacy = await signToken(
+      {
+        org: 'o1',
+        act: 'a1',
+        sub: 'p1',
+        unit: 'u1',
+        fmt: 'scorm12',
+        mode: 'normal',
+        anc: [],
+        exp: Math.floor(NOW / 1000) + 3600
+      },
+      SECRET
+    );
+
+    expect((await verifyLaunchToken(legacy, SECRET, NOW)).sub).toBe('p1');
   });
 });
 

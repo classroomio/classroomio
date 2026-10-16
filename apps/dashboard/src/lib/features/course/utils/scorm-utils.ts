@@ -427,7 +427,8 @@ export type PlayerInboundMessage =
   | { type: 'terminated'; navRequest: string | null }
   | { type: 'completed' }
   | { type: 'progress' }
-  | { type: 'did-not-connect' };
+  | { type: 'did-not-connect' }
+  | { type: 'boot-error'; error: string | null };
 
 /**
  * Parses a message posted by the activity player. Returns null for anything
@@ -441,6 +442,11 @@ export function parsePlayerMessage(data: unknown): PlayerInboundMessage | null {
   if (record['type'] === 'completed') return { type: 'completed' };
   if (record['type'] === 'progress') return { type: 'progress' };
   if (record['type'] === 'did-not-connect') return { type: 'did-not-connect' };
+  if (record['type'] === 'boot-error') {
+    const error = record['error'];
+
+    return { type: 'boot-error', error: typeof error === 'string' && error ? error : null };
+  }
   if (record['type'] === 'terminated') {
     const navRequest = record['navRequest'];
 

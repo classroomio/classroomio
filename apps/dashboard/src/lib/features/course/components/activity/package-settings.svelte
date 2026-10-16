@@ -144,7 +144,7 @@
             integer
             min={0}
             max={100}
-            {disabled}
+            isDisabled={disabled}
             label={$t('course.navItem.lessons.activities.settings.min_score')}
             value={minScore ?? 80}
             onValueChange={(next) => {
@@ -212,8 +212,10 @@
 
     <Field.Set>
       <Field.Field orientation="horizontal">
-        <Switch bind:checked={allowRetakes} {disabled} />
-        <Field.Label>{$t('course.navItem.lessons.activities.settings.retakes')}</Field.Label>
+        <Switch id="activity-settings-retakes" bind:checked={allowRetakes} {disabled} />
+        <Field.Label for="activity-settings-retakes"
+          >{$t('course.navItem.lessons.activities.settings.retakes')}</Field.Label
+        >
       </Field.Field>
       <p class="ui:text-muted-foreground text-sm">
         {$t('course.navItem.lessons.activities.settings.retakes_helper')}

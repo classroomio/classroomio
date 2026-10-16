@@ -10,6 +10,7 @@ import {
   getStudentSubmissionsForExercise
 } from '@cio/db/queries/course/certification-exercise';
 import { getActivitiesByCourseId, getActivityCompletionsByProfile } from '@cio/db/queries/activity/activity';
+import { getComplianceCycleStartIso } from '@cio/db/queries/course/compliance';
 import {
   getCourseById,
   getCourseCertificationRow,
@@ -17,6 +18,7 @@ import {
   type TCourseCertificationRow
 } from '@cio/db/queries/course/course';
 import { claimMemberCertificateEarned } from '@cio/db/queries/course/people';
+import { db } from '@cio/db/drizzle';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { trackServerEvent, SERVER_EVENTS } from '@cio/analytics';
 import { orgHasCertificatesEnabled } from '@api/services/course/certificate-plan';
@@ -155,11 +157,15 @@ async function buildCertificationEvaluation(
   const complianceMinScore = courseRow.type === 'COMPLIANCE' ? (courseRow.compliance?.passingScore ?? null) : null;
 
   const activities = await getActivitiesByCourseId(courseId);
+  const completedSinceIso =
+    courseRow.type === 'COMPLIANCE' ? await getComplianceCycleStartIso(courseId, profileId) : null;
   const completedActivityIds =
     activities.length > 0
       ? await getActivityCompletionsByProfile(
           activities.map((activity) => activity.id),
-          profileId
+          profileId,
+          db,
+          completedSinceIso
         )
       : [];
   const activitiesCount = activities.length;

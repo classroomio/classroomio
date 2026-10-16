@@ -61,6 +61,7 @@
     if (code === 'href_case_fixed') return 'course.navItem.lessons.activities.package.case_warning';
     if (code === 'manifest_rebased') return 'course.navItem.lessons.activities.package.rebased_warning';
     if (code === 'no_lms_api_detected') return 'course.navItem.lessons.activities.package.no_lms_warning';
+    if (code === 'has_prerequisites') return 'course.navItem.lessons.activities.package.prerequisites_warning';
 
     return null;
   }
@@ -188,7 +189,7 @@
       <span class="ui:text-muted-foreground">{$t('course.navItem.lessons.activities.package.version_label')}</span>
       <span class="ui:text-foreground font-medium tabular-nums">
         {current?.versionNumber ?? 1}
-        {#if versions.length > 1 && current?.id === versions[0]?.id}
+        {#if versions.length > 1 && current?.isCurrent !== false}
           · {$t('course.navItem.lessons.activities.package.version_current')}
         {/if}
       </span>

@@ -314,7 +314,7 @@ export function normalizeCommitCmi(commit: unknown): ScormCommit {
     ...(beacon === true ? { beacon: true as const } : {})
   };
 
-  if (JSON.stringify(normalized).length > MAX_COMMIT_JSON_BYTES) {
+  if (new TextEncoder().encode(JSON.stringify(normalized)).length > MAX_COMMIT_JSON_BYTES) {
     throw new PackageError('invalid_commit', { reason: 'too_large', maxBytes: MAX_COMMIT_JSON_BYTES });
   }
 
@@ -397,8 +397,12 @@ function scaledScore12(cmi: ScormCmi): number | null {
   const min = asNumber(getPath(cmi, 'core.score.min'));
   const max = asNumber(getPath(cmi, 'core.score.max'));
 
-  if (min !== null && max !== null && max > min) {
-    return (raw - min) / (max - min);
+  if (max !== null && max > 0) {
+    const effectiveMin = min ?? 0;
+
+    if (max > effectiveMin) {
+      return (raw - effectiveMin) / (max - effectiveMin);
+    }
   }
 
   return raw / 100;
@@ -625,24 +629,45 @@ export function parseCommitSessionTime(cmi: ScormCmi, format: ScormPackageFormat
 }
 
 /**
- * Returns the try's updated active seconds. A valid package-reported session
- * time wins, bounded to the try cap; otherwise credits bounded heartbeat
- * time. Never decreases.
+ * Reads the package-declared cumulative total time from one commit's CMI
+ * (`cmi.core.total_time` for 1.2, `cmi.total_time` for 2004). Returns null
+ * when absent or malformed.
+ */
+export function parseCommitTotalTime(cmi: ScormCmi, format: ScormPackageFormat): number | null {
+  const raw = format === 'scorm12' ? getPath(cmi, 'core.total_time') : getPath(cmi, 'total_time');
+
+  return parseScormSessionTime(raw, format);
+}
+
+/**
+ * Returns the try's updated active seconds. Heartbeat wall-clock time always
+ * accumulates, so resumed launches keep contributing; a valid
+ * package-reported session time wins when it runs ahead of the heartbeat.
+ * An explicit package total_time wins over both. Never decreases, capped.
  */
 export function accumulateTryTime(
   currentSeconds: number,
   sessionTimeSeconds: number | null,
   lastActivityMs: number,
-  nowMs: number
+  nowMs: number,
+  totalTimeSeconds: number | null = null
 ): number {
-  if (sessionTimeSeconds !== null && sessionTimeSeconds > 0) {
-    return Math.max(currentSeconds, Math.min(sessionTimeSeconds, MAX_SCORM_TRY_SECONDS));
-  }
-
   const deltaSeconds = Math.max(0, Math.round((nowMs - lastActivityMs) / 1000));
   const credited = deltaSeconds <= SCORM_HEARTBEAT_WINDOW_SECONDS ? deltaSeconds : SCORM_DORMANT_CREDIT_SECONDS;
+  const heartbeatTotal = Math.min(currentSeconds + credited, MAX_SCORM_TRY_SECONDS);
 
-  return Math.min(currentSeconds + credited, MAX_SCORM_TRY_SECONDS);
+  const sessionTotal =
+    sessionTimeSeconds !== null && sessionTimeSeconds > 0
+      ? Math.min(sessionTimeSeconds, MAX_SCORM_TRY_SECONDS)
+      : currentSeconds;
+
+  const withoutTotal = Math.max(currentSeconds, heartbeatTotal, sessionTotal);
+
+  if (totalTimeSeconds !== null && totalTimeSeconds > withoutTotal) {
+    return Math.min(totalTimeSeconds, MAX_SCORM_TRY_SECONDS);
+  }
+
+  return withoutTotal;
 }
 
 /**
@@ -663,8 +688,9 @@ export function isScormRuleMet(settings: ScormRuleSettings, modules: ScormModule
   if (rule === 'score') {
     const attemptScore = averageScaledScore(targets);
     const everyTargetCompleted = targets.every((module) => module.completion === 'completed');
+    const scaledPercent = attemptScore === null ? null : Math.round(attemptScore * 10000) / 100;
 
-    return everyTargetCompleted && attemptScore !== null && attemptScore * 100 >= (settings.minScorePercent ?? 100);
+    return everyTargetCompleted && scaledPercent !== null && scaledPercent + 1e-9 >= (settings.minScorePercent ?? 100);
   }
 
   return targets.every((module) => isModuleRuleMet(rule, module));

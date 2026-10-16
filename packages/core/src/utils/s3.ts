@@ -1,11 +1,9 @@
 import {
   DeleteObjectCommand,
   DeleteObjectCommandInput,
-  DeleteObjectsCommand,
   GetObjectCommand,
   GetObjectCommandInput,
   HeadObjectCommand,
-  ListObjectsV2Command,
   PutObjectCommand,
   PutObjectCommandInput
 } from '@aws-sdk/client-s3';
@@ -304,35 +302,4 @@ export async function getS3ObjectStream(bucket: string, key: string, range?: str
   if (!output.Body) throw new Error(`S3 object ${bucket}/${key} returned no body`);
 
   return output.Body as ReadableStream;
-}
-
-/**
- * Deletes every object under a prefix. Idempotent — missing objects are
- * fine. Returns the deleted key count.
- */
-export async function deleteS3Prefix(bucket: string, prefix: string): Promise<number> {
-  const client = getS3Client();
-  let deleted = 0;
-  let continuationToken: string | undefined;
-
-  do {
-    const listed = await client.send(
-      new ListObjectsV2Command({ Bucket: bucket, Prefix: prefix, ContinuationToken: continuationToken })
-    );
-    const keys = (listed.Contents ?? []).map((entry) => entry.Key).filter((key): key is string => Boolean(key));
-
-    if (keys.length > 0) {
-      await client.send(
-        new DeleteObjectsCommand({
-          Bucket: bucket,
-          Delete: { Objects: keys.map((Key) => ({ Key })), Quiet: true }
-        })
-      );
-      deleted += keys.length;
-    }
-
-    continuationToken = listed.IsTruncated ? listed.NextContinuationToken : undefined;
-  } while (continuationToken);
-
-  return deleted;
 }

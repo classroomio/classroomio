@@ -220,11 +220,13 @@
                       </Table.Cell>
                       <Table.Cell>
                         <Badge variant={COMPLETION_BADGE_VARIANTS[module.completion] ?? 'outline'}>
-                          {module.completion}
+                          {$t(`${T}.module_completion.${module.completion}`, { default: module.completion })}
                         </Badge>
                       </Table.Cell>
                       <Table.Cell>
-                        <Badge variant={SUCCESS_BADGE_VARIANTS[module.success] ?? 'outline'}>{module.success}</Badge>
+                        <Badge variant={SUCCESS_BADGE_VARIANTS[module.success] ?? 'outline'}>
+                          {$t(`${T}.module_success.${module.success}`, { default: module.success })}
+                        </Badge>
                       </Table.Cell>
                       <Table.Cell class="ui:tabular-nums">{formatScorePercent(module.scaledScorePercent)}</Table.Cell>
                       <Table.Cell class="ui:tabular-nums">{formatDuration(module.timeSpentSeconds)}</Table.Cell>
@@ -249,7 +251,11 @@
                     <li class="ui:text-muted-foreground text-xs">
                       <span class="font-medium">{event.moduleTitle}</span>
                       ·
-                      {$t(`${T}.events.${event.kind}`)}
+                      {#if event.kind === 'error' && (event.detail as Record<string, unknown>)?.reason === 'stale_sequence'}
+                        {$t(`${T}.events.duplicate`)}
+                      {:else}
+                        {$t(`${T}.events.${event.kind}`)}
+                      {/if}
                       ·
                       <span class="ui:tabular-nums">{eventTimeText(event.createdAt)}</span>
                     </li>

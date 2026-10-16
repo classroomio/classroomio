@@ -17,7 +17,6 @@ function cutoffIso(days: number, nowMs: number): string {
  */
 export async function runScormRetention(
   eventOlderThanDays = 90,
-  _unpinnedVersionDays = 30,
   nowMs: number = Date.now()
 ): Promise<ScormRetentionResult> {
   const eventsDeleted = await deleteScormSessionEventsOlderThan(cutoffIso(eventOlderThanDays, nowMs));

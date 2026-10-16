@@ -33,9 +33,14 @@ vi.mock('@cio/core/services/activity/activity', () => ({
   createActivity: vi.fn(),
   deleteActivityService: vi.fn(),
   getActivity: vi.fn(),
+  getActivityForStudent: vi.fn(),
   getActivityWithEditorData: vi.fn(),
   updateActivityService: vi.fn(),
   updateActivitySettings: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/group', () => ({
+  isCourseTeamMemberOrOrgAdmin: vi.fn()
 }));
 
 vi.mock('@cio/core/services/activity/providers', () => ({
@@ -47,10 +52,12 @@ import {
   createActivity,
   deleteActivityService,
   getActivity,
+  getActivityForStudent,
   getActivityWithEditorData,
   updateActivityService,
   updateActivitySettings
 } from '@cio/core/services/activity/activity';
+import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { attachScormPackage, detachScormPackage } from '@cio/core/services/activity/providers';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import { assertActivityKindAllowed } from '@api/services/activity/plan';
@@ -67,12 +74,14 @@ describe('course activity routes (PR 7)', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(getOrgIdByCourseId).mockResolvedValue('org-1');
+    vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
     vi.mocked(assertActivityKindAllowed).mockResolvedValue(undefined);
     vi.mocked(getActivity).mockResolvedValue(ACTIVITY as never);
   });
 
   it('GET returns kind data without a plan check', async () => {
     const app = buildApp();
+    vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
     vi.mocked(getActivityWithEditorData).mockResolvedValue({
       activity: ACTIVITY,
       editor: { available: true, kind: 'scorm', settings: {}, package: null }
@@ -82,6 +91,21 @@ describe('course activity routes (PR 7)', () => {
 
     expect(response.status).toBe(200);
     expect(assertActivityKindAllowed).not.toHaveBeenCalled();
+  });
+
+  it('GET returns the student view without editor data for learners', async () => {
+    const app = buildApp();
+    vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(false);
+    vi.mocked(getActivityForStudent).mockResolvedValue({
+      activity: ACTIVITY,
+      editor: { available: true, kind: 'scorm', settings: {}, package: null }
+    } as never);
+
+    const response = await app.request('/course/course-1/activity/act-1', { method: 'GET', headers: HEADERS });
+
+    expect(response.status).toBe(200);
+    expect(getActivityForStudent).toHaveBeenCalledWith('course-1', 'act-1');
+    expect(getActivityWithEditorData).not.toHaveBeenCalled();
   });
 
   it('POST creates a SCORM activity behind the plan check', async () => {

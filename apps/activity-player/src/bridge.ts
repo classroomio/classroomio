@@ -8,7 +8,8 @@ export type PlayerOutboundMessage =
   | { type: 'terminated'; navRequest: string | null }
   | { type: 'completed' }
   | { type: 'progress' }
-  | { type: 'did-not-connect' };
+  | { type: 'did-not-connect' }
+  | { type: 'boot-error'; error: string | null };
 
 export const DID_NOT_CONNECT_MS = 30_000;
 
@@ -62,6 +63,28 @@ export function connectParentBridge(
 
 export function notifyCompleted(parentOrigin: string | string[]): void {
   postMessage({ type: 'completed' }, parentOrigin);
+}
+
+/**
+ * Reports a boot failure to an unknown embedder. The launch state (and with
+ * it the parent origins) never arrived, so this broadcasts to any listener;
+ * the dashboard only acts on it when the event origin matches the player it
+ * launched. Carries no learner or package data.
+ */
+export function notifyBootError(error: string | null): void {
+  const message: PlayerOutboundMessage = { type: 'boot-error', error };
+
+  try {
+    if (window.parent && window.parent !== window) window.parent.postMessage(message, '*');
+  } catch {
+    return;
+  }
+
+  try {
+    if (window.opener && window.opener !== window) window.opener.postMessage(message, '*');
+  } catch {
+    return;
+  }
 }
 
 export function notifyProgress(parentOrigin: string | string[]): void {

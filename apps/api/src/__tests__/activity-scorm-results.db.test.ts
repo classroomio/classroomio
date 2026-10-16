@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { describe, expect, it } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 const hasDatabase = Boolean(
   process.env.DATABASE_URL || process.env.PRIVATE_DATABASE_URL || process.env.PGBOUNCER_DATABASE_URL
@@ -310,6 +310,12 @@ describe.skipIf(!hasDatabase)('scorm outcome mapping parity', () => {
       },
       {
         cmi: { core: { score: { raw: '30', min: '10', max: '110' } } },
+        format: 'scorm12',
+        masteryScoreRaw: null,
+        passingScoreScaled: null
+      },
+      {
+        cmi: { core: { lesson_status: 'completed', score: { raw: '8', max: '10' } } },
         format: 'scorm12',
         masteryScoreRaw: null,
         passingScoreScaled: null
@@ -1218,6 +1224,89 @@ describe.skipIf(!hasDatabase)('scorm results and reset', () => {
         .where(eq(schema.organizationmember.profileId, ids.profileId));
 
       expect(member?.lastActiveAt).not.toBeNull();
+    } finally {
+      await cleanupResultsFixture(ids);
+    }
+  });
+});
+
+describe.skipIf(!hasDatabase)('scorm settings recompute completions', () => {
+  it('flips completion to match a changed rule', { timeout: 30000 }, async () => {
+    const ids = await createResultsFixture(suffix());
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const { updateActivitySettings } = await import('@cio/core/services/activity/activity');
+
+      const [attempt] = await db
+        .insert(schema.scormAttempt)
+        .values({
+          activityId: ids.activityId,
+          profileId: ids.profileId,
+          packageVersionId: ids.versionId,
+          attemptNumber: 1
+        })
+        .returning();
+      const stampedAt = new Date().toISOString();
+      await db.insert(schema.scormScoAttempt).values([
+        {
+          attemptId: attempt!.id,
+          unitId: ids.unitIds[0]!,
+          status: 'closed',
+          cmi: { core: { lesson_status: 'passed', score: { raw: '90' } } },
+          commitSeq: 3,
+          lastCommitAt: stampedAt,
+          terminatedAt: stampedAt
+        },
+        {
+          attemptId: attempt!.id,
+          unitId: ids.unitIds[1]!,
+          status: 'closed',
+          cmi: { core: { lesson_status: 'completed' } },
+          commitSeq: 2,
+          lastCommitAt: stampedAt,
+          terminatedAt: stampedAt
+        }
+      ]);
+      await db.insert(schema.activityCompletion).values({
+        activityId: ids.activityId,
+        profileId: ids.profileId,
+        isComplete: true,
+        completedAt: stampedAt
+      });
+
+      const completionOf = async () => {
+        const [row] = await db
+          .select()
+          .from(schema.activityCompletion)
+          .where(
+            and(
+              eq(schema.activityCompletion.activityId, ids.activityId),
+              eq(schema.activityCompletion.profileId, ids.profileId)
+            )
+          )
+          .limit(1);
+
+        return row ?? null;
+      };
+
+      await updateActivitySettings(ids.courseId, ids.activityId, {
+        completionRule: 'passed',
+        minScorePercent: null,
+        allowRetakes: false,
+        moduleOrder: 'free',
+        completionModules: 'all'
+      });
+      expect((await completionOf())?.isComplete).toBe(false);
+
+      await updateActivitySettings(ids.courseId, ids.activityId, {
+        completionRule: 'auto',
+        minScorePercent: null,
+        allowRetakes: false,
+        moduleOrder: 'free',
+        completionModules: 'all'
+      });
+      expect((await completionOf())?.isComplete).toBe(true);
     } finally {
       await cleanupResultsFixture(ids);
     }

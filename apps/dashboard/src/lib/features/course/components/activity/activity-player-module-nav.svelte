@@ -118,14 +118,13 @@
               total: units.length
             })}
           </p>
-          <div role="listbox" aria-label={$t('course.navItem.lessons.activities.player.module_menu')}>
+          <div role="group" aria-label={$t('course.navItem.lessons.activities.player.module_menu')}>
             {#each units as unit, index (unit.identifier)}
               <Button
                 size="sm"
                 variant={unit.identifier === currentIdentifier ? 'secondary' : 'ghost'}
                 class="w-full justify-start"
-                role="option"
-                aria-selected={unit.identifier === currentIdentifier}
+                aria-current={unit.identifier === currentIdentifier || undefined}
                 disabled={unit.locked && unit.identifier !== currentIdentifier}
                 title={unit.locked ? $t('course.navItem.lessons.activities.player.module_locked') : undefined}
                 onclick={() => select(unit.identifier)}

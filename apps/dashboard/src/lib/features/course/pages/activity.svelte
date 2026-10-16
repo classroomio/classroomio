@@ -279,6 +279,7 @@
   function setModeQueryParam(value: (typeof MODES)[keyof typeof MODES]) {
     const params = new SvelteURLSearchParams(page.url.searchParams);
     params.set('mode', value);
+    hasUnsavedChanges = false;
     void goto(resolve(`${page.url.pathname}?${params.toString()}`, {}), { replaceState: false });
   }
 
@@ -293,6 +294,7 @@
     }
 
     const query = params.toString();
+    hasUnsavedChanges = false;
     return goto(resolve(query ? `${page.url.pathname}?${query}` : page.url.pathname, {}), { replaceState: false });
   }
 
@@ -499,7 +501,11 @@
               {/if}
             </span>
           {/if}
-          <IconButton onclick={toggleMode} disabled={savingTitle || savingInstructions}>
+          <IconButton
+            onclick={toggleMode}
+            disabled={savingTitle || savingInstructions}
+            aria-label={mode === MODES.edit ? $t('course.navItem.lessons.view') : $t('course.navItem.lessons.edit')}
+          >
             {#if mode === MODES.edit}
               <Save size={20} />
             {:else}

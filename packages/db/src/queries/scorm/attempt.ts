@@ -236,6 +236,29 @@ export async function getLatestScormAttempt(
   }
 }
 
+/**
+ * Lists every profile with at least one attempt for an activity. Used to
+ * recompute completions when the completion rule changes.
+ */
+export async function listAttemptProfileIdsByActivity(
+  activityId: string,
+  dbClient: DbOrTxClient = db
+): Promise<string[]> {
+  try {
+    const rows = await dbClient
+      .selectDistinct({ profileId: schema.scormAttempt.profileId })
+      .from(schema.scormAttempt)
+      .where(eq(schema.scormAttempt.activityId, activityId));
+
+    return rows.map((row) => row.profileId);
+  } catch (error) {
+    console.error('listAttemptProfileIdsByActivity error:', error);
+    throw new Error(
+      `Failed to list attempt profiles for activity "${activityId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function countScormAttempts(
   activityId: string,
   profileId: string,

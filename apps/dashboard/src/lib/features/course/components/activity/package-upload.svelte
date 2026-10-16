@@ -266,7 +266,7 @@
         const current = details?.currentVersion;
         if (current?.status === 'ready') {
           await activityApi.attachPackage(courseId, activityId, created.asset.id);
-          if (!activityApi.success) return;
+          if (!activityApi.success) throw new Error('Failed to attach package');
           if (mode === 'attach') onAttached?.(created.asset.id);
           else onReplaced?.();
           return;
@@ -315,7 +315,8 @@
             ? (await askPromoteChoice(deltaCount)) === 'restart'
             : replaceChoice === 'restart';
         await packageApi.makeCurrent(assetId, next.version.id, restart);
-        if (packageApi.success) onReplaced?.();
+        if (!packageApi.success) throw new Error('Failed to promote package version');
+        onReplaced?.();
       },
       async () => {
         await resolveFailedVersionError(assetId);

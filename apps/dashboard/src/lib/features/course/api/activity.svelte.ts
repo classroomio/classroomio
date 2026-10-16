@@ -345,6 +345,33 @@ export class ActivityApi extends BaseApiWithErrors {
   }
 
   /**
+   * Fetches one results page without touching the table store, for exports.
+   * Throws when the page fails so callers never silently reuse stale rows.
+   */
+  async fetchResultsPage(
+    courseId: string,
+    activityId: string,
+    query: TScormResultsQuery
+  ): Promise<ActivityResultsLearners> {
+    let rows: ActivityResultsLearners | undefined;
+    await this.execute<GetActivityResultsRequest>({
+      requestFn: () =>
+        classroomio.course[':courseId'].activity[':activityId'].results.$get({
+          param: { courseId, activityId },
+          query: { page: String(query.page), limit: String(query.limit), sort: query.sort, direction: query.direction }
+        }),
+      logContext: 'exporting activity results',
+      onSuccess: (response) => {
+        rows = response.data ?? [];
+      }
+    });
+
+    if (!rows) throw new Error('Failed to export activity results');
+
+    return rows;
+  }
+
+  /**
    * Lists paged learner results with the summary header for the Results tab.
    */
   async listResults(courseId: string, activityId: string, query: TScormResultsQuery) {

@@ -38,6 +38,7 @@ export {
   averageScaledScore,
   isScormRuleMet,
   parseCommitSessionTime,
+  parseCommitTotalTime,
   accumulateTryTime,
   parseScormSessionTime,
   shouldRecordCommitEvent,

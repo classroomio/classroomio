@@ -2764,6 +2764,7 @@
         "draft_recovery": "An unsaved draft was found for this lesson. Would you like to restore it?",
         "done": "Done",
         "edit": "Edit",
+        "view": "View",
         "mark_as": "Mark as",
         "incomplete": "Incomplete",
         "complete": "Complete",
@@ -3752,6 +3753,17 @@
               "reset": "Reset for this student",
               "confirm_reset": "Click again to confirm reset",
               "diagnostics_title": "Diagnostics",
+              "module_completion": {
+                "completed": "Completed",
+                "incomplete": "Incomplete",
+                "not_attempted": "Not attempted",
+                "unknown": "Unknown"
+              },
+              "module_success": {
+                "passed": "Passed",
+                "failed": "Failed",
+                "unknown": "Unknown"
+              },
               "events": {
                 "launch": "Launched",
                 "initialize": "Connected",
@@ -3759,9 +3771,10 @@
                 "terminate": "Finished",
                 "beacon": "Saved on exit",
                 "error": "Error",
+                "duplicate": "Duplicate save ignored",
                 "not_initialized": "Did not connect"
               },
-              "session_device": "Session device",
+              "session_device": "Session device: {device}",
               "technical_details": "Technical details"
             }
           },
@@ -3774,7 +3787,7 @@
           },
           "package": {
             "drop_label": "Drop your SCORM .zip here",
-            "drop_hint": "Up to {size}. Processing can take a few minutes; you can leave the page.",
+            "drop_hint": "Up to {size}. Keep this page open until the package is attached.",
             "wrong_type": "Only .zip files can be uploaded as SCORM packages.",
             "too_large": "This file is larger than {size}.",
             "uploading": "Uploading {progress}%",
@@ -3871,7 +3884,8 @@
             "empty_description": "Upload a SCORM package to start viewing and testing it.",
             "upload_package": "Upload package",
             "sequencing_ordered": "This package defines a module order: each module unlocks as the previous one completes. Other sequencing rules, like pre-tests and rollup, are ignored.",
-            "sequencing_unordered": "This package defines a module order, but learners can currently open modules in any order. Set Module order to “In sequence” in Settings to enforce it. Other sequencing rules, like pre-tests and rollup, are ignored."
+            "sequencing_unordered": "This package defines a module order, but learners can currently open modules in any order. Set Module order to “In sequence” in Settings to enforce it. Other sequencing rules, like pre-tests and rollup, are ignored.",
+            "prerequisites_warning": "This package gates modules behind prerequisites. They are enforced as sequential module order; finer prerequisite rules are ignored."
           },
           "instructions": {
             "label": "Instructions for learners",

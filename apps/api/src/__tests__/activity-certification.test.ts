@@ -136,7 +136,7 @@ describe('evaluateCourseCertification with activities', () => {
 
     // 1 lesson + 1 activity of 2 lessons + 1 activity = 67%.
     expect(evaluation.progressPercent).toBe(67);
-    expect(getActivityCompletionsByProfile).toHaveBeenCalledWith(['activity-1'], 'profile-1');
+    expect(getActivityCompletionsByProfile).toHaveBeenCalledWith(['activity-1'], 'profile-1', expect.anything(), null);
   });
 
   it('treats an activity-only course as content that can earn a certificate', async () => {

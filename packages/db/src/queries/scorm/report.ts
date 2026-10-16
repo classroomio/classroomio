@@ -342,7 +342,8 @@ export interface ScormActivityStatRow {
 export async function getScormActivityStatsForProfile(
   activityIds: string[],
   profileId: string,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  sinceIso: string | null = null
 ): Promise<ScormActivityStatRow[]> {
   try {
     if (activityIds.length === 0) return [];
@@ -353,6 +354,8 @@ export async function getScormActivityStatsForProfile(
       masteryScoreRaw: sql`u.mastery_score_raw`,
       passingScoreScaled: sql`u.passing_score_scaled`
     });
+    const sinceClause = sinceIso === null ? sql`` : sql`AND a.started_at >= ${sinceIso}::timestamptz`;
+    const sinceJoinClause = sinceIso === null ? sql`` : sql`AND a2.started_at >= ${sinceIso}::timestamptz`;
 
     const result = await dbClient.execute(sql`
       WITH activities AS (SELECT UNNEST(ARRAY[${sql.join(
@@ -364,7 +367,7 @@ export async function getScormActivityStatsForProfile(
                ROW_NUMBER() OVER (PARTITION BY a.activity_id ORDER BY a.attempt_number DESC) AS recency
         FROM scorm_attempt a
         JOIN activities act ON act.activity_id = a.activity_id
-        WHERE a.profile_id = ${profileId}
+        WHERE a.profile_id = ${profileId} ${sinceClause}
       ),
       ranked_tries AS (
         SELECT t.*,
@@ -390,7 +393,7 @@ export async function getScormActivityStatsForProfile(
                (SELECT COALESCE(SUM(t.time_spent_seconds), 0)::int
                 FROM scorm_sco_attempt t
                 JOIN scorm_attempt a2 ON a2.id = t.attempt_id
-                WHERE a2.activity_id = act.activity_id AND a2.profile_id = ${profileId}) AS total_seconds
+                WHERE a2.activity_id = act.activity_id AND a2.profile_id = ${profileId} ${sinceJoinClause}) AS total_seconds
         FROM activities act
         LEFT JOIN attempt_scores s ON s.activity_id = act.activity_id
         GROUP BY act.activity_id

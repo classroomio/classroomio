@@ -9,6 +9,7 @@ import {
   createScormPackage,
   createScormPackageVersion,
   getScormPackage,
+  getScormPackageDownloadUrl,
   makeScormPackageVersionCurrent,
   processScormPackageVersion
 } from '@cio/core/services/activity/packages';
@@ -95,6 +96,18 @@ export const packagesRouter = new Hono()
       }
     }
   )
+  .get('/:assetId/download', authMiddleware, orgTeamMemberMiddleware, zValidator('param', ZPackageParam), async (c) => {
+    try {
+      const orgId = c.req.header('cio-org-id')!;
+      const { assetId } = c.req.valid('param');
+      await assertActivityKindAllowed(orgId, 'scorm');
+      const result = await getScormPackageDownloadUrl(orgId, assetId);
+
+      return c.json({ success: true, data: result }, 200);
+    } catch (error) {
+      return handleError(c, error, 'Failed to build package download');
+    }
+  })
   .get('/:assetId', authMiddleware, orgTeamMemberMiddleware, zValidator('param', ZPackageParam), async (c) => {
     try {
       const orgId = c.req.header('cio-org-id')!;

@@ -8,7 +8,15 @@ import {
 } from './scorm/adapter';
 import type { Scorm12API } from 'scorm-again/scorm12';
 import type { Scorm2004API } from 'scorm-again/scorm2004';
-import { connectParentBridge, flushOnPageHide, notifyCompleted, notifyProgress, watchForConnection } from './bridge';
+import {
+  connectParentBridge,
+  flushOnPageHide,
+  notifyBootError,
+  notifyCompleted,
+  notifyProgress,
+  watchForConnection
+} from './bridge';
+import { installLargeBeaconFetchFallback } from './beacon-fallback';
 import { reportRuntimeEvent } from './runtime-event';
 
 /**
@@ -57,6 +65,7 @@ function mountPackageFrame(contentToken: string, launchPath: string): void {
 }
 
 async function boot(): Promise<void> {
+  installLargeBeaconFetchFallback();
   const launchToken = readLaunchToken();
   const state = await fetchLaunchState(launchToken);
   const parentOrigins =
@@ -114,6 +123,7 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   boot().catch((error: unknown) => {
     const message = error instanceof Error ? error.message : 'unknown error';
     setStatus(`This package did not connect: ${message}`);
+    notifyBootError(message);
 
     try {
       const launchToken = parseLaunchToken(window.location.pathname);

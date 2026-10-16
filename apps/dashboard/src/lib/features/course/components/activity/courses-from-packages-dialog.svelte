@@ -43,6 +43,14 @@
     onOpenChange(isOpen);
   }
 
+  $effect(() => {
+    for (const entry of packages) {
+      if (!(entry.assetId in titles)) {
+        titles[entry.assetId] = entry.title;
+      }
+    }
+  });
+
   async function handleCreate() {
     if (packages.length === 0 || isCreating) return;
 
@@ -83,8 +91,10 @@
     <Field.Group>
       <Field.Set>
         <Field.Field orientation="horizontal">
-          <Switch bind:checked={trackCompliance} />
-          <Field.Label>{$t('media_manager.scorm.track_compliance_label')}</Field.Label>
+          <Switch id="courses-from-packages-compliance" bind:checked={trackCompliance} />
+          <Field.Label for="courses-from-packages-compliance"
+            >{$t('media_manager.scorm.track_compliance_label')}</Field.Label
+          >
         </Field.Field>
         <Field.Description>{$t('media_manager.scorm.track_compliance_hint')}</Field.Description>
       </Field.Set>

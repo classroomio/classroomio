@@ -2916,7 +2916,7 @@
             "order_free": "Cualquier orden",
             "order_sequential": "En secuencia",
             "module_order_helper": "En secuencia, cada módulo se bloquea hasta que se complete el anterior. Los paquetes sin reglas de ordenación funcionan igual en ambos casos.",
-            "custom_threshold_hint": "Este paquete no tiene una calificación mínima para aprobar. Los estudiantes lo completan al terminar todos los módulos y obtener una media de al menos {puntuación}%.",
+            "custom_threshold_hint": "Este paquete no tiene una calificación mínima para aprobar. Los estudiantes lo completan al terminar todos los módulos y obtener una media de al menos {score}%.",
             "completion_modules": "Alcance de la finalización",
             "completion_modules_all": "Todos los módulos",
             "completion_modules_graded_only": "Solo módulos evaluados",
@@ -2929,7 +2929,6 @@
           },
           "package": {
             "drop_label": "Coloca tu archivo SCORM .zip aquí",
-            "drop_hint": "Hasta {size}. El procesamiento puede tardar unos minutos; puedes salir de la página.",
             "wrong_type": "Solo se pueden cargar archivos .zip como paquetes SCORM.",
             "too_large": "Este archivo es mayor que {size}.",
             "uploading": "Subiendo {progress}%",
@@ -3026,7 +3025,9 @@
             "details": "Detalles",
             "version_label": "Versión",
             "remove_package": "Eliminar paquete",
-            "launchable_count": "{count, plural, one {# elemento ejecutable} other {# elementos ejecutables}}"
+            "launchable_count": "{count, plural, one {# elemento ejecutable} other {# elementos ejecutables}}",
+            "drop_hint": "Hasta {size}. Mantenga esta página abierta hasta que se adjunte el paquete.",
+            "prerequisites_warning": "Este paquete restringe el acceso a los módulos mediante requisitos previos. Estos se aplican en un orden secuencial; las reglas de requisitos previos más específicas se ignoran."
           },
           "gating": {
             "title": "La creación de contenido SCORM está en pausa.",
@@ -3103,11 +3104,23 @@
                 "terminate": "Finalizado",
                 "beacon": "Guardado al salir",
                 "error": "Error",
-                "not_initialized": "No se conectó"
+                "not_initialized": "No se conectó",
+                "duplicate": "Guardado duplicado ignorado"
               },
               "interaction_correct": "Correcto: {answer}",
-              "session_device": "Dispositivo de sesión",
-              "technical_details": "Detalles técnicos"
+              "technical_details": "Detalles técnicos",
+              "session_device": "Dispositivo de sesión: {device}",
+              "module_success": {
+                "passed": "Aprobado",
+                "failed": "Fallido",
+                "unknown": "Desconocido"
+              },
+              "module_completion": {
+                "completed": "Completado",
+                "incomplete": "Incompleto",
+                "not_attempted": "No intentado",
+                "unknown": "Desconocido"
+              }
             },
             "export": {
               "title": "Resultados SCORM"
@@ -3149,7 +3162,8 @@
           "add_package_button": "Añadir paquete"
         },
         "add_content_created_activity": "¡El paquete SCORM se ha creado correctamente!",
-        "add_content_create_another_activity": "Crear otro paquete"
+        "add_content_create_another_activity": "Crear otro paquete",
+        "view": "Vista"
       },
       "news_feed": {
         "heading": "Noticias",

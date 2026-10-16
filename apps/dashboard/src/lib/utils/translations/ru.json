@@ -2909,7 +2909,6 @@
           "package": {
             "cancel_upload": "Отменить загрузку",
             "case_warning": "Некоторые имена файлов различаются только регистром букв.",
-            "drop_hint": "До {size}. Обработка может занять несколько минут; вы можете покинуть страницу.",
             "drop_label": "Перетащите сюда SCORM .zip",
             "errors": {
               "assets_only": "Ничто в этом пакете не сообщает о прогрессе.",
@@ -3005,7 +3004,9 @@
             "details": "Подробности",
             "version_label": "Версия",
             "remove_package": "Удалить пакет",
-            "launchable_count": "{count, plural, one {# объект для запуска} other {# объектов для запуска}}"
+            "launchable_count": "{count, plural, one {# объект для запуска} other {# объектов для запуска}}",
+            "drop_hint": "До {size}. Держите эту страницу открытой до тех пор, пока посылка не будет прикреплена.",
+            "prerequisites_warning": "Данный пакет ограничивает доступ к модулям только выполнением предварительных условий. Эти условия соблюдаются в порядке следования модулей; более тонкие правила предварительных условий игнорируются."
           },
           "player": {
             "autosave_hint": "Прогресс сохраняется автоматически.",
@@ -3078,11 +3079,23 @@
                 "terminate": "Законченный",
                 "beacon": "Сохранено при выходе",
                 "error": "Ошибка",
-                "not_initialized": "Не удалось подключиться"
+                "not_initialized": "Не удалось подключиться",
+                "duplicate": "Повторное сохранение игнорируется"
               },
               "interaction_correct": "Правильно: {answer}",
-              "session_device": "Устройство сеанса",
-              "technical_details": "Технические подробности"
+              "technical_details": "Технические подробности",
+              "session_device": "Устройство сеанса: {device}",
+              "module_success": {
+                "passed": "Прошедший",
+                "failed": "Неуспешный",
+                "unknown": "Неизвестный"
+              },
+              "module_completion": {
+                "completed": "Завершенный",
+                "incomplete": "Неполный",
+                "not_attempted": "Не предпринималось",
+                "unknown": "Неизвестный"
+              }
             },
             "status": {
               "completed": "Завершено",
@@ -3149,7 +3162,8 @@
           "add_package_button": "Добавить пакет"
         },
         "add_content_create_another_activity": "Создать ещё один пакет",
-        "add_content_created_activity": "SCORM-пакет успешно создан!"
+        "add_content_created_activity": "SCORM-пакет успешно создан!",
+        "view": "Просмотр"
       },
       "news_feed": {
         "heading": "Лента новостей",

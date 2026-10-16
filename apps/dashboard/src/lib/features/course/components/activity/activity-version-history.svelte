@@ -40,10 +40,15 @@
   const displayUnits = $derived(launchableUnits.length > 0 ? launchableUnits : units);
 
   let selectedVersionId = $state<string | null>(null);
+  let dialogEl = $state<HTMLElement | null>(null);
 
   const selectedVersion = $derived(
     versions.find((v) => v.id === selectedVersionId) ?? versions[0] ?? currentVersion ?? null
   );
+  const selectedStats = $derived(
+    packageDetails.versionStats?.find((stat) => stat.versionId === selectedVersion?.id) ?? null
+  );
+  const isSelectedCurrent = $derived(selectedVersion?.id === currentVersion?.id);
 
   const dateLocale = $derived($locale || 'en');
 
@@ -62,6 +67,8 @@
     if (!selectedVersionId && versions[0]) {
       selectedVersionId = versions[0].id;
     }
+
+    dialogEl?.querySelector('button')?.focus();
 
     return () => {
       document.body.style.overflow = previousOverflow;
@@ -143,6 +150,27 @@
   function handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       onClose?.();
+      return;
+    }
+
+    if (event.key !== 'Tab' || !dialogEl) return;
+
+    const focusables = [
+      ...dialogEl.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      )
+    ].filter((el) => el.offsetParent !== null);
+    if (focusables.length === 0) return;
+
+    const first = focusables[0] as HTMLElement;
+    const last = focusables[focusables.length - 1] as HTMLElement;
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
     }
   }
 
@@ -159,6 +187,7 @@
     if (code === 'href_case_fixed') return 'course.navItem.lessons.activities.package.case_warning';
     if (code === 'manifest_rebased') return 'course.navItem.lessons.activities.package.rebased_warning';
     if (code === 'no_lms_api_detected') return 'course.navItem.lessons.activities.package.no_lms_warning';
+    if (code === 'has_prerequisites') return 'course.navItem.lessons.activities.package.prerequisites_warning';
 
     return null;
   }
@@ -171,6 +200,8 @@
   );
 
   const passMark = $derived.by(() => {
+    if (!isSelectedCurrent) return selectedStats?.firstPassMark ?? null;
+
     for (const unit of displayUnits) {
       const mark = unitPassMark(unit);
       if (mark !== null) return mark;
@@ -178,13 +209,18 @@
 
     return null;
   });
+
+  const selectedModuleCount = $derived(
+    isSelectedCurrent ? displayUnits.length : (selectedStats?.unitCount ?? displayUnits.length)
+  );
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
 
 {#if open}
   <aside
-    class="ui:bg-background fixed inset-0 z-250 flex h-screen w-screen overflow-hidden"
+    bind:this={dialogEl}
+    class="ui:bg-background fixed inset-0 z-250 flex h-screen w-screen flex-col overflow-y-auto lg:flex-row lg:overflow-hidden"
     role="dialog"
     aria-modal="true"
     aria-labelledby="activity-version-history-title"
@@ -224,7 +260,7 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div class="min-w-0 flex-1">
                 <div class="flex flex-wrap items-center gap-2.5">
-                  <h1 class="text-foreground text-2xl font-bold tracking-tight">
+                  <h1 class="ui:text-foreground text-2xl font-bold tracking-tight">
                     {$t('course.navItem.lessons.activities.package.version', {
                       version: selectedVersion.versionNumber
                     })}
@@ -239,7 +275,7 @@
                     </Badge>
                   {/if}
                 </div>
-                <p class="text-muted-foreground mt-1 text-sm">{packageDetails.asset.title}</p>
+                <p class="ui:text-muted-foreground mt-1 text-sm">{packageDetails.asset.title}</p>
               </div>
 
               {#if selectedVersion.id !== currentVersion?.id && selectedVersion.status === 'ready'}
@@ -250,78 +286,86 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div class="border-border/80 bg-background/80 flex items-center gap-3 rounded-lg border p-3">
-                <div class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
+              <div class="ui:border-border/80 ui:bg-background/80 flex items-center gap-3 rounded-lg border p-3">
+                <div
+                  class="ui:bg-primary/10 ui:text-primary flex size-9 shrink-0 items-center justify-center rounded-lg"
+                >
                   <AwardIcon class="size-4.5" />
                 </div>
                 <div class="min-w-0">
-                  <div class="text-muted-foreground truncate text-xs">
+                  <div class="ui:text-muted-foreground truncate text-xs">
                     {$t('course.navItem.lessons.activities.package.stat_pass_mark')}
                   </div>
-                  <div class="text-foreground text-sm font-semibold tabular-nums">
+                  <div class="ui:text-foreground text-sm font-semibold tabular-nums">
                     {passMark !== null ? `${passMark}%` : $t('course.navItem.lessons.activities.package.none')}
                   </div>
                 </div>
               </div>
 
-              <div class="border-border/80 bg-background/80 flex items-center gap-3 rounded-lg border p-3">
-                <div class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
+              <div class="ui:border-border/80 ui:bg-background/80 flex items-center gap-3 rounded-lg border p-3">
+                <div
+                  class="ui:bg-primary/10 ui:text-primary flex size-9 shrink-0 items-center justify-center rounded-lg"
+                >
                   <LayersIcon class="size-4.5" />
                 </div>
                 <div class="min-w-0">
-                  <div class="text-muted-foreground truncate text-xs">
+                  <div class="ui:text-muted-foreground truncate text-xs">
                     {$t('course.navItem.lessons.activities.package.modules')}
                   </div>
-                  <div class="text-foreground text-sm font-semibold tabular-nums">
-                    {displayUnits.length}
+                  <div class="ui:text-foreground text-sm font-semibold tabular-nums">
+                    {selectedModuleCount}
                   </div>
                 </div>
               </div>
 
-              <div class="border-border/80 bg-background/80 flex items-center gap-3 rounded-lg border p-3">
-                <div class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
+              <div class="ui:border-border/80 ui:bg-background/80 flex items-center gap-3 rounded-lg border p-3">
+                <div
+                  class="ui:bg-primary/10 ui:text-primary flex size-9 shrink-0 items-center justify-center rounded-lg"
+                >
                   <FileTextIcon class="size-4.5" />
                 </div>
                 <div class="min-w-0">
-                  <div class="text-muted-foreground truncate text-xs">
+                  <div class="ui:text-muted-foreground truncate text-xs">
                     {$t('course.navItem.lessons.activities.package.files')}
                   </div>
-                  <div class="text-foreground text-sm font-semibold tabular-nums">
+                  <div class="ui:text-foreground text-sm font-semibold tabular-nums">
                     {selectedVersion.fileCount ?? units.length}
                   </div>
                 </div>
               </div>
 
-              <div class="border-border/80 bg-background/80 flex items-center gap-3 rounded-lg border p-3">
-                <div class="bg-primary/10 text-primary flex size-9 shrink-0 items-center justify-center rounded-lg">
+              <div class="ui:border-border/80 ui:bg-background/80 flex items-center gap-3 rounded-lg border p-3">
+                <div
+                  class="ui:bg-primary/10 ui:text-primary flex size-9 shrink-0 items-center justify-center rounded-lg"
+                >
                   <HardDriveIcon class="size-4.5" />
                 </div>
                 <div class="min-w-0">
-                  <div class="text-muted-foreground truncate text-xs">
+                  <div class="ui:text-muted-foreground truncate text-xs">
                     {$t('course.navItem.lessons.activities.package.size')}
                   </div>
-                  <div class="text-foreground text-sm font-semibold tabular-nums">
+                  <div class="ui:text-foreground text-sm font-semibold tabular-nums">
                     {formatPackageBytes(selectedBytes || null)}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="border-border/80 bg-muted/20 space-y-2 rounded-lg border p-4 text-xs">
+            <div class="ui:border-border/80 ui:bg-muted/20 space-y-2 rounded-lg border p-4 text-xs">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="text-muted-foreground">SCORM Format</span>
-                <span class="text-foreground font-medium">{formatScormVersion(selectedVersion.format)}</span>
+                <span class="ui:text-muted-foreground">SCORM Format</span>
+                <span class="ui:text-foreground font-medium">{formatScormVersion(selectedVersion.format)}</span>
               </div>
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="text-muted-foreground">Created</span>
-                <span class="text-foreground font-medium">
+                <span class="ui:text-muted-foreground">Created</span>
+                <span class="ui:text-foreground font-medium">
                   {formatTimestamp(new Date(selectedVersion.createdAt))}
                 </span>
               </div>
               {#if selectedVersion.manifestIdentifier}
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                  <span class="text-muted-foreground">Manifest ID</span>
-                  <span class="text-muted-foreground max-w-xs truncate font-mono">
+                  <span class="ui:text-muted-foreground">Manifest ID</span>
+                  <span class="ui:text-muted-foreground max-w-xs truncate font-mono">
                     {selectedVersion.manifestIdentifier}
                   </span>
                 </div>
@@ -347,9 +391,9 @@
             {/if}
 
             {#if selectedVersion.id === currentVersion?.id && displayUnits.length > 0}
-              <div class="border-border overflow-hidden rounded-xl border">
-                <div class="border-border bg-muted/30 flex items-center justify-between border-b px-4 py-3">
-                  <h3 class="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+              <div class="ui:border-border overflow-hidden rounded-xl border">
+                <div class="ui:border-border ui:bg-muted/30 flex items-center justify-between border-b px-4 py-3">
+                  <h3 class="ui:text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                     {$t('course.navItem.lessons.activities.package.modules')}
                   </h3>
                   <Badge variant="secondary" class="text-xs tabular-nums">
@@ -357,7 +401,7 @@
                   </Badge>
                 </div>
                 <Table.Root>
-                  <Table.Header class="bg-muted/20">
+                  <Table.Header class="ui:bg-muted/20">
                     <Table.Row>
                       <Table.Head class="w-12 text-center text-xs">
                         {$t('course.navItem.lessons.activities.package.table_num')}
@@ -377,14 +421,14 @@
                     {#each displayUnits as unit, index (unit.id)}
                       {@const mark = unitPassMark(unit)}
                       <Table.Row>
-                        <Table.Cell class="text-muted-foreground w-12 text-center font-mono text-xs tabular-nums">
+                        <Table.Cell class="ui:text-muted-foreground w-12 text-center font-mono text-xs tabular-nums">
                           {index + 1}
                         </Table.Cell>
-                        <Table.Cell class="text-foreground text-sm font-medium">
+                        <Table.Cell class="ui:text-foreground text-sm font-medium">
                           {unit.title}
                         </Table.Cell>
                         <Table.Cell class="w-24">
-                          <span class="text-muted-foreground font-mono text-xs uppercase">
+                          <span class="ui:text-muted-foreground font-mono text-xs uppercase">
                             {unit.unitType}
                           </span>
                         </Table.Cell>
@@ -394,7 +438,7 @@
                               {$t('course.navItem.lessons.activities.package.graded_pass', { score: mark })}
                             </Badge>
                           {:else}
-                            <span class="text-muted-foreground text-xs">
+                            <span class="ui:text-muted-foreground text-xs">
                               {$t('course.navItem.lessons.activities.package.ungraded')}
                             </span>
                           {/if}
@@ -410,7 +454,9 @@
       </main>
     </div>
 
-    <div class="ui:border-border ui:bg-muted/30 flex w-88 shrink-0 flex-col border-l">
+    <div
+      class="ui:border-border ui:bg-muted/30 flex max-h-80 w-full shrink-0 flex-col border-b lg:max-h-none lg:w-88 lg:border-b-0 lg:border-l"
+    >
       <div class="ui:border-border flex h-16 shrink-0 items-center border-b px-5">
         <h2 id="activity-version-history-title" class="text-base font-semibold">
           {$t('course.navItem.lessons.version_history.title')}

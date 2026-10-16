@@ -140,7 +140,7 @@ const worker = new Worker(
 
     if (job.name === JOB_NAMES.maintenance.scormRetention) {
       const data = ZScormRetentionPayload.parse(job.data ?? {});
-      const result = await runScormRetention(data.eventOlderThanDays, data.unpinnedVersionDays);
+      const result = await runScormRetention(data.eventOlderThanDays);
       log.info('scorm-retention-done', {
         eventsDeleted: result.eventsDeleted,
         versionsDeleted: result.versionsDeleted,

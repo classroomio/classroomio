@@ -3725,7 +3725,6 @@
           },
           "package": {
             "drop_label": "Trascina qui il tuo file .zip SCORM",
-            "drop_hint": "File fino a {size}. L'elaborazione potrebbe richiedere alcuni minuti; puoi lasciare la pagina.",
             "wrong_type": "È possibile caricare solo file .zip come pacchetti SCORM.",
             "too_large": "Questo file è più grande di {size}.",
             "uploading": "Caricamento in corso {progress}%",
@@ -3822,7 +3821,9 @@
             "details": "Dettagli",
             "version_label": "Versione",
             "remove_package": "Rimuovi pacchetto",
-            "launchable_count": "{count, plural, one {# elemento avviabile} other {# elementi avviabili}}"
+            "launchable_count": "{count, plural, one {# elemento avviabile} other {# elementi avviabili}}",
+            "drop_hint": "Fino a {size}. Mantieni questa pagina aperta finché il pacchetto non viene allegato.",
+            "prerequisites_warning": "Questo pacchetto limita l'accesso ai moduli in base a prerequisiti. L'ordine di esecuzione dei moduli è sequenziale; le regole di prerequisito più specifiche vengono ignorate."
           },
           "gating": {
             "title": "La creazione di pacchetti SCORM è in pausa.",
@@ -3899,11 +3900,23 @@
                 "terminate": "Completato",
                 "beacon": "Salvato all'uscita",
                 "error": "Errore",
-                "not_initialized": "Connessione non riuscita"
+                "not_initialized": "Connessione non riuscita",
+                "duplicate": "Salvataggio duplicato ignorato"
               },
               "interaction_correct": "Corretto: {answer}",
-              "session_device": "Dispositivo utilizzato per la sessione",
-              "technical_details": "Dettagli tecnici"
+              "technical_details": "Dettagli tecnici",
+              "session_device": "Dispositivo della sessione: {device}",
+              "module_success": {
+                "passed": "Superato",
+                "failed": "Fallito",
+                "unknown": "Sconosciuto"
+              },
+              "module_completion": {
+                "completed": "Completato",
+                "incomplete": "Incompleto",
+                "not_attempted": "Non tentato",
+                "unknown": "Sconosciuto"
+              }
             },
             "export": {
               "title": "Risultati SCORM"
@@ -3945,7 +3958,8 @@
           "add_package_button": "Aggiungi pacchetto"
         },
         "add_content_created_activity": "Il pacchetto SCORM è stato creato correttamente!",
-        "add_content_create_another_activity": "Crea un altro pacchetto"
+        "add_content_create_another_activity": "Crea un altro pacchetto",
+        "view": "Vista"
       },
       "attendance": {
         "title": "Partecipazione",

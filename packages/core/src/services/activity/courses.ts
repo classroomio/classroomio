@@ -33,8 +33,10 @@ type ReadyPackage = {
 
 /**
  * Creates one draft SCORM course per package, each with its package attached.
- * Every package is checked before any course is created, so the request fails
- * without creating anything when a package is foreign or has no ready version.
+ * Every package is checked before anything is created, and all courses are
+ * created in a single transaction, so the request fails without creating
+ * anything when a package is foreign, has no ready version, or any course
+ * write fails partway through.
  */
 export async function createCoursesFromPackages(
   organizationId: string,
@@ -55,10 +57,29 @@ export async function createCoursesFromPackages(
     packages.push({ asset, version, title });
   }
 
-  const created: CreatedPackageCourse[] = [];
+  const seenSlugs = new Set<string>();
+  const slugs: string[] = [];
   for (const ready of packages) {
-    created.push(await createPackageCourse(organizationId, profileId, input.courseType, ready));
+    const base = await generateUniqueCourseSlug(slugifyTitle(ready.title));
+    let candidate = base;
+    let suffix = 0;
+    while (seenSlugs.has(candidate)) {
+      suffix += 1;
+      candidate = `${base}-${suffix}`;
+    }
+    seenSlugs.add(candidate);
+    slugs.push(candidate);
   }
+
+  const created = await db.transaction(async (tx) => {
+    const rows: CreatedPackageCourse[] = [];
+    for (const [index, ready] of packages.entries()) {
+      rows.push(
+        await createPackageCourse(organizationId, profileId, input.courseType, ready, slugs[index] as string, tx)
+      );
+    }
+    return rows;
+  });
 
   await invalidateOrgStats(organizationId);
 
@@ -69,80 +90,79 @@ async function createPackageCourse(
   organizationId: string,
   profileId: string,
   courseType: TActivityCoursesCreate['courseType'],
-  ready: ReadyPackage
+  ready: ReadyPackage,
+  slug: string,
+  tx: DbOrTxClient
 ): Promise<CreatedPackageCourse> {
-  return db.transaction(async (tx) => {
-    const description = sanitizeHtml(ready.asset.description?.trim() || ready.title);
-    const [newGroup] = await createGroup({ name: ready.title, description, organizationId }, tx);
-    if (!newGroup) throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
+  const description = sanitizeHtml(ready.asset.description?.trim() || ready.title);
+  const [newGroup] = await createGroup({ name: ready.title, description, organizationId }, tx);
+  if (!newGroup) throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
 
-    const slug = await generateUniqueCourseSlug(slugifyTitle(ready.title));
-    const [newCourse] = await createCourseQuery(
-      {
-        title: ready.title,
-        description,
-        type: courseType,
-        format: 'single_activity',
-        groupId: newGroup.id,
-        slug,
-        isPublished: false,
-        status: 'ACTIVE',
-        ...(courseType === 'COMPLIANCE'
-          ? {
-              compliance: {
-                retakeIntervalMonths: 12,
-                gracePeriodDays: 14,
-                reminderDaysBefore: [30, 7, 1],
-                isMandatory: true,
-                passingScore: 80
-              }
+  const [newCourse] = await createCourseQuery(
+    {
+      title: ready.title,
+      description,
+      type: courseType,
+      format: 'single_activity',
+      groupId: newGroup.id,
+      slug,
+      isPublished: false,
+      status: 'ACTIVE',
+      ...(courseType === 'COMPLIANCE'
+        ? {
+            compliance: {
+              retakeIntervalMonths: 12,
+              gracePeriodDays: 14,
+              reminderDaysBefore: [30, 7, 1],
+              isMandatory: true,
+              passingScore: 80
             }
-          : {})
-      },
-      tx
-    );
-    if (!newCourse) throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
+          }
+        : {})
+    },
+    tx
+  );
+  if (!newCourse) throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
 
-    const [newMember] = await addGroupMember({ profileId, groupId: newGroup.id, roleId: ROLE.TUTOR }, tx);
-    if (!newMember) throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
+  const [newMember] = await addGroupMember({ profileId, groupId: newGroup.id, roleId: ROLE.TUTOR }, tx);
+  if (!newMember) throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
 
-    await createCourseNewsfeed(
-      {
-        content: sanitizeHtml(`<h2>Welcome to this course 🎉&nbsp;</h2>
+  await createCourseNewsfeed(
+    {
+      content: sanitizeHtml(`<h2>Welcome to this course 🎉&nbsp;</h2>
 <p>Thank you for joining this course and I hope you get the best out of it.</p>`),
-        courseId: newCourse.id,
-        isPinned: true,
-        authorId: newMember.id
-      },
-      tx
-    );
+      courseId: newCourse.id,
+      isPinned: true,
+      authorId: newMember.id
+    },
+    tx
+  );
 
-    const activity = await createCourseActivity(newCourse, ready.title, profileId, tx);
-    const sequenced = ((ready.version.warnings ?? []) as string[]).includes('has_sequencing');
-    await upsertActivityScorm(
-      { activityId: activity.id, assetId: ready.asset.id, moduleOrder: sequenced ? 'sequential' : 'free' },
-      tx
-    );
-    await createAssetUsage(
-      {
-        organizationId,
-        assetId: ready.asset.id,
-        targetType: 'activity',
-        targetId: activity.id,
-        slotType: ACTIVITY_PACKAGE_SLOT,
-        createdByProfileId: profileId
-      },
-      tx
-    );
+  const activity = await createCourseActivity(newCourse, ready.title, profileId, tx);
+  const sequenced = ((ready.version.warnings ?? []) as string[]).includes('has_sequencing');
+  await upsertActivityScorm(
+    { activityId: activity.id, assetId: ready.asset.id, moduleOrder: sequenced ? 'sequential' : 'free' },
+    tx
+  );
+  await createAssetUsage(
+    {
+      organizationId,
+      assetId: ready.asset.id,
+      targetType: 'activity',
+      targetId: activity.id,
+      slotType: ACTIVITY_PACKAGE_SLOT,
+      createdByProfileId: profileId
+    },
+    tx
+  );
 
-    return {
-      id: newCourse.id,
-      title: newCourse.title,
-      slug: newCourse.slug,
-      activityId: activity.id,
-      assetId: ready.asset.id
-    };
-  });
+  return {
+    id: newCourse.id,
+    title: newCourse.title,
+    slug: newCourse.slug,
+    activityId: activity.id,
+    assetId: ready.asset.id
+  };
 }
 
 async function createCourseActivity(course: TCourse, title: string, profileId: string, tx: DbOrTxClient) {

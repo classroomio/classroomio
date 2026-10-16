@@ -152,9 +152,9 @@ ALTER TABLE "course_activity" ADD CONSTRAINT "course_activity_source_id_fkey" FO
 ALTER TABLE "course_activity" ADD CONSTRAINT "course_activity_created_by_profile_id_fkey" FOREIGN KEY ("created_by_profile_id") REFERENCES "public"."profile"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_attempt" ADD CONSTRAINT "scorm_attempt_activity_id_fkey" FOREIGN KEY ("activity_id") REFERENCES "public"."course_activity"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_attempt" ADD CONSTRAINT "scorm_attempt_profile_id_fkey" FOREIGN KEY ("profile_id") REFERENCES "public"."profile"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "scorm_attempt" ADD CONSTRAINT "scorm_attempt_package_version_id_fkey" FOREIGN KEY ("package_version_id") REFERENCES "public"."content_package_version"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "scorm_attempt" ADD CONSTRAINT "scorm_attempt_package_version_id_fkey" FOREIGN KEY ("package_version_id") REFERENCES "public"."content_package_version"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_sco_attempt" ADD CONSTRAINT "scorm_sco_attempt_attempt_id_fkey" FOREIGN KEY ("attempt_id") REFERENCES "public"."scorm_attempt"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "scorm_sco_attempt" ADD CONSTRAINT "scorm_sco_attempt_unit_id_fkey" FOREIGN KEY ("unit_id") REFERENCES "public"."content_package_unit"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "scorm_sco_attempt" ADD CONSTRAINT "scorm_sco_attempt_unit_id_fkey" FOREIGN KEY ("unit_id") REFERENCES "public"."content_package_unit"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "scorm_session_event" ADD CONSTRAINT "scorm_session_event_sco_attempt_id_fkey" FOREIGN KEY ("sco_attempt_id") REFERENCES "public"."scorm_sco_attempt"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "idx_activity_scorm_asset_id" ON "activity_scorm" USING btree ("asset_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "content_package_version_current_key" ON "content_package_version" USING btree ("asset_id") WHERE "content_package_version"."is_current";--> statement-breakpoint
@@ -164,6 +164,9 @@ CREATE INDEX "idx_course_activity_course_slug" ON "course_activity" USING btree 
 CREATE INDEX "course_activity_source_id_idx" ON "course_activity" USING btree ("source_id") WHERE "course_activity"."source_id" is not null;--> statement-breakpoint
 CREATE UNIQUE INDEX "scorm_attempt_open_key" ON "scorm_attempt" USING btree ("activity_id","profile_id") WHERE "scorm_attempt"."closed_at" is null;--> statement-breakpoint
 CREATE INDEX "idx_scorm_attempt_activity_id" ON "scorm_attempt" USING btree ("activity_id");--> statement-breakpoint
+CREATE INDEX "scorm_attempt_profile_id_idx" ON "scorm_attempt" USING btree ("profile_id");--> statement-breakpoint
+CREATE INDEX "activity_completion_profile_id_idx" ON "activity_completion" USING btree ("profile_id");--> statement-breakpoint
+CREATE INDEX "course_activity_section_id_idx" ON "course_activity" USING btree ("section_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "scorm_sco_attempt_open_key" ON "scorm_sco_attempt" USING btree ("attempt_id","unit_id") WHERE "scorm_sco_attempt"."status" in ('active', 'suspended');--> statement-breakpoint
 CREATE INDEX "idx_scorm_sco_attempt_attempt_id" ON "scorm_sco_attempt" USING btree ("attempt_id","unit_id","started_at");--> statement-breakpoint
 CREATE INDEX "idx_scorm_session_event_sco_attempt_created" ON "scorm_session_event" USING btree ("sco_attempt_id","created_at");--> statement-breakpoint

@@ -13,6 +13,7 @@ import {
   normalizeCmiShape,
   normalizeCommitCmi,
   parseCommitSessionTime,
+  parseCommitTotalTime,
   accumulateTryTime,
   parseScormSessionTime,
   shouldRecordCommitEvent,
@@ -97,6 +98,16 @@ describe('moduleOutcomeFromCmi', () => {
     );
 
     expect(graded).toEqual({ completion: 'completed', success: 'passed', hasPassMark: true, scaledScore: 0.9 });
+  });
+
+  it('scales 1.2 raw against max alone when min is omitted', () => {
+    const eightOfTen = moduleOutcomeFromCmi(
+      { core: { lesson_status: 'completed', score: { raw: 8, max: 10 } } },
+      'scorm12',
+      unit()
+    );
+
+    expect(eightOfTen.scaledScore).toBe(0.8);
   });
 });
 
@@ -260,6 +271,21 @@ describe('mergeCmi and normalizeCommitCmi', () => {
       core: { score: { raw: '80' } }
     });
   });
+
+  it('measures the size limit in bytes, not characters', () => {
+    const multibyte = 'é'.repeat(70 * 1024);
+
+    try {
+      normalizeCommitCmi({ seq: 1, cmi: { suspend_data: multibyte } });
+      expect.unreachable();
+    } catch (error) {
+      expect((error as PackageError).code).toBe('invalid_commit');
+    }
+
+    const ascii = normalizeCommitCmi({ seq: 1, cmi: { suspend_data: 'x'.repeat(1000) } });
+
+    expect(ascii.seq).toBe(1);
+  });
 });
 
 describe('isScormRuleMet', () => {
@@ -305,6 +331,15 @@ describe('isScormRuleMet', () => {
     expect(isScormRuleMet({ rule: 'score', minScorePercent: 80 }, modules)).toBe(true);
     expect(isScormRuleMet({ rule: 'score', minScorePercent: 81 }, modules)).toBe(false);
     expect(isScormRuleMet({ rule: 'score', minScorePercent: 50 }, [outcome({ completion: 'completed' })])).toBe(false);
+  });
+
+  it('passes exact score thresholds despite floating-point error', () => {
+    const atThreshold = (fraction: number) => [outcome({ completion: 'completed', scaledScore: fraction })];
+
+    expect(isScormRuleMet({ rule: 'score', minScorePercent: 29 }, atThreshold(0.29))).toBe(true);
+    expect(isScormRuleMet({ rule: 'score', minScorePercent: 57 }, atThreshold(0.57))).toBe(true);
+    expect(isScormRuleMet({ rule: 'score', minScorePercent: 58 }, atThreshold(0.58))).toBe(true);
+    expect(isScormRuleMet({ rule: 'score', minScorePercent: 30 }, atThreshold(0.29))).toBe(false);
   });
 });
 
@@ -412,6 +447,19 @@ describe('parseCommitSessionTime', () => {
   });
 });
 
+describe('parseCommitTotalTime', () => {
+  it('reads the version-specific total time field', () => {
+    expect(parseCommitTotalTime({ core: { total_time: '01:00:00' } }, 'scorm12')).toBe(3600);
+    expect(parseCommitTotalTime({ total_time: 'PT1H' }, 'scorm2004_4')).toBe(3600);
+  });
+
+  it('returns null when absent or malformed', () => {
+    expect(parseCommitTotalTime({}, 'scorm12')).toBeNull();
+    expect(parseCommitTotalTime({}, 'scorm2004_4')).toBeNull();
+    expect(parseCommitTotalTime({ core: { session_time: '00:01:30' } }, 'scorm12')).toBeNull();
+  });
+});
+
 describe('accumulateTryTime', () => {
   it('prefers a valid package-reported session time, bounded', () => {
     expect(accumulateTryTime(100, 400, 0, 60_000)).toBe(400);
@@ -419,8 +467,20 @@ describe('accumulateTryTime', () => {
   });
 
   it('never decreases past tracked time', () => {
-    expect(accumulateTryTime(3600, 1800, 0, 60_000)).toBe(3600);
-    expect(accumulateTryTime(100, 90, 0, 60_000)).toBe(100);
+    expect(accumulateTryTime(3600, 1800, 0, 60_000)).toBe(3660);
+    expect(accumulateTryTime(100, 90, 0, 60_000)).toBe(160);
+  });
+
+  it('keeps crediting wall-clock time on resumed launches that restart session time', () => {
+    expect(accumulateTryTime(600, 10, 2_000_000, 2_030_000)).toBe(630);
+    expect(accumulateTryTime(600, 310, 2_000_000, 2_030_000)).toBe(630);
+    expect(accumulateTryTime(600, 900, 2_000_000, 2_030_000)).toBe(900);
+  });
+
+  it('honors an explicit package total time above both signals', () => {
+    expect(accumulateTryTime(100, 90, 1_000_000, 1_030_000, 500)).toBe(500);
+    expect(accumulateTryTime(100, 400, 1_000_000, 1_030_000, 200)).toBe(400);
+    expect(accumulateTryTime(100, null, 1_000_000, 1_030_000, null)).toBe(130);
   });
 
   it('credits exact heartbeat time inside the active window', () => {

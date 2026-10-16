@@ -15,6 +15,11 @@ describe('player message protocol', () => {
       navRequest: null
     });
     expect(parsePlayerMessage({ type: 'terminated' })).toEqual({ type: 'terminated', navRequest: null });
+    expect(parsePlayerMessage({ type: 'boot-error', error: 'Launch state request failed: 401' })).toEqual({
+      type: 'boot-error',
+      error: 'Launch state request failed: 401'
+    });
+    expect(parsePlayerMessage({ type: 'boot-error' })).toEqual({ type: 'boot-error', error: null });
     expect(parsePlayerMessage(null)).toBeNull();
     expect(parsePlayerMessage('ready')).toBeNull();
     expect(parsePlayerMessage({ type: 'cmi', value: 1 })).toBeNull();

@@ -120,13 +120,16 @@
     const pages = Math.max(1, Math.ceil(total / 100));
 
     for (let exportPage = 1; exportPage <= pages; exportPage += 1) {
-      await activityApi.listResults(courseId, activityId, { page: exportPage, limit: 100, sort, direction });
-      rows.push(...(activityApi.results ?? []));
+      const pageRows = await activityApi.fetchResultsPage(courseId, activityId, {
+        page: exportPage,
+        limit: 100,
+        sort,
+        direction
+      });
+      rows.push(...pageRows);
 
-      if ((activityApi.results ?? []).length < 100) break;
+      if (pageRows.length < 100) break;
     }
-
-    await activityApi.listResults(courseId, activityId, { page, limit, sort, direction });
 
     return {
       filename: 'scorm-results',

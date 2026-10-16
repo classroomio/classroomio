@@ -17,9 +17,11 @@ import {
   listScormLearnerResults,
   type ScormAttemptTryRow
 } from '@cio/db/queries/scorm/report';
+import { getComplianceCycleStartIso } from '@cio/db/queries/course/compliance';
+import { getActivityById } from '@cio/db/queries/activity/activity';
 import { listScormSessionEventsByLearner } from '@cio/db/queries/scorm/session-event';
 import { getActivityScormByActivityId } from '@cio/db/queries/scorm/activity-scorm';
-import type { DbOrTxClient } from '@cio/db/drizzle';
+import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type { TScormResultsQuery } from '@cio/utils/validation/activity/report';
 import { ZScormSettings } from '@cio/utils/validation/activity/scorm';
@@ -311,13 +313,16 @@ export async function getResultsSummary(activityId: string, profileIds: string[]
 
 /**
  * Best attempt score, attempt count and session minutes for the compliance
- * record. Returns null while the learner has no attempts.
+ * record, scoped to the learner's current renewal cycle. Returns null while
+ * the learner has no attempts in the cycle.
  */
 export async function getComplianceSnapshot(
   activityId: string,
   profileId: string
 ): Promise<ActivityComplianceSnapshot | null> {
-  const [stat] = await getScormActivityStatsForProfile([activityId], profileId);
+  const activity = await getActivityById(activityId);
+  const sinceIso = activity ? await getComplianceCycleStartIso(activity.courseId, profileId) : null;
+  const [stat] = await getScormActivityStatsForProfile([activityId], profileId, db, sinceIso);
 
   if (!stat || stat.attempts === 0) return null;
 

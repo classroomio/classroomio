@@ -17,6 +17,7 @@ import {
   createActivity,
   deleteActivityService,
   getActivity,
+  getActivityForStudent,
   getActivityLearnerResult,
   getActivityProgress,
   getActivityResults,
@@ -50,7 +51,11 @@ export const activityRouter = new Hono()
     try {
       const courseId = c.req.param('courseId')!;
       const { activityId } = c.req.valid('param');
-      const result = await getActivityWithEditorData(courseId, activityId);
+      const user = c.get('user')!;
+      const isAuthor = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
+      const result = isAuthor
+        ? await getActivityWithEditorData(courseId, activityId)
+        : await getActivityForStudent(courseId, activityId);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {

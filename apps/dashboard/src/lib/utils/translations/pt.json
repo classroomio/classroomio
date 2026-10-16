@@ -2929,7 +2929,6 @@
           },
           "package": {
             "drop_label": "Arraste seu arquivo SCORM .zip aqui",
-            "drop_hint": "Até {size}. O processamento pode levar alguns minutos; você pode sair da página.",
             "wrong_type": "Somente arquivos .zip podem ser enviados como pacotes SCORM.",
             "too_large": "Este arquivo é maior que {size}.",
             "uploading": "Carregando {progress}%",
@@ -3026,7 +3025,9 @@
             "details": "Detalhes",
             "version_label": "Versão",
             "remove_package": "Remover pacote",
-            "launchable_count": "{count, plural, one {# item executável} other {# itens executáveis}}"
+            "launchable_count": "{count, plural, one {# item executável} other {# itens executáveis}}",
+            "drop_hint": "Até {size}. Mantenha esta página aberta até que o pacote seja anexado.",
+            "prerequisites_warning": "Este pacote restringe a execução de módulos a pré-requisitos. Esses pré-requisitos são aplicados em ordem sequencial; regras mais específicas são ignoradas."
           },
           "gating": {
             "title": "A criação de pacotes SCORM está pausada.",
@@ -3103,11 +3104,23 @@
                 "terminate": "Concluído",
                 "beacon": "Salvo ao sair",
                 "error": "Erro",
-                "not_initialized": "Não conectado"
+                "not_initialized": "Não conectado",
+                "duplicate": "Salvamento duplicado ignorado"
               },
               "interaction_correct": "Correto: {answer}",
-              "session_device": "Dispositivo da sessão",
-              "technical_details": "Detalhes técnicos"
+              "technical_details": "Detalhes técnicos",
+              "session_device": "Dispositivo de sessão: {device}",
+              "module_success": {
+                "passed": "Aprovado",
+                "failed": "Falha",
+                "unknown": "Desconhecido"
+              },
+              "module_completion": {
+                "completed": "Concluído",
+                "incomplete": "Incompleto",
+                "not_attempted": "Não tentado",
+                "unknown": "Desconhecido"
+              }
             },
             "export": {
               "title": "Resultados SCORM"
@@ -3149,7 +3162,8 @@
           "add_package_button": "Adicionar pacote"
         },
         "add_content_created_activity": "O pacote SCORM foi criado com sucesso!",
-        "add_content_create_another_activity": "Criar outro pacote"
+        "add_content_create_another_activity": "Criar outro pacote",
+        "view": "Visualizar"
       },
       "news_feed": {
         "heading": "Feed de notícias",

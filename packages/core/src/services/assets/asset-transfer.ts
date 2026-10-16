@@ -48,18 +48,28 @@ async function copyObject(bucket: string, sourceKey: string, targetKey: string) 
   );
 }
 
+async function copyInParallel(jobs: Array<() => Promise<unknown>>, limit = 8): Promise<void> {
+  for (let index = 0; index < jobs.length; index += limit) {
+    const batch = jobs.slice(index, index + limit);
+    await Promise.all(batch.map((job) => job()));
+  }
+}
+
 async function copyPrefix(bucket: string, sourcePrefix: string, targetPrefix: string) {
   let continuationToken: string | undefined;
   do {
     const listed = await getS3Client().send(
       new ListObjectsV2Command({ Bucket: bucket, Prefix: sourcePrefix, ContinuationToken: continuationToken })
     );
-    for (const entry of listed.Contents ?? []) {
-      if (!entry.Key) continue;
+    const jobs = (listed.Contents ?? [])
+      .filter((entry) => entry.Key)
+      .map((entry) => {
+        const sourceKey = entry.Key as string;
+        const targetKey = `${targetPrefix}${sourceKey.slice(sourcePrefix.length)}`;
 
-      const targetKey = `${targetPrefix}${entry.Key.slice(sourcePrefix.length)}`;
-      await copyObject(bucket, entry.Key, targetKey);
-    }
+        return () => copyObject(bucket, sourceKey, targetKey);
+      });
+    await copyInParallel(jobs);
     continuationToken = listed.IsTruncated ? listed.NextContinuationToken : undefined;
   } while (continuationToken);
 }
@@ -166,6 +176,13 @@ function scormContentPrefix(assetId: string, versionNumber: number) {
   return `scorm/${assetId}/v${versionNumber}`;
 }
 
+function isMissingKeyError(error: unknown): boolean {
+  const name = (error as { name?: string })?.name;
+  const code = (error as { Code?: string })?.Code;
+
+  return name === 'NoSuchKey' || name === 'NoSuchBucket' || code === 'NoSuchKey' || code === 'NoSuchBucket';
+}
+
 async function copyScormVersionStorage(
   source: Pick<TContentPackageVersion, 'uploadKey' | 'contentPrefix'>,
   targetAssetId: string,
@@ -177,6 +194,12 @@ async function copyScormVersionStorage(
 
   await copyObject(config.bucketScorm, source.uploadKey, uploadKey);
   await copyPrefix(config.bucketScorm, `${source.contentPrefix}/`, `${contentPrefix}/`);
+
+  try {
+    await copyObject(config.bucketScorm, `${source.contentPrefix}.index.json`, `${contentPrefix}.index.json`);
+  } catch (error) {
+    if (!isMissingKeyError(error)) throw error;
+  }
 
   return { uploadKey, contentPrefix };
 }

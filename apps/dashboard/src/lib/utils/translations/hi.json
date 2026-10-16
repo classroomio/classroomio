@@ -2929,7 +2929,6 @@
           },
           "package": {
             "drop_label": "अपनी SCORM .zip फ़ाइल यहाँ डालें",
-            "drop_hint": "अधिकतम {size}। प्रसंस्करण में कुछ मिनट लग सकते हैं; आप पृष्ठ छोड़ सकते हैं।",
             "wrong_type": "SCORM पैकेज के रूप में केवल .zip फ़ाइलें ही अपलोड की जा सकती हैं।",
             "too_large": "यह फ़ाइल {size} से बड़ी है।",
             "uploading": "अपलोड हो रहा है {progress}%",
@@ -3026,7 +3025,9 @@
             "details": "विवरण",
             "version_label": "संस्करण",
             "remove_package": "पैकेज हटाएं",
-            "launchable_count": "{count, plural, one {# लॉन्च करने योग्य} other {# लॉन्च करने योग्य}}"
+            "launchable_count": "{count, plural, one {# लॉन्च करने योग्य} other {# लॉन्च करने योग्य}}",
+            "drop_hint": "{size} तक. पैकेज संलग्न होने तक इस पृष्ठ को खुला रखें।",
+            "prerequisites_warning": "यह पैकेज पूर्वापेक्षाओं के आधार पर मॉड्यूल को नियंत्रित करता है। इन्हें अनुक्रमिक मॉड्यूल क्रम में लागू किया जाता है; पूर्वापेक्षा के बारीक नियमों को अनदेखा किया जाता है।"
           },
           "gating": {
             "title": "SCORM ऑथरिंग रोक दी गई है।",
@@ -3103,11 +3104,23 @@
                 "terminate": "पूरा हुआ",
                 "beacon": "बाहर निकलने पर सेव किया गया",
                 "error": "एरर",
-                "not_initialized": "कनेक्ट नहीं हुआ"
+                "not_initialized": "कनेक्ट नहीं हुआ",
+                "duplicate": "डुप्लिकेट सहेजें पर ध्यान नहीं दिया गया"
               },
               "interaction_correct": "सही उत्तर: {answer}",
-              "session_device": "सत्र का उपकरण",
-              "technical_details": "तकनीकी विवरण"
+              "technical_details": "तकनीकी विवरण",
+              "session_device": "सत्र डिवाइस: {device}",
+              "module_success": {
+                "passed": "उत्तीर्ण",
+                "failed": "असफल",
+                "unknown": "अज्ञात"
+              },
+              "module_completion": {
+                "completed": "पूरा हुआ",
+                "incomplete": "अधूरा",
+                "not_attempted": "प्रयास नहीं किया गया",
+                "unknown": "अज्ञात"
+              }
             },
             "export": {
               "title": "SCORM नतीजे"
@@ -3149,7 +3162,8 @@
           "add_package_button": "पैकेज जोड़ें"
         },
         "add_content_created_activity": "SCORM पैकेज सफलतापूर्वक बन गया है!",
-        "add_content_create_another_activity": "एक और पैकेज बनाएं"
+        "add_content_create_another_activity": "एक और पैकेज बनाएं",
+        "view": "देखें"
       },
       "news_feed": {
         "heading": "समाचार फ़ीड",

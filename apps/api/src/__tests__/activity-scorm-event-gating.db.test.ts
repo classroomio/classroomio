@@ -256,7 +256,8 @@ describe.skipIf(!hasDatabase)('scorm commit event gating', () => {
       if (!tryId) throw new Error('missing module try');
 
       await expect(recordScormSessionEvent(tryId, 'commit', { blob: 'x'.repeat(2048) }, null)).rejects.toThrow();
-      await expect(recordScormSessionEvent(tryId, 'commit', { seq: 1 }, 'x'.repeat(513))).rejects.toThrow();
+      const truncated = await recordScormSessionEvent(tryId, 'commit', { seq: 1 }, 'x'.repeat(513));
+      expect(truncated.userAgent).toBe('x'.repeat(512));
       await expect(recordScormSessionEvent(tryId, 'unknown' as never, { seq: 1 }, null)).rejects.toThrow();
     } finally {
       await cleanupGatingFixture(fixture);

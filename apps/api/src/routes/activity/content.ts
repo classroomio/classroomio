@@ -11,7 +11,8 @@ import { isContentHostRequest } from '@api/middlewares/activity-content-host';
 import { Hono } from '@api/utils/hono';
 
 /**
- * Normalizes a content-relative path. Returns null when unsafe or empty.
+ * Normalizes a content-relative path decoded exactly once from the raw request
+ * URL. Returns null when unsafe or empty.
  */
 export function normalizeContentPath(raw: string): string | null {
   let decoded: string;
@@ -83,10 +84,16 @@ export const activityContentRouter = new Hono().on(['GET', 'HEAD'], '/:contentTo
 
   if (!contentToken) return c.body(null, 401);
 
-  const fullPath = c.req.path;
+  const rawUrl = c.req.raw?.url ?? c.req.url;
+  let rawPathname: string;
+  try {
+    rawPathname = new URL(rawUrl).pathname;
+  } catch {
+    return c.body(null, 404);
+  }
   const marker = `/activity/content/${contentToken}/`;
-  const markerIndex = fullPath.indexOf(marker);
-  const rawRelative = markerIndex === -1 ? '' : fullPath.slice(markerIndex + marker.length);
+  const markerIndex = rawPathname.indexOf(marker);
+  const rawRelative = markerIndex === -1 ? '' : rawPathname.slice(markerIndex + marker.length);
   const relative = normalizeContentPath(rawRelative);
 
   if (!relative) return c.body(null, 404);
