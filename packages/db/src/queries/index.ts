@@ -9,6 +9,8 @@ export * from './course';
 export * from './group';
 export * from './lesson';
 export * from './exercise';
+export * from './activity';
+export * from './scorm';
 export * from './analytics';
 export * from './mark';
 export * from './newsfeed';

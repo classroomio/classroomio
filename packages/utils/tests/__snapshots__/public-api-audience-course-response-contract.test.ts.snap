@@ -1103,6 +1103,13 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
         },
       ],
     },
+    "format": {
+      "enum": [
+        "standard",
+        "single_activity",
+      ],
+      "type": "string",
+    },
     "group": {
       "anyOf": [
         {
@@ -1728,6 +1735,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
     "compliance",
     "status",
     "type",
+    "format",
     "callout",
     "group",
     "attendance",
@@ -2016,6 +2024,13 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
     },
     "exerciseCount": {
       "type": "number",
+    },
+    "format": {
+      "enum": [
+        "standard",
+        "single_activity",
+      ],
+      "type": "string",
     },
     "groupId": {
       "anyOf": [
@@ -2415,6 +2430,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
     "compliance",
     "status",
     "type",
+    "format",
     "callout",
     "lessonCount",
     "totalStudents",
@@ -2700,6 +2716,13 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
           "type": "null",
         },
       ],
+    },
+    "format": {
+      "enum": [
+        "standard",
+        "single_activity",
+      ],
+      "type": "string",
     },
     "groupId": {
       "anyOf": [
@@ -3064,6 +3087,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
     "compliance",
     "status",
     "type",
+    "format",
     "callout",
   ],
   "type": "object",
@@ -4262,6 +4286,13 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
             },
           ],
         },
+        "format": {
+          "enum": [
+            "standard",
+            "single_activity",
+          ],
+          "type": "string",
+        },
         "groupId": {
           "anyOf": [
             {
@@ -4625,6 +4656,7 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
         "compliance",
         "status",
         "type",
+        "format",
         "callout",
       ],
       "type": "object",

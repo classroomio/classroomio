@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { COURSE_FORMAT_VALUES } from '../../constants/course-format';
 import { COURSE_TYPE_VALUES } from '../../constants/course-type';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
 
@@ -134,6 +135,7 @@ export const ZPublicApiCourseResponse = z.object({
   compliance: ZCourseCompliance.nullable(),
   status: z.string().describe('ACTIVE, or DELETED once the course is deleted'),
   type: z.enum(COURSE_TYPE_VALUES).nullable(),
+  format: z.enum(COURSE_FORMAT_VALUES),
   callout: ZCourseCallout.nullable()
 });
 
