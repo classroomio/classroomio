@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCORM Live Timer & Session Test Package</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --code-bg: #090d16;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .badges {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #334155;
+      color: #cbd5e1;
+    }
+    .badge.active {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+    }
+    .badge.version {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--accent);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (min-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #f1f5f9;
+    }
+
+    /* Timers Section */
+    .timer-hero {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .countdown-display {
+      font-size: 3.5rem;
+      font-weight: 800;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      letter-spacing: -1px;
+      color: var(--accent);
+      transition: color 0.3s ease;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .countdown-display.warning {
+      color: var(--warning);
+      animation: pulse 1s infinite;
+    }
+
+    .countdown-display.danger {
+      color: var(--danger);
+      animation: pulse 0.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .timer-subtext {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .timer-controls {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.9rem;
+    }
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+    .stat-label {
+      color: var(--text-muted);
+    }
+    .stat-value {
+      font-weight: 600;
+      font-family: ui-monospace, monospace;
+    }
+
+    /* Buttons & Inputs */
+    button {
+      background: var(--accent);
+      color: #0f172a;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    button:hover:not(:disabled) {
+      background: var(--accent-hover);
+      color: #fff;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    button.secondary {
+      background: #334155;
+      color: #f8fafc;
+    }
+    button.secondary:hover:not(:disabled) {
+      background: #475569;
+    }
+    button.danger {
+      background: var(--danger);
+      color: #fff;
+    }
+    button.danger:hover:not(:disabled) {
+      background: #dc2626;
+    }
+    button.success {
+      background: var(--success);
+      color: #0f172a;
+    }
+    button.success:hover:not(:disabled) {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    .quiz-question {
+      margin-bottom: 1.25rem;
+    }
+    .quiz-question p {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    .quiz-option {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      margin-bottom: 0.4rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    .quiz-option:hover {
+      border-color: var(--accent);
+    }
+    .quiz-option input {
+      margin-right: 0.5rem;
+    }
+
+    /* Log Box */
+    .log-container {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.75rem;
+      max-height: 220px;
+      overflow-y: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.8rem;
+      white-space: pre-wrap;
+      color: #cbd5e1;
+    }
+    .log-entry {
+      margin-bottom: 0.25rem;
+      line-height: 1.4;
+    }
+    .log-entry.info { color: #38bdf8; }
+    .log-entry.success { color: #4ade80; }
+    .log-entry.warn { color: #fbbf24; }
+    .log-entry.error { color: #f87171; }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+    .alert.danger {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+    .alert.success {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #86efac;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>ClassroomIO SCORM Timer Test</h1>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Test active timers, session tracking, countdowns, and auto-timeout</p>
+      </div>
+      <div class="badges">
+        <span id="badge-api" class="badge">Checking LMS API...</span>
+        <span id="badge-status" class="badge">Status: Unknown</span>
+      </div>
+    </header>
+
+    <div id="timeout-banner" class="alert danger">
+      ⏰ <strong>Time has expired!</strong> The quiz has auto-submitted and session closed with <code>time-out</code>.
+    </div>
+    <div id="success-banner" class="alert success">
+      🎉 <strong>Session Complete!</strong> Score and final session time reported to LMS.
+    </div>
+
+    <div class="grid">
+      <!-- Card 1: Interactive Live Timers -->
+      <div class="card">
+        <div class="card-title">
+          <span>Active Countdown Timer</span>
+          <span id="timer-state-badge" class="badge active">RUNNING</span>
+        </div>
+        <div class="timer-hero">
+          <div id="countdown-clock" class="countdown-display">00:10</div>
+          <div class="timer-subtext">Remaining time before auto-submit &amp; timeout (10s test)</div>
+          <div class="timer-controls">
+            <button id="btn-toggle-timer" class="secondary">Pause</button>
+            <button id="btn-reset-timer" class="secondary">Reset (10s)</button>
+            <button id="btn-add-10s" class="secondary">+10s</button>
+            <button id="btn-add-minute" class="secondary">+1 Min</button>
+          </div>
+        </div>
+        <div style="margin-top: 1rem;">
+          <div class="stat-row">
+            <span class="stat-label">Current Session Time:</span>
+            <span id="stat-session-time" class="stat-value">00:00:00</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">LMS Max Time Allowed:</span>
+            <span id="stat-max-time" class="stat-value">--</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">LMS Time Limit Action:</span>
+            <span id="stat-time-action" class="stat-value">--</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">Accumulated Total Time:</span>
+            <span id="stat-total-time" class="stat-value">--</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Timed Assessment & Submission -->
+      <div class="card">
+        <div class="card-title">
+          <span>Timed Assessment</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Pass Mark: 80%</span>
+        </div>
+        <form id="quiz-form">
+          <div class="quiz-question">
+            <p>1. What does SCORM stand for?</p>
+            <label class="quiz-option">
+              <input type="radio" name="q1" value="correct" checked />
+              Sharable Content Object Reference Model
+            </label>
+            <label class="quiz-option">
+              <input type="radio" name="q1" value="wrong" />
+              Standardized Course Object Runtime Module
+            </label>
+          </div>
+
+          <div class="quiz-question">
+            <p>2. Which CMI element tracks the active session duration?</p>
+            <label class="quiz-option">
+              <input type="radio" name="q2" value="correct" checked />
+              <code>cmi.core.session_time</code> / <code>cmi.session_time</code>
+            </label>
+            <label class="quiz-option">
+              <input type="radio" name="q2" value="wrong" />
+              <code>cmi.core.total_time</code>
+            </label>
+          </div>
+
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+            <button id="btn-submit-quiz" type="button" class="success">Submit Quiz & Finish</button>
+            <button id="btn-commit-now" type="button" class="secondary">Commit Session Time</button>
+            <button id="btn-suspend-exit" type="button" class="secondary">Suspend & Exit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Live SCORM Log Console -->
+    <div class="card">
+      <div class="card-title">
+        <span>Real-time SCORM API Log</span>
+        <button id="btn-clear-log" class="secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">Clear Log</button>
+      </div>
+      <div id="api-log" class="log-container" role="log" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      // 1. SCORM API Discovery Wrapper (supports SCORM 1.2 and SCORM 2004)
+      var api = null;
+      var apiVersion = null; // '1.2' or '2004'
+
+      function findAPI(win) {
+        var attempts = 0;
+        while (win && attempts < 10) {
+          if (win.API) {
+            apiVersion = '1.2';
+            return win.API;
+          }
+          if (win.API_1484_11) {
+            apiVersion = '2004';
+            return win.API_1484_11;
+          }
+          if (win.parent && win.parent !== win) {
+            win = win.parent;
+          } else {
+            break;
+          }
+          attempts++;
+        }
+        if (window.opener) {
+          try {
+            if (window.opener.API) {
+              apiVersion = '1.2';
+              return window.opener.API;
+            }
+            if (window.opener.API_1484_11) {
+              apiVersion = '2004';
+              return window.opener.API_1484_11;
+            }
+          } catch (e) {}
+        }
+        return null;
+      }
+
+      var logContainer = document.getElementById('api-log');
+      function log(msg, type) {
+        type = type || 'info';
+        var now = new Date().toTimeString().split(' ')[0] + '.' + String(Date.now() % 1000).padStart(3, '0');
+        var div = document.createElement('div');
+        div.className = 'log-entry ' + type;
+        div.textContent = '[' + now + '] ' + msg;
+        logContainer.appendChild(div);
+        logContainer.scrollTop = logContainer.scrollHeight;
+      }
+
+      function scormInit() {
+        if (!api) return false;
+        var res = apiVersion === '1.2' ? api.LMSInitialize('') : api.Initialize('');
+        log((apiVersion === '1.2' ? 'LMSInitialize()' : 'Initialize()') + ' -> ' + res, res === 'true' || res === true ? 'success' : 'error');
+        return res === 'true' || res === true;
+      }
+
+      function scormGetValue(param) {
+        if (!api) return '';
+        var actualParam = param;
+        if (apiVersion === '2004') {
+          if (param === 'cmi.core.student_name') actualParam = 'cmi.learner_name';
+          else if (param === 'cmi.core.lesson_status') actualParam = 'cmi.completion_status';
+          else if (param === 'cmi.core.total_time') actualParam = 'cmi.total_time';
+          else if (param === 'cmi.student_data.max_time_allowed') actualParam = 'cmi.max_time_allowed';
+          else if (param === 'cmi.student_data.time_limit_action') actualParam = 'cmi.time_limit_action';
+        }
+        var val = apiVersion === '1.2' ? api.LMSGetValue(actualParam) : api.GetValue(actualParam);
+        log('GetValue(' + actualParam + ') -> "' + val + '"', 'info');
+        return val;
+      }
+
+      function scormSetValue(param, val) {
+        if (!api) return false;
+        var actualParam = param;
+        if (apiVersion === '2004') {
+          if (param === 'cmi.core.lesson_status') actualParam = 'cmi.completion_status';
+          else if (param === 'cmi.core.session_time') actualParam = 'cmi.session_time';
+          else if (param === 'cmi.core.exit') actualParam = 'cmi.exit';
+          else if (param === 'cmi.core.score.raw') actualParam = 'cmi.score.raw';
+          else if (param === 'cmi.core.score.min') actualParam = 'cmi.score.min';
+          else if (param === 'cmi.core.score.max') actualParam = 'cmi.score.max';
+        }
+        var res = apiVersion === '1.2' ? api.LMSSetValue(actualParam, String(val)) : api.SetValue(actualParam, String(val));
+        log('SetValue(' + actualParam + ', "' + val + '") -> ' + res, res === 'true' || res === true ? 'info' : 'warn');
+        return res === 'true' || res === true;
+      }
+
+      function scormCommit() {
+        if (!api) return false;
+        var res = apiVersion === '1.2' ? api.LMSCommit('') : api.Commit('');
+        log((apiVersion === '1.2' ? 'LMSCommit()' : 'Commit()') + ' -> ' + res, 'info');
+        return res === 'true' || res === true;
+      }
+
+      function scormFinish() {
+        if (!api) return false;
+        var res = apiVersion === '1.2' ? api.LMSFinish('') : api.Terminate('');
+        log((apiVersion === '1.2' ? 'LMSFinish()' : 'Terminate()') + ' -> ' + res, 'success');
+        return res === 'true' || res === true;
+      }
+
+      // Convert Milliseconds to SCORM 1.2 CMITimespan (HH:MM:SS.SS) or SCORM 2004 (PT#H#M#S)
+      function formatSessionTime(ms) {
+        var totalSec = Math.floor(ms / 1000);
+        var hours = Math.floor(totalSec / 3600);
+        var minutes = Math.floor((totalSec % 3600) / 60);
+        var seconds = totalSec % 60;
+        var centisec = Math.floor((ms % 1000) / 10);
+
+        if (apiVersion === '2004') {
+          // ISO 8601 Duration PT#H#M#S
+          var iso = 'PT';
+          if (hours > 0) iso += hours + 'H';
+          if (minutes > 0 || hours > 0) iso += minutes + 'M';
+          iso += seconds + 'S';
+          return iso;
+        }
+
+        // SCORM 1.2 HH:MM:SS.SS
+        var hStr = String(hours).padStart(4, '0');
+        var mStr = String(minutes).padStart(2, '0');
+        var sStr = String(seconds).padStart(2, '0');
+        var csStr = String(centisec).padStart(2, '0');
+        return hStr + ':' + mStr + ':' + sStr + '.' + csStr;
+      }
+
+      function formatDisplayTime(sec) {
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      }
+
+      // Web Audio sound tone on warning / timeout
+      function playTone(freq, duration) {
+        try {
+          var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      // 2. Timer State
+      var sessionStartTime = Date.now();
+      var countdownSeconds = 10; // 10 seconds default for fast testing
+      var timerRunning = true;
+      var sessionEnded = false;
+      var countdownInterval = null;
+
+      var clockEl = document.getElementById('countdown-clock');
+      var sessionTimeEl = document.getElementById('stat-session-time');
+      var badgeApi = document.getElementById('badge-api');
+      var badgeStatus = document.getElementById('badge-status');
+      var timerStateBadge = document.getElementById('timer-state-badge');
+
+      function updateClockDisplay() {
+        clockEl.textContent = formatDisplayTime(countdownSeconds);
+        clockEl.className = 'countdown-display';
+        if (countdownSeconds <= 3) {
+          clockEl.classList.add('danger');
+        } else if (countdownSeconds <= 6) {
+          clockEl.classList.add('warning');
+        }
+      }
+
+      function tick() {
+        if (!timerRunning || sessionEnded) return;
+
+        // Session stopwatch
+        var elapsedMs = Date.now() - sessionStartTime;
+        sessionTimeEl.textContent = formatSessionTime(elapsedMs);
+
+        // Countdown
+        if (countdownSeconds > 0) {
+          countdownSeconds--;
+          updateClockDisplay();
+
+          if (countdownSeconds === 3) {
+            playTone(440, 0.3);
+            log('⚠️ Warning: 3 seconds remaining!', 'warn');
+          }
+        } else {
+          // Timer Expired!
+          handleTimeout();
+        }
+      }
+
+      function handleTimeout() {
+        if (sessionEnded) return;
+        sessionEnded = true;
+        timerRunning = false;
+        clearInterval(countdownInterval);
+
+        playTone(330, 0.8);
+        document.getElementById('timeout-banner').style.display = 'block';
+        timerStateBadge.textContent = 'EXPIRED';
+        timerStateBadge.style.background = 'rgba(239, 68, 68, 0.2)';
+        timerStateBadge.style.color = 'var(--danger)';
+
+        log('🚨 TIMER EXPIRED - Executing auto-timeout sequence', 'error');
+
+        var elapsedMs = Date.now() - sessionStartTime;
+        var finalSessionTime = formatSessionTime(elapsedMs);
+
+        // Standard SCORM time-out procedure
+        scormSetValue('cmi.core.session_time', finalSessionTime);
+        scormSetValue('cmi.core.exit', 'time-out');
+        scormSetValue('cmi.core.lesson_status', 'incomplete');
+
+        scormCommit();
+        scormFinish();
+
+        badgeStatus.textContent = 'Status: Timed Out';
+        badgeStatus.className = 'badge active';
+        badgeStatus.style.color = 'var(--danger)';
+
+        // Disable buttons
+        document.getElementById('btn-submit-quiz').disabled = true;
+        document.getElementById('btn-toggle-timer').disabled = true;
+      }
+
+      function submitQuiz() {
+        if (sessionEnded) return;
+        sessionEnded = true;
+        timerRunning = false;
+        clearInterval(countdownInterval);
+
+        var q1 = document.querySelector('input[name="q1"]:checked').value;
+        var q2 = document.querySelector('input[name="q2"]:checked').value;
+
+        var score = 0;
+        if (q1 === 'correct') score += 50;
+        if (q2 === 'correct') score += 50;
+
+        var passed = score >= 80;
+        var elapsedMs = Date.now() - sessionStartTime;
+        var finalTime = formatSessionTime(elapsedMs);
+
+        log('Submitting quiz: Score=' + score + ' (Passed=' + passed + '), Time=' + finalTime, 'info');
+
+        scormSetValue('cmi.core.score.raw', score);
+        scormSetValue('cmi.core.score.min', 0);
+        scormSetValue('cmi.core.score.max', 100);
+        scormSetValue('cmi.core.session_time', finalTime);
+        scormSetValue('cmi.core.lesson_status', passed ? 'passed' : 'failed');
+        if (apiVersion === '2004') {
+          scormSetValue('cmi.success_status', passed ? 'passed' : 'failed');
+          scormSetValue('cmi.completion_status', 'completed');
+        }
+        scormSetValue('cmi.core.exit', 'normal');
+
+        scormCommit();
+        scormFinish();
+
+        document.getElementById('success-banner').style.display = 'block';
+        document.getElementById('success-banner').innerHTML = '🎉 <strong>Quiz Submitted!</strong> Score: ' + score + '% (' + (passed ? 'PASSED' : 'FAILED') + ') in ' + finalTime;
+        badgeStatus.textContent = 'Status: ' + (passed ? 'Passed' : 'Failed');
+        badgeStatus.className = 'badge active';
+
+        document.getElementById('btn-submit-quiz').disabled = true;
+      }
+
+      // 3. Initialization
+      window.addEventListener('load', function () {
+        api = findAPI(window);
+        if (api) {
+          badgeApi.textContent = 'SCORM ' + apiVersion + ' Connected';
+          badgeApi.classList.add('version');
+          log('Discovered LMS API: SCORM ' + apiVersion, 'success');
+
+          if (scormInit()) {
+            var learner = scormGetValue('cmi.core.student_name');
+            var existingStatus = scormGetValue('cmi.core.lesson_status');
+            var totalTime = scormGetValue('cmi.core.total_time');
+            var maxTime = scormGetValue('cmi.student_data.max_time_allowed');
+            var timeAction = scormGetValue('cmi.student_data.time_limit_action');
+
+            if (existingStatus) {
+              badgeStatus.textContent = 'Status: ' + existingStatus;
+            }
+            if (totalTime) {
+              document.getElementById('stat-total-time').textContent = totalTime;
+            }
+            if (maxTime) {
+              document.getElementById('stat-max-time').textContent = maxTime;
+            }
+            if (timeAction) {
+              document.getElementById('stat-time-action').textContent = timeAction;
+            }
+
+            // Set to incomplete while in-progress
+            if (!existingStatus || existingStatus === 'not attempted') {
+              scormSetValue('cmi.core.lesson_status', 'incomplete');
+              scormCommit();
+            }
+          }
+        } else {
+          badgeApi.textContent = 'No LMS API (Standalone)';
+          log('No SCORM API found in window hierarchy. Running in standalone test mode.', 'warn');
+        }
+
+        updateClockDisplay();
+        countdownInterval = setInterval(tick, 1000);
+
+        // Auto-commit session_time heartbeat every 30 seconds
+        setInterval(function () {
+          if (!sessionEnded && api) {
+            var elapsed = formatSessionTime(Date.now() - sessionStartTime);
+            scormSetValue('cmi.core.session_time', elapsed);
+            scormCommit();
+            log('💓 Heartbeat: auto-committed session_time ' + elapsed, 'info');
+          }
+        }, 30000);
+      });
+
+      // 4. UI Handlers
+      document.getElementById('btn-toggle-timer').onclick = function () {
+        if (sessionEnded) return;
+        timerRunning = !timerRunning;
+        this.textContent = timerRunning ? 'Pause' : 'Resume';
+        timerStateBadge.textContent = timerRunning ? 'RUNNING' : 'PAUSED';
+        timerStateBadge.style.background = timerRunning ? 'rgba(34, 197, 94, 0.2)' : 'rgba(245, 158, 11, 0.2)';
+        timerStateBadge.style.color = timerRunning ? 'var(--success)' : 'var(--warning)';
+        log('Timer ' + (timerRunning ? 'Resumed' : 'Paused'), 'info');
+      };
+
+      document.getElementById('btn-reset-timer').onclick = function () {
+        countdownSeconds = 10;
+        sessionEnded = false;
+        timerRunning = true;
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(tick, 1000);
+        document.getElementById('timeout-banner').style.display = 'none';
+        document.getElementById('success-banner').style.display = 'none';
+        document.getElementById('btn-submit-quiz').disabled = false;
+        document.getElementById('btn-toggle-timer').disabled = false;
+        document.getElementById('btn-toggle-timer').textContent = 'Pause';
+        timerStateBadge.textContent = 'RUNNING';
+        timerStateBadge.style.background = 'rgba(34, 197, 94, 0.2)';
+        timerStateBadge.style.color = 'var(--success)';
+        updateClockDisplay();
+        log('Timer reset to 00:10', 'info');
+      };
+
+      document.getElementById('btn-add-10s').onclick = function () {
+        if (sessionEnded) return;
+        countdownSeconds += 10;
+        updateClockDisplay();
+        log('Added 10 seconds to timer', 'info');
+      };
+
+      document.getElementById('btn-add-minute').onclick = function () {
+        if (sessionEnded) return;
+        countdownSeconds += 60;
+        updateClockDisplay();
+        log('Added 60 seconds to timer', 'info');
+      };
+
+      document.getElementById('btn-submit-quiz').onclick = submitQuiz;
+
+      document.getElementById('btn-commit-now').onclick = function () {
+        if (sessionEnded) return;
+        var elapsed = formatSessionTime(Date.now() - sessionStartTime);
+        scormSetValue('cmi.core.session_time', elapsed);
+        scormCommit();
+      };
+
+      document.getElementById('btn-suspend-exit').onclick = function () {
+        if (sessionEnded) return;
+        sessionEnded = true;
+        timerRunning = false;
+        clearInterval(countdownInterval);
+
+        var elapsed = formatSessionTime(Date.now() - sessionStartTime);
+        scormSetValue('cmi.core.session_time', elapsed);
+        scormSetValue('cmi.core.exit', 'suspend');
+        scormCommit();
+        scormFinish();
+
+        badgeStatus.textContent = 'Status: Suspended';
+        document.getElementById('success-banner').style.display = 'block';
+        document.getElementById('success-banner').innerHTML = '⏸️ <strong>Session Suspended!</strong> Exit saved as <code>suspend</code> with session time: ' + elapsed;
+      };
+
+      document.getElementById('btn-clear-log').onclick = function () {
+        logContainer.innerHTML = '';
+      };
+
+      // Unload backup
+      window.addEventListener('beforeunload', function () {
+        if (!sessionEnded && api) {
+          var elapsed = formatSessionTime(Date.now() - sessionStartTime);
+          scormSetValue('cmi.core.session_time', elapsed);
+          scormSetValue('cmi.core.exit', 'suspend');
+          scormCommit();
+          scormFinish();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

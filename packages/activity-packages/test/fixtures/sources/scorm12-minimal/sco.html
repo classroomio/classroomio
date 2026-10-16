@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SCORM 1.2 minimal SCO</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 1.5rem;
+        line-height: 1.5;
+      }
+      .row {
+        margin: 0.5rem 0;
+      }
+      button {
+        margin: 0.15rem;
+      }
+      #log {
+        white-space: pre-wrap;
+        border: 1px solid #999;
+        padding: 0.5rem;
+        min-height: 8rem;
+      }
+      label {
+        display: inline-block;
+        min-width: 11rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SCORM 1.2 minimal SCO</h1>
+    <p>
+      Exercises every 1.2 API call and every exit value. Status starts unset so the LMS rule for never-set status can be
+      observed.
+    </p>
+    <div class="row">
+      <button id="btn-init">Initialize</button>
+      <button id="btn-finish">Finish</button>
+      <button id="btn-commit">Commit</button>
+      <button id="btn-status">Get status</button>
+    </div>
+    <div class="row">
+      <label for="sel-status">Set lesson_status</label>
+      <select id="sel-status">
+        <option value="incomplete">incomplete</option>
+        <option value="completed">completed</option>
+        <option value="passed">passed</option>
+        <option value="failed">failed</option>
+        <option value="browsed">browsed</option>
+      </select>
+      <button id="btn-set-status">Set</button>
+    </div>
+    <div class="row">
+      <label for="sel-exit">Set cmi.core.exit</label>
+      <select id="sel-exit">
+        <option value="">(empty)</option>
+        <option value="suspend">suspend</option>
+        <option value="logout">logout</option>
+        <option value="">none (leave unset)</option>
+      </select>
+      <button id="btn-set-exit">Set</button>
+    </div>
+    <div class="row">
+      <label for="inp-score">Raw score 0-100</label>
+      <input id="inp-score" value="85" size="5" />
+      <button id="btn-set-score">Set score</button>
+    </div>
+    <div class="row">
+      <label for="inp-location">Lesson location</label>
+      <input id="inp-location" value="page-3" size="12" />
+      <button id="btn-set-location">Set</button>
+    </div>
+    <div class="row">
+      <label for="inp-suspend">Suspend data</label>
+      <input id="inp-suspend" value="bookmark=page-3" size="24" />
+      <button id="btn-set-suspend">Set</button>
+    </div>
+    <div class="row">
+      <button id="btn-session">Set session_time 00:01:30</button>
+      <button id="btn-time">Get total_time</button>
+    </div>
+    <h2>Log</h2>
+    <div id="log" aria-live="polite"></div>
+    <script>
+      function findApi(win) {
+        while (win) {
+          if (win.API && win.API.LMSInitialize) return win.API;
+          if (win.parent === win) return null;
+          win = win.parent;
+        }
+        return null;
+      }
+      var api = null;
+      var logEl = document.getElementById('log');
+      function log(msg) {
+        logEl.textContent += msg + '\n';
+      }
+      function call(name, fn) {
+        try {
+          var result = fn();
+          var err = api ? api.LMSGetLastError() : '?';
+          log(name + ' -> ' + result + ' (error ' + err + ')');
+        } catch (e) {
+          log(name + ' threw: ' + (e && e.message));
+        }
+      }
+      document.getElementById('btn-init').onclick = function () {
+        api = findApi(window);
+        if (!api) {
+          log('no API found');
+          return;
+        }
+        call('LMSInitialize', function () {
+          return api.LMSInitialize('');
+        });
+      };
+      document.getElementById('btn-finish').onclick = function () {
+        call('LMSFinish', function () {
+          return api.LMSFinish('');
+        });
+      };
+      document.getElementById('btn-commit').onclick = function () {
+        call('LMSCommit', function () {
+          return api.LMSCommit('');
+        });
+      };
+      document.getElementById('btn-status').onclick = function () {
+        call('LMSGetValue lesson_status', function () {
+          return api.LMSGetValue('cmi.core.lesson_status');
+        });
+      };
+      document.getElementById('btn-set-status').onclick = function () {
+        var v = document.getElementById('sel-status').value;
+        call('LMSSetValue lesson_status=' + v, function () {
+          return api.LMSSetValue('cmi.core.lesson_status', v);
+        });
+      };
+      document.getElementById('btn-set-exit').onclick = function () {
+        var v = document.getElementById('sel-exit').value;
+        call('LMSSetValue exit=' + JSON.stringify(v), function () {
+          return api.LMSSetValue('cmi.core.exit', v);
+        });
+      };
+      document.getElementById('btn-set-score').onclick = function () {
+        var v = document.getElementById('inp-score').value;
+        call('LMSSetValue score.raw=' + v, function () {
+          return api.LMSSetValue('cmi.core.score.raw', v);
+        });
+      };
+      document.getElementById('btn-set-location').onclick = function () {
+        var v = document.getElementById('inp-location').value;
+        call('LMSSetValue lesson_location=' + v, function () {
+          return api.LMSSetValue('cmi.core.lesson_location', v);
+        });
+      };
+      document.getElementById('btn-set-suspend').onclick = function () {
+        var v = document.getElementById('inp-suspend').value;
+        call('LMSSetValue suspend_data len=' + v.length, function () {
+          return api.LMSSetValue('cmi.suspend_data', v);
+        });
+      };
+      document.getElementById('btn-session').onclick = function () {
+        call('LMSSetValue session_time', function () {
+          return api.LMSSetValue('cmi.core.session_time', '00:01:30');
+        });
+      };
+      document.getElementById('btn-time').onclick = function () {
+        call('LMSGetValue total_time', function () {
+          return api.LMSGetValue('cmi.core.total_time');
+        });
+      };
+    </script>
+  </body>
+</html>
