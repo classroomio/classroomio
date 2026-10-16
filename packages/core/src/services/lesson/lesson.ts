@@ -2,6 +2,8 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import { sanitizeHtml } from '../../utils/sanitize-html';
 import type { TLesson, TNewLessonComment, TNewLessonCompletion } from '@cio/db/types';
 import type { TLessonCreate, TLessonUpdate } from '@cio/utils/validation/lesson';
+import { ContentType } from '@cio/utils/constants';
+import { assertCourseAcceptsContent } from '../course/content';
 import {
   createLessonComment,
   createLessons,
@@ -40,6 +42,8 @@ import { resolveItemSlug } from '../course/slug';
  */
 export async function createLesson(courseId: string, data: TLessonCreate): Promise<TLesson> {
   try {
+    await assertCourseAcceptsContent(courseId, ContentType.Lesson);
+
     const slug = await resolveItemSlug({
       courseId,
       title: data.title,

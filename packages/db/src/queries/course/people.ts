@@ -14,7 +14,7 @@ import {
   type TCoursePeopleSortOrder
 } from '@cio/utils/validation/course';
 import { db } from '@db/drizzle';
-import { isExerciseCompletedSql } from '@db/queries/course/progression';
+import { isActivityCompletedSql, isExerciseCompletedSql } from '@db/queries/course/progression';
 
 export type CourseMemberWithProfile = TGroupmember & {
   profile: {
@@ -99,7 +99,7 @@ export async function getCourseMembers(courseId: string): Promise<CourseMemberWi
 }
 
 /**
- * Course work is its lessons and its exercises, matching `calcCourseProgress`.
+ * Course work is its lessons, its exercises and its activities, matching `calcCourseProgress`.
  * An exercise belongs to the course directly or through its lesson, and an
  * exercise submission is keyed by groupmember rather than profile.
  */
@@ -111,7 +111,8 @@ function progressSummaryLateral(courseId: string): SQL {
       FROM exercise ex
       LEFT JOIN lesson el ON el.id = ex.lesson_id
       WHERE ex.course_id = ${courseId} OR el.course_id = ${courseId}
-    )
+    ) +
+    (SELECT COUNT(*) FROM course_activity ca WHERE ca.course_id = ${courseId})
   )::int`;
 
   const completedItems = sql<number>`(
@@ -130,6 +131,12 @@ function progressSummaryLateral(courseId: string): SQL {
       LEFT JOIN lesson el ON el.id = ex.lesson_id
       WHERE (ex.course_id = ${courseId} OR el.course_id = ${courseId})
         AND ${isExerciseCompletedSql('ex', { groupMemberId: sql`${schema.groupmember.id}` })}
+    ) +
+    (
+      SELECT COUNT(*)
+      FROM course_activity ca
+      WHERE ca.course_id = ${courseId}
+        AND ${isActivityCompletedSql('ca', sql`${schema.groupmember.profileId}`)}
     )
   )::int`;
 

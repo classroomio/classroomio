@@ -15,6 +15,7 @@ import type { TAddCourseMembers } from '@cio/utils/validation/course/people';
 import type { TGroupmember } from '@cio/db/types';
 import type { PaginatedCourseMember, PaginatedCourseMembersOptions } from '@cio/db/queries/course/people';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { resetActivityLearnerState } from '@cio/core/services/activity/providers';
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { getCourseWithOrgData, getOrgIdByCourseId } from '@cio/db/queries/course';
 import { getProfileById } from '@cio/db/queries/auth';
@@ -431,11 +432,14 @@ export async function resetMemberCourseProgress(courseId: string, memberId: stri
       throw new AppError('Only student progress can be reset', ErrorCodes.VALIDATION_ERROR, 400);
     }
 
-    const summary = await resetStudentCourseProgress({
-      courseId,
-      groupMemberId: memberId,
-      profileId: member.profileId
-    });
+    const summary = await resetStudentCourseProgress(
+      {
+        courseId,
+        groupMemberId: memberId,
+        profileId: member.profileId
+      },
+      { resetActivityLearnerState }
+    );
 
     console.info('resetMemberCourseProgress', {
       actorProfileId,

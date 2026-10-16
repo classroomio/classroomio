@@ -94,7 +94,18 @@ export async function assetReferencedByGlobalTemplate(
       )
       .limit(1);
 
-    return Boolean(questionHit);
+    if (questionHit) return true;
+
+    const [packageHit] = await dbClient
+      .select({ id: schema.activityScorm.activityId })
+      .from(schema.activityScorm)
+      .innerJoin(schema.courseActivity, eq(schema.courseActivity.id, schema.activityScorm.activityId))
+      .innerJoin(schema.course, eq(schema.course.id, schema.courseActivity.courseId))
+      .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+      .where(and(globalCourse, eq(schema.activityScorm.assetId, assetId)))
+      .limit(1);
+
+    return Boolean(packageHit);
   } catch (error) {
     console.error('assetReferencedByGlobalTemplate error:', error);
     throw new Error(

@@ -560,8 +560,8 @@ export async function getPublicLessonMarkdownSource(
 
 /**
  * Helper for slug-collision resolution at the service layer. Returns the set of
- * slugs already in use for the given course across both lesson and exercise
- * tables.
+ * slugs already in use for the given course across lesson, exercise and
+ * activity tables.
  */
 export async function getTakenItemSlugs(courseId: string): Promise<Set<string>> {
   try {
@@ -575,11 +575,19 @@ export async function getTakenItemSlugs(courseId: string): Promise<Set<string>> 
       .from(schema.exercise)
       .where(eq(schema.exercise.courseId, courseId));
 
+    const activitySlugs = await db
+      .select({ slug: schema.courseActivity.slug })
+      .from(schema.courseActivity)
+      .where(eq(schema.courseActivity.courseId, courseId));
+
     const taken = new Set<string>();
     for (const row of lessonSlugs) {
       if (row.slug) taken.add(row.slug);
     }
     for (const row of exerciseSlugs) {
+      if (row.slug) taken.add(row.slug);
+    }
+    for (const row of activitySlugs) {
       if (row.slug) taken.add(row.slug);
     }
 

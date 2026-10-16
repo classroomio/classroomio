@@ -70,7 +70,7 @@ export function registerAnalyticsTools(server: McpServer, apiClient: ClassroomIo
 
   server.tool(
     'get_course_analytics',
-    `Course analytics. Pick sections with include (default ["summary"]): summary (tutors, students, lessons, exercises, and per-student averages for progress, exercise completion and grade) and funnel (course page → enrollment → completion over days: 7, 30, 90 or 365, default 30). Use list_course_analytics_students for the per-student rows. ${FRESHNESS} ${COURSE_TEAM_RULE}`,
+    `Course analytics. Pick sections with include (default ["summary"]): summary (tutors, students, lessons, exercises, activities, and per-student averages for progress, exercise completion and grade) and funnel (course page → enrollment → completion over days: 7, 30, 90 or 365, default 30). Use list_course_analytics_students for the per-student rows. ${FRESHNESS} ${COURSE_TEAM_RULE}`,
     courseAnalyticsShape,
     READ_ONLY,
     async (args) => {
@@ -82,7 +82,7 @@ export function registerAnalyticsTools(server: McpServer, apiClient: ClassroomIo
 
   server.tool(
     'list_course_analytics_students',
-    `Per-student progress, exercise submissions, average grade and last seen for a course, ordered by name. Paginated: page (default 1) and limit (default 20, max 50); the result includes pagination. ${COURSE_TEAM_RULE}`,
+    `Per-student progress, exercise submissions, activity results, average grade and last seen for a course, ordered by name. Paginated: page (default 1) and limit (default 20, max 50); the result includes pagination. ${COURSE_TEAM_RULE}`,
     courseAnalyticsStudentsShape,
     READ_ONLY,
     async (args) => {

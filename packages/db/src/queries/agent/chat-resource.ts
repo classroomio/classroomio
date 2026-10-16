@@ -52,3 +52,26 @@ export async function getCourseSectionBinding(sectionId: string): Promise<Resour
     throw new Error(`Failed to load section: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
+
+export type ActivityCourseBinding = ResourceCourseBinding & {
+  instructions: string | null;
+};
+
+export async function getActivityCourseBinding(activityId: string): Promise<ActivityCourseBinding | undefined> {
+  try {
+    const [row] = await db
+      .select({
+        courseId: schema.courseActivity.courseId,
+        title: schema.courseActivity.title,
+        instructions: schema.courseActivity.instructions
+      })
+      .from(schema.courseActivity)
+      .where(eq(schema.courseActivity.id, activityId))
+      .limit(1);
+
+    return row;
+  } catch (error) {
+    console.error('getActivityCourseBinding error:', error);
+    throw new Error(`Failed to load activity: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}

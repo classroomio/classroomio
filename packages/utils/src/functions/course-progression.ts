@@ -45,18 +45,28 @@ function exerciseBlocksProgression(): boolean {
 }
 
 /**
+ * Evaluates whether an activity blocks sequential progression (always true).
+ */
+function activityBlocksProgression(): boolean {
+  return true;
+}
+
+/**
  * Determines whether a course content item blocks sequential progression.
  */
-function itemBlocksProgression(type?: ContentType, completionPolicy?: string | null): boolean {
-  if (type === ContentType.Lesson) {
-    return lessonBlocksProgression(completionPolicy ?? 'manual');
+export function itemBlocksProgression(type?: ContentType, completionPolicy?: string | null): boolean {
+  switch (type) {
+    case ContentType.Lesson:
+      return lessonBlocksProgression(completionPolicy ?? 'manual');
+    case ContentType.Exercise:
+      return exerciseBlocksProgression();
+    case ContentType.Activity:
+      return activityBlocksProgression();
+    case ContentType.Section:
+    case undefined:
+    default:
+      return false;
   }
-
-  if (type === ContentType.Exercise) {
-    return exerciseBlocksProgression();
-  }
-
-  return false;
 }
 
 type CourseProgressionItem = {

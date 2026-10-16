@@ -2,6 +2,7 @@ import { AppError, ErrorCodes } from '@cio/utils/errors';
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import type { NonAutoGradableQuestionOffender } from '@cio/utils/validation/course';
 import { findNonAutoGradableQuestionsInCourse, getCourseTypeById } from '@cio/db/queries/course';
+import { getActivitiesByCourseId } from '@cio/db/queries/activity';
 import { AUTO_GRADABLE_QUESTION_TYPE_IDS, isAutoGradableQuestionTypeId } from '@cio/question-types';
 
 /**
@@ -50,4 +51,31 @@ export async function getPublicConversionOffenders(params: {
   if (params.currentType === 'PUBLIC') return [];
 
   return findNonAutoGradableQuestionsInCourse(params.courseId, AUTO_GRADABLE_QUESTION_TYPE_IDS, params.dbClient);
+}
+
+/**
+ * Throws when an activity would be created in a `PUBLIC` course.
+ */
+export async function assertCourseAllowsActivities(courseId: string): Promise<void> {
+  const courseType = await getCourseTypeById(courseId);
+
+  if (courseType === 'PUBLIC') {
+    throw new AppError('Activities cannot be added to Public courses', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+}
+
+/**
+ * Throws when converting a course with activities to `PUBLIC`, naming them.
+ */
+export async function assertNoActivitiesForPublicConversion(courseId: string, dbClient?: DbOrTxClient): Promise<void> {
+  const activities = await getActivitiesByCourseId(courseId, dbClient ?? undefined);
+  if (activities.length === 0) return;
+
+  const names = activities.map((activity) => activity.title).join(', ');
+
+  throw new AppError(
+    `Cannot convert to Public while this course has SCORM items (${names}). Remove them first.`,
+    ErrorCodes.VALIDATION_ERROR,
+    400
+  );
 }

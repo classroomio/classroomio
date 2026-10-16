@@ -2,7 +2,7 @@ import { sql } from 'drizzle-orm';
 
 import { ContentType } from '@cio/utils/constants';
 import { db, sql as drizzleSql, type DbOrTxClient } from '@db/drizzle';
-import { isExerciseCompletedSql } from './progression';
+import { isActivityCompletedSql, isExerciseCompletedSql } from './progression';
 
 export type CourseContentItemRow = {
   id: string;
@@ -23,6 +23,9 @@ export type CourseContentItemRow = {
   documentsCount: number | null;
   questionCount: number | null;
   dueBy: string | null;
+  slug: string | null;
+  activityKind: string | null;
+  activityStatus: string | null;
 };
 
 /**
@@ -48,6 +51,7 @@ export async function getCourseContentItems(
       : drizzleSql`false`;
 
     const exerciseCompletionSql = profileId ? isExerciseCompletedSql('exercise', { profileId }) : drizzleSql`false`;
+    const activityCompletionSql = profileId ? isActivityCompletedSql('course_activity', profileId) : drizzleSql`false`;
 
     const result = await dbClient.execute(drizzleSql`
       SELECT
@@ -68,7 +72,10 @@ export async function getCourseContentItems(
         NULL::int AS "videosCount",
         NULL::int AS "documentsCount",
         NULL::int AS "questionCount",
-        NULL::timestamp AS "dueBy"
+        NULL::timestamp AS "dueBy",
+        NULL::varchar AS "slug",
+        NULL::varchar AS "activityKind",
+        NULL::text AS "activityStatus"
       FROM course_section
       WHERE course_id = ${courseId}
 
@@ -114,7 +121,10 @@ export async function getCourseContentItems(
         COALESCE(jsonb_array_length(videos), 0) AS "videosCount",
         COALESCE(jsonb_array_length(documents), 0) AS "documentsCount",
         NULL::int AS "questionCount",
-        NULL::timestamp AS "dueBy"
+        NULL::timestamp AS "dueBy",
+        slug AS "slug",
+        NULL::varchar AS "activityKind",
+        NULL::text AS "activityStatus"
       FROM lesson
       WHERE course_id = ${courseId}
 
@@ -142,10 +152,40 @@ export async function getCourseContentItems(
           FROM question
           WHERE question.exercise_id = exercise.id
         )::int AS "questionCount",
-        exercise.due_by AS "dueBy"
+        exercise.due_by AS "dueBy",
+        exercise.slug AS "slug",
+        NULL::varchar AS "activityKind",
+        NULL::text AS "activityStatus"
       FROM exercise
       LEFT JOIN lesson ON lesson.id = exercise.lesson_id
       WHERE exercise.course_id = ${courseId} OR lesson.course_id = ${courseId}
+
+      UNION ALL
+
+      SELECT
+        course_activity.id,
+        ${ContentType.Activity}::text AS type,
+        course_activity.title,
+        course_activity."order",
+        course_activity.created_at AS "createdAt",
+        course_activity.section_id AS "sectionId",
+        course_activity.is_unlocked AS "isUnlocked",
+        ${activityCompletionSql} AS "isComplete",
+        NULL::timestamptz AS "lessonAt",
+        NULL::text AS "callUrl",
+        NULL::int AS "sessionDurationMinutes",
+        NULL::text AS "recordingUrl",
+        NULL::boolean AS "hasNoteContent",
+        NULL::boolean AS "hasSlideContent",
+        NULL::int AS "videosCount",
+        NULL::int AS "documentsCount",
+        NULL::int AS "questionCount",
+        NULL::timestamp AS "dueBy",
+        course_activity.slug AS "slug",
+        course_activity.kind::varchar AS "activityKind",
+        NULL::text AS "activityStatus"
+      FROM course_activity
+      WHERE course_activity.course_id = ${courseId}
     `);
 
     const rows = result.map((row) => row as CourseContentItemRow);

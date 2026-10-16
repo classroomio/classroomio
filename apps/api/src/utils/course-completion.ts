@@ -13,12 +13,16 @@ export function calcCourseProgressPercent(params: {
   totalLessons: number;
   exercisesCompleted: number;
   exercisesCount: number;
+  activitiesCompleted?: number;
+  activitiesCount?: number;
 }): number {
-  const totalItems = params.totalLessons + params.exercisesCount;
+  const activitiesCompleted = params.activitiesCompleted ?? 0;
+  const activitiesCount = params.activitiesCount ?? 0;
+  const totalItems = params.totalLessons + params.exercisesCount + activitiesCount;
 
   if (totalItems === 0) return 0;
 
-  const completedItems = params.lessonsCompleted + params.exercisesCompleted;
+  const completedItems = params.lessonsCompleted + params.exercisesCompleted + activitiesCompleted;
 
   return Math.round((completedItems / totalItems) * 100);
 }

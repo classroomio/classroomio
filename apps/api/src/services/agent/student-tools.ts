@@ -13,7 +13,11 @@ import { listCourseSections } from '@cio/core/services/course/section';
 import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
 import { AppError } from '@api/utils/errors';
 import { AgentEvent, trackAgentEvent } from '@cio/core/utils/tinybird';
-import { verifyExerciseBelongsToCourse, verifyLessonBelongsToCourse } from '@cio/core/services/agent/chat-context';
+import {
+  verifyActivityBelongsToCourse,
+  verifyExerciseBelongsToCourse,
+  verifyLessonBelongsToCourse
+} from '@cio/core/services/agent/chat-context';
 
 /**
  * Student agent tools — read-only, course-scoped.
@@ -138,11 +142,11 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
   return {
     list_course_outline: tool({
       description:
-        'List the course outline (sections with their lessons and exercises). The courseId is automatically scoped — do not pass it. Returns titles and ids only.',
+        'List the course outline (sections with their lessons, exercises and activities). The courseId is automatically scoped — do not pass it. Returns titles and ids only.',
       inputSchema: listCourseOutlineParam,
       execute: async () => {
         return executeStudentTool('list_course_outline', { orgId, userId, courseId }, async () => {
-          const [sections, lessons, exercises] = await Promise.all([
+          const [sections, lessons, exercises, activities] = await Promise.all([
             listCourseSections(courseId),
             db
               .select({
@@ -164,10 +168,20 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
               })
               .from(schema.exercise)
               .where(eq(schema.exercise.courseId, courseId))
-              .orderBy(asc(schema.exercise.order))
+              .orderBy(asc(schema.exercise.order)),
+            db
+              .select({
+                id: schema.courseActivity.id,
+                title: schema.courseActivity.title,
+                sectionId: schema.courseActivity.sectionId,
+                order: schema.courseActivity.order
+              })
+              .from(schema.courseActivity)
+              .where(eq(schema.courseActivity.courseId, courseId))
+              .orderBy(asc(schema.courseActivity.order))
           ]);
 
-          return { sections, lessons, exercises };
+          return { sections, lessons, exercises, activities };
         });
       }
     }),
@@ -259,14 +273,14 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
 
     search_course: tool({
       description:
-        'Search this course for lessons and exercises whose title or body contains the query. Returns up to `limit` ranked snippets with ids you can pass to read_lesson / read_exercise.',
+        'Search this course for lessons, exercises and activities whose title or body contains the query. Returns up to `limit` ranked snippets with ids you can pass to read_lesson / read_exercise.',
       inputSchema: searchCourseParam,
       execute: async (args) => {
         return executeStudentTool('search_course', { orgId, userId, courseId, args }, async () => {
           const pattern = `%${args.query}%`;
           const limit = args.limit ?? 8;
 
-          const [lessonMatches, exerciseMatches] = await Promise.all([
+          const [lessonMatches, exerciseMatches, activityMatches] = await Promise.all([
             db
               .select({
                 id: schema.lesson.id,
@@ -298,6 +312,20 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
                   or(ilike(schema.exercise.title, pattern), ilike(schema.exercise.description, pattern))
                 )
               )
+              .limit(limit),
+            db
+              .select({
+                id: schema.courseActivity.id,
+                title: schema.courseActivity.title,
+                instructions: schema.courseActivity.instructions
+              })
+              .from(schema.courseActivity)
+              .where(
+                and(
+                  eq(schema.courseActivity.courseId, courseId),
+                  or(ilike(schema.courseActivity.title, pattern), ilike(schema.courseActivity.instructions, pattern))
+                )
+              )
               .limit(limit)
           ]);
 
@@ -315,7 +343,14 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
             snippet: makeSnippet(em.description ?? em.title ?? '', args.query)
           }));
 
-          const merged = [...lessonsResult, ...exercisesResult].slice(0, limit);
+          const activitiesResult = activityMatches.map((am) => ({
+            type: 'activity' as const,
+            id: am.id,
+            title: am.title,
+            snippet: makeSnippet(am.instructions ?? am.title ?? '', args.query)
+          }));
+
+          const merged = [...lessonsResult, ...exercisesResult, ...activitiesResult].slice(0, limit);
 
           return { query: args.query, results: merged };
         });

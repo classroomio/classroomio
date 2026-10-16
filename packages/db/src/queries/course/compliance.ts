@@ -200,6 +200,30 @@ export async function getCourseComplianceHistoryRows(
   }
 }
 
+/**
+ * Returns the start of the learner's current compliance cycle as an ISO
+ * timestamp, or null on the first cycle (or when there is no record). Only
+ * renewal cycles need cycle-scoped counting; cycle 1 keeps all history.
+ */
+export async function getComplianceCycleStartIso(
+  courseId: string,
+  profileId: string,
+  dbClient: DbOrTxClient = db
+): Promise<string | null> {
+  try {
+    const [record] = await getLatestComplianceRecordsByProfiles(courseId, [profileId], dbClient);
+
+    if (!record || (record.cycleNumber ?? 1) <= 1) return null;
+
+    return record.createdAt;
+  } catch (error) {
+    console.error('getComplianceCycleStartIso error:', error);
+    throw new Error(
+      `Failed to get compliance cycle start for course "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getLatestComplianceRecordsByProfiles(
   courseId: string,
   profileIds: string[],
