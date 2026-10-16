@@ -4,7 +4,7 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts, and to read analytics, with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, your team, courses, and cohorts, and to read analytics, with organization-scoped API keys.
 
 # Authentication
 
@@ -146,8 +146,11 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/audience': 'Invite an audience member',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
   'GET /public-api/v1/audience/{memberId}': 'Get an audience member',
-  'PUT /public-api/v1/audience/{memberId}': "Update a member's email",
+  'PUT /public-api/v1/audience/{memberId}': 'Update an audience member',
   'DELETE /public-api/v1/audience/{memberId}': 'Remove an audience member',
+  'GET /public-api/v1/team': 'List team members',
+  'GET /public-api/v1/team/{memberId}': 'Get a team member',
+  'PUT /public-api/v1/team/{memberId}': 'Update a team member',
   'GET /public-api/v1/courses': 'List courses',
   'POST /public-api/v1/courses': 'Create a course',
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
@@ -237,6 +240,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 // Scalar groups operations under these tags.
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
+  { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
   { name: 'Courses', description: 'Create and manage courses.' },
   { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
   { name: 'Course Members', description: 'Manage the people in a course.' },

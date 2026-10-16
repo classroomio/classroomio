@@ -40,6 +40,18 @@ export function assertAutomationActor(actorId: string | null): asserts actorId i
   }
 }
 
+/** A pending member has no profile yet, so there is no name to change. Throws 400 for one. */
+export function assertMemberHasJoined(profileId: string | null | undefined): asserts profileId is string {
+  if (!profileId) {
+    throw new AppError(
+      'Only members who have joined can be renamed. A pending member has no profile yet',
+      ErrorCodes.VALIDATION_ERROR,
+      400,
+      'name'
+    );
+  }
+}
+
 export async function assertCohortBelongsToOrganization(orgId: string, cohortId: string): Promise<void> {
   const cohortOrganizationId = await getCohortOrganizationId(cohortId);
   if (!cohortOrganizationId || cohortOrganizationId !== orgId) {
