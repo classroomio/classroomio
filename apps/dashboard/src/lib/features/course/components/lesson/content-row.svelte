@@ -7,6 +7,7 @@
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
   import type { CourseContentItem } from '$features/course/utils/types';
   import { ContentType } from '@cio/utils/constants/content';
+  import { t } from '$lib/utils/functions/translations';
   import { cn } from '@cio/ui/tools';
   import { getSessionIndicatorPhase, liveSessionClock } from '$features/course/utils/live-session-phase';
   import LiveSessionIndicator from './live-session-indicator.svelte';
