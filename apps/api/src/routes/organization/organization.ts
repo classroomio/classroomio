@@ -620,7 +620,7 @@ export const organizationRouter = new Hono()
    * GET /organization/enrolled
    * Gets one page of the caller's courses and learning paths in an organization, most recently
    * active first (used in lms). Each item is `{ kind: 'course' | 'learning_path', data }`.
-   * `status` and `kind` filter the rows; `counts` carries the tab totals.
+   * `status` and `kind` filter the rows; `counts` carries the faceted totals.
    * Requires authentication and organization membership
    */
   .get('/enrolled', authMiddleware, orgMemberMiddleware, zValidator('query', ZGetEnrolled), async (c) => {

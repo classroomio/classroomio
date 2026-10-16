@@ -13,7 +13,10 @@ import type {
 class EnrolledApi extends BaseApiWithErrors {
   items = $state<EnrolledItems>([]);
   pagination = $state<EnrolledPagination | null>(null);
-  counts = $state<EnrolledCounts>({ notStarted: 0, inProgress: 0 });
+  counts = $state<EnrolledCounts>({
+    byStatus: { notStarted: 0, inProgress: 0 },
+    byKind: { course: 0, learningPath: 0 }
+  });
 
   /**
    * Fetches one page of the student's courses and learning paths, most recently progressed first.

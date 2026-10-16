@@ -89,7 +89,10 @@ describe('public API learning path contracts', () => {
           { kind: 'learning_path', data: { id: 'p-1', name: 'Basics' } }
         ],
         pagination: { page: 1, limit: 20, total: 2, totalPages: 1 },
-        counts: { inProgress: 1, completed: 1 }
+        counts: {
+          byStatus: { notStarted: 1, inProgress: 1 },
+          byKind: { course: 1, learningPath: 1 }
+        }
       })
     ).toMatchObject({ success: true });
   });

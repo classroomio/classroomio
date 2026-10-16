@@ -295,7 +295,10 @@ describe.skipIf(!hasDatabase)('getEnrolled (database)', () => {
         null
       ]);
       expect(page.total).toBe(5);
-      expect(page.counts).toEqual({ notStarted: 2, inProgress: 3 });
+      expect(page.counts).toEqual({
+        byStatus: { notStarted: 2, inProgress: 3 },
+        byKind: { course: 4, learningPath: 1 }
+      });
 
       const [figma, , live] = page.items;
       expect(figma.kind === 'course' && figma.data.upcomingSession).toBeNull();
@@ -359,22 +362,44 @@ describe.skipIf(!hasDatabase)('getEnrolled (database)', () => {
       const notStarted = await readFeed(tx, scenario, { status: 'not_started' });
       expect(toRows(notStarted).map((row) => row[1])).toEqual(['Empty path', 'Removed']);
       expect(notStarted.total).toBe(2);
+      // Status counts ignore the status filter; kind counts respect it.
+      expect(notStarted.counts).toEqual({
+        byStatus: { notStarted: 2, inProgress: 3 },
+        byKind: { course: 1, learningPath: 1 }
+      });
 
       const inProgress = await readFeed(tx, scenario, { status: 'in_progress' });
       expect(toRows(inProgress).map((row) => row[1])).toEqual(['Figma', 'Excel', 'Live']);
       expect(inProgress.total).toBe(3);
+      expect(inProgress.counts).toEqual({
+        byStatus: { notStarted: 2, inProgress: 3 },
+        byKind: { course: 3, learningPath: 0 }
+      });
 
       const courses = await readFeed(tx, scenario, { kind: 'course' });
       expect(toRows(courses).map((row) => row[1])).toEqual(['Figma', 'Excel', 'Live', 'Removed']);
       expect(courses.total).toBe(4);
+      // Kind counts ignore the kind filter; status counts respect it.
+      expect(courses.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 3 },
+        byKind: { course: 4, learningPath: 1 }
+      });
 
       const paths = await readFeed(tx, scenario, { kind: 'learning_path' });
       expect(toRows(paths).map((row) => row[1])).toEqual(['Empty path']);
       expect(paths.total).toBe(1);
+      expect(paths.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 0 },
+        byKind: { course: 4, learningPath: 1 }
+      });
 
       const inProgressCourses = await readFeed(tx, scenario, { status: 'in_progress', kind: 'course' });
       expect(toRows(inProgressCourses).map((row) => row[1])).toEqual(['Figma', 'Excel', 'Live']);
       expect(inProgressCourses.total).toBe(3);
+      expect(inProgressCourses.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 3 },
+        byKind: { course: 3, learningPath: 0 }
+      });
     });
   }, 30000);
 
@@ -400,7 +425,11 @@ describe.skipIf(!hasDatabase)('getEnrolled (database)', () => {
       expect(pages).toEqual(outsideDataScience);
 
       const pastEnd = await readFeed(tx, scenario, { page: 9, limit: 3 });
-      expect([pastEnd.items, pastEnd.total, pastEnd.counts]).toEqual([[], 5, { notStarted: 2, inProgress: 3 }]);
+      expect([pastEnd.items, pastEnd.total, pastEnd.counts]).toEqual([
+        [],
+        5,
+        { byStatus: { notStarted: 2, inProgress: 3 }, byKind: { course: 4, learningPath: 1 } }
+      ]);
     });
   }, 30000);
 });

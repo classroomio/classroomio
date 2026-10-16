@@ -58,11 +58,15 @@ export interface TEnrolledPage {
   /** Rows matching the search, status and kind filters, for pagination. */
   total: number;
   /**
-   * Tab totals under the search and kind filters: not-started and
-   * in-progress rows. Completed rows are never returned, so they are
-   * not counted.
+   * Faceted totals under the search filter. Each dimension ignores its
+   * own filter but respects the other: `byStatus` is scoped by kind,
+   * `byKind` is scoped by status. Completed rows are never returned, so
+   * they are not counted.
    */
-  counts: { notStarted: number; inProgress: number };
+  counts: {
+    byStatus: { notStarted: number; inProgress: number };
+    byKind: { course: number; learningPath: number };
+  };
 }
 
 interface GetEnrolledOptions {
@@ -302,6 +306,8 @@ export async function getEnrolled(
         : kind === 'learning_path'
           ? eq(feed.kind, 'learning_path')
           : undefined;
+    const matchesCourseKind = eq(feed.kind, 'course');
+    const matchesPathKind = eq(feed.kind, 'learning_path');
 
     const feedTotals = dbClient.$with('enrolled_totals').as(
       dbClient
@@ -312,6 +318,12 @@ export async function getEnrolled(
           ),
           inProgress: sql<number>`(COUNT(*) FILTER (WHERE ${and(matchesInProgress, matchesKind)}))::int`.as(
             'feed_in_progress'
+          ),
+          course: sql<number>`(COUNT(*) FILTER (WHERE ${and(matchesStatus, matchesCourseKind)}))::int`.as(
+            'feed_course'
+          ),
+          learningPath: sql<number>`(COUNT(*) FILTER (WHERE ${and(matchesStatus, matchesPathKind)}))::int`.as(
+            'feed_learning_path'
           )
         })
         .from(feed)
@@ -355,6 +367,8 @@ export async function getEnrolled(
         total: feedTotals.total,
         notStartedCount: feedTotals.notStarted,
         inProgressCount: feedTotals.inProgress,
+        courseCount: feedTotals.course,
+        learningPathCount: feedTotals.learningPath,
         kind: feedPage.kind,
         enrolledAt: feedPage.enrolledAt,
         completedAt: feedPage.completedAt,
@@ -465,7 +479,10 @@ export async function getEnrolled(
     return {
       items,
       total: totals?.total ?? 0,
-      counts: { notStarted: totals?.notStartedCount ?? 0, inProgress: totals?.inProgressCount ?? 0 }
+      counts: {
+        byStatus: { notStarted: totals?.notStartedCount ?? 0, inProgress: totals?.inProgressCount ?? 0 },
+        byKind: { course: totals?.courseCount ?? 0, learningPath: totals?.learningPathCount ?? 0 }
+      }
     };
   } catch (error) {
     console.error('getEnrolled error:', error);

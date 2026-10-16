@@ -25,7 +25,10 @@ describe('v1 enrolled service', () => {
     mocks.getUserEnrolled.mockResolvedValue({
       items: [{ kind: 'course', data: { id: 'course-1' } }],
       total: 25,
-      counts: { notStarted: 5, inProgress: 20 }
+      counts: {
+        byStatus: { notStarted: 5, inProgress: 20 },
+        byKind: { course: 20, learningPath: 5 }
+      }
     });
   });
 
@@ -47,7 +50,10 @@ describe('v1 enrolled service', () => {
     expect(result).toEqual({
       data: [{ kind: 'course', data: { id: 'course-1' } }],
       pagination: { page: 1, limit: 20, total: 25, totalPages: 2 },
-      counts: { notStarted: 5, inProgress: 20 }
+      counts: {
+        byStatus: { notStarted: 5, inProgress: 20 },
+        byKind: { course: 20, learningPath: 5 }
+      }
     });
   });
 
