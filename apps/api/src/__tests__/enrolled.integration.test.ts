@@ -411,8 +411,34 @@ describe.skipIf(!hasDatabase)('getEnrolled (database)', () => {
       const search = await readFeed(tx, scenario, { search: 'EXCEL' });
       expect(toRows(search).map((row) => row[1])).toEqual(['Data Science']);
       expect(search.total).toBe(1);
+      // Counts respect the search: Data Science is a not-started path.
+      expect(search.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 0 },
+        byKind: { course: 0, learningPath: 1 }
+      });
 
-      expect((await readFeed(tx, scenario, { search: '100%' })).total).toBe(0);
+      // A status filter empties the page but the counts still report the search scope.
+      const searchedInProgress = await readFeed(tx, scenario, { search: 'EXCEL', status: 'in_progress' });
+      expect(searchedInProgress.total).toBe(0);
+      expect(searchedInProgress.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 0 },
+        byKind: { course: 0, learningPath: 0 }
+      });
+
+      // A kind filter empties the page; byKind still reports the search scope.
+      const searchedCourses = await readFeed(tx, scenario, { search: 'EXCEL', kind: 'course' });
+      expect(searchedCourses.total).toBe(0);
+      expect(searchedCourses.counts).toEqual({
+        byStatus: { notStarted: 0, inProgress: 0 },
+        byKind: { course: 0, learningPath: 1 }
+      });
+
+      const noMatch = await readFeed(tx, scenario, { search: '100%' });
+      expect(noMatch.total).toBe(0);
+      expect(noMatch.counts).toEqual({
+        byStatus: { notStarted: 0, inProgress: 0 },
+        byKind: { course: 0, learningPath: 0 }
+      });
     });
   }, 30000);
 
