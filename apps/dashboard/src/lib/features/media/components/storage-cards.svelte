@@ -2,6 +2,7 @@
   import FileIcon from '@lucide/svelte/icons/file';
   import FileVideoIcon from '@lucide/svelte/icons/file-video';
   import Link2Icon from '@lucide/svelte/icons/link-2';
+  import PackageIcon from '@lucide/svelte/icons/package';
 
   import { ActivityCard } from '$features/ui';
   import { formatBytes, formatBytesSecondary } from '$features/media/utils';
@@ -17,6 +18,8 @@
   function bytesDescription(bytes: number | null | undefined, fallbackKey: string): string {
     return formatBytesSecondary(bytes) ?? t.get(fallbackKey);
   }
+
+  const scormBytes = $derived(storageSummary?.bytesByKind?.['scorm'] ?? 0);
 
   const storageCards = $derived([
     {
@@ -39,7 +42,18 @@
       percentage: storageSummary?.externalAssetCount ?? 0,
       description: t.get('media_manager.storage.external_assets'),
       hidePercentage: true
-    }
+    },
+    ...(scormBytes > 0
+      ? [
+          {
+            icon: PackageIcon,
+            title: t.get('media_manager.storage.scorm_bytes'),
+            percentage: formatBytes(scormBytes),
+            description: bytesDescription(scormBytes, 'media_manager.storage.scorm_bytes'),
+            hidePercentage: true
+          }
+        ]
+      : [])
   ]);
 </script>
 

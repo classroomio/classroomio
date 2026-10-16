@@ -13,7 +13,7 @@
   import { HoverableItem, AttachmentIcon } from '@cio/ui/custom/moving-icons';
   import { Button } from '@cio/ui/base/button';
   import { Chip } from '@cio/ui/custom/chip';
-  import { lessonApi, exerciseApi, courseApi, contentApi } from '$features/course/api';
+  import { activityApi, lessonApi, exerciseApi, courseApi, contentApi } from '$features/course/api';
   import { isOrgStudent } from '$lib/utils/store/app';
   import formatDate from '$lib/utils/functions/formatDate';
   import { t } from '$lib/utils/functions/translations';
@@ -94,7 +94,7 @@
 
     const contentUpdates: Array<{
       id: string;
-      type: ContentType.Lesson | ContentType.Exercise;
+      type: ContentType.Lesson | ContentType.Exercise | ContentType.Activity;
       order: number;
       sectionId?: string | null;
     }> = [];
@@ -102,7 +102,11 @@
     const updatedItems = contentItems.map((item, index) => {
       const order = index + 1;
 
-      if (item.type === ContentType.Lesson || item.type === ContentType.Exercise) {
+      if (
+        item.type === ContentType.Lesson ||
+        item.type === ContentType.Exercise ||
+        item.type === ContentType.Activity
+      ) {
         if (item.order !== order) {
           contentUpdates.push({
             id: item.contentId,
@@ -145,7 +149,8 @@
       item,
       courseId,
       lessonApi,
-      exerciseApi
+      exerciseApi,
+      activityApi
     });
 
     errors = nextErrors;
@@ -192,7 +197,15 @@
       return `/courses/${courseApi.course?.id}/lessons/${item.contentId}`;
     }
 
-    return `/courses/${courseApi.course?.id}/exercises/${item.contentId}`;
+    if (item.type === ContentType.Exercise) {
+      return `/courses/${courseApi.course?.id}/exercises/${item.contentId}`;
+    }
+
+    if (item.type === ContentType.Activity) {
+      return `/courses/${courseApi.course?.id}/activities/${item.contentId}`;
+    }
+
+    return '#';
   }
 
   function formatMetaDate(value?: string | null): string {
@@ -225,7 +238,8 @@
         item,
         courseId,
         lessonApi,
-        exerciseApi
+        exerciseApi,
+        activityApi
       });
       errors = lockErrors;
       if (Object.keys(lockErrors).length === 0) {
@@ -257,7 +271,8 @@
       },
       courseId: activeCourseId,
       lessonApi,
-      exerciseApi
+      exerciseApi,
+      activityApi
     });
 
     if (wasDeleted && profileId) {
@@ -404,6 +419,28 @@
             </div>
           {/snippet}
         </ContentRow>
+      {:else if item.type === ContentType.Activity}
+        <ContentRow
+          {item}
+          bind:title={item.title}
+          isLocked={itemLocked}
+          href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
+          isEditing={isEditingItem}
+          {errors}
+          autoFocus={isEditingItem}
+        >
+          {#snippet meta()}
+            <div class="mt-2 flex flex-wrap items-center gap-1.5">
+              <span class={metaChipClass}>SCORM</span>
+
+              {#if isStudentView}
+                <span class={metaChipClass}>
+                  {item.isComplete ? $t('course.navItem.lessons.complete') : $t('course.navItem.lessons.incomplete')}
+                </span>
+              {/if}
+            </div>
+          {/snippet}
+        </ContentRow>
       {/if}
 
       <div class="ml-3 flex min-w-fit items-start gap-2">
@@ -459,6 +496,7 @@
             disabled={actionDisabled}
             {lockLabel}
             showLock={false}
+            showEdit={item.type !== ContentType.Activity}
             onEdit={() => {
               contentEditingStore.set(item.contentId);
               prevTitle = item.title;

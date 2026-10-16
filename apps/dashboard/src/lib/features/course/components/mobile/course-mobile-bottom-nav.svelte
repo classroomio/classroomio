@@ -22,6 +22,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { CircleCheckIcon } from '$features/ui/icons';
   import { t } from '$lib/utils/functions/translations';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { isCourseLearnerView } from '$lib/utils/store/app';
   import { snackbar } from '$features/ui/snackbar/store';
   import type { CourseContentItem } from '$features/course/utils/types';
@@ -37,6 +38,7 @@
   let sheetOpen = $state(false);
   let isMarkingComplete = $state(false);
 
+  const isSingleActivity = $derived(isSingleActivityCourse(courseApi.course));
   const currentPath = $derived(path || page.url.pathname);
   const courseProgress = $derived(getCourseProgress(courseApi.course));
   const activeIndex = $derived(resolveActiveNavigableContentIndex(courseApi.course, currentPath));
@@ -49,8 +51,8 @@
   );
 
   const contentLockReason = $derived(
-    activeItem?.type === ContentType.Lesson
-      ? getStudentContentLockReason(courseApi.course, activeItem.id, ContentType.Lesson)
+    activeItem?.type === ContentType.Lesson || activeItem?.type === ContentType.Activity
+      ? getStudentContentLockReason(courseApi.course, activeItem.id, activeItem.type)
       : null
   );
   const completionState = $derived(
@@ -70,8 +72,11 @@
       return null;
     }
 
-    const targetType = target.type === ContentType.Lesson ? ContentType.Lesson : ContentType.Exercise;
-    return getStudentContentLockReason(courseApi.course, target.id, targetType);
+    if (target.type === ContentType.Section) {
+      return null;
+    }
+
+    return getStudentContentLockReason(courseApi.course, target.id, target.type);
   }
 
   function goToContent(target: CourseContentItem | null) {
@@ -113,8 +118,8 @@
   {positionLabel}
   sublineLabel={activeItem?.title}
   sublineComplete={showCompleteToggle ? false : (activeItem?.isComplete ?? false)}
-  hasPrev={!isPreviousDisabled}
-  hasNext={!isNextDisabled}
+  hasPrev={!isSingleActivity && !isPreviousDisabled}
+  hasNext={!isSingleActivity && !isNextDisabled}
   onPrev={() => goToContent(previousItem)}
   onNext={() => goToContent(nextItem)}
   onOpenSheet={() => (sheetOpen = true)}

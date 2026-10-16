@@ -15,6 +15,8 @@
   const lessonsTotal = $derived(progress?.lessonsTotal ?? 0);
   const exercisesComplete = $derived(progress?.exercisesComplete ?? 0);
   const exercisesTotal = $derived(progress?.exercisesTotal ?? 0);
+  const activitiesComplete = $derived(progress?.activitiesComplete ?? 0);
+  const activitiesTotal = $derived(progress?.activitiesTotal ?? 0);
 </script>
 
 <div class={className}>
@@ -31,6 +33,10 @@
       · {$t('course.sidebar.progress.exercises', {
         completed: exercisesComplete,
         total: exercisesTotal
+      })}{/if}{#if activitiesTotal > 0}
+      · {$t('course.sidebar.progress.activities', {
+        completed: activitiesComplete,
+        total: activitiesTotal
       })}{/if}
   </p>
 </div>

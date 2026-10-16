@@ -14,9 +14,15 @@
   import { isOrgStudent } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
   import { getPastLiveSessions, liveSessionClock } from '$features/course/utils/live-session-phase';
-  import { getCourseContent } from '$features/course/utils/content';
+  import { getCourseContent, getContentRoute } from '$features/course/utils/content';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { ContentType } from '@cio/utils/constants/content';
+  import { Button } from '@cio/ui/base/button';
+  import PackageIcon from '@lucide/svelte/icons/package';
+  import PlusIcon from '@lucide/svelte/icons/plus';
+  import { RoleBasedSecurity } from '$features/ui';
+  import { openAddContentModal } from '$features/course/components/content/open-content-create';
 
   interface Props {
     courseId: string;
@@ -31,7 +37,10 @@
     contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items
   );
   const navigableContentItems = $derived(
-    contentItems.filter((item) => item.type === ContentType.Lesson || item.type === ContentType.Exercise)
+    contentItems.filter(
+      (item) =>
+        item.type === ContentType.Lesson || item.type === ContentType.Exercise || item.type === ContentType.Activity
+    )
   );
 
   const sectionsTotal = $derived(
@@ -40,6 +49,7 @@
   const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
   const lessonsTotal = $derived(contentItems.filter((item) => item.type === ContentType.Lesson).length);
   const exercisesTotal = $derived(contentItems.filter((item) => item.type === ContentType.Exercise).length);
+  const activitiesTotal = $derived(contentItems.filter((item) => item.type === ContentType.Activity).length);
 
   let isFetching: boolean = $state(false);
   let hasHandledNext = $state(false);
@@ -64,17 +74,25 @@
     void courseApi.refreshCourse(courseId, $profile.id);
   });
 
+  const scormPackageItem = $derived(
+    isSingleActivityCourse(courseApi.course)
+      ? (navigableContentItems.find((item) => item.type === ContentType.Activity) ?? null)
+      : null
+  );
+
+  $effect(() => {
+    if (!isCourseLoadedForThisPage || !scormPackageItem || isFetching) return;
+
+    goto(getContentRoute(courseId, scormPackageItem), { replaceState: true });
+  });
+
   $effect(() => {
     if (!canResolveNext || isFetching || !isNextRequested) return;
 
     hasHandledNext = true;
     const incompleteContent = getFirstIncompleteNavigableContent(courseApi.course);
     if (incompleteContent) {
-      if (incompleteContent.type === ContentType.Lesson) {
-        goto(`/courses/${courseId}/lessons/${incompleteContent.id}`);
-      } else {
-        goto(`/courses/${courseId}/exercises/${incompleteContent.id}`);
-      }
+      goto(getContentRoute(courseId, incompleteContent));
     } else {
       goto(`/courses/${courseId}/lessons`, { replaceState: true });
     }
@@ -89,7 +107,7 @@
   </div>
 {:else if contentLength > 0}
   <div
-    class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3"
+    class="mb-5 grid grid-cols-1 gap-3 {activitiesTotal > 0 ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-3'}"
     role="region"
     aria-label={t.get('course.navItem.lessons.heading_v2')}
   >
@@ -114,6 +132,15 @@
       </div>
       <p class="text-2xl font-semibold tabular-nums">{exercisesTotal}</p>
     </div>
+    {#if activitiesTotal > 0}
+      <div class="ui:border-border flex flex-col gap-1 rounded-lg border px-4 py-3">
+        <div class="ui:text-muted-foreground flex items-center gap-2 text-xs font-medium">
+          <CourseContentIcon type={ContentType.Activity} size={14} />
+          <span>{$t('course.navItem.lessons.stats.activities')}</span>
+        </div>
+        <p class="text-2xl font-semibold tabular-nums">{activitiesTotal}</p>
+      </div>
+    {/if}
   </div>
 
   {#if isLiveCourse && !reorder}
@@ -131,6 +158,25 @@
   {:else}
     <ContentList {reorder} />
   {/if}
+{:else if isSingleActivityCourse(courseApi.course)}
+  <Empty
+    title={$t('course.navItem.lessons.activities.single_activity_empty_title')}
+    description={$isOrgStudent
+      ? $t('course.navItem.lessons.activities.single_activity_empty_student_desc')
+      : $t('course.navItem.lessons.activities.single_activity_empty_description')}
+    icon={PackageIcon}
+    variant="page"
+    class="text-center"
+  >
+    {#if !$isOrgStudent}
+      <RoleBasedSecurity allowedRoles={[1, 2]}>
+        <Button variant="secondary" onclick={() => openAddContentModal(courseId)}>
+          <PlusIcon size={16} />
+          {$t('course.navItem.lessons.activities.add_package_button')}
+        </Button>
+      </RoleBasedSecurity>
+    {/if}
+  </Empty>
 {:else}
   <Empty
     title={$t('course.navItem.lessons.body_header')}

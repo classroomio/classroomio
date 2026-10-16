@@ -8,7 +8,7 @@ export class ContentApi extends BaseApiWithErrors {
     courseId: string,
     items: Array<{
       id: string;
-      type: ContentType.Lesson | ContentType.Exercise;
+      type: ContentType.Lesson | ContentType.Exercise | ContentType.Activity;
       isUnlocked?: boolean;
       order?: number;
       sectionId?: string | null;
@@ -36,7 +36,10 @@ export class ContentApi extends BaseApiWithErrors {
 
   async deleteContent(
     courseId: string,
-    payload: { sectionId?: string; items?: Array<{ id: string; type: ContentType.Lesson | ContentType.Exercise }> }
+    payload: {
+      sectionId?: string;
+      items?: Array<{ id: string; type: ContentType.Lesson | ContentType.Exercise | ContentType.Activity }>;
+    }
   ) {
     const result = await this.execute<DeleteCourseContentRequest>({
       requestFn: () =>

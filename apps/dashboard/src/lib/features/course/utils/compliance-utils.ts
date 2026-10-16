@@ -32,13 +32,17 @@ type StudentEnrolledCourse = UserEnrolledCourses[number];
 function getCourseContentProgress(course: StudentEnrolledCourse) {
   const exercisesCompleted = typeof course.exercisesCompleted === 'number' ? course.exercisesCompleted : 0;
   const totalExercises = typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
-  const totalItems = (course.lessonCount ?? 0) + totalExercises;
+  const activitiesCompleted =
+    'activitiesCompleted' in course && typeof course.activitiesCompleted === 'number' ? course.activitiesCompleted : 0;
+  const totalActivities =
+    'activityCount' in course && typeof course.activityCount === 'number' ? course.activityCount : 0;
+  const totalItems = (course.lessonCount ?? 0) + totalExercises + totalActivities;
 
   if (totalItems <= 0) {
     return 0;
   }
 
-  const completedItems = (course.progressRate ?? 0) + exercisesCompleted;
+  const completedItems = (course.progressRate ?? 0) + exercisesCompleted + activitiesCompleted;
   return Math.round((completedItems / totalItems) * 100);
 }
 

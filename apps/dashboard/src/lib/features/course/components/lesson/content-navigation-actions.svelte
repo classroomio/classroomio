@@ -25,11 +25,13 @@
     courseId: string;
     /** When on an exercise page, pass this to show prev/next content in content order (no mark-complete). */
     exerciseId?: string;
+    /** When on an activity page, pass this to show prev/next content in content order (no mark-complete). */
+    activityId?: string;
     /** When false, hide prev/next chevrons (mobile bottom nav already has them). */
     showPrevNext?: boolean;
   }
 
-  let { lessonId, courseId, exerciseId, showPrevNext = true }: Props = $props();
+  let { lessonId, courseId, exerciseId, activityId, showPrevNext = true }: Props = $props();
 
   let isMarkingComplete = $state(false);
 
@@ -39,9 +41,15 @@
 
   /** Prev/next content items in full content order (immediate neighbors; locked content is hidden in the UI so we don't skip). */
   const prevNextContent = $derived.by(() => {
-    const currentId = lessonId ?? exerciseId;
-    const currentType = lessonId ? ContentType.Lesson : ContentType.Exercise;
-    if (!currentId) return { prev: null, next: null };
+    const currentId = lessonId ?? exerciseId ?? activityId;
+    const currentType = lessonId
+      ? ContentType.Lesson
+      : exerciseId
+        ? ContentType.Exercise
+        : activityId
+          ? ContentType.Activity
+          : null;
+    if (!currentId || !currentType) return { prev: null, next: null };
     const idx = navigableContentItems.findIndex((item) => item.type === currentType && item.id === currentId);
     if (idx < 0) return { prev: null, next: null };
     return {
@@ -53,8 +61,9 @@
   function getNavigableLockReason(target: CourseContentItem | null) {
     if (!target) return null;
 
-    const targetType = target.type === ContentType.Lesson ? ContentType.Lesson : ContentType.Exercise;
-    return getStudentContentLockReason(courseApi.course, target.id, targetType);
+    if (target.type === ContentType.Section) return null;
+
+    return getStudentContentLockReason(courseApi.course, target.id, target.type);
   }
 
   function goToContent(target: CourseContentItem | null) {

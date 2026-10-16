@@ -79,7 +79,7 @@
     isCourseMobileBottomNavVisible({
       isCourseLearnerView: $isCourseLearnerView,
       isMobile: isMobileStore.current,
-      isLessonOrExercisePage: true,
+      isContentPage: true,
       courseProgress: getCourseProgress(courseApi.course)
     })
   );
@@ -514,7 +514,11 @@
               {/if}
             </span>
           {/if}
-          <IconButton onclick={toggleMode} disabled={lessonApi.isSaving}>
+          <IconButton
+            onclick={toggleMode}
+            disabled={lessonApi.isSaving}
+            aria-label={mode === MODES.edit ? $t('course.navItem.lessons.view') : $t('course.navItem.lessons.edit')}
+          >
             {#if mode === MODES.edit}
               <Save size={20} />
             {:else}

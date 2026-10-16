@@ -16,6 +16,7 @@ import type {
   UpdateCourseRequest
 } from '../utils/types';
 import type { TCourseType } from '@cio/db/types';
+import type { TCourseFormat } from '@cio/utils/constants/course-format';
 import { ZCourseCreate, ZCourseUpdate, type TCourseUpdate } from '@cio/utils/validation/course/course';
 import { DEFAULT_COMPLIANCE_SETTINGS } from '../utils/compliance-utils';
 import { syncProgressionAccessToCourse } from '../utils/progression-utils';
@@ -109,12 +110,12 @@ export class CourseApi extends BaseApiWithErrors {
   }
 
   /**
-   * Updates a single lesson/exercise item in the local course content store.
+   * Updates a single lesson/exercise/activity item in the local course content store.
    * This avoids list staleness when navigating back from item detail pages.
    */
   updateContentItem(
     itemId: string,
-    itemType: ContentType.Lesson | ContentType.Exercise,
+    itemType: ContentType.Lesson | ContentType.Exercise | ContentType.Activity,
     patch: Partial<CourseContentItem>
   ) {
     if (!this.course?.content) return false;
@@ -183,10 +184,10 @@ export class CourseApi extends BaseApiWithErrors {
   }
 
   /**
-   * Removes a single lesson/exercise item from the local course content store.
+   * Removes a single lesson/exercise/activity item from the local course content store.
    * This keeps sidebar lists in sync after delete actions.
    */
-  removeContentItem(itemId: string, itemType: ContentType.Lesson | ContentType.Exercise) {
+  removeContentItem(itemId: string, itemType: ContentType.Lesson | ContentType.Exercise | ContentType.Activity) {
     if (!this.course?.content) return false;
 
     const content = this.course.content;
@@ -260,7 +261,6 @@ export class CourseApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching course',
       onSuccess: (response) => {
-        console.log('response', response.data);
         if (response.data) {
           const supersededFetch = this.isStaleFetch(courseId, fetchSeq);
           const editedDuringFetch = this.wasEditedSinceFetch(courseId, courseAtRequest, snapshotAtRequest);
@@ -435,8 +435,8 @@ export class CourseApi extends BaseApiWithErrors {
    * @returns The created course data or null on error
    */
   async create(
-    fields: { title: string; description: string; type: TCourseType },
-    onCreated?: (courseId: string) => void
+    fields: { title: string; description: string; type: TCourseType; format?: TCourseFormat },
+    onCreated?: (courseId: string, activityId?: string | null) => void
   ) {
     const org = get(currentOrg);
     const userProfile = get(profile);
@@ -446,6 +446,7 @@ export class CourseApi extends BaseApiWithErrors {
       title: fields.title,
       description: fields.description,
       type: fields.type,
+      format: fields.format,
       organizationId: org.id,
       compliance: fields.type === 'COMPLIANCE' ? DEFAULT_COMPLIANCE_SETTINGS : undefined
     };
@@ -466,6 +467,10 @@ export class CourseApi extends BaseApiWithErrors {
       onSuccess: (response) => {
         if (response.data?.course) {
           const newCourse = response.data.course;
+          const activityId =
+            'activityId' in response.data && typeof response.data.activityId === 'string'
+              ? response.data.activityId
+              : null;
 
           // Capture PostHog event
           capturePosthogEvent('course_created', {
@@ -481,7 +486,7 @@ export class CourseApi extends BaseApiWithErrors {
           orgNavCountsApi.adjustCount('courses', 1);
 
           if (onCreated) {
-            onCreated(newCourse.id);
+            onCreated(newCourse.id, activityId);
           } else {
             goto(resolve(`/courses/${newCourse.id}`, {}));
             snackbar.success('Course created successfully');
