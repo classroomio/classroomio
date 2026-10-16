@@ -3,7 +3,7 @@
   import * as Dialog from '@cio/ui/base/dialog';
   import { t } from '$lib/utils/functions/translations';
   import { snackbar } from '$features/ui/snackbar/store';
-  import { learningPathApi } from '../api';
+  import { publishPath } from '../utils/publish-path';
   import { openPathPreview } from '../utils/path-preview';
   import type { LearningPathDetail } from '../utils/types';
 
@@ -24,8 +24,8 @@
 
     isPublishing = true;
     try {
-      const updated = await learningPathApi.update(path.id, { isPublished: true }, { showSuccessToast: false });
-      if (!updated) {
+      const result = await publishPath(path);
+      if (!result.ok) {
         snackbar.error('learningPath.workspace.publish_failed');
         return;
       }
@@ -34,9 +34,10 @@
 
       open = false;
 
+      const previewPathId = path.publicId ?? path.id;
       openPathPreview({
-        pathId: path.id,
-        pathSlug: path.slug,
+        pathId: previewPathId,
+        pathSlug: result.slug,
         currentOrgDomain
       });
     } catch {
