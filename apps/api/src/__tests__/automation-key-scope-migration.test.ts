@@ -32,12 +32,22 @@ function scopesInFirstJsonbArray(sql: string, afterOperator: string): string[] {
   return JSON.parse(sql.slice(open, close + 1)) as string[];
 }
 
-describe('0033_media_upload_pipeline', () => {
-  const sql = readMigration('0033_media_upload_pipeline');
+const ADDED_IN_0035 = [
+  'course:submission:read',
+  'course:submission:write',
+  'course:learner:write',
+  'audience:read',
+  'audience:write',
+  'team:read',
+  'team:write'
+];
 
-  it('requires exactly the MCP default set as it stood before media:write', () => {
+describe('0035_public_api_scopes_and_instance', () => {
+  const sql = readMigration('0035_public_api_scopes_and_instance');
+
+  it('requires exactly the MCP default set as it stood before the new scopes', () => {
     const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');
-    const priorDefault = DEFAULT_SCOPES.mcp.filter((scope: string) => scope !== 'media:write');
+    const priorDefault = DEFAULT_SCOPES.mcp.filter((scope: string) => !ADDED_IN_0035.includes(scope));
 
     expect(new Set(required)).toEqual(new Set(priorDefault));
   });
@@ -46,6 +56,7 @@ describe('0033_media_upload_pipeline', () => {
     const added = scopesInFirstJsonbArray(sql, 'SET "scopes" =');
     const required = scopesInFirstJsonbArray(sql, 'AND "scopes" @>');
 
+    expect(new Set(added)).toEqual(new Set(ADDED_IN_0035));
     expect(new Set([...required, ...added])).toEqual(new Set(DEFAULT_SCOPES.mcp));
   });
 
@@ -53,7 +64,7 @@ describe('0033_media_upload_pipeline', () => {
     expect(sql).toContain(`"type" = 'mcp'`);
   });
 
-  it('skips keys already holding the scope, so re-running is a no-op', () => {
-    expect(sql).toContain('NOT "scopes" @> \'["media:write"]\'::jsonb');
+  it('skips keys already holding every new scope, so re-running is a no-op', () => {
+    expect(sql).toContain(`AND NOT "scopes" @> '${JSON.stringify(ADDED_IN_0035).replace(/","/g, '", "')}'::jsonb`);
   });
 });
