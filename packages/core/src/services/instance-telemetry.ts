@@ -23,7 +23,6 @@ export async function sendInstanceTelemetry(): Promise<InstanceTelemetryResult> 
   if (env.PUBLIC_IS_SELFHOSTED !== 'true') return { sent: false, reason: 'not-selfhosted' };
   if (env.CIO_TELEMETRY_DISABLED === 'true') return { sent: false, reason: 'disabled' };
 
-  // A failed license check looks the same as an invalid license, so with a key set we only send on a confirmed license.
   const hasLicenseKey = !!env.LICENSE_KEY?.trim();
   if (hasLicenseKey) {
     const license = await getLicenseStatus();
@@ -63,7 +62,11 @@ export async function sendInstanceTelemetry(): Promise<InstanceTelemetryResult> 
   }
 
   if (trigger === 'first_start') {
-    await markInstanceFirstReported(instance.id);
+    try {
+      await markInstanceFirstReported(instance.id);
+    } catch (error) {
+      console.error('markInstanceFirstReported failed after the event was sent:', error);
+    }
   }
 
   return { sent: true, trigger };

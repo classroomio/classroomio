@@ -125,6 +125,14 @@ describe('sendInstanceTelemetry', () => {
     expect(markInstanceFirstReported).not.toHaveBeenCalled();
   });
 
+  it('does not fail the job, and so resend first_start, when marking it reported fails', async () => {
+    markInstanceFirstReported.mockRejectedValue(new Error('db down'));
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    await expect(sendInstanceTelemetry()).resolves.toEqual({ sent: true, trigger: 'first_start' });
+    expect(fetchMock).toHaveBeenCalledOnce();
+  });
+
   it('falls back to other when no deployment method is set', async () => {
     env.CIO_DEPLOYMENT_METHOD = undefined;
 

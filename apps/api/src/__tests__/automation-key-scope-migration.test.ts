@@ -35,6 +35,7 @@ function scopesInFirstJsonbArray(sql: string, afterOperator: string): string[] {
 const ADDED_IN_0035 = [
   'course:submission:read',
   'course:submission:write',
+  'course:student:write',
   'audience:read',
   'audience:write',
   'team:read',

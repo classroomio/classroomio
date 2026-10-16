@@ -321,7 +321,6 @@ function toInternalQuestion(
   const title = question.question ?? stored?.title ?? '';
   const points = question.points ?? stored?.points ?? 1;
   const settings = question.settings ?? toStoredSettings(stored?.settings);
-  // The core check that every question sits in a sent section reads only the request, so keep the saved section.
   const exerciseSectionId =
     question.exerciseSectionId !== undefined ? question.exerciseSectionId : (stored?.exerciseSectionId ?? undefined);
 

@@ -432,18 +432,10 @@ export async function listSubmissionsForGrading(courseId: string) {
     for (const submission of rawSubmissions) {
       const gradingState = resolveSubmissionGradingState(submission);
       const statusId = projectLegacyStatusId(gradingState);
-      const storedOverallStatus = typeof submission.overallStatus === 'string' ? submission.overallStatus : '';
-      const fallbackOverallStatus = resolveOverallStatusFromQuestionTypeIds(
-        (submission.exercise.questions || [])
-          .map((question: any) => Number(question.questionTypeId))
-          .filter((questionTypeId: number) => Number.isFinite(questionTypeId))
-      );
-      const overallStatus: SubmissionOverallStatus =
-        storedOverallStatus === 'auto_graded' ||
-        storedOverallStatus === 'manual_required' ||
-        storedOverallStatus === 'hybrid'
-          ? (storedOverallStatus as SubmissionOverallStatus)
-          : fallbackOverallStatus;
+      const questionTypeIds = (submission.exercise.questions || [])
+        .map((question: any) => Number(question.questionTypeId))
+        .filter((questionTypeId: number) => Number.isFinite(questionTypeId));
+      const overallStatus = resolveSubmissionOverallStatus(submission.overallStatus, questionTypeIds);
       const isEarly = submission.exercise.dueBy
         ? new Date(submission.createdAt!).getTime() <= new Date(submission.exercise.dueBy).getTime()
         : true;
