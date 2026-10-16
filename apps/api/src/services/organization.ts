@@ -1042,14 +1042,23 @@ export async function getUserAnalytics(userId: string, orgId: string) {
           lessons_count: 0,
           lessons_completed: 0,
           exercises_count: 0,
-          exercises_completed: 0
+          exercises_completed: 0,
+          activities_count: 0,
+          activities_completed: 0
         };
-        // A course's work is its lessons and its exercises, matching
-        // `calcCourseProgress` in the dashboard and the audience roster. The
-        // exercise counts were already here; only the percentage ignored them,
-        // so a learner who watched everything and submitted nothing read 100%.
-        const completedItems = (progressData.lessons_completed || 0) + (progressData.exercises_completed || 0);
-        const totalItems = (progressData.lessons_count || 0) + (progressData.exercises_count || 0);
+        // A course's work is its lessons, its exercises and its activities,
+        // matching `calcCourseProgress` in the dashboard and the audience
+        // roster. The exercise counts were already here; only the percentage
+        // ignored them, so a learner who watched everything and submitted
+        // nothing read 100%.
+        const completedItems =
+          (progressData.lessons_completed || 0) +
+          (progressData.exercises_completed || 0) +
+          (progressData.activities_completed || 0);
+        const totalItems =
+          (progressData.lessons_count || 0) +
+          (progressData.exercises_count || 0) +
+          (progressData.activities_count || 0);
         const progressPercentage = courseProgress ? calcPercentageWithRounding(completedItems, totalItems) : 0;
 
         return {
@@ -1068,11 +1077,13 @@ export async function getUserAnalytics(userId: string, orgId: string) {
     // lookup failed stay excluded, as main does.
     const progressCourses = coursesWithStats.filter((course) => !course.progress_failed);
     const totalItems = progressCourses.reduce(
-      (acc, course) => acc + (course.lessons_count || 0) + (course.exercises_count || 0),
+      (acc, course) =>
+        acc + (course.lessons_count || 0) + (course.exercises_count || 0) + (course.activities_count || 0),
       0
     );
     const completedItems = progressCourses.reduce(
-      (acc, course) => acc + (course.lessons_completed || 0) + (course.exercises_completed || 0),
+      (acc, course) =>
+        acc + (course.lessons_completed || 0) + (course.exercises_completed || 0) + (course.activities_completed || 0),
       0
     );
     const overallCourseProgress = calcPercentageWithRounding(completedItems, totalItems);

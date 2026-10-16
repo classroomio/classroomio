@@ -28,6 +28,8 @@ import {
 } from '@cio/db/queries/exercise';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { resolveItemSlug } from '../course/slug';
+import { ContentType } from '@cio/utils/constants';
+import { assertCourseAcceptsContent } from '../course/content';
 import { guardNonAutoGradableQuestionsForCourseType } from '../course/public-course-guard';
 
 import { db } from '@cio/db/drizzle';
@@ -222,6 +224,8 @@ async function resolveExerciseCourseId(exercise: TExercise): Promise<string | nu
 export async function createExercise(data: TExerciseCreate): Promise<TExercise> {
   try {
     const sanitizedData = sanitizeExercisePayload(data);
+
+    await assertCourseAcceptsContent(sanitizedData.courseId, ContentType.Exercise);
 
     await guardNonAutoGradableQuestionsForCourseType({
       courseId: sanitizedData.courseId,

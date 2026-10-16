@@ -32,6 +32,7 @@ async function loadCourseSummary(courseId: string) {
     totalStudents: analytics.totalStudents,
     totalLessons: analytics.totalLessons,
     totalExercises: analytics.totalExercises,
+    totalActivities: analytics.totalActivities,
     averageProgress: analytics.lessonCompletionRate,
     averageExerciseCompletion: analytics.exerciseCompletionRate,
     averageGrade: analytics.averageGrade
@@ -96,6 +97,8 @@ async function loadCourseStudentsPage(courseId: string, query: TPublicApiCourseA
     totalLessons: student.totalLessons,
     exercisesSubmitted: student.exercisesSubmitted,
     totalExercises: student.totalExercises,
+    activitiesCompleted: student.activitiesCompleted,
+    totalActivities: student.totalActivities,
     averageGrade: student.averageGrade,
     progressPercentage: student.progressPercentage,
     lastSeen: student.lastSeen ?? null

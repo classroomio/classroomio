@@ -321,7 +321,9 @@ export async function getProfileCourseProgress(
         lessons_count: 0,
         lessons_completed: 0,
         exercises_count: 0,
-        exercises_completed: 0
+        exercises_completed: 0,
+        activities_count: 0,
+        activities_completed: 0
       };
     }
 
@@ -331,7 +333,9 @@ export async function getProfileCourseProgress(
         lessons_count: 0,
         lessons_completed: 0,
         exercises_count: 0,
-        exercises_completed: 0
+        exercises_completed: 0,
+        activities_count: 0,
+        activities_completed: 0
       };
     }
 
@@ -348,7 +352,9 @@ export async function getProfileCourseProgress(
         lessons_count: 0,
         lessons_completed: 0,
         exercises_count: 0,
-        exercises_completed: 0
+        exercises_completed: 0,
+        activities_count: 0,
+        activities_completed: 0
       };
     }
 
@@ -407,11 +413,40 @@ export async function getProfileCourseProgress(
 
     const exercisesCompleted = Number(exercisesCompletedResult[0]?.count || 0);
 
+    // Get activities count
+    const activitiesResult = await db
+      .select({
+        count: sql<number>`COUNT(*)`.as('count')
+      })
+      .from(schema.courseActivity)
+      .where(eq(schema.courseActivity.courseId, courseId));
+
+    const activitiesCount = Number(activitiesResult[0]?.count || 0);
+
+    // Get activities completed count
+    const activitiesCompletedResult = await db
+      .select({
+        count: sql<number>`COUNT(DISTINCT ${schema.activityCompletion.activityId})`.as('count')
+      })
+      .from(schema.activityCompletion)
+      .innerJoin(schema.courseActivity, eq(schema.activityCompletion.activityId, schema.courseActivity.id))
+      .where(
+        and(
+          eq(schema.courseActivity.courseId, courseId),
+          eq(schema.activityCompletion.profileId, profileId),
+          eq(schema.activityCompletion.isComplete, true)
+        )
+      );
+
+    const activitiesCompleted = Number(activitiesCompletedResult[0]?.count || 0);
+
     return {
       lessons_count: lessonsCount,
       lessons_completed: lessonsCompleted,
       exercises_count: exercisesCount,
-      exercises_completed: exercisesCompleted
+      exercises_completed: exercisesCompleted,
+      activities_count: activitiesCount,
+      activities_completed: activitiesCompleted
     };
   } catch (error) {
     console.error('getProfileCourseProgress error:', error);
@@ -422,7 +457,9 @@ export async function getProfileCourseProgress(
       lessons_count: 0,
       lessons_completed: 0,
       exercises_count: 0,
-      exercises_completed: 0
+      exercises_completed: 0,
+      activities_count: 0,
+      activities_completed: 0
     };
   }
 }

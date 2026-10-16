@@ -71,6 +71,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.675.0
         version: 3.958.0
+      '@cio/activity-packages':
+        specifier: workspace:*
+        version: link:../../packages/activity-packages
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../../packages/ai-assistant
@@ -1049,6 +1052,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.675.0
         version: 3.958.0
+      '@cio/activity-packages':
+        specifier: workspace:*
+        version: link:../activity-packages
       '@cio/ai-assistant':
         specifier: workspace:*
         version: link:../ai-assistant

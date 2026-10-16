@@ -793,6 +793,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
                 "enum": [
                   "LESSON",
                   "EXERCISE",
+                  "ACTIVITY",
                 ],
                 "type": "string",
               },
@@ -997,6 +998,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
                       "enum": [
                         "LESSON",
                         "EXERCISE",
+                        "ACTIVITY",
                       ],
                       "type": "string",
                     },
@@ -1751,6 +1753,9 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
+    "activityCount": {
+      "type": "number",
+    },
     "bannerImage": {
       "anyOf": [
         {
@@ -2295,6 +2300,9 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
       },
       "type": "object",
     },
+    "moduleCount": {
+      "type": "number",
+    },
     "overview": {
       "anyOf": [
         {
@@ -2435,6 +2443,8 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
     "lessonCount",
     "totalStudents",
     "exerciseCount",
+    "activityCount",
+    "moduleCount",
     "tags",
   ],
   "type": "object",
@@ -3107,6 +3117,34 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
     "draft": {
       "additionalProperties": false,
       "properties": {
+        "activities": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "existingActivityId": {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              "order": {
+                "maximum": 9007199254740991,
+                "minimum": 1,
+                "type": "integer",
+              },
+              "sectionExternalId": {
+                "minLength": 1,
+                "type": "string",
+              },
+            },
+            "required": [
+              "existingActivityId",
+              "sectionExternalId",
+              "order",
+            ],
+            "type": "object",
+          },
+          "type": "array",
+        },
         "course": {
           "additionalProperties": false,
           "properties": {
@@ -3192,6 +3230,13 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             },
             "description": {
               "minLength": 1,
+              "type": "string",
+            },
+            "format": {
+              "enum": [
+                "standard",
+                "single_activity",
+              ],
               "type": "string",
             },
             "locale": {
@@ -3687,7 +3732,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             ],
             "type": "object",
           },
-          "minItems": 1,
           "type": "array",
         },
         "lessons": {
@@ -3799,7 +3843,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             ],
             "type": "object",
           },
-          "minItems": 1,
           "type": "array",
         },
         "sections": {
@@ -4012,6 +4055,18 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
+    "activityId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
     "course": {
       "additionalProperties": false,
       "properties": {
@@ -4677,6 +4732,7 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
     "course",
     "groupId",
     "memberId",
+    "activityId",
   ],
   "type": "object",
 }
@@ -4973,6 +5029,9 @@ exports[`public API audience and course response contract > ZPublicApiUpdateCour
       },
       "type": "array",
     },
+    "untouchedActivities": {
+      "type": "number",
+    },
     "untouchedExercises": {
       "type": "number",
     },
@@ -4980,6 +5039,9 @@ exports[`public API audience and course response contract > ZPublicApiUpdateCour
       "type": "number",
     },
     "untouchedSections": {
+      "type": "number",
+    },
+    "updatedActivities": {
       "type": "number",
     },
     "updatedExercises": {
@@ -5011,6 +5073,7 @@ exports[`public API audience and course response contract > ZPublicApiUpdateCour
     "updatedLessons",
     "updatedExercises",
     "updatedLessonLanguages",
+    "updatedActivities",
     "deletedSections",
     "deletedLessons",
     "deletedExercises",
@@ -5018,6 +5081,7 @@ exports[`public API audience and course response contract > ZPublicApiUpdateCour
     "untouchedSections",
     "untouchedLessons",
     "untouchedExercises",
+    "untouchedActivities",
   ],
   "type": "object",
 }

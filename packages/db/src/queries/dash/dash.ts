@@ -1,7 +1,9 @@
 import {
+  activityCompletion,
   analyticsLoginEvents,
   and,
   course,
+  courseActivity,
   dashOrgStats,
   db,
   desc,
@@ -30,6 +32,11 @@ export function getCourseStats(orgId: string) {
         COUNT(DISTINCT ${lessonCompletion.id}) 
         FILTER (WHERE ${lessonCompletion.isComplete} = true)
       `.as('completed_lessons'),
+      totalActivities: sql<number>`COUNT(DISTINCT ${courseActivity.id})`.as('total_activities'),
+      completedActivities: sql<number>`
+        COUNT(DISTINCT ${activityCompletion.id})
+        FILTER (WHERE ${activityCompletion.isComplete} = true)
+      `.as('completed_activities'),
       certificatesEarned: sql<number>`
         COUNT(DISTINCT ${groupmember.id})
         FILTER (WHERE ${groupmember.certificateEarnedAt} IS NOT NULL)
@@ -43,6 +50,11 @@ export function getCourseStats(orgId: string) {
       lessonCompletion,
       and(eq(lessonCompletion.lessonId, lesson.id), eq(lessonCompletion.profileId, groupmember.profileId))
     )
+    .leftJoin(courseActivity, eq(courseActivity.courseId, course.id))
+    .leftJoin(
+      activityCompletion,
+      and(eq(activityCompletion.activityId, courseActivity.id), eq(activityCompletion.profileId, groupmember.profileId))
+    )
     .where(and(eq(course.status, 'ACTIVE'), eq(group.organizationId, orgId)))
     .groupBy(course.id, course.title)
     .orderBy(sql`completed_lessons DESC`)
@@ -53,10 +65,12 @@ export function getCourseStats(orgId: string) {
       courseId: subquery.courseId,
       courseTitle: subquery.courseTitle,
       totalStudents: sql<number>`${subquery.totalStudents}::integer`,
+      totalActivities: sql<number>`${subquery.totalActivities}::integer`,
+      completedActivities: sql<number>`${subquery.completedActivities}::integer`,
       completionPercentage: sql<number>`
         CASE 
-          WHEN ${subquery.totalStudents} * ${subquery.totalLessons} = 0 THEN 0
-          ELSE ROUND((${subquery.completedLessons}::numeric / (${subquery.totalStudents} * ${subquery.totalLessons})) * 100)::integer
+          WHEN ${subquery.totalStudents} * (${subquery.totalLessons} + ${subquery.totalActivities}) = 0 THEN 0
+          ELSE ROUND(((${subquery.completedLessons} + ${subquery.completedActivities})::numeric / (${subquery.totalStudents} * (${subquery.totalLessons} + ${subquery.totalActivities}))) * 100)::integer
         END
       `,
       certificationPercentage: sql<number>`

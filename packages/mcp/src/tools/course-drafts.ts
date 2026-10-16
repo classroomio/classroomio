@@ -123,7 +123,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'get_course_structure',
-    'Read the current live course structure. Use this before creating a fresh draft for post-publish edits.',
+    'Read the current live course structure, including sections, lessons, exercises and activities (such as SCORM packages). Use this before creating a fresh draft for post-publish edits.',
     getCourseStructureShape,
     async (args) => {
       const { courseId } = ZCourseImportCourseParam.parse(args);
@@ -145,7 +145,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'reorder_course_content',
-    'Batch reorder live course sections and lesson or exercise content without creating a draft. Use this for section ordering or moving/reordering lessons and exercises between sections. For items, pass type as LESSON or EXERCISE and use sectionId to move between sections or null for ungrouped content.',
+    'Batch reorder live course sections and lesson, exercise or activity content without creating a draft. Use this for section ordering or moving/reordering lessons, exercises and activities between sections. For items, pass type as LESSON, EXERCISE or ACTIVITY and use sectionId to move between sections or null for ungrouped content.',
     reorderCourseContentShape,
     async (args) => {
       const { courseId, ...rawPayload } = ZReorderCourseContentToolInput.parse(args);
@@ -157,7 +157,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'create_course_draft',
-    `Create a new unpublished course draft from structured course JSON. Use this before the first publish. ${LESSON_HTML_GUIDE}`,
+    `Create a new unpublished course draft from structured course JSON. Use this before the first publish. Activities such as SCORM packages cannot be created or edited through drafts; manage those on the live course. ${LESSON_HTML_GUIDE}`,
     createCourseDraftShape,
     async (args) => {
       const payload = ZCourseImportDraftCreate.parse(args);
@@ -245,7 +245,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'update_course_draft',
-    `Update an unpublished draft. If the draft is already published, do not keep editing it blindly; create a fresh draft from the live course first. ${LESSON_HTML_GUIDE}`,
+    `Update an unpublished draft. If the draft is already published, do not keep editing it blindly; create a fresh draft from the live course first. Activities such as SCORM packages cannot be created or edited through drafts. ${LESSON_HTML_GUIDE}`,
     updateCourseDraftShape,
     async (args) => {
       const { draftId, ...payload } = ZUpdateCourseDraftToolInput.parse(args);
@@ -267,7 +267,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'publish_course_draft',
-    'Publish an unpublished draft as a new live course. The result includes courseId and courseUrl. After publish, future major edits should usually start from a fresh draft created from the live course.',
+    'Publish an unpublished draft as a new live course. The result includes courseId and courseUrl. After publish, future major edits should usually start from a fresh draft created from the live course. Drafts never create activities such as SCORM packages.',
     publishCourseDraftShape,
     async (args) => {
       const { draftId, ...payload } = ZPublishCourseDraftToolInput.parse(args);
@@ -278,7 +278,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'publish_course_draft_to_existing_course',
-    'Apply a fresh draft back onto an existing live course. Use this after reading the live course and creating a new draft from it.',
+    'Apply a fresh draft back onto an existing live course. Use this after reading the live course and creating a new draft from it. Drafts never create or delete activities such as SCORM packages.',
     publishCourseDraftToExistingCourseShape,
     async (args) => {
       const { draftId, ...payload } = ZPublishCourseDraftToExistingCourseToolInput.parse(args);

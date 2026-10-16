@@ -27,12 +27,13 @@ import {
   getCourseImportDraftByIdempotencyKey,
   updateCourseImportDraft
 } from '@cio/db/queries/course-import';
+import { getActivitiesByCourseId, updateActivity } from '@cio/db/queries/activity';
 import { ZLessonVideoItem } from '@cio/utils/validation/lesson';
 import { getCourseById, isCourseSlugTaken, updateCourseSlug } from '@cio/db/queries/course';
 import { getLessonLanguagesByLessonIds } from '@cio/db/queries/lesson';
 import { getOrganizationById } from '@cio/db/queries/organization';
 import { getCourseTagsForOrganization } from '@cio/db/queries/tag';
-import type { TCourse, TCourseImportDraft, TLessonLanguage, TLocale, TOrganization } from '@db/types';
+import type { TCourse, TCourseActivity, TCourseImportDraft, TLessonLanguage, TLocale, TOrganization } from '@db/types';
 import {
   type TCourseImportDraftCreate,
   type TCourseImportDraftCreateFromCourse,
@@ -53,6 +54,7 @@ type DraftSummary = {
   sectionCount: number;
   lessonCount: number;
   exerciseCount: number;
+  activityCount: number;
   localeCount: number;
   warningCount: number;
 };
@@ -77,6 +79,7 @@ type PublishDraftToExistingCourseResult = PublishDraftResult & {
   updatedSections: number;
   updatedLessons: number;
   updatedExercises: number;
+  updatedActivities: number;
   createdLessonLanguages: number;
   updatedLessonLanguages: number;
   deletedSections: number;
@@ -86,6 +89,7 @@ type PublishDraftToExistingCourseResult = PublishDraftResult & {
   untouchedSections: number;
   untouchedLessons: number;
   untouchedExercises: number;
+  untouchedActivities: number;
 };
 
 function buildDraftSummary(draft: TCourseImportDraftPayload): DraftSummary {
@@ -93,6 +97,7 @@ function buildDraftSummary(draft: TCourseImportDraftPayload): DraftSummary {
     sectionCount: draft.sections.length,
     lessonCount: draft.lessons.length,
     exerciseCount: draft.exercises?.length ?? 0,
+    activityCount: draft.activities?.length ?? 0,
     localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size,
     warningCount: draft.warnings.length
   };
@@ -230,6 +235,12 @@ async function reserveDraftPublishedCourseId(
 }
 
 async function resetCourseContentForDraftRetry(courseId: string) {
+  const activities = await getActivitiesByCourseId(courseId);
+
+  if (activities.length > 0) {
+    throw new AppError('Draft retry cannot clear a course that holds packages', ErrorCodes.VALIDATION_ERROR, 400);
+  }
+
   const [exercises, lessons, sections] = await Promise.all([
     listExercises(courseId),
     listLessons(courseId),
@@ -270,6 +281,37 @@ async function getCourseRecord(orgId: string, courseId: string): Promise<TCourse
   }
 
   return course;
+}
+
+/**
+ * Resolves draft activity references against the target course. Drafts never
+ * create activities, so every reference must already live in that course.
+ */
+async function resolveDraftActivities(
+  courseId: string,
+  activities: TCourseImportDraftPayload['activities']
+): Promise<Map<string, TCourseActivity>> {
+  const byId = new Map<string, TCourseActivity>();
+
+  if (!activities || activities.length === 0) {
+    return byId;
+  }
+
+  for (const activity of await getActivitiesByCourseId(courseId)) {
+    byId.set(activity.id, activity);
+  }
+
+  for (const reference of activities) {
+    if (!byId.has(reference.existingActivityId)) {
+      throw new AppError(
+        `Activity "${reference.existingActivityId}" does not belong to this course`,
+        ErrorCodes.VALIDATION_ERROR,
+        400
+      );
+    }
+  }
+
+  return byId;
 }
 
 function inferDraftLocale(languages: TLessonLanguage[]): TLocale {
@@ -378,15 +420,16 @@ async function buildDraftExercisesSnapshot(courseId: string): Promise<TCourseImp
 
 async function buildCourseStructureSnapshot(orgId: string, courseId: string): Promise<CourseStructureSnapshot> {
   const course = await getCourseRecord(orgId, courseId);
-  const [sections, lessons, tags] = await Promise.all([
+  const [sections, lessons, activities, tags] = await Promise.all([
     listCourseSections(courseId),
     listLessons(courseId),
+    getActivitiesByCourseId(courseId),
     getCourseTagsForOrganization(orgId, courseId)
   ]);
 
-  if (lessons.length === 0) {
+  if (lessons.length === 0 && activities.length === 0) {
     throw new AppError(
-      'Course must contain at least one lesson before it can be imported into a draft',
+      'Course must contain at least one lesson or package before it can be imported into a draft',
       ErrorCodes.VALIDATION_ERROR,
       400
     );
@@ -405,7 +448,11 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
 
   let sectionReferenceMap = new Map(normalizedSections.map((section) => [section.externalId, section.externalId]));
 
-  if (normalizedSections.length === 0 || lessons.some((lesson) => !lesson.sectionId)) {
+  if (
+    normalizedSections.length === 0 ||
+    lessons.some((lesson) => !lesson.sectionId) ||
+    activities.some((activity) => !activity.sectionId)
+  ) {
     const syntheticSectionId = `synthetic:${courseId}:ungrouped`;
     normalizedSections.push({
       externalId: syntheticSectionId,
@@ -416,7 +463,7 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     warnings.push(
       ZCourseImportWarning.parse({
         code: 'UNGROUPED_CONTENT_NORMALIZED',
-        message: 'Some lessons were ungrouped. A synthetic section was added to the draft.',
+        message: 'Some lessons or packages were ungrouped. A synthetic section was added to the draft.',
         severity: 'warning'
       })
     );
@@ -504,7 +551,7 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     }
   }
 
-  if (normalizedLessonLanguages.length === 0) {
+  if (normalizedLessonLanguages.length === 0 && activities.length === 0) {
     throw new AppError(
       'Course lessons must contain note or localized content before they can be imported into a draft',
       ErrorCodes.VALIDATION_ERROR,
@@ -514,11 +561,46 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
 
   const normalizedExercises = await buildDraftExercisesSnapshot(courseId);
 
+  const sortedActivities = [...activities].sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
+  const maxOrderBySection = new Map<string, number>();
+  for (const lesson of normalizedLessons) {
+    maxOrderBySection.set(
+      lesson.sectionExternalId,
+      Math.max(maxOrderBySection.get(lesson.sectionExternalId) ?? 0, lesson.order)
+    );
+  }
+  const lessonSectionByExternalId = new Map(
+    normalizedLessons.map((lesson) => [lesson.externalId, lesson.sectionExternalId])
+  );
+  for (const exercise of normalizedExercises ?? []) {
+    const sectionExternalId = exercise.lessonExternalId
+      ? lessonSectionByExternalId.get(exercise.lessonExternalId)
+      : exercise.sectionExternalId;
+    if (sectionExternalId) {
+      maxOrderBySection.set(sectionExternalId, Math.max(maxOrderBySection.get(sectionExternalId) ?? 0, exercise.order));
+    }
+  }
+  const normalizedActivities = sortedActivities.map((activity) => {
+    const sectionExternalId =
+      activity.sectionId && sectionReferenceMap.has(activity.sectionId)
+        ? activity.sectionId
+        : normalizedSections[normalizedSections.length - 1]!.externalId;
+    const nextActivityOrder = (maxOrderBySection.get(sectionExternalId) ?? 0) + 1;
+    maxOrderBySection.set(sectionExternalId, nextActivityOrder);
+
+    return {
+      existingActivityId: activity.id,
+      sectionExternalId,
+      order: nextActivityOrder
+    };
+  });
+
   const draft = ZCourseImportDraftPayload.parse({
     course: {
       title: course.title,
       description: course.description,
       type: course.type,
+      format: course.format ?? 'standard',
       locale: fallbackLocale,
       metadata: course.metadata,
       compliance: course.compliance ?? undefined
@@ -528,6 +610,7 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     lessons: normalizedLessons,
     lessonLanguages: normalizedLessonLanguages,
     exercises: normalizedExercises,
+    activities: normalizedActivities,
     sourceReferences: [
       {
         type: 'course',
@@ -763,6 +846,14 @@ export async function publishCourseImportDraftService(
       }
     });
 
+    if (draft.activities && draft.activities.length > 0) {
+      throw new AppError(
+        'Draft activities reference an existing course and cannot be published to a new course',
+        ErrorCodes.VALIDATION_ERROR,
+        400
+      );
+    }
+
     let courseId = existing.publishedCourseId;
 
     if (courseId) {
@@ -905,6 +996,16 @@ export async function publishCourseImportDraftToExistingCourseService(
     const existingDraft = await getCourseImportDraftService(orgId, draftId);
     const draft = parseStoredDraft(existingDraft);
     const course = await getCourseRecord(orgId, overrides.courseId);
+
+    if (course.format === 'single_activity') {
+      throw new AppError(
+        'Drafts cannot publish to a single-activity course. Convert it to a standard course first.',
+        ErrorCodes.VALIDATION_ERROR,
+        400
+      );
+    }
+
+    const activityById = await resolveDraftActivities(course.id, draft.activities);
     const syncMode = overrides.syncMode ?? 'merge';
     const courseTitle = overrides.title ?? draft.course.title;
     const courseDescription = overrides.description ?? draft.course.description;
@@ -913,6 +1014,27 @@ export async function publishCourseImportDraftToExistingCourseService(
     const courseCompliance = overrides.compliance ?? draft.course.compliance;
     const preferredLocale = draft.course.locale as TLocale;
     const bannerImageUrl = await resolvePublishBannerImage(courseTitle, overrides);
+
+    if (syncMode === 'replace') {
+      const [preSections, preActivities] = await Promise.all([
+        listCourseSections(course.id),
+        getActivitiesByCourseId(course.id)
+      ]);
+      const draftSectionIds = new Set(draft.sections.map((section) => section.externalId));
+      const removedWithPackages = preSections.filter(
+        (section) =>
+          !draftSectionIds.has(section.id) && preActivities.some((activity) => activity.sectionId === section.id)
+      );
+
+      if (removedWithPackages.length > 0) {
+        const names = removedWithPackages.map((section) => `"${section.title}"`).join(', ');
+        throw new AppError(
+          `Cannot remove ${names} because ${removedWithPackages.length === 1 ? 'it still holds' : 'they still hold'} packages`,
+          ErrorCodes.ACTIVITY_SECTION_REMOVED,
+          409
+        );
+      }
+    }
 
     await updateCourse(course.id, {
       title: courseTitle,
@@ -929,6 +1051,7 @@ export async function publishCourseImportDraftToExistingCourseService(
       listLessons(course.id)
     ]);
     const existingExercises = await listExercises(course.id);
+    const existingActivities = [...activityById.values()];
     const existingSectionIds = new Set(existingSections.map((section) => section.id));
     const existingLessonIds = new Set(existingLessons.map((lesson) => lesson.id));
     const existingExerciseIds = new Set(existingExercises.map((exercise) => exercise.id));
@@ -1030,6 +1153,58 @@ export async function publishCourseImportDraftToExistingCourseService(
       });
       lessonIdMap.set(lesson.externalId, createdLesson.id);
       createdLessons += 1;
+    }
+
+    const maxOrderBySection = new Map<string, number>();
+    const trackOrder = (sectionId: string | null | undefined, order: unknown) => {
+      if (!sectionId) {
+        return;
+      }
+
+      const numeric = Number(order) || 0;
+      maxOrderBySection.set(sectionId, Math.max(maxOrderBySection.get(sectionId) ?? 0, numeric));
+    };
+    for (const existingLesson of existingLessons) {
+      trackOrder(existingLesson.sectionId, existingLesson.order);
+    }
+    for (const existingExercise of existingExercises) {
+      trackOrder(existingExercise.sectionId, existingExercise.order);
+    }
+    for (const existingActivity of existingActivities) {
+      trackOrder(existingActivity.sectionId, existingActivity.order);
+    }
+
+    let updatedActivities = 0;
+    for (const reference of [...(draft.activities ?? [])].sort((a, b) => a.order - b.order)) {
+      const sectionId = sectionIdMap.get(reference.sectionExternalId);
+      if (!sectionId) {
+        throw new AppError(
+          `Activity "${reference.existingActivityId}" references an unknown section`,
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+
+      const current = activityById.get(reference.existingActivityId);
+      if (!current) {
+        throw new AppError(
+          `Activity "${reference.existingActivityId}" does not belong to this course`,
+          ErrorCodes.VALIDATION_ERROR,
+          400
+        );
+      }
+
+      let order: number | undefined;
+      if (!isMerge || current.sectionId !== sectionId) {
+        order = isMerge ? (maxOrderBySection.get(sectionId) ?? 0) + 1 : reference.order;
+        maxOrderBySection.set(sectionId, order);
+      }
+
+      await updateActivity(reference.existingActivityId, {
+        sectionId,
+        ...(order !== undefined ? { order } : {})
+      });
+      updatedActivities += 1;
     }
 
     const existingLessonLanguageMap = new Map(
@@ -1146,12 +1321,28 @@ export async function publishCourseImportDraftToExistingCourseService(
     const referencedExerciseIds = new Set(
       (draft.exercises ?? []).map((exercise) => exercise.externalId).filter((id) => existingExerciseIds.has(id))
     );
+    const referencedActivityIds = new Set((draft.activities ?? []).map((activity) => activity.existingActivityId));
+    const placedActivities = await getActivitiesByCourseId(course.id);
     let deletedLessonLanguages = 0;
     let deletedExercises = 0;
     let deletedLessons = 0;
     let deletedSections = 0;
 
     if (syncMode === 'replace') {
+      const removedSectionsWithActivities = existingSections.filter(
+        (section) =>
+          !referencedSectionIds.has(section.id) &&
+          placedActivities.some((activity) => activity.sectionId === section.id)
+      );
+
+      if (removedSectionsWithActivities.length > 0) {
+        const names = removedSectionsWithActivities.map((section) => `"${section.title}"`).join(', ');
+        throw new AppError(
+          `Cannot remove ${names} because ${removedSectionsWithActivities.length === 1 ? 'it still holds' : 'they still hold'} packages`,
+          ErrorCodes.ACTIVITY_SECTION_REMOVED,
+          409
+        );
+      }
       const referencedLanguageKeys = new Set(
         draft.lessonLanguages
           .map((lessonLanguage) => {
@@ -1224,6 +1415,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         updatedSections,
         updatedLessons,
         updatedExercises,
+        updatedActivities,
         createdLessonLanguages,
         updatedLessonLanguages,
         deletedSections,
@@ -1245,6 +1437,7 @@ export async function publishCourseImportDraftToExistingCourseService(
       updatedLessons,
       createdExercises,
       updatedExercises,
+      updatedActivities,
       createdLessonLanguages,
       updatedLessonLanguages,
       deletedSections,
@@ -1254,6 +1447,7 @@ export async function publishCourseImportDraftToExistingCourseService(
       untouchedSections: Math.max(existingSections.length - referencedSectionIds.size - deletedSections, 0),
       untouchedLessons: Math.max(existingLessons.length - referencedLessonIds.size - deletedLessons, 0),
       untouchedExercises: Math.max(existingExercises.length - referencedExerciseIds.size - deletedExercises, 0),
+      untouchedActivities: Math.max(existingActivities.length - referencedActivityIds.size, 0),
       localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
     };
   } catch (error) {

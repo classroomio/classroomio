@@ -7,6 +7,7 @@ import {
 } from '@cio/utils/functions/course-progression';
 import type { CourseContentItemRow } from '@cio/db/queries/course/content';
 import {
+  getCompletedActivityIdsForProfile,
   getCompletedExerciseIdsForMember,
   getCompletedLessonIdsForProfile,
   getExerciseProgressionPolicies,
@@ -37,28 +38,36 @@ export type AnnotatedCourseContent = {
   items: AnnotatedCourseContentItem[];
 };
 
-function annotateNavigableAccess(params: {
+export function annotateNavigableAccess(params: {
   navigableItems: CourseContentItem[];
   lessonPolicyById: Map<string, LessonProgressionPolicy>;
   progressionMode: 'free' | 'sequential';
   completedLessonIds: Set<string>;
   completedExerciseIds: Set<string>;
+  completedActivityIds?: Set<string>;
 }): Map<string, { accessible: boolean; lockReason: ProgressionLockReason | null }> {
   return computeProgressionAccess({
     navigableItems: params.navigableItems,
     progressionMode: params.progressionMode,
     isComplete: (item) => {
-      if (item.type === ContentType.Lesson) {
-        return params.completedLessonIds.has(item.id);
+      switch (item.type) {
+        case ContentType.Lesson:
+          return params.completedLessonIds.has(item.id);
+        case ContentType.Exercise:
+          return params.completedExerciseIds.has(item.id) || Boolean(item.isComplete);
+        case ContentType.Activity:
+          return params.completedActivityIds?.has(item.id) === true || Boolean(item.isComplete);
+        case ContentType.Section:
+          return true;
+        default:
+          return false;
       }
-
-      if (item.type === ContentType.Exercise) {
-        return params.completedExerciseIds.has(item.id) || Boolean(item.isComplete);
-      }
-
-      return true;
     },
     getCompletionPolicy: (item) => {
+      if (item.type === ContentType.Activity) {
+        return null;
+      }
+
       const lessonPolicy = params.lessonPolicyById.get(item.id);
       return lessonPolicy?.completionPolicy ?? 'manual';
     }
@@ -137,14 +146,16 @@ export async function annotateCourseContentWithProgression(params: {
   const progressionMode = params.progressionMode ?? 'free';
   const groupMemberId = await getGroupMemberIdByCourseAndProfile(params.courseId, params.profileId);
 
-  const [lessonPolicies, exercisePolicies, completedLessonIds, completedExerciseIds] = await Promise.all([
-    getLessonProgressionPolicies(params.courseId),
-    getExerciseProgressionPolicies(params.courseId),
-    getCompletedLessonIdsForProfile(params.courseId, params.profileId),
-    groupMemberId
-      ? getCompletedExerciseIdsForMember(params.courseId, groupMemberId)
-      : Promise.resolve(new Set<string>())
-  ]);
+  const [lessonPolicies, exercisePolicies, completedLessonIds, completedExerciseIds, completedActivityIds] =
+    await Promise.all([
+      getLessonProgressionPolicies(params.courseId),
+      getExerciseProgressionPolicies(params.courseId),
+      getCompletedLessonIdsForProfile(params.courseId, params.profileId),
+      groupMemberId
+        ? getCompletedExerciseIdsForMember(params.courseId, groupMemberId)
+        : Promise.resolve(new Set<string>()),
+      getCompletedActivityIdsForProfile(params.courseId, params.profileId)
+    ]);
 
   const lessonPolicyById = new Map(lessonPolicies.map((policy) => [policy.id, policy]));
   const exercisePolicyById = new Map(exercisePolicies.map((policy) => [policy.id, policy]));
@@ -154,7 +165,8 @@ export async function annotateCourseContentWithProgression(params: {
     lessonPolicyById,
     progressionMode,
     completedLessonIds,
-    completedExerciseIds
+    completedExerciseIds,
+    completedActivityIds
   });
 
   return applyAccessToContent(content, accessById, lessonPolicyById, exercisePolicyById);
@@ -165,7 +177,7 @@ export async function assertStudentCanAccessContent(params: {
   profileId: string;
   roleId: number | null;
   contentId: string;
-  type: ContentType.Lesson | ContentType.Exercise;
+  type: ContentType.Lesson | ContentType.Exercise | ContentType.Activity;
   progressionMode?: 'free' | 'sequential';
   contentRows: CourseContentItemRow[];
   isContentGroupingEnabled: boolean;

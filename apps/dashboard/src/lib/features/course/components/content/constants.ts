@@ -71,12 +71,14 @@ export type ExerciseCreateType = (typeof EXERCISE_CREATE_TYPE)[keyof typeof EXER
 export const SUCCESS_SENTENCE_KEYS: Record<ContentType, string> = {
   [ContentType.Section]: 'course.navItem.lessons.add_content_created_section',
   [ContentType.Lesson]: 'course.navItem.lessons.add_content_created_lesson',
-  [ContentType.Exercise]: 'course.navItem.lessons.add_content_created_exercise'
+  [ContentType.Exercise]: 'course.navItem.lessons.add_content_created_exercise',
+  [ContentType.Activity]: 'course.navItem.lessons.add_content_created_activity'
 };
 
 /** "Create another" button label translation keys keyed by ContentType */
 export const REPEAT_LABEL_KEYS: Record<ContentType, string> = {
   [ContentType.Section]: 'course.navItem.lessons.add_content_create_another_section',
   [ContentType.Lesson]: 'course.navItem.lessons.add_content_create_another_lesson',
-  [ContentType.Exercise]: 'course.navItem.lessons.add_content_create_another_exercise'
+  [ContentType.Exercise]: 'course.navItem.lessons.add_content_create_another_exercise',
+  [ContentType.Activity]: 'course.navItem.lessons.add_content_create_another_activity'
 };

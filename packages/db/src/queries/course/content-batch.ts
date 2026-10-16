@@ -8,7 +8,7 @@ import type { DbOrTxClient } from '@db/drizzle';
 import { contentWriteBumpsTimestamp } from './content-timestamp';
 import { OperationalQueryError } from '../query-errors';
 
-const { courseSection, lesson, exercise } = schema;
+const { courseActivity, courseSection, lesson, exercise } = schema;
 
 function buildUpdatePayload(item: TCourseContentUpdate['items'][number]) {
   const payload: Record<string, unknown> = {};
@@ -31,7 +31,7 @@ function buildUpdatePayload(item: TCourseContentUpdate['items'][number]) {
 export async function applyCourseContentBulkUpdates(
   tx: DbOrTxClient,
   items: TCourseContentUpdate['items']
-): Promise<{ updatedItems: number; updatedLessons: number; updatedExercises: number }> {
+): Promise<{ updatedItems: number; updatedLessons: number; updatedExercises: number; updatedActivities: number }> {
   const updates = items
     .map((item) => ({
       item,
@@ -43,7 +43,8 @@ export async function applyCourseContentBulkUpdates(
     return {
       updatedItems: 0,
       updatedLessons: 0,
-      updatedExercises: 0
+      updatedExercises: 0,
+      updatedActivities: 0
     };
   }
 
@@ -51,6 +52,7 @@ export async function applyCourseContentBulkUpdates(
 
   const lessonUpdates = updates.filter(({ item }) => item.type === ContentType.Lesson);
   const exerciseUpdates = updates.filter(({ item }) => item.type === ContentType.Exercise);
+  const activityUpdates = updates.filter(({ item }) => item.type === ContentType.Activity);
 
   if (lessonUpdates.length > 0) {
     const lessonIds = lessonUpdates.map(({ item }) => item.id);
@@ -166,10 +168,68 @@ export async function applyCourseContentBulkUpdates(
     }
   }
 
+  if (activityUpdates.length > 0) {
+    const activityIds = activityUpdates.map(({ item }) => item.id);
+    const activityOrderUpdates = activityUpdates
+      .filter(({ payload }) => payload.order !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.order }));
+    const activitySectionUpdates = activityUpdates
+      .filter(({ payload }) => payload.sectionId !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.sectionId }));
+    const activityUnlockUpdates = activityUpdates
+      .filter(({ payload }) => payload.isUnlocked !== undefined)
+      .map(({ item, payload }) => ({ id: item.id, value: payload.isUnlocked }));
+
+    const activityContentIds = activityUpdates
+      .filter(({ payload }) => contentWriteBumpsTimestamp(Object.keys(payload)))
+      .map(({ item }) => item.id);
+
+    const activitySet: Record<string, unknown> = {};
+
+    if (activityContentIds.length > 0) {
+      activitySet.updatedAt = sql`case when ${courseActivity.id} in (${sql.join(
+        activityContentIds.map((id) => sql`${id}`),
+        sql`, `
+      )}) then ${updatedAt} else ${courseActivity.updatedAt} end`;
+    }
+
+    if (activityOrderUpdates.length > 0) {
+      activitySet.order = sql`case ${courseActivity.id} ${sql.join(
+        activityOrderUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${courseActivity.order} end`;
+    }
+
+    if (activitySectionUpdates.length > 0) {
+      activitySet.sectionId = sql`case ${courseActivity.id} ${sql.join(
+        activitySectionUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${courseActivity.sectionId} end`;
+    }
+
+    if (activityUnlockUpdates.length > 0) {
+      activitySet.isUnlocked = sql`case ${courseActivity.id} ${sql.join(
+        activityUnlockUpdates.map((update) => sql`when ${update.id} then ${update.value}`),
+        sql` `
+      )} else ${courseActivity.isUnlocked} end`;
+    }
+
+    const updatedActivities = await tx
+      .update(courseActivity)
+      .set(activitySet)
+      .where(inArray(courseActivity.id, activityIds))
+      .returning({ id: courseActivity.id });
+
+    if (updatedActivities.length !== activityIds.length) {
+      throw new OperationalQueryError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
+    }
+  }
+
   return {
     updatedItems: updates.length,
     updatedLessons: lessonUpdates.length,
-    updatedExercises: exerciseUpdates.length
+    updatedExercises: exerciseUpdates.length,
+    updatedActivities: activityUpdates.length
   };
 }
 

@@ -143,6 +143,8 @@ export const ZPublicApiCourseListItemResponse = ZPublicApiCourseResponse.extend(
   lessonCount: z.number(),
   totalStudents: z.number(),
   exerciseCount: z.number(),
+  activityCount: z.number(),
+  moduleCount: z.number(),
   tags: z.array(
     z.object({
       id: z.string().uuid(),
@@ -155,7 +157,7 @@ export const ZPublicApiCourseListItemResponse = ZPublicApiCourseResponse.extend(
 
 const ZCourseContentItem = z.object({
   id: z.string().uuid(),
-  type: z.enum(['LESSON', 'EXERCISE']),
+  type: z.enum(['LESSON', 'EXERCISE', 'ACTIVITY']),
   title: z.string(),
   order: z.number().nullable(),
   createdAt: nullableTimestamp,
@@ -244,7 +246,8 @@ export const ZPublicApiCourseDetailResponse = ZPublicApiCourseResponse.extend({
 export const ZPublicApiCreateCourseResponse = z.object({
   course: ZPublicApiCourseResponse,
   groupId: z.string().uuid(),
-  memberId: z.string().uuid().describe("The key creator's course member id; they are added as a tutor")
+  memberId: z.string().uuid().describe("The key creator's course member id; they are added as a tutor"),
+  activityId: z.string().uuid().nullable()
 });
 
 export const ZPublicApiCourseConversionOffenderResponse = z.object({
@@ -283,11 +286,13 @@ export const ZPublicApiUpdateCourseStructureResponse = z.object({
   updatedLessons: z.number(),
   updatedExercises: z.number(),
   updatedLessonLanguages: z.number(),
+  updatedActivities: z.number(),
   deletedSections: z.number(),
   deletedLessons: z.number(),
   deletedExercises: z.number(),
   deletedLessonLanguages: z.number(),
   untouchedSections: z.number(),
   untouchedLessons: z.number(),
-  untouchedExercises: z.number()
+  untouchedExercises: z.number(),
+  untouchedActivities: z.number()
 });

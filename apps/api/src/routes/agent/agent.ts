@@ -73,9 +73,11 @@ import {
   getLatestImplementationPlan,
   loadDocumentsMeta,
   loadDocumentsText,
+  verifyActivityBelongsToCourse,
   verifyExerciseBelongsToCourse,
   verifyLessonBelongsToCourse
 } from '@cio/core/services/agent/chat-context';
+import { getActivityCourseBinding } from '@cio/db/queries/agent/chat-resource';
 import { buildAgentTools, filterToolsForChatMode } from '@cio/core/services/agent/chat-tools';
 import { buildModelContextMessages } from '@cio/core/services/agent/model-context';
 import { summarizeConversation } from '@cio/core/services/agent/summarize';
@@ -488,6 +490,19 @@ const agentCoreRouter = new Hono()
         }
       }
 
+      let activityTitle: string | undefined;
+      let activityInstructions: string | undefined;
+      if (context?.activityId) {
+        try {
+          await verifyActivityBelongsToCourse(context.activityId, courseId);
+          const activity = await getActivityCourseBinding(context.activityId);
+          activityTitle = activity?.title ?? undefined;
+          activityInstructions = activity?.instructions ?? undefined;
+        } catch {
+          // Activity not found or doesn't belong — continue without activity context
+        }
+      }
+
       const studentAgentTools =
         role === AgentRole.STUDENT ? buildStudentAgentTools(orgId, user.id, courseId, studentPolicy!.settings) : null;
       let studentSubmission: unknown;
@@ -516,6 +531,9 @@ const agentCoreRouter = new Hono()
         lessonContent,
         exerciseId: context?.exerciseId,
         exerciseTitle,
+        activityId: context?.activityId,
+        activityTitle,
+        activityInstructions,
         studentSubmission,
         documentId: context?.documentId,
         documentText,

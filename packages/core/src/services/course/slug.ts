@@ -3,11 +3,11 @@ import { getTakenItemSlugs } from '@cio/db/queries/course';
 import { SLUG_REGEX, resolveSlugCollision, slugifyTitle } from '@cio/utils/validation';
 
 /**
- * Resolve an item (lesson or exercise) slug for a given course:
+ * Resolve an item (lesson, exercise or activity) slug for a given course:
  *  - If `requestedSlug` is provided, validate it and reject if already taken (excluding `ignoreItemId`).
  *  - Otherwise derive a slug from `title` and append `-2`, `-3`, ... until free.
  *
- * Uniqueness is enforced across the union of `lesson.slug` and `exercise.slug` per course.
+ * Uniqueness is enforced across `lesson.slug`, `exercise.slug` and `course_activity.slug` per course.
  */
 export async function resolveItemSlug(params: {
   courseId: string;

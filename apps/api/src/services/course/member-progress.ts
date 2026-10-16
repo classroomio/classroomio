@@ -4,13 +4,14 @@ import { getLastSeenForUserIds } from '@cio/db/queries/analytics';
 import { getCourseById } from '@cio/db/queries/course/course';
 import { getCourseContentItems } from '@cio/db/queries/course/content';
 import {
+  getBatchActivityCompletionsForCourse,
   getBatchCompletedExerciseIdsForMembers,
   getBatchLessonCompletionsForCourse,
   getBatchStudentCourseMembership,
   getCourseTrackableContentCounts
 } from '@cio/db/queries/course/member-progress';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
-import { buildCourseContent, type CourseContentItem } from './utils';
+import { buildCourseContent, type CourseContentItem } from '@cio/core/services/course/utils';
 
 export type CourseMemberStage =
   | { kind: 'not_started' }
@@ -19,7 +20,7 @@ export type CourseMemberStage =
       kind: 'content';
       position: number;
       title: string;
-      contentType: 'lesson' | 'exercise';
+      contentType: 'lesson' | 'exercise' | 'activity';
     };
 
 export type CourseMemberProgressSummary = {
@@ -31,7 +32,7 @@ export type CourseMemberProgressSummary = {
 
 type TrackableContentItem = {
   id: string;
-  type: ContentType.Lesson | ContentType.Exercise;
+  type: ContentType.Lesson | ContentType.Exercise | ContentType.Activity;
   title: string;
   isComplete: boolean;
 };
@@ -40,16 +41,22 @@ function toTrackableContentItems(contentItems: CourseContentItem[]): TrackableCo
   const trackableItems: TrackableContentItem[] = [];
 
   for (const item of contentItems) {
-    if (item.type !== ContentType.Lesson && item.type !== ContentType.Exercise) {
-      continue;
+    switch (item.type) {
+      case ContentType.Lesson:
+      case ContentType.Exercise:
+      case ContentType.Activity:
+        trackableItems.push({
+          id: item.id,
+          type: item.type,
+          title: item.title,
+          isComplete: item.isComplete ?? false
+        });
+        break;
+      case ContentType.Section:
+        break;
+      default:
+        break;
     }
-
-    trackableItems.push({
-      id: item.id,
-      type: item.type,
-      title: item.title,
-      isComplete: item.isComplete ?? false
-    });
   }
 
   return trackableItems;
@@ -72,17 +79,46 @@ function buildOrderedTrackableItems(
 function buildStudentTrackableItems(
   skeleton: Omit<TrackableContentItem, 'isComplete'>[],
   completedLessonIds: Set<string>,
-  completedExerciseIds: Set<string>
+  completedExerciseIds: Set<string>,
+  completedActivityIds: Set<string>
 ): TrackableContentItem[] {
   return skeleton.map((item) => {
-    const isLesson = item.type === ContentType.Lesson;
-    const isComplete = isLesson ? completedLessonIds.has(item.id) : completedExerciseIds.has(item.id);
-
-    return {
-      ...item,
-      isComplete
-    };
+    switch (item.type) {
+      case ContentType.Lesson:
+        return {
+          ...item,
+          isComplete: completedLessonIds.has(item.id)
+        };
+      case ContentType.Exercise:
+        return {
+          ...item,
+          isComplete: completedExerciseIds.has(item.id)
+        };
+      case ContentType.Activity:
+        return {
+          ...item,
+          isComplete: completedActivityIds.has(item.id)
+        };
+      default:
+        return {
+          ...item,
+          isComplete: false
+        };
+    }
   });
+}
+
+function contentTypeLabel(type: TrackableContentItem['type']): 'lesson' | 'exercise' | 'activity' {
+  switch (type) {
+    case ContentType.Lesson:
+      return 'lesson';
+    case ContentType.Exercise:
+      return 'exercise';
+    case ContentType.Activity:
+      return 'activity';
+    default:
+      return 'lesson';
+  }
 }
 
 export function deriveCourseMemberStage(params: {
@@ -109,7 +145,7 @@ export function deriveCourseMemberStage(params: {
     kind: 'content',
     position,
     title: firstIncomplete.title,
-    contentType: firstIncomplete.type === ContentType.Exercise ? 'exercise' : 'lesson'
+    contentType: contentTypeLabel(firstIncomplete.type)
   };
 }
 
@@ -141,6 +177,7 @@ export async function getCourseMemberProgressSummaries(
     contentCounts,
     membershipByProfileId,
     lessonCompletionsByProfileId,
+    activityCompletionsByProfileId,
     lastSeenByProfileId
   ] = await Promise.all([
     getCourseById(courseId),
@@ -148,6 +185,7 @@ export async function getCourseMemberProgressSummaries(
     getCourseTrackableContentCounts(courseId),
     getBatchStudentCourseMembership(courseId, profileIds),
     getBatchLessonCompletionsForCourse(courseId, profileIds),
+    getBatchActivityCompletionsForCourse(courseId, profileIds),
     getLastSeenForUserIds(profileIds)
   ]);
 
@@ -167,6 +205,7 @@ export async function getCourseMemberProgressSummaries(
     const completedExerciseIds = membership
       ? (exerciseCompletionsByMemberId.get(membership.groupMemberId) ?? new Set<string>())
       : new Set<string>();
+    const completedActivityIds = activityCompletionsByProfileId.get(student.profileId) ?? new Set<string>();
 
     const lessonsCompleted = trackableSkeleton.filter(
       (item) => item.type === ContentType.Lesson && completedLessonIds.has(item.id)
@@ -174,15 +213,25 @@ export async function getCourseMemberProgressSummaries(
     const exercisesCompleted = trackableSkeleton.filter(
       (item) => item.type === ContentType.Exercise && completedExerciseIds.has(item.id)
     ).length;
+    const activitiesCompleted = trackableSkeleton.filter(
+      (item) => item.type === ContentType.Activity && completedActivityIds.has(item.id)
+    ).length;
 
     const progressPercent = calcCourseProgressPercent({
       lessonsCompleted,
       totalLessons: contentCounts.lessonsCount,
       exercisesCompleted,
-      exercisesCount: contentCounts.exercisesCount
+      exercisesCount: contentCounts.exercisesCount,
+      activitiesCompleted,
+      activitiesCount: contentCounts.activitiesCount
     });
 
-    const contentItems = buildStudentTrackableItems(trackableSkeleton, completedLessonIds, completedExerciseIds);
+    const contentItems = buildStudentTrackableItems(
+      trackableSkeleton,
+      completedLessonIds,
+      completedExerciseIds,
+      completedActivityIds
+    );
     const certificateEarnedAt = membership?.certificateEarnedAt ?? null;
 
     const stage = deriveCourseMemberStage({
