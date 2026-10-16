@@ -18,6 +18,7 @@
     LandingPageIcon,
     MarksIcon,
     NewsFeedIcon,
+    PackageCheckIcon,
     PeopleIcon,
     PremiumIcon,
     SettingsIcon,
@@ -27,7 +28,7 @@
   import { ContentType } from '@cio/utils/constants/content';
   import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
   import { openAddContentModal } from '$features/course/components/content/open-content-create';
-  import { getCourseContent } from '$features/course/utils/content';
+  import { getCourseContent, getContentRoute } from '$features/course/utils/content';
   import CourseContentTree from './course-content-tree.svelte';
   import ContentCountBadges from '../content-count-badges.svelte';
 
@@ -37,7 +38,8 @@
   import { IS_AI_ENABLED } from '$lib/utils/constants/ai';
   import { currentOrg, isFreePlan, isStudentLimitReached, currentOrgPath } from '$lib/utils/store/org';
   import { isStudentExperience } from '$lib/utils/store/app';
-  import { getNavItemRoute, getLessonsRoute } from '$features/course/utils/functions';
+  import { getNavItemRoute, getLessonsRoute, getSingleActivityNavLabelKey } from '$features/course/utils/functions';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { useSidebar } from '@cio/ui/base/sidebar';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
@@ -56,8 +58,30 @@
   const currentPath = $derived(path || page.url.pathname);
   const lessonsRoute = $derived(getLessonsRoute(id));
   const isOnContentRoute = $derived(
-    currentPath.includes('/lessons') || currentPath.includes('/exercises') || currentPath === lessonsRoute
+    currentPath.includes('/lessons') ||
+      currentPath.includes('/exercises') ||
+      currentPath.includes('/activities') ||
+      currentPath === lessonsRoute
   );
+
+  const isSingleActivity = $derived(isSingleActivityCourse(courseApi.course));
+  const singleActivityItem = $derived.by(() => {
+    if (!isSingleActivity) return null;
+
+    const items = contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items;
+
+    return items.find((item) => item.type === ContentType.Activity) ?? null;
+  });
+  const singleActivityKind = $derived.by(() => {
+    const kind = (singleActivityItem as { activityKind?: unknown } | null)?.activityKind;
+
+    return typeof kind === 'string' ? kind : null;
+  });
+  const scormPackageRoute = $derived.by(() => {
+    if (!singleActivityItem) return lessonsRoute;
+
+    return getContentRoute(id, singleActivityItem);
+  });
 
   let contentTreeCollapsed = $state(false);
   let trackedContentKey = $state('');
@@ -70,11 +94,13 @@
       : contentData.items;
     const lessons = contentItems.filter((item) => item.type === ContentType.Lesson).length;
     const exercises = contentItems.filter((item) => item.type === ContentType.Exercise).length;
+    const activities = contentItems.filter((item) => item.type === ContentType.Activity).length;
 
     return {
       lessons,
       exercises,
-      total: lessons + exercises
+      activities,
+      total: lessons + exercises + activities
     };
   });
   const showContentCount = $derived(sidebar.open && !sidebar.isMobile && contentCount.total > 0);
@@ -98,10 +124,13 @@
       },
       {
         id: NAV_IDS.LESSONS,
-        title: $t('course.navItems.nav_content'),
-        url: lessonsRoute,
-        isActive: isOnContentRoute,
+        title: isSingleActivity
+          ? $t(getSingleActivityNavLabelKey(singleActivityKind))
+          : $t('course.navItems.nav_content'),
+        url: isSingleActivity ? scormPackageRoute : lessonsRoute,
+        isActive: isSingleActivity ? currentPath.includes('/activities') : isOnContentRoute,
         isLesson: true,
+        isPackage: isSingleActivity,
         icon: getNavIcon(NAV_IDS.LESSONS)
       },
       {
@@ -147,6 +176,7 @@
         show() {
           if (courseApi.course?.isTemplate) return false;
           if (isStudent) return false;
+          if (isSingleActivity) return false;
 
           return courseApi.course?.canGrade === true;
         },
@@ -159,6 +189,7 @@
         isActive: currentPath === getNavItemRoute(id, 'marks'),
         show() {
           if (courseApi.course?.isTemplate) return false;
+          if (isSingleActivity) return false;
           return isStudent ? ($currentOrg.customization?.['course']?.['grading'] ?? false) : true;
         },
         icon: getNavIcon(NAV_IDS.MARKS)
@@ -260,7 +291,7 @@
     } else if (id === NAV_IDS.NEWS_FEED) {
       return NewsFeedIcon;
     } else if (id === NAV_IDS.LESSONS) {
-      return ContentIcon;
+      return isSingleActivity ? PackageCheckIcon : ContentIcon;
     } else if (id === NAV_IDS.ATTENDANCE) {
       return AttendanceIcon;
     } else if (id === NAV_IDS.SUBMISSIONS) {
@@ -358,7 +389,25 @@
 
   <Sidebar.Menu>
     {#each navItems as item (item.id)}
-      {#if item.isLesson}
+      {#if item.isPackage}
+        <Sidebar.MenuItem>
+          <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
+            {#snippet child({ props })}
+              <HoverableItem>
+                {#snippet children(isHovered)}
+                  {@const Icon = item.icon}
+                  <a href={resolve(item.url, {})} data-testid="course-nav-package" {...props}>
+                    {#if Icon}
+                      <Icon {isHovered} size={16} />
+                    {/if}
+                    <span>{item.title}</span>
+                  </a>
+                {/snippet}
+              </HoverableItem>
+            {/snippet}
+          </Sidebar.MenuButton>
+        </Sidebar.MenuItem>
+      {:else if item.isLesson}
         <Sidebar.MenuItem>
           <Sidebar.MenuButton tooltipContent={item.title} isActive={item.isActive}>
             {#snippet child({ props })}
@@ -396,8 +445,12 @@
                           <Plus size={8} />
                         </IconButton>
                       {/if}
-                      {#if showContentCount}
-                        <ContentCountBadges lessons={contentCount.lessons} exercises={contentCount.exercises} />
+                      {#if showContentCount && !item.isPackage}
+                        <ContentCountBadges
+                          lessons={contentCount.lessons}
+                          exercises={contentCount.exercises}
+                          activities={contentCount.activities}
+                        />
                       {/if}
 
                       <IconButton

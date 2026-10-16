@@ -601,6 +601,18 @@ Registry and naming rules: `e2e/README.md` and AGENTS.md § E2E test hooks.
 <ChevronsUpDownIcon size={16} ariaHidden />
 ```
 
+## Package check
+
+`PackageCheckIcon` is the moving package check. Hovering it draws the check mark over 500ms, then it settles. Pass `isHovered` to play that motion from a parent.
+
+```svelte
+<script lang="ts">
+  import { PackageCheckIcon } from '@cio/ui/custom/moving-icons';
+</script>
+
+<PackageCheckIcon size={16} />
+```
+
 ## Template card
 
 `TemplateCard` is the small course-template tile used on the courses page and in the template gallery. Pass `blank` for the empty plus tile, which uses a dashed border. Pass `loading` for the skeleton, `typeBadge` for the course-type chip, and `overlay` for a menu that sits outside the button.

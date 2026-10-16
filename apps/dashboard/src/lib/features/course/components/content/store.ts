@@ -33,6 +33,14 @@ export const contentCreateStoreUtils = {
       skipTypeSelection: false
     });
   },
+  openActivity: () => {
+    contentCreateStore.set({
+      open: true,
+      sectionId: '',
+      initialType: ContentType.Activity,
+      skipTypeSelection: true
+    });
+  },
   close: () => {
     contentCreateStore.set({
       open: false,

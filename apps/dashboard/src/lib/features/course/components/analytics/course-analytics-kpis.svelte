@@ -15,12 +15,20 @@
 
   const tutorsCount = $derived(data.totalTutors ?? 0);
   const exerciseTotal = $derived(data.totalExercises ?? 0);
+  const activityTotal = $derived(
+    'totalActivities' in data && typeof data.totalActivities === 'number' ? data.totalActivities : 0
+  );
   const avgGrade = $derived(data.averageGrade ?? 0);
   const lessonRate = $derived(data.lessonCompletionRate ?? 0);
   const exerciseRate = $derived(data.exerciseCompletionRate ?? 0);
+  const activityRate = $derived(
+    'activityCompletionRate' in data && typeof data.activityCompletionRate === 'number'
+      ? data.activityCompletionRate
+      : 0
+  );
 </script>
 
-<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 {activityTotal > 0 ? 'xl:grid-cols-5' : 'xl:grid-cols-4'}">
   <KpiCard
     title={$t('analytics.students')}
     value={(data.totalStudents ?? 0).toLocaleString()}
@@ -49,4 +57,13 @@
     icon={ListChecksIcon}
     accent="primary"
   />
+  {#if activityTotal > 0}
+    <KpiCard
+      title={$t('analytics.packages')}
+      value={activityTotal.toLocaleString()}
+      description={$t('analytics.course_metrics.kpi_activity_completion', { rate: activityRate })}
+      icon={ListChecksIcon}
+      accent="primary"
+    />
+  {/if}
 </div>

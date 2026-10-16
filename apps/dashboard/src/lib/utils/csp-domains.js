@@ -84,7 +84,8 @@ const saasDefaults = {
     'https://slideshare.net',
     'https://www.beautiful.ai',
     'https://beautiful.ai',
-    'https://widget.userjot.com'
+    'https://widget.userjot.com',
+    'https://*.classroomio-content.com'
   ],
   fontSrc: ['https://fonts.gstatic.com', 'https://cdn.plyr.io'],
   mediaSrc: ['https:']

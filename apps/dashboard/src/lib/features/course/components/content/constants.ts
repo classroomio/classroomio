@@ -36,6 +36,15 @@ export const EXERCISE_STEPPER_DEFAULT_STATE: StepperState = {
   primaryActionLabel: ''
 };
 
+/** Default state for the SCORM package create stepper (label set at runtime from i18n) */
+export const ACTIVITY_STEPPER_DEFAULT_STATE: StepperState = {
+  currentStep: 0,
+  totalSteps: 1,
+  canProceed: false,
+  isSubmitting: false,
+  primaryActionLabel: ''
+};
+
 /** Content type options shown in the add-content modal (title/description are translation keys) */
 export const CONTENT_OPTIONS = [
   {
@@ -55,6 +64,12 @@ export const CONTENT_OPTIONS = [
     type: ContentType.Exercise,
     titleKey: 'course.navItem.lessons.add_content_options.exercise_title',
     descriptionKey: 'course.navItem.lessons.add_content_options.exercise_description'
+  },
+  {
+    id: 'scorm',
+    type: ContentType.Activity,
+    titleKey: 'course.navItem.lessons.add_content_options.activity_scorm_title',
+    descriptionKey: 'course.navItem.lessons.add_content_options.activity_scorm_description'
   }
 ] as const;
 

@@ -101,14 +101,19 @@
   function getCourseCompletedItems(course: EnrolledCourse) {
     const exercisesCompleted =
       'exercisesCompleted' in course && typeof course.exercisesCompleted === 'number' ? course.exercisesCompleted : 0;
+    const activitiesCompleted =
+      'activitiesCompleted' in course && typeof course.activitiesCompleted === 'number'
+        ? course.activitiesCompleted
+        : 0;
 
-    return (course.progressRate || 0) + exercisesCompleted;
+    return (course.progressRate || 0) + exercisesCompleted + activitiesCompleted;
   }
 
   function getCourseTotalItems(course: EnrolledCourse) {
     const exercises = 'exerciseCount' in course && typeof course.exerciseCount === 'number' ? course.exerciseCount : 0;
+    const activities = 'activityCount' in course && typeof course.activityCount === 'number' ? course.activityCount : 0;
 
-    return (course.lessonCount || 0) + exercises;
+    return (course.lessonCount || 0) + exercises + activities;
   }
 
   function getHighlightedCourses(courses: EnrolledCourse[]) {
@@ -492,6 +497,7 @@
               isPublished={course.isPublished ?? false}
               lessonCount={course.lessonCount}
               exerciseCount={course.exerciseCount}
+              activityCount={'activityCount' in course ? (course.activityCount ?? 0) : 0}
               isExplore={true}
               isLMS={true}
               hiddenColumns={['published', 'tags', 'students']}

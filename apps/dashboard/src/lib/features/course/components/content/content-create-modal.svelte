@@ -17,13 +17,21 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import ExerciseCreateStepper from './exercise-create-stepper.svelte';
+  import ActivityCreateStepper from './activity-create-stepper.svelte';
   import SectionCreateStepper from './section-create-stepper.svelte';
   import LessonCreateStepper from './lesson-create-stepper.svelte';
   import * as Alert from '@cio/ui/base/alert';
   import { getContentRoute } from '$features/course/utils/content';
   import type { CreatedContent, LockedSection, StepperRef, StepperState } from './types';
-  import { DEFAULT_STEPPER_STATE, CONTENT_OPTIONS, SUCCESS_SENTENCE_KEYS, REPEAT_LABEL_KEYS } from './constants';
+  import {
+    DEFAULT_STEPPER_STATE,
+    ACTIVITY_STEPPER_DEFAULT_STATE,
+    CONTENT_OPTIONS,
+    SUCCESS_SENTENCE_KEYS,
+    REPEAT_LABEL_KEYS
+  } from './constants';
   import { t } from '$lib/utils/functions/translations';
+  import { isSingleActivityCourse } from '$features/course/utils/course-format';
   import { preventDefault } from '$lib/utils/functions/svelte';
   import { shouldIgnoreGlobalShortcut } from '$lib/utils/functions/keyboard';
   import { isCourseLearnerView } from '$lib/utils/store/app';
@@ -51,6 +59,7 @@
   let sectionStepper: StepperRef | undefined = $state();
   let lessonStepper: StepperRef | undefined = $state();
   let exerciseStepper: StepperRef | undefined = $state();
+  let activityStepper: StepperRef | undefined = $state();
 
   // ============================================
   // UNIFIED STEPPER STATE
@@ -62,12 +71,15 @@
         ? lessonStepper
         : selectedType === ContentType.Exercise
           ? exerciseStepper
-          : undefined
+          : selectedType === ContentType.Activity
+            ? activityStepper
+            : undefined
   );
 
   let sectionStepperState = $state<StepperState>({ ...DEFAULT_STEPPER_STATE });
   let lessonStepperState = $state<StepperState>({ ...DEFAULT_STEPPER_STATE });
   let exerciseStepperState = $state<StepperState>({ ...DEFAULT_STEPPER_STATE });
+  let activityStepperState = $state<StepperState>({ ...ACTIVITY_STEPPER_DEFAULT_STATE });
 
   const stepperState = $derived(
     selectedType === ContentType.Section
@@ -76,7 +88,9 @@
         ? lessonStepperState
         : selectedType === ContentType.Exercise
           ? exerciseStepperState
-          : DEFAULT_STEPPER_STATE
+          : selectedType === ContentType.Activity
+            ? activityStepperState
+            : DEFAULT_STEPPER_STATE
   );
 
   const contentGroupingEnabled = $derived(courseApi.course?.metadata?.isContentGroupingEnabled ?? true);
@@ -88,11 +102,17 @@
    * in the sidebar (store sectionId), or continuing into a freshly created section (lockedSection).
    */
   const sectionFromContext = $derived(!!$contentCreateStore.sectionId || !!lockedSection);
-  const visibleContentOptions = $derived(
-    sectionFromContext || !contentGroupingEnabled
-      ? CONTENT_OPTIONS.filter((option) => option.type !== ContentType.Section)
-      : CONTENT_OPTIONS
-  );
+  const visibleContentOptions = $derived.by(() => {
+    const courseType = courseApi.course?.type;
+    const hideActivity = courseType === 'PUBLIC' || isSingleActivityCourse(courseApi.course);
+
+    const options =
+      sectionFromContext || !contentGroupingEnabled
+        ? CONTENT_OPTIONS.filter((option) => option.type !== ContentType.Section)
+        : CONTENT_OPTIONS;
+
+    return hideActivity ? options.filter((option) => option.type !== ContentType.Activity) : options;
+  });
   const contentOptionsForGroup = $derived(
     visibleContentOptions.map((o) => ({
       id: o.id,
@@ -147,12 +167,14 @@
     sectionStepperState = { ...DEFAULT_STEPPER_STATE };
     lessonStepperState = { ...DEFAULT_STEPPER_STATE };
     exerciseStepperState = { ...DEFAULT_STEPPER_STATE };
+    activityStepperState = { ...ACTIVITY_STEPPER_DEFAULT_STATE };
   }
 
   function resetAllSteppers() {
     sectionStepper?.actions.reset();
     lessonStepper?.actions.reset();
     exerciseStepper?.actions.reset();
+    activityStepper?.actions.reset();
     resetStepperStates();
   }
 
@@ -381,13 +403,17 @@
           </div>
         </Dialog.Footer>
       {:else if step === 0}
-        <!-- Select a content type - Section | Lesson | Exercise -->
+        <!-- Select a content type - Section | Lesson | Exercise | SCORM package -->
         <form class="flex flex-col gap-3" onsubmit={preventDefault(goToDetails)}>
           <Field.Description>{$t('course.navItem.lessons.add_content_description')}</Field.Description>
           <RadioOptionCardGroup
             options={contentOptionsForGroup}
             bind:value={selectedType}
-            class={contentOptionsForGroup.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}
+            class={contentOptionsForGroup.length >= 4
+              ? 'md:grid-cols-2 xl:grid-cols-4'
+              : contentOptionsForGroup.length >= 3
+                ? 'md:grid-cols-3'
+                : 'md:grid-cols-2'}
             onConfirm={goToDetails}
           />
           <Dialog.Footer class="flex justify-end">
@@ -395,7 +421,7 @@
           </Dialog.Footer>
         </form>
       {:else}
-        <!-- Create content - Section | Lesson | Exercise -->
+        <!-- Create content - Section | Lesson | Exercise | SCORM package -->
         <form class="px-1" onsubmit={preventDefault(handleUnifiedNext)}>
           {#if requiresSection}
             <div class="mb-4">
@@ -461,6 +487,17 @@
             <ExerciseCreateStepper
               bind:this={exerciseStepper}
               bind:stepperState={exerciseStepperState}
+              {courseId}
+              sectionId={effectiveSectionId}
+              order={nextContentOrder}
+              canCreate={canCreateLessonOrExercise}
+              session={modalSession}
+              onCreated={handleCreated}
+            />
+          {:else if selectedType === ContentType.Activity}
+            <ActivityCreateStepper
+              bind:this={activityStepper}
+              bind:stepperState={activityStepperState}
               {courseId}
               sectionId={effectiveSectionId}
               order={nextContentOrder}
