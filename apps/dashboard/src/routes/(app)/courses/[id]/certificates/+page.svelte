@@ -8,6 +8,7 @@
   import { courseApi } from '$features/course/api';
   import type { Course } from '$features/course/utils/types';
   import { parseCertificateThemeId } from '$features/course/utils/certificate-utils';
+  import { getEffectiveExerciseMinScorePercent } from '$features/course/utils/completion-rules-utils';
   import { isFreePlan, isOrgAdmin } from '$lib/utils/store/org';
   import { profile } from '$lib/utils/store/user';
   import { RefreshPageData, UnsavedChanges } from '$features/ui';
@@ -47,6 +48,8 @@
       return null;
     }
 
+    const exerciseMinScorePercent = getEffectiveExerciseMinScorePercent(course);
+
     return {
       description: course.description ?? '',
       certificate: {
@@ -56,12 +59,7 @@
         deadline: course.certificate?.deadline ?? null,
         threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
         requiredExerciseId: course.certificate?.requiredExerciseId ?? null,
-        exerciseMinScorePercent:
-          typeof course.certificate?.exerciseMinScorePercent === 'number'
-            ? course.certificate.exerciseMinScorePercent
-            : course.certificate?.requiredExerciseId
-              ? 100
-              : null,
+        exerciseMinScorePercent,
         emailMessage: course.certificate?.emailMessage ?? null
       }
     };
@@ -100,6 +98,8 @@
       return;
     }
 
+    const exerciseMinScorePercent = getEffectiveExerciseMinScorePercent(courseApi.course);
+
     const updatePayload = {
       description: courseApi.course.description ?? '',
       certificate: {
@@ -110,12 +110,7 @@
         threshold:
           typeof courseApi.course.certificate?.threshold === 'number' ? courseApi.course.certificate.threshold : 100,
         requiredExerciseId: courseApi.course.certificate?.requiredExerciseId ?? null,
-        exerciseMinScorePercent:
-          typeof courseApi.course.certificate?.exerciseMinScorePercent === 'number'
-            ? courseApi.course.certificate.exerciseMinScorePercent
-            : courseApi.course.certificate?.requiredExerciseId
-              ? 100
-              : null,
+        exerciseMinScorePercent,
         emailMessage: courseApi.course.certificate?.emailMessage ?? null
       }
     };
