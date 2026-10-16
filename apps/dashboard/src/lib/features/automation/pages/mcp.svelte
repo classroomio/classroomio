@@ -52,7 +52,7 @@
     if (!result) return;
 
     generatedSecret = automationApi.generatedSecret;
-    generatedSecretKeyId = result.key.id;
+    generatedSecretKeyId = result.data.key.id;
     automationApi.clearGeneratedSecret();
     isCreateKeyModalOpen = false;
     resetCreateKeyModal();
@@ -72,7 +72,7 @@
     if (!confirm(t.get('automation.keys.rotate_confirm'))) return;
 
     const result = await automationApi.rotateKey(keyId);
-    if (!result || result.key.revokedAt) return;
+    if (!result || result.data.key.revokedAt) return;
 
     const key = automationApi.keys.find((entry) => entry.id === keyId);
     if (!key || key.revokedAt) return;
