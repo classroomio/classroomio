@@ -22,7 +22,7 @@ export function getLicenseFeaturesForPlan(planName: string | null | undefined): 
   }
 
   if (planName === PLAN.EARLY_ADOPTER) {
-    return [LICENSE_FEATURE.CUSTOM_DOMAIN, LICENSE_FEATURE.CUSTOM_BRANDING];
+    return [LICENSE_FEATURE.CUSTOM_DOMAIN, LICENSE_FEATURE.CUSTOM_BRANDING, LICENSE_FEATURE.SCORM];
   }
 
   if (planName === PLAN.ENTERPRISE) {

@@ -22,6 +22,7 @@ export type UploadLimits = {
   agentDocumentMb: number;
   landingImageMb: number;
   thumbnailMb: number;
+  scormMb: number;
   documentBytes: number;
   imageBytes: number;
   videoBytes: number;
@@ -29,6 +30,7 @@ export type UploadLimits = {
   agentDocumentBytes: number;
   landingImageBytes: number;
   thumbnailBytes: number;
+  scormBytes: number;
 };
 
 export type UploadLimitEnv = {
@@ -39,7 +41,10 @@ export type UploadLimitEnv = {
   UPLOAD_MAX_AGENT_DOCUMENT_MB?: string;
   UPLOAD_MAX_LANDING_IMAGE_MB?: string;
   UPLOAD_MAX_THUMBNAIL_MB?: string;
+  UPLOAD_MAX_SCORM_MB?: string;
 };
+
+export const UPLOAD_DEFAULT_SCORM_MB = 500;
 
 export function resolveUploadLimits(env: UploadLimitEnv): UploadLimits {
   const documentMb = parseUploadLimitMb(env.UPLOAD_MAX_DOCUMENT_MB, 5);
@@ -49,6 +54,7 @@ export function resolveUploadLimits(env: UploadLimitEnv): UploadLimits {
   const agentDocumentMb = parseUploadLimitMb(env.UPLOAD_MAX_AGENT_DOCUMENT_MB, 5);
   const landingImageMb = parseUploadLimitMb(env.UPLOAD_MAX_LANDING_IMAGE_MB, 0.5);
   const thumbnailMb = parseUploadLimitMb(env.UPLOAD_MAX_THUMBNAIL_MB, 5);
+  const scormMb = parseUploadLimitMb(env.UPLOAD_MAX_SCORM_MB, UPLOAD_DEFAULT_SCORM_MB);
 
   return {
     documentMb,
@@ -58,12 +64,14 @@ export function resolveUploadLimits(env: UploadLimitEnv): UploadLimits {
     agentDocumentMb,
     landingImageMb,
     thumbnailMb,
+    scormMb,
     documentBytes: documentMb * BYTES_PER_MB,
     imageBytes: imageMb * BYTES_PER_MB,
     videoBytes: videoMb * BYTES_PER_MB,
     exerciseFileBytes: exerciseFileMb * BYTES_PER_MB,
     agentDocumentBytes: agentDocumentMb * BYTES_PER_MB,
     landingImageBytes: landingImageMb * BYTES_PER_MB,
-    thumbnailBytes: thumbnailMb * BYTES_PER_MB
+    thumbnailBytes: thumbnailMb * BYTES_PER_MB,
+    scormBytes: scormMb * BYTES_PER_MB
   };
 }

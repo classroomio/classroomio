@@ -9,6 +9,7 @@ import {
   integer,
   json,
   jsonb,
+  numeric,
   pgEnum,
   pgTable,
   pgView,
@@ -24,7 +25,20 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
+import { COURSE_FORMAT_VALUES } from '@cio/utils/constants/course-format';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import {
+  ACTIVITY_KINDS,
+  CONTENT_PACKAGE_FORMATS,
+  CONTENT_PACKAGE_STATUSES,
+  CONTENT_PACKAGE_UNIT_TYPES,
+  SCORM_ATTEMPT_CLOSE_REASONS,
+  SCORM_COMPLETION_MODULES,
+  SCORM_COMPLETION_RULES,
+  SCORM_MODULE_ORDERS,
+  SCORM_SCO_ATTEMPT_STATUSES,
+  SCORM_SESSION_EVENT_KINDS
+} from '@cio/utils/constants/activity';
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import {
@@ -34,6 +48,17 @@ import {
 import { sql } from 'drizzle-orm';
 
 export const courseType = pgEnum('COURSE_TYPE', [...COURSE_TYPE_VALUES]);
+export const courseFormat = pgEnum('COURSE_FORMAT', [...COURSE_FORMAT_VALUES]);
+export const activityKind = pgEnum('ACTIVITY_KIND', [...ACTIVITY_KINDS]);
+export const contentPackageStatus = pgEnum('CONTENT_PACKAGE_STATUS', [...CONTENT_PACKAGE_STATUSES]);
+export const contentPackageFormat = pgEnum('CONTENT_PACKAGE_FORMAT', [...CONTENT_PACKAGE_FORMATS]);
+export const contentPackageUnitType = pgEnum('CONTENT_PACKAGE_UNIT_TYPE', [...CONTENT_PACKAGE_UNIT_TYPES]);
+export const scormCompletionRule = pgEnum('SCORM_COMPLETION_RULE', [...SCORM_COMPLETION_RULES]);
+export const scormCompletionModules = pgEnum('SCORM_COMPLETION_MODULES', [...SCORM_COMPLETION_MODULES]);
+export const scormModuleOrder = pgEnum('SCORM_MODULE_ORDER', [...SCORM_MODULE_ORDERS]);
+export const scormAttemptCloseReason = pgEnum('SCORM_ATTEMPT_CLOSE_REASON', [...SCORM_ATTEMPT_CLOSE_REASONS]);
+export const scormScoAttemptStatus = pgEnum('SCORM_SCO_ATTEMPT_STATUS', [...SCORM_SCO_ATTEMPT_STATUSES]);
+export const scormSessionEventKind = pgEnum('SCORM_SESSION_EVENT_KIND', [...SCORM_SESSION_EVENT_KINDS]);
 export const locale = pgEnum('LOCALE', [...EMAIL_LOCALES]);
 export const lessonVersionKind = pgEnum('LESSON_VERSION_KIND', [...LESSON_VERSION_KIND_VALUES]);
 export const plan = pgEnum('PLAN', ['EARLY_ADOPTER', 'ENTERPRISE', 'BASIC']);
@@ -825,6 +850,7 @@ export const course = pgTable(
     }>(),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('SELF_PACED'),
+    format: courseFormat().default('standard').notNull(),
     callout: jsonb().$type<{
       title: string;
       description: string;
@@ -846,7 +872,8 @@ export const course = pgTable(
       .where(sql`${table.templateId} is not null`),
     uniqueIndex('course_seed_key_unique')
       .on(table.seedKey)
-      .where(sql`${table.seedKey} is not null`)
+      .where(sql`${table.seedKey} is not null`),
+    check('course_format_type_check', sql`${table.format} = 'standard' OR ${table.type} = 'SELF_PACED'`)
   ]
 );
 
@@ -1751,6 +1778,88 @@ export const lessonCompletion = pgTable(
   ]
 );
 
+export const courseActivity = pgTable(
+  'course_activity',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    courseId: uuid('course_id').notNull(),
+    sectionId: uuid('section_id'),
+    kind: activityKind().notNull(),
+    title: varchar().notNull(),
+    instructions: text(),
+    slug: varchar(),
+    order: bigint({ mode: 'number' }).notNull(),
+    isUnlocked: boolean('is_unlocked').default(true).notNull(),
+    sourceId: uuid('source_id'),
+    sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' }),
+    createdByProfileId: uuid('created_by_profile_id'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.courseId],
+      foreignColumns: [course.id],
+      name: 'course_activity_course_id_fkey'
+    }),
+    foreignKey({
+      columns: [table.sectionId],
+      foreignColumns: [courseSection.id],
+      name: 'course_activity_section_id_fkey'
+    }).onDelete('restrict'),
+    foreignKey({
+      columns: [table.sourceId],
+      foreignColumns: [table.id],
+      name: 'course_activity_source_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'course_activity_created_by_profile_id_fkey'
+    }).onDelete('set null'),
+    index('idx_course_activity_course_id').on(table.courseId),
+    index('idx_course_activity_course_slug').on(table.courseId, table.slug),
+    index('course_activity_section_id_idx').on(table.sectionId),
+    index('course_activity_source_id_idx')
+      .on(table.sourceId)
+      .where(sql`${table.sourceId} is not null`)
+  ]
+);
+
+export const activityCompletion = pgTable(
+  'activity_completion',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    activityId: uuid('activity_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    isComplete: boolean('is_complete').default(false).notNull(),
+    completedAt: timestamp('completed_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.activityId],
+      foreignColumns: [courseActivity.id],
+      name: 'activity_completion_activity_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'activity_completion_profile_id_fkey'
+    }).onDelete('cascade'),
+    unique('activity_completion_activity_profile_key').on(table.activityId, table.profileId),
+    index('activity_completion_profile_id_idx').on(table.profileId),
+    check('activity_completion_complete_check', sql`${table.isComplete} = (${table.completedAt} IS NOT NULL)`)
+  ]
+);
+
 export const communityAnswer = pgTable(
   'community_answer',
   {
@@ -2097,9 +2206,10 @@ export const organizationmember = pgTable(
     statusChangedBy: uuid('status_changed_by'),
     /**
      * Denormalized "last did anything in this org" timestamp. Maintained on
-     * page-event ingest and reconciled nightly from `analytics_page_event` and
-     * `lesson_completion`. Filtering 20k-row rosters against the raw event
-     * table does not hold up, which is why this column exists at all.
+     * page-event ingest and reconciled nightly from `analytics_page_event`,
+     * `lesson_completion` and `activity_completion`. Filtering 20k-row rosters
+     * against the raw event table does not hold up, which is why this column
+     * exists at all.
      */
     lastActiveAt: timestamp('last_active_at', { withTimezone: true, mode: 'string' }),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
@@ -4418,5 +4528,252 @@ export const liveSessionReminderDelivery = pgTable(
     index('idx_live_session_reminder_delivery_course_lesson_at').on(table.courseId, table.lessonAt),
     index('idx_live_session_reminder_delivery_profile_id').on(table.profileId),
     index('idx_live_session_reminder_delivery_status_lesson_at').on(table.status, table.lessonAt)
+  ]
+);
+
+export type PackageManifestTree = Record<string, unknown>;
+
+export type PackageWarningCode = string;
+
+export type PackageUnitFormatDetails =
+  | { format: 'scorm2004'; maxTimeAllowed: string | null; timeLimitAction: string | null }
+  | { format: 'scorm12'; maxTimeAllowed?: string | null; timeLimitAction?: string | null };
+
+export type ScormCmiState = Record<string, unknown>;
+
+export const contentPackageVersion = pgTable(
+  'content_package_version',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    assetId: uuid('asset_id').notNull(),
+    versionNumber: integer('version_number').notNull(),
+    isCurrent: boolean('is_current').default(false).notNull(),
+    status: contentPackageStatus().default('uploading').notNull(),
+    format: contentPackageFormat(),
+    manifestIdentifier: text('manifest_identifier'),
+    title: text(),
+    manifest: jsonb().$type<PackageManifestTree>(),
+    warnings: jsonb().default([]).$type<PackageWarningCode[]>().notNull(),
+    error: jsonb().$type<{ code: string; message: string } | null>(),
+    uploadKey: text('upload_key').notNull(),
+    contentPrefix: text('content_prefix').notNull(),
+    zipBytes: bigint('zip_bytes', { mode: 'number' }),
+    contentSha256: text('content_sha256'),
+    extractedBytes: bigint('extracted_bytes', { mode: 'number' }),
+    fileCount: integer('file_count'),
+    processingJobId: uuid('processing_job_id'),
+    createdByProfileId: uuid('created_by_profile_id'),
+    processedAt: timestamp('processed_at', { withTimezone: true, mode: 'string' }),
+    replacedAt: timestamp('replaced_at', { withTimezone: true, mode: 'string' }),
+    archivedAt: timestamp('archived_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.assetId],
+      foreignColumns: [asset.id],
+      name: 'content_package_version_asset_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.processingJobId],
+      foreignColumns: [mediaJob.id],
+      name: 'content_package_version_processing_job_id_fkey'
+    }).onDelete('set null'),
+    foreignKey({
+      columns: [table.createdByProfileId],
+      foreignColumns: [profile.id],
+      name: 'content_package_version_created_by_profile_id_fkey'
+    }).onDelete('set null'),
+    unique('content_package_version_asset_number_key').on(table.assetId, table.versionNumber),
+    uniqueIndex('content_package_version_current_key')
+      .on(table.assetId)
+      .where(sql`${table.isCurrent}`),
+    index('idx_content_package_version_replaced')
+      .on(table.replacedAt)
+      .where(sql`${table.isCurrent} = false`),
+    check(
+      'content_package_version_current_not_replaced_check',
+      sql`NOT (${table.isCurrent} AND ${table.replacedAt} IS NOT NULL)`
+    )
+  ]
+);
+
+export const contentPackageUnit = pgTable(
+  'content_package_unit',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    packageVersionId: uuid('package_version_id').notNull(),
+    identifier: text().notNull(),
+    parentIdentifier: text('parent_identifier'),
+    title: text().notNull(),
+    position: integer().notNull(),
+    unitType: contentPackageUnitType('unit_type').notNull(),
+    href: text().notNull(),
+    parameters: text(),
+    masteryScoreRaw: numeric('mastery_score_raw'),
+    passingScoreScaled: numeric('passing_score_scaled'),
+    completionThreshold: numeric('completion_threshold'),
+    launchData: text('launch_data'),
+    formatDetails: jsonb('format_details').default({}).$type<PackageUnitFormatDetails>().notNull(),
+    isVisible: boolean('is_visible').default(true).notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.packageVersionId],
+      foreignColumns: [contentPackageVersion.id],
+      name: 'content_package_unit_package_version_id_fkey'
+    }).onDelete('cascade'),
+    unique('content_package_unit_version_identifier_key').on(table.packageVersionId, table.identifier),
+    check(
+      'content_package_unit_mastery_score_raw_check',
+      sql`${table.masteryScoreRaw} IS NULL OR ${table.masteryScoreRaw} BETWEEN 0 AND 100`
+    ),
+    check(
+      'content_package_unit_passing_score_scaled_check',
+      sql`${table.passingScoreScaled} IS NULL OR ${table.passingScoreScaled} BETWEEN -1 AND 1`
+    ),
+    check(
+      'content_package_unit_completion_threshold_check',
+      sql`${table.completionThreshold} IS NULL OR ${table.completionThreshold} BETWEEN 0 AND 1`
+    )
+  ]
+);
+
+export const activityScorm = pgTable(
+  'activity_scorm',
+  {
+    activityId: uuid('activity_id').primaryKey().notNull(),
+    assetId: uuid('asset_id'),
+    completionRule: scormCompletionRule('completion_rule').default('auto').notNull(),
+    minScorePercent: integer('min_score_percent'),
+    allowRetakes: boolean('allow_retakes').default(false).notNull(),
+    moduleOrder: scormModuleOrder('module_order').default('free').notNull(),
+    completionModules: scormCompletionModules('completion_modules').default('all').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.activityId],
+      foreignColumns: [courseActivity.id],
+      name: 'activity_scorm_activity_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.assetId],
+      foreignColumns: [asset.id],
+      name: 'activity_scorm_asset_id_fkey'
+    }).onDelete('restrict'),
+    index('idx_activity_scorm_asset_id').on(table.assetId),
+    check(
+      'activity_scorm_min_score_check',
+      sql`${table.minScorePercent} IS NULL OR ${table.minScorePercent} BETWEEN 0 AND 100`
+    )
+  ]
+);
+
+export const scormAttempt = pgTable(
+  'scorm_attempt',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    activityId: uuid('activity_id').notNull(),
+    profileId: uuid('profile_id').notNull(),
+    packageVersionId: uuid('package_version_id').notNull(),
+    attemptNumber: integer('attempt_number').notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    closedAt: timestamp('closed_at', { withTimezone: true, mode: 'string' }),
+    closeReason: scormAttemptCloseReason('close_reason')
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.activityId],
+      foreignColumns: [courseActivity.id],
+      name: 'scorm_attempt_activity_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.profileId],
+      foreignColumns: [profile.id],
+      name: 'scorm_attempt_profile_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.packageVersionId],
+      foreignColumns: [contentPackageVersion.id],
+      name: 'scorm_attempt_package_version_id_fkey'
+    }).onDelete('cascade'),
+    unique('scorm_attempt_activity_profile_number_key').on(table.activityId, table.profileId, table.attemptNumber),
+    uniqueIndex('scorm_attempt_open_key')
+      .on(table.activityId, table.profileId)
+      .where(sql`${table.closedAt} is null`),
+    index('idx_scorm_attempt_activity_id').on(table.activityId),
+    index('scorm_attempt_profile_id_idx').on(table.profileId),
+    check('scorm_attempt_close_reason_check', sql`(${table.closedAt} IS NULL) = (${table.closeReason} IS NULL)`)
+  ]
+);
+
+export const scormScoAttempt = pgTable(
+  'scorm_sco_attempt',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    attemptId: uuid('attempt_id').notNull(),
+    unitId: uuid('unit_id').notNull(),
+    status: scormScoAttemptStatus().default('active').notNull(),
+    cmi: jsonb().default({}).$type<ScormCmiState>().notNull(),
+    commitSeq: integer('commit_seq').default(0).notNull(),
+    startedAt: timestamp('started_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
+    lastCommitAt: timestamp('last_commit_at', { withTimezone: true, mode: 'string' }),
+    terminatedAt: timestamp('terminated_at', { withTimezone: true, mode: 'string' }),
+    timeSpentSeconds: integer('time_spent_seconds').default(0).notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.attemptId],
+      foreignColumns: [scormAttempt.id],
+      name: 'scorm_sco_attempt_attempt_id_fkey'
+    }).onDelete('cascade'),
+    foreignKey({
+      columns: [table.unitId],
+      foreignColumns: [contentPackageUnit.id],
+      name: 'scorm_sco_attempt_unit_id_fkey'
+    }).onDelete('cascade'),
+    uniqueIndex('scorm_sco_attempt_open_key')
+      .on(table.attemptId, table.unitId)
+      .where(sql`${table.status} in ('active', 'suspended')`),
+    index('idx_scorm_sco_attempt_attempt_id').on(table.attemptId, table.unitId, table.startedAt)
+  ]
+);
+
+export const scormSessionEvent = pgTable(
+  'scorm_session_event',
+  {
+    id: uuid()
+      .default(sql`gen_random_uuid()`)
+      .primaryKey()
+      .notNull(),
+    scoAttemptId: uuid('sco_attempt_id').notNull(),
+    kind: scormSessionEventKind().notNull(),
+    detail: jsonb().default({}).$type<Record<string, unknown>>().notNull(),
+    userAgent: text('user_agent'),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.scoAttemptId],
+      foreignColumns: [scormScoAttempt.id],
+      name: 'scorm_session_event_sco_attempt_id_fkey'
+    }).onDelete('cascade'),
+    index('idx_scorm_session_event_sco_attempt_created').on(table.scoAttemptId, table.createdAt),
+    index('idx_scorm_session_event_created_at').on(table.createdAt)
   ]
 );

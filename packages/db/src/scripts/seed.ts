@@ -20,6 +20,7 @@ import { seedQuestionTypes } from '@db/utils/seed/questionType';
 import { seedQuestions } from '@db/utils/seed/question';
 import { seedReactCoursePeopleProgress } from '@db/utils/seed/reactCoursePeopleProgress';
 import { seedRoles } from '@db/utils/seed/role';
+import { seedScormActivities } from '@db/utils/seed/scormActivities';
 import { seedSubmissions } from '@db/utils/seed/submission';
 import { seedUsers } from '@db/utils/seed/users';
 import { resetLaunchTemplates, seedLaunchTemplates } from '@db/utils/seed/platform-templates/insert';
@@ -66,7 +67,8 @@ const orderedSeeds = [
   'react-people-progress',
   'learner-lifecycle',
   'newsfeed-threads',
-  'launch-templates'
+  'launch-templates',
+  'scorm-activities'
 ] as const;
 
 type SeedName = (typeof orderedSeeds)[number];
@@ -118,7 +120,8 @@ const DEMO_ORGANIZATION_SEEDS: Record<DemoOrganizationSlug, DemoOrganizationSeed
       'coursera-dummy-courses',
       'compliance',
       'newsfeed-threads',
-      'launch-templates'
+      'launch-templates',
+      'scorm-activities'
     ]
   },
   'skillshare-test': {
@@ -215,6 +218,7 @@ Flags:
   --launch-templates         Seed ClassroomIO launch templates into coursera-test
   --reset                    With --launch-templates, retire the previously seeded templates first
   --react-people-progress    Seed React course students with varied progress (udemy-test)
+  --scorm-activities         Seed demo SCORM packages (coursera-test, also runs with SEED_SCORM=true)
   --help, -h                  Show this help message
 
 Examples:
@@ -405,6 +409,15 @@ const seedFunctions = {
       reactCourseId: REACT_COURSE_ID,
       existingStudentUserId: STUDENT_USER_ID
     });
+  },
+  'scorm-activities': async () => {
+    if (process.env.SEED_SCORM !== 'true' && !cliOptions.flags.has('scorm-activities')) {
+      console.log('⏭️  Skipping scorm-activities: set SEED_SCORM=true to seed demo SCORM packages.');
+      return;
+    }
+
+    console.log('📝 Seeding SCORM demo data (coursera-test)...');
+    await seedScormActivities();
   }
 };
 
