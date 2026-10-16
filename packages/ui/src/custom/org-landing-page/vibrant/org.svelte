@@ -40,6 +40,9 @@
 
   const resolvedLessonsLabel = $derived(labels?.lessonsLabel ?? defaultLessonsLabel);
   const resolvedExercisesLabel = $derived(labels?.exercisesLabel ?? defaultExercisesLabel);
+  const resolvedActivitiesLabel = $derived(
+    labels?.activitiesLabel ?? ((count: number) => `${count} ${count === 1 ? 'package' : 'packages'}`)
+  );
 
   function formatCost(cost?: number, currency = 'USD'): string {
     if (!cost) return labels?.freeLabel ?? 'Free';
@@ -134,6 +137,10 @@
                     {#if featured.exerciseCount}
                       <span aria-hidden="true">·</span>
                       <span>{resolvedExercisesLabel(featured.exerciseCount)}</span>
+                    {/if}
+                    {#if featured.activityCount}
+                      <span aria-hidden="true">·</span>
+                      <span>{resolvedActivitiesLabel(featured.activityCount)}</span>
                     {/if}
                     {#if featured.duration}
                       <span aria-hidden="true">·</span>

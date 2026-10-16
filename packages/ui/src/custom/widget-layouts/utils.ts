@@ -61,6 +61,7 @@ export function formatLessonsLine(course: TWidgetPayloadCourse, showLessonsCount
   const parts: string[] = [];
   if (course.lessonCount) parts.push(`${course.lessonCount} lessons`);
   if (course.exerciseCount) parts.push(`${course.exerciseCount} exercises`);
+  if (course.activityCount) parts.push(`${course.activityCount} packages`);
   return parts.join(' · ');
 }
 

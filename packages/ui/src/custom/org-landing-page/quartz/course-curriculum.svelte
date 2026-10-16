@@ -23,14 +23,21 @@
     return `${lessons} across ${moduleTotal} ${moduleTotal === 1 ? 'module' : 'modules'}`;
   });
 
-  function sectionMeta(lessonCount: number, exerciseCount?: number): string {
+  function sectionMeta(lessonCount: number, exerciseCount?: number, activityCount?: number): string {
     const lessons = labels?.lessonsLabel?.(lessonCount) ?? `${lessonCount} ${lessonCount === 1 ? 'lesson' : 'lessons'}`;
-    if (!exerciseCount) return lessons;
+    const parts = [lessons];
+    if (exerciseCount) {
+      parts.push(
+        labels?.exercisesLabel?.(exerciseCount) ?? `${exerciseCount} ${exerciseCount === 1 ? 'exercise' : 'exercises'}`
+      );
+    }
+    if (activityCount) {
+      parts.push(
+        labels?.activitiesLabel?.(activityCount) ?? `${activityCount} ${activityCount === 1 ? 'package' : 'packages'}`
+      );
+    }
 
-    const exercises =
-      labels?.exercisesLabel?.(exerciseCount) ?? `${exerciseCount} ${exerciseCount === 1 ? 'exercise' : 'exercises'}`;
-
-    return `${lessons} · ${exercises}`;
+    return parts.join(' · ');
   }
 </script>
 
@@ -57,7 +64,11 @@
               {section.title}
             </span>
             <span class="ui:text-[13px] ui:text-[var(--landing-fg-faint)]">
-              {sectionMeta(section.lessons.length, section.exerciseCount)}
+              {sectionMeta(
+                section.lessons.length,
+                section.exerciseCount,
+                section.activityCount ?? section.activities?.length
+              )}
             </span>
             <ChevronDownIcon
               class="ui:size-4 ui:shrink-0 ui:text-[var(--landing-fg-faint)] ui:transition-transform ui:group-open:rotate-180"
@@ -76,6 +87,20 @@
                   </span>
                 {/if}
               </div>
+            {/each}
+            {#each section.activities ?? [] as activity (activity.id)}
+              <div
+                class="ui:flex ui:items-center ui:gap-3 ui:py-2.5 ui:text-[14.5px] ui:text-[var(--landing-fg-muted)] ui:border-t ui:border-[var(--landing-border-soft)]"
+              >
+                <span class="ui:min-w-0 ui:truncate">{activity.title}</span>
+              </div>
+              {#each activity.modules ?? [] as module (module.id)}
+                <div
+                  class="ui:flex ui:items-center ui:gap-3 ui:py-2 ui:pl-6 ui:text-[13.5px] ui:text-[var(--landing-fg-faint)] ui:border-t ui:border-[var(--landing-border-soft)]"
+                >
+                  <span class="ui:min-w-0 ui:truncate">{module.title}</span>
+                </div>
+              {/each}
             {/each}
           </div>
         </details>

@@ -20,11 +20,22 @@ export type LandingPageLesson = {
   createdAt?: string | null;
 };
 
+export type LandingPageActivity = {
+  id: string;
+  title: string | null;
+  order?: number | null;
+  createdAt?: string | null;
+  activityKind?: string | null;
+  modules?: Array<{ id: string; title: string | null }>;
+};
+
 export type LandingPageSection = {
   id: string;
   title: string | null;
   lessons: LandingPageLesson[];
   exerciseCount: number;
+  activities: LandingPageActivity[];
+  activityCount: number;
 };
 
 function sortLessons(lessons: LandingPageLesson[]): LandingPageLesson[] {
@@ -49,6 +60,24 @@ function getExerciseCountFromItems(items: CourseContentItem[]): number {
   return items.filter((item) => item.type === ContentType.Exercise).length;
 }
 
+function getActivitiesFromItems(items: CourseContentItem[]): LandingPageActivity[] {
+  const activityItems = items.filter((item) => item.type === ContentType.Activity);
+  const activities = activityItems.map((activity) => ({
+    id: activity.id,
+    title: activity.title,
+    order: activity.order ?? null,
+    createdAt: activity.createdAt ?? null,
+    activityKind: (activity as { activityKind?: string | null }).activityKind ?? null,
+    modules: ((activity as { modules?: Array<{ identifier: string; title: string }> | null }).modules ?? []).map(
+      (module, index) => ({ id: `${activity.id}:module:${index}`, title: module.title })
+    )
+  }));
+
+  return [...activities]
+    .sort((a, b) => new Date(a.createdAt || '').getTime() - new Date(b.createdAt || '').getTime())
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+}
+
 export function getCourseLessons(course: Course): LandingPageLesson[] {
   if (!course?.content) return [];
 
@@ -71,7 +100,9 @@ export function getCourseSections(course: Course): LandingPageSection[] {
         id: section.id,
         title: section.title ?? course.title ?? 'Lessons',
         lessons,
-        exerciseCount: getExerciseCountFromItems(section.items)
+        exerciseCount: getExerciseCountFromItems(section.items),
+        activities: getActivitiesFromItems(section.items),
+        activityCount: getActivitiesFromItems(section.items).length
       };
     });
   }
@@ -83,9 +114,17 @@ export function getCourseSections(course: Course): LandingPageSection[] {
       id: 'ungrouped',
       title: course.title ?? t.get('course.navItem.landing_page.lessons'),
       lessons: getLessonsFromItems(course.content.items),
-      exerciseCount: getExerciseCountFromItems(course.content.items)
+      exerciseCount: getExerciseCountFromItems(course.content.items),
+      activities: getActivitiesFromItems(course.content.items),
+      activityCount: getActivitiesFromItems(course.content.items).length
     }
   ];
+}
+
+export function getTotalActivities(sections: LandingPageSection[]) {
+  return sections.reduce((total, section) => {
+    return total + section.activities.length;
+  }, 0);
 }
 
 export function getTotalLessons(sections: LandingPageSection[]) {
@@ -280,7 +319,17 @@ export function buildCourseLandingPageProps(
           id: lesson.id,
           title: lesson.title ?? t.get('common.restricted_page.untitled_lesson')
         })),
-        exerciseCount: section.exerciseCount
+        exerciseCount: section.exerciseCount,
+        activities: section.activities.map((activity) => ({
+          id: activity.id,
+          title: activity.title ?? t.get('common.restricted_page.untitled_lesson'),
+          activityKind: activity.activityKind ?? undefined,
+          modules: (activity.modules ?? []).map((module) => ({
+            id: module.id,
+            title: module.title ?? t.get('common.restricted_page.untitled_lesson')
+          }))
+        })),
+        activityCount: section.activityCount
       }))
     },
     chips: {
@@ -330,6 +379,7 @@ export function buildCourseLandingPageProps(
       curriculumHeading: t.get('course.navItem.landing_page.course_content'),
       lessonsLabel: (count) => t.get('courses.course_card.lessons_count', { count }),
       exercisesLabel: (count) => t.get('courses.course_card.exercises_count', { count }),
+      activitiesLabel: (count) => t.get('courses.course_card.activities_count', { count }),
       infoRequirementsHeading: t.get('course.navItem.landing_page.requirement'),
       infoDescriptionHeading: t.get('course.navItem.landing_page.description'),
       infoGoalsHeading: t.get('course.navItem.landing_page.learn'),
@@ -347,6 +397,7 @@ export function buildCourseLandingPageProps(
       navReviewsLabel: t.get('course.navItem.landing_page.editor.title.reviews'),
       navPricingLabel: t.get('course.navItem.landing_page.editor.title.pricing'),
       factExercisesLabel: t.get('course.navItem.landing_page.exercises'),
+      factPackagesLabel: t.get('course.navItem.landing_page.packages'),
       factIncludedLabel: t.get('common.restricted_page.included')
     }
   };
