@@ -18,6 +18,7 @@ import type { Hono as HonoBase } from 'hono';
 import type { MergeSchemaPath } from 'hono/types';
 import { ErrorCodes, handlePublicApiError } from '@api/utils/errors';
 import { accountRouter } from '@api/routes/account';
+import { activityRouter } from '@api/routes/activity';
 import { agentRouter } from '@api/routes/agent';
 import { auth } from '@cio/db/auth';
 import { communityRouter } from '@api/routes/community';
@@ -45,6 +46,7 @@ import { publicCourseRouter, orgSiteOgRouter } from '@api/routes/org-site';
 import { publicWidgetsRouter } from '@api/routes/widgets';
 import { reportRouter } from '@api/routes/report';
 import rateLimiter from '@api/middlewares/rate-limiter';
+import { activityContentHostGate, isContentHostRequest } from '@api/middlewares/activity-content-host';
 import { secureHeaders } from 'hono/secure-headers';
 import { signupGuard } from '@api/middlewares/signup-guard';
 import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
@@ -56,19 +58,33 @@ const baseApp = new Hono()
   // Middleware
   .use('*', logger())
   .use('*', prettyJSON())
+  .use('*', activityContentHostGate)
   // `Cross-Origin-Resource-Policy: same-origin` (Hono's default) blocks the
   // dashboard from embedding api-served media (e.g. HLS segments via
   // `<video>`) when the dashboard and api live on different origins in
   // local dev / self-hosted. We're an API server — every response is
   // designed for cross-origin consumption, so the right value is
   // `cross-origin`. CORS still gates which origins can read the bytes.
-  .use('*', secureHeaders({ crossOriginResourcePolicy: 'cross-origin' }))
+  // Content-host responses carry their own header table instead.
   .use('*', async (c, next) => {
+    if (isContentHostRequest(c)) return next();
+
+    return secureHeaders({ crossOriginResourcePolicy: 'cross-origin' })(c, next);
+  })
+  .use('*', async (c, next) => {
+    if (isContentHostRequest(c)) return next();
     if (isPublicCorsPath(c.req.path)) return next();
 
     return sessionCors(c, next);
   })
   .use('*', async (c, next) => {
+    if (isContentHostRequest(c)) {
+      c.set('user', null);
+      c.set('session', null);
+      c.set('orgRoles', {});
+
+      return next();
+    }
     if (isPublicCorsPath(c.req.path)) {
       c.set('user', null);
       c.set('session', null);
@@ -271,6 +287,7 @@ type AppSchema =
 const routes = baseApp
   .route('/onboarding', onboardingRouter)
   .route('/account', accountRouter)
+  .route('/activity', activityRouter)
   .route('/course', courseRouter)
   .route('/domain', domainRouter)
   .route('/hls', hlsRouter)
