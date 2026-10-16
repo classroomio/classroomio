@@ -25,7 +25,7 @@ export function getPublicPathPageUrl(pathSlug: string, currentOrgDomain = ''): s
   const trimmedDomain = currentOrgDomain?.trim();
   const origin = trimmedDomain || getOrgPublicOrigin(get(currentOrg));
 
-  return new URL(`/path/${pathSlug}`, origin).toString();
+  return new URL(`/learning-paths/${pathSlug}`, origin).toString();
 }
 
 export function openPathPreview({ pathId, pathSlug, currentOrgDomain = '' }: OpenPathPreviewOptions) {
@@ -74,7 +74,7 @@ export async function viewPathAsStudent({ pathId, pathSlug, currentOrgDomain = '
   const origin = currentOrgDomain?.trim() || getOrgPublicOrigin(get(currentOrg));
   const loginLinkUrl = new URL('/api/auth/login-link', origin);
   loginLinkUrl.searchParams.set('token', token);
-  loginLinkUrl.searchParams.set('redirect', `/path/${pathSlug}`);
+  loginLinkUrl.searchParams.set('redirect', `/learning-paths/${pathSlug}`);
 
   // Cross-origin handoff — open in a new tab so the teacher keeps their dashboard.
   window.open(loginLinkUrl.toString(), '_blank', 'noopener,noreferrer');

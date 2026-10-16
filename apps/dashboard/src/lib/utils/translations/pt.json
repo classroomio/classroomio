@@ -5708,7 +5708,9 @@
       "series_outcomes_heading": "O que você vai aprender",
       "show_outline": "Mostrar resumo das lições",
       "hide_outline": "Ocultar resumo das lições",
-      "preview_badge": "Prévia"
+      "preview_badge": "Prévia",
+      "unavailable": "Esta trilha de aprendizagem não está disponível para inscrição.",
+      "back_to_path": "Voltar para a trilha"
     },
     "enrolled_label": "{count} inscritos",
     "subtitle": "Faixas guiadas de vários cursos com uma inscrição, cursos solicitados e um certificado no final.",

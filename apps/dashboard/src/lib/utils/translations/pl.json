@@ -5708,7 +5708,9 @@
       "series_outcomes_heading": "Czego się nauczysz",
       "show_outline": "Pokaż plan lekcji",
       "hide_outline": "Ukryj plan lekcji",
-      "preview_badge": "Podgląd"
+      "preview_badge": "Podgląd",
+      "unavailable": "Ta ścieżka nauki jest obecnie niedostępna do zapisu.",
+      "back_to_path": "Wróć do ścieżki nauki"
     },
     "enrolled_label": "{count} zarejestrowanych",
     "subtitle": "Wielokursowe ścieżki z przewodnikiem z jedną rejestracją, zamówionymi kursami i certyfikatem na końcu.",

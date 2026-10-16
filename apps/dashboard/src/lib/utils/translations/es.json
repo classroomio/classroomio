@@ -5708,7 +5708,9 @@
       "series_outcomes_heading": "Lo que aprenderás",
       "show_outline": "Mostrar esquema de lecciones",
       "hide_outline": "Ocultar esquema de lecciones",
-      "preview_badge": "Vista previa"
+      "preview_badge": "Vista previa",
+      "unavailable": "Esta ruta de aprendizaje no está disponible para inscripción.",
+      "back_to_path": "Volver a la ruta"
     },
     "enrolled_label": "{count} inscritos",
     "subtitle": "Pistas guiadas de varios cursos con una sola inscripción, cursos ordenados y un certificado al finalizar.",

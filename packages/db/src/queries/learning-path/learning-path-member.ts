@@ -334,6 +334,28 @@ export async function countPendingPathLearners(learningPathId: string, dbClient:
 }
 
 /**
+ * Counts joined members in a learning path (removed rows excluded).
+ * Feeds the public detail page's learner count.
+ */
+export async function countActivePathMembers(learningPathId: string, dbClient: DbOrTxClient = db): Promise<number> {
+  try {
+    const [row] = await dbClient
+      .select({ count: count(schema.learningPathMember.id) })
+      .from(schema.learningPathMember)
+      .where(
+        and(eq(schema.learningPathMember.learningPathId, learningPathId), isNull(schema.learningPathMember.removedAt))
+      );
+
+    return Number(row?.count ?? 0);
+  } catch (error) {
+    console.error('countActivePathMembers error:', error);
+    throw new Error(
+      `Failed to count active members for learning path "${learningPathId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
  * Lists active members in a learning path with profile details.
  * Returns paginated result with total count.
  */

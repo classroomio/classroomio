@@ -800,7 +800,7 @@ export function mapPublicLearningPathsToLandingPagePaths(
       courseCount,
       metadata: mapLandingPageDiscount(metadataRecord),
       image: coverImage,
-      link: pathSlug ? `/path/${pathSlug}` : undefined,
+      link: pathSlug ? `/learning-paths/${pathSlug}` : undefined,
       price: pathIsPaid ? price : undefined
     };
   });

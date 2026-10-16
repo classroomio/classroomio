@@ -1,25 +1,27 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
+import { classroomio, type InferResponseType } from '$lib/utils/services/api';
+import { safeServerApi } from '$lib/utils/services/api/server';
 import { redirect } from '@sveltejs/kit';
-import { mockLearningPaths, type LearningPathItem } from '@cio/ui/custom/org-landing-page';
+import type { LearningPathItem } from '@cio/ui/custom/org-landing-page';
 
 const PATHS_PER_PAGE = 9;
 
-function toCatalogPath(path: LearningPathItem): LearningPathItem {
+type ListPublicLearningPathsRequest = (typeof classroomio.organization)['learning-paths']['public']['$get'];
+type ListPublicLearningPathsSuccess = Extract<InferResponseType<ListPublicLearningPathsRequest>, { success: true }>;
+type PublicLearningPath = ListPublicLearningPathsSuccess['data']['learningPaths'][number];
+
+function toCatalogPath(path: PublicLearningPath): LearningPathItem {
   return {
-    ...path,
-    logo: null,
-    link: `/learning-paths/${path.slug ?? path.id}`
+    id: path.id,
+    slug: path.slug ?? path.publicId ?? path.id,
+    logo: path.coverImage,
+    title: path.name,
+    description: path.description ?? '',
+    cost: path.cost ?? 0,
+    currency: path.currency ?? 'USD',
+    courseCount: path.courseCount ?? 0,
+    link: `/learning-paths/${path.slug ?? path.publicId ?? path.id}`
   };
-}
-
-function filterPaths(paths: LearningPathItem[], search: string): LearningPathItem[] {
-  const normalized = search.toLowerCase();
-
-  return normalized
-    ? paths.filter(
-        (path) => path.title.toLowerCase().includes(normalized) || path.description.toLowerCase().includes(normalized)
-      )
-    : paths;
 }
 
 export const load = async ({ parent, url }) => {
@@ -29,18 +31,31 @@ export const load = async ({ parent, url }) => {
     throw redirect(307, '/');
   }
 
+  const siteName = orgSiteName || org.siteName;
+  if (!siteName) {
+    throw redirect(307, '/');
+  }
+
   const activeSearch = url.searchParams.get('search')?.trim() ?? '';
 
   const requestedPage = Number(url.searchParams.get('page'));
   const currentPage = Number.isInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
 
-  // TODO: replace with classroomio.organization.learningPaths.public.$get once available (Phase 4)
-  const filteredPaths = filterPaths(mockLearningPaths, activeSearch);
+  const pathsResult = await safeServerApi<ListPublicLearningPathsSuccess>(() =>
+    classroomio.organization['learning-paths'].public.$get({
+      query: {
+        siteName,
+        page: String(currentPage),
+        limit: String(PATHS_PER_PAGE),
+        ...(activeSearch ? { search: activeSearch } : {})
+      }
+    })
+  );
+  const pathData = pathsResult.ok
+    ? pathsResult.body.data
+    : { learningPaths: [], hasMoreLearningPaths: false, total: 0, page: currentPage, limit: 0, totalPages: 0 };
 
-  const pageCount = Math.max(Math.ceil(filteredPaths.length / PATHS_PER_PAGE), 1);
-  const activePage = Math.min(currentPage, pageCount);
-  const startIndex = (activePage - 1) * PATHS_PER_PAGE;
-  const learningPaths = filteredPaths.slice(startIndex, startIndex + PATHS_PER_PAGE).map(toCatalogPath);
+  const learningPaths = pathData.learningPaths.map(toCatalogPath);
 
   const canonicalUrl = new URL(url.pathname, url.origin).href;
   const orgTitle = `${org.name} – Learning Paths`;
@@ -63,10 +78,10 @@ export const load = async ({ parent, url }) => {
     learningPaths,
     activeSearch,
     pagination: {
-      page: activePage,
-      perPage: PATHS_PER_PAGE,
-      total: filteredPaths.length,
-      totalPages: pageCount
+      page: pathData.page,
+      perPage: pathData.limit,
+      total: pathData.total,
+      totalPages: pathData.totalPages
     },
     pageMetaTags
   };

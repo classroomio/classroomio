@@ -5708,7 +5708,9 @@
       "series_outcomes_heading": "Hvad du lærer",
       "show_outline": "Vis lektionsoversigt",
       "hide_outline": "Skjul lektionsoversigt",
-      "preview_badge": "Forhåndsvisning"
+      "preview_badge": "Forhåndsvisning",
+      "unavailable": "Denne læringssti er i øjeblikket ikke åben for tilmelding.",
+      "back_to_path": "Tilbage til læringssti"
     },
     "enrolled_label": "{count} tilmeldt",
     "subtitle": "Guidede multi-kursus spor med én tilmelding, bestilte kurser og et certifikat til sidst.",

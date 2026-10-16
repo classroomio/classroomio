@@ -5708,7 +5708,9 @@
       "series_outcomes_heading": "Ce que vous allez apprendre",
       "show_outline": "Afficher le plan des leçons",
       "hide_outline": "Masquer le plan des leçons",
-      "preview_badge": "Aperçu"
+      "preview_badge": "Aperçu",
+      "unavailable": "Ce parcours n’est pas disponible pour inscription.",
+      "back_to_path": "Retour au parcours"
     },
     "enrolled_label": "{count} inscrits",
     "subtitle": "Parcours guidés à plusieurs cours avec une seule inscription, des cours commandés et un certificat à la fin.",

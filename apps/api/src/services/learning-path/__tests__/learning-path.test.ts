@@ -30,6 +30,8 @@ const mocks = vi.hoisted(() => ({
   revokeLearningPathGrantsForPath: vi.fn(),
   listPublicLearningPaths: vi.fn(),
   countIssuedCertificates: vi.fn(),
+  countActivePathMembers: vi.fn(),
+  countActivePathMembers: vi.fn(),
   getCourseGroupIds: vi.fn(),
   getGroupMemberIdByGroupAndProfile: vi.fn(),
   insertGroupMembersOnConflictDoNothing: vi.fn(),
@@ -70,6 +72,8 @@ vi.mock('@cio/core/config/env', () => ({
 
 vi.mock('@cio/db/queries/learning-path', () => ({
   countIssuedCertificates: mocks.countIssuedCertificates,
+  countActivePathMembers: mocks.countActivePathMembers,
+  countActivePathMembers: mocks.countActivePathMembers,
   getLearningPathById: mocks.getLearningPathById,
   getLearningPathByPublicId: mocks.getLearningPathByPublicId,
   getLearningPathBySlug: mocks.getLearningPathBySlug,
@@ -285,11 +289,12 @@ describe('learning-path services', () => {
       mocks.getLearningPathBySlug.mockResolvedValue(mockPath);
       mocks.listLearningPathCourses.mockResolvedValue([]);
       mocks.countIssuedCertificates.mockResolvedValue(0);
+      mocks.countActivePathMembers.mockResolvedValue(7);
 
       const result = await getPublicLearningPathBySlug('org-1', 'published-path');
 
       expect(mocks.getLearningPathBySlug).toHaveBeenCalledWith('org-1', 'published-path', transactionClient);
-      expect(result).toMatchObject({ id: 'path-1', courses: [], certificatesIssued: 0 });
+      expect(result).toMatchObject({ id: 'path-1', courses: [], certificatesIssued: 0, totalStudents: 7 });
     });
 
     it('strips the post-enrollment welcome message from public responses', async () => {
@@ -1253,12 +1258,15 @@ describe('learning-path services', () => {
       mocks.getLearningPathById.mockResolvedValue(testPath);
       mocks.listLearningPathCourses.mockResolvedValue([{ id: 'c-1', title: 'Course 1' }]);
       mocks.countIssuedCertificates.mockResolvedValue(5);
+      mocks.countActivePathMembers.mockResolvedValue(12);
 
       const result = await getLearningPathDetail(testPath.id, 'user-1', { 'org-1': ROLE.ADMIN });
 
       expect(result.certificatesIssued).toBe(5);
       expect(result.courses).toHaveLength(1);
+      expect(result.totalStudents).toBe(12);
       expect(mocks.countIssuedCertificates).toHaveBeenCalledWith(testPath.id, transactionClient);
+      expect(mocks.countActivePathMembers).toHaveBeenCalledWith(testPath.id, transactionClient);
     });
 
     it('returns certificatesIssued for an assigned path tutor', async () => {

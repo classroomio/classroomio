@@ -34,9 +34,7 @@
     })
   );
 
-  const firstSeriesSlug = $derived(detail.series[0]?.slug);
-
-  const enrollHref = $derived(firstSeriesSlug ? resolve(`/course/${firstSeriesSlug}/enroll`, {}) : '#');
+  const enrollHref = $derived(detail.slug ? resolve(`/learning-paths/${detail.slug}/enroll`, {}) : '#');
 
   const landingProps = $derived(buildLearningPathLandingPageProps(detail, activeOrg, { enrollHref, authAction }));
 

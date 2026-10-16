@@ -1524,7 +1524,9 @@
       "series_outcomes_heading": "What you'll learn",
       "show_outline": "Show lesson outline",
       "hide_outline": "Hide lesson outline",
-      "preview_badge": "Preview"
+      "preview_badge": "Preview",
+      "unavailable": "This learning path is currently unavailable for enrollment.",
+      "back_to_path": "Back to learning path"
     }
   },
   "org_navigation": {

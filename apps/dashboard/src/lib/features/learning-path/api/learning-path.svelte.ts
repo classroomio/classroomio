@@ -35,6 +35,7 @@ import { orgNavCountsApi } from '$features/ui/sidebar/org-sidebar/org-nav-counts
 import { currentOrg } from '$lib/utils/store/org';
 import { get } from 'svelte/store';
 import { snackbar } from '$features/ui/snackbar/store';
+import { t } from '$lib/utils/functions/translations';
 import { slugifyForFilename } from '@cio/utils/functions';
 import { toPathListApiQuery } from '../utils/path-list-filters';
 
@@ -681,6 +682,53 @@ class LearnerPathStore extends BaseApiWithErrors {
     }
 
     return enrolled;
+  }
+
+  /**
+   * Public-site enrollment with a usable result. The plain enroll() only
+   * reports true/false; the org-site enroll page needs the failure reason to
+   * show paid, invite-only and limit states instead of a dead button.
+   */
+  async enrollFromPublicPage(pathId: string): Promise<{ enrolled: boolean; error: string | null }> {
+    let enrolled = false;
+    let failureMessage: string | null = null;
+    await this.execute<EnrollInLearningPathRequest>({
+      requestFn: () => classroomio['learning-path'][':pathId'].enroll.$post({ param: { pathId }, json: {} }),
+      logContext: 'enrolling in learning path',
+      onSuccess: () => {
+        enrolled = true;
+      },
+      onError: (result) => {
+        if (typeof result === 'string') {
+          failureMessage = t.get('snackbar.invite.failed_join');
+          snackbar.error('snackbar.invite.failed_join');
+          return;
+        }
+
+        const code =
+          typeof result === 'object' && result !== null && 'code' in result
+            ? String((result as { code?: unknown }).code ?? '')
+            : '';
+
+        if (code === ErrorCodes.UPGRADE_REQUIRED) {
+          failureMessage = t.get('course.navItem.landing_page.enroll_page.student_limit_reached', {
+            orgName: get(currentOrg)?.name ?? ''
+          });
+        } else if (code === ErrorCodes.VALIDATION_ERROR) {
+          failureMessage = t.get('course.navItem.landing_page.enroll_page.requires_payment_or_invite');
+        } else if (code === ErrorCodes.FORBIDDEN) {
+          failureMessage = t.get('course.navItem.landing_page.pricing_section.not_accepting');
+        } else {
+          failureMessage = t.get('snackbar.invite.failed_join');
+        }
+        snackbar.error(failureMessage);
+      }
+    });
+    if (enrolled) {
+      await this.listEnrolled();
+    }
+
+    return { enrolled, error: failureMessage };
   }
 
   async downloadCertificate(pathId: string, name: string, format: 'pdf' | 'png'): Promise<boolean> {

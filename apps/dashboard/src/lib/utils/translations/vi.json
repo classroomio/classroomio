@@ -5708,7 +5708,9 @@
       "series_outcomes_heading": "Những gì bạn sẽ học",
       "show_outline": "Hiển thị đề cương bài học",
       "hide_outline": "Ẩn đề cương bài học",
-      "preview_badge": "Xem trước"
+      "preview_badge": "Xem trước",
+      "unavailable": "Lộ trình học này hiện không mở ghi danh.",
+      "back_to_path": "Quay lại lộ trình"
     },
     "enrolled_label": "{count} đã đăng ký",
     "subtitle": "Các khóa học có nhiều khóa học có hướng dẫn chỉ với một lần đăng ký, các khóa học được đặt hàng và chứng chỉ ở cuối.",

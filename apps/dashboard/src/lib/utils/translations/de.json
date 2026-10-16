@@ -5708,7 +5708,9 @@
       "series_outcomes_heading": "Was du lernst",
       "show_outline": "Lektionsübersicht anzeigen",
       "hide_outline": "Lektionsübersicht ausblenden",
-      "preview_badge": "Vorschau"
+      "preview_badge": "Vorschau",
+      "unavailable": "Dieser Lernpfad ist derzeit nicht für die Einschreibung verfügbar.",
+      "back_to_path": "Zurück zum Lernpfad"
     },
     "enrolled_label": "{count} eingeschrieben",
     "subtitle": "Geführte Mehrkurs-Kurse mit einer Einschreibung, bestellten Kursen und einem Zertifikat am Ende.",
