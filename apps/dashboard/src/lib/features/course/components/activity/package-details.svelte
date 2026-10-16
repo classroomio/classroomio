@@ -7,11 +7,11 @@
   import PackageIcon from '@lucide/svelte/icons/package';
   import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
   import { t } from '$lib/utils/functions/translations';
-  import type { PackageDetails } from '$features/course/utils/types';
+  import type { AttachedPackageDetails } from '$features/course/utils/types';
   import { formatPackageBytes, formatScormVersion, unitPassMark } from '$features/course/utils/scorm-utils';
 
   interface Props {
-    details: PackageDetails;
+    details: AttachedPackageDetails;
     moduleOrder?: 'free' | 'sequential' | null;
     staleCount?: number;
     staleVersionNumber?: number | null;

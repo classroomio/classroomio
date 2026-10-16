@@ -156,6 +156,7 @@ function toLaunchModule(
     locked,
     scorePercent: scaled === null ? null : Math.round(scaled * 100),
     status: latestTry ? (latestTry.status as ScormLaunchModule['status']) : 'not_attempted',
+    success: outcome.success,
     maxTimeAllowed: maxTimeAllowedOf(unit)
   };
 }
@@ -426,6 +427,7 @@ export async function launchScormActivity(context: ActivityLaunchContext): Promi
       locked: false,
       scorePercent: null,
       status: 'not_attempted' as const,
+      success: 'unknown' as const,
       maxTimeAllowed: maxTimeAllowedOf(candidate)
     }));
 

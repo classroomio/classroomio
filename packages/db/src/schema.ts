@@ -25,7 +25,7 @@ import {
 } from 'drizzle-orm/pg-core';
 
 import type { AnswerData } from '@cio/question-types';
-import { COURSE_FORMAT_VALUES, SINGLE_ACTIVITY_COURSE_TYPES } from '@cio/utils/constants/course-format';
+import { COURSE_FORMAT_VALUES } from '@cio/utils/constants/course-format';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
 import {
   ACTIVITY_KINDS,

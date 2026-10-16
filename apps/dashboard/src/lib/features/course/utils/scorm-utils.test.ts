@@ -581,7 +581,7 @@ describe('getActivityStatusPill', () => {
       getActivityStatusPill({
         launch: {
           mode: 'normal',
-          units: [{ completed: false, scorePercent: 45, status: 'failed' }]
+          units: [{ completed: false, scorePercent: 45, success: 'failed' }]
         },
         isComplete: false
       })

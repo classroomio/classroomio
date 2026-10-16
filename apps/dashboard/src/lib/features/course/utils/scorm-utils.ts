@@ -660,7 +660,10 @@ export type ActivityStatusPill = {
  * activity attempt. Returns null for previews or unlaunched attempts.
  */
 export function getActivityStatusPill(input: {
-  launch: { mode?: string; units?: Array<{ completed?: boolean; scorePercent?: number | null }> } | null;
+  launch: {
+    mode?: string;
+    units?: Array<{ completed?: boolean; scorePercent?: number | null; success?: string }>;
+  } | null;
   isComplete: boolean;
 }): ActivityStatusPill | null {
   const { launch, isComplete } = input;
@@ -682,7 +685,7 @@ export function getActivityStatusPill(input: {
     };
   }
 
-  if ((launch.units ?? []).some((unit) => unit.status === 'failed')) {
+  if ((launch.units ?? []).some((unit) => unit.success === 'failed')) {
     return {
       variant: 'secondary',
       label: 'course.navItem.lessons.activities.player.status_not_passed'

@@ -1,6 +1,7 @@
 import type { DbOrTxClient } from '@cio/db/drizzle';
+import type { PackageVersionUnitSummary } from '@cio/db/queries/activity/package-unit';
 import type { TAsset, TContentPackageUnit, TContentPackageVersion } from '@cio/db/types';
-import type { LaunchMode } from '@cio/activity-packages';
+import type { LaunchMode, ScormSuccessValue } from '@cio/activity-packages';
 import type { LicenseFeatureId } from '@cio/utils/license';
 import type { TActivityKind } from '@cio/utils/constants/activity';
 import type { TScormResultsQuery } from '@cio/utils/validation/activity/report';
@@ -54,6 +55,7 @@ export type ActivityEditorData =
         versions: TContentPackageVersion[];
         currentVersion: TContentPackageVersion | null;
         units: TContentPackageUnit[];
+        versionStats: PackageVersionUnitSummary[];
         attemptCounts: {
           inProgress: number;
           stale: number;
@@ -83,6 +85,7 @@ export type ScormLaunchModule = {
   locked: boolean;
   scorePercent: number | null;
   status: 'not_attempted' | 'active' | 'suspended' | 'closed';
+  success: ScormSuccessValue;
   maxTimeAllowed: string | null;
 };
 

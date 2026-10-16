@@ -13,7 +13,7 @@ import {
   getPackageVersionById,
   listPackageVersionsByAsset
 } from '@cio/db/queries/activity/package-version';
-import { listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
+import { getPackageVersionUnitSummaries, listPackageUnitsByVersion } from '@cio/db/queries/activity/package-unit';
 import { getActivityScormByActivityId, upsertActivityScorm } from '@cio/db/queries/scorm';
 import {
   closeOpenAttemptsForActivity,
@@ -225,6 +225,7 @@ export const scormProvider: ActivityProvider = {
     }
 
     const { versions, currentVersion, units } = await resolvePackagePayload(asset.id);
+    const versionStats = await getPackageVersionUnitSummaries(asset.id);
     const attemptCounts = await getActivityOpenAttemptCounts(
       activityId,
       currentVersion?.id ?? null,
@@ -235,7 +236,7 @@ export const scormProvider: ActivityProvider = {
       available: true,
       kind: 'scorm',
       settings,
-      package: { asset, versions, currentVersion, units, attemptCounts }
+      package: { asset, versions, currentVersion, units, versionStats, attemptCounts }
     };
   },
   async updateSettings(activityId: string, input: unknown, tx: DbOrTxClient): Promise<void> {

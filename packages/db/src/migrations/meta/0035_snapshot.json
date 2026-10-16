@@ -5010,7 +5010,7 @@
       "checkConstraints": {
         "course_format_type_check": {
           "name": "course_format_type_check",
-          "value": "\"course\".\"format\" = 'standard' OR \"course\".\"type\" IN ('SELF_PACED', 'COMPLIANCE')"
+          "value": "\"course\".\"format\" = 'standard' OR \"course\".\"type\" = 'SELF_PACED'"
         }
       },
       "isRLSEnabled": false

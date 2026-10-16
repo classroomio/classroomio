@@ -17,13 +17,13 @@
   import { getRelativeDayLabelKey } from '$features/course/utils/lesson-version-utils';
   import { formatPackageBytes, formatScormVersion, unitPassMark } from '$features/course/utils/scorm-utils';
   import { locale, t } from '$lib/utils/functions/translations';
-  import type { PackageDetails } from '$features/course/utils/types';
+  import type { AttachedPackageDetails } from '$features/course/utils/types';
 
-  type VersionItem = NonNullable<PackageDetails['versions']>[number];
+  type VersionItem = NonNullable<AttachedPackageDetails['versions']>[number];
 
   interface Props {
     open?: boolean;
-    packageDetails: PackageDetails;
+    packageDetails: AttachedPackageDetails;
     moduleOrder?: 'free' | 'sequential' | null;
     onClose?: () => void;
     onRevert?: (version: VersionItem) => void;

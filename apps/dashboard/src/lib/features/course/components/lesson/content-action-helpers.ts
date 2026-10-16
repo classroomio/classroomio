@@ -1,4 +1,5 @@
 import { ContentType } from '@cio/utils/constants/content';
+import { assertNever } from '@cio/utils/functions';
 
 export type ContentActionItem = {
   type: ContentType;
@@ -62,7 +63,7 @@ export async function toggleLock({
   lessonApi: LessonApi;
   exerciseApi: ExerciseApi;
   activityApi: ActivityApi;
-}) {
+}): Promise<Record<string, string>> {
   item.isUnlocked = !(item.isUnlocked ?? false);
   const payload = buildContentPayload(item, { order: undefined });
 
@@ -77,9 +78,9 @@ export async function toggleLock({
       await activityApi.update(courseId, item.contentId, payload);
       return normalizeErrors(activityApi.errors);
     case ContentType.Section:
-      return [];
+      return {};
     default:
-      return [];
+      return assertNever(item.type);
   }
 }
 
@@ -95,7 +96,7 @@ export async function saveContent({
   lessonApi: LessonApi;
   exerciseApi: ExerciseApi;
   activityApi: ActivityApi;
-}) {
+}): Promise<Record<string, string>> {
   const payload = buildContentPayload(item);
 
   switch (item.type) {
@@ -109,9 +110,9 @@ export async function saveContent({
       await activityApi.update(courseId, item.contentId, payload);
       return normalizeErrors(activityApi.errors);
     case ContentType.Section:
-      return [];
+      return {};
     default:
-      return [];
+      return assertNever(item.type);
   }
 }
 
@@ -141,6 +142,6 @@ export async function deleteContent({
     case ContentType.Section:
       return false;
     default:
-      return false;
+      return assertNever(item.type);
   }
 }

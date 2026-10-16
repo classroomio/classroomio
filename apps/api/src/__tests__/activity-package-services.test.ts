@@ -54,6 +54,10 @@ vi.mock('@cio/core/services/jobs/activity-package-jobs', () => ({
   startActivityPackageJob: vi.fn()
 }));
 
+vi.mock('@cio/jobs', () => ({
+  isRedisConfigured: vi.fn(() => true)
+}));
+
 import { createAsset, getAssetById, updateAsset } from '@cio/db/queries/assets';
 import {
   createPackageVersion,

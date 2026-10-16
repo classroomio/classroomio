@@ -126,7 +126,9 @@
       const contentSha256 = await sha256IfSameSize(target, current);
       const sameFile = contentSha256 !== null && contentSha256 === current.contentSha256;
       const signature = await readScormManifestSignature(target);
-      const verdict = sameFile ? 'same_file' : comparePackageIdentity(signature, current);
+      const verdict: 'same_file' | PackageIdentityVerdict = sameFile
+        ? 'same_file'
+        : comparePackageIdentity(signature, current);
       const result = { file: target, verdict, contentSha256, title: signature.title, count: signature.itemIds.length };
       if (file === target) peek = result;
 
@@ -421,7 +423,7 @@
         maxFiles={1}
         fileCount={0}
         maxFileSize={maxSize}
-        onUpload={(files) => {
+        onUpload={async (files) => {
           if (files[0]) selectFile(files[0]);
         }}
         onFileRejected={handleRejected}

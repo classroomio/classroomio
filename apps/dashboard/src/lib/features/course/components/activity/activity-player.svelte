@@ -13,7 +13,7 @@
   import { activityApi, courseApi } from '$features/course/api';
   import StudentContentLockedNotice from '$features/course/components/student-content-locked-notice.svelte';
   import { getStudentContentLockReason } from '$features/ai-assistant/utils/content-ask-ai-bar';
-  import { getCourseProgress, getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
+  import { getOrderedNavigableContent, getContentRoute } from '$features/course/utils/content';
   import { sanitizeHtml } from '$lib/utils/functions/sanitize-html';
   import { openCourseCompletionIfDone } from '$features/course/utils/toggle-lesson-completion';
   import {

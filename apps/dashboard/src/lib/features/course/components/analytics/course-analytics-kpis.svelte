@@ -61,7 +61,7 @@
     <KpiCard
       title={$t('analytics.packages')}
       value={activityTotal.toLocaleString()}
-      description={$t('analytics.course_metrics.kpi_packages', { count: activityTotal })}
+      description={$t('analytics.course_metrics.kpi_activity_completion', { rate: activityRate })}
       icon={ListChecksIcon}
       accent="primary"
     />

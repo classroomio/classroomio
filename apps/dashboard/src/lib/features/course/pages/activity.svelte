@@ -525,7 +525,9 @@
           <HistoryIcon size={20} />
         </IconButton>
 
-        <RefreshPageData class="hidden lg:inline-flex" onRefresh={refreshEditor} />
+        <span class="hidden lg:inline-flex">
+          <RefreshPageData onRefresh={refreshEditor} />
+        </span>
       </RoleBasedSecurity>
     </div>
   </Page.Action>

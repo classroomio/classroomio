@@ -9,16 +9,19 @@ const base = {
 };
 
 describe('ZCourseCreate SCORM format', () => {
-  it('accepts Self-paced and Compliance SCORM courses', () => {
+  it('accepts Self-paced SCORM courses', () => {
     expect(ZCourseCreate.safeParse({ ...base, type: 'SELF_PACED', format: 'single_activity' }).success).toBe(true);
-    expect(
-      ZCourseCreate.safeParse({
-        ...base,
-        type: 'COMPLIANCE',
-        format: 'single_activity',
-        compliance: { retakeIntervalMonths: 12 }
-      }).success
-    ).toBe(true);
+  });
+
+  it('refuses Compliance SCORM courses', () => {
+    const result = ZCourseCreate.safeParse({
+      ...base,
+      type: 'COMPLIANCE',
+      format: 'single_activity',
+      compliance: { retakeIntervalMonths: 12 }
+    });
+
+    expect(result.success).toBe(false);
   });
 
   it('refuses other types for SCORM courses', () => {

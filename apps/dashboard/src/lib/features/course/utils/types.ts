@@ -331,6 +331,7 @@ export type GetPackageRequest = (typeof classroomio.activity.packages)[':assetId
 export type GetPackageResponse = InferResponseType<GetPackageRequest> | null;
 export type GetPackageSuccess = Extract<InferResponseType<GetPackageRequest>, { success: true }>;
 export type PackageDetails = GetPackageSuccess['data'];
+export type AttachedPackageDetails = Omit<PackageDetails, 'usedBy'>;
 
 export type GetPackageDownloadRequest = (typeof classroomio.activity.packages)[':assetId']['download']['$get'];
 export type GetPackageDownloadResponse = InferResponseType<GetPackageDownloadRequest>;

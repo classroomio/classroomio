@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as Dialog from '@cio/ui/base/dialog';
   import { Button } from '@cio/ui/base/button';
-  import * as Field from '@cio/ui/base/field';
   import { InputField } from '@cio/ui/custom/input-field';
   import PackageIcon from '@lucide/svelte/icons/package';
 
