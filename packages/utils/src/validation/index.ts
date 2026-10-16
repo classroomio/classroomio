@@ -2,6 +2,7 @@ export * from './constants';
 export * from './shared';
 
 export * from './account';
+export * from './activity';
 export * from './agent';
 export * from './attendance';
 export * from './assets';
