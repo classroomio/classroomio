@@ -2777,6 +2777,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "hls_status": {
+          "name": "hls_status",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'none'"
         }
       },
       "indexes": {
