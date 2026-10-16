@@ -168,7 +168,11 @@ GOOGLE_CLIENT_ID=           # Google OAuth sign-in
 GOOGLE_CLIENT_SECRET=
 OPENAI_API_KEY=             # transcription + AI course generation
 UNSPLASH_API_KEY=           # Unsplash image search
-LICENSE_KEY=                # enterprise features (SSO)
+LICENSE_KEY=                # enterprise features (SSO, token auth, no-tracking, SCORM)
+SCORM_CONTENT_ORIGIN=       # SCORM content hostname, e.g. https://content.yourdomain.com (needs one DNS record)
+ACTIVITY_SIGNING_SECRET=    # HMAC secret for SCORM launch/content tokens (generate with openssl rand -hex 32)
+OBJECT_STORAGE_BUCKET_SCORM= # private bucket for SCORM package files (default scorm)
+UPLOAD_MAX_SCORM_MB=        # SCORM package uploads (default 500; set same on api and dashboard)
 ALLOWED_EXTERNAL_DOMAINS=   # overrides all CSP_*_DOMAINS below
 CSP_SCRIPT_SRC_DOMAINS=
 CSP_STYLE_SRC_DOMAINS=
@@ -218,7 +222,11 @@ won't work correctly without them. Set them all.
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth sign-in. |
 | `OPENAI_API_KEY` | Transcription + AI course generation (jobs worker). |
 | `UNSPLASH_API_KEY` | Unsplash image search. |
-| `LICENSE_KEY` | Enterprise features — SSO requires a license ([book a call](http://cal.com/classroomio/enterprise)). |
+| `LICENSE_KEY` | Enterprise features — SSO, token auth, no-tracking, and SCORM require a license ([book a call](http://cal.com/classroomio/enterprise)). |
+| `SCORM_CONTENT_ORIGIN` | SCORM content hostname, e.g. `https://content.yourdomain.com`. Needs one DNS record routed to the `api` service. Without it, SCORM stays off. See [SCORM packages](/self-hosted/scorm). |
+| `ACTIVITY_SIGNING_SECRET` | HMAC secret signing SCORM launch and content tokens. Generate with `openssl rand -hex 32`. |
+| `OBJECT_STORAGE_BUCKET_SCORM` | Private bucket for SCORM package files. Default `scorm`. |
+| `UPLOAD_MAX_SCORM_MB` | SCORM package upload cap in MB. Default 500. Set the same value on `api` and `dashboard`. |
 | `ALLOWED_EXTERNAL_DOMAINS` | Overrides all `CSP_*_DOMAINS` vars with one comma-separated allowlist. |
 | `CSP_SCRIPT_SRC_DOMAINS`, `CSP_STYLE_SRC_DOMAINS`, `CSP_CONNECT_SRC_DOMAINS`, `CSP_FRAME_SRC_DOMAINS`, `CSP_FONT_SRC_DOMAINS` | Per-directive CSP allowlists for extra CDN/font/frame domains. |
 | `TRUSTED_ORIGINS` | Extra origins allowed to call the API directly (normal dashboard traffic is same-origin via the proxy). |
@@ -257,8 +265,15 @@ the `storage` profile off. See [Configuration → Object storage & uploads](/sel
 ### Upload size limits (optional)
 
 Set `UPLOAD_MAX_*_MB` in Coolify's env for both the `api` and `dashboard` services (same values in
-each), e.g. `UPLOAD_MAX_DOCUMENT_MB=50`. See
+each), e.g. `UPLOAD_MAX_DOCUMENT_MB=50` or `UPLOAD_MAX_SCORM_MB=500`. See
 [Configuration → Upload file size limits](/self-hosted/configuration/storage#upload-file-size-limits).
+
+### SCORM content hostname (optional)
+
+SCORM packages are served from a separate content hostname. Add one DNS record for
+`content.yourdomain.com` pointing at your server, route it to the `api` service, and set
+`SCORM_CONTENT_ORIGIN=https://content.yourdomain.com` plus `ACTIVITY_SIGNING_SECRET`. See
+[SCORM packages](/self-hosted/scorm).
 
 ## Upgrades & rollback
 

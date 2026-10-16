@@ -172,9 +172,15 @@ OBJECT_STORAGE_SECRET_ACCESS_KEY=<secret key>
 OBJECT_STORAGE_REGION=auto
 OBJECT_STORAGE_FORCE_PATH_STYLE=false
 OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://<public media domain>
+OBJECT_STORAGE_BUCKET_SCORM=scorm
+
+# SCORM content hostname (separate origin for package files, player, run-time)
+SCORM_CONTENT_ORIGIN=https://content.yourdomain.com
+ACTIVITY_SIGNING_SECRET=<generate-with-openssl-rand-hex-32>
+UPLOAD_MAX_SCORM_MB=500
 ```
 
-Optional: add `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for OAuth, `UNSPLASH_API_KEY` for image search, or `LICENSE_KEY` for enterprise features.
+Optional: add `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` for OAuth, `UNSPLASH_API_KEY` for image search, or `LICENSE_KEY` for enterprise features (including SCORM). See [SCORM packages](/self-hosted/scorm) for the content hostname, DNS, and same-site trade-off.
 
 ### cio-dashboard
 
@@ -191,7 +197,7 @@ ALLOWED_EXTERNAL_DOMAINS="https://fonts.googleapis.com"
 
 Optional: add `PUBLIC_APP_TITLE`, `PUBLIC_APP_DESCRIPTION`, `PUBLIC_OG_IMAGE_URL` for custom branding. You can also use per-directive CSP vars (`CSP_SCRIPT_SRC_DOMAINS`, `CSP_MEDIA_SRC_DOMAINS`, etc.) instead of `ALLOWED_EXTERNAL_DOMAINS` for finer control.
 
-**Upload size limits** (optional): add the same `UPLOAD_MAX_*_MB` values to **cio-api** and **cio-dashboard** (e.g. `UPLOAD_MAX_DOCUMENT_MB=50`). See [Configuration → Upload file size limits](/self-hosted/configuration/storage#upload-file-size-limits).
+**Upload size limits** (optional): add the same `UPLOAD_MAX_*_MB` values to **cio-api** and **cio-dashboard** (e.g. `UPLOAD_MAX_DOCUMENT_MB=50` or `UPLOAD_MAX_SCORM_MB=500`). See [Configuration → Upload file size limits](/self-hosted/configuration/storage#upload-file-size-limits).
 
 ### cio-jobs (background worker)
 
@@ -209,6 +215,8 @@ OBJECT_STORAGE_SECRET_ACCESS_KEY=<secret key>
 OBJECT_STORAGE_REGION=auto
 OBJECT_STORAGE_FORCE_PATH_STYLE=false
 OBJECT_STORAGE_MEDIA_PUBLIC_BASE_URL=https://<public media domain>
+OBJECT_STORAGE_BUCKET_SCORM=scorm
+UPLOAD_MAX_SCORM_MB=500
 
 # Email (worker sends invites, notifications, etc.)
 SMTP_HOST=  SMTP_PORT=  SMTP_USER=  SMTP_PASSWORD=  SMTP_SENDER=
@@ -241,6 +249,13 @@ See [Configuration → Email (SMTP)](/self-hosted/configuration/email) for the S
 ### SSO (Enterprise)
 
 SSO requires a `LICENSE_KEY` on the `cio-api` service. See [Enterprise & licensing](/self-hosted/enterprise).
+
+### SCORM (Enterprise)
+
+SCORM authoring needs a `LICENSE_KEY` with the `scorm` feature on `cio-api`, plus
+`SCORM_CONTENT_ORIGIN` (e.g. `https://content.yourdomain.com`) and `ACTIVITY_SIGNING_SECRET`.
+Playback, results, export, reset, and delete keep working without it. See
+[SCORM packages](/self-hosted/scorm).
 
 ## Upgrades
 
