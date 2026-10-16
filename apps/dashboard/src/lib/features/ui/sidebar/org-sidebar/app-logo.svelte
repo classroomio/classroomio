@@ -1,12 +1,9 @@
 <script lang="ts">
   import * as Avatar from '@cio/ui/base/avatar';
   import * as Sidebar from '@cio/ui/base/sidebar';
-  import { currentOrg, currentOrgPlan } from '$lib/utils/store/org';
-  import { Badge } from '@cio/ui/base/badge';
-  import { PLAN_NAMES, PLAN } from '@cio/utils/plans';
+  import { currentOrg } from '$lib/utils/store/org';
   import { BRAND_ROOT_DOMAIN, TENANT_ROOT_DOMAIN } from '@cio/utils/constants';
 
-  const plan = $derived($currentOrgPlan?.planName || PLAN.BASIC);
   const utmSource = $derived(
     $currentOrg.customDomain ||
       ($currentOrg.siteName ? `${$currentOrg.siteName}.${TENANT_ROOT_DOMAIN}` : BRAND_ROOT_DOMAIN)
@@ -26,14 +23,11 @@
           rel="noopener noreferrer"
           {...props}
         >
-          <Avatar.Root class="flex size-6 items-center justify-center">
-            <Avatar.Image src="/logo-192.png" alt="ClassroomIO logo" />
+          <Avatar.Root class="size-6 rounded-sm bg-white ring-1 ring-black/10">
+            <Avatar.Image src="/sunset-learning-logo.png" alt="Sunset Learning logo" class="object-contain" />
           </Avatar.Root>
 
-          <span class="truncate font-normal">ClassroomIO</span>
-          <Badge variant="outline" class="capitalize">
-            {PLAN_NAMES[plan] || plan}
-          </Badge>
+          <span class="truncate font-normal">Sunset Learning</span>
         </a>
       {/snippet}
     </Sidebar.MenuButton>
