@@ -161,6 +161,14 @@
       "question": {
         "too_small": "Der Titel der Frage ist erforderlich"
       }
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "Die Payload-URL muss mit http:// oder https:// beginnen"
+      },
+      "event_types": {
+        "required": "Wählen Sie mindestens ein Ereignis aus"
+      }
     }
   },
   "generic": {
@@ -515,6 +523,17 @@
       "success": "Danke. Wir prüfen diese Meldung.",
       "error": "Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
       "already_submitted": "Sie haben diesen Inhalt bereits gemeldet."
+    },
+    "webhooks": {
+      "created": "Webhook erstellt. Kopieren Sie jetzt das Signaturgeheimnis, da es nur einmal angezeigt wird.",
+      "updated": "Webhook aktualisiert.",
+      "enabled": "Webhook aktiviert.",
+      "disabled": "Webhook deaktiviert.",
+      "deleted": "Webhook gelöscht.",
+      "secret_regenerated": "Signaturgeheimnis neu generiert. Kopieren Sie es jetzt, da es nur einmal angezeigt wird.",
+      "test_success": "Testereignis erfolgreich zugestellt.",
+      "test_failed": "Das Testereignis ist fehlgeschlagen. Öffnen Sie das Zustellungsprotokoll, um den Grund zu sehen.",
+      "redelivered": "Ereignis für die erneute Zustellung eingereiht."
     }
   },
   "explore": {
@@ -575,7 +594,8 @@
     "required": "Upgrade erforderlich",
     "enterprise_required": "Für diese Funktion ist ein Enterprise-Plan erforderlich.",
     "public_api_required": "Upgrade auf Early Adopter oder Enterprise, um auf die öffentliche API zuzugreifen.",
-    "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten"
+    "unlock_field": "Führen Sie ein Upgrade durch, um diese Einstellung freizuschalten",
+    "webhooks_required": "Upgraden Sie auf Early Adopter oder Enterprise, um Webhooks zu nutzen."
   },
   "analytics": {
     "title": "Analysen",
@@ -5055,7 +5075,8 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks"
     },
     "permissions": {
       "disabled_title": "Nur lesender Zugriff",
@@ -5063,6 +5084,126 @@
     },
     "zapier": {
       "page_subtitle": "Automatisieren Sie ClassroomIO mit Tausenden von Apps über Zapier. Demnächst verfügbar."
+    },
+    "webhooks": {
+      "page_subtitle": "Senden Sie ClassroomIO-Ereignisse in Echtzeit an Slack, Ihr CRM oder Ihr eigenes Backend.",
+      "description": "ClassroomIO sendet einen signierten HTTP-POST an Ihre URL, sobald ein ausgewähltes Ereignis eintritt. Fehlgeschlagene Zustellungen werden automatisch wiederholt.",
+      "permissions_description": "Nur Organisationsadministratoren können Webhooks erstellen, bearbeiten oder löschen.",
+      "create": "Neuer Webhook",
+      "empty_title": "Noch keine Webhooks",
+      "empty_description": "Erstellen Sie einen Webhook, um Einladungen, Einschreibungen, Abschlüsse und Einreichungen an Ihre anderen Tools zu übertragen.",
+      "secret_once": "Kopieren Sie jetzt Ihr Signaturgeheimnis. Es wird nur einmal angezeigt und wird zur Überprüfung von Anfragen benötigt.",
+      "secret_dismiss": "Ich habe es gespeichert",
+      "delete_confirm": "Den Webhook \"{name}\" löschen? Der Zustellungsverlauf wird ebenfalls entfernt.",
+      "regenerate_confirm": "Signaturgeheimnis neu generieren? Das aktuelle Geheimnis funktioniert sofort nicht mehr.",
+      "events_all": "Alle Ereignisse",
+      "events_count_one": "{count} Ereignis",
+      "events_count_other": "{count} Ereignisse",
+      "no_deliveries": "Noch keine Zustellungen",
+      "table": {
+        "name": "Ziel",
+        "events": "Ereignisse",
+        "health": "Status",
+        "active": "Aktiv",
+        "error_rate": "Fehlerquote (24 Std.)",
+        "error_rate_detail": "{failed} von {total} fehlgeschlagen",
+        "no_recent_deliveries": "Keine Zustellungen in 24 Std."
+      },
+      "health": {
+        "healthy": "Fehlerfrei",
+        "degraded": "Fehlerhaft",
+        "disabled": "Automatisch deaktiviert"
+      },
+      "actions": {
+        "label": "Webhook-Aktionen",
+        "edit": "Bearbeiten",
+        "test": "Testereignis senden",
+        "deliveries": "Zustellungen anzeigen",
+        "regenerate_secret": "Geheimnis neu generieren",
+        "delete": "Löschen"
+      },
+      "form": {
+        "create_title": "Neuer Webhook",
+        "edit_title": "Webhook bearbeiten",
+        "description": "Wählen Sie, wohin ClassroomIO Ereignisse sendet und welche Ereignisse gesendet werden.",
+        "sections": {
+          "endpoint": "Endpunkt",
+          "events": "Ereignisse"
+        },
+        "name": "Name",
+        "name_placeholder": "CRM-Synchronisierung",
+        "payload_url": "Payload-URL",
+        "payload_url_help": "Muss eine öffentliche HTTPS-URL sein, die innerhalb von 10 Sekunden mit einer 2xx-Antwort antwortet.",
+        "secret": "Signaturgeheimnis",
+        "secret_placeholder": "Leer lassen, um eines zu generieren",
+        "secret_help": "Wird zum Signieren jeder Anfrage verwendet, damit Sie prüfen können, dass sie von ClassroomIO stammt.",
+        "secret_edit_placeholder": "Leer lassen, um das aktuelle Geheimnis beizubehalten",
+        "secret_edit_help": "Geben Sie einen neuen Wert ein, um das Geheimnis zu ersetzen. Das aktuelle wird nie angezeigt.",
+        "verify_ssl": "SSL-Zertifikat überprüfen",
+        "verify_ssl_help": "Lassen Sie dies aktiviert, außer Sie testen mit einem selbstsignierten Zertifikat.",
+        "active": "Aktiv",
+        "events_help": "Wählen Sie die Ereignisse aus, die diesen Webhook auslösen sollen.",
+        "mode_all": "Alles senden",
+        "mode_selected": "Einzelne Ereignisse auswählen",
+        "cancel": "Abbrechen",
+        "save": "Webhook speichern",
+        "select_all": "Alle auswählen",
+        "events_selected": "{selected} von {total} ausgewählt"
+      },
+      "event_groups": {
+        "organization": "Organisation",
+        "course": "Kurse",
+        "learning": "Lernfortschritt"
+      },
+      "events": {
+        "organization_invite_created": "Eine Team-Einladung wird gesendet",
+        "organization_invite_accepted": "Eine Team-Einladung wird angenommen",
+        "organization_invite_revoked": "Eine Team-Einladung wird widerrufen oder ersetzt",
+        "course_invite_created": "Eine Einladung für Lernende wird erstellt",
+        "course_invite_accepted": "Ein Lernender nimmt eine Einladung an und schreibt sich ein",
+        "course_invite_revoked": "Eine Einladung für Lernende wird widerrufen",
+        "course_member_added": "Ein Mitglied wird zu einem Kurs hinzugefügt",
+        "course_member_removed": "Ein Mitglied wird aus einem Kurs entfernt",
+        "course_completed": "Ein Lernender schließt einen Kurs ab",
+        "course_certificate_issued": "Ein Zertifikat wird erworben",
+        "course_submission_created": "Eine Übungseinreichung wird erstellt",
+        "course_submission_status_changed": "Der Status einer Einreichung ändert sich, z. B. bei der Bewertung",
+        "lesson_completion_updated": "Eine Lektion wird als abgeschlossen markiert oder zurückgesetzt",
+        "exercise_completion_updated": "Eine Übung wird abgeschlossen oder zurückgesetzt"
+      },
+      "deliveries": {
+        "title": "Zustellungen",
+        "description": "Ereignisse der letzten 30 Tage",
+        "back": "Zurück zu Zustellungen",
+        "filter_all": "Alle Status",
+        "empty": "Keine Zustellungen entsprechen diesem Filter.",
+        "load_error": "Zustellungen konnten nicht geladen werden. Bitte versuchen Sie es erneut.",
+        "redeliver": "Erneut zustellen",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Wird wiederholt",
+          "SUCCESS": "Erfolgreich",
+          "FAILED": "Fehlgeschlagen",
+          "GAVE_UP": "Fehlgeschlagen"
+        },
+        "columns": {
+          "event": "Ereignis",
+          "event_id": "Ereignis-ID",
+          "status": "Status",
+          "attempt": "Versuch",
+          "http": "HTTP-Status",
+          "duration": "Antwortzeit",
+          "time": "Gesendet",
+          "next_attempt": "Nächster Versuch"
+        },
+        "detail": {
+          "error": "Fehler",
+          "request_headers": "Anfrage-Header",
+          "payload": "Payload",
+          "response_body": "Antwort",
+          "no_response": "Es wurde keine Antwort empfangen."
+        }
+      }
     }
   },
   "ai_assistant": {

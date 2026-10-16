@@ -188,7 +188,11 @@ export async function resetStudentCourseProgress(input: {
   courseId: string;
   groupMemberId: string;
   profileId: string;
-}): Promise<ResetStudentCourseProgressSummary> {
+}): Promise<{
+  summary: ResetStudentCourseProgressSummary;
+  resetLessonIds: string[];
+  resetExerciseIds: string[];
+}> {
   const { courseId, groupMemberId, profileId } = input;
 
   try {
@@ -226,7 +230,7 @@ export async function resetStudentCourseProgress(input: {
       const deletedSubmissions = await tx
         .delete(schema.submission)
         .where(and(eq(schema.submission.courseId, courseId), eq(schema.submission.submittedBy, groupMemberId)))
-        .returning({ id: schema.submission.id });
+        .returning({ id: schema.submission.id, exerciseId: schema.submission.exerciseId });
 
       const deletedLessonCompletions =
         lessonIds.length > 0
@@ -238,7 +242,7 @@ export async function resetStudentCourseProgress(input: {
                   inArray(schema.lessonCompletion.lessonId, lessonIds)
                 )
               )
-              .returning({ id: schema.lessonCompletion.id })
+              .returning({ id: schema.lessonCompletion.id, lessonId: schema.lessonCompletion.lessonId })
           : [];
 
       const deletedVideoProgress =
@@ -305,7 +309,7 @@ export async function resetStudentCourseProgress(input: {
         })
         .where(eq(schema.groupmember.id, groupMemberId));
 
-      return {
+      const summary = {
         lessonCompletion: deletedLessonCompletions.length,
         lessonVideoProgress: deletedVideoProgress.length,
         submissions: deletedSubmissions.length,
@@ -317,6 +321,13 @@ export async function resetStudentCourseProgress(input: {
         courseCompletionRecords: deletedCompletionRecords.length,
         aiChatConversations: deletedAiChatConversations.length
       };
+
+      const resetLessonIds = [
+        ...new Set(deletedLessonCompletions.map((row) => row.lessonId).filter((id): id is string => id !== null))
+      ];
+      const resetExerciseIds = [...new Set(deletedSubmissions.map((row) => row.exerciseId))];
+
+      return { summary, resetLessonIds, resetExerciseIds };
     });
   } catch (error) {
     console.error('resetStudentCourseProgress error:', error);

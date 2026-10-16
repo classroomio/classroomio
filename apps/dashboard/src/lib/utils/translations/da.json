@@ -161,6 +161,14 @@
       "question": {
         "too_small": "Spørgsmålets titel er påkrævet"
       }
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload-URL skal starte med http:// eller https://"
+      },
+      "event_types": {
+        "required": "Vælg mindst én hændelse"
+      }
     }
   },
   "generic": {
@@ -515,6 +523,17 @@
       "success": "Tak. Vi gennemgår denne anmeldelse.",
       "error": "Anmeldelsen kunne ikke sendes. Prøv venligst igen.",
       "already_submitted": "Du har allerede anmeldt dette."
+    },
+    "webhooks": {
+      "created": "Webhook oprettet. Kopiér signeringshemmeligheden nu, fordi den kun vises én gang.",
+      "updated": "Webhook opdateret.",
+      "enabled": "Webhook aktiveret.",
+      "disabled": "Webhook deaktiveret.",
+      "deleted": "Webhook slettet.",
+      "secret_regenerated": "Signeringshemmelighed genereret igen. Kopiér den nu, fordi den kun vises én gang.",
+      "test_success": "Testhændelsen blev leveret.",
+      "test_failed": "Testhændelsen mislykkedes. Åbn leveringsloggen for at se hvorfor.",
+      "redelivered": "Hændelsen er sat i kø til ny levering."
     }
   },
   "explore": {
@@ -575,7 +594,8 @@
     "required": "Opgradering påkrævet",
     "enterprise_required": "Denne funktion kræver en Enterprise-plan.",
     "public_api_required": "Opgrader til Early Adopter eller Enterprise for at få adgang til det offentlige API.",
-    "unlock_field": "Opgrader for at låse denne indstilling op"
+    "unlock_field": "Opgrader for at låse denne indstilling op",
+    "webhooks_required": "Opgrader til Early Adopter eller Enterprise for at bruge webhooks."
   },
   "analytics": {
     "title": "Analyse",
@@ -5055,7 +5075,8 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks"
     },
     "permissions": {
       "disabled_title": "Skrivebeskyttet adgang",
@@ -5063,6 +5084,126 @@
     },
     "zapier": {
       "page_subtitle": "Automatiser ClassroomIO med tusindvis af apps via Zapier. Kommer snart."
+    },
+    "webhooks": {
+      "page_subtitle": "Send ClassroomIO-hændelser i realtid til Slack, dit CRM eller din egen backend.",
+      "description": "ClassroomIO sender en signeret HTTP POST til din URL, hver gang en valgt hændelse opstår. Mislykkede leverancer forsøges automatisk igen.",
+      "permissions_description": "Kun organisationsadministratorer kan oprette, redigere eller slette webhooks.",
+      "create": "Ny webhook",
+      "empty_title": "Ingen webhooks endnu",
+      "empty_description": "Opret en webhook for at sende invitationer, tilmeldinger, gennemførelser og afleveringer til dine andre værktøjer.",
+      "secret_once": "Kopiér din signeringshemmelighed nu. Den vises kun én gang, og du skal bruge den til at verificere forespørgsler.",
+      "secret_dismiss": "Jeg har gemt den",
+      "delete_confirm": "Slet webhooken \"{name}\"? Dens leveringshistorik fjernes også.",
+      "regenerate_confirm": "Generer signeringshemmeligheden igen? Den nuværende hemmelighed holder op med at virke med det samme.",
+      "events_all": "Alle hændelser",
+      "events_count_one": "{count} hændelse",
+      "events_count_other": "{count} hændelser",
+      "no_deliveries": "Ingen leverancer endnu",
+      "table": {
+        "name": "Destination",
+        "events": "Hændelser",
+        "health": "Status",
+        "active": "Aktiv",
+        "error_rate": "Fejlrate (24t)",
+        "error_rate_detail": "{failed} af {total} mislykkedes",
+        "no_recent_deliveries": "Ingen leverancer på 24t"
+      },
+      "health": {
+        "healthy": "Sund",
+        "degraded": "Fejler",
+        "disabled": "Automatisk deaktiveret"
+      },
+      "actions": {
+        "label": "Webhook-handlinger",
+        "edit": "Rediger",
+        "test": "Send testhændelse",
+        "deliveries": "Se leverancer",
+        "regenerate_secret": "Generer hemmelighed igen",
+        "delete": "Slet"
+      },
+      "form": {
+        "create_title": "Ny webhook",
+        "edit_title": "Rediger webhook",
+        "description": "Vælg, hvortil ClassroomIO sender hændelser, og hvilke hændelser der skal sendes.",
+        "sections": {
+          "endpoint": "Endepunkt",
+          "events": "Hændelser"
+        },
+        "name": "Navn",
+        "name_placeholder": "CRM-synkronisering",
+        "payload_url": "Payload-URL",
+        "payload_url_help": "Skal være en offentlig HTTPS-URL, der returnerer et 2xx-svar inden for 10 sekunder.",
+        "secret": "Signeringshemmelighed",
+        "secret_placeholder": "Lad feltet stå tomt for at generere en",
+        "secret_help": "Bruges til at signere hver forespørgsel, så du kan verificere, at den kom fra ClassroomIO.",
+        "secret_edit_placeholder": "Lad feltet stå tomt for at beholde den nuværende hemmelighed",
+        "secret_edit_help": "Indtast en ny værdi for at erstatte hemmeligheden. Den nuværende vises aldrig.",
+        "verify_ssl": "Verificer SSL-certifikat",
+        "verify_ssl_help": "Lad denne være slået til, medmindre du tester mod et selvsigneret certifikat.",
+        "active": "Aktiv",
+        "events_help": "Vælg de hændelser, der skal udløse denne webhook.",
+        "mode_all": "Send mig alt",
+        "mode_selected": "Lad mig vælge individuelle hændelser",
+        "cancel": "Annuller",
+        "save": "Gem webhook",
+        "select_all": "Vælg alle",
+        "events_selected": "{selected} af {total} valgt"
+      },
+      "event_groups": {
+        "organization": "Organisation",
+        "course": "Kurser",
+        "learning": "Læringsfremskridt"
+      },
+      "events": {
+        "organization_invite_created": "En teaminvitation sendes",
+        "organization_invite_accepted": "En teaminvitation accepteres",
+        "organization_invite_revoked": "En teaminvitation tilbagekaldes eller erstattes",
+        "course_invite_created": "En studerendeinvitation oprettes",
+        "course_invite_accepted": "En studerende accepterer en invitation og tilmelder sig",
+        "course_invite_revoked": "En studerendeinvitation tilbagekaldes",
+        "course_member_added": "Et medlem tilføjes til et kursus",
+        "course_member_removed": "Et medlem fjernes fra et kursus",
+        "course_completed": "En kursist gennemfører et kursus",
+        "course_certificate_issued": "Et certifikat opnås",
+        "course_submission_created": "En opgaveaflevering oprettes",
+        "course_submission_status_changed": "Status for en aflevering ændres, f.eks. når den bedømmes",
+        "lesson_completion_updated": "En lektion markeres som fuldført eller nulstilles",
+        "exercise_completion_updated": "En opgave fuldføres eller nulstilles"
+      },
+      "deliveries": {
+        "title": "Leverancer",
+        "description": "Hændelser fra de seneste 30 dage",
+        "back": "Tilbage til leverancer",
+        "filter_all": "Alle statusser",
+        "empty": "Ingen leverancer matcher dette filter.",
+        "load_error": "Kunne ikke indlæse leverancer. Prøv igen.",
+        "redeliver": "Lever igen",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Prøver igen",
+          "SUCCESS": "Gennemført",
+          "FAILED": "Mislykket",
+          "GAVE_UP": "Mislykket"
+        },
+        "columns": {
+          "event": "Hændelse",
+          "event_id": "Hændelses-ID",
+          "status": "Status",
+          "attempt": "Forsøg",
+          "http": "HTTP-status",
+          "duration": "Svartid",
+          "time": "Sendt",
+          "next_attempt": "Næste forsøg"
+        },
+        "detail": {
+          "error": "Fejl",
+          "request_headers": "Forespørgselsheadere",
+          "payload": "Payload",
+          "response_body": "Svar",
+          "no_response": "Der blev ikke modtaget noget svar."
+        }
+      }
     }
   },
   "ai_assistant": {

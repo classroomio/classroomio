@@ -161,6 +161,14 @@
       "question": {
         "too_small": "Tiêu đề câu hỏi là bắt buộc"
       }
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "Payload URL phải bắt đầu bằng http:// hoặc https://"
+      },
+      "event_types": {
+        "required": "Chọn ít nhất một sự kiện"
+      }
     }
   },
   "generic": {
@@ -515,6 +523,17 @@
       "success": "Cảm ơn. Chúng tôi sẽ xem xét báo cáo này.",
       "error": "Không thể gửi báo cáo. Vui lòng thử lại.",
       "already_submitted": "Bạn đã báo cáo nội dung này rồi."
+    },
+    "webhooks": {
+      "created": "Đã tạo webhook. Hãy sao chép khóa bí mật ký ngay vì nó chỉ hiển thị một lần.",
+      "updated": "Đã cập nhật webhook.",
+      "enabled": "Đã bật webhook.",
+      "disabled": "Đã tắt webhook.",
+      "deleted": "Đã xóa webhook.",
+      "secret_regenerated": "Đã tạo lại khóa bí mật ký. Hãy sao chép ngay vì nó chỉ hiển thị một lần.",
+      "test_success": "Đã gửi sự kiện thử nghiệm thành công.",
+      "test_failed": "Sự kiện thử nghiệm thất bại. Mở nhật ký gửi để xem lý do.",
+      "redelivered": "Sự kiện đã được đưa vào hàng đợi để gửi lại."
     }
   },
   "explore": {
@@ -575,7 +594,8 @@
     "required": "Yêu cầu nâng cấp",
     "enterprise_required": "Tính năng này yêu cầu gói Enterprise.",
     "public_api_required": "Nâng cấp lên Early Adopter hoặc Enterprise để truy cập API công khai.",
-    "unlock_field": "Nâng cấp để mở khóa cài đặt này"
+    "unlock_field": "Nâng cấp để mở khóa cài đặt này",
+    "webhooks_required": "Nâng cấp lên Early Adopter hoặc Enterprise để sử dụng webhook."
   },
   "analytics": {
     "title": "Phân tích",
@@ -5055,7 +5075,8 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooks"
     },
     "permissions": {
       "disabled_title": "Quyền truy cập chỉ đọc",
@@ -5063,6 +5084,126 @@
     },
     "zapier": {
       "page_subtitle": "Tự động hóa ClassroomIO với hàng nghìn ứng dụng qua Zapier. Sắp ra mắt."
+    },
+    "webhooks": {
+      "page_subtitle": "Gửi các sự kiện ClassroomIO theo thời gian thực đến Slack, CRM hoặc backend của riêng bạn.",
+      "description": "ClassroomIO gửi một HTTP POST đã ký đến URL của bạn mỗi khi một sự kiện được chọn xảy ra. Các lần gửi thất bại sẽ được tự động thử lại.",
+      "permissions_description": "Chỉ quản trị viên tổ chức mới có thể tạo, chỉnh sửa hoặc xóa webhook.",
+      "create": "Webhook mới",
+      "empty_title": "Chưa có webhook nào",
+      "empty_description": "Tạo webhook để đẩy lời mời, lượt ghi danh, lượt hoàn thành và bài nộp đến các công cụ khác của bạn.",
+      "secret_once": "Hãy sao chép khóa bí mật ký ngay bây giờ. Khóa chỉ hiển thị một lần và bạn sẽ cần nó để xác minh các yêu cầu.",
+      "secret_dismiss": "Tôi đã lưu lại",
+      "delete_confirm": "Xóa webhook \"{name}\"? Lịch sử gửi của nó cũng sẽ bị xóa.",
+      "regenerate_confirm": "Tạo lại khóa bí mật ký? Khóa hiện tại sẽ ngừng hoạt động ngay lập tức.",
+      "events_all": "Tất cả sự kiện",
+      "events_count_one": "{count} sự kiện",
+      "events_count_other": "{count} sự kiện",
+      "no_deliveries": "Chưa có lần gửi nào",
+      "table": {
+        "name": "Đích đến",
+        "events": "Sự kiện",
+        "health": "Trạng thái",
+        "active": "Hoạt động",
+        "error_rate": "Tỷ lệ lỗi (24 giờ)",
+        "error_rate_detail": "{failed}/{total} thất bại",
+        "no_recent_deliveries": "Không có lượt gửi trong 24 giờ"
+      },
+      "health": {
+        "healthy": "Ổn định",
+        "degraded": "Đang lỗi",
+        "disabled": "Tự động vô hiệu hóa"
+      },
+      "actions": {
+        "label": "Thao tác webhook",
+        "edit": "Chỉnh sửa",
+        "test": "Gửi sự kiện thử nghiệm",
+        "deliveries": "Xem các lần gửi",
+        "regenerate_secret": "Tạo lại khóa bí mật",
+        "delete": "Xóa"
+      },
+      "form": {
+        "create_title": "Webhook mới",
+        "edit_title": "Chỉnh sửa webhook",
+        "description": "Chọn nơi ClassroomIO gửi sự kiện và những sự kiện nào sẽ được gửi.",
+        "sections": {
+          "endpoint": "Điểm cuối",
+          "events": "Sự kiện"
+        },
+        "name": "Tên",
+        "name_placeholder": "Đồng bộ CRM",
+        "payload_url": "Payload URL",
+        "payload_url_help": "Phải là URL HTTPS công khai trả về phản hồi 2xx trong vòng 10 giây.",
+        "secret": "Khóa bí mật ký",
+        "secret_placeholder": "Để trống để tạo tự động",
+        "secret_help": "Dùng để ký mọi yêu cầu để bạn có thể xác minh yêu cầu đó đến từ ClassroomIO.",
+        "secret_edit_placeholder": "Để trống để giữ khóa bí mật hiện tại",
+        "secret_edit_help": "Nhập giá trị mới để thay thế khóa bí mật. Khóa hiện tại không bao giờ được hiển thị.",
+        "verify_ssl": "Xác minh chứng chỉ SSL",
+        "verify_ssl_help": "Hãy giữ bật trừ khi bạn đang thử nghiệm với chứng chỉ tự ký.",
+        "active": "Hoạt động",
+        "events_help": "Chọn các sự kiện sẽ kích hoạt webhook này.",
+        "mode_all": "Gửi cho tôi mọi thứ",
+        "mode_selected": "Cho phép tôi chọn từng sự kiện",
+        "cancel": "Hủy",
+        "save": "Lưu webhook",
+        "select_all": "Chọn tất cả",
+        "events_selected": "Đã chọn {selected}/{total}"
+      },
+      "event_groups": {
+        "organization": "Tổ chức",
+        "course": "Khóa học",
+        "learning": "Tiến độ học tập"
+      },
+      "events": {
+        "organization_invite_created": "Một lời mời tham gia nhóm được gửi",
+        "organization_invite_accepted": "Một lời mời tham gia nhóm được chấp nhận",
+        "organization_invite_revoked": "Một lời mời tham gia nhóm bị thu hồi hoặc thay thế",
+        "course_invite_created": "Một lời mời học viên được tạo",
+        "course_invite_accepted": "Một học viên chấp nhận lời mời và ghi danh",
+        "course_invite_revoked": "Một lời mời học viên bị thu hồi",
+        "course_member_added": "Một thành viên được thêm vào khóa học",
+        "course_member_removed": "Một thành viên bị xóa khỏi khóa học",
+        "course_completed": "Một người học hoàn thành khóa học",
+        "course_certificate_issued": "Một chứng chỉ được cấp",
+        "course_submission_created": "Một bài nộp bài tập được tạo",
+        "course_submission_status_changed": "Trạng thái bài nộp thay đổi, chẳng hạn khi được chấm điểm",
+        "lesson_completion_updated": "Một bài học được đánh dấu hoàn thành hoặc đặt lại",
+        "exercise_completion_updated": "Một bài tập được hoàn thành hoặc đặt lại"
+      },
+      "deliveries": {
+        "title": "Các lần gửi",
+        "description": "Sự kiện trong 30 ngày qua",
+        "back": "Quay lại các lần gửi",
+        "filter_all": "Tất cả trạng thái",
+        "empty": "Không có lần gửi nào khớp với bộ lọc này.",
+        "load_error": "Không thể tải các lần gửi. Vui lòng thử lại.",
+        "redeliver": "Gửi lại",
+        "test_badge": "Thử nghiệm",
+        "status": {
+          "PENDING": "Đang thử lại",
+          "SUCCESS": "Thành công",
+          "FAILED": "Thất bại",
+          "GAVE_UP": "Thất bại"
+        },
+        "columns": {
+          "event": "Sự kiện",
+          "event_id": "ID sự kiện",
+          "status": "Trạng thái",
+          "attempt": "Lần thử",
+          "http": "Trạng thái HTTP",
+          "duration": "Thời gian phản hồi",
+          "time": "Đã gửi",
+          "next_attempt": "Lần thử lại tiếp theo"
+        },
+        "detail": {
+          "error": "Lỗi",
+          "request_headers": "Tiêu đề yêu cầu",
+          "payload": "Payload",
+          "response_body": "Phản hồi",
+          "no_response": "Không nhận được phản hồi nào."
+        }
+      }
     }
   },
   "ai_assistant": {

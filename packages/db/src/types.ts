@@ -269,3 +269,10 @@ export type TContentReport = typeof schema.contentReport.$inferSelect;
 export type TNewContentReport = typeof schema.contentReport.$inferInsert;
 export type TLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferSelect;
 export type TNewLiveSessionReminderDelivery = typeof schema.liveSessionReminderDelivery.$inferInsert;
+
+export type TWebhookEndpoint = typeof schema.webhookEndpoint.$inferSelect;
+export type TNewWebhookEndpoint = typeof schema.webhookEndpoint.$inferInsert;
+export type TWebhookEvent = typeof schema.webhookEvent.$inferSelect;
+export type TNewWebhookEvent = typeof schema.webhookEvent.$inferInsert;
+export type TWebhookDelivery = typeof schema.webhookDelivery.$inferSelect;
+export type TNewWebhookDelivery = typeof schema.webhookDelivery.$inferInsert;
