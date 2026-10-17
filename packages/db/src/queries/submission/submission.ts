@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TNewQuestionAnswer, TNewSubmission, TQuestionAnswer, TSubmission } from '@db/types';
-import { and, count, db, desc, eq, inArray, sql } from '@db/drizzle';
+import { and, count, db, desc, eq, inArray, sql, type DbOrTxClient } from '@db/drizzle';
 
 /**
  * Gets a submission by ID
@@ -24,9 +24,13 @@ export async function getSubmissionById(submissionId: string): Promise<TSubmissi
   }
 }
 
-export async function hasSubmission(exerciseId: string, submittedBy: string): Promise<boolean> {
+export async function hasSubmission(
+  exerciseId: string,
+  submittedBy: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
   try {
-    const [result] = await db
+    const [result] = await dbClient
       .select({ total: count() })
       .from(schema.submission)
       .where(and(eq(schema.submission.exerciseId, exerciseId), eq(schema.submission.submittedBy, submittedBy)))
@@ -119,10 +123,7 @@ export type CourseSubmissionsPageFilters = {
   gradingState?: string;
 };
 
-/**
- * One page of a course's submissions, newest first, with the exercise and student each row needs but no answers.
- * @returns The page rows and the total matching the filters
- */
+/** Returns one page of a course's submissions, newest first and without answers, plus the total matching the filters. */
 export async function getCourseSubmissionsPage(
   courseId: string,
   filters: CourseSubmissionsPageFilters,
@@ -250,14 +251,24 @@ export async function getSubmissionsForGrading(courseId: string) {
   }
 }
 
+/** Holds a per-student lock on the exercise until the transaction ends. */
+export async function lockSubmissionAttempt(exerciseId: string, submittedBy: string, dbClient: DbOrTxClient) {
+  try {
+    await dbClient.execute(sql`select pg_advisory_xact_lock(hashtext(${`submission:${exerciseId}:${submittedBy}`}))`);
+  } catch (error) {
+    console.error('lockSubmissionAttempt error:', error);
+    throw new Error(`Failed to lock submission attempt: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 /**
  * Creates a new submission
  * @param data Submission data
  * @returns Created submission
  */
-export async function createSubmission(data: TNewSubmission): Promise<TSubmission> {
+export async function createSubmission(data: TNewSubmission, dbClient: DbOrTxClient = db): Promise<TSubmission> {
   try {
-    const [submission] = await db.insert(schema.submission).values(data).returning();
+    const [submission] = await dbClient.insert(schema.submission).values(data).returning();
     if (!submission) {
       throw new Error('Failed to create submission');
     }
@@ -343,13 +354,16 @@ export async function upsertQuestionAnswer(data: TNewQuestionAnswer): Promise<TQ
   }
 }
 
-export async function insertQuestionAnswersBatch(rows: TNewQuestionAnswer[]): Promise<TQuestionAnswer[]> {
+export async function insertQuestionAnswersBatch(
+  rows: TNewQuestionAnswer[],
+  dbClient: DbOrTxClient = db
+): Promise<TQuestionAnswer[]> {
   if (rows.length === 0) {
     return [];
   }
 
   try {
-    return db.insert(schema.questionAnswer).values(rows).returning();
+    return dbClient.insert(schema.questionAnswer).values(rows).returning();
   } catch (error) {
     console.error('insertQuestionAnswersBatch error:', error);
     throw new Error(

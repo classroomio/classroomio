@@ -12,10 +12,7 @@ export type InstanceUsageCounts = {
   activeStudentCount: number;
 };
 
-/**
- * Returns this install's row, creating it on first call. Safe to race: the singleton
- * constraint lets only one insert win.
- */
+/** Returns this install's single row, creating it on first call; safe to call concurrently. */
 export const getOrCreateInstance = async (dbClient: DbOrTxClient = db): Promise<TInstance> => {
   try {
     await dbClient.insert(schema.instance).values({}).onConflictDoNothing({ target: schema.instance.singleton });
@@ -47,10 +44,7 @@ const countRows = async (query: Promise<{ count: number }[]>): Promise<number> =
   return result?.count ?? 0;
 };
 
-/**
- * Install-wide totals for the self-hosted usage ping. Active students are students
- * who did anything in the last 30 days.
- */
+/** Returns install-wide counts; active students are those active in the last 30 days. */
 export const getInstanceUsageCounts = async (dbClient: DbOrTxClient = db): Promise<InstanceUsageCounts> => {
   const count = sql<number>`count(*)::int`.as('count');
   const activeSince = new Date(Date.now() - 30 * 86_400_000).toISOString();

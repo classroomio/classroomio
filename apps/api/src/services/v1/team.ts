@@ -4,8 +4,10 @@ import type {
   TPublicApiUpdateTeamMember
 } from '@cio/utils/validation/public-api';
 
-import { getOrgTeam, updateTeamMemberRole } from '@api/services/organization';
-import { updateUser } from '@api/services/account/profile';
+import { db } from '@cio/db/drizzle';
+import { updateProfile } from '@cio/db/queries/auth';
+import { getOrgTeam } from '@api/services/organization';
+import { applyTeamMemberRoleChange, reconcileAfterTeamRoleChange } from '@api/services/organization/team-role';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertAutomationActor, assertMemberHasJoined, assertOrgAdmin, paginateInMemory } from './shared';
 
@@ -47,10 +49,6 @@ export async function getTeamMemberService(orgId: string, actorId: string | null
   return toPublicTeamMember(await getTeamMember(orgId, params.memberId));
 }
 
-/**
- * Changes a team member's role, name, or both. The rename precondition is checked before the role write, so a request
- * that cannot be fully applied changes nothing. The role is written first, then the name.
- */
 export async function updateTeamMemberService(
   orgId: string,
   actorId: string | null,
@@ -66,12 +64,25 @@ export async function updateTeamMemberService(
     assertMemberHasJoined(member.profileId);
   }
 
-  if (payload.roleId !== undefined) {
-    await updateTeamMemberRole(orgId, params.memberId, payload.roleId, actorId);
-  }
+  const { roleId, name } = payload;
+  const profileId = member.profileId;
 
-  if (payload.name !== undefined && member.profileId) {
-    await updateUser(member.profileId, { fullname: payload.name });
+  const appliedRole = await db.transaction(async (tx) => {
+    const applied =
+      roleId !== undefined ? await applyTeamMemberRoleChange(orgId, params.memberId, roleId, actorId, tx) : null;
+
+    if (name !== undefined && profileId) {
+      const updatedProfile = await updateProfile(profileId, { fullname: name }, tx);
+      if (!updatedProfile) {
+        throw new AppError('Team member profile not found', ErrorCodes.PROFILE_NOT_FOUND, 404);
+      }
+    }
+
+    return applied;
+  });
+
+  if (appliedRole) {
+    await reconcileAfterTeamRoleChange(orgId, appliedRole);
   }
 
   return toPublicTeamMember(await getTeamMember(orgId, params.memberId));

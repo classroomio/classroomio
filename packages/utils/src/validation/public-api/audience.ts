@@ -36,7 +36,11 @@ export const ZPublicApiUpdateAudience = z
     sendEmail: z.boolean().default(true).describe('Whether to email the new invite when email changes'),
     name: ZPublicApiMemberName.optional().describe('Joined members only: sets the full name on their profile')
   })
-  .refine((data) => data.email !== undefined || data.name !== undefined, { message: 'No fields to update' });
+  .refine((data) => data.email !== undefined || data.name !== undefined, { message: 'No fields to update' })
+  .refine((data) => data.email === undefined || data.name === undefined, {
+    message: 'Send email or name, not both: email is for pending members and name is for joined members',
+    path: ['name']
+  });
 export type TPublicApiUpdateAudience = z.infer<typeof ZPublicApiUpdateAudience>;
 
 export const ZPublicApiAssignAudienceCourses = z

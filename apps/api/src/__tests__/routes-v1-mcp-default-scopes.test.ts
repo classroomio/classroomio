@@ -61,7 +61,6 @@ import { v1Router } from '@api/routes/v1';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 
-// The MCP default scopes once the cohort, course member, certificate, exercise, submission, audience, and team APIs are in.
 const MCP_DEFAULT_SCOPES = [
   'course_import:draft:create',
   'course_import:draft:read',

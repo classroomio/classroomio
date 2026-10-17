@@ -35,10 +35,7 @@ function buildStudentMarksByExerciseId(marks: Mark[]): GradebookStudentMarks {
   return result;
 }
 
-/**
- * Points per student per exercise, counting graded submissions only, so an exercise with no graded submission has no
- * entry. When a student has several graded attempts, the highest one counts.
- */
+/** Returns each student's best graded points per exercise; an exercise with no graded submission has no entry. */
 function buildGradedPointsByExerciseId(marks: Mark[]): GradebookGradedPoints {
   const result: GradebookGradedPoints = {};
   for (const mark of marks) {

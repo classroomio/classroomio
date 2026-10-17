@@ -1,4 +1,10 @@
-import type { AnswerData, FileUploadAnswerData, VideoRecordingAnswerData } from '@cio/question-types';
+import type {
+  AnswerData,
+  ExerciseQuestionModel,
+  FileUploadAnswerData,
+  VideoRecordingAnswerData
+} from '@cio/question-types';
+import { db } from '@cio/db/drizzle';
 import {
   getVideoRecordingMaxDurationSeconds,
   scoreSubmissionAnswers,
@@ -24,6 +30,7 @@ import {
   getSubmissionsForGrading,
   hasSubmission,
   insertQuestionAnswersBatch,
+  lockSubmissionAttempt,
   updateQuestionAnswer,
   updateSubmission,
   updateSubmissionGrades
@@ -552,19 +559,162 @@ export async function listSubmissionsForGrading(courseId: string) {
   }
 }
 
+type SubmissionAnswerInput = { questionId: number; optionId?: number; answer?: string };
+type ExerciseQuestionRow = Awaited<ReturnType<typeof getExerciseWithRelationsOptimized>>['questions'][number];
+
+export type CreateSubmissionOptions = {
+  /** Reject unknown questions, undecodable answers, foreign options and non-number values instead of skipping them. */
+  strict?: boolean;
+  allowUploads?: boolean;
+};
+
+const UPLOAD_QUESTION_TYPES = new Set(['FILE_UPLOAD', 'VIDEO_RECORDING']);
+
+function toQuestionModelsById(questions: ExerciseQuestionRow[]): Map<number, ExerciseQuestionModel> {
+  return new Map(
+    questions.map((q) => {
+      const questionTypeKey = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId] ?? 'TEXTAREA';
+      const settings =
+        q.settings && typeof q.settings === 'object' && !Array.isArray(q.settings)
+          ? (q.settings as Record<string, unknown>)
+          : {};
+      const options = (q.options ?? []).map((o) => ({
+        id: o.id as number,
+        label: o.label ?? '',
+        value: o.value ?? undefined,
+        isCorrect: o.isCorrect
+      }));
+
+      return [
+        q.id as number,
+        {
+          id: q.id as number,
+          title: String(q.title ?? ''),
+          questionType: questionTypeKey,
+          points: Number(q.points ?? 0),
+          settings,
+          options
+        }
+      ];
+    })
+  );
+}
+
+function invalidAnswer(questionId: number, reason: string) {
+  return new AppError(`Question ${questionId}: ${reason}`, ErrorCodes.VALIDATION_ERROR, 400);
+}
+
+function decodeAnswer(question: ExerciseQuestionModel, input: SubmissionAnswerInput, strict: boolean) {
+  const payload = { questionId: input.questionId, optionId: input.optionId, answer: input.answer };
+  if (!strict) {
+    return fromApiPayload(question.questionType, payload, question);
+  }
+
+  try {
+    return fromApiPayload(question.questionType, payload, question);
+  } catch {
+    return null;
+  }
+}
+
+function textareaLengthMessage(validation: ReturnType<typeof validateTextareaAnswer>) {
+  if (validation.minCharacters !== undefined && validation.maxCharacters !== undefined) {
+    return `Paragraph answer must be between ${validation.minCharacters} and ${validation.maxCharacters} characters`;
+  }
+
+  return validation.reason === 'below_min' && validation.minCharacters !== undefined
+    ? `Paragraph answer must be at least ${validation.minCharacters} characters`
+    : `Paragraph answer must be at most ${validation.maxCharacters} characters`;
+}
+
+/** Returns the decoded answers by question id; throws 400 (or 404 for an unknown question in strict mode) before anything is saved. */
+function decodeSubmissionAnswers(
+  questionById: Map<number, ExerciseQuestionModel>,
+  answers: SubmissionAnswerInput[],
+  options: CreateSubmissionOptions
+): Map<number, AnswerData> {
+  const strict = options.strict === true;
+  const answerByQuestionId = new Map<number, AnswerData>();
+
+  for (const input of answers) {
+    const question = questionById.get(input.questionId);
+    if (!question) {
+      if (strict) {
+        throw new AppError(`Question ${input.questionId} not found in this exercise`, ErrorCodes.NOT_FOUND, 404);
+      }
+      continue;
+    }
+
+    if (options.allowUploads === false && UPLOAD_QUESTION_TYPES.has(question.questionType)) {
+      throw invalidAnswer(input.questionId, 'needs a file or video upload, which the API does not support');
+    }
+
+    const answerData = decodeAnswer(question, input, strict);
+    if (!answerData) {
+      if (strict) {
+        throw invalidAnswer(
+          input.questionId,
+          `the answer is not in the format a ${question.questionType} question takes`
+        );
+      }
+      continue;
+    }
+
+    if (strict) {
+      const optionIds = new Set((question.options ?? []).map((option) => Number(option.id)));
+      const chosenOptionIds =
+        answerData.type === 'RADIO'
+          ? [answerData.optionId]
+          : answerData.type === 'CHECKBOX'
+            ? answerData.optionIds
+            : [];
+      if (chosenOptionIds.some((optionId) => !optionIds.has(Number(optionId)))) {
+        throw invalidAnswer(input.questionId, 'an option does not belong to this question');
+      }
+
+      if (answerData.type === 'NUMERIC' && !Number.isFinite(answerData.value)) {
+        throw invalidAnswer(input.questionId, 'the value must be a number');
+      }
+    }
+
+    if (answerData.type === 'TEXTAREA') {
+      const validation = validateTextareaAnswer(answerData.text, question);
+      if (!validation.isValid) {
+        throw new AppError(textareaLengthMessage(validation), ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
+    if (answerData.type === 'VIDEO_RECORDING') {
+      const maxDurationSeconds = getVideoRecordingMaxDurationSeconds(question.settings);
+      if (answerData.durationSeconds > maxDurationSeconds + 2) {
+        throw new AppError('Recording exceeds the configured duration', ErrorCodes.VALIDATION_ERROR, 400);
+      }
+    }
+
+    if (answerData.type === 'FILE_UPLOAD') {
+      const acceptedTypes = normalizeAcceptedFileTypes(question.settings?.acceptedTypes);
+      const mimeType = answerData.mimeType ?? '';
+      if (!isFileTypeAllowed({ name: answerData.fileName, type: mimeType }, acceptedTypes)) {
+        throw new AppError('File type is not allowed for this question', ErrorCodes.FILE_TYPE_NOT_ALLOWED, 400);
+      }
+    }
+
+    answerByQuestionId.set(input.questionId, answerData);
+  }
+
+  return answerByQuestionId;
+}
+
 /**
- * Creates a new submission with question answers
- * @param courseId Course ID
- * @param exerciseId Exercise ID
- * @param submittedBy Group member ID
- * @param answers Array of question answers
- * @returns Created submission (with `answers` when auto-graded on the server)
+ * Creates a submission with its answers, saving nothing if an answer is invalid. Throws 409 for a second attempt on a
+ * one-attempt exercise. Returns the submission, with `answers` when auto-graded.
  */
 export async function createSubmissionService(
   courseId: string,
   exerciseId: string,
   submittedBy: string,
-  answers: Array<{ questionId: number; optionId?: number; answer?: string }>
+  answers: SubmissionAnswerInput[],
+  options: CreateSubmissionOptions = {}
 ): Promise<TSubmission & { answers?: any[] }> {
   try {
     const [exerciseWithRelations, courseRows] = await Promise.all([
@@ -573,12 +723,8 @@ export async function createSubmissionService(
     ]);
     const course = courseRows[0];
 
-    if (!exerciseWithRelations.exercise.allowMultipleAttempts) {
-      const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
-      if (alreadySubmitted) {
-        throw new AppError('This exercise allows only one submission', ErrorCodes.VALIDATION_ERROR, 400);
-      }
-    }
+    const questionById = toQuestionModelsById(exerciseWithRelations.questions);
+    const answerByQuestionId = decodeSubmissionAnswers(questionById, answers, options);
 
     const overallStatus = resolveOverallStatusFromTypenames(
       exerciseWithRelations.questions
@@ -598,107 +744,42 @@ export async function createSubmissionService(
       total: 0
     };
 
-    let submission = await createSubmission(submissionData);
+    const shouldAutoGrade = overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
+    const unansweredQuestionIds = shouldAutoGrade
+      ? exerciseWithRelations.questions
+          .map((question) => question.id)
+          .filter((questionId): questionId is number => questionId != null && !answerByQuestionId.has(questionId))
+      : [];
 
-    const questionById = new Map(
-      exerciseWithRelations.questions.map((q) => {
-        const questionTypeKey = QUESTION_TYPE_ID_TO_KEY[q.questionTypeId] ?? 'TEXTAREA';
-        return [
-          q.id,
-          {
-            id: q.id,
-            title: String(q.title ?? ''),
-            questionType: questionTypeKey,
-            points: Number(q.points ?? 0),
-            settings:
-              q.settings && typeof q.settings === 'object' && !Array.isArray(q.settings)
-                ? (q.settings as Record<string, unknown>)
-                : {},
-            options: (q.options ?? []).map((o) => ({
-              id: o.id,
-              label: o.label ?? '',
-              value: o.value ?? undefined,
-              isCorrect: o.isCorrect
-            }))
-          }
-        ];
-      })
-    );
+    const created = await db.transaction(async (tx) => {
+      if (!exerciseWithRelations.exercise.allowMultipleAttempts) {
+        await lockSubmissionAttempt(exerciseId, submittedBy, tx);
 
-    const answerByQuestionId = new Map<number, AnswerData>();
-    const answerRows: TNewQuestionAnswer[] = [];
-
-    for (const ans of answers) {
-      const question = questionById.get(ans.questionId);
-      if (!question) continue;
-
-      const answerData = fromApiPayload(
-        question.questionType,
-        { questionId: ans.questionId, optionId: ans.optionId, answer: ans.answer },
-        question
-      );
-      if (!answerData) continue;
-
-      if (answerData.type === 'TEXTAREA') {
-        const validation = validateTextareaAnswer(answerData.text, question);
-
-        if (!validation.isValid) {
-          throw new AppError(
-            validation.minCharacters !== undefined && validation.maxCharacters !== undefined
-              ? `Paragraph answer must be between ${validation.minCharacters} and ${validation.maxCharacters} characters`
-              : validation.reason === 'below_min' && validation.minCharacters !== undefined
-                ? `Paragraph answer must be at least ${validation.minCharacters} characters`
-                : `Paragraph answer must be at most ${validation.maxCharacters} characters`,
-            ErrorCodes.VALIDATION_ERROR,
-            400
-          );
+        if (await hasSubmission(exerciseId, submittedBy, tx)) {
+          throw new AppError('This exercise allows only one submission', ErrorCodes.CONFLICT, 409);
         }
       }
 
-      if (answerData.type === 'VIDEO_RECORDING') {
-        const maxDurationSeconds = getVideoRecordingMaxDurationSeconds(question.settings);
-        if (answerData.durationSeconds > maxDurationSeconds + 2) {
-          throw new AppError('Recording exceeds the configured duration', ErrorCodes.VALIDATION_ERROR, 400);
-        }
-      }
-
-      if (answerData.type === 'FILE_UPLOAD') {
-        const acceptedTypes = normalizeAcceptedFileTypes(question.settings.acceptedTypes);
-        const mimeType = answerData.mimeType ?? '';
-
-        if (!isFileTypeAllowed({ name: answerData.fileName, type: mimeType }, acceptedTypes)) {
-          throw new AppError('File type is not allowed for this question', ErrorCodes.FILE_TYPE_NOT_ALLOWED, 400);
-        }
-      }
-
-      answerByQuestionId.set(ans.questionId, answerData);
-
-      answerRows.push({
-        submissionId: submission.id,
-        questionId: ans.questionId,
+      const createdSubmission = await createSubmission(submissionData, tx);
+      const answeredRows: TNewQuestionAnswer[] = [...answerByQuestionId].map(([questionId, answerData]) => ({
+        submissionId: createdSubmission.id,
+        questionId,
         groupMemberId: submittedBy,
         answerData
-      });
-    }
+      }));
+      const unansweredRows: TNewQuestionAnswer[] = unansweredQuestionIds.map((questionId) => ({
+        submissionId: createdSubmission.id,
+        questionId,
+        groupMemberId: submittedBy,
+        answerData: null
+      }));
+      const insertedRows = await insertQuestionAnswersBatch([...answeredRows, ...unansweredRows], tx);
 
-    const shouldAutoGrade = overallStatus === 'auto_graded' && exerciseWithRelations.questions.length > 0;
+      return { submission: createdSubmission, insertedAnswers: insertedRows };
+    });
 
-    if (shouldAutoGrade) {
-      const answeredIds = new Set(answerByQuestionId.keys());
-      for (const q of exerciseWithRelations.questions) {
-        if (q.id == null) continue;
-        if (!answeredIds.has(q.id)) {
-          answerRows.push({
-            submissionId: submission.id,
-            questionId: q.id,
-            groupMemberId: submittedBy,
-            answerData: null
-          });
-        }
-      }
-    }
-
-    const insertedAnswers = answerRows.length > 0 ? await insertQuestionAnswersBatch(answerRows) : [];
+    let submission = created.submission;
+    const insertedAnswers = created.insertedAnswers;
     await createVideoRecordingAssetUsages(insertedAnswers);
 
     if (shouldAutoGrade) {

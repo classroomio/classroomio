@@ -7,10 +7,7 @@ import {
   paginateInMemory
 } from '../shared';
 
-/**
- * The course gradebook, one row per student. Uses the dashboard's `getGradebook`, so a student actor only gets their
- * own row, as in the dashboard.
- */
+/** Returns one gradebook row per student; a student actor gets only their own row. */
 export async function getCourseMarksService(
   orgId: string,
   actorId: string | null,

@@ -83,7 +83,6 @@ const useKey = (type: 'mcp' | 'api', scopes: string[]) =>
     scopes
   });
 
-// [method, path, body, MCP tool, credits, success status]
 const routes: Array<[string, string, unknown, string, number, number]> = [
   ['GET', '/team', undefined, 'list_team_members', 0, 200],
   ['GET', '/team/7', undefined, 'get_team_member', 0, 200],

@@ -40,7 +40,7 @@ export function assertAutomationActor(actorId: string | null): asserts actorId i
   }
 }
 
-/** A pending member has no profile yet, so there is no name to change. Throws 400 for one. */
+/** Throws 400 if the member has not joined yet. */
 export function assertMemberHasJoined(profileId: string | null | undefined): asserts profileId is string {
   if (!profileId) {
     throw new AppError(

@@ -55,7 +55,7 @@ export async function getQueueJobEnvelope(
   };
 }
 
-/** A queued job's name and payload, so callers can check who owns it before exposing its status. */
+/** Returns a queued job's name and payload, or null if the job does not exist. */
 export async function getQueueJobMeta(
   queueName: QueueName,
   jobId: string

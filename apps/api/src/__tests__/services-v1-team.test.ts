@@ -5,19 +5,29 @@ vi.mock('@cio/db/queries/organization', () => ({
 }));
 
 vi.mock('@api/services/organization', () => ({
-  getOrgTeam: vi.fn(),
-  updateTeamMemberRole: vi.fn()
+  getOrgTeam: vi.fn()
 }));
 
-vi.mock('@api/services/account/profile', () => ({
-  updateUser: vi.fn()
+vi.mock('@api/services/organization/team-role', () => ({
+  applyTeamMemberRoleChange: vi.fn(),
+  reconcileAfterTeamRoleChange: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/auth', () => ({
+  updateProfile: vi.fn()
+}));
+
+const TX = { tx: true };
+vi.mock('@cio/db/drizzle', () => ({
+  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
 }));
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { getOrganizationMemberRoleId } from '@cio/db/queries/organization';
-import { getOrgTeam, updateTeamMemberRole } from '@api/services/organization';
-import { updateUser } from '@api/services/account/profile';
+import { getOrgTeam } from '@api/services/organization';
+import { applyTeamMemberRoleChange, reconcileAfterTeamRoleChange } from '@api/services/organization/team-role';
+import { updateProfile } from '@cio/db/queries/auth';
 import { getTeamMemberService, listTeamService, updateTeamMemberService } from '@api/services/v1/team';
 
 const ORG_ID = 'org-1';
@@ -54,6 +64,8 @@ describe('services/v1/team', () => {
     vi.clearAllMocks();
     vi.mocked(getOrganizationMemberRoleId).mockResolvedValue(ROLE.ADMIN);
     vi.mocked(getOrgTeam).mockResolvedValue([admin, tutor, pending] as never);
+    vi.mocked(updateProfile).mockResolvedValue({ id: 'profile' } as never);
+    vi.mocked(applyTeamMemberRoleChange).mockResolvedValue({ roleChanged: true } as never);
   });
 
   describe('who may call it', () => {
@@ -74,7 +86,7 @@ describe('services/v1/team', () => {
 
       await expect(call(ACTOR_ID)).rejects.toMatchObject({ statusCode: 403 });
       expect(getOrgTeam).not.toHaveBeenCalled();
-      expect(updateTeamMemberRole).not.toHaveBeenCalled();
+      expect(applyTeamMemberRoleChange).not.toHaveBeenCalled();
     });
 
     it.each(Object.entries(calls))('%s rejects an actor from another organization with 403', async (_name, call) => {
@@ -139,24 +151,25 @@ describe('services/v1/team', () => {
     it('changes the role through the dashboard service, as the actor', async () => {
       await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { roleId: ROLE.ADMIN });
 
-      expect(updateTeamMemberRole).toHaveBeenCalledWith(ORG_ID, tutor.id, ROLE.ADMIN, ACTOR_ID);
-      expect(updateUser).not.toHaveBeenCalled();
+      expect(applyTeamMemberRoleChange).toHaveBeenCalledWith(ORG_ID, tutor.id, ROLE.ADMIN, ACTOR_ID, TX);
+      expect(reconcileAfterTeamRoleChange).toHaveBeenCalledWith(ORG_ID, { roleChanged: true });
+      expect(updateProfile).not.toHaveBeenCalled();
     });
 
     it('renames a joined member and leaves the role alone', async () => {
       await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { name: 'Timothy Tutor' });
 
-      expect(updateUser).toHaveBeenCalledWith('profile-2', { fullname: 'Timothy Tutor' });
-      expect(updateTeamMemberRole).not.toHaveBeenCalled();
+      expect(updateProfile).toHaveBeenCalledWith('profile-2', { fullname: 'Timothy Tutor' }, TX);
+      expect(applyTeamMemberRoleChange).not.toHaveBeenCalled();
     });
 
     it('applies the role before the name when both are sent', async () => {
       const order: string[] = [];
-      vi.mocked(updateTeamMemberRole).mockImplementation(async () => {
+      vi.mocked(applyTeamMemberRoleChange).mockImplementation(async () => {
         order.push('role');
         return {} as never;
       });
-      vi.mocked(updateUser).mockImplementation(async () => {
+      vi.mocked(updateProfile).mockImplementation(async () => {
         order.push('name');
         return {} as never;
       });
@@ -181,8 +194,8 @@ describe('services/v1/team', () => {
         updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: 999 }, { roleId: ROLE.ADMIN, name: 'Some Name' })
       ).rejects.toMatchObject({ statusCode: 404 });
 
-      expect(updateTeamMemberRole).not.toHaveBeenCalled();
-      expect(updateUser).not.toHaveBeenCalled();
+      expect(applyTeamMemberRoleChange).not.toHaveBeenCalled();
+      expect(updateProfile).not.toHaveBeenCalled();
     });
 
     it('refuses to rename a pending member and changes nothing, even when a role is sent too', async () => {
@@ -190,18 +203,18 @@ describe('services/v1/team', () => {
         updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: pending.id }, { roleId: ROLE.ADMIN, name: 'New Name' })
       ).rejects.toMatchObject({ statusCode: 400, field: 'name' });
 
-      expect(updateTeamMemberRole).not.toHaveBeenCalled();
-      expect(updateUser).not.toHaveBeenCalled();
+      expect(applyTeamMemberRoleChange).not.toHaveBeenCalled();
+      expect(updateProfile).not.toHaveBeenCalled();
     });
 
     it('lets a pending member have their role changed', async () => {
       await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: pending.id }, { roleId: ROLE.ADMIN });
 
-      expect(updateTeamMemberRole).toHaveBeenCalledWith(ORG_ID, pending.id, ROLE.ADMIN, ACTOR_ID);
+      expect(applyTeamMemberRoleChange).toHaveBeenCalledWith(ORG_ID, pending.id, ROLE.ADMIN, ACTOR_ID, TX);
     });
 
     it('passes on the dashboard rules (own role, last admin) and does not rename after a refused role change', async () => {
-      vi.mocked(updateTeamMemberRole).mockRejectedValue(
+      vi.mocked(applyTeamMemberRoleChange).mockRejectedValue(
         new AppError('You cannot change your own role', ErrorCodes.ORG_TEAM_ROLE_SELF, 400)
       );
 
@@ -209,13 +222,25 @@ describe('services/v1/team', () => {
         updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: admin.id }, { roleId: ROLE.TUTOR, name: 'Ada A' })
       ).rejects.toMatchObject({ statusCode: 400, code: ErrorCodes.ORG_TEAM_ROLE_SELF });
 
-      expect(updateUser).not.toHaveBeenCalled();
+      expect(updateProfile).not.toHaveBeenCalled();
+    });
+
+    it('writes the role and the name in one transaction and schedules no reconcile when the name write fails', async () => {
+      vi.mocked(updateProfile).mockRejectedValue(new Error('db down'));
+
+      await expect(
+        updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: tutor.id }, { roleId: ROLE.ADMIN, name: 'Tim T' })
+      ).rejects.toThrow('db down');
+
+      expect(applyTeamMemberRoleChange).toHaveBeenCalledWith(ORG_ID, tutor.id, ROLE.ADMIN, ACTOR_ID, TX);
+      expect(updateProfile).toHaveBeenCalledWith('profile-2', { fullname: 'Tim T' }, TX);
+      expect(reconcileAfterTeamRoleChange).not.toHaveBeenCalled();
     });
 
     it('lets an admin correct their own name', async () => {
       await updateTeamMemberService(ORG_ID, ACTOR_ID, { memberId: admin.id }, { name: 'Ada Lovelace' });
 
-      expect(updateUser).toHaveBeenCalledWith(ACTOR_ID, { fullname: 'Ada Lovelace' });
+      expect(updateProfile).toHaveBeenCalledWith(ACTOR_ID, { fullname: 'Ada Lovelace' }, TX);
     });
   });
 });

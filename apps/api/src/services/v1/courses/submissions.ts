@@ -106,7 +106,7 @@ export async function listCourseSubmissionsService(
   };
 }
 
-/** true with no due date. null when there is a due date but no submission time to compare it with. */
+/** Returns true without a due date, and null when there is no submission time to compare. */
 function isSubmittedEarly(submittedAt: string | null, dueBy: string | null): boolean | null {
   if (!dueBy) return true;
   if (!submittedAt) return null;
@@ -147,10 +147,7 @@ export async function getCourseSubmissionService(
   };
 }
 
-/**
- * Grades a submission. Every graded question must belong to the exercise and already have an answer row: the grade
- * update skips questions with no answer, which would save a total that the stored points do not back.
- */
+/** Throws 400 if a graded question is not in the exercise or has no answer. */
 export async function gradeCourseSubmissionService(
   orgId: string,
   actorId: string | null,

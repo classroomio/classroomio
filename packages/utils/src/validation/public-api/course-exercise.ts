@@ -6,10 +6,7 @@ import { ZSlug } from '../shared/slug';
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
 
-/**
- * The question types the public API accepts, declared here so a dashboard schema change cannot change the public
- * contract. MATCHING (15) and HOTSPOT (16) are disabled and have no question_type row, so they are left out.
- */
+/** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
 export const ZPublicApiQuestionTypeId = z.union([
   z.literal(QUESTION_TYPE.RADIO),
   z.literal(QUESTION_TYPE.CHECKBOX),
@@ -107,10 +104,7 @@ export const ZPublicApiCreateCourseExercise = z
   });
 export type TPublicApiCreateCourseExercise = z.infer<typeof ZPublicApiCreateCourseExercise>;
 
-/**
- * A question or option with an `id` is a partial edit: omitted fields keep their stored values, and its option rules run
- * in the service on the merged result. One without an `id` is new and must be complete.
- */
+/** With an `id`, a partial edit that keeps omitted fields; without one, a complete new question or option. */
 export const ZPublicApiUpdateExerciseQuestion = z
   .object({
     id: z.number().int().positive().optional(),

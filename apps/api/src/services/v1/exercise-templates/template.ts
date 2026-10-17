@@ -9,7 +9,6 @@ import { assertOrgTeamMember, paginateInMemory } from '../shared';
 
 const TEXTAREA_QUESTION_TYPE_ID = 3;
 
-/** The built-in exercise template catalog (shared by every organization). Templates are only used for authoring. */
 export async function listExerciseTemplatesService(
   orgId: string,
   actorId: string | null,
@@ -61,7 +60,6 @@ export async function getExerciseTemplateService(
       points: question.points ?? 1,
       order: question.order ?? 0,
       settings: (question as { settings?: Record<string, unknown> }).settings ?? {},
-      // Create-from-template skips TEXTAREA options, so they are not part of what gets created.
       options:
         question.question_type.id === TEXTAREA_QUESTION_TYPE_ID
           ? []

@@ -61,6 +61,10 @@ describe('public API team and audience update contract', () => {
     });
   });
 
+  it('rejects email and name together, since they apply to different kinds of member', () => {
+    expect(ZPublicApiUpdateAudience.safeParse({ email: 'a@example.com', name: 'Ada Lovelace' }).success).toBe(false);
+  });
+
   it('leaves no way to change the fields that belong to the person', () => {
     const parsed = ZPublicApiUpdateTeamMember.parse({
       name: 'Ada Lovelace',

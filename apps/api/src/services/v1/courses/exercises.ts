@@ -116,7 +116,7 @@ async function assertCourseTeamAccess(orgId: string, actorId: string | null, cou
   await assertCourseTeamMemberOrOrgAdmin(courseId, actorId);
 }
 
-/** Loads the exercise and 404s unless it belongs to the course, including legacy lesson-linked exercises. */
+/** Returns the exercise, or throws 404 if it does not belong to the course. */
 export async function assertExerciseBelongsToCourse(courseId: string, exerciseId: string): Promise<TExercise> {
   const exercise = await getExerciseById(exerciseId);
   if (!exercise || (await resolveExerciseCourseId(exercise)) !== courseId) {
@@ -148,12 +148,7 @@ async function assertQuestionTypesAllowed(orgId: string, questionTypeIds: Array<
   assertNoPremiumQuestionTypes(questionTypeIds, await isOrgOnPaidPlan(orgId));
 }
 
-/**
- * Question and option ids in the update must already belong to this exercise: the core diff trusts them, so without
- * this check a caller could delete or edit another exercise's rows. Section ids may be new (callers mint them so new
- * questions can reference new sections) but must not belong to another exercise. When sections are sent, every
- * question that stays must land in one of them, because deleting a section nulls the section of its questions.
- */
+/** Throws 404 if the update references another exercise's question, option or section, or 400 if a kept question would lose its section. */
 async function assertUpdateIdsBelongToExercise(
   exerciseId: string,
   current: ExerciseDetail,
@@ -221,10 +216,7 @@ async function assertUpdateIdsBelongToExercise(
   }
 }
 
-/**
- * An existing question sends an option diff, so the option rules and the option limit are checked on what the question
- * ends up with: its stored options, minus the deleted ones, with the sent ones applied.
- */
+/** Throws 400 if an edited question's merged options break the option rules or the option limit. */
 function assertEditedQuestionOptionsValid(current: ExerciseDetail, payload: TPublicApiUpdateCourseExercise) {
   const currentById = new Map((current.questions ?? []).map((question) => [Number(question.id), question]));
 
@@ -335,11 +327,7 @@ function toInternalQuestion(
   };
 }
 
-/**
- * Turns the public partial update into the full payload the core diff expects. The core diff overwrites every field it
- * is sent and deletes any option missing from the request, so each field the caller omitted on an existing question or
- * option is filled in from the stored row, and stored options the caller left out are sent back unchanged.
- */
+/** Returns the full core update, filling every field the caller omitted from the stored exercise. */
 function toInternalUpdate(payload: TPublicApiUpdateCourseExercise, current: ExerciseDetail): TExerciseUpdate {
   const deletedAt = new Date().toISOString();
   const { questions, ...fields } = payload;
@@ -480,7 +468,7 @@ export async function notifyCourseExerciseStudentsService(
   return notifyCourseExerciseService(params.courseId, params.exerciseId);
 }
 
-/** Job ids are global to the notifications queue, so a job id alone does not prove it is this exercise's notification. */
+/** Throws 404 unless the job is this exercise's notification. */
 async function assertNotifyJobBelongsToExercise(params: TPublicApiCourseExerciseNotifyParam) {
   const job = await getQueueJobMeta(QUEUE_NAMES.notifications, params.jobId);
   if (

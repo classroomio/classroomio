@@ -65,10 +65,6 @@ export async function removeAudienceService(orgId: string, memberId: number, act
   return removeAudienceMember(orgId, memberId, actorId);
 }
 
-/**
- * Corrects a pending member's email or renames a joined one. Both preconditions are checked before either write, so a
- * request that cannot be fully applied changes nothing.
- */
 export async function updateAudienceService(
   orgId: string,
   memberId: number,

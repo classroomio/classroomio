@@ -1,10 +1,7 @@
 import { PREMIUM_QUESTION_TYPE_KEYS, QUESTION_TYPE_ID_TO_KEY, QUESTION_TYPE_REGISTRY } from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
 
-/**
- * Server-side twin of the dashboard editor hiding premium question types on the free plan.
- * Throws 403 UPGRADE_REQUIRED when a free-plan org tries to use one.
- */
+/** Throws 403 UPGRADE_REQUIRED if a free-plan org uses a premium question type. */
 export function assertNoPremiumQuestionTypes(
   questionTypeIds: ReadonlyArray<number | undefined | null>,
   isOrgOnPaidPlan: boolean
