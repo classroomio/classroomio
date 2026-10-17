@@ -4,8 +4,9 @@ import { Queue, Worker } from 'bullmq';
 
 import { runAnalyticsRollupDaily } from '@cio/analytics';
 import { purgeAssetStorage } from '@cio/core/services/assets/assets';
+import { sendInstanceTelemetry } from '@cio/core/services/instance-telemetry';
 import { reconcileCourseRolesToOrgRole } from '@cio/core/services/organization/course-roles';
-import { pruneDeadLetterJobsOlderThan, reapStuckMediaJobs } from '@cio/db/queries';
+import { pruneDeadLetterJobsOlderThan, reapStuckHlsEncodes, reapStuckMediaJobs } from '@cio/db/queries';
 import {
   listEarlyAdopterClaimsDueForReminder,
   markEarlyAdopterClaimReminded,
@@ -88,7 +89,19 @@ const worker = new Worker(
         });
       }
 
-      return { reaped: reaped.length };
+      // A dead encoder machine never calls /fail, so the asset would stay
+      // `converting` forever — and stay invisible, because the raw upload still
+      // plays. Sweep those to `failed` on the same cutoff.
+      const strandedEncodes = await reapStuckHlsEncodes(cutoffIso);
+      if (strandedEncodes.length > 0) {
+        log.warn('hls-encode-reap-done', {
+          reaped: strandedEncodes.length,
+          cutoffIso,
+          assetIds: strandedEncodes.map((row) => row.id)
+        });
+      }
+
+      return { reaped: reaped.length, strandedEncodes: strandedEncodes.length };
     }
 
     if (job.name === JOB_NAMES.maintenance.assetStorageCleanup) {
@@ -152,6 +165,12 @@ const worker = new Worker(
       return { reminded };
     }
 
+    if (job.name === JOB_NAMES.maintenance.instanceTelemetry) {
+      const result = await sendInstanceTelemetry();
+      log.info('instance-telemetry-done', result);
+      return result;
+    }
+
     throw new Error(`Unknown maintenance job: ${job.name}`);
   },
   { connection, concurrency: 1 }
@@ -163,6 +182,7 @@ const worker = new Worker(
  * boot. Without this, stuck `media_job` rows would never get cleaned up.
  */
 const MEDIA_JOB_REAP_INTERVAL_MS = 5 * 60 * 1_000;
+const INSTANCE_TELEMETRY_INTERVAL_MS = 7 * 86_400_000;
 // BullMQ requires a dedicated connection per Worker; give the Queue its own
 // so the scheduler upsert doesn't piggyback on the worker's blocking client.
 const schedulerConnection = createRedisConnection();
@@ -218,6 +238,23 @@ async function registerSchedulers(): Promise<void> {
     log.info('early-adopter-claim-reminder-scheduler-registered', {
       name: JOB_NAMES.maintenance.earlyAdopterClaimReminder,
       everyMs: 86_400_000
+    });
+
+    // BullMQ runs a new `every` scheduler immediately, then keeps its slot across restarts,
+    // so the first run is the instance's first_start ping and later runs are weekly.
+    // Retries cover a first run that lands before the api has applied migrations.
+    await maintenanceQueue.upsertJobScheduler(
+      'instance-telemetry-scheduler',
+      { every: INSTANCE_TELEMETRY_INTERVAL_MS },
+      {
+        name: JOB_NAMES.maintenance.instanceTelemetry,
+        data: {},
+        opts: { attempts: 6, backoff: { type: 'exponential', delay: 60_000 } }
+      }
+    );
+    log.info('instance-telemetry-scheduler-registered', {
+      name: JOB_NAMES.maintenance.instanceTelemetry,
+      everyMs: INSTANCE_TELEMETRY_INTERVAL_MS
     });
   } catch (err) {
     log.error('maintenance-scheduler-register-failed', { error: errorMessage(err) });

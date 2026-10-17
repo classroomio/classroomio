@@ -41,6 +41,7 @@ export type OrganizationAudienceMemberStatus = 'ACTIVE' | 'DEACTIVATED' | 'ARCHI
 export type OrganizationAudienceInviteStatus = 'active' | 'pending' | 'expired' | 'revoked';
 export type OrganizationAudienceEnrollment = 'enrolled' | 'not_enrolled';
 export type OrganizationAudienceCompletion = 'not_started' | 'in_progress' | 'completed';
+export type OrganizationAudienceCertificate = 'earned' | 'not_earned';
 export type OrganizationAudienceActivityWindow = '7d' | '30d' | '90d' | '180d' | 'never';
 
 export type OrganizationAudienceQuery = {
@@ -53,6 +54,7 @@ export type OrganizationAudienceQuery = {
   inviteStatus?: OrganizationAudienceInviteStatus;
   enrollment?: OrganizationAudienceEnrollment;
   completion?: OrganizationAudienceCompletion;
+  certificate?: OrganizationAudienceCertificate;
   lastLoginBefore?: OrganizationAudienceActivityWindow;
   lastActiveBefore?: OrganizationAudienceActivityWindow;
   excludeRecentJoiners: boolean;
@@ -97,6 +99,10 @@ export type LoginActivityData = LoginActivitySuccess['data'];
 export type InviteTeamRequest = (typeof classroomio.organization)['team']['invite']['$post'];
 export type InviteTeamSuccess = Extract<InferResponseType<InviteTeamRequest>, { success: true }>;
 export type InviteTeamData = InviteTeamSuccess['data'];
+export type TeamInviteConfirmation = Pick<InferRequestType<InviteTeamRequest>['json'], 'emails' | 'roleId'> & {
+  organizationId: string;
+  studentEmails: InviteTeamData['studentEmails'];
+};
 
 export type DeleteTeamRequest = (typeof classroomio.organization)['team'][':memberId']['$delete'];
 export type DeleteTeamSuccess = Extract<InferResponseType<DeleteTeamRequest>, { success: true }>;

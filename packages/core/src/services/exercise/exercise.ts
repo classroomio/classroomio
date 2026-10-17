@@ -19,6 +19,8 @@ import {
   getExerciseWithRelationsOptimized,
   getExercisesByCourseId,
   getLMSExercises,
+  getQuestionsByExerciseIds,
+  lockExerciseSectionForUpdate,
   createExerciseSections,
   deleteExerciseSectionsByIds,
   updateExerciseSection,
@@ -200,7 +202,7 @@ function validateSectionQuestionAssignments(data: TExerciseUpdate) {
   }
 }
 
-async function resolveExerciseCourseId(exercise: TExercise): Promise<string | null> {
+export async function resolveExerciseCourseId(exercise: TExercise): Promise<string | null> {
   if (exercise.courseId) {
     return exercise.courseId;
   }
@@ -214,6 +216,39 @@ async function resolveExerciseCourseId(exercise: TExercise): Promise<string | nu
   return lesson?.courseId ?? null;
 }
 
+async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
+  await guardNonAutoGradableQuestionsForCourseType({
+    courseId: sanitizedData.courseId,
+    questionTypeIds: (sanitizedData.questions ?? []).map((question) => question.questionTypeId)
+  });
+
+  const slug = await resolveItemSlug({
+    courseId: sanitizedData.courseId,
+    title: sanitizedData.title,
+    requestedSlug: sanitizedData.slug
+  });
+
+  return {
+    title: sanitizedData.title,
+    description: sanitizedData.description ?? null,
+    lessonId: sanitizedData.lessonId || null,
+    courseId: sanitizedData.courseId,
+    sectionId: sanitizedData.sectionId || null,
+    order: sanitizedData.order,
+    dueBy: sanitizedData.dueBy || null,
+    slug
+  };
+}
+
+async function insertExerciseRow(exerciseData: Awaited<ReturnType<typeof prepareExerciseRow>>, txClient: DbOrTxClient) {
+  const [exercise] = await createExercises([exerciseData], txClient);
+  if (!exercise) {
+    throw new AppError('Failed to create exercise', ErrorCodes.INTERNAL_ERROR, 500);
+  }
+
+  return exercise;
+}
+
 /**
  * Creates a new exercise with optional questions and options
  * @param data Exercise creation data
@@ -222,38 +257,13 @@ async function resolveExerciseCourseId(exercise: TExercise): Promise<string | nu
 export async function createExercise(data: TExerciseCreate): Promise<TExercise> {
   try {
     const sanitizedData = sanitizeExercisePayload(data);
+    const exerciseData = await prepareExerciseRow(sanitizedData);
 
-    await guardNonAutoGradableQuestionsForCourseType({
-      courseId: sanitizedData.courseId,
-      questionTypeIds: (sanitizedData.questions ?? []).map((question) => question.questionTypeId)
-    });
+    const exercise = await db.transaction(async (tx) => {
+      const txClient = tx as DbOrTxClient;
+      const exercise = await insertExerciseRow(exerciseData, txClient);
 
-    const slug = await resolveItemSlug({
-      courseId: sanitizedData.courseId,
-      title: sanitizedData.title,
-      requestedSlug: sanitizedData.slug
-    });
-
-    const exerciseData = {
-      title: sanitizedData.title,
-      description: sanitizedData.description ?? null,
-      lessonId: sanitizedData.lessonId || null,
-      courseId: sanitizedData.courseId,
-      sectionId: sanitizedData.sectionId || null,
-      order: sanitizedData.order,
-      dueBy: sanitizedData.dueBy || null,
-      slug
-    };
-
-    const [exercise] = await createExercises([exerciseData]);
-    if (!exercise) {
-      throw new AppError('Failed to create exercise', ErrorCodes.INTERNAL_ERROR, 500);
-    }
-
-    // Create questions and options if provided
-    if (sanitizedData.questions && sanitizedData.questions.length > 0) {
-      await db.transaction(async (tx) => {
-        const txClient = tx as DbOrTxClient;
+      if (sanitizedData.questions && sanitizedData.questions.length > 0) {
         const questionsData: TNewQuestion[] = sanitizedData.questions!.map((q) => ({
           exerciseId: exercise.id,
           title: q.question,
@@ -284,8 +294,10 @@ export async function createExercise(data: TExerciseCreate): Promise<TExercise> 
 
           await createOptions(optionsData, txClient);
         }
-      });
-    }
+      }
+
+      return exercise;
+    });
 
     // Fetch the complete exercise with questions and options
     const result = await getExercise(exercise.id);
@@ -361,9 +373,12 @@ export async function getExercise(
  * Only updates what has changed by querying the current state first and computing a diff.
  * @param exerciseId Exercise ID
  * @param data Partial exercise update data
- * @returns Updated exercise
+ * @returns Updated exercise, with the ids of the questions this update created
  */
-export async function updateExerciseService(exerciseId: string, data: TExerciseUpdate): Promise<TExercise> {
+export async function updateExerciseService(
+  exerciseId: string,
+  data: TExerciseUpdate
+): Promise<TExercise & { createdQuestionIds: number[] }> {
   try {
     const sanitizedData = sanitizeExercisePayload(data);
     validateSectionQuestionAssignments(sanitizedData);
@@ -388,6 +403,7 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
       });
     }
 
+    let createdQuestionIds: number[] = [];
     const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
 
@@ -455,7 +471,7 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
         }
 
         if (hasNewQuestions) {
-          await createNewQuestionsWithOptions(exerciseId, diff.questions.newQuestions, txClient);
+          createdQuestionIds = await createNewQuestionsWithOptions(exerciseId, diff.questions.newQuestions, txClient);
         }
       }
 
@@ -468,7 +484,7 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
       await touchCourseUpdatedAt(courseId);
     }
 
-    return result;
+    return { ...result, createdQuestionIds };
   } catch (error) {
     console.error('updateExerciseService error:', error);
     if (error instanceof AppError) {
@@ -613,6 +629,119 @@ export async function createExerciseSectionService(
       500
     );
   }
+}
+
+type ExerciseSectionAfterBehavior =
+  | { action: 'continue' }
+  | { action: 'submit' }
+  | { action: 'go_to_section'; exerciseSectionId: string };
+
+type ExerciseSectionPatch = {
+  title?: string;
+  description?: string | null;
+  order?: number;
+  colorTheme?: 'blue' | 'green' | 'amber' | 'rose' | 'violet' | 'slate';
+  afterBehavior?: ExerciseSectionAfterBehavior;
+};
+
+function exerciseSectionNotFound() {
+  return new AppError('Exercise section not found in this exercise', ErrorCodes.NOT_FOUND, 404);
+}
+
+/** Updates one exercise section. Throws 404 if the section or a go_to_section target is not on the exercise. */
+export async function updateExerciseSectionService(
+  exerciseId: string,
+  exerciseSectionId: string,
+  data: ExerciseSectionPatch
+) {
+  const sections = await getExerciseSectionsByExerciseId(exerciseId);
+  if (!sections.some((section) => section.id === exerciseSectionId)) {
+    throw exerciseSectionNotFound();
+  }
+
+  const target = data.afterBehavior?.action === 'go_to_section' ? data.afterBehavior.exerciseSectionId : null;
+  if (target && (target === exerciseSectionId || !sections.some((section) => section.id === target))) {
+    throw new AppError(
+      'afterBehavior must go to another section of this exercise',
+      ErrorCodes.VALIDATION_ERROR,
+      400,
+      'afterBehavior'
+    );
+  }
+
+  const title = data.title !== undefined ? sanitizeHtml(data.title) : undefined;
+  const description =
+    data.description === undefined
+      ? undefined
+      : data.description === null || data.description === ''
+        ? null
+        : (sanitizeOptionalHtml(data.description) ?? null);
+  const patch = {
+    ...(title !== undefined && { title }),
+    ...(description !== undefined && { description }),
+    ...(data.order !== undefined && { order: data.order }),
+    ...(data.colorTheme !== undefined && { colorTheme: data.colorTheme }),
+    ...(data.afterBehavior !== undefined && { afterBehavior: data.afterBehavior })
+  };
+
+  const updated = await updateExerciseSection(exerciseSectionId, patch);
+  if (!updated) {
+    throw exerciseSectionNotFound();
+  }
+
+  const exercise = await getExerciseById(exerciseId);
+  if (exercise?.courseId) {
+    await touchCourseUpdatedAt(exercise.courseId);
+  }
+
+  return updated;
+}
+
+/**
+ * Deletes one empty exercise section. Throws 404 if it is not on the exercise, and 409 if it still holds questions or
+ * another section's afterBehavior goes to it.
+ */
+export async function deleteExerciseSectionService(exerciseId: string, exerciseSectionId: string) {
+  const deleted = await db.transaction(async (tx) => {
+    if (!(await lockExerciseSectionForUpdate(exerciseId, exerciseSectionId, tx))) {
+      throw exerciseSectionNotFound();
+    }
+
+    const sections = await getExerciseSectionsByExerciseId(exerciseId, tx);
+    const section = sections.find((candidate) => candidate.id === exerciseSectionId);
+    if (!section) {
+      throw exerciseSectionNotFound();
+    }
+
+    const questions = await getQuestionsByExerciseIds([exerciseId], tx);
+    if (questions.some((question) => question.exerciseSectionId === exerciseSectionId)) {
+      throw new AppError('This section still holds questions: move or delete them first', ErrorCodes.CONFLICT, 409);
+    }
+
+    const pointsHere = sections.some((candidate) => {
+      const behavior = candidate.afterBehavior as ExerciseSectionAfterBehavior | null;
+
+      return behavior?.action === 'go_to_section' && behavior.exerciseSectionId === exerciseSectionId;
+    });
+    if (pointsHere) {
+      throw new AppError(
+        "Another section's afterBehavior goes to this section: change it first",
+        ErrorCodes.CONFLICT,
+        409
+      );
+    }
+
+    await deleteExerciseSectionsByIds([exerciseSectionId], tx);
+
+    return section;
+  });
+
+  const exercise = await getExerciseById(exerciseId);
+  if (exercise?.courseId) {
+    await touchCourseUpdatedAt(exercise.courseId);
+  }
+
+  return deleted;
 }
 
 /**
@@ -810,14 +939,20 @@ export async function createExerciseFromTemplate(
       courseId
     };
 
-    const exercise = await createExercise(exerciseData);
-
-    // Process the questionnaire to create questions and options
     const { questions } = template.questionnaire!;
 
-    if (questions && questions.length > 0) {
-      await db.transaction(async (tx) => {
-        const txClient = tx as DbOrTxClient;
+    await guardNonAutoGradableQuestionsForCourseType({
+      courseId,
+      questionTypeIds: (questions ?? []).map((question) => question.question_type.id)
+    });
+
+    const exerciseRow = await prepareExerciseRow(sanitizeExercisePayload(exerciseData));
+
+    const exercise = await db.transaction(async (tx) => {
+      const txClient = tx as DbOrTxClient;
+      const exercise = await insertExerciseRow(exerciseRow, txClient);
+
+      if (questions && questions.length > 0) {
         const hasTemplateOptions = questions.some(
           (question) => question.question_type.id !== 3 && (question.options?.length ?? 0) > 0
         );
@@ -864,8 +999,12 @@ export async function createExerciseFromTemplate(
             await createOptions(optionsData, txClient);
           }
         }
-      });
-    }
+      }
+
+      return exercise;
+    });
+
+    await touchCourseUpdatedAt(courseId);
 
     // Fetch the complete exercise with questions and options
     return await getExercise(exercise.id);

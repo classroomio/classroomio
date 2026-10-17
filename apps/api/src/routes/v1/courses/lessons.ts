@@ -4,7 +4,11 @@ import {
   ZPublicApiCourseLessonParam,
   ZPublicApiCourseLessonResponse,
   ZPublicApiCourseLessonsQuery,
-  ZPublicApiCourseParam
+  ZPublicApiCourseParam,
+  ZPublicApiCreateLesson,
+  ZPublicApiLessonParam,
+  ZPublicApiLessonResponse,
+  ZPublicApiUpdateLesson
 } from '@cio/utils/validation/public-api';
 import {
   deletePublicApiCourseLessonService,
@@ -12,6 +16,7 @@ import {
   listPublicApiCourseLessonsService,
   notifyPublicApiCourseLessonSessionService
 } from '@api/services/v1/courses/lessons';
+import { createPublicApiLessonService, updatePublicApiLessonService } from '@api/services/v1/lessons/lesson';
 
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
@@ -20,6 +25,10 @@ import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@
 import { COURSE_TEAM_RULE, PAGINATION_NOTE, contentForbiddenResponses, mcpRateLimitResponse } from './docs';
 
 const TAG = 'Course Lessons';
+const LessonResponse = itemResponse(ZPublicApiLessonResponse);
+
+const VIDEO_NOTE =
+  'Attach an uploaded video with `{ "type": "upload", "assetId": "…" }`, using an assetId from POST /assets whose bytes you have already uploaded. Attaching it completes the upload and queues thumbnailing, transcription and adaptive-bitrate encoding. External videos use `{ "type": "youtube" | "vimeo" | "generic", "link": "…" }` and are embedded rather than fetched.';
 
 export const v1CourseLessonsRouter = new Hono()
   .get(
@@ -134,6 +143,60 @@ export const v1CourseLessonsRouter = new Hono()
         return c.json({ success: true, data: result }, 202);
       } catch (error) {
         return handlePublicApiError(c, error, 'Failed to notify session update');
+      }
+    }
+  )
+  .post(
+    '/',
+    describeRoute({
+      description: `Create a lesson in a course. ${VIDEO_NOTE}`,
+      tags: [TAG],
+      responses: {
+        201: jsonResponse('Lesson created', LessonResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        404: { description: 'Course not found, or a referenced asset does not exist' },
+        409: { description: 'A referenced asset has no uploaded file yet' }
+      }
+    }),
+    validator('param', ZPublicApiCourseParam),
+    validator('json', ZPublicApiCreateLesson),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const lesson = await createPublicApiLessonService(orgId, actorId, c.req.valid('param'), c.req.valid('json'));
+
+        return c.json({ success: true, data: lesson }, 201);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to create lesson');
+      }
+    }
+  )
+  .put(
+    '/:lessonId',
+    describeRoute({
+      description: `Update a lesson. Omitted fields are left unchanged; a supplied \`videos\` array replaces the lesson's videos entirely. ${VIDEO_NOTE}`,
+      tags: [TAG],
+      responses: {
+        200: jsonResponse('Lesson updated', LessonResponse),
+        400: errorResponses.badRequest,
+        401: errorResponses.unauthorized,
+        404: { description: 'Course or lesson not found, or a referenced asset does not exist' },
+        409: { description: 'A referenced asset has no uploaded file yet' }
+      }
+    }),
+    validator('param', ZPublicApiLessonParam),
+    validator('json', ZPublicApiUpdateLesson),
+    async (c) => {
+      try {
+        const orgId = c.get('orgId')!;
+        const actorId = c.get('actorId');
+        const lesson = await updatePublicApiLessonService(orgId, actorId, c.req.valid('param'), c.req.valid('json'));
+
+        return c.json({ success: true, data: lesson }, 200);
+      } catch (error) {
+        return handlePublicApiError(c, error, 'Failed to update lesson');
       }
     }
   );

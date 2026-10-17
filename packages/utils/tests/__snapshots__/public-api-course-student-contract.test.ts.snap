@@ -1,0 +1,155 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API course student contract > ZPublicApiCourseStudentExerciseParam keeps its published shape > ZPublicApiCourseStudentExerciseParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "exerciseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "memberId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "memberId",
+    "exerciseId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course student contract > ZPublicApiCourseStudentLessonParam keeps its published shape > ZPublicApiCourseStudentLessonParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "memberId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "memberId",
+    "lessonId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course student contract > ZPublicApiCreateStudentSubmission keeps its published shape > ZPublicApiCreateStudentSubmission 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "answers": {
+      "description": "One entry per answered question. File-upload and video-recording questions cannot be answered through the API.",
+      "items": {
+        "properties": {
+          "answer": {
+            "description": "Every question type except single choice. True/false: "true" or "false". Short answer and paragraph: the plain text. Every other type: a JSON string. Multiple choice: {"type":"CHECKBOX","optionIds":[30,31]}. Numeric: {"type":"NUMERIC","value":2}. Fill in the blank: {"type":"FILL_BLANK","answers":["Paris"]}. Word bank: {"type":"WORD_BANK","filledBlanks":["Paris"]}. Matching: {"type":"MATCHING","value":[{"left":"A","right":"1"}]}. Ordering: {"type":"ORDERING","value":["first","second"]}. Link: {"type":"LINK","links":["https://example.com"]}. Hotspot: {"type":"HOTSPOT","value":[{"x":10,"y":20}]}. Star rating: {"type":"STAR","value":4}.",
+            "type": "string",
+          },
+          "optionId": {
+            "description": "Single choice questions only: the chosen option, which must belong to the question.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+          "questionId": {
+            "description": "Must be a question of this exercise.",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer",
+          },
+        },
+        "required": [
+          "questionId",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "minItems": 1,
+      "type": "array",
+    },
+  },
+  "required": [
+    "answers",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course student contract > ZPublicApiSetStudentLessonCompletion keeps its published shape > ZPublicApiSetStudentLessonCompletion 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "isComplete": {
+      "description": "true records the lesson as completed; false undoes it.",
+      "type": "boolean",
+    },
+  },
+  "required": [
+    "isComplete",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course student contract > ZPublicApiStudentLessonCompletionResponse keeps its published shape > ZPublicApiStudentLessonCompletionResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "isComplete": {
+      "type": "boolean",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "memberId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "updatedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+  },
+  "required": [
+    "lessonId",
+    "memberId",
+    "isComplete",
+    "updatedAt",
+  ],
+  "type": "object",
+}
+`;

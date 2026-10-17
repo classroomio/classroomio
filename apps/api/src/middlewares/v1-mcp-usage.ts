@@ -12,6 +12,15 @@ import { MCP_TOOL_CREDIT_COST, type TAutomationUsageCategory, type TMcpToolName 
 type TRouteMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, TMcpToolName>>> = {
+  '/public-api/v1/audience': { GET: 'list_audience_members', POST: 'add_audience_member' },
+  '/public-api/v1/audience/assign-courses': { POST: 'assign_audience_courses' },
+  '/public-api/v1/audience/:memberId': {
+    GET: 'get_audience_member',
+    PUT: 'update_audience_member',
+    DELETE: 'remove_audience_member'
+  },
+  '/public-api/v1/team': { GET: 'list_team_members' },
+  '/public-api/v1/team/:memberId': { GET: 'get_team_member', PUT: 'update_team_member' },
   '/public-api/v1/courses/:courseId/members': { GET: 'list_course_members', POST: 'add_course_member' },
   '/public-api/v1/courses/:courseId/members/:memberId': {
     GET: 'get_course_member',
@@ -49,6 +58,34 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
   '/public-api/v1/courses/:courseId/content/reorder': { PUT: 'reorder_course_content' },
   '/public-api/v1/courses/:courseId/content': { PATCH: 'set_course_content_unlocked' },
   '/public-api/v1/courses/:courseId/content/delete': { POST: 'delete_course_content' },
+  '/public-api/v1/courses/:courseId/exercises': { GET: 'list_course_exercises', POST: 'create_course_exercise' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId': {
+    GET: 'get_course_exercise',
+    PUT: 'update_course_exercise',
+    DELETE: 'delete_course_exercise'
+  },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify': { POST: 'notify_course_exercise' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions': { POST: 'add_exercise_question' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions/:questionId': {
+    PATCH: 'update_exercise_question',
+    DELETE: 'delete_exercise_question'
+  },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/sections': { POST: 'add_exercise_section' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/sections/:sectionId': {
+    PATCH: 'update_exercise_section',
+    DELETE: 'delete_exercise_section'
+  },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify/:jobId': { GET: 'get_course_exercise_notify_status' },
+  '/public-api/v1/exercise-templates': { GET: 'list_exercise_templates' },
+  '/public-api/v1/exercise-templates/:templateId': { GET: 'get_exercise_template' },
+  '/public-api/v1/courses/:courseId/submissions': { GET: 'list_course_submissions' },
+  '/public-api/v1/courses/:courseId/submissions/:submissionId': {
+    GET: 'get_course_submission',
+    PATCH: 'update_course_submission',
+    DELETE: 'delete_course_submission'
+  },
+  '/public-api/v1/courses/:courseId/submissions/:submissionId/grades': { PUT: 'grade_course_submission' },
+  '/public-api/v1/courses/:courseId/marks': { GET: 'get_course_marks' },
   '/public-api/v1/cohorts': { GET: 'list_org_cohorts', POST: 'create_cohort' },
   '/public-api/v1/cohorts/enrolled': { GET: 'list_my_enrolled_cohorts' },
   '/public-api/v1/cohorts/my/goals': { GET: 'list_my_cohort_goals' },

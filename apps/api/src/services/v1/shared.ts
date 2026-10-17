@@ -47,6 +47,18 @@ export function assertAutomationActor(actorId: string | null): asserts actorId i
   }
 }
 
+/** Throws 400 if the member has not joined yet. */
+export function assertMemberHasJoined(profileId: string | null | undefined): asserts profileId is string {
+  if (!profileId) {
+    throw new AppError(
+      'Only members who have joined can be renamed. A pending member has no profile yet',
+      ErrorCodes.VALIDATION_ERROR,
+      400,
+      'name'
+    );
+  }
+}
+
 export async function assertCohortBelongsToOrganization(orgId: string, cohortId: string): Promise<void> {
   const cohortOrganizationId = await getCohortOrganizationId(cohortId);
   if (!cohortOrganizationId || cohortOrganizationId !== orgId) {

@@ -31,6 +31,7 @@ Use this file to keep a single prioritized view of all PRDs.
 | - | - | `prd/plugin-system` | proposal |
 | - | - | `prd/scroll-to-top` | draft |
 | - | - | `prd/slide-builder` | draft (prototyped; absorbs `prototypes/slide-embed-picker` as the `embed` mode of the Slide tab) |
+| - | - | `prd/gamification` | draft (prototyped; learner XP, streaks, badges, leaderboards, admin settings) |
 
 ## DONE (Completed PRDs)
 

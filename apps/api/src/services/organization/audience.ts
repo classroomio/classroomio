@@ -173,7 +173,10 @@ async function enrollAudienceStudentProfilesInCourses(
   }
 
   if (validProfiles.length > 0) {
-    await ensureComplianceEnrollmentRecordsForProfiles(courseIds, validProfiles);
+    await ensureComplianceEnrollmentRecordsForProfiles(
+      courseGroups.map((courseGroup) => courseGroup.courseId),
+      validProfiles
+    );
   }
 
   let emailsSent = 0;

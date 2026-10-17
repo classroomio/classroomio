@@ -929,7 +929,10 @@
       "empty_description": "Hãy thử mở rộng phạm vi ngày hoặc xóa một bộ lọc.",
       "exclude_recent_joiners_hint": "Loại bỏ những học sinh mới tham gia quá gần đây để được coi là không hoạt động.",
       "empty_title": "Không có học viên nào phù hợp với các bộ lọc này",
-      "invite_status": "Trạng thái mời"
+      "invite_status": "Trạng thái mời",
+      "certificate": "Chứng chỉ",
+      "certificate_earned": "Đã đạt được",
+      "certificate_not_earned": "Chưa đạt được"
     },
     "views": {
       "never_logged_in": "Chưa từng đăng nhập",
@@ -940,7 +943,9 @@
       "custom": "Bộ lọc tùy chỉnh",
       "all": "Tất cả học viên"
     },
-    "learner_count": "{count} học sinh"
+    "learner_count": "{count} học sinh",
+    "certificate_earned": "Đã đạt được {count} chứng chỉ",
+    "certificates_earned": "Đã đạt được {count} chứng chỉ"
   },
   "community": {
     "title": "cộng đồng",
@@ -2588,7 +2593,15 @@
               "loading": "Đang tải video…",
               "playback_auth_error": "Phiên của bạn đã hết hạn. Vui lòng đăng nhập lại để xem video này.",
               "playback_auth_action": "Đăng nhập",
-              "vimeo_link": "Liên kết Vimeo"
+              "vimeo_link": "Liên kết Vimeo",
+              "hls_status": {
+                "encoding": "Đang mã hóa",
+                "ready": "Sẵn sàng",
+                "failed": "Thất bại",
+                "skipped": "Chưa được mã hóa",
+                "failed_hint": "Mã hóa thất bại. Video vẫn phát ở chất lượng gốc.",
+                "skipped_hint": "Mã hóa thích ứng đã tắt, vì vậy video phát ở chất lượng gốc."
+              }
             },
             "slide": {
               "title": "Slide",
@@ -4318,7 +4331,16 @@
       "actions_menu": "Hành động xác thực mã thông báo"
     },
     "teams": {
-      "page_subtitle": "Mời đồng đội và kiểm soát ai giúp vận hành tổ chức này."
+      "page_subtitle": "Mời đồng đội và kiểm soát ai giúp vận hành tổ chức này.",
+      "permission": {
+        "title": "Bạn không có quyền xem trang này",
+        "description": "Chỉ quản trị viên tổ chức mới có thể xem và quản lý nhóm. Hãy liên hệ với quản trị viên nếu bạn cần quyền truy cập."
+      },
+      "invite": {
+        "confirm_title": "Mời học viên vào nhóm?",
+        "confirm_description": "Những người này đã là học viên trong tổ chức: {emails}. Bạn có muốn mời họ với vai trò {role} không? Vai trò của họ chỉ thay đổi sau khi họ chấp nhận lời mời.",
+        "existing": "Những người này đã có trong nhóm: {members}. Hãy dùng bộ chọn vai trò trong danh sách thành viên nhóm để thay đổi vai trò của họ."
+      }
     },
     "ai_credits": {
       "sub_title": "Tín dụng AI",

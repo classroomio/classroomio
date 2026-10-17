@@ -929,7 +929,10 @@
       "empty_description": "Intenta ampliar el rango de fechas o borrar un filtro.",
       "exclude_recent_joiners_hint": "Se excluyen los estudiantes que se unieron demasiado recientemente como para ser considerados inactivos.",
       "empty_title": "Ningún estudiante coincide con estos filtros",
-      "invite_status": "Estado de la invitación"
+      "invite_status": "Estado de la invitación",
+      "certificate": "Certificado",
+      "certificate_earned": "Obtenido",
+      "certificate_not_earned": "No obtenido"
     },
     "views": {
       "never_logged_in": "Nunca han iniciado sesión",
@@ -940,7 +943,9 @@
       "custom": "Filtros personalizados",
       "all": "Todos los estudiantes"
     },
-    "learner_count": "{count} estudiantes"
+    "learner_count": "{count} estudiantes",
+    "certificate_earned": "{count} certificado obtenido",
+    "certificates_earned": "{count} certificados obtenidos"
   },
   "community": {
     "title": "Comunidad",
@@ -2588,7 +2593,15 @@
               "loading": "Cargando vídeo…",
               "playback_auth_error": "Tu sesión expiró. Inicie sesión nuevamente para ver este video.",
               "playback_auth_action": "Iniciar sesión",
-              "vimeo_link": "Enlace de Vimeo"
+              "vimeo_link": "Enlace de Vimeo",
+              "hls_status": {
+                "encoding": "Codificación",
+                "ready": "Listo",
+                "failed": "Error",
+                "skipped": "No se ha codificado",
+                "failed_hint": "La codificación falló. El vídeo se reproduce con su calidad original.",
+                "skipped_hint": "La codificación adaptativa está desactivada, por lo que se reproduce con su calidad original."
+              }
             },
             "slide": {
               "title": "Diapositiva",
@@ -4318,7 +4331,16 @@
       "actions_menu": "Acciones de autenticación de token"
     },
     "teams": {
-      "page_subtitle": "Invita a compañeros de equipo y controla quién ayuda a administrar esta organización."
+      "page_subtitle": "Invita a compañeros de equipo y controla quién ayuda a administrar esta organización.",
+      "permission": {
+        "title": "No tienes permiso para ver esta página",
+        "description": "Solo los administradores de la organización pueden ver y gestionar el equipo. Contacta con un administrador si necesitas acceso."
+      },
+      "invite": {
+        "confirm_title": "¿Invitar a estudiantes al equipo?",
+        "confirm_description": "Estas personas ya son estudiantes de esta organización: {emails}. ¿Quieres invitarlas como {role}? Su rol solo cambiará cuando acepten la invitación.",
+        "existing": "Ya forman parte del equipo: {members}. Usa el selector de rol en Miembros del equipo para cambiar su rol."
+      }
     },
     "ai_credits": {
       "sub_title": "Créditos de IA",

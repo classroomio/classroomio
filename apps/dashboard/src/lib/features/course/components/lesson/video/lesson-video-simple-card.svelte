@@ -4,6 +4,7 @@
   import { ExternalLinkIcon, HoverableItem } from '@cio/ui/custom/moving-icons';
   import { courseApi, lessonApi } from '$features/course/api';
   import VideoCardDropdown from './video-card-dropdown.svelte';
+  import VideoHlsStatusBadge from './video-hls-status-badge.svelte';
   import {
     getVideoThumbnailUrl,
     getVideoTitle,
@@ -62,6 +63,8 @@
 
     return t.get(`course.navItem.lessons.materials.tabs.video.simple_card.${key}`);
   });
+
+  const hlsStatus = $derived(video.assetId ? lessonApi.videoHlsStatuses[video.assetId] : undefined);
 
   const metaLine = $derived.by(() => {
     if (createdAtFormatted) {
@@ -143,7 +146,12 @@
           {$t('course.navItem.lessons.materials.tabs.video.simple_card.transcription_in_progress')}
         </p>
       {/if}
-      <p class="ui:text-muted-foreground mt-0.5 line-clamp-1 text-sm leading-snug">{metaLine}</p>
+      <div class="mt-0.5 flex min-w-0 items-center gap-2">
+        <p class="ui:text-muted-foreground line-clamp-1 text-sm leading-snug">{metaLine}</p>
+        {#if isEditMode}
+          <VideoHlsStatusBadge status={hlsStatus} />
+        {/if}
+      </div>
     </div>
   </div>
 </div>

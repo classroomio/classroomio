@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 import type { TOrganizationInvite } from '@db/types';
 
@@ -8,16 +8,21 @@ export type TLinkInviteRow = TOrganizationInvite & {
   organization: { id: string; name: string; siteName: string };
 };
 
-export async function getOrgLinkInvite(organizationId: string): Promise<TOrganizationInvite | null> {
+export async function getOrgLinkInvite(
+  organizationId: string,
+  roleId: number,
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite | null> {
   try {
-    const [row] = await db
+    const [row] = await dbClient
       .select()
       .from(schema.organizationInvite)
       .where(
         and(
           eq(schema.organizationInvite.organizationId, organizationId),
           eq(schema.organizationInvite.type, 'LINK'),
-          eq(schema.organizationInvite.isRevoked, false)
+          eq(schema.organizationInvite.isRevoked, false),
+          eq(schema.organizationInvite.roleId, roleId)
         )
       )
       .limit(1);
@@ -29,16 +34,19 @@ export async function getOrgLinkInvite(organizationId: string): Promise<TOrganiz
   }
 }
 
-export async function createLinkInvite(data: {
-  organizationId: string;
-  roleId: number;
-  tokenHash: string;
-  createdByProfileId: string;
-  expiresAt: string;
-  metadata: Record<string, unknown>;
-}): Promise<TOrganizationInvite> {
+export async function createLinkInvite(
+  data: {
+    organizationId: string;
+    roleId: number;
+    tokenHash: string;
+    createdByProfileId: string;
+    expiresAt: string;
+    metadata: Record<string, unknown>;
+  },
+  dbClient: DbOrTxClient = db
+): Promise<TOrganizationInvite> {
   try {
-    const [created] = await db
+    const [created] = await dbClient
       .insert(schema.organizationInvite)
       .values({
         ...data,
@@ -61,11 +69,35 @@ export async function createLinkInvite(data: {
 
 export async function setLinkInviteRevoked(
   organizationId: string,
+  roleId: number,
   isRevoked: boolean,
-  profileId: string
+  profileId: string,
+  dbClient: DbOrTxClient = db
 ): Promise<TOrganizationInvite | null> {
   try {
-    const [updated] = await db
+    const [invite] = await dbClient
+      .select({ id: schema.organizationInvite.id })
+      .from(schema.organizationInvite)
+      .where(
+        and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          eq(schema.organizationInvite.type, 'LINK'),
+          eq(schema.organizationInvite.roleId, roleId)
+        )
+      )
+      .orderBy(desc(schema.organizationInvite.createdAt), desc(schema.organizationInvite.id))
+      .limit(1);
+
+    if (!invite) return null;
+
+    const target = isRevoked
+      ? and(
+          eq(schema.organizationInvite.organizationId, organizationId),
+          eq(schema.organizationInvite.type, 'LINK'),
+          eq(schema.organizationInvite.roleId, roleId)
+        )
+      : eq(schema.organizationInvite.id, invite.id);
+    const updatedRows = await dbClient
       .update(schema.organizationInvite)
       .set({
         isRevoked,
@@ -73,11 +105,10 @@ export async function setLinkInviteRevoked(
         revokedAt: isRevoked ? new Date().toISOString() : null,
         updatedAt: new Date().toISOString()
       })
-      .where(
-        and(eq(schema.organizationInvite.organizationId, organizationId), eq(schema.organizationInvite.type, 'LINK'))
-      )
+      .where(target)
       .returning();
 
+    const updated = updatedRows.find((row) => row.id === invite.id);
     return updated ?? null;
   } catch (error) {
     console.error('setLinkInviteRevoked error:', error);

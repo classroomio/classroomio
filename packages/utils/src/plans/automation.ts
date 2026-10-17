@@ -26,8 +26,19 @@ export const MCP_TOOL_CREDIT_COST = {
   tag_course_draft: 1,
   tag_courses: 1,
   create_course_exercise: 1,
-  create_course_exercise_from_template: 1,
   update_course_exercise: 1,
+  create_course_exercise_from_template: 1,
+  delete_course_exercise: 1,
+  add_exercise_question: 1,
+  update_exercise_question: 1,
+  delete_exercise_question: 1,
+  add_exercise_section: 1,
+  update_exercise_section: 1,
+  delete_exercise_section: 1,
+  notify_course_exercise: 1,
+  get_course_exercise_notify_status: 0,
+  list_exercise_templates: 0,
+  get_exercise_template: 0,
   publish_course_draft: 5,
   publish_course_draft_to_existing_course: 5,
   list_org_cohorts: 0,
@@ -97,11 +108,26 @@ export const MCP_TOOL_CREDIT_COST = {
   delete_course_lesson_comment: 1,
   set_course_content_unlocked: 1,
   delete_course_content: 1,
+  list_course_submissions: 0,
+  get_course_submission: 0,
+  grade_course_submission: 1,
+  update_course_submission: 1,
+  delete_course_submission: 1,
+  get_course_marks: 0,
   get_org_analytics: 0,
   list_compliance_learners: 0,
   get_learner_analytics: 0,
   get_course_analytics: 0,
-  list_course_analytics_students: 0
+  list_course_analytics_students: 0,
+  list_audience_members: 0,
+  get_audience_member: 0,
+  add_audience_member: 1,
+  assign_audience_courses: 1,
+  update_audience_member: 1,
+  remove_audience_member: 1,
+  list_team_members: 0,
+  get_team_member: 0,
+  update_team_member: 1
 } as const;
 
 export type TMcpToolName = keyof typeof MCP_TOOL_CREDIT_COST;
@@ -203,11 +229,21 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'list_course_lesson_translations' ||
     toolName === 'list_course_lesson_history' ||
     toolName === 'list_course_lesson_comments' ||
+    toolName === 'get_course_exercise_notify_status' ||
+    toolName === 'list_exercise_templates' ||
+    toolName === 'get_exercise_template' ||
+    toolName === 'list_course_submissions' ||
+    toolName === 'get_course_submission' ||
+    toolName === 'get_course_marks' ||
     toolName === 'get_org_analytics' ||
     toolName === 'list_compliance_learners' ||
     toolName === 'get_learner_analytics' ||
     toolName === 'get_course_analytics' ||
-    toolName === 'list_course_analytics_students'
+    toolName === 'list_course_analytics_students' ||
+    toolName === 'list_audience_members' ||
+    toolName === 'get_audience_member' ||
+    toolName === 'list_team_members' ||
+    toolName === 'get_team_member'
   ) {
     return AUTOMATION_USAGE_CATEGORY.READ;
   }

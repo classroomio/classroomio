@@ -1195,6 +1195,7 @@ export const asset = pgTable(
     aspectRatio: text('aspect_ratio'),
     isExternal: boolean('is_external').default(false).notNull(),
     status: varchar().default('active').notNull(),
+    hlsStatus: varchar('hls_status').default('none').notNull(),
     metadata: jsonb().default({}),
     createdByProfileId: uuid('created_by_profile_id'),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull(),
@@ -1987,6 +1988,23 @@ export const earlyAdopterClaim = pgTable(
     unique('early_adopter_claim_token_hash_key').on(table.tokenHash),
     unique('early_adopter_claim_polar_subscription_id_key').on(table.polarSubscriptionId),
     index('idx_early_adopter_claim_status_created_at').on(table.status, table.createdAt)
+  ]
+);
+
+/**
+ * Single row holding this install's anonymous ID, reported in self-hosted usage pings.
+ */
+export const instance = pgTable(
+  'instance',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    singleton: boolean().default(true).notNull(),
+    firstReportedAt: timestamp('first_reported_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('instance_singleton_key').on(table.singleton),
+    check('instance_singleton_check', sql`${table.singleton}`)
   ]
 );
 
