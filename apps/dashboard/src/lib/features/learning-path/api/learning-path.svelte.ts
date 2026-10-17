@@ -337,9 +337,9 @@ export class LearningPathApi extends BaseApiWithErrors {
         }
       },
       onError: (err) => {
-        const field = err && typeof err === 'object' && 'field' in err ? err.field : undefined;
+        const code = err && typeof err === 'object' && 'code' in err ? err.code : undefined;
 
-        if (field === 'slug') {
+        if (code === ErrorCodes.LEARNING_PATH_SLUG_TAKEN) {
           this.errors = { slug: 'learningPath.settings.general.slug_taken' };
         }
       }

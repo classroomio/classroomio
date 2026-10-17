@@ -328,7 +328,7 @@ export async function updateLearningPathService(
     const postgresError = getPostgresError(error);
 
     if (postgresError?.code === '23505' && postgresError.constraint === 'learning_path_slug_key') {
-      throw new AppError('A learning path with this URL slug already exists', ErrorCodes.CONFLICT, 409, 'slug');
+      throw new AppError('A learning path with this URL slug already exists', ErrorCodes.LEARNING_PATH_SLUG_TAKEN, 409);
     }
 
     throwAsInternal(error, 'Failed to update learning path');

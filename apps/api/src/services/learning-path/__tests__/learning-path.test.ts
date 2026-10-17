@@ -1401,9 +1401,8 @@ describe('learning-path services', () => {
         updateLearningPathService(testPath.id, 'user-1', { slug: 'taken-slug' }, { 'org-1': ROLE.ADMIN })
       ).rejects.toMatchObject({
         message: 'A learning path with this URL slug already exists',
-        code: ErrorCodes.CONFLICT,
-        statusCode: 409,
-        field: 'slug'
+        code: ErrorCodes.LEARNING_PATH_SLUG_TAKEN,
+        statusCode: 409
       });
 
       expect(mocks.updateLearningPath).toHaveBeenCalled();
