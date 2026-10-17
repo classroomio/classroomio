@@ -251,17 +251,19 @@ export async function getSubmissionsForGrading(courseId: string) {
   }
 }
 
-export async function hasQuestionAnswers(questionId: number, dbClient: DbOrTxClient = db): Promise<boolean> {
-  try {
-    const [row] = await dbClient
-      .select({ id: schema.questionAnswer.id })
-      .from(schema.questionAnswer)
-      .where(eq(schema.questionAnswer.questionId, questionId))
-      .limit(1);
+/** Returns the ids among `questionIds` that at least one student has answered. */
+export async function getAnsweredQuestionIds(questionIds: number[], dbClient: DbOrTxClient = db): Promise<number[]> {
+  if (questionIds.length === 0) return [];
 
-    return Boolean(row);
+  try {
+    const rows = await dbClient
+      .selectDistinct({ questionId: schema.questionAnswer.questionId })
+      .from(schema.questionAnswer)
+      .where(inArray(schema.questionAnswer.questionId, questionIds));
+
+    return rows.map((row) => row.questionId);
   } catch (error) {
-    console.error('hasQuestionAnswers error:', error);
+    console.error('getAnsweredQuestionIds error:', error);
     throw new Error(`Failed to check question answers: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

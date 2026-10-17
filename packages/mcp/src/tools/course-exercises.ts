@@ -1,7 +1,7 @@
 import {
   ZPublicApiAddExerciseQuestion,
   ZPublicApiAddExerciseSection,
-  ZPublicApiDeleteExerciseQuestionQuery,
+  ZPublicApiForceQuery,
   ZPublicApiExerciseQuestionParam,
   ZPublicApiExerciseSectionParam,
   ZPublicApiUpdateExerciseQuestionFields,
@@ -47,7 +47,7 @@ export const ZCreateCourseExerciseToolInput = ZPublicApiCreateCourseExercise.saf
 });
 export const ZUpdateCourseExerciseToolInput = ZPublicApiUpdateCourseExercise.safeExtend(
   ZPublicApiCourseExerciseParam.shape
-);
+).safeExtend(ZPublicApiForceQuery.shape);
 export const ZDeleteCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
 export const ZAddExerciseQuestionToolInput = ZPublicApiAddExerciseQuestion.safeExtend(
   ZPublicApiCourseExerciseParam.shape
@@ -55,9 +55,7 @@ export const ZAddExerciseQuestionToolInput = ZPublicApiAddExerciseQuestion.safeE
 export const ZUpdateExerciseQuestionToolInput = ZPublicApiUpdateExerciseQuestionFields.safeExtend(
   ZPublicApiExerciseQuestionParam.shape
 );
-export const ZDeleteExerciseQuestionToolInput = ZPublicApiExerciseQuestionParam.extend(
-  ZPublicApiDeleteExerciseQuestionQuery.shape
-);
+export const ZDeleteExerciseQuestionToolInput = ZPublicApiExerciseQuestionParam.extend(ZPublicApiForceQuery.shape);
 export const ZAddExerciseSectionToolInput = ZPublicApiAddExerciseSection.safeExtend(
   ZPublicApiCourseExerciseParam.shape
 );
@@ -99,7 +97,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'create_course_exercise',
-    `Create an exercise on a live course. Either send title and questions, or send templateId (from list_exercise_templates) to copy a built-in template; with templateId only sectionId, lessonId and order may be sent alongside it. sectionId and lessonId must belong to this course. ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
+    `Create an exercise on a live course. Either send title and questions, or send templateId (from list_exercise_templates) to copy a built-in template; with templateId only sectionId, lessonId and order may be sent alongside it. sectionId and lessonId must belong to this course. ${LIVE_EDIT_NOTE} ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
     shape(ZCreateCourseExerciseToolInput),
     CREATE,
     async (args) => {
@@ -110,18 +108,18 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'update_course_exercise',
-    `Partially update an exercise on a live course. Omitted fields keep their values. questions is a diff: send a question with its id to edit it, with its id and delete: true to remove it, or without an id to add it; options work the same inside their question, and questions you leave out are unchanged. Read ids with get_course_exercise first. To change one question or one exercise section, use the add/update/delete_exercise_question and _exercise_section tools instead. sections replaces all exercise sections (ones you leave out are deleted); a new section may carry a UUID you generate so new questions can point at it with exerciseSectionId, and when sections is sent every remaining question must be in one. Deleting a question also deletes the answers students gave to it. ${LIVE_EDIT_NOTE} ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
+    `Partially update an exercise on a live course. Omitted fields keep their values. questions is a diff: send a question with its id to edit it, with its id and delete: true to remove it, or without an id to add it; options work the same inside their question, and questions you leave out are unchanged. Read ids with get_course_exercise first. To change one question or one exercise section, use the add/update/delete_exercise_question and _exercise_section tools instead. sections works the same way: id to edit, id and delete: true to remove, no id to add, and sections you leave out are unchanged; a new section may carry a UUID you generate so new questions can point at it with exerciseSectionId, and a removed section must not still hold questions. Deleting a question students have answered fails with 409 unless force is true, which also deletes their answers; ask the user before forcing. ${LIVE_EDIT_NOTE} ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
     shape(ZUpdateCourseExerciseToolInput),
     UPDATE,
     async (args) => {
-      const { courseId, exerciseId, ...payload } = ZUpdateCourseExerciseToolInput.parse(args);
-      return jsonContent(await apiClient.updateCourseExercise(courseId, exerciseId, payload));
+      const { courseId, exerciseId, force, ...payload } = ZUpdateCourseExerciseToolInput.parse(args);
+      return jsonContent(await apiClient.updateCourseExercise(courseId, exerciseId, payload, force));
     }
   );
 
   server.tool(
     'delete_course_exercise',
-    `Permanently delete an exercise from a live course. This is a hard delete, not an archive: its questions and every student submission for it are deleted too, and it cannot be undone. ${COURSE_TEAM_RULE}`,
+    `Permanently delete an exercise from a live course. This is a hard delete, not an archive: its questions and every student submission for it are deleted too, and it cannot be undone. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
     shape(ZDeleteCourseExerciseToolInput),
     DESTRUCTIVE,
     async (args) => {

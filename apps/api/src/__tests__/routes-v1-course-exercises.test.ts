@@ -186,8 +186,18 @@ describe('v1 course exercise routes', () => {
       'org-1',
       'actor-1',
       { courseId: COURSE_ID, exerciseId: EXERCISE_ID },
-      { title: 'Quiz 2', isUnlocked: false }
+      { title: 'Quiz 2', isUnlocked: false },
+      { force: false }
     );
+  });
+
+  it('reads force for the bulk update from the query string', async () => {
+    vi.mocked(exercises.updateCourseExerciseService).mockResolvedValue({ id: EXERCISE_ID } as never);
+
+    const response = await request(`${EXERCISE}?force=true`, send('PUT', { questions: [{ id: 7, delete: true }] }));
+
+    expect(response.status).toBe(200);
+    expect(vi.mocked(exercises.updateCourseExerciseService).mock.calls[0][4]).toEqual({ force: true });
   });
 
   it('returns 400 for an exercise id that is not a UUID', async () => {

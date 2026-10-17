@@ -1,8 +1,7 @@
-import { hasQuestionAnswers } from '@cio/db/queries/submission';
 import type {
   TPublicApiAddExerciseQuestion,
   TPublicApiCourseExerciseParam,
-  TPublicApiDeleteExerciseQuestionQuery,
+  TPublicApiForceQuery,
   TPublicApiExerciseQuestionParam,
   TPublicApiUpdateExerciseQuestionFields
 } from '@cio/utils/validation/public-api';
@@ -82,21 +81,19 @@ export async function deleteCourseExerciseQuestionService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiExerciseQuestionParam,
-  query: TPublicApiDeleteExerciseQuestionQuery
+  query: TPublicApiForceQuery
 ) {
   const { questionId, exerciseParams } = splitQuestionParam(params);
   const exercise = await getCourseExerciseService(orgId, actorId, exerciseParams);
   const question = findQuestion(exercise, questionId);
 
-  if (!query.force && (await hasQuestionAnswers(questionId))) {
-    throw new AppError(
-      'Students have answered this question. Pass force=true to delete it together with their answers',
-      ErrorCodes.CONFLICT,
-      409
-    );
-  }
-
-  await updateCourseExerciseService(orgId, actorId, exerciseParams, { questions: [{ id: questionId, delete: true }] });
+  await updateCourseExerciseService(
+    orgId,
+    actorId,
+    exerciseParams,
+    { questions: [{ id: questionId, delete: true }] },
+    query
+  );
 
   return question;
 }

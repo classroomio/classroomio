@@ -1,7 +1,7 @@
 import {
   ZPublicApiAddExerciseQuestion,
   ZPublicApiCourseExerciseParam,
-  ZPublicApiDeleteExerciseQuestionQuery,
+  ZPublicApiForceQuery,
   ZPublicApiExerciseQuestionParam,
   ZPublicApiExerciseQuestionResponse,
   ZPublicApiUpdateExerciseQuestionFields
@@ -110,7 +110,7 @@ export const v1CourseExerciseQuestionsRouter = new Hono()
       }
     }),
     validator('param', ZPublicApiExerciseQuestionParam),
-    validator('query', ZPublicApiDeleteExerciseQuestionQuery),
+    validator('query', ZPublicApiForceQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;

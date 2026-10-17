@@ -5,14 +5,12 @@ vi.mock('@api/services/v1/courses/exercises', () => ({
   getCourseExerciseService: vi.fn(),
   updateCourseExerciseService: vi.fn()
 }));
-vi.mock('@cio/db/queries/submission', () => ({ hasQuestionAnswers: vi.fn() }));
 vi.mock('@cio/core/services/exercise/exercise', () => ({
   createExerciseSectionService: vi.fn(),
   updateExerciseSectionService: vi.fn(),
   deleteExerciseSectionService: vi.fn()
 }));
 
-import { hasQuestionAnswers } from '@cio/db/queries/submission';
 import {
   createExerciseSectionService,
   deleteExerciseSectionService,
@@ -61,7 +59,6 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(getCourseExerciseService).mockResolvedValue(detail([10]));
   vi.mocked(updateCourseExerciseService).mockResolvedValue(detail([10]));
-  vi.mocked(hasQuestionAnswers).mockResolvedValue(false);
 });
 
 describe('addCourseExerciseQuestionService', () => {
@@ -137,32 +134,26 @@ describe('updateCourseExerciseQuestionService', () => {
 });
 
 describe('deleteCourseExerciseQuestionService', () => {
-  it('deletes an unanswered question and returns it as it was', async () => {
+  it('deletes through the shared update, passing force on, and returns the question as it was', async () => {
     const deleted = await deleteCourseExerciseQuestionService(ORG_ID, ACTOR_ID, questionParams, { force: false });
 
     expect(deleted).toMatchObject({ id: 10 });
-    expect(updateCourseExerciseService).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, exerciseParams, {
-      questions: [{ id: 10, delete: true }]
-    });
-  });
-
-  it('refuses an answered question with 409 unless forced', async () => {
-    vi.mocked(hasQuestionAnswers).mockResolvedValue(true);
-
-    await expect(
-      deleteCourseExerciseQuestionService(ORG_ID, ACTOR_ID, questionParams, { force: false })
-    ).rejects.toMatchObject({ statusCode: 409 });
-    expect(updateCourseExerciseService).not.toHaveBeenCalled();
+    expect(updateCourseExerciseService).toHaveBeenCalledWith(
+      ORG_ID,
+      ACTOR_ID,
+      exerciseParams,
+      { questions: [{ id: 10, delete: true }] },
+      { force: false }
+    );
 
     await deleteCourseExerciseQuestionService(ORG_ID, ACTOR_ID, questionParams, { force: true });
-    expect(updateCourseExerciseService).toHaveBeenCalled();
+    expect(vi.mocked(updateCourseExerciseService).mock.calls[1][4]).toEqual({ force: true });
   });
 
-  it('returns 404 for a question of another exercise before checking answers', async () => {
+  it('returns 404 for a question of another exercise before any write', async () => {
     await expect(
       deleteCourseExerciseQuestionService(ORG_ID, ACTOR_ID, { ...questionParams, questionId: 99 }, { force: true })
     ).rejects.toMatchObject({ statusCode: 404 });
-    expect(hasQuestionAnswers).not.toHaveBeenCalled();
     expect(updateCourseExerciseService).not.toHaveBeenCalled();
   });
 });

@@ -11,6 +11,7 @@ import { assertNoPremiumQuestionTypes } from '@cio/core/services/exercise/premiu
 import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
 import { getCourseSectionById } from '@cio/db/queries/course';
 import { getExerciseById, getExerciseSectionOwnersByIds } from '@cio/db/queries/exercise';
+import { getAnsweredQuestionIds } from '@cio/db/queries/submission';
 import { getLessonById } from '@cio/db/queries/lesson';
 import type { TExercise } from '@cio/db/types';
 import { getQuestionOptionIssues, type TExerciseUpdate } from '@cio/utils/validation/exercise';
@@ -21,6 +22,7 @@ import {
   type TPublicApiCourseExerciseParam,
   type TPublicApiCourseExercisesQuery,
   type TPublicApiCourseParam,
+  type TPublicApiForceQuery,
   type TPublicApiCreateCourseExercise,
   type TPublicApiUpdateCourseExercise
 } from '@cio/utils/validation/public-api';
@@ -34,6 +36,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertCourseBelongsToOrganization, assertCourseTeamMemberOrOrgAdmin, paginateInMemory } from '../shared';
 
 type ExerciseDetail = Awaited<ReturnType<typeof getExercise>>;
+type SectionAfterBehavior = NonNullable<TPublicApiUpdateCourseExercise['sections']>[number]['afterBehavior'];
 
 function toPublicExercise(exercise: TExercise) {
   return {
@@ -160,11 +163,26 @@ async function assertUpdateIdsBelongToExercise(
       new Set(question.options.map((option) => Number(option.id)))
     ])
   );
-  const currentSectionIds = new Set((current.sections ?? []).map((section) => section.id));
+  const currentSections = current.sections ?? [];
+  const currentSectionIds = new Set(currentSections.map((section) => section.id));
+  const sentSections = payload.sections ?? [];
 
-  const newSectionIds = (payload.sections ?? [])
-    .map((section) => section.id)
-    .filter((id): id is string => Boolean(id) && !currentSectionIds.has(id!));
+  const removedSectionIds = new Set(
+    sentSections.filter((section) => section.delete).map((section) => section.id as string)
+  );
+  const unknownRemovedId = [...removedSectionIds].find((id) => !currentSectionIds.has(id));
+  if (unknownRemovedId) {
+    throw new AppError(`Exercise section ${unknownRemovedId} not found in this exercise`, ErrorCodes.NOT_FOUND, 404);
+  }
+
+  const newSections = sentSections.filter(
+    (section) => !section.delete && (!section.id || !currentSectionIds.has(section.id))
+  );
+  if (newSections.some((section) => section.title === undefined || section.order === undefined)) {
+    throw new AppError('title and order are required for a new section', ErrorCodes.VALIDATION_ERROR, 400, 'sections');
+  }
+
+  const newSectionIds = newSections.map((section) => section.id).filter((id): id is string => Boolean(id));
   const takenSection = (await getExerciseSectionOwnersByIds(newSectionIds)).find(
     (section) => section.exerciseId !== exerciseId
   );
@@ -172,9 +190,30 @@ async function assertUpdateIdsBelongToExercise(
     throw new AppError(`Exercise section ${takenSection.id} not found in this exercise`, ErrorCodes.NOT_FOUND, 404);
   }
 
-  const assignableSectionIds = payload.sections
-    ? new Set(payload.sections.map((section) => section.id).filter((id): id is string => Boolean(id)))
-    : currentSectionIds;
+  const keptSectionIds = [...currentSectionIds].filter((id) => !removedSectionIds.has(id));
+  const assignableSectionIds = new Set([...keptSectionIds, ...newSectionIds]);
+
+  const sentSectionById = new Map(sentSections.filter((section) => section.id).map((section) => [section.id, section]));
+  const finalBehaviors = [
+    ...currentSections
+      .filter((section) => !removedSectionIds.has(section.id))
+      .map((section) => sentSectionById.get(section.id)?.afterBehavior ?? section.afterBehavior),
+    ...newSections.map((section) => section.afterBehavior)
+  ] as Array<SectionAfterBehavior | null | undefined>;
+  const strandedTarget = finalBehaviors.find(
+    (behavior) => behavior?.action === 'go_to_section' && !assignableSectionIds.has(behavior.exerciseSectionId)
+  );
+  if (strandedTarget?.action === 'go_to_section') {
+    const targetId = strandedTarget.exerciseSectionId;
+    if (removedSectionIds.has(targetId)) {
+      throw new AppError(
+        `Another section's afterBehavior goes to section ${targetId}: change it before removing that section`,
+        ErrorCodes.CONFLICT,
+        409
+      );
+    }
+    throw new AppError(`Exercise section ${targetId} not found in this exercise`, ErrorCodes.NOT_FOUND, 404);
+  }
 
   for (const question of payload.questions ?? []) {
     const optionIds = question.id ? optionIdsByQuestionId.get(question.id) : undefined;
@@ -206,7 +245,7 @@ async function assertUpdateIdsBelongToExercise(
     }
   }
 
-  if (!payload.sections || payload.sections.length === 0) return;
+  if (sentSections.length === 0) return;
 
   const incomingById = new Map((payload.questions ?? []).filter((q) => q.id).map((q) => [q.id, q]));
   for (const question of current.questions ?? []) {
@@ -215,13 +254,38 @@ async function assertUpdateIdsBelongToExercise(
 
     const sectionId =
       incoming?.exerciseSectionId !== undefined ? incoming.exerciseSectionId : question.exerciseSectionId;
-    if (!sectionId || !assignableSectionIds.has(sectionId)) {
+    if (sectionId && removedSectionIds.has(sectionId)) {
       throw new AppError(
-        `Question ${question.id} would be left without a section: move it to a section you are sending or delete it`,
+        `Section ${sectionId} still holds question ${question.id}: move or delete it in the same request`,
+        ErrorCodes.CONFLICT,
+        409
+      );
+    }
+
+    if (assignableSectionIds.size > 0 && (!sectionId || !assignableSectionIds.has(sectionId))) {
+      throw new AppError(
+        `Question ${question.id} would be left without a section: move it to a section of this exercise or delete it`,
         ErrorCodes.VALIDATION_ERROR,
         400
       );
     }
+  }
+}
+
+/** Throws 409 if the update deletes a question students have answered, unless `force` is set. */
+async function assertDeletedQuestionsUnanswered(payload: TPublicApiUpdateCourseExercise, force: boolean) {
+  if (force) return;
+
+  const deletedIds = (payload.questions ?? [])
+    .filter((question) => question.delete && question.id)
+    .map((question) => question.id as number);
+  const answeredIds = await getAnsweredQuestionIds(deletedIds);
+  if (answeredIds.length > 0) {
+    throw new AppError(
+      `Students have answered question ${answeredIds.join(', ')}. Pass force=true to delete it together with their answers`,
+      ErrorCodes.CONFLICT,
+      409
+    );
   }
 }
 
@@ -337,15 +401,56 @@ function toInternalQuestion(
 }
 
 /** Returns the full core update, filling every field the caller omitted from the stored exercise. */
+type PublicSectionUpdate = NonNullable<TPublicApiUpdateCourseExercise['sections']>[number];
+type InternalSection = NonNullable<TExerciseUpdate['sections']>[number];
+
+function toInternalSections(sent: PublicSectionUpdate[], current: ExerciseDetail): InternalSection[] {
+  const sentById = new Map(sent.filter((section) => section.id).map((section) => [section.id as string, section]));
+  const storedIds = new Set((current.sections ?? []).map((section) => section.id));
+
+  const kept = (current.sections ?? [])
+    .filter((stored) => !sentById.get(stored.id)?.delete)
+    .map((stored): InternalSection => {
+      const edit = sentById.get(stored.id);
+      const description = edit?.description !== undefined ? edit.description : stored.description;
+
+      return {
+        id: stored.id,
+        title: edit?.title ?? stored.title,
+        description,
+        order: edit?.order ?? stored.order,
+        colorTheme: (edit?.colorTheme ?? stored.colorTheme) as InternalSection['colorTheme'],
+        afterBehavior: (edit?.afterBehavior ?? stored.afterBehavior) as InternalSection['afterBehavior']
+      };
+    });
+  const added = sent
+    .filter((section) => !section.delete && (!section.id || !storedIds.has(section.id)))
+    .map(
+      (section): InternalSection => ({
+        id: section.id,
+        title: section.title as string,
+        description: section.description ?? null,
+        order: section.order as number,
+        colorTheme: section.colorTheme ?? 'blue',
+        afterBehavior: section.afterBehavior ?? { action: 'continue' }
+      })
+    );
+
+  return [...kept, ...added];
+}
+
 function toInternalUpdate(payload: TPublicApiUpdateCourseExercise, current: ExerciseDetail): TExerciseUpdate {
   const deletedAt = new Date().toISOString();
-  const { questions, ...fields } = payload;
+  const { questions, sections, ...fields } = payload;
   const storedQuestionById = new Map((current.questions ?? []).map((question) => [Number(question.id), question]));
   const internalQuestions = questions?.map((question) => toInternalQuestion(question, storedQuestionById, deletedAt));
 
+  const internalSections = sections !== undefined ? toInternalSections(sections, current) : undefined;
+
   return {
     ...fields,
-    questions: internalQuestions
+    questions: internalQuestions,
+    ...(internalSections !== undefined && { sections: internalSections })
   };
 }
 
@@ -435,7 +540,8 @@ export async function applyCourseExerciseUpdate(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
-  payload: TPublicApiUpdateCourseExercise
+  payload: TPublicApiUpdateCourseExercise,
+  options: TPublicApiForceQuery = { force: false }
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   await assertExerciseBelongsToCourse(params.courseId, params.exerciseId);
@@ -443,6 +549,7 @@ export async function applyCourseExerciseUpdate(
 
   const current = await getExercise(params.exerciseId);
   await assertUpdateIdsBelongToExercise(params.exerciseId, current, payload);
+  await assertDeletedQuestionsUnanswered(payload, options.force);
   assertEditedQuestionOptionsValid(current, payload);
 
   await assertQuestionTypesAllowed(
@@ -463,9 +570,10 @@ export async function updateCourseExerciseService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
-  payload: TPublicApiUpdateCourseExercise
+  payload: TPublicApiUpdateCourseExercise,
+  options: TPublicApiForceQuery = { force: false }
 ) {
-  const { exercise } = await applyCourseExerciseUpdate(orgId, actorId, params, payload);
+  const { exercise } = await applyCourseExerciseUpdate(orgId, actorId, params, payload, options);
 
   return exercise;
 }

@@ -5,7 +5,7 @@ import {
   ZPublicApiAddExerciseQuestion,
   ZPublicApiAddExerciseSection,
   ZPublicApiCourseExerciseDetailResponse,
-  ZPublicApiDeleteExerciseQuestionQuery,
+  ZPublicApiForceQuery,
   ZPublicApiExerciseQuestionParam,
   ZPublicApiExerciseQuestionResponse,
   ZPublicApiExerciseSectionParam,
@@ -37,7 +37,7 @@ const requestSchemas = {
   ZPublicApiExerciseQuestionParam,
   ZPublicApiAddExerciseQuestion,
   ZPublicApiUpdateExerciseQuestionFields,
-  ZPublicApiDeleteExerciseQuestionQuery,
+  ZPublicApiForceQuery,
   ZPublicApiExerciseSectionParam,
   ZPublicApiAddExerciseSection,
   ZPublicApiUpdateExerciseSectionFields
@@ -196,8 +196,23 @@ describe('public API exercise question and section contract', () => {
   });
 
   it('reads force from the query string and defaults it to false', () => {
-    expect(ZPublicApiDeleteExerciseQuestionQuery.parse({})).toEqual({ force: false });
-    expect(ZPublicApiDeleteExerciseQuestionQuery.parse({ force: 'true' })).toEqual({ force: true });
-    expect(ZPublicApiDeleteExerciseQuestionQuery.parse({ force: 'false' })).toEqual({ force: false });
+    expect(ZPublicApiForceQuery.parse({})).toEqual({ force: false });
+    expect(ZPublicApiForceQuery.parse({ force: 'true' })).toEqual({ force: true });
+    expect(ZPublicApiForceQuery.parse({ force: 'false' })).toEqual({ force: false });
+  });
+});
+
+describe('public API bulk exercise update section rules', () => {
+  const update = (sections: unknown[]) => ZPublicApiUpdateCourseExercise.safeParse({ sections }).success;
+
+  it('needs title and order for a new section only', () => {
+    expect(update([{ title: 'Part 2', order: 1 }])).toBe(true);
+    expect(update([{ title: 'Part 2' }])).toBe(false);
+    expect(update([{ id: '11111111-1111-4111-8111-111111111111', title: 'Renamed' }])).toBe(true);
+  });
+
+  it('needs an id to remove a section', () => {
+    expect(update([{ delete: true }])).toBe(false);
+    expect(update([{ id: '11111111-1111-4111-8111-111111111111', delete: true }])).toBe(true);
   });
 });

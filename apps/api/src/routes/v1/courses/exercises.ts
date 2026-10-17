@@ -9,6 +9,7 @@ import {
   ZPublicApiCourseExercisesQuery,
   ZPublicApiCourseParam,
   ZPublicApiCreateCourseExercise,
+  ZPublicApiForceQuery,
   ZPublicApiUpdateCourseExercise
 } from '@cio/utils/validation/public-api';
 import {
@@ -69,7 +70,7 @@ export const v1CourseExercisesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create an exercise in a course, either with your own questions or from a built-in template (templateId from GET /exercise-templates). With templateId, the template supplies the title, description and questions, so only sectionId, lessonId and order are allowed alongside it. sectionId and lessonId must belong to this course. ${QUESTION_TYPES_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Create an exercise in a course, either with your own questions or from a built-in template (templateId from GET /exercise-templates). With templateId, the template supplies the title, description and questions, so only sectionId, lessonId and order are allowed alongside it. sectionId and lessonId must belong to this course. ${LIVE_EDIT_NOTE} ${QUESTION_TYPES_NOTE} ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         201: jsonResponse('Exercise created successfully', ExerciseDetailResponse),
@@ -129,10 +130,11 @@ export const v1CourseExercisesRouter = new Hono()
         'To change one question or one exercise section, use the /questions and /sections endpoints instead.',
         'questions is a diff, like the dashboard editor: send a question with its id to edit it, with id and delete: true to remove it, and without an id to add it.',
         'Options follow the same rules inside their question. Questions you leave out are unchanged.',
+        'sections follows the same rules: send a section with its id to edit it, with id and delete: true to remove it, and without an id to add it; sections you leave out are unchanged.',
+        'A new section may carry a UUID you generate, so new questions can reference it by exerciseSectionId.',
+        'A removed section must not still hold questions or be the go_to_section target of another section (409).',
         'Question, option and section ids must belong to this exercise.',
-        'sections replaces the exercise sections: sections you leave out are deleted. New sections may carry a UUID you generate, so new questions can reference them by exerciseSectionId.',
-        'When sections is sent, every remaining question must be assigned to one of them.',
-        'Deleting a question also deletes the answers students gave to it.',
+        'Deleting a question students have answered returns 409 unless force=true, which also deletes their answers.',
         LIVE_EDIT_NOTE,
         QUESTION_TYPES_NOTE,
         COURSE_TEAM_RULE
@@ -144,16 +146,27 @@ export const v1CourseExercisesRouter = new Hono()
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.writeWithPlan,
         404: { description: 'Course, exercise, section, lesson, question or option not found' },
+        409: {
+          description:
+            'A deleted question has student answers and force is not set, or a removed section still holds questions or is a go_to_section target'
+        },
         429: mcpRateLimitResponse
       }
     }),
     validator('param', ZPublicApiCourseExerciseParam),
     validator('json', ZPublicApiUpdateCourseExercise),
+    validator('query', ZPublicApiForceQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
-        const exercise = await updateCourseExerciseService(orgId, actorId, c.req.valid('param'), c.req.valid('json'));
+        const exercise = await updateCourseExerciseService(
+          orgId,
+          actorId,
+          c.req.valid('param'),
+          c.req.valid('json'),
+          c.req.valid('query')
+        );
 
         return c.json({ success: true, data: exercise }, 200);
       } catch (error) {
@@ -164,7 +177,7 @@ export const v1CourseExercisesRouter = new Hono()
   .delete(
     '/:exerciseId',
     describeRoute({
-      description: `Permanently delete an exercise. This is a hard delete: its questions and every student submission for it are deleted too, and it cannot be undone. ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete an exercise. This is a hard delete: its questions and every student submission for it are deleted too, and it cannot be undone. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Exercise deleted successfully', itemResponse(ZPublicApiCourseExerciseResponse)),

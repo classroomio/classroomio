@@ -501,31 +501,6 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
 }
 `;
 
-exports[`public API course exercise request contract > ZPublicApiDeleteExerciseQuestionQuery keeps its published shape > ZPublicApiDeleteExerciseQuestionQuery 1`] = `
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "properties": {
-    "force": {
-      "anyOf": [
-        {
-          "type": "boolean",
-        },
-        {
-          "enum": [
-            "true",
-            "false",
-          ],
-          "type": "string",
-        },
-      ],
-      "default": false,
-      "description": "Also delete the answers students gave to the question; without it, an answered question is not deleted",
-    },
-  },
-  "type": "object",
-}
-`;
-
 exports[`public API course exercise request contract > ZPublicApiExerciseQuestionParam keeps its published shape > ZPublicApiExerciseQuestionParam 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -604,6 +579,31 @@ exports[`public API course exercise request contract > ZPublicApiExerciseTemplat
       "maxLength": 50,
       "minLength": 1,
       "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiForceQuery keeps its published shape > ZPublicApiForceQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "force": {
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
+      ],
+      "default": false,
+      "description": "Also delete the answers students gave to the deleted questions; without it, deleting an answered question returns 409",
     },
   },
   "type": "object",
@@ -856,9 +856,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "items": {
         "properties": {
           "afterBehavior": {
-            "default": {
-              "action": "continue",
-            },
+            "description": "Defaults to continue for a new section",
             "oneOf": [
               {
                 "properties": {
@@ -905,7 +903,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
             ],
           },
           "colorTheme": {
-            "default": "blue",
+            "description": "Defaults to blue for a new section",
             "enum": [
               "blue",
               "green",
@@ -915,6 +913,9 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
               "slate",
             ],
             "type": "string",
+          },
+          "delete": {
+            "type": "boolean",
           },
           "description": {
             "anyOf": [
@@ -932,19 +933,17 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
             "type": "string",
           },
           "order": {
+            "description": "Required for a new section",
             "maximum": 9007199254740991,
             "minimum": 0,
             "type": "integer",
           },
           "title": {
+            "description": "Required for a new section",
             "minLength": 1,
             "type": "string",
           },
         },
-        "required": [
-          "title",
-          "order",
-        ],
         "type": "object",
       },
       "maxItems": 50,

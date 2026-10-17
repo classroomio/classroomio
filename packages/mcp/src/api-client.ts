@@ -208,8 +208,15 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/exercises`, { method: 'POST', body: payload });
   }
 
-  async updateCourseExercise(courseId: string, exerciseId: string, payload: TPublicApiUpdateCourseExercise) {
-    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, {
+  async updateCourseExercise(
+    courseId: string,
+    exerciseId: string,
+    payload: TPublicApiUpdateCourseExercise,
+    force = false
+  ) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}${query}`, {
       method: 'PUT',
       body: payload
     });

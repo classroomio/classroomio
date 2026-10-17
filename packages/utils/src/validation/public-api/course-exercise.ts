@@ -196,6 +196,36 @@ export const ZPublicApiExerciseSection = z.object({
   afterBehavior: ZPublicApiExerciseSectionAfterBehavior.default({ action: 'continue' })
 });
 
+/** With an `id`, an edit that keeps omitted fields or, with `delete`, a removal; without one, a complete new section. */
+export const ZPublicApiUpdateExerciseSectionItem = z
+  .object({
+    id: z.string().uuid().optional(),
+    delete: z.boolean().optional(),
+    title: z.string().min(1).optional().describe('Required for a new section'),
+    description: z.string().nullable().optional(),
+    order: z.number().int().min(0).optional().describe('Required for a new section'),
+    colorTheme: z
+      .enum(['blue', 'green', 'amber', 'rose', 'violet', 'slate'])
+      .optional()
+      .describe('Defaults to blue for a new section'),
+    afterBehavior: ZPublicApiExerciseSectionAfterBehavior.optional().describe('Defaults to continue for a new section')
+  })
+  .superRefine((section, ctx) => {
+    if (section.delete && !section.id) {
+      ctx.addIssue({ code: 'custom', message: 'delete needs the id of an existing section', path: ['delete'] });
+    }
+
+    if (section.id) return;
+
+    if (section.title === undefined) {
+      ctx.addIssue({ code: 'custom', message: 'title is required for a new section', path: ['title'] });
+    }
+    if (section.order === undefined) {
+      ctx.addIssue({ code: 'custom', message: 'order is required for a new section', path: ['order'] });
+    }
+  });
+export type TPublicApiUpdateExerciseSectionItem = z.infer<typeof ZPublicApiUpdateExerciseSectionItem>;
+
 export const ZPublicApiUpdateCourseExercise = z
   .object({
     title: z.string().min(1).optional(),
@@ -208,7 +238,7 @@ export const ZPublicApiUpdateCourseExercise = z
     allowMultipleAttempts: z.boolean().optional(),
     slug: ZSlug.optional(),
     questions: z.array(ZPublicApiUpdateExerciseQuestion).max(MAX_QUESTIONS).optional(),
-    sections: z.array(ZPublicApiExerciseSection).max(MAX_SECTIONS).optional(),
+    sections: z.array(ZPublicApiUpdateExerciseSectionItem).max(MAX_SECTIONS).optional(),
     sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
     completionPolicy: z.enum(['submitted', 'passed']).optional(),
     passThreshold: z.number().int().min(0).max(100).optional()
@@ -278,14 +308,16 @@ export const ZPublicApiUpdateExerciseQuestionFields = z
   );
 export type TPublicApiUpdateExerciseQuestionFields = z.infer<typeof ZPublicApiUpdateExerciseQuestionFields>;
 
-export const ZPublicApiDeleteExerciseQuestionQuery = z.object({
+export const ZPublicApiForceQuery = z.object({
   force: z
     .union([z.boolean(), z.enum(['true', 'false'])])
     .default(false)
     .transform((value) => value === true || value === 'true')
-    .describe('Also delete the answers students gave to the question; without it, an answered question is not deleted')
+    .describe(
+      'Also delete the answers students gave to the deleted questions; without it, deleting an answered question returns 409'
+    )
 });
-export type TPublicApiDeleteExerciseQuestionQuery = z.infer<typeof ZPublicApiDeleteExerciseQuestionQuery>;
+export type TPublicApiForceQuery = z.infer<typeof ZPublicApiForceQuery>;
 
 export const ZPublicApiExerciseSectionParam = ZPublicApiCourseExerciseParam.extend({
   sectionId: z.string().uuid()
