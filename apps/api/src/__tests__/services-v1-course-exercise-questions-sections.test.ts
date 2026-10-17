@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@api/services/v1/courses/exercises', () => ({
+  applyCourseExerciseUpdate: vi.fn(),
   getCourseExerciseService: vi.fn(),
   updateCourseExerciseService: vi.fn()
 }));
@@ -17,7 +18,11 @@ import {
   deleteExerciseSectionService,
   updateExerciseSectionService
 } from '@cio/core/services/exercise/exercise';
-import { getCourseExerciseService, updateCourseExerciseService } from '@api/services/v1/courses/exercises';
+import {
+  applyCourseExerciseUpdate,
+  getCourseExerciseService,
+  updateCourseExerciseService
+} from '@api/services/v1/courses/exercises';
 import {
   addCourseExerciseQuestionService,
   deleteCourseExerciseQuestionService,
@@ -60,13 +65,16 @@ beforeEach(() => {
 });
 
 describe('addCourseExerciseQuestionService', () => {
-  it('adds through the exercise update and returns only the new question', async () => {
-    vi.mocked(updateCourseExerciseService).mockResolvedValue(detail([10, 11]));
+  it('returns the question its own write created, even when another add landed at the same time', async () => {
+    vi.mocked(applyCourseExerciseUpdate).mockResolvedValue({
+      exercise: detail([10, 11, 12]),
+      createdQuestionIds: [11]
+    } as never);
 
     const added = await addCourseExerciseQuestionService(ORG_ID, ACTOR_ID, exerciseParams, newQuestion);
 
     expect(added).toMatchObject({ id: 11 });
-    expect(updateCourseExerciseService).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, exerciseParams, {
+    expect(applyCourseExerciseUpdate).toHaveBeenCalledWith(ORG_ID, ACTOR_ID, exerciseParams, {
       questions: [newQuestion]
     });
   });
@@ -80,7 +88,7 @@ describe('addCourseExerciseQuestionService', () => {
         field: 'exerciseSectionId'
       }
     );
-    expect(updateCourseExerciseService).not.toHaveBeenCalled();
+    expect(applyCourseExerciseUpdate).not.toHaveBeenCalled();
   });
 
   it('passes the access checks of the exercise service on', async () => {
@@ -91,7 +99,7 @@ describe('addCourseExerciseQuestionService', () => {
         statusCode: 404
       }
     );
-    expect(updateCourseExerciseService).not.toHaveBeenCalled();
+    expect(applyCourseExerciseUpdate).not.toHaveBeenCalled();
   });
 });
 

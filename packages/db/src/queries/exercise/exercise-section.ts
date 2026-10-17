@@ -1,6 +1,6 @@
 import * as schema from '@db/schema';
 
-import { asc, db, eq, inArray } from '@db/drizzle';
+import { and, asc, db, eq, inArray } from '@db/drizzle';
 import type { DbOrTxClient } from '@db/drizzle';
 import type { TNewExerciseSection } from '@db/types';
 import { stampContentUpdatedAt } from '@db/queries/course/content-timestamp';
@@ -19,6 +19,28 @@ export async function getExerciseSectionsByExerciseId(exerciseId: string, dbClie
       `Failed to get exercise sections by exercise ID "${exerciseId}": ${
         error instanceof Error ? error.message : 'Unknown error'
       }`
+    );
+  }
+}
+
+/** Locks one section of the exercise until the transaction ends, so no question can be moved into it meanwhile. */
+export async function lockExerciseSectionForUpdate(
+  exerciseId: string,
+  exerciseSectionId: string,
+  dbClient: DbOrTxClient
+): Promise<{ id: string } | null> {
+  try {
+    const [section] = await dbClient
+      .select({ id: schema.exerciseSection.id })
+      .from(schema.exerciseSection)
+      .where(and(eq(schema.exerciseSection.id, exerciseSectionId), eq(schema.exerciseSection.exerciseId, exerciseId)))
+      .for('update');
+
+    return section ?? null;
+  } catch (error) {
+    console.error('lockExerciseSectionForUpdate error:', error);
+    throw new Error(
+      `Failed to lock exercise section "${exerciseSectionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );
   }
 }

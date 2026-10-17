@@ -20,6 +20,7 @@ import {
   getExercisesByCourseId,
   getLMSExercises,
   getQuestionsByExerciseIds,
+  lockExerciseSectionForUpdate,
   createExerciseSections,
   deleteExerciseSectionsByIds,
   updateExerciseSection,
@@ -372,9 +373,12 @@ export async function getExercise(
  * Only updates what has changed by querying the current state first and computing a diff.
  * @param exerciseId Exercise ID
  * @param data Partial exercise update data
- * @returns Updated exercise
+ * @returns Updated exercise, with the ids of the questions this update created
  */
-export async function updateExerciseService(exerciseId: string, data: TExerciseUpdate): Promise<TExercise> {
+export async function updateExerciseService(
+  exerciseId: string,
+  data: TExerciseUpdate
+): Promise<TExercise & { createdQuestionIds: number[] }> {
   try {
     const sanitizedData = sanitizeExercisePayload(data);
     validateSectionQuestionAssignments(sanitizedData);
@@ -399,6 +403,7 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
       });
     }
 
+    let createdQuestionIds: number[] = [];
     const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
 
@@ -466,7 +471,7 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
         }
 
         if (hasNewQuestions) {
-          await createNewQuestionsWithOptions(exerciseId, diff.questions.newQuestions, txClient);
+          createdQuestionIds = await createNewQuestionsWithOptions(exerciseId, diff.questions.newQuestions, txClient);
         }
       }
 
@@ -479,7 +484,7 @@ export async function updateExerciseService(exerciseId: string, data: TExerciseU
       await touchCourseUpdatedAt(courseId);
     }
 
-    return result;
+    return { ...result, createdQuestionIds };
   } catch (error) {
     console.error('updateExerciseService error:', error);
     if (error instanceof AppError) {
@@ -698,6 +703,10 @@ export async function updateExerciseSectionService(
  */
 export async function deleteExerciseSectionService(exerciseId: string, exerciseSectionId: string) {
   const deleted = await db.transaction(async (tx) => {
+    if (!(await lockExerciseSectionForUpdate(exerciseId, exerciseSectionId, tx))) {
+      throw exerciseSectionNotFound();
+    }
+
     const sections = await getExerciseSectionsByExerciseId(exerciseId, tx);
     const section = sections.find((candidate) => candidate.id === exerciseSectionId);
     if (!section) {

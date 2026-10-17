@@ -7,7 +7,7 @@ import type {
   TPublicApiUpdateExerciseQuestionFields
 } from '@cio/utils/validation/public-api';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { getCourseExerciseService, updateCourseExerciseService } from './exercises';
+import { applyCourseExerciseUpdate, getCourseExerciseService, updateCourseExerciseService } from './exercises';
 
 type PublicExerciseDetail = Awaited<ReturnType<typeof getCourseExerciseService>>;
 
@@ -35,8 +35,8 @@ export async function addCourseExerciseQuestionService(
   params: TPublicApiCourseExerciseParam,
   payload: TPublicApiAddExerciseQuestion
 ) {
-  const before = await getCourseExerciseService(orgId, actorId, params);
-  if (before.sections.length > 0 && !payload.exerciseSectionId) {
+  const current = await getCourseExerciseService(orgId, actorId, params);
+  if (current.sections.length > 0 && !payload.exerciseSectionId) {
     throw new AppError(
       'exerciseSectionId is required when the exercise has sections',
       ErrorCodes.VALIDATION_ERROR,
@@ -45,14 +45,15 @@ export async function addCourseExerciseQuestionService(
     );
   }
 
-  const existingIds = new Set(before.questions.map((question) => question.id));
-  const updated = await updateCourseExerciseService(orgId, actorId, params, { questions: [payload] });
-  const addedIds = updated.questions.map((question) => question.id).filter((id) => !existingIds.has(id));
-  if (addedIds.length === 0) {
+  const { exercise, createdQuestionIds } = await applyCourseExerciseUpdate(orgId, actorId, params, {
+    questions: [payload]
+  });
+  const [createdId] = createdQuestionIds;
+  if (createdId === undefined) {
     throw new AppError('Failed to add the question', ErrorCodes.INTERNAL_ERROR, 500);
   }
 
-  return findQuestion(updated, Math.max(...addedIds));
+  return findQuestion(exercise, createdId);
 }
 
 /** Edits one question; fields and options the caller does not name keep their values. Throws 404 for another exercise's ids. */

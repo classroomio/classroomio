@@ -195,6 +195,15 @@ async function assertUpdateIdsBelongToExercise(
         404
       );
     }
+
+    if (question.exerciseSectionId === null && !question.delete && assignableSectionIds.size > 0) {
+      throw new AppError(
+        'exerciseSectionId cannot be null while the exercise has sections',
+        ErrorCodes.VALIDATION_ERROR,
+        400,
+        'questions'
+      );
+    }
   }
 
   if (!payload.sections || payload.sections.length === 0) return;
@@ -421,7 +430,8 @@ export async function getCourseExerciseService(
   return toPublicExerciseDetail(await getExercise(params.exerciseId));
 }
 
-export async function updateCourseExerciseService(
+/** Applies a partial exercise update and returns the exercise with the ids of the questions it created. */
+export async function applyCourseExerciseUpdate(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseExerciseParam,
@@ -440,9 +450,24 @@ export async function updateCourseExerciseService(
     (payload.questions ?? []).filter((question) => !question.delete).map((question) => question.questionTypeId)
   );
 
-  const exercise = await updateExerciseService(params.exerciseId, toInternalUpdate(payload, current));
+  const { createdQuestionIds = [], ...updated } = await updateExerciseService(
+    params.exerciseId,
+    toInternalUpdate(payload, current)
+  );
+  const exercise = toPublicExerciseDetail(updated as ExerciseDetail);
 
-  return toPublicExerciseDetail(exercise as ExerciseDetail);
+  return { exercise, createdQuestionIds };
+}
+
+export async function updateCourseExerciseService(
+  orgId: string,
+  actorId: string | null,
+  params: TPublicApiCourseExerciseParam,
+  payload: TPublicApiUpdateCourseExercise
+) {
+  const { exercise } = await applyCourseExerciseUpdate(orgId, actorId, params, payload);
+
+  return exercise;
 }
 
 export async function deleteCourseExerciseService(

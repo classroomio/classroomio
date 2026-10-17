@@ -566,6 +566,26 @@ describe('updateCourseExerciseService partial edits', () => {
     expect(sent.options?.find((option) => option.id === 100)).toMatchObject({ label: 'A', isCorrect: true });
   });
 
+  it('refuses to take a question out of every section while the exercise has sections', async () => {
+    await expect(
+      updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+        questions: [{ id: 10, exerciseSectionId: null }]
+      })
+    ).rejects.toMatchObject({ statusCode: 400 });
+    expect(updateExerciseService).not.toHaveBeenCalled();
+  });
+
+  it('allows a null section when the update removes every section', async () => {
+    vi.mocked(updateExerciseService).mockResolvedValue(exerciseDetail());
+
+    await updateCourseExerciseService(ORG_ID, ACTOR_ID, exerciseParams, {
+      sections: [],
+      questions: [{ id: 10, exerciseSectionId: null }]
+    });
+
+    expect(updateExerciseService).toHaveBeenCalled();
+  });
+
   it('keeps the stored section when an edit sends sections but omits the question section', async () => {
     const sent = await internalQuestion({
       sections: [

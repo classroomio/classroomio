@@ -9,6 +9,7 @@ vi.mock('@cio/db/queries/exercise', () => ({
   getExerciseById: vi.fn(),
   getExerciseSectionsByExerciseId: vi.fn(),
   getQuestionsByExerciseIds: vi.fn(),
+  lockExerciseSectionForUpdate: vi.fn(),
   updateExerciseSection: vi.fn(),
   deleteExerciseSectionsByIds: vi.fn()
 }));
@@ -19,6 +20,7 @@ import {
   getExerciseById,
   getExerciseSectionsByExerciseId,
   getQuestionsByExerciseIds,
+  lockExerciseSectionForUpdate,
   updateExerciseSection
 } from '@cio/db/queries/exercise';
 import { deleteExerciseSectionService, updateExerciseSectionService } from '@cio/core/services/exercise/exercise';
@@ -40,6 +42,9 @@ beforeEach(() => {
   vi.mocked(getQuestionsByExerciseIds).mockResolvedValue([{ id: 10, exerciseSectionId: PART_1 }] as never);
   vi.mocked(updateExerciseSection).mockResolvedValue({ id: PART_2 } as never);
   vi.mocked(getExerciseById).mockResolvedValue({ courseId: 'course-1' } as never);
+  vi.mocked(lockExerciseSectionForUpdate).mockImplementation(async (_exerciseId, sectionId) =>
+    [PART_1, PART_2].includes(sectionId) ? { id: sectionId } : null
+  );
 });
 
 describe('updateExerciseSectionService', () => {
@@ -72,6 +77,10 @@ describe('deleteExerciseSectionService', () => {
   it('deletes an empty section nothing goes to, in one transaction', async () => {
     await deleteExerciseSectionService(EXERCISE_ID, PART_2);
 
+    expect(lockExerciseSectionForUpdate).toHaveBeenCalledWith(EXERCISE_ID, PART_2, TX);
+    expect(vi.mocked(lockExerciseSectionForUpdate).mock.invocationCallOrder[0]).toBeLessThan(
+      vi.mocked(getQuestionsByExerciseIds).mock.invocationCallOrder[0]
+    );
     expect(deleteExerciseSectionsByIds).toHaveBeenCalledWith([PART_2], TX);
   });
 

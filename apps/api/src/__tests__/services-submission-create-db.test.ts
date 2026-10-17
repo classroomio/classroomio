@@ -149,4 +149,34 @@ describe.skipIf(!hasDatabase)('createSubmissionService against the database', ()
     expect(rejected.reason).toMatchObject({ statusCode: 409 });
     expect(await countSubmissions()).toBe(1);
   });
+
+  it('deletes an empty exercise section under a row lock and refuses one that holds a question', async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    const { deleteExerciseSectionService } = await import('@cio/core/services/exercise/exercise');
+
+    const [empty, used] = await db
+      .insert(schema.exerciseSection)
+      .values([
+        { exerciseId, title: 'Empty part', order: 0 },
+        { exerciseId, title: 'Used part', order: 1 }
+      ])
+      .returning();
+    await db.insert(schema.question).values({
+      exerciseId,
+      questionTypeId: 1,
+      title: 'In a part',
+      points: 1,
+      exerciseSectionId: used.id
+    });
+
+    await deleteExerciseSectionService(exerciseId, empty.id);
+    await expect(deleteExerciseSectionService(exerciseId, used.id)).rejects.toMatchObject({ statusCode: 409 });
+
+    const remaining = await db
+      .select({ id: schema.exerciseSection.id })
+      .from(schema.exerciseSection)
+      .where(eq(schema.exerciseSection.exerciseId, exerciseId));
+    expect(remaining.map((section) => section.id)).toEqual([used.id]);
+  });
 });
