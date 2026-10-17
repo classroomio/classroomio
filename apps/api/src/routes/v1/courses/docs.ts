@@ -84,3 +84,9 @@ export const CertificateFileResponse = {
     'image/png': { schema: { type: 'string' as const, format: 'binary' } }
   }
 };
+
+export const QUESTION_TYPES_NOTE =
+  'questionTypeId: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
+
+export const LIVE_EDIT_NOTE =
+  'Changes apply immediately, also on published courses. Submissions already made are not regraded, and students submit against the current questions.';

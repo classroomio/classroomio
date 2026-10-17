@@ -217,3 +217,93 @@ export const ZPublicApiUpdateCourseExercise = z
     message: 'Send at least one field to update'
   });
 export type TPublicApiUpdateCourseExercise = z.infer<typeof ZPublicApiUpdateCourseExercise>;
+
+export const ZPublicApiExerciseQuestionParam = ZPublicApiCourseExerciseParam.extend({
+  questionId: z.coerce.number().int().positive()
+});
+export type TPublicApiExerciseQuestionParam = z.infer<typeof ZPublicApiExerciseQuestionParam>;
+
+export const ZPublicApiAddExerciseQuestion = ZPublicApiCreateExerciseQuestion.safeExtend({
+  exerciseSectionId: z
+    .string()
+    .uuid()
+    .optional()
+    .describe('The exercise section to put the question in; required when the exercise has sections')
+});
+export type TPublicApiAddExerciseQuestion = z.infer<typeof ZPublicApiAddExerciseQuestion>;
+
+const ZPublicApiNewQuestionOption = z.object({
+  label: z.string().min(1),
+  isCorrect: z.boolean(),
+  settings: ZSettings.optional()
+});
+
+const ZPublicApiQuestionOptionPatch = z.object({
+  id: z.number().int().positive(),
+  label: z.string().min(1).optional(),
+  isCorrect: z.boolean().optional(),
+  settings: ZSettings.optional()
+});
+
+export const ZPublicApiUpdateExerciseQuestionFields = z
+  .object({
+    exerciseSectionId: z.string().uuid().nullable().optional(),
+    question: z.string().min(1).optional(),
+    questionTypeId: ZPublicApiQuestionTypeId.optional(),
+    points: z.number().int().min(1).optional(),
+    order: z.number().int().min(0).optional(),
+    settings: ZSettings.optional(),
+    addOptions: z.array(ZPublicApiNewQuestionOption).max(PUBLIC_API_MAX_QUESTION_OPTIONS).optional(),
+    updateOptions: z
+      .array(ZPublicApiQuestionOptionPatch)
+      .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
+      .optional()
+      .describe('Edits existing options by id; fields you leave out keep their values'),
+    removeOptionIds: z
+      .array(z.number().int().positive())
+      .max(PUBLIC_API_MAX_QUESTION_OPTIONS)
+      .optional()
+      .describe('Options to remove; options you do not name are kept')
+  })
+  .refine((data) => Object.values(data).some((value) => value !== undefined), {
+    message: 'Send at least one field to update'
+  })
+  .refine(
+    (data) => {
+      const ids = [...(data.updateOptions ?? []).map((option) => option.id), ...(data.removeOptionIds ?? [])];
+
+      return new Set(ids).size === ids.length;
+    },
+    { message: 'An option id can appear only once across updateOptions and removeOptionIds', path: ['removeOptionIds'] }
+  );
+export type TPublicApiUpdateExerciseQuestionFields = z.infer<typeof ZPublicApiUpdateExerciseQuestionFields>;
+
+export const ZPublicApiDeleteExerciseQuestionQuery = z.object({
+  force: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .default(false)
+    .transform((value) => value === true || value === 'true')
+    .describe('Also delete the answers students gave to the question; without it, an answered question is not deleted')
+});
+export type TPublicApiDeleteExerciseQuestionQuery = z.infer<typeof ZPublicApiDeleteExerciseQuestionQuery>;
+
+export const ZPublicApiExerciseSectionParam = ZPublicApiCourseExerciseParam.extend({
+  sectionId: z.string().uuid()
+});
+export type TPublicApiExerciseSectionParam = z.infer<typeof ZPublicApiExerciseSectionParam>;
+
+export const ZPublicApiAddExerciseSection = ZPublicApiExerciseSection.omit({ id: true });
+export type TPublicApiAddExerciseSection = z.infer<typeof ZPublicApiAddExerciseSection>;
+
+export const ZPublicApiUpdateExerciseSectionFields = z
+  .object({
+    title: z.string().min(1).optional(),
+    description: z.string().nullable().optional(),
+    order: z.number().int().min(0).optional(),
+    colorTheme: z.enum(['blue', 'green', 'amber', 'rose', 'violet', 'slate']).optional(),
+    afterBehavior: ZPublicApiExerciseSectionAfterBehavior.optional()
+  })
+  .refine((data) => Object.values(data).some((value) => value !== undefined), {
+    message: 'Send at least one field to update'
+  });
+export type TPublicApiUpdateExerciseSectionFields = z.infer<typeof ZPublicApiUpdateExerciseSectionFields>;

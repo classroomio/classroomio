@@ -17,6 +17,10 @@ import type {
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type {
+  TPublicApiAddExerciseQuestion,
+  TPublicApiAddExerciseSection,
+  TPublicApiUpdateExerciseQuestionFields,
+  TPublicApiUpdateExerciseSectionFields,
   TPublicApiCourseExercisesQuery,
   TPublicApiCourseMarksQuery,
   TPublicApiCourseSubmissionsQuery,
@@ -213,6 +217,58 @@ export class ClassroomIoApiClient {
 
   async deleteCourseExercise(courseId: string, exerciseId: string) {
     return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, { method: 'DELETE' });
+  }
+
+  async addExerciseQuestion(courseId: string, exerciseId: string, payload: TPublicApiAddExerciseQuestion) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateExerciseQuestion(
+    courseId: string,
+    exerciseId: string,
+    questionId: number,
+    payload: TPublicApiUpdateExerciseQuestionFields
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async deleteExerciseQuestion(courseId: string, exerciseId: string, questionId: number, force: boolean) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}${query}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async addExerciseSection(courseId: string, exerciseId: string, payload: TPublicApiAddExerciseSection) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateExerciseSection(
+    courseId: string,
+    exerciseId: string,
+    sectionId: string,
+    payload: TPublicApiUpdateExerciseSectionFields
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections/${sectionId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async deleteExerciseSection(courseId: string, exerciseId: string, sectionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections/${sectionId}`, {
+      method: 'DELETE'
+    });
   }
 
   async notifyCourseExercise(courseId: string, exerciseId: string) {

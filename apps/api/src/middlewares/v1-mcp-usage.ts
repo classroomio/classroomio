@@ -41,6 +41,16 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     DELETE: 'delete_course_exercise'
   },
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify': { POST: 'notify_course_exercise' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions': { POST: 'add_exercise_question' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/questions/:questionId': {
+    PATCH: 'update_exercise_question',
+    DELETE: 'delete_exercise_question'
+  },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/sections': { POST: 'add_exercise_section' },
+  '/public-api/v1/courses/:courseId/exercises/:exerciseId/sections/:sectionId': {
+    PATCH: 'update_exercise_section',
+    DELETE: 'delete_exercise_section'
+  },
   '/public-api/v1/courses/:courseId/exercises/:exerciseId/notify/:jobId': { GET: 'get_course_exercise_notify_status' },
   '/public-api/v1/exercise-templates': { GET: 'list_exercise_templates' },
   '/public-api/v1/exercise-templates/:templateId': { GET: 'get_exercise_template' },

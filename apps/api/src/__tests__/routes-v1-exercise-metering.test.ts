@@ -25,6 +25,16 @@ vi.mock('@api/routes/v1/courses/course', () => ({
   v1CourseRouter: new Hono().get('/', (c) => c.json({ success: true }))
 }));
 
+vi.mock('@api/services/v1/courses/exercise-questions', () => ({
+  addCourseExerciseQuestionService: vi.fn(),
+  updateCourseExerciseQuestionService: vi.fn(),
+  deleteCourseExerciseQuestionService: vi.fn()
+}));
+vi.mock('@api/services/v1/courses/exercise-sections', () => ({
+  addCourseExerciseSectionService: vi.fn(),
+  updateCourseExerciseSectionService: vi.fn(),
+  deleteCourseExerciseSectionService: vi.fn()
+}));
 vi.mock('@api/services/v1/courses/exercises', () => ({
   listCourseExercisesService: vi.fn(),
   createCourseExerciseService: vi.fn(),
@@ -62,6 +72,8 @@ import {
   releaseMcpAutomationUsage,
   reserveMcpAutomationUsage
 } from '@api/services/organization/automation-usage';
+import * as questions from '@api/services/v1/courses/exercise-questions';
+import * as sections from '@api/services/v1/courses/exercise-sections';
 import { v1Router } from '@api/routes/v1';
 
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
@@ -110,6 +122,9 @@ beforeEach(() => {
   vi.mocked(submissions.updateCourseSubmissionService).mockResolvedValue({} as never);
   vi.mocked(submissions.deleteCourseSubmissionService).mockResolvedValue({} as never);
   vi.mocked(marks.getCourseMarksService).mockResolvedValue(PAGE as never);
+  for (const service of [...Object.values(questions), ...Object.values(sections)]) {
+    vi.mocked(service).mockResolvedValue({} as never);
+  }
 });
 
 const exercisePath = `/courses/${COURSE_ID}/exercises`;
@@ -132,6 +147,35 @@ describe('MCP metering on exercise routes through the real v1 router', () => {
     expect(response.status).toBe(status);
     expect(reserveMcpAutomationUsage).toHaveBeenCalledTimes(1);
     expect(completeMcpAutomationUsage).toHaveBeenCalledWith('usage-1', toolName, credits);
+  });
+});
+
+describe('MCP metering on exercise question and section routes through the real v1 router', () => {
+  const questionPath = `${exercisePath}/${EXERCISE_ID}/questions`;
+  const sectionPath = `${exercisePath}/${EXERCISE_ID}/sections`;
+  const SECTION_ID = '44444444-4444-4444-8444-444444444444';
+  const newQuestion = {
+    question: 'Pick one',
+    questionTypeId: 1,
+    points: 1,
+    options: [
+      { label: 'A', isCorrect: true },
+      { label: 'B', isCorrect: false }
+    ]
+  };
+
+  it.each([
+    ['add_exercise_question', 201, questionPath, body('POST', newQuestion)],
+    ['update_exercise_question', 200, `${questionPath}/9`, body('PATCH', { points: 2 })],
+    ['delete_exercise_question', 200, `${questionPath}/9`, { method: 'DELETE' }],
+    ['add_exercise_section', 201, sectionPath, body('POST', { title: 'Part 2', order: 1 })],
+    ['update_exercise_section', 200, `${sectionPath}/${SECTION_ID}`, body('PATCH', { title: 'Renamed' })],
+    ['delete_exercise_section', 200, `${sectionPath}/${SECTION_ID}`, { method: 'DELETE' }]
+  ])('meters %s at 1 credit', async (toolName, status, path, init) => {
+    const response = await requestAs('mcp', EXERCISE_SCOPES, path, init);
+
+    expect(response.status).toBe(status);
+    expect(completeMcpAutomationUsage).toHaveBeenCalledWith('usage-1', toolName, 1);
   });
 });
 

@@ -2,6 +2,16 @@ import * as z from 'zod';
 import { describe, expect, it } from 'vitest';
 
 import {
+  ZPublicApiAddExerciseQuestion,
+  ZPublicApiAddExerciseSection,
+  ZPublicApiCourseExerciseDetailResponse,
+  ZPublicApiDeleteExerciseQuestionQuery,
+  ZPublicApiExerciseQuestionParam,
+  ZPublicApiExerciseQuestionResponse,
+  ZPublicApiExerciseSectionParam,
+  ZPublicApiExerciseSectionResponse,
+  ZPublicApiUpdateExerciseQuestionFields,
+  ZPublicApiUpdateExerciseSectionFields,
   ZPublicApiCourseExerciseNotifyStatusQuery,
   ZPublicApiCourseExercisesQuery,
   ZPublicApiCourseMarksQuery,
@@ -23,7 +33,20 @@ const requestSchemas = {
   ZPublicApiCourseSubmissionsQuery,
   ZPublicApiGradeCourseSubmission,
   ZPublicApiUpdateCourseSubmission,
-  ZPublicApiCourseMarksQuery
+  ZPublicApiCourseMarksQuery,
+  ZPublicApiExerciseQuestionParam,
+  ZPublicApiAddExerciseQuestion,
+  ZPublicApiUpdateExerciseQuestionFields,
+  ZPublicApiDeleteExerciseQuestionQuery,
+  ZPublicApiExerciseSectionParam,
+  ZPublicApiAddExerciseSection,
+  ZPublicApiUpdateExerciseSectionFields
+};
+
+const responseSchemas = {
+  ZPublicApiExerciseQuestionResponse,
+  ZPublicApiExerciseSectionResponse,
+  ZPublicApiCourseExerciseDetailResponse
 };
 
 const choice = (options: Array<{ label: string; isCorrect: boolean }>) => ({
@@ -136,5 +159,45 @@ describe('public API course exercise request contract', () => {
     expect(update([{ question: 'Q', points: 1, options: options([true]) }])).toBe(false);
     expect(update([{ question: 'Q', points: 1, options: options([false, false]) }])).toBe(false);
     expect(update([{ question: 'Q', points: 1, options: options([true, false]) }])).toBe(true);
+  });
+});
+
+describe('public API exercise question and section contract', () => {
+  it.each(Object.entries(responseSchemas))('%s keeps its published shape', (name, schema) => {
+    expect(z.toJSONSchema(schema, { io: 'output', unrepresentable: 'any' })).toMatchSnapshot(name);
+  });
+
+  it('rejects an empty question or section edit', () => {
+    expect(ZPublicApiUpdateExerciseQuestionFields.safeParse({}).success).toBe(false);
+    expect(ZPublicApiUpdateExerciseSectionFields.safeParse({}).success).toBe(false);
+  });
+
+  it('rejects an option id that is both updated and removed', () => {
+    expect(
+      ZPublicApiUpdateExerciseQuestionFields.safeParse({ updateOptions: [{ id: 5, label: 'A' }], removeOptionIds: [5] })
+        .success
+    ).toBe(false);
+    expect(
+      ZPublicApiUpdateExerciseQuestionFields.safeParse({ updateOptions: [{ id: 5, label: 'A' }], removeOptionIds: [6] })
+        .success
+    ).toBe(true);
+  });
+
+  it('keeps the option rules on an added question', () => {
+    expect(ZPublicApiAddExerciseQuestion.safeParse(choice([{ label: 'A', isCorrect: false }])).success).toBe(false);
+    expect(
+      ZPublicApiAddExerciseQuestion.safeParse(
+        choice([
+          { label: 'A', isCorrect: true },
+          { label: 'B', isCorrect: false }
+        ])
+      ).success
+    ).toBe(true);
+  });
+
+  it('reads force from the query string and defaults it to false', () => {
+    expect(ZPublicApiDeleteExerciseQuestionQuery.parse({})).toEqual({ force: false });
+    expect(ZPublicApiDeleteExerciseQuestionQuery.parse({ force: 'true' })).toEqual({ force: true });
+    expect(ZPublicApiDeleteExerciseQuestionQuery.parse({ force: 'false' })).toEqual({ force: false });
   });
 });

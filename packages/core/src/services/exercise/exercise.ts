@@ -19,6 +19,7 @@ import {
   getExerciseWithRelationsOptimized,
   getExercisesByCourseId,
   getLMSExercises,
+  getQuestionsByExerciseIds,
   createExerciseSections,
   deleteExerciseSectionsByIds,
   updateExerciseSection,
@@ -623,6 +624,115 @@ export async function createExerciseSectionService(
       500
     );
   }
+}
+
+type ExerciseSectionAfterBehavior =
+  | { action: 'continue' }
+  | { action: 'submit' }
+  | { action: 'go_to_section'; exerciseSectionId: string };
+
+type ExerciseSectionPatch = {
+  title?: string;
+  description?: string | null;
+  order?: number;
+  colorTheme?: 'blue' | 'green' | 'amber' | 'rose' | 'violet' | 'slate';
+  afterBehavior?: ExerciseSectionAfterBehavior;
+};
+
+function exerciseSectionNotFound() {
+  return new AppError('Exercise section not found in this exercise', ErrorCodes.NOT_FOUND, 404);
+}
+
+/** Updates one exercise section. Throws 404 if the section or a go_to_section target is not on the exercise. */
+export async function updateExerciseSectionService(
+  exerciseId: string,
+  exerciseSectionId: string,
+  data: ExerciseSectionPatch
+) {
+  const sections = await getExerciseSectionsByExerciseId(exerciseId);
+  if (!sections.some((section) => section.id === exerciseSectionId)) {
+    throw exerciseSectionNotFound();
+  }
+
+  const target = data.afterBehavior?.action === 'go_to_section' ? data.afterBehavior.exerciseSectionId : null;
+  if (target && (target === exerciseSectionId || !sections.some((section) => section.id === target))) {
+    throw new AppError(
+      'afterBehavior must go to another section of this exercise',
+      ErrorCodes.VALIDATION_ERROR,
+      400,
+      'afterBehavior'
+    );
+  }
+
+  const title = data.title !== undefined ? sanitizeHtml(data.title) : undefined;
+  const description =
+    data.description === undefined
+      ? undefined
+      : data.description === null || data.description === ''
+        ? null
+        : (sanitizeOptionalHtml(data.description) ?? null);
+  const patch = {
+    ...(title !== undefined && { title }),
+    ...(description !== undefined && { description }),
+    ...(data.order !== undefined && { order: data.order }),
+    ...(data.colorTheme !== undefined && { colorTheme: data.colorTheme }),
+    ...(data.afterBehavior !== undefined && { afterBehavior: data.afterBehavior })
+  };
+
+  const updated = await updateExerciseSection(exerciseSectionId, patch);
+  if (!updated) {
+    throw exerciseSectionNotFound();
+  }
+
+  const exercise = await getExerciseById(exerciseId);
+  if (exercise?.courseId) {
+    await touchCourseUpdatedAt(exercise.courseId);
+  }
+
+  return updated;
+}
+
+/**
+ * Deletes one empty exercise section. Throws 404 if it is not on the exercise, and 409 if it still holds questions or
+ * another section's afterBehavior goes to it.
+ */
+export async function deleteExerciseSectionService(exerciseId: string, exerciseSectionId: string) {
+  const deleted = await db.transaction(async (tx) => {
+    const sections = await getExerciseSectionsByExerciseId(exerciseId, tx);
+    const section = sections.find((candidate) => candidate.id === exerciseSectionId);
+    if (!section) {
+      throw exerciseSectionNotFound();
+    }
+
+    const questions = await getQuestionsByExerciseIds([exerciseId], tx);
+    if (questions.some((question) => question.exerciseSectionId === exerciseSectionId)) {
+      throw new AppError('This section still holds questions: move or delete them first', ErrorCodes.CONFLICT, 409);
+    }
+
+    const pointsHere = sections.some((candidate) => {
+      const behavior = candidate.afterBehavior as ExerciseSectionAfterBehavior | null;
+
+      return behavior?.action === 'go_to_section' && behavior.exerciseSectionId === exerciseSectionId;
+    });
+    if (pointsHere) {
+      throw new AppError(
+        "Another section's afterBehavior goes to this section: change it first",
+        ErrorCodes.CONFLICT,
+        409
+      );
+    }
+
+    await deleteExerciseSectionsByIds([exerciseSectionId], tx);
+
+    return section;
+  });
+
+  const exercise = await getExerciseById(exerciseId);
+  if (exercise?.courseId) {
+    await touchCourseUpdatedAt(exercise.courseId);
+  }
+
+  return deleted;
 }
 
 /**

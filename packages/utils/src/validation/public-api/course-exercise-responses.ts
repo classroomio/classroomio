@@ -47,19 +47,19 @@ export const ZPublicApiExerciseQuestionResponse = z.object({
   )
 });
 
+export const ZPublicApiExerciseSectionResponse = z.object({
+  id: z.string().uuid(),
+  title: z.string(),
+  description: z.string().nullable(),
+  order: z.number(),
+  colorTheme: z.string(),
+  afterBehavior: ZPublicApiExerciseSectionAfterBehavior,
+  questionIds: z.array(z.number())
+});
+
 export const ZPublicApiCourseExerciseDetailResponse = ZPublicApiCourseExerciseResponse.extend({
   questions: z.array(ZPublicApiExerciseQuestionResponse),
-  sections: z.array(
-    z.object({
-      id: z.string().uuid(),
-      title: z.string(),
-      description: z.string().nullable(),
-      order: z.number(),
-      colorTheme: z.string(),
-      afterBehavior: ZPublicApiExerciseSectionAfterBehavior,
-      questionIds: z.array(z.number())
-    })
-  )
+  sections: z.array(ZPublicApiExerciseSectionResponse)
 });
 
 export const ZPublicApiCourseExerciseNotifyResponse = z.object({

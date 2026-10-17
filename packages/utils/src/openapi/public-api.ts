@@ -169,6 +169,14 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Get a course exercise',
   'PUT /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Update a course exercise',
   'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Delete a course exercise',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions': 'Add an exercise question',
+  'PATCH /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}':
+    'Update an exercise question',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}':
+    'Delete an exercise question',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections': 'Add an exercise section',
+  'PATCH /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Update an exercise section',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Delete an exercise section',
   'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify': 'Notify course members about an exercise',
   'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify/{jobId}': 'Get an exercise notification status',
   'GET /public-api/v1/exercise-templates': 'List exercise templates',

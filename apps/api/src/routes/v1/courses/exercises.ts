@@ -25,13 +25,17 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { COURSE_TEAM_RULE, PAGINATION_NOTE, exerciseForbiddenResponses, mcpRateLimitResponse } from './docs';
+import {
+  COURSE_TEAM_RULE,
+  LIVE_EDIT_NOTE,
+  PAGINATION_NOTE,
+  QUESTION_TYPES_NOTE,
+  exerciseForbiddenResponses,
+  mcpRateLimitResponse
+} from './docs';
 
 const TAG = 'Course Exercises';
 const ExerciseDetailResponse = itemResponse(ZPublicApiCourseExerciseDetailResponse);
-
-const QUESTION_TYPES_NOTE =
-  'questionTypeId: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
 
 export const v1CourseExercisesRouter = new Hono()
   .get(
@@ -121,12 +125,15 @@ export const v1CourseExercisesRouter = new Hono()
     '/:exerciseId',
     describeRoute({
       description: [
-        'Partially update an exercise. Omitted fields keep their values.',
+        'Partially update an exercise, or change many questions and sections at once. Omitted fields keep their values.',
+        'To change one question or one exercise section, use the /questions and /sections endpoints instead.',
         'questions is a diff, like the dashboard editor: send a question with its id to edit it, with id and delete: true to remove it, and without an id to add it.',
         'Options follow the same rules inside their question. Questions you leave out are unchanged.',
         'Question, option and section ids must belong to this exercise.',
         'sections replaces the exercise sections: sections you leave out are deleted. New sections may carry a UUID you generate, so new questions can reference them by exerciseSectionId.',
         'When sections is sent, every remaining question must be assigned to one of them.',
+        'Deleting a question also deletes the answers students gave to it.',
+        LIVE_EDIT_NOTE,
         QUESTION_TYPES_NOTE,
         COURSE_TEAM_RULE
       ].join(' '),

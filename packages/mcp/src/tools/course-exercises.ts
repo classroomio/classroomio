@@ -1,4 +1,11 @@
 import {
+  ZPublicApiAddExerciseQuestion,
+  ZPublicApiAddExerciseSection,
+  ZPublicApiDeleteExerciseQuestionQuery,
+  ZPublicApiExerciseQuestionParam,
+  ZPublicApiExerciseSectionParam,
+  ZPublicApiUpdateExerciseQuestionFields,
+  ZPublicApiUpdateExerciseSectionFields,
   ZPublicApiCourseExerciseNotifyParam,
   ZPublicApiCourseExerciseNotifyStatusQuery,
   ZPublicApiCourseExerciseParam,
@@ -26,6 +33,8 @@ const COURSE_TEAM_RULE =
 const ORG_TEAM_RULE = 'The API key creator must be an organization admin or tutor, otherwise the call fails with 403.';
 const PAGINATION_NOTE = 'Paginated: page (default 1) and limit (default 20, max 100); the result includes pagination.';
 const QUESTION_TYPES_GUIDE = formatEnabledQuestionTypesGuide();
+const LIVE_EDIT_NOTE =
+  'Changes apply immediately, also on published courses. Submissions already made are not regraded, and students submit against the current questions.';
 const PLAN_NOTE =
   'File upload, ordering, link, star rating and video recording questions need a paid plan (403 UPGRADE_REQUIRED on the Basic plan). PUBLIC courses only accept auto-graded question types.';
 
@@ -40,6 +49,22 @@ export const ZUpdateCourseExerciseToolInput = ZPublicApiUpdateCourseExercise.saf
   ZPublicApiCourseExerciseParam.shape
 );
 export const ZDeleteCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
+export const ZAddExerciseQuestionToolInput = ZPublicApiAddExerciseQuestion.safeExtend(
+  ZPublicApiCourseExerciseParam.shape
+);
+export const ZUpdateExerciseQuestionToolInput = ZPublicApiUpdateExerciseQuestionFields.safeExtend(
+  ZPublicApiExerciseQuestionParam.shape
+);
+export const ZDeleteExerciseQuestionToolInput = ZPublicApiExerciseQuestionParam.extend(
+  ZPublicApiDeleteExerciseQuestionQuery.shape
+);
+export const ZAddExerciseSectionToolInput = ZPublicApiAddExerciseSection.safeExtend(
+  ZPublicApiCourseExerciseParam.shape
+);
+export const ZUpdateExerciseSectionToolInput = ZPublicApiUpdateExerciseSectionFields.safeExtend(
+  ZPublicApiExerciseSectionParam.shape
+);
+export const ZDeleteExerciseSectionToolInput = ZPublicApiExerciseSectionParam;
 export const ZNotifyCourseExerciseToolInput = ZPublicApiCourseExerciseParam;
 export const ZGetCourseExerciseNotifyStatusToolInput = ZPublicApiCourseExerciseNotifyParam.extend(
   ZPublicApiCourseExerciseNotifyStatusQuery.shape
@@ -85,7 +110,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'update_course_exercise',
-    `Partially update an exercise on a live course. Omitted fields keep their values. questions is a diff: send a question with its id to edit it, with its id and delete: true to remove it, or without an id to add it; options work the same inside their question, and questions you leave out are unchanged. Read ids with get_course_exercise first. sections replaces all exercise sections (ones you leave out are deleted); a new section may carry a UUID you generate so new questions can point at it with exerciseSectionId, and when sections is sent every remaining question must be in one. ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
+    `Partially update an exercise on a live course. Omitted fields keep their values. questions is a diff: send a question with its id to edit it, with its id and delete: true to remove it, or without an id to add it; options work the same inside their question, and questions you leave out are unchanged. Read ids with get_course_exercise first. To change one question or one exercise section, use the add/update/delete_exercise_question and _exercise_section tools instead. sections replaces all exercise sections (ones you leave out are deleted); a new section may carry a UUID you generate so new questions can point at it with exerciseSectionId, and when sections is sent every remaining question must be in one. Deleting a question also deletes the answers students gave to it. ${LIVE_EDIT_NOTE} ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
     shape(ZUpdateCourseExerciseToolInput),
     UPDATE,
     async (args) => {
@@ -102,6 +127,74 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
     async (args) => {
       const { courseId, exerciseId } = ZDeleteCourseExerciseToolInput.parse(args);
       return jsonContent(await apiClient.deleteCourseExercise(courseId, exerciseId));
+    }
+  );
+
+  server.tool(
+    'add_exercise_question',
+    `Add one question, with its options, to an exercise on a live course. If the exercise has sections, pass exerciseSectionId (from get_course_exercise). ${LIVE_EDIT_NOTE} ${PLAN_NOTE} ${QUESTION_TYPES_GUIDE} ${COURSE_TEAM_RULE}`,
+    shape(ZAddExerciseQuestionToolInput),
+    CREATE,
+    async (args) => {
+      const { courseId, exerciseId, ...payload } = ZAddExerciseQuestionToolInput.parse(args);
+      return jsonContent(await apiClient.addExerciseQuestion(courseId, exerciseId, payload));
+    }
+  );
+
+  server.tool(
+    'update_exercise_question',
+    `Edit one question. Fields you leave out keep their values. Options change only through addOptions (new), updateOptions (by id; omitted fields kept) and removeOptionIds; options you do not name are kept. Read ids with get_course_exercise first. ${LIVE_EDIT_NOTE} ${PLAN_NOTE} ${COURSE_TEAM_RULE}`,
+    shape(ZUpdateExerciseQuestionToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, exerciseId, questionId, ...fields } = ZUpdateExerciseQuestionToolInput.parse(args);
+      const payload = ZPublicApiUpdateExerciseQuestionFields.parse(fields);
+      return jsonContent(await apiClient.updateExerciseQuestion(courseId, exerciseId, questionId, payload));
+    }
+  );
+
+  server.tool(
+    'delete_exercise_question',
+    `Permanently delete one question (hard delete). If students have answered it, the call fails with 409 unless force is true, which also deletes their answers; ask the user before forcing. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+    shape(ZDeleteExerciseQuestionToolInput),
+    DESTRUCTIVE,
+    async (args) => {
+      const { courseId, exerciseId, questionId, force } = ZDeleteExerciseQuestionToolInput.parse(args);
+      return jsonContent(await apiClient.deleteExerciseQuestion(courseId, exerciseId, questionId, force));
+    }
+  );
+
+  server.tool(
+    'add_exercise_section',
+    `Add one empty exercise section (a part that groups questions) to an exercise. Put questions in it with add_exercise_question or update_exercise_question (exerciseSectionId). ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+    shape(ZAddExerciseSectionToolInput),
+    CREATE,
+    async (args) => {
+      const { courseId, exerciseId, ...payload } = ZAddExerciseSectionToolInput.parse(args);
+      return jsonContent(await apiClient.addExerciseSection(courseId, exerciseId, payload));
+    }
+  );
+
+  server.tool(
+    'update_exercise_section',
+    `Edit one exercise section's title, description, order, colorTheme or afterBehavior. Fields you leave out keep their values; its questions are not touched. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+    shape(ZUpdateExerciseSectionToolInput),
+    UPDATE,
+    async (args) => {
+      const { courseId, exerciseId, sectionId, ...fields } = ZUpdateExerciseSectionToolInput.parse(args);
+      const payload = ZPublicApiUpdateExerciseSectionFields.parse(fields);
+      return jsonContent(await apiClient.updateExerciseSection(courseId, exerciseId, sectionId, payload));
+    }
+  );
+
+  server.tool(
+    'delete_exercise_section',
+    `Permanently delete one empty exercise section (hard delete). Fails with 409 while it holds questions or another section's afterBehavior goes to it: move or delete those first. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+    shape(ZDeleteExerciseSectionToolInput),
+    DESTRUCTIVE,
+    async (args) => {
+      const { courseId, exerciseId, sectionId } = ZDeleteExerciseSectionToolInput.parse(args);
+      return jsonContent(await apiClient.deleteExerciseSection(courseId, exerciseId, sectionId));
     }
   );
 

@@ -251,6 +251,21 @@ export async function getSubmissionsForGrading(courseId: string) {
   }
 }
 
+export async function hasQuestionAnswers(questionId: number, dbClient: DbOrTxClient = db): Promise<boolean> {
+  try {
+    const [row] = await dbClient
+      .select({ id: schema.questionAnswer.id })
+      .from(schema.questionAnswer)
+      .where(eq(schema.questionAnswer.questionId, questionId))
+      .limit(1);
+
+    return Boolean(row);
+  } catch (error) {
+    console.error('hasQuestionAnswers error:', error);
+    throw new Error(`Failed to check question answers: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 /** Holds a per-student lock on the exercise until the transaction ends. */
 export async function lockSubmissionAttempt(exerciseId: string, submittedBy: string, dbClient: DbOrTxClient) {
   try {
