@@ -131,7 +131,13 @@
 
     const version = ++finalizeVersion;
     await tick();
-    if (version !== finalizeVersion || !courseApi.course?.content) return;
+    if (version !== finalizeVersion) return;
+
+    if (!courseApi.course?.content) {
+      dragging = false;
+      draggingSection = false;
+      return;
+    }
 
     const course = courseApi.course;
     const previousContent = course.content;
