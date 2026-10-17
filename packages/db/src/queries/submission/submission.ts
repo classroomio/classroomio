@@ -1,7 +1,7 @@
 import * as schema from '@db/schema';
 
 import type { TNewQuestionAnswer, TNewSubmission, TQuestionAnswer, TSubmission } from '@db/types';
-import { and, count, db, eq, inArray, sql } from '@db/drizzle';
+import { and, count, db, desc, eq, inArray, sql, type DbOrTxClient } from '@db/drizzle';
 
 /**
  * Gets a submission by ID
@@ -24,9 +24,13 @@ export async function getSubmissionById(submissionId: string): Promise<TSubmissi
   }
 }
 
-export async function hasSubmission(exerciseId: string, submittedBy: string): Promise<boolean> {
+export async function hasSubmission(
+  exerciseId: string,
+  submittedBy: string,
+  dbClient: DbOrTxClient = db
+): Promise<boolean> {
   try {
-    const [result] = await db
+    const [result] = await dbClient
       .select({ total: count() })
       .from(schema.submission)
       .where(and(eq(schema.submission.exerciseId, exerciseId), eq(schema.submission.submittedBy, submittedBy)))
@@ -113,6 +117,63 @@ export async function getSubmissionsByCourseIdWithDetails(courseId: string, exer
  * @param courseId Course ID
  * @returns Array of submissions with exercise, lesson, groupmember, profile, questions, and answers
  */
+export type CourseSubmissionsPageFilters = {
+  exerciseId?: string;
+  memberId?: string;
+  gradingState?: string;
+};
+
+/** Returns one page of a course's submissions, newest first and without answers, plus the total matching the filters. */
+export async function getCourseSubmissionsPage(
+  courseId: string,
+  filters: CourseSubmissionsPageFilters,
+  paging: { page: number; limit: number }
+) {
+  try {
+    const where = and(
+      eq(schema.submission.courseId, courseId),
+      filters.exerciseId ? eq(schema.submission.exerciseId, filters.exerciseId) : undefined,
+      filters.memberId ? eq(schema.submission.submittedBy, filters.memberId) : undefined,
+      filters.gradingState ? eq(schema.submission.gradingState, filters.gradingState) : undefined
+    );
+
+    const [items, [totalRow]] = await Promise.all([
+      db
+        .select({
+          submission: schema.submission,
+          exerciseTitle: schema.exercise.title,
+          exerciseDueBy: schema.exercise.dueBy,
+          student: {
+            id: schema.profile.id,
+            fullname: schema.profile.fullname,
+            email: schema.profile.email,
+            avatarUrl: schema.profile.avatarUrl
+          }
+        })
+        .from(schema.submission)
+        .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
+        .leftJoin(schema.groupmember, eq(schema.submission.submittedBy, schema.groupmember.id))
+        .leftJoin(schema.profile, eq(schema.groupmember.profileId, schema.profile.id))
+        .where(where)
+        .orderBy(desc(schema.submission.createdAt), desc(schema.submission.id))
+        .limit(paging.limit)
+        .offset((paging.page - 1) * paging.limit),
+      db
+        .select({ total: count() })
+        .from(schema.submission)
+        .innerJoin(schema.exercise, eq(schema.submission.exerciseId, schema.exercise.id))
+        .where(where)
+    ]);
+
+    return { items, total: totalRow?.total ?? 0 };
+  } catch (error) {
+    console.error('getCourseSubmissionsPage error:', error);
+    throw new Error(
+      `Failed to get submissions page for course ID "${courseId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export async function getSubmissionsForGrading(courseId: string) {
   try {
     // First, get all submissions with basic relations
@@ -190,14 +251,41 @@ export async function getSubmissionsForGrading(courseId: string) {
   }
 }
 
+/** Returns the ids among `questionIds` that at least one student has answered. */
+export async function getAnsweredQuestionIds(questionIds: number[], dbClient: DbOrTxClient = db): Promise<number[]> {
+  if (questionIds.length === 0) return [];
+
+  try {
+    const rows = await dbClient
+      .selectDistinct({ questionId: schema.questionAnswer.questionId })
+      .from(schema.questionAnswer)
+      .where(inArray(schema.questionAnswer.questionId, questionIds));
+
+    return rows.map((row) => row.questionId);
+  } catch (error) {
+    console.error('getAnsweredQuestionIds error:', error);
+    throw new Error(`Failed to check question answers: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/** Holds a per-student lock on the exercise until the transaction ends. */
+export async function lockSubmissionAttempt(exerciseId: string, submittedBy: string, dbClient: DbOrTxClient) {
+  try {
+    await dbClient.execute(sql`select pg_advisory_xact_lock(hashtext(${`submission:${exerciseId}:${submittedBy}`}))`);
+  } catch (error) {
+    console.error('lockSubmissionAttempt error:', error);
+    throw new Error(`Failed to lock submission attempt: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 /**
  * Creates a new submission
  * @param data Submission data
  * @returns Created submission
  */
-export async function createSubmission(data: TNewSubmission): Promise<TSubmission> {
+export async function createSubmission(data: TNewSubmission, dbClient: DbOrTxClient = db): Promise<TSubmission> {
   try {
-    const [submission] = await db.insert(schema.submission).values(data).returning();
+    const [submission] = await dbClient.insert(schema.submission).values(data).returning();
     if (!submission) {
       throw new Error('Failed to create submission');
     }
@@ -283,13 +371,16 @@ export async function upsertQuestionAnswer(data: TNewQuestionAnswer): Promise<TQ
   }
 }
 
-export async function insertQuestionAnswersBatch(rows: TNewQuestionAnswer[]): Promise<TQuestionAnswer[]> {
+export async function insertQuestionAnswersBatch(
+  rows: TNewQuestionAnswer[],
+  dbClient: DbOrTxClient = db
+): Promise<TQuestionAnswer[]> {
   if (rows.length === 0) {
     return [];
   }
 
   try {
-    return db.insert(schema.questionAnswer).values(rows).returning();
+    return dbClient.insert(schema.questionAnswer).values(rows).returning();
   } catch (error) {
     console.error('insertQuestionAnswersBatch error:', error);
     throw new Error(

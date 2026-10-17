@@ -1,5 +1,5 @@
-import { env } from '@cio/core/config/env';
-import { LICENSE_FEATURE, type LicenseFeatureId } from '@cio/utils/license';
+import { env } from '../config/env';
+import { LICENSE_FEATURE, type LicenseFeatureId } from '@cio/utils';
 
 export type LicenseStatus = {
   valid: boolean;

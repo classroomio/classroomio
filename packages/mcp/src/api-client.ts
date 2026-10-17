@@ -13,21 +13,28 @@ import type {
   TCourseImportDraftPublishToCourse,
   TCourseImportDraftUpdate
 } from '@cio/utils/validation/course-import';
-import type {
-  TExerciseCreate,
-  TExerciseFromTemplate,
-  TExerciseGetParam,
-  TExerciseListQuery,
-  TExerciseUpdate
-} from '@cio/utils/validation/exercise';
 
 import type { McpServerConfig } from './config';
 import type { TGetOrganizationCoursesQuery } from '@cio/utils/validation/organization';
 import type {
+  TPublicApiAddExerciseQuestion,
+  TPublicApiAddExerciseSection,
+  TPublicApiUpdateExerciseQuestionFields,
+  TPublicApiUpdateExerciseSectionFields,
+  TPublicApiCourseExercisesQuery,
+  TPublicApiCourseMarksQuery,
+  TPublicApiCourseSubmissionsQuery,
+  TPublicApiCreateCourseExercise,
+  TPublicApiExerciseTemplatesQuery,
+  TPublicApiGradeCourseSubmission,
+  TPublicApiUpdateCourseExercise,
+  TPublicApiUpdateCourseSubmission,
   TPublicApiAddCohortMembers,
   TPublicApiAddCourseMember,
   TPublicApiAddCourseToCohort,
+  TPublicApiAssignAudienceCourses,
   TPublicApiAssignStudentsToCohort,
+  TPublicApiAudienceQuery,
   TPublicApiCertificateFileFormat,
   TPublicApiCohortNewsfeedQuery,
   TPublicApiCourseInvitesQuery,
@@ -36,6 +43,7 @@ import type {
   TPublicApiCourseAnalyticsStudentsQuery,
   TPublicApiCourseMembersQuery,
   TPublicApiCreateAsset,
+  TPublicApiCreateAudience,
   TPublicApiCreateCohort,
   TPublicApiCreateCohortGoal,
   TPublicApiCreateCohortNewsfeed,
@@ -48,13 +56,16 @@ import type {
   TPublicApiPaginationQuery,
   TPublicApiSetCohortInviteLinkRevoked,
   TPublicApiSetCohortReaction,
+  TPublicApiTeamQuery,
+  TPublicApiUpdateAudience,
   TPublicApiUpdateCohort,
   TPublicApiUpdateCohortGoal,
   TPublicApiUpdateCohortMember,
   TPublicApiUpdateCohortNewsfeed,
   TPublicApiUpdateCourseCertificate,
   TPublicApiUpdateCourseMember,
-  TPublicApiUpdateLesson
+  TPublicApiUpdateLesson,
+  TPublicApiUpdateTeamMember
 } from '@cio/utils/validation/public-api';
 
 type ApiSuccess<T> = {
@@ -96,6 +107,15 @@ const toPageQuerySuffix = (query: Partial<TPublicApiPaginationQuery>) => {
   const searchParams = new URLSearchParams();
   if (query.page) searchParams.set('page', String(query.page));
   if (query.limit) searchParams.set('limit', String(query.limit));
+
+  return searchParams.toString() ? `?${searchParams.toString()}` : '';
+};
+
+const toQuerySuffix = (query: Record<string, string | number | undefined>) => {
+  const searchParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined && value !== '') searchParams.set(key, String(value));
+  }
 
   return searchParams.toString() ? `?${searchParams.toString()}` : '';
 };
@@ -174,44 +194,138 @@ export class ClassroomIoApiClient {
     });
   }
 
-  async listCourseExercises(courseId: string, query: TExerciseListQuery = {}) {
-    const searchParams = new URLSearchParams();
-    if (query.lessonId) searchParams.set('lessonId', query.lessonId);
-    if (query.sectionId) searchParams.set('sectionId', query.sectionId);
-
-    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
-    return this.request(`/course/${courseId}/exercise${querySuffix}`, {
+  async listCourseExercises(courseId: string, query: Partial<TPublicApiCourseExercisesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/exercises${toQuerySuffix(query)}`, {
       method: 'GET'
     });
   }
 
-  async getCourseExercise(courseId: string, exerciseId: TExerciseGetParam['exerciseId']) {
-    return this.request(`/course/${courseId}/exercise/${exerciseId}`, {
-      method: 'GET'
-    });
+  async getCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, { method: 'GET' });
   }
 
-  async createCourseExercise(courseId: string, payload: Omit<TExerciseCreate, 'courseId'>) {
-    return this.request(`/course/${courseId}/exercise`, {
-      method: 'POST',
-      body: {
-        ...payload,
-        courseId
-      }
-    });
+  async createCourseExercise(courseId: string, payload: TPublicApiCreateCourseExercise) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises`, { method: 'POST', body: payload });
   }
 
-  async createCourseExerciseFromTemplate(courseId: string, payload: TExerciseFromTemplate) {
-    return this.request(`/course/${courseId}/exercise/from-template`, {
-      method: 'POST',
-      body: payload
-    });
-  }
+  async updateCourseExercise(
+    courseId: string,
+    exerciseId: string,
+    payload: TPublicApiUpdateCourseExercise,
+    force = false
+  ) {
+    const query = force ? '?force=true' : '';
 
-  async updateCourseExercise(courseId: string, exerciseId: TExerciseGetParam['exerciseId'], payload: TExerciseUpdate) {
-    return this.request(`/course/${courseId}/exercise/${exerciseId}`, {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}${query}`, {
       method: 'PUT',
       body: payload
+    });
+  }
+
+  async deleteCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}`, { method: 'DELETE' });
+  }
+
+  async addExerciseQuestion(courseId: string, exerciseId: string, payload: TPublicApiAddExerciseQuestion) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateExerciseQuestion(
+    courseId: string,
+    exerciseId: string,
+    questionId: number,
+    payload: TPublicApiUpdateExerciseQuestionFields
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async deleteExerciseQuestion(courseId: string, exerciseId: string, questionId: number, force: boolean) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/questions/${questionId}${query}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async addExerciseSection(courseId: string, exerciseId: string, payload: TPublicApiAddExerciseSection) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections`, {
+      method: 'POST',
+      body: payload
+    });
+  }
+
+  async updateExerciseSection(
+    courseId: string,
+    exerciseId: string,
+    sectionId: string,
+    payload: TPublicApiUpdateExerciseSectionFields
+  ) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections/${sectionId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async deleteExerciseSection(courseId: string, exerciseId: string, sectionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/sections/${sectionId}`, {
+      method: 'DELETE'
+    });
+  }
+
+  async notifyCourseExercise(courseId: string, exerciseId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/exercises/${exerciseId}/notify`, { method: 'POST' });
+  }
+
+  async getCourseExerciseNotifyStatus(courseId: string, exerciseId: string, jobId: string, pollCount?: number) {
+    const path = `/public-api/v1/courses/${courseId}/exercises/${exerciseId}/notify/${encodeURIComponent(jobId)}`;
+    return this.request(`${path}${toQuerySuffix({ pollCount })}`, { method: 'GET' });
+  }
+
+  async listExerciseTemplates(query: Partial<TPublicApiExerciseTemplatesQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/exercise-templates${toQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getExerciseTemplate(templateId: number) {
+    return this.request(`/public-api/v1/exercise-templates/${templateId}`, { method: 'GET' });
+  }
+
+  async listCourseSubmissions(courseId: string, query: Partial<TPublicApiCourseSubmissionsQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/submissions${toQuerySuffix(query)}`, {
+      method: 'GET'
+    });
+  }
+
+  async getCourseSubmission(courseId: string, submissionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, { method: 'GET' });
+  }
+
+  async gradeCourseSubmission(courseId: string, submissionId: string, payload: TPublicApiGradeCourseSubmission) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}/grades`, {
+      method: 'PUT',
+      body: payload
+    });
+  }
+
+  async updateCourseSubmission(courseId: string, submissionId: string, payload: TPublicApiUpdateCourseSubmission) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, {
+      method: 'PATCH',
+      body: payload
+    });
+  }
+
+  async deleteCourseSubmission(courseId: string, submissionId: string) {
+    return this.request(`/public-api/v1/courses/${courseId}/submissions/${submissionId}`, { method: 'DELETE' });
+  }
+
+  async getCourseMarks(courseId: string, query: Partial<TPublicApiCourseMarksQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/courses/${courseId}/marks${toQuerySuffix(query)}`, {
+      method: 'GET'
     });
   }
 
@@ -290,6 +404,52 @@ export class ClassroomIoApiClient {
     const mimeType = response.headers.get('content-type') ?? 'application/octet-stream';
 
     return { base64: bytes.toString('base64'), mimeType };
+  }
+
+  // ─── Audience (public API) ──────────────────────────────────────────────
+
+  async listAudienceMembers(query: Partial<TPublicApiAudienceQuery> = {}) {
+    const searchParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined && value !== '') searchParams.set(key, String(value));
+    }
+
+    const querySuffix = searchParams.toString() ? `?${searchParams.toString()}` : '';
+    return this.requestPaginated(`/public-api/v1/audience${querySuffix}`, { method: 'GET' });
+  }
+
+  async addAudienceMember(payload: TPublicApiCreateAudience) {
+    return this.request('/public-api/v1/audience', { method: 'POST', body: payload });
+  }
+
+  async assignAudienceCourses(payload: TPublicApiAssignAudienceCourses) {
+    return this.request('/public-api/v1/audience/assign-courses', { method: 'POST', body: payload });
+  }
+
+  async getAudienceMember(memberId: number) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'GET' });
+  }
+
+  async updateAudienceMember(memberId: number, payload: TPublicApiUpdateAudience) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'PUT', body: payload });
+  }
+
+  async removeAudienceMember(memberId: number) {
+    return this.request(`/public-api/v1/audience/${memberId}`, { method: 'DELETE' });
+  }
+
+  // ─── Team (public API) ──────────────────────────────────────────────────
+
+  async listTeamMembers(query: Partial<TPublicApiTeamQuery> = {}) {
+    return this.requestPaginated(`/public-api/v1/team${toPageQuerySuffix(query)}`, { method: 'GET' });
+  }
+
+  async getTeamMember(memberId: number) {
+    return this.request(`/public-api/v1/team/${memberId}`, { method: 'GET' });
+  }
+
+  async updateTeamMember(memberId: number, payload: TPublicApiUpdateTeamMember) {
+    return this.request(`/public-api/v1/team/${memberId}`, { method: 'PUT', body: payload });
   }
 
   // ─── Course Members (public API) ────────────────────────────────────────

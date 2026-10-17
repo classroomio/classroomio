@@ -1,0 +1,1933 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`public API course exercise request contract > ZPublicApiAddExerciseQuestion keeps its published shape > ZPublicApiAddExerciseQuestion 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "exerciseSectionId": {
+      "description": "The exercise section to put the question in; required when the exercise has sections",
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "options": {
+      "items": {
+        "properties": {
+          "isCorrect": {
+            "type": "boolean",
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string",
+          },
+          "settings": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string",
+            },
+            "type": "object",
+          },
+        },
+        "required": [
+          "label",
+          "isCorrect",
+        ],
+        "type": "object",
+      },
+      "maxItems": 50,
+      "type": "array",
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer",
+    },
+    "points": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "question": {
+      "minLength": 1,
+      "type": "string",
+    },
+    "questionTypeId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+        {
+          "const": 3,
+          "type": "number",
+        },
+        {
+          "const": 4,
+          "type": "number",
+        },
+        {
+          "const": 5,
+          "type": "number",
+        },
+        {
+          "const": 6,
+          "type": "number",
+        },
+        {
+          "const": 7,
+          "type": "number",
+        },
+        {
+          "const": 8,
+          "type": "number",
+        },
+        {
+          "const": 9,
+          "type": "number",
+        },
+        {
+          "const": 10,
+          "type": "number",
+        },
+        {
+          "const": 11,
+          "type": "number",
+        },
+        {
+          "const": 12,
+          "type": "number",
+        },
+        {
+          "const": 13,
+          "type": "number",
+        },
+        {
+          "const": 14,
+          "type": "number",
+        },
+      ],
+      "default": 1,
+    },
+    "settings": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string",
+      },
+      "type": "object",
+    },
+  },
+  "required": [
+    "question",
+    "points",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiAddExerciseSection keeps its published shape > ZPublicApiAddExerciseSection 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "afterBehavior": {
+      "default": {
+        "action": "continue",
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "continue",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "go_to_section",
+              "type": "string",
+            },
+            "exerciseSectionId": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+            "exerciseSectionId",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "submit",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "colorTheme": {
+      "default": "blue",
+      "enum": [
+        "blue",
+        "green",
+        "amber",
+        "rose",
+        "violet",
+        "slate",
+      ],
+      "type": "string",
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer",
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "title",
+    "order",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiCourseExerciseNotifyStatusQuery keeps its published shape > ZPublicApiCourseExerciseNotifyStatusQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "pollCount": {
+      "default": 0,
+      "maximum": 1000,
+      "minimum": 0,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiCourseExercisesQuery keeps its published shape > ZPublicApiCourseExercisesQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "sectionId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiCourseMarksQuery keeps its published shape > ZPublicApiCourseMarksQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiCourseSubmissionsQuery keeps its published shape > ZPublicApiCourseSubmissionsQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "exerciseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "gradingState": {
+      "enum": [
+        "queued",
+        "processing",
+        "awaiting_manual",
+        "completed",
+        "failed",
+      ],
+      "type": "string",
+    },
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "memberId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiCreateCourseExercise keeps its published shape > ZPublicApiCreateCourseExercise 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "description": {
+      "type": "string",
+    },
+    "dueBy": {
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+      "type": "string",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "questions": {
+      "items": {
+        "properties": {
+          "options": {
+            "items": {
+              "properties": {
+                "isCorrect": {
+                  "type": "boolean",
+                },
+                "label": {
+                  "minLength": 1,
+                  "type": "string",
+                },
+                "settings": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string",
+                  },
+                  "type": "object",
+                },
+              },
+              "required": [
+                "label",
+                "isCorrect",
+              ],
+              "type": "object",
+            },
+            "maxItems": 50,
+            "type": "array",
+          },
+          "order": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer",
+          },
+          "points": {
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer",
+          },
+          "question": {
+            "minLength": 1,
+            "type": "string",
+          },
+          "questionTypeId": {
+            "anyOf": [
+              {
+                "const": 1,
+                "type": "number",
+              },
+              {
+                "const": 2,
+                "type": "number",
+              },
+              {
+                "const": 3,
+                "type": "number",
+              },
+              {
+                "const": 4,
+                "type": "number",
+              },
+              {
+                "const": 5,
+                "type": "number",
+              },
+              {
+                "const": 6,
+                "type": "number",
+              },
+              {
+                "const": 7,
+                "type": "number",
+              },
+              {
+                "const": 8,
+                "type": "number",
+              },
+              {
+                "const": 9,
+                "type": "number",
+              },
+              {
+                "const": 10,
+                "type": "number",
+              },
+              {
+                "const": 11,
+                "type": "number",
+              },
+              {
+                "const": 12,
+                "type": "number",
+              },
+              {
+                "const": 13,
+                "type": "number",
+              },
+              {
+                "const": 14,
+                "type": "number",
+              },
+            ],
+            "default": 1,
+          },
+          "settings": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string",
+            },
+            "type": "object",
+          },
+        },
+        "required": [
+          "question",
+          "points",
+        ],
+        "type": "object",
+      },
+      "maxItems": 200,
+      "type": "array",
+    },
+    "sectionId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "slug": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string",
+    },
+    "templateId": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "required": [
+    "order",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiExerciseQuestionParam keeps its published shape > ZPublicApiExerciseQuestionParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "exerciseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "questionId": {
+      "exclusiveMinimum": 0,
+      "maximum": 9007199254740991,
+      "type": "integer",
+    },
+  },
+  "required": [
+    "courseId",
+    "exerciseId",
+    "questionId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiExerciseSectionParam keeps its published shape > ZPublicApiExerciseSectionParam 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "courseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "exerciseId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "sectionId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+  },
+  "required": [
+    "courseId",
+    "exerciseId",
+    "sectionId",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiExerciseTemplatesQuery keeps its published shape > ZPublicApiExerciseTemplatesQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "limit": {
+      "default": 20,
+      "maximum": 100,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "page": {
+      "default": 1,
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "tag": {
+      "maxLength": 50,
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiForceQuery keeps its published shape > ZPublicApiForceQuery 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "force": {
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "enum": [
+            "true",
+            "false",
+          ],
+          "type": "string",
+        },
+      ],
+      "default": false,
+      "description": "Also delete the answers students gave to the deleted questions; without it, deleting an answered question returns 409",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiGradeCourseSubmission keeps its published shape > ZPublicApiGradeCourseSubmission 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "answers": {
+      "items": {
+        "properties": {
+          "points": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer",
+          },
+          "questionId": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer",
+          },
+        },
+        "required": [
+          "questionId",
+          "points",
+        ],
+        "type": "object",
+      },
+      "maxItems": 500,
+      "type": "array",
+    },
+    "feedback": {
+      "type": "string",
+    },
+    "total": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer",
+    },
+  },
+  "required": [
+    "answers",
+    "total",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiUpdateCourseExercise keeps its published shape > ZPublicApiUpdateCourseExercise 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "allowMultipleAttempts": {
+      "type": "boolean",
+    },
+    "completionPolicy": {
+      "enum": [
+        "submitted",
+        "passed",
+      ],
+      "type": "string",
+    },
+    "description": {
+      "type": "string",
+    },
+    "dueBy": {
+      "format": "date-time",
+      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d+)?)?(?:Z|([+-](?:[01]\\d|2[0-3]):[0-5]\\d)))$",
+      "type": "string",
+    },
+    "isUnlocked": {
+      "type": "boolean",
+    },
+    "lessonId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "passThreshold": {
+      "maximum": 100,
+      "minimum": 0,
+      "type": "integer",
+    },
+    "questions": {
+      "items": {
+        "properties": {
+          "delete": {
+            "type": "boolean",
+          },
+          "exerciseSectionId": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "id": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer",
+          },
+          "options": {
+            "items": {
+              "properties": {
+                "delete": {
+                  "type": "boolean",
+                },
+                "id": {
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "type": "integer",
+                },
+                "isCorrect": {
+                  "description": "Required for a new option",
+                  "type": "boolean",
+                },
+                "label": {
+                  "description": "Required for a new option",
+                  "minLength": 1,
+                  "type": "string",
+                },
+                "settings": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string",
+                  },
+                  "type": "object",
+                },
+              },
+              "type": "object",
+            },
+            "maxItems": 50,
+            "type": "array",
+          },
+          "order": {
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer",
+          },
+          "points": {
+            "description": "Required for a new question",
+            "maximum": 9007199254740991,
+            "minimum": 1,
+            "type": "integer",
+          },
+          "question": {
+            "description": "Required for a new question",
+            "minLength": 1,
+            "type": "string",
+          },
+          "questionTypeId": {
+            "anyOf": [
+              {
+                "const": 1,
+                "type": "number",
+              },
+              {
+                "const": 2,
+                "type": "number",
+              },
+              {
+                "const": 3,
+                "type": "number",
+              },
+              {
+                "const": 4,
+                "type": "number",
+              },
+              {
+                "const": 5,
+                "type": "number",
+              },
+              {
+                "const": 6,
+                "type": "number",
+              },
+              {
+                "const": 7,
+                "type": "number",
+              },
+              {
+                "const": 8,
+                "type": "number",
+              },
+              {
+                "const": 9,
+                "type": "number",
+              },
+              {
+                "const": 10,
+                "type": "number",
+              },
+              {
+                "const": 11,
+                "type": "number",
+              },
+              {
+                "const": 12,
+                "type": "number",
+              },
+              {
+                "const": 13,
+                "type": "number",
+              },
+              {
+                "const": 14,
+                "type": "number",
+              },
+            ],
+            "description": "Defaults to RADIO (1) for a new question",
+          },
+          "settings": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string",
+            },
+            "type": "object",
+          },
+        },
+        "type": "object",
+      },
+      "maxItems": 200,
+      "type": "array",
+    },
+    "sectionDisplayMode": {
+      "enum": [
+        "one_question",
+        "all_questions",
+      ],
+      "type": "string",
+    },
+    "sectionId": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "sections": {
+      "items": {
+        "properties": {
+          "afterBehavior": {
+            "description": "Defaults to continue for a new section",
+            "oneOf": [
+              {
+                "properties": {
+                  "action": {
+                    "const": "continue",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "action",
+                ],
+                "type": "object",
+              },
+              {
+                "properties": {
+                  "action": {
+                    "const": "go_to_section",
+                    "type": "string",
+                  },
+                  "exerciseSectionId": {
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "action",
+                  "exerciseSectionId",
+                ],
+                "type": "object",
+              },
+              {
+                "properties": {
+                  "action": {
+                    "const": "submit",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "action",
+                ],
+                "type": "object",
+              },
+            ],
+          },
+          "colorTheme": {
+            "description": "Defaults to blue for a new section",
+            "enum": [
+              "blue",
+              "green",
+              "amber",
+              "rose",
+              "violet",
+              "slate",
+            ],
+            "type": "string",
+          },
+          "delete": {
+            "type": "boolean",
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "order": {
+            "description": "Required for a new section",
+            "maximum": 9007199254740991,
+            "minimum": 0,
+            "type": "integer",
+          },
+          "title": {
+            "description": "Required for a new section",
+            "minLength": 1,
+            "type": "string",
+          },
+        },
+        "type": "object",
+      },
+      "maxItems": 50,
+      "type": "array",
+    },
+    "slug": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string",
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiUpdateCourseSubmission keeps its published shape > ZPublicApiUpdateCourseSubmission 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "feedback": {
+      "type": "string",
+    },
+    "gradingState": {
+      "enum": [
+        "queued",
+        "processing",
+        "awaiting_manual",
+        "completed",
+        "failed",
+      ],
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQuestionFields keeps its published shape > ZPublicApiUpdateExerciseQuestionFields 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "addOptions": {
+      "items": {
+        "properties": {
+          "isCorrect": {
+            "type": "boolean",
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string",
+          },
+          "settings": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string",
+            },
+            "type": "object",
+          },
+        },
+        "required": [
+          "label",
+          "isCorrect",
+        ],
+        "type": "object",
+      },
+      "maxItems": 50,
+      "type": "array",
+    },
+    "exerciseSectionId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer",
+    },
+    "points": {
+      "maximum": 9007199254740991,
+      "minimum": 1,
+      "type": "integer",
+    },
+    "question": {
+      "minLength": 1,
+      "type": "string",
+    },
+    "questionTypeId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+        {
+          "const": 3,
+          "type": "number",
+        },
+        {
+          "const": 4,
+          "type": "number",
+        },
+        {
+          "const": 5,
+          "type": "number",
+        },
+        {
+          "const": 6,
+          "type": "number",
+        },
+        {
+          "const": 7,
+          "type": "number",
+        },
+        {
+          "const": 8,
+          "type": "number",
+        },
+        {
+          "const": 9,
+          "type": "number",
+        },
+        {
+          "const": 10,
+          "type": "number",
+        },
+        {
+          "const": 11,
+          "type": "number",
+        },
+        {
+          "const": 12,
+          "type": "number",
+        },
+        {
+          "const": 13,
+          "type": "number",
+        },
+        {
+          "const": 14,
+          "type": "number",
+        },
+      ],
+    },
+    "removeOptionIds": {
+      "description": "Options to remove; options you do not name are kept",
+      "items": {
+        "exclusiveMinimum": 0,
+        "maximum": 9007199254740991,
+        "type": "integer",
+      },
+      "maxItems": 50,
+      "type": "array",
+    },
+    "settings": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string",
+      },
+      "type": "object",
+    },
+    "updateOptions": {
+      "description": "Edits existing options by id; fields you leave out keep their values",
+      "items": {
+        "properties": {
+          "id": {
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "type": "integer",
+          },
+          "isCorrect": {
+            "type": "boolean",
+          },
+          "label": {
+            "minLength": 1,
+            "type": "string",
+          },
+          "settings": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string",
+            },
+            "type": "object",
+          },
+        },
+        "required": [
+          "id",
+        ],
+        "type": "object",
+      },
+      "maxItems": 50,
+      "type": "array",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API course exercise request contract > ZPublicApiUpdateExerciseSectionFields keeps its published shape > ZPublicApiUpdateExerciseSectionFields 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "properties": {
+    "afterBehavior": {
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "continue",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "go_to_section",
+              "type": "string",
+            },
+            "exerciseSectionId": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+            "exerciseSectionId",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "submit",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "colorTheme": {
+      "enum": [
+        "blue",
+        "green",
+        "amber",
+        "rose",
+        "violet",
+        "slate",
+      ],
+      "type": "string",
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "order": {
+      "maximum": 9007199254740991,
+      "minimum": 0,
+      "type": "integer",
+    },
+    "title": {
+      "minLength": 1,
+      "type": "string",
+    },
+  },
+  "type": "object",
+}
+`;
+
+exports[`public API exercise question and section contract > ZPublicApiCourseExerciseDetailResponse keeps its published shape > ZPublicApiCourseExerciseDetailResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allowMultipleAttempts": {
+      "type": "boolean",
+    },
+    "completionPolicy": {
+      "description": "submitted | passed",
+      "type": "string",
+    },
+    "courseId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "createdAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "dueBy": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "isUnlocked": {
+      "anyOf": [
+        {
+          "type": "boolean",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "lessonId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Deprecated: exercises now belong to a course section",
+    },
+    "order": {
+      "type": "number",
+    },
+    "passThreshold": {
+      "anyOf": [
+        {
+          "type": "number",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "questions": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "exerciseSectionId": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "id": {
+            "type": "number",
+          },
+          "name": {
+            "description": "Stable key used in submission answers",
+            "type": "string",
+          },
+          "options": {
+            "items": {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "number",
+                },
+                "isCorrect": {
+                  "type": "boolean",
+                },
+                "label": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
+                "settings": {
+                  "additionalProperties": {},
+                  "propertyNames": {
+                    "type": "string",
+                  },
+                  "type": "object",
+                },
+                "value": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                    },
+                    {
+                      "type": "null",
+                    },
+                  ],
+                },
+              },
+              "required": [
+                "id",
+                "label",
+                "value",
+                "isCorrect",
+                "settings",
+              ],
+              "type": "object",
+            },
+            "type": "array",
+          },
+          "order": {
+            "type": "number",
+          },
+          "points": {
+            "type": "number",
+          },
+          "question": {
+            "type": "string",
+          },
+          "questionTypeId": {
+            "anyOf": [
+              {
+                "const": 1,
+                "type": "number",
+              },
+              {
+                "const": 2,
+                "type": "number",
+              },
+              {
+                "const": 3,
+                "type": "number",
+              },
+              {
+                "const": 4,
+                "type": "number",
+              },
+              {
+                "const": 5,
+                "type": "number",
+              },
+              {
+                "const": 6,
+                "type": "number",
+              },
+              {
+                "const": 7,
+                "type": "number",
+              },
+              {
+                "const": 8,
+                "type": "number",
+              },
+              {
+                "const": 9,
+                "type": "number",
+              },
+              {
+                "const": 10,
+                "type": "number",
+              },
+              {
+                "const": 11,
+                "type": "number",
+              },
+              {
+                "const": 12,
+                "type": "number",
+              },
+              {
+                "const": 13,
+                "type": "number",
+              },
+              {
+                "const": 14,
+                "type": "number",
+              },
+            ],
+          },
+          "settings": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string",
+            },
+            "type": "object",
+          },
+        },
+        "required": [
+          "id",
+          "name",
+          "question",
+          "questionTypeId",
+          "points",
+          "order",
+          "settings",
+          "exerciseSectionId",
+          "options",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "sectionDisplayMode": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "one_question | all_questions",
+    },
+    "sectionId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "sections": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "afterBehavior": {
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "action": {
+                    "const": "continue",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "action",
+                ],
+                "type": "object",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "action": {
+                    "const": "go_to_section",
+                    "type": "string",
+                  },
+                  "exerciseSectionId": {
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "action",
+                  "exerciseSectionId",
+                ],
+                "type": "object",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "action": {
+                    "const": "submit",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "action",
+                ],
+                "type": "object",
+              },
+            ],
+          },
+          "colorTheme": {
+            "type": "string",
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "order": {
+            "type": "number",
+          },
+          "questionIds": {
+            "items": {
+              "type": "number",
+            },
+            "type": "array",
+          },
+          "title": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "title",
+          "description",
+          "order",
+          "colorTheme",
+          "afterBehavior",
+          "questionIds",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "slug": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "title": {
+      "type": "string",
+    },
+    "updatedAt": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+  },
+  "required": [
+    "id",
+    "courseId",
+    "sectionId",
+    "lessonId",
+    "title",
+    "description",
+    "order",
+    "slug",
+    "isUnlocked",
+    "dueBy",
+    "allowMultipleAttempts",
+    "sectionDisplayMode",
+    "completionPolicy",
+    "passThreshold",
+    "createdAt",
+    "updatedAt",
+    "questions",
+    "sections",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API exercise question and section contract > ZPublicApiExerciseQuestionResponse keeps its published shape > ZPublicApiExerciseQuestionResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "exerciseSectionId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "type": "number",
+    },
+    "name": {
+      "description": "Stable key used in submission answers",
+      "type": "string",
+    },
+    "options": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "number",
+          },
+          "isCorrect": {
+            "type": "boolean",
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "settings": {
+            "additionalProperties": {},
+            "propertyNames": {
+              "type": "string",
+            },
+            "type": "object",
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+        },
+        "required": [
+          "id",
+          "label",
+          "value",
+          "isCorrect",
+          "settings",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "order": {
+      "type": "number",
+    },
+    "points": {
+      "type": "number",
+    },
+    "question": {
+      "type": "string",
+    },
+    "questionTypeId": {
+      "anyOf": [
+        {
+          "const": 1,
+          "type": "number",
+        },
+        {
+          "const": 2,
+          "type": "number",
+        },
+        {
+          "const": 3,
+          "type": "number",
+        },
+        {
+          "const": 4,
+          "type": "number",
+        },
+        {
+          "const": 5,
+          "type": "number",
+        },
+        {
+          "const": 6,
+          "type": "number",
+        },
+        {
+          "const": 7,
+          "type": "number",
+        },
+        {
+          "const": 8,
+          "type": "number",
+        },
+        {
+          "const": 9,
+          "type": "number",
+        },
+        {
+          "const": 10,
+          "type": "number",
+        },
+        {
+          "const": 11,
+          "type": "number",
+        },
+        {
+          "const": 12,
+          "type": "number",
+        },
+        {
+          "const": 13,
+          "type": "number",
+        },
+        {
+          "const": 14,
+          "type": "number",
+        },
+      ],
+    },
+    "settings": {
+      "additionalProperties": {},
+      "propertyNames": {
+        "type": "string",
+      },
+      "type": "object",
+    },
+  },
+  "required": [
+    "id",
+    "name",
+    "question",
+    "questionTypeId",
+    "points",
+    "order",
+    "settings",
+    "exerciseSectionId",
+    "options",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API exercise question and section contract > ZPublicApiExerciseSectionResponse keeps its published shape > ZPublicApiExerciseSectionResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "afterBehavior": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "continue",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+          ],
+          "type": "object",
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "go_to_section",
+              "type": "string",
+            },
+            "exerciseSectionId": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+            "exerciseSectionId",
+          ],
+          "type": "object",
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "action": {
+              "const": "submit",
+              "type": "string",
+            },
+          },
+          "required": [
+            "action",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "colorTheme": {
+      "type": "string",
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "null",
+        },
+      ],
+    },
+    "id": {
+      "format": "uuid",
+      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+      "type": "string",
+    },
+    "order": {
+      "type": "number",
+    },
+    "questionIds": {
+      "items": {
+        "type": "number",
+      },
+      "type": "array",
+    },
+    "title": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "id",
+    "title",
+    "description",
+    "order",
+    "colorTheme",
+    "afterBehavior",
+    "questionIds",
+  ],
+  "type": "object",
+}
+`;

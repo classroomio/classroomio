@@ -10,7 +10,7 @@ const { operations: apiOperations, tags: apiTags } = extractOperations(apiSpec, 
 // Sidebar layout for the API tab: resource sections, then one group per tag.
 // Without this, Blume orders tags by first path seen, which scatters them.
 const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
-  { label: 'Audience', tags: ['Audience'] },
+  { label: 'Audience', tags: ['Audience', 'Team'] },
   { label: 'Analytics', tags: ['Analytics'] },
   {
     label: 'Courses',
@@ -18,6 +18,11 @@ const API_SECTIONS: Array<{ label: string; tags: string[] }> = [
       'Courses',
       'Course Members',
       'Course Invites',
+      'Course Exercises',
+      'Exercise Templates',
+      'Course Submissions',
+      'Course Marks',
+      'Student Activity',
       'Course Certificates'
     ]
   },

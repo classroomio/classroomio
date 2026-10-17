@@ -2,14 +2,9 @@ import { createHash } from 'node:crypto';
 
 import { tool } from 'ai';
 import { CoursePlanSchema, getCourseTemplate } from '@cio/ai-assistant';
-import {
-  ADD_QUESTIONS_TOOL_DESCRIPTION,
-  PREMIUM_QUESTION_TYPE_KEYS,
-  QUESTION_TYPE_ID_TO_KEY,
-  QUESTION_TYPE_REGISTRY,
-  UPDATE_QUESTIONS_BINARY_TYPES_HINT
-} from '@cio/question-types';
+import { ADD_QUESTIONS_TOOL_DESCRIPTION, UPDATE_QUESTIONS_BINARY_TYPES_HINT } from '@cio/question-types';
 import { AppError } from '@cio/utils/errors';
+import { assertNoPremiumQuestionTypes } from '../exercise/premium-guard';
 import { trackAgentEvent, AgentEvent } from '../../utils/tinybird';
 import {
   createAgentRunEvent,
@@ -427,36 +422,6 @@ async function executeAgentToolBase<TArgs, TResult>(
 
     throw sanitizeToolError(toolName, error);
   }
-}
-
-function assertNoPremiumQuestionTypes(
-  questionTypeIds: ReadonlyArray<number | undefined | null>,
-  isOrgOnPaidPlan: boolean
-): void {
-  if (isOrgOnPaidPlan) return;
-
-  const blockedTypenames = new Set<string>();
-  for (const typeId of questionTypeIds) {
-    if (typeId == null) continue;
-
-    const key = QUESTION_TYPE_ID_TO_KEY[typeId];
-    if (key && PREMIUM_QUESTION_TYPE_KEYS.has(key)) {
-      const registry = QUESTION_TYPE_REGISTRY.find((t) => t.id === typeId);
-      blockedTypenames.add(registry?.typename ?? key);
-    }
-  }
-
-  if (blockedTypenames.size === 0) return;
-
-  const allowed = QUESTION_TYPE_REGISTRY.filter((t) => !PREMIUM_QUESTION_TYPE_KEYS.has(t.key))
-    .map((t) => t.typename)
-    .join(', ');
-
-  throw new AppError(
-    `Question type(s) ${Array.from(blockedTypenames).join(', ')} require a paid plan and are not available on this org. Use one of: ${allowed}.`,
-    'UPGRADE_REQUIRED',
-    403
-  );
 }
 
 /**

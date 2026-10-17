@@ -4,6 +4,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { getConfig } from './config';
 import { registerAnalyticsTools } from './tools/analytics';
+import { registerAudienceTools } from './tools/audience';
 import { registerCohortGoalTools } from './tools/cohort-goals';
 import { registerCohortNewsfeedTools } from './tools/cohort-newsfeed';
 import { registerLessonTools } from './tools/lessons';
@@ -11,7 +12,10 @@ import { registerMediaUploadTools } from './tools/media-upload';
 import { registerCohortTools } from './tools/cohorts';
 import { registerCourseCertificateTools } from './tools/course-certificates';
 import { registerCourseDraftTools } from './tools/course-drafts';
+import { registerCourseExerciseTools } from './tools/course-exercises';
 import { registerCourseMemberTools } from './tools/course-members';
+import { registerCourseSubmissionTools } from './tools/course-submissions';
+import { registerTeamTools } from './tools/team';
 
 async function main() {
   const config = getConfig();
@@ -29,7 +33,11 @@ async function main() {
   registerLessonTools(server, apiClient);
   registerCourseMemberTools(server, apiClient);
   registerCourseCertificateTools(server, apiClient);
+  registerCourseExerciseTools(server, apiClient);
+  registerCourseSubmissionTools(server, apiClient);
   registerAnalyticsTools(server, apiClient);
+  registerAudienceTools(server, apiClient);
+  registerTeamTools(server, apiClient);
 
   const transport = new StdioServerTransport();
   await server.connect(transport);

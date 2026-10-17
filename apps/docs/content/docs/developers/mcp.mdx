@@ -144,11 +144,6 @@ Current tools:
 - `publish_course_draft_to_existing_course`
 - `tag_course_draft`
 - `tag_courses`
-- `list_course_exercises`
-- `get_course_exercise`
-- `create_course_exercise`
-- `create_course_exercise_from_template`
-- `update_course_exercise`
 
 Course certificate tools:
 
@@ -176,6 +171,56 @@ What the tools cover compared with the dashboard:
 - Not covered, on purpose: previewing a design, which is a UI concern.
 - Not covered yet: compliance certificate history. For compliance courses, the dashboard also shows each learner's cycle-by-cycle completion and recertification history. That belongs to a separate compliance API and is not part of these tools.
 - Not covered because the dashboard does not have it: manual issuance. Certificates are issued automatically when a student meets the course's completion rules.
+
+Course exercise tools:
+
+- `list_course_exercises`
+- `get_course_exercise`
+- `create_course_exercise`
+- `update_course_exercise`
+- `delete_course_exercise`
+- `add_exercise_question`
+- `update_exercise_question`
+- `delete_exercise_question`
+- `add_exercise_section`
+- `update_exercise_section`
+- `delete_exercise_section`
+- `notify_course_exercise`
+- `get_course_exercise_notify_status`
+- `list_exercise_templates`
+- `get_exercise_template`
+
+Submission and marks tools:
+
+- `list_course_submissions`
+- `get_course_submission`
+- `grade_course_submission`
+- `update_course_submission`
+- `delete_course_submission`
+- `get_course_marks`
+
+Exercise and template tools call the public API (`/public-api/v1/courses/:id/exercises` and `/public-api/v1/exercise-templates`) with the `course:exercise:read` / `course:exercise:write` scopes. Submission and marks tools call `/public-api/v1/courses/:id/submissions` and `/public-api/v1/courses/:id/marks` with the `course:submission:read` / `course:submission:write` scopes. MCP keys get all four by default. Existing MCP keys that still have the default scope set were given the submission scopes too; a key created with a narrower scope list is left unchanged, so create a new key to use the submission tools.
+
+These tools act as the person who created the key:
+
+- Every exercise, template, and submission tool needs them to be a course tutor/admin or an org admin (templates: an org admin or tutor). Exercise reads include the correct answers, which is why reading needs the team role too.
+- `get_course_marks` needs them to be a member of the course or an org admin. A student only gets their own row, as in the dashboard.
+
+`create_course_exercise` takes either `title` and `questions`, or a `templateId` from `list_exercise_templates`; with a template, only `sectionId`, `lessonId` and `order` may be sent alongside it. `create_course_exercise_from_template` was merged into it. `update_course_exercise` is a diff: send a question with its `id` to edit it, with `id` and `delete: true` to remove it, and without an `id` to add it; options work the same way. Question, option, and section ids must belong to the exercise. File upload, ordering, link, star rating, and video recording questions need a paid plan (403 `UPGRADE_REQUIRED` on Basic).
+
+For one question or exercise section, use `add_exercise_question`, `update_exercise_question` and `delete_exercise_question`, or `add_exercise_section`, `update_exercise_section` and `delete_exercise_section`. They never delete anything you leave out. `delete_exercise_question` and `update_course_exercise` fail with 409 when they would delete a question students have answered, unless `force` is true, which also deletes their answers. In `update_course_exercise`, sections follow the same diff rules as questions: sections you leave out are kept. Exercise changes apply immediately, also on published courses, and past submissions are not regraded.
+
+`delete_course_exercise` and `delete_course_submission` are hard deletes. Deleting an exercise also deletes every submission for it.
+
+`grade_course_submission` sets the points per answer, the total, and feedback, and marks the submission completed. `update_course_submission` only changes the grading state or feedback. The student is emailed when the state changes, as in the dashboard. `notify_course_exercise` emails every course member and returns a `jobId` for `get_course_exercise_notify_status`; each call sends the emails again.
+
+List tools (`list_course_exercises`, `list_exercise_templates`, `list_course_submissions`, `get_course_marks`) take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
+
+What the tools cover compared with the dashboard:
+
+- Covered: creating, editing, deleting, and notifying about exercises (including exercise sections and templates), reviewing and grading submissions, and the gradebook.
+- Not covered, on purpose: student actions (submitting an exercise, recording video answers). A key acts as its creator, an admin or tutor, and must not submit on a student's behalf.
+- Covered by other tools: moving or reordering exercises (`reorder_course_content`) and unlocking one (`isUnlocked` on `update_course_exercise`).
 
 Course member and invite tools:
 
@@ -231,7 +276,7 @@ Cohort tools:
 - `create_cohort_invite_link`
 - `set_cohort_invite_link_revoked`
 
-Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these, the course member, invite, and certificate tools, and analytics (below), MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
+Cohort tools call the public API and need the key's `cohort:read` and `cohort:write` scopes, which MCP keys have by default. Apart from these, the course member, invite, and certificate tools, and the analytics, audience, and team tools (below), MCP keys can't reach the public API. They act as the person who created the key, with the same permissions that person has in the dashboard:
 
 - Reading a cohort needs them to be a member of the cohort or an org admin.
 - Changing a cohort, its members, courses, posts, or goals, inviting students, managing the join link, and re-evaluating goals need them to be a cohort tutor/admin or an org admin.
@@ -261,6 +306,26 @@ Analytics tools are read-only and cost no credits. They need the key's `analytic
 `get_org_analytics` returns only the sections you ask for in `include` (default `overview`): `overview`, `traffic`, `countries`, `funnel`, `courseTypes`, `topCourses`, `loginActivity`, `compliance`. `get_course_analytics` takes `summary` and `funnel` (default `summary`). Both take `days` (7, 30, 90 or 365; default 30), and `get_org_analytics` takes `limit` (1-20, default 5) for its list sections.
 
 Each section is cached for up to 10 minutes (login activity: 24 hours), and `meta.generatedAt` says when the oldest one was computed. `list_compliance_learners` takes `page` and `limit` (default 20, max 100); `list_course_analytics_students` caps `limit` at 50.
+
+Audience and team tools:
+
+- `list_audience_members`
+- `get_audience_member`
+- `add_audience_member`
+- `assign_audience_courses`
+- `update_audience_member`
+- `remove_audience_member`
+- `list_team_members`
+- `get_team_member`
+- `update_team_member`
+
+These call the public API and need the key's `audience:read` / `audience:write` and `team:read` / `team:write` scopes, which MCP keys have by default. Existing MCP keys that still have the default scope set were given them too; a key created with a narrower scope list is left unchanged, so create a new key to use these tools. They act as the person who created the key:
+
+- Every audience and team tool needs the key creator to be an org admin, the same as the dashboard's Audience and Team settings pages.
+- `update_team_member` switches a member between admin and tutor with `roleId` (1 or 2). The key creator cannot change their own role, and the organization must keep at least one admin.
+- `update_audience_member` and `update_team_member` take `name` to set a joined member's full name. The profile is shared, so the name changes in every organization that person belongs to. Email, password, username and avatar stay with the person. On a member who has not accepted their invite yet, `update_audience_member` takes `email` to correct the address instead.
+- `remove_audience_member` deletes the organization membership; the person keeps their account. Inviting and removing team members is not available yet.
+- `list_audience_members` and `list_team_members` take `page` and `limit` (default 20, max 100) and return `{ data, pagination }`.
 
 ## Draft Model
 
@@ -482,8 +547,9 @@ Add a 5-question multiple-choice exercise to lesson 3.
 Expected tool sequence:
 
 1. Agent calls `list_course_exercises` if it needs current context.
-2. Agent calls `create_course_exercise` for a brand new exercise.
-3. Agent calls `update_course_exercise` for later revisions.
+2. Agent calls `create_course_exercise` for a brand new exercise, or with a `templateId` from `list_exercise_templates`.
+3. Agent calls `get_course_exercise`, then `update_course_exercise` for later revisions.
+4. Agent calls `notify_course_exercise` if the user wants students emailed.
 
 Use this direct path when the course is already live and the change is exercise-specific.
 
@@ -533,8 +599,14 @@ Exercise tools use the live course directly:
 - `list_course_exercises`
 - `get_course_exercise`
 - `create_course_exercise`
-- `create_course_exercise_from_template`
 - `update_course_exercise`
+- `delete_course_exercise`
+- `add_exercise_question`
+- `update_exercise_question`
+- `delete_exercise_question`
+- `add_exercise_section`
+- `update_exercise_section`
+- `delete_exercise_section`
 
 Supported `questionTypeId` values for exercise payloads:
 

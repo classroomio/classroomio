@@ -4,7 +4,7 @@ export const PUBLIC_API_BEARER_SCHEME = 'bearerAuth';
 
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete', 'options', 'head'] as const;
 
-export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, courses, and cohorts, and to read analytics, with organization-scoped API keys.
+export const PUBLIC_API_OPENAPI_DESCRIPTION = `Use the ClassroomIO public API to manage audience members, your team, courses, and cohorts, and to read analytics, with organization-scoped API keys.
 
 # Authentication
 
@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the cohort, course member and invite, and course certificate endpoints, through their \`cohort:*\`, \`course:member:*\`, and \`course:certificate:*\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the audience, team, cohort, course member and invite, course certificate, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their \`audience:*\`, \`team:*\`, \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:exercise:*\`, \`course:submission:*\`, \`course:student:write\`, and \`media:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -146,8 +146,11 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'POST /public-api/v1/audience': 'Invite an audience member',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
   'GET /public-api/v1/audience/{memberId}': 'Get an audience member',
-  'PUT /public-api/v1/audience/{memberId}': "Update a member's email",
+  'PUT /public-api/v1/audience/{memberId}': 'Update an audience member',
   'DELETE /public-api/v1/audience/{memberId}': 'Remove an audience member',
+  'GET /public-api/v1/team': 'List team members',
+  'GET /public-api/v1/team/{memberId}': 'Get a team member',
+  'PUT /public-api/v1/team/{memberId}': 'Update a team member',
   'GET /public-api/v1/courses': 'List courses',
   'POST /public-api/v1/courses': 'Create a course',
   'GET /public-api/v1/courses/{courseId}': 'Get a course',
@@ -161,6 +164,33 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
   'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
   'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate',
+  'GET /public-api/v1/courses/{courseId}/exercises': 'List course exercises',
+  'POST /public-api/v1/courses/{courseId}/exercises': 'Create a course exercise',
+  'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Get a course exercise',
+  'PUT /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Update a course exercise',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Delete a course exercise',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions': 'Add an exercise question',
+  'PATCH /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}':
+    'Update an exercise question',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}/questions/{questionId}':
+    'Delete an exercise question',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections': 'Add an exercise section',
+  'PATCH /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Update an exercise section',
+  'DELETE /public-api/v1/courses/{courseId}/exercises/{exerciseId}/sections/{sectionId}': 'Delete an exercise section',
+  'POST /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify': 'Notify course members about an exercise',
+  'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}/notify/{jobId}': 'Get an exercise notification status',
+  'GET /public-api/v1/exercise-templates': 'List exercise templates',
+  'GET /public-api/v1/exercise-templates/{templateId}': 'Get an exercise template',
+  'GET /public-api/v1/courses/{courseId}/submissions': 'List course submissions',
+  'GET /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Get a submission',
+  'PUT /public-api/v1/courses/{courseId}/submissions/{submissionId}/grades': 'Grade a submission',
+  'PATCH /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Update a submission',
+  'DELETE /public-api/v1/courses/{courseId}/submissions/{submissionId}': 'Delete a submission',
+  'PUT /public-api/v1/courses/{courseId}/members/{memberId}/lessons/{lessonId}/completion':
+    'Set lesson completion for a student',
+  'POST /public-api/v1/courses/{courseId}/members/{memberId}/exercises/{exerciseId}/submissions':
+    'Submit an exercise for a student',
+  'GET /public-api/v1/courses/{courseId}/marks': 'Get course marks',
   'GET /public-api/v1/courses/{courseId}/members': 'List course members',
   'POST /public-api/v1/courses/{courseId}/members': 'Add a course member',
   'GET /public-api/v1/courses/{courseId}/members/{memberId}': 'Get a course member',
@@ -218,10 +248,16 @@ const OPERATION_SUMMARIES: Record<string, string> = {
 // Scalar groups operations under these tags.
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
+  { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
   { name: 'Courses', description: 'Create and manage courses.' },
   { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
   { name: 'Course Members', description: 'Manage the people in a course.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },
+  { name: 'Course Exercises', description: 'Create and manage course exercises.' },
+  { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
+  { name: 'Course Submissions', description: 'Review and grade exercise submissions.' },
+  { name: 'Course Marks', description: 'Read the course gradebook.' },
+  { name: 'Student Activity', description: 'Record lesson completions and exercise submissions for a student.' },
   { name: 'Cohorts', description: 'Create and manage cohorts.' },
   { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
   { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },

@@ -24,6 +24,7 @@ const ZNotifyBranding = z
  */
 export const ZNotifyCourseExercisePayload = z.object({
   courseId: z.string().min(1),
+  exerciseId: z.string().min(1).optional(),
   exerciseTitle: z.string().min(1),
   courseName: z.string().min(1),
   orgName: z.string().min(1),
