@@ -8,7 +8,6 @@ const mocks = vi.hoisted(() => ({
   getLearningPathById: vi.fn(),
   getLearningPathByPublicId: vi.fn(),
   getLearningPathBySlug: vi.fn(),
-  isLearningPathSlugTaken: vi.fn(),
   getMemberByPathAndProfile: vi.fn(),
   createLearningPath: vi.fn(),
   listLearningPaths: vi.fn(),
@@ -74,7 +73,6 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   getLearningPathById: mocks.getLearningPathById,
   getLearningPathByPublicId: mocks.getLearningPathByPublicId,
   getLearningPathBySlug: mocks.getLearningPathBySlug,
-  isLearningPathSlugTaken: mocks.isLearningPathSlugTaken,
   getMemberByPathAndProfile: mocks.getMemberByPathAndProfile,
   createLearningPath: mocks.createLearningPath,
   listLearningPaths: mocks.listLearningPaths,
@@ -1388,16 +1386,27 @@ describe('learning-path services', () => {
       expect(mocks.updateLearningPath).not.toHaveBeenCalled();
     });
 
-    it('rejects a slug that is already used by any learning path', async () => {
+    it('returns a slug conflict when the update hits the slug unique constraint', async () => {
       mocks.getLearningPathById.mockResolvedValue({ ...testPath, slug: 'old-slug' });
-      mocks.isLearningPathSlugTaken.mockResolvedValue(true);
+      const postgresError = Object.assign(
+        new Error('duplicate key value violates unique constraint "learning_path_slug_key"'),
+        {
+          code: '23505',
+          constraint_name: 'learning_path_slug_key'
+        }
+      );
+      mocks.updateLearningPath.mockRejectedValue(Object.assign(new Error('Failed query'), { cause: postgresError }));
 
       await expect(
         updateLearningPathService(testPath.id, 'user-1', { slug: 'taken-slug' }, { 'org-1': ROLE.ADMIN })
-      ).rejects.toMatchObject({ code: ErrorCodes.VALIDATION_ERROR, statusCode: 400 });
+      ).rejects.toMatchObject({
+        message: 'A learning path with this URL slug already exists',
+        code: ErrorCodes.CONFLICT,
+        statusCode: 409,
+        field: 'slug'
+      });
 
-      expect(mocks.isLearningPathSlugTaken).toHaveBeenCalledWith('taken-slug', transactionClient);
-      expect(mocks.updateLearningPath).not.toHaveBeenCalled();
+      expect(mocks.updateLearningPath).toHaveBeenCalled();
     });
 
     it('skips the plan check when the update does not touch the certificate', async () => {
