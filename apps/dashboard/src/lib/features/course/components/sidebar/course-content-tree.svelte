@@ -192,7 +192,7 @@
               event.stopPropagation();
             }}
           >
-            <span class="outline-icon"><CourseContentIcon type={contentItem.type} size={14} /></span>
+            <CourseContentIcon type={contentItem.type} size={14} className="outline-icon" />
             <GripVerticalIcon class="outline-grip absolute size-3.5" />
           </span>
         {:else}
@@ -279,7 +279,7 @@
                             event.stopPropagation();
                           }}
                         >
-                          <span class="outline-icon"><CourseContentIcon type={ContentType.Section} size={12} /></span>
+                          <CourseContentIcon type={ContentType.Section} size={12} className="outline-icon" />
                           <GripVerticalIcon class="outline-grip absolute size-3.5" />
                         </span>
                       {:else}
