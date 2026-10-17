@@ -3,11 +3,7 @@ import {
   ZAutomationDraftTagAssignment,
   ZAutomationDraftTagParam
 } from '@cio/utils/validation/tag';
-import {
-  ZCourseContentReorder,
-  ZCourseContentReorderBase,
-  ZCourseLandingPageUpdate
-} from '@cio/utils/validation/course';
+import { ZCourseLandingPageUpdate } from '@cio/utils/validation/course';
 import {
   ZCourseImportCourseParam,
   ZCourseImportDraftCreate,
@@ -36,10 +32,6 @@ export const ZUpdateCourseLandingPageToolInput = ZCourseLandingPageUpdate.extend
   courseId: ZCourseImportCourseParam.shape.courseId
 });
 
-export const ZReorderCourseContentToolInput = ZCourseContentReorderBase.extend({
-  courseId: ZCourseImportCourseParam.shape.courseId
-});
-
 export const ZPublishCourseDraftToolInput = ZCourseImportDraftPublishBase.extend({
   draftId: ZCourseImportDraftGetParam.shape.draftId
 }).refine((data) => data.type !== 'COMPLIANCE' || data.compliance !== undefined, {
@@ -62,7 +54,6 @@ const getCourseDraftShape = ZCourseImportDraftGetParam.shape as unknown as ZodRa
 const updateCourseDraftShape = ZUpdateCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
 const tagCourseDraftShape = ZTagCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
 const updateCourseLandingPageShape = ZUpdateCourseLandingPageToolInput.shape as unknown as ZodRawShapeCompat;
-const reorderCourseContentShape = ZReorderCourseContentToolInput.shape as unknown as ZodRawShapeCompat;
 const publishCourseDraftShape = ZPublishCourseDraftToolInput.shape as unknown as ZodRawShapeCompat;
 const publishCourseDraftToExistingCourseShape =
   ZPublishCourseDraftToExistingCourseToolInput.shape as unknown as ZodRawShapeCompat;
@@ -101,18 +92,6 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
     async (args) => {
       const { courseId, ...payload } = ZUpdateCourseLandingPageToolInput.parse(args);
       const result = await apiClient.updateCourseLandingPage(courseId, payload);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
-    'reorder_course_content',
-    'Batch reorder live course sections and lesson or exercise content without creating a draft. Use this for section ordering or moving/reordering lessons and exercises between sections. For items, pass type as LESSON or EXERCISE and use sectionId to move between sections or null for ungrouped content.',
-    reorderCourseContentShape,
-    async (args) => {
-      const { courseId, ...rawPayload } = ZReorderCourseContentToolInput.parse(args);
-      const payload = ZCourseContentReorder.parse(rawPayload);
-      const result = await apiClient.reorderCourseContent(courseId, payload);
       return jsonContent(result);
     }
   );
