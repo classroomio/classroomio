@@ -230,7 +230,6 @@
     use:dragHandleZone={{
       items: outline,
       type: 'course-sidebar-outline',
-      centreDraggedOnCursor: true,
       dragDisabled: !canOpenContentModal || saving,
       dropTargetStyle: { outline: '2px solid var(--color-primary)' }
     }}
@@ -333,7 +332,6 @@
                       use:dragHandleZone={{
                         items: entry.items,
                         type: 'course-sidebar-outline',
-                        centreDraggedOnCursor: true,
                         dragDisabled: !canOpenContentModal || saving,
                         dropFromOthersDisabled: draggingSection,
                         dropTargetStyle: { outline: '2px solid var(--color-primary)' }
