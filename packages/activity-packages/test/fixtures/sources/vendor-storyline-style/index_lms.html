@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Storyline-style SCO</title>
+  </head>
+  <body>
+    <h1>Storyline-style SCO</h1>
+    <div class="row">
+      <button id="btn-init">Initialize</button>
+      <button id="btn-finish">Finish</button>
+      <button id="btn-commit">Commit</button>
+    </div>
+    <div class="row">
+      <label for="inp-score">Raw score 0-100</label>
+      <input id="inp-score" value="85" size="5" />
+      <button id="btn-set-score">Set score</button>
+    </div>
+    <div class="row">
+      <video id="intro" src="media/intro.mp4" controls></video>
+    </div>
+    <h2>Log</h2>
+    <div id="log" aria-live="polite"></div>
+    <script>
+      function findApi(win) {
+        while (win) {
+          if (win.API && win.API.LMSInitialize) return win.API;
+          if (win.parent === win) return null;
+          win = win.parent;
+        }
+        return null;
+      }
+      var api = null;
+      var logEl = document.getElementById('log');
+      function log(msg) {
+        logEl.textContent += msg + '\n';
+      }
+      document.getElementById('btn-init').onclick = function () {
+        api = findApi(window);
+        if (!api) {
+          log('no API found');
+          return;
+        }
+        log('LMSInitialize -> ' + api.LMSInitialize(''));
+      };
+      document.getElementById('btn-finish').onclick = function () {
+        log('LMSFinish -> ' + api.LMSFinish(''));
+      };
+      document.getElementById('btn-commit').onclick = function () {
+        log('LMSCommit -> ' + api.LMSCommit(''));
+      };
+      document.getElementById('btn-set-score').onclick = function () {
+        var v = document.getElementById('inp-score').value;
+        log('LMSSetValue score.raw=' + v + ' -> ' + api.LMSSetValue('cmi.core.score.raw', v));
+      };
+    </script>
+  </body>
+</html>

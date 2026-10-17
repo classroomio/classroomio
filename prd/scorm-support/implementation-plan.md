@@ -1,4 +1,8 @@
-# SCORM Support Implementation Plan
+# SCORM Support Implementation Plan (v1 — Superseded)
+
+> [!CAUTION]
+> **SUPERSEDED ARCHITECTURE**
+> This v1 implementation plan was based on modelling SCORM as a lesson type and is superseded by the v2 activity architecture.
 
 ## Purpose
 
