@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   getLearningPathById: vi.fn(),
   getLearningPathByPublicId: vi.fn(),
   getLearningPathBySlug: vi.fn(),
+  isLearningPathSlugTaken: vi.fn(),
   getMemberByPathAndProfile: vi.fn(),
   createLearningPath: vi.fn(),
   listLearningPaths: vi.fn(),
@@ -73,6 +74,7 @@ vi.mock('@cio/db/queries/learning-path', () => ({
   getLearningPathById: mocks.getLearningPathById,
   getLearningPathByPublicId: mocks.getLearningPathByPublicId,
   getLearningPathBySlug: mocks.getLearningPathBySlug,
+  isLearningPathSlugTaken: mocks.isLearningPathSlugTaken,
   getMemberByPathAndProfile: mocks.getMemberByPathAndProfile,
   createLearningPath: mocks.createLearningPath,
   listLearningPaths: mocks.listLearningPaths,
@@ -1383,6 +1385,18 @@ describe('learning-path services', () => {
           { 'org-1': ROLE.ADMIN }
         )
       ).rejects.toMatchObject({ code: ErrorCodes.UPGRADE_REQUIRED, statusCode: 403 });
+      expect(mocks.updateLearningPath).not.toHaveBeenCalled();
+    });
+
+    it('rejects a slug that is already used by any learning path', async () => {
+      mocks.getLearningPathById.mockResolvedValue({ ...testPath, slug: 'old-slug' });
+      mocks.isLearningPathSlugTaken.mockResolvedValue(true);
+
+      await expect(
+        updateLearningPathService(testPath.id, 'user-1', { slug: 'taken-slug' }, { 'org-1': ROLE.ADMIN })
+      ).rejects.toMatchObject({ code: ErrorCodes.VALIDATION_ERROR, statusCode: 400 });
+
+      expect(mocks.isLearningPathSlugTaken).toHaveBeenCalledWith('taken-slug', transactionClient);
       expect(mocks.updateLearningPath).not.toHaveBeenCalled();
     });
 

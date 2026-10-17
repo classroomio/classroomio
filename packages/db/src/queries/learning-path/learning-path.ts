@@ -587,6 +587,22 @@ export async function getLearningPathByPublicId(
   }
 }
 
+/** True when any learning path row exists with this slug. */
+export async function isLearningPathSlugTaken(slug: string, dbClient: DbOrTxClient = db): Promise<boolean> {
+  try {
+    const rows = await dbClient
+      .select({ id: schema.learningPath.id })
+      .from(schema.learningPath)
+      .where(eq(schema.learningPath.slug, slug))
+      .limit(1);
+
+    return rows.length > 0;
+  } catch (error) {
+    console.error('isLearningPathSlugTaken error:', error);
+    throw new Error(`Failed to check learning path slug: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
 /**
  * Fetches a learning path by organizationId and slug (for public org-site URLs).
  */

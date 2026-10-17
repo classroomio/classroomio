@@ -20,6 +20,7 @@ import {
   getLearningPathById,
   getLearningPathByPublicId,
   getLearningPathBySlug,
+  isLearningPathSlugTaken,
   getLearningPathCertificateVerification,
   getMemberByPathAndProfile,
   listLearningPathCourses,
@@ -306,9 +307,9 @@ export async function updateLearningPathService(
       }
 
       if (data.slug && data.slug !== path.slug) {
-        const existingWithSlug = await getLearningPathBySlug(path.organizationId, data.slug, tx);
+        const slugTaken = await isLearningPathSlugTaken(data.slug, tx);
 
-        if (existingWithSlug && existingWithSlug.id !== path.id) {
+        if (slugTaken) {
           throw new AppError('A learning path with this URL slug already exists', ErrorCodes.VALIDATION_ERROR, 400);
         }
       }
