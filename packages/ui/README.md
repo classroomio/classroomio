@@ -710,3 +710,7 @@ When adding a new component to this package, follow these steps:
 - `jsrepo.json` - jsrepo configuration for component installation
 - `svelte.config.js` - Svelte configuration
 - `tsconfig.json` - TypeScript configuration
+
+### Public course mixed outline
+
+`PublicCourseSidebarSection.standalone` renders its items directly, without a section heading or collapse control. Supply one standalone entry per root lesson or exercise, interleaved with section entries in course order. Standalone entries stay visible when `collapsibleSections` is enabled.

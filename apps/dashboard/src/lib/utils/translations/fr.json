@@ -2845,7 +2845,8 @@
         "add_content_later": "Plus tard",
         "add_content_add_to_section": "Ajouter du contenu",
         "expand_content": "Développer le contenu",
-        "collapse_content": "Réduire le contenu"
+        "collapse_content": "Réduire le contenu",
+        "outside_section": "En dehors d’une section"
       },
       "news_feed": {
         "heading": "Fil d'actualité",

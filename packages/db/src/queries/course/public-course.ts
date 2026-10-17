@@ -232,17 +232,9 @@ export async function getPublicCourseTreeBySlug(courseSlug: string): Promise<Pub
         isUnlocked: row.isUnlocked ?? true
       }));
 
-    // Sort items so that the visual reading order matches the sidebar:
-    // items in the first section come before items in the second, and within
-    // a section items are sorted by their own `order`. Unsectioned items go
-    // last so the redirect from the course landing page never lands on a
-    // floating lesson when sections exist.
-    const UNSECTIONED_ORDER = Number.POSITIVE_INFINITY;
     const sectionOrderById = new Map(sections.map((section) => [section.id, section.order]));
     const orderForItem = (item: PublicCourseItem) =>
-      item.sectionId && sectionOrderById.has(item.sectionId)
-        ? (sectionOrderById.get(item.sectionId) ?? UNSECTIONED_ORDER)
-        : UNSECTIONED_ORDER;
+      item.sectionId ? (sectionOrderById.get(item.sectionId) ?? item.order) : item.order;
 
     const items = [...lessonItems, ...exerciseItems].sort((left, right) => {
       const sectionDiff = orderForItem(left) - orderForItem(right);

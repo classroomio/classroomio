@@ -32,9 +32,10 @@
 
   interface Props {
     reorder?: boolean;
+    standaloneItem?: CourseContentItem;
   }
 
-  let { reorder = false }: Props = $props();
+  let { reorder = false, standaloneItem }: Props = $props();
 
   let prevTitle: string | undefined = $state();
   let errors: Record<string, string> = $state({});
@@ -63,7 +64,7 @@
   let contentItems = $state<ContentDndItem[]>([]);
 
   function buildContentItems(): ContentDndItem[] {
-    return (contentData.items || []).map((item) => ({
+    return (standaloneItem ? [standaloneItem] : contentData.items || []).map((item) => ({
       ...item,
       id: `${item.type}-${item.id}`,
       contentId: item.id
@@ -71,7 +72,33 @@
   }
 
   function syncCourseContentItems(items: ContentDndItem[]) {
-    if (!courseApi.course?.content || courseApi.course.content.grouped) return;
+    if (!courseApi.course?.content) return;
+
+    if (courseApi.course.content.grouped) {
+      const updatedStandaloneItems = items.map(({ contentId, id: _dndId, ...rest }) => ({
+        ...rest,
+        id: contentId
+      }));
+
+      courseApi.course.content = {
+        ...courseApi.course.content,
+        sections: courseApi.course.content.sections.map((section) => {
+          if (section.id !== 'ungrouped') return section;
+
+          return {
+            ...section,
+            items: section.items.map((existing) => {
+              const updated = updatedStandaloneItems.find(
+                (item) => item.id === existing.id && item.type === existing.type
+              );
+
+              return updated ?? existing;
+            })
+          };
+        })
+      };
+      return;
+    }
 
     const updatedItems = items.map(({ contentId, id: _dndId, ...rest }, index) => ({
       ...rest,
