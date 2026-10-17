@@ -10,7 +10,7 @@
 
 ## ✨ About ClassroomIO
 
-<img width="3248" height="1999" alt="image" src="https://github.com/user-attachments/assets/290d663a-5a52-4705-8f1b-615427695717" />
+<img width="3248" height="1999" alt="image" src="https://assets.cdn.clsrio.com/www/home/dashboard-home.png" />
 
 
 ClassroomIO is an intelligent customer Training platform that helps SaaS companies use education to grow their business. Create high-quality learning experiences faster, deliver them across your customer journey, and use AI to scale customer education.
