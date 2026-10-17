@@ -13,7 +13,7 @@
 <img width="3248" height="1999" alt="image" src="https://assets.cdn.clsrio.com/www/home/dashboard-home.png" />
 
 
-ClassroomIO is an intelligent customer Training platform that helps SaaS companies use education to grow their business. Create high-quality learning experiences faster, deliver them across your customer journey, and use AI to scale customer education.
+ClassroomIO is an intelligent customer training platform that helps SaaS companies use education to grow their business. Create high-quality learning experiences faster, deliver them across your customer journey, and use AI to scale customer education.
 
 ## Who It's For
 
@@ -41,7 +41,7 @@ ClassroomIO is an intelligent customer Training platform that helps SaaS compani
 - **Learning Paths:** Guide learners through structured learning experiences.
 - **Embedded Learning:** Embed videos, slides, and documents directly into your courses to give learners a seamless learning experience.
 - **REST API & Webhooks:** Connect ClassroomIO to your existing systems, access learning data, and trigger workflows across your tools.
-- **Zapier Integration:** Connect ClassroomIO with your favourite tools and automate workflows across your existing apps.
+- **Zapier Integration (Coming Soon):** Connect ClassroomIO with your favourite tools and automate workflows across your existing apps.
 
   ### 3. Intelligence
 
