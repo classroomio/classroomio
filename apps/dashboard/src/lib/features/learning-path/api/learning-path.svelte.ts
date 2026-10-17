@@ -308,6 +308,8 @@ export class LearningPathApi extends BaseApiWithErrors {
   ): Promise<UpdateLearningPathData | null> {
     const { showSuccessToast = true } = options;
 
+    this.errors = {};
+
     const validationResult = ZUpdateLearningPath.safeParse(data);
     if (!validationResult.success) {
       this.errors = mapZodErrorsToTranslations(validationResult.error);
@@ -332,6 +334,13 @@ export class LearningPathApi extends BaseApiWithErrors {
         this.paths = this.paths.map((p) => (p.id === pathId || p.publicId === pathId ? { ...p, ...result.data } : p));
         if (showSuccessToast) {
           snackbar.success('learningPath.snackbar.updated');
+        }
+      },
+      onError: (err) => {
+        const field = err && typeof err === 'object' && 'field' in err ? err.field : undefined;
+
+        if (field === 'slug') {
+          this.errors = { slug: 'learningPath.settings.general.slug_taken' };
         }
       }
     });
