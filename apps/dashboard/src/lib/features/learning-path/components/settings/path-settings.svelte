@@ -83,6 +83,7 @@
         isPublished: path.isPublished ?? false
       };
       errors = {};
+      learningPathApi.resetErrors();
       hasUnsavedChanges = false;
     }
   });
@@ -128,6 +129,8 @@
         currentSlug = response.slug ?? generatedSlug;
         snapshot.slug = currentSlug;
         snackbar.success('learningPath.snackbar.link_generated');
+      } else if (learningPathApi.errors.slug) {
+        snackbar.error(learningPathApi.errors.slug);
       }
     } catch (error) {
       console.error(error);
@@ -180,6 +183,10 @@
 
     const updated = await learningPathApi.update(pathPublicId, payload, { showSuccessToast: false });
     if (!updated) {
+      if (learningPathApi.errors.slug) {
+        snackbar.error(learningPathApi.errors.slug);
+      }
+
       return;
     }
 
@@ -346,6 +353,9 @@
             <p class="text-sm">{$t('learningPath.settings.general.setup_landing_for_link')}</p>
           {/if}
         </div>
+        {#if learningPathApi.errors.slug}
+          <Field.Error>{$t(learningPathApi.errors.slug)}</Field.Error>
+        {/if}
       </Field.Field>
     </Field.Group>
   </Field.Set>

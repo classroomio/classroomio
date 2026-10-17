@@ -639,6 +639,11 @@ export async function updateLearningPath(
     return updated || null;
   } catch (error) {
     console.error('updateLearningPath error:', error);
+
+    if (getPostgresError(error)?.code === '23505') {
+      throw error;
+    }
+
     throw new Error(
       `Failed to update learning path "${id}": ${error instanceof Error ? error.message : 'Unknown error'}`
     );

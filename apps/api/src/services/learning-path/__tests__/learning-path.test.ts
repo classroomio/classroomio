@@ -1386,6 +1386,28 @@ describe('learning-path services', () => {
       expect(mocks.updateLearningPath).not.toHaveBeenCalled();
     });
 
+    it('returns a slug conflict when the update hits the slug unique constraint', async () => {
+      mocks.getLearningPathById.mockResolvedValue({ ...testPath, slug: 'old-slug' });
+      const postgresError = Object.assign(
+        new Error('duplicate key value violates unique constraint "learning_path_slug_key"'),
+        {
+          code: '23505',
+          constraint_name: 'learning_path_slug_key'
+        }
+      );
+      mocks.updateLearningPath.mockRejectedValue(Object.assign(new Error('Failed query'), { cause: postgresError }));
+
+      await expect(
+        updateLearningPathService(testPath.id, 'user-1', { slug: 'taken-slug' }, { 'org-1': ROLE.ADMIN })
+      ).rejects.toMatchObject({
+        message: 'A learning path with this URL slug already exists',
+        code: ErrorCodes.LEARNING_PATH_SLUG_TAKEN,
+        statusCode: 409
+      });
+
+      expect(mocks.updateLearningPath).toHaveBeenCalled();
+    });
+
     it('skips the plan check when the update does not touch the certificate', async () => {
       mocks.getLearningPathById.mockResolvedValue(testPath);
       mocks.updateLearningPath.mockResolvedValue({ ...testPath, name: 'Renamed' });
