@@ -61,10 +61,6 @@ For what's coming next, see the [public roadmap](https://classroomio.com/roadmap
 - [Better Auth](https://www.better-auth.com/)
 - [TailwindCSS](https://tailwindcss.com/?ref=classroomio.com)
 
-
-<img width="3440" height="2192" alt="image" src="https://github.com/user-attachments/assets/e5093e8a-a1bc-4cc9-80fc-675fa37af677" />
-
-
 ## Get a Demo
 
 You can book a quick 15 min demo to see if ClassroomIO is a good fit for you
