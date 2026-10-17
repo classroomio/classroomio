@@ -368,7 +368,7 @@
   :global(.outline-handle:focus .outline-icon) {
     opacity: 0;
   }
-  .outline-grip {
+  :global(.outline-grip) {
     opacity: 0;
   }
   :global(.group\/content-row:hover .outline-grip),
