@@ -156,6 +156,19 @@
     outline = updateSidebarOutlineZone(outline, sectionId, event.detail.items);
   }
 
+  /**
+   * Shows a dragged section closed. svelte-dnd-action clones the row as it looked when the drag started.
+   */
+  function collapseDraggedSection(element?: HTMLElement) {
+    const section = element?.querySelector<HTMLElement>('[data-sidebar-section-id]');
+    if (!section) return;
+
+    section.dataset.state = 'closed';
+    for (const list of section.querySelectorAll<HTMLElement>('[data-sidebar-section-items]')) {
+      if (list.parentElement) list.parentElement.style.display = 'none';
+    }
+  }
+
   async function handleFinalize(sectionId: string | null, event: CustomEvent<DndEvent<SidebarOutlineEntry>>) {
     if (!canManageContent || saving) return;
 
@@ -404,14 +417,15 @@
   />
 {/snippet}
 
-<div class={className}>
+<div class="{className} ui:group-data-[collapsible=icon]:hidden">
   <ul
     data-sidebar-outline
     use:dragHandleZone={{
       items: outline,
       type: 'course-sidebar-outline',
       dragDisabled: !canManageContent || saving,
-      dropTargetStyle: { outline: '2px solid var(--color-primary)' }
+      dropTargetStyle: { outline: '2px solid var(--color-primary)' },
+      transformDraggedElement: collapseDraggedSection
     }}
     onconsider={(event) => handleConsider(null, event)}
     onfinalize={(event) => handleFinalize(null, event)}
