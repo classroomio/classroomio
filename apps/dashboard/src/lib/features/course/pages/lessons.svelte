@@ -128,13 +128,15 @@
   {/if}
 
   {#if contentData.grouped}
-    {#each getCourseOutline(contentData) as entry (entry.id)}
-      {#if entry.kind === 'section'}
-        <ContentSectionList {reorder} sectionId={entry.section.id} />
-      {:else}
-        <ContentList standaloneItem={entry.item} />
-      {/if}
-    {/each}
+    <div class="py-3">
+      {#each getCourseOutline(contentData) as entry (entry.id)}
+        {#if entry.kind === 'section'}
+          <ContentSectionList {reorder} sectionId={entry.section.id} />
+        {:else}
+          <ContentList standaloneItem={entry.item} />
+        {/if}
+      {/each}
+    </div>
   {:else}
     <ContentList {reorder} />
   {/if}

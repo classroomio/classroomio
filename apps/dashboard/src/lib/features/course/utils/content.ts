@@ -52,6 +52,18 @@ export function getContentRoute(courseId: string, item: { id: string; type: stri
   return '';
 }
 
+/**
+ * Route that opens a lesson or exercise ready to edit. Exercises edit on their questions tab.
+ */
+export function getContentEditRoute(courseId: string, item: { id: string; type: string }) {
+  const route = getContentRoute(courseId, item);
+  if (item.type === CourseContentType.Lesson) return `${route}?mode=edit`;
+
+  if (item.type === CourseContentType.Exercise) return `${route}?tab=questions`;
+
+  return route;
+}
+
 export function getCourseContent(course: Course | null) {
   return course?.content ?? EMPTY_CONTENT;
 }

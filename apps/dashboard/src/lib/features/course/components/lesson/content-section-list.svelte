@@ -456,7 +456,7 @@
 <DeleteLessonConfirmation bind:openDeleteModal {deleteLesson} />
 
 <section
-  class="mx-auto w-full p-3 lg:w-11/12"
+  class="mx-auto w-full px-3 lg:w-11/12 {sectionId ? '' : 'py-3'}"
   use:dndzone={{
     items: sections,
     flipDurationMs,

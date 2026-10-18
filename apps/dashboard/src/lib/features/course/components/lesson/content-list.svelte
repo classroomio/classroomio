@@ -294,7 +294,9 @@
 />
 
 <section
-  class="mx-auto w-full p-3 lg:w-11/12 {reorder ? 'cursor-grab active:cursor-grabbing' : ''}"
+  class="mx-auto w-full px-3 lg:w-11/12 {standaloneItem ? '' : 'py-3'} {reorder
+    ? 'cursor-grab active:cursor-grabbing'
+    : ''}"
   use:dndzone={{
     items: contentItems,
     flipDurationMs,
@@ -327,9 +329,11 @@
         ? 'border-primary-300 bg-primary-50/40 cursor-grab shadow-sm active:cursor-grabbing'
         : ''}"
     >
-      <div class="mt-0.5 mr-5">
-        <Chip value={getContentOrder(item.contentId, item.type)} />
-      </div>
+      {#if !standaloneItem}
+        <div class="mt-0.5 mr-5">
+          <Chip value={getContentOrder(item.contentId, item.type)} />
+        </div>
+      {/if}
 
       {#if item.type === ContentType.Lesson}
         <ContentRow

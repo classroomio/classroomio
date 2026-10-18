@@ -703,3 +703,4 @@ export type SidebarOutlineEntry =
       section: Omit<CourseContentSection, 'items'>;
       items: SidebarOutlineEntry[];
     };
+export type SidebarDeleteTarget = { kind: 'section'; sectionId: string } | { kind: 'item'; item: CourseContentItem };
