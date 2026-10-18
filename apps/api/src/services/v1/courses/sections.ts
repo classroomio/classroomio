@@ -11,6 +11,7 @@ import type {
   TPublicApiCourseSectionParam,
   TPublicApiCourseSectionsQuery,
   TPublicApiCreateCourseSection,
+  TPublicApiForceQuery,
   TPublicApiUpdateCourseSection
 } from '@cio/utils/validation/public-api';
 import { assertCourseTeamAccess, assertSectionInCourse, paginateInMemory } from '../shared';
@@ -81,13 +82,13 @@ export async function updatePublicApiCourseSectionService(
 export async function deletePublicApiCourseSectionService(
   orgId: string,
   actorId: string | null,
-  params: TPublicApiCourseSectionParam
+  params: TPublicApiCourseSectionParam,
+  query: TPublicApiForceQuery
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
   const section = await assertSectionInCourse(params.courseId, params.sectionId);
 
-  // Same path as the dashboard: also deletes the section's lessons and exercises.
-  await deleteCourseContent(params.courseId, { sectionId: params.sectionId });
+  await deleteCourseContent(params.courseId, { sectionId: params.sectionId }, { force: query.force });
 
   return toPublicSection(section);
 }

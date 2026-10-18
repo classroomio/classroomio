@@ -3,6 +3,7 @@ import { getCourseSectionsByCourseId } from '@cio/db/queries/course';
 import type {
   TPublicApiCourseParam,
   TPublicApiDeleteCourseContent,
+  TPublicApiForceQuery,
   TPublicApiReorderCourseContent,
   TPublicApiUpdateCourseContentLock
 } from '@cio/utils/validation/public-api';
@@ -46,20 +47,20 @@ export async function updatePublicApiCourseContentLockService(
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
 
-  await updateCourseContent(params.courseId, payload.items);
+  const { items } = await updateCourseContent(params.courseId, payload.items);
+  const storedItems = items.map((item) => ({ id: item.id, type: item.type, isUnlocked: item.isUnlocked ?? false }));
 
-  return { items: payload.items };
+  return { items: storedItems };
 }
 
 export async function deletePublicApiCourseContentService(
   orgId: string,
   actorId: string | null,
   params: TPublicApiCourseParam,
-  payload: TPublicApiDeleteCourseContent
+  payload: TPublicApiDeleteCourseContent,
+  query: TPublicApiForceQuery
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
 
-  await deleteCourseContent(params.courseId, { items: payload.items });
-
-  return { items: payload.items };
+  return deleteCourseContent(params.courseId, { items: payload.items }, { force: query.force });
 }

@@ -63,18 +63,20 @@ describe('v1 course content routes', () => {
     const del = { items: [{ id: LESSON_ID, type: 'LESSON' }] };
 
     expect((await app.request(`/${COURSE_ID}/content`, jsonRequest('PATCH', lock))).status).toBe(200);
-    expect((await app.request(`/${COURSE_ID}/content/delete`, jsonRequest('POST', del))).status).toBe(200);
+    expect((await app.request(`/${COURSE_ID}/content`, jsonRequest('DELETE', del))).status).toBe(200);
+    expect((await app.request(`/${COURSE_ID}/content?force=true`, jsonRequest('DELETE', del))).status).toBe(200);
     expect(updatePublicApiCourseContentLockService).toHaveBeenCalledWith('org-1', 'actor-1', courseParams, lock);
-    expect(deletePublicApiCourseContentService).toHaveBeenCalledWith('org-1', 'actor-1', courseParams, del);
+    expect(deletePublicApiCourseContentService).toHaveBeenCalledWith('org-1', 'actor-1', courseParams, del, {
+      force: false
+    });
+    expect(vi.mocked(deletePublicApiCourseContentService).mock.calls[1][4]).toEqual({ force: true });
   });
 
   it('rejects invalid batches with 400', async () => {
     const dup = { id: LESSON_ID, type: 'LESSON' };
 
     expect((await app.request(`/${COURSE_ID}/content/reorder`, jsonRequest('PUT', {}))).status).toBe(400);
-    expect((await app.request(`/${COURSE_ID}/content/delete`, jsonRequest('POST', { items: [dup, dup] }))).status).toBe(
-      400
-    );
+    expect((await app.request(`/${COURSE_ID}/content`, jsonRequest('DELETE', { items: [dup, dup] }))).status).toBe(400);
     expect(
       (await app.request(`/${COURSE_ID}/content`, jsonRequest('PATCH', { items: [{ id: 'x', type: 'LESSON' }] })))
         .status

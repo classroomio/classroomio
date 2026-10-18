@@ -6,6 +6,7 @@ import {
   ZPublicApiCourseLessonsQuery,
   ZPublicApiCourseParam,
   ZPublicApiCreateLesson,
+  ZPublicApiForceQuery,
   ZPublicApiLessonParam,
   ZPublicApiLessonResponse,
   ZPublicApiUpdateLesson
@@ -22,7 +23,14 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { COURSE_TEAM_RULE, PAGINATION_NOTE, contentForbiddenResponses, mcpRateLimitResponse } from './docs';
+import {
+  COURSE_TEAM_RULE,
+  PAGINATION_NOTE,
+  STUDENT_WORK_NOTE,
+  contentForbiddenResponses,
+  mcpRateLimitResponse,
+  studentWorkConflictResponse
+} from './docs';
 
 const TAG = 'Course Lessons';
 const LessonResponse = itemResponse(ZPublicApiLessonResponse);
@@ -94,7 +102,7 @@ export const v1CourseLessonsRouter = new Hono()
   .delete(
     '/:lessonId',
     describeRoute({
-      description: `Permanently delete a lesson with its translations, history, comments and learners' completion. To delete several lessons or exercises at once, use POST /courses/{courseId}/content/delete. ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete a lesson with its translations, history, comments and learners' completion. To delete several lessons or exercises at once, use DELETE /courses/{courseId}/content. ${STUDENT_WORK_NOTE} ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Lesson deleted successfully', itemResponse(ZPublicApiCourseLessonResponse)),
@@ -102,15 +110,22 @@ export const v1CourseLessonsRouter = new Hono()
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
         404: { description: 'Course or lesson not found' },
+        409: studentWorkConflictResponse,
         429: mcpRateLimitResponse
       }
     }),
     validator('param', ZPublicApiCourseLessonParam),
+    validator('query', ZPublicApiForceQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
         const actorId = c.get('actorId');
-        const lesson = await deletePublicApiCourseLessonService(orgId, actorId, c.req.valid('param'));
+        const lesson = await deletePublicApiCourseLessonService(
+          orgId,
+          actorId,
+          c.req.valid('param'),
+          c.req.valid('query')
+        );
 
         return c.json({ success: true, data: lesson }, 200);
       } catch (error) {

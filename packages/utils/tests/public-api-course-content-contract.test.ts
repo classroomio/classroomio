@@ -2,6 +2,8 @@ import * as z from 'zod';
 import { describe, expect, it } from 'vitest';
 
 import {
+  ZPublicApiCourseContentDeleteResponse,
+  ZPublicApiCourseContentLockResponse,
   ZPublicApiCourseLessonCommentParam,
   ZPublicApiCourseLessonCommentsQuery,
   ZPublicApiCourseLessonHistoryQuery,
@@ -112,4 +114,13 @@ describe('public API course content request contract', () => {
       ZPublicApiCourseLessonCommentParam.safeParse({ courseId: SECTION_A, lessonId: LESSON, commentId: 'x' }).success
     ).toBe(false);
   });
+});
+
+describe('public API course content response contract', () => {
+  it.each(Object.entries({ ZPublicApiCourseContentLockResponse, ZPublicApiCourseContentDeleteResponse }))(
+    '%s keeps its published shape',
+    (name, schema) => {
+      expect(z.toJSONSchema(schema, { io: 'output', unrepresentable: 'any' })).toMatchSnapshot(name);
+    }
+  );
 });

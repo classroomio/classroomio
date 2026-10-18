@@ -1,11 +1,13 @@
-import { deleteLessonService, getLesson, listLessonsPaginated } from '@api/services/lesson';
+import { deleteCourseContent } from '@cio/core/services/course/content';
+import { getLesson, listLessonsPaginated } from '@api/services/lesson';
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import type { LessonById } from '@cio/db/queries/lesson';
 import type { TLesson, TLessonLanguage } from '@cio/db/types';
 import type {
   TPublicApiCourseLessonParam,
   TPublicApiCourseLessonsQuery,
-  TPublicApiCourseParam
+  TPublicApiCourseParam,
+  TPublicApiForceQuery
 } from '@cio/utils/validation/public-api';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertCourseTeamAccess, assertLessonInCourse, assertSectionInCourse, toPublicApiPagination } from '../shared';
@@ -87,12 +89,16 @@ export async function getPublicApiCourseLessonService(
 export async function deletePublicApiCourseLessonService(
   orgId: string,
   actorId: string | null,
-  params: TPublicApiCourseLessonParam
+  params: TPublicApiCourseLessonParam,
+  query: TPublicApiForceQuery
 ) {
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
-  await assertLessonInCourse(params.courseId, params.lessonId);
+  const lesson = await assertLessonInCourse(params.courseId, params.lessonId);
+  const items = [{ type: 'LESSON' as const, id: params.lessonId }];
 
-  return toPublicLesson(await deleteLessonService(params.lessonId));
+  await deleteCourseContent(params.courseId, { items }, { force: query.force });
+
+  return toPublicLesson(lesson);
 }
 
 export async function notifyPublicApiCourseLessonSessionService(

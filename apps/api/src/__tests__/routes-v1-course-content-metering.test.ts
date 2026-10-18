@@ -162,7 +162,7 @@ describe('MCP metering on course content routes through the real v1 router', () 
       `${course}/content`,
       body('PATCH', { items: [{ ...lessonItem, isUnlocked: true }] })
     ],
-    ['delete_course_content', 1, 200, `${course}/content/delete`, body('POST', { items: [lessonItem] })]
+    ['delete_course_content', 1, 200, `${course}/content`, body('DELETE', { items: [lessonItem] })]
   ])('meters %s at %i credits', async (toolName, credits, status, path, init) => {
     const response = await requestAs('mcp', COURSE_SCOPES, path, init as RequestInit);
 
@@ -174,8 +174,8 @@ describe('MCP metering on course content routes through the real v1 router', () 
     const response = await requestAs(
       'mcp',
       ['course:read'],
-      `${course}/content/delete`,
-      body('POST', { items: [lessonItem] })
+      `${course}/content`,
+      body('DELETE', { items: [lessonItem] })
     );
 
     expect(response.status).toBe(403);

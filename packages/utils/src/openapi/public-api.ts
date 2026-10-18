@@ -182,7 +182,7 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Delete a lesson comment',
   'PUT /public-api/v1/courses/{courseId}/content/reorder': 'Reorder course content',
   'PATCH /public-api/v1/courses/{courseId}/content': 'Lock or unlock course content',
-  'POST /public-api/v1/courses/{courseId}/content/delete': 'Delete course content',
+  'DELETE /public-api/v1/courses/{courseId}/content': 'Delete course content',
   'GET /public-api/v1/courses/{courseId}/exercises': 'List course exercises',
   'POST /public-api/v1/courses/{courseId}/exercises': 'Create a course exercise',
   'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Get a course exercise',

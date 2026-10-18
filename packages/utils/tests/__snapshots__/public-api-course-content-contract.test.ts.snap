@@ -498,3 +498,95 @@ exports[`public API course content request contract > ZPublicApiUpdateCourseSect
   "type": "object",
 }
 `;
+
+exports[`public API course content response contract > ZPublicApiCourseContentDeleteResponse keeps its published shape > ZPublicApiCourseContentDeleteResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "deletedLessonCompletions": {
+      "description": "Lesson completions deleted with them",
+      "type": "number",
+    },
+    "deletedSubmissions": {
+      "description": "Exercise submissions deleted with them",
+      "type": "number",
+    },
+    "items": {
+      "description": "The lessons and exercises deleted",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "items",
+    "deletedSubmissions",
+    "deletedLessonCompletions",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`public API course content response contract > ZPublicApiCourseContentLockResponse keeps its published shape > ZPublicApiCourseContentLockResponse 1`] = `
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "description": "Each item as stored after the change",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+            "type": "string",
+          },
+          "isUnlocked": {
+            "type": "boolean",
+          },
+          "type": {
+            "enum": [
+              "LESSON",
+              "EXERCISE",
+            ],
+            "type": "string",
+          },
+        },
+        "required": [
+          "id",
+          "type",
+          "isUnlocked",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "items",
+  ],
+  "type": "object",
+}
+`;

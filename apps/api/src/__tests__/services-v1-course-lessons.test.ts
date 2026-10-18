@@ -5,8 +5,8 @@ vi.mock('@cio/db/queries/group', () => ({ isCourseTeamMemberOrOrgAdmin: vi.fn() 
 vi.mock('@cio/db/queries/course', () => ({ getCourseSectionById: vi.fn() }));
 vi.mock('@cio/db/queries/lesson', () => ({ getLessonById: vi.fn() }));
 vi.mock('@cio/core/services/course/course', () => ({}));
+vi.mock('@cio/core/services/course/content', () => ({ deleteCourseContent: vi.fn() }));
 vi.mock('@api/services/lesson', () => ({
-  deleteLessonService: vi.fn(),
   getLesson: vi.fn(),
   listLessonsPaginated: vi.fn()
 }));
@@ -16,7 +16,8 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { getCourseSectionById } from '@cio/db/queries/course';
 import { getLessonById } from '@cio/db/queries/lesson';
-import { deleteLessonService, getLesson, listLessonsPaginated } from '@api/services/lesson';
+import { deleteCourseContent } from '@cio/core/services/course/content';
+import { getLesson, listLessonsPaginated } from '@api/services/lesson';
 import { notifyCourseSessionUpdateService } from '@api/services/course/notify-session';
 import {
   deletePublicApiCourseLessonService,
@@ -74,10 +75,12 @@ describe('services/v1/courses/lessons', () => {
     await expect(getPublicApiCourseLessonService(ORG_ID, ACTOR_ID, lessonParams)).rejects.toMatchObject({
       statusCode: 403
     });
-    await expect(deletePublicApiCourseLessonService(ORG_ID, ACTOR_ID, lessonParams)).rejects.toMatchObject({
+    await expect(
+      deletePublicApiCourseLessonService(ORG_ID, ACTOR_ID, lessonParams, { force: false })
+    ).rejects.toMatchObject({
       statusCode: 403
     });
-    expect(deleteLessonService).not.toHaveBeenCalled();
+    expect(deleteCourseContent).not.toHaveBeenCalled();
   });
 
   it('returns 404 for a lesson from another course', async () => {
@@ -86,11 +89,24 @@ describe('services/v1/courses/lessons', () => {
     await expect(getPublicApiCourseLessonService(ORG_ID, ACTOR_ID, lessonParams)).rejects.toMatchObject({
       statusCode: 404
     });
-    await expect(deletePublicApiCourseLessonService(ORG_ID, ACTOR_ID, lessonParams)).rejects.toMatchObject({
+    await expect(
+      deletePublicApiCourseLessonService(ORG_ID, ACTOR_ID, lessonParams, { force: false })
+    ).rejects.toMatchObject({
       statusCode: 404
     });
     expect(getLesson).not.toHaveBeenCalled();
-    expect(deleteLessonService).not.toHaveBeenCalled();
+    expect(deleteCourseContent).not.toHaveBeenCalled();
+  });
+
+  it('deletes through the shared content delete, passing force on, and returns the lesson as it was', async () => {
+    const result = await deletePublicApiCourseLessonService(ORG_ID, ACTOR_ID, lessonParams, { force: true });
+
+    expect(deleteCourseContent).toHaveBeenCalledWith(
+      COURSE_ID,
+      { items: [{ type: 'LESSON', id: lessonParams.lessonId }] },
+      { force: true }
+    );
+    expect(result).toMatchObject({ id: lessonParams.lessonId });
   });
 
   it('returns 404 when filtering by a section from another course', async () => {

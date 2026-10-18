@@ -101,3 +101,10 @@ export const QUESTION_TYPES_NOTE =
 
 export const LIVE_EDIT_NOTE =
   'Changes apply immediately, also on published courses. Submissions already made are not regraded, and students submit against the current questions.';
+
+export const STUDENT_WORK_NOTE =
+  'If students have submissions or lesson completions in what you delete, this returns 409 unless force=true, which deletes their work too.';
+
+export const studentWorkConflictResponse = {
+  description: 'Students have submissions or lesson completions here; pass force=true to delete them too'
+};

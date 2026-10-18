@@ -427,8 +427,10 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/sections/${sectionId}`, { method: 'PUT', body: payload });
   }
 
-  async deleteCourseSection(courseId: string, sectionId: string) {
-    return this.request(`/public-api/v1/courses/${courseId}/sections/${sectionId}`, { method: 'DELETE' });
+  async deleteCourseSection(courseId: string, sectionId: string, force = false) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/sections/${sectionId}${query}`, { method: 'DELETE' });
   }
 
   async listCourseLessons(courseId: string, query: Partial<TPublicApiCourseLessonsQuery> = {}) {
@@ -443,8 +445,10 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}`, { method: 'GET' });
   }
 
-  async deleteCourseLesson(courseId: string, lessonId: string) {
-    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
+  async deleteCourseLesson(courseId: string, lessonId: string, force = false) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/lessons/${lessonId}${query}`, { method: 'DELETE' });
   }
 
   async notifyCourseLessonSessionUpdate(courseId: string, lessonId: string) {
@@ -535,8 +539,10 @@ export class ClassroomIoApiClient {
     return this.request(`/public-api/v1/courses/${courseId}/content`, { method: 'PATCH', body: payload });
   }
 
-  async deleteCourseContent(courseId: string, payload: TPublicApiDeleteCourseContent) {
-    return this.request(`/public-api/v1/courses/${courseId}/content/delete`, { method: 'POST', body: payload });
+  async deleteCourseContent(courseId: string, payload: TPublicApiDeleteCourseContent, force = false) {
+    const query = force ? '?force=true' : '';
+
+    return this.request(`/public-api/v1/courses/${courseId}/content${query}`, { method: 'DELETE', body: payload });
   }
 
   // ─── Audience (public API) ──────────────────────────────────────────────

@@ -1,7 +1,9 @@
 import {
-  ZPublicApiCourseContentItemsResponse,
+  ZPublicApiCourseContentDeleteResponse,
+  ZPublicApiCourseContentLockResponse,
   ZPublicApiCourseParam,
   ZPublicApiDeleteCourseContent,
+  ZPublicApiForceQuery,
   ZPublicApiReorderCourseContent,
   ZPublicApiReorderCourseContentResponse,
   ZPublicApiUpdateCourseContentLock
@@ -16,7 +18,13 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
-import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse } from './docs';
+import {
+  COURSE_TEAM_RULE,
+  STUDENT_WORK_NOTE,
+  contentForbiddenResponses,
+  mcpRateLimitResponse,
+  studentWorkConflictResponse
+} from './docs';
 
 const TAG = 'Course Content';
 const ATOMIC_NOTE =
@@ -59,10 +67,10 @@ export const v1CourseContentRouter = new Hono()
   .patch(
     '/',
     describeRoute({
-      description: `Lock or unlock lessons and exercises for students (isUnlocked). ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Lock or unlock lessons and exercises for students (isUnlocked). Returns each item as stored after the change. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Content updated successfully', itemResponse(ZPublicApiCourseContentItemsResponse)),
+        200: jsonResponse('Content updated successfully', itemResponse(ZPublicApiCourseContentLockResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
@@ -89,22 +97,24 @@ export const v1CourseContentRouter = new Hono()
       }
     }
   )
-  .post(
-    '/delete',
+  .delete(
+    '/',
     describeRoute({
-      description: `Permanently delete lessons and exercises, with their translations, comments, submissions and learner progress. Retrying after success returns 404 because the items are gone. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete lessons and exercises, with their translations and comments. Returns what was deleted, with the number of submissions and lesson completions deleted with it. Retrying after success returns 404 because the items are gone. ${STUDENT_WORK_NOTE} ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Content deleted successfully', itemResponse(ZPublicApiCourseContentItemsResponse)),
+        200: jsonResponse('Content deleted successfully', itemResponse(ZPublicApiCourseContentDeleteResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
         404: { description: 'Course, lesson or exercise not found' },
+        409: studentWorkConflictResponse,
         429: mcpRateLimitResponse
       }
     }),
     validator('param', ZPublicApiCourseParam),
     validator('json', ZPublicApiDeleteCourseContent),
+    validator('query', ZPublicApiForceQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;
@@ -113,7 +123,8 @@ export const v1CourseContentRouter = new Hono()
           orgId,
           actorId,
           c.req.valid('param'),
-          c.req.valid('json')
+          c.req.valid('json'),
+          c.req.valid('query')
         );
 
         return c.json({ success: true, data: result }, 200);

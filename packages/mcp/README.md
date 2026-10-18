@@ -151,7 +151,7 @@ Course section, lesson and content tools:
 They call `/public-api/v1/courses/:id/{sections,lessons,content}` with the key's `course:read` (reads) and `course:write` (everything else) scopes, which MCP keys have by default. Every tool, reads included, needs the key creator to be a course tutor/admin or an org admin.
 
 - `create_course_section` with `moveUngrouped: true` moves every lesson and exercise without a section into the new section.
-- `delete_course_section`, `delete_course_lesson` and `delete_course_content` are hard deletes. Deleting a section also deletes its lessons and exercises.
+- `delete_course_section`, `delete_course_lesson` and `delete_course_content` are hard deletes. Deleting a section also deletes its lessons and exercises. If students have submissions or lesson completions in what you delete, they fail with 409 unless `force` is true, which deletes that work too.
 - `reorder_course_content`, `set_course_content_unlocked` and `delete_course_content` are all or nothing: one id outside the course fails the whole call with 404.
 - Comments are posted as the key creator. Only the author can edit a comment; the author or the course team can delete it.
 - Creating and editing lessons and uploading videos use `create_lesson`, `update_lesson` and `upload_video`. Restoring a lesson version is not covered.

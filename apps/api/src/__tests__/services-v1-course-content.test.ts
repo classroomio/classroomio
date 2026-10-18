@@ -25,6 +25,7 @@ const COURSE_ID = 'course-1';
 const ACTOR_ID = 'actor-1';
 const courseParams = { courseId: COURSE_ID };
 const lessonItem = { id: 'lesson-1', type: 'LESSON' as const };
+const noForce = { force: false };
 
 describe('services/v1/courses/content', () => {
   beforeEach(() => {
@@ -70,7 +71,7 @@ describe('services/v1/courses/content', () => {
       })
     ).rejects.toMatchObject({ statusCode: 403 });
     await expect(
-      deletePublicApiCourseContentService(ORG_ID, ACTOR_ID, courseParams, { items: [lessonItem] })
+      deletePublicApiCourseContentService(ORG_ID, ACTOR_ID, courseParams, { items: [lessonItem] }, noForce)
     ).rejects.toMatchObject({ statusCode: 403 });
     expect(updateCourseContent).not.toHaveBeenCalled();
     expect(deleteCourseContent).not.toHaveBeenCalled();
@@ -80,17 +81,36 @@ describe('services/v1/courses/content', () => {
     vi.mocked(getCourseOrganizationId).mockResolvedValue('other-org');
 
     await expect(
-      deletePublicApiCourseContentService(ORG_ID, ACTOR_ID, courseParams, { items: [lessonItem] })
+      deletePublicApiCourseContentService(ORG_ID, ACTOR_ID, courseParams, { items: [lessonItem] }, noForce)
     ).rejects.toMatchObject({ statusCode: 404 });
   });
 
-  it('passes lock and delete batches to the dashboard services', async () => {
-    await updatePublicApiCourseContentLockService(ORG_ID, ACTOR_ID, courseParams, {
+  it('returns each locked item as stored, not the request', async () => {
+    vi.mocked(updateCourseContent).mockResolvedValue({
+      items: [{ ...lessonItem, isUnlocked: true, title: 'Lesson 1' }]
+    } as never);
+
+    const result = await updatePublicApiCourseContentLockService(ORG_ID, ACTOR_ID, courseParams, {
       items: [{ ...lessonItem, isUnlocked: false }]
     });
-    await deletePublicApiCourseContentService(ORG_ID, ACTOR_ID, courseParams, { items: [lessonItem] });
 
     expect(updateCourseContent).toHaveBeenCalledWith(COURSE_ID, [{ ...lessonItem, isUnlocked: false }]);
-    expect(deleteCourseContent).toHaveBeenCalledWith(COURSE_ID, { items: [lessonItem] });
+    expect(result).toEqual({ items: [{ ...lessonItem, isUnlocked: true }] });
+  });
+
+  it('passes force to the delete and returns what it deleted', async () => {
+    const deleted = { items: [lessonItem], deletedSubmissions: 0, deletedLessonCompletions: 3 };
+    vi.mocked(deleteCourseContent).mockResolvedValue(deleted as never);
+
+    const result = await deletePublicApiCourseContentService(
+      ORG_ID,
+      ACTOR_ID,
+      courseParams,
+      { items: [lessonItem] },
+      { force: true }
+    );
+
+    expect(deleteCourseContent).toHaveBeenCalledWith(COURSE_ID, { items: [lessonItem] }, { force: true });
+    expect(result).toEqual(deleted);
   });
 });

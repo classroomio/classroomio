@@ -90,7 +90,7 @@ describe('v1 course sections routes', () => {
     ).toBe(200);
     expect((await app.request(`/${COURSE_ID}/sections/${SECTION_ID}`, { method: 'DELETE' })).status).toBe(200);
     expect(updatePublicApiCourseSectionService).toHaveBeenCalledWith('org-1', 'actor-1', params, { title: 'W2' });
-    expect(deletePublicApiCourseSectionService).toHaveBeenCalledWith('org-1', 'actor-1', params);
+    expect(deletePublicApiCourseSectionService).toHaveBeenCalledWith('org-1', 'actor-1', params, { force: false });
   });
 
   it('passes service errors through', async () => {

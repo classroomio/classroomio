@@ -56,8 +56,10 @@ export const MCP_V1_ROUTE_TOOL_MAP: Record<string, Partial<Record<TRouteMethod, 
     DELETE: 'delete_course_lesson_comment'
   },
   '/public-api/v1/courses/:courseId/content/reorder': { PUT: 'reorder_course_content' },
-  '/public-api/v1/courses/:courseId/content': { PATCH: 'set_course_content_unlocked' },
-  '/public-api/v1/courses/:courseId/content/delete': { POST: 'delete_course_content' },
+  '/public-api/v1/courses/:courseId/content': {
+    PATCH: 'set_course_content_unlocked',
+    DELETE: 'delete_course_content'
+  },
   '/public-api/v1/courses/:courseId/exercises': { GET: 'list_course_exercises', POST: 'create_course_exercise' },
   '/public-api/v1/courses/:courseId/exercises/:exerciseId': {
     GET: 'get_course_exercise',

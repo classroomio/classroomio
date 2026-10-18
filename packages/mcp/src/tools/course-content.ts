@@ -1,4 +1,5 @@
 import {
+  ZPublicApiForceQuery,
   ZPublicApiCourseParam,
   ZPublicApiDeleteCourseContent,
   ZPublicApiReorderCourseContent,
@@ -22,7 +23,9 @@ const courseId = ZPublicApiCourseParam.shape.courseId;
 
 export const ZReorderCourseContentToolInput = ZPublicApiReorderCourseContent.safeExtend({ courseId });
 export const ZSetCourseContentUnlockedToolInput = ZPublicApiUpdateCourseContentLock.safeExtend({ courseId });
-export const ZDeleteCourseContentToolInput = ZPublicApiDeleteCourseContent.safeExtend({ courseId });
+export const ZDeleteCourseContentToolInput = ZPublicApiDeleteCourseContent.safeExtend({ courseId }).safeExtend(
+  ZPublicApiForceQuery.shape
+);
 
 const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawShapeCompat;
 
@@ -51,12 +54,12 @@ export function registerCourseContentTools(server: McpServer, apiClient: Classro
 
   server.tool(
     'delete_course_content',
-    `Permanently delete lessons and exercises with their translations, comments, submissions and learner progress (hard delete, cannot be undone). To delete a whole section, use delete_course_section. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+    `Permanently delete lessons and exercises with their translations and comments (hard delete, cannot be undone), and return what was deleted. To delete a whole section, use delete_course_section. If students have submissions or lesson completions in it, this fails with 409 unless force is true, which deletes their work too; ask the user before forcing. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
     shape(ZDeleteCourseContentToolInput),
     DESTRUCTIVE,
     async (args) => {
-      const { courseId, ...payload } = ZDeleteCourseContentToolInput.parse(args);
-      return jsonContent(await apiClient.deleteCourseContent(courseId, payload));
+      const { courseId, force, ...payload } = ZDeleteCourseContentToolInput.parse(args);
+      return jsonContent(await apiClient.deleteCourseContent(courseId, payload, force));
     }
   );
 }

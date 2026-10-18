@@ -60,7 +60,7 @@ describe('v1 course lessons routes', () => {
     expect(got.status).toBe(200);
     expect(await got.json()).toEqual({ success: true, data: { id: LESSON_ID } });
     expect((await app.request(`/${COURSE_ID}/lessons/${LESSON_ID}`, { method: 'DELETE' })).status).toBe(200);
-    expect(deletePublicApiCourseLessonService).toHaveBeenCalledWith('org-1', 'actor-1', lessonParams);
+    expect(deletePublicApiCourseLessonService).toHaveBeenCalledWith('org-1', 'actor-1', lessonParams, { force: false });
   });
 
   it('queues a session notification with 202', async () => {

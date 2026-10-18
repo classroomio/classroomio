@@ -120,6 +120,14 @@ export const ZPublicApiReorderCourseContentResponse = z.object({
   updatedExercises: z.number()
 });
 
-export const ZPublicApiCourseContentItemsResponse = z.object({
-  items: z.array(z.object({ id: z.string().uuid(), type: contentType }))
+export const ZPublicApiCourseContentLockResponse = z.object({
+  items: z
+    .array(z.object({ id: z.string().uuid(), type: contentType, isUnlocked: z.boolean() }))
+    .describe('Each item as stored after the change')
+});
+
+export const ZPublicApiCourseContentDeleteResponse = z.object({
+  items: z.array(z.object({ id: z.string().uuid(), type: contentType })).describe('The lessons and exercises deleted'),
+  deletedSubmissions: z.number().describe('Exercise submissions deleted with them'),
+  deletedLessonCompletions: z.number().describe('Lesson completions deleted with them')
 });

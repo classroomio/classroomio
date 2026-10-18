@@ -1,4 +1,5 @@
 import {
+  ZPublicApiForceQuery,
   ZPublicApiCourseLessonCommentParam,
   ZPublicApiCourseLessonCommentsQuery,
   ZPublicApiCourseLessonHistoryQuery,
@@ -32,6 +33,7 @@ export const ZListCourseLessonsToolInput = ZPublicApiCourseLessonsQuery.extend({
   courseId: ZPublicApiCourseParam.shape.courseId
 });
 export const ZCourseLessonToolInput = ZPublicApiCourseLessonParam;
+export const ZDeleteCourseLessonToolInput = ZPublicApiCourseLessonParam.extend(ZPublicApiForceQuery.shape);
 export const ZListCourseLessonTranslationsToolInput = ZPublicApiCourseLessonParam.extend(
   ZPublicApiCourseLessonTranslationsQuery.shape
 );
@@ -79,12 +81,12 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'delete_course_lesson',
-    `Permanently delete a lesson with its translations, history, comments and learners' completion (hard delete, cannot be undone). Use delete_course_content to delete several lessons or exercises at once. ${COURSE_TEAM_RULE}`,
-    shape(ZCourseLessonToolInput),
+    `Permanently delete a lesson with its translations, history, comments and learners' completion (hard delete, cannot be undone). Use delete_course_content to delete several lessons or exercises at once. If students have submissions or lesson completions in it, this fails with 409 unless force is true, which deletes their work too; ask the user before forcing. ${COURSE_TEAM_RULE}`,
+    shape(ZDeleteCourseLessonToolInput),
     DESTRUCTIVE,
     async (args) => {
-      const { courseId, lessonId } = ZCourseLessonToolInput.parse(args);
-      return jsonContent(await apiClient.deleteCourseLesson(courseId, lessonId));
+      const { courseId, lessonId, force } = ZDeleteCourseLessonToolInput.parse(args);
+      return jsonContent(await apiClient.deleteCourseLesson(courseId, lessonId, force));
     }
   );
 

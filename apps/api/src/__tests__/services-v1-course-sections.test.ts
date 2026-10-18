@@ -48,6 +48,7 @@ const section = (overrides: Record<string, unknown> = {}) =>
   }) as never;
 
 const sectionParams = { courseId: COURSE_ID, sectionId: SECTION_ID };
+const noForce = { force: false };
 
 describe('services/v1/courses/sections', () => {
   beforeEach(() => {
@@ -130,17 +131,17 @@ describe('services/v1/courses/sections', () => {
     await expect(
       updatePublicApiCourseSectionService(ORG_ID, ACTOR_ID, sectionParams, { title: 'X' })
     ).rejects.toMatchObject({ statusCode: 404 });
-    await expect(deletePublicApiCourseSectionService(ORG_ID, ACTOR_ID, sectionParams)).rejects.toMatchObject({
+    await expect(deletePublicApiCourseSectionService(ORG_ID, ACTOR_ID, sectionParams, noForce)).rejects.toMatchObject({
       statusCode: 404
     });
     expect(updateCourseSectionService).not.toHaveBeenCalled();
     expect(deleteCourseContent).not.toHaveBeenCalled();
   });
 
-  it('deletes a section through the content service the dashboard uses', async () => {
-    const deleted = await deletePublicApiCourseSectionService(ORG_ID, ACTOR_ID, sectionParams);
+  it('deletes a section through the content service the dashboard uses, passing force on', async () => {
+    const deleted = await deletePublicApiCourseSectionService(ORG_ID, ACTOR_ID, sectionParams, noForce);
 
-    expect(deleteCourseContent).toHaveBeenCalledWith(COURSE_ID, { sectionId: SECTION_ID });
+    expect(deleteCourseContent).toHaveBeenCalledWith(COURSE_ID, { sectionId: SECTION_ID }, noForce);
     expect(deleted).toMatchObject({ id: SECTION_ID });
   });
 });
