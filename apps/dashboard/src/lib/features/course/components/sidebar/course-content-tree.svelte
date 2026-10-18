@@ -398,7 +398,9 @@
 
 {#snippet sectionChevron(iconClass = '')}
   <ChevronRightIcon
-    class="ui:text-muted-foreground size-3.5 shrink-0 transition-transform duration-200 group-data-[state=open]/section:rotate-90 {iconClass}"
+    class="ui:text-muted-foreground size-3.5 shrink-0 transition-transform duration-200 {draggingSection
+      ? ''
+      : 'group-data-[state=open]/section:rotate-90'} {iconClass}"
   />
 {/snippet}
 
@@ -511,7 +513,7 @@
                   {@render sectionDropZone(section.id, entry.items, sectionOpen)}
                 {:else}
                   <Collapsible.Content>
-                    {@render sectionDropZone(section.id, entry.items, true)}
+                    {@render sectionDropZone(section.id, entry.items, !draggingSection)}
                   </Collapsible.Content>
                 {/if}
               </div>
