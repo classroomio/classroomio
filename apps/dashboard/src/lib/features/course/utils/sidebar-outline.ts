@@ -1,7 +1,8 @@
 import { getCourseOutline, UNGROUPED_SECTION_KEY } from '@cio/utils/functions/course-content';
 import { ContentType } from '@cio/utils/constants/content';
 import type { TCourseContentReorder } from '@cio/utils/validation/course';
-import type { CourseContent, SidebarOutlineEntry } from './types';
+import { SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
+import type { ContentDndItem, CourseContent, SidebarOutlineEntry } from './types';
 
 export function buildSidebarOutline(content: CourseContent): SidebarOutlineEntry[] {
   return getCourseOutline(content).map((entry) => {
@@ -75,6 +76,39 @@ export function withRootOrders(content: CourseContent, entries: SidebarOutlineEn
   });
 
   return { ...content, sections };
+}
+
+function copyShadowMarker<T extends object>(source: object, target: T): T {
+  const marker = (source as Record<string, unknown>)[SHADOW_ITEM_MARKER_PROPERTY_NAME];
+  return marker ? { ...target, [SHADOW_ITEM_MARKER_PROPERTY_NAME]: marker } : target;
+}
+
+/**
+ * Outline entry for an element of any contents-page drag zone. Zones share one drag type, so a zone can receive
+ * another zone's element shape. The drag library's shadow marker is kept.
+ */
+export function toOutlineEntry(element: SidebarOutlineEntry | ContentDndItem): SidebarOutlineEntry {
+  if ('kind' in element) return element;
+
+  const {
+    contentId,
+    id,
+    [SHADOW_ITEM_MARKER_PROPERTY_NAME]: _marker,
+    ...item
+  } = element as ContentDndItem & Record<typeof SHADOW_ITEM_MARKER_PROPERTY_NAME, unknown>;
+  const entry: SidebarOutlineEntry = { id, kind: 'item', order: item.order ?? 0, item: { ...item, id: contentId } };
+  return copyShadowMarker(element, entry);
+}
+
+/**
+ * Section drag zone element for a lesson or exercise received from any contents-page drag zone.
+ */
+export function toContentDndItem(element: SidebarOutlineEntry | ContentDndItem): ContentDndItem | null {
+  if (!('kind' in element)) return element;
+
+  if (element.kind === 'section') return null;
+
+  return copyShadowMarker(element, { ...element.item, id: element.id, contentId: element.item.id });
 }
 
 export function outlineToCourseContent(entries: SidebarOutlineEntry[], grouped: boolean): CourseContent {

@@ -3,7 +3,7 @@
   import { page } from '$app/state';
   import { resolve } from '$app/paths';
   import { flip } from 'svelte/animate';
-  import { dndzone } from 'svelte-dnd-action';
+  import { dndzone, type DndEvent, type DndEventInfo } from 'svelte-dnd-action';
   import CalendarClockIcon from '@lucide/svelte/icons/calendar-clock';
   import FileTextIcon from '@lucide/svelte/icons/file-text';
   import HelpCircleIcon from '@lucide/svelte/icons/help-circle';
@@ -20,7 +20,13 @@
   import { snackbar } from '$features/ui/snackbar/store';
   import { profile } from '$lib/utils/store/user';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
-  import type { CourseContent, CourseContentItem } from '$features/course/utils/types';
+  import type {
+    ContentDndItem as OutlineDndItem,
+    CourseContent,
+    CourseContentItem,
+    SidebarOutlineEntry
+  } from '$features/course/utils/types';
+  import { toContentDndItem, toOutlineEntry } from '$features/course/utils/sidebar-outline';
   import { contentCreateStoreUtils, contentEditingStore } from '$features/course/components/content/store';
   import { getCourseContent } from '$features/course/utils/content';
   import { ContentType } from '@cio/utils/constants/content';
@@ -37,12 +43,25 @@
     lessonTitle?: string;
   };
 
+  type ZoneHandler = (sectionId: string, entries: SidebarOutlineEntry[], info: DndEventInfo) => void;
+
   interface Props {
     reorder?: boolean;
     sectionId?: string;
+    dndType?: string;
+    dropFromOthersDisabled?: boolean;
+    onZoneConsider?: ZoneHandler;
+    onZoneFinalize?: ZoneHandler;
   }
 
-  let { reorder = false, sectionId }: Props = $props();
+  let {
+    reorder = false,
+    sectionId,
+    dndType = 'section-content',
+    dropFromOthersDisabled = false,
+    onZoneConsider,
+    onZoneFinalize
+  }: Props = $props();
 
   let prevTitle: string | undefined = $state();
   let errors: Record<string, string> = $state({});
@@ -136,7 +155,7 @@
   }
 
   async function applyPendingReorder() {
-    if (!sections.length) return;
+    if (!sections.length || onZoneFinalize) return;
 
     const contentUpdates: Array<{
       id: string;
@@ -437,14 +456,29 @@
     syncCourseContentSections(updatedSections);
   }
 
-  function handleDndConsiderCards(sectionId: string, e) {
-    updateSectionItems(sectionId, e.detail.items as ContentDndItem[]);
+  function toZoneItems(elements: Array<SidebarOutlineEntry | OutlineDndItem>): ContentDndItem[] {
+    return elements.flatMap((element) => toContentDndItem(element) ?? []);
+  }
+
+  function handleDndConsiderCards(sectionId: string, e: CustomEvent<DndEvent<SidebarOutlineEntry | OutlineDndItem>>) {
+    const items = toZoneItems(e.detail.items);
+    updateSectionItems(sectionId, items);
+    if (onZoneConsider) {
+      onZoneConsider(sectionId, items.map(toOutlineEntry), e.detail.info);
+      return;
+    }
+
     syncCourseContentSections(sections);
   }
 
-  function handleDndFinalizeCards(sectionId: string, e) {
-    const items = e.detail.items as ContentDndItem[];
+  function handleDndFinalizeCards(sectionId: string, e: CustomEvent<DndEvent<SidebarOutlineEntry | OutlineDndItem>>) {
+    const items = toZoneItems(e.detail.items);
     updateSectionItems(sectionId, items);
+    if (onZoneFinalize) {
+      onZoneFinalize(sectionId, items.map(toOutlineEntry), e.detail.info);
+      return;
+    }
+
     syncCourseContentSections(sections);
 
     if (!reorder) {
@@ -519,7 +553,8 @@
             'border-style': 'dashed'
           },
           dragDisabled: !reorder,
-          type: 'section-content'
+          dropFromOthersDisabled,
+          type: dndType
         }}
         onconsider={(e) => handleDndConsiderCards(section.id, e)}
         onfinalize={(e) => handleDndFinalizeCards(section.id, e)}
@@ -550,6 +585,7 @@
                 {item}
                 bind:title={item.title}
                 isLocked={itemLocked}
+                linkDisabled={reorder}
                 href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
                 isEditing={isEditingItem}
                 {errors}
@@ -623,6 +659,7 @@
                 {item}
                 bind:title={item.title}
                 isLocked={itemLocked}
+                linkDisabled={reorder}
                 href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
                 isEditing={isEditingItem}
                 {errors}

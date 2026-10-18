@@ -6,6 +6,8 @@ import {
   outlineReorderPayload,
   outlineToCourseContent,
   rootReorderPayload,
+  toContentDndItem,
+  toOutlineEntry,
   updateSidebarOutlineZone,
   withRootOrders
 } from './sidebar-outline';
@@ -108,5 +110,22 @@ describe('top-level moves', () => {
       'SECTION-settings',
       'LESSON-intro'
     ]);
+  });
+});
+
+describe('contents page drag zones', () => {
+  it('moves a standalone lesson into a section zone and back without losing the drag placeholder', () => {
+    const [standalone, section] = buildSidebarOutline(courseContent);
+    const placeholder = { ...standalone, isDndShadowItem: true };
+
+    const zoneItem = toContentDndItem(placeholder);
+    expect(zoneItem).toMatchObject({ id: 'LESSON-intro', contentId: 'intro', isDndShadowItem: true });
+    expect(toContentDndItem(section)).toBeNull();
+
+    const entry = toOutlineEntry(zoneItem!);
+    expect(entry).toMatchObject({ id: 'LESSON-intro', kind: 'item', isDndShadowItem: true });
+    if (entry.kind !== 'item') throw new Error('Expected an item');
+    expect(entry.item).toMatchObject({ id: 'intro' });
+    expect(entry.item).not.toHaveProperty('isDndShadowItem');
   });
 });

@@ -340,6 +340,7 @@
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}
@@ -411,6 +412,7 @@
           {item}
           bind:title={item.title}
           isLocked={itemLocked}
+          linkDisabled={reorder}
           href={resolve(itemLocked ? page.url.pathname : getItemPath(item), {})}
           isEditing={isEditingItem}
           {errors}
