@@ -201,6 +201,9 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/invites': 'List invites',
   'POST /public-api/v1/courses/{courseId}/invites': 'Create an invite',
   'POST /public-api/v1/courses/{courseId}/invites/{inviteId}/revoke': 'Revoke an invite',
+  'POST /public-api/v1/courses/{courseId}/lessons': 'Create a course lesson',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Update a course lesson',
+  'POST /public-api/v1/assets': 'Reserve an asset upload',
   'GET /public-api/v1/cohorts': 'List cohorts',
   'POST /public-api/v1/cohorts': 'Create a cohort',
   'GET /public-api/v1/cohorts/{cohortId}': 'Get a cohort',
@@ -245,25 +248,28 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/courses/{courseId}/analytics/students': 'List per-student course analytics'
 };
 
-// Scalar groups operations under these tags.
 const OPERATION_TAGS = [
   { name: 'Audience', description: 'Manage people in your organization.' },
   { name: 'Team', description: 'Manage the admins and tutors of your organization.' },
-  { name: 'Courses', description: 'Create and manage courses.' },
-  { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
-  { name: 'Course Members', description: 'Manage the people in a course.' },
+  { name: 'Courses', description: 'Create, update, and delete courses.' },
+  { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
+  { name: 'Course Members', description: 'Manage the people in a course and their progress.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },
   { name: 'Course Exercises', description: 'Create and manage course exercises.' },
+  { name: 'Exercise Questions', description: 'Manage the questions of a course exercise.' },
+  { name: 'Exercise Sections', description: 'Manage the sections of a course exercise.' },
   { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
-  { name: 'Course Submissions', description: 'Review and grade exercise submissions.' },
-  { name: 'Course Marks', description: 'Read the course gradebook.' },
-  { name: 'Student Activity', description: 'Record lesson completions and exercise submissions for a student.' },
+  { name: 'Course Submissions', description: 'Review and grade exercise submissions and read the course gradebook.' },
+  { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
+  { name: 'Public API Lessons', description: 'Create and update lessons, including attached videos.' },
+  { name: 'Public API Assets', description: 'Reserve asset uploads for media attached to lessons and exercises.' },
   { name: 'Cohorts', description: 'Create and manage cohorts.' },
   { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
   { name: 'Cohort Courses', description: 'Link and unlink courses on a cohort.' },
-  { name: 'Cohort Newsfeed', description: 'Post, comment, and react on a cohort newsfeed.' },
-  { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
   { name: 'Cohort Invites', description: 'Invite people to a cohort.' },
+  { name: 'Cohort Newsfeed', description: 'Post, react, and moderate a cohort newsfeed.' },
+  { name: 'Cohort Newsfeed Comments', description: 'Manage comments on cohort newsfeed posts.' },
+  { name: 'Cohort Goals', description: 'Create and manage cohort goals.' },
   { name: 'Analytics', description: 'Read organization, course, learner, and compliance analytics.' }
 ];
 

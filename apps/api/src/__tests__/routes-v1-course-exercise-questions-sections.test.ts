@@ -203,21 +203,25 @@ describe('MCP key scopes on question and section routes', () => {
 });
 
 describe('v1 exercise question and section OpenAPI spec', () => {
-  it('lists every route with its method, path params and the Course Exercises tag', async () => {
+  it('lists every route with its method, path params and its tag', async () => {
     const spec = await generateSpecs(app);
     const paths = spec.paths ?? {};
     const prefix = '/public-api/v1/courses/{courseId}/exercises/{exerciseId}';
+    const expectedTags = {
+      questions: 'Exercise Questions',
+      sections: 'Exercise Sections'
+    } as const;
     const operations = [
-      paths[`${prefix}/questions`]?.post,
-      paths[`${prefix}/questions/{questionId}`]?.patch,
-      paths[`${prefix}/questions/{questionId}`]?.delete,
-      paths[`${prefix}/sections`]?.post,
-      paths[`${prefix}/sections/{sectionId}`]?.patch,
-      paths[`${prefix}/sections/{sectionId}`]?.delete
-    ];
+      [paths[`${prefix}/questions`]?.post, expectedTags.questions],
+      [paths[`${prefix}/questions/{questionId}`]?.patch, expectedTags.questions],
+      [paths[`${prefix}/questions/{questionId}`]?.delete, expectedTags.questions],
+      [paths[`${prefix}/sections`]?.post, expectedTags.sections],
+      [paths[`${prefix}/sections/{sectionId}`]?.patch, expectedTags.sections],
+      [paths[`${prefix}/sections/{sectionId}`]?.delete, expectedTags.sections]
+    ] as const;
 
-    for (const operation of operations) {
-      expect(operation?.tags).toEqual(['Course Exercises']);
+    for (const [operation, expectedTag] of operations) {
+      expect(operation?.tags).toEqual([expectedTag]);
     }
   });
 });

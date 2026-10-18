@@ -1,0 +1,34 @@
+/*
+ * Sidebar overrides for the API reference (apps/docs/blume.config.ts API tab).
+ *
+ * Blume's NavTree.astro renders nav rows with the HTTP-method badge after the
+ * label and truncates overflowing labels; section headers (its "flat" groups)
+ * differ from items only by font-weight. These overrides follow cal.com's
+ * sidebar: badge first, wrapped labels, small uppercase muted section headers,
+ * and generous spacing between sections. Scoped to the nav tree so the mobile
+ * drawer, featured links, and page bodies are untouched.
+ */
+
+[data-blume-nav-tree] span.flex-1.truncate,
+[data-blume-nav-tree] span.truncate {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  text-wrap: pretty;
+}
+
+[data-blume-nav-tree] span.flex.items-center.gap-2 > span:last-child {
+  order: -1;
+}
+
+[data-blume-nav-tree] li > p.mb-2 {
+  color: var(--blume-muted-foreground);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+[data-blume-nav-tree] ul > li.mt-6 {
+  margin-top: 2.5rem;
+}

@@ -109,7 +109,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/students',
     describeRoute({
       description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
-      tags: ['Courses'],
+      tags: ['Course Members'],
       responses: {
         200: CourseStudentsResponse,
         401: { description: 'Unauthorized' },
@@ -148,7 +148,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/export',
     describeRoute({
       description: 'Export a course structure snapshot',
-      tags: ['Courses'],
+      tags: ['Course Structure'],
       responses: {
         200: jsonResponse('Course export returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
         401: { description: 'Unauthorized' },
@@ -179,7 +179,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/structure',
     describeRoute({
       description: 'Get a course structure snapshot',
-      tags: ['Courses'],
+      tags: ['Course Structure'],
       responses: {
         200: jsonResponse('Course structure returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
         401: { description: 'Unauthorized' },
@@ -210,7 +210,7 @@ export const v1CourseRouter = new Hono()
     '/:courseId/structure',
     describeRoute({
       description: 'Synchronize a course structure using the draft payload shape',
-      tags: ['Courses'],
+      tags: ['Course Structure'],
       responses: {
         200: jsonResponse(
           'Course structure updated successfully',
