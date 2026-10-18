@@ -25,7 +25,7 @@
 [data-blume-nav-tree] li > p.mb-2 {
   color: var(--blume-muted-foreground);
   font-size: 0.72rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
