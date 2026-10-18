@@ -21,6 +21,7 @@ vi.mock('@cio/core/services/exercise/exercise', () => ({
   updateExerciseService: vi.fn()
 }));
 vi.mock('@cio/core/services/agent/usage', () => ({ isOrgOnPaidPlan: vi.fn() }));
+vi.mock('@cio/core/services/course/outline', () => ({ getCourseItemRanks: vi.fn() }));
 vi.mock('@cio/db/queries/course', () => ({ getCourseSectionById: vi.fn() }));
 vi.mock('@cio/db/queries/exercise', () => ({
   getExerciseById: vi.fn(),
@@ -58,6 +59,7 @@ import {
   updateExerciseService
 } from '@cio/core/services/exercise/exercise';
 import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
+import { getCourseItemRanks } from '@cio/core/services/course/outline';
 import { getCourseSectionById } from '@cio/db/queries/course';
 import { getExerciseById, getExerciseSectionOwnersByIds } from '@cio/db/queries/exercise';
 import { getLessonById } from '@cio/db/queries/lesson';
@@ -149,6 +151,7 @@ const question = (overrides: Record<string, unknown> = {}) => ({
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(getCourseItemRanks).mockResolvedValue(new Map());
   vi.mocked(getCourseOrganizationId).mockResolvedValue(ORG_ID);
   vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
   vi.mocked(getExerciseById).mockResolvedValue(exerciseRow());
@@ -216,6 +219,23 @@ describe('listCourseExercisesService', () => {
     expect(result.items.map((item) => item.id)).toEqual(['a', 'b']);
     expect(result.items[0]).not.toHaveProperty('isComplete');
     expect(result.pagination).toEqual({ page: 1, limit: 2, total: 3, totalPages: 2 });
+  });
+
+  it('follows the course outline before the stored order', async () => {
+    vi.mocked(listExercises).mockResolvedValue([
+      { ...(exerciseRow({ id: 'in-section', order: 1 }) as object), isComplete: false },
+      { ...(exerciseRow({ id: 'standalone', order: 2 }) as object), isComplete: false }
+    ] as never);
+    vi.mocked(getCourseItemRanks).mockResolvedValue(
+      new Map([
+        ['standalone', 0],
+        ['in-section', 1]
+      ])
+    );
+
+    const result = await listCourseExercisesService(ORG_ID, ACTOR_ID, params, { page: 1, limit: 10 });
+
+    expect(result.items.map((item) => item.id)).toEqual(['standalone', 'in-section']);
   });
 });
 

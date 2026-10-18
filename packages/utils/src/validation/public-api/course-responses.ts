@@ -226,7 +226,17 @@ export const ZPublicApiCourseDetailResponse = ZPublicApiCourseResponse.extend({
         items: z.array(ZCourseContentItem)
       })
     ),
-    items: z.array(ZCourseContentItem).describe('Filled only when grouped is false')
+    items: z.array(ZCourseContentItem).describe('Filled only when grouped is false'),
+    outline: z
+      .array(
+        z.discriminatedUnion('kind', [
+          z.object({ kind: z.literal('section'), id: z.string() }),
+          z.object({ kind: z.literal('item'), id: z.string().uuid(), type: z.enum(['LESSON', 'EXERCISE']) })
+        ])
+      )
+      .describe(
+        'Top-level reading order: sections and lessons or exercises outside any section, in course order. Items inside a section follow sections[].items.'
+      )
   }),
   studentLimitReached: z.boolean(),
   org: z

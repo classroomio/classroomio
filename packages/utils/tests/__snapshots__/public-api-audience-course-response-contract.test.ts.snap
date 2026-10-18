@@ -831,6 +831,58 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
           },
           "type": "array",
         },
+        "outline": {
+          "description": "Top-level reading order: sections and lessons or exercises outside any section, in course order. Items inside a section follow sections[].items.",
+          "items": {
+            "oneOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string",
+                  },
+                  "kind": {
+                    "const": "section",
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "kind",
+                  "id",
+                ],
+                "type": "object",
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+                    "type": "string",
+                  },
+                  "kind": {
+                    "const": "item",
+                    "type": "string",
+                  },
+                  "type": {
+                    "enum": [
+                      "LESSON",
+                      "EXERCISE",
+                    ],
+                    "type": "string",
+                  },
+                },
+                "required": [
+                  "kind",
+                  "id",
+                  "type",
+                ],
+                "type": "object",
+              },
+            ],
+          },
+          "type": "array",
+        },
         "sections": {
           "items": {
             "additionalProperties": false,
@@ -1064,6 +1116,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
         "grouped",
         "sections",
         "items",
+        "outline",
       ],
       "type": "object",
     },

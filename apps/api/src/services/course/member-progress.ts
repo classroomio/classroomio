@@ -11,7 +11,7 @@ import {
   getCourseTrackableContentCounts
 } from '@cio/db/queries/course/member-progress';
 import { calcCourseProgressPercent } from '@api/utils/course-completion';
-import { buildCourseContent, type CourseContentItem } from './utils';
+import { buildCourseContent, type CourseContentItem } from '@cio/core/services/course/utils';
 
 export type CourseMemberStage =
   | { kind: 'not_started' }

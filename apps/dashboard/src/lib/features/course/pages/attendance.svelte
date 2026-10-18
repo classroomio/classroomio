@@ -15,6 +15,7 @@
   import type { CourseMember, CourseMembers, CourseContentItem } from '$features/course/utils/types';
   import { getCourseContent } from '$features/course/utils/content';
   import { ContentType } from '@cio/utils/constants/content';
+  import { flattenNavigableItems } from '@cio/utils/functions/course-progression';
 
   interface Props {
     courseId: string;
@@ -36,11 +37,7 @@
   const paginatedStudents = $derived(filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize));
 
   const contentData = $derived(getCourseContent(courseApi.course));
-  const lessonItems = $derived(
-    (contentData.grouped ? contentData.sections.flatMap((section) => section.items) : contentData.items).filter(
-      (item) => item.type === ContentType.Lesson
-    )
-  );
+  const lessonItems = $derived(flattenNavigableItems(contentData).filter((item) => item.type === ContentType.Lesson));
 
   const attendanceLookup = $derived.by(() => {
     if (!courseApi.course?.attendance) return {};
