@@ -79,6 +79,7 @@ type DemoExercise = {
   id: string;
   title: string;
   description: string;
+  slug: string;
   fileQuestion: { title: string; acceptedTypes: string[]; points: number };
   textQuestion: { title: string; points: number };
 };
@@ -87,6 +88,7 @@ const EXERCISES: DemoExercise[] = [
   {
     id: seedId(7000, 1),
     title: 'Project 1: Clean the sales data',
+    slug: 'project-1-clean-the-sales-data',
     description:
       '<p>Harbor &amp; Pine Coffee exported three months of orders from their till. The file has duplicate order IDs, two date formats and prices with and without a currency sign.</p><p>Clean it, save it as a CSV and upload it below.</p>',
     fileQuestion: { title: 'Upload your cleaned sales file', acceptedTypes: [CSV_MIME], points: 10 },
@@ -95,6 +97,7 @@ const EXERCISES: DemoExercise[] = [
   {
     id: seedId(7000, 2),
     title: 'Project 2: Explore the data in a notebook',
+    slug: 'project-2-explore-the-data-in-a-notebook',
     description:
       '<p>Load your cleaned file in a Jupyter notebook. Chart weekly revenue, find the best and worst selling drinks, and compare the three stores.</p>',
     fileQuestion: { title: 'Upload your notebook', acceptedTypes: [NOTEBOOK_MIME], points: 15 },
@@ -103,6 +106,7 @@ const EXERCISES: DemoExercise[] = [
   {
     id: seedId(7000, 3),
     title: 'Final project: Forecast next quarter',
+    slug: 'final-project-forecast-next-quarter',
     description:
       '<p>Forecast revenue for each store for the next quarter. Submit your notebook, or a CSV with the forecast if you worked in a spreadsheet.</p>',
     fileQuestion: { title: 'Upload your forecast', acceptedTypes: [CSV_MIME, NOTEBOOK_MIME], points: 20 },
@@ -434,6 +438,7 @@ async function seedCourse(adminProfileId: string) {
       courseId: COURSE_ID,
       sectionId: SECTION_ID,
       title: 'Loading data with pandas',
+      slug: 'loading-data-with-pandas',
       note: '<p>Read a CSV into a DataFrame, inspect its columns and spot the problems before you fix them.</p>',
       isUnlocked: true,
       order: 1
@@ -443,6 +448,7 @@ async function seedCourse(adminProfileId: string) {
       courseId: COURSE_ID,
       sectionId: SECTION_ID,
       title: 'Cleaning messy data',
+      slug: 'cleaning-messy-data',
       note: '<p>Duplicates, mixed date formats and prices stored as text: how to find and fix each one.</p>',
       isUnlocked: true,
       order: 2
@@ -470,6 +476,7 @@ async function seedExercises(typeIds: { fileUploadTypeId: number; textareaTypeId
     await db.insert(exercise).values({
       id: demoExercise.id,
       title: demoExercise.title,
+      slug: demoExercise.slug,
       description: demoExercise.description,
       courseId: COURSE_ID,
       sectionId: SECTION_ID,

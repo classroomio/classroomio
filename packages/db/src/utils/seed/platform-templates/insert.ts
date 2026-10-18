@@ -21,6 +21,7 @@ import { createLessonLanguages, createLessons } from '@db/queries/lesson';
 import { getOrganizationById } from '@db/queries/organization';
 import type { TNewCourse } from '@db/types';
 import { QUESTION_TYPE } from '@cio/utils/validation/constants';
+import { claimSlug } from '@cio/utils/validation/shared';
 
 import type {
   LaunchExercise,
@@ -179,6 +180,7 @@ async function insertExercise(
   sectionId: string,
   exercise: LaunchExercise,
   order: number,
+  slug: string,
   dbClient: DbOrTxClient
 ) {
   const [created] = await createExercises(
@@ -188,7 +190,8 @@ async function insertExercise(
         description: exercise.description,
         courseId,
         sectionId,
-        order
+        order,
+        slug
       }
     ],
     dbClient
@@ -292,6 +295,7 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
   );
 
   let finalExerciseId: string | null = null;
+  const itemSlugs = new Set<string>();
 
   for (const [sectionIndex, section] of fixture.sections.entries()) {
     const courseSectionId = sections[sectionIndex]?.id;
@@ -304,11 +308,13 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
         videosByLesson.push(videos);
       }
 
+      const lessonSlugs = section.lessons.map((lesson) => claimSlug(lesson.title, itemSlugs));
       const lessons = await createLessons(
         section.lessons.map((lesson, index) => ({
           courseId: course.id,
           sectionId: courseSectionId,
           title: lesson.title,
+          slug: lessonSlugs[index],
           order: index + 1,
           isUnlocked: true,
           public: fixture.type === 'PUBLIC',
@@ -359,11 +365,13 @@ async function insertLaunchTemplate(orgId: string, fixture: LaunchTemplateFixtur
     }
 
     for (const [exerciseIndex, exercise] of section.exercises.entries()) {
+      const exerciseSlug = claimSlug(exercise.title, itemSlugs);
       const exerciseId = await insertExercise(
         course.id,
         courseSectionId,
         exercise,
         section.lessons.length + exerciseIndex + 1,
+        exerciseSlug,
         dbClient
       );
       if (exercise.final && exerciseId) finalExerciseId = exerciseId;

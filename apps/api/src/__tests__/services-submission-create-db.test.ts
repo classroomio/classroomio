@@ -74,7 +74,7 @@ describe.skipIf(!hasDatabase)('createSubmissionService against the database', ()
 
     const [exercise] = await db
       .insert(schema.exercise)
-      .values({ title: 'One attempt quiz', order: 1, courseId, allowMultipleAttempts: false })
+      .values({ title: 'One attempt quiz', slug: 'one-attempt-quiz', order: 1, courseId, allowMultipleAttempts: false })
       .returning();
     exerciseId = exercise.id;
 
