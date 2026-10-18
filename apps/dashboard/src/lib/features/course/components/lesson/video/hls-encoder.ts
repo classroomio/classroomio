@@ -246,7 +246,7 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
 
   function emit(patch: Partial<HlsEncodeProgress>) {
     Object.assign(progress, patch);
-    diagnostics.stage = progress.stage;
+    diagnostics.stage = diagnostics.failedRequest ? 'uploading' : progress.stage;
     opts.onProgress?.({ ...progress });
   }
 
@@ -497,7 +497,7 @@ export async function encodeAndUploadHls1080(opts: EncodeAndUpload1080Options): 
 
   function emit(patch: Partial<HlsEncodeProgress>) {
     Object.assign(progress, patch);
-    diagnostics.stage = progress.stage;
+    diagnostics.stage = diagnostics.failedRequest ? 'uploading' : progress.stage;
     opts.onProgress?.({ ...progress });
   }
 
@@ -810,6 +810,20 @@ async function putPresignedObject(options: {
 
   for (let attempt = 1; attempt <= HLS_PUT_MAX_ATTEMPTS; attempt += 1) {
     const requestStartedAt = Date.now();
+    const recordFailure = (
+      failure: { httpStatus: number | null; errorName?: string },
+      requestDurationMs = Date.now() - requestStartedAt
+    ) => {
+      options.onFailure({
+        objectPath: options.path,
+        requestBytes: options.body.size,
+        contentType: options.contentType,
+        attempt,
+        requestDurationMs,
+        presignedAgeMs: Date.now() - presigned.createdAt,
+        ...failure
+      });
+    };
     let response: Response;
 
     try {
@@ -820,13 +834,7 @@ async function putPresignedObject(options: {
         signal: options.signal
       });
     } catch (error) {
-      options.onFailure({
-        objectPath: options.path,
-        requestBytes: options.body.size,
-        contentType: options.contentType,
-        attempt,
-        requestDurationMs: Date.now() - requestStartedAt,
-        presignedAgeMs: Date.now() - presigned.createdAt,
+      recordFailure({
         httpStatus: null,
         errorName: error instanceof Error ? error.name : typeof error
       });
@@ -837,22 +845,20 @@ async function putPresignedObject(options: {
 
     const retryable = response.status === 403 || response.status === 429 || response.status >= 500;
     if (!retryable || attempt === HLS_PUT_MAX_ATTEMPTS) {
-      options.onFailure({
-        objectPath: options.path,
-        requestBytes: options.body.size,
-        contentType: options.contentType,
-        attempt,
-        requestDurationMs: Date.now() - requestStartedAt,
-        presignedAgeMs: Date.now() - presigned.createdAt,
-        httpStatus: response.status
-      });
+      recordFailure({ httpStatus: response.status });
       const detail = await response.text().catch(() => '');
       const suffix = detail ? `: ${detail.slice(0, 160)}` : '';
       throw new HlsEncoderError('upload_failed', `PUT ${options.path} → ${response.status}${suffix}`);
     }
 
     if (response.status === 403) {
-      presigned = await options.refreshPresign();
+      const requestDurationMs = Date.now() - requestStartedAt;
+      try {
+        presigned = await options.refreshPresign();
+      } catch (error) {
+        recordFailure({ httpStatus: response.status }, requestDurationMs);
+        throw error;
+      }
     }
 
     await sleep(Math.min(1000 * 2 ** (attempt - 1), 8000));
