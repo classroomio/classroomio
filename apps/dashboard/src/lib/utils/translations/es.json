@@ -12,6 +12,7 @@
     },
     "discard": "Descartar",
     "save_changes": "Guardar cambios",
+    "cancel": "Cancelar",
     "scroll_to_top": "Volver al inicio",
     "delete": "Eliminar",
     "restricted_page": {
@@ -4337,8 +4338,8 @@
         "description": "Solo los administradores de la organización pueden ver y gestionar el equipo. Contacta con un administrador si necesitas acceso."
       },
       "invite": {
-        "confirm_title": "¿Invitar a estudiantes al equipo?",
-        "confirm_description": "Estas personas ya son estudiantes de esta organización: {emails}. ¿Quieres invitarlas como {role}? Su rol solo cambiará cuando acepten la invitación.",
+        "confirm_title": "{count, plural, =1 {¿Invitar a este estudiante al equipo?} other {¿Invitar a estos estudiantes al equipo?}}",
+        "confirm_description": "{count, plural, =1 {Esta persona ya es estudiante de esta organización: {emails}. ¿Quieres enviarle una invitación para que sea {role}? Su rol solo cambiará cuando acepte.} other {Estas personas ya son estudiantes de esta organización: {emails}. ¿Quieres enviarles una invitación para que sean {role}? Sus roles solo cambiarán cuando acepten.}}",
         "existing": "Ya forman parte del equipo: {members}. Usa el selector de rol en Miembros del equipo para cambiar su rol."
       }
     },

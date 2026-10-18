@@ -447,6 +447,7 @@
     },
     "discard": "Discard",
     "save_changes": "Save changes",
+    "cancel": "Cancel",
     "refresh": "Refresh",
     "scroll_to_top": "Scroll to top",
     "delete": "Delete",
@@ -854,8 +855,8 @@
       },
       "page_subtitle": "Invite teammates and control who helps run this organization.",
       "invite": {
-        "confirm_title": "Invite Students to the team?",
-        "confirm_description": "These people are already Students in this organization: {emails}. Send them an invitation to become {role}? Their role will change only after they accept.",
+        "confirm_title": "{count, plural, =1 {Invite this student to the team?} other {Invite these students to the team?}}",
+        "confirm_description": "{count, plural, =1 {This person is already a student in this organization: {emails}. Send them an invitation to become {role}? Their role will change only after they accept.} other {These people are already students in this organization: {emails}. Send them an invitation to become {role}? Their roles will change only after they accept.}}",
         "existing": "Already on the team: {members}. Use the role control in Team members to change their role."
       }
     },
