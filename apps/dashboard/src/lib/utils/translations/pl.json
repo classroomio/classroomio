@@ -12,6 +12,7 @@
     },
     "discard": "Odrzuć",
     "save_changes": "Zapisz zmiany",
+    "cancel": "Anuluj",
     "scroll_to_top": "Przewiń do góry",
     "delete": "Usuń",
     "restricted_page": {
@@ -4337,8 +4338,8 @@
         "description": "Tylko administratorzy organizacji mogą wyświetlać zespół i nim zarządzać. Jeśli potrzebujesz dostępu, skontaktuj się z administratorem."
       },
       "invite": {
-        "confirm_title": "Zaprosić uczniów do zespołu?",
-        "confirm_description": "Te osoby są już uczniami w tej organizacji: {emails}. Czy wysłać im zaproszenie z rolą {role}? Ich rola zmieni się dopiero po zaakceptowaniu zaproszenia.",
+        "confirm_title": "{count, plural, =1 {Zaprosić tego ucznia do zespołu?} other {Zaprosić tych uczniów do zespołu?}}",
+        "confirm_description": "{count, plural, =1 {Ta osoba jest już uczniem w tej organizacji: {emails}. Czy wysłać zaproszenie z rolą {role}? Rola zmieni się dopiero po zaakceptowaniu zaproszenia.} other {Te osoby są już uczniami w tej organizacji: {emails}. Czy wysłać im zaproszenie z rolą {role}? Ich role zmienią się dopiero po zaakceptowaniu zaproszenia.}}",
         "existing": "Te osoby są już w zespole: {members}. Aby zmienić ich rolę, użyj wyboru roli na liście członków zespołu."
       }
     },
