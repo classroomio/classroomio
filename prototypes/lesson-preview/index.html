@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson preview — Prototype map</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../learning-paths/app-theme.css" />
+    <script>
+      if (
+        localStorage.cioTheme === 'dark' ||
+        (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches)
+      )
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      .page {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 56px 24px 80px;
+      }
+      h1 {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: -0.03em;
+        margin: 8px 0 8px;
+      }
+      .lead {
+        color: var(--muted-foreground);
+        font-size: 15px;
+        max-width: 72ch;
+        margin: 0 0 12px;
+      }
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--primary);
+      }
+      .sec {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted-foreground);
+        margin: 36px 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .sec::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      .shot {
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: border-color 0.15s, box-shadow 0.15s;
+      }
+      .shot:hover {
+        border-color: var(--ring);
+        box-shadow: var(--shadow-md);
+      }
+      .shot .cover {
+        height: 84px;
+        display: grid;
+        place-items: center;
+        color: #fff;
+      }
+      .shot .cover svg {
+        width: 26px;
+        height: 26px;
+        stroke-width: 1.8;
+      }
+      .shot .b {
+        padding: 13px 15px 15px;
+      }
+      .shot .n {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted-foreground);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+      }
+      .shot .t {
+        font-size: 14.5px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        margin: 3px 0 4px;
+      }
+      .shot .d {
+        font-size: 12.5px;
+        color: var(--muted-foreground);
+        margin: 0;
+        line-height: 1.5;
+      }
+      .foot {
+        margin-top: 44px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        color: var(--muted-foreground);
+        font-size: 13.5px;
+        line-height: 1.7;
+      }
+      .foot b {
+        color: var(--foreground);
+        font-weight: 500;
+      }
+      .foot code {
+        background: var(--muted);
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 12.5px;
+      }
+      .ideas {
+        display: grid;
+        gap: 8px;
+        margin: 16px 0 0;
+      }
+      .ideas li {
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: start;
+      }
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="top">
+        <span class="eyebrow">ClassroomIO · Prototype + PRD handoff</span>
+        <button class="icon-btn" id="theme" type="button" aria-label="Toggle theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+        </button>
+      </div>
+      <h1>Lesson preview</h1>
+      <p class="lead">
+        Let an unenrolled visitor <b style="color: var(--foreground)">watch or read selected lessons</b> before they
+        enroll or pay. The hero of the public course page plays a preview lesson; a card under the player lists the
+        others; the curriculum marks which rows are free to open. Explore uses the same player in a wider modal.
+        Teachers decide which lessons are previews and which one is the hero.
+      </p>
+      <p class="lead" style="font-size: 13.5px">
+        Interactive HTML. Toggle language and free/paid on the landing page. Compare a wide Explore modal (has previews)
+        with today’s narrow one (no previews). Engineering notes live in
+        <code>prd/lesson-preview/README.md</code>.
+      </p>
+
+      <div class="sec">1 · Visitor — org course page</div>
+      <div class="grid">
+        <a class="card shot" href="course-landing.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.488 0.243 264.376), oklch(0.685 0.169 237.323))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m10 9 6 3-6 3z" />
+            </svg>
+          </div>
+          <div class="b">
+            <div class="n">Learning page</div>
+            <div class="t">Course landing with hero player</div>
+            <p class="d">
+              Video (or article, or diagrams) in the hero. Playlist card: “3 more lessons to preview.” Curriculum rows
+              with Preview vs lock. Enroll / Buy to continue. EN/FR + free/paid toggles.
+            </p>
+          </div>
+        </a>
+      </div>
+
+      <div class="sec">2 · Learner — LMS Explore</div>
+      <div class="grid">
+        <a class="card shot" href="explore.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.546 0.245 262.881), oklch(0.424 0.199 265.638))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="7" width="18" height="12" rx="2" />
+              <path d="M8 7V5a4 4 0 0 1 8 0v2" />
+            </svg>
+          </div>
+          <div class="b">
+            <div class="n">Enroll modal</div>
+            <div class="t">Explore preview modal</div>
+            <p class="d">
+              Click a course with previews: modal goes wide, player on top, remaining-count card underneath, move
+              between lessons. Click a course without previews: today’s compact banner + enroll footer.
+            </p>
+          </div>
+        </a>
+      </div>
+
+      <div class="sec">3 · Teacher — define previews</div>
+      <div class="grid">
+        <a class="card shot" href="admin-lessons.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.596 0.145 163.225), oklch(0.488 0.243 264.376))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M12 20h9" />
+              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+            </svg>
+          </div>
+          <div class="b">
+            <div class="n">Course contents</div>
+            <div class="t">Mark preview lessons</div>
+            <p class="d">
+              Per-lesson Allow preview switch. Use as hero video (one per course, video previews only). Lock/unlock for
+              enrolled pacing stays a different control.
+            </p>
+          </div>
+        </a>
+        <a class="card shot" href="admin-landing.html">
+          <div class="cover" style="background: linear-gradient(135deg, oklch(0.705 0.213 47.604), oklch(0.75 0.183 55.934))">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="M3 9h18" />
+            </svg>
+          </div>
+          <div class="b">
+            <div class="n">Landing editor</div>
+            <div class="t">Hero lesson picker</div>
+            <p class="d">
+              Replaces the unused YouTube URL field. Pick which preview lesson plays on the hero, or fall back to the
+              cover image.
+            </p>
+          </div>
+        </a>
+      </div>
+
+      <ul class="ideas">
+        <li>Preview is the <b style="color: var(--foreground)">full lesson</b> (video, notes, images) — not a clipped trailer.</li>
+        <li>CTA copy follows cost: <b style="color: var(--foreground)">Enroll for free</b> / <b style="color: var(--foreground)">Buy</b> / not accepting.</li>
+        <li>All visitor copy is academy-language (prototype: EN ↔ FR).</li>
+        <li>Exercises stay locked until enrollment.</li>
+      </ul>
+
+      <div class="foot">
+        Open from a local server so the shared <code>data.js</code> / <code>player.js</code> load
+        (<code>python3 -m http.server</code> from the repo root, then
+        <code>/prototypes/lesson-preview/</code>). Tokens come from the learning-paths prototype stylesheets.
+      </div>
+    </div>
+    <script>
+      document.getElementById('theme').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+      });
+    </script>
+  </body>
+</html>
