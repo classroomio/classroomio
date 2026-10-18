@@ -23,6 +23,7 @@ import {
   type InputVideoTrack
 } from 'mediabunny';
 
+import * as Sentry from '@sentry/sveltekit';
 import { classroomio } from '$lib/utils/services/api';
 
 export type HlsEncodeStage = 'probing' | 'encoding' | 'uploading' | 'thumbnail' | 'finalizing' | 'done' | 'failed';
@@ -58,6 +59,59 @@ export interface HlsRungConfig {
   width: number;
   height: number;
   videoBitrate: number;
+}
+
+interface HlsUploadFailureContext {
+  objectPath: string;
+  requestBytes: number;
+  contentType: string;
+  attempt: number;
+  requestDurationMs: number;
+  presignedAgeMs: number;
+  httpStatus: number | null;
+  errorName?: string;
+}
+
+interface HlsUploadDiagnosticContext {
+  assetId: string | null;
+  stage: HlsEncodeStage;
+  source: {
+    fileSizeBytes: number;
+    mimeType: string | null;
+    durationSeconds: number | null;
+    width: number | null;
+    height: number | null;
+    hasAudio: boolean | null;
+  };
+  encoding: {
+    renditions: HlsRungConfig[];
+    outputVideoCodec: 'avc';
+    outputAudioCodec: 'aac' | 'none';
+  };
+  progress: {
+    uploadedBytes: number;
+    uploadedCount: number;
+    expectedUploadBytes: number | null;
+  };
+  failedRequest: HlsUploadFailureContext | null;
+}
+
+function createHlsUploadDiagnosticContext(file: File, assetId: string | null = null): HlsUploadDiagnosticContext {
+  return {
+    assetId,
+    stage: 'probing',
+    source: {
+      fileSizeBytes: file.size,
+      mimeType: file.type || null,
+      durationSeconds: null,
+      width: null,
+      height: null,
+      hasAudio: null
+    },
+    encoding: { renditions: [], outputVideoCodec: 'avc', outputAudioCodec: 'none' },
+    progress: { uploadedBytes: 0, uploadedCount: 0, expectedUploadBytes: null },
+    failedRequest: null
+  };
 }
 
 export const ALL_HLS_RUNGS: HlsRungConfig[] = [
@@ -188,9 +242,11 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     uploadedBytes: 0,
     uploadedCount: 0
   };
+  const diagnostics = createHlsUploadDiagnosticContext(opts.file);
 
   function emit(patch: Partial<HlsEncodeProgress>) {
     Object.assign(progress, patch);
+    diagnostics.stage = progress.stage;
     opts.onProgress?.({ ...progress });
   }
 
@@ -213,6 +269,12 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     const sourceWidth = videoTrack.displayWidth ?? 0;
     const sourceHeight = videoTrack.displayHeight ?? 0;
     const rungs = opts.rungs ?? selectRungsForSource(videoTrack, DEFAULT_MAX_RUNG_HEIGHT, opts.file.size);
+    diagnostics.source.durationSeconds = duration;
+    diagnostics.source.width = sourceWidth;
+    diagnostics.source.height = sourceHeight;
+    diagnostics.source.hasAudio = Boolean(audioTrack);
+    diagnostics.encoding.renditions = rungs;
+    diagnostics.encoding.outputAudioCodec = audioTrack ? 'aac' : 'none';
     if (rungs.length === 0) {
       throw new HlsEncoderError('encode_failed', 'Source resolution is too low for HLS encoding');
     }
@@ -232,6 +294,7 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     }
     const { assetId } = initBody.data;
     reservedAssetId = assetId;
+    diagnostics.assetId = assetId;
     opts.onAssetReserved?.(assetId);
 
     // --- Pre-presign every file Mediabunny will write ------------------
@@ -243,11 +306,14 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
     const expectedPaths = predictHlsPaths(rungs, duration, Boolean(audioTrack));
     const presignedUrls = await batchPresignPaths(assetId, expectedPaths);
     const expectedUploadBytes = estimateHlsUploadBytes(rungs, duration, Boolean(audioTrack));
+    diagnostics.progress.expectedUploadBytes = expectedUploadBytes;
 
     const uploader = new HlsUploader({
       assetId,
       presignedUrls,
       onUploaded: ({ totalBytes, count }) => {
+        diagnostics.progress.uploadedBytes = totalBytes;
+        diagnostics.progress.uploadedCount = count;
         const uploadFraction = Math.min(1, totalBytes / expectedUploadBytes);
         const uploadPercent = 73 + Math.round(uploadFraction * 22);
         emit({
@@ -256,6 +322,12 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
           stage: uploadFraction > 0 ? 'uploading' : progress.stage,
           percent: Math.max(progress.percent, uploadPercent)
         });
+      },
+      onUploadFailure: (failure) => {
+        if (diagnostics.failedRequest) return;
+
+        diagnostics.stage = 'uploading';
+        diagnostics.failedRequest = failure;
       },
       signal: opts.signal
     });
@@ -391,6 +463,7 @@ export async function encodeAndUploadHls(opts: EncodeAndUploadOptions): Promise<
   } catch (error) {
     const code = error instanceof HlsEncoderError ? error.code : 'encode_failed';
     const message = error instanceof Error ? error.message : 'Unknown encoder error';
+    captureHlsUploadFailure(error, diagnostics, opts.signal);
     emit({ stage: 'failed', error: `${code}: ${message}` });
 
     // Best-effort cleanup: tell the server to drop the reserved row + any
@@ -419,9 +492,12 @@ export async function encodeAndUploadHls1080(opts: EncodeAndUpload1080Options): 
     uploadedBytes: 0,
     uploadedCount: 0
   };
+  const diagnostics = createHlsUploadDiagnosticContext(opts.file, opts.assetId);
+  diagnostics.encoding.renditions = [P1080_RUNG];
 
   function emit(patch: Partial<HlsEncodeProgress>) {
     Object.assign(progress, patch);
+    diagnostics.stage = progress.stage;
     opts.onProgress?.({ ...progress });
   }
 
@@ -437,6 +513,10 @@ export async function encodeAndUploadHls1080(opts: EncodeAndUpload1080Options): 
       throw new HlsEncoderError('encode_failed', 'No video track found in source');
     }
 
+    diagnostics.source.durationSeconds = duration;
+    diagnostics.source.width = videoTrack.displayWidth ?? 0;
+    diagnostics.source.height = videoTrack.displayHeight ?? 0;
+
     const sourceHeight = videoTrack.displayHeight ?? 0;
     if (sourceHeight < 1080) {
       throw new HlsEncoderError('encode_failed', 'Source video does not support 1080p');
@@ -446,6 +526,7 @@ export async function encodeAndUploadHls1080(opts: EncodeAndUpload1080Options): 
     emit({ stage: 'encoding', percent: 1, rung: 'p1080' });
 
     const expectedPaths = predictHlsPaths(rungs, duration, false);
+    diagnostics.progress.expectedUploadBytes = estimateHlsUploadBytes(rungs, duration, false);
     const presignedUrls = await batchPresign1080Paths(opts.assetId, expectedPaths);
 
     const capturedFiles = new Map<string, Uint8Array>();
@@ -456,7 +537,15 @@ export async function encodeAndUploadHls1080(opts: EncodeAndUpload1080Options): 
       skipPaths: new Set(['master.m3u8']),
       capturedFiles,
       onUploaded: ({ totalBytes, count }) => {
+        diagnostics.progress.uploadedBytes = totalBytes;
+        diagnostics.progress.uploadedCount = count;
         emit({ uploadedBytes: totalBytes, uploadedCount: count });
+      },
+      onUploadFailure: (failure) => {
+        if (diagnostics.failedRequest) return;
+
+        diagnostics.stage = 'uploading';
+        diagnostics.failedRequest = failure;
       },
       signal: opts.signal
     });
@@ -538,6 +627,7 @@ export async function encodeAndUploadHls1080(opts: EncodeAndUpload1080Options): 
   } catch (error) {
     const code = error instanceof HlsEncoderError ? error.code : 'encode_failed';
     const message = error instanceof Error ? error.message : 'Unknown encoder error';
+    captureHlsUploadFailure(error, diagnostics, opts.signal);
     emit({ stage: 'failed', error: `${code}: ${message}` });
 
     await cleanupAbortedHls1080Upload(opts.assetId, opts.signal);
@@ -555,9 +645,20 @@ class HlsEncoderError extends Error {
   }
 }
 
+function captureHlsUploadFailure(error: unknown, context: HlsUploadDiagnosticContext, signal?: AbortSignal): void {
+  if (signal?.aborted) return;
+
+  Sentry.withScope((scope) => {
+    scope.setContext('video_upload', context);
+    scope.setTag('video_upload_stage', context.stage);
+    Sentry.captureException(error);
+  });
+}
+
 interface PresignedUrl {
   url: string;
   key: string;
+  createdAt: number;
 }
 
 /**
@@ -642,7 +743,7 @@ async function parsePresignResponse(paths: string[], response: Response): Promis
       throw new HlsEncoderError('upload_failed', `Presign missing url for ${path}`);
     }
 
-    map.set(path, { url, key });
+    map.set(path, { url, key, createdAt: Date.now() });
   }
 
   return map;
@@ -703,21 +804,48 @@ async function putPresignedObject(options: {
   contentType: string;
   signal?: AbortSignal;
   refreshPresign: () => Promise<PresignedUrl>;
+  onFailure: (failure: HlsUploadFailureContext) => void;
 }): Promise<PresignedUrl> {
   let presigned = options.presigned;
 
   for (let attempt = 1; attempt <= HLS_PUT_MAX_ATTEMPTS; attempt += 1) {
-    const response = await fetch(presigned.url, {
-      method: 'PUT',
-      headers: { 'Content-Type': options.contentType },
-      body: options.body,
-      signal: options.signal
-    });
+    const requestStartedAt = Date.now();
+    let response: Response;
+
+    try {
+      response = await fetch(presigned.url, {
+        method: 'PUT',
+        headers: { 'Content-Type': options.contentType },
+        body: options.body,
+        signal: options.signal
+      });
+    } catch (error) {
+      options.onFailure({
+        objectPath: options.path,
+        requestBytes: options.body.size,
+        contentType: options.contentType,
+        attempt,
+        requestDurationMs: Date.now() - requestStartedAt,
+        presignedAgeMs: Date.now() - presigned.createdAt,
+        httpStatus: null,
+        errorName: error instanceof Error ? error.name : typeof error
+      });
+      throw error;
+    }
 
     if (response.ok) return presigned;
 
     const retryable = response.status === 403 || response.status === 429 || response.status >= 500;
     if (!retryable || attempt === HLS_PUT_MAX_ATTEMPTS) {
+      options.onFailure({
+        objectPath: options.path,
+        requestBytes: options.body.size,
+        contentType: options.contentType,
+        attempt,
+        requestDurationMs: Date.now() - requestStartedAt,
+        presignedAgeMs: Date.now() - presigned.createdAt,
+        httpStatus: response.status
+      });
       const detail = await response.text().catch(() => '');
       const suffix = detail ? `: ${detail.slice(0, 160)}` : '';
       throw new HlsEncoderError('upload_failed', `PUT ${options.path} → ${response.status}${suffix}`);
@@ -752,6 +880,7 @@ class HlsUploader {
       assetId: string;
       presignedUrls: Map<string, PresignedUrl>;
       onUploaded: (state: { totalBytes: number; count: number }) => void;
+      onUploadFailure: (failure: HlsUploadFailureContext) => void;
       signal?: AbortSignal;
       presignEndpoint?: 'default' | '1080';
       skipPaths?: Set<string>;
@@ -798,6 +927,7 @@ class HlsUploader {
         body,
         contentType,
         signal: this.options.signal,
+        onFailure: this.options.onUploadFailure,
         refreshPresign: async () => {
           const refreshed = await this.fallbackPresign(path);
           this.options.presignedUrls.set(path, refreshed);
@@ -817,11 +947,10 @@ class HlsUploader {
       () => undefined,
       (error) => {
         this.uploadFailures.push(error);
-        throw error;
       }
     );
     this.inflight.push(tracked);
-    tracked.finally(() => {
+    tracked.then(() => {
       const index = this.inflight.indexOf(tracked);
       if (index >= 0) this.inflight.splice(index, 1);
     });
@@ -849,7 +978,7 @@ class HlsUploader {
     if (!url || !key) {
       throw new HlsEncoderError('upload_failed', `Presign returned no url for ${path}`);
     }
-    return { url, key };
+    return { url, key, createdAt: Date.now() };
   }
 
   async flush(): Promise<void> {
