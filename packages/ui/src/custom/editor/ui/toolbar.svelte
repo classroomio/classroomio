@@ -52,7 +52,7 @@
       {:else}
         {@const commandGroup = commands[cmd]}
         {@const visibleCommandGroup = commandGroup.filter(({ name }) => name !== 'audio-placeholder')}
-        {#each visibleCommandGroup as command (command.name)}
+        {#each visibleCommandGroup as command (command)}
           <ToolBarIcon {editor} {command} />
           {#if command.name === 'blockQuote'}
             <CalloutMenu {editor} />
