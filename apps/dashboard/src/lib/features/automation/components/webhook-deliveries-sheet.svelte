@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
+  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import RefreshCwIcon from '@lucide/svelte/icons/refresh-cw';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import { Badge } from '@cio/ui/base/badge';
@@ -113,11 +113,20 @@
       {#if selectedDelivery}
         <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between gap-2">
-            <Button variant="outline" size="sm" onclick={() => (webhookApi.selectedDelivery = null)}>
-              <ChevronLeftIcon size={16} />
-              {$t(`${T}.back`)}
+            <Button
+              variant="link"
+              class="h-fit! justify-start! px-2! py-2!"
+              onclick={() => (webhookApi.selectedDelivery = null)}
+            >
+              <ArrowLeftIcon class="custom" />
+              <span class="text-xs">{$t(`${T}.back`)}</span>
             </Button>
-            <Button size="sm" onclick={() => handleRedeliver(selectedDelivery.id)} testId="webhook-redeliver">
+            <Button
+              variant="secondary"
+              size="sm"
+              onclick={() => handleRedeliver(selectedDelivery.id)}
+              testId="webhook-redeliver"
+            >
               <RotateCcwIcon size={16} />
               {$t(`${T}.redeliver`)}
             </Button>
