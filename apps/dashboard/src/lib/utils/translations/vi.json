@@ -12,6 +12,7 @@
     },
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi",
+    "cancel": "Hủy bỏ",
     "scroll_to_top": "Cuộn lên đầu trang",
     "delete": "Xóa",
     "restricted_page": {
@@ -4337,8 +4338,8 @@
         "description": "Chỉ quản trị viên tổ chức mới có thể xem và quản lý nhóm. Hãy liên hệ với quản trị viên nếu bạn cần quyền truy cập."
       },
       "invite": {
-        "confirm_title": "Mời học viên vào nhóm?",
-        "confirm_description": "Những người này đã là học viên trong tổ chức: {emails}. Bạn có muốn mời họ với vai trò {role} không? Vai trò của họ chỉ thay đổi sau khi họ chấp nhận lời mời.",
+        "confirm_title": "{count, plural, =1 {Mời học viên này vào nhóm?} other {Mời các học viên này vào nhóm?}}",
+        "confirm_description": "{count, plural, =1 {Người này đã là học viên trong tổ chức: {emails}. Bạn có muốn gửi lời mời để người này trở thành {role} không? Vai trò chỉ thay đổi sau khi lời mời được chấp nhận.} other {Những người này đã là học viên trong tổ chức: {emails}. Bạn có muốn mời họ với vai trò {role} không? Vai trò của họ chỉ thay đổi sau khi họ chấp nhận lời mời.}}",
         "existing": "Những người này đã có trong nhóm: {members}. Hãy dùng bộ chọn vai trò trong danh sách thành viên nhóm để thay đổi vai trò của họ."
       }
     },
