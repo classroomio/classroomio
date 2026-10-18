@@ -13,7 +13,7 @@ Webhooks share the entitlement of the REST API. On cloud they require an **Early
 
 1. Open your organization, then **Automation → Webhooks** (organization admins only).
 2. Select **New webhook** and enter a name and your **Payload URL**.
-3. Choose **Send me everything** or pick individual events. New webhooks start with the recommended events selected.
+3. Choose **Send me everything** or pick individual events. Select all, whole groups, or single events.
 4. Save. ClassroomIO shows the **signing secret once**. Copy it now, because it cannot be shown again.
 5. Use **Send test event** to confirm your endpoint responds with a `2xx` status.
 
@@ -323,7 +323,8 @@ export function verifyClassroomIoWebhook({ secret, timestamp, rawBody, signature
 - Failed deliveries are retried automatically, up to **6 attempts** in total: immediately, then after 10 seconds, 1 minute, 5 minutes, 30 minutes, and 2 hours. After the last attempt the delivery is marked as failed.
 - Deliveries are **at least once**. Use `X-Cio-Event-Id` (or `id` in the body) as an idempotency key so a retry never processes the same event twice.
 - Only one delivery to a given endpoint is in flight at a time, and the oldest due delivery is sent first. A delivery that is waiting to retry does not block newer events, so do not rely on strict ordering across retries. Use `createdAt` when order matters.
-- An endpoint shows as **Failing** after 20 consecutive failed deliveries and is **auto-disabled** after 100. Re-enable it from the dashboard once it is fixed.
+- An endpoint shows as **Failing** after 20 consecutive failed deliveries and is **auto-disabled** after 100. Re-enable it from the dashboard once it is fixed. ClassroomIO does not send an email when this happens, so check the **Error rate (24h)** column.
+- You can pause a webhook at any time with its toggle in the **Destination** list. While paused, no events are sent to it.
 - Event and delivery history is kept for **30 days**. Open **View deliveries** to inspect headers, payloads, responses, and errors, and to **Redeliver** any retained event. A redelivery keeps the original event id.
 
 ## Security
