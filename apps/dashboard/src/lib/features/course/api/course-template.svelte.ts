@@ -200,7 +200,7 @@ export class CourseTemplateApi extends BaseApiWithErrors {
         logContext: 'saving course as template',
         onSuccess: (response) => {
           bumpTemplateUsage(1);
-          saveTemplateModal.set(saveTemplateModalInitialState);
+          saveTemplateModal.set({ ...saveTemplateModalInitialState });
           snackbar.success('course_templates.save.saved', undefined, {
             label: 'course_templates.save.view_templates',
             onClick: () => {
@@ -234,7 +234,7 @@ export class CourseTemplateApi extends BaseApiWithErrors {
           orgNavCountsApi.adjustCount('courses', -1);
           courseApi.invalidateCourse(courseId);
           await courseApi.get(courseId);
-          saveTemplateModal.set(saveTemplateModalInitialState);
+          saveTemplateModal.set({ ...saveTemplateModalInitialState });
           snackbar.success('course_templates.save.converted');
           await this.list();
           goto(resolve(`/courses/${courseId}/lessons`, {}));
