@@ -225,6 +225,7 @@ describe('services/v1/courses/certificates', () => {
       expect(updateCourse).not.toHaveBeenCalled();
       expect(getPaginatedCourseMembers).not.toHaveBeenCalled();
       expect(generateCertificatePdf).not.toHaveBeenCalled();
+      expect(assertCertificatesEnabled).not.toHaveBeenCalled();
     });
   });
 
@@ -328,10 +329,9 @@ describe('services/v1/courses/certificates', () => {
       expect(updateCourse).not.toHaveBeenCalled();
     });
 
-    it('does not gate reads, the issued list, or downloads on the plan', async () => {
+    it('does not gate reads or the issued list on the plan', async () => {
       await getPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params);
       await listPublicApiCourseCertificatesService(ORG_ID, ACTOR_ID, params, firstPage);
-      await downloadPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, memberParams, pdfQuery);
 
       expect(assertCertificatesEnabled).not.toHaveBeenCalled();
     });
@@ -478,6 +478,7 @@ describe('services/v1/courses/certificates', () => {
     it('renders the student certificate as the student would download it', async () => {
       const result = await downloadPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, memberParams, pdfQuery);
 
+      expect(assertCertificatesEnabled).toHaveBeenCalledWith(ORG_ID);
       expect(getCourseMember).toHaveBeenCalledWith(COURSE_ID, MEMBER_ID);
       expect(assembleCertificateRender).toHaveBeenCalledWith(COURSE_ID, {
         studentName: 'Ada Lovelace',
@@ -486,6 +487,18 @@ describe('services/v1/courses/certificates', () => {
       });
       expect(generateCertificatePng).not.toHaveBeenCalled();
       expect(result).toEqual({ file: Buffer.from('pdf'), format: 'pdf', courseName: 'Intro Course' });
+    });
+
+    it('rejects downloads when the organization is on a plan without certificates', async () => {
+      vi.mocked(assertCertificatesEnabled).mockRejectedValueOnce(
+        new AppError('Certificates require a paid plan', ErrorCodes.UPGRADE_REQUIRED, 403)
+      );
+
+      await expect(
+        downloadPublicApiCourseCertificateService(ORG_ID, ACTOR_ID, memberParams, pdfQuery)
+      ).rejects.toMatchObject({ statusCode: 403, code: ErrorCodes.UPGRADE_REQUIRED });
+      expect(getCourseMember).not.toHaveBeenCalled();
+      expect(assembleCertificateRender).not.toHaveBeenCalled();
     });
 
     it('renders a PNG when asked', async () => {
