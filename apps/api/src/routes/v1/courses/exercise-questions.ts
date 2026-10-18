@@ -24,7 +24,7 @@ import {
   mcpRateLimitResponse
 } from './docs';
 
-const TAG = 'Course Exercises';
+const TAG = 'Exercise Questions';
 const QuestionResponse = itemResponse(ZPublicApiExerciseQuestionResponse);
 
 export const v1CourseExerciseQuestionsRouter = new Hono()
