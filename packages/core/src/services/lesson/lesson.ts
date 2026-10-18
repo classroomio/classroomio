@@ -32,6 +32,7 @@ import { db } from '@cio/db/drizzle';
 import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
+import { claimRootOrder } from '../course/root-order';
 
 /**
  * Creates a new lesson
@@ -47,10 +48,12 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
       requestedSlug: data.slug
     });
 
+    const order = data.sectionId ? data.order : await claimRootOrder(courseId, data.order);
     const lessonData = {
       ...data,
       courseId,
       slug,
+      order,
       isUnlocked: data.isUnlocked ?? true
     };
 
@@ -121,7 +124,8 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
   try {
     const payload: TLessonUpdate = { ...data };
     const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
-    const existing = payload.slug !== undefined || touchesSession ? await getLessonById(lessonId) : null;
+    const needsExisting = payload.slug !== undefined || payload.order !== undefined || touchesSession;
+    const existing = needsExisting ? await getLessonById(lessonId) : null;
 
     if (payload.slug !== undefined) {
       if (!existing) {
@@ -137,6 +141,11 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
         requestedSlug: payload.slug,
         ignoreItemSlug: existing.slug ?? undefined
       });
+    }
+
+    const endsAtTopLevel = !(payload.sectionId ?? existing?.sectionId);
+    if (payload.order !== undefined && existing?.courseId && endsAtTopLevel) {
+      payload.order = await claimRootOrder(existing.courseId, payload.order, lessonId);
     }
 
     const updated = await updateLesson(lessonId, payload);

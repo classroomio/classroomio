@@ -2,7 +2,7 @@ import { AppError, ErrorCodes } from '@api/utils/errors';
 import { env } from '@cio/core/config/env';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
 import { createCourse, updateCourse } from '@cio/core/services/course/course';
-import { updateCourseContent } from '@cio/core/services/course/content';
+import { reorderCourseContent, updateCourseContent } from '@cio/core/services/course/content';
 import { DEFAULT_CONTENT_GROUPING } from '@cio/core/services/course/utils';
 import {
   createExercise,
@@ -289,6 +289,38 @@ function getDraftRootOrders(draft: TCourseImportDraftPayload) {
   }
 
   return new Map(rootEntries.map((entry) => [`${entry.kind}:${entry.externalId}`, entry.order]));
+}
+
+type DraftContentIds = {
+  sectionIdMap: Map<string, string>;
+  lessonIdMap: Map<string, string>;
+  exerciseIdMap: Map<string, string>;
+};
+
+/**
+ * Writes every top-level draft entry's position in one validated reorder. Replace mode runs it after its
+ * writes and deletions so positions shifted along the way end where the draft puts them.
+ */
+async function applyDraftRootOrders(courseId: string, draft: TCourseImportDraftPayload, ids: DraftContentIds) {
+  const rootEntries = getDraftRootEntries(draft) ?? [];
+  const sections = rootEntries
+    .filter((entry) => entry.kind === 'section')
+    .map((entry) => ({ id: ids.sectionIdMap.get(entry.externalId)!, order: entry.order }));
+  const items = rootEntries
+    .filter((entry) => entry.kind !== 'section')
+    .map((entry) => {
+      const id =
+        entry.kind === 'lesson' ? ids.lessonIdMap.get(entry.externalId) : ids.exerciseIdMap.get(entry.externalId);
+      const type = entry.kind === 'lesson' ? ('LESSON' as const) : ('EXERCISE' as const);
+
+      return { id: id!, type, sectionId: null, order: entry.order };
+    });
+  if (sections.length === 0 && items.length === 0) return;
+
+  await reorderCourseContent(courseId, {
+    ...(sections.length > 0 ? { sections } : {}),
+    ...(items.length > 0 ? { items } : {})
+  });
 }
 
 function isRootDraftExercise(exercise: TCourseImportDraftExercise) {
@@ -1158,6 +1190,7 @@ export async function publishCourseImportDraftToExistingCourseService(
       return nextOrder;
     };
 
+    const exerciseIdMap = new Map<string, string>();
     for (const exercise of draft.exercises ?? []) {
       const draftOrder = isRootDraftExercise(exercise)
         ? rootOrders.get(`exercise:${exercise.externalId}`)!
@@ -1192,6 +1225,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         };
 
         await replaceExerciseService(exercise.externalId, updatePayload);
+        exerciseIdMap.set(exercise.externalId, exercise.externalId);
         updatedExercises += 1;
         continue;
       }
@@ -1199,11 +1233,12 @@ export async function publishCourseImportDraftToExistingCourseService(
       const groupKey = groupKeyForExercise(payload.lessonId, payload.sectionId);
       const exerciseOrder = isMerge ? claimNextExerciseOrder(groupKey) : payload.order;
 
-      await createExercise({
+      const createdExercise = await createExercise({
         courseId: course.id,
         ...payload,
         order: exerciseOrder
       });
+      exerciseIdMap.set(exercise.externalId, createdExercise.id);
       createdExercises += 1;
     }
 
@@ -1284,6 +1319,8 @@ export async function publishCourseImportDraftToExistingCourseService(
         await deleteCourseSectionService(existingSection.id);
         deletedSections += 1;
       }
+
+      await applyDraftRootOrders(course.id, draft, { sectionIdMap, lessonIdMap, exerciseIdMap });
     }
 
     const courseUrl = await resolveCourseUrl(orgId, course.id, courseTitle);

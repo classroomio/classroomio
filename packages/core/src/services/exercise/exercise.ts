@@ -30,6 +30,7 @@ import {
 } from '@cio/db/queries/exercise';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { resolveItemSlug } from '../course/slug';
+import { claimRootOrder } from '../course/root-order';
 import { guardNonAutoGradableQuestionsForCourseType } from '../course/public-course-guard';
 
 import { db } from '@cio/db/drizzle';
@@ -228,16 +229,32 @@ async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
     requestedSlug: sanitizedData.slug
   });
 
+  const isTopLevel = !sanitizedData.sectionId && !sanitizedData.lessonId;
+  const order = isTopLevel ? await claimRootOrder(sanitizedData.courseId, sanitizedData.order) : sanitizedData.order;
+
   return {
     title: sanitizedData.title,
     description: sanitizedData.description ?? null,
     lessonId: sanitizedData.lessonId || null,
     courseId: sanitizedData.courseId,
     sectionId: sanitizedData.sectionId || null,
-    order: sanitizedData.order,
+    order,
     dueBy: sanitizedData.dueBy || null,
     slug
   };
+}
+
+/**
+ * Frees the requested position when an updated exercise ends up at the top level of its course.
+ */
+async function claimUpdatedExerciseOrder(existing: TExercise | null | undefined, data: TExerciseUpdate) {
+  if (data.order === undefined || !existing?.courseId) return data.order;
+
+  const sectionId = data.sectionId === undefined ? existing.sectionId : data.sectionId || null;
+  const lessonId = data.lessonId === undefined ? existing.lessonId : data.lessonId || null;
+  if (sectionId || lessonId) return data.order;
+
+  return claimRootOrder(existing.courseId, data.order, existing.id);
 }
 
 async function insertExerciseRow(exerciseData: Awaited<ReturnType<typeof prepareExerciseRow>>, txClient: DbOrTxClient) {
@@ -402,6 +419,8 @@ export async function updateExerciseService(
         ignoreItemSlug: existing.slug ?? undefined
       });
     }
+
+    sanitizedData.order = await claimUpdatedExerciseOrder(existing, sanitizedData);
 
     let createdQuestionIds: number[] = [];
     const result = await db.transaction(async (tx) => {
@@ -753,6 +772,7 @@ export async function replaceExerciseService(exerciseId: string, data: TExercise
     const sanitizedData = sanitizeExercisePayload(data);
 
     const existing = await getExerciseById(exerciseId);
+    sanitizedData.order = await claimUpdatedExerciseOrder(existing, sanitizedData);
 
     const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;

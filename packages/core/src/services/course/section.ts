@@ -16,6 +16,7 @@ import type {
 } from '@cio/utils/validation/course/section';
 import { updateUngroupedExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { db } from '@cio/db/drizzle';
+import { claimRootOrder } from './root-order';
 
 /**
  * Creates a new course section
@@ -25,8 +26,10 @@ import { db } from '@cio/db/drizzle';
  */
 export async function createCourseSection(courseId: string, data: TCourseSectionCreate): Promise<TCourseSection> {
   try {
+    const order = await claimRootOrder(courseId, data.order);
     const sectionData = {
       ...data,
+      order,
       courseId
     };
 
@@ -147,7 +150,12 @@ export async function updateCourseSectionService(
       throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
     }
 
-    const updated = await updateCourseSection(sectionId, data);
+    const payload = { ...data };
+    if (payload.order !== undefined && section.courseId) {
+      payload.order = await claimRootOrder(section.courseId, payload.order, sectionId);
+    }
+
+    const updated = await updateCourseSection(sectionId, payload);
     if (!updated) {
       throw new AppError('Failed to update course section', ErrorCodes.INTERNAL_ERROR, 500);
     }
