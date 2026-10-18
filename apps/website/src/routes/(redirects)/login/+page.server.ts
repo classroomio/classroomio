@@ -1,14 +1,6 @@
-import { client } from '$lib/utils/posthog';
-import { getDistinctId } from '$lib/utils/posthog/distinct-id';
-import { redirect } from '@sveltejs/kit';
+import { trackAndRedirect } from '$lib/utils/posthog/track-redirect';
 
 export const prerender = false;
 
-export const load = ({ request, url }) => {
-  client.capture({
-    distinctId: getDistinctId(request),
-    event: 'login'
-  });
-
-  redirect(307, `https://app.classroomio.com/login${url.search ?? ''}`);
-};
+export const load = ({ request, url, platform }) =>
+  trackAndRedirect({ request, platform }, 'login', `https://app.classroomio.com/login${url.search}`);
