@@ -49,7 +49,20 @@ export function toPublicSidebarSections(tree: PublicCourseTree): PublicCourseSid
       items: [sidebarItem]
     });
   }
-  return sections.filter((section) => section.items.length > 0).sort((left, right) => left.order - right.order);
+  const ordered = sections
+    .filter((section) => section.items.length > 0)
+    .sort((left, right) => left.order - right.order);
+
+  return ordered.reduce<Array<PublicCourseSidebarSection & { order: number }>>((merged, section) => {
+    const previous = merged.at(-1);
+    if (section.standalone && previous?.standalone) {
+      previous.items.push(...section.items);
+      return merged;
+    }
+
+    merged.push(section);
+    return merged;
+  }, []);
 }
 
 export function toPublicLessonView(lesson: Extract<PublicItem, { kind: 'lesson' }>): PublicLessonViewData {

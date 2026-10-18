@@ -305,7 +305,15 @@
     <div class="h-screen w-80">
       <PublicCourse.PublicCourseSidebar
         sections={[
-          { id: 'intro', title: '', standalone: true, items: [SIDEBAR_FIXTURE[0].items[0]] },
+          {
+            id: 'intro',
+            title: '',
+            standalone: true,
+            items: [
+              SIDEBAR_FIXTURE[0].items[0],
+              { kind: 'exercise', id: 'exercise-warmup', slug: 'warm-up-quiz', title: 'Warm-up quiz', isUnlocked: true }
+            ]
+          },
           SIDEBAR_FIXTURE[0],
           { id: 'checkpoint', title: '', standalone: true, items: [SIDEBAR_FIXTURE[1].items[0]] },
           SIDEBAR_FIXTURE[1]

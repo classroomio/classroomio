@@ -88,7 +88,8 @@
 {#snippet sectionItems(section: PublicCourseSidebarSection)}
   {#each section.items as item, index (item.id)}
     <SidebarRow
-      number={index + 1}
+      number={section.standalone ? undefined : index + 1}
+      kind={item.kind}
       title={item.title}
       active={item.slug === activeSlug}
       locked={!item.isUnlocked}
