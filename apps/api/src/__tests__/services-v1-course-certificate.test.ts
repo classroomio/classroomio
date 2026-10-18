@@ -225,6 +225,7 @@ describe('services/v1/courses/certificates', () => {
       expect(updateCourse).not.toHaveBeenCalled();
       expect(getPaginatedCourseMembers).not.toHaveBeenCalled();
       expect(generateCertificatePdf).not.toHaveBeenCalled();
+      expect(assertCertificatesEnabled).not.toHaveBeenCalled();
     });
   });
 
