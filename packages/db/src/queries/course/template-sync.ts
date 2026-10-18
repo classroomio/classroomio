@@ -58,15 +58,36 @@ export async function countSubmissionsByExerciseIds(exerciseIds: string[], dbCli
   }
 }
 
-export async function shiftCourseSectionOrders(courseId: string, fromOrder: number, dbClient: DbOrTxClient = db) {
+/**
+ * Moves every top-level outline entry (sections, and lessons or exercises outside any section or lesson)
+ * at or after `fromOrder` down one position.
+ */
+export async function shiftCourseRootOrders(courseId: string, fromOrder: number, dbClient: DbOrTxClient = db) {
   try {
     await dbClient
       .update(schema.courseSection)
       .set({ order: sql`${schema.courseSection.order} + 1` })
       .where(and(eq(schema.courseSection.courseId, courseId), gte(schema.courseSection.order, fromOrder)));
+    await dbClient
+      .update(schema.lesson)
+      .set({ order: sql`${schema.lesson.order} + 1` })
+      .where(
+        and(eq(schema.lesson.courseId, courseId), isNull(schema.lesson.sectionId), gte(schema.lesson.order, fromOrder))
+      );
+    await dbClient
+      .update(schema.exercise)
+      .set({ order: sql`${schema.exercise.order} + 1` })
+      .where(
+        and(
+          eq(schema.exercise.courseId, courseId),
+          isNull(schema.exercise.sectionId),
+          isNull(schema.exercise.lessonId),
+          gte(schema.exercise.order, fromOrder)
+        )
+      );
   } catch (error) {
-    console.error('shiftCourseSectionOrders error:', error);
-    throw new Error(`Failed to shift section order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error('shiftCourseRootOrders error:', error);
+    throw new Error(`Failed to shift top-level order: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

@@ -2,6 +2,8 @@ import { ContentType } from '@cio/utils/constants';
 import { getReleasedRecordingUrl } from '@cio/utils/functions/live-session';
 import type { CourseContentItemRow } from '@cio/db/queries/course';
 
+export const DEFAULT_CONTENT_GROUPING = true;
+
 export type CourseContentItem = {
   id: string;
   type: ContentType;

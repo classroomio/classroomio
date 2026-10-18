@@ -55,7 +55,7 @@ import { getStudentLimit } from '@cio/utils/plans';
 import { env } from '../../config/env';
 import { invalidateOrgStats } from '../../utils/redis/org-stats-cache';
 import { annotateCourseContentWithProgression } from './progression';
-import { buildCourseContent, calcPercentageWithRounding, type CourseContent } from './utils';
+import { buildCourseContent, calcPercentageWithRounding, DEFAULT_CONTENT_GROUPING, type CourseContent } from './utils';
 import { getPublicConversionOffenders } from './public-course-guard';
 
 export interface UpdateCourseResult {
@@ -78,8 +78,6 @@ async function isStudentLimitReached(orgId: string): Promise<boolean> {
   const currentCount = await countActiveStudents(orgId);
   return currentCount + 1 > limit;
 }
-
-const DEFAULT_CONTENT_GROUPING = true;
 
 export async function ensureProgramCourseAccess(courseId: string, profileId: string) {
   const access = await getCourseProgramAccess(courseId, profileId);

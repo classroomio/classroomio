@@ -3474,6 +3474,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "order": {
+                "description": "Position within its section or lesson, 1-based. An exercise with neither takes its place in the top-level sequence it shares with sections and top-level lessons.",
                 "maximum": 9007199254740991,
                 "minimum": 1,
                 "type": "integer",
@@ -3678,6 +3679,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "boolean",
               },
               "order": {
+                "description": "Position within the section, 1-based. A lesson without a section takes its place in the top-level sequence it shares with sections and top-level exercises.",
                 "maximum": 9007199254740991,
                 "minimum": 1,
                 "type": "integer",
@@ -3686,6 +3688,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "boolean",
               },
               "sectionExternalId": {
+                "description": "Section the lesson belongs to. Omit it for a lesson that sits at the top level of the course.",
                 "minLength": 1,
                 "type": "string",
               },
@@ -3769,7 +3772,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             },
             "required": [
               "externalId",
-              "sectionExternalId",
               "title",
               "order",
             ],
@@ -3779,6 +3781,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
           "type": "array",
         },
         "sections": {
+          "default": [],
           "items": {
             "additionalProperties": false,
             "properties": {
@@ -3787,6 +3790,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "order": {
+                "description": "Top-level position. Sections, lessons without a section, and exercises with neither a section nor a lesson share one contiguous 1-based sequence.",
                 "maximum": 9007199254740991,
                 "minimum": 1,
                 "type": "integer",
@@ -3803,7 +3807,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
             ],
             "type": "object",
           },
-          "minItems": 1,
           "type": "array",
         },
         "sourceReferences": {

@@ -3,7 +3,12 @@ import { ContentType } from '@cio/utils/constants';
 import type { DbOrTxClient } from '@cio/db/drizzle';
 import { db } from '@cio/db/drizzle';
 import { applyCourseContentBulkUpdates, applyCourseSectionOrderUpdates } from '@cio/db/queries/course/content-batch';
-import { deleteCourseSection, getCourseSectionById, getCourseSectionsByCourseId } from '@cio/db/queries/course';
+import {
+  deleteCourseSection,
+  getCourseById,
+  getCourseSectionById,
+  getCourseSectionsByCourseId
+} from '@cio/db/queries/course';
 import { OperationalQueryError } from '@cio/db/queries/query-errors';
 import {
   countContentStudentWork,
@@ -15,6 +20,7 @@ import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
 import { ZCourseContentReorder } from '@cio/utils/validation/course';
 import type { TCourseContentDelete, TCourseContentReorder, TCourseContentUpdate } from '@cio/utils/validation/course';
+import { DEFAULT_CONTENT_GROUPING } from './utils';
 
 type CourseContentReorderResult = {
   courseId: string;
@@ -106,13 +112,22 @@ function mapContentBatchError(error: unknown): AppError | null {
   return null;
 }
 
-function assertEffectiveRootOrders(contentItems: CourseContentItemRow[], payload: TCourseContentReorder) {
+/**
+ * Throws when two top-level outline entries would share an order. Sections only count when content grouping is on.
+ */
+function assertEffectiveRootOrders(
+  contentItems: CourseContentItemRow[],
+  payload: TCourseContentReorder,
+  isContentGroupingEnabled: boolean
+) {
   const sectionUpdates = new Map(payload.sections?.map((section) => [section.id, section.order]) ?? []);
   const itemUpdates = new Map(payload.items?.map((item) => [buildContentKey(item), item]) ?? []);
   const rootOrders: number[] = [];
 
   contentItems.forEach((contentItem) => {
     if (contentItem.type === ContentType.Section) {
+      if (!isContentGroupingEnabled) return;
+
       const effectiveOrder = sectionUpdates.get(contentItem.id) ?? contentItem.order;
       if (effectiveOrder !== null) {
         rootOrders.push(effectiveOrder);
@@ -123,7 +138,7 @@ function assertEffectiveRootOrders(contentItems: CourseContentItemRow[], payload
 
     const itemUpdate = itemUpdates.get(buildContentKey(contentItem));
     const effectiveSectionId = itemUpdate?.sectionId === undefined ? contentItem.sectionId : itemUpdate.sectionId;
-    if (effectiveSectionId !== null) {
+    if (isContentGroupingEnabled && effectiveSectionId !== null) {
       return;
     }
 
@@ -201,7 +216,9 @@ export async function reorderCourseContent(
     }
 
     const contentItems = await assertCourseContentItems(courseId, payload.items ?? []);
-    assertEffectiveRootOrders(contentItems, payload);
+    const [course] = await getCourseById(courseId);
+    const isContentGroupingEnabled = course?.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING;
+    assertEffectiveRootOrders(contentItems, payload, isContentGroupingEnabled);
 
     return await transactionWithContentBatch(async (tx) => {
       const updatedSections = payload.sections?.length ? await applyCourseSectionOrderUpdates(tx, payload.sections) : 0;

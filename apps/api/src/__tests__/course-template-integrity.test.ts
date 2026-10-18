@@ -198,6 +198,7 @@ describe.skipIf(!hasDatabase)('course template database integrity', () => {
         await tx.insert(schema.lesson).values({
           courseId: template.id,
           title: 'Watch this',
+          slug: 'watch-this',
           order: 1,
           videos: [{ type: 'youtube', link: sourceUrl, assetId: sourceAsset.id, fileName: 'Intro video' }]
         });
@@ -395,6 +396,7 @@ describe.skipIf(!hasDatabase)('course template database integrity', () => {
         .insert(schema.lesson)
         .values({
           title: 'New lesson',
+          slug: 'new-lesson',
           courseId: template.id,
           order: 1,
           sectionId: foreignSection.id,
@@ -416,6 +418,112 @@ describe.skipIf(!hasDatabase)('course template database integrity', () => {
         .from(schema.courseSection)
         .where(eq(schema.courseSection.id, courseSection.id));
       expect(unchanged.title).toBe('Old section');
+    } finally {
+      if (courseIds.length > 0) {
+        await db.delete(schema.lesson).where(inArray(schema.lesson.courseId, courseIds));
+        await db.delete(schema.course).where(inArray(schema.course.id, courseIds));
+      }
+      await db.delete(schema.group).where(eq(schema.group.organizationId, orgId));
+      await db.delete(schema.organization).where(eq(schema.organization.id, orgId));
+    }
+  });
+
+  it('pulls a new template section in among standalone items without sharing a position', async () => {
+    const { db } = await import('@db/drizzle');
+    const schema = await import('@db/schema');
+    const past = '2020-01-01T00:00:00.000Z';
+    const current = '2026-01-01T00:00:00.000Z';
+    const organization = await db
+      .insert(schema.organization)
+      .values({ name: `tpl-root-${Date.now()}` })
+      .returning();
+    const orgId = organization[0].id;
+    const courseIds: string[] = [];
+
+    try {
+      const [group] = await db.insert(schema.group).values({ name: 'Root', organizationId: orgId }).returning();
+      const [template] = await db
+        .insert(schema.course)
+        .values({
+          title: 'Template',
+          description: 'Template',
+          groupId: group.id,
+          isTemplate: true,
+          status: 'ACTIVE',
+          createdAt: past
+        })
+        .returning();
+      const [course] = await db
+        .insert(schema.course)
+        .values({
+          title: 'Course',
+          description: 'Course',
+          groupId: group.id,
+          templateId: template.id,
+          status: 'ACTIVE',
+          createdAt: past
+        })
+        .returning();
+      courseIds.push(template.id, course.id);
+
+      const [firstSection, addedSection] = await db
+        .insert(schema.courseSection)
+        .values([
+          { title: 'Basics', order: 1, courseId: template.id, updatedAt: past, createdAt: past },
+          { title: 'Advanced', order: 2, courseId: template.id, updatedAt: current, createdAt: current }
+        ])
+        .returning();
+      const [templateLesson] = await db
+        .insert(schema.lesson)
+        .values({
+          title: 'Wrap up',
+          slug: 'wrap-up',
+          courseId: template.id,
+          order: 3,
+          updatedAt: past,
+          createdAt: past
+        })
+        .returning();
+      const [courseSection] = await db
+        .insert(schema.courseSection)
+        .values({
+          title: 'Basics',
+          order: 1,
+          courseId: course.id,
+          sourceId: firstSection.id,
+          sourceSyncedAt: past,
+          updatedAt: past,
+          createdAt: past
+        })
+        .returning();
+      const [courseLesson] = await db
+        .insert(schema.lesson)
+        .values({
+          title: 'Wrap up',
+          slug: 'wrap-up',
+          courseId: course.id,
+          order: 2,
+          sourceId: templateLesson.id,
+          sourceSyncedAt: past,
+          updatedAt: past,
+          createdAt: past
+        })
+        .returning();
+
+      await pullCourseTemplateUpdates(course.id, orgId, USER_ID, [addedSection.id], []);
+
+      const sections = await db
+        .select({ id: schema.courseSection.id, order: schema.courseSection.order })
+        .from(schema.courseSection)
+        .where(eq(schema.courseSection.courseId, course.id));
+      const [lesson] = await db
+        .select({ order: schema.lesson.order })
+        .from(schema.lesson)
+        .where(eq(schema.lesson.id, courseLesson.id));
+      const pulledSection = sections.find((section) => section.id !== courseSection.id);
+      expect(sections.find((section) => section.id === courseSection.id)?.order).toBe(1);
+      expect(pulledSection?.order).toBe(2);
+      expect(lesson.order).toBe(3);
     } finally {
       if (courseIds.length > 0) {
         await db.delete(schema.lesson).where(inArray(schema.lesson.courseId, courseIds));

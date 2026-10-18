@@ -2,6 +2,7 @@ import type { Course, CourseContentItem } from '$features/course/utils/types';
 import { NAV_ITEMS, NAV_ITEM_KEY } from './constants';
 
 import { ContentType } from '@cio/utils/constants/content';
+import { getCourseOutline } from '@cio/utils/functions/course-content';
 import type { Review } from '$features/course/utils/types';
 import get from 'lodash/get';
 import type { AccountOrg, PublicOrg } from '$features/app/types';
@@ -61,19 +62,47 @@ export function getCourseLessons(course: Course): LandingPageLesson[] {
   return getLessonsFromItems(course.content.items);
 }
 
+/**
+ * Curriculum blocks in outline order. Consecutive items outside any section share one untitled block.
+ */
+function getOutlineSections(course: Course): LandingPageSection[] {
+  const sections: LandingPageSection[] = [];
+  let standaloneBlock: LandingPageSection | null = null;
+
+  for (const entry of getCourseOutline(course.content)) {
+    if (entry.kind === 'section') {
+      standaloneBlock = null;
+      sections.push({
+        id: entry.section.id,
+        title: entry.section.title ?? course.title ?? 'Lessons',
+        lessons: getLessonsFromItems(entry.section.items),
+        exerciseCount: getExerciseCountFromItems(entry.section.items)
+      });
+      continue;
+    }
+
+    if (!standaloneBlock) {
+      standaloneBlock = {
+        id: `standalone-${entry.item.id}`,
+        title: t.get('course.navItem.lessons.heading'),
+        lessons: [],
+        exerciseCount: 0
+      };
+      sections.push(standaloneBlock);
+    }
+
+    standaloneBlock.lessons.push(...getLessonsFromItems([entry.item]));
+    standaloneBlock.exerciseCount += getExerciseCountFromItems([entry.item]);
+  }
+
+  return sections;
+}
+
 export function getCourseSections(course: Course): LandingPageSection[] {
   if (!course?.content) return [];
 
   if (course.content.grouped) {
-    return course.content.sections.map((section) => {
-      const lessons = getLessonsFromItems(section.items);
-      return {
-        id: section.id,
-        title: section.title ?? course.title ?? 'Lessons',
-        lessons,
-        exerciseCount: getExerciseCountFromItems(section.items)
-      };
-    });
+    return getOutlineSections(course);
   }
 
   if (!course.content.items.length) return [];

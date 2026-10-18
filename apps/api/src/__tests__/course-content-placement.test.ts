@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const queries = vi.hoisted(() => ({
+  course: vi.fn(),
   sections: vi.fn(),
   content: vi.fn(),
   updateItems: vi.fn(),
@@ -9,6 +10,7 @@ const queries = vi.hoisted(() => ({
 
 vi.mock('@cio/db/drizzle', () => ({ db: { transaction: async (runner: (client: unknown) => unknown) => runner({}) } }));
 vi.mock('@cio/db/queries/course', () => ({
+  getCourseById: queries.course,
   getCourseSectionsByCourseId: queries.sections,
   deleteCourseSection: vi.fn(),
   getCourseSectionById: vi.fn()
@@ -26,6 +28,7 @@ import { updateCourseContent, reorderCourseContent } from '@cio/core/services/co
 
 beforeEach(() => {
   vi.clearAllMocks();
+  queries.course.mockResolvedValue([{ id: 'course', metadata: {} }]);
   queries.sections.mockResolvedValue([{ id: 'settings', courseId: 'course', order: 2 }]);
   queries.content.mockResolvedValue([
     { id: 'settings', type: 'SECTION', sectionId: null, order: 2 },
@@ -86,6 +89,36 @@ describe('course content placement', () => {
     await expect(
       reorderCourseContent('course', {
         items: [{ id: 'intro', type: 'LESSON', order: 2 }]
+      })
+    ).rejects.toThrow('Top-level orders must be unique');
+
+    expect(queries.updateItems).not.toHaveBeenCalled();
+  });
+
+  it('ignores leftover sections when content grouping is off', async () => {
+    queries.course.mockResolvedValue([{ id: 'course', metadata: { isContentGroupingEnabled: false } }]);
+    queries.content.mockResolvedValue([
+      { id: 'settings', type: 'SECTION', sectionId: null, order: 1 },
+      { id: 'intro', type: 'LESSON', sectionId: null, order: 2 },
+      { id: 'quiz', type: 'EXERCISE', sectionId: 'settings', order: 1 }
+    ]);
+
+    await reorderCourseContent('course', {
+      items: [
+        { id: 'intro', type: 'LESSON', sectionId: null, order: 1 },
+        { id: 'quiz', type: 'EXERCISE', sectionId: null, order: 2 }
+      ]
+    });
+
+    expect(queries.updateItems).toHaveBeenCalled();
+  });
+
+  it('rejects two items at one position when content grouping is off', async () => {
+    queries.course.mockResolvedValue([{ id: 'course', metadata: { isContentGroupingEnabled: false } }]);
+
+    await expect(
+      reorderCourseContent('course', {
+        items: [{ id: 'quiz', type: 'EXERCISE', order: 1 }]
       })
     ).rejects.toThrow('Top-level orders must be unique');
 

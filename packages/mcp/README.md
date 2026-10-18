@@ -639,7 +639,7 @@ Supported `questionTypeId` values for exercise payloads:
 ## Operational Notes
 
 - `create_course_draft_from_course` may add warnings if a live course uses legacy lesson notes instead of localized lesson content
-- if a course has ungrouped lessons, the seeded draft may add a synthetic `Ungrouped` section so the structure stays valid
+- lessons and exercises outside any section stay at the top level of the draft: a lesson without `sectionExternalId` and an exercise with neither a section nor a lesson share one 1-based `order` sequence with the sections
 - published drafts are treated as finalized snapshots
 
 ## Recommended Agent Behavior
