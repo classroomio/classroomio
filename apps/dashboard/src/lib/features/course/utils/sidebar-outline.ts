@@ -38,6 +38,45 @@ export function outlineReorderPayload(entries: SidebarOutlineEntry[], grouped = 
   return { ...(sections.length ? { sections } : {}), ...(items.length ? { items } : {}) };
 }
 
+/**
+ * Reorder payload for top-level positions only: sections and items outside any section. Section contents are left out.
+ */
+export function rootReorderPayload(entries: SidebarOutlineEntry[]): TCourseContentReorder {
+  const sections: NonNullable<TCourseContentReorder['sections']> = [];
+  const items: NonNullable<TCourseContentReorder['items']> = [];
+  entries.forEach((entry, index) => {
+    if (entry.kind === 'section') {
+      sections.push({ id: entry.section.id, order: index + 1 });
+      return;
+    }
+
+    if (entry.item.type === ContentType.Section) return;
+
+    items.push({ id: entry.item.id, type: entry.item.type, order: index + 1, sectionId: null });
+  });
+  return { ...(sections.length ? { sections } : {}), ...(items.length ? { items } : {}) };
+}
+
+/**
+ * Course content with sections and standalone items renumbered to their position in `entries`.
+ */
+export function withRootOrders(content: CourseContent, entries: SidebarOutlineEntry[]): CourseContent {
+  const rootOrderById = new Map(entries.map((entry, index) => [entry.id, index + 1]));
+  const sections = content.sections.map((section) => {
+    if (section.id !== UNGROUPED_SECTION_KEY) {
+      return { ...section, order: rootOrderById.get(`SECTION-${section.id}`) ?? section.order };
+    }
+
+    const items = section.items.map((item) => ({
+      ...item,
+      order: rootOrderById.get(`${item.type}-${item.id}`) ?? item.order
+    }));
+    return { ...section, items };
+  });
+
+  return { ...content, sections };
+}
+
 export function outlineToCourseContent(entries: SidebarOutlineEntry[], grouped: boolean): CourseContent {
   const sections: CourseContent['sections'] = [];
   const standaloneItems: CourseContent['items'] = [];

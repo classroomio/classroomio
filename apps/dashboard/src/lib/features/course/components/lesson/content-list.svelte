@@ -117,7 +117,7 @@
   }
 
   async function applyPendingReorder() {
-    if (!contentItems.length) return;
+    if (!contentItems.length || standaloneItem) return;
 
     const contentUpdates: Array<{
       id: string;
@@ -300,7 +300,7 @@
   use:dndzone={{
     items: contentItems,
     flipDurationMs,
-    dragDisabled: !reorder,
+    dragDisabled: !reorder || Boolean(standaloneItem),
     dropTargetStyle: {
       border: '2px #1d4ed8 solid',
       'border-style': 'dashed'

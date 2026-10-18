@@ -121,7 +121,7 @@
         return {
           ...section,
           items: toCourseContentItems(section.items),
-          order: section.order ?? null
+          order: sectionId ? existing.order : (section.order ?? null)
         };
       })
     };

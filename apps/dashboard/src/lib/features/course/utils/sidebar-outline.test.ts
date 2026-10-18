@@ -5,7 +5,9 @@ import {
   buildSidebarOutline,
   outlineReorderPayload,
   outlineToCourseContent,
-  updateSidebarOutlineZone
+  rootReorderPayload,
+  updateSidebarOutlineZone,
+  withRootOrders
 } from './sidebar-outline';
 import type { CourseContent, CourseContentItem } from './types';
 
@@ -89,6 +91,22 @@ describe('nested drag event reconciliation', () => {
     const payload = outlineReorderPayload(nextRoot);
     expect(payload.items?.filter((item) => item.id === 'quiz')).toEqual([
       { id: 'quiz', type: 'EXERCISE', order: 2, sectionId: null }
+    ]);
+  });
+});
+
+describe('top-level moves', () => {
+  it('reorders sections and standalone items without touching section contents', () => {
+    const [standalone, section] = buildSidebarOutline(courseContent);
+    const moved = [section, standalone];
+
+    expect(rootReorderPayload(moved)).toEqual({
+      sections: [{ id: 'settings', order: 1 }],
+      items: [{ id: 'intro', type: ContentType.Lesson, order: 2, sectionId: null }]
+    });
+    expect(buildSidebarOutline(withRootOrders(courseContent, moved)).map((entry) => entry.id)).toEqual([
+      'SECTION-settings',
+      'LESSON-intro'
     ]);
   });
 });

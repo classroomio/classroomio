@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { getCourseOutline } from '@cio/utils/functions/course-content';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { Empty } from '@cio/ui/custom/empty';
@@ -10,7 +9,7 @@
   import ContentSectionList from '$features/course/components/lesson/content-section-list.svelte';
   import PastSessionsSection from '$features/course/components/lesson/past-sessions-section.svelte';
   import CourseContentIcon from '$features/course/components/course-content-icon.svelte';
-  import { courseApi } from '$features/course/api';
+  import { contentApi, courseApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
   import { isOrgStudent } from '$lib/utils/store/app';
   import { profile } from '$lib/utils/store/user';
@@ -18,6 +17,10 @@
   import { getCourseContent } from '$features/course/utils/content';
   import { getFirstIncompleteNavigableContent } from '$features/course/utils/content-navigation';
   import { ContentType } from '@cio/utils/constants/content';
+  import { flip } from 'svelte/animate';
+  import { dndzone, type DndEvent } from 'svelte-dnd-action';
+  import { buildSidebarOutline, rootReorderPayload, withRootOrders } from '$features/course/utils/sidebar-outline';
+  import type { SidebarOutlineEntry } from '$features/course/utils/types';
 
   interface Props {
     courseId: string;
@@ -41,6 +44,30 @@
   const isLiveCourse = $derived(courseApi.course?.type === 'LIVE_CLASS');
   const lessonsTotal = $derived(contentItems.filter((item) => item.type === ContentType.Lesson).length);
   const exercisesTotal = $derived(contentItems.filter((item) => item.type === ContentType.Exercise).length);
+
+  const ROOT_FLIP_MS = 200;
+  let draggedOutline = $state<SidebarOutlineEntry[] | null>(null);
+  let isSavingRoot = $state(false);
+  const rootOutline = $derived(draggedOutline ?? buildSidebarOutline(contentData));
+
+  function handleRootConsider(event: CustomEvent<DndEvent<SidebarOutlineEntry>>) {
+    draggedOutline = event.detail.items;
+  }
+
+  async function handleRootFinalize(event: CustomEvent<DndEvent<SidebarOutlineEntry>>) {
+    const entries = event.detail.items;
+    const previousContent = courseApi.course?.content;
+    draggedOutline = null;
+    if (!previousContent) return;
+
+    courseApi.course!.content = withRootOrders(previousContent, entries);
+    isSavingRoot = true;
+    const isSaved = await contentApi.reorder(courseId, rootReorderPayload(entries));
+    isSavingRoot = false;
+    if (isSaved || !courseApi.course) return;
+
+    courseApi.course.content = previousContent;
+  }
 
   let isFetching: boolean = $state(false);
   let hasHandledNext = $state(false);
@@ -128,13 +155,26 @@
   {/if}
 
   {#if contentData.grouped}
-    <div class="py-3">
-      {#each getCourseOutline(contentData) as entry (entry.id)}
-        {#if entry.kind === 'section'}
-          <ContentSectionList {reorder} sectionId={entry.section.id} />
-        {:else}
-          <ContentList standaloneItem={entry.item} />
-        {/if}
+    <div
+      class="py-3"
+      use:dndzone={{
+        items: rootOutline,
+        type: 'lessons-page-outline',
+        flipDurationMs: ROOT_FLIP_MS,
+        dragDisabled: !reorder || isSavingRoot,
+        dropTargetStyle: { border: '2px #1d4ed8 solid', 'border-style': 'dashed' }
+      }}
+      onconsider={handleRootConsider}
+      onfinalize={handleRootFinalize}
+    >
+      {#each rootOutline as entry (entry.id)}
+        <div class={reorder ? 'cursor-grab active:cursor-grabbing' : ''} animate:flip={{ duration: ROOT_FLIP_MS }}>
+          {#if entry.kind === 'section'}
+            <ContentSectionList {reorder} sectionId={entry.section.id} />
+          {:else}
+            <ContentList {reorder} standaloneItem={entry.item} />
+          {/if}
+        </div>
       {/each}
     </div>
   {:else}
