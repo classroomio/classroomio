@@ -34,14 +34,14 @@ import { getPaginatedLessonsByCourseId } from '@cio/db/queries/lesson/lesson';
 const COURSE_ID = '11111111-1111-4111-8111-111111111111';
 
 describe('getPaginatedLessonsByCourseId', () => {
-  it('sorts by section order before lesson order and returns plain lessons', async () => {
+  it('sorts by top-level position, then section, then lesson order, and returns plain lessons', async () => {
     const page = await getPaginatedLessonsByCourseId(COURSE_ID, { page: 1, limit: 20 });
     const dialect = new PgDialect();
 
     expect(page).toEqual({ items: [{ id: 'a' }, { id: 'b' }], total: 2 });
     expect(dialect.sqlToQuery(queries.joins[0] as SQL).sql).toBe('"course_section"."id" = "lesson"."section_id"');
     expect(queries.orderBys[0].map((column) => dialect.sqlToQuery(column as SQL).sql)).toEqual([
-      '"course_section"."order" asc',
+      'coalesce("course_section"."order", "lesson"."order") asc',
       '"lesson"."section_id" asc',
       '"lesson"."order" asc',
       '"lesson"."id" asc'

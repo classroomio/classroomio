@@ -267,6 +267,7 @@ exports[`public API course content request contract > ZPublicApiCreateCourseSect
       "type": "boolean",
     },
     "order": {
+      "description": "Top-level position, starting at 1. Sections share these positions with lessons and exercises outside any section; the entry at that position and every later one move down one.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -486,6 +487,7 @@ exports[`public API course content request contract > ZPublicApiUpdateCourseSect
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "order": {
+      "description": "Top-level position, starting at 1. Sections share these positions with lessons and exercises outside any section; the entry at that position and every later one move down one.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",

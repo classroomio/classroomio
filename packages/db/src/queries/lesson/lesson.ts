@@ -40,14 +40,14 @@ export async function getPaginatedLessonsByCourseId(
 
     const [countRows, items] = await Promise.all([
       db.select({ total: count() }).from(schema.lesson).where(where),
-      // Lesson order restarts in each section; lessons without a section sort last.
+      // A lesson in a section sorts at its section's top-level position, then by its order in the section.
       db
         .select({ lesson: schema.lesson })
         .from(schema.lesson)
         .leftJoin(schema.courseSection, eq(schema.courseSection.id, schema.lesson.sectionId))
         .where(where)
         .orderBy(
-          asc(schema.courseSection.order),
+          asc(sql`coalesce(${schema.courseSection.order}, ${schema.lesson.order})`),
           asc(schema.lesson.sectionId),
           asc(schema.lesson.order),
           asc(schema.lesson.id)
