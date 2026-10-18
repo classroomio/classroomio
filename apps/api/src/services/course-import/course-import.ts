@@ -323,6 +323,45 @@ async function applyDraftRootOrders(courseId: string, draft: TCourseImportDraftP
   });
 }
 
+type MergeRootPlacement = {
+  sectionIds: Set<string>;
+  lessons: Array<{ id: string; sectionId: string | null }>;
+  exercises: Array<{ id: string; sectionId: string | null; lessonId: string | null }>;
+};
+
+/**
+ * Top-level positions, keyed `kind:externalId`, for the draft entries merge mode adds to the top level or moves
+ * there, numbered after `lastRootOrder` in the draft's own order.
+ */
+function allocateMergeRootOrders(
+  draft: TCourseImportDraftPayload,
+  lastRootOrder: number,
+  existing: MergeRootPlacement
+) {
+  const lessonsById = new Map(existing.lessons.map((lesson) => [lesson.id, lesson]));
+  const exercisesById = new Map(existing.exercises.map((exercise) => [exercise.id, exercise]));
+  const needsPosition = (kind: string, externalId: string) => {
+    if (kind === 'section') return !existing.sectionIds.has(externalId);
+
+    if (kind === 'lesson') {
+      const lesson = lessonsById.get(externalId);
+      return !lesson || Boolean(lesson.sectionId);
+    }
+
+    const exercise = exercisesById.get(externalId);
+    return !exercise || Boolean(exercise.sectionId || exercise.lessonId);
+  };
+
+  const orders = new Map<string, number>();
+  for (const entry of getDraftRootEntries(draft) ?? []) {
+    if (!needsPosition(entry.kind, entry.externalId)) continue;
+
+    orders.set(`${entry.kind}:${entry.externalId}`, lastRootOrder + orders.size + 1);
+  }
+
+  return orders;
+}
+
 function isRootDraftExercise(exercise: TCourseImportDraftExercise) {
   return !exercise.sectionExternalId && !exercise.lessonExternalId;
 }
@@ -1027,6 +1066,14 @@ export async function publishCourseImportDraftToExistingCourseService(
         .map((exercise) => Number(exercise.order) || 0)
     ];
     let nextRootOrder = isMerge ? Math.max(0, ...existingRootOrders) : 0;
+    const mergeRootOrders = isMerge
+      ? allocateMergeRootOrders(draft, nextRootOrder, {
+          sectionIds: existingSectionIds,
+          lessons: existingLessons,
+          exercises: existingExercises
+        })
+      : new Map<string, number>();
+    nextRootOrder += mergeRootOrders.size;
 
     const sectionIdMap = new Map<string, string>();
     let createdSections = 0;
@@ -1046,7 +1093,9 @@ export async function publishCourseImportDraftToExistingCourseService(
       const createdSection = await createCourseSection(course.id, {
         courseId: course.id,
         title: section.title,
-        order: isMerge ? ++nextRootOrder : rootOrders.get(`section:${section.externalId}`)!
+        order: isMerge
+          ? mergeRootOrders.get(`section:${section.externalId}`)!
+          : rootOrders.get(`section:${section.externalId}`)!
       });
       sectionIdMap.set(section.externalId, createdSection.id);
       createdSections += 1;
@@ -1066,8 +1115,8 @@ export async function publishCourseImportDraftToExistingCourseService(
       nextLessonOrderBySection.set(existingLesson.sectionId, Math.max(current, Number(existingLesson.order) || 0));
     }
 
-    const claimNextLessonOrder = (sectionId: string | undefined) => {
-      if (!sectionId) return ++nextRootOrder;
+    const claimNextLessonOrder = (sectionId: string | undefined, externalId: string) => {
+      if (!sectionId) return mergeRootOrders.get(`lesson:${externalId}`) ?? ++nextRootOrder;
 
       const nextOrder = (nextLessonOrderBySection.get(sectionId) ?? 0) + 1;
       nextLessonOrderBySection.set(sectionId, nextOrder);
@@ -1091,7 +1140,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         let mergedOrder: number | undefined;
         if (isMerge) {
           if (sectionChanged) {
-            mergedOrder = claimNextLessonOrder(sectionId);
+            mergedOrder = claimNextLessonOrder(sectionId, lesson.externalId);
           }
         } else {
           mergedOrder = draftOrder;
@@ -1116,7 +1165,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         continue;
       }
 
-      const nextLessonOrder = claimNextLessonOrder(sectionId);
+      const nextLessonOrder = claimNextLessonOrder(sectionId, lesson.externalId);
       const createdLesson = await createLesson(course.id, {
         courseId: course.id,
         title: lesson.title,
@@ -1181,8 +1230,8 @@ export async function publishCourseImportDraftToExistingCourseService(
       nextExerciseOrderByGroup.set(groupKey, Math.max(current, Number(existingExercise.order) || 0));
     }
 
-    const claimNextExerciseOrder = (groupKey: string) => {
-      if (groupKey === 'ungrouped') return ++nextRootOrder;
+    const claimNextExerciseOrder = (groupKey: string, externalId: string) => {
+      if (groupKey === 'ungrouped') return mergeRootOrders.get(`exercise:${externalId}`) ?? ++nextRootOrder;
 
       const nextOrder = (nextExerciseOrderByGroup.get(groupKey) ?? 0) + 1;
       nextExerciseOrderByGroup.set(groupKey, nextOrder);
@@ -1208,7 +1257,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         let exerciseOrder: number | undefined;
         if (isMerge) {
           if (groupChanged) {
-            exerciseOrder = claimNextExerciseOrder(destGroupKey);
+            exerciseOrder = claimNextExerciseOrder(destGroupKey, exercise.externalId);
           }
         } else {
           exerciseOrder = payload.order;
@@ -1231,7 +1280,7 @@ export async function publishCourseImportDraftToExistingCourseService(
       }
 
       const groupKey = groupKeyForExercise(payload.lessonId, payload.sectionId);
-      const exerciseOrder = isMerge ? claimNextExerciseOrder(groupKey) : payload.order;
+      const exerciseOrder = isMerge ? claimNextExerciseOrder(groupKey, exercise.externalId) : payload.order;
 
       const createdExercise = await createExercise({
         courseId: course.id,

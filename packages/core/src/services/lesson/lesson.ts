@@ -48,16 +48,19 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
       requestedSlug: data.slug
     });
 
-    const order = data.sectionId ? data.order : await claimRootOrder(courseId, data.order);
     const lessonData = {
       ...data,
       courseId,
       slug,
-      order,
       isUnlocked: data.isUnlocked ?? true
     };
 
-    const [lesson] = await createLessons([lessonData]);
+    const [lesson] = data.sectionId
+      ? await createLessons([lessonData])
+      : await db.transaction(async (tx) => {
+          const order = await claimRootOrder(courseId, data.order, null, tx);
+          return createLessons([{ ...lessonData, order }], tx);
+        });
     if (!lesson) {
       throw new AppError('Failed to create lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
@@ -144,11 +147,13 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
     }
 
     const endsAtTopLevel = !(payload.sectionId ?? existing?.sectionId);
-    if (payload.order !== undefined && existing?.courseId && endsAtTopLevel) {
-      payload.order = await claimRootOrder(existing.courseId, payload.order, lessonId);
-    }
-
-    const updated = await updateLesson(lessonId, payload);
+    const rootCourseId = payload.order !== undefined && endsAtTopLevel ? existing?.courseId : null;
+    const updated = rootCourseId
+      ? await db.transaction(async (tx) => {
+          payload.order = await claimRootOrder(rootCourseId, payload.order, lessonId, tx);
+          return updateLesson(lessonId, payload, tx);
+        })
+      : await updateLesson(lessonId, payload);
     if (!updated) {
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }

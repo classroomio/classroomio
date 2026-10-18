@@ -229,16 +229,13 @@ async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
     requestedSlug: sanitizedData.slug
   });
 
-  const isTopLevel = !sanitizedData.sectionId && !sanitizedData.lessonId;
-  const order = isTopLevel ? await claimRootOrder(sanitizedData.courseId, sanitizedData.order) : sanitizedData.order;
-
   return {
     title: sanitizedData.title,
     description: sanitizedData.description ?? null,
     lessonId: sanitizedData.lessonId || null,
     courseId: sanitizedData.courseId,
     sectionId: sanitizedData.sectionId || null,
-    order,
+    order: sanitizedData.order,
     dueBy: sanitizedData.dueBy || null,
     slug
   };
@@ -247,18 +244,26 @@ async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
 /**
  * Frees the requested position when an updated exercise ends up at the top level of its course.
  */
-async function claimUpdatedExerciseOrder(existing: TExercise | null | undefined, data: TExerciseUpdate) {
+async function claimUpdatedExerciseOrder(
+  existing: TExercise | null | undefined,
+  data: TExerciseUpdate,
+  txClient: DbOrTxClient
+) {
   if (data.order === undefined || !existing?.courseId) return data.order;
 
   const sectionId = data.sectionId === undefined ? existing.sectionId : data.sectionId || null;
   const lessonId = data.lessonId === undefined ? existing.lessonId : data.lessonId || null;
   if (sectionId || lessonId) return data.order;
 
-  return claimRootOrder(existing.courseId, data.order, existing.id);
+  return claimRootOrder(existing.courseId, data.order, existing.id, txClient);
 }
 
 async function insertExerciseRow(exerciseData: Awaited<ReturnType<typeof prepareExerciseRow>>, txClient: DbOrTxClient) {
-  const [exercise] = await createExercises([exerciseData], txClient);
+  const isTopLevel = !exerciseData.sectionId && !exerciseData.lessonId;
+  const order = isTopLevel
+    ? await claimRootOrder(exerciseData.courseId, exerciseData.order, null, txClient)
+    : exerciseData.order;
+  const [exercise] = await createExercises([{ ...exerciseData, order }], txClient);
   if (!exercise) {
     throw new AppError('Failed to create exercise', ErrorCodes.INTERNAL_ERROR, 500);
   }
@@ -420,11 +425,10 @@ export async function updateExerciseService(
       });
     }
 
-    sanitizedData.order = await claimUpdatedExerciseOrder(existing, sanitizedData);
-
     let createdQuestionIds: number[] = [];
     const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
+      sanitizedData.order = await claimUpdatedExerciseOrder(existing, sanitizedData, txClient);
 
       // Update exercise basic fields only if they changed
       const exerciseUpdate = buildExerciseUpdateFields(sanitizedData);
@@ -772,10 +776,10 @@ export async function replaceExerciseService(exerciseId: string, data: TExercise
     const sanitizedData = sanitizeExercisePayload(data);
 
     const existing = await getExerciseById(exerciseId);
-    sanitizedData.order = await claimUpdatedExerciseOrder(existing, sanitizedData);
 
     const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
+      sanitizedData.order = await claimUpdatedExerciseOrder(existing, sanitizedData, txClient);
 
       const exerciseUpdate = buildExerciseUpdateFields(sanitizedData);
       if (Object.keys(exerciseUpdate).length > 0) {

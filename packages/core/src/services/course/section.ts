@@ -26,14 +26,10 @@ import { claimRootOrder } from './root-order';
  */
 export async function createCourseSection(courseId: string, data: TCourseSectionCreate): Promise<TCourseSection> {
   try {
-    const order = await claimRootOrder(courseId, data.order);
-    const sectionData = {
-      ...data,
-      order,
-      courseId
-    };
-
-    const [section] = await createCourseSections([sectionData]);
+    const [section] = await db.transaction(async (tx) => {
+      const order = await claimRootOrder(courseId, data.order, null, tx);
+      return createCourseSections([{ ...data, order, courseId }], tx);
+    });
     if (!section) {
       throw new AppError('Failed to create course section', ErrorCodes.INTERNAL_ERROR, 500);
     }
@@ -150,12 +146,14 @@ export async function updateCourseSectionService(
       throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
     }
 
-    const payload = { ...data };
-    if (payload.order !== undefined && section.courseId) {
-      payload.order = await claimRootOrder(section.courseId, payload.order, sectionId);
-    }
-
-    const updated = await updateCourseSection(sectionId, payload);
+    const courseId = section.courseId;
+    const updated =
+      data.order !== undefined && courseId
+        ? await db.transaction(async (tx) => {
+            const order = await claimRootOrder(courseId, data.order, sectionId, tx);
+            return updateCourseSection(sectionId, { ...data, order }, tx);
+          })
+        : await updateCourseSection(sectionId, data);
     if (!updated) {
       throw new AppError('Failed to update course section', ErrorCodes.INTERNAL_ERROR, 500);
     }

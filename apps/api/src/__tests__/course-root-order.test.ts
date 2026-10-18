@@ -122,6 +122,23 @@ describe.skipIf(!hasDatabase)('top-level content placement', () => {
     }
   });
 
+  it('gives concurrent standalone lessons at the same position different positions', async () => {
+    const setup = await createCourseWithOutline();
+    try {
+      const { createLesson } = await import('@cio/core/services/lesson/lesson');
+      await Promise.all(
+        Array.from({ length: 8 }, (_, index) =>
+          createLesson(setup.course.id, { title: `Concurrent ${index}`, courseId: setup.course.id, order: 3 })
+        )
+      );
+
+      const orders = Object.values(await rootOrders(setup.course.id));
+      expect(new Set(orders).size).toBe(orders.length);
+    } finally {
+      await cleanUp(setup);
+    }
+  });
+
   it('moves a section into a taken position without sharing it', async () => {
     const setup = await createCourseWithOutline();
     try {
