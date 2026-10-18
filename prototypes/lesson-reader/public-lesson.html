@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Public lesson · Lesson reader · ClassroomIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Literata:opsz,wght@7..72,400;7..72,600&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="app-theme.css" />
+    <link rel="stylesheet" href="reader.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+  </head>
+  <body>
+    <script>
+      window.READER_CONFIG = { surface: 'public', view: 'learner' };
+    </script>
+    <script src="lesson-data.js"></script>
+    <script src="reader.js"></script>
+  </body>
+</html>
