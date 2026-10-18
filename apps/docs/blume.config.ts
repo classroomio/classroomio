@@ -96,12 +96,6 @@ const sectionItem = (placement: TagPlacement) => {
   return [...core, ...trailing];
 };
 
-const apiSidebarSections = API_SECTIONS.map((section) => ({
-  label: section.label,
-  display: 'flat' as const,
-  items: section.tags.flatMap(sectionItem)
-})).filter((section) => section.items.length > 0);
-
 const placedTags = new Set(API_SECTIONS.flatMap((section) => section.tags.map((placement) => placement.tag)));
 const unplacedTags = apiTags.filter((tag) => !placedTags.has(tag.name));
 if (unplacedTags.length > 0) {
@@ -109,6 +103,18 @@ if (unplacedTags.length > 0) {
     `[docs] API tags missing from API_SECTIONS in blume.config.ts: ${unplacedTags.map((tag) => tag.name).join(', ')}`
   );
 }
+
+// Render unplaced tags as standalone groups instead of dropping their
+// operations: a stale reused spec (fetch-openapi.mjs falls back to the last
+// fetched copy) can still carry tags this config no longer places, and the
+// docs build must not silently lose those pages from the sidebar.
+const apiSidebarSections = API_SECTIONS.map((section) => ({
+  label: section.label,
+  display: 'flat' as const,
+  items: section.tags.flatMap(sectionItem)
+}))
+  .filter((section) => section.items.length > 0)
+  .concat(unplacedTags.map((tag) => tagGroup({ tag: tag.name })));
 
 /**
  * The site is served at classroomio.com/docs, proxied to this worker by the
