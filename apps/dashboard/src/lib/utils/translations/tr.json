@@ -3643,7 +3643,7 @@
         },
         "expand_content": "İçeriği genişlet",
         "collapse_content": "İçeriği daralt",
-        "outside_section": "Bölüm dışında"
+        "no_section": "Bölüm yok"
       },
       "attendance": {
         "title": "Attendance",

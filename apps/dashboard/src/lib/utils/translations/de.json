@@ -2847,7 +2847,7 @@
         "add_content_add_to_section": "Inhalte hinzufügen",
         "expand_content": "Inhalte erweitern",
         "collapse_content": "Inhalt reduzieren",
-        "outside_section": "Außerhalb eines Abschnitts"
+        "no_section": "Kein Abschnitt"
       },
       "news_feed": {
         "heading": "Newsfeed",

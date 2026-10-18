@@ -2847,7 +2847,7 @@
         "add_content_add_to_section": "Adicionar conteúdo",
         "expand_content": "Expandir conteúdo",
         "collapse_content": "Recolher conteúdo",
-        "outside_section": "Fora de uma seção"
+        "no_section": "Sem seção"
       },
       "news_feed": {
         "heading": "Feed de notícias",

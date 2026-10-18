@@ -178,7 +178,7 @@
         const initialType = $contentCreateStore.initialType ?? ContentType.Lesson;
         selectedType = contentGroupingEnabled || initialType !== ContentType.Section ? initialType : ContentType.Lesson;
         const storeSectionId = $contentCreateStore.sectionId;
-        sectionId = storeSectionId || UNGROUPED_SECTION_KEY;
+        sectionId = storeSectionId || sections[0]?.id || UNGROUPED_SECTION_KEY;
 
         resetAllSteppers();
       });
@@ -425,16 +425,14 @@
                   }}
                 >
                   <Select.Trigger class="h-10 w-full max-w-full">
-                    {sections.find((s) => s.id === sectionId)?.title || $t('course.navItem.lessons.outside_section')}
+                    {sections.find((s) => s.id === sectionId)?.title || $t('course.navItem.lessons.no_section')}
                   </Select.Trigger>
                   <Select.Content>
                     <Select.Group>
-                      <Select.Item value={UNGROUPED_SECTION_KEY}
-                        >{$t('course.navItem.lessons.outside_section')}</Select.Item
-                      >
                       {#each sections as section (section.id)}
                         <Select.Item value={section.id}>{section.title}</Select.Item>
                       {/each}
+                      <Select.Item value={UNGROUPED_SECTION_KEY}>{$t('course.navItem.lessons.no_section')}</Select.Item>
                     </Select.Group>
                   </Select.Content>
                 </Select.Root>

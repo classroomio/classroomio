@@ -2847,7 +2847,7 @@
         "add_content_add_to_section": "Tilføj indhold",
         "expand_content": "Udvid indhold",
         "collapse_content": "Skjul indholdet",
-        "outside_section": "Uden for en sektion"
+        "no_section": "Ingen sektion"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
