@@ -14,7 +14,7 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, studentForbiddenResponse, mcpRateLimitResponse } from './docs';
 
-const TAG = 'Student Activity';
+const TAG = 'Course Members';
 
 export const v1CourseStudentRouter = new Hono()
   .put(

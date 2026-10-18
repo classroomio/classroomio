@@ -12,6 +12,7 @@
     },
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern",
+    "cancel": "Abbrechen",
     "scroll_to_top": "Zum Seitenanfang scrollen",
     "delete": "Löschen",
     "restricted_page": {
@@ -4337,8 +4338,8 @@
         "description": "Nur Organisationsadministratoren können das Team anzeigen und verwalten. Wende dich an einen Administrator, wenn du Zugriff benötigst."
       },
       "invite": {
-        "confirm_title": "Studierende ins Team einladen?",
-        "confirm_description": "Diese Personen sind bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rolle ändert sich erst, wenn sie die Einladung annehmen.",
+        "confirm_title": "{count, plural, =1 {Diese Person ins Team einladen?} other {Diese Personen ins Team einladen?}}",
+        "confirm_description": "{count, plural, =1 {Diese Person ist bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rolle ändert sich erst, wenn sie die Einladung annimmt.} other {Diese Personen sind bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rollen ändern sich erst, wenn sie die Einladung annehmen.}}",
         "existing": "Bereits im Team: {members}. Ändere ihre Rolle über die Rollenauswahl unter Teammitglieder."
       }
     },

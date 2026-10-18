@@ -160,7 +160,7 @@ describe('v1 student activity OpenAPI spec', () => {
     const paths = spec.paths ?? {};
     const prefix = '/public-api/v1/courses/{courseId}/members/{memberId}';
 
-    expect(paths[`${prefix}/lessons/{lessonId}/completion`]?.put?.tags).toEqual(['Student Activity']);
-    expect(paths[`${prefix}/exercises/{exerciseId}/submissions`]?.post?.tags).toEqual(['Student Activity']);
+    expect(paths[`${prefix}/lessons/{lessonId}/completion`]?.put?.tags).toEqual(['Course Members']);
+    expect(paths[`${prefix}/exercises/{exerciseId}/submissions`]?.post?.tags).toEqual(['Course Members']);
   });
 });

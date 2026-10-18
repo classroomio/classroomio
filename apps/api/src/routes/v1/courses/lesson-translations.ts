@@ -20,7 +20,7 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse } from './docs';
 
-const TAG = 'Course Lessons';
+const TAG = 'Lesson Translations';
 
 export const v1CourseLessonTranslationsRouter = new Hono()
   .get(
