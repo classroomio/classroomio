@@ -153,7 +153,7 @@ describe('validateReview', () => {
 });
 
 describe('getCourseSections', () => {
-  it('lists standalone items in outline order and groups consecutive ones into one block', () => {
+  it('makes each standalone item its own module in outline order and lists exercises in sections', () => {
     const lesson = (id: string, order: number) => ({ id, type: 'LESSON', title: id, order });
     const exercise = (id: string, order: number) => ({ id, type: 'EXERCISE', title: id, order });
     const course = {
@@ -162,22 +162,24 @@ describe('getCourseSections', () => {
         grouped: true,
         items: [],
         sections: [
-          { id: 'fundamentals', title: 'Fundamentals', order: 3, items: [lesson('cleaning', 1)] },
-          {
-            id: 'ungrouped',
-            title: 'Ungrouped',
-            order: 4,
-            items: [exercise('final', 1), lesson('loading', 2), lesson('wrap', 4)]
-          }
+          { id: 'fundamentals', title: 'Fundamentals', order: 2, items: [lesson('cleaning', 1), exercise('drill', 2)] },
+          { id: 'ungrouped', title: 'Ungrouped', order: 4, items: [exercise('quiz', 1), lesson('wrap', 3)] }
         ]
       }
     } as unknown as Course;
 
     const sections = getCourseSections(course);
 
-    expect(sections.map((section) => section.id)).toEqual(['standalone-final', 'fundamentals', 'standalone-wrap']);
-    expect(sections[0].lessons.map((item) => item.id)).toEqual(['loading']);
-    expect(sections[0].exerciseCount).toBe(1);
+    expect(sections.map((section) => [section.id, section.standalone ?? null])).toEqual([
+      ['standalone-quiz', 'exercise'],
+      ['fundamentals', null],
+      ['standalone-wrap', 'lesson']
+    ]);
+    expect(sections[0].title).toBe('quiz');
+    expect(sections[1].items.map((item) => [item.id, item.kind])).toEqual([
+      ['cleaning', 'lesson'],
+      ['drill', 'exercise']
+    ]);
     expect(sections.some((section) => section.title === 'Ungrouped')).toBe(false);
   });
 });
