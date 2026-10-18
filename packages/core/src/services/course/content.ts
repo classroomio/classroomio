@@ -5,7 +5,11 @@ import { db } from '@cio/db/drizzle';
 import { applyCourseContentBulkUpdates, applyCourseSectionOrderUpdates } from '@cio/db/queries/course/content-batch';
 import { deleteCourseSection, getCourseSectionById, getCourseSectionsByCourseId } from '@cio/db/queries/course';
 import { OperationalQueryError } from '@cio/db/queries/query-errors';
-import { getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
+import {
+  countContentStudentWork,
+  getCourseContentItems,
+  type CourseContentItemRow
+} from '@cio/db/queries/course/content';
 import { deleteLesson } from '@cio/db/queries/lesson';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { deleteExercise } from '@cio/db/queries/exercise/exercise';
@@ -114,11 +118,22 @@ async function transactionWithContentBatch<TResult>(runner: (tx: DbOrTxClient) =
   }
 }
 
-export async function updateCourseContent(courseId: string, items: TCourseContentUpdate['items']) {
+/** Applies lock/order/section changes atomically and returns each item as stored afterwards. */
+export async function updateCourseContent(
+  courseId: string,
+  items: TCourseContentUpdate['items']
+): Promise<{ items: CourseContentItemRow[] }> {
   try {
     await assertCourseContentItems(courseId, items);
 
-    await transactionWithContentBatch(async (tx) => applyCourseContentBulkUpdates(tx, items));
+    const storedItems = await transactionWithContentBatch(async (tx) => {
+      await applyCourseContentBulkUpdates(tx, items);
+
+      return getCourseContentItems(courseId, undefined, tx);
+    });
+    const requestedKeys = new Set(items.map(buildContentKey));
+
+    return { items: storedItems.filter((item) => requestedKeys.has(buildContentKey(item))) };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -181,62 +196,56 @@ export async function reorderCourseContent(
   }
 }
 
-export async function deleteCourseContent(courseId: string, payload: TCourseContentDelete) {
+export type CourseContentDeleteResult = {
+  items: Array<{ id: string; type: ContentType }>;
+  deletedSubmissions: number;
+  deletedLessonCompletions: number;
+};
+
+/**
+ * Deletes a section's content (and the section) or the given lessons and exercises in one transaction, and returns what
+ * was deleted. Without `force`, throws 409 when any of it holds exercise submissions or lesson completions.
+ */
+export async function deleteCourseContent(
+  courseId: string,
+  payload: TCourseContentDelete,
+  options: { force: boolean } = { force: true }
+): Promise<CourseContentDeleteResult> {
   try {
-    if (payload.sectionId) {
-      const sectionId = payload.sectionId;
+    const sectionId = payload.sectionId;
+    if (sectionId) {
       const section = await getCourseSectionById(sectionId);
       if (!section || section.courseId !== courseId) {
         throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
       }
-
-      const contentItems = await getCourseContentItems(courseId);
-      const itemsToDelete = normalizeDeleteItems(
-        contentItems.filter(
-          (item) =>
-            (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === sectionId
-        )
-      );
-
-      console.log('Items to delete:', itemsToDelete);
-      await db.transaction(async (tx) => {
-        for (const item of itemsToDelete) {
-          if (item.type === ContentType.Lesson) {
-            const deleted = await deleteLesson(item.id, tx);
-            if (!deleted) {
-              throw new AppError('Lesson not found', ErrorCodes.LESSON_NOT_FOUND, 404);
-            }
-
-            await deleteAssetUsagesByTarget('lesson', item.id, tx);
-            continue;
-          }
-
-          const deleted = await deleteExercise(item.id, tx);
-          if (!deleted) {
-            console.log('delete exercise failed for id:', item.id);
-            throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
-          }
-        }
-
-        const deletedSection = await deleteCourseSection(sectionId, tx);
-        if (!deletedSection) {
-          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
-        }
-      });
-
-      return;
-    }
-
-    if (!payload.items) {
+    } else if (!payload.items) {
       throw new AppError('Content items are required', ErrorCodes.VALIDATION_ERROR, 400);
+    } else {
+      await assertCourseContentItems(courseId, payload.items);
     }
 
-    const items = payload.items;
-    await assertCourseContentItems(courseId, items);
-    const normalizedItems = normalizeDeleteItems(items);
+    const itemsToDelete = sectionId
+      ? normalizeDeleteItems(
+          (await getCourseContentItems(courseId)).filter(
+            (item) =>
+              (item.type === ContentType.Lesson || item.type === ContentType.Exercise) && item.sectionId === sectionId
+          )
+        )
+      : normalizeDeleteItems(payload.items ?? []);
+    const lessonIds = itemsToDelete.filter((item) => item.type === ContentType.Lesson).map((item) => item.id);
+    const exerciseIds = itemsToDelete.filter((item) => item.type === ContentType.Exercise).map((item) => item.id);
 
-    await db.transaction(async (tx) => {
-      for (const item of normalizedItems) {
+    const studentWork = await db.transaction(async (tx) => {
+      const work = await countContentStudentWork(lessonIds, exerciseIds, tx);
+      if (!options.force && work.submissions + work.lessonCompletions > 0) {
+        throw new AppError(
+          `Students have work here (${work.submissions} submissions, ${work.lessonCompletions} lesson completions). Pass force=true to delete it with their work`,
+          ErrorCodes.CONFLICT,
+          409
+        );
+      }
+
+      for (const item of itemsToDelete) {
         if (item.type === ContentType.Lesson) {
           const deleted = await deleteLesson(item.id, tx);
           if (!deleted) {
@@ -252,7 +261,22 @@ export async function deleteCourseContent(courseId: string, payload: TCourseCont
           throw new AppError('Exercise not found', ErrorCodes.EXERCISE_NOT_FOUND, 404);
         }
       }
+
+      if (sectionId) {
+        const deletedSection = await deleteCourseSection(sectionId, tx);
+        if (!deletedSection) {
+          throw new AppError('Course section not found', ErrorCodes.COURSE_SECTION_NOT_FOUND, 404);
+        }
+      }
+
+      return work;
     });
+
+    return {
+      items: itemsToDelete.map((item) => ({ id: item.id, type: item.type as ContentType })),
+      deletedSubmissions: studentWork.submissions,
+      deletedLessonCompletions: studentWork.lessonCompletions
+    };
   } catch (error) {
     if (error instanceof AppError) {
       throw error;

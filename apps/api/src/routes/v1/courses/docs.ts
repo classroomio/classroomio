@@ -44,6 +44,17 @@ export const courseForbiddenResponses = {
   )
 };
 
+export const contentForbiddenResponses = {
+  read: forbidden('course:read', TEAM_FORBIDDEN),
+  write: forbidden('course:write', TEAM_FORBIDDEN),
+  comments: forbidden('course:read', `${TEAM_FORBIDDEN}, or comments are turned off (COMMENTS_DISABLED)`),
+  commentWrite: forbidden('course:write', `${TEAM_FORBIDDEN}, or comments are turned off (COMMENTS_DISABLED)`),
+  commentEdit: forbidden(
+    'course:write',
+    `${TEAM_FORBIDDEN}, comments are turned off (COMMENTS_DISABLED), or the actor may not change this comment`
+  )
+};
+
 export const exerciseForbiddenResponses = {
   read: forbidden('course:exercise:read', TEAM_FORBIDDEN),
   write: forbidden('course:exercise:write', TEAM_FORBIDDEN),
@@ -90,3 +101,10 @@ export const QUESTION_TYPES_NOTE =
 
 export const LIVE_EDIT_NOTE =
   'Changes apply immediately, also on published courses. Submissions already made are not regraded, and students submit against the current questions.';
+
+export const STUDENT_WORK_NOTE =
+  'If students have submissions or lesson completions in what you delete, this returns 409 unless force=true, which deletes their work too.';
+
+export const studentWorkConflictResponse = {
+  description: 'Students have submissions or lesson completions here; pass force=true to delete them too'
+};

@@ -91,6 +91,23 @@ export const MCP_TOOL_CREDIT_COST = {
   list_course_certificates: 0,
   download_course_certificate: 0,
   update_course_certificate: 1,
+  list_course_sections: 0,
+  create_course_section: 1,
+  update_course_section: 1,
+  delete_course_section: 1,
+  list_course_lessons: 0,
+  get_course_lesson: 0,
+  delete_course_lesson: 1,
+  notify_course_lesson_session_update: 1,
+  list_course_lesson_translations: 0,
+  set_course_lesson_translation: 1,
+  list_course_lesson_history: 0,
+  list_course_lesson_comments: 0,
+  create_course_lesson_comment: 1,
+  update_course_lesson_comment: 1,
+  delete_course_lesson_comment: 1,
+  set_course_content_unlocked: 1,
+  delete_course_content: 1,
   list_course_submissions: 0,
   get_course_submission: 0,
   grade_course_submission: 1,
@@ -206,6 +223,12 @@ export function getMcpAutomationCategory(toolName: TMcpToolName): TAutomationUsa
     toolName === 'get_course_certificate' ||
     toolName === 'list_course_certificates' ||
     toolName === 'download_course_certificate' ||
+    toolName === 'list_course_sections' ||
+    toolName === 'list_course_lessons' ||
+    toolName === 'get_course_lesson' ||
+    toolName === 'list_course_lesson_translations' ||
+    toolName === 'list_course_lesson_history' ||
+    toolName === 'list_course_lesson_comments' ||
     toolName === 'get_course_exercise_notify_status' ||
     toolName === 'list_exercise_templates' ||
     toolName === 'get_exercise_template' ||

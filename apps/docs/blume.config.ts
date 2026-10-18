@@ -30,12 +30,16 @@ const API_SECTIONS: Array<{ label: string; tags: TagPlacement[] }> = [
     tags: [
       { tag: 'Courses', flat: true },
       { tag: 'Course Structure', label: 'Structure' },
+      { tag: 'Course Sections', label: 'Sections' },
+      { tag: 'Course Lessons', label: 'Lessons' },
+      { tag: 'Lesson Translations', label: 'Translations' },
+      { tag: 'Lesson Comments', label: 'Comments' },
+      { tag: 'Course Content', label: 'Content' },
       { tag: 'Course Members', label: 'Members' },
       { tag: 'Course Invites', label: 'Invites' },
       { tag: 'Course Exercises', label: 'Exercises' },
       { tag: 'Exercise Questions', label: 'Questions' },
-      { tag: 'Exercise Sections', label: 'Sections' },
-      { tag: 'Public API Lessons', label: 'Lessons' },
+      { tag: 'Exercise Sections', label: 'Exercise Sections' },
       { tag: 'Exercise Templates', label: 'Templates' },
       { tag: 'Course Submissions', label: 'Submissions' },
       { tag: 'Course Certificates', label: 'Certificates' }

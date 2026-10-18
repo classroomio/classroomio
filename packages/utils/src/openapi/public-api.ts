@@ -17,7 +17,7 @@ All public API endpoints require an **organization-scoped API key** sent as a Be
 3. Click **Generate API key** and copy the secret immediately (it is shown only once).
 4. Keys look like \`cio_api_...\` and include the \`public_api:*\` scope.
 
-MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the audience, team, cohort, course member and invite, course certificate, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their \`audience:*\`, \`team:*\`, \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:exercise:*\`, \`course:submission:*\`, \`course:student:write\`, and \`media:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
+MCP keys (\`cio_mcp_...\`) don't get \`public_api:*\`. They can call only the audience, team, cohort, course member and invite, course certificate, course section, lesson and content, course exercise and exercise template, course submission and marks, student activity, and asset upload endpoints, through their \`audience:*\`, \`team:*\`, \`cohort:*\`, \`course:member:*\`, \`course:certificate:*\`, \`course:read\`/\`course:write\`, \`course:exercise:*\`, \`course:submission:*\`, \`course:student:write\`, and \`media:write\` scopes, plus the analytics GET endpoints (\`/analytics/**\` and \`/courses/{courseId}/analytics/**\`) through \`analytics:read\`. Every other endpoint returns 403 for them.
 
 ## Send requests
 
@@ -164,6 +164,25 @@ const OPERATION_SUMMARIES: Record<string, string> = {
   'PATCH /public-api/v1/courses/{courseId}/certificate': 'Update course certificate settings',
   'GET /public-api/v1/courses/{courseId}/certificates': 'List issued course certificates',
   'GET /public-api/v1/courses/{courseId}/certificates/{memberId}/download': 'Download an issued course certificate',
+  'GET /public-api/v1/courses/{courseId}/sections': 'List course sections',
+  'POST /public-api/v1/courses/{courseId}/sections': 'Create a course section',
+  'PUT /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Update a course section',
+  'DELETE /public-api/v1/courses/{courseId}/sections/{sectionId}': 'Delete a course section',
+  'GET /public-api/v1/courses/{courseId}/lessons': 'List course lessons',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Get a course lesson',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}': 'Delete a course lesson',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/notify-session-update':
+    'Notify students of a session update',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations': 'List lesson translations',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/translations/{locale}': 'Save a lesson translation',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/history': 'List lesson version history',
+  'GET /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments': 'List lesson comments',
+  'POST /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments': 'Post a lesson comment',
+  'PUT /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Edit a lesson comment',
+  'DELETE /public-api/v1/courses/{courseId}/lessons/{lessonId}/comments/{commentId}': 'Delete a lesson comment',
+  'PUT /public-api/v1/courses/{courseId}/content/reorder': 'Reorder course content',
+  'PATCH /public-api/v1/courses/{courseId}/content': 'Lock or unlock course content',
+  'DELETE /public-api/v1/courses/{courseId}/content': 'Delete course content',
   'GET /public-api/v1/courses/{courseId}/exercises': 'List course exercises',
   'POST /public-api/v1/courses/{courseId}/exercises': 'Create a course exercise',
   'GET /public-api/v1/courses/{courseId}/exercises/{exerciseId}': 'Get a course exercise',
@@ -255,13 +274,23 @@ const OPERATION_TAGS = [
   { name: 'Course Structure', description: 'Export, read, and sync a course structure snapshot.' },
   { name: 'Course Members', description: 'Manage the people in a course and their progress.' },
   { name: 'Course Invites', description: 'Invite people to a course.' },
+  { name: 'Course Sections', description: 'Add, rename, move and delete course sections.' },
+  {
+    name: 'Course Lessons',
+    description: 'List, create, read, update and delete lessons, including attached videos.'
+  },
+  {
+    name: 'Lesson Translations',
+    description: "Read and save a lesson's content per language, and its version history."
+  },
+  { name: 'Lesson Comments', description: 'Read, post, edit and delete comments on a lesson.' },
+  { name: 'Course Content', description: 'Reorder, lock and delete lessons and exercises in bulk.' },
   { name: 'Course Exercises', description: 'Create and manage course exercises.' },
   { name: 'Exercise Questions', description: 'Manage the questions of a course exercise.' },
   { name: 'Exercise Sections', description: 'Manage the sections of a course exercise.' },
   { name: 'Exercise Templates', description: 'Browse built-in exercise templates.' },
   { name: 'Course Submissions', description: 'Review and grade exercise submissions and read the course gradebook.' },
   { name: 'Course Certificates', description: 'Configure course certificates and list who earned them.' },
-  { name: 'Public API Lessons', description: 'Create and update lessons, including attached videos.' },
   { name: 'Public API Assets', description: 'Reserve asset uploads for media attached to lessons and exercises.' },
   { name: 'Cohorts', description: 'Create and manage cohorts.' },
   { name: 'Cohort Members', description: 'Manage the people in a cohort.' },
