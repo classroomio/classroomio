@@ -1,0 +1,339 @@
+---
+title: Webhooks
+description: Receive signed, real-time ClassroomIO events in Slack, your CRM, or your own backend.
+---
+
+Webhooks let ClassroomIO send an HTTP `POST` to a URL you control whenever something happens in your organization, such as a learner finishing a course or a submission being graded. Use them to keep a CRM in sync, alert tutors in Slack, or trigger your own workflows.
+
+:::info[Plan requirement]
+Webhooks share the entitlement of the REST API. On cloud they require an **Early Adopter** or **Enterprise** plan. Self-hosted installs require **Enterprise**.
+:::
+
+## Set up a webhook
+
+1. Open your organization, then **Automation → Webhooks** (organization admins only).
+2. Select **New webhook** and enter a name and your **Payload URL**.
+3. Choose **Send me everything** or pick individual events. Select all, whole groups, or single events.
+4. Save. ClassroomIO shows the **signing secret once**. Copy it now, because it cannot be shown again.
+5. Use **Send test event** to confirm your endpoint responds with a `2xx` status.
+
+Leave the secret blank to have ClassroomIO generate one. Every delivery is signed.
+
+## Events
+
+| Event | Sent when |
+| --- | --- |
+| `organization.invite.created` | A team invite is sent |
+| `organization.invite.accepted` | A team invite is accepted |
+| `organization.invite.revoked` | A team invite is revoked or replaced |
+| `course.invite.created` | A student invite is created |
+| `course.invite.accepted` | A student accepts an invite and enrolls |
+| `course.invite.revoked` | A student invite is revoked |
+| `course.member.added` | A member is added to a course |
+| `course.member.removed` | A member is removed from a course |
+| `course.completed` | A learner completes a course and earns its certificate. Requires certificates to be enabled for the organization |
+| `course.certificate.issued` | A certificate is earned |
+| `course.submission.created` | An exercise submission is created |
+| `course.submission.status_changed` | A submission status changes, for example when it is graded |
+| `lesson.completion.updated` | A lesson is marked complete or reset |
+| `exercise.completion.updated` | An exercise is completed, meeting any passing grade the exercise requires, or reset |
+
+Recommended defaults: `course.invite.accepted`, `course.member.added`, `course.completed`, `course.certificate.issued`, and `course.submission.created`.
+
+## Payload
+
+Every event uses the same envelope. The shape of `data` depends on the event type, see the [event reference](#event-reference).
+
+```json
+{
+  "id": "evt_01c9f0a8e2b14d7f9a3b5c6d7e8f9012",
+  "type": "course.completed",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": { "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289", "siteName": "acme" },
+  "data": {
+    "courseId": "98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e",
+    "profileId": "0c256e75-aa40-4f62-8d30-0217ca1c60d9",
+    "memberId": "5d3f1c2e-0a9b-4c8d-b7e6-1f2a3b4c5d6e",
+    "completedAt": "2026-10-13T12:15:30.000Z"
+  }
+}
+```
+
+### Request headers
+
+| Header | Description |
+| --- | --- |
+| `Content-Type` | `application/json` |
+| `User-Agent` | `ClassroomIO-Webhooks/1.0` |
+| `X-Cio-Event` | The event type |
+| `X-Cio-Event-Id` | The unique, stable event id, identical on every retry and redelivery |
+| `X-Cio-Delivery` | The delivery id |
+| `X-Cio-Webhook` | The webhook id |
+| `X-Cio-Timestamp` | Unix time in seconds when the request was signed |
+| `X-Cio-Signature-256` | `sha256=<hex>` HMAC of the request |
+
+## Event reference
+
+Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. IDs are UUIDs and timestamps are ISO 8601 in UTC.
+
+### Team invites
+
+#### `organization.invite.created`
+
+A team invite is sent.
+
+```json
+{
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "tutor@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "reason": null
+}
+```
+
+`reason` is only set when an invite is replaced or revoked, and is otherwise `null`.
+
+#### `organization.invite.accepted`
+
+A team invite is accepted.
+
+```json
+{
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "tutor@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "reason": null
+}
+```
+
+#### `organization.invite.revoked`
+
+A team invite is revoked or replaced.
+
+```json
+{
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "tutor@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "reason": "revoked"
+}
+```
+
+### Course invites
+
+#### `course.invite.created`
+
+A student invite is created.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "student@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+}
+```
+
+`email` is `null` for shareable invite links that are not tied to an address.
+
+#### `course.invite.accepted`
+
+A student accepts an invite and enrolls.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "student@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+}
+```
+
+`actorProfileId` is the student who accepted. A `course.member.added` event follows for the new enrollment.
+
+#### `course.invite.revoked`
+
+A student invite is revoked.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+  "email": "student@example.com",
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+}
+```
+
+### Course members
+
+#### `course.member.added`
+
+A member is added to a course, by an admin or by accepting an invite.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "email": "student@example.com",
+  "roleId": 3
+}
+```
+
+`memberId` is the course membership id. `profileId` is `null` until a pending member signs up. `roleId` is `1` for admin, `2` for tutor, `3` for student.
+
+#### `course.member.removed`
+
+A member is removed from a course.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "email": "student@example.com",
+  "roleId": 3
+}
+```
+
+### Completion and certificates
+
+#### `course.completed`
+
+A learner completes a course and earns its certificate. Requires certificates to be enabled for the organization.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "completedAt": "2026-10-13T12:15:30.000Z"
+}
+```
+
+#### `course.certificate.issued`
+
+A certificate is earned. Sent together with `course.completed`.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "completedAt": "2026-10-13T12:15:30.000Z"
+}
+```
+
+### Submissions
+
+#### `course.submission.created`
+
+An exercise submission is created.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "submissionId": "000000f1-0000-4000-8000-0000000000f1",
+  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "statusId": 1,
+  "gradingState": "queued",
+  "total": null
+}
+```
+
+`statusId` is `1` submitted, `2` in progress, `3` graded. `gradingState` is one of `queued`, `processing`, `awaiting_manual`, `failed`, `completed`. `total` is the score once graded.
+
+#### `course.submission.status_changed`
+
+A submission status or grading state changes, for example when it is graded.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "submissionId": "000000f1-0000-4000-8000-0000000000f1",
+  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "statusId": 3,
+  "gradingState": "completed",
+  "total": 8,
+  "previousStatusId": 2,
+  "previousGradingState": "awaiting_manual"
+}
+```
+
+`statusId` and `gradingState` are the new values.
+
+### Progress
+
+#### `lesson.completion.updated`
+
+A lesson is marked complete, or reset when an admin resets a learner's progress.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "lessonId": "000000f3-0000-4000-8000-0000000000f3",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "isComplete": true
+}
+```
+
+#### `exercise.completion.updated`
+
+An exercise is completed, meeting any passing grade it requires, or reset by an admin.
+
+```json
+{
+  "courseId": "000000c1-0000-4000-8000-0000000000c1",
+  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+  "memberId": "000000d1-0000-4000-8000-0000000000d1",
+  "profileId": "000000b1-0000-4000-8000-0000000000b1",
+  "isComplete": true
+}
+```
+
+`memberId` is the course membership id of the learner.
+
+## Verify the signature
+
+The signature is an HMAC-SHA256 of `<timestamp>.<raw request body>` using your signing secret. Verify it against the **raw** body, before parsing JSON, and reject requests whose timestamp is more than five minutes old.
+
+```js
+import { createHmac, timingSafeEqual } from 'node:crypto';
+
+export function verifyClassroomIoWebhook({ secret, timestamp, rawBody, signature }) {
+  const ageSeconds = Math.abs(Date.now() / 1000 - Number(timestamp));
+  if (!Number.isFinite(ageSeconds) || ageSeconds > 300) return false;
+
+  const expected = `sha256=${createHmac('sha256', secret).update(`${timestamp}.${rawBody}`).digest('hex')}`;
+  const received = Buffer.from(signature ?? '');
+  const wanted = Buffer.from(expected);
+
+  return received.length === wanted.length && timingSafeEqual(received, wanted);
+}
+```
+
+## Delivery and retries
+
+- Your endpoint must respond with any `2xx` status within **10 seconds**. Redirects are not followed and count as failures.
+- Failed deliveries are retried automatically, up to **3 attempts** in total: immediately, then after 10 seconds, and again after 1 minute. After the last attempt the delivery is marked as failed.
+- Deliveries are **at least once**. Use `X-Cio-Event-Id` (or `id` in the body) as an idempotency key so a retry never processes the same event twice.
+- Only one delivery to a given endpoint is in flight at a time, and the oldest due delivery is sent first. A delivery that is waiting to retry does not block newer events, so do not rely on strict ordering across retries. Use `createdAt` when order matters.
+- An endpoint shows as **Failing** after 20 consecutive failed deliveries and is **auto-disabled** after 100. Re-enable it from the dashboard once it is fixed. ClassroomIO emails your organization admins at both points, and the **Error rate (24h)** column shows how many recent deliveries failed. A webhook that is still retrying its first failed deliveries shows as **Retrying**.
+- You can pause a webhook at any time with its toggle in the **Destination** list. While paused, no new events are queued for it, and any retry that comes due is marked as failed and is not resumed when you re-enable the webhook. Use **Redeliver** to resend retained events.
+- Event and delivery history is kept for **30 days**. Open **View deliveries** to inspect headers, payloads, responses, and errors, and to **Redeliver** any retained event. A redelivery keeps the original event id.
+
+## Security
+
+- Payload URLs must use HTTPS. On cloud, URLs that point to localhost or private network addresses are rejected, and the destination is checked again at delivery time.
+- Stored response bodies are truncated and sensitive values such as tokens and API keys are redacted.
+- **Regenerate secret** replaces the signing secret immediately. The old secret stops working.
+- Self-hosted installs can allow private-network and plain `http` destinations by setting `WEBHOOK_ALLOW_PRIVATE_NETWORKS=true` on the API and jobs services.
+
+## Management API
+
+Organization admins can also manage webhooks over the dashboard API under `/organization/webhooks` (list, create, update, delete, regenerate secret, send a test event, and list or redeliver deliveries). These routes use your dashboard session and are not part of the public API-key surface.

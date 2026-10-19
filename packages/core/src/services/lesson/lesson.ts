@@ -33,6 +33,7 @@ import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
 import { claimItemOrder } from '../course/root-order';
+import { emitCourseWebhookEvent } from '../webhook/emit';
 
 /**
  * Creates a new lesson
@@ -479,7 +480,11 @@ export async function upsertLessonCompletionService(lessonId: string, profileId:
       isComplete
     };
 
-    return await upsertLessonCompletion(completionData);
+    const completion = await upsertLessonCompletion(completionData);
+
+    await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', { lessonId, profileId, isComplete });
+
+    return completion;
   } catch (error) {
     if (error instanceof AppError) {
       throw error;
@@ -692,6 +697,11 @@ export async function updateLessonWatchProgressService(
 
     if (didJustComplete) {
       await upsertLessonCompletion({
+        lessonId,
+        profileId,
+        isComplete: true
+      });
+      await emitCourseWebhookEvent(lesson.courseId, 'lesson.completion.updated', {
         lessonId,
         profileId,
         isComplete: true

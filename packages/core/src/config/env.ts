@@ -51,6 +51,7 @@ const envSchema = z.object({
   UNSPLASH_API_KEY: z.string().optional(),
   /** When 'true', instance runs in self-hosted mode: single org, auto-enroll as student, no org switching */
   PUBLIC_IS_SELFHOSTED: z.string().optional(),
+  WEBHOOK_ALLOW_PRIVATE_NETWORKS: z.string().optional(),
   /** License key for enterprise features (SSO, token-auth, no-tracking, etc.) */
   LICENSE_KEY: z.string().optional(),
   /** Reported in the self-hosted usage ping. Baked into the published jobs image; unset when run from source. */

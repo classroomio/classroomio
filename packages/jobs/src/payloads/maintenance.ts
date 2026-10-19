@@ -115,3 +115,8 @@ export const ZEarlyAdopterClaimReminderPayload = z.object({
   batchSize: z.number().int().positive().max(500).default(100)
 });
 export type TEarlyAdopterClaimReminderPayload = z.infer<typeof ZEarlyAdopterClaimReminderPayload>;
+
+export const ZWebhookRetentionPayload = z.object({
+  olderThanDays: z.number().int().positive().default(30)
+});
+export type TWebhookRetentionPayload = z.infer<typeof ZWebhookRetentionPayload>;

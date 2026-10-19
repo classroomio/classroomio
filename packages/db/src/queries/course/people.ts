@@ -15,6 +15,7 @@ import {
 } from '@cio/utils/validation/course';
 import { db } from '@db/drizzle';
 import { isExerciseCompletedSql } from '@db/queries/course/progression';
+import { deleteStudentCourseProgress } from '@db/queries/course/reset-progress';
 
 export type CourseMemberWithProfile = TGroupmember & {
   profile: {
@@ -533,7 +534,7 @@ export async function updateCourseMember(
 }
 
 /**
- * Deletes a course member
+ * Deletes a course member and, for students, the course data they own
  * @param courseId Course ID
  * @param memberId Member ID
  * @returns Deleted member or null if not found
@@ -546,12 +547,21 @@ export async function deleteCourseMember(courseId: string, memberId: string): Pr
       return null;
     }
 
-    const [deleted] = await db
-      .delete(schema.groupmember)
-      .where(and(eq(schema.groupmember.id, memberId), eq(schema.groupmember.groupId, member.groupId)))
-      .returning();
+    return await db.transaction(async (tx) => {
+      if (member.roleId === ROLE.STUDENT && member.profileId) {
+        await deleteStudentCourseProgress(tx, { courseId, groupMemberId: memberId, profileId: member.profileId });
+      }
 
-    return deleted || null;
+      await tx.delete(schema.questionAnswer).where(eq(schema.questionAnswer.groupMemberId, memberId));
+      await tx.delete(schema.appsPollSubmission).where(eq(schema.appsPollSubmission.selectedById, memberId));
+
+      const [deleted] = await tx
+        .delete(schema.groupmember)
+        .where(and(eq(schema.groupmember.id, memberId), eq(schema.groupmember.groupId, member.groupId)))
+        .returning();
+
+      return deleted || null;
+    });
   } catch (error) {
     console.error('deleteCourseMember error:', error);
     throw new Error(`Failed to delete course member: ${error instanceof Error ? error.message : 'Unknown error'}`);

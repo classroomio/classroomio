@@ -23,7 +23,6 @@ import {
 } from '@cio/db/queries/cohort';
 import {
   createOrganizationInvite,
-  createOrganizationInviteAudits,
   createOrganizationInvites,
   createOrganizationMembers,
   getOrganizationAudienceMember,
@@ -35,6 +34,7 @@ import {
   hasActiveOrganizationInviteForEmail,
   revokeActiveOrganizationInvitesByEmails
 } from '@cio/db/queries/organization';
+import { recordOrganizationInviteAudits } from './invite';
 import { getCourseGroupIds, getOrgCourseGroups, getOrgCourses } from '@cio/db/queries/course';
 import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 
@@ -372,7 +372,7 @@ async function createStudentOrgInvitesAndSendEmails(input: {
   const inviteByEmail = new Map(invites.map((inv) => [(inv.email ?? '').toLowerCase(), inv]));
   const tokenByEmail = new Map(inviteInputs.map((i) => [i.email.toLowerCase(), i.token]));
 
-  await createOrganizationInviteAudits(
+  await recordOrganizationInviteAudits(
     emails.map((email) => {
       const invite = inviteByEmail.get(email)!;
       return {
@@ -434,7 +434,7 @@ async function createStudentOrgInvitesAndSendEmails(input: {
     emailsSent = emailOutcomes.filter((o) => o.success).length;
     emailsFailed = emailOutcomes.length - emailsSent;
 
-    await createOrganizationInviteAudits(
+    await recordOrganizationInviteAudits(
       emailOutcomes.map((o) => ({
         inviteId: o.inviteId,
         organizationId: orgId,
@@ -731,7 +731,7 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     }
   });
 
-  await createOrganizationInviteAudits([
+  await recordOrganizationInviteAudits([
     {
       inviteId: invite.id,
       organizationId: orgId,
@@ -771,7 +771,7 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     emailSent = true;
     // Optimistic EMAIL_SENT — worker handles retries; final failure flips
     // email_delivery to `failed` for operator follow-up.
-    await createOrganizationInviteAudits([
+    await recordOrganizationInviteAudits([
       {
         inviteId: invite.id,
         organizationId: orgId,
@@ -785,7 +785,7 @@ export async function resendAudienceInvite(orgId: string, data: TAudienceInviteB
     ]);
   } catch (emailError) {
     const message = emailError instanceof Error ? emailError.message : 'Unknown email error';
-    await createOrganizationInviteAudits([
+    await recordOrganizationInviteAudits([
       {
         inviteId: invite.id,
         organizationId: orgId,
@@ -827,7 +827,7 @@ export async function revokeAudiencePendingInvite(
     throw new AppError('No invite was revoked', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
-  await createOrganizationInviteAudits(
+  await recordOrganizationInviteAudits(
     revoked.map((inv) => ({
       inviteId: inv.id,
       organizationId: orgId,

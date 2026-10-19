@@ -66,6 +66,8 @@ export const JOB_NAMES = {
     courseRoleReconcile: 'course-role-reconcile',
     memberActivityReconcile: 'member-activity-reconcile',
     earlyAdopterClaimReminder: 'early-adopter-claim-reminder',
-    instanceTelemetry: 'instance-telemetry'
+    instanceTelemetry: 'instance-telemetry',
+    webhookRetention: 'webhook-retention',
+    webhookSweep: 'webhook-sweep'
   }
 } as const;

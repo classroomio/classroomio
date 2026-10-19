@@ -260,6 +260,13 @@
       "when": 1792266230279,
       "tag": "0036_mixed_course_outline",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1792391198034,
+      "tag": "0037_webhooks",
+      "breakpoints": true
     }
   ]
 }

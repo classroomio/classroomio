@@ -162,6 +162,14 @@
       "question": {
         "too_small": "Tytuł pytania jest wymagany"
       }
+    },
+    "webhook": {
+      "payload_url": {
+        "protocol": "URL ładunku musi zaczynać się od http:// lub https://"
+      },
+      "event_types": {
+        "required": "Wybierz co najmniej jedno zdarzenie"
+      }
     }
   },
   "generic": {
@@ -516,6 +524,17 @@
       "success": "Dziękujemy. Przejrzymy to zgłoszenie.",
       "error": "Nie udało się wysłać zgłoszenia. Spróbuj ponownie.",
       "already_submitted": "Już zgłosiłeś tę treść."
+    },
+    "webhooks": {
+      "created": "Webhook utworzony. Skopiuj teraz klucz podpisu, ponieważ jest pokazywany tylko raz.",
+      "updated": "Webhook zaktualizowany.",
+      "enabled": "Webhook włączony.",
+      "disabled": "Webhook wyłączony.",
+      "deleted": "Webhook usunięty.",
+      "secret_regenerated": "Klucz podpisu wygenerowany ponownie. Skopiuj go teraz, ponieważ jest pokazywany tylko raz.",
+      "test_success": "Zdarzenie testowe zostało dostarczone.",
+      "test_failed": "Zdarzenie testowe nie powiodło się. Otwórz dziennik dostarczeń, aby zobaczyć powód.",
+      "redelivered": "Zdarzenie dodane do kolejki ponownego dostarczenia."
     }
   },
   "explore": {
@@ -576,7 +595,8 @@
     "required": "Wymagana aktualizacja",
     "enterprise_required": "Ta funkcja wymaga planu Enterprise.",
     "public_api_required": "Uaktualnij do Early Adopter lub Enterprise, aby uzyskać dostęp do publicznego API.",
-    "unlock_field": "Uaktualnij, aby odblokować to ustawienie"
+    "unlock_field": "Uaktualnij, aby odblokować to ustawienie",
+    "webhooks_required": "Przejdź na plan Early Adopter lub Enterprise, aby korzystać z webhooków."
   },
   "analytics": {
     "title": "Analityka",
@@ -5064,7 +5084,9 @@
     "tabs": {
       "mcp": "MCP",
       "zapier": "Zapier",
-      "api": "API"
+      "api": "API",
+      "webhooks": "Webhooki",
+      "new_badge": "Nowy"
     },
     "permissions": {
       "disabled_title": "Dostęp tylko do odczytu",
@@ -5072,6 +5094,129 @@
     },
     "zapier": {
       "page_subtitle": "Automatyzuj ClassroomIO z tysiącami aplikacji przez Zapier. Wkrótce."
+    },
+    "webhooks": {
+      "page_subtitle": "Wysyłaj zdarzenia ClassroomIO w czasie rzeczywistym do Slacka, Twojego CRM lub własnego backendu.",
+      "description": "ClassroomIO wysyła podpisane żądanie HTTP POST na Twój URL za każdym razem, gdy wystąpi wybrane zdarzenie. Nieudane dostarczenia są ponawiane automatycznie.",
+      "permissions_description": "Tylko administratorzy organizacji mogą tworzyć, edytować i usuwać webhooki.",
+      "create": "Nowy webhook",
+      "empty_title": "Brak webhooków",
+      "empty_description": "Utwórz webhook, aby przesyłać zaproszenia, zapisy, ukończenia i zgłoszenia do swoich innych narzędzi.",
+      "reveal_title": "Twój nowy klucz podpisu",
+      "reveal_description": "Skopiuj ten klucz podpisu teraz. Nie zostanie pokazany ponownie, a będzie potrzebny do weryfikowania żądań.",
+      "reveal_docs": "Jak weryfikować żądania",
+      "delete_confirm": "Usunąć webhook \"{name}\"? Jego historia dostarczeń również zostanie usunięta.",
+      "regenerate_confirm": "Wygenerować klucz podpisu ponownie? Obecny klucz przestanie działać natychmiast.",
+      "events_all": "Wszystkie zdarzenia",
+      "events_count_one": "{count} zdarzenie",
+      "events_count_other": "{count} zdarzeń",
+      "no_deliveries": "Brak dostarczeń",
+      "retrying_hint": "Ponawianie nieudanych dostarczeń",
+      "table": {
+        "name": "Miejsce docelowe",
+        "events": "Zdarzenia",
+        "health": "Status",
+        "active": "Aktywny",
+        "error_rate": "Odsetek błędów (24 godz.)",
+        "error_rate_detail": "Niepowodzenia: {failed} z {total}",
+        "no_recent_deliveries": "Brak dostarczeń w ciągu 24 godz."
+      },
+      "health": {
+        "healthy": "Działa poprawnie",
+        "retrying": "Ponawianie",
+        "degraded": "Błędy",
+        "disabled": "Wyłączony automatycznie"
+      },
+      "actions": {
+        "label": "Akcje webhooka",
+        "edit": "Edytuj",
+        "test": "Wyślij zdarzenie testowe",
+        "deliveries": "Zobacz dostarczenia",
+        "regenerate_secret": "Wygeneruj klucz ponownie",
+        "delete": "Usuń"
+      },
+      "form": {
+        "create_title": "Nowy webhook",
+        "edit_title": "Edytuj webhook",
+        "description": "Wybierz, dokąd ClassroomIO ma wysyłać zdarzenia i które zdarzenia wysyłać.",
+        "sections": {
+          "endpoint": "Punkt końcowy",
+          "events": "Zdarzenia"
+        },
+        "name": "Nazwa",
+        "name_placeholder": "Synchronizacja CRM",
+        "payload_url": "URL ładunku",
+        "payload_url_help": "Musi to być publiczny URL HTTPS, który zwraca odpowiedź 2xx w ciągu 10 sekund.",
+        "secret": "Klucz podpisu",
+        "secret_placeholder": "Pozostaw puste, aby wygenerować",
+        "secret_help": "Służy do podpisywania każdego żądania, aby można było zweryfikować, że pochodzi z ClassroomIO.",
+        "secret_edit_placeholder": "Pozostaw puste, aby zachować obecny klucz",
+        "secret_edit_help": "Wprowadź nową wartość, aby zastąpić klucz. Obecny klucz nigdy nie jest wyświetlany.",
+        "verify_ssl": "Weryfikuj certyfikat SSL",
+        "verify_ssl_help": "Pozostaw włączone, chyba że testujesz z certyfikatem z podpisem własnym.",
+        "active": "Aktywny",
+        "events_help": "Wybierz zdarzenia, które mają uruchamiać ten webhook.",
+        "mode_all": "Wysyłaj wszystko",
+        "mode_selected": "Wybiorę poszczególne zdarzenia",
+        "cancel": "Anuluj",
+        "save": "Zapisz webhook",
+        "select_all": "Zaznacz wszystko",
+        "events_selected": "Wybrano {selected} z {total}"
+      },
+      "event_groups": {
+        "organization": "Organizacja",
+        "course": "Kursy",
+        "learning": "Postępy w nauce"
+      },
+      "events": {
+        "organization_invite_created": "Wysłano zaproszenie do zespołu",
+        "organization_invite_accepted": "Zaproszenie do zespołu zostało przyjęte",
+        "organization_invite_revoked": "Zaproszenie do zespołu zostało cofnięte lub zastąpione",
+        "course_invite_created": "Utworzono zaproszenie dla studenta",
+        "course_invite_accepted": "Student przyjmuje zaproszenie i zapisuje się",
+        "course_invite_revoked": "Zaproszenie dla studenta zostało cofnięte",
+        "course_member_added": "Dodano uczestnika do kursu",
+        "course_member_removed": "Usunięto uczestnika z kursu",
+        "course_completed": "Uczestnik kończy kurs",
+        "course_certificate_issued": "Zdobyto certyfikat",
+        "course_submission_created": "Utworzono zgłoszenie ćwiczenia",
+        "course_submission_status_changed": "Zmienia się status zgłoszenia, na przykład po jego ocenieniu",
+        "lesson_completion_updated": "Lekcja została oznaczona jako ukończona lub zresetowana",
+        "exercise_completion_updated": "Ćwiczenie zostało ukończone lub zresetowane"
+      },
+      "deliveries": {
+        "title": "Dostarczenia",
+        "description": "Zdarzenia z ostatnich 30 dni",
+        "back": "Wróć do dostarczeń",
+        "filter_all": "Wszystkie statusy",
+        "empty": "Żadne dostarczenia nie pasują do tego filtra.",
+        "load_error": "Nie udało się wczytać dostarczeń. Spróbuj ponownie.",
+        "redeliver": "Dostarcz ponownie",
+        "test_badge": "Test",
+        "status": {
+          "PENDING": "Ponawianie",
+          "SUCCESS": "Sukces",
+          "FAILED": "Niepowodzenie",
+          "GAVE_UP": "Niepowodzenie"
+        },
+        "columns": {
+          "event": "Zdarzenie",
+          "event_id": "ID zdarzenia",
+          "status": "Status",
+          "attempt": "Próba",
+          "http": "Status HTTP",
+          "duration": "Czas odpowiedzi",
+          "time": "Wysłano",
+          "next_attempt": "Następna próba"
+        },
+        "detail": {
+          "error": "Błąd",
+          "request_headers": "Nagłówki żądania",
+          "payload": "Ładunek",
+          "response_body": "Odpowiedź",
+          "no_response": "Nie otrzymano odpowiedzi."
+        }
+      }
     }
   },
   "ai_assistant": {

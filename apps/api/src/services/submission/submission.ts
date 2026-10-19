@@ -50,6 +50,7 @@ import { canAccessCourseSubmissions, getGroupMemberIdByCourseAndProfile } from '
 import { QUESTION_TYPE_ID_TO_KEY } from '@cio/question-types';
 
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
+import { emitCourseWebhookEvent } from '@cio/core/services/webhook/emit';
 import { generateDocumentDownloadPresignedUrls, generateVideoDownloadPresignedUrls } from '@cio/core/utils/s3';
 import { syncComplianceProgressFromSubmission } from '@api/services/course/compliance';
 import { evaluateCourseCertification } from '@api/services/course/completion';
@@ -709,6 +710,72 @@ function decodeSubmissionAnswers(
  * Creates a submission with its answers, saving nothing if an answer is invalid. Throws 409 for a second attempt on a
  * one-attempt exercise. Returns the submission, with `answers` when auto-graded.
  */
+async function buildSubmissionWebhookData(
+  submission: TSubmission & { courseId: string },
+  overrides: { statusId?: number | null; gradingState?: string | null } = {}
+) {
+  const profile = submission.submittedBy ? await getProfileByGroupMemberId(submission.submittedBy) : null;
+
+  return {
+    submissionId: submission.id,
+    exerciseId: submission.exerciseId,
+    memberId: submission.submittedBy,
+    profileId: profile?.id ?? null,
+    statusId: overrides.statusId === undefined ? submission.statusId : overrides.statusId,
+    gradingState: overrides.gradingState === undefined ? submission.gradingState : overrides.gradingState,
+    total: submission.total
+  };
+}
+
+async function emitSubmissionCreatedWebhookEvent(
+  submission: TSubmission,
+  overrides: { statusId?: number | null; gradingState?: string | null } = {}
+) {
+  if (!submission.courseId) return;
+
+  const data = await buildSubmissionWebhookData({ ...submission, courseId: submission.courseId }, overrides);
+
+  await emitCourseWebhookEvent(submission.courseId, 'course.submission.created', data);
+}
+
+async function emitSubmissionStatusChangedWebhookEvent(
+  submission: TSubmission,
+  previous: { statusId: number; gradingState: string }
+) {
+  if (!submission.courseId) return;
+
+  const submissionData = await buildSubmissionWebhookData({ ...submission, courseId: submission.courseId });
+
+  await emitCourseWebhookEvent(submission.courseId, 'course.submission.status_changed', {
+    ...submissionData,
+    previousStatusId: previous.statusId,
+    previousGradingState: previous.gradingState
+  });
+}
+
+async function wasExerciseCompleteForMember(exerciseId: string | null, groupMemberId: string | null) {
+  if (!exerciseId || !groupMemberId) return false;
+
+  return isExerciseCompletedForMember(exerciseId, groupMemberId);
+}
+
+async function emitExerciseCompletionIfReached(submission: TSubmission, wasCompleteBefore: boolean) {
+  if (!submission.courseId || !submission.exerciseId || !submission.submittedBy || wasCompleteBefore) return;
+
+  const isCompleteNow = await isExerciseCompletedForMember(submission.exerciseId, submission.submittedBy);
+
+  if (!isCompleteNow) return;
+
+  const profile = await getProfileByGroupMemberId(submission.submittedBy);
+
+  await emitCourseWebhookEvent(submission.courseId, 'exercise.completion.updated', {
+    exerciseId: submission.exerciseId,
+    memberId: submission.submittedBy,
+    profileId: profile?.id ?? null,
+    isComplete: true
+  });
+}
+
 export async function createSubmissionService(
   courseId: string,
   exerciseId: string,
@@ -725,6 +792,8 @@ export async function createSubmissionService(
 
     const questionById = toQuestionModelsById(exerciseWithRelations.questions);
     const answerByQuestionId = decodeSubmissionAnswers(questionById, answers, options);
+    const alreadySubmitted = await hasSubmission(exerciseId, submittedBy);
+    const wasCompleteBefore = await wasExerciseCompleteForMember(exerciseId, submittedBy);
 
     const overallStatus = resolveOverallStatusFromTypenames(
       exerciseWithRelations.questions
@@ -823,6 +892,15 @@ export async function createSubmissionService(
 
         await syncComplianceProgressFromSubmission(courseId, submittedBy);
         await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
+        await emitSubmissionCreatedWebhookEvent(submission, {
+          statusId: projectLegacyStatusId(gradingState),
+          gradingState
+        });
+        await emitSubmissionStatusChangedWebhookEvent(submission, {
+          statusId: projectLegacyStatusId(gradingState),
+          gradingState
+        });
+        await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
 
         const enrichedAnswers =
           answersWithPoints.length > 0 ? await enrichFileUploadAnswersArray(answersWithPoints) : answersWithPoints;
@@ -836,6 +914,8 @@ export async function createSubmissionService(
 
     await syncComplianceProgressFromSubmission(courseId, submittedBy);
     await triggerCertificationIfExerciseComplete(courseId, exerciseId, submittedBy);
+    await emitSubmissionCreatedWebhookEvent(submission);
+    await emitExerciseCompletionIfReached(submission, wasCompleteBefore);
 
     return submission;
   } catch (error) {
@@ -884,6 +964,7 @@ export async function updateSubmissionService(
     }
 
     const previousLegacyStatusId = projectLegacyStatusId(currentGradingState);
+    const wasCompleteBefore = await wasExerciseCompleteForMember(submission.exerciseId, submission.submittedBy);
     const updatePayload: Partial<TSubmission> = { ...data };
     if (requestedGradingState) {
       updatePayload.gradingState = requestedGradingState;
@@ -892,6 +973,7 @@ export async function updateSubmissionService(
 
     const nextLegacyStatusId = Number(updatePayload.statusId ?? previousLegacyStatusId);
     const statusChanged = nextLegacyStatusId !== previousLegacyStatusId;
+    const gradingStateChanged = Boolean(requestedGradingState) && requestedGradingState !== currentGradingState;
 
     const updated = await updateSubmission(submissionId, updatePayload);
     if (!updated) {
@@ -907,6 +989,15 @@ export async function updateSubmissionService(
     if (updated.gradingState === 'completed' && updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
     }
+
+    if (statusChanged || gradingStateChanged) {
+      await emitSubmissionStatusChangedWebhookEvent(updated, {
+        statusId: previousLegacyStatusId,
+        gradingState: currentGradingState
+      });
+    }
+
+    await emitExerciseCompletionIfReached(updated, wasCompleteBefore);
 
     return updated;
   } catch (error) {
@@ -993,6 +1084,7 @@ export async function updateSubmissionGradesBatch(
 
     const previousLegacyStatusId = projectLegacyStatusId(currentGradingState);
     const statusChanged = targetStatusId !== previousLegacyStatusId;
+    const wasCompleteBefore = await wasExerciseCompleteForMember(submission.exerciseId, submission.submittedBy);
 
     const updated = await updateSubmissionGrades(submissionId, {
       answers: data.answers,
@@ -1015,6 +1107,15 @@ export async function updateSubmissionGradesBatch(
     if (updated.courseId && updated.submittedBy) {
       await syncComplianceProgressFromSubmission(updated.courseId, updated.submittedBy);
     }
+
+    if (statusChanged || currentGradingState !== targetGradingState) {
+      await emitSubmissionStatusChangedWebhookEvent(updated, {
+        statusId: previousLegacyStatusId,
+        gradingState: currentGradingState
+      });
+    }
+
+    await emitExerciseCompletionIfReached(updated, wasCompleteBefore);
 
     return updated;
   } catch (error) {
