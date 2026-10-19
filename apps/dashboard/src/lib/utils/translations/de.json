@@ -4980,7 +4980,6 @@
         "title": "MCP-Schlüssel",
         "description": "Diese Schlüssel authentifizieren die aktuelle Organisation, wenn ein MCP-Client ClassroomIO über „@classroomio/mcp“ aufruft.",
         "generate": "MCP-Schlüssel generieren",
-        "secret_once": "Dieses Geheimnis wird einmal gezeigt. Kopieren Sie es jetzt in Ihren MCP-Client.",
         "modal": {
           "title": "MCP-Schlüssel erstellen",
           "description": "Wählen Sie einen Namen für diesen MCP-Schlüssel, bevor er generiert wird.",
@@ -4988,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Abbrechen",
           "save": "Schlüssel erstellen"
-        }
+        },
+        "reveal_title": "Ihr neuer MCP-Schlüssel"
       },
       "usage": {
         "title": "Nutzung und Grenzen",
@@ -5008,7 +5008,6 @@
         "title": "API-Schlüssel",
         "description": "Diese Schlüssel authentifizieren die aktuelle Organisation beim Aufruf der öffentlichen ClassroomIO-API.",
         "generate": "API-Schlüssel generieren",
-        "secret_once": "Dieses Geheimnis wird nur einmal angezeigt. Kopieren Sie es und speichern Sie es sicher.",
         "empty_title": "Noch keine API-Schlüssel",
         "empty_description": "Erstellen Sie den ersten organisationsbezogenen API-Schlüssel, um die öffentliche ClassroomIO-API zu nutzen.",
         "modal": {
@@ -5018,7 +5017,8 @@
           "name_placeholder": "Meine API-Integration",
           "cancel": "Abbrechen",
           "save": "Schlüssel erstellen"
-        }
+        },
+        "reveal_title": "Ihr neuer API-Schlüssel"
       },
       "setup": {
         "title": "Schnellstart",
@@ -5042,7 +5042,14 @@
       "table_key": "Schlüssel",
       "table_status": "Status",
       "table_created": "Erstellt",
-      "table_last_used": "Zuletzt verwendet"
+      "table_last_used": "Zuletzt verwendet",
+      "reveal": {
+        "description": "Kopieren Sie diesen Schlüssel jetzt. Er wird nicht erneut angezeigt.",
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "how_to_use": "So verwenden Sie diesen Schlüssel",
+        "close": "Schließen"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",

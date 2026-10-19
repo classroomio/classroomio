@@ -432,6 +432,18 @@ Pass `onCommit` for follow-up work that must run only on blur or Enter with the 
 <NumberField label="Points" integer min={1} bind:value={points} />
 ```
 
+### Copy input (`src/custom/copy-input/`)
+
+Read-only `InputGroup` that shows a value with an inline Copy button. Focusing the input selects the value; the button switches to the copied label for two seconds. Use it to reveal a one-time secret, an invite link, or any value the user should copy rather than edit. The host passes translated labels.
+
+```svelte
+<script lang="ts">
+  import { CopyInput } from '@cio/ui/custom/copy-input';
+</script>
+
+<CopyInput value={secret} copyLabel={$t('automation.keys.reveal.copy')} copiedLabel={$t('automation.keys.reveal.copied')} />
+```
+
 ### Hooks (`src/hooks/`)
 
 Reusable Svelte hooks are located in the `src/hooks/` directory. These are Svelte 5 runes-based utilities that can be used across components.

@@ -4980,7 +4980,6 @@
         "title": "Klucze MCP",
         "description": "Te klucze uwierzytelniają bieżącą organizację, gdy klient MCP wywołuje ClassroomIO poprzez `@classroomio/mcp`.",
         "generate": "Wygeneruj klucz MCP",
-        "secret_once": "Sekret ten zostaje pokazany raz. Skopiuj go teraz do swojego klienta MCP.",
         "modal": {
           "title": "Utwórz klucz MCP",
           "description": "Wybierz nazwę tego klucza MCP przed jego wygenerowaniem.",
@@ -4988,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Anuluj",
           "save": "Utwórz klucz"
-        }
+        },
+        "reveal_title": "Twój nowy klucz MCP"
       },
       "usage": {
         "title": "Zastosowanie i ograniczenia",
@@ -5008,7 +5008,6 @@
         "title": "Klucze API",
         "description": "Te klucze uwierzytelniają bieżącą organizację podczas wywoływania publicznego API ClassroomIO.",
         "generate": "Wygeneruj klucz API",
-        "secret_once": "Ten sekret jest wyświetlany tylko raz. Skopiuj go i przechowuj bezpiecznie.",
         "empty_title": "Brak kluczy API",
         "empty_description": "Utwórz pierwszy klucz API o zasięgu organizacji, aby korzystać z publicznego API ClassroomIO.",
         "modal": {
@@ -5018,7 +5017,8 @@
           "name_placeholder": "Moja integracja API",
           "cancel": "Anuluj",
           "save": "Utwórz klucz"
-        }
+        },
+        "reveal_title": "Twój nowy klucz API"
       },
       "setup": {
         "title": "Szybki start",
@@ -5042,7 +5042,14 @@
       "table_key": "Klucz",
       "table_status": "Status",
       "table_created": "Utworzono",
-      "table_last_used": "Ostatnio używany"
+      "table_last_used": "Ostatnio używany",
+      "reveal": {
+        "description": "Skopiuj ten klucz teraz. Nie będzie już widoczny.",
+        "copy": "Kopiuj",
+        "copied": "Skopiowano",
+        "how_to_use": "Jak używać tego klucza",
+        "close": "Zamknij"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",

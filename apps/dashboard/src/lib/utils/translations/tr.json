@@ -4930,7 +4930,14 @@
       "table_last_used": "LSon kullanılan",
       "scopes_label": "Kapsamlar:",
       "revoke_confirm": "Bu otomasyon anahtarı iptal edilsin mi?",
-      "rotate_confirm": "Bu otomasyon anahtarı döndürülsün mü?"
+      "rotate_confirm": "Bu otomasyon anahtarı döndürülsün mü?",
+      "reveal": {
+        "description": "Bu anahtarı şimdi kopyalayın. Bir daha gösterilmeyecek.",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "how_to_use": "Bu anahtar nasıl kullanılır",
+        "close": "Kapat"
+      }
     },
     "mcp": {
       "page_subtitle": "Döndürebileceğiniz kuruluş kapsamlı anahtarlarla AI araçlarını ClassroomIO'ya bağlayın istediğiniz zaman.",
@@ -4947,7 +4954,6 @@
         "title": "MCP anahtarları",
         "description": "Bu anahtarlar, bir MCP istemcisi `@classroomio/mcp` aracılığıyla ClassroomIO'yu aradığında mevcut organizasyonun kimliğini doğrular.",
         "generate": "MCP anahtarını oluştur",
-        "secret_once": "Bu sır bir kez gösterilir. Şimdi MCP istemcinize kopyalayın.",
         "modal": {
           "title": "MCP anahtarı oluştur",
           "description": "Oluşturulmadan önce bu MCP anahtarı için bir ad seçin.",
@@ -4955,7 +4961,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "İptal",
           "save": "Anahtar oluştur"
-        }
+        },
+        "reveal_title": "Yeni MCP anahtarınız"
       },
       "setup": {
         "title": "İstemci kurulumu",
@@ -4973,7 +4980,6 @@
         "title": "API anahtarları",
         "description": "Bu anahtarlar, ClassroomIO genel API'si çağrılırken mevcut kuruluşun kimliğini doğrular.",
         "generate": "API anahtarı oluştur",
-        "secret_once": "Bu sır bir kez gösterilir. Kopyalayın ve güvenli bir şekilde saklayın.",
         "empty_title": "Henüz API anahtarı yok",
         "empty_description": "ClassroomIO genel API'sini kullanmak için ilk kuruluş kapsamlı API anahtarını oluşturun.",
         "modal": {
@@ -4983,7 +4989,8 @@
           "name_placeholder": "API entegrasyonum",
           "cancel": "İptal",
           "save": "Anahtar oluştur"
-        }
+        },
+        "reveal_title": "Yeni API anahtarınız"
       },
       "setup": {
         "title": "Hızlı başlangıç",

@@ -4980,7 +4980,6 @@
         "title": "Khóa MCP",
         "description": "Các khóa này xác thực tổ chức hiện tại khi máy khách MCP gọi ClassroomIO thông qua `@classroomio/mcp`.",
         "generate": "Tạo khóa MCP",
-        "secret_once": "Bí mật này được hiển thị một lần. Sao chép nó vào ứng dụng khách MCP của bạn ngay bây giờ.",
         "modal": {
           "title": "Tạo khóa MCP",
           "description": "Chọn tên cho khóa MCP này trước khi tạo.",
@@ -4988,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Hủy",
           "save": "Tạo khóa"
-        }
+        },
+        "reveal_title": "Khóa MCP mới của bạn"
       },
       "usage": {
         "title": "Cách sử dụng và giới hạn",
@@ -5008,7 +5008,6 @@
         "title": "Khóa API",
         "description": "Các khóa này xác thực tổ chức hiện tại khi gọi API công khai ClassroomIO.",
         "generate": "Tạo khóa API",
-        "secret_once": "Bí mật này chỉ hiển thị một lần. Hãy sao chép và lưu trữ an toàn.",
         "empty_title": "Chưa có khóa API",
         "empty_description": "Tạo khóa API trong phạm vi tổ chức đầu tiên để sử dụng API công khai ClassroomIO.",
         "modal": {
@@ -5018,7 +5017,8 @@
           "name_placeholder": "Tích hợp API của tôi",
           "cancel": "Hủy",
           "save": "Tạo khóa"
-        }
+        },
+        "reveal_title": "Khóa API mới của bạn"
       },
       "setup": {
         "title": "Bắt đầu nhanh",
@@ -5042,7 +5042,14 @@
       "table_key": "Chìa khóa",
       "table_status": "Trạng thái",
       "table_created": "Đã tạo",
-      "table_last_used": "Lần sử dụng cuối cùng"
+      "table_last_used": "Lần sử dụng cuối cùng",
+      "reveal": {
+        "description": "Hãy sao chép khóa này ngay bây giờ. Nó sẽ không hiển thị lại nữa.",
+        "copy": "Sao chép",
+        "copied": "Đã sao chép",
+        "how_to_use": "Cách sử dụng khóa này",
+        "close": "Đóng"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
