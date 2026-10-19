@@ -62,7 +62,7 @@ export function registerLessonTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'update_lesson',
-    "Update a lesson. Omitted fields are left unchanged; supplying videos replaces the lesson's videos entirely.",
+    "Update a lesson, leaving omitted fields unchanged. Supplying videos replaces the lesson's videos entirely.",
     updateLessonShape,
     async (args) => {
       const { courseId, lessonId, ...payload } = ZUpdateLessonToolInput.parse(args);

@@ -41,7 +41,7 @@ const uploadVideoShape = ZUploadVideoToolInput.shape as unknown as ZodRawShapeCo
 export function registerMediaUploadTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'upload_video',
-    'Upload a local video file (mp4, mov, avi, mkv) to ClassroomIO. Returns { assetId } — pass that to create_lesson or update_lesson in videos[] as { "type": "upload", "assetId": "..." } to attach it. Attaching is what starts thumbnailing, transcription and adaptive-bitrate encoding, so an uploaded video should always be attached to a lesson.',
+    'Upload a local video file (mp4, mov, avi, mkv) to ClassroomIO and return its assetId. Always attach it with create_lesson or update_lesson as { "type": "upload", "assetId": "..." } in videos[], which starts thumbnailing, transcription and adaptive-bitrate encoding.',
     uploadVideoShape,
     async (args) => {
       const { filePath } = ZUploadVideoToolInput.parse(args);
