@@ -246,6 +246,20 @@
       "when": 1791971013728,
       "tag": "0034_restore_missing_unique_constraints",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792160611625,
+      "tag": "0035_public_api_scopes_and_instance",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1792266230279,
+      "tag": "0036_mixed_course_outline",
+      "breakpoints": true
     }
   ]
 }

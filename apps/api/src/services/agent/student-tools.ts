@@ -1,4 +1,4 @@
-import { and, asc, eq, ilike, or } from 'drizzle-orm';
+import { and, eq, ilike, or } from 'drizzle-orm';
 import { tool } from 'ai';
 import { z } from 'zod';
 
@@ -9,7 +9,7 @@ import type { AiTutorSettings } from '@cio/ai-assistant';
 import { getLesson } from '@cio/core/services/lesson/lesson';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
-import { listCourseSections } from '@cio/core/services/course/section';
+import { getCourseOutlineSummary } from '@cio/core/services/course/outline';
 import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
 import { AppError } from '@api/utils/errors';
 import { AgentEvent, trackAgentEvent } from '@cio/core/utils/tinybird';
@@ -138,36 +138,13 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
   return {
     list_course_outline: tool({
       description:
-        'List the course outline (sections with their lessons and exercises). The courseId is automatically scoped — do not pass it. Returns titles and ids only.',
+        'List the course outline in course order: sections with their lessons and exercises, and lessons or exercises outside any section in their place. The courseId is automatically scoped — do not pass it. Returns titles and ids only.',
       inputSchema: listCourseOutlineParam,
       execute: async () => {
         return executeStudentTool('list_course_outline', { orgId, userId, courseId }, async () => {
-          const [sections, lessons, exercises] = await Promise.all([
-            listCourseSections(courseId),
-            db
-              .select({
-                id: schema.lesson.id,
-                title: schema.lesson.title,
-                sectionId: schema.lesson.sectionId,
-                order: schema.lesson.order
-              })
-              .from(schema.lesson)
-              .where(eq(schema.lesson.courseId, courseId))
-              .orderBy(asc(schema.lesson.order)),
-            db
-              .select({
-                id: schema.exercise.id,
-                title: schema.exercise.title,
-                lessonId: schema.exercise.lessonId,
-                sectionId: schema.exercise.sectionId,
-                order: schema.exercise.order
-              })
-              .from(schema.exercise)
-              .where(eq(schema.exercise.courseId, courseId))
-              .orderBy(asc(schema.exercise.order))
-          ]);
+          const outline = await getCourseOutlineSummary(courseId);
 
-          return { sections, lessons, exercises };
+          return { outline };
         });
       }
     }),

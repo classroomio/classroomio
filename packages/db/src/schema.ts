@@ -1144,7 +1144,7 @@ export const lesson = pgTable(
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-    slug: varchar(),
+    slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
     sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
@@ -1336,7 +1336,7 @@ export const exercise = pgTable(
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
     completionPolicy: varchar('completion_policy').default('submitted').notNull(),
     passThreshold: integer('pass_threshold'),
-    slug: varchar(),
+    slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => exercise.id, { onDelete: 'set null' }),
     sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
@@ -1988,6 +1988,23 @@ export const earlyAdopterClaim = pgTable(
     unique('early_adopter_claim_token_hash_key').on(table.tokenHash),
     unique('early_adopter_claim_polar_subscription_id_key').on(table.polarSubscriptionId),
     index('idx_early_adopter_claim_status_created_at').on(table.status, table.createdAt)
+  ]
+);
+
+/**
+ * Single row holding this install's anonymous ID, reported in self-hosted usage pings.
+ */
+export const instance = pgTable(
+  'instance',
+  {
+    id: uuid().defaultRandom().primaryKey().notNull(),
+    singleton: boolean().default(true).notNull(),
+    firstReportedAt: timestamp('first_reported_at', { withTimezone: true, mode: 'string' }),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
+  },
+  (table) => [
+    unique('instance_singleton_key').on(table.singleton),
+    check('instance_singleton_check', sql`${table.singleton}`)
   ]
 );
 

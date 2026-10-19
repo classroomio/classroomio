@@ -12,6 +12,7 @@
     },
     "discard": "Verwerfen",
     "save_changes": "Änderungen speichern",
+    "cancel": "Abbrechen",
     "scroll_to_top": "Zum Seitenanfang scrollen",
     "delete": "Löschen",
     "restricted_page": {
@@ -2845,7 +2846,8 @@
         "add_content_later": "Später",
         "add_content_add_to_section": "Inhalte hinzufügen",
         "expand_content": "Inhalte erweitern",
-        "collapse_content": "Inhalt reduzieren"
+        "collapse_content": "Inhalt reduzieren",
+        "no_section": "Kein Abschnitt"
       },
       "news_feed": {
         "heading": "Newsfeed",
@@ -4331,7 +4333,16 @@
       "actions_menu": "Token-Authentifizierungsaktionen"
     },
     "teams": {
-      "page_subtitle": "Laden Sie Teammitglieder ein und steuern Sie, wer diese Organisation mitbetreibt."
+      "page_subtitle": "Laden Sie Teammitglieder ein und steuern Sie, wer diese Organisation mitbetreibt.",
+      "permission": {
+        "title": "Du hast keine Berechtigung, diese Seite anzuzeigen",
+        "description": "Nur Organisationsadministratoren können das Team anzeigen und verwalten. Wende dich an einen Administrator, wenn du Zugriff benötigst."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Diese Person ins Team einladen?} other {Diese Personen ins Team einladen?}}",
+        "confirm_description": "{count, plural, =1 {Diese Person ist bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rolle ändert sich erst, wenn sie die Einladung annimmt.} other {Diese Personen sind bereits Studierende in dieser Organisation: {emails}. Möchtest du sie als {role} einladen? Ihre Rollen ändern sich erst, wenn sie die Einladung annehmen.}}",
+        "existing": "Bereits im Team: {members}. Ändere ihre Rolle über die Rollenauswahl unter Teammitglieder."
+      }
     },
     "ai_credits": {
       "sub_title": "KI-Credits",
@@ -4969,7 +4980,6 @@
         "title": "MCP-Schlüssel",
         "description": "Diese Schlüssel authentifizieren die aktuelle Organisation, wenn ein MCP-Client ClassroomIO über „@classroomio/mcp“ aufruft.",
         "generate": "MCP-Schlüssel generieren",
-        "secret_once": "Dieses Geheimnis wird einmal gezeigt. Kopieren Sie es jetzt in Ihren MCP-Client.",
         "modal": {
           "title": "MCP-Schlüssel erstellen",
           "description": "Wählen Sie einen Namen für diesen MCP-Schlüssel, bevor er generiert wird.",
@@ -4977,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Abbrechen",
           "save": "Schlüssel erstellen"
-        }
+        },
+        "reveal_title": "Ihr neuer MCP-Schlüssel"
       },
       "usage": {
         "title": "Nutzung und Grenzen",
@@ -4997,7 +5008,6 @@
         "title": "API-Schlüssel",
         "description": "Diese Schlüssel authentifizieren die aktuelle Organisation beim Aufruf der öffentlichen ClassroomIO-API.",
         "generate": "API-Schlüssel generieren",
-        "secret_once": "Dieses Geheimnis wird nur einmal angezeigt. Kopieren Sie es und speichern Sie es sicher.",
         "empty_title": "Noch keine API-Schlüssel",
         "empty_description": "Erstellen Sie den ersten organisationsbezogenen API-Schlüssel, um die öffentliche ClassroomIO-API zu nutzen.",
         "modal": {
@@ -5007,7 +5017,8 @@
           "name_placeholder": "Meine API-Integration",
           "cancel": "Abbrechen",
           "save": "Schlüssel erstellen"
-        }
+        },
+        "reveal_title": "Ihr neuer API-Schlüssel"
       },
       "setup": {
         "title": "Schnellstart",
@@ -5031,7 +5042,14 @@
       "table_key": "Schlüssel",
       "table_status": "Status",
       "table_created": "Erstellt",
-      "table_last_used": "Zuletzt verwendet"
+      "table_last_used": "Zuletzt verwendet",
+      "reveal": {
+        "description": "Kopieren Sie diesen Schlüssel jetzt. Er wird nicht erneut angezeigt.",
+        "copy": "Kopieren",
+        "copied": "Kopiert",
+        "how_to_use": "So verwenden Sie diesen Schlüssel",
+        "close": "Schließen"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -5490,6 +5508,20 @@
     "delete_modal": {
       "title": "Widget endgültig löschen",
       "description": "Möchten Sie \"{name}\" wirklich endgültig löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+    },
+    "filters": {
+      "filter": "Filtern",
+      "popover_title": "Filter",
+      "clear_all": "Alles löschen",
+      "search_placeholder": "Suchen Sie Widgets nach Namen",
+      "status": "Status",
+      "layout_type": "Layouttyp",
+      "selection_mode": "Auswahlmodus",
+      "no_results_title": "Keine Widgets entsprechen Ihren Filtern",
+      "no_results_description": "Versuchen Sie es mit einem anderen Suchbegriff oder löschen Sie Ihre Filter, um alles wieder anzuzeigen.",
+      "no_results_page_title": "Nichts auf dieser Seite",
+      "no_results_page_description": "Diese Filter stimmen mit weniger Widgets überein, als diese Seite beginnt.",
+      "back_to_first_page": "Zurück zur ersten Seite"
     }
   },
   "side_panel": {

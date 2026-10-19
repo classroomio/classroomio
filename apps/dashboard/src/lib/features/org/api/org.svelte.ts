@@ -624,15 +624,15 @@ class OrgApi extends BaseApiWithErrors {
    * @param emails Array of email addresses
    * @param roleId Role ID (ADMIN or TUTOR)
    */
-  async inviteTeamMembers(emails: string[], roleId: number) {
+  async inviteTeamMembers(emails: string[], roleId: number, confirmedStudentEmails: string[] = []) {
     return this.execute<InviteTeamRequest>({
       requestFn: () =>
         classroomio.organization.team.invite.$post({
-          json: { emails, roleId }
+          json: { emails, roleId, confirmedStudentEmails }
         }),
       logContext: 'inviting team members',
-      onSuccess: () => {
-        this.getOrgTeam();
+      onSuccess: (response) => {
+        if (response.data.queuedCount > 0) void this.getOrgTeam();
       },
       onError: (result) => {
         if (typeof result === 'string') {
@@ -938,9 +938,9 @@ class OrgApi extends BaseApiWithErrors {
 
   linkInvite = $state<OrgLinkInvite>(null);
 
-  async getLinkInvite() {
+  async getLinkInvite(roleId: number) {
     return this.execute<GetLinkInviteRequest>({
-      requestFn: () => classroomio.organization['link-invite'].$get(),
+      requestFn: () => classroomio.organization['link-invite'].$get({ query: { roleId: roleId.toString() } }),
       logContext: 'fetching link invite',
       onSuccess: (response) => {
         this.linkInvite = response.data;
@@ -963,9 +963,9 @@ class OrgApi extends BaseApiWithErrors {
     });
   }
 
-  async toggleLinkInvite(isRevoked: boolean) {
+  async toggleLinkInvite(roleId: number, isRevoked: boolean) {
     return this.execute<ToggleLinkInviteRequest>({
-      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { isRevoked } }),
+      requestFn: () => classroomio.organization['link-invite'].$patch({ json: { roleId, isRevoked } }),
       logContext: 'toggling link invite',
       onSuccess: (response) => {
         this.linkInvite = response.data;

@@ -223,7 +223,8 @@ export const ZTestStudentEmailTemplate = z.object({
 
 export const ZInviteTeamMembers = z.object({
   emails: z.array(z.string().email()).min(1).max(50),
-  roleId: z.number().int().positive()
+  roleId: z.number().int().positive(),
+  confirmedStudentEmails: z.array(z.string().email()).max(50).default([])
 });
 
 export type TInviteTeamMembers = z.infer<typeof ZInviteTeamMembers>;
@@ -246,7 +247,12 @@ export const ZCreateLinkInvite = z.object({
 
 export type TCreateLinkInvite = z.infer<typeof ZCreateLinkInvite>;
 
+export const ZGetLinkInvite = z.object({
+  roleId: z.coerce.number().int().positive()
+});
+
 export const ZToggleLinkInvite = z.object({
+  roleId: z.number().int().positive(),
   isRevoked: z.boolean()
 });
 

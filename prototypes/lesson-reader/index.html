@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lesson reader · Prototype map · ClassroomIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="app-theme.css" />
+    <script>
+      if (localStorage.cioTheme === 'dark' || (!localStorage.cioTheme && matchMedia('(prefers-color-scheme: dark)').matches))
+        document.documentElement.classList.add('dark');
+    </script>
+    <style>
+      body {
+        margin: 0;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      }
+
+      .page {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 48px 24px 96px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--primary);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .lede {
+        max-width: 680px;
+        margin: 12px 0 0;
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--muted-foreground);
+      }
+
+      .start {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      h2 {
+        margin: 48px 0 6px;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+
+      .sec-sub {
+        margin: 0 0 16px;
+        font-size: 13.5px;
+        color: var(--muted-foreground);
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 12px;
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--card);
+        color: inherit;
+        text-decoration: none;
+        transition: border-color 0.15s;
+      }
+
+      .card:hover {
+        border-color: color-mix(in oklab, var(--primary) 50%, var(--border));
+      }
+
+      .card .t {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14.5px;
+        font-weight: 600;
+      }
+
+      .card .t .arrow {
+        margin-left: auto;
+        color: var(--muted-foreground);
+        transition: transform 0.15s;
+      }
+
+      .card:hover .arrow {
+        transform: translateX(2px);
+        color: var(--primary);
+      }
+
+      .card .d {
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--muted-foreground);
+      }
+
+      .card .file {
+        margin-top: auto;
+        padding-top: 6px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11.5px;
+        color: var(--muted-foreground);
+      }
+
+      .tag {
+        padding: 1px 7px;
+        border-radius: 999px;
+        background: var(--secondary);
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--muted-foreground);
+      }
+
+      .tag.new {
+        background: color-mix(in oklab, var(--primary) 12%, transparent);
+        color: var(--primary);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+      }
+
+      th,
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: var(--sidebar);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--muted-foreground);
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      td a {
+        color: var(--primary);
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      td .muted {
+        color: var(--muted-foreground);
+      }
+
+      .theme-btn {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="btn btn-outline btn-sm theme-btn" id="theme">Dark</button>
+    <main class="page">
+      <p class="eyebrow">Prototype · lesson reader</p>
+      <h1>A better way to read lessons</h1>
+      <p class="lede">
+        Gloss-style reading inside the ClassroomIO course player. Highlight any line, ask it anything, and the answer lands in the margin next to the sentence.
+        Every screen below uses the real course shell and the seeded <b>Data Science with Python and Pandas</b> course. A <b>Prototype</b> button on each page switches states.
+      </p>
+      <div class="start">
+        <a class="btn btn-primary" href="lesson.html?state=returning">Open the lesson</a>
+        <a class="btn btn-outline" href="lesson.html">Start as a first-time reader</a>
+      </div>
+
+      <h2>Learner · reading a lesson</h2>
+      <p class="sec-sub">One page, many states. Select any text in the lesson to get the toolbar.</p>
+      <div class="grid" id="learner"></div>
+
+      <h2>Learner · video lessons</h2>
+      <p class="sec-sub">The same notebook on a video. Entries anchor to a moment in the video, and the transcript gets the selection toolbar.</p>
+      <div class="grid" id="video"></div>
+
+      <h2>Learner · beyond the lesson</h2>
+      <p class="sec-sub">Where saved highlights and questions go after you leave the page.</p>
+      <div class="grid" id="beyond"></div>
+
+      <h2>Teacher</h2>
+      <p class="sec-sub">Aggregated reading signals show authors which passages confuse learners.</p>
+      <div class="grid" id="teacher"></div>
+
+      <h2>From the demo to ClassroomIO</h2>
+      <p class="sec-sub">Every feature in the Gloss video, including the ones it only showed in passing, and where it lives here.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>In the demo</th><th>In ClassroomIO</th><th>Try it</th></tr></thead>
+          <tbody id="mapping"></tbody>
+        </table>
+      </div>
+    </main>
+    <script>
+      const arrow = '<svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>';
+      const card = ({ t, d, href, tag }) =>
+        `<a class="card" href="${href}"><span class="t">${t}${tag ? `<span class="tag ${tag === 'New surface' ? 'new' : ''}">${tag}</span>` : ''}${arrow}</span><span class="d">${d}</span><span class="file">${href}</span></a>`;
+
+      const LEARNER = [
+        { t: 'First visit', d: 'Clean lesson with reading time, the map rail and a "Brief this lesson" prompt. Nothing saved yet.', href: 'lesson.html' },
+        { t: 'Returning learner', d: 'Resume card, saved highlights, a margin answer from last time and a passage that changed since.', href: 'lesson.html?state=returning' },
+        { t: 'Selection toolbar', d: 'Ask · Explain · Define · Highlight · Note · Read aloud · Copy. Keyboard: E, D, A, H, N, L.', href: 'lesson.html?state=returning&demo=select' },
+        { t: 'Explain in the margin', d: 'The answer streams into a card tied to its sentence, with follow-ups and Open in chat.', href: 'lesson.html?state=returning&demo=explain' },
+        { t: 'Ask your own question', d: 'Free-form question with suggestion chips, answered from this lesson.', href: 'lesson.html?state=returning&demo=ask' },
+        { t: 'Reading settings (Aa)', d: 'Look, Text and Answers tabs: themes, pen, highlighter, typeface, size, spacing, width, answer length and level.', href: 'lesson.html?state=returning&open=settings' },
+        { t: 'Notebook panel', d: 'All / Questions / Highlights, this lesson or the whole course, notes, export to Markdown.', href: 'lesson.html?state=returning&open=notebook' },
+        { t: 'Focus mode', d: 'Hides the course chrome and dims everything but the paragraph you are on. Esc to leave.', href: 'lesson.html?state=returning&focus=1' },
+        { t: 'Listen', d: 'Reads the lesson aloud with the browser voice and highlights the sentence being read.', href: 'lesson.html?state=returning&listen=1' },
+        { t: 'Night theme, serif type', d: 'A learner-chosen look applied to the whole course player.', href: 'lesson.html?state=returning&theme=night&face=serif' },
+        { t: 'AI switched off', d: 'Organisations without AI keep highlights, notes, listen and focus. AI actions and the brief disappear.', href: 'lesson.html?state=returning&ai=off' },
+        { t: 'Read to complete', d: 'Optional completion policy: reading to the end marks the lesson complete.', href: 'lesson.html?completion=read', tag: 'Teacher opt-in' },
+        { t: 'Continue in chat', d: 'A margin answer carried into the Assistant panel with its quote and ¶ source. Learners can also choose chat over the margin in Aa → Answers.', href: 'lesson.html?state=returning&open=assistant' }
+      ];
+
+      const VIDEO = [
+        { t: 'Video lesson, returning', d: 'Notebook markers on the scrub bar, hover to preview, click to jump. Bookmark (B), Note (N) and Ask (A) in the player.', href: 'video-lesson.html?state=returning', tag: 'New surface' },
+        { t: 'Note at this moment', d: 'N pauses the video and opens a note with the line being spoken. Save and resume picks up where you were.', href: 'video-lesson.html?state=returning&demo=note' },
+        { t: 'Ask about this moment', d: 'Answers from the transcript around the playhead, so "what did they just say?" works without selecting anything.', href: 'video-lesson.html?state=returning&demo=ask' },
+        { t: 'Select words in the transcript', d: 'The transcript panel gets the reader toolbar: Ask, Explain, Define, Highlight, Note, Play from here, Copy with timestamp.', href: 'video-lesson.html?state=returning&demo=select' },
+        { t: 'Explain beside the transcript', d: 'The answer opens under the line you selected and is saved with its timestamp.', href: 'video-lesson.html?state=returning&demo=explain' },
+        { t: 'Video notebook panel', d: 'Moments, highlights and questions in video order, then lesson notes, then entries from a video the teacher replaced.', href: 'video-lesson.html?state=returning&open=notebook' },
+        { t: 'YouTube embed', d: 'YouTube draws its own controls, so markers and moment buttons sit on a strip under the player. Transcript from cached captions.', href: 'video-lesson.html?state=returning&source=youtube' },
+        { t: 'Google Drive embed', d: 'No playback time and no transcript: notes belong to the whole video, with an optional time the learner types.', href: 'video-lesson.html?state=returning&source=drive&open=notebook' },
+        { t: 'Skipping ahead blocked', d: 'With watch enforcement, unwatched transcript lines are dimmed and seeking past your furthest point is refused.', href: 'video-lesson.html?state=returning&enforce=1&open=transcript' },
+        { t: 'First visit', d: 'Nothing saved yet. Empty notebook explains B, N, A and transcript selection.', href: 'video-lesson.html?open=notebook' }
+      ];
+
+      const BEYOND = [
+        { t: 'Course notebook', d: 'Every highlight and question across the course, grouped by lesson, with filters, search and a quiz built from what you saved.', href: 'notebook.html', tag: 'New surface' },
+        { t: 'Dashboard resurfacing', d: '"From your notebook" brings old highlights back on a spaced schedule, with Test me and Got it.', href: 'home.html', tag: 'New surface' },
+        { t: 'On a phone', d: 'Docked selection bar, inline answers, settings and notebook as sheets.', href: 'mobile.html' },
+        { t: 'Public lesson, signed out', d: 'Reading comfort and browser-only highlights for visitors. AI asks them to sign in.', href: 'public-lesson.html' }
+      ];
+
+      const TEACHER = [
+        { t: 'Reading insights', d: 'Heat on the passages learners highlight and ask about most, the questions they ask, and a Rewrite with AI shortcut.', href: 'insights.html', tag: 'New surface' },
+        { t: 'Video insights', d: 'A heat strip along the timeline: where learners rewind, bookmark and ask. Top moments with their top question and a next step.', href: 'video-lesson.html?view=teacher', tag: 'New surface' }
+      ];
+
+      const MAPPING = [
+        ['Paste a link and read a clean article', 'The lesson body is already clean. Reading time and section count sit under the title.', 'lesson.html'],
+        ['Highlight a line → Ask / Explain / Define', 'Selection toolbar on the lesson note, with Highlight, Note, Read aloud and Copy added', 'lesson.html?state=returning&demo=select'],
+        ['Answers in the margin, fast', 'Margin cards tied to the sentence; inline under the paragraph when space is tight', 'lesson.html?state=returning&demo=explain'],
+        ['Highlights saved for later', 'Anchored highlights in four colours, with personal notes', 'lesson.html?state=returning'],
+        ['Notebook (All / Questions / Highlights)', 'Notebook side panel plus a course-wide Notebook page', 'lesson.html?state=returning&open=notebook'],
+        ['Highlights resurface on the home page', '"From your notebook" card on the student dashboard', 'home.html'],
+        ['Gloss this text: gist, claims, map', 'Lesson brief, generated once per lesson version and shared by the course', 'lesson.html'],
+        ['Map rail', 'Minimap with progress, headings, highlights and questions; click or drag to jump', 'lesson.html?state=returning'],
+        ['Numbers', 'Paragraph numbers in the gutter, used by answers, notebook and links', 'lesson.html?state=returning&open=settings'],
+        ['Themes, pen and highlighter colours', 'Aa → Look', 'lesson.html?state=returning&open=settings'],
+        ['Typeface, size, spacing, width, align, paragraphs', 'Aa → Text', 'lesson.html?state=returning&open=settings'],
+        ['Answers tab (not opened in the demo)', 'Aa → Answers: length, level, margin or chat, show brief, tutor allowance', 'lesson.html?state=returning&open=settings'],
+        ['Focus (not demoed)', 'Focus mode', 'lesson.html?state=returning&focus=1'],
+        ['Listen (not demoed)', 'Read aloud with sentence highlighting', 'lesson.html?state=returning&listen=1'],
+        ['"These live in this browser only"', 'Public lessons keep highlights in the browser until the visitor signs in', 'public-lesson.html'],
+        ['—', 'Teacher reading insights (no equivalent in a personal reader)', 'insights.html'],
+        ['— (articles only)', 'The same notebook on video lessons: moments, transcript highlights and questions anchored to a time', 'video-lesson.html?state=returning']
+      ];
+
+      document.getElementById('learner').innerHTML = LEARNER.map(card).join('');
+      document.getElementById('video').innerHTML = VIDEO.map(card).join('');
+      document.getElementById('beyond').innerHTML = BEYOND.map(card).join('');
+      document.getElementById('teacher').innerHTML = TEACHER.map(card).join('');
+      document.getElementById('mapping').innerHTML = MAPPING.map(([demo, ours, href]) => `<tr><td>${demo}</td><td>${ours}</td><td><a href="${href}">Open →</a></td></tr>`).join('');
+
+      const themeButton = document.getElementById('theme');
+      const syncLabel = () => (themeButton.textContent = document.documentElement.classList.contains('dark') ? 'Light' : 'Dark');
+      syncLabel();
+      themeButton.addEventListener('click', () => {
+        const dark = document.documentElement.classList.toggle('dark');
+        localStorage.cioTheme = dark ? 'dark' : 'light';
+        syncLabel();
+      });
+    </script>
+  </body>
+</html>

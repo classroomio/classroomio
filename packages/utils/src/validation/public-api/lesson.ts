@@ -25,10 +25,13 @@ export const ZPublicApiLessonParam = ZPublicApiCourseParam.extend({
 });
 export type TPublicApiLessonParam = z.infer<typeof ZPublicApiLessonParam>;
 
+const LESSON_ORDER_DESCRIPTION =
+  'Position within the section, starting at 1. Without a section, the position among the course top-level sections, lessons and exercises; the entry at that position and every later one move down one.';
+
 export const ZPublicApiCreateLesson = z.object({
   title: z.string().min(1).max(255),
   sectionId: z.string().uuid().optional(),
-  order: z.number().int().min(1),
+  order: z.number().int().min(1).describe(LESSON_ORDER_DESCRIPTION),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
   videos: z.array(ZPublicApiLessonVideo).max(20).optional()
@@ -37,7 +40,7 @@ export type TPublicApiCreateLesson = z.infer<typeof ZPublicApiCreateLesson>;
 
 export const ZPublicApiUpdateLesson = z.object({
   title: z.string().min(1).max(255).optional(),
-  order: z.number().int().min(1).optional(),
+  order: z.number().int().min(1).optional().describe(LESSON_ORDER_DESCRIPTION),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
   videos: z

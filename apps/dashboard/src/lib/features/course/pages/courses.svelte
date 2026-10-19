@@ -25,6 +25,7 @@
   import { COURSE_SORT_OPTIONS, DEFAULT_COURSE_SORT, type CourseSortBy } from '../utils/constants';
   import { deleteCourseModal, deleteCourseModalInitialState, courseMetaDeta } from '../utils/store';
   import { browser } from '$app/environment';
+  import { invalidateAll } from '$app/navigation';
   import type { OrgCourses, UserEnrolledCourses } from '$features/course/types';
   import type { Snippet } from 'svelte';
   import { Button } from '@cio/ui/base/button';
@@ -96,15 +97,17 @@
   async function handleDeleteCourse() {
     if (!$deleteCourseModal.id) return;
 
-    $deleteCourseModal.isDeleting = true;
+    const deletedCourseId = $deleteCourseModal.id;
+    deleteCourseModal.update((modal) => ({ ...modal, isDeleting: true }));
 
-    await courseApi.delete($deleteCourseModal.id);
+    await courseApi.delete(deletedCourseId);
 
     if (courseApi.success) {
-      deleteCourseModal.set(deleteCourseModalInitialState);
+      deleteCourseModal.set({ ...deleteCourseModalInitialState });
+      await invalidateAll();
+    } else {
+      deleteCourseModal.update((modal) => ({ ...modal, isDeleting: false }));
     }
-
-    $deleteCourseModal.isDeleting = false;
   }
 </script>
 

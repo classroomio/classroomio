@@ -447,6 +447,7 @@
     },
     "discard": "Scartare",
     "save_changes": "Salva modifiche",
+    "cancel": "Annulla",
     "refresh": "Aggiorna",
     "scroll_to_top": "Scorri verso l'alto",
     "delete": "Eliminare",
@@ -848,7 +849,16 @@
       "actions_menu": "Azioni di autenticazione del token"
     },
     "teams": {
-      "page_subtitle": "Invita i compagni di squadra e controlla chi aiuta a gestire questa organizzazione."
+      "page_subtitle": "Invita i compagni di squadra e controlla chi aiuta a gestire questa organizzazione.",
+      "permission": {
+        "title": "Non hai il permesso di visualizzare questa pagina",
+        "description": "Solo gli amministratori dell’organizzazione possono visualizzare e gestire il team. Contatta un amministratore se hai bisogno di accedere."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Invitare questo studente nel team?} other {Invitare questi studenti nel team?}}",
+        "confirm_description": "{count, plural, =1 {Questa persona è già uno studente di questa organizzazione: {emails}. Vuoi inviarle un invito per diventare {role}? Il suo ruolo cambierà solo dopo aver accettato l’invito.} other {Queste persone sono già studenti di questa organizzazione: {emails}. Vuoi invitarle come {role}? I loro ruoli cambieranno solo dopo aver accettato l’invito.}}",
+        "existing": "Queste persone fanno già parte del team: {members}. Usa il selettore del ruolo in Membri del team per modificare il loro ruolo."
+      }
     },
     "auth": {
       "page_subtitle": "Controlla la registrazione, l'accesso, l'SSO e l'accesso basato su token per questa organizzazione.",
@@ -3622,7 +3632,8 @@
           },
           "by_author": "di {name}",
           "empty": "Nessuna versione ancora"
-        }
+        },
+        "no_section": "Nessuna sezione"
       },
       "attendance": {
         "title": "Partecipazione",
@@ -4909,7 +4920,14 @@
       "table_last_used": "Ultimo usato",
       "scopes_label": "Ambiti:",
       "revoke_confirm": "Revocare questa chiave di automazione?",
-      "rotate_confirm": "Ruotare questa chiave di automazione?"
+      "rotate_confirm": "Ruotare questa chiave di automazione?",
+      "reveal": {
+        "description": "Copia subito questa chiave. Non verrà più mostrata.",
+        "copy": "Copia",
+        "copied": "Copiato",
+        "how_to_use": "Come utilizzare questa chiave",
+        "close": "Chiudi"
+      }
     },
     "mcp": {
       "page_subtitle": "Collega gli strumenti AI a ClassroomIO con chiavi con ambito organizzazione che puoi ruotare in qualsiasi momento.",
@@ -4926,7 +4944,6 @@
         "title": "Chiavi MCP",
         "description": "Queste chiavi autenticano l'organizzazione corrente quando un client MCP chiama ClassroomIO tramite `@classroomio/mcp`.",
         "generate": "Genera la chiave MCP",
-        "secret_once": "Questo segreto viene mostrato una volta. Copialo ora nel tuo client MCP.",
         "modal": {
           "title": "Crea chiave MCP",
           "description": "Scegli un nome per questa chiave MCP prima che venga generata.",
@@ -4934,7 +4951,8 @@
           "name_placeholder": "ClassroomIOOpenCode",
           "cancel": "Annulla",
           "save": "Crea chiave"
-        }
+        },
+        "reveal_title": "La tua nuova chiave MCP"
       },
       "setup": {
         "title": "Configurazione del cliente",
@@ -4952,7 +4970,6 @@
         "title": "Chiavi API",
         "description": "Queste chiavi autenticano l'organizzazione corrente quando si chiama l'API pubblica ClassroomIO.",
         "generate": "Genera chiave API",
-        "secret_once": "Questo segreto viene mostrato una volta. Copialo e conservalo in modo sicuro.",
         "empty_title": "Nessuna chiave API ancora",
         "empty_description": "Crea la prima chiave API con ambito organizzazione per utilizzare l'API pubblica ClassroomIO.",
         "modal": {
@@ -4962,7 +4979,8 @@
           "name_placeholder": "La mia integrazione API",
           "cancel": "Annulla",
           "save": "Crea chiave"
-        }
+        },
+        "reveal_title": "La tua nuova chiave API"
       },
       "setup": {
         "title": "Avvio rapido",

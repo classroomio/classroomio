@@ -15,6 +15,7 @@
     item: CourseContentItem;
     title: string | null | undefined;
     href: string;
+    linkDisabled?: boolean;
     isEditing?: boolean;
     errors?: Record<string, string>;
     isLocked?: boolean;
@@ -37,6 +38,7 @@
     item,
     title = $bindable(),
     href,
+    linkDisabled = false,
     isEditing = false,
     errors = {},
     isLocked = false,
@@ -81,16 +83,18 @@
         <LiveSessionIndicator phase={sessionPhase} size={iconSize} />
       {/if}
 
-      <a
-        href={resolve(href, {})}
+      <svelte:element
+        this={linkDisabled ? 'span' : 'a'}
+        href={linkDisabled ? undefined : resolve(href, {})}
         class={cn(
-          'flex-1 truncate text-sm text-black hover:underline dark:text-white',
+          'flex-1 truncate text-sm text-black dark:text-white',
+          !linkDisabled && 'hover:underline',
           isLocked ? 'cursor-not-allowed opacity-50' : linkClass
         )}
-        data-sveltekit-preload-data={preloadOff ? 'off' : undefined}
+        data-sveltekit-preload-data={preloadOff && !linkDisabled ? 'off' : undefined}
       >
         <span class={titleClass}>{title}</span>
-      </a>
+      </svelte:element>
 
       {#if showStatus}
         {#if isLocked}

@@ -188,7 +188,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/:feedId/comments',
     describeRoute({
       description: `List the comments on a cohort newsfeed post, oldest first. ${PAGINATION_NOTE} ${COHORT_MEMBER_RULE}`,
-      tags: ['Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed Comments'],
       responses: {
         200: jsonResponse(
           'Comments returned successfully',
@@ -220,7 +220,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     '/:feedId/comment',
     describeRoute({
       description: `Add a comment to a cohort newsfeed post, authored by the automation actor. The automation actor (the key creator) must be a member of the cohort, or this fails with 403; being an org admin is not enough.`,
-      tags: ['Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed Comments'],
       responses: {
         201: jsonResponse('Comment created successfully', CommentResponse),
         400: errorResponses.badRequest,
@@ -250,7 +250,7 @@ export const v1CohortNewsfeedRouter = new Hono()
     describeRoute({
       description:
         'Permanently delete a comment from a cohort newsfeed post. The automation actor (the key creator) must be the comment author, a cohort tutor/admin, or an org admin, or this fails with 403.',
-      tags: ['Cohort Newsfeed'],
+      tags: ['Cohort Newsfeed Comments'],
       responses: {
         200: jsonResponse('Comment deleted successfully', CommentResponse),
         400: errorResponses.badRequest,

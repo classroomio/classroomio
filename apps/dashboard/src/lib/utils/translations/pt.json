@@ -12,6 +12,7 @@
     },
     "discard": "Descartar",
     "save_changes": "Salvar alterações",
+    "cancel": "Cancelar",
     "scroll_to_top": "Voltar ao topo",
     "delete": "Excluir",
     "restricted_page": {
@@ -2845,7 +2846,8 @@
         "add_content_later": "Mais tarde",
         "add_content_add_to_section": "Adicionar conteúdo",
         "expand_content": "Expandir conteúdo",
-        "collapse_content": "Recolher conteúdo"
+        "collapse_content": "Recolher conteúdo",
+        "no_section": "Sem seção"
       },
       "news_feed": {
         "heading": "Feed de notícias",
@@ -4331,7 +4333,16 @@
       "actions_menu": "Ações de autenticação de token"
     },
     "teams": {
-      "page_subtitle": "Convide colegas de equipe e controle quem ajuda a administrar esta organização."
+      "page_subtitle": "Convide colegas de equipe e controle quem ajuda a administrar esta organização.",
+      "permission": {
+        "title": "Você não tem permissão para ver esta página",
+        "description": "Somente administradores da organização podem visualizar e gerenciar a equipe. Entre em contato com um administrador se precisar de acesso."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Convidar este aluno para a equipe?} other {Convidar estes alunos para a equipe?}}",
+        "confirm_description": "{count, plural, =1 {Esta pessoa já é aluno desta organização: {emails}. Deseja enviar um convite para que ela se torne {role}? A função só mudará depois que a pessoa aceitar.} other {Estas pessoas já são alunos desta organização: {emails}. Deseja convidá-las como {role}? As funções só mudarão depois que elas aceitarem o convite.}}",
+        "existing": "Estas pessoas já fazem parte da equipe: {members}. Use o seletor de função em Membros da equipe para alterar a função delas."
+      }
     },
     "ai_credits": {
       "sub_title": "Créditos de IA",
@@ -4969,7 +4980,6 @@
         "title": "Chaves MCP",
         "description": "Essas chaves autenticam a organização atual quando um cliente MCP chama ClassroomIO por meio de `@classroomio/mcp`.",
         "generate": "Gerar chave MCP",
-        "secret_once": "Este segredo é mostrado uma vez. Copie-o para o seu cliente MCP agora.",
         "modal": {
           "title": "Criar chave MCP",
           "description": "Escolha um nome para esta chave MCP antes de gerá-la.",
@@ -4977,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Cancelar",
           "save": "Criar chave"
-        }
+        },
+        "reveal_title": "Sua nova chave MCP"
       },
       "usage": {
         "title": "Uso e limites",
@@ -4997,7 +5008,6 @@
         "title": "Chaves de API",
         "description": "Essas chaves autenticam a organização atual ao chamar a API pública do ClassroomIO.",
         "generate": "Gerar chave de API",
-        "secret_once": "Este segredo é exibido apenas uma vez. Copie-o e armazene-o com segurança.",
         "empty_title": "Ainda não há chaves de API",
         "empty_description": "Crie a primeira chave de API da organização para usar a API pública do ClassroomIO.",
         "modal": {
@@ -5007,7 +5017,8 @@
           "name_placeholder": "Minha integração de API",
           "cancel": "Cancelar",
           "save": "Criar chave"
-        }
+        },
+        "reveal_title": "Sua nova chave de API"
       },
       "setup": {
         "title": "Início rápido",
@@ -5031,7 +5042,14 @@
       "table_key": "Chave",
       "table_status": "Status",
       "table_created": "Criado",
-      "table_last_used": "Usado pela última vez"
+      "table_last_used": "Usado pela última vez",
+      "reveal": {
+        "description": "Copie esta chave agora. Ela não será exibida novamente.",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "how_to_use": "Como usar esta chave",
+        "close": "Fechar"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -5490,6 +5508,20 @@
     "delete_modal": {
       "title": "Excluir widget permanentemente",
       "description": "Tem certeza de que deseja excluir permanentemente \"{name}\"? Esta ação não pode ser desfeita."
+    },
+    "filters": {
+      "filter": "Filtro",
+      "popover_title": "Filtros",
+      "clear_all": "Limpar tudo",
+      "search_placeholder": "Pesquise widgets por nome",
+      "status": "Estado",
+      "layout_type": "Tipo de layout",
+      "selection_mode": "Modo de seleção",
+      "no_results_title": "Nenhum widget corresponde aos seus filtros",
+      "no_results_description": "Experimente um termo de pesquisa diferente ou limpe os filtros para ver tudo novamente.",
+      "no_results_page_title": "Nada nesta página",
+      "no_results_page_description": "Esses filtros correspondem a menos widgets do que o início desta página.",
+      "back_to_first_page": "Voltar para a primeira página"
     }
   },
   "side_panel": {

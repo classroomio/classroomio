@@ -88,7 +88,8 @@
 {#snippet sectionItems(section: PublicCourseSidebarSection)}
   {#each section.items as item, index (item.id)}
     <SidebarRow
-      number={index + 1}
+      number={section.standalone ? undefined : index + 1}
+      kind={item.kind}
       title={item.title}
       active={item.slug === activeSlug}
       locked={!item.isUnlocked}
@@ -103,7 +104,9 @@
   <nav class="ui:flex ui:flex-1 ui:flex-col ui:gap-6 ui:py-6 ui:px-2" aria-label="Course outline">
     <Tooltip.Provider delayDuration={300}>
       {#each sections as section (section.id)}
-        {#if collapsibleSections}
+        {#if section.standalone}
+          <div class="ui:flex ui:min-w-0 ui:flex-col">{@render sectionItems(section)}</div>
+        {:else if collapsibleSections}
           <Collapsible.Root
             open={isSectionOpen(section.id)}
             onOpenChange={(open) => handleSectionOpenChange(section.id, open)}

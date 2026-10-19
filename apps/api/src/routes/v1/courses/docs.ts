@@ -44,6 +44,37 @@ export const courseForbiddenResponses = {
   )
 };
 
+export const contentForbiddenResponses = {
+  read: forbidden('course:read', TEAM_FORBIDDEN),
+  write: forbidden('course:write', TEAM_FORBIDDEN),
+  comments: forbidden('course:read', `${TEAM_FORBIDDEN}, or comments are turned off (COMMENTS_DISABLED)`),
+  commentWrite: forbidden('course:write', `${TEAM_FORBIDDEN}, or comments are turned off (COMMENTS_DISABLED)`),
+  commentEdit: forbidden(
+    'course:write',
+    `${TEAM_FORBIDDEN}, comments are turned off (COMMENTS_DISABLED), or the actor may not change this comment`
+  )
+};
+
+export const exerciseForbiddenResponses = {
+  read: forbidden('course:exercise:read', TEAM_FORBIDDEN),
+  write: forbidden('course:exercise:write', TEAM_FORBIDDEN),
+  writeWithPlan: forbidden(
+    'course:exercise:write',
+    `${TEAM_FORBIDDEN}, or a premium question type is used on the Basic plan (UPGRADE_REQUIRED)`
+  )
+};
+
+export const submissionForbiddenResponses = {
+  read: forbidden('course:submission:read', TEAM_FORBIDDEN),
+  write: forbidden('course:submission:write', TEAM_FORBIDDEN),
+  marks: forbidden('course:submission:read', MEMBER_FORBIDDEN)
+};
+
+export const studentForbiddenResponse = forbidden(
+  'course:student:write',
+  `${TEAM_FORBIDDEN}, or the content is still locked for the student`
+);
+
 export const mcpRateLimitResponse = {
   description: 'MCP keys only: the per-key or per-organization MCP rate limit was hit'
 };
@@ -63,4 +94,17 @@ export const CertificateFileResponse = {
     'application/pdf': { schema: { type: 'string' as const, format: 'binary' } },
     'image/png': { schema: { type: 'string' as const, format: 'binary' } }
   }
+};
+
+export const QUESTION_TYPES_NOTE =
+  'questionTypeId: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
+
+export const LIVE_EDIT_NOTE =
+  'Changes apply immediately, also on published courses. Submissions already made are not regraded, and students submit against the current questions.';
+
+export const STUDENT_WORK_NOTE =
+  'If students have submissions or lesson completions in what you delete, this returns 409 unless force=true, which deletes their work too.';
+
+export const studentWorkConflictResponse = {
+  description: 'Students have submissions or lesson completions here; pass force=true to delete them too'
 };

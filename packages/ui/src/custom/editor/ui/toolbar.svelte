@@ -51,12 +51,15 @@
         <Alignment {editor} />
       {:else}
         {@const commandGroup = commands[cmd]}
-        {#each commandGroup as command (command)}
+        {@const visibleCommandGroup = commandGroup.filter(({ name }) => name !== 'audio-placeholder')}
+        {#each visibleCommandGroup as command (command)}
           <ToolBarIcon {editor} {command} />
+          {#if command.name === 'blockQuote'}
+            <CalloutMenu {editor} />
+          {/if}
         {/each}
       {/if}
     {/each}
-    <CalloutMenu {editor} />
     <FontSize {editor} />
     <QuickColors {editor} />
     <SearchAndReplace {editor} />

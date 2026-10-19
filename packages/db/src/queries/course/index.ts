@@ -1,6 +1,7 @@
 export * from './course';
 export * from './course-template';
 export * from './template-sync';
+export * from './root-order';
 export * from './template-access';
 export * from './template-assets';
 export * from './compliance';

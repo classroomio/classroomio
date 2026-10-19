@@ -164,7 +164,7 @@
 
   {#if lesson.isUnlocked && (outlineItems.length > 0 || outlineActions)}
     <aside class="ui:hidden ui:w-60 ui:shrink-0 ui:lg:block">
-      <div class="ui:sticky ui:top-12 ui:z-10 ui:h-[calc(100dvh-3rem)] ui:overflow-y-auto">
+      <div class="ui:sticky ui:top-12 ui:z-10 ui:max-h-[calc(100dvh-3rem)] ui:overflow-y-auto">
         <div class="ui:px-4 ui:py-8">
           {#if outlineItems.length > 0}
             <PageOutline items={outlineItems} label={outlineLabel} hideBelow="never" />

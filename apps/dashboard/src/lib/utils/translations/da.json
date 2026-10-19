@@ -12,6 +12,7 @@
     },
     "discard": "Kassér",
     "save_changes": "Gem ændringer",
+    "cancel": "Annuller",
     "scroll_to_top": "Rul til toppen",
     "delete": "Slet",
     "restricted_page": {
@@ -2845,7 +2846,8 @@
         "add_content_later": "Senere",
         "add_content_add_to_section": "Tilføj indhold",
         "expand_content": "Udvid indhold",
-        "collapse_content": "Skjul indholdet"
+        "collapse_content": "Skjul indholdet",
+        "no_section": "Ingen sektion"
       },
       "news_feed": {
         "heading": "Nyhedsfeed",
@@ -4331,7 +4333,16 @@
       "actions_menu": "Tokengodkendelseshandlinger"
     },
     "teams": {
-      "page_subtitle": "Inviter teammedlemmer og styr, hvem der hjælper med at drive denne organisation."
+      "page_subtitle": "Inviter teammedlemmer og styr, hvem der hjælper med at drive denne organisation.",
+      "permission": {
+        "title": "Du har ikke tilladelse til at se denne side",
+        "description": "Kun organisationsadministratorer kan se og administrere teamet. Kontakt en administrator, hvis du har brug for adgang."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Inviter denne elev til teamet?} other {Inviter disse elever til teamet?}}",
+        "confirm_description": "{count, plural, =1 {Denne person er allerede elev i denne organisation: {emails}. Vil du sende en invitation, så personen bliver {role}? Rollen ændres først, når invitationen accepteres.} other {Disse personer er allerede elever i denne organisation: {emails}. Vil du invitere dem som {role}? Deres roller ændres først, når de accepterer invitationen.}}",
+        "existing": "Disse personer er allerede med i teamet: {members}. Brug rollevælgeren under Teammedlemmer til at ændre deres rolle."
+      }
     },
     "ai_credits": {
       "sub_title": "AI-credits",
@@ -4969,7 +4980,6 @@
         "title": "MCP nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@classroomio/mcp`.",
         "generate": "Generer MCP-nøgle",
-        "secret_once": "Denne hemmelighed vises én gang. Kopier det til din MCP-klient nu.",
         "modal": {
           "title": "Opret MCP-nøgle",
           "description": "Vælg et navn til denne MCP-nøgle, før den genereres.",
@@ -4977,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Annuller",
           "save": "Opret nøgle"
-        }
+        },
+        "reveal_title": "Din nye MCP-nøgle"
       },
       "usage": {
         "title": "Anvendelse og grænser",
@@ -4997,7 +5008,6 @@
         "title": "API-nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når der kaldes til ClassroomIOs offentlige API.",
         "generate": "Generer API-nøgle",
-        "secret_once": "Denne hemmelighed vises kun én gang. Kopiér den og opbevar den sikkert.",
         "empty_title": "Ingen API-nøgler endnu",
         "empty_description": "Opret den første organisationsnøgle til API for at bruge ClassroomIOs offentlige API.",
         "modal": {
@@ -5007,7 +5017,8 @@
           "name_placeholder": "Min API-integration",
           "cancel": "Annuller",
           "save": "Opret nøgle"
-        }
+        },
+        "reveal_title": "Din nye API-nøgle"
       },
       "setup": {
         "title": "Hurtig start",
@@ -5031,7 +5042,14 @@
       "table_key": "Nøgle",
       "table_status": "Status",
       "table_created": "Oprettet",
-      "table_last_used": "Sidst brugt"
+      "table_last_used": "Sidst brugt",
+      "reveal": {
+        "description": "Kopiér denne nøgle nu. Den vises ikke igen.",
+        "copy": "Kopiér",
+        "copied": "Kopieret",
+        "how_to_use": "Sådan bruger du denne nøgle",
+        "close": "Luk"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -5490,6 +5508,20 @@
     "delete_modal": {
       "title": "Slet widget permanent",
       "description": "Er du sikker på, at du vil slette \"{name}\" permanent? Denne handling kan ikke fortrydes."
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filtre",
+      "clear_all": "Ryd alle",
+      "search_placeholder": "Søg efter widgets efter navn",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Valgtilstand",
+      "no_results_title": "Ingen widgets matcher dine filtre",
+      "no_results_description": "Prøv en anden søgeterm, eller ryd dine filtre for at se alt igen.",
+      "no_results_page_title": "Intet på denne side",
+      "no_results_page_description": "Disse filtre matcher færre widgets end denne side starter ved.",
+      "back_to_first_page": "Tilbage til første side"
     }
   },
   "side_panel": {

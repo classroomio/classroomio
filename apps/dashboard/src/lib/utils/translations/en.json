@@ -447,6 +447,7 @@
     },
     "discard": "Discard",
     "save_changes": "Save changes",
+    "cancel": "Cancel",
     "refresh": "Refresh",
     "scroll_to_top": "Scroll to top",
     "delete": "Delete",
@@ -848,7 +849,16 @@
       "actions_menu": "Token auth actions"
     },
     "teams": {
-      "page_subtitle": "Invite teammates and control who helps run this organization."
+      "permission": {
+        "title": "You don’t have permission to view this page",
+        "description": "Only organization administrators can view and manage the team. Contact an administrator if you need access."
+      },
+      "page_subtitle": "Invite teammates and control who helps run this organization.",
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Invite this student to the team?} other {Invite these students to the team?}}",
+        "confirm_description": "{count, plural, =1 {This person is already a student in this organization: {emails}. Send them an invitation to become {role}? Their role will change only after they accept.} other {These people are already students in this organization: {emails}. Send them an invitation to become {role}? Their roles will change only after they accept.}}",
+        "existing": "Already on the team: {members}. Use the role control in Team members to change their role."
+      }
     },
     "auth": {
       "page_subtitle": "Control sign-up, login, SSO, and token-based access for this org.",
@@ -1917,6 +1927,20 @@
       "all": "All",
       "unpublished": "Unpublished",
       "course_type": "Course Type"
+    },
+    "filters": {
+      "filter": "Filter",
+      "popover_title": "Filters",
+      "clear_all": "Clear all",
+      "search_placeholder": "Search by name",
+      "status": "Status",
+      "layout_type": "Layout type",
+      "selection_mode": "Selection mode",
+      "no_results_title": "No widgets match your filters",
+      "no_results_description": "Try a different search term or clear your filters to see everything again.",
+      "no_results_page_title": "Nothing on this page",
+      "no_results_page_description": "These filters match fewer widgets than this page starts at.",
+      "back_to_first_page": "Back to first page"
     }
   },
   "setup": {
@@ -3622,7 +3646,8 @@
           },
           "by_author": "by {name}",
           "empty": "No versions yet"
-        }
+        },
+        "no_section": "No section"
       },
       "attendance": {
         "title": "Attendance",
@@ -4909,7 +4934,14 @@
       "table_last_used": "Last used",
       "scopes_label": "Scopes:",
       "revoke_confirm": "Revoke this automation key?",
-      "rotate_confirm": "Rotate this automation key?"
+      "rotate_confirm": "Rotate this automation key?",
+      "reveal": {
+        "description": "Copy this key now. It won't be shown again.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "how_to_use": "How to use this key",
+        "close": "Close"
+      }
     },
     "mcp": {
       "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
@@ -4926,7 +4958,7 @@
         "title": "MCP keys",
         "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
         "generate": "Generate MCP key",
-        "secret_once": "This secret is shown once. Copy it into your MCP client now.",
+        "reveal_title": "Your new MCP key",
         "modal": {
           "title": "Create MCP key",
           "description": "Choose a name for this MCP key before it is generated.",
@@ -4952,7 +4984,7 @@
         "title": "API keys",
         "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
         "generate": "Generate API key",
-        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "reveal_title": "Your new API key",
         "empty_title": "No API keys yet",
         "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
         "modal": {

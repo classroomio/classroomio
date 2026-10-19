@@ -12,6 +12,7 @@
     },
     "discard": "Hủy",
     "save_changes": "Lưu thay đổi",
+    "cancel": "Hủy bỏ",
     "scroll_to_top": "Cuộn lên đầu trang",
     "delete": "Xóa",
     "restricted_page": {
@@ -2845,7 +2846,8 @@
         "add_content_later": "Để sau",
         "add_content_add_to_section": "Thêm nội dung",
         "expand_content": "Mở rộng nội dung",
-        "collapse_content": "Thu gọn nội dung"
+        "collapse_content": "Thu gọn nội dung",
+        "no_section": "Không có phần nào"
       },
       "news_feed": {
         "heading": "Nguồn cấp tin tức",
@@ -4331,7 +4333,16 @@
       "actions_menu": "Hành động xác thực mã thông báo"
     },
     "teams": {
-      "page_subtitle": "Mời đồng đội và kiểm soát ai giúp vận hành tổ chức này."
+      "page_subtitle": "Mời đồng đội và kiểm soát ai giúp vận hành tổ chức này.",
+      "permission": {
+        "title": "Bạn không có quyền xem trang này",
+        "description": "Chỉ quản trị viên tổ chức mới có thể xem và quản lý nhóm. Hãy liên hệ với quản trị viên nếu bạn cần quyền truy cập."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Mời học viên này vào nhóm?} other {Mời các học viên này vào nhóm?}}",
+        "confirm_description": "{count, plural, =1 {Người này đã là học viên trong tổ chức: {emails}. Bạn có muốn gửi lời mời để người này trở thành {role} không? Vai trò chỉ thay đổi sau khi lời mời được chấp nhận.} other {Những người này đã là học viên trong tổ chức: {emails}. Bạn có muốn mời họ với vai trò {role} không? Vai trò của họ chỉ thay đổi sau khi họ chấp nhận lời mời.}}",
+        "existing": "Những người này đã có trong nhóm: {members}. Hãy dùng bộ chọn vai trò trong danh sách thành viên nhóm để thay đổi vai trò của họ."
+      }
     },
     "ai_credits": {
       "sub_title": "Tín dụng AI",
@@ -4969,7 +4980,6 @@
         "title": "Khóa MCP",
         "description": "Các khóa này xác thực tổ chức hiện tại khi máy khách MCP gọi ClassroomIO thông qua `@classroomio/mcp`.",
         "generate": "Tạo khóa MCP",
-        "secret_once": "Bí mật này được hiển thị một lần. Sao chép nó vào ứng dụng khách MCP của bạn ngay bây giờ.",
         "modal": {
           "title": "Tạo khóa MCP",
           "description": "Chọn tên cho khóa MCP này trước khi tạo.",
@@ -4977,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Hủy",
           "save": "Tạo khóa"
-        }
+        },
+        "reveal_title": "Khóa MCP mới của bạn"
       },
       "usage": {
         "title": "Cách sử dụng và giới hạn",
@@ -4997,7 +5008,6 @@
         "title": "Khóa API",
         "description": "Các khóa này xác thực tổ chức hiện tại khi gọi API công khai ClassroomIO.",
         "generate": "Tạo khóa API",
-        "secret_once": "Bí mật này chỉ hiển thị một lần. Hãy sao chép và lưu trữ an toàn.",
         "empty_title": "Chưa có khóa API",
         "empty_description": "Tạo khóa API trong phạm vi tổ chức đầu tiên để sử dụng API công khai ClassroomIO.",
         "modal": {
@@ -5007,7 +5017,8 @@
           "name_placeholder": "Tích hợp API của tôi",
           "cancel": "Hủy",
           "save": "Tạo khóa"
-        }
+        },
+        "reveal_title": "Khóa API mới của bạn"
       },
       "setup": {
         "title": "Bắt đầu nhanh",
@@ -5031,7 +5042,14 @@
       "table_key": "Chìa khóa",
       "table_status": "Trạng thái",
       "table_created": "Đã tạo",
-      "table_last_used": "Lần sử dụng cuối cùng"
+      "table_last_used": "Lần sử dụng cuối cùng",
+      "reveal": {
+        "description": "Hãy sao chép khóa này ngay bây giờ. Nó sẽ không hiển thị lại nữa.",
+        "copy": "Sao chép",
+        "copied": "Đã sao chép",
+        "how_to_use": "Cách sử dụng khóa này",
+        "close": "Đóng"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -5490,6 +5508,20 @@
     "delete_modal": {
       "title": "Xóa tiện ích vĩnh viễn",
       "description": "Bạn có chắc chắn muốn xóa vĩnh viễn \"{name}\" không? Hành động này không thể hoàn tác."
+    },
+    "filters": {
+      "filter": "Lọc",
+      "popover_title": "Bộ lọc",
+      "clear_all": "Xóa tất cả",
+      "search_placeholder": "Tìm kiếm widget theo tên",
+      "status": "Trạng thái",
+      "layout_type": "Kiểu bố cục",
+      "selection_mode": "Chế độ lựa chọn",
+      "no_results_title": "Không có vật dụng nào phù hợp với bộ lọc của bạn",
+      "no_results_description": "Hãy thử một cụm từ tìm kiếm khác hoặc xóa bộ lọc của bạn để xem lại mọi thứ.",
+      "no_results_page_title": "Không có gì trên trang này",
+      "no_results_page_description": "Các bộ lọc này phù hợp với ít tiện ích hơn trang này bắt đầu.",
+      "back_to_first_page": "Quay lại trang đầu tiên"
     }
   },
   "side_panel": {

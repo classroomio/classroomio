@@ -4,6 +4,7 @@
     getExerciseQuestionContractKey,
     isAutoGradableQuestionTypeId,
     QUESTION_TYPE_KEY,
+    scoreAnswerForQuestion,
     type AnswerData,
     type ExerciseQuestionLabels,
     type ExerciseQuestionModel
@@ -162,6 +163,18 @@
           answer.orderedValues.every((value) => typeof value === 'string' && value.length > 0)
         );
       }
+      case QUESTION_TYPE_KEY.STAR:
+        return answer.type === 'STAR' && answer.value > 0;
+      case QUESTION_TYPE_KEY.WORD_BANK:
+        return (
+          answer.type === 'WORD_BANK' &&
+          answer.filledBlanks.length > 0 &&
+          answer.filledBlanks.every((value) => value.trim().length > 0)
+        );
+      case QUESTION_TYPE_KEY.MATCHING:
+        return answer.type === 'MATCHING' && answer.pairs.length > 0;
+      case QUESTION_TYPE_KEY.HOTSPOT:
+        return answer.type === 'HOTSPOT' && answer.coordinates.length > 0;
       default:
         return false;
     }
@@ -253,6 +266,11 @@
           answer.orderedValues.every((value, index) => value === expected[index])
         );
       }
+      case QUESTION_TYPE_KEY.STAR:
+      case QUESTION_TYPE_KEY.WORD_BANK:
+      case QUESTION_TYPE_KEY.MATCHING:
+      case QUESTION_TYPE_KEY.HOTSPOT:
+        return scoreAnswerForQuestion({ ...question, points: 1 }, answer) === 1;
       default:
         return null;
     }
@@ -454,7 +472,7 @@
 
   {#if outlineActions}
     <aside class="ui:hidden ui:w-60 ui:shrink-0 ui:lg:block">
-      <div class="ui:sticky ui:top-12 ui:z-10 ui:h-[calc(100dvh-3rem)] ui:overflow-y-auto">
+      <div class="ui:sticky ui:top-12 ui:z-10 ui:max-h-[calc(100dvh-3rem)] ui:overflow-y-auto">
         <div class="ui:px-4 ui:py-8">
           {@render outlineActions()}
         </div>

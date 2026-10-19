@@ -12,6 +12,7 @@
     },
     "discard": "Descartar",
     "save_changes": "Guardar cambios",
+    "cancel": "Cancelar",
     "scroll_to_top": "Volver al inicio",
     "delete": "Eliminar",
     "restricted_page": {
@@ -2845,7 +2846,8 @@
         "add_content_later": "Más tarde",
         "add_content_add_to_section": "Añadir contenido",
         "expand_content": "Ampliar contenido",
-        "collapse_content": "Contraer contenido"
+        "collapse_content": "Contraer contenido",
+        "no_section": "Ninguna sección"
       },
       "news_feed": {
         "heading": "Noticias",
@@ -4331,7 +4333,16 @@
       "actions_menu": "Acciones de autenticación de token"
     },
     "teams": {
-      "page_subtitle": "Invita a compañeros de equipo y controla quién ayuda a administrar esta organización."
+      "page_subtitle": "Invita a compañeros de equipo y controla quién ayuda a administrar esta organización.",
+      "permission": {
+        "title": "No tienes permiso para ver esta página",
+        "description": "Solo los administradores de la organización pueden ver y gestionar el equipo. Contacta con un administrador si necesitas acceso."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {¿Invitar a este estudiante al equipo?} other {¿Invitar a estos estudiantes al equipo?}}",
+        "confirm_description": "{count, plural, =1 {Esta persona ya es estudiante de esta organización: {emails}. ¿Quieres enviarle una invitación para que sea {role}? Su rol solo cambiará cuando acepte.} other {Estas personas ya son estudiantes de esta organización: {emails}. ¿Quieres enviarles una invitación para que sean {role}? Sus roles solo cambiarán cuando acepten.}}",
+        "existing": "Ya forman parte del equipo: {members}. Usa el selector de rol en Miembros del equipo para cambiar su rol."
+      }
     },
     "ai_credits": {
       "sub_title": "Créditos de IA",
@@ -4969,7 +4980,6 @@
         "title": "Claves MCP",
         "description": "Estas claves autentican la organización actual cuando un cliente MCP llama a ClassroomIO a través de `@classroomio/mcp`.",
         "generate": "Generar clave MCP",
-        "secret_once": "Este secreto se muestra una vez. Cópielo en su cliente MCP ahora.",
         "modal": {
           "title": "Crear clave MCP",
           "description": "Elige un nombre para esta clave MCP antes de generarla.",
@@ -4977,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Cancelar",
           "save": "Crear clave"
-        }
+        },
+        "reveal_title": "Tu nueva clave MCP"
       },
       "usage": {
         "title": "Uso y límites",
@@ -4997,7 +5008,6 @@
         "title": "Claves API",
         "description": "Estas claves autentican la organización actual al llamar a la API pública de ClassroomIO.",
         "generate": "Generar clave API",
-        "secret_once": "Este secreto se muestra una sola vez. Cópialo y guárdalo de forma segura.",
         "empty_title": "Aún no hay claves API",
         "empty_description": "Crea la primera clave API con ámbito de organización para usar la API pública de ClassroomIO.",
         "modal": {
@@ -5007,7 +5017,8 @@
           "name_placeholder": "Mi integración API",
           "cancel": "Cancelar",
           "save": "Crear clave"
-        }
+        },
+        "reveal_title": "Tu nueva clave API"
       },
       "setup": {
         "title": "Inicio rápido",
@@ -5031,7 +5042,14 @@
       "table_key": "clave",
       "table_status": "Estado",
       "table_created": "Creado",
-      "table_last_used": "último usado"
+      "table_last_used": "último usado",
+      "reveal": {
+        "description": "Copia esta clave ahora. No volverá a aparecer.",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "how_to_use": "Cómo usar esta clave",
+        "close": "Cerrar"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -5490,6 +5508,20 @@
     "delete_modal": {
       "title": "Eliminar widget permanentemente",
       "description": "¿Está seguro de que desea eliminar permanentemente \"{name}\"? Esta acción no se puede deshacer."
+    },
+    "filters": {
+      "filter": "Filtrar",
+      "popover_title": "Filtros",
+      "clear_all": "Borrar todo",
+      "search_placeholder": "Buscar widgets por nombre",
+      "status": "Estado",
+      "layout_type": "Tipo de diseño",
+      "selection_mode": "Modo de selección",
+      "no_results_title": "Ningún widget coincide con tus filtros",
+      "no_results_description": "Pruebe con un término de búsqueda diferente o borre sus filtros para verlo todo nuevamente.",
+      "no_results_page_title": "Nada en esta pagina",
+      "no_results_page_description": "Estos filtros coinciden con menos widgets de los que comienza esta página.",
+      "back_to_first_page": "Volver a la primera página"
     }
   },
   "side_panel": {

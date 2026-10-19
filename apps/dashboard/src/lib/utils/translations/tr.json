@@ -446,6 +446,7 @@
     },
     "discard": "Discard",
     "save_changes": "Değişiklikleri kaydet",
+    "cancel": "İptal",
     "refresh": "Yenile",
     "scroll_to_top": "Şuraya kaydır: top",
     "delete": "Delete",
@@ -763,7 +764,16 @@
       "actions_menu": "Token kimlik doğrulama eylemleri"
     },
     "teams": {
-      "page_subtitle": "Ekip arkadaşlarınızı davet edin ve bu organizasyonun yönetilmesine kimin yardımcı olacağını kontrol edin."
+      "page_subtitle": "Ekip arkadaşlarınızı davet edin ve bu organizasyonun yönetilmesine kimin yardımcı olacağını kontrol edin.",
+      "permission": {
+        "title": "Bu sayfayı görüntüleme izniniz yok",
+        "description": "Yalnızca kuruluş yöneticileri ekibi görüntüleyebilir ve yönetebilir. Erişime ihtiyacınız varsa bir yöneticiyle iletişime geçin."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Bu öğrenci ekibe davet edilsin mi?} other {Bu öğrenciler ekibe davet edilsin mi?}}",
+        "confirm_description": "{count, plural, =1 {Bu kişi zaten bu kuruluşta öğrenci: {emails}. Onu {role} rolüyle davet etmek istiyor musunuz? Rolü yalnızca daveti kabul ettiğinde değişir.} other {Bu kişiler zaten bu kuruluşta öğrenci: {emails}. Onları {role} rolüyle davet etmek istiyor musunuz? Rolleri yalnızca daveti kabul ettiklerinde değişir.}}",
+        "existing": "Bu kişiler zaten ekipte: {members}. Rollerini değiştirmek için Ekip üyeleri bölümündeki rol seçiciyi kullanın."
+      }
     },
     "auth": {
       "page_subtitle": "Bu kuruluş için kaydolma, oturum açma, SSO ve jeton tabanlı erişimi kontrol edin.",
@@ -3632,7 +3642,8 @@
           "empty": "Henüz sürüm yok"
         },
         "expand_content": "İçeriği genişlet",
-        "collapse_content": "İçeriği daralt"
+        "collapse_content": "İçeriği daralt",
+        "no_section": "Bölüm yok"
       },
       "attendance": {
         "title": "Attendance",
@@ -4919,7 +4930,14 @@
       "table_last_used": "LSon kullanılan",
       "scopes_label": "Kapsamlar:",
       "revoke_confirm": "Bu otomasyon anahtarı iptal edilsin mi?",
-      "rotate_confirm": "Bu otomasyon anahtarı döndürülsün mü?"
+      "rotate_confirm": "Bu otomasyon anahtarı döndürülsün mü?",
+      "reveal": {
+        "description": "Bu anahtarı şimdi kopyalayın. Bir daha gösterilmeyecek.",
+        "copy": "Kopyala",
+        "copied": "Kopyalandı",
+        "how_to_use": "Bu anahtar nasıl kullanılır",
+        "close": "Kapat"
+      }
     },
     "mcp": {
       "page_subtitle": "Döndürebileceğiniz kuruluş kapsamlı anahtarlarla AI araçlarını ClassroomIO'ya bağlayın istediğiniz zaman.",
@@ -4936,7 +4954,6 @@
         "title": "MCP anahtarları",
         "description": "Bu anahtarlar, bir MCP istemcisi `@classroomio/mcp` aracılığıyla ClassroomIO'yu aradığında mevcut organizasyonun kimliğini doğrular.",
         "generate": "MCP anahtarını oluştur",
-        "secret_once": "Bu sır bir kez gösterilir. Şimdi MCP istemcinize kopyalayın.",
         "modal": {
           "title": "MCP anahtarı oluştur",
           "description": "Oluşturulmadan önce bu MCP anahtarı için bir ad seçin.",
@@ -4944,7 +4961,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "İptal",
           "save": "Anahtar oluştur"
-        }
+        },
+        "reveal_title": "Yeni MCP anahtarınız"
       },
       "setup": {
         "title": "İstemci kurulumu",
@@ -4962,7 +4980,6 @@
         "title": "API anahtarları",
         "description": "Bu anahtarlar, ClassroomIO genel API'si çağrılırken mevcut kuruluşun kimliğini doğrular.",
         "generate": "API anahtarı oluştur",
-        "secret_once": "Bu sır bir kez gösterilir. Kopyalayın ve güvenli bir şekilde saklayın.",
         "empty_title": "Henüz API anahtarı yok",
         "empty_description": "ClassroomIO genel API'sini kullanmak için ilk kuruluş kapsamlı API anahtarını oluşturun.",
         "modal": {
@@ -4972,7 +4989,8 @@
           "name_placeholder": "API entegrasyonum",
           "cancel": "İptal",
           "save": "Anahtar oluştur"
-        }
+        },
+        "reveal_title": "Yeni API anahtarınız"
       },
       "setup": {
         "title": "Hızlı başlangıç",

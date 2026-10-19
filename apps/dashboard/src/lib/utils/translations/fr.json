@@ -12,6 +12,7 @@
     },
     "discard": "Abandonner les modifications",
     "save_changes": "Enregistrer les modifications",
+    "cancel": "Annuler",
     "scroll_to_top": "Remonter en haut",
     "delete": "Supprimer",
     "restricted_page": {
@@ -2845,7 +2846,8 @@
         "add_content_later": "Plus tard",
         "add_content_add_to_section": "Ajouter du contenu",
         "expand_content": "Développer le contenu",
-        "collapse_content": "Réduire le contenu"
+        "collapse_content": "Réduire le contenu",
+        "no_section": "Aucune section"
       },
       "news_feed": {
         "heading": "Fil d'actualité",
@@ -4331,7 +4333,16 @@
       "actions_menu": "Actions d'authentification par jeton"
     },
     "teams": {
-      "page_subtitle": "Invitez des collègues et contrôlez qui aide à gérer cette organisation."
+      "page_subtitle": "Invitez des collègues et contrôlez qui aide à gérer cette organisation.",
+      "permission": {
+        "title": "Vous n’avez pas l’autorisation de consulter cette page",
+        "description": "Seuls les administrateurs de l’organisation peuvent consulter et gérer l’équipe. Contactez un administrateur si vous avez besoin d’un accès."
+      },
+      "invite": {
+        "confirm_title": "{count, plural, =1 {Inviter cet étudiant dans l’équipe ?} other {Inviter ces étudiants dans l’équipe ?}}",
+        "confirm_description": "{count, plural, =1 {Cette personne est déjà un étudiant de cette organisation : {emails}. Voulez-vous lui envoyer une invitation pour devenir {role} ? Son rôle ne changera qu’après acceptation de l’invitation.} other {Ces personnes sont déjà des étudiants de cette organisation : {emails}. Voulez-vous leur envoyer une invitation pour devenir {role} ? Leurs rôles ne changeront qu’après acceptation de l’invitation.}}",
+        "existing": "Ces personnes font déjà partie de l’équipe : {members}. Utilisez le sélecteur de rôle dans Membres de l’équipe pour modifier leur rôle."
+      }
     },
     "ai_credits": {
       "sub_title": "Crédits IA",
@@ -4969,7 +4980,6 @@
         "title": "Clés MCP",
         "description": "Ces clés authentifient l'organisation actuelle lorsqu'un client MCP appelle ClassroomIO via `@classroomio/mcp`.",
         "generate": "Générer une clé MCP",
-        "secret_once": "Ce secret est montré une fois. Copiez-le dans votre client MCP maintenant.",
         "modal": {
           "title": "Créer une clé MCP",
           "description": "Choisissez un nom pour cette clé MCP avant qu'elle ne soit générée.",
@@ -4977,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Annuler",
           "save": "Créer la clé"
-        }
+        },
+        "reveal_title": "Votre nouvelle clé MCP"
       },
       "usage": {
         "title": "Utilisation et limites",
@@ -4997,7 +5008,6 @@
         "title": "Clés API",
         "description": "Ces clés authentifient l'organisation actuelle lors des appels à l'API publique ClassroomIO.",
         "generate": "Générer une clé API",
-        "secret_once": "Ce secret n'est affiché qu'une fois. Copiez-le et conservez-le en lieu sûr.",
         "empty_title": "Aucune clé API pour l'instant",
         "empty_description": "Créez la première clé API à l'échelle de l'organisation pour utiliser l'API publique ClassroomIO.",
         "modal": {
@@ -5007,7 +5017,8 @@
           "name_placeholder": "Mon intégration API",
           "cancel": "Annuler",
           "save": "Créer la clé"
-        }
+        },
+        "reveal_title": "Votre nouvelle clé API"
       },
       "setup": {
         "title": "Démarrage rapide",
@@ -5031,7 +5042,14 @@
       "table_key": "Clé",
       "table_status": "Statut",
       "table_created": "Créé",
-      "table_last_used": "Dernière utilisation"
+      "table_last_used": "Dernière utilisation",
+      "reveal": {
+        "description": "Copiez cette clé maintenant. Elle ne sera plus affichée.",
+        "copy": "Copier",
+        "copied": "Copié",
+        "how_to_use": "Comment utiliser cette clé",
+        "close": "Fermer"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -5490,6 +5508,20 @@
     "delete_modal": {
       "title": "Supprimer définitivement le widget",
       "description": "Êtes-vous sûr de vouloir supprimer définitivement « {name} » ? Cette action est irréversible."
+    },
+    "filters": {
+      "filter": "Filtrer",
+      "popover_title": "Filtres",
+      "clear_all": "Tout effacer",
+      "search_placeholder": "Rechercher des widgets par nom",
+      "status": "Statut",
+      "layout_type": "Type de mise en page",
+      "selection_mode": "Mode de sélection",
+      "no_results_title": "Aucun widget ne correspond à vos filtres",
+      "no_results_description": "Essayez un autre terme de recherche ou effacez vos filtres pour tout voir à nouveau.",
+      "no_results_page_title": "Rien sur cette page",
+      "no_results_page_description": "Ces filtres correspondent à moins de widgets que ce à quoi commence cette page.",
+      "back_to_first_page": "Retour à la première page"
     }
   },
   "side_panel": {
