@@ -191,15 +191,13 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
   let standaloneBlock: PreviewBlock | null = null;
   for (const entry of rootEntries) {
     if (entry.kind === 'section') {
+      const sectionId = entry.section.id;
+      const sectionLessons = byOrder(lessons.filter((lesson) => lesson.sectionId === sectionId)).map(toPreviewLesson);
+      const sectionExercises = byOrder(exercises.filter((exercise) => exercise.sectionId === sectionId)).map(
+        toPreviewExercise
+      );
       standaloneBlock = null;
-      outline.push({
-        id: entry.section.id,
-        title: entry.section.title,
-        lessons: byOrder(lessons.filter((lesson) => lesson.sectionId === entry.section.id)).map(toPreviewLesson),
-        exercises: byOrder(exercises.filter((exercise) => exercise.sectionId === entry.section.id)).map(
-          toPreviewExercise
-        )
-      });
+      outline.push({ id: sectionId, title: entry.section.title, lessons: sectionLessons, exercises: sectionExercises });
       continue;
     }
 

@@ -16,7 +16,7 @@ import type {
 } from '@cio/utils/validation/course/section';
 import { updateUngroupedExercisesSectionId } from '@cio/db/queries/exercise/exercise';
 import { db } from '@cio/db/drizzle';
-import { claimRootOrder } from './root-order';
+import { claimSectionOrder } from './root-order';
 
 /**
  * Creates a new course section
@@ -27,7 +27,7 @@ import { claimRootOrder } from './root-order';
 export async function createCourseSection(courseId: string, data: TCourseSectionCreate): Promise<TCourseSection> {
   try {
     const [section] = await db.transaction(async (tx) => {
-      const order = await claimRootOrder(courseId, data.order, null, tx);
+      const order = await claimSectionOrder(courseId, data.order, null, tx);
       return createCourseSections([{ ...data, order, courseId }], tx);
     });
     if (!section) {
@@ -150,7 +150,7 @@ export async function updateCourseSectionService(
     const updated =
       data.order !== undefined && courseId
         ? await db.transaction(async (tx) => {
-            const order = await claimRootOrder(courseId, data.order, sectionId, tx);
+            const order = await claimSectionOrder(courseId, data.order, sectionId, tx);
             return updateCourseSection(sectionId, { ...data, order }, tx);
           })
         : await updateCourseSection(sectionId, data);

@@ -4,25 +4,57 @@ import { and, eq, gte, isNull, max, ne, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 /**
- * Highest order among a course's top-level outline entries (sections, and lessons or exercises outside any
- * section or lesson), or 0 when the course has none.
+ * Which entries share one run of positions. `outline`: sections plus lessons and exercises outside any section, the
+ * top level of a grouped course. `items`: every lesson and exercise, the list of a course with grouping off.
+ * `sections`: sections alone, which a course with grouping off does not show. Exercises inside a lesson are never
+ * counted.
  */
-export async function getLastCourseRootOrder(courseId: string, dbClient: DbOrTxClient = db) {
+export type CourseOrderScope = 'outline' | 'items' | 'sections';
+
+function scopeParts(scope: CourseOrderScope) {
+  return {
+    hasSections: scope !== 'items',
+    hasItems: scope !== 'sections',
+    hasSectionItems: scope === 'items'
+  };
+}
+
+/**
+ * Highest order among a course's entries in `scope`, or 0 when it has none.
+ */
+export async function getLastCourseRootOrder(
+  courseId: string,
+  dbClient: DbOrTxClient = db,
+  scope: CourseOrderScope = 'outline'
+) {
+  const { hasSections, hasItems, hasSectionItems } = scopeParts(scope);
   try {
-    const [sectionRow] = await dbClient
-      .select({ value: max(schema.courseSection.order) })
-      .from(schema.courseSection)
-      .where(eq(schema.courseSection.courseId, courseId));
-    const [lessonRow] = await dbClient
-      .select({ value: max(schema.lesson.order) })
-      .from(schema.lesson)
-      .where(and(eq(schema.lesson.courseId, courseId), isNull(schema.lesson.sectionId)));
-    const [exerciseRow] = await dbClient
-      .select({ value: max(schema.exercise.order) })
-      .from(schema.exercise)
-      .where(
-        and(eq(schema.exercise.courseId, courseId), isNull(schema.exercise.sectionId), isNull(schema.exercise.lessonId))
-      );
+    const [sectionRow] = hasSections
+      ? await dbClient
+          .select({ value: max(schema.courseSection.order) })
+          .from(schema.courseSection)
+          .where(eq(schema.courseSection.courseId, courseId))
+      : [];
+    const [lessonRow] = hasItems
+      ? await dbClient
+          .select({ value: max(schema.lesson.order) })
+          .from(schema.lesson)
+          .where(
+            and(eq(schema.lesson.courseId, courseId), hasSectionItems ? undefined : isNull(schema.lesson.sectionId))
+          )
+      : [];
+    const [exerciseRow] = hasItems
+      ? await dbClient
+          .select({ value: max(schema.exercise.order) })
+          .from(schema.exercise)
+          .where(
+            and(
+              eq(schema.exercise.courseId, courseId),
+              hasSectionItems ? undefined : isNull(schema.exercise.sectionId),
+              isNull(schema.exercise.lessonId)
+            )
+          )
+      : [];
 
     const lastOrders = [sectionRow?.value, lessonRow?.value, exerciseRow?.value].map((value) => Number(value ?? 0));
 
@@ -34,51 +66,59 @@ export async function getLastCourseRootOrder(courseId: string, dbClient: DbOrTxC
 }
 
 /**
- * Whether any top-level outline entry other than `excludeId` already sits at `order`.
+ * Whether any entry in `scope` other than `excludeId` already sits at `order`.
  */
 export async function isCourseRootOrderTaken(
   courseId: string,
   order: number,
   excludeId: string | null,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  scope: CourseOrderScope = 'outline'
 ) {
+  const { hasSections, hasItems, hasSectionItems } = scopeParts(scope);
   try {
-    const sections = await dbClient
-      .select({ id: schema.courseSection.id })
-      .from(schema.courseSection)
-      .where(
-        and(
-          eq(schema.courseSection.courseId, courseId),
-          eq(schema.courseSection.order, order),
-          excludeId ? ne(schema.courseSection.id, excludeId) : undefined
-        )
-      )
-      .limit(1);
-    const lessons = await dbClient
-      .select({ id: schema.lesson.id })
-      .from(schema.lesson)
-      .where(
-        and(
-          eq(schema.lesson.courseId, courseId),
-          isNull(schema.lesson.sectionId),
-          eq(schema.lesson.order, order),
-          excludeId ? ne(schema.lesson.id, excludeId) : undefined
-        )
-      )
-      .limit(1);
-    const exercises = await dbClient
-      .select({ id: schema.exercise.id })
-      .from(schema.exercise)
-      .where(
-        and(
-          eq(schema.exercise.courseId, courseId),
-          isNull(schema.exercise.sectionId),
-          isNull(schema.exercise.lessonId),
-          eq(schema.exercise.order, order),
-          excludeId ? ne(schema.exercise.id, excludeId) : undefined
-        )
-      )
-      .limit(1);
+    const sections = hasSections
+      ? await dbClient
+          .select({ id: schema.courseSection.id })
+          .from(schema.courseSection)
+          .where(
+            and(
+              eq(schema.courseSection.courseId, courseId),
+              eq(schema.courseSection.order, order),
+              excludeId ? ne(schema.courseSection.id, excludeId) : undefined
+            )
+          )
+          .limit(1)
+      : [];
+    const lessons = hasItems
+      ? await dbClient
+          .select({ id: schema.lesson.id })
+          .from(schema.lesson)
+          .where(
+            and(
+              eq(schema.lesson.courseId, courseId),
+              hasSectionItems ? undefined : isNull(schema.lesson.sectionId),
+              eq(schema.lesson.order, order),
+              excludeId ? ne(schema.lesson.id, excludeId) : undefined
+            )
+          )
+          .limit(1)
+      : [];
+    const exercises = hasItems
+      ? await dbClient
+          .select({ id: schema.exercise.id })
+          .from(schema.exercise)
+          .where(
+            and(
+              eq(schema.exercise.courseId, courseId),
+              hasSectionItems ? undefined : isNull(schema.exercise.sectionId),
+              isNull(schema.exercise.lessonId),
+              eq(schema.exercise.order, order),
+              excludeId ? ne(schema.exercise.id, excludeId) : undefined
+            )
+          )
+          .limit(1)
+      : [];
 
     return sections.length + lessons.length + exercises.length > 0;
   } catch (error) {
@@ -88,20 +128,34 @@ export async function isCourseRootOrderTaken(
 }
 
 /**
- * Moves every top-level outline entry (sections, and lessons or exercises outside any section or lesson)
- * at or after `fromOrder` down one position.
+ * Moves every entry in `scope` at or after `fromOrder` down one position.
  */
-export async function shiftCourseRootOrders(courseId: string, fromOrder: number, dbClient: DbOrTxClient = db) {
+export async function shiftCourseRootOrders(
+  courseId: string,
+  fromOrder: number,
+  dbClient: DbOrTxClient = db,
+  scope: CourseOrderScope = 'outline'
+) {
+  const { hasSections, hasItems, hasSectionItems } = scopeParts(scope);
   try {
-    await dbClient
-      .update(schema.courseSection)
-      .set({ order: sql`${schema.courseSection.order} + 1` })
-      .where(and(eq(schema.courseSection.courseId, courseId), gte(schema.courseSection.order, fromOrder)));
+    if (hasSections) {
+      await dbClient
+        .update(schema.courseSection)
+        .set({ order: sql`${schema.courseSection.order} + 1` })
+        .where(and(eq(schema.courseSection.courseId, courseId), gte(schema.courseSection.order, fromOrder)));
+    }
+
+    if (!hasItems) return;
+
     await dbClient
       .update(schema.lesson)
       .set({ order: sql`${schema.lesson.order} + 1` })
       .where(
-        and(eq(schema.lesson.courseId, courseId), isNull(schema.lesson.sectionId), gte(schema.lesson.order, fromOrder))
+        and(
+          eq(schema.lesson.courseId, courseId),
+          hasSectionItems ? undefined : isNull(schema.lesson.sectionId),
+          gte(schema.lesson.order, fromOrder)
+        )
       );
     await dbClient
       .update(schema.exercise)
@@ -109,7 +163,7 @@ export async function shiftCourseRootOrders(courseId: string, fromOrder: number,
       .where(
         and(
           eq(schema.exercise.courseId, courseId),
-          isNull(schema.exercise.sectionId),
+          hasSectionItems ? undefined : isNull(schema.exercise.sectionId),
           isNull(schema.exercise.lessonId),
           gte(schema.exercise.order, fromOrder)
         )

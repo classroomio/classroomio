@@ -215,7 +215,10 @@
   function requestEdit(event: MouseEvent, item: CourseContentItem) {
     event.preventDefault();
     event.stopPropagation();
-    void goto(resolve(getContentEditRoute(id, item), {}));
+    goto(resolve(getContentEditRoute(id, item), {})).catch((error) => {
+      console.error('Failed to open content for editing:', error);
+      snackbar.error('snackbar.something');
+    });
   }
 
   function isViewingDeleteTarget(target: SidebarDeleteTarget) {

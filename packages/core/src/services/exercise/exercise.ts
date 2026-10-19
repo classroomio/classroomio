@@ -30,7 +30,7 @@ import {
 } from '@cio/db/queries/exercise';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { resolveItemSlug } from '../course/slug';
-import { claimRootOrder } from '../course/root-order';
+import { claimItemOrder } from '../course/root-order';
 import { guardNonAutoGradableQuestionsForCourseType } from '../course/public-course-guard';
 
 import { db } from '@cio/db/drizzle';
@@ -242,7 +242,7 @@ async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
 }
 
 /**
- * Frees the requested position when an updated exercise ends up at the top level of its course.
+ * Frees the requested position when an updated exercise ends up in its course's shared list (see `claimItemOrder`).
  */
 async function claimUpdatedExerciseOrder(
   existing: TExercise | null | undefined,
@@ -253,16 +253,13 @@ async function claimUpdatedExerciseOrder(
 
   const sectionId = data.sectionId === undefined ? existing.sectionId : data.sectionId || null;
   const lessonId = data.lessonId === undefined ? existing.lessonId : data.lessonId || null;
-  if (sectionId || lessonId) return data.order;
 
-  return claimRootOrder(existing.courseId, data.order, existing.id, txClient);
+  return claimItemOrder(existing.courseId, { sectionId, lessonId }, data.order, existing.id, txClient);
 }
 
 async function insertExerciseRow(exerciseData: Awaited<ReturnType<typeof prepareExerciseRow>>, txClient: DbOrTxClient) {
-  const isTopLevel = !exerciseData.sectionId && !exerciseData.lessonId;
-  const order = isTopLevel
-    ? await claimRootOrder(exerciseData.courseId, exerciseData.order, null, txClient)
-    : exerciseData.order;
+  const placement = { sectionId: exerciseData.sectionId, lessonId: exerciseData.lessonId };
+  const order = await claimItemOrder(exerciseData.courseId, placement, exerciseData.order, null, txClient);
   const [exercise] = await createExercises([{ ...exerciseData, order }], txClient);
   if (!exercise) {
     throw new AppError('Failed to create exercise', ErrorCodes.INTERNAL_ERROR, 500);
