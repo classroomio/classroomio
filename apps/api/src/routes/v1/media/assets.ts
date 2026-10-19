@@ -5,7 +5,7 @@ import { createPublicApiAssetUploadService } from '@api/services/v1/media/assets
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
-import { MEDIA_WRITE_RULE, UPLOAD_FLOW_NOTE } from './docs';
+import { MEDIA_WRITE_RULE } from './docs';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
 
 const AssetUploadResponse = itemResponse(ZPublicApiAssetUploadResponse);
@@ -13,10 +13,13 @@ const AssetUploadResponse = itemResponse(ZPublicApiAssetUploadResponse);
 export const v1AssetsRouter = new Hono().post(
   '/',
   describeRoute({
-    description: `Reserve an asset and get a URL to upload its bytes to. ${UPLOAD_FLOW_NOTE} ${MEDIA_WRITE_RULE}`,
+    description: `Reserve an asset and get a URL to upload its bytes to; ${MEDIA_WRITE_RULE}.`,
     tags: ['Public API Assets'],
     responses: {
-      201: jsonResponse('Asset reserved and upload URL issued', AssetUploadResponse),
+      201: jsonResponse(
+        'Asset reserved: PUT the bytes to uploadUrl, then reference assetId when attaching the asset',
+        AssetUploadResponse
+      ),
       400: errorResponses.badRequest,
       401: errorResponses.unauthorized,
       403: { description: 'Automation key is missing the media:write scope' },
