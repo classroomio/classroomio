@@ -86,7 +86,80 @@ my-classroomio-plugin/
 
 ---
 
-## Quickstart: Build a Plugin in 5 Minutes
+## Get started: build, test, and publish a plugin
+
+This is the shortest complete path from an empty directory to a reviewed submission. Run the
+commands from the plugin project directory unless noted otherwise.
+
+### 1. Scaffold and install
+
+```bash
+npx cio-plugin create reading-timer \
+  --id com.example.reading-timer \
+  --name "Reading timer" \
+  --publisher "Example"
+cd reading-timer
+npm install
+```
+
+`create` writes `plugin.json`, a Vite UI, an icon, and lifecycle scripts. The generated `dev` and
+`build` scripts are standard Vite commands: `dev` serves the UI for browser development and
+`build` compiles it. The `cio-plugin` CLI commands package, install, and publish artifacts.
+
+### 2. Configure local development
+
+```bash
+export CLASSROOMIO_API_URL=http://localhost:3002
+export CLASSROOMIO_PLUGIN_TOKEN=<api-key-with-plugin-publish-scope>
+export CLASSROOMIO_ORG_ID=<organization-id>
+npm run seed -- --org "$CLASSROOMIO_ORG_ID"
+```
+
+`CLASSROOMIO_API_URL` selects the API. `CLASSROOMIO_PLUGIN_TOKEN` authenticates the publisher.
+`CLASSROOMIO_ORG_ID` is required only by local `dev`/`seed` and selects the one organization that receives
+the development installation. It is not needed to publish a public marketplace plugin.
+
+The API validates the archive, stores local files under `PLUGIN_ARTIFACTS_PATH`, and installs the
+development version into that organization. Use `npm run dev` separately when you want to serve the
+UI directly from Vite for standalone browser work.
+
+### 3. Build and test locally
+
+```bash
+npm run build
+npm run pack
+```
+
+`npm run build` compiles the UI. `npm run pack` invokes `cio-plugin build`, validates the manifest, packages the compiled
+assets, creates a deterministic `.tar.gz` archive, and computes its `sha256-...` digest. Open the
+selected organization's plugin page in the local ClassroomIO dashboard to exercise the iframe,
+slots, permissions, and host SDK.
+
+### 4. Submit to quarantine
+
+```bash
+export CLASSROOMIO_API_URL=https://api.classroomio.com
+export CLASSROOMIO_PLUGIN_TOKEN=<api-key-with-plugin-publish-scope>
+unset CLASSROOMIO_ORG_ID
+npm run publish
+```
+
+`publish` creates a submission intent, receives a short-lived presigned upload URL, uploads the
+archive directly to the private `PLUGIN_QUARANTINE_BUCKET`, and asks the API to verify it. The API
+checks the digest, manifest, archive paths, links, and host imports before placing it in review.
+
+### 5. Track review
+
+```bash
+npm run status -- <submission-id>
+```
+
+Reviewers inspect the quarantined preview and either approve or reject the submission. Approval
+promotes the verified files to the production bucket; only then can organizations install the
+version from the catalog. See [Packaging and publishing](/developers/plugins/packaging-and-publishing)
+for credentials, storage setup, review roles, and troubleshooting.
+
+## Quickstart: understand the plugin structure
 
 ### 1. Install the SDK
 
@@ -115,11 +188,16 @@ Define your plugin metadata and declare the UI slot you wish to render into:
 ```json
 {
   "$schema": "https://classroomio.com/schemas/plugin.v1.json",
+  "manifestVersion": 1,
   "id": "com.example.reading-timer",
   "name": "Lesson Reading Timer",
   "version": "1.0.0",
   "publisher": "classroomio",
   "description": "Calculates reading time and renders reading metrics below lessons",
+  "engines": {
+    "classroomio": ">=1.0.0",
+    "pluginApi": "1.0.0"
+  },
   "runtime": {
     "ui": {
       "entrypoints": {
@@ -136,6 +214,10 @@ Define your plugin metadata and declare the UI slot you wish to render into:
         "title": "Estimated Reading Time"
       }
     ]
+  },
+  "dataPolicy": {
+    "storesCustomerData": false,
+    "retentionAfterUninstallDays": 0
   }
 }
 ```
@@ -172,11 +254,9 @@ init().catch(console.error);
 Compile your assets and generate a content-addressed artifact digest using the `cio-plugin` CLI:
 
 ```bash
-# 1. Compile UI assets
-pnpm vite build
-
-# 2. Package and compute SHA-256 digest
-npx cio-plugin pack
+# Compile UI assets, package, and compute the SHA-256 digest
+npm run build
+npm run pack
 ```
 
 The CLI outputs an immutable digest (e.g. `sha256-4b82...`) and organizes your artifact under `.plugin-artifacts/`.

@@ -1,212 +1,165 @@
 ---
-title: Packaging and Publishing
-description: Build immutable content-addressed plugin artifacts with the cio-plugin CLI and publish locally or to production.
+title: Packaging and publishing
+description: Build, develop, and submit a ClassroomIO plugin.
 ---
 
-ClassroomIO uses **content-addressed immutable packaging**. Every plugin release is identified by a cryptographic SHA-256 digest calculated over its manifest and compiled production files.
+`cio-plugin` has five commands.
 
-The official `@classroomio/plugin-sdk` includes the `cio-plugin` CLI to validate, hash, and package your plugins for distribution.
+| Command | Purpose |
+| --- | --- |
+| `cio-plugin create <directory>` | Create a Vite-based plugin starter. |
+| `cio-plugin build [path] [--all]` | Validate, compile, and produce a deterministic archive. `npm run pack` is the scaffolded alias. |
+| `cio-plugin dev [path] --org <organization-id>` | Build and install a development release into one local organization. `npm run seed` is the scaffolded alias. |
+| `cio-plugin publish [path]` | Build, upload to quarantine, and submit for review. |
+| `cio-plugin status <submission-id>` | Check a review result. |
 
----
-
-## The `cio-plugin` CLI
-
-The CLI is included automatically when you install `@classroomio/plugin-sdk`. You can execute it via `npx` or `pnpm exec`:
-
-```bash
-npx cio-plugin --help
-```
-
-### Commands
-
-| Command | Usage | Description |
-| :--- | :--- | :--- |
-| `cio-plugin init [name]` | `npx cio-plugin init my-plugin` | Scaffolds a new ClassroomIO plugin starter with TypeScript, Vite, and SDK setup. |
-| `cio-plugin validate [path]` | `npx cio-plugin validate` | Validates `plugin.json` structure against the ClassroomIO manifest schema. |
-| `cio-plugin pack [path]` | `npx cio-plugin pack` | Validates manifest, creates a deterministic `.tar.gz` archive and canonical SHA-256 digest. |
-| `cio-plugin publish [path]` | `npx cio-plugin publish --token $TOKEN` | Packages and uploads plugin to the quarantine registry for automated validation and review. |
-| `cio-plugin status <id>` | `npx cio-plugin status <id>` | Checks review and approval status for a submitted plugin release. |
-| `cio-plugin digest <dir>` | `npx cio-plugin digest ./dist` | Calculates deterministic SHA-256 hash over directory file paths and byte contents. |
-
-
----
-
-## Local Development Workflow
-
-When developing plugins on your local machine, the ClassroomIO API automatically serves files from disk, allowing you to test changes rapidly.
-
-```mermaid
-flowchart TD
-    A[Vite Build: dist/] --> B[npx cio-plugin pack]
-    B --> C[Packaged in .plugin-artifacts/]
-    C --> D[pnpm plugins:verify-artifacts]
-    D --> E[pnpm plugins:seed-official]
-    E --> F[Test in Local Dashboard: http://localhost:5173]
-```
-
-### Step 1: Compile Your Assets
-Run your project build command to generate static files in `./dist`:
+## Create a plugin
 
 ```bash
-pnpm vite build
+npx cio-plugin create reading-timer \
+  --id com.example.reading-timer \
+  --name "Reading timer" \
+  --publisher "Example"
+cd reading-timer
+npm install
 ```
 
-### Step 2: Package the Artifact
-Run `cio-plugin pack`:
+The generated project has conventional Vite `npm run dev` and `npm run build` scripts. Use the
+`cio-plugin` CLI explicitly when you need to install a packaged development release or create an
+immutable artifact. The generated `pack` and `seed` scripts reserve those names for ClassroomIO
+workflows without taking over npm's standard `build` and `dev` scripts.
+
+## Publisher credentials
+
+Publishing uses a scoped organization API key. The key secret is the value assigned to
+`CLASSROOMIO_PLUGIN_TOKEN`; it is shown only once when created.
+
+For the current v1 flow, a developer needs a ClassroomIO account and access to an organization.
+An organization administrator creates an API key with exactly the `plugin:publish` scope and gives
+the developer the secret through a secure channel. Do not use `PRIVATE_SERVER_KEY` or a broad
+`public_api:*` key.
+
+The key's organization is the credential owner. It is not the organization where a public plugin
+will eventually be installed. Public marketplace publishing does not require `CLASSROOMIO_ORG_ID`.
+
+The CLI currently requires `CLASSROOMIO_ORG_ID` only for `dev` (or its `npm run seed` alias), because local development must
+install into one explicit organization. The dashboard form for custom automation scopes is still a
+pending product surface; until it is available, an operator must create the scoped key through the
+approved administrative API/tooling.
+
+## Local development
+
+Start the ClassroomIO API locally, create a scoped publisher token, then target exactly one organization:
 
 ```bash
-npx cio-plugin pack
+export CLASSROOMIO_API_URL=http://localhost:3002
+export CLASSROOMIO_PLUGIN_TOKEN=<publisher-token>
+export CLASSROOMIO_ORG_ID=<organization-id>
+npm run dev
 ```
 
-**Output:**
-```text
-✓ Validated manifest for com.example.reading-timer (v1.0.0)
-✓ Packed com.example.reading-timer v1.0.0 (sha256-a1b2c3d4e5f6...)
+`npm run dev` starts the plugin's Vite server for standalone UI development. It does not install the
+plugin into ClassroomIO.
 
-Successfully packed 1 plugin release(s) in .plugin-artifacts/
-```
-
-### Step 3: Verify Integrity
-Validate that all files referenced in `runtime.ui.entrypoints` and icons exist:
+To validate, package, and install the development release in the selected organization, stop the
+Vite server and run:
 
 ```bash
-pnpm plugins:verify-artifacts
+npm run seed -- --org "$CLASSROOMIO_ORG_ID"
 ```
 
-### Step 4: Seed Into Local Database
-Register the plugin and version in your local PostgreSQL database:
+The API validates the archive, writes its files to `PLUGIN_ARTIFACTS_PATH`, and updates the named
+organization's installation. It never uses a server master key and is disabled in production.
+
+## Build
 
 ```bash
-pnpm plugins:seed-official
+npm run build
+npm run pack
 ```
 
-### Step 5: Test on Dashboard
-1. Open the dashboard at `http://localhost:5173`.
-2. Navigate to **Settings > Plugins**.
-3. Locate your plugin in the Catalog and click **Install**.
-4. Visit the slot where your plugin is mounted (e.g. `lesson.after`) to test live.
+`npm run build` compiles the UI. `npm run pack` invokes `cio-plugin build`, which validates `plugin.json`, checks the generated
+assets, and creates a deterministic archive beneath `.plugin-artifacts/`. The SHA-256 digest
+identifies the exact artifact that will be submitted.
 
----
-
-## Production CI/CD Workflow
-
-In production, assets are served from a high-performance CDN / Cloudflare R2 / AWS S3 origin (`PLUGIN_ASSET_ORIGIN`), and releases are published to the ClassroomIO database via authenticated internal endpoints.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant CI as GitHub Actions CI
-    participant S3 as S3 / Cloudflare R2 (CDN)
-    participant API as ClassroomIO API
-    participant DB as Production Database
-
-    CI->>CI: pnpm build && npx cio-plugin pack
-    CI->>S3: aws s3 sync .plugin-artifacts/ s3://assets.classroomio.com/
-    Note over S3: Assets cached with immutable headers
-    CI->>API: POST /internal/plugins/releases (with $INTERNAL_API_KEY)
-    API->>API: Validate manifest & check digest immutability
-    API->>DB: Upsert plugin & create approved plugin_version
-    API-->>CI: 201 Created (Plugin is live in Marketplace)
-```
-
-### Step 1: CI Build & Packaging
-In your CI workflow (e.g. `.github/workflows/deploy.yml`):
-
-```yaml
-- name: Build and Pack Plugin
-  run: |
-    pnpm install --frozen-lockfile
-    pnpm vite build
-    npx cio-plugin pack
-```
-
-### Step 2: Upload Assets to CDN / Object Storage
-Upload the contents of `.plugin-artifacts/` to your object storage bucket:
-
-<CodeGroup>
-
-```bash AWS S3
-aws s3 sync .plugin-artifacts/ s3://classroomio-plugin-assets/ \
-  --cache-control "public, max-age=31536000, immutable"
-```
-
-```bash Cloudflare R2
-wrangler r2 object put classroomio-plugin-assets/.plugin-artifacts \
-  --file=.plugin-artifacts \
-  --cache-control="public, max-age=31536000, immutable"
-```
-
-</CodeGroup>
-
-Because each version URL includes its exact SHA-256 digest (`/:pluginId/:version/:digest/...`), assets can be cached aggressively forever without cache invalidation risks.
-
-### Step 3: Publish with the `cio-plugin publish` Command
-
-ClassroomIO uses a **three-lane release model** with automated quarantine scanning and integrity verification:
-
-| Release Lane | Publisher | Distribution | Review & Approval Policy |
-| :--- | :--- | :--- | :--- |
-| **First-Party** | ClassroomIO Core Team | Public Catalog | Fast team approval; auto-promoted on valid signature and `com.classroomio.*` namespace. |
-| **Private** | Organization Developers | Organization Only | Automatic approval for the publishing organization; scoped strictly to authorized workspaces. |
-| **Community Public** | Third-Party Developers | Public Marketplace | Uploaded to isolated quarantine storage; undergoes static code analysis and ClassroomIO marketplace team review. |
-
-#### Submitting a Release
-
-From your plugin project directory, run:
+## Submit for review
 
 ```bash
-npx cio-plugin publish --token $CLASSROOMIO_API_TOKEN
+export CLASSROOMIO_API_URL=https://api.classroomio.com
+export CLASSROOMIO_PLUGIN_TOKEN=<publisher-token>
+npm run publish
 ```
 
-For private organization plugins, pass the `--org` flag:
+The API creates a submission and returns a short-lived object-storage upload URL. The CLI uploads the archive directly to the private quarantine bucket, then tells the API to verify it. The archive is checked for its digest, manifest, unsafe paths, links, and host imports before a review record is created.
 
-```bash
-npx cio-plugin publish --token $CLASSROOMIO_API_TOKEN --org $ORG_ID
-```
+ClassroomIO namespace plugins (`com.classroomio.*`) require a platform-admin publisher token. All other plugins use the same review pipeline.
 
-#### What Happens Under the Hood
-1. **Packaging**: Creates an in-memory deterministic POSIX ustar `.tar.gz` archive and computes the exact `sha256-<hex>` digest.
-2. **Quarantine Upload**: Creates a submission intent and uploads the tarball to an isolated quarantine bucket.
-3. **Automated Security Scan**: The registry downloads the quarantined archive, recomputes the SHA-256 hash, validates `plugin.json` against `ZPluginManifest`, and scans for forbidden imports (`@cio/*`, `$lib/*`) or path traversal attempts.
-4. **Promotion**:
-   - First-party and private plugins are automatically unpacked into the CDN and published.
-   - Community plugins transition to `in_review` and are queued for marketplace approval.
+## Review and release
 
-#### Checking Submission Status
+Reviewers inspect a quarantined submission through the reviewer API and the configured review origin, then either reject it with notes or approve it. Approval copies the verified assets and archive from quarantine to `PLUGIN_ASSET_BUCKET`; production loads them only from `PLUGIN_ASSET_ORIGIN` under the verified content digest. Quarantine objects are never served by the production CDN.
 
-You can monitor review progress at any time:
+The API currently provides the reviewer queue, submission details, preview URL, and approve/reject actions. A dashboard reviewer screen and the Cloudflare review-origin worker are deployment surfaces that must be provided by the host environment; `PLUGIN_REVIEW_ORIGIN` must resolve a reviewer-authenticated preview for the submission ID.
 
-```bash
-npx cio-plugin status <submissionId>
-```
+The planned reviewer dashboard is platform-admin-only. It will show the review queue, manifest,
+digest, permissions, validation results, quarantined preview, review notes, and immutable approval
+history. Organization administrators and plugin publishers cannot approve releases.
 
+## Production storage setup
 
----
+Use separate private storage locations for quarantine and approved artifacts:
 
-## Provisioning Backend OAuth2 Credentials
+| Location | API access | Browser access |
+| --- | --- | --- |
+| `PLUGIN_QUARANTINE_BUCKET` | API read; presigned upload only | Review origin only, authenticated |
+| `PLUGIN_ASSET_BUCKET` | API promotion write | Production CDN read-only |
 
-If your plugin includes a remote server (`runtime.backend.baseUrl`), generate OAuth2 client credentials to authenticate your backend:
+The review and production origins must be separate. The production CDN must never read from the
+quarantine bucket. Configure the review worker to validate the submission ID, authenticate the
+reviewer, apply restrictive CSP/CORS headers, and expose only the quarantined preview. Configure
+the production worker to serve only approved, digest-qualified keys.
 
-```bash
-curl -X POST https://api.classroomio.com/internal/plugins/backend-clients \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $INTERNAL_API_KEY" \
-  -d '{
-    "pluginId": "com.example.reading-timer",
-    "label": "Production Backend"
-  }'
-```
+## Complete lifecycle
 
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "clientId": "cio_client_9f8e7d6c5b4a",
-    "clientSecret": "cio_sec_1a2b3c4d5e6f...",
-    "issuedAt": "2026-10-12T13:00:00Z"
-  }
-}
-```
+1. `create` scaffolds the project, `npm run build` compiles the UI, and `npm run pack` invokes `cio-plugin build` to produce a deterministic archive.
+2. `npm run seed` invokes `cio-plugin dev` and sends that archive to the local development endpoint, where it is validated, unpacked under `PLUGIN_ARTIFACTS_PATH`, registered as a private development version, and installed in one organization.
+3. `publish` creates a database intent, receives a short-lived R2/S3 presigned upload URL, uploads the archive directly to quarantine, and calls `complete`.
+4. `complete` reads the quarantine object, verifies its digest and manifest, rejects unsafe paths/links/host imports, and moves the submission to `in_review`.
+5. A platform reviewer uses the reviewer queue and preview origin. Rejection records notes and leaves the artifact quarantined; approval copies every verified file to the immutable production bucket and marks the version approved.
+6. The catalog exposes only approved versions. Organization administrators install an approved version, and the host serves its assets from the digest-qualified production CDN URL.
 
-Store `clientId` and `clientSecret` securely in your backend environment variables to exchange launch codes and authenticate webhooks.
+The publisher token is never a server master key. `PRIVATE_SERVER_KEY` remains an internal dashboard/API credential and must not be used by plugin developers or CI.
+
+## Environment variables
+
+### CLI
+
+| Variable | Required by | Meaning |
+| --- | --- | --- |
+| `CLASSROOMIO_API_URL` | `dev`, `publish`, `status` | API origin; defaults to `http://localhost:3002`. |
+| `CLASSROOMIO_PLUGIN_TOKEN` | `dev`, `publish`, `status` | Scoped publisher token. |
+| `CLASSROOMIO_ORG_ID` | `dev` | Local target organization; `--org` overrides it. |
+
+### API host
+
+| Variable | Environment | Meaning |
+| --- | --- | --- |
+| `PLUGIN_API_TOKEN_SECRET` | production | Independent secret (at least 32 characters) used to sign plugin backend access tokens. Never expose it to plugin UI or CLI users. |
+| `PLUGIN_ARTIFACTS_PATH` | local | Filesystem root for development artifacts. |
+| `PLUGIN_QUARANTINE_BUCKET` | local and production publishing | Private R2/S3 bucket for submitted archives. |
+| `PLUGIN_REVIEW_ORIGIN` | production review | Authenticated reviewer-only preview origin. |
+| `PLUGIN_ASSET_BUCKET` | production | Bucket for approved assets. |
+| `PLUGIN_ASSET_ORIGIN` | production | CDN origin for approved assets. |
+
+`PRIVATE_SERVER_KEY` is an API-host internal-service credential. It is not a plugin CLI credential and must never be placed in a plugin repository or CI publishing environment.
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+| --- | --- | --- |
+| `Local development requires --org` | `dev`/`seed` has no target organization | Set `CLASSROOMIO_ORG_ID` or pass `--org`. |
+| `API key is missing plugin:publish scope` | The token is an ordinary API key | Create or rotate a key with only `plugin:publish`. |
+| `PLUGIN_QUARANTINE_BUCKET is required` | The production submission bucket is unset | Configure the private quarantine bucket on the API. |
+| Digest mismatch | The archive changed after the intent was created | Run `build` again and publish the resulting archive. |
+| Manifest mismatch or forbidden import | The packaged `plugin.json` or source violates the release rules | Fix the manifest/source and rebuild. |
+| Preview fails but review succeeds | Review-origin worker, authentication, or CORS/CSP is misconfigured | Check the review origin and keep it separate from production assets. |
+| Approved plugin assets fail to load | CDN origin, bucket policy, or response headers are incorrect | Verify the digest-qualified production key and CDN response headers. |
