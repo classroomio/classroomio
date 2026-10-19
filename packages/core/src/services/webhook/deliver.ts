@@ -19,6 +19,7 @@ import {
 } from '@cio/utils/constants/webhook';
 
 import { getWebhookUrlPolicy } from './policy';
+import { notifyWebhookHealthChange } from './health';
 import { redactSensitiveText, truncateText } from './redact';
 import { decryptWebhookSecret } from './secret';
 import { sendWebhookRequest } from './send';
@@ -151,7 +152,11 @@ async function drainWebhookEndpoint(webhookId: string): Promise<{ count: number;
     }
 
     const result = await attemptWebhookDelivery(endpoint, record.delivery, record.event);
-    await recordWebhookAttempt(record.delivery.id, webhookId, !record.delivery.isTest, result);
+    const transition = await recordWebhookAttempt(record.delivery.id, webhookId, !record.delivery.isTest, result);
+
+    if (transition) {
+      await notifyWebhookHealthChange(webhookId, transition, record.delivery.id);
+    }
   }
 
   const nextAttemptAt = await getEarliestPendingWebhookAttemptAt(webhookId);

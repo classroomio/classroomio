@@ -10,8 +10,11 @@ import type {
 } from '@db/types';
 import { and, count, desc, eq, gte, inArray, lte, or, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient, type TxClient } from '@db/drizzle';
+import { WEBHOOK_DEGRADED_FAILURE_THRESHOLD } from '@cio/utils/constants/webhook';
 
 export type TWebhookEndpointWithEvents = TWebhookEndpoint & { eventTypes: string[] };
+
+export type TWebhookHealthTransition = 'degraded' | 'disabled' | null;
 
 export type TWebhookDeliveryRecord = {
   delivery: TWebhookDelivery;
@@ -460,12 +463,10 @@ export async function recordWebhookAttempt(
   affectsHealth: boolean,
   result: TWebhookAttemptResult,
   client?: DbOrTxClient
-): Promise<void> {
+): Promise<TWebhookHealthTransition> {
   try {
     if (!client) {
-      await db.transaction((tx) => recordWebhookAttempt(deliveryId, webhookId, affectsHealth, result, tx));
-
-      return;
+      return await db.transaction((tx) => recordWebhookAttempt(deliveryId, webhookId, affectsHealth, result, tx));
     }
 
     const nowIso = new Date().toISOString();
@@ -490,7 +491,7 @@ export async function recordWebhookAttempt(
       })
       .where(eq(schema.webhookDelivery.id, deliveryId));
 
-    if (!affectsHealth) return;
+    if (!affectsHealth) return null;
 
     if (result.success) {
       await client
@@ -498,12 +499,12 @@ export async function recordWebhookAttempt(
         .set({ consecutiveFailures: 0, lastDeliveryStatus: 'SUCCESS', lastDeliveryAt: nowIso })
         .where(eq(schema.webhookEndpoint.id, webhookId));
 
-      return;
+      return null;
     }
 
-    if (status !== 'GAVE_UP') return;
+    if (status !== 'GAVE_UP') return null;
 
-    await client
+    const [updated] = await client
       .update(schema.webhookEndpoint)
       .set({
         consecutiveFailures: sql`${schema.webhookEndpoint.consecutiveFailures} + 1`,
@@ -512,7 +513,17 @@ export async function recordWebhookAttempt(
         isActive: sql`case when ${schema.webhookEndpoint.consecutiveFailures} + 1 >= ${result.failureThreshold} then false else ${schema.webhookEndpoint.isActive} end`,
         autoDisabledAt: sql`case when ${schema.webhookEndpoint.consecutiveFailures} + 1 >= ${result.failureThreshold} then ${nowIso}::timestamptz else ${schema.webhookEndpoint.autoDisabledAt} end`
       })
-      .where(eq(schema.webhookEndpoint.id, webhookId));
+      .where(eq(schema.webhookEndpoint.id, webhookId))
+      .returning({
+        consecutiveFailures: schema.webhookEndpoint.consecutiveFailures,
+        isActive: schema.webhookEndpoint.isActive
+      });
+
+    if (!updated) return null;
+    if (updated.consecutiveFailures === result.failureThreshold && !updated.isActive) return 'disabled';
+    if (updated.consecutiveFailures === WEBHOOK_DEGRADED_FAILURE_THRESHOLD) return 'degraded';
+
+    return null;
   } catch (error) {
     console.error('recordWebhookAttempt error:', error);
     throw new Error('Failed to record webhook attempt');

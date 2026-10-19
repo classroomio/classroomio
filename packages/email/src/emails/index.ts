@@ -31,6 +31,8 @@ export * from './early-adopter-reminder';
 export * from './student-limit-reached';
 export * from './student-limit-approaching';
 export * from './content-report-alert';
+export * from './webhook-failing';
+export * from './webhook-disabled';
 
 import type { newsfeedCommentEmail, newsfeedPostEmail } from './newsfeed';
 
@@ -54,6 +56,8 @@ import type { earlyAdopterReminderEmail } from './early-adopter-reminder';
 import type { studentLimitReachedEmail } from './student-limit-reached';
 import type { studentLimitApproachingEmail } from './student-limit-approaching';
 import type { contentReportAlertEmail } from './content-report-alert';
+import type { webhookFailingEmail } from './webhook-failing';
+import type { webhookDisabledEmail } from './webhook-disabled';
 import type { teacherCourseWelcomeEmail } from './teacher-course-welcome';
 import type { teacherStudentBuyRequestEmail } from './teacher-student-buy-request';
 import type { teacherStudentJoinedEmail } from './teacher-student-joined';
@@ -94,4 +98,6 @@ export type EmailSchemas = {
   studentLimitReached: typeof studentLimitReachedEmail.template.schema;
   studentLimitApproaching: typeof studentLimitApproachingEmail.template.schema;
   contentReportAlert: typeof contentReportAlertEmail.template.schema;
+  webhookFailing: typeof webhookFailingEmail.template.schema;
+  webhookDisabled: typeof webhookDisabledEmail.template.schema;
 };
