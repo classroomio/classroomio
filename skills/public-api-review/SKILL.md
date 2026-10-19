@@ -47,6 +47,7 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
   - why a call fails goes in the matching error response description.
   - what the response holds goes in the success response description or the response field's `.describe()`.
 - An MCP tool description is the same sentence plus at most one more, kept only when an agent would otherwise call the tool wrongly (a tool to call first, a status code to expect).
+- Check every claim against the service and schema, including text you only moved or shortened. A list of accepted values names every value in the schema's enum; if only some are for new data, say which. Guidance moved onto a field ("use X") is not that field's contract ("accepts X, Y, Z").
 
 ## Validate at the public API boundary
 
