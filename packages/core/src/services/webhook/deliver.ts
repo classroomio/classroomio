@@ -19,6 +19,7 @@ import {
 } from '@cio/utils/constants/webhook';
 
 import { getWebhookUrlPolicy } from './policy';
+import { hasWebhookEntitlement } from './entitlement';
 import { notifyWebhookHealthChange } from './health';
 import { redactSensitiveText, truncateText } from './redact';
 import { decryptWebhookSecret } from './secret';
@@ -134,13 +135,15 @@ async function drainWebhookEndpoint(webhookId: string): Promise<{ count: number;
 
     count += 1;
 
-    if (!endpoint.isActive && !record.delivery.isTest) {
+    const isEntitled = endpoint.isActive ? await hasWebhookEntitlement(endpoint.organizationId) : true;
+
+    if ((!endpoint.isActive || !isEntitled) && !record.delivery.isTest) {
       const skipped: TWebhookAttemptResult = {
         success: false,
         attempt: record.delivery.attempt,
         responseStatus: null,
         responseBody: null,
-        errorMessage: 'Endpoint is disabled',
+        errorMessage: endpoint.isActive ? 'Webhooks are not included in the current plan' : 'Endpoint is disabled',
         durationMs: 0,
         requestHeaders: {},
         nextAttemptAt: null,

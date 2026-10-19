@@ -37,6 +37,7 @@ import { decryptWebhookSecret } from '@cio/core/services/webhook/secret';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import {
   createWebhookEndpointWithinLimit,
+  deleteWebhookEndpoint,
   getWebhookDeliveryStats,
   getWebhookEndpoint,
   listWebhookEndpoints,
@@ -49,9 +50,14 @@ import { WEBHOOK_EVENT_TYPES, WEBHOOK_MAX_ENDPOINTS_PER_ORG } from '@cio/utils/c
 import { ZCreateWebhook, ZUpdateWebhook } from '@cio/utils/validation/webhook';
 import {
   createWebhookService,
+  deleteWebhookService,
+  getWebhookDeliveryService,
+  getWebhookService,
+  listWebhookDeliveriesService,
   listWebhooksService,
   redeliverWebhookService,
   regenerateWebhookSecretService,
+  sendTestWebhookService,
   updateWebhookService
 } from '@api/services/webhook/webhook';
 
@@ -105,23 +111,37 @@ describe('webhook service', () => {
   });
 
   describe('plan entitlement', () => {
-    it('rejects a BASIC org on every operation', async () => {
+    it('rejects a BASIC org on every operation before touching any webhook data', async () => {
       allowPlan('BASIC');
 
-      await expect(listWebhooksService(orgId)).rejects.toMatchObject({ statusCode: 403, code: 'UPGRADE_REQUIRED' });
-      await expect(
-        createWebhookService(
-          orgId,
-          'profile-1',
-          ZCreateWebhook.parse({ name: 'x', payloadUrl: 'https://a.example.com', eventTypes: ['course.completed'] })
-        )
-      ).rejects.toMatchObject({ statusCode: 403 });
-      await expect(updateWebhookService(orgId, webhookId, 'profile-1', {})).rejects.toMatchObject({ statusCode: 403 });
-      await expect(regenerateWebhookSecretService(orgId, webhookId, 'profile-1')).rejects.toMatchObject({
-        statusCode: 403
-      });
-      await expect(redeliverWebhookService(orgId, webhookId, 'whd_1')).rejects.toMatchObject({ statusCode: 403 });
+      const operations = [
+        () => listWebhooksService(orgId),
+        () => getWebhookService(orgId, webhookId),
+        () =>
+          createWebhookService(
+            orgId,
+            'profile-1',
+            ZCreateWebhook.parse({ name: 'x', payloadUrl: 'https://a.example.com', eventTypes: ['course.completed'] })
+          ),
+        () => updateWebhookService(orgId, webhookId, 'profile-1', {}),
+        () => regenerateWebhookSecretService(orgId, webhookId, 'profile-1'),
+        () => deleteWebhookService(orgId, webhookId),
+        () => sendTestWebhookService(orgId, webhookId),
+        () => listWebhookDeliveriesService(orgId, webhookId, { page: 1, limit: 10 }),
+        () => getWebhookDeliveryService(orgId, webhookId, 'whd_1'),
+        () => redeliverWebhookService(orgId, webhookId, 'whd_1')
+      ];
+
+      for (const operation of operations) {
+        await expect(operation()).rejects.toMatchObject({ statusCode: 403, code: 'UPGRADE_REQUIRED' });
+      }
+
       expect(createWebhookEndpointWithinLimit).not.toHaveBeenCalled();
+      expect(getWebhookEndpoint).not.toHaveBeenCalled();
+      expect(listWebhookEndpoints).not.toHaveBeenCalled();
+      expect(deleteWebhookEndpoint).not.toHaveBeenCalled();
+      expect(updateWebhookEndpoint).not.toHaveBeenCalled();
+      expect(requeueWebhookDelivery).not.toHaveBeenCalled();
     });
 
     it('rejects an org with no active plan', async () => {

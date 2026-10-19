@@ -34,7 +34,7 @@ describe('webhook secrets', () => {
 
   it('rejects tampered ciphertext', () => {
     const [version, iv, tag, ciphertext] = encryptWebhookSecret('top-secret').split('.');
-    const flipped = `${ciphertext!.slice(0, -2)}AA`;
+    const flipped = `${ciphertext![0] === 'A' ? 'B' : 'A'}${ciphertext!.slice(1)}`;
 
     expect(() => decryptWebhookSecret([version, iv, tag, flipped].join('.'))).toThrow();
   });

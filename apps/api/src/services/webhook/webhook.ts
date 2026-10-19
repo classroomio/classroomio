@@ -3,9 +3,9 @@ import { attemptWebhookDelivery, createWebhookRecordId } from '@cio/core/service
 import { buildWebhookEnvelope } from '@cio/core/services/webhook/emit';
 import { getWebhookUrlPolicy } from '@cio/core/services/webhook/policy';
 import { encryptWebhookSecret, generateWebhookSecret } from '@cio/core/services/webhook/secret';
+import { hasWebhookEntitlement } from '@cio/core/services/webhook/entitlement';
 import { assertWebhookUrlShape, resolveWebhookTarget, WebhookUrlError } from '@cio/core/services/webhook/url-guard';
 import { db } from '@cio/db/drizzle';
-import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import {
   createWebhookEndpointWithinLimit,
   deleteWebhookEndpoint,
@@ -29,7 +29,6 @@ import {
   WEBHOOK_MAX_ENDPOINTS_PER_ORG,
   type TWebhookEndpointHealth
 } from '@cio/utils/constants/webhook';
-import { canUsePublicApi } from '@cio/utils/plans';
 import type { TCreateWebhook, TUpdateWebhook, TWebhookDeliveryListQuery } from '@cio/utils/validation/webhook';
 
 import { AppError, ErrorCodes } from '@api/utils/errors';
@@ -101,13 +100,12 @@ function toDeliveryDetail(record: TWebhookDeliveryRecord) {
  * Throws 403 unless the org's plan includes REST API access, which webhooks share.
  */
 export async function assertWebhooksAllowed(organizationId: string): Promise<void> {
-  const activePlan = await getActiveOrganizationPlan(organizationId);
-  const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
-
-  if (canUsePublicApi(activePlan?.planName ?? null, isSelfHosted)) return;
+  if (await hasWebhookEntitlement(organizationId)) return;
 
   throw new AppError(
-    isSelfHosted ? 'Webhooks require an Enterprise plan' : 'Webhooks require an Early Adopter or Enterprise plan',
+    env.PUBLIC_IS_SELFHOSTED === 'true'
+      ? 'Webhooks require an Enterprise plan'
+      : 'Webhooks require an Early Adopter or Enterprise plan',
     ErrorCodes.UPGRADE_REQUIRED,
     403
   );

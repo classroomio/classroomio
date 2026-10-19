@@ -1,15 +1,13 @@
-import { getActiveOrganizationPlan, getOrganizationById } from '@cio/db/queries/organization';
+import { getOrganizationById } from '@cio/db/queries/organization';
 import { insertWebhookEventWithDeliveries, listActiveEndpointsForEvent } from '@cio/db/queries/webhook';
 import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import type { TGroupmember } from '@cio/db/types';
 import { enqueueWebhookDelivery } from '@cio/jobs';
 import { WEBHOOK_API_VERSION, type TWebhookEventType } from '@cio/utils/constants/webhook';
 import type { TCourseWebhookEventType, TWebhookEventData } from '@cio/utils/validation/webhook';
-import { canUsePublicApi } from '@cio/utils/plans';
-
-import { env } from '../../config/env';
 
 import { createWebhookRecordId } from './deliver';
+import { hasWebhookEntitlement } from './entitlement';
 
 export type TWebhookEventEnvelope = {
   id: string;
@@ -51,9 +49,7 @@ export async function emitWebhookEvent<TEvent extends TWebhookEventType>(
 
     if (endpoints.length === 0) return;
 
-    const activePlan = await getActiveOrganizationPlan(organizationId);
-
-    if (!canUsePublicApi(activePlan?.planName ?? null, env.PUBLIC_IS_SELFHOSTED === 'true')) return;
+    if (!(await hasWebhookEntitlement(organizationId))) return;
 
     const envelope = await buildWebhookEnvelope(organizationId, eventType, data);
     const now = new Date().toISOString();
