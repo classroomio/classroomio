@@ -4598,6 +4598,7 @@
       "status": {
         "ready": "Pronto",
         "already_member": "Già tra il pubblico",
+        "invite_resent": "Invito inviato di nuovo",
         "invalid_email": "E-mail non valida",
         "duplicate_in_file": "Duplicato nel file",
         "is_staff": "Personale, non studente",

@@ -817,6 +817,7 @@
       "status": {
         "ready": "Bereit",
         "already_member": "Bereits im Publikum",
+        "invite_resent": "Einladung erneut gesendet",
         "invalid_email": "Ungültige E-Mail-Adresse",
         "duplicate_in_file": "Duplikat in der Datei",
         "over_seat_limit": "Alle Plätze belegt",

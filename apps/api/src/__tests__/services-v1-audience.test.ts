@@ -103,6 +103,44 @@ describe('services/v1/audience', () => {
     });
   });
 
+  describe('createAudienceService', () => {
+    it('sends a single email as before', async () => {
+      await createAudienceService(ORG_ID, ACTOR_ID, { email: 'new@example.com', sendEmail: true });
+
+      expect(importAudienceMembers).toHaveBeenCalledWith(
+        ORG_ID,
+        {
+          recipientCsv: 'new@example.com',
+          courseIds: undefined,
+          allCourses: false,
+          allCohorts: false,
+          sendEmail: true
+        },
+        ACTOR_ID
+      );
+    });
+
+    it('sends a list as one row per address, in order', async () => {
+      await createAudienceService(ORG_ID, ACTOR_ID, {
+        emails: ['a@example.com', 'not-an-email', 'a@example.com'],
+        courseIds: ['course-1'],
+        sendEmail: false
+      });
+
+      expect(importAudienceMembers).toHaveBeenCalledWith(
+        ORG_ID,
+        {
+          recipients: [{ email: 'a@example.com' }, { email: 'not-an-email' }, { email: 'a@example.com' }],
+          courseIds: ['course-1'],
+          allCourses: false,
+          allCohorts: false,
+          sendEmail: false
+        },
+        ACTOR_ID
+      );
+    });
+  });
+
   it('removes a member as the actor, so their invites are revoked', async () => {
     await removeAudienceService(ORG_ID, MEMBER_ID, ACTOR_ID);
 

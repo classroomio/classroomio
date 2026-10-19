@@ -517,7 +517,7 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
 
     if (!m.profileId) {
       pendingStudentEmails.push(row.email);
-      row.status = 'already_member';
+      row.status = 'invite_resent';
       continue;
     }
 

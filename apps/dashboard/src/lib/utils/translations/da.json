@@ -817,6 +817,7 @@
       "status": {
         "ready": "Klar",
         "already_member": "Allerede i målgruppen",
+        "invite_resent": "Invitation sendt igen",
         "invalid_email": "Ugyldig e-mail",
         "duplicate_in_file": "Duplikat i filen",
         "over_seat_limit": "Ingen pladser tilbage",

@@ -143,7 +143,7 @@ function applySecurityToOperations(paths: Record<string, unknown>) {
 // Keyed by "METHOD /path" (the exact template, including `{param}` braces).
 const OPERATION_SUMMARIES: Record<string, string> = {
   'GET /public-api/v1/audience': 'List audience members',
-  'POST /public-api/v1/audience': 'Invite an audience member',
+  'POST /public-api/v1/audience': 'Invite audience members',
   'POST /public-api/v1/audience/assign-courses': 'Assign members to courses',
   'GET /public-api/v1/audience/{memberId}': 'Get an audience member',
   'PUT /public-api/v1/audience/{memberId}': 'Update an audience member',

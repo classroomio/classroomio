@@ -817,6 +817,7 @@
       "status": {
         "ready": "Готово",
         "already_member": "Уже в аудитории",
+        "invite_resent": "Приглашение отправлено повторно",
         "invalid_email": "Неверный адрес электронной почты",
         "duplicate_in_file": "Дубликат в файле",
         "over_seat_limit": "Нет свободных мест",

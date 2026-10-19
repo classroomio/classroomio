@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { AUDIENCE_IMPORT_MAX_ROWS } from '../organization/audience-import';
+
 const ZPublicApiAudienceActivityWindow = z.enum(['7d', '30d', '90d', '180d', 'never']);
 
 export const ZPublicApiAudienceQuery = z.object({
@@ -21,11 +23,24 @@ export const ZPublicApiAudienceQuery = z.object({
 });
 export type TPublicApiAudienceQuery = z.infer<typeof ZPublicApiAudienceQuery>;
 
-export const ZPublicApiCreateAudience = z.object({
-  email: z.string().email(),
-  courseIds: z.array(z.string().uuid()).optional(),
-  sendEmail: z.boolean().default(true)
-});
+export const ZPublicApiCreateAudience = z
+  .object({
+    email: z.string().email().optional().describe('One person to invite. Send this or emails, not both'),
+    emails: z
+      .array(z.string().trim().max(320))
+      .min(1)
+      .max(AUDIENCE_IMPORT_MAX_ROWS)
+      .optional()
+      .describe(
+        `Up to ${AUDIENCE_IMPORT_MAX_ROWS} people to invite in one request. An address that is not valid comes back as an invalid_email row instead of failing the request. Names are not taken here; set one with PUT /audience/{memberId} after the person joins`
+      ),
+    courseIds: z.array(z.string().uuid()).optional(),
+    sendEmail: z.boolean().default(true)
+  })
+  .refine((data) => (data.email === undefined) !== (data.emails === undefined), {
+    message: 'Send email or emails, not both',
+    path: ['emails']
+  });
 export type TPublicApiCreateAudience = z.infer<typeof ZPublicApiCreateAudience>;
 
 export const ZPublicApiMemberName = z.string().trim().min(3).max(120);

@@ -82,13 +82,18 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create an audience member invitation for the authenticated organization. ${ORG_ADMIN_RULE}`,
+      description: `Invite one person (email) or up to 1000 (emails) to the organization as students. ${ORG_ADMIN_RULE}`,
       tags: ['Audience'],
       responses: {
-        201: jsonResponse('Audience member created successfully', itemResponse(ZPublicApiCreateAudienceResponse)),
+        201: jsonResponse(
+          'Invites processed. rows has one entry per address, in order, with what happened to it',
+          itemResponse(ZPublicApiCreateAudienceResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: forbidden('audience:write'),
+        403: {
+          description: `${forbidden('audience:write').description}, or the Free plan student limit was reached while the request ran (UPGRADE_REQUIRED)`
+        },
         429: mcpRateLimitResponse
       }
     }),

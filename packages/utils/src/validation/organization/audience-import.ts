@@ -20,6 +20,7 @@ export const AUDIENCE_IMPORT_ACCEPT = '.csv,text/csv';
 export const AudienceImportRowStatus = z.enum([
   'ready',
   'already_member',
+  'invite_resent',
   'invalid_email',
   'duplicate_in_file',
   'is_staff',

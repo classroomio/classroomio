@@ -183,18 +183,26 @@ exports[`public API team and audience update contract > ZPublicApiCreateAudience
       "type": "array",
     },
     "email": {
+      "description": "One person to invite. Send this or emails, not both",
       "format": "email",
       "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
       "type": "string",
+    },
+    "emails": {
+      "description": "Up to 1000 people to invite in one request. An address that is not valid comes back as an invalid_email row instead of failing the request. Names are not taken here; set one with PUT /audience/{memberId} after the person joins",
+      "items": {
+        "maxLength": 320,
+        "type": "string",
+      },
+      "maxItems": 1000,
+      "minItems": 1,
+      "type": "array",
     },
     "sendEmail": {
       "default": true,
       "type": "boolean",
     },
   },
-  "required": [
-    "email",
-  ],
   "type": "object",
 }
 `;

@@ -53,7 +53,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'add_audience_member',
-    `Invite someone to the organization as a student by email, optionally enrolling them in courses. Sends an invite email unless sendEmail is false. ${ORG_ADMIN_RULE}`,
+    `Invite one student (email) or up to 1000 (emails) to the organization, optionally enrolling them in courses. Returns what happened to each address. Sends invite emails unless sendEmail is false. ${ORG_ADMIN_RULE}`,
     addAudienceMemberShape,
     WRITE,
     async (args) => {

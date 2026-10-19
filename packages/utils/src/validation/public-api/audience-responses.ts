@@ -32,15 +32,20 @@ export const ZPublicApiCreateAudienceResponse = z.object({
     z.object({
       email: z.string(),
       name: z.string().optional(),
-      status: z.enum([
-        'ready',
-        'already_member',
-        'invalid_email',
-        'duplicate_in_file',
-        'is_staff',
-        'over_seat_limit',
-        'missing_email'
-      ])
+      status: z
+        .enum([
+          'ready',
+          'already_member',
+          'invite_resent',
+          'invalid_email',
+          'duplicate_in_file',
+          'is_staff',
+          'over_seat_limit',
+          'missing_email'
+        ])
+        .describe(
+          'ready: added to the organization and invited. already_member: a student who has joined; enrolled in courseIds directly. invite_resent: invited earlier but not joined; earlier invites are revoked and a new one is created. invalid_email, missing_email: skipped. duplicate_in_file: the address appears earlier in the request; skipped. is_staff: an admin or tutor of the organization; skipped. over_seat_limit: no student seats left on the plan; skipped'
+        )
     })
   ),
   assigned: z.number(),

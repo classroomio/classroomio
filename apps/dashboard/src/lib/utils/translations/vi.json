@@ -817,6 +817,7 @@
       "status": {
         "ready": "Sẵn sàng",
         "already_member": "Đã có trong danh sách người tham dự",
+        "invite_resent": "Đã gửi lại lời mời",
         "invalid_email": "Email không hợp lệ",
         "duplicate_in_file": "Trùng lặp trong tệp",
         "over_seat_limit": "Không còn chỗ trống",

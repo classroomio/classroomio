@@ -28,7 +28,9 @@ export async function createAudienceService(orgId: string, actorId: string | nul
   return importAudienceMembers(
     orgId,
     {
-      recipientCsv: payload.email,
+      ...(payload.emails
+        ? { recipients: payload.emails.map((email) => ({ email })) }
+        : { recipientCsv: payload.email }),
       courseIds: payload.courseIds,
       allCourses: false,
       allCohorts: false,

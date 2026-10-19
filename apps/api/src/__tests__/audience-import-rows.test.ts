@@ -120,6 +120,19 @@ describe('importAudienceMembers — one bad row does not fail the batch', () => 
     expect(result.imported).toBe(0);
   });
 
+  it('reports a fresh invite for a student who has not joined yet', async () => {
+    vi.mocked(getOrganizationMembersByNormalizedEmails).mockResolvedValue([
+      { normalizedEmail: 'ada@test.dev', profileId: null, roleId: ROLE.STUDENT }
+    ] as never);
+
+    const result = await importAudienceMembers(ORG, csv('email', 'ada@test.dev'), ACTOR);
+
+    expect(result.rows[0].status).toBe('invite_resent');
+    expect(result).toMatchObject({ pendingInvitesRenewed: 1 });
+    expect(createOrganizationInvites).toHaveBeenCalled();
+    expect(result.imported).toBe(0);
+  });
+
   it('flags in-file duplicates without importing them twice', async () => {
     const result = await importAudienceMembers(ORG, csv('email', 'ada@test.dev', 'ADA@test.dev'), ACTOR);
 
