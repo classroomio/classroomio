@@ -32,6 +32,12 @@ const forbidden = (scope: 'audience:read' | 'audience:write') => ({
   description: `The key has neither the public_api:* nor the ${scope} scope, or the automation actor is not an org admin`
 });
 
+const audienceWriteForbidden = forbidden('audience:write');
+
+const createAudienceForbidden = {
+  description: `${audienceWriteForbidden.description}, or the Free plan student limit was reached while the request ran (UPGRADE_REQUIRED)`
+};
+
 const AUDIENCE_UPDATE_DESCRIPTION = [
   'Update an audience member (a student). Send only the fields to change.',
   'email corrects the address of a member who has not accepted their invite yet, and re-sends the invite unless sendEmail is false (400 for a member who has joined, 409 if the email is already in the organization).',
@@ -91,9 +97,7 @@ export const v1AudienceRouter = new Hono()
         ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: {
-          description: `${forbidden('audience:write').description}, or the Free plan student limit was reached while the request ran (UPGRADE_REQUIRED)`
-        },
+        403: createAudienceForbidden,
         429: mcpRateLimitResponse
       }
     }),
