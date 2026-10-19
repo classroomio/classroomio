@@ -259,7 +259,7 @@ export const v1CohortNewsfeedRouter = new Hono()
         401: errorResponses.unauthorized,
         403: {
           description:
-            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not the author or a cohort team member'
+            'The key lacks the public_api:* or cohort:read/write scope, or the actor is not the author, a cohort team member, or an org admin'
         },
         404: { description: 'Cohort, newsfeed post, or comment not found' }
       }

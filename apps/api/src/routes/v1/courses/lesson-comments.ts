@@ -135,7 +135,7 @@ export const v1CourseLessonCommentsRouter = new Hono()
         200: jsonResponse('Comment deleted successfully', CommentResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
-        403: contentForbiddenResponses.commentEdit,
+        403: contentForbiddenResponses.commentDelete,
         404: { description: 'Course, lesson or comment not found' },
         429: mcpRateLimitResponse
       }

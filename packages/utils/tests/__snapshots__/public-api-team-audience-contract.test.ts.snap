@@ -189,6 +189,7 @@ exports[`public API team and audience update contract > ZPublicApiCreateAudience
     },
     "sendEmail": {
       "default": true,
+      "description": "Email the invite. Default: true; false adds them without an email.",
       "type": "boolean",
     },
   },

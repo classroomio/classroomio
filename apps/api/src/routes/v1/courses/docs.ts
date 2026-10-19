@@ -38,6 +38,10 @@ export const contentForbiddenResponses = {
   commentEdit: forbidden(
     'course:write',
     `${TEAM_FORBIDDEN}, ${COMMENTS_OFF}, or the actor may not change this comment (only its author can edit it)`
+  ),
+  commentDelete: forbidden(
+    'course:write',
+    `${TEAM_FORBIDDEN}, or ${COMMENTS_OFF}. The comment's author, a course tutor/admin or an org admin may delete it`
   )
 };
 

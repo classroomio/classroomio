@@ -50,7 +50,7 @@ const updateLessonShape = ZUpdateLessonToolInput.shape as unknown as ZodRawShape
 export function registerLessonTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'create_lesson',
-    'Create a lesson in a course, optionally with videos. Attaching an uploaded video here is what starts its thumbnail, transcript and adaptive-bitrate encoding.',
+    'Create a lesson in a course, optionally with videos. Attaching an uploaded video here is what starts its thumbnail and adaptive-bitrate encoding, plus a transcript when the server has it configured.',
     createLessonShape,
     async (args) => {
       const { courseId, ...payload } = ZCreateLessonToolInput.parse(args);

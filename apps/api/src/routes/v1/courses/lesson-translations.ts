@@ -66,7 +66,7 @@ export const v1CourseLessonTranslationsRouter = new Hono()
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          'Translation saved. The HTML is sanitized, each save is recorded in the lesson history as the key creator, and sending the same body twice gives the same result.',
+          'Translation saved. The HTML is sanitized, and each save is recorded in the lesson history as the key creator.',
           itemResponse(ZPublicApiCourseLessonTranslationResponse)
         ),
         400: errorResponses.badRequest,

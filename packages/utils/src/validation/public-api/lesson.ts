@@ -21,7 +21,7 @@ export const ZPublicApiLessonVideo = z.discriminatedUnion('type', [ZPublicApiUpl
 export type TPublicApiLessonVideo = z.infer<typeof ZPublicApiLessonVideo>;
 
 const VIDEOS_DESCRIPTION =
-  'Attach an uploaded video with { "type": "upload", "assetId": "…" }; attaching it completes the upload and queues thumbnailing, transcription and adaptive-bitrate encoding. External videos use { "type": "youtube" | "vimeo" | "generic", "link": "…" } and are embedded rather than fetched.';
+  'Attach an uploaded video with { "type": "upload", "assetId": "…" }; attaching it completes the upload and queues thumbnailing and adaptive-bitrate encoding, plus transcription when the server has an OpenAI key. External videos use { "type": "youtube" | "vimeo" | "generic", "link": "…" } and are embedded rather than fetched.';
 
 export const ZPublicApiLessonParam = ZPublicApiCourseParam.extend({
   lessonId: z.string().uuid()

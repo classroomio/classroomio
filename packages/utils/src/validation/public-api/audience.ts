@@ -24,7 +24,7 @@ export type TPublicApiAudienceQuery = z.infer<typeof ZPublicApiAudienceQuery>;
 export const ZPublicApiCreateAudience = z.object({
   email: z.string().email(),
   courseIds: z.array(z.string().uuid()).optional(),
-  sendEmail: z.boolean().default(true)
+  sendEmail: z.boolean().default(true).describe('Email the invite. Default: true; false adds them without an email.')
 });
 export type TPublicApiCreateAudience = z.infer<typeof ZPublicApiCreateAudience>;
 
