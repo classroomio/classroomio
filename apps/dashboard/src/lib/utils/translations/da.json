@@ -5109,6 +5109,7 @@
       "events_count_one": "{count} hændelse",
       "events_count_other": "{count} hændelser",
       "no_deliveries": "Ingen leverancer endnu",
+      "retrying_hint": "Prøver mislykkede leverancer igen",
       "table": {
         "name": "Destination",
         "events": "Hændelser",
@@ -5120,6 +5121,7 @@
       },
       "health": {
         "healthy": "Sund",
+        "retrying": "Prøver igen",
         "degraded": "Fejler",
         "disabled": "Automatisk deaktiveret"
       },

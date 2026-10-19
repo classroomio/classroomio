@@ -5109,6 +5109,7 @@
       "events_count_one": "{count} событие",
       "events_count_other": "{count} событий",
       "no_deliveries": "Доставок пока нет",
+      "retrying_hint": "Повторная отправка неудавшихся доставок",
       "table": {
         "name": "Получатель",
         "events": "События",
@@ -5120,6 +5121,7 @@
       },
       "health": {
         "healthy": "Работает",
+        "retrying": "Повторные попытки",
         "degraded": "Сбои",
         "disabled": "Отключен автоматически"
       },

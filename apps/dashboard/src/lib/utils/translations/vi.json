@@ -5109,6 +5109,7 @@
       "events_count_one": "{count} sự kiện",
       "events_count_other": "{count} sự kiện",
       "no_deliveries": "Chưa có lần gửi nào",
+      "retrying_hint": "Đang thử lại các lần gửi thất bại",
       "table": {
         "name": "Đích đến",
         "events": "Sự kiện",
@@ -5120,6 +5121,7 @@
       },
       "health": {
         "healthy": "Ổn định",
+        "retrying": "Đang thử lại",
         "degraded": "Đang lỗi",
         "disabled": "Tự động vô hiệu hóa"
       },

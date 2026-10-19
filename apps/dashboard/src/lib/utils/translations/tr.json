@@ -5018,6 +5018,7 @@
       "events_count_one": "{count} olay",
       "events_count_other": "{count} olay",
       "no_deliveries": "Henüz teslimat yok",
+      "retrying_hint": "Başarısız teslimatlar yeniden deneniyor",
       "table": {
         "name": "Hedef",
         "events": "Olaylar",
@@ -5029,6 +5030,7 @@
       },
       "health": {
         "healthy": "Sağlıklı",
+        "retrying": "Yeniden deneniyor",
         "degraded": "Hata veriyor",
         "disabled": "Otomatik devre dışı"
       },

@@ -5109,6 +5109,7 @@
       "events_count_one": "{count} zdarzenie",
       "events_count_other": "{count} zdarzeń",
       "no_deliveries": "Brak dostarczeń",
+      "retrying_hint": "Ponawianie nieudanych dostarczeń",
       "table": {
         "name": "Miejsce docelowe",
         "events": "Zdarzenia",
@@ -5120,6 +5121,7 @@
       },
       "health": {
         "healthy": "Działa poprawnie",
+        "retrying": "Ponawianie",
         "degraded": "Błędy",
         "disabled": "Wyłączony automatycznie"
       },

@@ -22,6 +22,7 @@
   import type { Webhook } from '$features/automation/utils/types';
   import {
     formatWebhookTimestamp,
+    getWebhookDisplayHealth,
     getWebhookErrorRate,
     getWebhookEventsCountKey,
     getWebhookEventsLabelCount,
@@ -190,9 +191,17 @@
                   </Popover.Root>
                 </Table.Cell>
                 <Table.Cell>
-                  <Badge variant={WEBHOOK_HEALTH_BADGE[webhook.health]}>{$t(`${T}.health.${webhook.health}`)}</Badge>
+                  <Badge variant={WEBHOOK_HEALTH_BADGE[getWebhookDisplayHealth(webhook)]}>
+                    {$t(`${T}.health.${getWebhookDisplayHealth(webhook)}`)}
+                  </Badge>
                   <p class="ui:text-muted-foreground mt-1 text-xs">
-                    {webhook.lastDeliveryAt ? formatWebhookTimestamp(webhook.lastDeliveryAt) : $t(`${T}.no_deliveries`)}
+                    {#if webhook.lastDeliveryAt}
+                      {formatWebhookTimestamp(webhook.lastDeliveryAt)}
+                    {:else if getWebhookDisplayHealth(webhook) === 'retrying'}
+                      {$t(`${T}.retrying_hint`)}
+                    {:else}
+                      {$t(`${T}.no_deliveries`)}
+                    {/if}
                   </p>
                 </Table.Cell>
                 <Table.Cell class="text-sm">

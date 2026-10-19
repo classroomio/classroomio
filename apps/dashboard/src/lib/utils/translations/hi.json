@@ -5109,6 +5109,7 @@
       "events_count_one": "{count} इवेंट",
       "events_count_other": "{count} इवेंट",
       "no_deliveries": "अभी तक कोई डिलीवरी नहीं",
+      "retrying_hint": "विफल डिलीवरी का पुनः प्रयास जारी है",
       "table": {
         "name": "गंतव्य",
         "events": "इवेंट",
@@ -5120,6 +5121,7 @@
       },
       "health": {
         "healthy": "स्वस्थ",
+        "retrying": "पुनः प्रयास",
         "degraded": "विफल हो रहा है",
         "disabled": "अपने आप अक्षम"
       },

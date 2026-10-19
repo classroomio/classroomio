@@ -21,8 +21,9 @@ export const WEBHOOK_DELIVERY_STATUS_BADGE: Record<WebhookDeliveryStatus, BadgeV
   GAVE_UP: 'destructive'
 };
 
-export const WEBHOOK_HEALTH_BADGE: Record<WebhookHealth, BadgeVariant> = {
+export const WEBHOOK_HEALTH_BADGE: Record<WebhookHealth | 'retrying', BadgeVariant> = {
   healthy: 'success',
+  retrying: 'warning',
   degraded: 'warning',
   disabled: 'destructive'
 };
@@ -61,6 +62,12 @@ export function getWebhookEventsLabelCount(webhook: Webhook): number {
 
 export function getWebhookEventTypes(webhook: Webhook): readonly string[] {
   return webhook.eventMode === 'all' ? WEBHOOK_EVENT_TYPES : webhook.eventTypes;
+}
+
+export function getWebhookDisplayHealth(webhook: Webhook): WebhookHealth | 'retrying' {
+  const isRetrying = webhook.health === 'healthy' && !webhook.lastDeliveryAt && webhook.recentDeliveries.failed > 0;
+
+  return isRetrying ? 'retrying' : webhook.health;
 }
 
 export function getWebhookErrorRate(webhook: Webhook): number | null {

@@ -5109,6 +5109,7 @@
       "events_count_one": "{count} evento",
       "events_count_other": "{count} eventos",
       "no_deliveries": "Aún no hay envíos",
+      "retrying_hint": "Reintentando envíos fallidos",
       "table": {
         "name": "Destino",
         "events": "Eventos",
@@ -5120,6 +5121,7 @@
       },
       "health": {
         "healthy": "Saludable",
+        "retrying": "Reintentando",
         "degraded": "Con fallos",
         "disabled": "Desactivado automáticamente"
       },

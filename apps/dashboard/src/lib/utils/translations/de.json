@@ -5109,6 +5109,7 @@
       "events_count_one": "{count} Ereignis",
       "events_count_other": "{count} Ereignisse",
       "no_deliveries": "Noch keine Zustellungen",
+      "retrying_hint": "Fehlgeschlagene Zustellungen werden wiederholt",
       "table": {
         "name": "Ziel",
         "events": "Ereignisse",
@@ -5120,6 +5121,7 @@
       },
       "health": {
         "healthy": "Fehlerfrei",
+        "retrying": "Wiederholung",
         "degraded": "Fehlerhaft",
         "disabled": "Automatisch deaktiviert"
       },

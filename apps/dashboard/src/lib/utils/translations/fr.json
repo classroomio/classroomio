@@ -5109,6 +5109,7 @@
       "events_count_one": "{count} événement",
       "events_count_other": "{count} événements",
       "no_deliveries": "Aucun envoi pour le moment",
+      "retrying_hint": "Nouvelle tentative des envois échoués",
       "table": {
         "name": "Destination",
         "events": "Événements",
@@ -5120,6 +5121,7 @@
       },
       "health": {
         "healthy": "Opérationnel",
+        "retrying": "Nouvelle tentative",
         "degraded": "En échec",
         "disabled": "Désactivé automatiquement"
       },

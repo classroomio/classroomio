@@ -4925,6 +4925,7 @@
       "events_count_one": "{count} event",
       "events_count_other": "{count} events",
       "no_deliveries": "No deliveries yet",
+      "retrying_hint": "Retrying failed deliveries",
       "table": {
         "name": "Destination",
         "events": "Events",
@@ -4936,6 +4937,7 @@
       },
       "health": {
         "healthy": "Healthy",
+        "retrying": "Retrying",
         "degraded": "Failing",
         "disabled": "Auto-disabled"
       },
