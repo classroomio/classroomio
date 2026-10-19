@@ -1,5 +1,6 @@
 import http from 'node:http';
 import https from 'node:https';
+import type { LookupFunction } from 'node:net';
 
 import { WEBHOOK_REQUEST_TIMEOUT_MS, WEBHOOK_RESPONSE_BODY_LIMIT } from '@cio/utils/constants/webhook';
 
@@ -19,6 +20,22 @@ export type TWebhookSendResult = {
   errorMessage: string | null;
   durationMs: number;
 };
+
+/**
+ * Answers every DNS lookup for the request with the already vetted address. Node asks for a list of
+ * addresses when `autoSelectFamily` is on, which is the default from Node 20.
+ */
+export function createPinnedLookup(target: { address: string; family: number }): LookupFunction {
+  return (_hostname, options, callback) => {
+    if (options.all) {
+      callback(null, [{ address: target.address, family: target.family }]);
+
+      return;
+    }
+
+    callback(null, target.address, target.family);
+  };
+}
 
 /**
  * POSTs the body to the vetted address of the URL's host. Never follows redirects and never throws:
@@ -70,7 +87,7 @@ export async function sendWebhookRequest(input: TWebhookSendInput): Promise<TWeb
         headers: { ...input.headers, 'Content-Length': Buffer.byteLength(input.body).toString() },
         servername: input.url.hostname,
         rejectUnauthorized: input.verifySsl,
-        lookup: (_hostname, _options, callback) => callback(null, target.address, target.family)
+        lookup: createPinnedLookup(target)
       } as https.RequestOptions,
       (response) => {
         const chunks: Buffer[] = [];
