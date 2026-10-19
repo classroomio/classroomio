@@ -80,26 +80,22 @@ workflow must resolve those packages from packed or published artifacts.
 
 ## Local validation workflow
 
-Run these commands from the ClassroomIO repository after the `classroomio-plugins` repository is
-checked out beside it:
+Set `PLUGIN_ARTIFACTS_PATH` in `apps/api/.env` to the absolute path of the official plugin
+repository's `.plugin-artifacts` directory. Then run these commands from `classroomio-plugins`:
 
 ```bash
-pnpm plugins:verify-isolation
-pnpm plugins:build-artifacts
-pnpm plugins:verify-artifacts
-pnpm plugins:seed-official
+node ../classroomio/packages/plugin-sdk/bin/cio-plugin.mjs pack --all
+node ../classroomio/packages/plugin-sdk/bin/cio-plugin.mjs seed --org <organization-id>
 ```
 
-The API serves the approved immutable bundle from `classroomio-plugins/.plugin-artifacts` during
-development. Set `PLUGIN_ARTIFACTS_PATH` when the repositories are not siblings. The seed command
-registers the release index and installs the official plugins for existing organizations so the
-dashboard can be tested without a plugin development server.
+The seed command reads `CLASSROOMIO_PLUGIN_TOKEN` and installs only into the requested organization.
+The official plugin's normal `npm run dev` remains the Vite UI server; `seed` packages the selected
+plugin and explicitly installs or updates it in that organization so the dashboard can be tested
+with the packaged artifact.
 
 The published-dependency check is a separate deployment gate:
 
-```bash
-pnpm plugins:verify-isolation:published
-```
+Run the published-dependency check from the official plugin repository's release workflow.
 
 It intentionally fails until the official plugin repository replaces local boundary-package links
 with packed or published versions of the SDK, design package, and certificate kit. The normal
