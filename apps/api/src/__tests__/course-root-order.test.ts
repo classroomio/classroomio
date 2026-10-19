@@ -151,6 +151,36 @@ describe.skipIf(!hasDatabase)('top-level content placement', () => {
     }
   });
 
+  it('shares positions across sections when grouping is off', async () => {
+    const setup = await createCourseWithOutline();
+    try {
+      const { db, schema, course, section } = setup;
+      await db
+        .update(schema.course)
+        .set({ metadata: { isContentGroupingEnabled: false } })
+        .where(eq(schema.course.id, course.id));
+      await db
+        .insert(schema.lesson)
+        .values({ title: 'Inside', slug: 'inside', order: 1, courseId: course.id, sectionId: section.id });
+
+      const { createLesson } = await import('@cio/core/services/lesson/lesson');
+      await createLesson(course.id, { title: 'Intro', courseId: course.id, order: 1 });
+
+      const lessons = await db
+        .select({ title: schema.lesson.title, order: schema.lesson.order })
+        .from(schema.lesson)
+        .where(eq(schema.lesson.courseId, course.id));
+      expect(Object.fromEntries(lessons.map((lesson) => [lesson.title, lesson.order]))).toEqual({
+        Intro: 1,
+        Inside: 2,
+        'Wrap up': 3
+      });
+      expect(await rootOrders(course.id)).toMatchObject({ Basics: 1 });
+    } finally {
+      await cleanUp(setup);
+    }
+  });
+
   it('leaves top-level positions alone for a lesson inside a section', async () => {
     const setup = await createCourseWithOutline();
     try {

@@ -1636,13 +1636,16 @@ export async function getOrgCourseGroups(orgId: string, courseIds: string[]) {
   }
 }
 
+/** Locks the course row until the transaction ends. Returns its id and metadata, or null when it does not exist. */
 export async function lockCourseForUpdate(courseId: string, dbClient: DbOrTxClient = db) {
   try {
-    await dbClient
-      .select({ id: schema.course.id })
+    const [course] = await dbClient
+      .select({ id: schema.course.id, metadata: schema.course.metadata })
       .from(schema.course)
       .where(eq(schema.course.id, courseId))
       .for('update');
+
+    return course ?? null;
   } catch (error) {
     console.error('lockCourseForUpdate error:', error);
     throw new Error(`Failed to lock course: ${error instanceof Error ? error.message : 'Unknown error'}`);
