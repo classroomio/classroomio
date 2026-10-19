@@ -14,7 +14,7 @@
   }
 </script>
 
-<Page.Root class="mx-auto flex md:max-w-5xl">
+<Page.Root class="mx-auto flex w-full px-3 sm:px-4 md:max-w-5xl">
   <Page.Header>
     <Page.HeaderContent>
       <Page.Title>
