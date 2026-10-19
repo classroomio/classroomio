@@ -171,5 +171,13 @@
     document.body.prepend(bar);
   }
 
+  A.mountEditBar(S, {
+    label: 'Viewing as owner',
+    actions: [
+      { label: 'Edit landing page', href: M.R.course(course.id, 'landingpage') },
+      { label: 'Edit lessons', href: M.R.course(course.id, 'lessons') },
+      { label: 'Settings', href: M.R.courseSettings(course.id) }
+    ]
+  });
   A.mountPoweredBy(S);
 })();

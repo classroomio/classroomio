@@ -171,3 +171,48 @@ body.pa-app {
   font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+
+/* owner-only edit bar on the public catalog and course page */
+.pa-editbar {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  max-width: calc(100vw - 32px);
+  padding: 6px 6px 6px 14px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  border: 1px solid rgba(23, 20, 15, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  box-shadow: 0 8px 24px rgba(23, 20, 15, 0.16);
+  font-size: 13px;
+}
+.pa-editbar-label {
+  color: #6b655c;
+  font-weight: 500;
+}
+.pa-editbar-link {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #17140f;
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+}
+.pa-editbar-link:hover {
+  background: #3a342b;
+}
+.pa-editbar-link + .pa-editbar-link {
+  background: transparent;
+  color: #17140f;
+}
+.pa-editbar-link + .pa-editbar-link:hover {
+  background: rgba(23, 20, 15, 0.08);
+}

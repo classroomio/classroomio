@@ -364,6 +364,22 @@
     document.body.appendChild(link);
   }
 
+  /** Owner-only bar on public academy pages; learners and visitors never get it. */
+  function mountEditBar(S, { label, actions }) {
+    if (viewer(S)?.kind !== 'owner') return;
+
+    const bar = document.createElement('div');
+    const links = actions
+      .map((action) => `<a class="pa-editbar-link" href="${rel(action.href)}">${P.escapeHtml(action.label)}</a>`)
+      .join('');
+
+    bar.className = 'pa-editbar';
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', 'Edit this page');
+    bar.innerHTML = `<span class="pa-editbar-label">${P.escapeHtml(label)}</span>${links}`;
+    document.body.appendChild(bar);
+  }
+
   function toast(message, kind) {
     if (window.CioAcademy?.notify) window.CioAcademy.notify(message, kind);
     else P.toast(message);
@@ -408,6 +424,7 @@
     enrolledIds,
     enroll,
     mountPoweredBy,
+    mountEditBar,
     currentPageHref,
     toast
   };

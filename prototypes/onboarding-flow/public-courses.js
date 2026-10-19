@@ -19,5 +19,12 @@
     perPage: 6
   });
 
+  A.mountEditBar(S, {
+    label: 'Viewing as owner',
+    actions: [
+      { label: 'Edit courses', href: A.M.R.courses() },
+      { label: 'Edit page design', href: A.M.R.landingEditor() }
+    ]
+  });
   A.mountPoweredBy(S);
 })();
