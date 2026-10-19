@@ -271,12 +271,14 @@ exports[`public API team and audience update contract > ZPublicApiTeamQuery keep
   "properties": {
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -289,15 +291,16 @@ exports[`public API team and audience update contract > ZPublicApiTeamQuery keep
 exports[`public API team and audience update contract > ZPublicApiUpdateAudience keeps its published shape > ZPublicApiUpdateAudience 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Send email for a pending member or name for a joined member. A joined member's own email, password, username and avatar cannot be changed here; to change an admin's or tutor's role, use PUT /team/{memberId}.",
   "properties": {
     "email": {
-      "description": "Pending members only: corrects the invited email",
+      "description": "Pending members only: corrects the invited email and re-sends the invite unless sendEmail is false",
       "format": "email",
       "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
       "type": "string",
     },
     "name": {
-      "description": "Joined members only: sets the full name on their profile",
+      "description": "Joined members only: sets the full name on their profile. The profile is shared, so the name shows in every organization the person belongs to.",
       "maxLength": 120,
       "minLength": 3,
       "type": "string",
@@ -315,9 +318,10 @@ exports[`public API team and audience update contract > ZPublicApiUpdateAudience
 exports[`public API team and audience update contract > ZPublicApiUpdateTeamMember keeps its published shape > ZPublicApiUpdateTeamMember 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Send only the fields to change. Email, password, username and avatar belong to the person and cannot be changed here.",
   "properties": {
     "name": {
-      "description": "Joined members only: sets the full name on their profile",
+      "description": "Joined members only: sets the full name on their profile. The profile is shared, so the name shows in every organization the person belongs to.",
       "maxLength": 120,
       "minLength": 3,
       "type": "string",
@@ -333,7 +337,7 @@ exports[`public API team and audience update contract > ZPublicApiUpdateTeamMemb
           "type": "number",
         },
       ],
-      "description": "1 = admin, 2 = tutor",
+      "description": "1 = admin, 2 = tutor. You cannot change your own role, and the organization must keep at least one admin. A pending member's invite is updated to match.",
     },
   },
   "type": "object",
