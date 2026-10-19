@@ -40,7 +40,7 @@ export const ZPublicApiAddCohortMembers = z.object({
       { message: 'Each profileId or email may appear only once per request' }
     )
     .describe(
-      "People to add, each with a profileId or an email that appears only once per request. No invitation email or organization invite is sent; use POST /cohorts/{cohortId}/invite for the dashboard's invite flow. Students with a profile are also added to your organization and to the cohort's courses."
+      "People to add, each with a profileId or an email that appears only once per request. No invitation email or organization invite is sent; use POST /cohorts/{cohortId}/invite for the dashboard's invite flow. When the cohort has courses, students with a profile are also added to your organization and to those courses."
     )
 });
 export type TPublicApiAddCohortMembers = z.infer<typeof ZPublicApiAddCohortMembers>;

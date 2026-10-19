@@ -56,7 +56,7 @@ export const v1CohortCoursesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Link a course from your organization to a cohort and enrol the cohort's existing students in it; ${COHORT_TEAM_RULE}.`,
+      description: `Link a course from your organization to a cohort and enrol the cohort's existing members in it; ${COHORT_TEAM_RULE}.`,
       tags: ['Cohort Courses'],
       responses: {
         201: jsonResponse('Course added to cohort', CohortCourseResponse),

@@ -138,7 +138,7 @@ export const v1CourseLessonsRouter = new Hono()
       tags: [TAG],
       responses: {
         202: jsonResponse(
-          'Notification queued; the emails are sent in the background',
+          'Notification queued; the emails are sent in the background, skipping students without an email or who turned these emails off',
           itemResponse(ZPublicApiCourseLessonNotifyResponse)
         ),
         400: errorResponses.badRequest,

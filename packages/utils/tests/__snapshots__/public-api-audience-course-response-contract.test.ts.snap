@@ -3757,6 +3757,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "videos": {
+                "description": "Hosted videos as { type, link }, where type is youtube, vimeo or generic.",
                 "items": {
                   "additionalProperties": false,
                   "properties": {

@@ -151,7 +151,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'add_cohort_members',
-    `Add people to a cohort directly, each with a role and without an invitation email; ${COHORT_TEAM_RULE}. Returns { added, errors }; retrying is safe because existing members fail with code MEMBER_ALREADY_IN_COHORT. For the dashboard invite flow, use invite_students_to_cohort.`,
+    `Add people to a cohort directly, each with a role and without an invitation email (invite_students_to_cohort sends one); ${COHORT_TEAM_RULE}. Returns { added, errors }, and retrying is safe because existing members fail with code MEMBER_ALREADY_IN_COHORT.`,
     addCohortMembersShape,
     WRITE,
     async (args) => {
@@ -199,7 +199,7 @@ export function registerCohortTools(server: McpServer, apiClient: ClassroomIoApi
 
   server.tool(
     'add_cohort_course',
-    `Link a course from the organization to a cohort and enrol the cohort's existing students in it; ${COHORT_TEAM_RULE}. Fails with 409 if already linked.`,
+    `Link a course from the organization to a cohort and enrol the cohort's existing members in it; ${COHORT_TEAM_RULE}. Fails with 409 if already linked.`,
     addCohortCourseShape,
     WRITE,
     async (args) => {

@@ -184,11 +184,11 @@ export const v1CourseExercisesRouter = new Hono()
   .post(
     '/:exerciseId/notify',
     describeRoute({
-      description: `Email every course member a link to take this exercise, like "Notify students" in the dashboard; ${COURSE_TEAM_RULE}.`,
+      description: `Email the course's students a link to take this exercise, like "Notify students" in the dashboard; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         202: jsonResponse(
-          'Notification job queued; poll GET /courses/{courseId}/exercises/{exerciseId}/notify/{jobId} with the jobId. Each call sends the emails again.',
+          'Notification job queued; poll GET /courses/{courseId}/exercises/{exerciseId}/notify/{jobId} with the jobId. Students without an email or who turned these emails off are skipped, and each call sends the emails again.',
           itemResponse(ZPublicApiCourseExerciseNotifyResponse)
         ),
         400: { description: 'Invalid path, or a PUBLIC course/exercise has no slug to link to' },

@@ -66,7 +66,9 @@ export const ZPublicApiAddCohortMembersResponse = z.object({
         message: z.string()
       })
     )
-    .describe('Entries that failed; each entry is processed independently of the others')
+    .describe(
+      'Entries that failed. Entries are processed independently once every profileId passes the organization check; one outside the organization fails the whole request with 404.'
+    )
 });
 
 export const ZPublicApiCohortCourseResponse = z.object({

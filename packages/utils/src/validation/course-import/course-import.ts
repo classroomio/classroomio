@@ -65,7 +65,10 @@ export const ZCourseImportDraftLesson = z.object({
     ),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
-  videos: z.array(ZLessonVideoItem).optional()
+  videos: z
+    .array(ZLessonVideoItem)
+    .optional()
+    .describe('Hosted videos as { type, link }, where type is youtube, vimeo or generic.')
 });
 export type TCourseImportDraftLesson = z.infer<typeof ZCourseImportDraftLesson>;
 

@@ -22,6 +22,8 @@ import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse, stud
 
 const TAG = 'Course Content';
 const ALL_OR_NOTHING = 'All or nothing: if any id is not a lesson or exercise of this course, nothing changes.';
+const REORDER_ALL_OR_NOTHING =
+  'All or nothing: if any id is not a section, lesson or exercise of this course, nothing changes.';
 
 export const v1CourseContentRouter = new Hono()
   .put(
@@ -34,7 +36,7 @@ export const v1CourseContentRouter = new Hono()
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
-        404: { description: `Course, section, lesson or exercise not found. ${ALL_OR_NOTHING}` },
+        404: { description: `Course, section, lesson or exercise not found. ${REORDER_ALL_OR_NOTHING}` },
         429: mcpRateLimitResponse
       }
     }),

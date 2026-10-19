@@ -191,7 +191,7 @@ export function registerCourseExerciseTools(server: McpServer, apiClient: Classr
 
   server.tool(
     'notify_course_exercise',
-    `Email every member of a course a link to take an exercise, as a background job you check with get_course_exercise_notify_status; ${COURSE_TEAM_RULE}. Every call sends the emails again, so don't retry a call that succeeded.`,
+    `Email a course's students a link to take an exercise, as a background job you check with get_course_exercise_notify_status; ${COURSE_TEAM_RULE}. Every call sends the emails again, so don't retry a call that succeeded.`,
     shape(ZNotifyCourseExerciseToolInput),
     CREATE,
     async (args) => {

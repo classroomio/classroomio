@@ -59,13 +59,13 @@ const publishCourseDraftToExistingCourseShape =
   ZPublishCourseDraftToExistingCourseToolInput.shape as unknown as ZodRawShapeCompat;
 const tagCoursesShape = ZAutomationCourseTagAssignment.shape as unknown as ZodRawShapeCompat;
 
-const LESSON_HTML_GUIDE =
-  'For draft lesson HTML, put only the lesson body in lessonLanguages[].content. Do not include the lesson title. Do not use h1 or h2 anywhere in lesson HTML. Start headings at h3 because that is the highest heading level allowed in lesson content. To attach a video to a lesson, set lessons[].videos[] with a { type, link } entry (type is one of youtube, vimeo, or generic for a hosted URL). To attach a local video file, call upload_video; attaching the assetId it returns needs create_lesson or update_lesson, which act on a published course, so for a draft publish it first and then attach the video to the resulting lesson.';
+const DRAFT_VIDEO_HINT =
+  'A local video file can only be attached after publish, with upload_video and then create_lesson or update_lesson.';
 
 export function registerCourseDraftTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_org_courses',
-    'List all courses in the authenticated organization. Use this when the user refers to a course by name and you need to discover the available course IDs first.',
+    "List the organization's courses. Use it to find a course id when the user names a course.",
     listOrganizationCoursesShape,
     async (args) => {
       const query = ZGetOrganizationCoursesQuery.parse(args);
@@ -76,7 +76,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'get_course_structure',
-    'Read the current live course structure. Use this before creating a fresh draft for post-publish edits.',
+    "Get a live course's current structure. Read it before creating a fresh draft for post-publish edits.",
     getCourseStructureShape,
     async (args) => {
       const { courseId } = ZCourseImportCourseParam.parse(args);
@@ -98,7 +98,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'create_course_draft',
-    `Create a new unpublished course draft from structured course JSON. Use this before the first publish. ${LESSON_HTML_GUIDE}`,
+    `Create an unpublished course draft from structured course JSON, before the first publish. ${DRAFT_VIDEO_HINT}`,
     createCourseDraftShape,
     async (args) => {
       const payload = ZCourseImportDraftCreate.parse(args);
@@ -109,7 +109,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'create_course_draft_from_course',
-    'Create a fresh draft from an existing live course. Use this after a course has already been published and the user wants more changes.',
+    'Create a fresh draft from a live course, to make more changes after it was published.',
     createCourseDraftFromCourseShape,
     async (args) => {
       const payload = ZCourseImportDraftCreateFromCourse.parse(args);
@@ -120,7 +120,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'get_course_draft',
-    'Fetch an existing draft. Draft responses include status and publishedCourseId so you can decide whether to keep editing the draft or seed a fresh one from the live course.',
+    'Get a draft with its status and publishedCourseId. Use them to decide whether to keep editing it or start a fresh draft from the live course.',
     getCourseDraftShape,
     async (args) => {
       const { draftId } = ZCourseImportDraftGetParam.parse(args);
@@ -131,7 +131,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'update_course_draft',
-    `Update an unpublished draft. If the draft is already published, do not keep editing it blindly; create a fresh draft from the live course first. ${LESSON_HTML_GUIDE}`,
+    `Update an unpublished draft; once it is published, create a fresh draft from the live course instead. ${DRAFT_VIDEO_HINT}`,
     updateCourseDraftShape,
     async (args) => {
       const { draftId, ...payload } = ZUpdateCourseDraftToolInput.parse(args);
@@ -142,7 +142,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'tag_course_draft',
-    'Attach human-readable tags to a draft before publish. The tags are stored on the draft and applied during publish.',
+    'Attach tags to a draft; they are applied when it is published.',
     tagCourseDraftShape,
     async (args) => {
       const { draftId, ...payload } = ZTagCourseDraftToolInput.parse(args);
@@ -153,7 +153,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'publish_course_draft',
-    'Publish an unpublished draft as a new live course. The result includes courseId and courseUrl. After publish, future major edits should usually start from a fresh draft created from the live course.',
+    'Publish an unpublished draft as a new live course, returning its courseId and courseUrl. Start later major edits from a fresh draft of the live course.',
     publishCourseDraftShape,
     async (args) => {
       const { draftId, ...payload } = ZPublishCourseDraftToolInput.parse(args);
@@ -164,7 +164,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'publish_course_draft_to_existing_course',
-    'Apply a fresh draft back onto an existing live course. Use this after reading the live course and creating a new draft from it.',
+    'Apply a draft back onto an existing live course. Create that draft from the live course first.',
     publishCourseDraftToExistingCourseShape,
     async (args) => {
       const { draftId, ...payload } = ZPublishCourseDraftToExistingCourseToolInput.parse(args);
@@ -175,7 +175,7 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
 
   server.tool(
     'tag_courses',
-    'Assign tags directly to one or more live courses by name. Default mode is merge, so existing tags are preserved unless replace is requested.',
+    'Assign tags to one or more live courses by name. Existing tags are kept unless mode is replace.',
     tagCoursesShape,
     async (args) => {
       const payload = ZAutomationCourseTagAssignment.parse(args);
