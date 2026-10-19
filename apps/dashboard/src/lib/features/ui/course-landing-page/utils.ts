@@ -2,6 +2,7 @@ import type { Course, CourseContentItem } from '$features/course/utils/types';
 import { NAV_ITEMS, NAV_ITEM_KEY } from './constants';
 
 import { ContentType } from '@cio/utils/constants/content';
+import { getCourseOutline } from '@cio/utils/functions/course-content';
 import type { Review } from '$features/course/utils/types';
 import get from 'lodash/get';
 import type { AccountOrg, PublicOrg } from '$features/app/types';
@@ -20,11 +21,19 @@ export type LandingPageLesson = {
   createdAt?: string | null;
 };
 
+export type LandingPageItem = {
+  id: string;
+  title: string | null;
+  kind: 'lesson' | 'exercise';
+};
+
 export type LandingPageSection = {
   id: string;
   title: string | null;
   lessons: LandingPageLesson[];
   exerciseCount: number;
+  items: LandingPageItem[];
+  standalone?: 'lesson' | 'exercise';
 };
 
 function sortLessons(lessons: LandingPageLesson[]): LandingPageLesson[] {
@@ -49,6 +58,12 @@ function getExerciseCountFromItems(items: CourseContentItem[]): number {
   return items.filter((item) => item.type === ContentType.Exercise).length;
 }
 
+function toLandingPageItem(item: CourseContentItem): LandingPageItem {
+  const kind = item.type === ContentType.Exercise ? 'exercise' : 'lesson';
+
+  return { id: item.id, title: item.title, kind };
+}
+
 export function getCourseLessons(course: Course): LandingPageLesson[] {
   if (!course?.content) return [];
 
@@ -61,19 +76,39 @@ export function getCourseLessons(course: Course): LandingPageLesson[] {
   return getLessonsFromItems(course.content.items);
 }
 
+/**
+ * Curriculum modules in outline order. Each lesson or exercise outside any section is its own module.
+ */
+function getOutlineSections(course: Course): LandingPageSection[] {
+  return getCourseOutline(course.content).map((entry) => {
+    if (entry.kind === 'section') {
+      return {
+        id: entry.section.id,
+        title: entry.section.title ?? course.title ?? 'Lessons',
+        lessons: getLessonsFromItems(entry.section.items),
+        exerciseCount: getExerciseCountFromItems(entry.section.items),
+        items: entry.section.items.map(toLandingPageItem)
+      };
+    }
+
+    const item = toLandingPageItem(entry.item);
+
+    return {
+      id: `standalone-${entry.item.id}`,
+      title: entry.item.title,
+      lessons: getLessonsFromItems([entry.item]),
+      exerciseCount: getExerciseCountFromItems([entry.item]),
+      items: [],
+      standalone: item.kind
+    };
+  });
+}
+
 export function getCourseSections(course: Course): LandingPageSection[] {
   if (!course?.content) return [];
 
   if (course.content.grouped) {
-    return course.content.sections.map((section) => {
-      const lessons = getLessonsFromItems(section.items);
-      return {
-        id: section.id,
-        title: section.title ?? course.title ?? 'Lessons',
-        lessons,
-        exerciseCount: getExerciseCountFromItems(section.items)
-      };
-    });
+    return getOutlineSections(course);
   }
 
   if (!course.content.items.length) return [];
@@ -83,7 +118,8 @@ export function getCourseSections(course: Course): LandingPageSection[] {
       id: 'ungrouped',
       title: course.title ?? t.get('course.navItem.landing_page.lessons'),
       lessons: getLessonsFromItems(course.content.items),
-      exerciseCount: getExerciseCountFromItems(course.content.items)
+      exerciseCount: getExerciseCountFromItems(course.content.items),
+      items: course.content.items.map(toLandingPageItem)
     }
   ];
 }
@@ -280,7 +316,13 @@ export function buildCourseLandingPageProps(
           id: lesson.id,
           title: lesson.title ?? t.get('common.restricted_page.untitled_lesson')
         })),
-        exerciseCount: section.exerciseCount
+        exerciseCount: section.exerciseCount,
+        items: section.items.map((item) => ({
+          id: item.id,
+          title: item.title ?? t.get('common.restricted_page.untitled_lesson'),
+          kind: item.kind
+        })),
+        standalone: section.standalone
       }))
     },
     chips: {
@@ -330,6 +372,8 @@ export function buildCourseLandingPageProps(
       curriculumHeading: t.get('course.navItem.landing_page.course_content'),
       lessonsLabel: (count) => t.get('courses.course_card.lessons_count', { count }),
       exercisesLabel: (count) => t.get('courses.course_card.exercises_count', { count }),
+      standaloneLessonLabel: t.get('course.navItem.lessons.add_content_options.lesson_title'),
+      standaloneExerciseLabel: t.get('course.navItem.lessons.add_content_options.exercise_title'),
       infoRequirementsHeading: t.get('course.navItem.landing_page.requirement'),
       infoDescriptionHeading: t.get('course.navItem.landing_page.description'),
       infoGoalsHeading: t.get('course.navItem.landing_page.learn'),

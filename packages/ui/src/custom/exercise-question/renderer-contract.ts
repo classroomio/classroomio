@@ -87,6 +87,7 @@ import { default as WordBankReview } from './renderers/word-bank/review.svelte';
 import { default as OrderingReview } from './renderers/ordering/review.svelte';
 import { default as ThumbsReview } from './renderers/thumbs/review.svelte';
 import { default as TrueFalseReview } from './renderers/true-false/review.svelte';
+import { default as StarReview } from './renderers/star/review.svelte';
 
 type SharedRendererComponent = Component<ExerciseQuestionRendererProps>;
 
@@ -189,7 +190,8 @@ export const EXERCISE_QUESTION_RENDERER_CONTRACT: ExerciseRendererRegistry<Share
     edit: StarEdit,
     take: StarTake,
     preview: StarPreview,
-    submission: StarSubmission
+    submission: StarSubmission,
+    review: StarReview
   },
   [QUESTION_TYPE_KEY.VIDEO_RECORDING]: {
     edit: VideoRecordingEdit,

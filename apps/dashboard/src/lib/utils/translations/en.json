@@ -3632,7 +3632,8 @@
           },
           "by_author": "by {name}",
           "empty": "No versions yet"
-        }
+        },
+        "no_section": "No section"
       },
       "attendance": {
         "title": "Attendance",

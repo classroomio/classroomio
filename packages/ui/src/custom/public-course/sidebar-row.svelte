@@ -1,10 +1,13 @@
 <script lang="ts">
+  import BookOpenTextIcon from '@lucide/svelte/icons/book-open-text';
+  import ListChecksIcon from '@lucide/svelte/icons/list-checks';
   import NumberBadge from '$src/base/number-badge/number-badge.svelte';
   import { cn } from '../../tools';
 
   interface Props {
-    /** 1-indexed number shown in the badge. Resets per section. */
-    number: number;
+    /** 1-indexed number shown in the badge. Resets per section. Omit it to show the item's type icon instead. */
+    number?: number;
+    kind?: 'lesson' | 'exercise';
     title: string;
     /** Is this the active (currently-viewed) row? */
     active?: boolean;
@@ -18,7 +21,17 @@
     class?: string;
   }
 
-  let { number, title, active = false, locked = false, itemSlug, href, onClick, class: className }: Props = $props();
+  let {
+    number,
+    kind = 'lesson',
+    title,
+    active = false,
+    locked = false,
+    itemSlug,
+    href,
+    onClick,
+    class: className
+  }: Props = $props();
 
   const rowClass = $derived(
     cn(
@@ -57,7 +70,17 @@
 </script>
 
 {#snippet body()}
-  <NumberBadge {number} {active} {locked} />
+  {#if number === undefined}
+    <NumberBadge {active} {locked}>
+      {#if kind === 'exercise'}
+        <ListChecksIcon class="ui:size-3.5 custom" />
+      {:else}
+        <BookOpenTextIcon class="ui:size-3.5 custom" />
+      {/if}
+    </NumberBadge>
+  {:else}
+    <NumberBadge {number} {active} {locked} />
+  {/if}
   <span class={titleClass}>{title}</span>
 {/snippet}
 

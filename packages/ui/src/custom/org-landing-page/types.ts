@@ -233,10 +233,13 @@ export interface OrgLandingPageLabels {
   terminalEnrollLabel?: string;
 }
 
+export type CourseCurriculumItemKind = 'lesson' | 'exercise';
+
 export type CourseCurriculumLesson = {
   id: string;
   title: string;
   durationMinutes?: number;
+  kind?: CourseCurriculumItemKind;
 };
 
 export type CourseCurriculumSection = {
@@ -244,6 +247,10 @@ export type CourseCurriculumSection = {
   title: string;
   lessons: CourseCurriculumLesson[];
   exerciseCount?: number;
+  /** Rows to list, lessons and exercises in course order. Falls back to `lessons`. */
+  items?: CourseCurriculumLesson[];
+  /** Marks a lesson or exercise outside any section, shown as its own module with no rows. */
+  standalone?: CourseCurriculumItemKind;
 };
 
 export type CourseReviewItem = {
@@ -333,6 +340,10 @@ export interface CourseLandingPageLabels {
   curriculumHeading?: string;
   lessonsLabel?: (count: number) => string;
   exercisesLabel?: (count: number) => string;
+  /** Type label on a module that is a single lesson outside any section. Default: "Lesson". */
+  standaloneLessonLabel?: string;
+  /** Type label on a module that is a single exercise outside any section. Default: "Exercise". */
+  standaloneExerciseLabel?: string;
   lecturePrefix?: (index: number) => string;
   infoRequirementsHeading?: string;
   infoRequirementsEyebrow?: string;

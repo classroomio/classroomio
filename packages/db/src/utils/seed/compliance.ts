@@ -576,6 +576,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       courseId: HIPAA_COURSE_ID,
       sectionId: HIPAA_SECTION_ID,
       title: 'What HIPAA actually requires of you',
+      slug: 'what-hipaa-actually-requires-of-you',
       note: '<p>Plain-English summary of the privacy rule, security rule, and breach notification obligations.</p>',
       isUnlocked: true,
       order: 1
@@ -585,6 +586,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       courseId: HIPAA_COURSE_ID,
       sectionId: HIPAA_SECTION_ID,
       title: 'Handling PHI: the everyday rules',
+      slug: 'handling-phi-the-everyday-rules',
       note: '<p>Minimum necessary access, secure messaging, faxing rules, and what to do if you spot a breach.</p>',
       isUnlocked: false,
       order: 2
@@ -594,6 +596,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       courseId: SOC2_COURSE_ID,
       sectionId: SOC2_SECTION_ID,
       title: 'Passwords, MFA, and not getting phished',
+      slug: 'passwords-mfa-and-not-getting-phished',
       note: '<p>Strong-credential hygiene + recognizing the four most common phishing patterns we see at Coursera Test.</p>',
       isUnlocked: true,
       order: 1
@@ -603,6 +606,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
       courseId: SOC2_COURSE_ID,
       sectionId: SOC2_SECTION_ID,
       title: 'Data classification & incident response',
+      slug: 'data-classification-incident-response',
       note: '<p>What counts as confidential, who to call when something goes wrong, and how we record an incident.</p>',
       isUnlocked: false,
       order: 2
@@ -630,6 +634,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
     {
       id: HIPAA_EXERCISE_ID,
       title: 'HIPAA: end-of-course quiz',
+      slug: 'hipaa-end-of-course-quiz',
       description: '<p>Pass this short quiz to mark the course complete.</p>',
       lessonId: HIPAA_LESSON_IDS[1],
       sectionId: HIPAA_SECTION_ID,
@@ -638,6 +643,7 @@ export async function seedCompliance({ enterpriseOrgId }: SeedComplianceArgs) {
     {
       id: SOC2_EXERCISE_ID,
       title: 'SOC 2: end-of-course quiz',
+      slug: 'soc-2-end-of-course-quiz',
       description: '<p>Pass this short quiz to mark the course complete.</p>',
       lessonId: SOC2_LESSON_IDS[1],
       sectionId: SOC2_SECTION_ID,

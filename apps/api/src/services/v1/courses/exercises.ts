@@ -9,6 +9,7 @@ import {
 } from '@cio/core/services/exercise/exercise';
 import { assertNoPremiumQuestionTypes } from '@cio/core/services/exercise/premium-guard';
 import { isOrgOnPaidPlan } from '@cio/core/services/agent/usage';
+import { getCourseItemRanks } from '@cio/core/services/course/outline';
 import { getCourseSectionById } from '@cio/db/queries/course';
 import { getExerciseById, getExerciseSectionOwnersByIds } from '@cio/db/queries/exercise';
 import { getAnsweredQuestionIds } from '@cio/db/queries/submission';
@@ -463,7 +464,9 @@ export async function listCourseExercisesService(
   await assertCourseTeamAccess(orgId, actorId, params.courseId);
 
   const exercises = await listExercises(params.courseId, { sectionId: query.sectionId, lessonId: query.lessonId });
-  const sorted = [...exercises].sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));
+  const ranks = await getCourseItemRanks(params.courseId);
+  const rankOf = (exercise: (typeof exercises)[number]) => ranks.get(exercise.id) ?? Number.MAX_SAFE_INTEGER;
+  const sorted = [...exercises].sort((a, b) => rankOf(a) - rankOf(b) || a.order - b.order || a.id.localeCompare(b.id));
   const { items, pagination } = paginateInMemory(sorted, query);
 
   return { items: items.map(toPublicExercise), pagination };

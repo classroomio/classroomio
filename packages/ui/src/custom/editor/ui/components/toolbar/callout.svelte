@@ -67,7 +67,7 @@
           class: cn(activeStyle !== DEFAULT_VALUE && 'ui:bg-muted')
         })}
       >
-        <LayoutGrid />
+        <LayoutGrid class="custom" />
       </div>
     </EdraToolTip>
   </DropdownMenu.Trigger>

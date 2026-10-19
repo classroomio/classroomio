@@ -551,6 +551,8 @@ Expected tool sequence:
 Use this direct path when the live course only needs section ordering or lesson or exercise moves between sections.
 It avoids the full draft round-trip for simple structural changes.
 
+Courses with grouping enabled can mix sections and standalone lessons or exercises. Sections and standalone items share one top-level `order`; items within a section have their own sibling order. Pass `sectionId: null` to move an item outside its section. Omitted fields retain their current values. Include sections and items in one request to save a mixed reorder atomically.
+
 ### Flow 7: Add exercises to a live course
 
 User says:
@@ -645,7 +647,7 @@ Supported `questionTypeId` values for exercise payloads:
 ## Operational Notes
 
 - `create_course_draft_from_course` may add warnings if a live course uses legacy lesson notes instead of localized lesson content
-- if a course has ungrouped lessons, the seeded draft may add a synthetic `Ungrouped` section so the structure stays valid
+- lessons and exercises outside any section stay at the top level of the draft: a lesson without `sectionExternalId` and an exercise with neither a section nor a lesson share one 1-based `order` sequence with the sections
 - published drafts are treated as finalized snapshots
 
 ## Recommended Agent Behavior

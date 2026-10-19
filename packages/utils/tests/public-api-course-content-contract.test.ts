@@ -72,10 +72,18 @@ describe('public API course content request contract', () => {
       ZPublicApiReorderCourseContent.safeParse({
         sections: [
           { id: SECTION_A, order: 1 },
-          { id: SECTION_B, order: 3 }
+          { id: SECTION_A, order: 2 }
         ]
       }).success
     ).toBe(false);
+    expect(
+      ZPublicApiReorderCourseContent.safeParse({
+        sections: [
+          { id: SECTION_A, order: 1 },
+          { id: SECTION_B, order: 3 }
+        ]
+      }).success
+    ).toBe(true);
     expect(
       ZPublicApiReorderCourseContent.safeParse({
         items: [{ id: LESSON, type: 'LESSON', sectionId: SECTION_A, order: 1 }]

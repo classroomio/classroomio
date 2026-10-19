@@ -74,9 +74,9 @@ describe.skipIf(!hasDatabase)('course content delete and lock against the databa
     const [answered, untouched, lockable] = await db
       .insert(schema.lesson)
       .values([
-        { courseId, sectionId: sectionWithWorkId, title: 'Done lesson', order: 1 },
-        { courseId, title: 'Untouched lesson', order: 2 },
-        { courseId, title: 'Lockable lesson', order: 3, isUnlocked: true }
+        { courseId, sectionId: sectionWithWorkId, title: 'Done lesson', slug: 'done-lesson', order: 1 },
+        { courseId, title: 'Untouched lesson', slug: 'untouched-lesson', order: 2 },
+        { courseId, title: 'Lockable lesson', slug: 'lockable-lesson', order: 3, isUnlocked: true }
       ])
       .returning();
     answeredLessonId = answered.id;
@@ -85,7 +85,7 @@ describe.skipIf(!hasDatabase)('course content delete and lock against the databa
 
     const [exercise] = await db
       .insert(schema.exercise)
-      .values({ title: 'Quiz', order: 2, courseId, sectionId: sectionWithWorkId })
+      .values({ title: 'Quiz', slug: 'quiz', order: 2, courseId, sectionId: sectionWithWorkId })
       .returning();
     submittedExerciseId = exercise.id;
 

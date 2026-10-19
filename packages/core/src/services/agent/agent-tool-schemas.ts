@@ -32,12 +32,23 @@ export const emptyParam = z.object({});
 export const lessonReadParam = z.object({ lessonId: z.string(), locale: z.string().default('en') });
 export const lessonTranscriptParam = z.object({ lessonId: z.string() });
 export const exerciseReadParam = z.object({ exerciseId: z.string() });
-export const createSectionParam = z.object({ title: z.string().min(1), order: z.number().int().min(1) });
+const TOP_LEVEL_ORDER_NOTE =
+  'Top-level positions (1-based) are shared by sections and by lessons or exercises outside any section; the entry at that position and every later one move down one.';
+
+export const createSectionParam = z.object({
+  title: z.string().min(1),
+  order: z.number().int().min(1).describe(`Position among the course's top-level entries. ${TOP_LEVEL_ORDER_NOTE}`)
+});
 export const updateSectionParam = z
   .object({
     sectionId: z.string(),
     title: z.string().min(1).optional(),
-    order: z.number().int().min(1).optional()
+    order: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe(`New position among the course's top-level entries. ${TOP_LEVEL_ORDER_NOTE}`)
   })
   .refine((data) => data.title !== undefined || data.order !== undefined, {
     message: 'Provide at least one field to update'
@@ -56,7 +67,14 @@ export const updateLessonParam = z
     lessonId: z.string(),
     title: z.string().min(1).optional(),
     sectionId: z.string().optional(),
-    order: z.number().int().min(1).optional(),
+    order: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe(
+        `New order within the section (1-based). For a lesson outside any section, its top-level position. ${TOP_LEVEL_ORDER_NOTE}`
+      ),
     lessonAt: z.string().optional(),
     callUrl: z.string().optional(),
     isUnlocked: z.boolean().optional(),
@@ -117,7 +135,14 @@ export const updateExerciseParam = z
       .describe('New short description shown to students. Pass an empty string to clear it.'),
     lessonId: z.string().optional().describe('Link the exercise to a lesson in this course.'),
     sectionId: z.string().optional().describe('Move the exercise to a section in this course.'),
-    order: z.number().int().min(1).optional().describe('New order within the section (1-based).'),
+    order: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe(
+        `New order within the section (1-based). For an exercise outside any section and lesson, its top-level position. ${TOP_LEVEL_ORDER_NOTE}`
+      ),
     dueBy: z
       .string()
       .optional()
@@ -353,7 +378,11 @@ export const reorderContentParam = z.object({
     .array(
       z.object({
         id: z.string().min(1),
-        order: z.number().int().min(1)
+        order: z
+          .number()
+          .int()
+          .min(1)
+          .describe('Top-level position, shared with lessons and exercises outside any section')
       })
     )
     .optional()
@@ -363,7 +392,14 @@ export const reorderContentParam = z.object({
       z.object({
         id: z.string().min(1),
         type: z.enum(['LESSON', 'EXERCISE']),
-        order: z.number().int().min(1).optional().describe('New order within the section'),
+        order: z
+          .number()
+          .int()
+          .min(1)
+          .optional()
+          .describe(
+            'New order within the section, or the top-level position when the item is outside any section. Top-level positions must be unique across sections, lessons and exercises.'
+          ),
         sectionId: z.string().nullable().optional().describe('Move item to a different section')
       })
     )

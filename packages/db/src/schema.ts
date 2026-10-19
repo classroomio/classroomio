@@ -1144,7 +1144,7 @@ export const lesson = pgTable(
       onDelete: 'cascade',
       onUpdate: 'cascade'
     }),
-    slug: varchar(),
+    slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => lesson.id, { onDelete: 'set null' }),
     sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },
@@ -1336,7 +1336,7 @@ export const exercise = pgTable(
     sectionDisplayMode: varchar('section_display_mode').default('one_question'),
     completionPolicy: varchar('completion_policy').default('submitted').notNull(),
     passThreshold: integer('pass_threshold'),
-    slug: varchar(),
+    slug: varchar().notNull(),
     sourceId: uuid('source_id').references((): AnyPgColumn => exercise.id, { onDelete: 'set null' }),
     sourceSyncedAt: timestamp('source_synced_at', { withTimezone: true, mode: 'string' })
   },

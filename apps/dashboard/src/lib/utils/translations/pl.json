@@ -2846,7 +2846,8 @@
         "add_content_later": "Później",
         "add_content_add_to_section": "Dodaj treść",
         "expand_content": "Rozwiń treść",
-        "collapse_content": "Zwiń zawartość"
+        "collapse_content": "Zwiń zawartość",
+        "no_section": "Brak sekcji"
       },
       "news_feed": {
         "heading": "Kanał wiadomości",

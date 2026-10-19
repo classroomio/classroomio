@@ -32,6 +32,7 @@ import { db } from '@cio/db/drizzle';
 import { enrichLessonWithPresignedUrls } from '../../utils/lesson-media';
 import { resolveWatchEnforcedAssetIds } from '../../utils/lesson-watch-enforcement';
 import { resolveItemSlug } from '../course/slug';
+import { claimRootOrder } from '../course/root-order';
 
 /**
  * Creates a new lesson
@@ -54,7 +55,12 @@ export async function createLesson(courseId: string, data: TLessonCreate): Promi
       isUnlocked: data.isUnlocked ?? true
     };
 
-    const [lesson] = await createLessons([lessonData]);
+    const [lesson] = data.sectionId
+      ? await createLessons([lessonData])
+      : await db.transaction(async (tx) => {
+          const order = await claimRootOrder(courseId, data.order, null, tx);
+          return createLessons([{ ...lessonData, order }], tx);
+        });
     if (!lesson) {
       throw new AppError('Failed to create lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }
@@ -121,7 +127,8 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
   try {
     const payload: TLessonUpdate = { ...data };
     const touchesSession = payload.lessonAt !== undefined || payload.callUrl !== undefined;
-    const existing = payload.slug !== undefined || touchesSession ? await getLessonById(lessonId) : null;
+    const needsExisting = payload.slug !== undefined || payload.order !== undefined || touchesSession;
+    const existing = needsExisting ? await getLessonById(lessonId) : null;
 
     if (payload.slug !== undefined) {
       if (!existing) {
@@ -139,7 +146,14 @@ export async function updateLessonService(lessonId: string, data: TLessonUpdate)
       });
     }
 
-    const updated = await updateLesson(lessonId, payload);
+    const endsAtTopLevel = !(payload.sectionId ?? existing?.sectionId);
+    const rootCourseId = payload.order !== undefined && endsAtTopLevel ? existing?.courseId : null;
+    const updated = rootCourseId
+      ? await db.transaction(async (tx) => {
+          payload.order = await claimRootOrder(rootCourseId, payload.order, lessonId, tx);
+          return updateLesson(lessonId, payload, tx);
+        })
+      : await updateLesson(lessonId, payload);
     if (!updated) {
       throw new AppError('Failed to update lesson', ErrorCodes.INTERNAL_ERROR, 500);
     }

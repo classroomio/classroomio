@@ -1,5 +1,6 @@
 <script module>
   import { defineMeta } from '@storybook/addon-svelte-csf';
+  import BookOpenTextIcon from '@lucide/svelte/icons/book-open-text';
   import { NumberBadge } from '@cio/ui/base/number-badge';
 
   const { Story } = defineMeta({
@@ -27,6 +28,19 @@
 <Story name="Locked">
   {#snippet template()}
     <NumberBadge number={3} locked />
+  {/snippet}
+</Story>
+
+<Story name="With icon">
+  {#snippet template()}
+    <div class="flex items-center gap-2">
+      <NumberBadge>
+        <BookOpenTextIcon class="ui:size-3.5 custom" />
+      </NumberBadge>
+      <NumberBadge active>
+        <BookOpenTextIcon class="ui:size-3.5 custom" />
+      </NumberBadge>
+    </div>
   {/snippet}
 </Story>
 

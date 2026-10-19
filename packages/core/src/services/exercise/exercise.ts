@@ -30,6 +30,7 @@ import {
 } from '@cio/db/queries/exercise';
 import { touchCourseUpdatedAt } from '@cio/db/queries/course';
 import { resolveItemSlug } from '../course/slug';
+import { claimRootOrder } from '../course/root-order';
 import { guardNonAutoGradableQuestionsForCourseType } from '../course/public-course-guard';
 
 import { db } from '@cio/db/drizzle';
@@ -240,8 +241,29 @@ async function prepareExerciseRow(sanitizedData: TExerciseCreate) {
   };
 }
 
+/**
+ * Frees the requested position when an updated exercise ends up at the top level of its course.
+ */
+async function claimUpdatedExerciseOrder(
+  existing: TExercise | null | undefined,
+  data: TExerciseUpdate,
+  txClient: DbOrTxClient
+) {
+  if (data.order === undefined || !existing?.courseId) return data.order;
+
+  const sectionId = data.sectionId === undefined ? existing.sectionId : data.sectionId || null;
+  const lessonId = data.lessonId === undefined ? existing.lessonId : data.lessonId || null;
+  if (sectionId || lessonId) return data.order;
+
+  return claimRootOrder(existing.courseId, data.order, existing.id, txClient);
+}
+
 async function insertExerciseRow(exerciseData: Awaited<ReturnType<typeof prepareExerciseRow>>, txClient: DbOrTxClient) {
-  const [exercise] = await createExercises([exerciseData], txClient);
+  const isTopLevel = !exerciseData.sectionId && !exerciseData.lessonId;
+  const order = isTopLevel
+    ? await claimRootOrder(exerciseData.courseId, exerciseData.order, null, txClient)
+    : exerciseData.order;
+  const [exercise] = await createExercises([{ ...exerciseData, order }], txClient);
   if (!exercise) {
     throw new AppError('Failed to create exercise', ErrorCodes.INTERNAL_ERROR, 500);
   }
@@ -406,6 +428,7 @@ export async function updateExerciseService(
     let createdQuestionIds: number[] = [];
     const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
+      sanitizedData.order = await claimUpdatedExerciseOrder(existing, sanitizedData, txClient);
 
       // Update exercise basic fields only if they changed
       const exerciseUpdate = buildExerciseUpdateFields(sanitizedData);
@@ -756,6 +779,7 @@ export async function replaceExerciseService(exerciseId: string, data: TExercise
 
     const result = await db.transaction(async (tx) => {
       const txClient = tx as DbOrTxClient;
+      sanitizedData.order = await claimUpdatedExerciseOrder(existing, sanitizedData, txClient);
 
       const exerciseUpdate = buildExerciseUpdateFields(sanitizedData);
       if (Object.keys(exerciseUpdate).length > 0) {

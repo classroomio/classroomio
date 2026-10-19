@@ -3642,7 +3642,8 @@
           "empty": "Henüz sürüm yok"
         },
         "expand_content": "İçeriği genişlet",
-        "collapse_content": "İçeriği daralt"
+        "collapse_content": "İçeriği daralt",
+        "no_section": "Bölüm yok"
       },
       "attendance": {
         "title": "Attendance",

@@ -710,3 +710,9 @@ When adding a new component to this package, follow these steps:
 - `jsrepo.json` - jsrepo configuration for component installation
 - `svelte.config.js` - Svelte configuration
 - `tsconfig.json` - TypeScript configuration
+
+### Public course mixed outline
+
+`PublicCourseSidebarSection.standalone` renders its items directly, without a section heading or collapse control. Group consecutive root lessons and exercises into one standalone entry, interleaved with section entries in course order. Standalone rows show the item type icon in the badge instead of a number, since numbers count position within a section. Standalone entries stay visible when `collapsibleSections` is enabled.
+
+`NumberBadge` renders its `children` snippet in place of `number`, for a badge that shows an icon.

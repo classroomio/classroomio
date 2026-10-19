@@ -3632,7 +3632,8 @@
           },
           "by_author": "di {name}",
           "empty": "Nessuna versione ancora"
-        }
+        },
+        "no_section": "Nessuna sezione"
       },
       "attendance": {
         "title": "Partecipazione",
