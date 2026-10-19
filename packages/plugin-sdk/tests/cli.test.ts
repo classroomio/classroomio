@@ -2,11 +2,12 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import {
   buildAllPlugins,
   createDeterministicTarGz,
   packageSinglePlugin,
+  scaffoldPlugin,
   validateManifest,
   verifyArtifacts
 } from '../bin/cio-plugin.mjs';
@@ -80,19 +81,99 @@ describe('Plugin CLI (cio-plugin)', () => {
     expect(hasInventory).toBe(true);
   });
 
+  it('produces the same package digest at different build times', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-deterministic-'));
+    fs.writeFileSync(path.join(tempDir, 'plugin.json'), JSON.stringify(validManifest));
+
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+      const firstPackage = packageSinglePlugin(tempDir);
+      vi.setSystemTime(new Date('2026-06-01T00:00:00.000Z'));
+      const secondPackage = packageSinglePlugin(tempDir);
+
+      expect(secondPackage.artifactDigest).toBe(firstPackage.artifactDigest);
+      expect(secondPackage.tarGzBuffer.equals(firstPackage.tarGzBuffer)).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('builds and verifies all plugin artifacts in a multi-plugin directory', () => {
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-multi-'));
     const pluginA = path.join(tempDir, 'plugin-a');
-    fs.mkdirSync(pluginA, { recursive: true });
-    fs.writeFileSync(path.join(pluginA, 'plugin.json'), JSON.stringify(validManifest));
+    const distDir = path.join(pluginA, 'dist');
+    fs.mkdirSync(path.join(distDir, 'assets'), { recursive: true });
+    fs.writeFileSync(path.join(distDir, 'index.html'), '<h1>Plugin</h1>');
+    fs.writeFileSync(path.join(distDir, 'assets', 'icon.svg'), '<svg xmlns="http://www.w3.org/2000/svg" />');
+    fs.writeFileSync(
+      path.join(pluginA, 'plugin.json'),
+      JSON.stringify({
+        ...validManifest,
+        icon: { resource: 'assets/icon.svg' },
+        runtime: {
+          ui: {
+            entrypoints: {
+              main: { renderMode: 'custom', resource: 'dist/index.html' }
+            }
+          }
+        },
+        contributes: {
+          pages: [{ id: 'main', entrypoint: 'main', title: 'Main' }]
+        }
+      })
+    );
 
     const buildResult = buildAllPlugins(tempDir);
     expect(buildResult.releases).toHaveLength(1);
     expect(fs.existsSync(path.join(tempDir, '.plugin-artifacts', 'release-index.json'))).toBe(true);
 
+    const release = buildResult.releases[0];
+    const artifactDirectory = path.join(tempDir, release.artifactDirectory);
+    expect(fs.existsSync(path.join(artifactDirectory, 'index.html'))).toBe(true);
+    expect(fs.existsSync(path.join(artifactDirectory, 'assets', 'icon.svg'))).toBe(true);
+    expect(fs.existsSync(path.join(artifactDirectory, 'dist', 'index.html'))).toBe(false);
+
     const verifyResult = verifyArtifacts(tempDir);
     expect(verifyResult.valid).toBe(true);
     expect(verifyResult.count).toBe(1);
     expect(verifyResult.errors).toHaveLength(0);
+  });
+
+  it('scaffolds a buildable plugin starter with the SDK lifecycle scripts', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-scaffold-'));
+    const targetDir = path.join(tempDir, 'course-insights');
+
+    const result = scaffoldPlugin(targetDir, {
+      id: 'com.acme.course-insights',
+      publisher: 'Acme Inc.'
+    });
+
+    expect(result.manifest).toMatchObject({
+      id: 'com.acme.course-insights',
+      slug: 'course-insights',
+      publisher: 'Acme Inc.',
+      version: '0.1.0'
+    });
+    expect(validateManifest(result.manifest).valid).toBe(true);
+    expect(result.packageJson.scripts).toMatchObject({
+      dev: 'vite',
+      build: 'vite build',
+      'build:ui': 'vite build',
+      pack: 'cio-plugin build',
+      seed: 'cio-plugin dev',
+      publish: 'cio-plugin publish'
+    });
+    expect(fs.readFileSync(path.join(targetDir, 'vite.config.ts'), 'utf8')).toContain("base: './'");
+    expect(fs.readFileSync(path.join(targetDir, 'src', 'main.ts'), 'utf8')).toContain('createClassroomIOClient');
+    expect(fs.existsSync(path.join(targetDir, 'public', 'assets', 'icon.svg'))).toBe(true);
+    expect(fs.existsSync(path.join(targetDir, 'README.md'))).toBe(true);
+  });
+
+  it('refuses to scaffold over a non-empty directory', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-scaffold-existing-'));
+    fs.writeFileSync(path.join(tempDir, 'keep.txt'), 'keep');
+
+    expect(() => scaffoldPlugin(tempDir)).toThrow('is not empty');
   });
 });
