@@ -6,12 +6,14 @@ import type { TPathJourneyCourse } from '@cio/db/queries/learning-path';
 const mocks = vi.hoisted(() => ({
   getMemberByPathAndProfile: vi.fn(),
   getPathJourney: vi.fn(),
+  getLearningPathCertificate: vi.fn(),
   orgHasCertificatesEnabled: vi.fn()
 }));
 
 vi.mock('@cio/db/queries/learning-path', () => ({
   getMemberByPathAndProfile: mocks.getMemberByPathAndProfile,
-  getPathJourney: mocks.getPathJourney
+  getPathJourney: mocks.getPathJourney,
+  getLearningPathCertificate: mocks.getLearningPathCertificate
 }));
 
 vi.mock('@api/utils/plan-features', () => ({
@@ -39,8 +41,6 @@ const member = {
   completedAt: '2026-09-20 00:00:00+00'
 } as unknown as TLearningPathMember;
 
-const issued = { certificateId: 'CERT-1', issuedAt: '2026-09-20 00:00:00+00' };
-
 function course(courseId: string, isComplete: boolean): TPathJourneyCourse {
   return {
     courseId,
@@ -63,14 +63,15 @@ function course(courseId: string, isComplete: boolean): TPathJourneyCourse {
   };
 }
 
-function journeyRows(courses: TPathJourneyCourse[], certificate: typeof issued | null = null) {
-  return { courses, lastProgressAt: '2026-09-18 10:00:00+00', certificate };
+function journeyRows(courses: TPathJourneyCourse[]) {
+  return { courses, lastProgressAt: '2026-09-18 10:00:00+00' };
 }
 
 describe('getPathJourneyService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.orgHasCertificatesEnabled.mockResolvedValue(true);
+    mocks.getLearningPathCertificate.mockResolvedValue({ certificateId: 'CERT-1' });
   });
 
   it('summarises live course completion the way evaluatePathCompletion does', async () => {
@@ -80,7 +81,6 @@ describe('getPathJourneyService', () => {
 
     expect(mocks.getPathJourney).toHaveBeenCalledWith({
       pathId: 'path-1',
-      memberId: 'member-1',
       profileId: 'ada',
       sequentialUnlock: true
     });
@@ -94,7 +94,7 @@ describe('getPathJourneyService', () => {
       completedAt: null,
       lastProgressAt: '2026-09-18 10:00:00+00',
       certificateEnabled: true,
-      certificate: null
+      certificateAvailable: false
     });
     expect(journey.path).toEqual({
       id: 'path-1',
@@ -108,7 +108,7 @@ describe('getPathJourneyService', () => {
   });
 
   it('points a finished path at its last course and offers the downloadable certificate', async () => {
-    mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true), course('b', true)], issued));
+    mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true), course('b', true)]));
 
     const journey = await getPathJourneyService(path, member, 'ada');
 
@@ -118,7 +118,8 @@ describe('getPathJourneyService', () => {
       progress: 100,
       currentCourseId: 'b',
       completedAt: '2026-09-20 00:00:00+00',
-      certificate: issued
+      certificateEnabled: true,
+      certificateAvailable: true
     });
     expect(mocks.orgHasCertificatesEnabled).toHaveBeenCalledWith('org-1');
   });
@@ -138,22 +139,44 @@ describe('getPathJourneyService', () => {
     });
   });
 
-  it.each([
-    ['the plan has no certificates', member, path, false, false],
-    ['the path certificate is not downloadable', member, { ...path, certificate: {} }, true, false],
-    ['the membership is no longer completed', { ...member, status: 'IN_PROGRESS' }, path, true, true]
-  ] as const)('hides an issued certificate when %s', async (_reason, pathMember, pathRow, plan, certificateEnabled) => {
-    mocks.orgHasCertificatesEnabled.mockResolvedValue(plan);
-    mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true)], issued));
+  it('reports the certificate unavailable when the plan has no certificates', async () => {
+    mocks.orgHasCertificatesEnabled.mockResolvedValue(false);
+    mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true)]));
 
-    const journey = await getPathJourneyService(
-      pathRow as TLearningPath,
-      pathMember as unknown as TLearningPathMember,
-      'ada'
-    );
+    const journey = await getPathJourneyService(path, member, 'ada');
 
-    expect(journey.certificate).toBeNull();
-    expect(journey.certificateEnabled).toBe(certificateEnabled);
+    expect(journey.certificateEnabled).toBe(false);
+    expect(journey.certificateAvailable).toBe(false);
+  });
+
+  it('reports the certificate unavailable when the path certificate is not downloadable', async () => {
+    mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true)]));
+
+    const journey = await getPathJourneyService({ ...path, certificate: {} } as TLearningPath, member, 'ada');
+
+    expect(journey.certificateEnabled).toBe(false);
+    expect(journey.certificateAvailable).toBe(false);
+    expect(mocks.orgHasCertificatesEnabled).not.toHaveBeenCalled();
+  });
+
+  it('reports the certificate unavailable until one is issued, as the download guard requires', async () => {
+    mocks.getLearningPathCertificate.mockResolvedValue(null);
+    mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true)]));
+
+    const journey = await getPathJourneyService(path, member, 'ada');
+
+    expect(journey.isComplete).toBe(true);
+    expect(journey.certificateAvailable).toBe(false);
+    expect(mocks.getLearningPathCertificate).toHaveBeenCalledWith('member-1');
+  });
+
+  it('reports the certificate unavailable while the path is still in progress', async () => {
+    mocks.getPathJourney.mockResolvedValue(journeyRows([course('a', true), course('b', false)]));
+
+    const journey = await getPathJourneyService(path, { ...member, status: 'IN_PROGRESS' }, 'ada');
+
+    expect(journey.certificateEnabled).toBe(true);
+    expect(journey.certificateAvailable).toBe(false);
   });
 
   it('finds the enrollment of an org admin, whom the middleware passes without one', async () => {
@@ -163,7 +186,7 @@ describe('getPathJourneyService', () => {
     await getPathJourneyService(path, null, 'admin-1');
 
     expect(mocks.getMemberByPathAndProfile).toHaveBeenCalledWith('path-1', 'admin-1');
-    expect(mocks.getPathJourney).toHaveBeenCalledWith(expect.objectContaining({ memberId: 'member-1' }));
+    expect(mocks.getPathJourney).toHaveBeenCalledWith(expect.objectContaining({ profileId: 'admin-1' }));
   });
 
   it('returns 404 for an org admin who is not enrolled', async () => {

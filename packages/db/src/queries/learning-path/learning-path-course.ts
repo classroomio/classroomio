@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, isNull, sql } from 'drizzle-orm';
+import { and, asc, eq, inArray, isNull, sql, type SQL } from 'drizzle-orm';
 
 import { db, type DbOrTxClient } from '@db/drizzle';
 import { INSTRUCTOR_ROLE_LABEL, ROLE } from '@cio/utils/constants';
@@ -27,8 +27,44 @@ export interface TLearningPathCourseDetail {
 }
 
 /**
+ * Whether a path's course link counts as part of the path: the link is not
+ * soft-removed and its course is not deleted. Every query that lists, counts,
+ * orders or completes a path's courses filters on this, so they cannot
+ * disagree. Needs `course` joined to `learning_path_course`; raw queries pass
+ * their aliases, query-builder ones use the table names.
+ */
+export function pathCourseIsActiveSql(
+  aliases: { link: SQL; course: SQL } = { link: sql`${schema.learningPathCourse}`, course: sql`${schema.course}` }
+): SQL<boolean> {
+  return sql<boolean>`(${aliases.link}.removed_at IS NULL AND ${aliases.course}.status = 'ACTIVE')`;
+}
+
+/**
+ * 1-based position of a path course among the path's active courses, in path
+ * order (`order`, then `added_at`, then `course_id`, as the journey orders
+ * them); null when the link itself is not active. Stored `order` is only a
+ * sort key: links to deleted courses keep their slot, so it can skip numbers.
+ * Every course number shown to people comes from this. Pass the link alias a
+ * raw query uses; defaults to the table name.
+ */
+export function pathCoursePositionSql(link: SQL = sql`${schema.learningPathCourse}`): SQL<number | null> {
+  const siblingIsActive = pathCourseIsActiveSql({ link: sql`sibling_link`, course: sql`sibling_course` });
+
+  return sql<number | null>`(
+    SELECT CASE WHEN BOOL_OR(sibling_link.id = ${link}.id) THEN COUNT(*)::int END
+    FROM ${schema.learningPathCourse} sibling_link
+    JOIN ${schema.course} sibling_course ON sibling_course.id = sibling_link.course_id
+    WHERE sibling_link.learning_path_id = ${link}.learning_path_id
+      AND ${siblingIsActive}
+      AND (sibling_link."order", sibling_link.added_at, sibling_link.course_id)
+        <= (${link}."order", ${link}.added_at, ${link}.course_id)
+  )`;
+}
+
+/**
  * Lists active courses in a learning path in order, joined with course details and item counts.
- * Soft-removed rows are excluded; their progress cache is preserved for re-adds.
+ * Soft-removed rows and deleted courses are excluded; their progress cache is preserved for re-adds.
+ * `order` is the course's position (`pathCoursePositionSql`), not the stored sort key.
  */
 export async function listLearningPathCourses(
   learningPathId: string,
@@ -58,7 +94,7 @@ export async function listLearningPathCourses(
         id: schema.learningPathCourse.id,
         learningPathId: schema.learningPathCourse.learningPathId,
         courseId: schema.learningPathCourse.courseId,
-        order: schema.learningPathCourse.order,
+        order: sql<number>`${pathCoursePositionSql()}`,
         addedAt: schema.learningPathCourse.addedAt,
         title: schema.course.title,
         description: schema.course.description,
@@ -72,10 +108,12 @@ export async function listLearningPathCourses(
       })
       .from(schema.learningPathCourse)
       .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
-      .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-      )
-      .orderBy(asc(schema.learningPathCourse.order));
+      .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
+      .orderBy(
+        asc(schema.learningPathCourse.order),
+        asc(schema.learningPathCourse.addedAt),
+        asc(schema.learningPathCourse.courseId)
+      );
 
     const missingGroupIds = [
       ...new Set(
@@ -318,8 +356,10 @@ export async function removeCourseFromPath(
 /**
  * Reorders courses in a learning path to match the array order.
  * Validates the submission is an exact permutation of the path's active
- * courses, then applies all order changes atomically. Safe to call inside an
- * outer transaction (reuses the provided client) or standalone.
+ * courses (the ones `getCourseIdsInPath` returns), then applies all order
+ * changes atomically. Links to deleted courses keep their relative order
+ * after the active ones. Safe to call inside an outer transaction (reuses the
+ * provided client) or standalone.
  */
 export async function reorderLearningPathCourses(
   learningPathId: string,
@@ -327,14 +367,18 @@ export async function reorderLearningPathCourses(
   dbClient: DbOrTxClient = db
 ): Promise<void> {
   const applyReorder = async (client: DbOrTxClient): Promise<void> => {
-    const existingRows = await client
-      .select({ courseId: schema.learningPathCourse.courseId })
+    const liveLinks = await client
+      .select({ courseId: schema.learningPathCourse.courseId, isActive: pathCourseIsActiveSql() })
       .from(schema.learningPathCourse)
+      .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
       .where(
         and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-      );
+      )
+      .orderBy(asc(schema.learningPathCourse.order));
 
-    const existingIds = existingRows.map((row) => row.courseId);
+    const existingIds = liveLinks.filter((link) => link.isActive).map((link) => link.courseId);
+    const inactiveCourseIds = liveLinks.filter((link) => !link.isActive).map((link) => link.courseId);
+    const orderedCourseIds = [...courseIds, ...inactiveCourseIds];
     const existingSet = new Set(existingIds);
     const submittedSet = new Set(courseIds);
 
@@ -349,7 +393,7 @@ export async function reorderLearningPathCourses(
     }
 
     const orderCase = sql<number>`(CASE ${schema.learningPathCourse.courseId} ${sql.join(
-      courseIds.map((courseId, index) => sql`WHEN ${courseId} THEN ${index + 1}::integer`),
+      orderedCourseIds.map((courseId, index) => sql`WHEN ${courseId} THEN ${index + 1}::integer`),
       sql` `
     )} END)::integer`;
 
@@ -359,7 +403,7 @@ export async function reorderLearningPathCourses(
       .where(
         and(
           eq(schema.learningPathCourse.learningPathId, learningPathId),
-          inArray(schema.learningPathCourse.courseId, courseIds)
+          inArray(schema.learningPathCourse.courseId, orderedCourseIds)
         )
       );
   };
@@ -375,17 +419,21 @@ export async function reorderLearningPathCourses(
 }
 
 /**
- * Returns ordered list of active course UUIDs in a learning path.
+ * Returns ordered list of active course UUIDs in a learning path: links not
+ * soft-removed, to courses not deleted. Path completion requires exactly these.
  */
 export async function getCourseIdsInPath(learningPathId: string, dbClient: DbOrTxClient = db): Promise<string[]> {
   try {
     const rows = await dbClient
       .select({ courseId: schema.learningPathCourse.courseId })
       .from(schema.learningPathCourse)
-      .where(
-        and(eq(schema.learningPathCourse.learningPathId, learningPathId), isNull(schema.learningPathCourse.removedAt))
-      )
-      .orderBy(asc(schema.learningPathCourse.order));
+      .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
+      .where(and(eq(schema.learningPathCourse.learningPathId, learningPathId), pathCourseIsActiveSql()))
+      .orderBy(
+        asc(schema.learningPathCourse.order),
+        asc(schema.learningPathCourse.addedAt),
+        asc(schema.learningPathCourse.courseId)
+      );
 
     return rows.map((r) => r.courseId);
   } catch (error) {
@@ -408,11 +456,12 @@ export async function isCourseInPath(
     const [row] = await dbClient
       .select({ id: schema.learningPathCourse.id })
       .from(schema.learningPathCourse)
+      .innerJoin(schema.course, eq(schema.learningPathCourse.courseId, schema.course.id))
       .where(
         and(
           eq(schema.learningPathCourse.learningPathId, learningPathId),
           eq(schema.learningPathCourse.courseId, courseId),
-          isNull(schema.learningPathCourse.removedAt)
+          pathCourseIsActiveSql()
         )
       )
       .limit(1);
@@ -441,11 +490,12 @@ export async function getPathsContainingCourseForMember(
       })
       .from(schema.learningPath)
       .innerJoin(schema.learningPathCourse, eq(schema.learningPathCourse.learningPathId, schema.learningPath.id))
+      .innerJoin(schema.course, eq(schema.course.id, schema.learningPathCourse.courseId))
       .innerJoin(schema.learningPathMember, eq(schema.learningPathMember.learningPathId, schema.learningPath.id))
       .where(
         and(
           eq(schema.learningPathCourse.courseId, courseId),
-          isNull(schema.learningPathCourse.removedAt),
+          pathCourseIsActiveSql(),
           eq(schema.learningPathMember.profileId, profileId),
           isNull(schema.learningPathMember.removedAt),
           eq(schema.learningPath.status, 'ACTIVE')

@@ -17,6 +17,7 @@ import {
   addPathCourses,
   completeLessons,
   hasDatabase,
+  insertComplianceCycle,
   insertCourse,
   insertExercise,
   insertGrant,
@@ -25,6 +26,7 @@ import {
   insertPath,
   insertProfile,
   joinPath,
+  recordCourseCompletion,
   submit,
   withRollback
 } from './fixtures/learner-db';
@@ -34,12 +36,15 @@ type Row = [kind: string, name: string, completed: number, total: number, progre
 
 /**
  * Ada's org. Standalone: Excel (8/10), Figma (2/5 via a passed-policy
- * exercise), Live (a live class with a lesson toggled off), Done (100%),
- * Safety (compliance, 0% but compliant), Removed (dropped from Data Science
- * with its path grant still live). Paths: Basics (Intro plus an empty course,
- * so complete), an empty path, and Data Science (Excel and Python) which she
- * joins later. Never shown: a revoked grant, a deleted course, a course that
- * requires a path, another org's course and path, a deleted path.
+ * exercise), Live (a live class with a lesson toggled off), Done (100% with
+ * its completion recorded), Safety (compliance, 0% but compliant), Removed
+ * (dropped from Data Science with its path grant still live). Paths: Basics
+ * (Intro at 100% live progress but with no recorded completion, plus an
+ * empty course that counts as done), an empty path, and Data Science (Excel
+ * and Python) which she joins later. Never shown: a revoked grant, a deleted
+ * course, a course that requires a path, another org's course and path, a
+ * deleted path. A path course counts as done by its recorded completion, so
+ * Basics shows 1 of 2 until Intro's completion is recorded.
  */
 async function seedScenario(tx: DbOrTxClient) {
   const ada = await insertProfile(tx, 'ada');
@@ -160,17 +165,28 @@ async function seedScenario(tx: DbOrTxClient) {
     WHERE id = ${courses.live.lessonIds[1]}`);
 
   await completeLessons(tx, courses.done.lessonIds, ada, '2026-09-01T00:00:00Z');
+  await recordCourseCompletion(tx, members.done, '2026-09-01T00:00:00Z');
   await completeLessons(tx, courses.intro.lessonIds, ada, '2026-09-15T00:00:00Z');
 
-  // Safety: the latest compliance cycle is compliant, so it is complete at 0% content.
-  for (const [cycle, status] of [
-    [1, 'in_progress'],
-    [2, 'compliant']
-  ] as const) {
-    await tx.execute(sql`
-      INSERT INTO course_completion_record (course_id, group_member_id, profile_id, cycle_number, status, due_date)
-      VALUES (${courses.safety.courseId}, ${members.safety}, ${ada}, ${cycle}, ${status}, '2026-12-01T00:00:00Z')`);
-  }
+  // Safety: the latest compliance cycle is completed and still valid, so it is complete at 0% content.
+  await insertComplianceCycle(tx, {
+    courseId: courses.safety.courseId,
+    groupMemberId: members.safety,
+    profileId: ada,
+    cycleNumber: 1,
+    status: 'in_progress'
+  });
+  await insertComplianceCycle(
+    tx,
+    {
+      courseId: courses.safety.courseId,
+      groupMemberId: members.safety,
+      profileId: ada,
+      cycleNumber: 2,
+      status: 'compliant'
+    },
+    { completedAt: '2026-09-27T00:00:00Z', validUntil: '2099-01-01T00:00:00Z' }
+  );
 
   // Bob's progress on the same courses never reaches Ada's rows.
   const bobExcel = await insertMember(tx, courses.excel.groupId, bob);
@@ -187,7 +203,10 @@ async function seedScenario(tx: DbOrTxClient) {
   await addPathCourses(tx, basics.pathId, [courses.intro.courseId, courses.blank.courseId]);
   await addPathCourses(tx, foreignPath.pathId, [courses.foreign.courseId]);
   await addPathCourses(tx, deletedPath.pathId, [courses.python.courseId]);
-  await joinPath(tx, basics.pathId, ada, '2026-03-01T00:00:00Z');
+  await joinPath(tx, basics.pathId, ada, '2026-03-01T00:00:00Z', {
+    status: 'COMPLETED',
+    completedAt: '2026-09-15T00:00:00Z'
+  });
   await joinPath(tx, emptyPath.pathId, ada, '2026-09-20T00:00:00Z');
   await joinPath(tx, foreignPath.pathId, ada, '2026-03-01T00:00:00Z');
   await joinPath(tx, deletedPath.pathId, ada, '2026-03-01T00:00:00Z');
@@ -209,7 +228,13 @@ async function withScenario(test: (tx: DbOrTxClient, scenario: Scenario) => Prom
 async function readFeed(
   tx: DbOrTxClient,
   scenario: Scenario,
-  query: { page?: number; limit?: number; status?: 'all' | 'in_progress' | 'completed'; search?: string } = {}
+  query: {
+    page?: number;
+    limit?: number;
+    status?: 'all' | 'not_started' | 'in_progress';
+    kind?: 'all' | 'course' | 'learning_path';
+    search?: string;
+  } = {}
 ) {
   const { getEnrolled } = await import('@cio/db/queries/enrolled');
 
@@ -234,10 +259,7 @@ function lastProgressIso(page: TEnrolledPage) {
 const outsideDataScience: Row[] = [
   ['course', 'Figma', 2, 5, 40, false],
   ['course', 'Excel', 8, 10, 80, false],
-  ['learning_path', 'Basics', 2, 2, 100, true],
   ['course', 'Live', 1, 3, 33, false],
-  ['course', 'Done', 2, 2, 100, true],
-  ['course', 'Safety', 0, 1, 0, true],
   ['learning_path', 'Empty path', 0, 0, 0, false],
   ['course', 'Removed', 0, 1, 0, false]
 ];
@@ -268,24 +290,20 @@ describe.skipIf(!hasDatabase)('getEnrolled (database)', () => {
       expect(lastProgressIso(page)).toEqual([
         '2026-09-29T09:00:00.000Z',
         '2026-09-18T15:00:00.000Z',
-        '2026-09-15T00:00:00.000Z',
         '2026-09-06T00:00:00.000Z',
-        '2026-09-01T00:00:00.000Z',
-        null,
         null,
         null
       ]);
-      expect(page.total).toBe(8);
-      expect(page.counts).toEqual({ inProgress: 5, completed: 3 });
+      expect(page.total).toBe(5);
+      expect(page.counts).toEqual({
+        byStatus: { notStarted: 2, inProgress: 3 },
+        byKind: { course: 4, learningPath: 1 }
+      });
 
-      const [figma, , , live, , safety] = page.items;
+      const [figma, , live] = page.items;
       expect(figma.kind === 'course' && figma.data.upcomingSession).toBeNull();
       expect(figma.kind === 'course' && [figma.data.progressRate, figma.data.exercisesCompleted]).toEqual([1, 1]);
       expect(live.kind === 'course' && live.data.upcomingSession?.lessonTitle).toBe('Live Q&A');
-      expect(safety.kind === 'course' && [safety.data.complianceStatus, safety.data.complianceCycleNumber]).toEqual([
-        'compliant',
-        2
-      ]);
     });
   }, 30000);
 
@@ -298,7 +316,7 @@ describe.skipIf(!hasDatabase)('getEnrolled (database)', () => {
       expect(toRows(joined)).toEqual([
         outsideDataScience[0],
         ['learning_path', 'Data Science', 0, 2, 0, false],
-        ...outsideDataScience.slice(2)
+        ...outsideDataScience.slice(1).filter((row) => row[1] !== 'Excel')
       ]);
       expect(lastProgressIso(joined)[1]).toBe('2026-09-18T15:00:00.000Z');
 
@@ -314,29 +332,113 @@ describe.skipIf(!hasDatabase)('getEnrolled (database)', () => {
     });
   }, 30000);
 
-  it('filters by completion status and search while counting both tabs', async () => {
+  it('keeps finished-looking work in the feed until its completion is recorded', async () => {
     await withScenario(async (tx, scenario) => {
-      await joinDataScience(tx, scenario);
+      await tx.execute(sql`UPDATE groupmember SET completed_at = NULL WHERE id = ${scenario.members.done}`);
+      await tx.execute(sql`
+        UPDATE learning_path_member SET status = 'IN_PROGRESS', completed_at = NULL
+        WHERE profile_id = ${scenario.ada} AND status = 'COMPLETED'`);
 
-      const completed = await readFeed(tx, scenario, { status: 'completed' });
-      expect(toRows(completed).map((row) => row[1])).toEqual(['Basics', 'Done', 'Safety']);
-      expect([completed.total, completed.counts]).toEqual([3, { inProgress: 5, completed: 3 }]);
+      const page = await readFeed(tx, scenario);
 
-      const inProgress = await readFeed(tx, scenario, { status: 'in_progress' });
-      expect(toRows(inProgress).map((row) => row[1])).toEqual([
+      expect(toRows(page).map((row) => row[1])).toEqual([
         'Figma',
-        'Data Science',
+        'Excel',
+        'Basics',
         'Live',
+        'Done',
         'Empty path',
         'Removed'
       ]);
+      expect(toRows(page).filter((row) => ['Basics', 'Done'].includes(row[1]))).toEqual([
+        ['learning_path', 'Basics', 1, 2, 50, false],
+        ['course', 'Done', 2, 2, 100, false]
+      ]);
+    });
+  }, 30000);
+
+  it('filters by status and kind', async () => {
+    await withScenario(async (tx, scenario) => {
+      const notStarted = await readFeed(tx, scenario, { status: 'not_started' });
+      expect(toRows(notStarted).map((row) => row[1])).toEqual(['Empty path', 'Removed']);
+      expect(notStarted.total).toBe(2);
+      // Status counts ignore the status filter; kind counts respect it.
+      expect(notStarted.counts).toEqual({
+        byStatus: { notStarted: 2, inProgress: 3 },
+        byKind: { course: 1, learningPath: 1 }
+      });
+
+      const inProgress = await readFeed(tx, scenario, { status: 'in_progress' });
+      expect(toRows(inProgress).map((row) => row[1])).toEqual(['Figma', 'Excel', 'Live']);
+      expect(inProgress.total).toBe(3);
+      expect(inProgress.counts).toEqual({
+        byStatus: { notStarted: 2, inProgress: 3 },
+        byKind: { course: 3, learningPath: 0 }
+      });
+
+      const courses = await readFeed(tx, scenario, { kind: 'course' });
+      expect(toRows(courses).map((row) => row[1])).toEqual(['Figma', 'Excel', 'Live', 'Removed']);
+      expect(courses.total).toBe(4);
+      // Kind counts ignore the kind filter; status counts respect it.
+      expect(courses.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 3 },
+        byKind: { course: 4, learningPath: 1 }
+      });
+
+      const paths = await readFeed(tx, scenario, { kind: 'learning_path' });
+      expect(toRows(paths).map((row) => row[1])).toEqual(['Empty path']);
+      expect(paths.total).toBe(1);
+      expect(paths.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 0 },
+        byKind: { course: 4, learningPath: 1 }
+      });
+
+      const inProgressCourses = await readFeed(tx, scenario, { status: 'in_progress', kind: 'course' });
+      expect(toRows(inProgressCourses).map((row) => row[1])).toEqual(['Figma', 'Excel', 'Live']);
+      expect(inProgressCourses.total).toBe(3);
+      expect(inProgressCourses.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 3 },
+        byKind: { course: 3, learningPath: 0 }
+      });
+    });
+  }, 30000);
+
+  it('searches across paths and courses', async () => {
+    await withScenario(async (tx, scenario) => {
+      await joinDataScience(tx, scenario);
 
       // A course folded into a path is found through the path.
       const search = await readFeed(tx, scenario, { search: 'EXCEL' });
       expect(toRows(search).map((row) => row[1])).toEqual(['Data Science']);
-      expect([search.total, search.counts]).toEqual([1, { inProgress: 1, completed: 0 }]);
+      expect(search.total).toBe(1);
+      // Counts respect the search: Data Science is a not-started path.
+      expect(search.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 0 },
+        byKind: { course: 0, learningPath: 1 }
+      });
 
-      expect((await readFeed(tx, scenario, { search: '100%' })).total).toBe(0);
+      // A status filter empties the page but the counts still report the search scope.
+      const searchedInProgress = await readFeed(tx, scenario, { search: 'EXCEL', status: 'in_progress' });
+      expect(searchedInProgress.total).toBe(0);
+      expect(searchedInProgress.counts).toEqual({
+        byStatus: { notStarted: 1, inProgress: 0 },
+        byKind: { course: 0, learningPath: 0 }
+      });
+
+      // A kind filter empties the page; byKind still reports the search scope.
+      const searchedCourses = await readFeed(tx, scenario, { search: 'EXCEL', kind: 'course' });
+      expect(searchedCourses.total).toBe(0);
+      expect(searchedCourses.counts).toEqual({
+        byStatus: { notStarted: 0, inProgress: 0 },
+        byKind: { course: 0, learningPath: 1 }
+      });
+
+      const noMatch = await readFeed(tx, scenario, { search: '100%' });
+      expect(noMatch.total).toBe(0);
+      expect(noMatch.counts).toEqual({
+        byStatus: { notStarted: 0, inProgress: 0 },
+        byKind: { course: 0, learningPath: 0 }
+      });
     });
   }, 30000);
 
@@ -349,7 +451,11 @@ describe.skipIf(!hasDatabase)('getEnrolled (database)', () => {
       expect(pages).toEqual(outsideDataScience);
 
       const pastEnd = await readFeed(tx, scenario, { page: 9, limit: 3 });
-      expect([pastEnd.items, pastEnd.total, pastEnd.counts]).toEqual([[], 8, { inProgress: 5, completed: 3 }]);
+      expect([pastEnd.items, pastEnd.total, pastEnd.counts]).toEqual([
+        [],
+        5,
+        { byStatus: { notStarted: 2, inProgress: 3 }, byKind: { course: 4, learningPath: 1 } }
+      ]);
     });
   }, 30000);
 });

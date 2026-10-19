@@ -3562,6 +3562,7 @@
         "last_login_at": "Last Login At",
         "enrolled_at": "Enrolled At",
         "certificate_earned": "Certificate earned",
+        "completed": "Completed",
         "not_started": "Not started",
         "role": "Role",
         "action": "Action",
@@ -6137,6 +6138,7 @@
       }
     },
     "snackbar": {
+      "setup_open_failed": "Couldn't open setup. Try again.",
       "created": "Learning path created",
       "updated": "Learning path updated",
       "deleted": "Learning path deleted",

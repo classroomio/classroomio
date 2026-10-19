@@ -2,7 +2,7 @@ import * as schema from '@db/schema';
 import { latestGrantSourceColumns, sourceCondition, type CoursePeopleSourceFilter } from './people-source';
 
 import { TGroupmember, TNewGroupmember } from '@db/types';
-import { and, asc, count, eq, ilike, isNull, or } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, isNull, or, sql, type SQL } from 'drizzle-orm';
 
 import { ROLE } from '@cio/utils/constants';
 import { db, type DbOrTxClient } from '@db/drizzle';
@@ -466,6 +466,183 @@ export async function claimMemberCertificateEarned(memberId: string, earnedAt: s
   } catch (error) {
     console.error('claimMemberCertificateEarned error:', error);
     throw new Error(`Failed to claim certificate earned: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Atomically records the learner's first completion of a course membership.
+ * Returns true when this caller made the write, so concurrent evaluations
+ * run first-completion side effects once. Never cleared by later progress
+ * changes, only by a progress reset.
+ */
+export async function claimMemberCourseCompleted(memberId: string, completedAt: string): Promise<boolean> {
+  try {
+    const updated = await db
+      .update(schema.groupmember)
+      .set({ completedAt })
+      .where(and(eq(schema.groupmember.id, memberId), isNull(schema.groupmember.completedAt)))
+      .returning({ id: schema.groupmember.id });
+    return updated.length > 0;
+  } catch (error) {
+    console.error('claimMemberCourseCompleted error:', error);
+    throw new Error(`Failed to claim course completion: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Memberships whose earned certificate is not reflected in
+ * `groupmember.completed_at`: none recorded, or a later one recorded by an
+ * evaluation that ran before the copy. A certificate is only ever earned on
+ * completion, so its date is the completion date. Optionally limited to one
+ * organization.
+ */
+function earnedCertificatesMissingCompletionSql(organizationId?: string): SQL {
+  const inOrganization = organizationId
+    ? sql`gm.group_id IN (SELECT g.id FROM ${schema.group} g WHERE g.organization_id = ${organizationId})`
+    : sql`true`;
+
+  return sql`
+    gm.certificate_earned_at IS NOT NULL
+    AND (gm.completed_at IS NULL OR gm.completed_at > gm.certificate_earned_at)
+    AND ${inOrganization}
+  `;
+}
+
+/**
+ * Counts memberships {@link copyEarnedCertificatesToCompletion} would update.
+ */
+export async function countEarnedCertificatesMissingCompletion(
+  options: { organizationId?: string } = {},
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const [row] = await dbClient.execute<{ total: number }>(sql`
+      SELECT COUNT(*)::int AS total FROM ${schema.groupmember} gm
+      WHERE ${earnedCertificatesMissingCompletionSql(options.organizationId)}
+    `);
+
+    return row?.total ?? 0;
+  } catch (error) {
+    console.error('countEarnedCertificatesMissingCompletion error:', error);
+    throw new Error(
+      `Failed to count earned certificates missing completion: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * Sets `completed_at` to `certificate_earned_at` wherever an earned
+ * certificate is not reflected in it. Idempotent. Returns how many
+ * memberships changed.
+ */
+export async function copyEarnedCertificatesToCompletion(
+  options: { organizationId?: string } = {},
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const rows = await dbClient.execute<{ id: string }>(sql`
+      UPDATE ${schema.groupmember} gm
+      SET completed_at = gm.certificate_earned_at
+      WHERE ${earnedCertificatesMissingCompletionSql(options.organizationId)}
+      RETURNING gm.id
+    `);
+
+    return rows.length;
+  } catch (error) {
+    console.error('copyEarnedCertificatesToCompletion error:', error);
+    throw new Error(
+      `Failed to copy earned certificates to completion: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+export type TCourseCompletionBackfillCandidate = {
+  groupMemberId: string;
+  courseId: string;
+  profileId: string;
+};
+
+/**
+ * Student memberships of active courses with no recorded completion that
+ * could meet the certification rule today: the learner made some progress,
+ * or the course threshold is 0. Anyone else is at 0% and cannot be eligible.
+ * Optionally limited to one organization.
+ */
+function courseCompletionBackfillCandidatesSql(organizationId?: string): SQL {
+  const inOrganization = organizationId ? sql`g.organization_id = ${organizationId}` : sql`true`;
+
+  return sql`
+    FROM ${schema.groupmember} gm
+    JOIN ${schema.course} c ON c.group_id = gm.group_id AND c.status = 'ACTIVE'
+    JOIN ${schema.group} g ON g.id = c.group_id
+    WHERE gm.completed_at IS NULL
+      AND gm.profile_id IS NOT NULL
+      AND gm.role_id = ${ROLE.STUDENT}
+      AND ${inOrganization}
+      AND (
+        COALESCE((c.certificate->>'threshold')::numeric, 100) <= 0
+        OR EXISTS (
+          SELECT 1
+          FROM ${schema.lessonCompletion} lc
+          JOIN ${schema.lesson} l ON l.id = lc.lesson_id
+          WHERE l.course_id = c.id AND lc.profile_id = gm.profile_id AND lc.is_complete
+        )
+        OR EXISTS (SELECT 1 FROM ${schema.submission} cs WHERE cs.submitted_by = gm.id)
+      )
+  `;
+}
+
+/**
+ * Counts {@link listCourseCompletionBackfillCandidates} rows.
+ */
+export async function countCourseCompletionBackfillCandidates(
+  options: { organizationId?: string } = {},
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  try {
+    const [row] = await dbClient.execute<{ total: number }>(
+      sql`SELECT COUNT(*)::int AS total ${courseCompletionBackfillCandidatesSql(options.organizationId)}`
+    );
+
+    return row?.total ?? 0;
+  } catch (error) {
+    console.error('countCourseCompletionBackfillCandidates error:', error);
+    throw new Error(
+      `Failed to count course completion backfill candidates: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
+/**
+ * One keyset page of memberships whose completion may predate
+ * `groupmember.completed_at`, ordered by membership id. Pass the last id of
+ * the previous page as `afterGroupMemberId`.
+ */
+export async function listCourseCompletionBackfillCandidates(
+  options: { organizationId?: string; afterGroupMemberId?: string; limit: number },
+  dbClient: DbOrTxClient = db
+): Promise<TCourseCompletionBackfillCandidate[]> {
+  try {
+    const afterCursor = options.afterGroupMemberId ? sql`gm.id > ${options.afterGroupMemberId}` : sql`true`;
+
+    const rows = await dbClient.execute<{ group_member_id: string; course_id: string; profile_id: string }>(sql`
+      SELECT gm.id AS group_member_id, c.id AS course_id, gm.profile_id
+      ${courseCompletionBackfillCandidatesSql(options.organizationId)}
+        AND ${afterCursor}
+      ORDER BY gm.id
+      LIMIT ${options.limit}
+    `);
+
+    return rows.map((row) => ({
+      groupMemberId: row.group_member_id,
+      courseId: row.course_id,
+      profileId: row.profile_id
+    }));
+  } catch (error) {
+    console.error('listCourseCompletionBackfillCandidates error:', error);
+    throw new Error(
+      `Failed to list course completion backfill candidates: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 

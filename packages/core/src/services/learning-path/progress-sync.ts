@@ -29,11 +29,13 @@ import { enqueueWorkerTemplateEmail } from './template-email';
 
 /**
  * Learning-path progress sync, shared by the API (after learner events) and
- * the worker (path-wide and reconcile syncs). Truth is `lesson_completion` and
- * `submission`; this writes the `learning_path_member` and
- * `learning_path_member_course` caches that People, analytics and the member
- * detail page read, and it is where a path is marked complete, its
- * certificate issued and its completion email sent.
+ * the worker (path-wide and reconcile syncs). Progress totals are read live
+ * from `lesson_completion` and `submission`; this writes the
+ * `learning_path_member` and `learning_path_member_course` caches that People,
+ * analytics and the member detail page read, and it is where a path is marked
+ * complete, its certificate issued and its completion email sent. Whether a
+ * course counts as done is what completion evaluation recorded, not live
+ * counts.
  */
 
 export interface TProgressSyncOptions {
@@ -46,7 +48,9 @@ export interface TProgressSyncOptions {
 
 /**
  * Checks whether a single course is complete for a student within a learning path.
- * A course is complete when all lessons are completed AND all exercises are completed.
+ * A course is complete when completion evaluation recorded it
+ * (`getCourseCompletionStatsForProfile`), with the empty-course exemption, so
+ * paths complete on the same rule as certificates rather than live counts.
  */
 export async function courseCompleteForPath(
   profileId: string,

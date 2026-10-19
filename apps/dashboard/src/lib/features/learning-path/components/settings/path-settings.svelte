@@ -15,12 +15,12 @@
   import { DeleteModal, AttentionHighlight, UploadWidget, TextEditor } from '$features/ui';
   import { handleOpenWidget } from '$features/ui/course-landing-page/store';
   import { copyToClipboard } from '$lib/utils/functions/formatYoutubeVideo';
-  import { generateSlug } from '@cio/utils/functions';
   import { ROUTE_NAME, ROUTE_SECTIONS } from '$lib/routing/routes';
   import { snackbar } from '$features/ui/snackbar/store';
   import { t } from '$lib/utils/functions/translations';
   import { currentOrgDomain, currentOrgPath, isOrgAdmin } from '$lib/utils/store/org';
   import { learningPathApi } from '../../api';
+  import { generatePathSlug } from '../../utils/path-slug';
   import type { LearningPathDetail, UpdateLearningPathInput } from '../../utils/types';
 
   interface Props {
@@ -120,7 +120,7 @@
 
     isGeneratingLink = true;
     try {
-      const generatedSlug = generateSlug(name || path.name, { appendTimestamp: true });
+      const generatedSlug = generatePathSlug(name || path.name);
       const pathPublicId = path.publicId ?? path.id;
       const response = await learningPathApi.update(pathPublicId, { slug: generatedSlug }, { showSuccessToast: false });
 
@@ -163,7 +163,7 @@
     let targetSlug = currentSlug;
 
     if (isPublished && !targetSlug) {
-      targetSlug = generateSlug(name.trim(), { appendTimestamp: true });
+      targetSlug = generatePathSlug(name.trim());
       currentSlug = targetSlug;
     }
 

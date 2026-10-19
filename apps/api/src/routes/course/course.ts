@@ -27,7 +27,7 @@ import {
   getCourseProgress,
   updateCourse
 } from '@cio/core/services/course/course';
-import { assertCertificateDownloadAllowed, evaluateCourseCertification } from '@api/services/course/completion';
+import { assertCertificateDownloadAllowed, evaluateAndRecordCourseCompletion } from '@api/services/course/completion';
 import { getCourseTags, replaceCourseTags } from '@api/services/tag';
 
 import { Hono } from '@api/utils/hono';
@@ -468,7 +468,7 @@ export const courseRouter = new Hono()
       try {
         const { courseId } = c.req.valid('param');
         const user = c.get('user')!;
-        const data = await evaluateCourseCertification(courseId, user.id);
+        const data = await evaluateAndRecordCourseCompletion(courseId, user.id);
 
         return c.json(
           {

@@ -182,6 +182,25 @@
         description="Build fast, interactive user interfaces with React, hooks, and modern JavaScript tooling."
         coverGradient={COVER_GRADIENT}
         certificateEarnedAt="2026-05-14T10:00:00.000Z"
+        certificateAvailable
+        status="COMPLETED"
+        isLMS
+        isCertificateView
+        {labels}
+      />
+    </div>
+  {/snippet}
+</Story>
+
+<Story name="Certificate view — no certificate available">
+  {#snippet template()}
+    <div class="w-80">
+      <CourseCard
+        href="/courses/modern-web-development"
+        title="Modern Web Development with React"
+        description="Build fast, interactive user interfaces with React, hooks, and modern JavaScript tooling."
+        coverGradient={COVER_GRADIENT}
+        certificateEarnedAt="2026-05-14T10:00:00.000Z"
         status="COMPLETED"
         isLMS
         isCertificateView

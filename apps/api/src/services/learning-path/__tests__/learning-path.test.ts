@@ -31,7 +31,6 @@ const mocks = vi.hoisted(() => ({
   listPublicLearningPaths: vi.fn(),
   countIssuedCertificates: vi.fn(),
   countActivePathMembers: vi.fn(),
-  countActivePathMembers: vi.fn(),
   getCourseGroupIds: vi.fn(),
   getGroupMemberIdByGroupAndProfile: vi.fn(),
   insertGroupMembersOnConflictDoNothing: vi.fn(),
@@ -72,7 +71,6 @@ vi.mock('@cio/core/config/env', () => ({
 
 vi.mock('@cio/db/queries/learning-path', () => ({
   countIssuedCertificates: mocks.countIssuedCertificates,
-  countActivePathMembers: mocks.countActivePathMembers,
   countActivePathMembers: mocks.countActivePathMembers,
   getLearningPathById: mocks.getLearningPathById,
   getLearningPathByPublicId: mocks.getLearningPathByPublicId,

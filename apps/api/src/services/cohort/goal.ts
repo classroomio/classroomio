@@ -9,7 +9,7 @@ import {
   getAssignmentsForProfile,
   getLatestCompletionRecordsForProfilesAndCourses,
   getMaxScoresForProfilesAndCourses,
-  getNonComplianceCourseCompletions,
+  getRecordedCourseCompletions,
   getCohortById,
   getCohortGoalAssignments,
   getCohortGoalById,
@@ -234,22 +234,16 @@ export async function evaluateGoal(goalId: string): Promise<{ evaluated: number 
   const profileIds = studentMembers.map((member) => member.profileId!);
   const courseIds = goal.courseIds ?? [];
 
-  const [completionRecords, nonComplianceCompletions, scoreMap, existingAssignments] = await Promise.all([
+  const [completionRecords, recordedCompletions, scoreMap, existingAssignments] = await Promise.all([
     getLatestCompletionRecordsForProfilesAndCourses(profileIds, courseIds),
-    getNonComplianceCourseCompletions(profileIds, courseIds),
+    getRecordedCourseCompletions(profileIds, courseIds),
     goal.type === 'score' || goal.type === 'pass_rate'
       ? getMaxScoresForProfilesAndCourses(profileIds, courseIds)
       : Promise.resolve(new Map<string, number>()),
     getCohortGoalAssignments(goalId)
   ]);
 
-  const completionByKey = new Map<string, { status: string; score: number | null }>();
-  for (const record of completionRecords) {
-    completionByKey.set(`${record.profileId}:${record.courseId}`, {
-      status: record.status,
-      score: record.score
-    });
-  }
+  const scoredRecordKeys = new Set(completionRecords.map((record) => `${record.profileId}:${record.courseId}`));
 
   const previousByMember = new Map(existingAssignments.map((assignment) => [assignment.cohortMemberId, assignment]));
 
@@ -267,22 +261,13 @@ export async function evaluateGoal(goalId: string): Promise<{ evaluated: number 
 
     const completedCourseIds = courseIds.filter((courseId) => {
       const key = `${member.profileId}:${courseId}`;
-      const record = completionByKey.get(key);
 
-      if (record) {
-        if (goal.type === 'score' || goal.type === 'pass_rate') {
-          const score = scoreMap.get(key);
-          return typeof score === 'number' && score >= (goal.scoreThreshold ?? 100);
-        }
-        if (record.status === 'compliant') return true;
+      if (goal.type === 'score' || goal.type === 'pass_rate') {
+        const score = scoredRecordKeys.has(key) ? scoreMap.get(key) : undefined;
+        return typeof score === 'number' && score >= (goal.scoreThreshold ?? 100);
       }
 
-      // Fallback: non-compliance course where every lesson is completed.
-      if (goal.type !== 'score' && goal.type !== 'pass_rate') {
-        return nonComplianceCompletions.has(key);
-      }
-
-      return false;
+      return recordedCompletions.has(key);
     });
 
     const completed = completedCourseIds.length;

@@ -1369,6 +1369,7 @@
         "last_login_at": "Último login",
         "enrolled_at": "Matriculado em",
         "certificate_earned": "Certificado obtido",
+        "completed": "Concluído",
         "not_started": "Não iniciado",
         "role": "Função",
         "action": "Ação",

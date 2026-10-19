@@ -125,7 +125,7 @@ Prototype: `Templates/Student Profile`.
 
 **Tabs** — `Courses` (with a count badge), `Grades`, `Activity`. Selected tab syncs to `?tab=`; an unknown or absent value normalizes to `courses`.
 
-- **Courses tab** — one card per course: logo, title (links to the course), description clamped to two lines, a status badge (`Complete` / `In progress` / `Not started`, derived from `lessons_completed` vs `lessons_count`), then a footer with the progress ring plus Lessons, Exercises and Grade figures. Empty state when the student has no enrollments.
+- **Courses tab** — one card per course: logo, title (links to the course), description clamped to two lines, a status badge (`Complete` / `In progress` / `Not started`; `Complete` is the recorded completion — `completedAt`, or the current compliance cycle for compliance courses — never live lesson counts), then a footer with the progress ring plus Lessons, Exercises and Grade figures. Empty state when the student has no enrollments.
 - **Grades tab** — a single table. Each course contributes a muted group header row (course title, exercises completed/total, average-grade badge) followed by one row per exercise: title (links to the exercise), lesson title beneath, score, and status. **An ungraded submission renders `—/20`, never `0/20`** — a zero the student did not earn is a different claim. Status is `Graded` / `Awaiting grade` / `Not submitted`. A course with no exercises shows its header row only. Empty state when there are no enrollments.
 - **Activity tab** — `Empty` state naming what will land here and why it has not.
 

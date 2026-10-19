@@ -230,6 +230,7 @@ The card is **labels-driven and presentational**: all copy is passed in via `lab
 | `totalStudents`                                                             | Enrolled-student count; only shown on admin surfaces                                       |
 | `isPublished`                                                               | Publish/unpublished badge; only shown on admin surfaces (`labels.published`/`unpublished`) |
 | `certificateEarnedAt`                                                       | ISO date shown as "Earned on" on certificate surfaces                                      |
+| `certificateAvailable`                                                      | Certificate surface: shows the "View certificate" CTA only when `true` (default `false`)   |
 | `compliance`                                                                | `CourseCardCompliance` (`statusLabel`, `statusVariant`, `dateLabel`, `dateValue`)          |
 | `partOfPath`                                                                | `{ name, href }` link rendered as "Part of: {name}"                                        |
 | `isLMS` / `isExplore` / `isAdmin` / `isCertificateView` / `isOnLandingPage` | Surface flags                                                                              |
@@ -247,7 +248,7 @@ See `Molecules/CourseCard` in Storybook.
 
 Presentational card, badge, and progress bar for learning paths. Import as `import { LearningPathCard, LearningPathBadge, LearningPathProgress, type LearningPathCardLabels } from '@cio/ui'` (or from `@cio/ui/custom/learning-path-card`).
 
-`LearningPathCard` is labels-driven like the course card. The surface is derived from the same flag priority (`isCertificateView` → `isAdmin` → `isExplore` → `isOnLandingPage` → `isLMS` → admin default). LMS and certificate surfaces show progress + a certificate badge when `done` (`certificateEarned` or `coursesCompleted === courseCount` with `courseCount > 0`); admin surfaces show a status badge (`status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED'`) and a "Continue setup"/"Manage" CTA. `ctaLabel` overrides the derived label.
+`LearningPathCard` is labels-driven like the course card. The surface is derived from the same flag priority (`isCertificateView` → `isAdmin` → `isExplore` → `isOnLandingPage` → `isLMS` → admin default). The LMS surface shows progress, and is `done` when `certificateEarned` or `coursesCompleted === courseCount` with `courseCount > 0`. On the certificate surface, and on a `done` LMS card, the certificate badge and "View certificate" CTA show only when `certificateEarned`; without it there is no CTA; admin surfaces show a status badge (`status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED'`) and a "Continue setup"/"Manage" CTA. `ctaLabel` overrides the derived label.
 
 | Prop                                                                        | Description                                                 |
 | --------------------------------------------------------------------------- | ----------------------------------------------------------- |
@@ -257,9 +258,9 @@ Presentational card, badge, and progress bar for learning paths. Import as `impo
 | `coverGradient` / `coverImage`                                              | Banner background / image                                   |
 | `courseCount`                                                               | Number of courses in the path                               |
 | `totalHours`                                                                | Estimated duration                                          |
-| `progressPercent`                                                           | Overall progress 0–100 (defaults to 0)                      |
-| `coursesCompleted`                                                          | Courses completed so far (defaults to 0)                    |
-| `certificateEarned`                                                         | Done state for LMS/certificate surfaces                     |
+| `progressPercent`                                                           | Overall progress 0–100                                      |
+| `coursesCompleted`                                                          | Courses completed so far                                    |
+| `certificateEarned`                                                         | A certificate exists: badge and "View certificate" CTA      |
 | `certificateEarnedAt`                                                       | ISO date shown as "Earned on" on certificate surfaces       |
 | `status`                                                                    | Admin status (`DRAFT` \| `ACTIVE` \| `ARCHIVED`)            |
 | `isLMS` / `isExplore` / `isAdmin` / `isCertificateView` / `isOnLandingPage` | Surface flags                                               |

@@ -71,6 +71,8 @@
     totalStudents?: number;
     isPublished?: boolean;
     certificateEarnedAt?: string | null;
+    /** Certificate surface: a certificate can be viewed. The CTA shows only when true. */
+    certificateAvailable?: boolean;
     partOfPath?: { name: string; href: string } | null;
     compliance?: CourseCardCompliance | null;
     isLMS?: boolean;
@@ -104,6 +106,7 @@
     totalStudents,
     isPublished = false,
     certificateEarnedAt,
+    certificateAvailable = false,
     partOfPath = null,
     compliance = null,
     isLMS = false,
@@ -149,6 +152,7 @@
   const ctaVariant = 'outline';
 
   const showCtaArrow = $derived(surface !== 'lms');
+  const showCta = $derived(surface !== 'certificate' || certificateAvailable);
 
   const ctaLabelText = $derived(
     ctaLabel ??
@@ -361,17 +365,19 @@
       </span>
     {/if}
 
-    <div class="ui:mt-1 ui:flex ui:flex-1 ui:items-end">
-      <Button
-        href={innerHref}
-        variant={ctaVariant}
-        size="sm"
-        class="ui:relative ui:z-10 ui:w-full"
-        onclick={isExploreClickable ? handleCtaClick : undefined}
-      >
-        {ctaLabelText}
-        {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
-      </Button>
-    </div>
+    {#if showCta}
+      <div class="ui:mt-1 ui:flex ui:flex-1 ui:items-end">
+        <Button
+          href={innerHref}
+          variant={ctaVariant}
+          size="sm"
+          class="ui:relative ui:z-10 ui:w-full"
+          onclick={isExploreClickable ? handleCtaClick : undefined}
+        >
+          {ctaLabelText}
+          {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
+        </Button>
+      </div>
+    {/if}
   </div>
 </div>

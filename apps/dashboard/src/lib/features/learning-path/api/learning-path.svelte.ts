@@ -435,6 +435,8 @@ class LearnerPathStore extends BaseApiWithErrors {
 
   completedPaths = $derived(this.enrolledPaths.filter((path) => path.isComplete));
 
+  unfinishedPaths = $derived(this.enrolledPaths.filter((path) => !path.isComplete));
+
   notStartedPaths = $derived(this.enrolledPaths.filter((path) => !path.isComplete && path.progress <= 0));
 
   inProgressPaths = $derived(this.enrolledPaths.filter((path) => !path.isComplete && path.progress > 0));

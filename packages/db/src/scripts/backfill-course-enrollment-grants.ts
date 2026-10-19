@@ -7,10 +7,9 @@
  * recorded as `IMPORT`. Only STUDENT groupmember rows are backfilled; staff
  * access is role-based and intentionally grant-less.
  *
- * Deploy steps (no safety-net writer: bugs must fail loudly):
- *   1. Migration at merge, which includes the backfill.
- *   2. Run this fixed script once after cutover (dry run, then --execute)
- *      to catch rows written in between.
+ * Deploy steps: `db:setup` already applies this backfill on every start,
+ * through the essential seed (`seed.ts`). Use this script to dry-run or
+ * re-run it by hand, for example scoped to one org.
  *
  * Usage:
  *   pnpm db:backfill-course-enrollment-grants                      # dry run (default)
