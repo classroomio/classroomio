@@ -2,7 +2,6 @@
 
 **Type:** Feature
 **Area:** Org public site (academy), landing page
-**Status:** Draft, not yet filed
 **Prototype:** `prototypes/onboarding-flow/` (`public-courses.html`, `public-course.html`)
 
 ## Summary
@@ -72,22 +71,8 @@ The first link is the primary action (dark, filled). The rest are ghost links.
 - The bar should be mounted once per shell (the public catalog and public course shells), not copied into each page.
 - Prototype reference: `mountEditBar` in `academy-common.js`, styles in `public-academy.css` (`.pa-editbar*`), called from `public-courses.js` and `public-course.js`.
 
-## Open questions
-
-1. Should tutors and admins see the bar, or only the single owner? Recommendation: all org admins and tutors who can edit that course.
-2. On a custom domain, is a cross-origin hop to the admin app acceptable, or do we need a short-lived sign-in handoff?
-3. Should the bar be dismissible for the session so owners can screenshot their page cleanly?
-4. Should the label say "Viewing as owner" or "Viewing as admin" for non-owner staff?
 
 ## Known issues in the prototype
 
 - On a narrow window the bar overlaps the "Powered by ClassroomIO" badge slightly. Needs a layout fix before this ships (criterion 5).
 - I checked the course page bar in the browser. The catalog page bar was not checked in a browser, and neither were the learner and signed-out hidden states or the link click-through.
-
-## Test plan
-
-- Owner, learner, signed-out and other-org viewer on both pages.
-- Free plan (badge shown) and paid plan.
-- Widths: 390px, 768px, 1280px.
-- Click every link and confirm the destination, including the course id.
-- Keyboard-only pass and screen reader label check.
