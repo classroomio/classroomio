@@ -8,13 +8,14 @@ export const COURSE_MEMBER_RULE =
   'the key creator must be a course member (directly or through a program) or an org admin';
 export const COURSE_TEAM_RULE = 'the key creator must be a course tutor/admin or an org admin';
 export const ANY_KEY_RULE = 'any key with the public_api:* scope may call it';
-export const PAGINATION_NOTE = 'Paginated with page (default 1) and limit (default 20, max 100).';
 
 const ROLE_CHECKED_NOTE = "The key creator's role is checked on every call, so losing access ends it for the key too.";
 
 const MEMBER_FORBIDDEN =
   'the automation actor is not a course member (directly or through a program) or org admin, or program access would exceed the Free plan student limit';
 const TEAM_FORBIDDEN = 'the automation actor is not a course tutor/admin or org admin';
+
+const COMMENTS_OFF = 'comments are turned off for the organization, course or lesson (COMMENTS_DISABLED)';
 
 const forbidden = (scope: string, actorRule: string) => ({
   description: `The key has neither the public_api:* nor the ${scope} scope, or ${actorRule}. ${ROLE_CHECKED_NOTE}`
@@ -32,11 +33,11 @@ export const courseForbiddenResponses = {
 export const contentForbiddenResponses = {
   read: forbidden('course:read', TEAM_FORBIDDEN),
   write: forbidden('course:write', TEAM_FORBIDDEN),
-  comments: forbidden('course:read', `${TEAM_FORBIDDEN}, or comments are turned off (COMMENTS_DISABLED)`),
-  commentWrite: forbidden('course:write', `${TEAM_FORBIDDEN}, or comments are turned off (COMMENTS_DISABLED)`),
+  comments: forbidden('course:read', `${TEAM_FORBIDDEN}, or ${COMMENTS_OFF}`),
+  commentWrite: forbidden('course:write', `${TEAM_FORBIDDEN}, or ${COMMENTS_OFF}`),
   commentEdit: forbidden(
     'course:write',
-    `${TEAM_FORBIDDEN}, comments are turned off (COMMENTS_DISABLED), or the actor may not change this comment`
+    `${TEAM_FORBIDDEN}, ${COMMENTS_OFF}, or the actor may not change this comment (only its author can edit it)`
   )
 };
 
@@ -80,14 +81,8 @@ export const CertificateFileResponse = {
   }
 };
 
-export const QUESTION_TYPES_NOTE =
-  'questionTypeId: 1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
-
 export const LIVE_EDIT_NOTE =
   'Changes apply immediately, also on published courses. Submissions already made are not regraded, and students submit against the current questions.';
-
-export const STUDENT_WORK_NOTE =
-  'If students have submissions or lesson completions in what you delete, this returns 409 unless force=true, which deletes their work too.';
 
 export const studentWorkConflictResponse = {
   description: 'Students have submissions or lesson completions here; pass force=true to delete them too'

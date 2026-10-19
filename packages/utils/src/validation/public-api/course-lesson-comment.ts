@@ -26,8 +26,9 @@ export const ZPublicApiCourseLessonCommentsQuery = z.object({
     .refine((cursor) => isRealTimestamp(cursor.slice(0, cursor.lastIndexOf('|'))), {
       message: 'cursor must be a nextCursor value'
     })
-    .optional(),
-  limit: z.coerce.number().int().min(1).max(50).default(10)
+    .optional()
+    .describe('data.nextCursor from the previous page; omit for the newest comments'),
+  limit: z.coerce.number().int().min(1).max(50).default(10).describe('Comments per page, 1-50. Default: 10.')
 });
 export type TPublicApiCourseLessonCommentsQuery = z.infer<typeof ZPublicApiCourseLessonCommentsQuery>;
 

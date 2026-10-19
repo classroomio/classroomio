@@ -9,15 +9,18 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { COURSE_MEMBER_RULE, PAGINATION_NOTE, mcpRateLimitResponse, submissionForbiddenResponses } from './docs';
+import { COURSE_MEMBER_RULE, mcpRateLimitResponse, submissionForbiddenResponses } from './docs';
 
 export const v1CourseMarksRouter = new Hono().get(
   '/',
   describeRoute({
-    description: `The course gradebook: one row per student, with their points on every exercise in course order (null when not graded yet). A student actor only gets their own row, as in the dashboard. ${PAGINATION_NOTE} ${COURSE_MEMBER_RULE}`,
+    description: `Get the course gradebook, with each student's points on every exercise; ${COURSE_MEMBER_RULE}.`,
     tags: ['Course Submissions'],
     responses: {
-      200: jsonResponse('Marks returned successfully', paginatedResponse(ZPublicApiCourseMarksRowResponse)),
+      200: jsonResponse(
+        'One row per student, with exercises in course order and null points when not graded yet. A student actor only gets their own row, as in the dashboard.',
+        paginatedResponse(ZPublicApiCourseMarksRowResponse)
+      ),
       400: errorResponses.badRequest,
       401: errorResponses.unauthorized,
       403: submissionForbiddenResponses.marks,

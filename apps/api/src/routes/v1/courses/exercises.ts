@@ -26,14 +26,7 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import {
-  COURSE_TEAM_RULE,
-  LIVE_EDIT_NOTE,
-  PAGINATION_NOTE,
-  QUESTION_TYPES_NOTE,
-  exerciseForbiddenResponses,
-  mcpRateLimitResponse
-} from './docs';
+import { COURSE_TEAM_RULE, LIVE_EDIT_NOTE, exerciseForbiddenResponses, mcpRateLimitResponse } from './docs';
 
 const TAG = 'Course Exercises';
 const ExerciseDetailResponse = itemResponse(ZPublicApiCourseExerciseDetailResponse);
@@ -42,7 +35,7 @@ export const v1CourseExercisesRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List a course's exercises in course order, without their questions. Filter by sectionId (course section) or the deprecated lessonId. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `List a course's exercises in course order, without their questions; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Exercises returned successfully', paginatedResponse(ZPublicApiCourseExerciseResponse)),
@@ -70,10 +63,10 @@ export const v1CourseExercisesRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create an exercise in a course, either with your own questions or from a built-in template (templateId from GET /exercise-templates). With templateId, the template supplies the title, description and questions, so only sectionId, lessonId and order are allowed alongside it. sectionId and lessonId must belong to this course. ${LIVE_EDIT_NOTE} ${QUESTION_TYPES_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Create an exercise in a course, with your own questions or from a built-in template; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        201: jsonResponse('Exercise created successfully', ExerciseDetailResponse),
+        201: jsonResponse(`Exercise created successfully. ${LIVE_EDIT_NOTE}`, ExerciseDetailResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.writeWithPlan,
@@ -98,7 +91,7 @@ export const v1CourseExercisesRouter = new Hono()
   .get(
     '/:exerciseId',
     describeRoute({
-      description: `Get an exercise with its questions, options (including which are correct) and exercise sections. ${COURSE_TEAM_RULE}`,
+      description: `Get an exercise with its questions, options (including which are correct) and exercise sections; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Exercise returned successfully', ExerciseDetailResponse),
@@ -125,23 +118,10 @@ export const v1CourseExercisesRouter = new Hono()
   .put(
     '/:exerciseId',
     describeRoute({
-      description: [
-        'Partially update an exercise, or change many questions and sections at once. Omitted fields keep their values.',
-        'To change one question or one exercise section, use the /questions and /sections endpoints instead.',
-        'questions is a diff, like the dashboard editor: send a question with its id to edit it, with id and delete: true to remove it, and without an id to add it.',
-        'Options follow the same rules inside their question. Questions you leave out are unchanged.',
-        'sections follows the same rules: send a section with its id to edit it, with id and delete: true to remove it, and without an id to add it; sections you leave out are unchanged.',
-        'A new section may carry a UUID you generate, so new questions can reference it by exerciseSectionId.',
-        'A removed section must not still hold questions or be the go_to_section target of another section (409).',
-        'Question, option and section ids must belong to this exercise.',
-        'Deleting a question students have answered returns 409 unless force=true, which also deletes their answers.',
-        LIVE_EDIT_NOTE,
-        QUESTION_TYPES_NOTE,
-        COURSE_TEAM_RULE
-      ].join(' '),
+      description: `Partially update an exercise, or change many of its questions and sections at once; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Exercise updated successfully', ExerciseDetailResponse),
+        200: jsonResponse(`Exercise updated successfully. ${LIVE_EDIT_NOTE}`, ExerciseDetailResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.writeWithPlan,
@@ -177,10 +157,10 @@ export const v1CourseExercisesRouter = new Hono()
   .delete(
     '/:exerciseId',
     describeRoute({
-      description: `Permanently delete an exercise. This is a hard delete: its questions and every student submission for it are deleted too, and it cannot be undone. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete an exercise with its questions and every student submission for it; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Exercise deleted successfully', itemResponse(ZPublicApiCourseExerciseResponse)),
+        200: jsonResponse('Exercise deleted; this cannot be undone', itemResponse(ZPublicApiCourseExerciseResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.write,
@@ -204,10 +184,13 @@ export const v1CourseExercisesRouter = new Hono()
   .post(
     '/:exerciseId/notify',
     describeRoute({
-      description: `Email every course member a link to take this exercise, the same as "Notify students" in the dashboard. Emails are sent by a background job: this returns 202 with a jobId to poll with GET /courses/{courseId}/exercises/{exerciseId}/notify/{jobId}. Each call sends the emails again. ${COURSE_TEAM_RULE}`,
+      description: `Email every course member a link to take this exercise, like "Notify students" in the dashboard; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        202: jsonResponse('Notification job queued', itemResponse(ZPublicApiCourseExerciseNotifyResponse)),
+        202: jsonResponse(
+          'Notification job queued; poll GET /courses/{courseId}/exercises/{exerciseId}/notify/{jobId} with the jobId. Each call sends the emails again.',
+          itemResponse(ZPublicApiCourseExerciseNotifyResponse)
+        ),
         400: { description: 'Invalid path, or a PUBLIC course/exercise has no slug to link to' },
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.write,
@@ -231,18 +214,19 @@ export const v1CourseExercisesRouter = new Hono()
   .get(
     '/:exerciseId/notify/:jobId',
     describeRoute({
-      description: `Get the status of a notification job started with POST /courses/{courseId}/exercises/{exerciseId}/notify. Poll until status is completed or failed, waiting nextPollMs between calls; pass how many times you have polled as pollCount. Finished jobs are removed after a while, which returns 404. ${COURSE_TEAM_RULE}`,
+      description: `Get the status of an exercise notification job; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          'Notification job status returned successfully',
+          'Job status; poll until status is completed or failed, waiting nextPollMs between calls',
           itemResponse(ZPublicApiCourseExerciseNotifyStatusResponse)
         ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.read,
         404: {
-          description: "Course, exercise or job not found, or the job is not this course's exercise notification"
+          description:
+            "Course, exercise or job not found, or the job is not this course's exercise notification. Finished jobs are removed after a while."
         },
         429: mcpRateLimitResponse
       }

@@ -19,14 +19,7 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import {
-  COURSE_TEAM_RULE,
-  PAGINATION_NOTE,
-  STUDENT_WORK_NOTE,
-  contentForbiddenResponses,
-  mcpRateLimitResponse,
-  studentWorkConflictResponse
-} from './docs';
+import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse, studentWorkConflictResponse } from './docs';
 
 const TAG = 'Course Sections';
 const SectionResponse = itemResponse(ZPublicApiCourseSectionResponse);
@@ -35,7 +28,7 @@ export const v1CourseSectionsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List a course's sections in order. For sections with their lessons and exercises, use GET /courses/{courseId}/structure. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `List a course's sections in order; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Sections returned successfully', paginatedResponse(ZPublicApiCourseSectionResponse)),
@@ -68,7 +61,7 @@ export const v1CourseSectionsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Create a section. Send order to place it, or moveUngrouped: true (without order) to add it at the end and move every lesson and exercise that has no section into it; that fails with 400 when there is no such content. ${COURSE_TEAM_RULE}`,
+      description: `Create a section in a course; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         201: jsonResponse('Section created successfully', itemResponse(ZPublicApiCreateCourseSectionResponse)),
@@ -101,7 +94,7 @@ export const v1CourseSectionsRouter = new Hono()
   .put(
     '/:sectionId',
     describeRoute({
-      description: `Rename or move a section. Omitted fields keep their values. To reorder several sections at once, use PUT /courses/{courseId}/content/reorder. ${COURSE_TEAM_RULE}`,
+      description: `Rename or move a section; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Section updated successfully', SectionResponse),
@@ -134,7 +127,7 @@ export const v1CourseSectionsRouter = new Hono()
   .delete(
     '/:sectionId',
     describeRoute({
-      description: `Permanently delete a section together with every lesson and exercise in it, as the dashboard does. Returns the deleted section. ${STUDENT_WORK_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete a section with every lesson and exercise in it, as the dashboard does; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Section deleted successfully', SectionResponse),

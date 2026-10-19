@@ -18,7 +18,12 @@ export const ZPublicApiCreateCourseSection = z
   .object({
     title: z.string().min(1),
     order: z.number().int().min(1).optional().describe(SECTION_ORDER_DESCRIPTION),
-    moveUngrouped: z.boolean().optional()
+    moveUngrouped: z
+      .boolean()
+      .optional()
+      .describe(
+        'Send true without order to add the section at the end and move every lesson and exercise that has no section into it; returns 400 when there is no such content'
+      )
   })
   .refine((data) => (data.moveUngrouped ? data.order === undefined : data.order !== undefined), {
     message: 'Send order, or moveUngrouped: true without order',
@@ -33,5 +38,8 @@ export const ZPublicApiUpdateCourseSection = z
   })
   .refine((data) => data.title !== undefined || data.order !== undefined, {
     message: 'Provide title or order'
-  });
+  })
+  .describe(
+    'Send only the fields to change. To reorder several sections at once, use PUT /courses/{courseId}/content/reorder.'
+  );
 export type TPublicApiUpdateCourseSection = z.infer<typeof ZPublicApiUpdateCourseSection>;

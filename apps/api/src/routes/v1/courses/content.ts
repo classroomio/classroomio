@@ -18,30 +18,23 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
-import {
-  COURSE_TEAM_RULE,
-  STUDENT_WORK_NOTE,
-  contentForbiddenResponses,
-  mcpRateLimitResponse,
-  studentWorkConflictResponse
-} from './docs';
+import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse, studentWorkConflictResponse } from './docs';
 
 const TAG = 'Course Content';
-const ATOMIC_NOTE =
-  'All or nothing: if any id is not a lesson or exercise of this course, nothing changes and this fails with 404. Up to 500 items; an id may appear once per type.';
+const ALL_OR_NOTHING = 'All or nothing: if any id is not a lesson or exercise of this course, nothing changes.';
 
 export const v1CourseContentRouter = new Hono()
   .put(
     '/reorder',
     describeRoute({
-      description: `Reorder sections and move or reorder lessons and exercises in one transaction. sections sets section order; items set each item's order and, with sectionId, move it to another section (null for no section). Orders you send must be 1, 2, 3, … within each group. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Reorder sections and move or reorder lessons and exercises in one transaction; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Content reordered successfully', itemResponse(ZPublicApiReorderCourseContentResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
-        404: { description: 'Course, section, lesson or exercise not found' },
+        404: { description: `Course, section, lesson or exercise not found. ${ALL_OR_NOTHING}` },
         429: mcpRateLimitResponse
       }
     }),
@@ -67,14 +60,14 @@ export const v1CourseContentRouter = new Hono()
   .patch(
     '/',
     describeRoute({
-      description: `Lock or unlock lessons and exercises for students (isUnlocked). Returns each item as stored after the change. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Lock or unlock lessons and exercises for students; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Content updated successfully', itemResponse(ZPublicApiCourseContentLockResponse)),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
-        404: { description: 'Course, lesson or exercise not found' },
+        404: { description: `Course, lesson or exercise not found. ${ALL_OR_NOTHING}` },
         429: mcpRateLimitResponse
       }
     }),
@@ -100,14 +93,19 @@ export const v1CourseContentRouter = new Hono()
   .delete(
     '/',
     describeRoute({
-      description: `Permanently delete lessons and exercises, with their translations and comments. Returns what was deleted, with the number of submissions and lesson completions deleted with it. Retrying after success returns 404 because the items are gone. ${STUDENT_WORK_NOTE} ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete lessons and exercises with their translations and comments; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Content deleted successfully', itemResponse(ZPublicApiCourseContentDeleteResponse)),
+        200: jsonResponse(
+          'Content deleted; returns what was deleted, with the number of submissions and lesson completions deleted with it',
+          itemResponse(ZPublicApiCourseContentDeleteResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
-        404: { description: 'Course, lesson or exercise not found' },
+        404: {
+          description: `Course, lesson or exercise not found; retrying after a delete succeeded returns this. ${ALL_OR_NOTHING}`
+        },
         409: studentWorkConflictResponse,
         429: mcpRateLimitResponse
       }

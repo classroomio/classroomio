@@ -22,13 +22,12 @@ import { COURSE_TEAM_RULE, contentForbiddenResponses, mcpRateLimitResponse } fro
 
 const TAG = 'Lesson Comments';
 const CommentResponse = itemResponse(ZPublicApiCourseLessonCommentResponse);
-const COMMENTS_OFF = 'Fails with 403 COMMENTS_DISABLED when comments are off for the organization, course or lesson.';
 
 export const v1CourseLessonCommentsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List a lesson's comments, newest first. Cursor-paginated: pass data.nextCursor back as cursor; limit defaults to 10, max 50. ${COMMENTS_OFF} ${COURSE_TEAM_RULE}`,
+      description: `List a lesson's comments, newest first; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Comments returned successfully', itemResponse(ZPublicApiCourseLessonCommentsResponse)),
@@ -61,10 +60,13 @@ export const v1CourseLessonCommentsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Post a comment as the key creator. An org admin who is not in the course is added to it as an admin first, as in the dashboard. ${COMMENTS_OFF} ${COURSE_TEAM_RULE}`,
+      description: `Post a comment on a lesson as the key creator; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        201: jsonResponse('Comment created successfully', CommentResponse),
+        201: jsonResponse(
+          'Comment created; an org admin who is not in the course is added to it as an admin first, as in the dashboard',
+          CommentResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.commentWrite,
@@ -94,7 +96,7 @@ export const v1CourseLessonCommentsRouter = new Hono()
   .put(
     '/:commentId',
     describeRoute({
-      description: `Edit a comment. Only its author (the key creator) can edit it, else 403. ${COMMENTS_OFF} ${COURSE_TEAM_RULE}`,
+      description: `Edit a comment the key creator wrote; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Comment updated successfully', CommentResponse),
@@ -127,7 +129,7 @@ export const v1CourseLessonCommentsRouter = new Hono()
   .delete(
     '/:commentId',
     describeRoute({
-      description: `Permanently delete a comment. Its author, a course tutor/admin or an org admin can delete it. ${COMMENTS_OFF} ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete a comment on a lesson; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Comment deleted successfully', CommentResponse),

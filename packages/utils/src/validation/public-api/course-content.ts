@@ -30,7 +30,8 @@ export const ZPublicApiReorderCourseContent = z
       .array(z.object({ id: z.string().uuid(), order: z.number().int().min(1) }))
       .min(1)
       .max(MAX_ITEMS)
-      .optional(),
+      .optional()
+      .describe('Sets the order of these sections, numbered 1, 2, 3, …'),
     items: z
       .array(
         ZContentItemRef.extend({
@@ -41,6 +42,9 @@ export const ZPublicApiReorderCourseContent = z
       .min(1)
       .max(MAX_ITEMS)
       .optional()
+      .describe(
+        "Sets each item's order and, with sectionId, moves it to another section (null for no section). Orders must be 1, 2, 3, … within each group; an id may appear once per type."
+      )
   })
   // Same ordering rules as the dashboard.
   .superRefine((data, ctx) => {
@@ -56,13 +60,14 @@ export const ZPublicApiUpdateCourseContentLock = z
       .array(ZContentItemRef.extend({ isUnlocked: z.boolean() }))
       .min(1)
       .max(MAX_ITEMS)
+      .describe('An id may appear once per type')
   })
   .superRefine(rejectDuplicateItems);
 export type TPublicApiUpdateCourseContentLock = z.infer<typeof ZPublicApiUpdateCourseContentLock>;
 
 export const ZPublicApiDeleteCourseContent = z
   .object({
-    items: z.array(ZContentItemRef).min(1).max(MAX_ITEMS)
+    items: z.array(ZContentItemRef).min(1).max(MAX_ITEMS).describe('An id may appear once per type')
   })
   .superRefine(rejectDuplicateItems);
 export type TPublicApiDeleteCourseContent = z.infer<typeof ZPublicApiDeleteCourseContent>;
