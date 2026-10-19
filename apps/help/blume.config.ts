@@ -997,6 +997,10 @@ export default defineConfig({
             ]
           },
           {
+            label: 'Create and manage webhooks',
+            root: '/integrations-and-automation/create-and-manage-webhooks'
+          },
+          {
             label: 'Open the developer documentation',
             href: 'https://classroomio.com/docs/developers'
           }
