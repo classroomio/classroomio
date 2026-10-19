@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   getActiveOrganizationPlan: vi.fn(),
   getOrganizationById: vi.fn(),
   listActiveEndpointsForEvent: vi.fn(),
+  orgHasActiveWebhookEndpoint: vi.fn(),
   insertWebhookEventWithDeliveries: vi.fn(),
   claimNextDueWebhookDelivery: vi.fn(),
   getWebhookEndpointById: vi.fn(),
@@ -24,6 +25,7 @@ vi.mock('@cio/db/queries/organization', () => ({
 
 vi.mock('@cio/db/queries/webhook', () => ({
   listActiveEndpointsForEvent: mocks.listActiveEndpointsForEvent,
+  orgHasActiveWebhookEndpoint: mocks.orgHasActiveWebhookEndpoint,
   insertWebhookEventWithDeliveries: mocks.insertWebhookEventWithDeliveries,
   claimNextDueWebhookDelivery: mocks.claimNextDueWebhookDelivery,
   getWebhookEndpointById: mocks.getWebhookEndpointById,
@@ -40,7 +42,7 @@ vi.mock('@cio/jobs', () => ({
 }));
 
 import { processWebhookEndpoint } from '@cio/core/services/webhook/deliver';
-import { emitWebhookEvent } from '@cio/core/services/webhook/emit';
+import { recordWebhookEvent } from '@cio/core/services/webhook/emit';
 
 const orgId = '22222222-2222-4222-8222-222222222222';
 const webhookId = '11111111-1111-4111-8111-111111111111';
@@ -55,15 +57,16 @@ describe('webhook plan entitlement outside the management API', () => {
     mocks.getEarliestPendingWebhookAttemptAt.mockResolvedValue(null);
   });
 
-  describe('emitWebhookEvent', () => {
+  describe('recordWebhookEvent', () => {
     beforeEach(() => {
+      mocks.orgHasActiveWebhookEndpoint.mockResolvedValue(true);
       mocks.listActiveEndpointsForEvent.mockResolvedValue([{ id: webhookId }]);
     });
 
     it.each([['BASIC'], [null]])('records nothing for an org on the %s plan', async (planName) => {
       usePlan(planName);
 
-      await emitWebhookEvent(orgId, 'course.completed', {
+      await recordWebhookEvent(orgId, 'course.completed', {
         courseId: 'c',
         memberId: 'm',
         profileId: 'p',
