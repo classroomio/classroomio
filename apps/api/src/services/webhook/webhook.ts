@@ -3,7 +3,7 @@ import { attemptWebhookDelivery, createWebhookRecordId } from '@cio/core/service
 import { buildWebhookEnvelope } from '@cio/core/services/webhook/emit';
 import { getWebhookUrlPolicy } from '@cio/core/services/webhook/policy';
 import { encryptWebhookSecret, generateWebhookSecret } from '@cio/core/services/webhook/secret';
-import { invalidateOrgWebhookEndpoints } from '@cio/core/services/webhook/endpoint-cache';
+import { refreshOrgHasWebhookEndpoints } from '@cio/core/services/webhook/endpoint-cache';
 import { hasWebhookEntitlement } from '@cio/core/services/webhook/entitlement';
 import { assertWebhookUrlShape, resolveWebhookTarget, WebhookUrlError } from '@cio/core/services/webhook/url-guard';
 import { db } from '@cio/db/drizzle';
@@ -202,7 +202,7 @@ export async function createWebhookService(organizationId: string, profileId: st
     );
   }
 
-  await invalidateOrgWebhookEndpoints(organizationId);
+  await refreshOrgHasWebhookEndpoints(organizationId);
 
   return { webhook: toWebhookView(created), secret };
 }
@@ -255,7 +255,7 @@ export async function updateWebhookService(
     throw new AppError('Webhook not found', ErrorCodes.WEBHOOK_NOT_FOUND, 404);
   }
 
-  await invalidateOrgWebhookEndpoints(organizationId);
+  await refreshOrgHasWebhookEndpoints(organizationId);
 
   if (reEnabling) {
     await enqueueWebhookDelivery({ webhookId });
@@ -292,7 +292,7 @@ export async function deleteWebhookService(organizationId: string, webhookId: st
     throw new AppError('Webhook not found', ErrorCodes.WEBHOOK_NOT_FOUND, 404);
   }
 
-  await invalidateOrgWebhookEndpoints(organizationId);
+  await refreshOrgHasWebhookEndpoints(organizationId);
 }
 
 /**

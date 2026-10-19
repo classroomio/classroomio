@@ -1,7 +1,9 @@
+import { orgHasActiveWebhookEndpoint } from '@cio/db/queries/webhook';
+
 import { env } from '../../config/env';
 import { logRedisUnavailableOnce, redis } from '../../utils/redis/redis';
 
-const ORG_HAS_ENDPOINTS_TTL_SECONDS = 60;
+const ORG_HAS_ENDPOINTS_TTL_SECONDS = 300;
 const COURSE_ORGANIZATION_TTL_SECONDS = 600;
 
 function hasEndpointsKey(organizationId: string): string {
@@ -47,6 +49,21 @@ export async function invalidateOrgWebhookEndpoints(organizationId: string): Pro
     await redis.del(hasEndpointsKey(organizationId));
   } catch (error) {
     logRedisUnavailableOnce('Redis invalidate failed for webhook endpoint cache, continuing', error);
+  }
+}
+
+/**
+ * Stores the org's current answer in the cache after its webhooks change, and drops the cached
+ * answer instead when the answer cannot be read.
+ */
+export async function refreshOrgHasWebhookEndpoints(organizationId: string): Promise<void> {
+  try {
+    const hasEndpoints = await orgHasActiveWebhookEndpoint(organizationId);
+
+    await writeOrgHasWebhookEndpoints(organizationId, hasEndpoints);
+  } catch (error) {
+    console.error('refreshOrgHasWebhookEndpoints error:', { organizationId, error });
+    await invalidateOrgWebhookEndpoints(organizationId);
   }
 }
 

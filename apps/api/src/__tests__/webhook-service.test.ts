@@ -18,6 +18,7 @@ vi.mock('@cio/db/queries/webhook', () => ({
   insertWebhookEventWithDeliveries: vi.fn(),
   listWebhookDeliveries: vi.fn(),
   listWebhookEndpoints: vi.fn(),
+  orgHasActiveWebhookEndpoint: vi.fn(),
   recordWebhookAttempt: vi.fn(),
   requeueWebhookDelivery: vi.fn(),
   updateWebhookEndpoint: vi.fn()
