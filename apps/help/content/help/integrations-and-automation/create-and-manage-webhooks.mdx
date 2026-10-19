@@ -45,7 +45,9 @@ Select the checkbox next to a group (**Organization**, **Courses**, or **Learnin
 
 ### 4. Save and copy the signing secret
 
-Select **Save webhook**. ClassroomIO shows the signing secret once. Copy it, store it where your server can read it, then select **I saved it**. You can't view the secret again, but you can replace it later with **Regenerate secret**.
+Select **Save webhook**. A **Your new signing secret** window opens with the secret. Select **Copy**, store it where your server can read it, then select **Close**. ClassroomIO shows the secret only once, but you can replace it later with **Regenerate secret**.
+
+![Signing secret window with the secret and a Copy button](./images/create-and-manage-webhooks/secret-dialog.webp)
 
 Your server uses the secret to confirm that a request really came from ClassroomIO. The developer documentation explains the [signature check and the payload of every event](https://classroomio.com/docs/developers/webhooks).
 
