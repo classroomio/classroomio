@@ -45,3 +45,6 @@ export const WEBHOOK_API_VERSION = '2026-10-13';
 
 export const WEBHOOK_SIGNATURE_HEADER = 'X-Cio-Signature-256';
 export const WEBHOOK_TIMESTAMP_HEADER = 'X-Cio-Timestamp';
+export const WEBHOOK_STANDARD_ID_HEADER = 'webhook-id';
+export const WEBHOOK_STANDARD_TIMESTAMP_HEADER = 'webhook-timestamp';
+export const WEBHOOK_STANDARD_SIGNATURE_HEADER = 'webhook-signature';

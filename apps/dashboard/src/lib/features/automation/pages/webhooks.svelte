@@ -35,6 +35,7 @@
   import { currentOrg, hasPublicApiAccess, isOrgAdmin } from '$lib/utils/store/org';
 
   const T = 'automation.webhooks';
+  const ROW_CONTROL_SELECTOR = 'button, a, [role="switch"], [role="menuitem"]';
 
   let isFormOpen = $state(false);
   let editingWebhook = $state<Webhook | null>(null);
@@ -76,6 +77,12 @@
   function openCreate() {
     editingWebhook = null;
     isFormOpen = true;
+  }
+
+  function handleRowClick(event: MouseEvent, webhook: Webhook) {
+    if ((event.target as HTMLElement).closest(ROW_CONTROL_SELECTOR)) return;
+
+    openEdit(webhook);
   }
 
   function openEdit(webhook: Webhook) {
@@ -166,7 +173,11 @@
           </Table.Header>
           <Table.Body>
             {#each webhooks as webhook (webhook.id)}
-              <Table.Row data-testid={`webhook-row-${webhook.id}`}>
+              <Table.Row
+                class="cursor-pointer"
+                data-testid={`webhook-row-${webhook.id}`}
+                onclick={(event: MouseEvent) => handleRowClick(event, webhook)}
+              >
                 <Table.Cell>
                   <p class="font-medium">{webhook.name}</p>
                   <p class="ui:text-muted-foreground max-w-xs truncate text-xs">{webhook.payloadUrl}</p>

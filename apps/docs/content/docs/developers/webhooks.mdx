@@ -50,12 +50,14 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
   "type": "course.completed",
   "createdAt": "2026-10-13T12:15:30.000Z",
   "apiVersion": "2026-10-13",
-  "organization": { "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289", "siteName": "acme" },
+  "organization": { "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289", "name": "Acme Academy", "siteName": "acme" },
   "data": {
     "courseId": "98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e",
     "profileId": "0c256e75-aa40-4f62-8d30-0217ca1c60d9",
     "memberId": "5d3f1c2e-0a9b-4c8d-b7e6-1f2a3b4c5d6e",
-    "completedAt": "2026-10-13T12:15:30.000Z"
+    "completedAt": "2026-10-13T12:15:30.000Z",
+    "course": { "id": "98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e", "title": "Intro to Data Science", "slug": "intro-to-data-science" },
+    "learner": { "id": "0c256e75-aa40-4f62-8d30-0217ca1c60d9", "name": "Alex Johnson", "email": "student@example.com" }
   }
 }
 ```
@@ -72,10 +74,13 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
 | `X-Cio-Webhook` | The webhook id |
 | `X-Cio-Timestamp` | Unix time in seconds when the request was signed |
 | `X-Cio-Signature-256` | `sha256=<hex>` HMAC of the request |
+| `webhook-id` | Same value as `X-Cio-Event-Id` ([Standard Webhooks](https://www.standardwebhooks.com)) |
+| `webhook-timestamp` | Same value as `X-Cio-Timestamp` |
+| `webhook-signature` | `v1,<base64>` signature in the Standard Webhooks format |
 
 ## Event reference
 
-Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. IDs are UUIDs and timestamps are ISO 8601 in UTC.
+Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `learner` and `actor` (`id`, `name`, `email`), `course` (`id`, `title`, `slug`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
 
 ### Team invites
 
@@ -88,7 +93,12 @@ A team invite is sent.
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
   "email": "tutor@example.com",
   "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "reason": null
+  "reason": null,
+  "actor": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Sam Rivera",
+    "email": "sam@example.com"
+  }
 }
 ```
 
@@ -103,7 +113,12 @@ A team invite is accepted.
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
   "email": "tutor@example.com",
   "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "reason": null
+  "reason": null,
+  "actor": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Sam Rivera",
+    "email": "sam@example.com"
+  }
 }
 ```
 
@@ -116,7 +131,12 @@ A team invite is revoked or replaced.
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
   "email": "tutor@example.com",
   "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "reason": "revoked"
+  "reason": "revoked",
+  "actor": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Sam Rivera",
+    "email": "sam@example.com"
+  }
 }
 ```
 
@@ -131,7 +151,17 @@ A student invite is created.
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
   "email": "student@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "actor": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Sam Rivera",
+    "email": "sam@example.com"
+  }
 }
 ```
 
@@ -146,7 +176,17 @@ A student accepts an invite and enrolls.
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
   "email": "student@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "actor": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  }
 }
 ```
 
@@ -161,7 +201,17 @@ A student invite is revoked.
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "inviteId": "000000e1-0000-4000-8000-0000000000e1",
   "email": "student@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1"
+  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "actor": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Sam Rivera",
+    "email": "sam@example.com"
+  }
 }
 ```
 
@@ -177,7 +227,18 @@ A member is added to a course, by an admin or by accepting an invite.
   "memberId": "000000d1-0000-4000-8000-0000000000d1",
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
   "email": "student@example.com",
-  "roleId": 3
+  "roleId": 3,
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "learner": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  },
+  "role": "student"
 }
 ```
 
@@ -193,7 +254,18 @@ A member is removed from a course.
   "memberId": "000000d1-0000-4000-8000-0000000000d1",
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
   "email": "student@example.com",
-  "roleId": 3
+  "roleId": 3,
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "learner": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  },
+  "role": "student"
 }
 ```
 
@@ -208,7 +280,17 @@ A learner completes a course and earns its certificate. Requires certificates to
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "memberId": "000000d1-0000-4000-8000-0000000000d1",
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "completedAt": "2026-10-13T12:15:30.000Z"
+  "completedAt": "2026-10-13T12:15:30.000Z",
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "learner": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  }
 }
 ```
 
@@ -221,7 +303,17 @@ A certificate is earned. Sent together with `course.completed`.
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "memberId": "000000d1-0000-4000-8000-0000000000d1",
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "completedAt": "2026-10-13T12:15:30.000Z"
+  "completedAt": "2026-10-13T12:15:30.000Z",
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "learner": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  }
 }
 ```
 
@@ -240,7 +332,21 @@ An exercise submission is created.
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
   "statusId": 1,
   "gradingState": "queued",
-  "total": null
+  "total": null,
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "exercise": {
+    "id": "000000f2-0000-4000-8000-0000000000f2",
+    "title": "Week 1 quiz"
+  },
+  "learner": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  }
 }
 ```
 
@@ -261,7 +367,21 @@ A submission status or grading state changes, for example when it is graded.
   "gradingState": "completed",
   "total": 8,
   "previousStatusId": 2,
-  "previousGradingState": "awaiting_manual"
+  "previousGradingState": "awaiting_manual",
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "exercise": {
+    "id": "000000f2-0000-4000-8000-0000000000f2",
+    "title": "Week 1 quiz"
+  },
+  "learner": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  }
 }
 ```
 
@@ -278,7 +398,21 @@ A lesson is marked complete, or reset when an admin resets a learner's progress.
   "courseId": "000000c1-0000-4000-8000-0000000000c1",
   "lessonId": "000000f3-0000-4000-8000-0000000000f3",
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "isComplete": true
+  "isComplete": true,
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "lesson": {
+    "id": "000000f3-0000-4000-8000-0000000000f3",
+    "title": "Getting started"
+  },
+  "learner": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  }
 }
 ```
 
@@ -292,7 +426,21 @@ An exercise is completed, meeting any passing grade it requires, or reset by an 
   "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
   "memberId": "000000d1-0000-4000-8000-0000000000d1",
   "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "isComplete": true
+  "isComplete": true,
+  "course": {
+    "id": "000000c1-0000-4000-8000-0000000000c1",
+    "title": "Intro to Data Science",
+    "slug": "intro-to-data-science"
+  },
+  "exercise": {
+    "id": "000000f2-0000-4000-8000-0000000000f2",
+    "title": "Week 1 quiz"
+  },
+  "learner": {
+    "id": "000000b1-0000-4000-8000-0000000000b1",
+    "name": "Alex Johnson",
+    "email": "student@example.com"
+  }
 }
 ```
 
@@ -316,6 +464,16 @@ export function verifyClassroomIoWebhook({ secret, timestamp, rawBody, signature
   return received.length === wanted.length && timingSafeEqual(received, wanted);
 }
 ```
+
+### Verify with a Standard Webhooks library
+
+ClassroomIO also signs every request the way the [Standard Webhooks](https://www.standardwebhooks.com) specification describes, so receivers and libraries that support it can verify requests with your signing secret as it is. That includes the **Standard Webhooks** authentication option in tools such as Hookdeck.
+
+- The signed content is `<webhook-id>.<webhook-timestamp>.<raw request body>`.
+- The key is the base64 part of your `whsec_` secret, decoded to bytes.
+- `webhook-signature` is `v1,` followed by the base64 HMAC-SHA256.
+
+If a Standard Webhooks receiver rejects the signature for a webhook created before this was added, use **Regenerate secret** and paste the new secret into the receiver. Older secrets can contain URL-safe characters that some libraries can't decode.
 
 ## Delivery and retries
 
