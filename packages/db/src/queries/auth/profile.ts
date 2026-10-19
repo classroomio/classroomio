@@ -95,6 +95,16 @@ export const getProfileById = async (id: string) => {
   return profile;
 };
 
+export async function isPlatformAdmin(userId: string): Promise<boolean> {
+  const [user] = await db
+    .select({ role: schema.user.role })
+    .from(schema.user)
+    .where(eq(schema.user.id, userId))
+    .limit(1);
+
+  return user?.role === 'admin';
+}
+
 export async function markWelcomeEmailPending(userId: string) {
   const [updatedProfile] = await db
     .update(schema.profile)

@@ -50,6 +50,9 @@ const envSchema = z.object({
   PLUGIN_API_TOKEN_SECRET: z.string().min(32).optional(),
   /** Public immutable artifact origin, populated by the plugin artifact deployment pipeline. */
   PLUGIN_ASSET_ORIGIN: z.string().url().optional(),
+  PLUGIN_ASSET_BUCKET: z.string().min(1).optional(),
+  PLUGIN_QUARANTINE_BUCKET: z.string().min(1).optional(),
+  PLUGIN_REVIEW_ORIGIN: z.string().url().optional(),
   /** Local immutable artifact directory used by development and release validation. */
   PLUGIN_ARTIFACTS_PATH: z.string().optional(),
   PROJECT_ID_VERCEL: z.string().optional(),

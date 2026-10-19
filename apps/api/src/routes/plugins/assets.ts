@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { readFile, readdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { Hono } from '@api/utils/hono';
 import { getPluginVersion } from '@cio/db/queries/plugin';
@@ -18,13 +18,6 @@ const MIME_MAP: Record<string, string> = {
   '.woff': 'font/woff',
   '.woff2': 'font/woff2'
 };
-
-interface ResolvedPlugin {
-  dir: string;
-  manifest: any;
-}
-
-const pluginCache = new Map<string, ResolvedPlugin>();
 
 export function buildPluginCsp(manifest?: { networkAccess?: { allowedDomains?: string[] } }): string {
   const allowedConnectOrigins: string[] = [];
@@ -58,49 +51,6 @@ export function buildPluginCsp(manifest?: { networkAccess?: { allowedDomains?: s
     allowedConnectOrigins.length > 0 ? `'self' ${Array.from(new Set(allowedConnectOrigins)).join(' ')}` : "'none'";
 
   return `default-src 'self'; connect-src ${connectSrc}; img-src 'self' data: blob:; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; object-src 'none'; base-uri 'none';`;
-}
-
-async function resolvePluginDirectory(pluginId: string): Promise<ResolvedPlugin | null> {
-  const cached = pluginCache.get(pluginId);
-  if (cached && existsSync(cached.dir)) {
-    return cached;
-  }
-
-  const liveDevPath = process.env.PLUGINS_DEV_PATH || process.env.OFFICIAL_PLUGINS_PATH;
-  if (!liveDevPath) {
-    return null;
-  }
-
-  const basePluginsPath = path.resolve(liveDevPath);
-  if (!existsSync(basePluginsPath)) {
-    return null;
-  }
-
-  const entries = await readdir(basePluginsPath, { withFileTypes: true });
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-
-    const manifestPath = path.join(basePluginsPath, entry.name, 'plugin.json');
-    if (!existsSync(manifestPath)) continue;
-
-    try {
-      const manifestRaw = await readFile(manifestPath, 'utf-8');
-      const manifest = JSON.parse(manifestRaw) as { id?: string };
-      if (manifest.id === pluginId) {
-        const resolved = {
-          dir: path.join(basePluginsPath, entry.name),
-          manifest
-        };
-        pluginCache.set(pluginId, resolved);
-
-        return resolved;
-      }
-    } catch {
-      continue;
-    }
-  }
-
-  return null;
 }
 
 function resolveArtifactDirectory(pluginId: string, version: string, digest: string): string | null {
@@ -151,18 +101,13 @@ export const pluginAssetsRouter = new Hono().get('/:pluginId/:version/:digest/:a
     return c.text('Plugin artifacts must be served from PLUGIN_ASSET_ORIGIN in production', 404);
   }
 
-  const resolved = await resolvePluginDirectory(pluginId);
   const artifactDirectory = resolveArtifactDirectory(pluginId, version, digest);
-  if (!resolved && !artifactDirectory) {
+  if (!artifactDirectory) {
     return c.text('Plugin not found', 404);
   }
 
-  const normalizedPluginDir = path.resolve(artifactDirectory ?? resolved!.dir);
-  let fullPath = path.resolve(normalizedPluginDir, assetPath);
-
-  if (!artifactDirectory && !existsSync(fullPath)) {
-    fullPath = path.resolve(resolved!.dir, 'dist', assetPath);
-  }
+  const normalizedPluginDir = path.resolve(artifactDirectory);
+  const fullPath = path.resolve(normalizedPluginDir, assetPath);
 
   if (!fullPath.startsWith(`${normalizedPluginDir}${path.sep}`)) {
     return c.text('Forbidden asset path', 403);
@@ -176,7 +121,7 @@ export const pluginAssetsRouter = new Hono().get('/:pluginId/:version/:digest/:a
     const fileBytes = await readFile(fullPath);
     const ext = path.extname(fullPath).toLowerCase();
     const contentType = MIME_MAP[ext] ?? 'application/octet-stream';
-    const csp = buildPluginCsp(resolved?.manifest);
+    const csp = buildPluginCsp(versionRecord.manifest as { networkAccess?: { allowedDomains?: string[] } });
 
     return new Response(fileBytes, {
       status: 200,

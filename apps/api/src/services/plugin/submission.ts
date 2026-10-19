@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { AppError } from '@api/utils/errors';
+import { generateUploadPresignedUrl, getFromS3, uploadToS3 } from '@cio/core/utils/s3';
+import { isPlatformAdmin } from '@cio/db/queries/auth';
 import {
   createPluginSubmission,
   createPluginVersion,
@@ -10,12 +12,14 @@ import {
   getPluginSubmissionById,
   getPluginVersion,
   listPluginSubmissions,
+  updatePluginVersionArtifact,
   updatePluginSubmissionStatus,
   updatePluginVersionReviewStatus,
   upsertPlugin
 } from '@cio/db/queries/plugin';
 import type { TPluginReleaseLane, TPluginSubmission, TPluginSubmissionStatus } from '@cio/db/types';
 import { ZPluginManifest, type TPluginManifest } from '@cio/utils/validation/plugin';
+import { installPlugin } from './installation';
 
 export interface TarEntry {
   path: string;
@@ -24,12 +28,24 @@ export interface TarEntry {
   content: Buffer;
 }
 
+const MAX_PLUGIN_ARCHIVE_BYTES = 12 * 1024 * 1024;
+const MAX_PLUGIN_EXTRACTED_BYTES = 48 * 1024 * 1024;
+const MAX_PLUGIN_ARCHIVE_ENTRIES = 1_000;
+
 export function parseTarGz(archiveBuffer: Buffer): TarEntry[] {
+  if (archiveBuffer.length > MAX_PLUGIN_ARCHIVE_BYTES) {
+    throw new AppError('Plugin archive exceeds the maximum upload size', 'ARCHIVE_TOO_LARGE', 413);
+  }
+
   let tarBuffer: Buffer;
   try {
     tarBuffer = zlib.gunzipSync(archiveBuffer);
   } catch (err) {
     throw new AppError('Invalid gzip archive: failed to decompress', 'INVALID_ARCHIVE', 400);
+  }
+
+  if (tarBuffer.length > MAX_PLUGIN_EXTRACTED_BYTES) {
+    throw new AppError('Plugin archive exceeds the maximum extracted size', 'ARCHIVE_TOO_LARGE', 413);
   }
 
   const entries: TarEntry[] = [];
@@ -55,25 +71,114 @@ export function parseTarGz(archiveBuffer: Buffer): TarEntry[] {
     const paddedBlockCount = Math.ceil(size / 512) * 512;
     byteOffset += paddedBlockCount;
 
+    if (byteOffset > tarBuffer.length) {
+      throw new AppError('Invalid tar archive entry size', 'INVALID_ARCHIVE', 400);
+    }
+
     entries.push({
       path: relativePath,
       size,
       type: typeFlag,
       content: Buffer.from(content)
     });
+
+    if (entries.length > MAX_PLUGIN_ARCHIVE_ENTRIES) {
+      throw new AppError('Plugin archive contains too many files', 'ARCHIVE_TOO_LARGE', 413);
+    }
   }
 
   return entries;
 }
 
-function getQuarantineDirectory(submissionId: string): string {
-  const baseDirectory = process.env.PLUGIN_QUARANTINE_PATH || path.resolve(process.cwd(), '.plugin-quarantine');
-  return path.resolve(baseDirectory, submissionId);
+function parsePluginArchive(
+  archiveBuffer: Buffer,
+  expectedDigest: string
+): { entries: TarEntry[]; manifest: TPluginManifest } {
+  const computedDigest = `sha256-${crypto.createHash('sha256').update(archiveBuffer).digest('hex')}`;
+  if (computedDigest !== expectedDigest) {
+    throw new AppError('Plugin archive digest does not match the submitted digest', 'ARTIFACT_DIGEST_MISMATCH', 400);
+  }
+
+  const entries = parseTarGz(archiveBuffer);
+  const paths = new Set<string>();
+  let manifestEntry: TarEntry | undefined;
+
+  for (const entry of entries) {
+    if (
+      !entry.path ||
+      entry.path.startsWith('/') ||
+      entry.path.startsWith('\\') ||
+      entry.path.includes('..') ||
+      paths.has(entry.path)
+    ) {
+      throw new AppError(`Archive contains an invalid path: ${entry.path}`, 'SECURITY_VIOLATION', 400);
+    }
+    paths.add(entry.path);
+
+    if (entry.type === '1' || entry.type === '2') {
+      throw new AppError(`Archive contains a forbidden link: ${entry.path}`, 'SECURITY_VIOLATION', 400);
+    }
+
+    if (entry.path === 'plugin.json') {
+      manifestEntry = entry;
+    }
+
+    if (/\.(js|mjs|ts|tsx|svelte|html)$/i.test(entry.path)) {
+      const source = entry.content.toString('utf8');
+      if (source.includes('@cio/') || source.includes('$lib/')) {
+        throw new AppError(`Archive contains a forbidden host import: ${entry.path}`, 'FORBIDDEN_IMPORT', 400);
+      }
+    }
+  }
+
+  if (!manifestEntry) {
+    throw new AppError('Archive is missing plugin.json', 'MISSING_MANIFEST', 400);
+  }
+
+  let manifestJson: unknown;
+  try {
+    manifestJson = JSON.parse(manifestEntry.content.toString('utf8'));
+  } catch {
+    throw new AppError('plugin.json is not valid JSON', 'INVALID_MANIFEST', 400);
+  }
+
+  const parsedManifest = ZPluginManifest.safeParse(manifestJson);
+  if (!parsedManifest.success) {
+    throw new AppError('plugin.json is invalid', 'INVALID_MANIFEST', 400);
+  }
+
+  return { entries, manifest: parsedManifest.data };
 }
 
 function getArtifactsTargetDirectory(pluginId: string, version: string, digest: string): string {
   const baseDirectory = process.env.PLUGIN_ARTIFACTS_PATH || path.resolve(process.cwd(), '.plugin-artifacts');
   return path.resolve(baseDirectory, pluginId, version, digest);
+}
+
+function getQuarantineBucket(): string {
+  const bucket = process.env.PLUGIN_QUARANTINE_BUCKET;
+  if (!bucket) {
+    throw new AppError('PLUGIN_QUARANTINE_BUCKET is required for plugin publishing', 'SERVER_CONFIGURATION_ERROR', 500);
+  }
+
+  return bucket;
+}
+
+async function readQuarantineArchive(submission: TPluginSubmission): Promise<Buffer> {
+  const result = await getFromS3({
+    Bucket: submission.quarantineBucket,
+    Key: submission.quarantineKey
+  });
+  if (!result.success || !result.data?.Body) {
+    throw new AppError('Quarantine package archive not found', 'FILE_NOT_FOUND', 404);
+  }
+
+  if (typeof result.data.ContentLength === 'number' && result.data.ContentLength > MAX_PLUGIN_ARCHIVE_BYTES) {
+    throw new AppError('Plugin archive exceeds the maximum upload size', 'ARCHIVE_TOO_LARGE', 413);
+  }
+
+  const bytes = await result.data.Body.transformToByteArray();
+  return Buffer.from(bytes);
 }
 
 function extractEntriesToDirectory(entries: TarEntry[], destinationDirectory: string, archiveBuffer?: Buffer): void {
@@ -99,31 +204,168 @@ function extractEntriesToDirectory(entries: TarEntry[], destinationDirectory: st
   }
 }
 
+function getArtifactContentType(filePath: string): string {
+  const extension = path.extname(filePath).toLowerCase();
+  const contentTypes: Record<string, string> = {
+    '.css': 'text/css; charset=utf-8',
+    '.html': 'text/html; charset=utf-8',
+    '.js': 'application/javascript; charset=utf-8',
+    '.json': 'application/json; charset=utf-8',
+    '.mjs': 'application/javascript; charset=utf-8',
+    '.png': 'image/png',
+    '.svg': 'image/svg+xml',
+    '.webp': 'image/webp',
+    '.woff': 'font/woff',
+    '.woff2': 'font/woff2'
+  };
+
+  return contentTypes[extension] ?? 'application/octet-stream';
+}
+
+async function promoteArtifact(
+  entries: TarEntry[],
+  submission: TPluginSubmission,
+  archiveBuffer: Buffer
+): Promise<void> {
+  const destinationDirectory = getArtifactsTargetDirectory(
+    submission.pluginId,
+    submission.version,
+    submission.artifactDigest
+  );
+  if (process.env.NODE_ENV !== 'production') {
+    extractEntriesToDirectory(entries, destinationDirectory, archiveBuffer);
+
+    return;
+  }
+
+  if (!process.env.PLUGIN_ASSET_ORIGIN) {
+    throw new AppError('PLUGIN_ASSET_ORIGIN is required for production promotion', 'SERVER_CONFIGURATION_ERROR', 500);
+  }
+
+  const bucket = process.env.PLUGIN_ASSET_BUCKET;
+  if (!bucket) {
+    throw new AppError('PLUGIN_ASSET_BUCKET is required for production promotion', 'SERVER_CONFIGURATION_ERROR', 500);
+  }
+  const keyPrefix = `${submission.pluginId}/${submission.version}/${submission.artifactDigest}`;
+
+  for (const entry of entries) {
+    if (entry.type === '5' || entry.path.endsWith('/')) {
+      continue;
+    }
+
+    const uploadInput = {
+      Bucket: bucket,
+      Key: `${keyPrefix}/${entry.path}`,
+      Body: entry.content,
+      ContentType: getArtifactContentType(entry.path),
+      CacheControl: 'public, max-age=31536000, immutable'
+    };
+    const uploadResult = await uploadToS3(uploadInput);
+    if (!uploadResult.success) {
+      throw new AppError(
+        `Failed to promote plugin artifact ${entry.path}: ${uploadResult.error ?? 'Unknown error'}`,
+        'ARTIFACT_PROMOTION_FAILED',
+        502
+      );
+    }
+  }
+
+  const archiveUploadInput = {
+    Bucket: bucket,
+    Key: `${keyPrefix}/package.tar.gz`,
+    Body: archiveBuffer,
+    ContentType: 'application/gzip',
+    CacheControl: 'public, max-age=31536000, immutable'
+  };
+  const archiveUploadResult = await uploadToS3(archiveUploadInput);
+  if (!archiveUploadResult.success) {
+    throw new AppError(
+      `Failed to promote plugin archive: ${archiveUploadResult.error ?? 'Unknown error'}`,
+      'ARTIFACT_PROMOTION_FAILED',
+      502
+    );
+  }
+}
+
+export async function publishDevelopmentRelease(options: {
+  manifest: unknown;
+  artifactDigest: string;
+  archive: Buffer;
+  organizationId: string;
+  profileId: string;
+}): Promise<{ pluginId: string; version: string; artifactDigest: string }> {
+  if (process.env.NODE_ENV === 'production') {
+    throw new AppError('Development releases are unavailable in production', 'DEV_RELEASE_UNAVAILABLE', 404);
+  }
+
+  const submittedManifest = ZPluginManifest.parse(options.manifest);
+  const { entries, manifest } = parsePluginArchive(options.archive, options.artifactDigest);
+  if (manifest.id !== submittedManifest.id || manifest.version !== submittedManifest.version) {
+    throw new AppError('Submitted manifest does not match the packaged manifest', 'MANIFEST_MISMATCH', 400);
+  }
+
+  const artifactDirectory = getArtifactsTargetDirectory(manifest.id, manifest.version, options.artifactDigest);
+  extractEntriesToDirectory(entries, artifactDirectory, options.archive);
+
+  await upsertPlugin({
+    id: manifest.id,
+    slug: manifest.slug ?? manifest.id.split('.').pop()!,
+    name: manifest.name,
+    description: manifest.description ?? null,
+    publisher: manifest.publisher,
+    publisherId: null,
+    status: 'published',
+    distribution: 'private'
+  });
+
+  const existingVersion = await getPluginVersion(manifest.id, manifest.version);
+  if (existingVersion) {
+    await updatePluginVersionArtifact(manifest.id, manifest.version, manifest, options.artifactDigest);
+  } else {
+    await createPluginVersion({
+      pluginId: manifest.id,
+      version: manifest.version,
+      manifest,
+      artifactDigest: options.artifactDigest,
+      reviewStatus: 'approved'
+    });
+  }
+
+  await installPlugin({
+    pluginId: manifest.id,
+    version: manifest.version,
+    ownerType: 'organization',
+    organizationId: options.organizationId,
+    installedByProfileId: options.profileId,
+    allowDowngrade: true,
+    replaceExisting: true
+  });
+
+  return {
+    pluginId: manifest.id,
+    version: manifest.version,
+    artifactDigest: options.artifactDigest
+  };
+}
+
 export async function createSubmissionIntent(options: {
   pluginId: string;
   version: string;
   releaseLane: TPluginReleaseLane;
   artifactDigest: string;
   organizationId?: string;
-  publisherId?: string;
   profileId: string;
 }): Promise<{ submission: TPluginSubmission; uploadUrl: string }> {
-  const { pluginId, version, releaseLane, artifactDigest, organizationId, publisherId, profileId } = options;
+  const { pluginId, version, releaseLane, artifactDigest, organizationId, profileId } = options;
 
-  if (releaseLane === 'first-party' && !pluginId.startsWith('com.classroomio.')) {
-    throw new AppError('First-party plugins must use the com.classroomio.* namespace', 'FORBIDDEN_NAMESPACE', 403);
+  if (releaseLane !== 'first-party' && pluginId.startsWith('com.classroomio.')) {
+    throw new AppError('The com.classroomio.* namespace is reserved for trusted publishers', 'RESERVED_NAMESPACE', 403);
   }
 
-  if (releaseLane === 'community' && pluginId.startsWith('com.classroomio.')) {
-    throw new AppError(
-      'Community plugins cannot use the reserved com.classroomio.* namespace',
-      'RESERVED_NAMESPACE',
-      403
-    );
-  }
-
-  if (releaseLane === 'private' && !organizationId) {
-    throw new AppError('Private plugins require an organizationId', 'ORGANIZATION_REQUIRED', 400);
+  const existingSubmissions = await listPluginSubmissions({ pluginId });
+  const existingOwnerSubmission = existingSubmissions[0];
+  if (existingOwnerSubmission && existingOwnerSubmission.submittedByProfileId !== profileId) {
+    throw new AppError('Plugin ID belongs to another publisher', 'PLUGIN_PUBLISHER_MISMATCH', 403);
   }
 
   const existingVersion = await getPluginVersion(pluginId, version);
@@ -135,58 +377,27 @@ export async function createSubmissionIntent(options: {
     );
   }
 
-  const quarantineKey = `quarantine/${pluginId}/${version}/${artifactDigest}.tar.gz`;
+  const quarantineBucket = getQuarantineBucket();
+  const quarantineKey = `submissions/${pluginId}/${version}/${artifactDigest}.tar.gz`;
   const submission = await createPluginSubmission({
     pluginId,
-    publisherId: publisherId ?? null,
+    publisherId: null,
     organizationId: organizationId ?? null,
     version,
     releaseLane,
-    quarantineBucket: 'local-quarantine',
+    quarantineBucket,
     quarantineKey,
     artifactDigest,
     status: 'pending_upload',
     submittedByProfileId: profileId
   });
 
-  const uploadUrl = `/plugins/submissions/${submission.id}/upload`;
+  const uploadUrl = await generateUploadPresignedUrl(quarantineKey, quarantineBucket, 'application/gzip');
 
   return {
     submission,
     uploadUrl
   };
-}
-
-export async function storeQuarantineUpload(submissionId: string, archiveBuffer: Buffer): Promise<TPluginSubmission> {
-  const submission = await getPluginSubmissionById(submissionId);
-  if (!submission) {
-    throw new AppError('Submission not found', 'NOT_FOUND', 404);
-  }
-
-  if (submission.status !== 'pending_upload') {
-    throw new AppError(`Submission is in ${submission.status} status and cannot accept upload`, 'INVALID_STATUS', 400);
-  }
-
-  const hashHex = crypto.createHash('sha256').update(archiveBuffer).digest('hex');
-  const computedDigest = `sha256-${hashHex}`;
-  if (computedDigest !== submission.artifactDigest) {
-    throw new AppError(
-      `Archive SHA-256 digest mismatch. Claimed: ${submission.artifactDigest}, computed: ${computedDigest}`,
-      'ARTIFACT_DIGEST_MISMATCH',
-      400
-    );
-  }
-
-  const directoryPath = getQuarantineDirectory(submissionId);
-  fs.mkdirSync(directoryPath, { recursive: true });
-  fs.writeFileSync(path.join(directoryPath, 'package.tar.gz'), archiveBuffer);
-
-  const updated = await updatePluginSubmissionStatus(submissionId, 'quarantined');
-  if (!updated) {
-    throw new AppError('Failed to update submission status', 'DATABASE_ERROR', 500);
-  }
-
-  return updated;
 }
 
 export async function completeSubmission(
@@ -197,69 +408,12 @@ export async function completeSubmission(
     throw new AppError('Submission not found', 'NOT_FOUND', 404);
   }
 
-  if (submission.status !== 'quarantined') {
-    throw new AppError(
-      `Submission is in ${submission.status} status, must be quarantined before finalizing`,
-      'INVALID_STATUS',
-      400
-    );
+  if (submission.status !== 'pending_upload') {
+    throw new AppError(`Submission is in ${submission.status} status and cannot be finalized`, 'INVALID_STATUS', 400);
   }
 
-  const packagePath = path.join(getQuarantineDirectory(submissionId), 'package.tar.gz');
-  if (!fs.existsSync(packagePath)) {
-    throw new AppError('Quarantine package archive not found', 'FILE_NOT_FOUND', 404);
-  }
-
-  const archiveBuffer = fs.readFileSync(packagePath);
-  const entries = parseTarGz(archiveBuffer);
-
-  let manifestEntry: TarEntry | undefined;
-
-  for (const entry of entries) {
-    if (entry.path.startsWith('/') || entry.path.startsWith('\\') || entry.path.includes('..')) {
-      throw new AppError(`Archive contains illegal path traversal entry: ${entry.path}`, 'SECURITY_VIOLATION', 400);
-    }
-
-    if (entry.type === '1' || entry.type === '2') {
-      throw new AppError(`Archive contains forbidden link entry: ${entry.path}`, 'SECURITY_VIOLATION', 400);
-    }
-
-    if (entry.path === 'plugin.json') {
-      manifestEntry = entry;
-    }
-
-    if (/\.(js|mjs|ts|tsx|svelte|html)$/i.test(entry.path)) {
-      const codeString = entry.content.toString('utf8');
-      if (codeString.includes('@cio/') || codeString.includes('$lib/')) {
-        throw new AppError(
-          `Security violation: forbidden host internal import detected in ${entry.path}`,
-          'FORBIDDEN_IMPORT',
-          400
-        );
-      }
-    }
-  }
-
-  if (!manifestEntry) {
-    throw new AppError('Archive is missing required plugin.json manifest at root', 'MISSING_MANIFEST', 400);
-  }
-
-  let parsedJson: unknown;
-  try {
-    parsedJson = JSON.parse(manifestEntry.content.toString('utf8'));
-  } catch {
-    throw new AppError('plugin.json is not valid JSON', 'INVALID_MANIFEST', 400);
-  }
-
-  const manifestParseResult = ZPluginManifest.safeParse(parsedJson);
-  if (!manifestParseResult.success) {
-    const errorDetails = manifestParseResult.error.issues
-      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
-      .join(', ');
-    throw new AppError(`Manifest validation failed: ${errorDetails}`, 'INVALID_MANIFEST', 400);
-  }
-
-  const manifest = manifestParseResult.data;
+  const archiveBuffer = await readQuarantineArchive(submission);
+  const { entries, manifest } = parsePluginArchive(archiveBuffer, submission.artifactDigest);
 
   if (manifest.id !== submission.pluginId) {
     throw new AppError(
@@ -277,15 +431,13 @@ export async function completeSubmission(
     );
   }
 
-  const destinationDirectory = getArtifactsTargetDirectory(
-    submission.pluginId,
-    submission.version,
-    submission.artifactDigest
-  );
+  await updatePluginSubmissionStatus(submissionId, 'quarantined');
 
-  if (submission.releaseLane === 'first-party') {
-    extractEntriesToDirectory(entries, destinationDirectory, archiveBuffer);
-
+  const [existingPlugin, existingVersion] = await Promise.all([
+    getPluginById(manifest.id),
+    getPluginVersion(manifest.id, manifest.version)
+  ]);
+  if (!existingPlugin) {
     const generatedSlug = manifest.slug ?? manifest.id.split('.').pop()!;
     await upsertPlugin({
       id: manifest.id,
@@ -294,54 +446,11 @@ export async function completeSubmission(
       description: manifest.description ?? null,
       publisher: manifest.publisher,
       publisherId: submission.publisherId ?? null,
-      status: 'published',
+      status: 'draft',
       distribution: 'public'
     });
-
-    await createPluginVersion({
-      pluginId: manifest.id,
-      version: manifest.version,
-      manifest,
-      artifactDigest: submission.artifactDigest,
-      reviewStatus: 'approved'
-    });
-
-    const updated = await updatePluginSubmissionStatus(submissionId, 'approved', 'Auto-approved first-party plugin');
-    return { submission: updated!, manifest };
   }
 
-  if (submission.releaseLane === 'private') {
-    extractEntriesToDirectory(entries, destinationDirectory, archiveBuffer);
-
-    const generatedSlug = manifest.slug ?? manifest.id.split('.').pop()!;
-    await upsertPlugin({
-      id: manifest.id,
-      slug: generatedSlug,
-      name: manifest.name,
-      description: manifest.description ?? null,
-      publisher: manifest.publisher,
-      publisherId: submission.publisherId ?? null,
-      status: 'published',
-      distribution: 'private'
-    });
-
-    await createPluginVersion({
-      pluginId: manifest.id,
-      version: manifest.version,
-      manifest,
-      artifactDigest: submission.artifactDigest,
-      reviewStatus: 'approved'
-    });
-
-    const updated = await updatePluginSubmissionStatus(
-      submissionId,
-      'approved',
-      'Auto-approved private organization plugin'
-    );
-    return { submission: updated!, manifest };
-  }
-
-  const existingVersion = await getPluginVersion(manifest.id, manifest.version);
   if (!existingVersion) {
     await createPluginVersion({
       pluginId: manifest.id,
@@ -380,27 +489,13 @@ export async function reviewSubmission(
     return updated!;
   }
 
-  const packagePath = path.join(getQuarantineDirectory(submissionId), 'package.tar.gz');
-  if (!fs.existsSync(packagePath)) {
-    throw new AppError('Quarantine package archive not found', 'FILE_NOT_FOUND', 404);
+  const archiveBuffer = await readQuarantineArchive(submission);
+  const { entries, manifest } = parsePluginArchive(archiveBuffer, submission.artifactDigest);
+  if (manifest.id !== submission.pluginId || manifest.version !== submission.version) {
+    throw new AppError('Packaged manifest does not match the reviewed submission', 'MANIFEST_MISMATCH', 400);
   }
 
-  const archiveBuffer = fs.readFileSync(packagePath);
-  const entries = parseTarGz(archiveBuffer);
-
-  const manifestEntry = entries.find((e) => e.path === 'plugin.json');
-  if (!manifestEntry) {
-    throw new AppError('Archive is missing required plugin.json manifest', 'MISSING_MANIFEST', 400);
-  }
-
-  const manifest = JSON.parse(manifestEntry.content.toString('utf8')) as TPluginManifest;
-  const destinationDirectory = getArtifactsTargetDirectory(
-    submission.pluginId,
-    submission.version,
-    submission.artifactDigest
-  );
-
-  extractEntriesToDirectory(entries, destinationDirectory, archiveBuffer);
+  await promoteArtifact(entries, submission, archiveBuffer);
 
   const generatedSlug = manifest.slug ?? manifest.id.split('.').pop()!;
   await upsertPlugin({
@@ -432,6 +527,22 @@ export async function getSubmissionDetails(submissionId: string): Promise<TPlugi
   }
 
   return submission;
+}
+
+export function getSubmissionReviewUrl(submission: TPluginSubmission): string {
+  const reviewOrigin = process.env.PLUGIN_REVIEW_ORIGIN;
+  if (!reviewOrigin) {
+    throw new AppError('PLUGIN_REVIEW_ORIGIN is required for reviewer previews', 'SERVER_CONFIGURATION_ERROR', 500);
+  }
+
+  return `${reviewOrigin.replace(/\/$/, '')}/${encodeURIComponent(submission.id)}/`;
+}
+
+export async function assertPlatformPluginReviewer(profileId: string): Promise<void> {
+  const isReviewer = await isPlatformAdmin(profileId);
+  if (!isReviewer) {
+    throw new AppError('Platform reviewer access is required', 'FORBIDDEN', 403);
+  }
 }
 
 export async function listSubmissions(

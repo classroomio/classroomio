@@ -17,12 +17,17 @@ export const ZPluginSubmissionStatus = z.enum(PLUGIN_SUBMISSION_STATUSES);
 export const ZCreateSubmissionIntent = z.object({
   pluginId: z.string().trim().min(3).max(128),
   version: z.string().trim().min(1).max(64),
-  releaseLane: ZPluginReleaseLane,
-  artifactDigest: z.string().regex(/^sha256-[0-9a-f]{64}$/, 'Must be a sha256 checksum (sha256-<hex>)'),
-  organizationId: z.string().uuid().optional(),
-  publisherId: z.string().trim().max(64).optional()
+  artifactDigest: z.string().regex(/^sha256-[0-9a-f]{64}$/, 'Must be a sha256 checksum (sha256-<hex>)')
 });
 export type TCreateSubmissionIntent = z.infer<typeof ZCreateSubmissionIntent>;
+
+export const ZCreateDevelopmentRelease = z.object({
+  manifest: z.record(z.string(), z.unknown()),
+  artifactDigest: z.string().regex(/^sha256-[0-9a-f]{64}$/, 'Must be a sha256 checksum (sha256-<hex>)'),
+  archive: z.string().min(1).max(16_000_000),
+  organizationId: z.string().uuid()
+});
+export type TCreateDevelopmentRelease = z.infer<typeof ZCreateDevelopmentRelease>;
 
 export const ZCompleteSubmission = z.object({
   submissionId: z.string().uuid()

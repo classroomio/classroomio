@@ -5,6 +5,7 @@ import type { TPluginManifest } from '@cio/utils/validation/plugin';
 
 const dbMocks = vi.hoisted(() => ({
   createInstallation: vi.fn(),
+  getApprovedPrivatePluginSubmission: vi.fn(),
   getInstallationById: vi.fn(),
   getInstallationGrants: vi.fn(),
   getOrganizationInstallation: vi.fn(),
@@ -14,6 +15,7 @@ const dbMocks = vi.hoisted(() => ({
   getPluginVersionById: vi.fn(),
   getUserInstallation: vi.fn(),
   listOrganizationInstallations: vi.fn(),
+  listPluginVersions: vi.fn(),
   recordPluginAuditEvent: vi.fn(),
   reinstallInstallation: vi.fn(),
   replaceInstallationGrants: vi.fn(),
@@ -235,6 +237,31 @@ describe('Plugin Installation Service', () => {
         installedByProfileId: 'profile-1'
       })
     ).rejects.toThrow('not approved for installation');
+  });
+
+  it('rejects private plugin installation outside the publishing organization', async () => {
+    dbMocks.getPluginById.mockResolvedValueOnce({
+      id: linkedinManifest.id,
+      status: 'published',
+      distribution: 'private'
+    });
+    dbMocks.getPluginVersion.mockResolvedValueOnce({
+      id: 'version-1',
+      pluginId: linkedinManifest.id,
+      version: linkedinManifest.version,
+      reviewStatus: 'approved'
+    });
+    dbMocks.getApprovedPrivatePluginSubmission.mockResolvedValueOnce(null);
+
+    await expect(
+      installPlugin({
+        pluginId: linkedinManifest.id,
+        version: linkedinManifest.version,
+        ownerType: 'organization',
+        organizationId: 'organization-other',
+        installedByProfileId: 'profile-1'
+      })
+    ).rejects.toThrow('Private plugins can only be installed by the publishing organization');
   });
 
   it('blocks downgrade unless allowDowngrade is explicitly set', async () => {

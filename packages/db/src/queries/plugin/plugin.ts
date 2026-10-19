@@ -112,3 +112,18 @@ export async function updatePluginVersionReviewStatus(
 
   return row ?? null;
 }
+
+export async function updatePluginVersionArtifact(
+  pluginId: string,
+  version: string,
+  manifest: TPluginVersion['manifest'],
+  artifactDigest: string
+): Promise<TPluginVersion | null> {
+  const [row] = await db
+    .update(schema.pluginVersion)
+    .set({ manifest, artifactDigest })
+    .where(and(eq(schema.pluginVersion.pluginId, pluginId), eq(schema.pluginVersion.version, version)))
+    .returning();
+
+  return row ?? null;
+}

@@ -4,9 +4,7 @@ import { Hono } from '@api/utils/hono';
 import { apiKeyMiddleware } from '@api/middlewares/api-key';
 import { handleError } from '@api/utils/errors';
 import {
-  devInstallPlugin,
   processPendingOutboxDeliveries,
-  publishOfficialPluginRelease,
   provisionPluginBackendClient,
   revokePluginBackendClientService,
   rotatePluginBackendClient
@@ -25,37 +23,7 @@ const ZBackendClientId = z
   })
   .strict();
 
-const ZOfficialPluginRelease = z
-  .object({
-    manifest: z.record(z.string(), z.unknown()),
-    artifactDigest: z.string().trim(),
-    signature: z.string().trim().min(1).optional()
-  })
-  .strict();
-
-const ZDevInstallPlugin = z
-  .object({
-    pluginId: z.string().trim().min(1).max(128),
-    version: z.string().trim().min(1).optional(),
-    organizationId: z.string().uuid().optional()
-  })
-  .strict();
-
 export const internalPluginsRouter = new Hono()
-  .post('/releases', apiKeyMiddleware, zValidator('json', ZOfficialPluginRelease), async (c) => {
-    try {
-      const input = c.req.valid('json');
-      const result = await publishOfficialPluginRelease({
-        manifest: input.manifest,
-        artifactDigest: input.artifactDigest,
-        signature: input.signature
-      });
-
-      return c.json({ success: true, data: result }, 201);
-    } catch (error) {
-      return handleError(c, error, 'Failed to publish official plugin release');
-    }
-  })
   .post('/backend-clients', apiKeyMiddleware, zValidator('json', ZProvisionBackendClient), async (c) => {
     try {
       const input = c.req.valid('json');
@@ -93,15 +61,5 @@ export const internalPluginsRouter = new Hono()
       return c.json({ success: true, data: { processed } }, 200);
     } catch (error) {
       return handleError(c, error, 'Failed to process plugin event deliveries');
-    }
-  })
-  .post('/dev-install', apiKeyMiddleware, zValidator('json', ZDevInstallPlugin), async (c) => {
-    try {
-      const input = c.req.valid('json');
-      const result = await devInstallPlugin(input);
-
-      return c.json({ success: true, data: result }, 200);
-    } catch (error) {
-      return handleError(c, error, 'Failed to dev-install plugin');
     }
   });

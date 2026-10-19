@@ -1,8 +1,8 @@
 import { AppError } from '@api/utils/errors';
 import {
-  getPluginById,
   getPluginByIdOrSlug,
   getPluginVersion,
+  listPluginSubmissions,
   listPluginVersions,
   listPlugins,
   listPublishers,
@@ -10,7 +10,6 @@ import {
   createPluginVersion
 } from '@cio/db/queries/plugin';
 import type { TNewPlugin, TNewPluginVersion, TPlugin, TPluginStatus, TPluginVersion } from '@cio/db/types';
-import { ZPluginManifest } from '@cio/utils/validation/plugin';
 import { getPluginArtifactBaseUrl } from './installation';
 
 export type CatalogPluginListItem = TPlugin & {
@@ -32,14 +31,43 @@ function resolveCatalogIconUrl(pluginId: string, version: TPluginVersion | undef
   return `${artifactBaseUrl}/${encodedResource}`;
 }
 
-export async function listCatalogPlugins(options: { status?: TPluginStatus } = {}): Promise<CatalogPluginListItem[]> {
+async function canAccessCatalogPlugin(plugin: TPlugin, organizationId?: string): Promise<boolean> {
+  if (plugin.distribution !== 'private') {
+    return true;
+  }
+
+  if (!organizationId) {
+    return false;
+  }
+
+  const approvedSubmissions = await listPluginSubmissions({
+    pluginId: plugin.id,
+    organizationId,
+    status: 'approved'
+  });
+
+  return approvedSubmissions.some((submission) => submission.releaseLane === 'private');
+}
+
+async function assertCatalogPluginAccess(plugin: TPlugin, organizationId?: string): Promise<void> {
+  const canAccess = await canAccessCatalogPlugin(plugin, organizationId);
+  if (!canAccess) {
+    throw new AppError('Plugin not found', 'PLUGIN_NOT_FOUND', 404);
+  }
+}
+
+export async function listCatalogPlugins(
+  options: { status?: TPluginStatus; organizationId?: string } = {}
+): Promise<CatalogPluginListItem[]> {
   const [plugins, publishers] = await Promise.all([listPlugins(options), listPublishers()]);
   const publisherMap = new Map(publishers.map((p) => [p.id, p]));
+  const visibility = await Promise.all(plugins.map((plugin) => canAccessCatalogPlugin(plugin, options.organizationId)));
+  const visiblePlugins = plugins.filter((_plugin, index) => visibility[index]);
 
   return Promise.all(
-    plugins.map(async (plugin) => {
+    visiblePlugins.map(async (plugin) => {
       const versions = await listPluginVersions(plugin.id);
-      const latestVersion = versions[0];
+      const latestVersion = versions.find((version) => version.reviewStatus === 'approved');
       const manifest = latestVersion?.manifest as {
         permissions?: { required?: string[]; optional?: string[] };
       } | null;
@@ -58,7 +86,10 @@ export async function listCatalogPlugins(options: { status?: TPluginStatus } = {
   );
 }
 
-export async function getCatalogPluginDetails(idOrSlug: string): Promise<{
+export async function getCatalogPluginDetails(
+  idOrSlug: string,
+  organizationId?: string
+): Promise<{
   plugin: TPlugin;
   latestVersion: TPluginVersion | null;
   versions: TPluginVersion[];
@@ -68,7 +99,10 @@ export async function getCatalogPluginDetails(idOrSlug: string): Promise<{
     throw new AppError('Plugin not found', 'PLUGIN_NOT_FOUND', 404);
   }
 
-  const versions = await listPluginVersions(plugin.id);
+  await assertCatalogPluginAccess(plugin, organizationId);
+
+  const pluginVersions = await listPluginVersions(plugin.id);
+  const versions = pluginVersions.filter((version) => version.reviewStatus === 'approved');
   const latestVersion = versions[0] ?? null;
 
   return {
@@ -78,9 +112,20 @@ export async function getCatalogPluginDetails(idOrSlug: string): Promise<{
   };
 }
 
-export async function getCatalogPluginVersion(pluginId: string, version: string): Promise<TPluginVersion> {
+export async function getCatalogPluginVersion(
+  pluginId: string,
+  version: string,
+  organizationId?: string
+): Promise<TPluginVersion> {
+  const plugin = await getPluginByIdOrSlug(pluginId);
+  if (!plugin) {
+    throw new AppError('Plugin not found', 'PLUGIN_NOT_FOUND', 404);
+  }
+
+  await assertCatalogPluginAccess(plugin, organizationId);
+
   const pluginVersionRow = await getPluginVersion(pluginId, version);
-  if (!pluginVersionRow) {
+  if (!pluginVersionRow || pluginVersionRow.reviewStatus !== 'approved') {
     throw new AppError('Plugin version not found', 'PLUGIN_VERSION_NOT_FOUND', 404);
   }
 
@@ -101,48 +146,4 @@ export async function registerPluginWithVersion(
     plugin: registeredPlugin,
     version: registeredVersion
   };
-}
-
-export async function publishOfficialPluginRelease(input: {
-  manifest: unknown;
-  artifactDigest: string;
-  signature?: string;
-}): Promise<{ plugin: TPlugin; version: TPluginVersion }> {
-  const manifest = ZPluginManifest.parse(input.manifest);
-  if (!/^sha256-[a-f0-9]{64}$/.test(input.artifactDigest)) {
-    throw new AppError('Artifact digest must be a SHA-256 content digest', 'INVALID_PLUGIN_ARTIFACT', 400);
-  }
-
-  const existingVersion = await getPluginVersion(manifest.id, manifest.version);
-  if (existingVersion) {
-    if (existingVersion.artifactDigest !== input.artifactDigest) {
-      throw new AppError('Published plugin versions are immutable', 'PLUGIN_VERSION_IMMUTABLE', 409);
-    }
-
-    const plugin = await getPluginById(manifest.id);
-    if (!plugin) throw new AppError('Plugin record not found', 'PLUGIN_NOT_FOUND', 404);
-
-    return { plugin, version: existingVersion };
-  }
-
-  const slug = manifest.slug ?? manifest.id.replace(/^([a-z0-9_-]+\.)+/i, '');
-
-  return registerPluginWithVersion(
-    {
-      id: manifest.id,
-      slug,
-      name: manifest.name,
-      description: manifest.description,
-      publisher: manifest.publisher,
-      status: 'published',
-      distribution: 'public'
-    },
-    {
-      version: manifest.version,
-      manifest,
-      artifactDigest: input.artifactDigest,
-      signature: input.signature,
-      reviewStatus: 'approved'
-    }
-  );
 }

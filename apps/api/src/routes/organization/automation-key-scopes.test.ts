@@ -27,4 +27,10 @@ describe('ZCreateOrganizationApiKey scopes', () => {
     expect(ZCreateOrganizationApiKey.safeParse({ type: 'api', scopes: ['public_api:*'] }).success).toBe(true);
     expect(ZCreateOrganizationApiKey.safeParse({ type: 'zapier', scopes: ['public_api:*'] }).success).toBe(true);
   });
+
+  it('allows a least-privilege plugin publishing key', () => {
+    const result = ZCreateOrganizationApiKey.safeParse({ type: 'api', scopes: ['plugin:publish'] });
+
+    expect(result.success).toBe(true);
+  });
 });

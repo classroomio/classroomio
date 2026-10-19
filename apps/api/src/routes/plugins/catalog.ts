@@ -5,7 +5,11 @@ import { getCatalogPluginDetails, getCatalogPluginVersion, listCatalogPlugins } 
 export const pluginCatalogRouter = new Hono()
   .get('/', async (c) => {
     try {
-      const plugins = await listCatalogPlugins({ status: 'published' });
+      const requestedOrganizationId = c.req.header('cio-org-id');
+      const organizationRoles = c.get('orgRoles');
+      const organizationId =
+        requestedOrganizationId && organizationRoles[requestedOrganizationId] ? requestedOrganizationId : undefined;
+      const plugins = await listCatalogPlugins({ status: 'published', organizationId });
 
       return c.json({ success: true, data: plugins }, 200);
     } catch (error) {
@@ -16,7 +20,11 @@ export const pluginCatalogRouter = new Hono()
     const pluginId = c.req.param('id');
 
     try {
-      const details = await getCatalogPluginDetails(pluginId);
+      const requestedOrganizationId = c.req.header('cio-org-id');
+      const organizationRoles = c.get('orgRoles');
+      const organizationId =
+        requestedOrganizationId && organizationRoles[requestedOrganizationId] ? requestedOrganizationId : undefined;
+      const details = await getCatalogPluginDetails(pluginId, organizationId);
 
       return c.json({ success: true, data: details }, 200);
     } catch (error) {
@@ -28,7 +36,11 @@ export const pluginCatalogRouter = new Hono()
     const version = c.req.param('version');
 
     try {
-      const versionData = await getCatalogPluginVersion(pluginId, version);
+      const requestedOrganizationId = c.req.header('cio-org-id');
+      const organizationRoles = c.get('orgRoles');
+      const organizationId =
+        requestedOrganizationId && organizationRoles[requestedOrganizationId] ? requestedOrganizationId : undefined;
+      const versionData = await getCatalogPluginVersion(pluginId, version, organizationId);
 
       return c.json({ success: true, data: versionData }, 200);
     } catch (error) {

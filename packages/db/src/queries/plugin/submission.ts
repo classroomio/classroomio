@@ -15,6 +15,28 @@ export async function getPluginSubmissionById(id: string): Promise<TPluginSubmis
   return row ?? null;
 }
 
+export async function getApprovedPrivatePluginSubmission(
+  pluginId: string,
+  version: string,
+  organizationId: string
+): Promise<TPluginSubmission | null> {
+  const [row] = await db
+    .select()
+    .from(schema.pluginSubmission)
+    .where(
+      and(
+        eq(schema.pluginSubmission.pluginId, pluginId),
+        eq(schema.pluginSubmission.version, version),
+        eq(schema.pluginSubmission.organizationId, organizationId),
+        eq(schema.pluginSubmission.releaseLane, 'private'),
+        eq(schema.pluginSubmission.status, 'approved')
+      )
+    )
+    .limit(1);
+
+  return row ?? null;
+}
+
 export async function listPluginSubmissions(
   options: {
     pluginId?: string;
