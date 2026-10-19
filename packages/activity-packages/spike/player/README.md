@@ -1,6 +1,6 @@
 # Throwaway spike player
 
-Proves the Phase 0 run-time: scorm-again `3.4.6` on a second local origin, framing an extracted package, posting commits to a stub. Never imported by production code; the real player lands in `apps/activity-player` (PR 8, PR 10).
+Proves the Phase 0 run-time: scorm-again `3.4.6` on a second local origin, framing an extracted package, posting commits to a stub. Never imported by production code; the real player lives in `apps/activity-player`.
 
 ## Run
 

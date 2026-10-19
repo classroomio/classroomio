@@ -1,6 +1,6 @@
 # SCORM compatibility matrix (v2)
 
-Contract: `prd/scorm-support/v2/implementation-plan.md` Compatibility Matrix and Test Plan, `prd/scorm-support/v2/README.md` Acceptance Criteria 15-17, 19-23, 27-28.
+Contract: `prd/scorm-support/README.md`.
 
 Automated coverage: `compatibility-matrix.test.ts` in this folder. Run it with `pnpm --filter @cio/activity-packages test test/compatibility`.
 
