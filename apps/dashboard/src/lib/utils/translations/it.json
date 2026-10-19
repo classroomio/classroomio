@@ -4894,7 +4894,8 @@
       "mcp": "MCP",
       "zapier": "Zapier",
       "api": "API",
-      "webhooks": "Webhook"
+      "webhooks": "Webhook",
+      "new_badge": "Nuovo"
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -5000,8 +5001,9 @@
       "create": "Nuovo webhook",
       "empty_title": "Nessun webhook ancora",
       "empty_description": "Crea un webhook per inviare inviti, iscrizioni, completamenti e consegne ai tuoi altri strumenti.",
-      "secret_once": "Copia ora il tuo segreto di firma. Viene mostrato una sola volta e ti servirà per verificare le richieste.",
-      "secret_dismiss": "L'ho salvato",
+      "reveal_title": "Il tuo nuovo segreto di firma",
+      "reveal_description": "Copia questo segreto di firma ora. Non verrà mostrato di nuovo e ti servirà per verificare le richieste.",
+      "reveal_docs": "Come verificare le richieste",
       "delete_confirm": "Eliminare il webhook \"{name}\"? Verrà rimossa anche la sua cronologia delle consegne.",
       "regenerate_confirm": "Rigenerare il segreto di firma? Il segreto attuale smetterà di funzionare immediatamente.",
       "events_all": "Tutti gli eventi",

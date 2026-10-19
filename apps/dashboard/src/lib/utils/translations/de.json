@@ -5085,7 +5085,8 @@
       "mcp": "MCP",
       "zapier": "Zapier",
       "api": "API",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "new_badge": "Neu"
     },
     "permissions": {
       "disabled_title": "Nur lesender Zugriff",
@@ -5101,8 +5102,9 @@
       "create": "Neuer Webhook",
       "empty_title": "Noch keine Webhooks",
       "empty_description": "Erstellen Sie einen Webhook, um Einladungen, Einschreibungen, Abschlüsse und Einreichungen an Ihre anderen Tools zu übertragen.",
-      "secret_once": "Kopieren Sie jetzt Ihr Signaturgeheimnis. Es wird nur einmal angezeigt und wird zur Überprüfung von Anfragen benötigt.",
-      "secret_dismiss": "Ich habe es gespeichert",
+      "reveal_title": "Dein neues Signaturgeheimnis",
+      "reveal_description": "Kopiere dieses Signaturgeheimnis jetzt. Es wird nicht noch einmal angezeigt, und du brauchst es, um Anfragen zu überprüfen.",
+      "reveal_docs": "So überprüfst du Anfragen",
       "delete_confirm": "Den Webhook \"{name}\" löschen? Der Zustellungsverlauf wird ebenfalls entfernt.",
       "regenerate_confirm": "Signaturgeheimnis neu generieren? Das aktuelle Geheimnis funktioniert sofort nicht mehr.",
       "events_all": "Alle Ereignisse",

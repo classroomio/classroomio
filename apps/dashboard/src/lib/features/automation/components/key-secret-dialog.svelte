@@ -10,9 +10,20 @@
     title: string;
     secret: string | null;
     docsHref: string;
+    description?: string;
+    docsLabel?: string;
+    testId?: string;
   }
 
-  let { open = $bindable(), title, secret, docsHref }: Props = $props();
+  let {
+    open = $bindable(),
+    title,
+    secret,
+    docsHref,
+    description,
+    docsLabel,
+    testId = 'automation-key-secret'
+  }: Props = $props();
 
   let copyButton = $state<HTMLButtonElement | null>(null);
 
@@ -26,7 +37,7 @@
   <Dialog.Content class="sm:max-w-md" showCloseButton={false} onOpenAutoFocus={focusCopyButton}>
     <Dialog.Header>
       <Dialog.Title>{title}</Dialog.Title>
-      <Dialog.Description>{$t('automation.keys.reveal.description')}</Dialog.Description>
+      <Dialog.Description>{description ?? $t('automation.keys.reveal.description')}</Dialog.Description>
     </Dialog.Header>
 
     <CopyInput
@@ -34,13 +45,13 @@
       bind:buttonRef={copyButton}
       copyLabel={$t('automation.keys.reveal.copy')}
       copiedLabel={$t('automation.keys.reveal.copied')}
-      testId="automation-key-secret"
+      {testId}
     />
 
     <Dialog.Footer class="items-center sm:justify-between">
       <Button variant="ghost" size="sm" href={docsHref} target="_blank" rel="noopener noreferrer">
         <SquareArrowOutUpRightIcon />
-        {$t('automation.keys.reveal.how_to_use')}
+        {docsLabel ?? $t('automation.keys.reveal.how_to_use')}
       </Button>
       <Button variant="outline" size="sm" onclick={() => (open = false)}>
         {$t('automation.keys.reveal.close')}

@@ -5085,7 +5085,8 @@
       "mcp": "MCP",
       "zapier": "Zapier",
       "api": "API",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "new_badge": "Ny"
     },
     "permissions": {
       "disabled_title": "Skrivebeskyttet adgang",
@@ -5101,8 +5102,9 @@
       "create": "Ny webhook",
       "empty_title": "Ingen webhooks endnu",
       "empty_description": "Opret en webhook for at sende invitationer, tilmeldinger, gennemførelser og afleveringer til dine andre værktøjer.",
-      "secret_once": "Kopiér din signeringshemmelighed nu. Den vises kun én gang, og du skal bruge den til at verificere forespørgsler.",
-      "secret_dismiss": "Jeg har gemt den",
+      "reveal_title": "Din nye signeringshemmelighed",
+      "reveal_description": "Kopiér denne signeringshemmelighed nu. Den vises ikke igen, og du skal bruge den til at verificere anmodninger.",
+      "reveal_docs": "Sådan verificerer du anmodninger",
       "delete_confirm": "Slet webhooken \"{name}\"? Dens leveringshistorik fjernes også.",
       "regenerate_confirm": "Generer signeringshemmeligheden igen? Den nuværende hemmelighed holder op med at virke med det samme.",
       "events_all": "Alle hændelser",

@@ -4904,7 +4904,8 @@
       "mcp": "MCP",
       "zapier": "Zapier",
       "api": "API",
-      "webhooks": "Webhook'lar"
+      "webhooks": "Webhook'lar",
+      "new_badge": "Yeni"
     },
     "clients": {
       "claude_code": "Claude Code",
@@ -5010,8 +5011,9 @@
       "create": "Yeni webhook",
       "empty_title": "Henüz webhook yok",
       "empty_description": "Davetleri, kayıtları, tamamlamaları ve gönderimleri diğer araçlarınıza iletmek için bir webhook oluşturun.",
-      "secret_once": "İmza sırrınızı şimdi kopyalayın. Yalnızca bir kez gösterilir ve istekleri doğrulamak için gerekecektir.",
-      "secret_dismiss": "Kaydettim",
+      "reveal_title": "Yeni imza sırrınız",
+      "reveal_description": "Bu imza sırrını şimdi kopyalayın. Bir daha gösterilmeyecek ve istekleri doğrulamak için buna ihtiyacınız olacak.",
+      "reveal_docs": "İstekler nasıl doğrulanır",
       "delete_confirm": "\"{name}\" webhook'u silinsin mi? Teslimat geçmişi de kaldırılacak.",
       "regenerate_confirm": "İmza sırrı yeniden oluşturulsun mu? Mevcut sır hemen çalışmayı durdurur.",
       "events_all": "Tüm olaylar",

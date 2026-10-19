@@ -4908,7 +4908,8 @@
       "mcp": "MCP",
       "zapier": "Zapier",
       "api": "API",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "new_badge": "New"
     },
     "webhooks": {
       "page_subtitle": "Send real-time ClassroomIO events to Slack, your CRM, or your own backend.",
@@ -4917,8 +4918,9 @@
       "create": "New webhook",
       "empty_title": "No webhooks yet",
       "empty_description": "Create a webhook to push invites, enrollments, completions, and submissions to your other tools.",
-      "secret_once": "Copy your signing secret now. It is only shown once, and you will need it to verify requests.",
-      "secret_dismiss": "I saved it",
+      "reveal_title": "Your new signing secret",
+      "reveal_description": "Copy this signing secret now. It won't be shown again, and you'll need it to verify requests.",
+      "reveal_docs": "How to verify requests",
       "delete_confirm": "Delete the webhook \"{name}\"? Its delivery history will be removed too.",
       "regenerate_confirm": "Regenerate the signing secret? The current secret stops working immediately.",
       "events_all": "All events",

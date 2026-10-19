@@ -5085,7 +5085,8 @@
       "mcp": "MCP",
       "zapier": "Zapier",
       "api": "API",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "new_badge": "Mới"
     },
     "permissions": {
       "disabled_title": "Quyền truy cập chỉ đọc",
@@ -5101,8 +5102,9 @@
       "create": "Webhook mới",
       "empty_title": "Chưa có webhook nào",
       "empty_description": "Tạo webhook để đẩy lời mời, lượt ghi danh, lượt hoàn thành và bài nộp đến các công cụ khác của bạn.",
-      "secret_once": "Hãy sao chép khóa bí mật ký ngay bây giờ. Khóa chỉ hiển thị một lần và bạn sẽ cần nó để xác minh các yêu cầu.",
-      "secret_dismiss": "Tôi đã lưu lại",
+      "reveal_title": "Khóa bí mật ký mới của bạn",
+      "reveal_description": "Hãy sao chép khóa bí mật ký này ngay bây giờ. Nó sẽ không hiển thị lại và bạn cần nó để xác minh các yêu cầu.",
+      "reveal_docs": "Cách xác minh yêu cầu",
       "delete_confirm": "Xóa webhook \"{name}\"? Lịch sử gửi của nó cũng sẽ bị xóa.",
       "regenerate_confirm": "Tạo lại khóa bí mật ký? Khóa hiện tại sẽ ngừng hoạt động ngay lập tức.",
       "events_all": "Tất cả sự kiện",

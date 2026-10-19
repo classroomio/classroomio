@@ -4,21 +4,21 @@
   import WebhookIcon from '@lucide/svelte/icons/webhook';
   import * as Alert from '@cio/ui/base/alert';
   import { Badge } from '@cio/ui/base/badge';
-  import { Button } from '@cio/ui/base/button';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Popover from '@cio/ui/base/popover';
   import * as Field from '@cio/ui/base/field';
   import { Skeleton } from '@cio/ui/base/skeleton';
   import { Switch } from '@cio/ui/base/switch';
   import * as Table from '@cio/ui/base/table';
-  import * as Code from '@cio/ui/custom/code';
   import { Empty } from '@cio/ui/custom/empty';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { PUBLIC_IS_SELFHOSTED } from '$env/static/public';
 
   import { webhookApi } from '$features/automation/api/webhook.svelte';
+  import KeySecretDialog from '$features/automation/components/key-secret-dialog.svelte';
   import WebhookDeliveriesSheet from '$features/automation/components/webhook-deliveries-sheet.svelte';
   import WebhookFormSheet from '$features/automation/components/webhook-form-sheet.svelte';
+  import { WEBHOOKS_DOCS_URL } from '$features/automation/utils/automation-utils';
   import type { Webhook } from '$features/automation/utils/types';
   import {
     formatWebhookTimestamp,
@@ -38,6 +38,8 @@
   let isFormOpen = $state(false);
   let editingWebhook = $state<Webhook | null>(null);
   let deliveriesWebhook = $state<Webhook | null>(null);
+  let isSecretDialogOpen = $state(false);
+  let revealedSecret = $state<string | null>(null);
   let loadedOrgId = '';
 
   const webhooks = $derived(webhookApi.webhooks);
@@ -65,6 +67,8 @@
     isFormOpen = false;
     editingWebhook = null;
     deliveriesWebhook = null;
+    isSecretDialogOpen = false;
+    revealedSecret = null;
     webhookApi.resetOrganizationState();
   }
 
@@ -81,6 +85,15 @@
   function closeForm() {
     isFormOpen = false;
     editingWebhook = null;
+    showRevealedSecret();
+  }
+
+  function showRevealedSecret() {
+    if (webhookApi.revealedSecret === null) return;
+
+    revealedSecret = webhookApi.revealedSecret;
+    webhookApi.clearRevealedSecret();
+    isSecretDialogOpen = true;
   }
 
   async function handleDelete(webhook: Webhook) {
@@ -93,6 +106,7 @@
     if (!confirm(t.get(`${T}.regenerate_confirm`))) return;
 
     await webhookApi.regenerateSecret(webhook.id);
+    showRevealedSecret();
   }
 </script>
 
@@ -117,22 +131,6 @@
         </IconButton>
       {/if}
     </div>
-
-    {#if webhookApi.revealedSecret}
-      <div class="rounded-lg border border-amber-200 bg-amber-50 p-4" data-testid="webhook-secret-reveal">
-        <div class="flex items-start justify-between gap-2">
-          <p class="text-sm font-medium text-amber-800">{$t(`${T}.secret_once`)}</p>
-          <Button variant="outline" size="sm" onclick={() => webhookApi.clearRevealedSecret()}>
-            {$t(`${T}.secret_dismiss`)}
-          </Button>
-        </div>
-        <div class="mt-3">
-          <Code.Root code={webhookApi.revealedSecret} hideLines={true} class="text-xs break-all">
-            <Code.CopyButton />
-          </Code.Root>
-        </div>
-      </div>
-    {/if}
 
     {#if canManage}
       {#if !webhooks}
@@ -267,3 +265,13 @@
 {#if deliveriesWebhook}
   <WebhookDeliveriesSheet webhook={deliveriesWebhook} onClose={() => (deliveriesWebhook = null)} />
 {/if}
+
+<KeySecretDialog
+  bind:open={isSecretDialogOpen}
+  title={$t(`${T}.reveal_title`)}
+  description={$t(`${T}.reveal_description`)}
+  docsLabel={$t(`${T}.reveal_docs`)}
+  secret={revealedSecret}
+  docsHref={WEBHOOKS_DOCS_URL}
+  testId="webhook-secret"
+/>

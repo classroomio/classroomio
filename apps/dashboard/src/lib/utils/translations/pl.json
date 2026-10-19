@@ -5085,7 +5085,8 @@
       "mcp": "MCP",
       "zapier": "Zapier",
       "api": "API",
-      "webhooks": "Webhooki"
+      "webhooks": "Webhooki",
+      "new_badge": "Nowy"
     },
     "permissions": {
       "disabled_title": "Dostęp tylko do odczytu",
@@ -5101,8 +5102,9 @@
       "create": "Nowy webhook",
       "empty_title": "Brak webhooków",
       "empty_description": "Utwórz webhook, aby przesyłać zaproszenia, zapisy, ukończenia i zgłoszenia do swoich innych narzędzi.",
-      "secret_once": "Skopiuj teraz swój klucz podpisu. Jest pokazywany tylko raz i będzie potrzebny do weryfikacji żądań.",
-      "secret_dismiss": "Zapisano",
+      "reveal_title": "Twój nowy klucz podpisu",
+      "reveal_description": "Skopiuj ten klucz podpisu teraz. Nie zostanie pokazany ponownie, a będzie potrzebny do weryfikowania żądań.",
+      "reveal_docs": "Jak weryfikować żądania",
       "delete_confirm": "Usunąć webhook \"{name}\"? Jego historia dostarczeń również zostanie usunięta.",
       "regenerate_confirm": "Wygenerować klucz podpisu ponownie? Obecny klucz przestanie działać natychmiast.",
       "events_all": "Wszystkie zdarzenia",

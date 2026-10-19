@@ -5085,7 +5085,8 @@
       "mcp": "MCP",
       "zapier": "Zapier",
       "api": "API",
-      "webhooks": "Webhooks"
+      "webhooks": "Webhooks",
+      "new_badge": "Nuevo"
     },
     "permissions": {
       "disabled_title": "Acceso de solo lectura",
@@ -5101,8 +5102,9 @@
       "create": "Nuevo webhook",
       "empty_title": "Aún no hay webhooks",
       "empty_description": "Cree un webhook para enviar invitaciones, inscripciones, finalizaciones y entregas a sus otras herramientas.",
-      "secret_once": "Copie ahora su secreto de firma. Solo se muestra una vez y lo necesitará para verificar las solicitudes.",
-      "secret_dismiss": "Ya lo guardé",
+      "reveal_title": "Tu nuevo secreto de firma",
+      "reveal_description": "Copia este secreto de firma ahora. No se volverá a mostrar y lo necesitarás para verificar las solicitudes.",
+      "reveal_docs": "Cómo verificar las solicitudes",
       "delete_confirm": "¿Eliminar el webhook \"{name}\"? Su historial de envíos también se eliminará.",
       "regenerate_confirm": "¿Regenerar el secreto de firma? El secreto actual dejará de funcionar de inmediato.",
       "events_all": "Todos los eventos",
