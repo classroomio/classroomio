@@ -16,7 +16,7 @@ function deriveKey(): Buffer {
 }
 
 export function generateWebhookSecret(): string {
-  return `whsec_${randomBytes(24).toString('base64url')}`;
+  return `whsec_${randomBytes(24).toString('base64')}`;
 }
 
 /**

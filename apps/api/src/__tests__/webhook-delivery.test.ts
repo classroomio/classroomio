@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import http from 'node:http';
 import type { AddressInfo } from 'node:net';
 
@@ -94,6 +95,21 @@ describe('attemptWebhookDelivery', () => {
     expect(
       verifyWebhookSignature(secret, timestamp, request.body, String(request.headers['x-cio-signature-256']))
     ).toBe(true);
+  });
+
+  it('also sends the Standard Webhooks headers with a matching signature', async () => {
+    captured = [];
+    respond = (response) => response.end('received');
+
+    await attemptWebhookDelivery(buildEndpoint('/ok'), { id: 'whd_1', attempt: 0 }, event);
+    const request = captured[0]!;
+    const timestamp = request.headers['x-cio-timestamp'];
+    const key = Buffer.from(secret.slice('whsec_'.length), 'base64');
+    const expected = createHmac('sha256', key).update(`evt_abc.${timestamp}.${request.body}`).digest('base64');
+
+    expect(request.headers['webhook-id']).toBe('evt_abc');
+    expect(request.headers['webhook-timestamp']).toBe(timestamp);
+    expect(request.headers['webhook-signature']).toBe(`v1,${expected}`);
   });
 
   it('stops reading an oversized response body and still reports the status', async () => {

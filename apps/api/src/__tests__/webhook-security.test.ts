@@ -8,7 +8,11 @@ vi.hoisted(() => {
 
 import { redactSensitiveText, truncateText } from '@cio/core/services/webhook/redact';
 import { decryptWebhookSecret, encryptWebhookSecret, generateWebhookSecret } from '@cio/core/services/webhook/secret';
-import { signWebhookPayload, verifyWebhookSignature } from '@cio/core/services/webhook/signature';
+import {
+  signStandardWebhookPayload,
+  signWebhookPayload,
+  verifyWebhookSignature
+} from '@cio/core/services/webhook/signature';
 import {
   assertWebhookUrlShape,
   isPrivateAddress,
@@ -54,6 +58,35 @@ describe('webhook signatures', () => {
     expect(verifyWebhookSignature('secret', 100, 'body!', signature)).toBe(false);
     expect(verifyWebhookSignature('secret', 101, 'body', signature)).toBe(false);
     expect(verifyWebhookSignature('other', 100, 'body', signature)).toBe(false);
+  });
+});
+
+describe('standard webhooks signatures', () => {
+  it('matches the published Standard Webhooks test vector', () => {
+    const signature = signStandardWebhookPayload(
+      'whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw',
+      'msg_p5jXN8AQM9LWM0D4loKWxJek',
+      1614265330,
+      '{"test": 2432232314}'
+    );
+
+    expect(signature).toBe('v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLJ1OE=');
+  });
+
+  it('uses a secret that is not whsec_ plus base64 as plain text', () => {
+    const expected = createHmac('sha256', 'plain secret!').update('msg_1.100.body').digest('base64');
+
+    expect(signStandardWebhookPayload('plain secret!', 'msg_1', 100, 'body')).toBe(`v1,${expected}`);
+  });
+
+  it('changes when the message id, timestamp, body or secret changes', () => {
+    const secret = generateWebhookSecret();
+    const signature = signStandardWebhookPayload(secret, 'msg_1', 100, 'body');
+
+    expect(signStandardWebhookPayload(secret, 'msg_2', 100, 'body')).not.toBe(signature);
+    expect(signStandardWebhookPayload(secret, 'msg_1', 101, 'body')).not.toBe(signature);
+    expect(signStandardWebhookPayload(secret, 'msg_1', 100, 'body!')).not.toBe(signature);
+    expect(signStandardWebhookPayload(generateWebhookSecret(), 'msg_1', 100, 'body')).not.toBe(signature);
   });
 });
 

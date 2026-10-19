@@ -15,6 +15,9 @@ import {
   WEBHOOK_RESPONSE_BODY_LIMIT,
   WEBHOOK_RETRY_DELAYS_MS,
   WEBHOOK_SIGNATURE_HEADER,
+  WEBHOOK_STANDARD_ID_HEADER,
+  WEBHOOK_STANDARD_SIGNATURE_HEADER,
+  WEBHOOK_STANDARD_TIMESTAMP_HEADER,
   WEBHOOK_TIMESTAMP_HEADER
 } from '@cio/utils/constants/webhook';
 
@@ -24,7 +27,7 @@ import { notifyWebhookHealthChange } from './health';
 import { redactSensitiveText, truncateText } from './redact';
 import { decryptWebhookSecret } from './secret';
 import { sendWebhookRequest } from './send';
-import { signWebhookPayload } from './signature';
+import { signStandardWebhookPayload, signWebhookPayload } from './signature';
 import { assertWebhookUrlShape, WebhookUrlError } from './url-guard';
 
 const LOCK_BUSY_RETRY_MS = 5_000;
@@ -50,12 +53,15 @@ export function buildWebhookRequestHeaders(
     'X-Cio-Event-Id': event.id,
     'X-Cio-Delivery': deliveryId,
     'X-Cio-Webhook': endpoint.id,
-    [WEBHOOK_TIMESTAMP_HEADER]: String(timestamp)
+    [WEBHOOK_TIMESTAMP_HEADER]: String(timestamp),
+    [WEBHOOK_STANDARD_ID_HEADER]: event.id,
+    [WEBHOOK_STANDARD_TIMESTAMP_HEADER]: String(timestamp)
   };
 
   if (endpoint.secretCiphertext) {
     const secret = decryptWebhookSecret(endpoint.secretCiphertext);
     headers[WEBHOOK_SIGNATURE_HEADER] = signWebhookPayload(secret, timestamp, body);
+    headers[WEBHOOK_STANDARD_SIGNATURE_HEADER] = signStandardWebhookPayload(secret, event.id, timestamp, body);
   }
 
   return headers;

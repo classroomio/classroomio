@@ -108,6 +108,10 @@ ClassroomIO treats any response outside `2xx` as a failure. Open the delivery to
 
 Open **Edit** and check that the event is selected. If you chose **Let me select individual events**, new event types are not added automatically.
 
+### My receiver says the signature is invalid
+
+ClassroomIO signs requests in the Standard Webhooks format, so if the receiver offers a **Standard Webhooks** authentication method, choose it and paste the signing secret. Receivers that expect a different signature format, such as a plain body hash, can't verify ClassroomIO requests. If the secret belongs to a webhook created a while ago, use **Regenerate secret** and paste the new one.
+
 ### I can't save my Payload URL
 
 Cloud organizations need a public HTTPS URL. Addresses on a private network and `localhost` are rejected.
