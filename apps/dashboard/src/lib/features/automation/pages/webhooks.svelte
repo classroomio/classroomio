@@ -4,6 +4,7 @@
   import WebhookIcon from '@lucide/svelte/icons/webhook';
   import * as Alert from '@cio/ui/base/alert';
   import { Badge } from '@cio/ui/base/badge';
+  import { Button } from '@cio/ui/base/button';
   import * as DropdownMenu from '@cio/ui/base/dropdown-menu';
   import * as Popover from '@cio/ui/base/popover';
   import * as Field from '@cio/ui/base/field';
