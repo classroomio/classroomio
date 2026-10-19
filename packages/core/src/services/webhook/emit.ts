@@ -8,7 +8,7 @@ import { getCourseOrganizationId } from '@cio/db/queries/tag';
 import type { TGroupmember } from '@cio/db/types';
 import { enqueueWebhookDelivery } from '@cio/jobs';
 import { WEBHOOK_API_VERSION, type TWebhookEventType } from '@cio/utils/constants/webhook';
-import type { TCourseWebhookEventType, TWebhookEventData } from '@cio/utils/validation/webhook';
+import type { TCourseWebhookEventType, TWebhookEventInput } from '@cio/utils/validation/webhook';
 
 import { createWebhookRecordId } from './deliver';
 import {
@@ -17,6 +17,7 @@ import {
   writeCachedCourseOrganizationId,
   writeOrgHasWebhookEndpoints
 } from './endpoint-cache';
+import { enrichWebhookEventData } from './enrich';
 import { hasWebhookEntitlement } from './entitlement';
 
 export type TWebhookEventEnvelope = {
@@ -24,7 +25,7 @@ export type TWebhookEventEnvelope = {
   type: string;
   createdAt: string;
   apiVersion: string;
-  organization: { id: string; siteName: string | null };
+  organization: { id: string; name: string | null; siteName: string | null };
   data: Record<string, unknown>;
 };
 
@@ -41,7 +42,7 @@ export async function buildWebhookEnvelope(
     type: eventType,
     createdAt: occurredAt,
     apiVersion: WEBHOOK_API_VERSION,
-    organization: { id: organizationId, siteName: organization?.siteName ?? null },
+    organization: { id: organizationId, name: organization?.name ?? null, siteName: organization?.siteName ?? null },
     data
   };
 }
@@ -99,7 +100,7 @@ async function resolveCourseOrganizationId(courseId: string): Promise<string | n
 export async function recordWebhookEvent<TEvent extends TWebhookEventType>(
   organizationId: string,
   eventType: TEvent,
-  data: TWebhookEventData<TEvent>,
+  data: TWebhookEventInput<TEvent>,
   occurredAt: string = new Date().toISOString()
 ): Promise<void> {
   try {
@@ -111,7 +112,8 @@ export async function recordWebhookEvent<TEvent extends TWebhookEventType>(
 
     if (!(await hasWebhookEntitlement(organizationId))) return;
 
-    const envelope = await buildWebhookEnvelope(organizationId, eventType, data, occurredAt);
+    const detailedData = await enrichWebhookEventData(data);
+    const envelope = await buildWebhookEnvelope(organizationId, eventType, detailedData, occurredAt);
     const now = new Date().toISOString();
     const deliveries = await insertWebhookEventWithDeliveries(
       { id: envelope.id, organizationId, eventType, payload: envelope },
@@ -135,7 +137,7 @@ export async function recordWebhookEvent<TEvent extends TWebhookEventType>(
 export async function recordCourseWebhookEvent<TEvent extends TCourseWebhookEventType>(
   courseId: string,
   eventType: TEvent,
-  data: Omit<TWebhookEventData<TEvent>, 'courseId'>,
+  data: Omit<TWebhookEventInput<TEvent>, 'courseId'>,
   occurredAt: string = new Date().toISOString()
 ): Promise<void> {
   try {
@@ -143,7 +145,12 @@ export async function recordCourseWebhookEvent<TEvent extends TCourseWebhookEven
 
     if (!organizationId) return;
 
-    await recordWebhookEvent(organizationId, eventType, { courseId, ...data } as TWebhookEventData<TEvent>, occurredAt);
+    await recordWebhookEvent(
+      organizationId,
+      eventType,
+      { courseId, ...data } as TWebhookEventInput<TEvent>,
+      occurredAt
+    );
   } catch (error) {
     console.error('recordCourseWebhookEvent error:', { eventType, courseId, error });
   }
@@ -156,7 +163,7 @@ export async function recordCourseWebhookEvent<TEvent extends TCourseWebhookEven
 export async function emitWebhookEvent<TEvent extends TWebhookEventType>(
   organizationId: string,
   eventType: TEvent,
-  data: TWebhookEventData<TEvent>
+  data: TWebhookEventInput<TEvent>
 ): Promise<void> {
   const occurredAt = new Date().toISOString();
 
@@ -169,7 +176,7 @@ export async function emitWebhookEvent<TEvent extends TWebhookEventType>(
 export async function emitCourseWebhookEvent<TEvent extends TCourseWebhookEventType>(
   courseId: string,
   eventType: TEvent,
-  data: Omit<TWebhookEventData<TEvent>, 'courseId'>
+  data: Omit<TWebhookEventInput<TEvent>, 'courseId'>
 ): Promise<void> {
   const occurredAt = new Date().toISOString();
 

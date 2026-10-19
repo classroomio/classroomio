@@ -14,6 +14,20 @@ import { WEBHOOK_DEGRADED_FAILURE_THRESHOLD } from '@cio/utils/constants/webhook
 
 export type TWebhookEndpointWithEvents = TWebhookEndpoint & { eventTypes: string[] };
 
+export type TWebhookEventContext = {
+  profiles: Map<string, { name: string | null; email: string | null }>;
+  course: { id: string; title: string | null; slug: string | null } | null;
+  exercise: { id: string; title: string | null } | null;
+  lesson: { id: string; title: string | null } | null;
+};
+
+export type TWebhookEventContextInput = {
+  profileIds: string[];
+  courseId?: string;
+  exerciseId?: string;
+  lessonId?: string;
+};
+
 export type TWebhookHealthTransition = 'degraded' | 'disabled' | null;
 
 export type TWebhookDeliveryRecord = {
@@ -288,6 +302,57 @@ export async function orgHasActiveWebhookEndpoint(organizationId: string, client
   } catch (error) {
     console.error('orgHasActiveWebhookEndpoint error:', error);
     throw new Error('Failed to check for active webhook endpoints');
+  }
+}
+
+/**
+ * Reads the names and titles an event payload shows next to its ids. Anything that no longer exists
+ * is returned as missing instead of failing.
+ */
+export async function getWebhookEventContext(
+  input: TWebhookEventContextInput,
+  client: DbOrTxClient = db
+): Promise<TWebhookEventContext> {
+  try {
+    const [profiles, course, exercise, lesson] = await Promise.all([
+      input.profileIds.length > 0
+        ? client
+            .select({ id: schema.profile.id, name: schema.profile.fullname, email: schema.profile.email })
+            .from(schema.profile)
+            .where(inArray(schema.profile.id, input.profileIds))
+        : [],
+      input.courseId
+        ? client
+            .select({ id: schema.course.id, title: schema.course.title, slug: schema.course.slug })
+            .from(schema.course)
+            .where(eq(schema.course.id, input.courseId))
+            .limit(1)
+        : [],
+      input.exerciseId
+        ? client
+            .select({ id: schema.exercise.id, title: schema.exercise.title })
+            .from(schema.exercise)
+            .where(eq(schema.exercise.id, input.exerciseId))
+            .limit(1)
+        : [],
+      input.lessonId
+        ? client
+            .select({ id: schema.lesson.id, title: schema.lesson.title })
+            .from(schema.lesson)
+            .where(eq(schema.lesson.id, input.lessonId))
+            .limit(1)
+        : []
+    ]);
+
+    return {
+      profiles: new Map(profiles.map((row) => [row.id, { name: row.name, email: row.email }])),
+      course: course[0] ?? null,
+      exercise: exercise[0] ?? null,
+      lesson: lesson[0] ?? null
+    };
+  } catch (error) {
+    console.error('getWebhookEventContext error:', error);
+    throw new Error('Failed to read webhook event details');
   }
 }
 
