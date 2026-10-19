@@ -33,8 +33,8 @@ export type TWebhookDeliveryStatus = (typeof WEBHOOK_DELIVERY_STATUSES)[number];
 export const WEBHOOK_ENDPOINT_HEALTH = ['healthy', 'degraded', 'disabled'] as const;
 export type TWebhookEndpointHealth = (typeof WEBHOOK_ENDPOINT_HEALTH)[number];
 
-export const WEBHOOK_MAX_ATTEMPTS = 6;
-export const WEBHOOK_RETRY_DELAYS_MS = [10_000, 60_000, 300_000, 1_800_000, 7_200_000] as const;
+export const WEBHOOK_MAX_ATTEMPTS = 3;
+export const WEBHOOK_RETRY_DELAYS_MS = [10_000, 60_000] as const;
 export const WEBHOOK_REQUEST_TIMEOUT_MS = 10_000;
 export const WEBHOOK_DEGRADED_FAILURE_THRESHOLD = 20;
 export const WEBHOOK_AUTO_DISABLE_FAILURE_THRESHOLD = 100;

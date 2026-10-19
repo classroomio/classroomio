@@ -86,7 +86,7 @@ Select **Redeliver** to send the same event again after you fix your server. The
 
 ## How failed deliveries are retried
 
-ClassroomIO tries a failed delivery up to six times: right away, then after 10 seconds, 1 minute, 5 minutes, 30 minutes, and 2 hours. After the last attempt the delivery is marked **Failed**. Redirects are not followed and count as failures.
+ClassroomIO tries a failed delivery up to three times: right away, then again after 10 seconds, and once more after 1 minute. After the last attempt the delivery is marked **Failed**. Redirects are not followed and count as failures.
 
 ## Pause, edit, or delete a webhook
 

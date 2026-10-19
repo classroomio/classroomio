@@ -320,7 +320,7 @@ export function verifyClassroomIoWebhook({ secret, timestamp, rawBody, signature
 ## Delivery and retries
 
 - Your endpoint must respond with any `2xx` status within **10 seconds**. Redirects are not followed and count as failures.
-- Failed deliveries are retried automatically, up to **6 attempts** in total: immediately, then after 10 seconds, 1 minute, 5 minutes, 30 minutes, and 2 hours. After the last attempt the delivery is marked as failed.
+- Failed deliveries are retried automatically, up to **3 attempts** in total: immediately, then after 10 seconds, and again after 1 minute. After the last attempt the delivery is marked as failed.
 - Deliveries are **at least once**. Use `X-Cio-Event-Id` (or `id` in the body) as an idempotency key so a retry never processes the same event twice.
 - Only one delivery to a given endpoint is in flight at a time, and the oldest due delivery is sent first. A delivery that is waiting to retry does not block newer events, so do not rely on strict ordering across retries. Use `createdAt` when order matters.
 - An endpoint shows as **Failing** after 20 consecutive failed deliveries and is **auto-disabled** after 100. Re-enable it from the dashboard once it is fixed. ClassroomIO emails your organization admins at both points, and the **Error rate (24h)** column shows how many recent deliveries failed. A webhook that is still retrying its first failed deliveries shows as **Retrying**.
