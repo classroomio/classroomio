@@ -69,7 +69,7 @@ export const ZCourseImportDraftLesson = z.object({
     .array(ZLessonVideoItem)
     .optional()
     .describe(
-      'Lesson videos as { type, link }, where type is youtube, vimeo, generic, upload or google_drive. Add new videos as youtube, vimeo or generic with a hosted URL; upload and google_drive entries come from existing lessons in a draft created from a live course, so send them back unchanged.'
+      'Lesson videos as { type, link }, where type is youtube, vimeo, generic, upload or google_drive. Add new videos as youtube, vimeo or generic with a hosted URL, and keep any upload or google_drive entries already in the draft unchanged.'
     )
 });
 export type TCourseImportDraftLesson = z.infer<typeof ZCourseImportDraftLesson>;
