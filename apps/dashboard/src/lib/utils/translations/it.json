@@ -4920,7 +4920,14 @@
       "table_last_used": "Ultimo usato",
       "scopes_label": "Ambiti:",
       "revoke_confirm": "Revocare questa chiave di automazione?",
-      "rotate_confirm": "Ruotare questa chiave di automazione?"
+      "rotate_confirm": "Ruotare questa chiave di automazione?",
+      "reveal": {
+        "description": "Copia subito questa chiave. Non verrà più mostrata.",
+        "copy": "Copia",
+        "copied": "Copiato",
+        "how_to_use": "Come utilizzare questa chiave",
+        "close": "Chiudi"
+      }
     },
     "mcp": {
       "page_subtitle": "Collega gli strumenti AI a ClassroomIO con chiavi con ambito organizzazione che puoi ruotare in qualsiasi momento.",
@@ -4937,7 +4944,6 @@
         "title": "Chiavi MCP",
         "description": "Queste chiavi autenticano l'organizzazione corrente quando un client MCP chiama ClassroomIO tramite `@classroomio/mcp`.",
         "generate": "Genera la chiave MCP",
-        "secret_once": "Questo segreto viene mostrato una volta. Copialo ora nel tuo client MCP.",
         "modal": {
           "title": "Crea chiave MCP",
           "description": "Scegli un nome per questa chiave MCP prima che venga generata.",
@@ -4945,7 +4951,8 @@
           "name_placeholder": "ClassroomIOOpenCode",
           "cancel": "Annulla",
           "save": "Crea chiave"
-        }
+        },
+        "reveal_title": "La tua nuova chiave MCP"
       },
       "setup": {
         "title": "Configurazione del cliente",
@@ -4963,7 +4970,6 @@
         "title": "Chiavi API",
         "description": "Queste chiavi autenticano l'organizzazione corrente quando si chiama l'API pubblica ClassroomIO.",
         "generate": "Genera chiave API",
-        "secret_once": "Questo segreto viene mostrato una volta. Copialo e conservalo in modo sicuro.",
         "empty_title": "Nessuna chiave API ancora",
         "empty_description": "Crea la prima chiave API con ambito organizzazione per utilizzare l'API pubblica ClassroomIO.",
         "modal": {
@@ -4973,7 +4979,8 @@
           "name_placeholder": "La mia integrazione API",
           "cancel": "Annulla",
           "save": "Crea chiave"
-        }
+        },
+        "reveal_title": "La tua nuova chiave API"
       },
       "setup": {
         "title": "Avvio rapido",

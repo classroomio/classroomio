@@ -4980,7 +4980,6 @@
         "title": "Claves MCP",
         "description": "Estas claves autentican la organización actual cuando un cliente MCP llama a ClassroomIO a través de `@classroomio/mcp`.",
         "generate": "Generar clave MCP",
-        "secret_once": "Este secreto se muestra una vez. Cópielo en su cliente MCP ahora.",
         "modal": {
           "title": "Crear clave MCP",
           "description": "Elige un nombre para esta clave MCP antes de generarla.",
@@ -4988,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Cancelar",
           "save": "Crear clave"
-        }
+        },
+        "reveal_title": "Tu nueva clave MCP"
       },
       "usage": {
         "title": "Uso y límites",
@@ -5008,7 +5008,6 @@
         "title": "Claves API",
         "description": "Estas claves autentican la organización actual al llamar a la API pública de ClassroomIO.",
         "generate": "Generar clave API",
-        "secret_once": "Este secreto se muestra una sola vez. Cópialo y guárdalo de forma segura.",
         "empty_title": "Aún no hay claves API",
         "empty_description": "Crea la primera clave API con ámbito de organización para usar la API pública de ClassroomIO.",
         "modal": {
@@ -5018,7 +5017,8 @@
           "name_placeholder": "Mi integración API",
           "cancel": "Cancelar",
           "save": "Crear clave"
-        }
+        },
+        "reveal_title": "Tu nueva clave API"
       },
       "setup": {
         "title": "Inicio rápido",
@@ -5042,7 +5042,14 @@
       "table_key": "clave",
       "table_status": "Estado",
       "table_created": "Creado",
-      "table_last_used": "último usado"
+      "table_last_used": "último usado",
+      "reveal": {
+        "description": "Copia esta clave ahora. No volverá a aparecer.",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "how_to_use": "Cómo usar esta clave",
+        "close": "Cerrar"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",

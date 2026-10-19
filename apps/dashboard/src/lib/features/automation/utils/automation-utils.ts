@@ -3,6 +3,9 @@ import { PUBLIC_API_BASE_URL } from '@cio/utils/openapi/public-api';
 
 const PUBLIC_API_SETUP_SECRET_PLACEHOLDER = '<paste-your-api-key>';
 
+export const MCP_DOCS_URL = 'https://classroomio.com/docs/mcp';
+export const PUBLIC_API_DOCS_URL = 'https://classroomio.com/docs/api';
+
 function getServerPath() {
   return 'npx -y @classroomio/mcp';
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { ApiAutomationPage } from '$features/automation/pages';
   import { automationApi } from '$features/automation/api/automation.svelte';
+  import { PUBLIC_API_DOCS_URL } from '$features/automation/utils/automation-utils';
   import { t } from '$lib/utils/functions/translations';
   import * as Page from '@cio/ui/base/page';
   import { Button } from '@cio/ui/base/button';
@@ -26,7 +27,7 @@
       <Page.Subtitle>{$t('automation.api.subtitle')}</Page.Subtitle>
     </Page.HeaderContent>
     <Page.Action>
-      <Button variant="outline" onclick={() => window.open('https://classroomio.com/docs/api', '_blank')}>
+      <Button variant="outline" href={PUBLIC_API_DOCS_URL} target="_blank" rel="noopener noreferrer">
         <ArrowUpRightIcon size={16} />
         {$t('automation.api.view_docs')}
       </Button>

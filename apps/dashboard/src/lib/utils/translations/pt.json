@@ -4980,7 +4980,6 @@
         "title": "Chaves MCP",
         "description": "Essas chaves autenticam a organização atual quando um cliente MCP chama ClassroomIO por meio de `@classroomio/mcp`.",
         "generate": "Gerar chave MCP",
-        "secret_once": "Este segredo é mostrado uma vez. Copie-o para o seu cliente MCP agora.",
         "modal": {
           "title": "Criar chave MCP",
           "description": "Escolha um nome para esta chave MCP antes de gerá-la.",
@@ -4988,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Cancelar",
           "save": "Criar chave"
-        }
+        },
+        "reveal_title": "Sua nova chave MCP"
       },
       "usage": {
         "title": "Uso e limites",
@@ -5008,7 +5008,6 @@
         "title": "Chaves de API",
         "description": "Essas chaves autenticam a organização atual ao chamar a API pública do ClassroomIO.",
         "generate": "Gerar chave de API",
-        "secret_once": "Este segredo é exibido apenas uma vez. Copie-o e armazene-o com segurança.",
         "empty_title": "Ainda não há chaves de API",
         "empty_description": "Crie a primeira chave de API da organização para usar a API pública do ClassroomIO.",
         "modal": {
@@ -5018,7 +5017,8 @@
           "name_placeholder": "Minha integração de API",
           "cancel": "Cancelar",
           "save": "Criar chave"
-        }
+        },
+        "reveal_title": "Sua nova chave de API"
       },
       "setup": {
         "title": "Início rápido",
@@ -5042,7 +5042,14 @@
       "table_key": "Chave",
       "table_status": "Status",
       "table_created": "Criado",
-      "table_last_used": "Usado pela última vez"
+      "table_last_used": "Usado pela última vez",
+      "reveal": {
+        "description": "Copie esta chave agora. Ela não será exibida novamente.",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "how_to_use": "Como usar esta chave",
+        "close": "Fechar"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",

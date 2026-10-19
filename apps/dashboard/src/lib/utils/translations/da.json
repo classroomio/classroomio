@@ -4980,7 +4980,6 @@
         "title": "MCP nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når en MCP-klient ringer til ClassroomIO gennem `@classroomio/mcp`.",
         "generate": "Generer MCP-nøgle",
-        "secret_once": "Denne hemmelighed vises én gang. Kopier det til din MCP-klient nu.",
         "modal": {
           "title": "Opret MCP-nøgle",
           "description": "Vælg et navn til denne MCP-nøgle, før den genereres.",
@@ -4988,7 +4987,8 @@
           "name_placeholder": "ClassroomIO OpenCode",
           "cancel": "Annuller",
           "save": "Opret nøgle"
-        }
+        },
+        "reveal_title": "Din nye MCP-nøgle"
       },
       "usage": {
         "title": "Anvendelse og grænser",
@@ -5008,7 +5008,6 @@
         "title": "API-nøgler",
         "description": "Disse nøgler autentificerer den aktuelle organisation, når der kaldes til ClassroomIOs offentlige API.",
         "generate": "Generer API-nøgle",
-        "secret_once": "Denne hemmelighed vises kun én gang. Kopiér den og opbevar den sikkert.",
         "empty_title": "Ingen API-nøgler endnu",
         "empty_description": "Opret den første organisationsnøgle til API for at bruge ClassroomIOs offentlige API.",
         "modal": {
@@ -5018,7 +5017,8 @@
           "name_placeholder": "Min API-integration",
           "cancel": "Annuller",
           "save": "Opret nøgle"
-        }
+        },
+        "reveal_title": "Din nye API-nøgle"
       },
       "setup": {
         "title": "Hurtig start",
@@ -5042,7 +5042,14 @@
       "table_key": "Nøgle",
       "table_status": "Status",
       "table_created": "Oprettet",
-      "table_last_used": "Sidst brugt"
+      "table_last_used": "Sidst brugt",
+      "reveal": {
+        "description": "Kopiér denne nøgle nu. Den vises ikke igen.",
+        "copy": "Kopiér",
+        "copied": "Kopieret",
+        "how_to_use": "Sådan bruger du denne nøgle",
+        "close": "Luk"
+      }
     },
     "clients": {
       "claude_code": "Claude Code",

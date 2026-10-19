@@ -4920,7 +4920,14 @@
       "table_last_used": "Last used",
       "scopes_label": "Scopes:",
       "revoke_confirm": "Revoke this automation key?",
-      "rotate_confirm": "Rotate this automation key?"
+      "rotate_confirm": "Rotate this automation key?",
+      "reveal": {
+        "description": "Copy this key now. It won't be shown again.",
+        "copy": "Copy",
+        "copied": "Copied",
+        "how_to_use": "How to use this key",
+        "close": "Close"
+      }
     },
     "mcp": {
       "page_subtitle": "Connect AI tools to ClassroomIO with org-scoped keys you can rotate anytime.",
@@ -4937,7 +4944,7 @@
         "title": "MCP keys",
         "description": "These keys authenticate the current organization when an MCP client calls ClassroomIO through `@classroomio/mcp`.",
         "generate": "Generate MCP key",
-        "secret_once": "This secret is shown once. Copy it into your MCP client now.",
+        "reveal_title": "Your new MCP key",
         "modal": {
           "title": "Create MCP key",
           "description": "Choose a name for this MCP key before it is generated.",
@@ -4963,7 +4970,7 @@
         "title": "API keys",
         "description": "These keys authenticate the current organization when calling the ClassroomIO public API.",
         "generate": "Generate API key",
-        "secret_once": "This secret is shown once. Copy it and store it securely.",
+        "reveal_title": "Your new API key",
         "empty_title": "No API keys yet",
         "empty_description": "Create the first org-scoped API key to use the ClassroomIO public API.",
         "modal": {
