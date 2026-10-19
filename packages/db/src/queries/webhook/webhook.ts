@@ -314,7 +314,7 @@ export async function getWebhookEventContext(
   client: DbOrTxClient = db
 ): Promise<TWebhookEventContext> {
   try {
-    const [profiles, course, exercise, lesson] = await Promise.all([
+    const [profileResult, courseResult, exerciseResult, lessonResult] = await Promise.allSettled([
       input.profileIds.length > 0
         ? client
             .select({ id: schema.profile.id, name: schema.profile.fullname, email: schema.profile.email })
@@ -343,6 +343,24 @@ export async function getWebhookEventContext(
             .limit(1)
         : []
     ]);
+
+    const failedLookups = [
+      ['profiles', profileResult],
+      ['course', courseResult],
+      ['exercise', exerciseResult],
+      ['lesson', lessonResult]
+    ] as const;
+
+    for (const [lookup, result] of failedLookups) {
+      if (result.status === 'rejected') {
+        console.error('getWebhookEventContext lookup error:', { lookup, error: result.reason });
+      }
+    }
+
+    const profiles = profileResult.status === 'fulfilled' ? profileResult.value : [];
+    const course = courseResult.status === 'fulfilled' ? courseResult.value : [];
+    const exercise = exerciseResult.status === 'fulfilled' ? exerciseResult.value : [];
+    const lesson = lessonResult.status === 'fulfilled' ? lessonResult.value : [];
 
     return {
       profiles: new Map(profiles.map((row) => [row.id, { name: row.name, email: row.email }])),

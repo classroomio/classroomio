@@ -80,7 +80,7 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
 
 ## Event reference
 
-Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `learner` and `actor` (`id`, `name`, `email`), `course` (`id`, `title`, `slug`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`. These details are a snapshot taken when the event happened, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
+Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `learner` and `actor` (`id`, `name`, `email`), `course` (`id`, `title`, `slug`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
 
 ### Team invites
 
