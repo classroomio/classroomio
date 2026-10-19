@@ -4498,7 +4498,10 @@ export const webhookEvent = pgTable(
     payload: jsonb('payload').notNull().$type<Record<string, unknown>>(),
     createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' }).defaultNow().notNull()
   },
-  (table) => [index('idx_webhook_event_org_created_at').on(table.organizationId, table.createdAt)]
+  (table) => [
+    index('idx_webhook_event_created_at').on(table.createdAt),
+    index('idx_webhook_event_org_created_at').on(table.organizationId, table.createdAt)
+  ]
 );
 
 export const webhookDelivery = pgTable(

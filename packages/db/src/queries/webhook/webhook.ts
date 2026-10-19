@@ -276,6 +276,21 @@ export async function countWebhookEndpoints(organizationId: string, client: DbOr
   }
 }
 
+export async function orgHasActiveWebhookEndpoint(organizationId: string, client: DbOrTxClient = db): Promise<boolean> {
+  try {
+    const [row] = await client
+      .select({ id: schema.webhookEndpoint.id })
+      .from(schema.webhookEndpoint)
+      .where(and(eq(schema.webhookEndpoint.organizationId, organizationId), eq(schema.webhookEndpoint.isActive, true)))
+      .limit(1);
+
+    return Boolean(row);
+  } catch (error) {
+    console.error('orgHasActiveWebhookEndpoint error:', error);
+    throw new Error('Failed to check for active webhook endpoints');
+  }
+}
+
 export async function listActiveEndpointsForEvent(
   organizationId: string,
   eventType: string,
