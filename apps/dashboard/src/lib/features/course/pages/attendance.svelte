@@ -29,7 +29,7 @@
       : courseApi.group.people.filter((person) => !!person.profile && Number(person.roleId) === ROLE.STUDENT)
   );
 
-  const canManageAttendance = $derived(!$isOrgStudent);
+  const canManageAttendance = $derived($isOrgStudent === false);
 
   let searchValue = $state('');
   let currentPage = $state(1);
@@ -71,7 +71,7 @@
   }
 
   async function handleAttendanceChange(e: any, student: CourseMember, lesson: CourseContentItem) {
-    if ($isOrgStudent) return;
+    if (!canManageAttendance) return;
 
     const isPresent = e.target.checked;
 
@@ -172,7 +172,7 @@
               <Table.Cell class="text-center">
                 <div class="flex justify-center">
                   <Checkbox
-                    disabled={$isOrgStudent}
+                    disabled={!canManageAttendance}
                     checked={getAttendanceStatus(student.id, lesson.id)}
                     onCheckedChange={(checked) => {
                       const e = { target: { checked } };
