@@ -137,6 +137,7 @@ services:
       TRUSTED_ORIGINS: ${TRUSTED_ORIGINS:-}
       DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-classroomio}
       REDIS_URL: redis://redis:6379
+      PUBLIC_IS_SELFHOSTED: ${PUBLIC_IS_SELFHOSTED:-true}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-docker-local-client-id}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-docker-local-client-secret}
       SMTP_HOST: ${SMTP_HOST:-}
