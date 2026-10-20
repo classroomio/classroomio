@@ -1,6 +1,16 @@
 ClassroomIO Plugin Publishing Research
 =======================================
 
+Decision status
+---------------
+
+The earlier quarantine-upload recommendation in this research was superseded
+by the PR-first release model. ClassroomIO now reviews plugin source through
+pull requests to the official `classroomio-plugins` repository. Only protected
+post-merge CI may build production artifacts, upload immutable assets, and
+register a catalog release. Contributors do not receive upload credentials or
+a `plugin:publish` token.
+
 Purpose
 -------
 
@@ -350,39 +360,38 @@ Figma and Shopify abstract the artifact storage more completely. All four
 patterns are compatible with a private quarantine bucket internally.
 
 
-Recommended ClassroomIO model
------------------------------
+Adopted ClassroomIO model
+-------------------------
 
 Public/community plugin flow
 
-  Developer project
-      -> npm run build
-      -> npm run pack
-      -> npm run publish
-      -> submission intent
-      -> short-lived presigned upload to quarantine R2
-      -> automated validation
-      -> reviewer dashboard
-      -> reject or approve
-      -> promote immutable digest to production R2
-      -> publish catalog entry
+  Contributor fork
+      -> plugin source and manifest
+      -> pull request to classroomio-plugins
+      -> untrusted checks, tests, package validation, and reviewer artifact
+      -> source review and approval
+      -> merge to protected main
+      -> protected CI rebuilds and proves the digest is deterministic
+      -> protected CI uploads immutable digest-qualified assets to production R2
+      -> protected CI registers the release and its provenance in ClassroomIO
 
-Internal plugin flow
+Local development flow
 
-  Internal developer
+  Plugin developer
       -> npm run build
-      -> npm run pack
-      -> npm run seed -- --org <organization-id>
+      -> pnpm run pack
+      -> pnpm run seed -- <plugin-path> --org <organization-id>
       -> organization-scoped development installation
 
-Internal plugins should have a separate trust boundary and should not need the
-public marketplace review queue, similar to Figma's internal plugin path.
+Local seed uses an organization API key with `plugin:development` scope. It is
+not a publication mechanism and cannot create a public catalog release.
 
-Optional source repository
+Canonical source repository
 
-ClassroomIO should support an optional repository URL in the manifest. It can
-be encouraged, or required for public/community plugins later, but it should
-not replace artifact submission.
+The official `classroomio-plugins` repository is the single source of reviewed
+production plugin code. A plugin manifest may still link to the original
+author's homepage, issue tracker, or upstream project, but the reviewed source
+and lockfile merged into the official repository are authoritative.
 
 Suggested metadata:
 
@@ -397,9 +406,9 @@ Suggested metadata:
     }
   }
 
-The repository provides source transparency, issue tracking, documentation,
-community contribution, CI, and provenance. The uploaded artifact remains the
-exact package ClassroomIO approves and serves.
+Protected CI packages the exact reviewed merge commit. Pull-request artifacts
+exist only for reviewer inspection and expire; contributors never upload to
+the production bucket.
 
 Recommended provenance record
 
@@ -408,61 +417,46 @@ For stronger supply-chain security, store the following with every submission:
   - Artifact SHA-256 digest
   - Repository URL
   - Git commit SHA
-  - Release tag
+  - Protected workflow run URL
   - Build tool and SDK versions
   - Dependency lockfile hash
   - Automated validation results
-  - Reviewer identity and timestamp
+  - Review history in the merged pull request
 
-This gives ClassroomIO the benefits of GitHub without making review depend on a
-mutable branch.
+This ties every production digest to reviewed source and a protected workflow.
 
 
 Recommended ClassroomIO policy
 ------------------------------
 
-Community plugins should require:
+Community plugins require:
 
-  - ClassroomIO account
-  - Scoped `plugin:publish` token
+  - A pull request to the official plugin repository
   - Valid manifest
-  - Immutable artifact upload
+  - Committed dependency lockfile and exact public dependency versions
   - Automated validation
-  - Human review
+  - Human source review
   - Support contact
   - Privacy/data policy
-  - Optional or encouraged public source repository
+  - A version bump for every changed release
 
-Internal plugins should allow:
+Local development requires:
 
   - Organization-scoped credentials
-  - `npm run seed -- --org <organization-id>`
-  - No public review queue
-  - Organization-admin approval or internal trust policy
+  - `plugin:development` scope
+  - `pnpm run seed -- <plugin-path> --org <organization-id>`
+  - An organization administrator
 
-Recommended public review states:
-
-  draft
-  uploading
-  validating
-  in_review
-  changes_requested
-  rejected
-  approved
-  published
-  withdrawn
-
-Do not use GitHub pull requests as the public submission mechanism. A PR-only
-model would force community developers into the ClassroomIO repository,
-review source rather than the exact built artifact, couple publishing to repo
-permissions, and make private/internal distribution awkward.
+There is no contributor-facing publish command, public upload credential,
+quarantine bucket, reviewer queue, submission endpoint, or `plugin:publish`
+scope in the adopted model.
 
 
 Bottom line
 -----------
 
-The quarantine-bucket workflow is consistent with established plugin and app
-marketplaces. ClassroomIO should accept an immutable artifact through a
-presigned upload, review that exact artifact, optionally link it to a source
-repository, and promote only the approved digest to the production CDN.
-
+Other platforms commonly accept built artifacts through a marketplace UI or
+API. ClassroomIO deliberately uses a different, source-first model at its
+current scale: review a pull request, rebuild it in protected CI, publish only
+digest-qualified immutable assets, and record the commit and workflow run with
+the catalog version.
