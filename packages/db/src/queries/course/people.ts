@@ -15,7 +15,7 @@ import {
 } from '@cio/utils/validation/course';
 import { db } from '@db/drizzle';
 import { isActivityCompletedSql, isExerciseCompletedSql } from '@db/queries/course/progression';
-import { deleteStudentCourseProgress } from '@db/queries/course/reset-progress';
+import { deleteStudentCourseProgress, type ResetStudentCourseProgressHooks } from '@db/queries/course/reset-progress';
 
 export type CourseMemberWithProfile = TGroupmember & {
   profile: {
@@ -546,7 +546,11 @@ export async function updateCourseMember(
  * @param memberId Member ID
  * @returns Deleted member or null if not found
  */
-export async function deleteCourseMember(courseId: string, memberId: string): Promise<TGroupmember | null> {
+export async function deleteCourseMember(
+  courseId: string,
+  memberId: string,
+  hooks: ResetStudentCourseProgressHooks = {}
+): Promise<TGroupmember | null> {
   try {
     // Verify member belongs to course
     const member = await getCourseMember(courseId, memberId);
@@ -556,7 +560,11 @@ export async function deleteCourseMember(courseId: string, memberId: string): Pr
 
     return await db.transaction(async (tx) => {
       if (member.roleId === ROLE.STUDENT && member.profileId) {
-        await deleteStudentCourseProgress(tx, { courseId, groupMemberId: memberId, profileId: member.profileId });
+        await deleteStudentCourseProgress(
+          tx,
+          { courseId, groupMemberId: memberId, profileId: member.profileId },
+          hooks
+        );
       }
 
       await tx.delete(schema.questionAnswer).where(eq(schema.questionAnswer.groupMemberId, memberId));

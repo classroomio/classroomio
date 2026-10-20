@@ -19,6 +19,7 @@ import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
 import { deleteActivityCompletions, getActivitiesByCourseId } from '@cio/db/queries/activity/activity';
 import { getScormActivityStatsForProfile } from '@cio/db/queries/scorm/report';
+import { resetActivityLearnerState } from '@cio/core/services/activity/providers';
 
 import { ROLE } from '@cio/utils/constants';
 import type {
@@ -558,6 +559,7 @@ export async function resetCourseCompliance(courseId: string, payload: TCourseCo
 
       if (activityIds.length > 0) {
         await deleteActivityCompletions(activityIds, profileId, tx);
+        await resetActivityLearnerState(activityIds, profileId, tx);
       }
 
       const existingRecord = recordByProfileId.get(profileId);
