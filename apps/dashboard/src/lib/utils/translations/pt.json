@@ -6271,7 +6271,8 @@
         "name_placeholder": "ex.: Desenvolvimento Web Fullstack",
         "name_required": "O nome da trilha é obrigatório",
         "open_link": "Abrir link em nova guia",
-        "setup_landing_for_link": "Configure a landing page para obter o link da trilha"
+        "setup_landing_for_link": "Configure a landing page para obter o link da trilha",
+        "slug_taken": "Esse link já está sendo usado por outro percurso de aprendizagem."
       },
       "progression": {
         "desc": "Controle se os alunos podem acessar todos os cursos ou devem concluí-los em ordem.",
@@ -6345,7 +6346,8 @@
       "reordered": "Ordem do curso atualizada",
       "settings_saved": "Configurações do caminho de aprendizagem atualizadas",
       "tutor_removed": "Tutor removido da trilha",
-      "updated": "Caminho de aprendizagem atualizado"
+      "updated": "Caminho de aprendizagem atualizado",
+      "setup_open_failed": "Não foi possível abrir a configuração. Tente novamente."
     },
     "status": {
       "active": "Ativo",

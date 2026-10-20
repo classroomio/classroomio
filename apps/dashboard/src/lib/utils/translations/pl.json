@@ -6271,7 +6271,8 @@
         "name_placeholder": "np. Programowanie Fullstack",
         "name_required": "Nazwa ścieżki jest wymagana",
         "open_link": "Otwórz link w nowej karcie",
-        "setup_landing_for_link": "Skonfiguruj stronę docelową, aby uzyskać link do ścieżki"
+        "setup_landing_for_link": "Skonfiguruj stronę docelową, aby uzyskać link do ścieżki",
+        "slug_taken": "Ten link jest już używany w innej ścieżce edukacyjnej."
       },
       "progression": {
         "desc": "Określ, czy uczniowie mają dostęp do wszystkich kursów, czy muszą ukończyć je po kolei.",
@@ -6345,7 +6346,8 @@
       "reordered": "Zaktualizowano kolejność kursów",
       "settings_saved": "Ustawienia ścieżki nauki zaktualizowane",
       "tutor_removed": "Usunięto tutora ze ścieżki",
-      "updated": "Zaktualizowano ścieżkę edukacyjną"
+      "updated": "Zaktualizowano ścieżkę edukacyjną",
+      "setup_open_failed": "Nie udało się otworzyć konfiguracji. Spróbuj ponownie."
     },
     "status": {
       "active": "Aktywne",

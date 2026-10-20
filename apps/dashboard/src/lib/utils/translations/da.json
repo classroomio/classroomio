@@ -6271,7 +6271,8 @@
         "name_placeholder": "f.eks. Fullstack Webudvikling",
         "name_required": "Stinavn er påkrævet",
         "open_link": "Åbn link i ny fane",
-        "setup_landing_for_link": "Opsæt landingsside for at få stilink"
+        "setup_landing_for_link": "Opsæt landingsside for at få stilink",
+        "slug_taken": "Det link bruges allerede af en anden læringssti."
       },
       "progression": {
         "desc": "Styr, om elever kan få adgang til alle kurser eller skal gennemføre dem i rækkefølge.",
@@ -6345,7 +6346,8 @@
       "reordered": "Kursusrækkefølgen er opdateret",
       "settings_saved": "Læringsstiens indstillinger er opdateret",
       "tutor_removed": "Underviser fjernet fra forløbet",
-      "updated": "Læringsvej opdateret"
+      "updated": "Læringsvej opdateret",
+      "setup_open_failed": "Kunne ikke åbne opsætningen. Prøv igen."
     },
     "status": {
       "active": "Aktiv",

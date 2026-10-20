@@ -6271,7 +6271,8 @@
         "name_placeholder": "Schreiben Sie hier den Pfadtitel",
         "name_required": "Pfadname ist erforderlich",
         "open_link": "Link in neuem Tab öffnen",
-        "setup_landing_for_link": "Richten Sie die Landingpage ein, um den Pfadlink zu erhalten"
+        "setup_landing_for_link": "Richten Sie die Landingpage ein, um den Pfadlink zu erhalten",
+        "slug_taken": "Dieser Link wird bereits von einem anderen Lernpfad genutzt."
       },
       "progression": {
         "desc": "Kontrollieren Sie, ob Studierende auf alle Kurse zugreifen können oder diese der Reihe nach absolvieren müssen.",
@@ -6345,7 +6346,8 @@
       "reordered": "Kursreihenfolge aktualisiert",
       "settings_saved": "Lernpfadeinstellungen aktualisiert",
       "tutor_removed": "Tutor aus dem Pfad entfernt",
-      "updated": "Lernpfad aktualisiert"
+      "updated": "Lernpfad aktualisiert",
+      "setup_open_failed": "Setup konnte nicht geöffnet werden. Bitte versuchen Sie es erneut."
     },
     "status": {
       "active": "Aktiv",
