@@ -817,6 +817,7 @@
       "status": {
         "ready": "Listo",
         "already_member": "Ya en la audiencia",
+        "invite_resent": "Invitación reenviada",
         "invalid_email": "Correo electrónico no válido",
         "duplicate_in_file": "Duplicado en el archivo",
         "over_seat_limit": "No quedan plazas disponibles",

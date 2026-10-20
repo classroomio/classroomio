@@ -817,6 +817,7 @@
       "status": {
         "ready": "Prêt",
         "already_member": "Déjà dans le public",
+        "invite_resent": "Invitation renvoyée",
         "invalid_email": "Adresse e-mail invalide",
         "duplicate_in_file": "Duplicata dans le fichier",
         "over_seat_limit": "Plus de places disponibles",

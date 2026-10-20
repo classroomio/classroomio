@@ -4614,6 +4614,7 @@
       "status": {
         "ready": "Ready",
         "already_member": "Already in audience",
+        "invite_resent": "Invite resent",
         "invalid_email": "Invalid email",
         "duplicate_in_file": "Duplicate in file",
         "is_staff": "Staff, not a student",

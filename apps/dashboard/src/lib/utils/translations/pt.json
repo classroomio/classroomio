@@ -817,6 +817,7 @@
       "status": {
         "ready": "Pronto",
         "already_member": "Já na plateia",
+        "invite_resent": "Convite reenviado",
         "invalid_email": "E-mail inválido",
         "duplicate_in_file": "Duplicado no arquivo",
         "over_seat_limit": "Sem vagas disponíveis",

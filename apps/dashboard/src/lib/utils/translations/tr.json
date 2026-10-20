@@ -4608,6 +4608,7 @@
       "status": {
         "ready": "Ready",
         "already_member": "Zaten hedef kitlede",
+        "invite_resent": "Davet yeniden gönderildi",
         "invalid_email": "Geçersiz e-posta",
         "duplicate_in_file": "Dosyada kopyala",
         "is_staff": "Personel, öğrenci değil",

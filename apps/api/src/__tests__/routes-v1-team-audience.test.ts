@@ -89,6 +89,7 @@ const routes: Array<[string, string, unknown, string, number, number]> = [
   ['PUT', '/team/7', { roleId: 1 }, 'update_team_member', 1, 200],
   ['GET', '/audience', undefined, 'list_audience_members', 0, 200],
   ['POST', '/audience', { email: 'new@example.com' }, 'add_audience_member', 1, 201],
+  ['POST', '/audience', { emails: ['a@example.com', 'b@example.com'] }, 'add_audience_member', 1, 201],
   [
     'POST',
     '/audience/assign-courses',
@@ -219,13 +220,16 @@ describe('team and audience routes through the v1 router', () => {
     ['GET', '/team?limit=101', undefined],
     ['PUT', '/audience/7', {}],
     ['PUT', '/audience/7', { sendEmail: false }],
-    ['PUT', '/audience/7', { name: 'Al' }]
+    ['PUT', '/audience/7', { name: 'Al' }],
+    ['POST', '/audience', {}],
+    ['POST', '/audience', { email: 'a@example.com', emails: ['b@example.com'] }]
   ])('%s %s with %j is a 400 that is not metered', async (method, path, body) => {
     const response = await request(method, path, body);
 
     expect(response.status).toBe(400);
     expect(mocks.team.updateTeamMemberService).not.toHaveBeenCalled();
     expect(mocks.audience.updateAudienceService).not.toHaveBeenCalled();
+    expect(mocks.audience.createAudienceService).not.toHaveBeenCalled();
     expect(mocks.complete).not.toHaveBeenCalled();
     expect(mocks.release).toHaveBeenCalledWith('reservation-id');
   });
