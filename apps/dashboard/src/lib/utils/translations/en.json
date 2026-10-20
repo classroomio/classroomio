@@ -3892,6 +3892,17 @@
             "empty_title": "No package uploaded",
             "empty_description": "Upload a SCORM package to start viewing and testing it.",
             "upload_package": "Upload package",
+            "modal_title": "Add package",
+            "tabs": {
+              "upload": "Upload",
+              "library": "Library"
+            },
+            "library_search": "Search library",
+            "library_search_action": "Search",
+            "library_loading": "Loading packages…",
+            "library_empty": "No packages found in library",
+            "library_attach": "Attach",
+            "library_attached_success": "Package attached successfully.",
             "sequencing_ordered": "This package defines a module order: each module unlocks as the previous one completes. Other sequencing rules, like pre-tests and rollup, are ignored.",
             "sequencing_unordered": "This package defines a module order, but learners can currently open modules in any order. Set Module order to “In sequence” in Settings to enforce it. Other sequencing rules, like pre-tests and rollup, are ignored.",
             "prerequisites_warning": "This package gates modules behind prerequisites. They are enforced as sequential module order; finer prerequisite rules are ignored."

@@ -3818,7 +3818,18 @@
             "remove_package": "Rimuovi pacchetto",
             "launchable_count": "{count, plural, one {# elemento avviabile} other {# elementi avviabili}}",
             "drop_hint": "Fino a {size}. Mantieni questa pagina aperta finché il pacchetto non viene allegato.",
-            "prerequisites_warning": "Questo pacchetto limita l'accesso ai moduli in base a prerequisiti. L'ordine di esecuzione dei moduli è sequenziale; le regole di prerequisito più specifiche vengono ignorate."
+            "prerequisites_warning": "Questo pacchetto limita l'accesso ai moduli in base a prerequisiti. L'ordine di esecuzione dei moduli è sequenziale; le regole di prerequisito più specifiche vengono ignorate.",
+            "modal_title": "Aggiungi pacchetto",
+            "library_search": "Cerca nella biblioteca",
+            "library_search_action": "Ricerca",
+            "library_loading": "Caricamento dei pacchetti in corso…",
+            "library_empty": "Nessun pacchetto trovato nella libreria",
+            "library_attach": "Allegare",
+            "library_attached_success": "Pacchetto allegato correttamente.",
+            "tabs": {
+              "upload": "Caricamento",
+              "library": "Biblioteca"
+            }
           },
           "gating": {
             "title": "La creazione di pacchetti SCORM è in pausa.",

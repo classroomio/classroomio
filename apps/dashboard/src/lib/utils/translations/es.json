@@ -3053,7 +3053,18 @@
             "remove_package": "Eliminar paquete",
             "launchable_count": "{count, plural, one {# elemento ejecutable} other {# elementos ejecutables}}",
             "drop_hint": "Hasta {size}. Mantenga esta página abierta hasta que se adjunte el paquete.",
-            "prerequisites_warning": "Este paquete restringe el acceso a los módulos mediante requisitos previos. Estos se aplican en un orden secuencial; las reglas de requisitos previos más específicas se ignoran."
+            "prerequisites_warning": "Este paquete restringe el acceso a los módulos mediante requisitos previos. Estos se aplican en un orden secuencial; las reglas de requisitos previos más específicas se ignoran.",
+            "modal_title": "Agregar paquete",
+            "library_search": "Buscar en la biblioteca",
+            "library_search_action": "Buscar",
+            "library_loading": "Cargando paquetes…",
+            "library_empty": "No se encontraron paquetes en la biblioteca.",
+            "library_attach": "Adjuntar",
+            "library_attached_success": "El paquete se adjuntó correctamente.",
+            "tabs": {
+              "upload": "Subir",
+              "library": "Biblioteca"
+            }
           },
           "gating": {
             "title": "La creación de contenido SCORM está en pausa.",
