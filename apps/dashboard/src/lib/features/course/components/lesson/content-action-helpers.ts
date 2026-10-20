@@ -38,16 +38,19 @@ function normalizeErrors(errors: CourseApiErrorMap): Record<string, string> {
   return entries.length ? Object.fromEntries(entries) : {};
 }
 
-function buildContentPayload(item: ContentActionItem, overrides: Record<string, unknown> = {}) {
+function buildContentPayload(item: ContentActionItem, overrides: Record<string, unknown> = {}, omitEmptyTitle = false) {
   const normalizedSectionId = item.sectionId === '' ? null : item.sectionId;
-
-  return {
+  const payload: Record<string, unknown> = {
     title: item.title || '',
     isUnlocked: item.isUnlocked ?? undefined,
     sectionId: normalizedSectionId ?? undefined,
     order: item.order ?? undefined,
     ...overrides
   };
+
+  if (omitEmptyTitle && !item.title) delete payload.title;
+
+  return payload;
 }
 
 export async function toggleLock({
@@ -64,7 +67,7 @@ export async function toggleLock({
   activityApi: ActivityApi;
 }): Promise<Record<string, string>> {
   item.isUnlocked = !(item.isUnlocked ?? false);
-  const payload = buildContentPayload(item, { order: undefined });
+  const payload = buildContentPayload(item, { order: undefined }, item.type === ContentType.Activity);
 
   switch (item.type) {
     case ContentType.Exercise:

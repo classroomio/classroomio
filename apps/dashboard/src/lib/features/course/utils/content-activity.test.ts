@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ContentType } from '@cio/utils/constants/content';
 import {
+  getContentEditRoute,
   getContentItemsProgress,
   getContentRoute,
   getCourseProgress,
@@ -57,6 +58,12 @@ describe('activities in shared content utilities', () => {
   it('routes an activity to its page', () => {
     expect(getContentRoute('course-1', { id: 'activity-1', type: ContentType.Activity })).toBe(
       '/courses/course-1/activities/activity-1'
+    );
+  });
+
+  it('routes an activity ready to edit with mode=edit', () => {
+    expect(getContentEditRoute('course-1', { id: 'activity-1', type: ContentType.Activity })).toBe(
+      '/courses/course-1/activities/activity-1?mode=edit'
     );
   });
 

@@ -626,26 +626,39 @@ export function buildPlayerUiState(
   const currentUnit = currentIndex >= 0 ? input.units[currentIndex] : null;
   const timeLimit = formatTimeLimit(currentUnit?.maxTimeAllowed);
   const completedCount = input.units.filter((unit) => unit.completed).length;
+  const units = input.units.map(({ identifier, title, completed, locked }) => ({
+    identifier,
+    title,
+    completed,
+    locked
+  }));
+  const currentIdentifier = currentUnit ? currentUnit.identifier : null;
+  const positionLabel = currentUnit
+    ? label('module_position', { current: currentIndex + 1, total: input.units.length })
+    : '';
+  const completeLabel = label('modules_complete', { complete: completedCount, total: input.units.length });
+  const timeLimitLabel = timeLimit ? label('time_limit', { time: timeLimit }) : '';
+  const labels: PlayerUiLabels = {
+    previous: label('prev_module'),
+    next: label('next_module'),
+    menu: label('module_menu'),
+    position: positionLabel,
+    complete: completeLabel,
+    locked: label('module_locked'),
+    exitFullscreen: label('exit_fullscreen'),
+    timeLimit: timeLimitLabel,
+    loading: label('loading'),
+    didNotConnect: label('no_connection_title'),
+    loadFailed: label('load_failed_title'),
+    videoFullscreenHint: label('fullscreen_video_hint'),
+    dismiss: label('dismiss')
+  };
 
   return {
-    units: input.units.map(({ identifier, title, completed, locked }) => ({ identifier, title, completed, locked })),
-    currentIdentifier: currentUnit ? currentUnit.identifier : null,
+    units,
+    currentIdentifier,
     timeLimit,
-    labels: {
-      previous: label('prev_module'),
-      next: label('next_module'),
-      menu: label('module_menu'),
-      position: currentUnit ? label('module_position', { current: currentIndex + 1, total: input.units.length }) : '',
-      complete: label('modules_complete', { complete: completedCount, total: input.units.length }),
-      locked: label('module_locked'),
-      exitFullscreen: label('exit_fullscreen'),
-      timeLimit: timeLimit ? label('time_limit', { time: timeLimit }) : '',
-      loading: label('loading'),
-      didNotConnect: label('no_connection_title'),
-      loadFailed: label('load_failed_title'),
-      videoFullscreenHint: label('fullscreen_video_hint'),
-      dismiss: label('dismiss')
-    },
+    labels,
     theme: input.theme
   };
 }

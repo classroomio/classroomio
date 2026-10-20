@@ -26,7 +26,7 @@
   import LearnerAttemptsSheet from '$features/course/components/activity/learner-attempts-sheet.svelte';
   import PackageDetails from '$features/course/components/activity/package-details.svelte';
   import PackageSettings from '$features/course/components/activity/package-settings.svelte';
-  import PackageUpload from '$features/course/components/activity/package-upload.svelte';
+  import AddPackageModal from '$features/course/components/activity/add-package-modal.svelte';
   import ActivityPlayer from '$features/course/components/activity/activity-player.svelte';
   import ActivityPageEditHeader from '$features/course/components/activity/activity-page-edit-header.svelte';
   import ActivityVersionHistory from '$features/course/components/activity/activity-version-history.svelte';
@@ -66,7 +66,8 @@
   );
 
   let currentTab = $state('package');
-  let replaceMode = $state<'upgrade' | 'swap' | null>(null);
+  let addPackageModalOpen = $state(false);
+  let addPackageModalMode = $state<'attach' | 'upgrade' | 'swap'>('attach');
   let settingsDirty = $state(false);
   let settingsSaving = $state(false);
   let settingsPanel = $state<PackageSettings | null>(null);
@@ -90,6 +91,7 @@
   let savingTitle = $state(false);
   let savingInstructions = $state(false);
   let hasUnsavedChanges = $state(false);
+  let resultsRefreshKey = $state(0);
 
   const HISTORY_PARAM = 'history';
   const VERSION_PARAM = 'version';
@@ -133,8 +135,12 @@
     if (!organizationId || !profileId || !courseId || !activityId) return;
 
     untrack(() => {
-      void courseApi.refreshCourse(courseId, profileId);
-      void activityApi.get(courseId, activityId);
+      if (courseApi.course?.id !== courseId) {
+        void courseApi.refreshCourse(courseId, profileId);
+      }
+      if (activityApi.activity?.id !== activityId) {
+        void activityApi.get(courseId, activityId);
+      }
     });
   });
 
@@ -143,7 +149,8 @@
       loadedActivityId = activityId;
       activityApi.launchResult = null;
       syncedActivityId = null;
-      replaceMode = null;
+      addPackageModalOpen = false;
+      addPackageModalMode = 'attach';
       deleteOpen = false;
       removeOpen = false;
       swapOpen = false;
@@ -251,7 +258,10 @@
 
     savingInstructions = true;
     try {
-      await activityApi.update(courseId, activityId, { instructions });
+      const updated = await activityApi.update(courseId, activityId, { instructions });
+      if (updated && 'instructions' in updated) {
+        instructions = (updated.instructions as string | null) ?? instructions;
+      }
     } finally {
       savingInstructions = false;
     }
@@ -261,6 +271,7 @@
     const promises: Promise<unknown>[] = [];
     if (titleDirty && !savingTitle) promises.push(saveTitle());
     if (instructionsDirty && !savingInstructions) promises.push(saveInstructions());
+    if (settingsDirty) promises.push(settingsPanel?.save());
     if (promises.length > 0) {
       await Promise.all(promises);
     }
@@ -283,7 +294,7 @@
     void goto(resolve(`${page.url.pathname}?${params.toString()}`, {}), { replaceState: false });
   }
 
-  function setHistoryQueryParam(isOpen: boolean) {
+  async function setHistoryQueryParam(isOpen: boolean) {
     const params = new SvelteURLSearchParams(page.url.searchParams);
 
     if (isOpen) {
@@ -295,7 +306,8 @@
 
     const query = params.toString();
     hasUnsavedChanges = false;
-    return goto(resolve(query ? `${page.url.pathname}?${query}` : page.url.pathname, {}), { replaceState: false });
+    await goto(resolve(query ? `${page.url.pathname}?${query}` : page.url.pathname, {}), { replaceState: false });
+    hasUnsavedChanges = mode === MODES.edit && (titleDirty || instructionsDirty || settingsDirty);
   }
 
   function toggleMode() {
@@ -331,6 +343,7 @@
     try {
       await activityApi.delete(courseId, activityId);
       if (activityApi.success) {
+        hasUnsavedChanges = false;
         const profileId = $profile.id;
         if (profileId) void courseApi.refreshCourse(courseId, profileId);
         await goto(resolve(`/courses/${courseId}/lessons`, {}));
@@ -343,7 +356,7 @@
 
   async function refreshEditor() {
     await activityApi.get(courseId, activityId);
-    replaceMode = null;
+    addPackageModalOpen = false;
     const currentActivity = activityApi.activity;
     if (currentActivity?.id === activityId) {
       const freshTitle = currentActivity.title ?? '';
@@ -382,13 +395,18 @@
 
     movingStale = true;
     try {
-      await packageApi.makeCurrent(assetId, versionId, true);
+      await packageApi.makeCurrent(assetId, versionId, true, activityId);
       if (!packageApi.success) return;
       moveStaleOpen = false;
       void refreshEditor();
     } finally {
       movingStale = false;
     }
+  }
+
+  function openAddPackageModal(nextMode: 'attach' | 'upgrade' | 'swap' = 'attach') {
+    addPackageModalMode = nextMode;
+    addPackageModalOpen = true;
   }
 
   function handleRemoveRequest() {
@@ -398,12 +416,12 @@
 
   function handleSwapRequest() {
     currentTab = 'package';
-    replaceMode = 'swap';
+    openAddPackageModal('swap');
   }
 
   function handleUpgradeRequest() {
     currentTab = 'package';
-    replaceMode = 'upgrade';
+    openAddPackageModal('upgrade');
   }
 
   function handleRemoveOpenChange(isOpen: boolean) {
@@ -438,7 +456,7 @@
 
     reverting = true;
     try {
-      await packageApi.makeCurrent(assetId, revertTargetVersion.id, revertCloseOpenAttempts);
+      await packageApi.makeCurrent(assetId, revertTargetVersion.id, revertCloseOpenAttempts, activityId);
       if (!packageApi.success) return;
       revertOpen = false;
       revertTargetVersion = null;
@@ -460,12 +478,7 @@
   );
 
   async function handleLearnerReset() {
-    await activityApi.listResults(courseId, activityId, {
-      page: 1,
-      limit: 20,
-      sort: 'last_launched',
-      direction: 'desc'
-    });
+    resultsRefreshKey += 1;
   }
 </script>
 
@@ -544,13 +557,18 @@
         {:else}
           <Empty
             title={$t('course.navItem.lessons.activities.package.empty_title')}
-            description={$t('course.navItem.lessons.activities.package.empty_description')}
+            description={$t('course.navItem.lessons.materials.body_content') +
+              ' ' +
+              $t('course.navItem.lessons.materials.get_started') +
+              ' ' +
+              $t('course.navItem.lessons.materials.button') +
+              '.'}
             icon={PackageIcon}
             variant="page"
             class="text-center"
           >
             <Button onclick={toggleMode}>
-              {$t('course.navItem.lessons.activities.package.upload_package')}
+              {$t('course.navItem.lessons.materials.get_started')}
             </Button>
           </Empty>
         {/if}
@@ -604,26 +622,15 @@
                   icon={PackageIcon}
                   variant="page"
                 />
-              {:else if !attachedPackage || replaceMode}
-                {#if replaceMode && attachedPackage}
-                  <div class="mb-4 flex justify-end">
-                    <Button variant="outline" size="sm" onclick={() => (replaceMode = null)}>
-                      {$t('common.discard')}
-                    </Button>
-                  </div>
-                {/if}
-                <PackageUpload
-                  {courseId}
-                  {activityId}
-                  assetId={attachedPackage?.asset.id ?? null}
-                  mode={attachedPackage ? (replaceMode ?? 'upgrade') : 'attach'}
-                  inProgressCount={attachedPackage ? inProgressCount : 0}
-                  currentFingerprint={attachedPackage ? currentFingerprint : null}
-                  getFreshInProgressCount={refreshAttemptCounts}
-                  onAttached={refreshEditor}
-                  onReplaced={refreshEditor}
-                  onSwapRequest={handleSwapRequest}
-                  onUpgradeRequest={handleUpgradeRequest}
+              {:else if !attachedPackage}
+                <Button onclick={() => openAddPackageModal('attach')} class="float-end my-4" disabled={!hasScormAccess}>
+                  {$t('course.navItem.lessons.activities.package.upload_package')}
+                </Button>
+
+                <Empty
+                  title={$t('course.navItem.lessons.activities.package.empty_title')}
+                  description={$t('course.navItem.lessons.activities.package.empty_description')}
+                  icon={PackageIcon}
                 />
               {:else}
                 <PackageDetails
@@ -654,7 +661,7 @@
 
           <UnderlineTabs.Content value="results">
             <div class="py-4">
-              <ActivityResultsPanel {courseId} {activityId} onSelectLearner={openLearnerSheet} />
+              <ActivityResultsPanel {courseId} {activityId} {resultsRefreshKey} onSelectLearner={openLearnerSheet} />
             </div>
           </UnderlineTabs.Content>
 
@@ -861,6 +868,21 @@
           learnerName={selectedLearnerName}
           bind:open={sheetOpen}
           onReset={handleLearnerReset}
+        />
+
+        <AddPackageModal
+          bind:open={addPackageModalOpen}
+          {courseId}
+          {activityId}
+          assetId={attachedPackage?.asset.id ?? null}
+          mode={addPackageModalMode}
+          inProgressCount={attachedPackage ? inProgressCount : 0}
+          currentFingerprint={attachedPackage ? currentFingerprint : null}
+          getFreshInProgressCount={refreshAttemptCounts}
+          onAttached={refreshEditor}
+          onReplaced={refreshEditor}
+          onSwapRequest={handleSwapRequest}
+          onUpgradeRequest={handleUpgradeRequest}
         />
       {/if}
     </div>

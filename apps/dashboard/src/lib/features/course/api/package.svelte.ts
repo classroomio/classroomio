@@ -101,13 +101,14 @@ export class PackageApi extends BaseApiWithErrors {
     return jobId;
   }
 
-  async makeCurrent(assetId: string, versionId: string, closeOpenAttempts = false) {
+  async makeCurrent(assetId: string, versionId: string, closeOpenAttempts = false, activityId?: string) {
     let closedAttempts = 0;
+    const payload = activityId ? { closeOpenAttempts, activityId } : { closeOpenAttempts };
     await this.execute<MakePackageVersionCurrentRequest>({
       requestFn: () =>
         classroomio.activity.packages[':assetId'].versions[':versionId'].current.$post({
           param: { assetId, versionId },
-          json: { closeOpenAttempts }
+          json: payload
         }),
       logContext: 'promoting package version',
       onSuccess: (response) => {

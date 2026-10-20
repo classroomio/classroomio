@@ -27,7 +27,7 @@
   import * as Sidebar from '@cio/ui/base/sidebar';
   import * as Collapsible from '@cio/ui/base/collapsible';
   import { ContentType } from '@cio/utils/constants/content';
-  import { courseApi, contentApi, exerciseApi, lessonApi } from '$features/course/api';
+  import { courseApi, contentApi, exerciseApi, lessonApi, activityApi } from '$features/course/api';
   import { deleteContent } from '$features/course/components/lesson/content-action-helpers';
   import DeleteLessonConfirmation from '$features/course/components/lesson/delete-lesson-confirmation.svelte';
   import { snackbar } from '$features/ui/snackbar/store';
@@ -239,7 +239,8 @@
       },
       courseId,
       lessonApi,
-      exerciseApi
+      exerciseApi,
+      activityApi
     });
   }
 

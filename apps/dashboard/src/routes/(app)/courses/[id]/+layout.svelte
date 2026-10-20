@@ -103,9 +103,11 @@
   const exerciseId = $derived((page.params.exerciseId as string | undefined) ?? data.exerciseId);
   const activityId = $derived(page.params.activityId as string | undefined);
   const isContentPage = $derived(Boolean(lessonId || exerciseId || activityId));
-  const isLessonEditMode = $derived(page.url.searchParams.get('mode') === 'edit');
+  const isEditMode = $derived(page.url.searchParams.get('mode') === 'edit');
 
-  const contentAskAiWidthClass = $derived(getContentAskAiBarWidthClass({ lessonId, isLessonEditMode }));
+  const contentAskAiWidthClass = $derived(
+    getContentAskAiBarWidthClass({ lessonId, activityId, isLessonEditMode: isEditMode, isEditMode })
+  );
 
   const isContentLockedForStudent = $derived(
     isCourseContentLockedForStudent(

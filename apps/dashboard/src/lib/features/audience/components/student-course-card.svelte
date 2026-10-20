@@ -19,15 +19,18 @@
     const asNumber = (value: unknown) => (typeof value === 'number' ? value : 0);
     const lessonsCount = asNumber(record.lessons_count ?? record.lessonCount);
     const lessonsCompleted = asNumber(record.lessons_completed ?? record.progressRate);
+    const exercisesCount = asNumber(record.exercises_count ?? record.exerciseCount);
+    const exercisesCompleted = asNumber(record.exercises_completed ?? record.exercisesCompleted);
     const activitiesCount = asNumber(record.activities_count ?? record.activityCount);
     const activitiesCompleted = asNumber(record.activities_completed ?? record.activitiesCompleted);
 
-    const totalRequired = lessonsCount + activitiesCount;
+    const totalRequired = lessonsCount + exercisesCount + activitiesCount;
     if (totalRequired === 0) return false;
 
     const lessonsDone = lessonsCount === 0 || lessonsCompleted >= lessonsCount;
+    const exercisesDone = exercisesCount === 0 || exercisesCompleted >= exercisesCount;
     const activitiesDone = activitiesCount === 0 || activitiesCompleted >= activitiesCount;
-    return lessonsDone && activitiesDone;
+    return lessonsDone && exercisesDone && activitiesDone;
   }
 
   function hasStarted(c: AudienceAnalyticsCourse): boolean {

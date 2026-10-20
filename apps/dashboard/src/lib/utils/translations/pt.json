@@ -2941,7 +2941,7 @@
             "module_order": "Ordem dos módulos",
             "order_free": "Qualquer ordem",
             "order_sequential": "Em sequência",
-            "module_order_helper": "A ordem em que cada módulo é executado bloqueia o anterior até que seja concluído. Pacotes sem regras de ordenação funcionam da mesma forma em ambos os casos.",
+            "module_order_helper": "A ordem em que cada módulo é executado bloqueia o próximo módulo até que o anterior seja concluído. Pacotes sem regras de ordenação funcionam da mesma forma em ambos os casos.",
             "custom_threshold_hint": "Este pacote não define nota de aprovação. Os alunos o concluem finalizando todos os módulos e obtendo uma média de pelo menos {score}%.",
             "completion_modules": "Escopo de conclusão",
             "completion_modules_all": "Todos os módulos",
@@ -3053,7 +3053,18 @@
             "remove_package": "Remover pacote",
             "launchable_count": "{count, plural, one {# item executável} other {# itens executáveis}}",
             "drop_hint": "Até {size}. Mantenha esta página aberta até que o pacote seja anexado.",
-            "prerequisites_warning": "Este pacote restringe a execução de módulos a pré-requisitos. Esses pré-requisitos são aplicados em ordem sequencial; regras mais específicas são ignoradas."
+            "prerequisites_warning": "Este pacote restringe a execução de módulos a pré-requisitos. Esses pré-requisitos são aplicados em ordem sequencial; regras mais específicas são ignoradas.",
+            "modal_title": "Adicionar pacote",
+            "library_search": "Pesquisar na biblioteca",
+            "library_search_action": "Procurar",
+            "library_loading": "Carregando pacotes…",
+            "library_empty": "Nenhum pacote encontrado na biblioteca",
+            "library_attach": "Anexar",
+            "library_attached_success": "Pacote anexado com sucesso.",
+            "tabs": {
+              "upload": "Carregar",
+              "library": "Biblioteca"
+            }
           },
           "gating": {
             "title": "A criação de pacotes SCORM está pausada.",

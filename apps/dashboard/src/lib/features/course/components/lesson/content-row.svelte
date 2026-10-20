@@ -67,12 +67,6 @@
         ? $t('course.navItem.lessons.add_content_options.activity_scorm_default_title')
         : '')
   );
-  const displayTitle = $derived(
-    title?.trim() ||
-      (item.type === ContentType.Activity
-        ? $t('course.navItem.lessons.add_content_options.activity_scorm_default_title')
-        : '')
-  );
 </script>
 
 {#if isEditing}

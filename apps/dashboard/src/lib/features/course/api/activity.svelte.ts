@@ -45,6 +45,11 @@ export class ActivityApi extends BaseApiWithErrors {
   learnerAttempts = $state<ActivityLearnerAttempts | null>(null);
   launchResult = $state<LaunchActivityData | null>(null);
   launching = $state(false);
+  private launchReqId = 0;
+  private progressReqId = 0;
+  private activityReqId = 0;
+  private resultsReqId = 0;
+  private learnerAttemptsReqId = 0;
 
   /**
    * Launches an activity module for the learner. Stores the launch result
@@ -63,6 +68,7 @@ export class ActivityApi extends BaseApiWithErrors {
     }
     this.errors = {};
     this.launching = true;
+    const reqId = ++this.launchReqId;
     let launched: LaunchActivityData | undefined;
     try {
       await this.execute<LaunchActivityRequest>({
@@ -73,7 +79,7 @@ export class ActivityApi extends BaseApiWithErrors {
           }),
         logContext: 'launching activity',
         onSuccess: (response) => {
-          if (response.data) {
+          if (response.data && reqId === this.launchReqId) {
             launched = response.data;
             this.launchResult = response.data;
             this.success = true;
@@ -81,6 +87,8 @@ export class ActivityApi extends BaseApiWithErrors {
           }
         },
         onError: (result) => {
+          if (reqId !== this.launchReqId) return;
+
           this.success = false;
           if (typeof result === 'string') {
             snackbar.error('snackbar.activity.launch_failed');
@@ -93,7 +101,9 @@ export class ActivityApi extends BaseApiWithErrors {
         }
       });
     } finally {
-      this.launching = false;
+      if (reqId === this.launchReqId) {
+        this.launching = false;
+      }
     }
 
     return launched;
@@ -105,11 +115,15 @@ export class ActivityApi extends BaseApiWithErrors {
    * when the request fails or the activity is unavailable.
    */
   async refreshProgress(courseId: string, activityId: string) {
+    const reqId = ++this.progressReqId;
+    const activityReqId = this.activityReqId;
     await this.execute<GetActivityProgressRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].activity[':activityId'].progress.$get({ param: { courseId, activityId } }),
       logContext: 'refreshing activity progress',
       onSuccess: (response) => {
+        if (reqId !== this.progressReqId || activityReqId !== this.activityReqId) return;
+
         const launch = this.launchResult;
         if (!response.data || !launch?.available || response.data.units.length === 0) return;
 
@@ -122,6 +136,7 @@ export class ActivityApi extends BaseApiWithErrors {
    * Gets an activity by ID
    */
   async get(courseId: string, activityId: string) {
+    const reqId = ++this.activityReqId;
     return this.execute<GetActivityRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].activity[':activityId'].$get({
@@ -129,10 +144,10 @@ export class ActivityApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching activity',
       onSuccess: (response) => {
-        if (response.data) {
-          this.activity = response.data.activity;
-          this.editor = response.data.editor;
-        }
+        if (reqId !== this.activityReqId || !response.data) return;
+
+        this.activity = response.data.activity;
+        this.editor = response.data.editor;
       }
     });
   }
@@ -375,6 +390,7 @@ export class ActivityApi extends BaseApiWithErrors {
    * Lists paged learner results with the summary header for the Results tab.
    */
   async listResults(courseId: string, activityId: string, query: TScormResultsQuery) {
+    const reqId = ++this.resultsReqId;
     return this.execute<GetActivityResultsRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].activity[':activityId'].results.$get({
@@ -383,6 +399,8 @@ export class ActivityApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching activity results',
       onSuccess: (response) => {
+        if (reqId !== this.resultsReqId) return;
+
         this.results = response.data ?? [];
         this.resultsSummary = response.summary ?? null;
         this.resultsPagination = response.pagination ?? null;
@@ -391,9 +409,18 @@ export class ActivityApi extends BaseApiWithErrors {
   }
 
   /**
+   * Clears the learner attempt sheet and invalidates any in-flight request.
+   */
+  clearLearnerAttempts() {
+    this.learnerAttemptsReqId += 1;
+    this.learnerAttempts = null;
+  }
+
+  /**
    * Fetches every attempt of one learner for the student sheet.
    */
   async getLearnerAttempts(courseId: string, activityId: string, profileId: string) {
+    const reqId = ++this.learnerAttemptsReqId;
     return this.execute<GetActivityLearnerResultRequest>({
       requestFn: () =>
         classroomio.course[':courseId'].activity[':activityId'].results[':profileId'].$get({
@@ -401,7 +428,9 @@ export class ActivityApi extends BaseApiWithErrors {
         }),
       logContext: 'fetching learner attempts',
       onSuccess: (response) => {
-        this.learnerAttempts = response.data ?? null;
+        if (reqId === this.learnerAttemptsReqId) {
+          this.learnerAttempts = response.data ?? null;
+        }
       }
     });
   }

@@ -132,11 +132,6 @@
           <span class="ui:text-foreground text-[13px] font-semibold">
             {$t('course.navItem.lessons.activities.package.modules')}
           </span>
-          <span
-            class="ui:bg-secondary ui:text-secondary-foreground inline-flex h-5 items-center rounded-full px-2 text-xs font-medium tabular-nums"
-          >
-            {displayUnits.length}
-          </span>
         </div>
         {#if displayUnits.length > 0}
           <span class="ui:text-muted-foreground text-xs font-normal">

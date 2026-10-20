@@ -99,6 +99,7 @@
     if (key === loadedKey) return;
 
     loadedKey = key;
+    activityApi.clearLearnerAttempts();
     void activityApi.getLearnerAttempts(courseId, activityId, profileId);
   });
 
@@ -108,7 +109,7 @@
 
     if (!next) {
       loadedKey = '';
-      activityApi.learnerAttempts = null;
+      activityApi.clearLearnerAttempts();
     }
   }
 

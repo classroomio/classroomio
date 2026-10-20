@@ -3,7 +3,6 @@
   import * as Select from '@cio/ui/base/select';
   import { Switch } from '@cio/ui/base/switch';
   import { NumberField } from '@cio/ui/custom/number-field';
-  import { UnsavedChanges } from '$features/ui';
   import { snackbar } from '$features/ui/snackbar/store';
   import { activityApi } from '$features/course/api';
   import { t } from '$lib/utils/functions/translations';
@@ -41,18 +40,21 @@
   let allowRetakes = $state(false);
   let moduleOrder = $state<TScormSettings['moduleOrder']>('free');
   let completionModules = $state<TScormSettings['completionModules']>('all');
-  let hasUnsavedChanges = $state(false);
-
   $effect(() => {
-    if (activityId === loadedActivityId) return;
-
-    loadedActivityId = activityId;
-    rule = settings.completionRule;
-    minScore = settings.minScorePercent ?? null;
-    allowRetakes = settings.allowRetakes;
-    moduleOrder = settings.moduleOrder;
-    completionModules = settings.completionModules;
-    hasUnsavedChanges = false;
+    if (activityId !== loadedActivityId) {
+      loadedActivityId = activityId;
+      rule = settings.completionRule;
+      minScore = settings.minScorePercent ?? null;
+      allowRetakes = settings.allowRetakes;
+      moduleOrder = settings.moduleOrder;
+      completionModules = settings.completionModules;
+    } else if (!formDirty) {
+      rule = settings.completionRule;
+      minScore = settings.minScorePercent ?? null;
+      allowRetakes = settings.allowRetakes;
+      moduleOrder = settings.moduleOrder;
+      completionModules = settings.completionModules;
+    }
   });
 
   const formDirty = $derived(
@@ -64,7 +66,6 @@
   );
 
   $effect(() => {
-    hasUnsavedChanges = formDirty && !disabled;
     dirty = formDirty && !disabled;
   });
 
@@ -83,7 +84,6 @@
 
       if (activityApi.success) {
         snackbar.success('snackbar.activity.settings_saved');
-        hasUnsavedChanges = false;
         onSaved?.();
       }
     } finally {
@@ -103,8 +103,6 @@
     completionModules = settings.completionModules;
   }
 </script>
-
-<UnsavedChanges bind:hasUnsavedChanges />
 
 <div data-testid="activity-settings">
   <Field.Group>

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { ContentType } from '@cio/utils/constants/content';
 import {
+  getContentEditRoute,
   getContentItemsProgress,
   getContentRoute,
   getCourseProgress,
@@ -62,6 +63,26 @@ describe('characterization: getContentRoute (zero activities)', () => {
 
   it('returns an empty route for unknown types', () => {
     expect(getContentRoute('course-1', { id: 'x', type: 'UNKNOWN' })).toBe('');
+  });
+});
+
+describe('characterization: getContentEditRoute (zero activities)', () => {
+  it('routes lessons ready to edit with mode=edit', () => {
+    expect(getContentEditRoute('course-1', { id: 'lesson-1', type: ContentType.Lesson })).toBe(
+      '/courses/course-1/lessons/lesson-1?mode=edit'
+    );
+  });
+
+  it('routes exercises ready to edit with tab=questions', () => {
+    expect(getContentEditRoute('course-1', { id: 'exercise-1', type: ContentType.Exercise })).toBe(
+      '/courses/course-1/exercises/exercise-1?tab=questions'
+    );
+  });
+
+  it('returns unparameterized route for sections', () => {
+    expect(getContentEditRoute('course-1', { id: 'section-1', type: ContentType.Section })).toBe(
+      '/courses/course-1/lessons#section-section-1'
+    );
   });
 });
 
