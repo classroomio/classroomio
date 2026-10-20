@@ -2571,7 +2571,8 @@
                 "vimeo_privacy_error_unlisted_hint": "Ikke-listet videolink mangler muligvis sin privatlivsnøgle (hash)",
                 "vimeo_privacy_error_domain_prefix": "Domænebegrænsninger på Vimeo (sørg for, at",
                 "vimeo_privacy_error_domain_suffix": "er tilladt i videoindstillingerne)",
-                "vimeo_privacy_error_other_hint": "Andre Vimeo-privatlivsindstillinger"
+                "vimeo_privacy_error_other_hint": "Andre Vimeo-privatlivsindstillinger",
+                "asset_registration_failed": "Videoen blev uploadet, men kunne ikke registreres, så den blev ikke vedhæftet. Prøv igen."
               },
               "empty_title": "Ingen videoer endnu",
               "empty_description": "Tilføj videoer fra YouTube, upload eller dit mediebibliotek",

@@ -1927,6 +1927,20 @@
       "all": "Tutto",
       "unpublished": "Inedito",
       "course_type": "Tipo di corso"
+    },
+    "filters": {
+      "filter": "Filtro",
+      "popover_title": "Filtri",
+      "clear_all": "Cancella tutto",
+      "search_placeholder": "Cerca per nome",
+      "status": "Stato",
+      "layout_type": "Tipo di layout",
+      "selection_mode": "Modalità di selezione",
+      "no_results_title": "Nessun widget corrisponde ai tuoi filtri",
+      "no_results_description": "Prova a utilizzare un termine di ricerca diverso o a cancellare i filtri per visualizzare nuovamente tutti i risultati.",
+      "no_results_page_title": "Niente in questa pagina",
+      "no_results_page_description": "Questi filtri corrispondono a un numero di widget inferiore rispetto a quello iniziale di questa pagina.",
+      "back_to_first_page": "Torna alla prima pagina"
     }
   },
   "setup": {
@@ -2897,7 +2911,8 @@
                   "completed": "Elaborazione completata",
                   "failed": "Elaborazione non riuscita",
                   "canceled": "Elaborazione annullata"
-                }
+                },
+                "asset_registration_failed": "Il video è stato caricato ma non è stato possibile registrarlo, quindi non è stato allegato. Riprova."
               },
               "generate_transcript": "Genera trascrizione",
               "transcript_in_progress": "Recupero della trascrizione…",

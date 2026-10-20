@@ -2571,7 +2571,8 @@
                 "vimeo_privacy_error_unlisted_hint": "अनलिस्टेड वीडियो लिंक में उसकी प्राइवेसी की (हैश) मौजूद नहीं हो सकती है।",
                 "vimeo_privacy_error_domain_prefix": "Vimeo पर डोमेन प्रतिबंध (सुनिश्चित करें कि",
                 "vimeo_privacy_error_domain_suffix": "को वीडियो सेटिंग्स में अनुमति दी गई है)",
-                "vimeo_privacy_error_other_hint": "अन्य Vimeo गोपनीयता सेटिंग्स"
+                "vimeo_privacy_error_other_hint": "अन्य Vimeo गोपनीयता सेटिंग्स",
+                "asset_registration_failed": "वीडियो अपलोड हो गया लेकिन रजिस्टर नहीं हो सका, इसलिए अटैच नहीं हो पाया। कृपया दोबारा कोशिश करें।"
               },
               "empty_title": "अभी तक कोई वीडियो नहीं",
               "empty_description": "YouTube से वीडियो जोड़ें, अपलोड करें, या अपनी मीडिया लाइब्रेरी से",

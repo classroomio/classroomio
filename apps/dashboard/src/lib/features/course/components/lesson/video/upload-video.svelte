@@ -281,6 +281,14 @@
         assetId = asset?.id;
       }
 
+      // Both calls resolve to null on failure. Attaching the video anyway would
+      // save an upload the media pipeline and the encoder can never find, and
+      // no later path repairs it — so fail the attach instead and let the
+      // person retry while the file is still in hand.
+      if (!assetId) {
+        throw new Error(t.get(`${ADD_VIDEO}.asset_registration_failed`));
+      }
+
       lessonApi.updateLessonState(
         'videos',
         [

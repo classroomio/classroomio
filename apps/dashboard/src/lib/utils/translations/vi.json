@@ -2571,7 +2571,8 @@
                 "vimeo_privacy_error_unlisted_hint": "Liên kết video không được liệt kê có thể thiếu khóa quyền riêng tư (mã băm)",
                 "vimeo_privacy_error_domain_prefix": "Hạn chế tên miền trên Vimeo (đảm bảo",
                 "vimeo_privacy_error_domain_suffix": "được cho phép trong cài đặt video)",
-                "vimeo_privacy_error_other_hint": "Các cài đặt quyền riêng tư khác của Vimeo"
+                "vimeo_privacy_error_other_hint": "Các cài đặt quyền riêng tư khác của Vimeo",
+                "asset_registration_failed": "Video đã được tải lên nhưng không thể đăng ký, vì vậy không thể đính kèm. Vui lòng thử lại."
               },
               "empty_title": "Chưa có video nào",
               "empty_description": "Thêm video từ YouTube, tải lên hoặc thư viện phương tiện của bạn",
