@@ -101,10 +101,10 @@ describe('webhook event enrichment', () => {
     expect(enriched).toMatchObject(input);
   });
 
-  it('adds readable learner, course and exercise details', async () => {
+  it('adds readable student, course and exercise details', async () => {
     const enriched = await enrichWebhookEventData(inputs['course.submission.created']);
 
-    expect(enriched.learner).toEqual({ id: ids.profile, name: 'Alex Johnson', email: 'alex@example.com' });
+    expect(enriched.student).toEqual({ id: ids.profile, name: 'Alex Johnson', email: 'alex@example.com' });
     expect(enriched.course).toEqual({ id: ids.course, title: 'Intro to Data Science', slug: 'intro-to-data-science' });
     expect(enriched.exercise).toEqual({ id: ids.exercise, title: 'Week 1 quiz' });
   });
@@ -112,7 +112,7 @@ describe('webhook event enrichment', () => {
   it('prefers the email recorded on the event over the profile email', async () => {
     const enriched = await enrichWebhookEventData({ ...inputs['course.member.added'], email: 'invited@example.com' });
 
-    expect(enriched.learner).toMatchObject({ email: 'invited@example.com' });
+    expect(enriched.student).toMatchObject({ email: 'invited@example.com' });
   });
 
   it('labels the role next to roleId', async () => {
@@ -139,7 +139,7 @@ describe('webhook event enrichment', () => {
     mocks.getWebhookEventContext.mockResolvedValue({ profiles: new Map(), course: null, exercise: null, lesson: null });
     const enriched = await enrichWebhookEventData(inputs['lesson.completion.updated']);
 
-    expect(enriched.learner).toEqual({ id: ids.profile, name: null, email: null });
+    expect(enriched.student).toEqual({ id: ids.profile, name: null, email: null });
     expect(enriched.course).toEqual({ id: ids.course, title: null, slug: null });
     expect(enriched.lesson).toEqual({ id: ids.lesson, title: null });
   });
@@ -150,6 +150,6 @@ describe('webhook event enrichment', () => {
     const enriched = await enrichWebhookEventData(inputs['course.completed']);
 
     expect(enriched).toMatchObject(inputs['course.completed']);
-    expect(enriched.learner).toEqual({ id: ids.profile, name: null, email: null });
+    expect(enriched.student).toEqual({ id: ids.profile, name: null, email: null });
   });
 });

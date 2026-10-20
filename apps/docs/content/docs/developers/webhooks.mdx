@@ -3,7 +3,7 @@ title: Webhooks
 description: Receive signed, real-time ClassroomIO events in Slack, your CRM, or your own backend.
 ---
 
-Webhooks let ClassroomIO send an HTTP `POST` to a URL you control whenever something happens in your organization, such as a learner finishing a course or a submission being graded. Use them to keep a CRM in sync, alert tutors in Slack, or trigger your own workflows.
+Webhooks let ClassroomIO send an HTTP `POST` to a URL you control whenever something happens in your organization, such as a student finishing a course or a submission being graded. Use them to keep a CRM in sync, alert tutors in Slack, or trigger your own workflows.
 
 :::info[Plan requirement]
 Webhooks share the entitlement of the REST API. On cloud they require an **Early Adopter** or **Enterprise** plan. Self-hosted installs require **Enterprise**.
@@ -31,7 +31,7 @@ Leave the secret blank to have ClassroomIO generate one. Every delivery is signe
 | `course.invite.revoked` | A student invite is revoked |
 | `course.member.added` | A member is added to a course |
 | `course.member.removed` | A member is removed from a course |
-| `course.completed` | A learner completes a course and earns its certificate. Requires certificates to be enabled for the organization |
+| `course.completed` | A student completes a course and earns its certificate. Requires certificates to be enabled for the organization |
 | `course.certificate.issued` | A certificate is earned |
 | `course.submission.created` | An exercise submission is created |
 | `course.submission.status_changed` | A submission status changes, for example when it is graded |
@@ -57,7 +57,7 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
     "memberId": "5d3f1c2e-0a9b-4c8d-b7e6-1f2a3b4c5d6e",
     "completedAt": "2026-10-13T12:15:30.000Z",
     "course": { "id": "98e6e798-f0bd-4f9d-a6f5-ce0816a4f97e", "title": "Intro to Data Science", "slug": "intro-to-data-science" },
-    "learner": { "id": "0c256e75-aa40-4f62-8d30-0217ca1c60d9", "name": "Alex Johnson", "email": "student@example.com" }
+    "student": { "id": "0c256e75-aa40-4f62-8d30-0217ca1c60d9", "name": "Alex Johnson", "email": "student@example.com" }
   }
 }
 ```
@@ -80,7 +80,7 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
 
 ## Event reference
 
-Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `learner` and `actor` (`id`, `name`, `email`), `course` (`id`, `title`, `slug`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
+Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`), `course` (`id`, `title`, `slug`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
 
 ### Team invites
 
@@ -233,7 +233,7 @@ A member is added to a course, by an admin or by accepting an invite.
     "title": "Intro to Data Science",
     "slug": "intro-to-data-science"
   },
-  "learner": {
+  "student": {
     "id": "000000b1-0000-4000-8000-0000000000b1",
     "name": "Alex Johnson",
     "email": "student@example.com"
@@ -260,7 +260,7 @@ A member is removed from a course.
     "title": "Intro to Data Science",
     "slug": "intro-to-data-science"
   },
-  "learner": {
+  "student": {
     "id": "000000b1-0000-4000-8000-0000000000b1",
     "name": "Alex Johnson",
     "email": "student@example.com"
@@ -273,7 +273,7 @@ A member is removed from a course.
 
 #### `course.completed`
 
-A learner completes a course and earns its certificate. Requires certificates to be enabled for the organization.
+A student completes a course and earns its certificate. Requires certificates to be enabled for the organization.
 
 ```json
 {
@@ -286,7 +286,7 @@ A learner completes a course and earns its certificate. Requires certificates to
     "title": "Intro to Data Science",
     "slug": "intro-to-data-science"
   },
-  "learner": {
+  "student": {
     "id": "000000b1-0000-4000-8000-0000000000b1",
     "name": "Alex Johnson",
     "email": "student@example.com"
@@ -309,7 +309,7 @@ A certificate is earned. Sent together with `course.completed`.
     "title": "Intro to Data Science",
     "slug": "intro-to-data-science"
   },
-  "learner": {
+  "student": {
     "id": "000000b1-0000-4000-8000-0000000000b1",
     "name": "Alex Johnson",
     "email": "student@example.com"
@@ -342,7 +342,7 @@ An exercise submission is created.
     "id": "000000f2-0000-4000-8000-0000000000f2",
     "title": "Week 1 quiz"
   },
-  "learner": {
+  "student": {
     "id": "000000b1-0000-4000-8000-0000000000b1",
     "name": "Alex Johnson",
     "email": "student@example.com"
@@ -377,7 +377,7 @@ A submission status or grading state changes, for example when it is graded.
     "id": "000000f2-0000-4000-8000-0000000000f2",
     "title": "Week 1 quiz"
   },
-  "learner": {
+  "student": {
     "id": "000000b1-0000-4000-8000-0000000000b1",
     "name": "Alex Johnson",
     "email": "student@example.com"
@@ -391,7 +391,7 @@ A submission status or grading state changes, for example when it is graded.
 
 #### `lesson.completion.updated`
 
-A lesson is marked complete, or reset when an admin resets a learner's progress.
+A lesson is marked complete, or reset when an admin resets a student's progress.
 
 ```json
 {
@@ -408,7 +408,7 @@ A lesson is marked complete, or reset when an admin resets a learner's progress.
     "id": "000000f3-0000-4000-8000-0000000000f3",
     "title": "Getting started"
   },
-  "learner": {
+  "student": {
     "id": "000000b1-0000-4000-8000-0000000000b1",
     "name": "Alex Johnson",
     "email": "student@example.com"
@@ -436,7 +436,7 @@ An exercise is completed, meeting any passing grade it requires, or reset by an 
     "id": "000000f2-0000-4000-8000-0000000000f2",
     "title": "Week 1 quiz"
   },
-  "learner": {
+  "student": {
     "id": "000000b1-0000-4000-8000-0000000000b1",
     "name": "Alex Johnson",
     "email": "student@example.com"
@@ -444,7 +444,7 @@ An exercise is completed, meeting any passing grade it requires, or reset by an 
 }
 ```
 
-`memberId` is the course membership id of the learner.
+`memberId` is the course membership id of the student.
 
 ## Verify the signature
 
