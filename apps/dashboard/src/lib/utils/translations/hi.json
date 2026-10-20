@@ -817,7 +817,7 @@
       "status": {
         "ready": "तैयार",
         "already_member": "पहले से ही श्रोताओं में शामिल",
-        "invite_resent": "निमंत्रण फिर से भेजा गया",
+        "invite_resent": "आमंत्रण पुनः भेजा गया",
         "invalid_email": "अमान्य ईमेल",
         "duplicate_in_file": "फ़ाइल में डुप्लिकेट",
         "over_seat_limit": "कोई सीट शेष नहीं",
