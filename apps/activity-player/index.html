@@ -322,7 +322,14 @@
   <body>
     <header id="toolbar" hidden>
       <div id="module-nav" hidden>
-        <button type="button" id="nav-previous" class="btn icon" disabled>
+        <button
+          type="button"
+          id="nav-previous"
+          class="btn icon"
+          aria-label="Previous module"
+          title="Previous module"
+          disabled
+        >
           <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
         </button>
         <div class="menu-anchor">
@@ -342,17 +349,24 @@
             <div id="nav-menu-list" role="group"></div>
           </div>
         </div>
-        <button type="button" id="nav-next" class="btn icon" disabled>
+        <button
+          type="button"
+          id="nav-next"
+          class="btn icon"
+          aria-label="Next module"
+          title="Next module"
+          disabled
+        >
           <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
         </button>
-        <span id="time-limit" class="badge" hidden>
-          <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0" />
-            <path d="M12 6v6l4 2" />
-          </svg>
-          <span id="time-limit-text"></span>
-        </span>
       </div>
+      <span id="time-limit" class="badge" hidden>
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0" />
+          <path d="M12 6v6l4 2" />
+        </svg>
+        <span id="time-limit-text"></span>
+      </span>
       <span id="status" role="status"></span>
       <button
         type="button"
@@ -390,7 +404,13 @@
     <div id="notice" role="status" hidden>
       <span id="notice-text"></span>
       <button type="button" id="notice-action" class="btn"></button>
-      <button type="button" id="notice-dismiss" class="btn icon">
+      <button
+        type="button"
+        id="notice-dismiss"
+        class="btn icon"
+        aria-label="Dismiss notice"
+        title="Dismiss notice"
+      >
         <svg class="i" viewBox="0 0 24 24" aria-hidden="true">
           <path d="M18 6 6 18" />
           <path d="m6 6 12 12" />

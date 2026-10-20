@@ -290,7 +290,7 @@ async function handleHlsRequest(request: Request, env: Env): Promise<Response> {
 }
 
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request: Request, env: Env, ctx?: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
     const originalHost = request.headers.get('host') ?? url.host;
 
@@ -317,7 +317,7 @@ export default {
         return new Response('Not Found', { status: 404 });
       }
 
-      return handleActivityContentRequest(request, env);
+      return handleActivityContentRequest(request, env, Date.now(), ctx);
     }
 
     // The content host serves only player, run-time and content paths. Player

@@ -100,6 +100,7 @@ vi.mock('@cio/db/queries', () => ({
   },
   getAssetById: async () => ({ ...baseAsset() }),
   getCurrentPackageVersion: async () => state.currentVersion,
+  getMediaJobById: async (id: string) => state.mediaJobs.get(id) ?? null,
   getPackageVersionById: async (id: string) => state.versions.get(id) ?? null,
   setCurrentPackageVersion: async (id: string) => {
     const row = { ...(state.versions.get(id) ?? {}), isCurrent: true };
@@ -136,7 +137,7 @@ const payload = {
   }
 };
 
-describe('processScormPackage (PR 6)', () => {
+describe('processScormPackage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     state.versions.clear();

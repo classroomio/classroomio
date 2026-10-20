@@ -238,16 +238,21 @@ export async function verifyActivityContentToken(
     throw new ActivityContentHttpError(401, 'Unauthorized');
   }
 
-  let claims: { org?: unknown; p?: unknown; anc?: unknown; wk?: unknown };
+  let claims: { typ?: unknown; org?: unknown; p?: unknown; anc?: unknown; wk?: unknown };
 
   try {
     claims = JSON.parse(new TextDecoder().decode(payloadBytes)) as {
+      typ?: unknown;
       org?: unknown;
       p?: unknown;
       anc?: unknown;
       wk?: unknown;
     };
   } catch {
+    throw new ActivityContentHttpError(401, 'Unauthorized');
+  }
+
+  if (claims.typ !== undefined && claims.typ !== 'content') {
     throw new ActivityContentHttpError(401, 'Unauthorized');
   }
 
@@ -284,7 +289,11 @@ export async function sha256Hex(input: string): Promise<string> {
 }
 
 export function buildActivityCacheKey(host: string, objectKey: string, ancestorsHash: string): Request {
-  return new Request(`https://${host}/activity/content/${objectKey}?anc=${ancestorsHash}`, { method: 'GET' });
+  const encodedKey = objectKey
+    .split('/')
+    .map((part) => encodeURIComponent(part))
+    .join('/');
+  return new Request(`https://${host}/activity/content/${encodedKey}?anc=${ancestorsHash}`, { method: 'GET' });
 }
 
 export function findActivityCaseInsensitiveMatch(target: string, names: string[]): string | null {
@@ -315,8 +324,9 @@ export function activityContentHeaders(contentType: string, ancestors: string[])
   return headers;
 }
 
-async function readIndexListing(bucket: R2Bucket, prefix: string): Promise<string[] | null> {
+async function readIndexListings(bucket: R2Bucket, prefix: string): Promise<string[][]> {
   const candidates = activityIndexKeys(prefix);
+  const listings: string[][] = [];
 
   for (const indexKey of candidates) {
     const indexObject = await bucket.get(indexKey);
@@ -340,11 +350,10 @@ async function readIndexListing(bucket: R2Bucket, prefix: string): Promise<strin
     if (!names) continue;
 
     const relativeNames = names.filter((entry): entry is string => typeof entry === 'string' && entry.length > 0);
-
-    return relativeNames;
+    listings.push(relativeNames);
   }
 
-  return null;
+  return listings;
 }
 
 async function resolveActivityObjectKey(
@@ -357,21 +366,15 @@ async function resolveActivityObjectKey(
 
   if (exactHead) return exactKey;
 
-  const listing = await readIndexListing(bucket, prefix);
+  for (const listing of await readIndexListings(bucket, prefix)) {
+    const match = findActivityCaseInsensitiveMatch(normalizedPath, listing);
 
-  if (!listing) return null;
+    if (!match) continue;
 
-  const match = findActivityCaseInsensitiveMatch(normalizedPath, listing);
+    return match.startsWith(`${prefix}/`) ? match : `${prefix}/${match}`;
+  }
 
-  if (!match) return null;
-
-  if (match.startsWith(`${prefix}/`)) return match;
-
-  const normalizedMatch = normalizeActivityContentPath(match);
-
-  if (!normalizedMatch) return null;
-
-  return `${prefix}/${normalizedMatch}`;
+  return null;
 }
 
 function contentTypeForStoredObject(objectKey: string, httpMetadata?: { contentType?: string }): string {
@@ -418,7 +421,8 @@ function parseActivityContentUrl(pathname: string): ParsedActivityContentUrl | n
 export async function handleActivityContentRequest(
   request: Request,
   env: ActivityContentEnv,
-  nowMs: number = Date.now()
+  nowMs: number = Date.now(),
+  ctx?: { waitUntil: (promise: Promise<unknown>) => void }
 ): Promise<Response> {
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     return new Response('Method Not Allowed', { status: 405 });
@@ -459,7 +463,7 @@ export async function handleActivityContentRequest(
   let normalizedPath: string | null;
 
   try {
-    normalizedPath = normalizeActivityContentPath(decodeURIComponent(parsed.relativePath));
+    normalizedPath = normalizeActivityContentPath(parsed.relativePath);
   } catch {
     return new Response('Bad Request', { status: 400 });
   }
@@ -592,30 +596,13 @@ export async function handleActivityContentRequest(
   let bodyObject: R2ObjectBody | null = storedObject;
 
   if (!bodyObject) {
-    const listing = await readIndexListing(env.SCORM_BUCKET, claims.p);
+    const fallbackKey = await resolveActivityObjectKey(env.SCORM_BUCKET, claims.p, normalizedPath);
 
-    if (!listing) {
+    if (!fallbackKey) {
       return new Response('Not Found', { status: 404 });
     }
 
-    const match = findActivityCaseInsensitiveMatch(normalizedPath, listing);
-
-    if (!match) {
-      return new Response('Not Found', { status: 404 });
-    }
-
-    if (match.startsWith(`${claims.p}/`)) {
-      resolvedKey = match;
-    } else {
-      const normalizedMatch = normalizeActivityContentPath(match);
-
-      if (!normalizedMatch) {
-        return new Response('Not Found', { status: 404 });
-      }
-
-      resolvedKey = `${claims.p}/${normalizedMatch}`;
-    }
-
+    resolvedKey = fallbackKey;
     bodyObject = await env.SCORM_BUCKET.get(resolvedKey);
 
     if (!bodyObject) {
@@ -638,7 +625,12 @@ export async function handleActivityContentRequest(
 
   if (withinCacheLimit) {
     const cacheKey = buildActivityCacheKey(hostname, objectKey, ancestorsFingerprint);
-    await caches.default.put(cacheKey, response.clone());
+    const putPromise = caches.default.put(cacheKey, response.clone()).catch((error) => {
+      console.warn('Edge cache write failed:', error);
+    });
+    if (ctx && typeof ctx.waitUntil === 'function') {
+      ctx.waitUntil(putPromise);
+    }
   }
 
   return response;

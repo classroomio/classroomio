@@ -78,71 +78,12 @@ describe('event names', () => {
   });
 });
 
-describe('commit response', () => {
-  function fakeXhr(status: number, responseText: string): XMLHttpRequest {
-    return { status, responseText } as XMLHttpRequest;
-  }
+describe('commit transport', () => {
+  it('sends saves through the run-time service', () => {
+    const settings = buildAdapterSettings('t', false);
 
-  function responseHandler(
-    onCompleted?: () => void,
-    onProgress?: () => void
-  ): (xhr: XMLHttpRequest) => { result: string | boolean; errorCode: number } {
-    const settings = buildAdapterSettings('t', false, onCompleted, onProgress);
-
-    if (!settings || !settings.xhrResponseHandler) throw new Error('commit response handler is missing');
-
-    return settings.xhrResponseHandler;
-  }
-
-  it('forwards the scorm-again result shape', () => {
-    const handler = responseHandler();
-
-    expect(handler(fakeXhr(200, '{"result":true,"errorCode":0}'))).toEqual({ result: true, errorCode: 0 });
-    expect(handler(fakeXhr(200, '{"result":"true","errorCode":0}'))).toEqual({ result: 'true', errorCode: 0 });
-    expect(handler(fakeXhr(200, 'not json'))).toEqual({ result: true, errorCode: 0 });
-    expect(handler(fakeXhr(500, '{}'))).toEqual({ result: false, errorCode: 101 });
-  });
-
-  it('notifies when the server reports completion', () => {
-    const onCompleted = vi.fn();
-
-    responseHandler(onCompleted)(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":true}'));
-
-    expect(onCompleted).toHaveBeenCalledTimes(1);
-  });
-
-  it('stays silent without a completion flag', () => {
-    const onCompleted = vi.fn();
-
-    responseHandler(onCompleted)(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":false}'));
-
-    expect(onCompleted).not.toHaveBeenCalled();
-  });
-
-  it('notifies progress when a module outcome changed', () => {
-    const onCompleted = vi.fn();
-    const onProgress = vi.fn();
-
-    responseHandler(
-      onCompleted,
-      onProgress
-    )(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":false,"progressChanged":true}'));
-
-    expect(onProgress).toHaveBeenCalledTimes(1);
-    expect(onCompleted).not.toHaveBeenCalled();
-  });
-
-  it('reports completion alone when both flags are set', () => {
-    const onCompleted = vi.fn();
-    const onProgress = vi.fn();
-
-    responseHandler(
-      onCompleted,
-      onProgress
-    )(fakeXhr(200, '{"result":true,"errorCode":0,"completedActivity":true,"progressChanged":true}'));
-
-    expect(onCompleted).toHaveBeenCalledTimes(1);
-    expect(onProgress).not.toHaveBeenCalled();
+    expect(settings?.httpService).toBeDefined();
+    expect(settings?.xhrResponseHandler).toBeUndefined();
   });
 });
 
