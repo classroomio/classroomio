@@ -3828,7 +3828,18 @@
             "remove_package": "Paketi kaldır",
             "launchable_count": "{count, plural, one {# başlatılabilir öğe} other {# başlatılabilir öğe}}",
             "drop_hint": "{size} kadar. Paket eklenene kadar bu sayfayı açık tutun.",
-            "prerequisites_warning": "Bu paket, modülleri ön koşullar arkasına yerleştirir. Bu ön koşullar, sıralı modül sırasına göre uygulanır; daha ayrıntılı ön koşul kuralları göz ardı edilir."
+            "prerequisites_warning": "Bu paket, modülleri ön koşullar arkasına yerleştirir. Bu ön koşullar, sıralı modül sırasına göre uygulanır; daha ayrıntılı ön koşul kuralları göz ardı edilir.",
+            "modal_title": "Paket ekle",
+            "library_search": "Kütüphanede arama yap",
+            "library_search_action": "Aramak",
+            "library_loading": "Paketler yükleniyor…",
+            "library_empty": "Kütüphanede hiçbir paket bulunamadı.",
+            "library_attach": "Eklemek",
+            "library_attached_success": "Paket başarıyla eklendi.",
+            "tabs": {
+              "upload": "Yüklemek",
+              "library": "Kütüphane"
+            }
           },
           "gating": {
             "title": "SCORM oluşturma işlemi duraklatıldı.",

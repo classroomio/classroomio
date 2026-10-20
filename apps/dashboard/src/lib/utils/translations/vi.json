@@ -3053,7 +3053,18 @@
             "remove_package": "Gỡ bỏ gói",
             "launchable_count": "{count, plural, one {# mục có thể khởi chạy} other {# mục có thể khởi chạy}}",
             "drop_hint": "Lên đến {size}. Giữ trang này mở cho đến khi gói được đính kèm.",
-            "prerequisites_warning": "Gói này giới hạn các mô-đun dựa trên các điều kiện tiên quyết. Chúng được thực thi theo thứ tự mô-đun tuần tự; các quy tắc điều kiện tiên quyết chi tiết hơn sẽ bị bỏ qua."
+            "prerequisites_warning": "Gói này giới hạn các mô-đun dựa trên các điều kiện tiên quyết. Chúng được thực thi theo thứ tự mô-đun tuần tự; các quy tắc điều kiện tiên quyết chi tiết hơn sẽ bị bỏ qua.",
+            "modal_title": "Thêm gói",
+            "library_search": "Tìm kiếm thư viện",
+            "library_search_action": "Tìm kiếm",
+            "library_loading": "Đang tải gói hàng…",
+            "library_empty": "Không tìm thấy gói nào trong thư viện.",
+            "library_attach": "Gắn",
+            "library_attached_success": "Gói hàng đã được đính kèm thành công.",
+            "tabs": {
+              "upload": "Tải lên",
+              "library": "Thư viện"
+            }
           },
           "gating": {
             "title": "Tính năng tạo gói SCORM đang bị tạm dừng.",

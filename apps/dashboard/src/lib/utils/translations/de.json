@@ -3053,7 +3053,18 @@
             "remove_package": "Paket entfernen",
             "launchable_count": "{count, plural, one {# startbares Element} other {# startbare Elemente}}",
             "drop_hint": "Bis zu {size}. Lassen Sie diese Seite geöffnet, bis das Paket angehängt wird.",
-            "prerequisites_warning": "Dieses Paket kapselt Module hinter bestimmten Voraussetzungen. Diese werden in sequenzieller Modulreihenfolge durchgesetzt; feinere Regeln für Voraussetzungen werden ignoriert."
+            "prerequisites_warning": "Dieses Paket kapselt Module hinter bestimmten Voraussetzungen. Diese werden in sequenzieller Modulreihenfolge durchgesetzt; feinere Regeln für Voraussetzungen werden ignoriert.",
+            "modal_title": "Paket hinzufügen",
+            "library_search": "Bibliothek durchsuchen",
+            "library_search_action": "Suchen",
+            "library_loading": "Pakete werden geladen…",
+            "library_empty": "In der Bibliothek wurden keine Pakete gefunden.",
+            "library_attach": "Befestigen",
+            "library_attached_success": "Paket erfolgreich angehängt.",
+            "tabs": {
+              "upload": "Hochladen",
+              "library": "Bibliothek"
+            }
           },
           "gating": {
             "title": "Die SCORM-Erstellung ist pausiert.",
