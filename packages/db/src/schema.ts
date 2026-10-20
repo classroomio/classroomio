@@ -819,7 +819,6 @@ export const course = pgTable(
       isMandatory?: boolean;
       framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
       maxRetakeAttempts?: number | null;
-      passingScore?: number;
     }>(),
     status: text().default('ACTIVE').notNull(),
     type: courseType().default('SELF_PACED'),

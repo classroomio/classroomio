@@ -563,9 +563,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
                 },
               ],
             },
-            "passingScore": {
-              "type": "number",
-            },
             "reminderDaysBefore": {
               "items": {
                 "type": "number",
@@ -1945,9 +1942,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
                 },
               ],
             },
-            "passingScore": {
-              "type": "number",
-            },
             "reminderDaysBefore": {
               "items": {
                 "type": "number",
@@ -2610,9 +2604,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
                 },
               ],
             },
-            "passingScore": {
-              "type": "number",
-            },
             "reminderDaysBefore": {
               "items": {
                 "type": "number",
@@ -3099,12 +3090,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                     },
                   ],
                 },
-                "passingScore": {
-                  "default": 80,
-                  "maximum": 100,
-                  "minimum": 0,
-                  "type": "integer",
-                },
                 "reminderDaysBefore": {
                   "default": [
                     30,
@@ -3130,7 +3115,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "gracePeriodDays",
                 "reminderDaysBefore",
                 "isMandatory",
-                "passingScore",
               ],
               "type": "object",
             },
@@ -4152,9 +4136,6 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
                       "type": "null",
                     },
                   ],
-                },
-                "passingScore": {
-                  "type": "number",
                 },
                 "reminderDaysBefore": {
                   "items": {

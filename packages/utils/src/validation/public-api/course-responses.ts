@@ -95,8 +95,7 @@ const ZCourseCompliance = z
     reminderDaysBefore: z.array(z.number()).optional(),
     isMandatory: z.boolean().optional(),
     framework: z.enum(['HIPAA', 'OSHA', 'SOX', 'GDPR', 'PCI_DSS', 'FERPA', 'ISO', 'CUSTOM']).nullable().optional(),
-    maxRetakeAttempts: z.number().nullable().optional(),
-    passingScore: z.number().optional()
+    maxRetakeAttempts: z.number().nullable().optional()
   })
   .catchall(z.unknown());
 

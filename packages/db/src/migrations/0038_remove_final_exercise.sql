@@ -35,4 +35,9 @@ WHERE "certificate" ?| ARRAY['requiredExerciseId', 'exerciseMinScorePercent'];--
 
 --> The final-exercise sync setting no longer exists, so its per-course markers are dead rows.
 DELETE FROM "course_template_setting_sync"
-WHERE "setting_key" = 'finalExercise';
+WHERE "setting_key" = 'finalExercise';--> statement-breakpoint
+
+--> The compliance passing score only fed the removed final-exercise fallback.
+UPDATE "course"
+SET "compliance" = "compliance" - 'passingScore'
+WHERE "compliance" ? 'passingScore';

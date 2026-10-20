@@ -296,8 +296,7 @@ export const ZComplianceSettings = z.object({
   reminderDaysBefore: z.array(z.number().int().min(1).max(365)).max(10).optional().default([30, 7, 1]),
   isMandatory: z.boolean().optional().default(true),
   framework: z.enum(['HIPAA', 'OSHA', 'SOX', 'GDPR', 'PCI_DSS', 'FERPA', 'ISO', 'CUSTOM']).nullable().optional(),
-  maxRetakeAttempts: z.number().int().min(1).nullable().optional(),
-  passingScore: z.number().int().min(0).max(100).optional().default(80)
+  maxRetakeAttempts: z.number().int().min(1).nullable().optional()
 });
 export type TComplianceSettings = z.infer<typeof ZComplianceSettings>;
 
