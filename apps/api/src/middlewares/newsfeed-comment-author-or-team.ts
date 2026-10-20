@@ -1,7 +1,7 @@
 import { Context, Next } from 'hono';
 import { getGroupMemberIdByCourseAndProfile, isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { getNewsfeedCommentAuthorAndCourse } from '@cio/db/queries/newsfeed';
 
 /**
@@ -9,7 +9,10 @@ import { getNewsfeedCommentAuthorAndCourse } from '@cio/db/queries/newsfeed';
  * Requires authMiddleware to be applied first
  * Expects commentId in route params as 'commentId'
  */
-export const newsfeedCommentAuthorOrTeamMiddleware = async (c: Context, next: Next) => {
+export const newsfeedCommentAuthorOrTeamMiddleware = async (
+  c: Context,
+  next: Next
+): Promise<void | ApiErrorResponse> => {
   try {
     const user = c.get('user');
     if (!user) {

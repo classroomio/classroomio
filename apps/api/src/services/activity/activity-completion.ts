@@ -19,20 +19,36 @@ export async function runActivityCompletionSideEffects(
   const activity = await getActivityById(activityId);
 
   if (!activity) {
-    throw new AppError('Activity not found', ErrorCodes.COURSE_NOT_FOUND, 404);
+    throw new AppError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
   }
 
-  await evaluateCourseCertification(activity.courseId, profileId);
-
-  let minutes = timeSpentMinutes;
-
-  if (minutes !== undefined) {
-    const sinceIso = await getComplianceCycleStartIso(activity.courseId, profileId);
-    const activityIds = (await getActivitiesByCourseId(activity.courseId)).map((row) => row.id);
-    const stats = await getScormActivityStatsForProfile(activityIds, profileId, db, sinceIso);
-
-    minutes = Math.floor(stats.reduce((total, row) => total + (row.timeSpentSeconds ?? 0), 0) / 60);
+  let certError: unknown = null;
+  try {
+    await evaluateCourseCertification(activity.courseId, profileId);
+  } catch (error) {
+    certError = error;
+    console.error('Failed to evaluate course certification after activity completion:', error);
   }
 
-  await syncComplianceProgressForMember(activity.courseId, profileId, 'activity', minutes);
+  let complianceError: unknown = null;
+  try {
+    let minutes = timeSpentMinutes;
+
+    if (minutes !== undefined) {
+      const sinceIso = await getComplianceCycleStartIso(activity.courseId, profileId);
+      const activityIds = (await getActivitiesByCourseId(activity.courseId)).map((row) => row.id);
+      const stats = await getScormActivityStatsForProfile(activityIds, profileId, db, sinceIso);
+
+      minutes = Math.floor(stats.reduce((total, row) => total + (row.timeSpentSeconds ?? 0), 0) / 60);
+    }
+
+    await syncComplianceProgressForMember(activity.courseId, profileId, 'activity', minutes);
+  } catch (error) {
+    complianceError = error;
+    console.error('Failed to sync compliance progress after activity completion:', error);
+  }
+
+  if (certError && complianceError) {
+    throw certError;
+  }
 }

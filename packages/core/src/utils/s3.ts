@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream';
+
 import {
   DeleteObjectCommand,
   DeleteObjectCommandInput,
@@ -271,9 +273,9 @@ export const SCORM_UPLOAD_CONTENT_TYPE = 'application/zip';
 /**
  * Generates a presigned PUT URL for a SCORM package ZIP in the private scorm bucket.
  */
-export async function generateScormUploadPresignedUrl(fileKey: string): Promise<string> {
+export async function generateScormUploadPresignedUrl(fileKey: string, contentLength?: number): Promise<string> {
   const config = getStorageConfig();
-  return generateUploadPresignedUrl(fileKey, config.bucketScorm, SCORM_UPLOAD_CONTENT_TYPE);
+  return generateUploadPresignedUrl(fileKey, config.bucketScorm, SCORM_UPLOAD_CONTENT_TYPE, contentLength);
 }
 
 /**
@@ -300,6 +302,9 @@ export async function getS3ObjectStream(bucket: string, key: string, range?: str
     new GetObjectCommand({ Bucket: bucket, Key: key, ...(range ? { Range: range } : {}) })
   );
   if (!output.Body) throw new Error(`S3 object ${bucket}/${key} returned no body`);
+  if (output.Body instanceof Readable) {
+    return Readable.toWeb(output.Body) as ReadableStream;
+  }
 
   return output.Body as ReadableStream;
 }

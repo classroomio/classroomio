@@ -1,9 +1,11 @@
 import { Context, Next } from 'hono';
 
+import type { ApiErrorResponse } from '@api/utils/errors';
+
 import { authMiddleware } from './auth';
 import { automationKeyMiddleware } from './automation-key';
 
-export const authOrAutomationKeyMiddleware = async (c: Context, next: Next) => {
+export const authOrAutomationKeyMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   const user = c.get('user');
   const session = c.get('session');
 

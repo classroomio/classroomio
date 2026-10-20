@@ -2,7 +2,7 @@ import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { createAssetUsage, getAssetById } from '@cio/db/queries/assets';
 import { getCurrentPackageVersion } from '@cio/db/queries/activity/package-version';
 import { createActivities } from '@cio/db/queries/activity';
-import { createCourse as createCourseQuery, createCourseNewsfeed } from '@cio/db/queries/course';
+import { createCourse as createCourseQuery, createCourseNewsfeed, isCourseSlugTaken } from '@cio/db/queries/course';
 import { addGroupMember, createGroup } from '@cio/db/queries/group';
 import { upsertActivityScorm } from '@cio/db/queries/scorm';
 import type { TAsset, TContentPackageVersion, TCourse } from '@cio/db/types';
@@ -60,12 +60,12 @@ export async function createCoursesFromPackages(
   const seenSlugs = new Set<string>();
   const slugs: string[] = [];
   for (const ready of packages) {
-    const base = await generateUniqueCourseSlug(slugifyTitle(ready.title));
-    let candidate = base;
+    const baseSlug = slugifyTitle(ready.title);
+    let candidate = baseSlug;
     let suffix = 0;
-    while (seenSlugs.has(candidate)) {
+    while (seenSlugs.has(candidate) || (await isCourseSlugTaken(candidate))) {
       suffix += 1;
-      candidate = `${base}-${suffix}`;
+      candidate = `${baseSlug}-${suffix}`;
     }
     seenSlugs.add(candidate);
     slugs.push(candidate);
@@ -102,7 +102,7 @@ async function createPackageCourse(
     {
       title: ready.title,
       description,
-      type: 'SELF_PACED',
+      type: courseType ?? 'SELF_PACED',
       format: 'single_activity',
       groupId: newGroup.id,
       slug,
@@ -116,10 +116,11 @@ async function createPackageCourse(
   const [newMember] = await addGroupMember({ profileId, groupId: newGroup.id, roleId: ROLE.TUTOR }, tx);
   if (!newMember) throw new AppError('Failed to create course', ErrorCodes.INTERNAL_ERROR, 500);
 
+  const newsfeedContent = sanitizeHtml(`<h2>Welcome to this course 🎉&nbsp;</h2>
+<p>Thank you for joining this course and I hope you get the best out of it.</p>`);
   await createCourseNewsfeed(
     {
-      content: sanitizeHtml(`<h2>Welcome to this course 🎉&nbsp;</h2>
-<p>Thank you for joining this course and I hope you get the best out of it.</p>`),
+      content: newsfeedContent,
       courseId: newCourse.id,
       isPinned: true,
       authorId: newMember.id

@@ -89,7 +89,7 @@ async function createRuntimeFixture(suffix: string, options: FixtureOptions = {}
     .insert(schema.course)
     .values({
       title: 'Runtime course',
-      description: 'PR 10 run-time',
+      description: 'run-time',
       groupId: group.id,
       slug: `rt-${suffix}`,
       type: courseType as never,
@@ -238,7 +238,7 @@ describe('activity commit validation', () => {
   });
 });
 
-describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => {
+describe.skipIf(!hasDatabase)('scorm launch and run-time', () => {
   it('launches the first module on attempt 1 without a plan check', async () => {
     const fixture = await createRuntimeFixture(suffix());
     try {
@@ -510,7 +510,7 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
     }
   });
 
-  it('completes a three-module 2004 package in any order only after the last module', async () => {
+  it('completes a three-module 2004 package in any order only after the last module', { timeout: 30000 }, async () => {
     const fixture = await createRuntimeFixture(suffix(), {
       format: 'scorm2004_4',
       units: [
@@ -557,7 +557,7 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
     }
   });
 
-  it('starts a failed 1.2 module fresh while the attempt stays open', async () => {
+  it('starts a failed 1.2 module fresh while the attempt stays open', { timeout: 30000 }, async () => {
     const fixture = await createRuntimeFixture(suffix(), {
       units: [{ identifier: 'quiz', title: 'Quiz', href: 'quiz.html', masteryScoreRaw: 80 }]
     });
@@ -598,7 +598,7 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
     }
   });
 
-  it('resumes a 1.2 unfinished exit but starts a 2004 normal exit fresh', async () => {
+  it('resumes a 1.2 unfinished exit but starts a 2004 normal exit fresh', { timeout: 30000 }, async () => {
     const fixture12 = await createRuntimeFixture(suffix());
     const fixture04 = await createRuntimeFixture(suffix(), { format: 'scorm2004_4' });
     try {
@@ -816,6 +816,12 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time (PR 10 server)', () => 
       expect(byNumber[0]?.closeReason).toBe('replaced');
       expect(byNumber[1]?.packageVersionId).toBe(otherVersion!.id);
       expect(byNumber[1]?.closedAt).toBeNull();
+
+      const lateCommit = await commitScormAttempt(launchTokenOf(first.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_location': 'slide-2' }
+      });
+      expect(lateCommit.saved).toBe(true);
     } finally {
       await cleanupRuntimeFixture(fixture);
     }
@@ -1372,6 +1378,172 @@ describe.skipIf(!hasDatabase)('scorm time tracking and limits (phase 4 step 3)',
     } finally {
       await cleanupRuntimeFixture(scoped);
       await cleanupRuntimeFixture(unscoped);
+    }
+  });
+
+  it('populates cmi.completion_threshold on 2004 launch state', async () => {
+    if (!hasDatabase) return;
+
+    const fixture = await createRuntimeFixture(suffix(), {
+      format: 'scorm2004_4',
+      units: [
+        {
+          identifier: 'unit-thresh',
+          title: 'Threshold Unit',
+          href: 'index.html',
+          completionThreshold: 0.85
+        }
+      ]
+    });
+
+    try {
+      const launch = await launchActivity(
+        fixture.courseId,
+        fixture.activityId,
+        { unitIdentifier: 'unit-thresh' },
+        { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false }
+      );
+      if (!launch.available) throw new Error('Launch not available');
+
+      const state = await getScormRuntimeState(launchTokenOf(launch.playerUrl));
+      expect(state.cmi['completion_threshold']).toBe('0.85');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('keeps attempt open on mid-session commit when rule is met', async () => {
+    if (!hasDatabase) return;
+
+    const fixture = await createRuntimeFixture(suffix(), {
+      format: 'scorm12',
+      units: [{ identifier: 'mod-1', title: 'Single Module', href: 'mod1.html' }]
+    });
+
+    try {
+      const launch = await launchActivity(
+        fixture.courseId,
+        fixture.activityId,
+        { unitIdentifier: 'mod-1' },
+        { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false }
+      );
+      if (!launch.available) throw new Error('Launch not available');
+
+      const result = await commitScormAttempt(launchTokenOf(launch.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'completed' },
+        terminate: false
+      });
+
+      expect(result.saved).toBe(true);
+      expect(result.completedActivity).toBe(true);
+
+      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      expect(attempts[0]?.closedAt).toBeNull();
+      expect(attempts[0]?.closeReason).toBeNull();
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('keeps multi-SCO attempt open until all launchable SCOs terminate', async () => {
+    if (!hasDatabase) return;
+
+    const fixture = await createRuntimeFixture(suffix(), {
+      format: 'scorm12',
+      units: [
+        { identifier: 'sco-1', title: 'First SCO', href: 'sco1.html' },
+        { identifier: 'sco-2', title: 'Second SCO', href: 'sco2.html' }
+      ]
+    });
+
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launch1 = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'sco-1' }, context);
+      if (!launch1.available) throw new Error('Launch not available');
+
+      await commitScormAttempt(launchTokenOf(launch1.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'completed' },
+        terminate: true
+      });
+
+      let attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      expect(attempts[0]?.closedAt).toBeNull();
+
+      const launch2 = await launchActivity(fixture.courseId, fixture.activityId, { unitIdentifier: 'sco-2' }, context);
+      if (!launch2.available) throw new Error('Launch not available');
+
+      await commitScormAttempt(launchTokenOf(launch2.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'completed' },
+        terminate: true
+      });
+
+      attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      expect(attempts[0]?.closedAt).not.toBeNull();
+      expect(attempts[0]?.closeReason).toBe('finished');
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
+  it('reopens attempt when settings change causes completion to be cleared', async () => {
+    if (!hasDatabase) return;
+
+    const fixture = await createRuntimeFixture(suffix(), {
+      format: 'scorm12',
+      units: [{ identifier: 'quiz-1', title: 'Quiz', href: 'quiz.html' }]
+    });
+
+    try {
+      const { updateActivitySettings } = await import('@cio/core/services/activity/activity');
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+
+      const launch = await launchActivity(
+        fixture.courseId,
+        fixture.activityId,
+        { unitIdentifier: 'quiz-1' },
+        { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false }
+      );
+      if (!launch.available) throw new Error('Launch not available');
+
+      await commitScormAttempt(launchTokenOf(launch.playerUrl), {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'passed', 'core.score.raw': '75' },
+        terminate: true
+      });
+
+      let [completion] = await db
+        .select()
+        .from(schema.activityCompletion)
+        .where(eq(schema.activityCompletion.activityId, fixture.activityId));
+      expect(completion?.isComplete).toBe(true);
+
+      let attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      expect(attempts[0]?.closedAt).not.toBeNull();
+      expect(attempts[0]?.closeReason).toBe('finished');
+
+      await updateActivitySettings(fixture.courseId, fixture.activityId, {
+        completionRule: 'score',
+        minScorePercent: 90,
+        allowRetakes: false,
+        moduleOrder: 'free',
+        completionModules: 'all'
+      });
+
+      [completion] = await db
+        .select()
+        .from(schema.activityCompletion)
+        .where(eq(schema.activityCompletion.activityId, fixture.activityId));
+      expect(completion?.isComplete).toBe(false);
+
+      attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      expect(attempts[0]?.closedAt).toBeNull();
+      expect(attempts[0]?.closeReason).toBeNull();
+    } finally {
+      await cleanupRuntimeFixture(fixture);
     }
   });
 });

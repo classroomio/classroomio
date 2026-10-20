@@ -9,10 +9,13 @@ import { ZScormResultsProfileParam, ZScormResultsQuery } from '@cio/utils/valida
 import { ZScormSettings } from '@cio/utils/validation/activity/scorm';
 import type { TActivityKind } from '@cio/utils/constants/activity';
 import { ContentType, ROLE } from '@cio/utils/constants';
+import { getActivityCompletionsByProfile } from '@cio/db/queries/activity/activity';
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import { getCourseMembers } from '@cio/db/queries/course/people';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 import { attachScormPackage, detachScormPackage } from '@cio/core/services/activity/providers';
+import { getComplianceSnapshot } from '@cio/core/services/activity/providers/scorm/results';
+import { runActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
 import {
   createActivity,
   deleteActivityService,
@@ -24,9 +27,9 @@ import {
   getActivityWithEditorData,
   launchActivity,
   resetActivityLearner,
-  updateActivityService,
-  updateActivitySettings
+  updateActivityService
 } from '@cio/core/services/activity/activity';
+import { saveActivitySettings } from '@api/services/activity/activity-settings';
 import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
 
 import { Hono } from '@api/utils/hono';
@@ -109,7 +112,7 @@ export const activityRouter = new Hono()
         const data = c.req.valid('json');
         const existing = await getActivity(courseId, activityId);
         await assertScormAuthoringAllowed(courseId, existing.kind);
-        await updateActivitySettings(courseId, activityId, data);
+        await saveActivitySettings(courseId, activityId, data);
 
         return c.json({ success: true, data: { activityId } }, 200);
       } catch (error) {
@@ -229,6 +232,20 @@ export const activityRouter = new Hono()
         });
         const isPreview = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
         const result = await getActivityProgress(courseId, activityId, { profileId: user.id, isPreview });
+
+        if (!isPreview) {
+          const completedIds = await getActivityCompletionsByProfile([activityId], user.id);
+          if (completedIds.length > 0) {
+            void (async () => {
+              try {
+                const snapshot = await getComplianceSnapshot(activityId, user.id);
+                await runActivityCompletionSideEffects(activityId, user.id, snapshot?.minutes);
+              } catch (err) {
+                console.error('Failed to reconcile activity completion side effects on progress fetch:', err);
+              }
+            })();
+          }
+        }
 
         return c.json({ success: true, data: result }, 200);
       } catch (error) {

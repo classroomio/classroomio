@@ -1,5 +1,7 @@
 import type { Context, Next } from 'hono';
 
+import type { ApiErrorResponse } from '@api/utils/errors';
+
 import type { LicenseFeatureId } from '@cio/utils/license';
 import { env } from '@cio/core/config/env';
 import { isFeatureLicensed } from '@cio/core/services/license';
@@ -10,7 +12,7 @@ import { isFeatureLicensed } from '@cio/core/services/license';
  * License check is skipped when not self-hosted (cloud/SaaS has no license restrictions).
  */
 export function requireLicense(feature: LicenseFeatureId | string) {
-  return async (c: Context, next: Next) => {
+  return async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
     // No license restrictions for cloud/SaaS (non-self-hosted instances)
     const isSelfHosted = env.PUBLIC_IS_SELFHOSTED === 'true';
     if (!isSelfHosted) {

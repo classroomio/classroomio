@@ -1,11 +1,13 @@
 import { Context, Next } from 'hono';
 
+import type { ApiErrorResponse } from '@api/utils/errors';
+
 import {
   authenticateOrganizationApiKeyService,
   touchOrganizationApiKeyLastUsedService
 } from '@api/services/organization/automation-key';
 
-export const automationKeyMiddleware = async (c: Context, next: Next) => {
+export const automationKeyMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const authHeader = c.req.header('Authorization');
 

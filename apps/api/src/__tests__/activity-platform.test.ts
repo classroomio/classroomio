@@ -109,7 +109,7 @@ async function createActivityFixture(suffix: string): Promise<ActivityFixture> {
     .insert(schema.course)
     .values({
       title: 'Activity baseline',
-      description: 'PR 1 activity queries',
+      description: 'activity queries',
       groupId: group.id,
       slug: `act-${suffix}`,
       type: 'SELF_PACED' as never,

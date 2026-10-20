@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { describe, expect, it, vi } from 'vitest';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 vi.mock('@cio/core/config/activity-content', async (importOriginal) => {
   const original = await importOriginal<typeof import('@cio/core/config/activity-content')>();
@@ -54,7 +54,7 @@ async function createDiagnosticsFixture(suffix: string): Promise<DiagnosticsFixt
     .insert(schema.course)
     .values({
       title: 'Diagnostics course',
-      description: 'PR 14 diagnostics',
+      description: 'diagnostics',
       groupId: group.id,
       slug: `dg-${suffix}`,
       type: 'SELF_PACED' as never,
@@ -164,7 +164,7 @@ async function launchTokenFor(fixture: DiagnosticsFixture): Promise<string> {
   return launchTokenOf(launched.playerUrl);
 }
 
-describe.skipIf(!hasDatabase)('scorm diagnostics events (PR 14)', () => {
+describe.skipIf(!hasDatabase)('scorm diagnostics events', () => {
   it('records launch, commit, terminate and beacon events', async () => {
     const fixture = await createDiagnosticsFixture(suffix());
     try {
@@ -280,22 +280,38 @@ describe.skipIf(!hasDatabase)('scorm diagnostics events (PR 14)', () => {
       const token = await launchTokenFor(fixture);
       await getScormRuntimeState(token, null);
 
-      const rows = await db.select({ id: schema.scormScoAttempt.id }).from(schema.scormScoAttempt).limit(1);
-      const tryId = rows[0]?.id;
+      const [tryRow] = await db
+        .select({ id: schema.scormScoAttempt.id })
+        .from(schema.scormScoAttempt)
+        .innerJoin(schema.scormAttempt, eq(schema.scormScoAttempt.attemptId, schema.scormAttempt.id))
+        .where(
+          and(
+            eq(schema.scormAttempt.activityId, fixture.activityId),
+            eq(schema.scormAttempt.profileId, fixture.studentId)
+          )
+        )
+        .limit(1);
+      const tryId = tryRow?.id;
       if (!tryId) throw new Error('missing module try');
 
-      const old = await recordScormSessionEvent(tryId, 'commit', { seq: 1 }, null);
-      const ancient = new Date(Date.now() - 100 * 86_400_000).toISOString();
-      await db
-        .update(schema.scormSessionEvent)
-        .set({ createdAt: ancient })
-        .where(eq(schema.scormSessionEvent.id, old.id));
+      const rollbackMessage = 'retention test rollback';
+      await expect(
+        db.transaction(async (tx) => {
+          const old = await recordScormSessionEvent(tryId, 'commit', { seq: 1 }, null, tx);
+          const ancient = new Date(Date.now() - 100 * 86_400_000).toISOString();
+          await tx
+            .update(schema.scormSessionEvent)
+            .set({ createdAt: ancient })
+            .where(eq(schema.scormSessionEvent.id, old.id));
 
-      const cutoff = new Date(Date.now() - 90 * 86_400_000).toISOString();
-      expect(await deleteScormSessionEventsOlderThan(cutoff)).toBe(1);
+          const cutoff = new Date(Date.now() - 90 * 86_400_000).toISOString();
+          expect(await deleteScormSessionEventsOlderThan(cutoff, tx)).toBe(1);
 
-      const remaining = await listScormSessionEventsByLearner(fixture.activityId, fixture.studentId);
-      expect(remaining.map((event) => event.kind)).toEqual(['launch']);
+          const remaining = await listScormSessionEventsByLearner(fixture.activityId, fixture.studentId, tx);
+          expect(remaining.map((event) => event.kind)).toEqual(['launch']);
+          throw new Error(rollbackMessage);
+        })
+      ).rejects.toThrow(rollbackMessage);
     } finally {
       await cleanupDiagnosticsFixture(fixture);
     }

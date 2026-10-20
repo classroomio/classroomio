@@ -144,11 +144,11 @@ async function createStructureFixture(suffix: string): Promise<StructureFixture>
     .returning();
   const [lesson] = await db
     .insert(schema.lesson)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Welcome', order: 1 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Welcome', slug: 'welcome', order: 1 })
     .returning();
   const [exercise] = await db
     .insert(schema.exercise)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Quiz', order: 2 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Quiz', slug: 'quiz', order: 2 })
     .returning();
   const queries = await import('@db/queries/activity/activity');
   const [activity] = await queries.createActivities([

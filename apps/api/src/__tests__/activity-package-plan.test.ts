@@ -8,7 +8,7 @@ vi.mock('@cio/db/queries/organization/organization', () => ({
   getActiveOrganizationPlan: vi.fn()
 }));
 
-vi.mock('@api/services/license', () => ({
+vi.mock('@cio/core/services/license', () => ({
   isFeatureLicensed: vi.fn()
 }));
 
@@ -18,7 +18,7 @@ vi.mock('@cio/core/services/activity/providers', () => ({
 
 import { env } from '@cio/core/config/env';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization/organization';
-import { isFeatureLicensed } from '@api/services/license';
+import { isFeatureLicensed } from '@cio/core/services/license';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { assertActivityKindAllowed } from '@api/services/activity/plan';
 
@@ -38,7 +38,7 @@ async function expectRejection(promise: Promise<void>, code: string, statusCode:
   throw new Error(`Expected rejection with ${code}`);
 }
 
-describe('assertActivityKindAllowed (PR 6)', () => {
+describe('assertActivityKindAllowed', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     (env as { PUBLIC_IS_SELFHOSTED?: string }).PUBLIC_IS_SELFHOSTED = 'false';

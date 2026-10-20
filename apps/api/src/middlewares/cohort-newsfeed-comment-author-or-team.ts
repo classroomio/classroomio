@@ -1,5 +1,5 @@
 import { Context, Next } from 'hono';
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import {
   getCohortMemberByProfileId,
   getCohortMemberRole,
@@ -9,7 +9,10 @@ import {
 } from '@cio/db/queries/cohort';
 import { ROLE } from '@cio/utils/constants';
 
-export const cohortNewsfeedCommentAuthorOrTeamMiddleware = async (c: Context, next: Next) => {
+export const cohortNewsfeedCommentAuthorOrTeamMiddleware = async (
+  c: Context,
+  next: Next
+): Promise<void | ApiErrorResponse> => {
   try {
     const user = c.get('user');
     if (!user) {

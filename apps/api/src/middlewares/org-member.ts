@@ -1,5 +1,7 @@
 import { Context, Next } from 'hono';
 
+import type { ApiErrorResponse } from '@api/utils/errors';
+
 /**
  * Middleware to check if the authenticated user is a member of the organization.
  * Reads the role from the Better Auth session (populated by the customSession plugin),
@@ -9,7 +11,7 @@ import { Context, Next } from 'hono';
  * Expects orgId in the 'cio-org-id' header.
  * Stores orgRole and orgId in context for use in route handlers.
  */
-export const orgMemberMiddleware = async (c: Context, next: Next) => {
+export const orgMemberMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const user = c.get('user');
     if (!user) {

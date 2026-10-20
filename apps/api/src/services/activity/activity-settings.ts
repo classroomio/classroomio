@@ -1,3 +1,4 @@
+import { updateActivitySettings } from '@cio/core/services/activity/activity';
 import { getComplianceSnapshot } from '@cio/core/services/activity/providers/scorm/results';
 import { runActivityCompletionSideEffects } from '@api/services/activity/activity-completion';
 
@@ -23,4 +24,16 @@ export async function runSettingsCompletionSideEffects(activityId: string, profi
       })
     );
   }
+}
+
+/**
+ * Saves an activity's settings. Learners the new settings completed get
+ * certificate and compliance updates.
+ */
+export async function saveActivitySettings(courseId: string, activityId: string, input: unknown): Promise<void> {
+  const { newlyCompletedProfileIds } = await updateActivitySettings(courseId, activityId, input);
+
+  if (newlyCompletedProfileIds.length === 0) return;
+
+  await runSettingsCompletionSideEffects(activityId, newlyCompletedProfileIds);
 }

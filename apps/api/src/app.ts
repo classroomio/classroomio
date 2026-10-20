@@ -53,10 +53,23 @@ import { ssoDiscoveryRouter } from '@api/routes/sso/discovery';
 import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 
+const ACTIVITY_TOKEN_PATH_REGEX = /\/activity\/(?:player|scorm\/runtime|content)\/[A-Za-z0-9_.-]+/g;
+
+function redactTokenInLog(message: string): string {
+  return message.replace(ACTIVITY_TOKEN_PATH_REGEX, (match) => {
+    const segments = match.split('/');
+    segments[segments.length - 1] = '[REDACTED]';
+    return segments.join('/');
+  });
+}
+
 // Create Hono app with chaining for RPC support
 const baseApp = new Hono()
   // Middleware
-  .use('*', logger())
+  .use(
+    '*',
+    logger((message, ...rest) => console.log(redactTokenInLog(message), ...rest))
+  )
   .use('*', prettyJSON())
   .use('*', activityContentHostGate)
   // `Cross-Origin-Resource-Policy: same-origin` (Hono's default) blocks the

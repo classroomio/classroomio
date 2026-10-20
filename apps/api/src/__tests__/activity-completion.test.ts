@@ -130,4 +130,25 @@ describe.skipIf(!hasDatabase)('runActivityCompletionSideEffects (zero-activity b
     });
     expect(evaluateCourseCertification).not.toHaveBeenCalled();
   });
+
+  it('still syncs compliance when certification evaluation throws', async () => {
+    const fixture = await createCompletionFixture(`${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`);
+    try {
+      vi.mocked(evaluateCourseCertification).mockRejectedValue(new Error('certificate service unavailable'));
+      vi.mocked(syncComplianceProgressForMember).mockResolvedValue(null);
+
+      await runActivityCompletionSideEffects(fixture.activityId, fixture.profileId);
+
+      expect(evaluateCourseCertification).toHaveBeenCalledWith(fixture.courseId, fixture.profileId);
+      expect(syncComplianceProgressForMember).toHaveBeenCalledWith(
+        fixture.courseId,
+        fixture.profileId,
+        'activity',
+        undefined
+      );
+    } finally {
+      await cleanupCompletionFixture(fixture);
+      vi.clearAllMocks();
+    }
+  });
 });
