@@ -738,23 +738,11 @@ export async function getCourseProgress(
 
 /** Course + org fields needed for certification email and threshold rules */
 export type TCourseCertificationRow = {
-  type: string | null;
-  compliance: {
-    retakeIntervalMonths: number;
-    gracePeriodDays?: number;
-    reminderDaysBefore?: number[];
-    isMandatory?: boolean;
-    framework?: 'HIPAA' | 'OSHA' | 'SOX' | 'GDPR' | 'PCI_DSS' | 'FERPA' | 'ISO' | 'CUSTOM' | null;
-    maxRetakeAttempts?: number | null;
-    passingScore?: number;
-  } | null;
   certificate: {
     isDownloadable?: boolean;
     theme?: string;
     deadline?: string | null;
     threshold?: number;
-    requiredExerciseId?: string | null;
-    exerciseMinScorePercent?: number | null;
     emailMessage?: string | null;
   } | null;
   title: string;
@@ -771,8 +759,6 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
   try {
     const [row] = await db
       .select({
-        type: schema.course.type,
-        compliance: schema.course.compliance,
         certificate: schema.course.certificate,
         title: schema.course.title,
         orgId: schema.organization.id,

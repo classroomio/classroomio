@@ -2421,31 +2421,16 @@
       "deadline_invalid": "Kursun tamamlanma son tarihi geçersiz.",
       "threshold_label": "Minimum tamamlama (%)",
       "threshold_helper": "Sertifikayı kazanmak için birleşik ders ve egzersiz ilerlemesi gerekir (0–100). Varsayılan %100'dür.",
-      "final_exercise_label": "Son alıştırma (isteğe bağlı)",
-      "final_exercise_none": "none",
-      "final_exercise_helper": "Ayarlandığında, öğrencilerin yukarıdaki tamamlama yüzdesine ek olarak bu alıştırmada en azından minimum puana (en iyi deneme sayısı) ulaşması gerekir.",
-      "final_exercise_multiple_attempts_note": "Öğrencilerin seçilen alıştırmada sınırsız deneme yapmasına izin verilecektir.",
-      "final_exercise_deleted": "Silinmiş alıştırma",
-      "final_exercise_deleted_warning": "Burada seçilen alıştırma silindi, bu nedenle bu kural uygulanmıyor. Başka bir alıştırma seçin veya hiçbirini seçmeyin.",
-      "min_exercise_score_label": "Son alıştırmadaki minimum puan (%)",
-      "min_exercise_score_helper": "Puan, söz konusu alıştırmada alınabilecek toplam puanların yüzdesidir (0-100).",
       "completion_rules_heading": "Tamamlama kuralları",
       "completion_rules_description": "Bu kurallar bu sertifikayı kimin alacağını belirler. Kursun Ayarlar sekmesinde belirlenir.",
       "completion_rules_threshold": "Minimum tamamlama: %{percent}",
       "completion_rules_deadline": "En geç {date} tarihine kadar tamamlayın",
       "completion_rules_no_deadline": "Son tarih yok",
-      "completion_rules_final_exercise": "\"{title}\" alıştırmasında en az %{score} puan alın",
-      "completion_rules_no_final_exercise": "Son alıştırma gerekmiyor",
-      "completion_rules_final_exercise_deleted": "Son alıştırma silindi, bu nedenle gerekli değil",
       "completion_rules_edit": "Tamamlama kurallarını düzenle",
       "completion_rules_upgrade": "Tamamlama kurallarını düzenlemek için planınızı yükseltin",
       "blocker_progress": "Kurs ilerlemeniz %{current}; {required}% gerekli.",
       "blocker_deadline": "Sertifika son tarihi geçti.",
       "blocker_no_content": "Bu kursta tamamlanması gereken ders veya alıştırma yok.",
-      "blocker_final_not_submitted": "Sertifikaya hak kazanmak için gerekli \"{exerciseTitle}\" alıştırmasını gönderin.",
-      "blocker_final_pending": "\"{exerciseTitle}\" denemeniz hâlâ notlandırılıyor.",
-      "blocker_final_score": "En iyi puanınız \"{exerciseTitle}\" %{bestPercent}'tir; {requiredPercent}% gereklidir.",
-      "blocker_final_misconfigured": "\"{exerciseTitle}\" sertifikasyon alıştırmasında yapılandırılmış nokta yoktur; eğitmeninizden düzeltmesini isteyin.",
       "email_message_label": "E-posta Mesajı",
       "email_message_placeholder": "e.g. İlerlemenizle gurur duyuyoruz — öğrenmeye devam edin!"
     },
@@ -2457,8 +2442,7 @@
         "view_certificate": "Sertifikayı görüntüle",
         "later": "Kapat",
         "checking": "Kontrol ediliyor uygunluk…",
-        "not_eligible_title": "Neredeyse orada",
-        "retake_exercise": "Egzersizi tekrar alın"
+        "not_eligible_title": "Neredeyse orada"
       }
     },
     "header": {
@@ -6287,7 +6271,6 @@
       "certificate": "Sertifika etkin",
       "deadline": "Son tarih {date}",
       "threshold": "Kursun %{percent}'ini tamamlayın",
-      "final_exercise": "Pass “{title}” at {percent}%",
       "sequential": "Lessons unlock in order",
       "grading": "A öğretmen gönderimlere not verir",
       "comments_off": "Lders yorumları kapalı",
@@ -6383,7 +6366,6 @@
         "welcomeEmail": "Karşılama e-postası",
         "completionDeadline": "Tamamlanma tarihi",
         "completionThreshold": "Tamamlanma eşiği",
-        "finalExercise": "Son alıştırma",
         "lessonTabsOrder": "Lders sekmeleri",
         "contentGrouping": "İçerik gruplama",
         "progression": "İlerleme",
@@ -6412,8 +6394,7 @@
       "value": {
         "free": "Free",
         "sequential": "Sequential",
-        "no_price": "Free",
-        "pass_mark": "Geçiş işareti {score}"
+        "no_price": "Free"
       },
       "template_label": "Template",
       "yours_label": "Sizinkiler"

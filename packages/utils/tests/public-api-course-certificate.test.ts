@@ -32,8 +32,6 @@ const fullPayload = {
   design: fullDesign,
   deadline: '2026-12-31T23:59:59Z',
   threshold: 80,
-  requiredExerciseId: COURSE_ID,
-  exerciseMinScorePercent: 70,
   emailMessage: 'Well done'
 };
 
@@ -70,7 +68,7 @@ describe('ZPublicApiUpdateCourseCertificate', () => {
   );
 
   it('accepts null to clear each nullable field', () => {
-    const cleared = { deadline: null, requiredExerciseId: null, exerciseMinScorePercent: null, emailMessage: null };
+    const cleared = { deadline: null, emailMessage: null };
 
     expect(ZPublicApiUpdateCourseCertificate.parse(cleared)).toEqual(cleared);
   });
@@ -81,26 +79,15 @@ describe('ZPublicApiUpdateCourseCertificate', () => {
     }
   });
 
-  it('rejects a requiredExerciseId that is not a uuid and scores out of range', () => {
-    expect(ZPublicApiUpdateCourseCertificate.safeParse({ requiredExerciseId: 'exercise-1' }).success).toBe(false);
+  it('rejects a threshold out of range', () => {
     expect(ZPublicApiUpdateCourseCertificate.safeParse({ threshold: 101 }).success).toBe(false);
-    expect(ZPublicApiUpdateCourseCertificate.safeParse({ exerciseMinScorePercent: -1 }).success).toBe(false);
   });
 });
 
 describe('public certificate contract', () => {
   it('exposes exactly the documented settings fields', () => {
     expect([...PUBLIC_API_CERTIFICATE_FIELDS].sort()).toEqual(
-      [
-        'deadline',
-        'design',
-        'emailMessage',
-        'exerciseMinScorePercent',
-        'isDownloadable',
-        'requiredExerciseId',
-        'theme',
-        'threshold'
-      ].sort()
+      ['deadline', 'design', 'emailMessage', 'isDownloadable', 'theme', 'threshold'].sort()
     );
   });
 

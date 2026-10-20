@@ -24,8 +24,6 @@ type CourseSettings = {
   certificate: {
     deadline: string | null;
     threshold: number;
-    requiredExerciseId: string | null;
-    exerciseMinScorePercent: number | null;
   };
 };
 
@@ -53,8 +51,6 @@ export const settings = writable<CourseSettings>({
   liveSessionReminders: [],
   certificate: {
     deadline: null,
-    threshold: 100,
-    requiredExerciseId: null,
-    exerciseMinScorePercent: null
+    threshold: 100
   }
 });

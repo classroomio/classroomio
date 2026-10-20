@@ -446,8 +446,6 @@ export const ZCertificationSettings = z.object({
   /** ISO 8601 datetime string or null to clear */
   deadline: z.union([z.string().min(1), z.null()]).optional(),
   threshold: z.number().int().min(0).max(100).optional(),
-  requiredExerciseId: z.union([z.string().uuid(), z.null()]).optional(),
-  exerciseMinScorePercent: z.number().int().min(0).max(100).nullable().optional(),
   emailMessage: z.string().max(5000).nullable().optional()
 });
 export type TCertificationSettings = z.infer<typeof ZCertificationSettings>;

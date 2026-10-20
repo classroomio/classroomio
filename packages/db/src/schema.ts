@@ -810,8 +810,6 @@ export const course = pgTable(
       };
       deadline?: string | null;
       threshold?: number;
-      requiredExerciseId?: string | null;
-      exerciseMinScorePercent?: number | null;
       emailMessage?: string | null;
     }>(),
     compliance: jsonb().$type<{

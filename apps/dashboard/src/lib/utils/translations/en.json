@@ -2425,31 +2425,16 @@
       "deadline_invalid": "The course completion deadline is invalid.",
       "threshold_label": "Minimum completion (%)",
       "threshold_helper": "Combined lesson and exercise progress required to earn the certificate (0–100). Default is 100%.",
-      "final_exercise_label": "Final exercise (optional)",
-      "final_exercise_none": "none",
-      "final_exercise_helper": "When set, students must reach at least the minimum score on this exercise (best attempt counts) in addition to the completion percentage above.",
-      "final_exercise_multiple_attempts_note": "Students will be allowed unlimited attempts on the selected exercise.",
-      "final_exercise_deleted": "Deleted exercise",
-      "final_exercise_deleted_warning": "The exercise chosen here was deleted, so this rule is not being applied. Choose another exercise, or none.",
-      "min_exercise_score_label": "Minimum score on final exercise (%)",
-      "min_exercise_score_helper": "Score is a percentage of the total points possible on that exercise (0–100).",
       "completion_rules_heading": "Completion rules",
       "completion_rules_description": "These rules decide who earns this certificate. They are set on the course Settings tab.",
       "completion_rules_threshold": "Minimum completion: {percent}%",
       "completion_rules_deadline": "Complete by {date}",
       "completion_rules_no_deadline": "No deadline",
-      "completion_rules_final_exercise": "Score at least {score}% on \"{title}\"",
-      "completion_rules_no_final_exercise": "No final exercise required",
-      "completion_rules_final_exercise_deleted": "The final exercise was deleted, so it is not required",
       "completion_rules_edit": "Edit completion rules",
       "completion_rules_upgrade": "Upgrade to edit completion rules",
       "blocker_progress": "Your course progress is {current}%; {required}% is required.",
       "blocker_deadline": "The certification deadline has passed.",
       "blocker_no_content": "This course has no lessons or exercises to complete.",
-      "blocker_final_not_submitted": "Submit the required exercise \"{exerciseTitle}\" to qualify for the certificate.",
-      "blocker_final_pending": "Your attempt on \"{exerciseTitle}\" is still being graded.",
-      "blocker_final_score": "Your best score on \"{exerciseTitle}\" is {bestPercent}%; {requiredPercent}% is required.",
-      "blocker_final_misconfigured": "The certification exercise \"{exerciseTitle}\" has no points configured; ask your instructor to fix it.",
       "email_message_label": "Email Message",
       "email_message_placeholder": "e.g. We are proud of your progress — keep learning!"
     },
@@ -2461,8 +2446,7 @@
         "view_certificate": "View certificate",
         "later": "Close",
         "checking": "Checking eligibility…",
-        "not_eligible_title": "Almost there",
-        "retake_exercise": "Retake exercise"
+        "not_eligible_title": "Almost there"
       }
     },
     "header": {
@@ -6291,7 +6275,6 @@
       "certificate": "Certificate enabled",
       "deadline": "Deadline {date}",
       "threshold": "Complete {percent}% of the course",
-      "final_exercise": "Pass “{title}” at {percent}%",
       "sequential": "Lessons unlock in order",
       "grading": "A tutor grades submissions",
       "comments_off": "Lesson comments are off",
@@ -6387,7 +6370,6 @@
         "welcomeEmail": "Welcome email",
         "completionDeadline": "Completion deadline",
         "completionThreshold": "Completion threshold",
-        "finalExercise": "Final exercise",
         "lessonTabsOrder": "Lesson tabs",
         "contentGrouping": "Content grouping",
         "progression": "Progression",
@@ -6416,8 +6398,7 @@
       "value": {
         "free": "Free",
         "sequential": "Sequential",
-        "no_price": "Free",
-        "pass_mark": "Pass mark {score}"
+        "no_price": "Free"
       },
       "template_label": "Template",
       "yours_label": "Yours"

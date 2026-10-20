@@ -63,16 +63,6 @@ export function templatePreviewSettingRows(settings: CourseTemplatePreview['sett
     });
   }
 
-  if (settings.finalExercise) {
-    rows.push({
-      key: 'finalExercise',
-      label: translate('course_templates.preview.final_exercise', {
-        title: settings.finalExercise.title,
-        percent: settings.finalExercise.score
-      })
-    });
-  }
-
   if (settings.sequential) {
     rows.push({ key: 'sequential', label: translate('course_templates.preview.sequential') });
   }
@@ -187,15 +177,6 @@ export function templateSettingDisplay(key: string, value: unknown, translate: T
 
   if (key === 'pricing' && isRecord(value)) {
     return { kind: 'text', text: formatPrice(value, translate) };
-  }
-
-  if (key === 'finalExercise' && isRecord(value)) {
-    if (!value.exerciseId) return empty;
-    if (typeof value.minScore !== 'number')
-      return { kind: 'text', text: translate('course_templates.sync.custom_value') };
-
-    const score = formatPercent(value.minScore);
-    return { kind: 'text', text: translate('course_templates.sync.value.pass_mark', { score }) };
   }
 
   if (key === 'landingInstructor' && isRecord(value)) {

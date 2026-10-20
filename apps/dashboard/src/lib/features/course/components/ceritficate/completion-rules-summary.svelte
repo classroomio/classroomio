@@ -48,18 +48,6 @@
         {$t('course.certification.completion_rules_no_deadline')}
       {/if}
     </li>
-    <li>
-      {#if summary.finalExercise.kind === 'found'}
-        {$t('course.certification.completion_rules_final_exercise', {
-          title: summary.finalExercise.title,
-          score: summary.exerciseMinScorePercent
-        })}
-      {:else if summary.finalExercise.kind === 'missing'}
-        <span class="ui:text-destructive">{$t('course.certification.completion_rules_final_exercise_deleted')}</span>
-      {:else}
-        {$t('course.certification.completion_rules_no_final_exercise')}
-      {/if}
-    </li>
   </ul>
 
   {#if editRulesHref}

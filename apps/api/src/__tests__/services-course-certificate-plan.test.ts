@@ -115,9 +115,7 @@ describe('assertCertificateChangeAllowed', () => {
         ...storedCertificate,
         theme: undefined,
         deadline: null,
-        threshold: 100,
-        requiredExerciseId: null,
-        exerciseMinScorePercent: null
+        threshold: 100
       })
     ).resolves.toBeUndefined();
     expect(getActiveOrganizationPlan).not.toHaveBeenCalled();

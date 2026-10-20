@@ -8,7 +8,6 @@ export const SYNCABLE_SETTING_KEYS = [
   'welcomeEmail',
   'completionDeadline',
   'completionThreshold',
-  'finalExercise',
   'lessonTabsOrder',
   'contentGrouping',
   'progression',
@@ -100,8 +99,6 @@ export type SettingMetadata = {
 export type SettingCertificate = {
   deadline?: string | null;
   threshold?: number;
-  requiredExerciseId?: string | null;
-  exerciseMinScorePercent?: number | null;
   theme?: string;
   design?: unknown;
   isDownloadable?: boolean;
@@ -140,8 +137,6 @@ export type DetectedSettingChange = {
   key: SyncableSettingKey;
   templateValue: unknown;
   courseValue: unknown;
-  /** Template unit that must be pulled with this setting, e.g. a final exercise the course has no copy of. */
-  requiresUnitId?: string;
 };
 
 type CopyRef = {
@@ -381,23 +376,6 @@ function certificate(course: SettingCarrier): SettingCertificate {
   return course.certificate ?? {};
 }
 
-function uncopiedFinalExerciseId(template: SettingCarrier, exerciseCopyBySourceId: Map<string, string>) {
-  const requiredId = certificate(template).requiredExerciseId ?? null;
-  if (!requiredId || exerciseCopyBySourceId.has(requiredId)) return null;
-
-  return requiredId;
-}
-
-function finalExerciseValue(course: SettingCarrier, exerciseIds: Map<string, string> | null) {
-  const requiredId = certificate(course).requiredExerciseId ?? null;
-  const mappedId = exerciseIds && requiredId ? (exerciseIds.get(requiredId) ?? requiredId) : requiredId;
-
-  return {
-    exerciseId: mappedId,
-    minScore: certificate(course).exerciseMinScorePercent ?? null
-  };
-}
-
 function pricingValue(course: SettingCarrier) {
   const fields = metadata(course);
 
@@ -411,11 +389,7 @@ function pricingValue(course: SettingCarrier) {
   };
 }
 
-export function readSettingValue(
-  course: SettingCarrier,
-  key: SyncableSettingKey,
-  exerciseIds: Map<string, string> | null
-): unknown {
+export function readSettingValue(course: SettingCarrier, key: SyncableSettingKey): unknown {
   const fields = metadata(course);
   const rules = certificate(course);
 
@@ -430,8 +404,6 @@ export function readSettingValue(
       return rules.deadline ?? null;
     case 'completionThreshold':
       return rules.threshold ?? null;
-    case 'finalExercise':
-      return finalExerciseValue(course, exerciseIds);
     case 'lessonTabsOrder':
       return fields.lessonTabsOrder ?? null;
     case 'contentGrouping':
@@ -476,7 +448,6 @@ export function detectSettingChanges(input: {
   course: SettingCarrier;
   courseCreatedAt: string | null;
   syncedAtByKey: Partial<Record<SyncableSettingKey, string>>;
-  exerciseCopyBySourceId: Map<string, string>;
 }): DetectedSettingChange[] {
   const changes: DetectedSettingChange[] = [];
 
@@ -484,18 +455,11 @@ export function detectSettingChanges(input: {
     const syncedAt = input.syncedAtByKey[key] ?? input.courseCreatedAt;
     if (!later(input.template.updatedAt, syncedAt)) continue;
 
-    const templateValue =
-      key === 'finalExercise'
-        ? readSettingValue(input.template, key, input.exerciseCopyBySourceId)
-        : readSettingValue(input.template, key, null);
-    const courseValue = readSettingValue(input.course, key, null);
-    const requiresUnitId =
-      key === 'finalExercise' ? uncopiedFinalExerciseId(input.template, input.exerciseCopyBySourceId) : null;
-    if (!requiresUnitId && same(templateValue, courseValue)) continue;
+    const templateValue = readSettingValue(input.template, key);
+    const courseValue = readSettingValue(input.course, key);
+    if (same(templateValue, courseValue)) continue;
 
-    changes.push(
-      requiresUnitId ? { key, templateValue, courseValue, requiresUnitId } : { key, templateValue, courseValue }
-    );
+    changes.push({ key, templateValue, courseValue });
   }
 
   return changes;
@@ -504,8 +468,7 @@ export function detectSettingChanges(input: {
 export function applySettingChanges(
   course: SettingCarrier,
   template: SettingCarrier,
-  keys: SyncableSettingKey[],
-  exerciseCopyBySourceId: Map<string, string>
+  keys: SyncableSettingKey[]
 ): Partial<SettingCarrier> {
   const nextMetadata: SettingMetadata = { ...metadata(course) };
   const nextCertificate: SettingCertificate = { ...certificate(course) };
@@ -536,16 +499,6 @@ export function applySettingChanges(
         nextCertificate.threshold = templateCertificate.threshold;
         certificateChanged = true;
         break;
-      case 'finalExercise': {
-        const requiredId = templateCertificate.requiredExerciseId ?? null;
-        const courseRequiredId = certificate(course).requiredExerciseId ?? null;
-        nextCertificate.requiredExerciseId = requiredId
-          ? (exerciseCopyBySourceId.get(requiredId) ?? courseRequiredId)
-          : null;
-        nextCertificate.exerciseMinScorePercent = templateCertificate.exerciseMinScorePercent ?? null;
-        certificateChanged = true;
-        break;
-      }
       case 'lessonTabsOrder':
         nextMetadata.lessonTabsOrder = templateMetadata.lessonTabsOrder;
         metadataChanged = true;
@@ -650,15 +603,7 @@ export function preparePullSelection(
     return { ok: false, reason: 'stale' };
   }
 
-  const requiredUnitIds: string[] = [];
-  for (const setting of settings) {
-    if (!setting.requiresUnitId || !settingKeys.includes(setting.key)) continue;
-    if (!unitsById.has(setting.requiresUnitId)) return { ok: false, reason: 'stale' };
-
-    requiredUnitIds.push(setting.requiresUnitId);
-  }
-
-  const selected = new Set([...unitIds, ...requiredUnitIds]);
+  const selected = new Set(unitIds);
   const visit = (id: string) => {
     const unit = unitsById.get(id);
     if (!unit?.parentId) return;

@@ -84,8 +84,6 @@ const ZCourseCertificate = z
       .optional(),
     deadline: z.string().nullable().optional(),
     threshold: z.number().optional(),
-    requiredExerciseId: z.string().uuid().nullable().optional(),
-    exerciseMinScorePercent: z.number().nullable().optional(),
     emailMessage: z.string().nullable().optional()
   })
   .catchall(z.unknown());

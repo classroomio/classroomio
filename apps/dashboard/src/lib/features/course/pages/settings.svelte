@@ -43,12 +43,6 @@
   import { Button } from '@cio/ui/base/button';
 
   import { settings } from '$features/course/utils/settings-store';
-  import {
-    getCourseExercises,
-    getDefaultExerciseMinScorePercent,
-    getEffectiveExerciseMinScorePercent,
-    resolveFinalExercise
-  } from '$features/course/utils/completion-rules-utils';
   import { getNavItemRoute } from '$features/course/utils/functions';
   import Copy from '@lucide/svelte/icons/copy';
   import * as Alert from '@cio/ui/base/alert';
@@ -301,11 +295,7 @@
         certificate: {
           ...(courseApi.course.certificate ?? {}),
           deadline: $settings.certificate.deadline,
-          threshold: $settings.certificate.threshold,
-          requiredExerciseId: $settings.certificate.requiredExerciseId,
-          exerciseMinScorePercent: $settings.certificate.requiredExerciseId
-            ? $settings.certificate.exerciseMinScorePercent
-            : null
+          threshold: $settings.certificate.threshold
         }
       };
 
@@ -398,9 +388,7 @@
         ),
         certificate: {
           deadline: course.certificate?.deadline ?? null,
-          threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
-          requiredExerciseId: course.certificate?.requiredExerciseId ?? null,
-          exerciseMinScorePercent: getEffectiveExerciseMinScorePercent(course)
+          threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100
         }
       });
     });
@@ -559,17 +547,6 @@
     return { before, after };
   });
 
-  const certExercises = $derived(getCourseExercises(courseApi.course));
-
-  const finalExercise = $derived(resolveFinalExercise(certExercises, $settings.certificate.requiredExerciseId));
-
-  const finalExerciseLabel = $derived.by(() => {
-    if (finalExercise.kind === 'found') return finalExercise.title;
-    if (finalExercise.kind === 'missing') return $t('course.certification.final_exercise_deleted');
-
-    return $t('course.certification.final_exercise_none');
-  });
-
   // Completion rules change the certificate settings, which the API only accepts on plans with certificates.
   const areCompletionRulesLocked = $derived($isFreePlan);
 
@@ -597,27 +574,6 @@
     const value = (e.currentTarget as HTMLInputElement).value;
     $settings.certificate.deadline = value ? new Date(value).toISOString() : null;
     delete courseApi.errors['certificate.deadline'];
-    hasUnsavedChanges = true;
-  }
-
-  // Default for the type being saved, not the stored one, using the compliance settings handleSave will send.
-  function getPendingExerciseMinScoreDefault() {
-    const pendingCompliance = courseApi.course?.compliance ?? DEFAULT_COMPLIANCE_SETTINGS;
-
-    return getDefaultExerciseMinScorePercent({ type: $settings.type, compliance: pendingCompliance });
-  }
-
-  function onFinalExerciseChange(value: string) {
-    $settings.certificate.requiredExerciseId = value && value !== 'none' ? value : null;
-
-    if (!$settings.certificate.requiredExerciseId) {
-      $settings.certificate.exerciseMinScorePercent = null;
-    } else if (typeof $settings.certificate.exerciseMinScorePercent !== 'number') {
-      $settings.certificate.exerciseMinScorePercent = getPendingExerciseMinScoreDefault();
-    }
-
-    delete courseApi.errors['certificate.requiredExerciseId'];
-    delete courseApi.errors['certificate.exerciseMinScorePercent'];
     hasUnsavedChanges = true;
   }
 </script>
@@ -963,67 +919,6 @@
             <Field.Error>{courseApi.errors['certificate.threshold']}</Field.Error>
           {/if}
         </Field.Field>
-
-        <Field.Field id="final-exercise" class="scroll-mt-24">
-          <Field.Label>
-            <a href="#final-exercise" class="hover:underline">{$t('course.certification.final_exercise_label')}</a>
-          </Field.Label>
-          <Select.Root
-            type="single"
-            value={$settings.certificate.requiredExerciseId ?? 'none'}
-            onValueChange={onFinalExerciseChange}
-            disabled={areCompletionRulesLocked}
-          >
-            <Select.Trigger class="w-full">
-              {finalExerciseLabel}
-            </Select.Trigger>
-            <Select.Content>
-              <Select.Group>
-                <Select.Item value="none" label={$t('course.certification.final_exercise_none')}>
-                  {$t('course.certification.final_exercise_none')}
-                </Select.Item>
-                {#each certExercises as item (item.id)}
-                  <Select.Item value={item.id} label={item.title}>
-                    {item.title}
-                  </Select.Item>
-                {/each}
-              </Select.Group>
-            </Select.Content>
-          </Select.Root>
-          <Field.Description>{$t('course.certification.final_exercise_helper')}</Field.Description>
-          <Field.Description>{$t('course.certification.final_exercise_multiple_attempts_note')}</Field.Description>
-          {#if finalExercise.kind === 'missing'}
-            <Field.Error>{$t('course.certification.final_exercise_deleted_warning')}</Field.Error>
-          {/if}
-        </Field.Field>
-
-        {#if finalExercise.kind === 'found'}
-          <Field.Field id="min-exercise-score" class="scroll-mt-24">
-            <Field.Label for="course-min-exercise-score">
-              <a href="#min-exercise-score" class="hover:underline"
-                >{$t('course.certification.min_exercise_score_label')}</a
-              >
-            </Field.Label>
-            <NumberField
-              name="course-min-exercise-score"
-              integer
-              min={0}
-              max={100}
-              className="w-full"
-              value={$settings.certificate.exerciseMinScorePercent ?? 100}
-              onValueChange={(next) => {
-                $settings.certificate.exerciseMinScorePercent = next ?? 100;
-                courseApi.clearError('certificate.exerciseMinScorePercent');
-                hasUnsavedChanges = true;
-              }}
-              isDisabled={areCompletionRulesLocked}
-            />
-            <Field.Description>{$t('course.certification.min_exercise_score_helper')}</Field.Description>
-            {#if courseApi.errors['certificate.exerciseMinScorePercent']}
-              <Field.Error>{courseApi.errors['certificate.exerciseMinScorePercent']}</Field.Error>
-            {/if}
-          </Field.Field>
-        {/if}
       </Field.Group>
     </SettingsCard>
   </AttentionHighlight>

@@ -31,7 +31,9 @@ export type LaunchExerciseSection = {
 export type LaunchExercise = {
   title: string;
   description?: string;
-  final?: boolean;
+  completionPolicy?: 'submitted' | 'passed';
+  passThreshold?: number;
+  allowMultipleAttempts?: boolean;
   questions?: LaunchQuestion[];
   sections?: LaunchExerciseSection[];
 };
@@ -210,7 +212,6 @@ const customerOnboarding: LaunchTemplateFixture = {
   certificate: {
     isDownloadable: true,
     threshold: 100,
-    exerciseMinScorePercent: 80,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -243,7 +244,7 @@ const customerOnboarding: LaunchTemplateFixture = {
           [
             'Student progression → Settings › Content. This course uses sequential progression.',
             'AI tutor → Settings › AI tutor. Persona is friendly, assessment mode is hint-only, and answers stay grounded in the course.',
-            'Certificate → Settings › Certificate. Completion is 100% and the final exercise needs 80%.',
+            'Certificate → Settings › Certificate. Completion is 100%. The final exam exercise uses a passed completion rule at 80%.',
             'Welcome email → Settings › Access. Self-enrollment is on.',
             'Landing page → the landing editor. Requirements, description, and goals are filled in.'
           ],
@@ -443,9 +444,11 @@ const customerOnboarding: LaunchTemplateFixture = {
       exercises: [
         {
           title: 'Final exam',
+          allowMultipleAttempts: true,
           description:
             '<p>The final exam covers all four sections: setup, the core workflow, shortcuts, and inviting your team.</p><p>9 questions in 9 formats: single choice, multiple choice, true or false, fill in the blank, ordering, word bank, short answer, numeric, written reflection.</p><h2>Before you start the exam</h2><ul><li>You need 80% on the scored questions to earn your certificate.</li><li>The reflection and feedback questions are not scored; your instructor reads them.</li><li>Take it when you have finished every section. You can retake it.</li></ul><img src="https://images.unsplash.com/photo-1622675363311-3e1904dc1885?w=1200&amp;q=75&amp;auto=format&amp;fit=crop" alt="Final exam" />',
-          final: true,
+          completionPolicy: 'passed',
+          passThreshold: 80,
           questions: [
             {
               type: 'RADIO',
@@ -847,9 +850,9 @@ const productTraining: LaunchTemplateFixture = {
       exercises: [
         {
           title: 'Final exam',
+          allowMultipleAttempts: true,
           description:
             '<p>The final exam covers both tracks: permissions, sign-on, provisioning, audit logs, reports, and automations.</p><p>9 questions in 9 formats: true or false, numeric, fill in the blank, ordering, multiple choice, short answer, word bank, single choice, written reflection.</p><h2>Before you start the exam</h2><ul><li>The reflection and feedback questions are not scored; your instructor reads them.</li><li>Take it when you have finished every section. You can retake it.</li></ul><img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1200&amp;q=75&amp;auto=format&amp;fit=crop" alt="Final exam" />',
-          final: true,
           questions: [
             {
               type: 'TRUE_FALSE',
@@ -1250,9 +1253,9 @@ const publicMiniCourse: LaunchTemplateFixture = {
       exercises: [
         {
           title: 'Final exam',
+          allowMultipleAttempts: true,
           description:
             '<p>The final exam covers all five lessons, from why customers stop to turning learners into advocates.</p><p>8 questions in 8 formats: single choice, true or false, ordering, fill in the blank, multiple choice, short answer, word bank, numeric.</p><h2>Before you start the exam</h2><ul><li>Take it when you have finished every section. You can retake it.</li></ul><img src="https://images.unsplash.com/photo-1675119715594-30fde4bd3dbc?w=1200&amp;q=75&amp;auto=format&amp;fit=crop" alt="Final exam" />',
-          final: true,
           questions: [
             {
               type: 'RADIO',
@@ -1426,7 +1429,6 @@ const chatgptWork: LaunchTemplateFixture = {
   certificate: {
     isDownloadable: true,
     threshold: 100,
-    exerciseMinScorePercent: 70,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -1725,9 +1727,11 @@ const chatgptWork: LaunchTemplateFixture = {
       exercises: [
         {
           title: 'Final exam',
+          allowMultipleAttempts: true,
           description:
             '<p>The final exam covers the whole course: Start working, Reuse what works, Share and go mobile.</p><p>10 questions in 9 formats: single choice, multiple choice, true or false, fill in the blank, short answer, ordering, word bank, numeric, written reflection.</p><h2>Before you start the exam</h2><ul><li>You need 70% on the scored questions to earn your certificate.</li><li>The reflection and feedback questions are not scored; your instructor reads them.</li><li>Take it when you have finished every section. You can retake it.</li></ul><img src="https://i.ytimg.com/vi/Rk4VyQxDq5s/maxresdefault.jpg" alt="Getting Started with ChatGPT Work" />',
-          final: true,
+          completionPolicy: 'passed',
+          passThreshold: 70,
           questions: [
             {
               type: 'RADIO',
@@ -1903,7 +1907,6 @@ const aiFluency: LaunchTemplateFixture = {
   certificate: {
     isDownloadable: true,
     threshold: 100,
-    exerciseMinScorePercent: 70,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -2284,9 +2287,11 @@ const aiFluency: LaunchTemplateFixture = {
       exercises: [
         {
           title: 'Final exam',
+          allowMultipleAttempts: true,
           description:
             '<p>The final exam covers the whole course: Why AI fluency, How generative AI works, Delegation and description, Discernment and diligence.</p><p>10 questions in 9 formats: multiple choice, ordering, word bank, fill in the blank, short answer, true or false, single choice, numeric, written reflection.</p><h2>Before you start the exam</h2><ul><li>You need 70% on the scored questions to earn your certificate.</li><li>The reflection and feedback questions are not scored; your instructor reads them.</li><li>Take it when you have finished every section. You can retake it.</li></ul><img src="https://i.ytimg.com/vi/W4Ua6XFfX9w/maxresdefault.jpg" alt="AI Fluency: Framework &amp; Foundations" />',
-          final: true,
+          completionPolicy: 'passed',
+          passThreshold: 70,
           questions: [
             {
               type: 'CHECKBOX',
@@ -2465,7 +2470,6 @@ const hubspotSalesHub: LaunchTemplateFixture = {
   certificate: {
     isDownloadable: true,
     threshold: 100,
-    exerciseMinScorePercent: 70,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -2727,9 +2731,11 @@ const hubspotSalesHub: LaunchTemplateFixture = {
       exercises: [
         {
           title: 'Final exam',
+          allowMultipleAttempts: true,
           description:
             '<p>The final exam covers the whole course: Manage leads and prospecting, Write outreach and save time, Run and coach a consistent process.</p><p>10 questions in 10 formats: fill in the blank, ordering, word bank, short answer, multiple choice, true or false, numeric, single choice, written reflection, thumbs feedback.</p><h2>Before you start the exam</h2><ul><li>You need 70% on the scored questions to earn your certificate.</li><li>The reflection and feedback questions are not scored; your instructor reads them.</li><li>Take it when you have finished every section. You can retake it.</li></ul><img src="https://i.ytimg.com/vi/tRpOCQ15L7M/maxresdefault.jpg" alt="HubSpot Sales Hub Essentials" />',
-          final: true,
+          completionPolicy: 'passed',
+          passThreshold: 70,
           questions: [
             {
               type: 'FILL_BLANK',
@@ -2900,7 +2906,6 @@ const salesforceCpq: LaunchTemplateFixture = {
   certificate: {
     isDownloadable: true,
     threshold: 100,
-    exerciseMinScorePercent: 70,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -3193,9 +3198,11 @@ const salesforceCpq: LaunchTemplateFixture = {
       exercises: [
         {
           title: 'Final exam',
+          allowMultipleAttempts: true,
           description:
             '<p>The final exam covers the whole course: Build the catalog, Price and renew, Approve and send.</p><p>10 questions in 9 formats: single choice, ordering, word bank, fill in the blank, short answer, numeric, multiple choice, true or false, written reflection.</p><h2>Before you start the exam</h2><ul><li>You need 70% on the scored questions to earn your certificate.</li><li>The reflection and feedback questions are not scored; your instructor reads them.</li><li>Take it when you have finished every section. You can retake it.</li></ul><img src="https://i.ytimg.com/vi/28juxa933qY/maxresdefault.jpg" alt="Salesforce CPQ Admin Essentials" />',
-          final: true,
+          completionPolicy: 'passed',
+          passThreshold: 70,
           questions: [
             {
               type: 'RADIO',

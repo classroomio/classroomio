@@ -41,9 +41,7 @@ import {
 import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
-import { exerciseBelongsToCourse } from '@cio/db/queries/course/certification-exercise';
 import { skipRemovedOffsetReminderDeliveries } from '@cio/db/queries/course/live-session-reminder';
-import { updateExercise } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import {
   countActiveStudents,
@@ -456,15 +454,6 @@ export async function updateCourse(
         400,
         'certificate.deadline'
       );
-    }
-
-    if (data.certificate?.requiredExerciseId) {
-      const ok = await exerciseBelongsToCourse(data.certificate.requiredExerciseId, courseId, dbClient);
-      if (!ok) {
-        throw new AppError('Certification exercise must belong to this course', ErrorCodes.VALIDATION_ERROR, 400);
-      }
-
-      await updateExercise(data.certificate.requiredExerciseId, { allowMultipleAttempts: true }, dbClient);
     }
 
     const updated = await updateCourseQuery(courseId, sanitizeUnknownStrings(sanitizedData), dbClient);

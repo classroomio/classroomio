@@ -109,8 +109,6 @@ const effectiveStored = {
   design: { ...storedDesign, descriptionOverride: undefined },
   deadline: null,
   threshold: 100,
-  requiredExerciseId: null,
-  exerciseMinScorePercent: null,
   emailMessage: 'Well done'
 };
 
@@ -263,8 +261,7 @@ describe('services/v1/courses/certificates', () => {
   });
 
   describe('effective settings', () => {
-    const course = (certificate: Record<string, unknown> | null, extra: Record<string, unknown> = {}) =>
-      ({ type: 'SELF_PACED', compliance: null, certificate, ...extra }) as unknown as TCertificateCourse;
+    const course = (certificate: Record<string, unknown> | null) => ({ certificate }) as unknown as TCertificateCourse;
 
     it('returns the dashboard defaults when nothing is stored', () => {
       expect(toEffectiveCertificateSettings(course(null))).toEqual({
@@ -273,24 +270,9 @@ describe('services/v1/courses/certificates', () => {
         design: { ...DEFAULT_CERTIFICATE_DESIGN, descriptionOverride: undefined },
         deadline: null,
         threshold: 100,
-        requiredExerciseId: null,
-        exerciseMinScorePercent: null,
         emailMessage: null
       });
       expect(toEffectiveCertificateSettings(course({}))).toEqual(toEffectiveCertificateSettings(course(null)));
-    });
-
-    it('defaults the required exercise score to 100, or the compliance passing score', () => {
-      const withExercise = { requiredExerciseId: 'exercise-1' };
-
-      expect(toEffectiveCertificateSettings(course(withExercise)).exerciseMinScorePercent).toBe(100);
-      expect(
-        toEffectiveCertificateSettings(course(withExercise, { type: 'COMPLIANCE', compliance: { passingScore: 70 } }))
-          .exerciseMinScorePercent
-      ).toBe(70);
-      expect(
-        toEffectiveCertificateSettings(course({ ...withExercise, exerciseMinScorePercent: 55 })).exerciseMinScorePercent
-      ).toBe(55);
     });
 
     it('maps a legacy theme-only record to a full design and keeps the stored theme', () => {

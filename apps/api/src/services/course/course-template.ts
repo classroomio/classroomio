@@ -85,40 +85,30 @@ export async function listCourseTemplates(orgId: string) {
   };
 }
 
-function templatePreviewSettings(
-  template: {
-    type: string | null;
-    certificate: {
-      isDownloadable?: boolean;
-      deadline?: string | null;
-      threshold?: number;
-      requiredExerciseId?: string | null;
-      exerciseMinScorePercent?: number | null;
-    } | null;
-    metadata: {
-      progressionMode?: 'free' | 'sequential';
-      grading?: boolean;
-      commentsEnabled?: boolean;
-      lessonDownload?: boolean;
-      allowSelfEnrollment?: boolean | null;
-      allowNewStudent?: boolean | null;
-      aiTutor?: { enabled?: boolean };
-    } | null;
-    compliance: {
-      retakeIntervalMonths: number;
-      isMandatory?: boolean;
-    } | null;
-  },
-  exercises: { id: string; title: string }[]
-) {
+function templatePreviewSettings(template: {
+  type: string | null;
+  certificate: {
+    isDownloadable?: boolean;
+    deadline?: string | null;
+    threshold?: number;
+  } | null;
+  metadata: {
+    progressionMode?: 'free' | 'sequential';
+    grading?: boolean;
+    commentsEnabled?: boolean;
+    lessonDownload?: boolean;
+    allowSelfEnrollment?: boolean | null;
+    allowNewStudent?: boolean | null;
+    aiTutor?: { enabled?: boolean };
+  } | null;
+  compliance: {
+    retakeIntervalMonths: number;
+    isMandatory?: boolean;
+  } | null;
+}) {
   const certificate = template.certificate ?? {};
   const metadata = template.metadata ?? {};
   const certificateOn = certificate.isDownloadable === true;
-  const requiredExerciseId = certificate.requiredExerciseId ?? null;
-  const finalExercise = requiredExerciseId
-    ? exercises.find((exercise) => exercise.id === requiredExerciseId)
-    : undefined;
-  const score = typeof certificate.exerciseMinScorePercent === 'number' ? certificate.exerciseMinScorePercent : 100;
   const compliance =
     template.type === 'COMPLIANCE' && template.compliance
       ? {
@@ -131,7 +121,6 @@ function templatePreviewSettings(
     certificate: certificateOn,
     deadline: certificate.deadline ?? null,
     threshold: certificateOn ? (typeof certificate.threshold === 'number' ? certificate.threshold : 100) : null,
-    finalExercise: finalExercise ? { title: finalExercise.title, score } : null,
     sequential: metadata.progressionMode === 'sequential',
     grading: metadata.grading === true,
     commentsOff: metadata.commentsEnabled === false,
@@ -232,7 +221,7 @@ export async function getCourseTemplatePreview(templateId: string, orgId: string
       title: highlight.title,
       description: highlight.description
     })),
-    settings: templatePreviewSettings(template, exercises),
+    settings: templatePreviewSettings(template),
     outline
   };
 }
