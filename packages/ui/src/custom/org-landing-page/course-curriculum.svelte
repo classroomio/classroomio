@@ -1,5 +1,11 @@
 <script lang="ts">
-  import type { CourseCurriculum, CourseCurriculumLesson, CourseLandingPageLabels, OrgLandingPageTheme } from './types';
+  import type {
+    CourseCurriculum,
+    CourseCurriculumLesson,
+    CourseCurriculumSection,
+    CourseLandingPageLabels,
+    OrgLandingPageTheme
+  } from './types';
   import { courseLandingTokens } from './course-landing-page.tokens';
   import EditableLandingSection from './editable-section.svelte';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
@@ -112,6 +118,17 @@
   {/if}
 {/snippet}
 
+{#snippet standaloneModules(section: CourseCurriculumSection)}
+  {#each section.activities ?? [] as activity (activity.id)}
+    {#each activity.modules ?? [] as module, moduleIdx (module.id)}
+      <div class={t.curriculumLessonRow}>
+        <span class={t.curriculumLessonPrefix}>{lecturePrefix(moduleIdx)}</span>
+        <span class={t.curriculumLessonTitle}>{module.title}</span>
+      </div>
+    {/each}
+  {/each}
+{/snippet}
+
 <EditableLandingSection sectionKey="curriculum">
   <section id="curriculum" class={t.sectionShell}>
     <div class={t.sectionInner}>
@@ -133,6 +150,7 @@
                   </span>
                   <span class={t.curriculumModuleMeta}>{standaloneLabel(section.standalone)}</span>
                 </div>
+                {@render standaloneModules(section)}
               {:else}
                 <button
                   type="button"
@@ -195,7 +213,9 @@
                   {/if}
                 </span>
               </div>
-              {#if !section.standalone}
+              {#if section.standalone}
+                {@render standaloneModules(section)}
+              {:else}
                 <div class="ui:flex ui:flex-col">
                   {#each section.items ?? section.lessons as item, itemIdx (item.id)}
                     {@render itemRow(item, itemIdx)}

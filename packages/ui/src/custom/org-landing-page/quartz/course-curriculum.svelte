@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { CourseCurriculum, CourseLandingPageLabels } from '../types';
+  import type { CourseCurriculum, CourseCurriculumSection, CourseLandingPageLabels } from '../types';
   import BookOpenTextIcon from '@lucide/svelte/icons/book-open-text';
   import ChevronDownIcon from '@lucide/svelte/icons/chevron-down';
   import ListChecksIcon from '@lucide/svelte/icons/list-checks';
@@ -52,6 +52,22 @@
   }
 </script>
 
+{#snippet standaloneModules(section: CourseCurriculumSection)}
+  {#if section.standalone === 'activity'}
+    <div class="ui:pl-9 ui:pb-3 ui:border-b ui:border-[var(--landing-border)]">
+      {#each section.activities ?? [] as activity (activity.id)}
+        {#each activity.modules ?? [] as module (module.id)}
+          <div
+            class="ui:flex ui:items-center ui:gap-3 ui:py-2 ui:text-[13.5px] ui:text-[var(--landing-fg-faint)] ui:border-t ui:border-[var(--landing-border-soft)] ui:first:border-t-0"
+          >
+            <span class="ui:min-w-0 ui:truncate">{module.title}</span>
+          </div>
+        {/each}
+      {/each}
+    </div>
+  {/if}
+{/snippet}
+
 {#if curriculum.sections.length > 0}
   <QuartzCourseSection
     id="curriculum"
@@ -62,19 +78,23 @@
     <div class="ui:border-t ui:border-[var(--landing-border)]">
       {#each curriculum.sections as section, index (section.id)}
         {#if section.standalone}
-          <div
-            class="ui:w-full ui:flex ui:items-center ui:gap-3.5 ui:py-4 ui:border-b ui:border-[var(--landing-border)]"
-          >
-            <span class="ui:w-6 ui:text-xs ui:tabular-nums ui:text-[var(--landing-fg-faint)]">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-            <span
-              class="ui:flex-1 ui:text-base ui:font-medium ui:text-[var(--landing-fg)] ui:[letter-spacing:var(--landing-heading-tracking)]"
+          <div>
+            <div
+              class="ui:w-full ui:flex ui:items-center ui:gap-3.5 ui:py-4 ui:border-b ui:border-[var(--landing-border)]"
             >
-              {section.title}
-            </span>
-            <span class="ui:text-[13px] ui:text-[var(--landing-fg-faint)]">{standaloneLabel(section.standalone)}</span>
-            <span class="ui:size-4 ui:shrink-0" aria-hidden="true"></span>
+              <span class="ui:w-6 ui:text-xs ui:tabular-nums ui:text-[var(--landing-fg-faint)]">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span
+                class="ui:flex-1 ui:text-base ui:font-medium ui:text-[var(--landing-fg)] ui:[letter-spacing:var(--landing-heading-tracking)]"
+              >
+                {section.title}
+              </span>
+              <span class="ui:text-[13px] ui:text-[var(--landing-fg-faint)]">{standaloneLabel(section.standalone)}</span
+              >
+              <span class="ui:size-4 ui:shrink-0" aria-hidden="true"></span>
+            </div>
+            {@render standaloneModules(section)}
           </div>
         {:else}
           <!-- Native disclosure: no component state to drift out of sync with the curriculum prop. -->
