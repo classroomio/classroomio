@@ -250,10 +250,10 @@ export async function resolveLaunchHosts(organizationId: string): Promise<Launch
 async function hasComplianceCycleStartedSince(
   courseId: string,
   profileId: string,
-  latestClosedAt: string | null,
+  since: string | null,
   dbClient: DbOrTxClient
 ): Promise<boolean> {
-  if (!latestClosedAt) return false;
+  if (!since) return false;
 
   const [course] = await getCourseById(courseId, dbClient);
   if (!course || course.type !== 'COMPLIANCE') return false;
@@ -261,7 +261,7 @@ async function hasComplianceCycleStartedSince(
   const [record] = await getLatestComplianceRecordsByProfiles(courseId, [profileId], dbClient);
   if (!record) return false;
 
-  return record.createdAt > latestClosedAt;
+  return record.createdAt > since;
 }
 
 interface AttemptResolution {
@@ -284,12 +284,16 @@ async function resolveAttempt(
   tx: DbOrTxClient
 ): Promise<AttemptResolution> {
   const open = await getOpenScormAttempt(activityId, profileId, tx);
+  let cycleReset = false;
   if (open) {
     const locked = (await lockScormAttemptForUpdate(open.id, tx)) ?? open;
     const pinned =
       locked.packageVersionId === current.id ? current : await getPackageVersionById(locked.packageVersionId, tx);
+    cycleReset = await hasComplianceCycleStartedSince(courseId, profileId, locked.startedAt, tx);
 
-    if (isResumableVersion(pinned, current)) return { attempt: locked, review: false, restartedAfterReplace: false };
+    if (!cycleReset && isResumableVersion(pinned, current)) {
+      return { attempt: locked, review: false, restartedAfterReplace: false };
+    }
 
     await closeScormAttempt(locked.id, 'replaced', tx);
   }
@@ -297,13 +301,14 @@ async function resolveAttempt(
   const latest = await getLatestScormAttempt(activityId, profileId, tx);
   const attemptNumber = (latest?.attemptNumber ?? 0) + 1;
   const closedAt = latest?.closedAt ?? null;
-  const restartedAfterReplace = latest?.closeReason === 'replaced' || Boolean(open);
 
-  const shouldCreate =
-    !latest ||
-    latest.closeReason === 'replaced' ||
-    (startNewAttempt && allowRetakes) ||
-    (await hasComplianceCycleStartedSince(courseId, profileId, closedAt ?? latest?.startedAt ?? null, tx));
+  if (!open) {
+    cycleReset = await hasComplianceCycleStartedSince(courseId, profileId, closedAt ?? latest?.startedAt ?? null, tx);
+  }
+
+  const restartedAfterReplace = !cycleReset && (latest?.closeReason === 'replaced' || Boolean(open));
+
+  const shouldCreate = !latest || cycleReset || latest.closeReason === 'replaced' || (startNewAttempt && allowRetakes);
 
   if (!shouldCreate && latest) return { attempt: latest, review: true, restartedAfterReplace: false };
 

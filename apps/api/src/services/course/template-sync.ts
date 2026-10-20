@@ -79,6 +79,7 @@ import {
 import { invalidateOrgStats } from '@cio/core/utils/redis/org-stats-cache';
 import { AppError, ErrorCodes } from '@api/utils/errors';
 import { syncLessonAssetUsages, remapContentAssets } from '@api/services/course/clone';
+import { runSettingsCompletionSideEffects } from '@api/services/activity/activity-settings';
 
 type SyncGraph = {
   sections: TCourseSection[];
@@ -598,13 +599,6 @@ async function writeLessonLanguages(
   }
 }
 
-function packageIsNewer(left: string | null | undefined, right: string | null | undefined) {
-  if (!left) return false;
-  if (!right) return true;
-
-  return Date.parse(left) > Date.parse(right);
-}
-
 async function pullActivityDetails(
   templateActivityId: string,
   courseActivityId: string,
@@ -612,16 +606,16 @@ async function pullActivityDetails(
   courseOrgId: string | null,
   userId: string,
   client: DbOrTxClient
-) {
+): Promise<string[]> {
   const templateDetails = await getActivityScormByActivityId(templateActivityId, client);
   const courseDetails = await getActivityScormByActivityId(courseActivityId, client);
 
   if (!templateDetails) {
-    if (!courseDetails) return;
+    if (!courseDetails) return [];
 
     await upsertActivityScorm({ activityId: courseActivityId, assetId: null }, client);
     await deleteAssetUsagesByTarget('activity', courseActivityId, client);
-    return;
+    return [];
   }
 
   const settings = {
@@ -632,29 +626,34 @@ async function pullActivityDetails(
     completionModules: templateDetails.completionModules
   };
   const crossOrg = Boolean(templateOrgId && courseOrgId && templateOrgId !== courseOrgId);
+  const applySettings = async (): Promise<string[]> => {
+    const { newlyCompletedProfileIds } = await ACTIVITY_PROVIDERS.scorm.updateSettings(
+      courseActivityId,
+      settings,
+      client
+    );
+
+    return newlyCompletedProfileIds;
+  };
 
   if (!templateDetails.assetId) {
-    if (!courseDetails) return;
+    if (!courseDetails) return [];
 
-    await upsertActivityScorm({ activityId: courseActivityId, assetId: null, ...settings }, client);
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: null }, client);
     await deleteAssetUsagesByTarget('activity', courseActivityId, client);
-    return;
+    return applySettings();
   }
 
   if (!crossOrg) {
     if (courseDetails?.assetId === templateDetails.assetId) {
-      await upsertActivityScorm(
-        { activityId: courseActivityId, assetId: templateDetails.assetId, ...settings },
-        client
-      );
-      return;
+      return applySettings();
     }
 
     if (courseDetails?.assetId) {
       await closeOpenAttemptsForActivity(courseActivityId, 'replaced', client);
     }
     await deleteAssetUsagesByTarget('activity', courseActivityId, client);
-    await upsertActivityScorm({ activityId: courseActivityId, assetId: templateDetails.assetId, ...settings }, client);
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: templateDetails.assetId }, client);
 
     if (courseOrgId) {
       await createAssetUsage(
@@ -670,15 +669,15 @@ async function pullActivityDetails(
       );
     }
 
-    return;
+    return applySettings();
   }
 
   if (!courseDetails?.assetId) {
     const templateAsset = await getAssetById(templateDetails.assetId, templateOrgId ?? undefined);
-    if (!templateAsset || !courseOrgId) return;
+    if (!templateAsset || !courseOrgId) return [];
 
     const transfer = await transferScormPackageAsset(templateAsset, courseOrgId, userId, client);
-    await upsertActivityScorm({ activityId: courseActivityId, assetId: transfer.asset.id, ...settings }, client);
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: transfer.asset.id }, client);
     await createAssetUsage(
       {
         organizationId: courseOrgId,
@@ -691,19 +690,25 @@ async function pullActivityDetails(
       client
     );
 
-    return;
+    return applySettings();
   }
 
-  await upsertActivityScorm({ activityId: courseActivityId, assetId: courseDetails.assetId, ...settings }, client);
+  await upsertActivityScorm({ activityId: courseActivityId, assetId: courseDetails.assetId }, client);
 
-  if (!templateDetails.assetId || templateDetails.assetId === courseDetails.assetId || !courseOrgId) return;
+  if (!templateDetails.assetId || templateDetails.assetId === courseDetails.assetId || !courseOrgId) {
+    return applySettings();
+  }
 
   const [templateCurrent, courseCurrent] = await Promise.all([
     getCurrentPackageVersion(templateDetails.assetId, client),
     getCurrentPackageVersion(courseDetails.assetId, client)
   ]);
-  if (!templateCurrent || templateCurrent.status !== 'ready') return;
-  if (courseCurrent && !packageIsNewer(templateCurrent.updatedAt, courseCurrent.updatedAt)) return;
+  if (!templateCurrent || templateCurrent.status !== 'ready') {
+    return applySettings();
+  }
+  if (courseCurrent && templateCurrent.contentSha256 && courseCurrent.contentSha256 === templateCurrent.contentSha256) {
+    return applySettings();
+  }
 
   const copied = await copyPackageVersionToAsset(
     templateCurrent.id,
@@ -713,6 +718,7 @@ async function pullActivityDetails(
     client
   );
   await setCurrentPackageVersion(copied.id, client);
+  return applySettings();
 }
 
 export async function pullCourseTemplateUpdates(
@@ -722,6 +728,7 @@ export async function pullCourseTemplateUpdates(
   requestedUnitIds: string[],
   requestedSettingKeys: SyncableSettingKey[]
 ) {
+  const completedProfilesByActivity = new Map<string, string[]>();
   const pulled = await withAssetStorageRollback(() =>
     db.transaction(async (tx) => {
       await lockCourseForUpdate(courseId, tx);
@@ -990,7 +997,17 @@ export async function pullCourseTemplateUpdates(
             },
             tx
           );
-          await pullActivityDetails(activity.id, existing.id, templateOrgId, courseOrgId, userId, tx);
+          const completedProfiles = await pullActivityDetails(
+            activity.id,
+            existing.id,
+            templateOrgId,
+            courseOrgId,
+            userId,
+            tx
+          );
+          if (completedProfiles.length > 0) {
+            completedProfilesByActivity.set(existing.id, completedProfiles);
+          }
           stamped.activityIds.push(existing.id);
           continue;
         }
@@ -1057,5 +1074,8 @@ export async function pullCourseTemplateUpdates(
   );
 
   await invalidateOrgStats(orgId);
+  for (const [activityId, profileIds] of completedProfilesByActivity) {
+    await runSettingsCompletionSideEffects(activityId, profileIds);
+  }
   return pulled;
 }
