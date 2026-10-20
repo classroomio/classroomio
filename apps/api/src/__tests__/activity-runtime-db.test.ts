@@ -822,6 +822,20 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time', () => {
         cmi: { 'core.lesson_location': 'slide-2' }
       });
       expect(lateCommit.saved).toBe(true);
+
+      const passingCommit = await commitScormAttempt(launchTokenOf(first.playerUrl), {
+        commitSequence: 2,
+        cmi: { 'core.completion_status': 'completed', 'core.success_status': 'passed' },
+        terminate: true
+      });
+      expect(passingCommit.saved).toBe(true);
+      expect(passingCommit.completedActivity).toBe(false);
+
+      const [completion] = await db
+        .select()
+        .from(schema.activityCompletion)
+        .where(eq(schema.activityCompletion.activityId, fixture.activityId));
+      expect(completion?.isComplete).not.toBe(true);
     } finally {
       await cleanupRuntimeFixture(fixture);
     }
