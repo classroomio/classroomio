@@ -51,8 +51,8 @@ const envSchema = z.object({
   /** Public immutable artifact origin, populated by the plugin artifact deployment pipeline. */
   PLUGIN_ASSET_ORIGIN: z.string().url().optional(),
   PLUGIN_ASSET_BUCKET: z.string().min(1).optional(),
-  PLUGIN_QUARANTINE_BUCKET: z.string().min(1).optional(),
-  PLUGIN_REVIEW_ORIGIN: z.string().url().optional(),
+  /** Dedicated secret token required by POST /internal/plugin-releases. */
+  PLUGIN_RELEASE_DEPLOY_TOKEN: z.string().min(32).optional(),
   /** Local immutable artifact directory used by development and release validation. */
   PLUGIN_ARTIFACTS_PATH: z.string().optional(),
   PROJECT_ID_VERCEL: z.string().optional(),

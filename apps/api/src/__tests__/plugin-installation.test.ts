@@ -5,7 +5,6 @@ import type { TPluginManifest } from '@cio/utils/validation/plugin';
 
 const dbMocks = vi.hoisted(() => ({
   createInstallation: vi.fn(),
-  getApprovedPrivatePluginSubmission: vi.fn(),
   getInstallationById: vi.fn(),
   getInstallationGrants: vi.fn(),
   getOrganizationInstallation: vi.fn(),
@@ -249,9 +248,9 @@ describe('Plugin Installation Service', () => {
       id: 'version-1',
       pluginId: linkedinManifest.id,
       version: linkedinManifest.version,
-      reviewStatus: 'approved'
+      reviewStatus: 'approved',
+      releaseMetadata: { organizationId: 'organization-owner' }
     });
-    dbMocks.getApprovedPrivatePluginSubmission.mockResolvedValueOnce(null);
 
     await expect(
       installPlugin({

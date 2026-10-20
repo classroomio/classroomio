@@ -54,20 +54,13 @@ export function buildPluginCsp(manifest?: { networkAccess?: { allowedDomains?: s
 }
 
 function resolveArtifactDirectory(pluginId: string, version: string, digest: string): string | null {
-  const currentWorkingDirectory = process.cwd();
-  const configuredRoot = process.env.PLUGIN_ARTIFACTS_PATH ? [path.resolve(process.env.PLUGIN_ARTIFACTS_PATH)] : [];
-  const artifactRoots = [
-    ...configuredRoot,
-    path.resolve(currentWorkingDirectory, '.plugin-artifacts'),
-    path.resolve(currentWorkingDirectory, '../.plugin-artifacts'),
-    path.resolve(currentWorkingDirectory, '../../.plugin-artifacts')
-  ];
+  const artifactRoot = process.env.PLUGIN_ARTIFACTS_PATH
+    ? path.resolve(process.env.PLUGIN_ARTIFACTS_PATH)
+    : path.resolve(process.cwd(), '.plugin-artifacts');
 
-  for (const artifactRoot of artifactRoots) {
-    const releaseDirectory = path.resolve(artifactRoot, pluginId, version, digest);
-    if (existsSync(releaseDirectory)) {
-      return releaseDirectory;
-    }
+  const releaseDirectory = path.resolve(artifactRoot, pluginId, version, digest);
+  if (existsSync(releaseDirectory)) {
+    return releaseDirectory;
   }
 
   return null;

@@ -301,7 +301,7 @@ export function createDeterministicTarGz(files) {
   return zlib.gzipSync(tarBuf, { mtime: 0 });
 }
 
-export function packageSinglePlugin(pluginDir) {
+export function packageSinglePlugin(pluginDir, options = {}) {
   const manifestPath = path.join(pluginDir, 'plugin.json');
   if (!fs.existsSync(manifestPath)) {
     throw new Error(`plugin.json not found in ${pluginDir}`);
@@ -325,7 +325,18 @@ export function packageSinglePlugin(pluginDir) {
 
   if (manifest.runtime?.ui) {
     const distDir = path.join(pluginDir, 'dist');
-    if (!fs.existsSync(distDir)) {
+    const packageJsonPath = path.join(pluginDir, 'package.json');
+    if (options.rebuildUi && fs.existsSync(packageJsonPath)) {
+      const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+      const buildScript = packageJson.scripts?.['build:ui'] ? 'build:ui' : packageJson.scripts?.build ? 'build' : null;
+      if (buildScript) {
+        fs.rmSync(distDir, { recursive: true, force: true });
+        const build = spawnSync('pnpm', ['run', buildScript], { cwd: pluginDir, stdio: 'inherit' });
+        if (build.status !== 0) {
+          throw new Error(`Build failed for ${manifest.id}`);
+        }
+      }
+    } else if (!fs.existsSync(distDir)) {
       console.log(`Building UI assets for ${manifest.id}...`);
       const build = spawnSync('npm', ['run', 'build:ui'], { cwd: pluginDir, stdio: 'inherit' });
       if (build.status !== 0) {
@@ -415,20 +426,84 @@ export function findPluginDirectories(rootDir = '.') {
     .map((entry) => path.join(resolvedRoot, entry.name));
 }
 
-export function buildAllPlugins(rootDir = '.') {
+export function buildAllPlugins(rootDir = '.', options = {}) {
   const resolvedRoot = path.resolve(process.cwd(), rootDir);
   const outputRoot = path.join(resolvedRoot, '.plugin-artifacts');
-  const pluginDirs = findPluginDirectories(resolvedRoot);
+  let pluginCandidates = [];
 
-  if (pluginDirs.length === 0) {
+  if (options.registry) {
+    const candidatePaths = [
+      path.resolve(process.cwd(), options.registry),
+      path.resolve(resolvedRoot, options.registry)
+    ];
+    const registryPath = candidatePaths.find((p) => fs.existsSync(p));
+    if (!registryPath) {
+      throw new Error(`Registry file not found at: ${options.registry}`);
+    }
+
+    const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+    if (!registry || registry.schemaVersion !== 1 || !Array.isArray(registry.plugins)) {
+      throw new Error(`Invalid registry file at ${registryPath}: expected schemaVersion 1 and a "plugins" array.`);
+    }
+
+    const registryIds = new Set();
+    const registryPaths = new Set();
+    for (const item of registry.plugins) {
+      if (
+        !item ||
+        typeof item.id !== 'string' ||
+        typeof item.path !== 'string' ||
+        !['first-party', 'community', 'fixture'].includes(item.kind) ||
+        typeof item.release !== 'boolean'
+      ) {
+        throw new Error('Every registry entry must define id, path, kind, and release.');
+      }
+      if (registryIds.has(item.id) || registryPaths.has(item.path)) {
+        throw new Error(`Duplicate plugin registry ID or path: ${item.id}`);
+      }
+      registryIds.add(item.id);
+      registryPaths.add(item.path);
+
+      const usesReservedNamespace = item.id.startsWith('com.classroomio.');
+      if (item.release && usesReservedNamespace !== (item.kind === 'first-party')) {
+        throw new Error(`Invalid namespace policy for registry entry "${item.id}".`);
+      }
+      if (item.kind === 'fixture' && item.release) {
+        throw new Error(`Fixture registry entry "${item.id}" cannot be released.`);
+      }
+
+      const foundDir = path.resolve(resolvedRoot, item.path);
+      if (!foundDir.startsWith(`${resolvedRoot}${path.sep}`)) {
+        throw new Error(`Registry path escapes the repository root: ${item.path}`);
+      }
+      if (!fs.existsSync(foundDir) || !fs.existsSync(path.join(foundDir, 'plugin.json'))) {
+        throw new Error(
+          `Plugin directory or plugin.json not found for registry entry "${item.id}" at path "${item.path}".`
+        );
+      }
+
+      const manifest = JSON.parse(fs.readFileSync(path.join(foundDir, 'plugin.json'), 'utf8'));
+      if (manifest.id !== item.id) {
+        throw new Error(`Registry ID mismatch: registry declared "${item.id}" but plugin.json has "${manifest.id}".`);
+      }
+
+      if (item.release === false) continue;
+      pluginCandidates.push({ directory: foundDir, kind: item.kind });
+    }
+  } else {
+    pluginCandidates = findPluginDirectories(resolvedRoot).map((directory) => ({ directory, kind: undefined }));
+  }
+
+  if (pluginCandidates.length === 0) {
     throw new Error(`No plugin.json found in ${resolvedRoot} or its direct subdirectories.`);
   }
 
   const releases = [];
 
-  for (const pluginDir of pluginDirs) {
+  for (const pluginCandidate of pluginCandidates) {
+    const pluginDir = pluginCandidate.directory;
     console.log(`Packaging plugin in ${path.relative(process.cwd(), pluginDir) || '.'}...`);
-    const pkg = packageSinglePlugin(pluginDir);
+    const pkg = packageSinglePlugin(pluginDir, { rebuildUi: Boolean(options.registry) });
 
     const pluginOutputDir = path.join(outputRoot, pkg.manifest.id, pkg.manifest.version);
     fs.mkdirSync(pluginOutputDir, { recursive: true });
@@ -450,6 +525,7 @@ export function buildAllPlugins(rootDir = '.') {
       pluginId: pkg.manifest.id,
       slug: pkg.slug,
       version: pkg.manifest.version,
+      kind: pluginCandidate.kind,
       artifactDigest: pkg.artifactDigest,
       archive: path.relative(resolvedRoot, archivePath),
       manifest: pkg.manifest,
@@ -692,9 +768,7 @@ export function scaffoldPlugin(target = 'my-classroomio-plugin', options = {}) {
       'build:ui': 'vite build',
       pack: 'cio-plugin build',
       seed: 'cio-plugin dev',
-      preview: 'vite preview',
-      publish: 'cio-plugin publish',
-      status: 'cio-plugin status'
+      preview: 'vite preview'
     },
     dependencies: {
       '@classroomio/plugin-sdk': '^1.0.0'
@@ -791,9 +865,10 @@ To install a packaged development release in one local ClassroomIO organization,
 Vite server stopped:
 
 \`\`\`bash
-CLASSROOMIO_API_URL=http://localhost:3002 \\
-CLASSROOMIO_PLUGIN_TOKEN=<publisher-token> \\
-npm run seed -- --org <organization-id>
+export CLASSROOMIO_API_URL=http://localhost:3002
+export CLASSROOMIO_DEV_TOKEN=<organization-api-key-with-plugin-development-scope>
+export CLASSROOMIO_ORG_ID=<organization-id>
+npm run seed -- --org "$CLASSROOMIO_ORG_ID"
 \`\`\`
 
 ## Build the UI
@@ -804,11 +879,14 @@ npm run build
 
 To create the immutable plugin archive, run \`npm run pack\` after the UI build.
 
-## Publish
+## Contributing
 
-\`\`\`bash
-CLASSROOMIO_PLUGIN_TOKEN=<publisher-token> npm run publish
-\`\`\`
+To publish this plugin to ClassroomIO:
+1. Ensure \`npm run build\` and \`npm run pack\` pass locally.
+2. Fork \`classroomio-plugins\` on GitHub.
+3. Add your plugin directory and register it in \`registry/plugins.json\`.
+4. Submit a pull request to \`classroomio-plugins\`.
+5. Once merged, trusted release CI publishes the approved artifact to production storage and registers the release.
 `;
   const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
   <rect width="18" height="18" x="3" y="3" rx="2" />
@@ -838,30 +916,26 @@ ClassroomIO Plugin CLI (cio-plugin)
 
 Usage:
   cio-plugin create [directory]        Scaffold a new ClassroomIO plugin starter
-  cio-plugin build [path] [--all]     Validate, build, and package immutable plugin artifacts
-  cio-plugin dev [path] [options]     Install a local development release
-  cio-plugin publish [path] [options]  Submit a release for review and promotion
-  cio-plugin status <submissionId>     Check the status of a submitted release
+  cio-plugin build [path] [options]    Validate, build, and package immutable plugin artifacts
+  cio-plugin dev [path] [options]      Install a local development release into one organization
 
 Create Options:
   --id <pluginId>        Reverse-domain plugin ID (default: com.example.<slug>)
   --name <displayName>   Human-readable plugin name
   --publisher <name>     Publisher shown in the catalog
 
-Development Options:
-  --host <url>           ClassroomIO API host (default: $CLASSROOMIO_API_URL or http://localhost:3000)
-  --token <token>        Publisher API key (default: $CLASSROOMIO_PLUGIN_TOKEN)
-  --org <orgId>          Development organization (default: $CLASSROOMIO_ORG_ID)
+Build Options:
+  --registry <path>      Path to plugins.json registry (e.g. registry/plugins.json)
 
-Publish Options:
-  --host <url>           ClassroomIO API host (default: $CLASSROOMIO_API_URL or http://localhost:3000)
-  --token <token>        Publisher API key (default: $CLASSROOMIO_PLUGIN_TOKEN)
+Development Options:
+  --host <url>           ClassroomIO API host (default: $CLASSROOMIO_API_URL or http://localhost:3002)
+  --token <token>        Development API token (default: $CLASSROOMIO_DEV_TOKEN)
+  --org <orgId>          Development organization (default: $CLASSROOMIO_ORG_ID)
 
 Examples:
   npx cio-plugin create my-plugin --id com.acme.my-plugin --publisher "Acme Inc."
-  npx cio-plugin build --all
+  npx cio-plugin build --registry registry/plugins.json
   npx cio-plugin dev --org <organization-id>
-  npx cio-plugin publish ./my-plugin
 `);
 }
 
@@ -927,7 +1001,7 @@ export async function runCli(argv = process.argv.slice(2)) {
     const rootDir = targetArg;
     try {
       console.log(`Building plugin artifacts...`);
-      const { releases, outputRoot } = buildAllPlugins(rootDir);
+      const { releases, outputRoot } = buildAllPlugins(rootDir, { registry: cliOptions.registry });
       const verification = verifyArtifacts(outputRoot);
       if (!verification.valid) {
         throw new Error(verification.errors.join('\n'));
@@ -942,18 +1016,18 @@ export async function runCli(argv = process.argv.slice(2)) {
     }
   }
 
-  if (command === 'dev' || command === 'publish') {
+  if (command === 'dev') {
     const targetDir = path.resolve(process.cwd(), targetArg === command ? '.' : targetArg);
     const host = (cliOptions.host || process.env.CLASSROOMIO_API_URL || 'http://localhost:3002').replace(/\/$/, '');
-    const token = cliOptions.token || process.env.CLASSROOMIO_PLUGIN_TOKEN || '';
+    const token = cliOptions.token || process.env.CLASSROOMIO_DEV_TOKEN || '';
     const organizationId = cliOptions.org || process.env.CLASSROOMIO_ORG_ID || '';
 
     if (!token) {
-      console.error('\n✖ This command requires --token or CLASSROOMIO_PLUGIN_TOKEN with the plugin:publish scope.');
+      console.error('\n✖ Local development requires --token or CLASSROOMIO_DEV_TOKEN.');
       process.exit(1);
     }
 
-    if (command === 'dev' && !organizationId) {
+    if (!organizationId) {
       console.error('\n✖ Local development requires --org or CLASSROOMIO_ORG_ID.');
       process.exit(1);
     }
@@ -966,156 +1040,28 @@ export async function runCli(argv = process.argv.slice(2)) {
       process.exit(1);
     }
 
-    if (command === 'dev') {
-      try {
-        const response = await fetch(`${host}/plugins/development/releases`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            manifest: pkg.manifest,
-            artifactDigest: pkg.artifactDigest,
-            archive: pkg.tarGzBuffer.toString('base64'),
-            organizationId
-          })
-        });
-        if (!response.ok) {
-          throw new Error(await response.text());
-        }
-
-        console.log(`✓ Installed ${pkg.manifest.id}@${pkg.manifest.version} in ${organizationId}.`);
-        process.exit(0);
-      } catch (error) {
-        console.error(`\n✖ Local development release failed: ${error.message}`);
-        process.exit(1);
-      }
-    }
-
-    console.log(`\nSubmitting ${pkg.manifest.id}@${pkg.manifest.version} to ${host}...`);
-
     try {
-      // 1. Create intent
-      const intentHeaders = { 'Content-Type': 'application/json' };
-      if (token) intentHeaders['Authorization'] = `Bearer ${token}`;
-
-      const intentBody = {
-        pluginId: pkg.manifest.id,
-        version: pkg.manifest.version,
-        artifactDigest: pkg.artifactDigest
-      };
-
-      const intentRes = await fetch(`${host}/plugins/submissions/intent`, {
+      const response = await fetch(`${host}/plugins/development/releases`, {
         method: 'POST',
-        headers: intentHeaders,
-        body: JSON.stringify(intentBody)
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          manifest: pkg.manifest,
+          artifactDigest: pkg.artifactDigest,
+          archive: pkg.tarGzBuffer.toString('base64'),
+          organizationId
+        })
       });
-
-      if (!intentRes.ok) {
-        const errText = await intentRes.text();
-        console.error(`\n✖ Submission intent failed (${intentRes.status}): ${errText}`);
-        process.exit(1);
+      if (!response.ok) {
+        throw new Error(await response.text());
       }
 
-      const intentJson = await intentRes.json();
-      const { submission, uploadUrl } = intentJson.data;
-      console.log(`✓ Created submission intent (ID: ${submission.id})`);
-
-      // 2. Upload archive to quarantine
-      console.log(`Uploading archive package (${(pkg.tarGzBuffer.length / 1024).toFixed(1)} KB)...`);
-      const fullUploadUrl = uploadUrl.startsWith('http') ? uploadUrl : `${host}${uploadUrl}`;
-      const uploadRes = await fetch(fullUploadUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/gzip' },
-        body: pkg.tarGzBuffer
-      });
-
-      if (!uploadRes.ok) {
-        const errText = await uploadRes.text();
-        console.error(`\n✖ Archive upload failed (${uploadRes.status}): ${errText}`);
-        process.exit(1);
-      }
-      console.log(`✓ Quarantined package archive uploaded successfully`);
-
-      // 3. Finalize submission
-      console.log(`Validating archive integrity and manifest on registry...`);
-      const completeHeaders = {};
-      if (token) completeHeaders['Authorization'] = `Bearer ${token}`;
-
-      const completeRes = await fetch(`${host}/plugins/submissions/${submission.id}/complete`, {
-        method: 'POST',
-        headers: completeHeaders
-      });
-
-      if (!completeRes.ok) {
-        const errText = await completeRes.text();
-        console.error(`\n✖ Finalization failed (${completeRes.status}): ${errText}`);
-        process.exit(1);
-      }
-
-      const completeJson = await completeRes.json();
-      const finalSub = completeJson.data.submission;
-
-      console.log(`\n========================================================`);
-      if (finalSub.status === 'in_review') {
-        console.log(`✓ Plugin submitted to marketplace review queue!`);
-        console.log(`  Submission ID: ${finalSub.id}`);
-        console.log(`  Status:        ${finalSub.status}`);
-        console.log(`  Track status:  npx cio-plugin status ${finalSub.id} --host ${host}`);
-      } else {
-        console.log(`Submission status: ${finalSub.status}`);
-      }
-      console.log(`========================================================\n`);
+      console.log(`✓ Installed ${pkg.manifest.id}@${pkg.manifest.version} in ${organizationId}.`);
       process.exit(0);
-    } catch (err) {
-      console.error(`\n✖ Network error during publish: ${err.message}`);
-      process.exit(1);
-    }
-  }
-
-  if (command === 'status') {
-    const submissionId = targetArg;
-    if (!submissionId || submissionId === '.') {
-      console.error(`Error: Submission ID is required. Example: cio-plugin status <submissionId>`);
-      process.exit(1);
-    }
-
-    const host = (cliOptions.host || process.env.CLASSROOMIO_API_URL || 'http://localhost:3002').replace(/\/$/, '');
-    const token = cliOptions.token || process.env.CLASSROOMIO_PLUGIN_TOKEN || '';
-
-    if (!token) {
-      console.error('Error: Status checks require --token or CLASSROOMIO_PLUGIN_TOKEN.');
-      process.exit(1);
-    }
-
-    try {
-      const headers = {};
-      if (token) headers['Authorization'] = `Bearer ${token}`;
-
-      const res = await fetch(`${host}/plugins/submissions/${submissionId}`, { headers });
-      if (!res.ok) {
-        const errText = await res.text();
-        console.error(`Error (${res.status}): ${errText}`);
-        process.exit(1);
-      }
-
-      const json = await res.json();
-      const sub = json.data;
-
-      console.log(`\nSubmission Details:`);
-      console.log(`  ID:           ${sub.id}`);
-      console.log(`  Plugin:       ${sub.pluginId}@${sub.version}`);
-      console.log(`  Status:       ${sub.status}`);
-      console.log(`  Digest:       ${sub.artifactDigest}`);
-      if (sub.reviewNotes) {
-        console.log(`  Review Notes: ${sub.reviewNotes}`);
-      }
-      console.log(`  Submitted:    ${sub.createdAt}`);
-      console.log(`  Updated:      ${sub.updatedAt}\n`);
-      process.exit(0);
-    } catch (err) {
-      console.error(`\n✖ Network error checking status: ${err.message}`);
+    } catch (error) {
+      console.error(`\n✖ Local development release failed: ${error.message}`);
       process.exit(1);
     }
   }

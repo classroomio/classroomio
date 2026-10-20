@@ -327,7 +327,7 @@ Suggested request body:
       "pluginId": "com.example.reading-timer",
       "version": "1.2.0",
       "artifactDigest": "sha256-...",
-      "artifactKeyPrefix": "com.example.reading-timer/1.2.0/sha256-..."
+      "kind": "community"
     }
   ]
 }

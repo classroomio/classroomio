@@ -276,17 +276,11 @@ export type TPluginReviewStatus = (typeof schema.pluginReviewStatus.enumValues)[
 export type TPluginOwnerType = (typeof schema.pluginOwnerType.enumValues)[number];
 export type TPluginInstallationStatus = (typeof schema.pluginInstallationStatus.enumValues)[number];
 export type TPluginStorageScopeType = (typeof schema.pluginStorageScopeType.enumValues)[number];
-export type TPluginReleaseLane = (typeof schema.pluginReleaseLane.enumValues)[number];
-export type TPluginSubmissionStatus = (typeof schema.pluginSubmissionStatus.enumValues)[number];
-
 export type TPluginPublisher = typeof schema.pluginPublisher.$inferSelect;
 export type TNewPluginPublisher = typeof schema.pluginPublisher.$inferInsert;
 
 export type TPlugin = typeof schema.plugin.$inferSelect;
 export type TNewPlugin = typeof schema.plugin.$inferInsert;
-
-export type TPluginSubmission = typeof schema.pluginSubmission.$inferSelect;
-export type TNewPluginSubmission = typeof schema.pluginSubmission.$inferInsert;
 
 export type TPluginVersion = typeof schema.pluginVersion.$inferSelect;
 export type TNewPluginVersion = typeof schema.pluginVersion.$inferInsert;

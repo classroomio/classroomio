@@ -162,12 +162,78 @@ describe('Plugin CLI (cio-plugin)', () => {
       'build:ui': 'vite build',
       pack: 'cio-plugin build',
       seed: 'cio-plugin dev',
-      publish: 'cio-plugin publish'
+      preview: 'vite preview'
     });
+    expect(result.packageJson.scripts.publish).toBeUndefined();
     expect(fs.readFileSync(path.join(targetDir, 'vite.config.ts'), 'utf8')).toContain("base: './'");
     expect(fs.readFileSync(path.join(targetDir, 'src', 'main.ts'), 'utf8')).toContain('createClassroomIOClient');
     expect(fs.existsSync(path.join(targetDir, 'public', 'assets', 'icon.svg'))).toBe(true);
     expect(fs.existsSync(path.join(targetDir, 'README.md'))).toBe(true);
+  });
+
+  it('builds plugins declared in a registry file and skips unreleased entries', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-registry-'));
+    const pluginA = path.join(tempDir, 'plugins', 'plugin-a');
+    const pluginB = path.join(tempDir, 'plugins', 'plugin-b');
+
+    fs.mkdirSync(path.join(pluginA, 'dist'), { recursive: true });
+    fs.writeFileSync(path.join(pluginA, 'dist', 'index.html'), '<h1>A</h1>');
+    fs.writeFileSync(
+      path.join(pluginA, 'plugin.json'),
+      JSON.stringify({ ...validManifest, id: 'com.example.plugin-a', slug: 'plugin-a' })
+    );
+
+    fs.mkdirSync(path.join(pluginB, 'dist'), { recursive: true });
+    fs.writeFileSync(path.join(pluginB, 'dist', 'index.html'), '<h1>B</h1>');
+    fs.writeFileSync(
+      path.join(pluginB, 'plugin.json'),
+      JSON.stringify({ ...validManifest, id: 'com.example.plugin-b', slug: 'plugin-b' })
+    );
+
+    const registryDir = path.join(tempDir, 'registry');
+    fs.mkdirSync(registryDir, { recursive: true });
+    const registryPath = path.join(registryDir, 'plugins.json');
+    fs.writeFileSync(
+      registryPath,
+      JSON.stringify({
+        schemaVersion: 1,
+        plugins: [
+          { id: 'com.example.plugin-a', path: 'plugins/plugin-a', kind: 'community', release: true },
+          { id: 'com.example.plugin-b', path: 'plugins/plugin-b', kind: 'fixture', release: false }
+        ]
+      })
+    );
+
+    const buildResult = buildAllPlugins(tempDir, { registry: registryPath });
+    expect(buildResult.releases).toHaveLength(1);
+    expect(buildResult.releases[0].pluginId).toBe('com.example.plugin-a');
+    expect(buildResult.releases[0].kind).toBe('community');
+  });
+
+  it('rejects duplicate and namespace-violating registry entries', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cio-cli-registry-policy-'));
+    const pluginDir = path.join(tempDir, 'plugin-a');
+    fs.mkdirSync(pluginDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(pluginDir, 'plugin.json'),
+      JSON.stringify({ ...validManifest, id: 'com.classroomio.plugin-a', slug: 'plugin-a' })
+    );
+
+    const registryDir = path.join(tempDir, 'registry');
+    fs.mkdirSync(registryDir, { recursive: true });
+    const registryPath = path.join(registryDir, 'plugins.json');
+    fs.writeFileSync(
+      registryPath,
+      JSON.stringify({
+        schemaVersion: 1,
+        plugins: [
+          { id: 'com.classroomio.plugin-a', path: 'plugin-a', kind: 'community', release: true },
+          { id: 'com.classroomio.plugin-a', path: 'plugin-a', kind: 'community', release: true }
+        ]
+      })
+    );
+
+    expect(() => buildAllPlugins(tempDir, { registry: registryPath })).toThrow(/namespace policy|Duplicate/);
   });
 
   it('refuses to scaffold over a non-empty directory', () => {

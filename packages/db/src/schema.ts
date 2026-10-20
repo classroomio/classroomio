@@ -96,14 +96,6 @@ export const pluginInstallationStatus = pgEnum('PLUGIN_INSTALLATION_STATUS', [
 export const pluginStorageScopeType = pgEnum('PLUGIN_STORAGE_SCOPE_TYPE', ['organization', 'user', 'global']);
 export const pluginAuditOutcome = pgEnum('PLUGIN_AUDIT_OUTCOME', ['success', 'denied', 'error']);
 export const pluginBackendClientStatus = pgEnum('PLUGIN_BACKEND_CLIENT_STATUS', ['active', 'revoked']);
-export const pluginReleaseLane = pgEnum('PLUGIN_RELEASE_LANE', ['first-party', 'private', 'community']);
-export const pluginSubmissionStatus = pgEnum('PLUGIN_SUBMISSION_STATUS', [
-  'pending_upload',
-  'quarantined',
-  'in_review',
-  'approved',
-  'rejected'
-]);
 
 /**
  * Lifecycle state of an organization membership. Orthogonal to `verified`,
@@ -4397,6 +4389,10 @@ export const pluginVersion = pgTable(
     manifest: jsonb('manifest').notNull().$type<TPluginManifest>(),
     artifactDigest: varchar('artifact_digest', { length: 128 }),
     signature: text('signature'),
+    sourceCommit: varchar('source_commit', { length: 40 }),
+    releaseRunUrl: text('release_run_url'),
+    releasedBy: varchar('released_by', { length: 64 }).default('github-actions').notNull(),
+    releaseMetadata: jsonb('release_metadata'),
     reviewStatus: pluginReviewStatus('review_status').default('approved').notNull(),
     publishedAt: timestamp('published_at', { withTimezone: true, mode: 'string' })
       .default(sql`timezone('utc'::text, now())`)
@@ -4407,46 +4403,11 @@ export const pluginVersion = pgTable(
   },
   (table) => [
     uniqueIndex('idx_plugin_version_plugin_ver_unique').on(table.pluginId, table.version),
-    index('idx_plugin_version_plugin_id').on(table.pluginId)
-  ]
-);
-
-export const pluginSubmission = pgTable(
-  'plugin_submission',
-  {
-    id: uuid('id')
-      .default(sql`gen_random_uuid()`)
-      .primaryKey()
-      .notNull(),
-    pluginId: varchar('plugin_id', { length: 128 }).notNull(),
-    publisherId: varchar('publisher_id', { length: 64 }).references(() => pluginPublisher.id, {
-      onDelete: 'set null'
-    }),
-    organizationId: uuid('organization_id').references(() => organization.id, {
-      onDelete: 'cascade'
-    }),
-    version: varchar('version', { length: 64 }).notNull(),
-    releaseLane: pluginReleaseLane('release_lane').notNull(),
-    quarantineBucket: text('quarantine_bucket').notNull(),
-    quarantineKey: text('quarantine_key').notNull(),
-    artifactDigest: text('artifact_digest').notNull(),
-    status: pluginSubmissionStatus('status').default('pending_upload').notNull(),
-    reviewNotes: text('review_notes'),
-    submittedByProfileId: uuid('submitted_by_profile_id')
-      .references(() => profile.id, { onDelete: 'cascade' })
-      .notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
-      .default(sql`timezone('utc'::text, now())`)
-      .notNull(),
-    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
-      .default(sql`timezone('utc'::text, now())`)
-      .notNull()
-  },
-  (table) => [
-    index('idx_plugin_submission_plugin').on(table.pluginId),
-    index('idx_plugin_submission_status').on(table.status),
-    index('idx_plugin_submission_publisher').on(table.publisherId),
-    index('idx_plugin_submission_org').on(table.organizationId)
+    index('idx_plugin_version_plugin_id').on(table.pluginId),
+    check(
+      'plugin_version_ci_provenance_check',
+      sql`${table.releasedBy} <> 'github-actions' OR (${table.sourceCommit} IS NOT NULL AND ${table.releaseRunUrl} IS NOT NULL AND ${table.artifactDigest} IS NOT NULL)`
+    )
   ]
 );
 

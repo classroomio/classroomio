@@ -2,7 +2,6 @@ import { API_SERVER_URL } from '@api/constants';
 import { AppError } from '@api/utils/errors';
 import {
   createInstallation,
-  getApprovedPrivatePluginSubmission,
   getInstallationById,
   getOrganizationInstallation,
   getPluginById,
@@ -75,8 +74,8 @@ export async function assertInstallableRelease(params: {
   }
 
   if (plugin.distribution === 'private') {
-    if (process.env.NODE_ENV !== 'production') {
-      return;
+    if (process.env.NODE_ENV === 'production') {
+      throw new AppError('Private plugins cannot be installed in production', 'PLUGIN_PRIVATE_ACCESS_DENIED', 403);
     }
 
     if (!targetOrgId) {
@@ -87,10 +86,25 @@ export async function assertInstallableRelease(params: {
       );
     }
 
-    const privateSubmission = await getApprovedPrivatePluginSubmission(plugin.id, versionRecord.version, targetOrgId);
-    if (!privateSubmission) {
+    const allowedOrgId = (versionRecord.releaseMetadata as { organizationId?: string } | null)?.organizationId;
+    if (allowedOrgId && allowedOrgId !== targetOrgId) {
       throw new AppError(
         'Private plugins can only be installed by the publishing organization',
+        'PLUGIN_PRIVATE_ACCESS_DENIED',
+        403
+      );
+    }
+  }
+
+  if (versionRecord.releasedBy === 'development') {
+    if (process.env.NODE_ENV === 'production') {
+      throw new AppError('Development plugins cannot be installed in production', 'PLUGIN_PRIVATE_ACCESS_DENIED', 403);
+    }
+
+    const developmentOrgId = (versionRecord.releaseMetadata as { organizationId?: string } | null)?.organizationId;
+    if (!targetOrgId || developmentOrgId !== targetOrgId) {
+      throw new AppError(
+        'Development plugins can only be installed by the publishing organization',
         'PLUGIN_PRIVATE_ACCESS_DENIED',
         403
       );

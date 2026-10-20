@@ -2,7 +2,6 @@ import { AppError } from '@api/utils/errors';
 import {
   getPluginByIdOrSlug,
   getPluginVersion,
-  listPluginSubmissions,
   listPluginVersions,
   listPlugins,
   listPublishers,
@@ -40,13 +39,11 @@ async function canAccessCatalogPlugin(plugin: TPlugin, organizationId?: string):
     return false;
   }
 
-  const approvedSubmissions = await listPluginSubmissions({
-    pluginId: plugin.id,
-    organizationId,
-    status: 'approved'
+  const versions = await listPluginVersions(plugin.id);
+  return versions.some((version) => {
+    const meta = version.releaseMetadata as { organizationId?: string } | null;
+    return meta?.organizationId === organizationId;
   });
-
-  return approvedSubmissions.some((submission) => submission.releaseLane === 'private');
 }
 
 async function assertCatalogPluginAccess(plugin: TPlugin, organizationId?: string): Promise<void> {

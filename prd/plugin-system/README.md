@@ -84,11 +84,11 @@ Set `PLUGIN_ARTIFACTS_PATH` in `apps/api/.env` to the absolute path of the offic
 repository's `.plugin-artifacts` directory. Then run these commands from `classroomio-plugins`:
 
 ```bash
-node ../classroomio/packages/plugin-sdk/bin/cio-plugin.mjs pack --all
-node ../classroomio/packages/plugin-sdk/bin/cio-plugin.mjs seed --org <organization-id>
+pnpm pack
+CLASSROOMIO_DEV_TOKEN=<organization-api-key-with-plugin-development-scope> CLASSROOMIO_ORG_ID=<organization-id> pnpm seed
 ```
 
-The seed command reads `CLASSROOMIO_PLUGIN_TOKEN` and installs only into the requested organization.
+The seed command reads `CLASSROOMIO_DEV_TOKEN` and installs only into the requested organization.
 The official plugin's normal `npm run dev` remains the Vite UI server; `seed` packages the selected
 plugin and explicitly installs or updates it in that organization so the dashboard can be tested
 with the packaged artifact.

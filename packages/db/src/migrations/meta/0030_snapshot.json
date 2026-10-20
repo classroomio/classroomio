@@ -12037,6 +12037,31 @@
           "primaryKey": false,
           "notNull": false
         },
+        "source_commit": {
+          "name": "source_commit",
+          "type": "varchar(40)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "release_run_url": {
+          "name": "release_run_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "released_by": {
+          "name": "released_by",
+          "type": "varchar(64)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'github-actions'"
+        },
+        "release_metadata": {
+          "name": "release_metadata",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
         "review_status": {
           "name": "review_status",
           "type": "PLUGIN_REVIEW_STATUS",
@@ -12112,7 +12137,12 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
-      "checkConstraints": {},
+      "checkConstraints": {
+        "plugin_version_ci_provenance_check": {
+          "name": "plugin_version_ci_provenance_check",
+          "value": "\"plugin_version\".\"released_by\" <> 'github-actions' OR (\"plugin_version\".\"source_commit\" IS NOT NULL AND \"plugin_version\".\"release_run_url\" IS NOT NULL AND \"plugin_version\".\"artifact_digest\" IS NOT NULL)"
+        }
+      },
       "isRLSEnabled": false
     },
     "public.profile": {

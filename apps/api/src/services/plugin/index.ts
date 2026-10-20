@@ -14,4 +14,6 @@ export * from './access-token';
 export * from './enrollments';
 export * from './exercises';
 export * from './issued-certificates';
-export * from './submission';
+export * from './release';
+export * from './release-validation';
+export * from './development';

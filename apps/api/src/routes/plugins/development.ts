@@ -1,25 +1,26 @@
 import { Hono } from '@api/utils/hono';
-import { pluginPublisherAuthMiddleware } from '@api/middlewares/plugin-publisher-auth';
+import { automationKeyMiddleware } from '@api/middlewares/automation-key';
 import { handleError } from '@api/utils/errors';
-import { publishDevelopmentRelease } from '@api/services/plugin';
-import { ROLE } from '@cio/utils/constants';
+import { assertPluginDevelopmentAccess, publishDevelopmentRelease } from '@api/services/plugin';
 import { ZCreateDevelopmentRelease } from '@cio/utils/validation/plugin';
 import { zValidator } from '@hono/zod-validator';
 
 export const pluginDevelopmentRouter = new Hono().post(
   '/releases',
-  pluginPublisherAuthMiddleware,
+  async (c, next) => {
+    if (process.env.NODE_ENV === 'production') {
+      return c.json({ success: false, message: 'Not found' }, 404);
+    }
+
+    await next();
+  },
+  automationKeyMiddleware,
   zValidator('json', ZCreateDevelopmentRelease),
   async (c) => {
     try {
       const payload = c.req.valid('json');
-      const publisherKey = c.get('automationKey');
-      const organizationRoles = c.get('orgRoles');
-      const keyCanPublish = publisherKey?.organizationId === payload.organizationId;
-      const sessionCanPublish = !publisherKey && organizationRoles[payload.organizationId] === ROLE.ADMIN;
-      if (!keyCanPublish && !sessionCanPublish) {
-        return c.json({ success: false, message: 'Organization admin access is required' }, 403);
-      }
+      const automationKey = c.get('automationKey')!;
+      await assertPluginDevelopmentAccess(automationKey, payload.organizationId);
 
       const archive = Buffer.from(payload.archive, 'base64');
       const result = await publishDevelopmentRelease({
@@ -27,7 +28,7 @@ export const pluginDevelopmentRouter = new Hono().post(
         artifactDigest: payload.artifactDigest,
         archive,
         organizationId: payload.organizationId,
-        profileId: c.get('actorId')!
+        profileId: automationKey.createdByProfileId
       });
 
       return c.json({ success: true, data: result }, 201);
