@@ -1,10 +1,10 @@
 ---
 title: Create a SCORM course
 description: Turn one SCORM package, or several at once, into a course that is just the package.
-last_reviewed: '2026-10-11'
+last_reviewed: '2026-10-19'
 ---
 
-To create a SCORM course, choose **New course → Upload a SCORM package**, give it a title, and upload the ZIP. The course navigation shows **Package** where other courses show Content. Certificates, the landing page, and People work as in any course.
+To create a SCORM course, choose **New course → Upload a SCORM package**, give it a title, and upload or attach the package. The course navigation shows **Package** where other courses show Content. Certificates, the landing page, and People work as in any course.
 
 ![New course dialog with the Upload a SCORM package option](./images/create-a-scorm-course/overview.webp)
 
@@ -14,7 +14,7 @@ To create a SCORM course, choose **New course → Upload a SCORM package**, give
 On ClassroomIO Cloud, SCORM courses are included in every paid plan. On the Free plan the **Upload a SCORM package** option shows a **Paid plans** pill and opens the upgrade modal. On a self-hosted server it needs an enterprise license key that includes SCORM.
 :::
 
-A SCORM course holds exactly one SCORM package and no sections or lessons. It is Self-paced — Live class, Public, and Compliance do not apply to a single package. To add lessons, exercises, or compliance tracking later, convert it to a standard course. That step cannot be undone.
+A SCORM course holds exactly one SCORM package and no sections or lessons. It is Self-paced — Live class, Public, and Compliance do not apply to a single-package course. To add lessons, exercises, or compliance tracking later, convert it to a standard course in course settings. That step cannot be undone.
 
 ## Create one SCORM course
 
@@ -28,11 +28,11 @@ Choose **Upload a SCORM package**. On the Free plan it shows **Paid plans** with
 
 ### 2. Enter the course details
 
-Enter the title and short description. Creating the course makes the course and its one empty SCORM activity in one step, and lands on the Package page where the upload starts, exactly as for a SCORM item added to a course.
+Enter the title and short description. Creating the course makes the course and its one empty SCORM activity in one step, and lands on the Package page where you can upload or attach the package, exactly as for a SCORM item added to a course.
 
-### 3. Upload the package
+### 3. Add or upload the package
 
-On the Package page, drop your ZIP on **Drop your SCORM .zip here** and wait while ClassroomIO checks and unpacks it. Large packages can take a few minutes, and you can leave the page. When it is ready, review the modules, the pass mark, and the completion rule, then publish. See [Add a SCORM package](/build-courses/add-a-scorm-package) for the Package, Instructions, and Settings tabs.
+On the Package page, choose **Upload package** to open the package modal. Upload a new ZIP on the **Upload** tab or pick an existing package from your organisation's **Library**, and wait while ClassroomIO checks and unpacks it. Large packages can take a few minutes, and you can leave the page. When it is ready, review the modules, the pass mark, and the completion rule, then publish. See [Add a SCORM package](/build-courses/add-a-scorm-package) for the Package, Instructions, and Settings tabs.
 
 ## Create several courses at once
 
@@ -50,13 +50,15 @@ You can also open **Create course from package** on a single package card. It sh
 - **Landing page:** the curriculum shows the package with its title, module count, and module titles.
 - **Course cards and rows:** show **SCORM · N modules** instead of lesson and exercise counts.
 
-Course progress and certificates need no special case: the course has one item, and it is the package. For recurring compliance training or high-stakes certification, build a standard course with a ClassroomIO exercise as the graded step — the score comes from the package itself, as with every SCORM platform.
+Course progress and certificates need no special case: the course has one item, and it is the package. The SCORM package reports its own score, as with every SCORM platform. For recurring compliance training or high-stakes certification, build a standard course and add a ClassroomIO exercise as a separate graded step alongside the package.
 
 ## Convert to a standard course
 
-To add lessons or exercises later, open the course settings and choose **Convert to a standard course**. It sets the format back to standard, keeps the package as the first item, and brings Content back. Confirm the dialog — this cannot be undone.
+To add lessons, exercises, or multiple sections later, open **Settings** in the course navigation, scroll to the **Convert to a standard course** card, and choose **Convert to a standard course**.
 
-The package's only activity cannot be deleted while the course is a SCORM course. The editor offers **Replace package** instead, and the course itself can be deleted as usual.
+This sets the course format back to standard, keeps the SCORM package in place as an activity item in the content outline, and restores full course outline editing with sections, lessons, exercises, and other content types. Confirm the dialog — this conversion cannot be undone (a standard course cannot be converted back into a single-activity course).
+
+While the course remains a single-activity SCORM course, its sole package activity cannot be deleted. You can use **Upload new version** to upload a newer export of the same package, **Swap package** to attach a different package, or **Remove** to detach the package. The course itself can be deleted as usual.
 
 ## What happens when a plan or license lapses
 
@@ -66,7 +68,7 @@ Learners keep taking the package, and results stay available. You cannot create 
 
 ### I cannot add a lesson to a SCORM course
 
-That is by design. A SCORM course holds exactly one SCORM activity. Convert it to a standard course first, then add lessons or exercises.
+That is by design. A SCORM course holds exactly one SCORM activity. To add lessons, exercises, or sections, convert it to a standard course first in **Settings → Convert to a standard course**.
 
 ### I cannot switch a SCORM course to Public
 

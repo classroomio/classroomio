@@ -1,10 +1,10 @@
 ---
 title: Add a SCORM package to a course
 description: Upload a SCORM 1.2 or 2004 ZIP, add it to any section, and choose how it completes.
-last_reviewed: '2026-10-11'
+last_reviewed: '2026-10-19'
 ---
 
-To add a SCORM package to a course, open the course and choose **Add content → SCORM package**, give it a title, and drop your ZIP on the upload area. ClassroomIO checks and unpacks the package, then lists its modules and pass mark so you can choose the completion rule.
+To add a SCORM package to a course, open the course and choose **Add content → SCORM package**, give it a title, and upload or attach your package. ClassroomIO checks and unpacks the package, then lists its modules and pass mark so you can choose the completion rule.
 
 ![Package editor with a ready SCORM package](./images/add-a-scorm-package/overview.webp)
 
@@ -28,11 +28,14 @@ Open the course, choose **Add content → SCORM package**, and enter a package t
 
 The option is hidden in `PUBLIC` courses and in SCORM-format courses, which already hold exactly one package.
 
-### 2. Upload the ZIP
+### 2. Add or upload the package
 
-On the **Package** tab, drop your `.zip` on the area labelled **Drop your SCORM .zip here**. Only `.zip` files are accepted.
+On the **Package** tab, choose **Upload package** to open the **Add package** modal. You can upload a new ZIP file or attach an existing package already in your organisation's library:
 
-![Package tab with the upload dropzone](./images/add-a-scorm-package/upload-dropzone.webp)
+- **Upload:** drop your `.zip` on the area labelled **Drop your SCORM .zip here**, or click to browse for a file. Only `.zip` files are accepted.
+- **Library:** browse packages uploaded across any course in your organisation, search by name, and choose **Attach** to reuse a package without uploading it again.
+
+![Add package modal with the upload dropzone and library tab](./images/add-a-scorm-package/upload-dropzone.webp)
 
 Uploading shows a progress bar with **Cancel upload**. If you leave the page while uploading, ClassroomIO asks for confirmation. Once the upload finishes, processing starts — validating, extracting, uploading files, and reading the manifest — and you can leave the page. The tab shows the stage and percentage while it works.
 
@@ -47,18 +50,20 @@ When processing finishes, the tab shows the title, SCORM version, file count, si
 - Modules of type asset appear in the menu but never count toward completion, because assets never talk to the SCORM API.
 - **Some file names differ only in letter case** appears when a package built on Windows references files in the wrong case. ClassroomIO resolves them, but re-export with matching case when you can.
 
-Switch the page to view mode to play the package as a learner would — nothing is recorded. The buttons below the details hold **Upload new version** for a revised export of the same course and **Swap package** for a different course; **Remove** detaches the package from the item and the header deletes the item. The file stays in the Media Manager.
+Switch the page to view mode to play the package as a learner would — nothing is recorded. The buttons below the details hold **Upload new version** for a revised export of the same course and **Swap package** for a different course (either from a new ZIP or from your organisation's library); **Remove** detaches the package from the item and the header deletes the item. The file stays in the Media Manager.
 
 If processing fails, the tab shows a specific reason — no `imsmanifest.xml`, an xAPI or cmi5 package, an unsupported version, a file that is too large, unsafe paths, a missing launch file, a module that launches from another website, or a package where nothing reports progress — with a **Try another file** action.
 
-### 4. Choose the completion rule
+### 4. Choose the completion rule and settings
 
 Open the **Settings** tab. Under **Completion rule**, choose how ClassroomIO decides the package is done:
 
 - **Automatic** — a graded module counts when it reports passed; an ungraded module counts when it reports completed. A module is graded when its manifest sets a passing score, or once it has reported passed or failed. Pass or fail always wins over completed, including in the same save.
-- **Completed** — every module must report completed.
-- **Passed** — every module must report passed.
-- **Minimum score** — every module must report completed, and the average score of the modules that report one must reach **Minimum score (%)**, which defaults to 80.
+- **Completed** — the modules selected by **Completion scope** must report completed.
+- **Passed** — the modules selected by **Completion scope** must report passed.
+- **Minimum score** — the modules selected by **Completion scope** must report completed, and the average score of the modules that report one must reach **Minimum score (%)**, which defaults to 80.
+
+**Completion scope** decides which modules the rule evaluates: **All modules** evaluates every module, while **Graded modules only** evaluates graded modules when any exist and falls back to all modules when none are graded.
 
 Under the rule, a line says whether the package is graded: **This package has a pass mark of 80%, so students must pass it** or **This package has no pass mark, so students complete it by finishing it**.
 
@@ -68,7 +73,11 @@ Choosing **Passed** for a package with an ungraded module shows a warning: a mod
 
 Why the Passed rule matters: with **Automatic**, a package that has no pass mark in its manifest counts as soon as it reports completed. A few packages report that at the end of the slides, before the quiz reports pass or fail. If learners complete before taking the quiz, set the rule to **Passed** for that package. With **Automatic**, a SCORM 1.2 quiz package whose manifest already has a mastery score does not complete on completed alone — it completes on a raw score at or above that score.
 
-The tab also holds **Allow retakes**. With retakes on, a completed package reopens with a **Start a new attempt** button and ClassroomIO keeps the best score. Remember to click **Save changes** on the bar at the bottom to apply your settings.
+- **Completion scope:** choose **All modules** (default) to require every module to meet the rule, or **Graded modules only** so optional or ungraded introduction/summary modules do not block completion.
+- **Allow retakes:** with retakes on, a completed package reopens with a **Start a new attempt** button and ClassroomIO keeps the best score.
+- **Module order:** choose **Free** (default) to let learners take modules in any order, or **In sequence** to unlock each module only after the previous one meets the completion rule.
+
+Remember to click **Save changes** on the bar at the bottom to apply your settings.
 
 ### 5. Add instructions and publish
 
@@ -76,7 +85,7 @@ Use the **Instructions** tab for optional rich text shown to learners above the 
 
 ## What learners see
 
-The package opens in a large frame with a full-screen button. Packages with several modules show a module bar above the frame — **Previous**, **Module N of M · title**, **Next** — opening a menu with a tick on each finished module and **N of M modules complete**. In full screen the bar floats over the top and hides until the mouse moves. The page opens on the first module that has not met the rule.
+The package opens in a large frame with a full-screen button. Packages with several modules show a module bar above the frame — **Previous**, **Module N of M · title**, **Next** — opening a menu with a tick on each finished module and **N of M modules complete**. In full screen the navigation bar stays docked at the top. The page opens on the first module that has not met the rule.
 
 Progress saves automatically. When the package reports that the learner finished or passed, the item is marked complete and the course moves on. Learners never see a **Mark as complete** button on SCORM packages.
 
@@ -89,7 +98,7 @@ Progress saves automatically. When the package reports that the learner finished
 
 **Upload new version** adds a new version of the same course. After you pick a file, ClassroomIO reads its contents and says whether it matches the current package. A file that matches exactly disables uploading — it is already the current version. A file whose modules do not match disables uploading too, with an offer to swap instead. Learners in the middle of an attempt keep the old version until they finish — or restart them on the new version, per the choice shown when learners are part-way through. If learners start while the new version is processing, ClassroomIO asks again with fresh numbers before switching.
 
-**Swap package** attaches a different course as a new package. Picking a file shows what it contains; a file that matches the current course disables swapping, with an offer to upload a new version instead. In-progress attempts on the previous package close at once, and learners start the new package from the beginning on their next launch; learners who completed it stay completed. The previous package stays in the Media Manager with its results.
+**Swap package** attaches a different course as a new package, either by uploading a new ZIP or choosing one from your organisation's library. Picking a file shows what it contains; a file that matches the current course disables swapping, with an offer to upload a new version instead. In-progress attempts on the previous package close at once, and learners start the new package from the beginning on their next launch; learners who completed it stay completed. The previous package stays in the Media Manager with its results.
 
 When learners are still on an older version after an upgrade, the Package tab states how many and offers **Move them to this version** — the dialog states how many learners it affects.
 
