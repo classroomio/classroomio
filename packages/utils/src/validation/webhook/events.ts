@@ -111,28 +111,28 @@ const organizationInviteData = organizationInviteInput.extend({ actor: personRef
 
 const courseInviteData = courseInviteInput.extend({ course: courseRef, actor: personRef.nullable() });
 
-const courseMemberData = courseMemberInput.extend({ course: courseRef, learner: personRef, role: z.string() });
+const courseMemberData = courseMemberInput.extend({ course: courseRef, student: personRef, role: z.string() });
 
-const courseCompletionData = courseCompletionInput.extend({ course: courseRef, learner: personRef });
+const courseCompletionData = courseCompletionInput.extend({ course: courseRef, student: personRef });
 
 const submissionData = submissionInput.extend({
   course: courseRef,
   exercise: itemRef.nullable(),
-  learner: personRef
+  student: personRef
 });
 
 const submissionStatusChangedData = submissionStatusChangedInput.extend({
   course: courseRef,
   exercise: itemRef.nullable(),
-  learner: personRef
+  student: personRef
 });
 
-const lessonCompletionData = lessonCompletionInput.extend({ course: courseRef, lesson: itemRef, learner: personRef });
+const lessonCompletionData = lessonCompletionInput.extend({ course: courseRef, lesson: itemRef, student: personRef });
 
 const exerciseCompletionData = exerciseCompletionInput.extend({
   course: courseRef,
   exercise: itemRef,
-  learner: personRef
+  student: personRef
 });
 
 /**

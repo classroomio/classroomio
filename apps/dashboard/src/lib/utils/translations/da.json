@@ -5177,7 +5177,7 @@
         "course_invite_revoked": "En studerendeinvitation tilbagekaldes",
         "course_member_added": "Et medlem tilføjes til et kursus",
         "course_member_removed": "Et medlem fjernes fra et kursus",
-        "course_completed": "En kursist gennemfører et kursus",
+        "course_completed": "En studerende gennemfører et kursus",
         "course_certificate_issued": "Et certifikat opnås",
         "course_submission_created": "En opgaveaflevering oprettes",
         "course_submission_status_changed": "Status for en aflevering ændres, f.eks. når den bedømmes",

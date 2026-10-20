@@ -5177,7 +5177,7 @@
         "course_invite_revoked": "Приглашение для студента отозвано",
         "course_member_added": "Участник добавлен в курс",
         "course_member_removed": "Участник удален из курса",
-        "course_completed": "Учащийся завершает курс",
+        "course_completed": "Студент завершает курс",
         "course_certificate_issued": "Получен сертификат",
         "course_submission_created": "Создана отправка упражнения",
         "course_submission_status_changed": "Меняется статус отправки, например при оценивании",

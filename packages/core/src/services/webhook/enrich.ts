@@ -45,7 +45,7 @@ function toPersonRef(
 }
 
 /**
- * Adds the readable details (learner, course, exercise, lesson, actor, role) next to the ids an event
+ * Adds the readable details (student, course, exercise, lesson, actor, role) next to the ids an event
  * was created with. The existing fields are kept as they are. Details that cannot be read come back
  * as `null` so the event is still sent.
  */
@@ -71,7 +71,7 @@ export async function enrichWebhookEventData(data: Record<string, unknown>): Pro
   }
 
   if ('profileId' in data) {
-    enriched.learner = toPersonRef(readString(data, 'profileId'), readString(data, 'email'), context.profiles);
+    enriched.student = toPersonRef(readString(data, 'profileId'), readString(data, 'email'), context.profiles);
   }
 
   if ('actorProfileId' in data) {
