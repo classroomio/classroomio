@@ -2,7 +2,7 @@
 
 Automated coverage: `compatibility-matrix.test.ts` in this folder. Run it with `pnpm --filter @cio/activity-packages test test/compatibility`.
 
-Browser coverage: `e2e/regression/scorm-compatibility.spec.ts` boots every in-git fixture against the stub content origin. Run it across engines with `e2e/playwright.compat.config.ts` (chromium, firefox, webkit plus mobile viewports) once those browsers are installed via `npx playwright install`; the default `e2e/playwright.config.ts` stays on Desktop Chrome so backend-dependent specs are unaffected.
+Browser coverage: manual for now. Every in-git fixture can be booted against the stub content origin in each target browser; browser automation is not part of this change.
 
 ## Axes
 
@@ -14,7 +14,7 @@ Run every row below in Chrome, Edge, Firefox, Safari on macOS and iOS, and Chrom
 
 | Source | SCORM 1.2 | SCORM 2004 | What it exercises | Where it runs |
 | --- | --- | --- | --- | --- |
-| Hand-written fixtures (in git) | Yes | Yes | Every API call, errors, resume, exit values, three modules, a 1.2 mastery score, a streamed-content launcher, the two rejections | Automated in `compatibility-matrix.test.ts` plus `e2e/regression/scorm-compatibility.spec.ts` |
+| Hand-written fixtures (in git) | Yes | Yes | Every API call, errors, resume, exit values, three modules, a 1.2 mastery score, a streamed-content launcher, the two rejections | Automated in `compatibility-matrix.test.ts` |
 | Rustici golf examples (in git, CC BY 3.0) | Yes | 2nd to 4th | Multi-SCO and sequencing samples: module menu, rollup and the warnings | Automated in `compatibility-matrix.test.ts` |
 | Adapt Learning (local only, GPL-3.0) | Yes | 4th | A single-page app with suspend data, using the pipwerks wrapper | Local: build from `adapt_authoring`, export both editions into `test/fixtures/vendor/`, then run the matrix spec |
 | Articulate Storyline 360 | Yes | 2nd to 4th | Large compressed suspend data, resume prompt, video, the mastery score in 1.2 quiz manifests; launch file `index_lms.html` | Synthetic `vendor-storyline-style` fixture automated; full vendor export manual, local-only |
