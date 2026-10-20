@@ -49,7 +49,7 @@ import { unsplashRouter } from '@api/routes/unsplash/unsplash';
 import { v1Router } from '@api/routes/v1';
 
 // Create Hono app with chaining for RPC support
-export const app = new Hono()
+export const app: InstanceType<typeof Hono> = new Hono()
   // Middleware
   .use('*', logger())
   .use('*', prettyJSON())

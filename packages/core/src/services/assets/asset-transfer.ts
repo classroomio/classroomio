@@ -20,8 +20,15 @@ import type { TAssetStorageCleanupPayload } from '@cio/jobs';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 
 import { getS3Client, getStorageConfig } from '../../config/storage';
-import { scormContentPrefix, scormUploadKey } from '../activity/packages';
 import { purgeAssetStorage } from './assets';
+
+export function scormUploadKey(assetId: string, versionNumber: number): string {
+  return `scorm/${assetId}/v${versionNumber}.zip`;
+}
+
+export function scormContentPrefix(assetId: string, versionNumber: number): string {
+  return `scorm/${assetId}/v${versionNumber}`;
+}
 
 export type TAssetTransfer = {
   asset: TAsset;
