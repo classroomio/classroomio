@@ -4391,7 +4391,7 @@ export const pluginVersion = pgTable(
     signature: text('signature'),
     sourceCommit: varchar('source_commit', { length: 40 }),
     releaseRunUrl: text('release_run_url'),
-    releasedBy: varchar('released_by', { length: 64 }).default('github-actions').notNull(),
+    releasedBy: varchar('released_by', { length: 64 }).default('legacy').notNull(),
     releaseMetadata: jsonb('release_metadata'),
     reviewStatus: pluginReviewStatus('review_status').default('approved').notNull(),
     publishedAt: timestamp('published_at', { withTimezone: true, mode: 'string' })

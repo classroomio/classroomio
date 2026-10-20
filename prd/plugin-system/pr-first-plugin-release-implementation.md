@@ -148,7 +148,7 @@ The root `classroomio-plugins/package.json` should expose only commands that exi
 }
 ```
 
-`npm run dev` and `npm run build` inside an individual UI plugin remain normal Vite commands. `pnpm pack` at repository root creates canonical release artifacts. `pnpm seed -- --org <organization-id>` installs one local development release only.
+`npm run dev` and `npm run build` inside an individual UI plugin remain normal Vite commands. `pnpm run pack` at repository root creates canonical release artifacts. `pnpm run seed -- <plugin-path> --org <organization-id>` installs one local development release only. Bare `pnpm pack` is not used because it invokes pnpm's package-tarball command rather than the repository script.
 
 The exact `--registry` flag may be implemented in the SDK CLI or the root script may enumerate registry entries. Prefer adding an explicit registry-aware option to the CLI so release selection is deterministic and shared by local and CI workflows.
 
@@ -243,7 +243,7 @@ Required steps:
 4. Validate `registry/plugins.json`.
 5. Build every changed releaseable plugin, or all enabled plugins for the initial implementation.
 6. Run each plugin’s `check` and `test` script where present.
-7. Run `pnpm pack` to build canonical artifacts.
+7. Run `pnpm run pack` to build canonical artifacts.
 8. Run `pnpm release:verify`.
 9. Run the plugin isolation check against compiled output and source imports.
 10. Build twice in clean output directories and fail if the release digest changes.

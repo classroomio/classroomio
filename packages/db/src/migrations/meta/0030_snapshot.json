@@ -12054,7 +12054,7 @@
           "type": "varchar(64)",
           "primaryKey": false,
           "notNull": true,
-          "default": "'github-actions'"
+          "default": "'legacy'"
         },
         "release_metadata": {
           "name": "release_metadata",

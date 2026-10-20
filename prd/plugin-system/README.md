@@ -84,7 +84,7 @@ Set `PLUGIN_ARTIFACTS_PATH` in `apps/api/.env` to the absolute path of the offic
 repository's `.plugin-artifacts` directory. Then run these commands from `classroomio-plugins`:
 
 ```bash
-pnpm pack
+pnpm run pack
 CLASSROOMIO_DEV_TOKEN=<organization-api-key-with-plugin-development-scope> CLASSROOMIO_ORG_ID=<organization-id> pnpm seed
 ```
 

@@ -498,6 +498,7 @@ export function buildAllPlugins(rootDir = '.', options = {}) {
     throw new Error(`No plugin.json found in ${resolvedRoot} or its direct subdirectories.`);
   }
 
+  fs.rmSync(outputRoot, { recursive: true, force: true });
   const releases = [];
 
   for (const pluginCandidate of pluginCandidates) {

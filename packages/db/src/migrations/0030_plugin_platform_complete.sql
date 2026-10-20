@@ -166,7 +166,7 @@ CREATE TABLE "plugin_version" (
 	"signature" text,
 	"source_commit" varchar(40),
 	"release_run_url" text,
-	"released_by" varchar(64) DEFAULT 'github-actions' NOT NULL,
+	"released_by" varchar(64) DEFAULT 'legacy' NOT NULL,
 	"release_metadata" jsonb,
 	"review_status" "PLUGIN_REVIEW_STATUS" DEFAULT 'approved' NOT NULL,
 	"published_at" timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
