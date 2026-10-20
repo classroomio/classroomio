@@ -5177,7 +5177,7 @@
         "course_invite_revoked": "Une invitation d'étudiant est révoquée",
         "course_member_added": "Un membre est ajouté à un cours",
         "course_member_removed": "Un membre est retiré d'un cours",
-        "course_completed": "Un apprenant termine un cours",
+        "course_completed": "Un étudiant termine un cours",
         "course_certificate_issued": "Un certificat est obtenu",
         "course_submission_created": "Une soumission d'exercice est créée",
         "course_submission_status_changed": "Le statut d'une soumission change, par exemple lorsqu'elle est notée",

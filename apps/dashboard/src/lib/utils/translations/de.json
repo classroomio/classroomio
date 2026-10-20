@@ -5177,7 +5177,7 @@
         "course_invite_revoked": "Eine Einladung für Lernende wird widerrufen",
         "course_member_added": "Ein Mitglied wird zu einem Kurs hinzugefügt",
         "course_member_removed": "Ein Mitglied wird aus einem Kurs entfernt",
-        "course_completed": "Ein Lernender schließt einen Kurs ab",
+        "course_completed": "Ein Student schließt einen Kurs ab",
         "course_certificate_issued": "Ein Zertifikat wird erworben",
         "course_submission_created": "Eine Übungseinreichung wird erstellt",
         "course_submission_status_changed": "Der Status einer Einreichung ändert sich, z. B. bei der Bewertung",
