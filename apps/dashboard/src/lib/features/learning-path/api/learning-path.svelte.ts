@@ -386,6 +386,7 @@ class LearnerPathStore extends BaseApiWithErrors {
   // Latest journey/detail request ids. Late responses from older requests are ignored.
   private journeyRequestSeq = 0;
   private publicDetailRequestSeq = 0;
+  private pathContextRequestSeq = 0;
 
   // Selected path journey for the detail page
   selectedJourney = $state<PathJourney | null>(null);
@@ -575,15 +576,23 @@ class LearnerPathStore extends BaseApiWithErrors {
     return journey;
   }
 
-  /**
-   * Resolves the path widget for an open course from real journey data.
-   * Stays null when the course is in none of the student's enrolled paths
-   * (plain courses render no widget). When the caller knows which path the
-   * student came from (path-mirror URLs), that path wins over first match.
-   */
   async loadPathContext(courseId: string, preferredPublicId?: string): Promise<void> {
+    const requestSeq = ++this.pathContextRequestSeq;
     this.pathContext = null;
     if (!courseId) return;
+
+    if (preferredPublicId) {
+      const preferredJourney = await this.getPreferredJourney(preferredPublicId);
+      if (requestSeq !== this.pathContextRequestSeq) return;
+
+      const preferredContext = preferredJourney ? this.buildPathContext(courseId, preferredJourney) : null;
+      if (preferredContext) {
+        this.pathContext = preferredContext;
+      }
+
+      // The URL names a path: never replace it with a different path's widget.
+      return;
+    }
 
     if (!this.hasLoaded) {
       try {
@@ -591,60 +600,70 @@ class LearnerPathStore extends BaseApiWithErrors {
       } catch {
         return;
       }
+      if (requestSeq !== this.pathContextRequestSeq) return;
     }
 
-    const orderedPaths =
-      preferredPublicId && this.enrolledPaths.some((path) => path.publicId === preferredPublicId)
-        ? [...this.enrolledPaths].sort(
-            (a, b) => Number(b.publicId === preferredPublicId) - Number(a.publicId === preferredPublicId)
-          )
-        : this.enrolledPaths;
-
-    for (const path of orderedPaths) {
+    for (const path of this.enrolledPaths) {
       let journey: PathJourney | null = null;
       try {
         journey = await this.fetchJourney(path.id);
       } catch {
         continue;
       }
+      if (requestSeq !== this.pathContextRequestSeq) return;
       if (!journey) continue;
 
-      const position = journey.courses.findIndex((course) => course.courseId === courseId);
-      if (position < 0) continue;
+      const context = this.buildPathContext(courseId, journey);
+      if (!context) continue;
 
-      const current = journey.courses[position];
-      const nodes: CourseInPathNode[] = journey.courses.map((course) => ({
-        title: course.title,
-        state: course.status,
-        courseId: course.courseId,
-        href: getStudentCourseContinuePath(course.courseId, journey.path.publicId ?? journey.path.id)
-      }));
-      const nextCourse = journey.courses
-        .filter((course) => course.position > current.position && !course.isComplete)
-        .sort((a, b) => a.position - b.position)[0];
-
-      this.pathContext = {
-        courseId,
-        pathName: journey.path.name,
-        pathHref: `/lms/paths/${journey.path.publicId ?? journey.path.id}`,
-        nodes,
-        currentPosition: current.position,
-        next: nextCourse
-          ? {
-              position: nextCourse.position,
-              title: nextCourse.title,
-              courseId: nextCourse.courseId,
-              isUnlocked: nextCourse.isUnlocked,
-              href: getStudentCourseContinuePath(nextCourse.courseId, journey.path.publicId ?? journey.path.id),
-              remainingLessons: Math.max(0, nextCourse.lessonsTotal - nextCourse.lessonsCompleted),
-              remainingExercises: Math.max(0, nextCourse.exercisesTotal - nextCourse.exercisesCompleted)
-            }
-          : null,
-        isPathComplete: journey.isComplete
-      };
-
+      this.pathContext = context;
       return;
     }
+  }
+
+  /** The journey for the path open in the URL, from cache when possible. */
+  private async getPreferredJourney(preferredPublicId: string): Promise<PathJourney | null> {
+    try {
+      return await this.fetchJourney(preferredPublicId);
+    } catch {
+      return null;
+    }
+  }
+
+  /** Builds the in-course widget data, or null when the course is not in the journey. */
+  private buildPathContext(courseId: string, journey: PathJourney): CourseInPathContext | null {
+    const current = journey.courses.find((course) => course.courseId === courseId);
+    if (!current) return null;
+
+    const nodes: CourseInPathNode[] = journey.courses.map((course) => ({
+      title: course.title,
+      state: course.status,
+      courseId: course.courseId,
+      href: getStudentCourseContinuePath(course.courseId, journey.path.publicId ?? journey.path.id)
+    }));
+    const nextCourse = journey.courses
+      .filter((course) => course.position > current.position && !course.isComplete)
+      .sort((a, b) => a.position - b.position)[0];
+
+    return {
+      courseId,
+      pathName: journey.path.name,
+      pathHref: `/lms/paths/${journey.path.publicId ?? journey.path.id}`,
+      nodes,
+      currentPosition: current.position,
+      next: nextCourse
+        ? {
+            position: nextCourse.position,
+            title: nextCourse.title,
+            courseId: nextCourse.courseId,
+            isUnlocked: nextCourse.isUnlocked,
+            href: getStudentCourseContinuePath(nextCourse.courseId, journey.path.publicId ?? journey.path.id),
+            remainingLessons: Math.max(0, nextCourse.lessonsTotal - nextCourse.lessonsCompleted),
+            remainingExercises: Math.max(0, nextCourse.exercisesTotal - nextCourse.exercisesCompleted)
+          }
+        : null,
+      isPathComplete: journey.isComplete
+    };
   }
 
   async loadExplorePaths(limit = 3): Promise<void> {
