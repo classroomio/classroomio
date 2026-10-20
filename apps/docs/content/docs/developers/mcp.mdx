@@ -234,7 +234,7 @@ Course member and invite tools:
 - `create_course_invite`
 - `revoke_course_invite`
 
-These call the public API and need the key's `course:member:read` (list/get/analytics) and `course:member:write` (everything else) scopes, which MCP keys have by default. They count toward the same per-key and per-organization MCP rate limits as the other tools. They act as the person who created the key, with the same rule as the dashboard's People and Invites pages: that person must be a tutor/admin of the course or an org admin.
+These call the public API and need the key's `course:member:read` (list/get/analytics) and `course:member:write` (everything else) scopes, which MCP keys have by default. They count toward the same per-key and per-organization MCP rate limits as the other tools. They act as the person who created the key, with the same rule as the dashboard's People and Invites pages: that person must be a tutor/admin of the course or an org admin. `list_course_members` takes the People page's filters and sort, for example `progress: "not_started"`.
 
 Course section, lesson and content tools:
 
@@ -302,7 +302,7 @@ Cohort tools call the public API and need the key's `cohort:read` and `cohort:wr
 
 `add_cohort_members` adds people to a cohort directly without sending any email. To invite people the way the dashboard does, with an invitation email, use `invite_students_to_cohort`.
 
-List tools take `page` and `limit` (default 20, max 100). The newsfeed is cursor-based instead: pass the returned `nextCursor` back as `cursor`.
+List tools take `page` and `limit` (default 20, max 100). The newsfeed is cursor-based instead: pass the returned `nextCursor` back as `cursor`. `list_org_cohorts` and `list_cohort_members` also take the dashboard's search, filters and sort.
 
 Analytics tools:
 

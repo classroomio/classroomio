@@ -4,8 +4,8 @@ import {
   ZPublicApiCohortMemberListItemResponse,
   ZPublicApiCohortMemberParam,
   ZPublicApiCohortMemberResponse,
+  ZPublicApiCohortMembersQuery,
   ZPublicApiCohortParam,
-  ZPublicApiPaginationQuery,
   ZPublicApiUpdateCohortMember
 } from '@cio/utils/validation/public-api';
 import {
@@ -41,7 +41,7 @@ export const v1CohortMembersRouter = new Hono()
       }
     }),
     validator('param', ZPublicApiCohortParam),
-    validator('query', ZPublicApiPaginationQuery),
+    validator('query', ZPublicApiCohortMembersQuery),
     async (c) => {
       try {
         const orgId = c.get('orgId')!;

@@ -3258,7 +3258,9 @@
       "date_created": "दिनांक निर्मित",
       "last_updated_at": "अंतिम अपडेट",
       "published": "प्रकाशित",
-      "lessons": "सबक"
+      "lessons": "सबक",
+      "name": "नाम",
+      "price": "मूल्य"
     },
     "tag_filters": {
       "filter": "फ़िल्टर करें",

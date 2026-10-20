@@ -4,7 +4,9 @@ import {
   ZPublicApiAssignStudentsToCohort,
   ZPublicApiCohortCourseParam,
   ZPublicApiCohortMemberParam,
+  ZPublicApiCohortMembersQuery,
   ZPublicApiCohortParam,
+  ZPublicApiCohortsQuery,
   ZPublicApiCreateCohort,
   ZPublicApiInviteStudentsToCohort,
   ZPublicApiPaginationQuery,
@@ -18,7 +20,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 import { COHORT_MEMBER_RULE, COHORT_TEAM_RULE, DESTRUCTIVE, READ_ONLY, WRITE, jsonContent } from './cohort-tool-text';
 
-export const ZListOrgCohortsToolInput = ZPublicApiPaginationQuery;
+export const ZListOrgCohortsToolInput = ZPublicApiCohortsQuery;
 
 export const ZCreateCohortToolInput = ZPublicApiCreateCohort;
 
@@ -30,7 +32,7 @@ export const ZUpdateCohortToolInput = ZPublicApiUpdateCohort.safeExtend({
 
 export const ZDeleteCohortToolInput = ZPublicApiCohortParam;
 
-export const ZListCohortMembersToolInput = ZPublicApiCohortParam.extend(ZPublicApiPaginationQuery.shape);
+export const ZListCohortMembersToolInput = ZPublicApiCohortParam.extend(ZPublicApiCohortMembersQuery.shape);
 
 export const ZAddCohortMembersToolInput = ZPublicApiAddCohortMembers.safeExtend({
   cohortId: ZPublicApiCohortParam.shape.cohortId

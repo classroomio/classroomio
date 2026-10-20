@@ -1,5 +1,6 @@
 import type {
   TPublicApiCohortParam,
+  TPublicApiCohortsQuery,
   TPublicApiCreateCohort,
   TPublicApiPaginationQuery,
   TPublicApiUpdateCohort
@@ -22,7 +23,7 @@ import {
   toPublicApiPagination
 } from '@api/services/v1/shared';
 
-export async function listCohortsService(orgId: string, actorId: string | null, query: TPublicApiPaginationQuery) {
+export async function listCohortsService(orgId: string, actorId: string | null, query: TPublicApiCohortsQuery) {
   assertAutomationActor(actorId);
 
   const { items, total } = await listOrgCohortsPage(orgId, actorId, query);

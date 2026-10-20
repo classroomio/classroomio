@@ -799,7 +799,7 @@ export async function getCourseCertificationRow(courseId: string): Promise<TCour
 }
 
 type OrgCoursePublishedStatus = 'published' | 'unpublished';
-type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons';
+type OrgCourseSortKey = 'date_created' | 'last_updated_at' | 'published' | 'lessons' | 'name' | 'price';
 type OrgCourseSortOrder = 'asc' | 'desc';
 
 interface GetOrgCoursesOptions {
@@ -867,20 +867,20 @@ function orgCourseListConditions({
 
 function orgCourseListOrderBy(sortKey?: OrgCourseSortKey, order?: OrgCourseSortOrder) {
   const direction = order === 'asc' ? asc : desc;
+  const column =
+    sortKey === 'last_updated_at'
+      ? sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`
+      : sortKey === 'published'
+        ? schema.course.isPublished
+        : sortKey === 'lessons'
+          ? sql`COUNT(DISTINCT ${schema.lesson.id})`
+          : sortKey === 'name'
+            ? sql`lower(${schema.course.title})`
+            : sortKey === 'price'
+              ? sql`COALESCE(${schema.course.cost}, 0)`
+              : schema.course.createdAt;
 
-  if (sortKey === 'last_updated_at') {
-    return direction(sql`COALESCE(${schema.course.updatedAt}, ${schema.course.createdAt})`);
-  }
-
-  if (sortKey === 'published') {
-    return direction(schema.course.isPublished);
-  }
-
-  if (sortKey === 'lessons') {
-    return direction(sql`COUNT(DISTINCT ${schema.lesson.id})`);
-  }
-
-  return direction(schema.course.createdAt);
+  return [direction(column), direction(schema.course.id)];
 }
 
 export async function countOrgCourses({
@@ -989,7 +989,7 @@ export const getOrgCourses = async ({
 
     const result = await itemsQuery
       .groupBy(schema.course.id)
-      .orderBy(orgCourseListOrderBy(sortKey, order))
+      .orderBy(...orgCourseListOrderBy(sortKey, order))
       .limit(limit)
       .offset((page - 1) * limit);
 

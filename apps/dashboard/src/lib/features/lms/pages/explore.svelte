@@ -50,6 +50,10 @@
       return coursesFiltered.sort((a, b) => Number(b.isPublished) - Number(a.isPublished));
     } else if (sortKey === CourseSortBy.Lessons) {
       return coursesFiltered.sort((a, b) => (b.lessonCount ?? 0) - (a.lessonCount ?? 0));
+    } else if (sortKey === CourseSortBy.Name) {
+      return coursesFiltered.sort((a, b) => a.title.localeCompare(b.title));
+    } else if (sortKey === CourseSortBy.Price) {
+      return coursesFiltered.sort((a, b) => (a.cost ?? 0) - (b.cost ?? 0));
     }
 
     return coursesFiltered;

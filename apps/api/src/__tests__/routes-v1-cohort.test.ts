@@ -77,7 +77,11 @@ describe('v1CohortsRouter', () => {
     const response = await app.request('/');
 
     expect(response.status).toBe(200);
-    expect(listCohortsService).toHaveBeenCalledWith('org-1', 'actor-1', firstPage);
+    expect(listCohortsService).toHaveBeenCalledWith('org-1', 'actor-1', {
+      ...firstPage,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    });
     expect(await response.json()).toEqual({
       success: true,
       data: [{ id: COHORT_ID }],
@@ -85,12 +89,32 @@ describe('v1CohortsRouter', () => {
     });
   });
 
-  it('rejects a limit above 100 with a 400', async () => {
-    const response = await app.request('/?limit=101');
+  it('passes cohort search, status and sort through', async () => {
+    vi.mocked(listCohortsService).mockResolvedValue(
+      emptyPage as unknown as Awaited<ReturnType<typeof listCohortsService>>
+    );
 
-    expect(response.status).toBe(400);
-    expect(listCohortsService).not.toHaveBeenCalled();
+    const response = await app.request('/?search=%20spring%20&status=ARCHIVED&sortBy=name&sortOrder=asc');
+
+    expect(response.status).toBe(200);
+    expect(listCohortsService).toHaveBeenCalledWith('org-1', 'actor-1', {
+      ...firstPage,
+      search: 'spring',
+      status: 'ARCHIVED',
+      sortBy: 'name',
+      sortOrder: 'asc'
+    });
   });
+
+  it.each([['limit=101'], ['status=DELETED'], ['sortBy=updatedAt'], ['sortOrder=up'], [`search=${'a'.repeat(201)}`]])(
+    'rejects an out-of-range cohort list param with a 400: %s',
+    async (query) => {
+      const response = await app.request(`/?${query}`);
+
+      expect(response.status).toBe(400);
+      expect(listCohortsService).not.toHaveBeenCalled();
+    }
+  );
 
   it('rejects a non-uuid cohortId with a 400', async () => {
     const response = await app.request('/not-a-uuid');
@@ -158,10 +182,20 @@ describe('v1CohortsRouter', () => {
       'org-1',
       'actor-1',
       { cohortId: COHORT_ID },
-      { page: 2, limit: 5 }
+      { page: 2, limit: 5, sortBy: 'joined', sortOrder: 'asc' }
     );
     expect(getPublicApiCohortService).not.toHaveBeenCalled();
   });
+
+  it.each([['roleId=1'], ['membership=pending'], ['lastLoginBefore=1y'], ['sortBy=progress']])(
+    'rejects an out-of-range cohort member list param with a 400: %s',
+    async (query) => {
+      const response = await app.request(`/${COHORT_ID}/members?${query}`);
+
+      expect(response.status).toBe(400);
+      expect(listPublicApiCohortMembersService).not.toHaveBeenCalled();
+    }
+  );
 
   it('adds, updates, and removes cohort members', async () => {
     vi.mocked(addPublicApiCohortMembersService).mockResolvedValue({ added: [], errors: [] });
