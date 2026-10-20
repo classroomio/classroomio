@@ -196,7 +196,12 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     const fixture = await createRetentionFixture(current);
     const ancient = new Date(Date.now() - 40 * 86_400_000).toISOString();
 
-    const first = await createVersion(fixture, 1, current, { isCurrent: false, replacedAt: ancient });
+    const first = await createVersion(fixture, 1, current, {
+      isCurrent: false,
+      replacedAt: ancient,
+      zipBytes: 1000,
+      extractedBytes: 5000
+    });
     await createVersion(fixture, 2, current, { isCurrent: true, replacedAt: null });
 
     storedObjects.clear();
@@ -232,7 +237,12 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
     const fixture = await createRetentionFixture(current);
     const ancient = new Date(Date.now() - 40 * 86_400_000).toISOString();
 
-    const first = await createVersion(fixture, 1, current, { isCurrent: false, replacedAt: ancient });
+    const first = await createVersion(fixture, 1, current, {
+      isCurrent: false,
+      replacedAt: ancient,
+      zipBytes: 1000,
+      extractedBytes: 5000
+    });
     await db.insert(schema.contentPackageUnit).values({
       packageVersionId: first.id,
       identifier: 'mod-1',
@@ -282,6 +292,8 @@ describe.skipIf(!hasDatabase)('scorm retention', () => {
       expect(result.versionsArchived).toBe(1);
       expect(kept?.status).toBe('archived');
       expect(kept?.archivedAt).not.toBeNull();
+      expect(kept?.zipBytes).toBe(1000);
+      expect(kept?.extractedBytes).toBe(0);
     } finally {
       storedObjects.clear();
       await cleanupRetentionFixture(fixture);

@@ -63,6 +63,23 @@ describe('parseDashboardMessage', () => {
     });
   });
 
+  it('accepts module menus up to the package entry limit', () => {
+    const many = Array.from({ length: 10_000 }, (_, index) => ({
+      identifier: `m${index}`,
+      title: `Module ${index}`,
+      completed: false,
+      locked: index > 0
+    }));
+
+    expect(parseDashboardMessage({ type: 'player-ui', ui: { units: many } })).not.toBeNull();
+    expect(
+      parseDashboardMessage({
+        type: 'player-ui',
+        ui: { units: [...many, { identifier: 'm-over', title: 'Over', completed: false, locked: false }] }
+      })
+    ).toBeNull();
+  });
+
   it('rejects malformed modules', () => {
     expect(parseDashboardMessage({ type: 'player-ui', ui: { units: [{ title: 'No id' }] } })).toBeNull();
     expect(parseDashboardMessage({ type: 'player-ui', ui: { units: 'm1' } })).toBeNull();

@@ -2,7 +2,7 @@ import './../bootstrap';
 
 import { UnrecoverableError, Worker } from 'bullmq';
 
-import { recordDeadLetterJob, updateMediaJob, updatePackageVersion } from '@cio/db/queries';
+import { getPackageVersionById, recordDeadLetterJob, updateMediaJob, updatePackageVersion } from '@cio/db/queries';
 import { JOB_NAMES, QUEUE_NAMES, createRedisConnection } from '@cio/jobs';
 
 import { JobCanceledError, errorMessage } from '../utils/cancel';
@@ -58,19 +58,22 @@ worker.on('failed', async (job, err) => {
     packageVersionId?: string;
     actorContext?: { organizationId?: string };
   };
+  const recordedVersion = data?.packageVersionId ? await getPackageVersionById(data.packageVersionId) : null;
+  const recordedError = recordedVersion?.status === 'failed' ? recordedVersion.error : null;
+  const finalError = recordedError ?? { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) };
   if (data?.mediaJobId) {
     await updateMediaJob(data.mediaJobId, {
       status: 'failed',
       stage: 'failed',
-      error: { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) }
+      error: finalError
     });
   }
 
-  if (data?.packageVersionId && data?.mediaJobId) {
+  if (data?.packageVersionId && data?.mediaJobId && !recordedError) {
     const processedAt = new Date().toISOString();
     await updatePackageVersion(data.packageVersionId, {
       status: 'failed',
-      error: { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) },
+      error: finalError,
       processedAt
     });
   }
@@ -83,7 +86,7 @@ worker.on('failed', async (job, err) => {
     jobName: job.name,
     bullmqJobId: job.id ?? null,
     payload: job.data as Record<string, unknown>,
-    error: { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err), stack: err.stack },
+    error: { ...finalError, stack: err.stack },
     attempts: job.attemptsMade
   });
 });

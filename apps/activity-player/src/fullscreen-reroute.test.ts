@@ -83,6 +83,48 @@ describe('installFullscreenReroute', () => {
     expect(webkitEnterFullscreen).toHaveBeenCalledOnce();
   });
 
+  it('handles a rejected leave before either WebKit wrapper runs', async () => {
+    const { win, prototypes, webkitRequestFullscreen, webkitEnterFullscreen } = fakePackageWindow();
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    installFullscreenReroute(win, {
+      shouldReroute: () => true,
+      leaveFullscreen: () => Promise.reject(new Error('leave failed')),
+      settleMs: 0
+    });
+
+    prototypes.Element.prototype.webkitRequestFullscreen.call({});
+    prototypes.HTMLVideoElement.prototype.webkitEnterFullscreen.call({});
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(webkitRequestFullscreen).not.toHaveBeenCalled();
+    expect(webkitEnterFullscreen).not.toHaveBeenCalled();
+    expect(consoleError).toHaveBeenCalledTimes(2);
+    consoleError.mockRestore();
+  });
+
+  it('handles a WebKit wrapper that throws after leaving fullscreen', async () => {
+    const { win, prototypes, webkitRequestFullscreen, webkitEnterFullscreen } = fakePackageWindow();
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    webkitRequestFullscreen.mockImplementation(() => {
+      throw new Error('request failed');
+    });
+    webkitEnterFullscreen.mockImplementation(() => {
+      throw new Error('video failed');
+    });
+    installFullscreenReroute(win, {
+      shouldReroute: () => true,
+      leaveFullscreen: () => Promise.resolve(),
+      settleMs: 0
+    });
+
+    prototypes.Element.prototype.webkitRequestFullscreen.call({});
+    prototypes.HTMLVideoElement.prototype.webkitEnterFullscreen.call({});
+    await vi.advanceTimersByTimeAsync(0);
+
+    expect(consoleError).toHaveBeenCalledTimes(2);
+    consoleError.mockRestore();
+  });
+
   it('patches each page only once', async () => {
     const { win, prototypes } = fakePackageWindow();
     const leaveFullscreen = vi.fn(() => Promise.resolve());
