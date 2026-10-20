@@ -582,12 +582,13 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     }));
 
     let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+    let insertedMembers: Awaited<ReturnType<typeof createOrganizationMembers>> = [];
 
     await db.transaction(async (tx) => {
       studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, newEmails.length, tx, {
         deferNotification: true
       });
-      await createOrganizationMembers(newMemberRows, tx);
+      insertedMembers = await createOrganizationMembers(newMemberRows, tx);
     });
 
     if (studentMilestoneNotification) {
@@ -596,12 +597,22 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
       });
     }
 
+    const insertedEmails = new Set(insertedMembers.map((member) => (member.email ?? '').toLowerCase()));
+    const addedEmails = newEmails.filter((email) => insertedEmails.has(email));
+    const addedConcurrently = new Set(newEmails.filter((email) => !insertedEmails.has(email)));
+
+    for (const row of rows) {
+      if (row.status === 'ready' && addedConcurrently.has(row.email)) {
+        row.status = 'already_member';
+      }
+    }
+
     if (courseIds.length > 0) {
       const courseGroupMappings = await getCourseGroupIds(courseIds);
       const validGroupIds = courseGroupMappings.map((m) => m.groupId).filter(Boolean) as string[];
 
       if (validGroupIds.length > 0) {
-        const profiles = await getProfilesByEmails(newEmails);
+        const profiles = await getProfilesByEmails(addedEmails);
         if (profiles.length > 0) {
           const users = profiles.map((p) => ({ profileId: p.id, email: p.email ?? undefined }));
           await enrollUsersInCourseGroups(validGroupIds, users, ROLE.STUDENT);
@@ -615,7 +626,7 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     }
 
     if (cohortIds.length > 0) {
-      const profiles = await getProfilesByEmails(newEmails);
+      const profiles = await getProfilesByEmails(addedEmails);
       if (profiles.length > 0) {
         await enrollAudienceStudentProfilesInCohorts(
           organization,
@@ -630,14 +641,14 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
     const inviteOutcome = await createStudentOrgInvitesAndSendEmails({
       orgId,
       organization,
-      emails: newEmails,
+      emails: addedEmails,
       courseIds,
       cohortIds,
       accessNamesLabel,
       invitedByProfileId,
       shouldSendEmail: data.sendEmail
     });
-    imported = newEmails.length;
+    imported = addedEmails.length;
     importEmailsSent = inviteOutcome.emailsSent;
     importEmailsFailed = inviteOutcome.emailsFailed;
   }

@@ -13,7 +13,7 @@ vi.mock('@cio/db/queries/organization', () => ({
     .mockImplementation(async (rows: { email: string }[]) =>
       rows.map((row, index) => ({ id: `invite-${index}`, email: row.email }))
     ),
-  createOrganizationMembers: vi.fn().mockResolvedValue([]),
+  createOrganizationMembers: vi.fn().mockImplementation(async (rows: { email: string }[]) => rows),
   getOrganizationAudienceMember: vi.fn(),
   getLatestOrganizationInviteRowByOrgAndEmail: vi.fn(),
   getOrgMembersByProfileIds: vi.fn().mockResolvedValue([]),
@@ -216,6 +216,18 @@ describe('importAudienceMembers — seat limit', () => {
     expect(result.imported).toBe(20);
     expect(result.rows.filter((row) => row.status === 'ready')).toHaveLength(20);
     expect(result.rows.filter((row) => row.status === 'over_seat_limit')).toHaveLength(980);
+  });
+
+  it('does not re-invite an address another request added first', async () => {
+    vi.mocked(createOrganizationMembers).mockImplementationOnce(
+      async (rows) => rows.filter((row) => row.email !== 'b@test.dev') as never
+    );
+
+    const result = await importAudienceMembers(ORG, csv('email', 'a@test.dev', 'b@test.dev'), ACTOR);
+
+    expect(result.rows.map((row) => row.status)).toEqual(['ready', 'already_member']);
+    expect(result.imported).toBe(1);
+    expect(createOrganizationInvites).toHaveBeenCalledWith([expect.objectContaining({ email: 'a@test.dev' })]);
   });
 
   it('checks capacity and inserts members in the same transaction', async () => {
