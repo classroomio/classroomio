@@ -52,6 +52,10 @@ vi.mock('@api/services/activity/activity-completion', () => ({
   runActivityCompletionSideEffects: vi.fn().mockResolvedValue(undefined)
 }));
 
+vi.mock('@api/services/course/access', () => ({
+  assertEnrolledStudentContentAccess: vi.fn().mockResolvedValue(undefined)
+}));
+
 vi.mock('@cio/core/services/activity/providers/scorm/results', () => ({
   getComplianceSnapshot: vi.fn().mockResolvedValue({ minutes: 15, score: 90, attempts: 1 })
 }));
@@ -72,6 +76,7 @@ import { runSettingsCompletionSideEffects } from '@api/services/activity/activit
 import { getOrgIdByCourseId } from '@cio/db/queries/course';
 import { assertActivityKindAllowed } from '@api/services/activity/plan';
 import { activityRouter } from '@api/routes/course/activity';
+import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
 
 function buildApp() {
   return new Hono().route('/course/:courseId/activity', activityRouter);
@@ -86,6 +91,7 @@ describe('course activity routes', () => {
     vi.mocked(getOrgIdByCourseId).mockResolvedValue('org-1');
     vi.mocked(isCourseTeamMemberOrOrgAdmin).mockResolvedValue(true);
     vi.mocked(assertActivityKindAllowed).mockResolvedValue(undefined);
+    vi.mocked(assertEnrolledStudentContentAccess).mockResolvedValue(undefined);
     vi.mocked(getActivity).mockResolvedValue(ACTIVITY as never);
   });
 
@@ -114,6 +120,12 @@ describe('course activity routes', () => {
     const response = await app.request('/course/course-1/activity/act-1', { method: 'GET', headers: HEADERS });
 
     expect(response.status).toBe(200);
+    expect(assertEnrolledStudentContentAccess).toHaveBeenCalledWith({
+      courseId: 'course-1',
+      profileId: 'user-1',
+      contentId: 'act-1',
+      type: 'ACTIVITY'
+    });
     expect(getActivityForStudent).toHaveBeenCalledWith('course-1', 'act-1');
     expect(getActivityWithEditorData).not.toHaveBeenCalled();
   });

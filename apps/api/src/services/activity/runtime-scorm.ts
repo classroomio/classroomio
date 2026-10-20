@@ -587,24 +587,19 @@ export async function commitScormAttempt(
       await closeScormAttempt(chain.attempt.id, 'finished', tx);
     }
 
-    const completedActivity = await completeActivityOnce(activityId, profileId, tx);
+    const activity = await getActivityById(activityId, tx);
+    const cycleStart = activity?.courseId ? await getComplianceCycleStartIso(activity.courseId, profileId, tx) : null;
+    const attemptInCurrentCycle = cycleStart === null || chain.attempt.startedAt >= cycleStart;
+    const completedActivity = attemptInCurrentCycle ? await completeActivityOnce(activityId, profileId, tx) : false;
 
-    if (!completedActivity) {
-      const completedCourse = await getActivityById(activityId, tx);
-      const cycleStart =
-        completedCourse?.courseId != null
-          ? await getComplianceCycleStartIso(completedCourse.courseId, profileId, tx)
-          : null;
-
-      if (cycleStart !== null && chain.attempt.startedAt >= cycleStart) {
-        await upsertActivityCompletion({ activityId, profileId, isComplete: true }, tx);
-      }
+    if (!completedActivity && attemptInCurrentCycle && cycleStart !== null) {
+      await upsertActivityCompletion({ activityId, profileId, isComplete: true }, tx);
     }
 
     return {
       saved: true,
       completedActivity,
-      ruleMet: true,
+      ruleMet: attemptInCurrentCycle,
       progressChanged,
       activityId,
       profileId,

@@ -56,9 +56,18 @@ export const activityRouter = new Hono()
       const { activityId } = c.req.valid('param');
       const user = c.get('user')!;
       const isAuthor = await isCourseTeamMemberOrOrgAdmin(courseId, user.id);
-      const result = isAuthor
-        ? await getActivityWithEditorData(courseId, activityId)
-        : await getActivityForStudent(courseId, activityId);
+      if (isAuthor) {
+        const result = await getActivityWithEditorData(courseId, activityId);
+        return c.json({ success: true, data: result }, 200);
+      }
+
+      await assertEnrolledStudentContentAccess({
+        courseId,
+        profileId: user.id,
+        contentId: activityId,
+        type: ContentType.Activity
+      });
+      const result = await getActivityForStudent(courseId, activityId);
 
       return c.json({ success: true, data: result }, 200);
     } catch (error) {
