@@ -1,6 +1,8 @@
 <script lang="ts">
   import * as Table from '@cio/ui/base/table';
+  import { Search } from '@cio/ui/custom/search';
   import { Checkbox } from '@cio/ui/base/checkbox';
+  import * as Pagination from '@cio/ui/base/pagination';
   import { Empty } from '@cio/ui/custom/empty';
   import UserXIcon from '@lucide/svelte/icons/user-x';
 
@@ -26,6 +28,16 @@
       ? courseApi.group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
       : courseApi.group.people.filter((person) => !!person.profile && Number(person.roleId) === ROLE.STUDENT)
   );
+
+  const canManageAttendance = $derived(!$isOrgStudent);
+
+  let searchValue = $state('');
+  let currentPage = $state(1);
+  let pageSize = $state(10);
+
+  const searchedStudents = $derived(searchStudents(searchValue, students));
+  const totalStudents = $derived(searchedStudents.length);
+  const paginatedStudents = $derived(searchedStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize));
 
   const contentData = $derived(getCourseContent(courseApi.course));
   const lessonItems = $derived(flattenNavigableItems(contentData).filter((item) => item.type === ContentType.Lesson));
@@ -107,6 +119,11 @@
       }
     }
   }
+
+  function searchStudents(query: string, _students: CourseMembers) {
+    const lowercaseQuery = query.toLowerCase();
+    return _students.filter((student) => student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery));
+  }
 </script>
 
 <section class="flex items-center">
@@ -121,6 +138,14 @@
         <span>{$t('course.navItem.attendance.absent')}</span>
       </p>
     </div>
+
+    {#if canManageAttendance}
+      <Search
+        placeholder={$t('course.navItem.attendance.search_students')}
+        bind:value={searchValue}
+        onValueChange={() => (currentPage = 1)}
+      />
+    {/if}
   </div>
 </section>
 
@@ -138,7 +163,7 @@
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {#each students as student}
+        {#each paginatedStudents as student}
           <Table.Row>
             <Table.Cell class="font-semibold">
               {student.profile?.fullname}
@@ -164,5 +189,39 @@
   </div>
   {#if students.length === 0}
     <Empty title={$t('course.navItem.attendance.no_student')} icon={UserXIcon} variant="page" />
+  {/if}
+  {#if canManageAttendance && totalStudents > 0}
+    <div class="mt-4">
+      <Pagination.Root
+        count={totalStudents}
+        perPage={pageSize}
+        page={currentPage}
+        onPageChange={(page) => (currentPage = page)}
+      >
+        {#snippet children({ pages, currentPage: activePage })}
+          <Pagination.Content>
+            <Pagination.Item>
+              <Pagination.PrevButton />
+            </Pagination.Item>
+            {#each pages as page (page.key)}
+              {#if page.type === 'ellipsis'}
+                <Pagination.Item>
+                  <Pagination.Ellipsis />
+                </Pagination.Item>
+              {:else}
+                <Pagination.Item>
+                  <Pagination.Link {page} isActive={activePage === page.value}>
+                    {page.value}
+                  </Pagination.Link>
+                </Pagination.Item>
+              {/if}
+            {/each}
+            <Pagination.Item>
+              <Pagination.NextButton />
+            </Pagination.Item>
+          </Pagination.Content>
+        {/snippet}
+      </Pagination.Root>
+    </div>
   {/if}
 </section>
