@@ -22,7 +22,8 @@ export const ZScormSessionEventDetail = z
   .record(z.string(), z.unknown())
   .default({})
   .superRefine((detail, ctx) => {
-    if (JSON.stringify(detail).length > SCORM_SESSION_EVENT_DETAIL_MAX_BYTES) {
+    const bytes = new TextEncoder().encode(JSON.stringify(detail)).length;
+    if (bytes > SCORM_SESSION_EVENT_DETAIL_MAX_BYTES) {
       ctx.addIssue({
         code: 'custom',
         message: `Detail must not exceed ${SCORM_SESSION_EVENT_DETAIL_MAX_BYTES} bytes`

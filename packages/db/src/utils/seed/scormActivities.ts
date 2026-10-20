@@ -63,32 +63,34 @@ async function ensurePackageVersion(versionId: string, assetId: string, title: s
     return;
   }
 
-  await db.insert(contentPackageVersion).values({
-    id: versionId,
-    assetId,
-    versionNumber: 1,
-    isCurrent: true,
-    status: 'ready',
-    format: 'scorm2004_4',
-    title,
-    warnings: [],
-    uploadKey: `scorm/${assetId}/v1.zip`,
-    contentPrefix: `scorm/${assetId}/v1`,
-    zipBytes: 1024,
-    extractedBytes: 2048,
-    fileCount: modules.length + 1,
-    createdByProfileId: ENTERPRISE_ADMIN_USER_ID
+  await db.transaction(async (tx) => {
+    await tx.insert(contentPackageVersion).values({
+      id: versionId,
+      assetId,
+      versionNumber: 1,
+      isCurrent: true,
+      status: 'ready',
+      format: 'scorm2004_4',
+      title,
+      warnings: [],
+      uploadKey: `scorm/${assetId}/v1.zip`,
+      contentPrefix: `scorm/${assetId}/v1`,
+      zipBytes: 1024,
+      extractedBytes: 2048,
+      fileCount: modules.length + 1,
+      createdByProfileId: ENTERPRISE_ADMIN_USER_ID
+    });
+    await tx.insert(contentPackageUnit).values(
+      modules.map((moduleTitle, index) => ({
+        packageVersionId: versionId,
+        identifier: `sco-${index + 1}`,
+        title: moduleTitle,
+        position: index + 1,
+        unitType: 'sco' as const,
+        href: `sco-${index + 1}.html`
+      }))
+    );
   });
-  await db.insert(contentPackageUnit).values(
-    modules.map((moduleTitle, index) => ({
-      packageVersionId: versionId,
-      identifier: `sco-${index + 1}`,
-      title: moduleTitle,
-      position: index + 1,
-      unitType: 'sco' as const,
-      href: `sco-${index + 1}.html`
-    }))
-  );
   console.log(`   ✓ Inserted package version for "${title}"`);
 }
 
@@ -100,14 +102,16 @@ async function ensureActivityAttachment(activityId: string, assetId: string) {
 
   if (existing.length > 0) return;
 
-  await db.insert(activityScorm).values({ activityId, assetId });
-  await db.insert(assetUsage).values({
-    organizationId: ENTERPRISE_ORG_ID,
-    assetId,
-    targetType: 'activity',
-    targetId: activityId,
-    slotType: 'activity_package',
-    createdByProfileId: ENTERPRISE_ADMIN_USER_ID
+  await db.transaction(async (tx) => {
+    await tx.insert(activityScorm).values({ activityId, assetId });
+    await tx.insert(assetUsage).values({
+      organizationId: ENTERPRISE_ORG_ID,
+      assetId,
+      targetType: 'activity',
+      targetId: activityId,
+      slotType: 'activity_package',
+      createdByProfileId: ENTERPRISE_ADMIN_USER_ID
+    });
   });
 }
 
