@@ -265,6 +265,8 @@ const baseApp = new Hono()
     });
   });
 
+// The chained app's inferred schema is too large for declaration emit.
+// Keep this union in sync with the mounts below so RPC clients retain every route.
 type AppSchemaOf<T> = T extends HonoBase<any, infer S, any> ? (S extends object ? S : never) : never;
 type Mount<Path extends string, Router> = MergeSchemaPath<AppSchemaOf<Router>, Path>;
 
@@ -272,6 +274,7 @@ type AppSchema =
   | AppSchemaOf<typeof baseApp>
   | Mount<'/onboarding', typeof onboardingRouter>
   | Mount<'/account', typeof accountRouter>
+  | Mount<'/activity', typeof activityRouter>
   | Mount<'/course', typeof courseRouter>
   | Mount<'/domain', typeof domainRouter>
   | Mount<'/hls', typeof hlsRouter>
