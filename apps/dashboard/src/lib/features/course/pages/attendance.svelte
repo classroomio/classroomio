@@ -1,8 +1,6 @@
 <script lang="ts">
   import * as Table from '@cio/ui/base/table';
-  import { Search } from '@cio/ui/custom/search';
   import { Checkbox } from '@cio/ui/base/checkbox';
-  import * as Pagination from '@cio/ui/base/pagination';
   import { Empty } from '@cio/ui/custom/empty';
   import UserXIcon from '@lucide/svelte/icons/user-x';
 
@@ -28,13 +26,6 @@
       ? courseApi.group.people.filter((person) => !!person.profile && person.profile.id === $profile.id)
       : courseApi.group.people.filter((person) => !!person.profile && Number(person.roleId) === ROLE.STUDENT)
   );
-  let searchValue = $state('');
-  let currentPage = $state(1);
-  let pageSize = $state(10);
-
-  const filteredStudents = $derived(searchStudents(searchValue, students));
-  const totalStudents = $derived(filteredStudents.length);
-  const paginatedStudents = $derived(filteredStudents.slice((currentPage - 1) * pageSize, currentPage * pageSize));
 
   const contentData = $derived(getCourseContent(courseApi.course));
   const lessonItems = $derived(flattenNavigableItems(contentData).filter((item) => item.type === ContentType.Lesson));
@@ -116,19 +107,13 @@
       }
     }
   }
-
-  // function for the searchbar
-  function searchStudents(query: string, _students: CourseMembers) {
-    const lowercaseQuery = query.toLowerCase();
-    return _students.filter((student) => student.profile?.fullname?.toLowerCase()?.includes(lowercaseQuery));
-  }
 </script>
 
 <section class="flex items-center">
   <div class="flex w-full flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
     <div class="flex gap-5">
       <p class="flex items-center gap-2">
-        <Checkbox disabled />
+        <Checkbox disabled checked />
         <span>{$t('course.navItem.attendance.present')}</span>
       </p>
       <p class="flex items-center gap-2">
@@ -136,12 +121,6 @@
         <span>{$t('course.navItem.attendance.absent')}</span>
       </p>
     </div>
-
-    <Search
-      placeholder={$t('course.navItem.attendance.search_students')}
-      bind:value={searchValue}
-      onValueChange={() => (currentPage = 1)}
-    />
   </div>
 </section>
 
@@ -159,7 +138,7 @@
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        {#each paginatedStudents as student}
+        {#each students as student}
           <Table.Row>
             <Table.Cell class="font-semibold">
               {student.profile?.fullname}
@@ -185,39 +164,5 @@
   </div>
   {#if students.length === 0}
     <Empty title={$t('course.navItem.attendance.no_student')} icon={UserXIcon} variant="page" />
-  {/if}
-  {#if totalStudents > 0}
-    <div class="mt-4">
-      <Pagination.Root
-        count={totalStudents}
-        perPage={pageSize}
-        page={currentPage}
-        onPageChange={(page) => (currentPage = page)}
-      >
-        {#snippet children({ pages, currentPage: activePage })}
-          <Pagination.Content>
-            <Pagination.Item>
-              <Pagination.PrevButton />
-            </Pagination.Item>
-            {#each pages as page (page.key)}
-              {#if page.type === 'ellipsis'}
-                <Pagination.Item>
-                  <Pagination.Ellipsis />
-                </Pagination.Item>
-              {:else}
-                <Pagination.Item>
-                  <Pagination.Link {page} isActive={activePage === page.value}>
-                    {page.value}
-                  </Pagination.Link>
-                </Pagination.Item>
-              {/if}
-            {/each}
-            <Pagination.Item>
-              <Pagination.NextButton />
-            </Pagination.Item>
-          </Pagination.Content>
-        {/snippet}
-      </Pagination.Root>
-    </div>
   {/if}
 </section>
