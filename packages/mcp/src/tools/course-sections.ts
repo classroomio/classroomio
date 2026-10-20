@@ -17,9 +17,7 @@ const CREATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, i
 const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: true };
 const DESTRUCTIVE: ToolAnnotations = { readOnlyHint: false, destructiveHint: true, idempotentHint: false };
 
-const COURSE_TEAM_RULE =
-  'The API key creator must be a course tutor/admin or an org admin, otherwise the call fails with 403.';
-const PAGINATION_NOTE = 'Paginated: page (default 1) and limit (default 20, max 100); the result includes pagination.';
+const COURSE_TEAM_RULE = 'the API key creator must be a course tutor/admin or an org admin';
 
 export const ZListCourseSectionsToolInput = ZPublicApiCourseSectionsQuery.extend({
   courseId: ZPublicApiCourseParam.shape.courseId
@@ -37,7 +35,7 @@ const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawS
 export function registerCourseSectionTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_course_sections',
-    `List a live course's sections in order. Use get_course_structure for sections with their lessons and exercises. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+    `List a live course's sections in order; ${COURSE_TEAM_RULE}. Use get_course_structure for sections with their lessons and exercises.`,
     shape(ZListCourseSectionsToolInput),
     READ_ONLY,
     async (args) => {
@@ -48,7 +46,7 @@ export function registerCourseSectionTools(server: McpServer, apiClient: Classro
 
   server.tool(
     'create_course_section',
-    `Create a section on a live course. Send order to place it, or moveUngrouped: true (without order) to add it at the end and move every lesson and exercise that has no section into it. ${COURSE_TEAM_RULE}`,
+    `Create a section on a live course; ${COURSE_TEAM_RULE}.`,
     shape(ZCreateCourseSectionToolInput),
     CREATE,
     async (args) => {
@@ -59,7 +57,7 @@ export function registerCourseSectionTools(server: McpServer, apiClient: Classro
 
   server.tool(
     'update_course_section',
-    `Rename or move one section. To reorder several sections or move content between them, use reorder_course_content. ${COURSE_TEAM_RULE}`,
+    `Rename or move one section; ${COURSE_TEAM_RULE}. To reorder several sections or move content between them, use reorder_course_content.`,
     shape(ZUpdateCourseSectionToolInput),
     UPDATE,
     async (args) => {
@@ -70,7 +68,7 @@ export function registerCourseSectionTools(server: McpServer, apiClient: Classro
 
   server.tool(
     'delete_course_section',
-    `Permanently delete a section together with every lesson and exercise in it (hard delete, cannot be undone). To keep the content, first move it out with reorder_course_content. If students have submissions or lesson completions in it, this fails with 409 unless force is true, which deletes their work too; ask the user before forcing. ${COURSE_TEAM_RULE}`,
+    `Permanently delete a section with every lesson and exercise in it; ${COURSE_TEAM_RULE}. To keep its content, move it out first with reorder_course_content; ask the user before setting force.`,
     shape(ZDeleteCourseSectionToolInput),
     DESTRUCTIVE,
     async (args) => {

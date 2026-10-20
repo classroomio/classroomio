@@ -111,6 +111,7 @@ exports[`public API course exercise request contract > ZPublicApiAddExerciseQues
         },
       ],
       "default": 1,
+      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
     },
     "settings": {
       "additionalProperties": {},
@@ -227,6 +228,7 @@ exports[`public API course exercise request contract > ZPublicApiCourseExerciseN
   "properties": {
     "pollCount": {
       "default": 0,
+      "description": "How many times you have polled this job so far",
       "maximum": 1000,
       "minimum": 0,
       "type": "integer",
@@ -241,23 +243,27 @@ exports[`public API course exercise request contract > ZPublicApiCourseExercises
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "lessonId": {
+      "description": "Deprecated: only exercises linked to this lesson",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
     },
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
     },
     "sectionId": {
+      "description": "Only exercises in this course section",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
@@ -273,12 +279,14 @@ exports[`public API course exercise request contract > ZPublicApiCourseMarksQuer
   "properties": {
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -293,11 +301,13 @@ exports[`public API course exercise request contract > ZPublicApiCourseSubmissio
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "exerciseId": {
+      "description": "Only submissions for this exercise",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
     },
     "gradingState": {
+      "description": "Only submissions in this grading state",
       "enum": [
         "queued",
         "processing",
@@ -309,17 +319,20 @@ exports[`public API course exercise request contract > ZPublicApiCourseSubmissio
     },
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "memberId": {
+      "description": "Only submissions by this course member",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -342,6 +355,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
       "type": "string",
     },
     "lessonId": {
+      "description": "A lesson of this course",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
@@ -455,6 +469,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
               },
             ],
             "default": 1,
+            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
           },
           "settings": {
             "additionalProperties": {},
@@ -474,6 +489,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
       "type": "array",
     },
     "sectionId": {
+      "description": "A section of this course",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
@@ -485,6 +501,7 @@ exports[`public API course exercise request contract > ZPublicApiCreateCourseExe
       "type": "string",
     },
     "templateId": {
+      "description": "A built-in template from GET /exercise-templates. The template supplies the title, description and questions, so only sectionId, lessonId and order may be sent with it.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
@@ -565,17 +582,20 @@ exports[`public API course exercise request contract > ZPublicApiExerciseTemplat
   "properties": {
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
     },
     "tag": {
+      "description": "Only return templates with this tag",
       "maxLength": 50,
       "minLength": 1,
       "type": "string",
@@ -603,7 +623,7 @@ exports[`public API course exercise request contract > ZPublicApiForceQuery keep
         },
       ],
       "default": false,
-      "description": "Also delete the answers students gave to the deleted questions; without it, deleting an answered question returns 409",
+      "description": "Also delete the student work in what you delete (answers, submissions or lesson completions); without it, this returns 409 when there is any",
     },
   },
   "type": "object",
@@ -623,6 +643,7 @@ exports[`public API course exercise request contract > ZPublicApiGradeCourseSubm
             "type": "integer",
           },
           "questionId": {
+            "description": "A question of the submission's exercise",
             "exclusiveMinimum": 0,
             "maximum": 9007199254740991,
             "type": "integer",
@@ -657,6 +678,7 @@ exports[`public API course exercise request contract > ZPublicApiGradeCourseSubm
 exports[`public API course exercise request contract > ZPublicApiUpdateCourseExercise keeps its published shape > ZPublicApiUpdateCourseExercise 1`] = `
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Send only the fields to change. To change one question or one exercise section, use the /questions and /sections endpoints instead.",
   "properties": {
     "allowMultipleAttempts": {
       "type": "boolean",
@@ -695,6 +717,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "type": "integer",
     },
     "questions": {
+      "description": "A diff, like the dashboard editor: send a question with its id to edit it, with id and delete: true to remove it, or without an id to add it. Options follow the same rules inside their question, and ids must belong to this exercise. Questions you leave out are unchanged. Deleting a question students have answered returns 409 unless force=true.",
       "items": {
         "properties": {
           "delete": {
@@ -825,7 +848,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
                 "type": "number",
               },
             ],
-            "description": "Defaults to RADIO (1) for a new question",
+            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types. Defaults to 1 for a new question.",
           },
           "settings": {
             "additionalProperties": {},
@@ -853,6 +876,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseExe
       "type": "string",
     },
     "sections": {
+      "description": "Same rules as questions. A new section may carry a UUID you generate, so new questions can reference it by exerciseSectionId. A removed section must not still hold questions or be another section's go_to_section target (409).",
       "items": {
         "properties": {
           "afterBehavior": {
@@ -972,6 +996,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateCourseSub
       "type": "string",
     },
     "gradingState": {
+      "description": "Moves queued → processing → completed, awaiting_manual or failed; awaiting_manual → completed; failed → queued. Any other change returns 400.",
       "enum": [
         "queued",
         "processing",
@@ -1102,6 +1127,7 @@ exports[`public API course exercise request contract > ZPublicApiUpdateExerciseQ
           "type": "number",
         },
       ],
+      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
     },
     "removeOptionIds": {
       "description": "Options to remove; options you do not name are kept",
@@ -1477,6 +1503,7 @@ exports[`public API exercise question and section contract > ZPublicApiCourseExe
                 "type": "number",
               },
             ],
+            "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
           },
           "settings": {
             "additionalProperties": {},
@@ -1810,6 +1837,7 @@ exports[`public API exercise question and section contract > ZPublicApiExerciseQ
           "type": "number",
         },
       ],
+      "description": "1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.",
     },
     "settings": {
       "additionalProperties": {},

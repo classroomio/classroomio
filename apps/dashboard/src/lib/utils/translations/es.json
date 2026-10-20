@@ -5178,7 +5178,7 @@
         "course_invite_revoked": "Se revoca una invitación de estudiante",
         "course_member_added": "Se añade un miembro a un curso",
         "course_member_removed": "Se elimina un miembro de un curso",
-        "course_completed": "Un alumno completa un curso",
+        "course_completed": "Un estudiante completa un curso",
         "course_certificate_issued": "Se obtiene un certificado",
         "course_submission_created": "Se crea una entrega de ejercicio",
         "course_submission_status_changed": "Cambia el estado de una entrega, por ejemplo al calificarla",

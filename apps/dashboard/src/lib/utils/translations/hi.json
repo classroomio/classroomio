@@ -5178,7 +5178,7 @@
         "course_invite_revoked": "विद्यार्थी आमंत्रण रद्द किया जाता है",
         "course_member_added": "किसी कोर्स में सदस्य जोड़ा जाता है",
         "course_member_removed": "किसी कोर्स से सदस्य हटाया जाता है",
-        "course_completed": "कोई शिक्षार्थी कोर्स पूरा करता है",
+        "course_completed": "कोई विद्यार्थी कोर्स पूरा करता है",
         "course_certificate_issued": "प्रमाणपत्र अर्जित किया जाता है",
         "course_submission_created": "अभ्यास सबमिशन बनाया जाता है",
         "course_submission_status_changed": "सबमिशन की स्थिति बदलती है, जैसे ग्रेड किए जाने पर",

@@ -21,7 +21,11 @@ export type TPublicApiCreateAsset = z.infer<typeof ZPublicApiCreateAsset>;
 
 export const ZPublicApiAssetUploadResponse = z.object({
   assetId: z.string().uuid().describe('Reference this when attaching the asset to a lesson.'),
-  uploadUrl: z.string().describe('Send the file bytes here with a single PUT and no authorization header.'),
+  uploadUrl: z
+    .string()
+    .describe(
+      'Send the file bytes here with a single PUT and no authorization header, with a Content-Type that matches mimeType.'
+    ),
   expiresAt: z.string().describe('ISO timestamp after which uploadUrl stops working.')
 });
 export type TPublicApiAssetUploadResponse = z.infer<typeof ZPublicApiAssetUploadResponse>;

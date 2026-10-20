@@ -39,6 +39,16 @@ Apply this skill when designing, implementing, or reviewing a public API, automa
 - Make sensitive list fields intentional and return only the personal data consumers need.
 - Document idempotency, concurrency behavior, pagination limits, filtering, sorting, and error responses in OpenAPI and client docs.
 
+## Keep descriptions to one sentence
+
+- A `describeRoute` description is one sentence: what the endpoint does, then who may call it (`List the members of a cohort; the key creator must be a cohort member or an org admin.`). Take the "who" clause from the domain `docs.ts` so the wording matches what the service enforces.
+- Put every other detail next to the thing it is about, where the reference and MCP clients still show it:
+  - a rule about one field (defaults, limits, `null` clears it, formats) goes in that field's `.describe()` in the public schema. Call `.describe()` after `.refine()`, which returns a new schema without the description.
+  - why a call fails goes in the matching error response description.
+  - what the response holds goes in the success response description or the response field's `.describe()`.
+- An MCP tool description is the same sentence plus at most one more, kept only when an agent would otherwise call the tool wrongly (a tool to call first, a status code to expect).
+- Check every claim against the service and schema, including text you only moved or shortened. A list of accepted values names every value in the schema's enum; if only some are for new data, say which. Guidance moved onto a field ("use X") is not that field's contract ("accepts X, Y, Z"). Say what to do with each value, not where values usually come from, unless the code enforces it.
+
 ## Validate at the public API boundary
 
 - Define public request and response schemas independently from internal dashboard schemas. Reuse only deliberately shared primitives.

@@ -5178,7 +5178,7 @@
         "course_invite_revoked": "Zaproszenie dla studenta zostało cofnięte",
         "course_member_added": "Dodano uczestnika do kursu",
         "course_member_removed": "Usunięto uczestnika z kursu",
-        "course_completed": "Uczestnik kończy kurs",
+        "course_completed": "Student kończy kurs",
         "course_certificate_issued": "Zdobyto certyfikat",
         "course_submission_created": "Utworzono zgłoszenie ćwiczenia",
         "course_submission_status_changed": "Zmienia się status zgłoszenia, na przykład po jego ocenieniu",

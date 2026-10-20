@@ -20,7 +20,7 @@ export const v1CourseStudentRouter = new Hono()
   .put(
     '/lessons/:lessonId/completion',
     describeRoute({
-      description: `Record a lesson as completed for a student, or undo it. ${COURSE_TEAM_RULE}`,
+      description: `Record a lesson as completed for a student, or undo it; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
@@ -60,7 +60,7 @@ export const v1CourseStudentRouter = new Hono()
   .post(
     '/exercises/:exerciseId/submissions',
     describeRoute({
-      description: `Submit an exercise for a student. ${COURSE_TEAM_RULE}`,
+      description: `Submit an exercise for a student; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         201: jsonResponse(

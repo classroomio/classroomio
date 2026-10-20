@@ -26,11 +26,11 @@ export const v1CourseLessonTranslationsRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List a lesson's content in each language, with the full HTML. Pass locale to get just one; the list is empty when that language has no content. At most one entry per supported locale. ${COURSE_TEAM_RULE}`,
+      description: `List a lesson's content in each language, with the full HTML; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse(
-          'Translations returned successfully',
+          'Translations returned, at most one per supported locale',
           itemResponse(z.array(ZPublicApiCourseLessonTranslationResponse))
         ),
         400: errorResponses.badRequest,
@@ -62,10 +62,13 @@ export const v1CourseLessonTranslationsRouter = new Hono()
   .put(
     '/:locale',
     describeRoute({
-      description: `Create or replace a lesson's content in one language (idempotent). The HTML is sanitized, and each save is recorded in the lesson history as the key creator. versionIntent manual marks a named version (versionLabel); auto (default) may merge into the current editing session. ${COURSE_TEAM_RULE}`,
+      description: `Create or replace a lesson's content in one language; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Translation saved successfully', itemResponse(ZPublicApiCourseLessonTranslationResponse)),
+        200: jsonResponse(
+          'Translation saved. The HTML is sanitized, and each save is recorded in the lesson history as the key creator.',
+          itemResponse(ZPublicApiCourseLessonTranslationResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: contentForbiddenResponses.write,
@@ -96,10 +99,13 @@ export const v1CourseLessonTranslationsRouter = new Hono()
 export const v1CourseLessonHistoryRouter = new Hono().get(
   '/',
   describeRoute({
-    description: `List saved versions of a lesson's content in one language, newest first, with the content before and after each save. Cursor-paginated: pass data.nextCursor back as cursor; limit defaults to 10, max 50. ${COURSE_TEAM_RULE}`,
+    description: `List saved versions of a lesson's content in one language, newest first; ${COURSE_TEAM_RULE}.`,
     tags: [TAG],
     responses: {
-      200: jsonResponse('History returned successfully', itemResponse(ZPublicApiCourseLessonHistoryResponse)),
+      200: jsonResponse(
+        'History returned, with the content before and after each save',
+        itemResponse(ZPublicApiCourseLessonHistoryResponse)
+      ),
       400: errorResponses.badRequest,
       401: errorResponses.unauthorized,
       403: contentForbiddenResponses.read,

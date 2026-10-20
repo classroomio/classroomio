@@ -5087,7 +5087,7 @@
         "course_invite_revoked": "Bir öğrenci daveti iptal edildiğinde",
         "course_member_added": "Bir kursa üye eklendiğinde",
         "course_member_removed": "Bir kurstan üye çıkarıldığında",
-        "course_completed": "Bir öğrenen kursu tamamladığında",
+        "course_completed": "Bir öğrenci kursu tamamladığında",
         "course_certificate_issued": "Bir sertifika kazanıldığında",
         "course_submission_created": "Bir alıştırma gönderimi oluşturulduğunda",
         "course_submission_status_changed": "Bir gönderimin durumu değiştiğinde, örneğin notlandırıldığında",

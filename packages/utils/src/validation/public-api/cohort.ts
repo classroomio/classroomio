@@ -15,8 +15,8 @@ export type TPublicApiCreateCohort = z.infer<typeof ZPublicApiCreateCohort>;
 export const ZPublicApiUpdateCohort = z
   .object({
     name: z.string().min(1).max(255).optional(),
-    description: z.string().max(2000).nullable().optional(),
-    coverImage: z.string().url().nullable().optional(),
+    description: z.string().max(2000).nullable().optional().describe('Send null to clear it.'),
+    coverImage: z.string().url().nullable().optional().describe('Send null to clear it.'),
     status: z.enum(['ACTIVE', 'INACTIVE', 'ARCHIVED']).optional()
   })
   .refine((data) => Object.keys(data).length > 0, { message: 'No fields to update' });

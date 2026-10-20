@@ -23,11 +23,8 @@ const CREATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, i
 const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: true };
 const DESTRUCTIVE: ToolAnnotations = { readOnlyHint: false, destructiveHint: true, idempotentHint: false };
 
-const COURSE_TEAM_RULE =
-  'The API key creator must be a course tutor/admin or an org admin, otherwise the call fails with 403.';
-const PAGINATION_NOTE = 'Paginated: page (default 1) and limit (default 20, max 100); the result includes pagination.';
-const CURSOR_NOTE = 'Pass nextCursor back as cursor for the next page; limit defaults to 10, max 50.';
-const COMMENTS_OFF = 'Fails with 403 COMMENTS_DISABLED when comments are off for the organization, course or lesson.';
+const COURSE_TEAM_RULE = 'the API key creator must be a course tutor/admin or an org admin';
+const CURSOR_NOTE = 'Pass nextCursor back as cursor for the next page.';
 
 export const ZListCourseLessonsToolInput = ZPublicApiCourseLessonsQuery.extend({
   courseId: ZPublicApiCourseParam.shape.courseId
@@ -59,7 +56,7 @@ const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawS
 export function registerCourseLessonTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_course_lessons',
-    `List a live course's lessons in order, without their content. Optionally filter by sectionId. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+    `List a live course's lessons in order, without their content; ${COURSE_TEAM_RULE}.`,
     shape(ZListCourseLessonsToolInput),
     READ_ONLY,
     async (args) => {
@@ -70,7 +67,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'get_course_lesson',
-    `Get one lesson with its note, slides, videos, documents and the content of every language. Uploaded files come back as short-lived signed links. ${COURSE_TEAM_RULE}`,
+    `Get one lesson with its note, slides, videos, documents and the content of every language; ${COURSE_TEAM_RULE}.`,
     shape(ZCourseLessonToolInput),
     READ_ONLY,
     async (args) => {
@@ -81,7 +78,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'delete_course_lesson',
-    `Permanently delete a lesson with its translations, history, comments and learners' completion (hard delete, cannot be undone). Use delete_course_content to delete several lessons or exercises at once. If students have submissions or lesson completions in it, this fails with 409 unless force is true, which deletes their work too; ask the user before forcing. ${COURSE_TEAM_RULE}`,
+    `Permanently delete a lesson with its translations, history, comments and learners' completion; ${COURSE_TEAM_RULE}. Ask the user before setting force, which deletes students' work too.`,
     shape(ZDeleteCourseLessonToolInput),
     DESTRUCTIVE,
     async (args) => {
@@ -92,7 +89,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'notify_course_lesson_session_update',
-    `Email every student an updated calendar invite for a live lesson after its time or call link changed. Runs in the background and returns a job id. Fails with 409 if the lesson has no callUrl and lessonAt. ${COURSE_TEAM_RULE}`,
+    `Email every student an updated calendar invite after a live lesson's time or call link changed; ${COURSE_TEAM_RULE}. Fails with 409 if the lesson has no callUrl and lessonAt.`,
     shape(ZCourseLessonToolInput),
     CREATE,
     async (args) => {
@@ -103,7 +100,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'list_course_lesson_translations',
-    `Get a lesson's HTML content in each language, or in one language with locale (empty list if that language has none). ${COURSE_TEAM_RULE}`,
+    `Get a lesson's HTML content in each language, or in one language with locale; ${COURSE_TEAM_RULE}.`,
     shape(ZListCourseLessonTranslationsToolInput),
     READ_ONLY,
     async (args) => {
@@ -114,7 +111,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'set_course_lesson_translation',
-    `Create or replace a lesson's HTML content in one language. The HTML is sanitized and the save is recorded in the lesson history as the API key creator. versionIntent "manual" with versionLabel saves a named version. ${COURSE_TEAM_RULE}`,
+    `Create or replace a lesson's HTML content in one language, recorded in the lesson history as the API key creator; ${COURSE_TEAM_RULE}.`,
     shape(ZSetCourseLessonTranslationToolInput),
     UPDATE,
     async (args) => {
@@ -125,7 +122,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'list_course_lesson_history',
-    `List saved versions of a lesson's content in one language, newest first, with the content before and after each save. ${CURSOR_NOTE} ${COURSE_TEAM_RULE}`,
+    `List saved versions of a lesson's content in one language, newest first; ${COURSE_TEAM_RULE}. ${CURSOR_NOTE}`,
     shape(ZListCourseLessonHistoryToolInput),
     READ_ONLY,
     async (args) => {
@@ -136,7 +133,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'list_course_lesson_comments',
-    `List a lesson's comments, newest first, with each author's name. ${CURSOR_NOTE} ${COMMENTS_OFF} ${COURSE_TEAM_RULE}`,
+    `List a lesson's comments, newest first, with each author's name; ${COURSE_TEAM_RULE}. ${CURSOR_NOTE}`,
     shape(ZListCourseLessonCommentsToolInput),
     READ_ONLY,
     async (args) => {
@@ -147,7 +144,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'create_course_lesson_comment',
-    `Post a comment on a lesson as the API key creator. An org admin who is not in the course is added to it as an admin first. ${COMMENTS_OFF} ${COURSE_TEAM_RULE}`,
+    `Post a comment on a lesson as the API key creator; ${COURSE_TEAM_RULE}.`,
     shape(ZCreateCourseLessonCommentToolInput),
     CREATE,
     async (args) => {
@@ -158,7 +155,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'update_course_lesson_comment',
-    `Edit a lesson comment. Only its author (the API key creator) can edit it, otherwise 403. ${COMMENTS_OFF} ${COURSE_TEAM_RULE}`,
+    `Edit a lesson comment the API key creator wrote; ${COURSE_TEAM_RULE}.`,
     shape(ZUpdateCourseLessonCommentToolInput),
     UPDATE,
     async (args) => {
@@ -169,7 +166,7 @@ export function registerCourseLessonTools(server: McpServer, apiClient: Classroo
 
   server.tool(
     'delete_course_lesson_comment',
-    `Permanently delete a lesson comment (hard delete). Its author, a course tutor/admin or an org admin can delete it. ${COMMENTS_OFF} ${COURSE_TEAM_RULE}`,
+    `Permanently delete a lesson comment; ${COURSE_TEAM_RULE}.`,
     shape(ZDeleteCourseLessonCommentToolInput),
     DESTRUCTIVE,
     async (args) => {

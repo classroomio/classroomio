@@ -18,15 +18,11 @@ import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, jsonResponse } from '@api/utils/openapi/responses';
 import { slugifyForFilename } from '@api/utils/certificate';
 import {
-  CERTIFICATE_DOWNLOAD_DESCRIPTION,
-  CERTIFICATE_UPDATE_DESCRIPTION,
   COURSE_MEMBER_RULE,
   COURSE_TEAM_RULE,
   CertificateFileResponse,
   CertificateSettingsResponse,
-  EFFECTIVE_SETTINGS_NOTE,
   IssuedCertificatesResponse,
-  PAGINATION_NOTE,
   courseForbiddenResponses,
   mcpRateLimitResponse
 } from './docs';
@@ -39,10 +35,13 @@ export const v1CourseCertificateRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `Get a course's certificate settings and design (template, accent colour, signatories, subtitle, ID format, download and email settings, completion rules). ${EFFECTIVE_SETTINGS_NOTE} ${COURSE_MEMBER_RULE}`,
+      description: `Get a course's certificate settings and design; ${COURSE_MEMBER_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Effective certificate settings returned successfully', CertificateSettingsResponse),
+        200: jsonResponse(
+          'Effective certificate settings: stored values, with defaults filled in where nothing is stored',
+          CertificateSettingsResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: courseForbiddenResponses.member,
@@ -67,10 +66,13 @@ export const v1CourseCertificateRouter = new Hono()
   .patch(
     '/',
     describeRoute({
-      description: `${CERTIFICATE_UPDATE_DESCRIPTION} ${COURSE_TEAM_RULE}`,
+      description: `Partially update a course's certificate settings and design; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Certificate settings updated; returns the effective settings', CertificateSettingsResponse),
+        200: jsonResponse(
+          'Certificate settings updated; returns the effective settings. Sending the same body twice gives the same result.',
+          CertificateSettingsResponse
+        ),
         400: {
           description:
             'Invalid path or body (including a deadline that is not an ISO 8601 datetime with a timezone), an empty body, a requiredExerciseId from another course, or a published compliance course left without a deadline'
@@ -102,10 +104,13 @@ export const v1CourseCertificatesRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the students who earned a course's certificate, when they earned it, and when the certificate email was sent. Compliance cycle and recertification history is not included. Optional search matches name or email. ${PAGINATION_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `List the students who earned a course's certificate, with when they earned it and when its email was sent; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Issued certificates returned successfully', IssuedCertificatesResponse),
+        200: jsonResponse(
+          'Issued certificates returned; compliance cycle and recertification history is not included',
+          IssuedCertificatesResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: courseForbiddenResponses.team,
@@ -132,7 +137,7 @@ export const v1CourseCertificatesRouter = new Hono()
   .get(
     '/:memberId/download',
     describeRoute({
-      description: `${CERTIFICATE_DOWNLOAD_DESCRIPTION} ${COURSE_TEAM_RULE}`,
+      description: `Download the certificate a student earned as a PDF or PNG, rendered with the course's current design; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: CertificateFileResponse,

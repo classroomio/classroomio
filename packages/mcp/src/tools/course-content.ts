@@ -14,10 +14,7 @@ import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-com
 const UPDATE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, idempotentHint: true };
 const DESTRUCTIVE: ToolAnnotations = { readOnlyHint: false, destructiveHint: true, idempotentHint: false };
 
-const COURSE_TEAM_RULE =
-  'The API key creator must be a course tutor/admin or an org admin, otherwise the call fails with 403.';
-const ATOMIC_NOTE =
-  'All or nothing: if any id is not a lesson or exercise of this course, nothing changes (404). Up to 500 items. type is LESSON or EXERCISE.';
+const COURSE_TEAM_RULE = 'the API key creator must be a course tutor/admin or an org admin';
 
 const courseId = ZPublicApiCourseParam.shape.courseId;
 
@@ -32,7 +29,7 @@ const shape = (schema: { shape: unknown }) => schema.shape as unknown as ZodRawS
 export function registerCourseContentTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'reorder_course_content',
-    `Reorder sections and move or reorder lessons and exercises of a live course in one transaction, without a draft. sections sets section order; items set each item's order and, with sectionId, move it to another section (null for no section). Orders must be 1, 2, 3, … within each group. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+    `Reorder sections and move or reorder lessons and exercises of a live course in one transaction, without a draft; ${COURSE_TEAM_RULE}.`,
     shape(ZReorderCourseContentToolInput),
     UPDATE,
     async (args) => {
@@ -43,7 +40,7 @@ export function registerCourseContentTools(server: McpServer, apiClient: Classro
 
   server.tool(
     'set_course_content_unlocked',
-    `Lock (isUnlocked false) or unlock (isUnlocked true) lessons and exercises for students. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+    `Lock (isUnlocked false) or unlock (isUnlocked true) lessons and exercises for students; ${COURSE_TEAM_RULE}.`,
     shape(ZSetCourseContentUnlockedToolInput),
     UPDATE,
     async (args) => {
@@ -54,7 +51,7 @@ export function registerCourseContentTools(server: McpServer, apiClient: Classro
 
   server.tool(
     'delete_course_content',
-    `Permanently delete lessons and exercises with their translations and comments (hard delete, cannot be undone), and return what was deleted. To delete a whole section, use delete_course_section. If students have submissions or lesson completions in it, this fails with 409 unless force is true, which deletes their work too; ask the user before forcing. ${ATOMIC_NOTE} ${COURSE_TEAM_RULE}`,
+    `Permanently delete lessons and exercises with their translations and comments; ${COURSE_TEAM_RULE}. Ask the user before setting force, which deletes students' work too.`,
     shape(ZDeleteCourseContentToolInput),
     DESTRUCTIVE,
     async (args) => {

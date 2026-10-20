@@ -5178,7 +5178,7 @@
         "course_invite_revoked": "Một lời mời học viên bị thu hồi",
         "course_member_added": "Một thành viên được thêm vào khóa học",
         "course_member_removed": "Một thành viên bị xóa khỏi khóa học",
-        "course_completed": "Một người học hoàn thành khóa học",
+        "course_completed": "Một học viên hoàn thành khóa học",
         "course_certificate_issued": "Một chứng chỉ được cấp",
         "course_submission_created": "Một bài nộp bài tập được tạo",
         "course_submission_status_changed": "Trạng thái bài nộp thay đổi, chẳng hạn khi được chấm điểm",

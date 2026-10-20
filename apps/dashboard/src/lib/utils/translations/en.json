@@ -4994,7 +4994,7 @@
         "course_invite_revoked": "A student invite is revoked",
         "course_member_added": "A member is added to a course",
         "course_member_removed": "A member is removed from a course",
-        "course_completed": "A learner completes a course",
+        "course_completed": "A student completes a course",
         "course_certificate_issued": "A certificate is earned",
         "course_submission_created": "An exercise submission is created",
         "course_submission_status_changed": "A submission status changes, such as when it is graded",

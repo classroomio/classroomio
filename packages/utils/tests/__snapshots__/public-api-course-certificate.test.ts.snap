@@ -10,6 +10,7 @@ exports[`public certificate contract > keeps the ZPublicApiCourseCertificateMemb
       "type": "string",
     },
     "memberId": {
+      "description": "The memberId returned by the issued certificates list.",
       "format": "uuid",
       "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
       "type": "string",
@@ -29,6 +30,7 @@ exports[`public certificate contract > keeps the ZPublicApiDownloadCourseCertifi
   "properties": {
     "format": {
       "default": "pdf",
+      "description": "pdf or png. Default: pdf.",
       "enum": [
         "pdf",
         "png",
@@ -46,17 +48,20 @@ exports[`public certificate contract > keeps the ZPublicApiListCourseCertificate
   "properties": {
     "limit": {
       "default": 20,
+      "description": "Items per page, 1-100. Default: 20.",
       "maximum": 100,
       "minimum": 1,
       "type": "integer",
     },
     "page": {
       "default": 1,
+      "description": "Page number, starting at 1. Default: 1.",
       "maximum": 9007199254740991,
       "minimum": 1,
       "type": "integer",
     },
     "search": {
+      "description": "Matches name or email.",
       "maxLength": 200,
       "type": "string",
     },
@@ -80,8 +85,10 @@ exports[`public certificate contract > keeps the ZPublicApiUpdateCourseCertifica
           "type": "null",
         },
       ],
+      "description": "ISO 8601 datetime with a timezone, for example 2026-12-31T23:59:59Z. Send null to clear it.",
     },
     "design": {
+      "description": "Replaces the whole stored design instead of merging, so read it first and send the full object. Sent without theme, it sets theme to design.templateId, as the dashboard editor does.",
       "properties": {
         "accentColor": {
           "pattern": "^#[0-9a-fA-F]{6}$",
@@ -178,6 +185,7 @@ exports[`public certificate contract > keeps the ZPublicApiUpdateCourseCertifica
           "type": "null",
         },
       ],
+      "description": "Send null to clear it.",
     },
     "exerciseMinScorePercent": {
       "anyOf": [
@@ -190,8 +198,10 @@ exports[`public certificate contract > keeps the ZPublicApiUpdateCourseCertifica
           "type": "null",
         },
       ],
+      "description": "Send null to clear it.",
     },
     "isDownloadable": {
+      "description": "Controls learner downloads only; the download endpoint works either way.",
       "type": "boolean",
     },
     "requiredExerciseId": {
@@ -205,6 +215,7 @@ exports[`public certificate contract > keeps the ZPublicApiUpdateCourseCertifica
           "type": "null",
         },
       ],
+      "description": "Send null to clear it.",
     },
     "theme": {
       "maxLength": 40,
