@@ -71,7 +71,7 @@ async function ensurePackageVersion(
   if (existing.length > 0) {
     await db
       .update(contentPackageVersion)
-      .set({ status: 'ready', isCurrent: true, ...provisioned })
+      .set({ ...provisioned })
       .where(eq(contentPackageVersion.id, versionId));
     console.log(`   ✓ Refreshed package content for "${title}"`);
     return;
