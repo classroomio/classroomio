@@ -495,7 +495,13 @@
       showSlugEditor={isPublicCourse}
       slugError={lessonApi.errors.slug}
       onSlugChange={handleLessonSlugChange}
-    />
+    >
+      {#snippet trailing()}
+        <div class="md:hidden">
+          <LanguageSelector />
+        </div>
+      {/snippet}
+    </LessonPageEditHeader>
   </Page.HeaderContent>
   <Page.Action>
     <div class="flex items-center gap-2">
@@ -536,7 +542,9 @@
         <RefreshPageData class="hidden lg:inline-flex" onRefresh={() => lessonApi.get(courseId, lessonId)} />
       </RoleBasedSecurity>
 
-      <LanguageSelector />
+      <div class="hidden md:block">
+        <LanguageSelector />
+      </div>
     </div>
   </Page.Action>
 </Page.Header>
