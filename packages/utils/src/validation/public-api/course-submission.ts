@@ -17,9 +17,9 @@ export const ZPublicApiCourseSubmissionParam = ZPublicApiCourseParam.extend({
 export type TPublicApiCourseSubmissionParam = z.infer<typeof ZPublicApiCourseSubmissionParam>;
 
 export const ZPublicApiCourseSubmissionsQuery = ZPublicApiPaginationQuery.extend({
-  exerciseId: z.string().uuid().optional(),
-  memberId: z.string().uuid().optional(),
-  gradingState: ZPublicApiSubmissionGradingState.optional()
+  exerciseId: z.string().uuid().optional().describe('Only submissions for this exercise'),
+  memberId: z.string().uuid().optional().describe('Only submissions by this course member'),
+  gradingState: ZPublicApiSubmissionGradingState.optional().describe('Only submissions in this grading state')
 });
 export type TPublicApiCourseSubmissionsQuery = z.infer<typeof ZPublicApiCourseSubmissionsQuery>;
 
@@ -28,7 +28,7 @@ export const ZPublicApiGradeCourseSubmission = z
     answers: z
       .array(
         z.object({
-          questionId: z.number().int().positive(),
+          questionId: z.number().int().positive().describe("A question of the submission's exercise"),
           points: z.number().int().min(0)
         })
       )
@@ -44,7 +44,9 @@ export type TPublicApiGradeCourseSubmission = z.infer<typeof ZPublicApiGradeCour
 
 export const ZPublicApiUpdateCourseSubmission = z
   .object({
-    gradingState: ZPublicApiSubmissionGradingState.optional(),
+    gradingState: ZPublicApiSubmissionGradingState.optional().describe(
+      'Moves queued → processing → completed, awaiting_manual or failed; awaiting_manual → completed; failed → queued. Any other change returns 400.'
+    ),
     feedback: z.string().optional()
   })
   .refine((data) => data.gradingState !== undefined || data.feedback !== undefined, {

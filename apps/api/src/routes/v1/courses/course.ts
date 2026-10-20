@@ -30,7 +30,7 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { PAGINATION_NOTE } from './docs';
+import { ANY_KEY_RULE } from './docs';
 
 const CoursesListEnvelope = z.object({ query: ZPublicApiCoursesQuery });
 
@@ -41,7 +41,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: 'List courses for the authenticated organization',
+      description: `List the organization's courses; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
@@ -76,7 +76,7 @@ export const v1CourseRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: 'Create a course for the authenticated organization',
+      description: `Create a course in the organization; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         201: jsonResponse('Course created successfully', itemResponse(ZPublicApiCreateCourseResponse)),
@@ -108,7 +108,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/students',
     describeRoute({
-      description: `List enrolled students for a course. ${PAGINATION_NOTE}`,
+      description: `List the students enrolled in a course; ${ANY_KEY_RULE}.`,
       tags: ['Course Members'],
       responses: {
         200: CourseStudentsResponse,
@@ -147,7 +147,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/export',
     describeRoute({
-      description: 'Export a course structure snapshot',
+      description: `Export a snapshot of a course's structure; ${ANY_KEY_RULE}.`,
       tags: ['Course Structure'],
       responses: {
         200: jsonResponse('Course export returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
@@ -178,7 +178,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId/structure',
     describeRoute({
-      description: 'Get a course structure snapshot',
+      description: `Get a snapshot of a course's structure; ${ANY_KEY_RULE}.`,
       tags: ['Course Structure'],
       responses: {
         200: jsonResponse('Course structure returned successfully', itemResponse(ZPublicApiCourseStructureResponse)),
@@ -209,7 +209,7 @@ export const v1CourseRouter = new Hono()
   .put(
     '/:courseId/structure',
     describeRoute({
-      description: 'Synchronize a course structure using the draft payload shape',
+      description: `Synchronize a course's structure using the draft payload shape; ${ANY_KEY_RULE}.`,
       tags: ['Course Structure'],
       responses: {
         200: jsonResponse(
@@ -247,7 +247,7 @@ export const v1CourseRouter = new Hono()
   .get(
     '/:courseId',
     describeRoute({
-      description: 'Get a single course by id',
+      description: `Get a course; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse('Course returned successfully', itemResponse(ZPublicApiCourseDetailResponse)),
@@ -278,7 +278,7 @@ export const v1CourseRouter = new Hono()
   .put(
     '/:courseId',
     describeRoute({
-      description: 'Update a course by id',
+      description: `Update a course; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse(
@@ -316,7 +316,7 @@ export const v1CourseRouter = new Hono()
   .delete(
     '/:courseId',
     describeRoute({
-      description: 'Delete a course by id',
+      description: `Delete a course; ${ANY_KEY_RULE}.`,
       tags: ['Courses'],
       responses: {
         200: jsonResponse('Course deleted successfully', itemResponse(ZPublicApiCourseResponse)),

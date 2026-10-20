@@ -16,13 +16,7 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse } from '@api/utils/openapi/responses';
-import {
-  COURSE_TEAM_RULE,
-  LIVE_EDIT_NOTE,
-  QUESTION_TYPES_NOTE,
-  exerciseForbiddenResponses,
-  mcpRateLimitResponse
-} from './docs';
+import { COURSE_TEAM_RULE, LIVE_EDIT_NOTE, exerciseForbiddenResponses, mcpRateLimitResponse } from './docs';
 
 const TAG = 'Exercise Questions';
 const QuestionResponse = itemResponse(ZPublicApiExerciseQuestionResponse);
@@ -31,10 +25,10 @@ export const v1CourseExerciseQuestionsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add one question, with its options, to an exercise. ${LIVE_EDIT_NOTE} ${QUESTION_TYPES_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Add one question, with its options, to an exercise; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        201: jsonResponse('Question added successfully', QuestionResponse),
+        201: jsonResponse(`Question added successfully. ${LIVE_EDIT_NOTE}`, QuestionResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.writeWithPlan,
@@ -64,10 +58,10 @@ export const v1CourseExerciseQuestionsRouter = new Hono()
   .patch(
     '/:questionId',
     describeRoute({
-      description: `Edit one question. Fields you leave out keep their values; options change only through addOptions, updateOptions and removeOptionIds. ${LIVE_EDIT_NOTE} ${QUESTION_TYPES_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Edit one question and its options; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Question updated successfully', QuestionResponse),
+        200: jsonResponse(`Question updated successfully. ${LIVE_EDIT_NOTE}`, QuestionResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.writeWithPlan,
@@ -97,10 +91,13 @@ export const v1CourseExerciseQuestionsRouter = new Hono()
   .delete(
     '/:questionId',
     describeRoute({
-      description: `Permanently delete one question. A question students have answered is only deleted with force=true, which also deletes their answers to it. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete one question from an exercise; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Question deleted successfully; returns the question as it was', QuestionResponse),
+        200: jsonResponse(
+          `Question deleted successfully; returns the question as it was. ${LIVE_EDIT_NOTE}`,
+          QuestionResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.write,

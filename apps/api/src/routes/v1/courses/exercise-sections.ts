@@ -24,10 +24,13 @@ export const v1CourseExerciseSectionsRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Add one empty exercise section (a part of the exercise that groups questions). Put questions in it with the question endpoints. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Add one empty exercise section, a part of the exercise that groups questions; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        201: jsonResponse('Exercise section added successfully', SectionResponse),
+        201: jsonResponse(
+          `Exercise section added; put questions in it with the question endpoints. ${LIVE_EDIT_NOTE}`,
+          SectionResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.write,
@@ -57,10 +60,10 @@ export const v1CourseExerciseSectionsRouter = new Hono()
   .patch(
     '/:sectionId',
     describeRoute({
-      description: `Edit one exercise section. Fields you leave out keep their values; its questions are not touched. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Edit one exercise section without touching its questions; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Exercise section updated successfully', SectionResponse),
+        200: jsonResponse(`Exercise section updated successfully. ${LIVE_EDIT_NOTE}`, SectionResponse),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.write,
@@ -90,15 +93,21 @@ export const v1CourseExerciseSectionsRouter = new Hono()
   .delete(
     '/:sectionId',
     describeRoute({
-      description: `Permanently delete one empty exercise section. Move or delete its questions first. ${LIVE_EDIT_NOTE} ${COURSE_TEAM_RULE}`,
+      description: `Permanently delete one empty exercise section; ${COURSE_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Exercise section deleted successfully; returns the section as it was', SectionResponse),
+        200: jsonResponse(
+          `Exercise section deleted successfully; returns the section as it was. ${LIVE_EDIT_NOTE}`,
+          SectionResponse
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: exerciseForbiddenResponses.write,
         404: { description: 'Course, exercise or exercise section not found' },
-        409: { description: "The section still holds questions, or another section's afterBehavior goes to it" },
+        409: {
+          description:
+            "The section still holds questions (move or delete them first), or another section's afterBehavior goes to it"
+        },
         429: mcpRateLimitResponse
       }
     }),

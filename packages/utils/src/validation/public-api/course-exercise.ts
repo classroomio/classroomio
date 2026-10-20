@@ -6,23 +6,28 @@ import { ZSlug } from '../shared/slug';
 import { ZPublicApiCourseParam } from './course';
 import { ZPublicApiPaginationQuery } from './pagination';
 
+const QUESTION_TYPE_DESCRIPTION =
+  '1 single choice, 2 multiple choice, 3 paragraph, 4 true/false, 5 short answer, 6 numeric, 7 fill in the blank, 8 file upload, 9 ordering, 10 link, 11 word bank, 12 star rating, 13 video recording, 14 thumbs up/down. True/false is auto-graded with settings.correctValue (boolean); thumbs up/down is open-ended and not auto-graded. File upload, ordering, link, star rating and video recording need a paid plan (403 UPGRADE_REQUIRED on Basic). PUBLIC courses only accept auto-graded types.';
+
 /** Question types the public API accepts; MATCHING (15) and HOTSPOT (16) are disabled and excluded. */
-export const ZPublicApiQuestionTypeId = z.union([
-  z.literal(QUESTION_TYPE.RADIO),
-  z.literal(QUESTION_TYPE.CHECKBOX),
-  z.literal(QUESTION_TYPE.TEXTAREA),
-  z.literal(QUESTION_TYPE.TRUE_FALSE),
-  z.literal(QUESTION_TYPE.SHORT_ANSWER),
-  z.literal(QUESTION_TYPE.NUMERIC),
-  z.literal(QUESTION_TYPE.FILL_BLANK),
-  z.literal(QUESTION_TYPE.FILE_UPLOAD),
-  z.literal(QUESTION_TYPE.ORDERING),
-  z.literal(QUESTION_TYPE.LINK),
-  z.literal(QUESTION_TYPE.WORD_BANK),
-  z.literal(QUESTION_TYPE.STAR),
-  z.literal(QUESTION_TYPE.VIDEO_RECORDING),
-  z.literal(QUESTION_TYPE.THUMBS)
-]);
+export const ZPublicApiQuestionTypeId = z
+  .union([
+    z.literal(QUESTION_TYPE.RADIO),
+    z.literal(QUESTION_TYPE.CHECKBOX),
+    z.literal(QUESTION_TYPE.TEXTAREA),
+    z.literal(QUESTION_TYPE.TRUE_FALSE),
+    z.literal(QUESTION_TYPE.SHORT_ANSWER),
+    z.literal(QUESTION_TYPE.NUMERIC),
+    z.literal(QUESTION_TYPE.FILL_BLANK),
+    z.literal(QUESTION_TYPE.FILE_UPLOAD),
+    z.literal(QUESTION_TYPE.ORDERING),
+    z.literal(QUESTION_TYPE.LINK),
+    z.literal(QUESTION_TYPE.WORD_BANK),
+    z.literal(QUESTION_TYPE.STAR),
+    z.literal(QUESTION_TYPE.VIDEO_RECORDING),
+    z.literal(QUESTION_TYPE.THUMBS)
+  ])
+  .describe(QUESTION_TYPE_DESCRIPTION);
 
 const MAX_QUESTIONS = 200;
 export const PUBLIC_API_MAX_QUESTION_OPTIONS = 50;
@@ -41,13 +46,19 @@ export const ZPublicApiCourseExerciseNotifyParam = ZPublicApiCourseExerciseParam
 export type TPublicApiCourseExerciseNotifyParam = z.infer<typeof ZPublicApiCourseExerciseNotifyParam>;
 
 export const ZPublicApiCourseExerciseNotifyStatusQuery = z.object({
-  pollCount: z.coerce.number().int().min(0).max(1000).default(0)
+  pollCount: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .max(1000)
+    .default(0)
+    .describe('How many times you have polled this job so far')
 });
 export type TPublicApiCourseExerciseNotifyStatusQuery = z.infer<typeof ZPublicApiCourseExerciseNotifyStatusQuery>;
 
 export const ZPublicApiCourseExercisesQuery = ZPublicApiPaginationQuery.extend({
-  sectionId: z.string().uuid().optional(),
-  lessonId: z.string().uuid().optional()
+  sectionId: z.string().uuid().optional().describe('Only exercises in this course section'),
+  lessonId: z.string().uuid().optional().describe('Deprecated: only exercises linked to this lesson')
 });
 export type TPublicApiCourseExercisesQuery = z.infer<typeof ZPublicApiCourseExercisesQuery>;
 
@@ -76,13 +87,20 @@ export const ZPublicApiCreateCourseExercise = z
   .object({
     title: z.string().min(1).optional(),
     description: z.string().optional(),
-    sectionId: z.string().uuid().optional(),
-    lessonId: z.string().uuid().optional(),
+    sectionId: z.string().uuid().optional().describe('A section of this course'),
+    lessonId: z.string().uuid().optional().describe('A lesson of this course'),
     order: z.number().int().min(1),
     dueBy: z.string().datetime({ offset: true }).optional(),
     slug: ZSlug.optional(),
     questions: z.array(ZPublicApiCreateExerciseQuestion).max(MAX_QUESTIONS).optional(),
-    templateId: z.number().int().min(1).optional()
+    templateId: z
+      .number()
+      .int()
+      .min(1)
+      .optional()
+      .describe(
+        'A built-in template from GET /exercise-templates. The template supplies the title, description and questions, so only sectionId, lessonId and order may be sent with it.'
+      )
   })
   .superRefine((data, ctx) => {
     if (data.templateId === undefined) {
@@ -111,7 +129,9 @@ export const ZPublicApiUpdateExerciseQuestion = z
     delete: z.boolean().optional(),
     exerciseSectionId: z.string().uuid().nullable().optional(),
     question: z.string().min(1).optional().describe('Required for a new question'),
-    questionTypeId: ZPublicApiQuestionTypeId.optional().describe('Defaults to RADIO (1) for a new question'),
+    questionTypeId: ZPublicApiQuestionTypeId.optional().describe(
+      `${QUESTION_TYPE_DESCRIPTION} Defaults to 1 for a new question.`
+    ),
     points: z.number().int().min(1).optional().describe('Required for a new question'),
     order: z.number().int().min(0).optional(),
     settings: ZSettings.optional(),
@@ -237,15 +257,30 @@ export const ZPublicApiUpdateCourseExercise = z
     dueBy: z.string().datetime({ offset: true }).optional(),
     allowMultipleAttempts: z.boolean().optional(),
     slug: ZSlug.optional(),
-    questions: z.array(ZPublicApiUpdateExerciseQuestion).max(MAX_QUESTIONS).optional(),
-    sections: z.array(ZPublicApiUpdateExerciseSectionItem).max(MAX_SECTIONS).optional(),
+    questions: z
+      .array(ZPublicApiUpdateExerciseQuestion)
+      .max(MAX_QUESTIONS)
+      .optional()
+      .describe(
+        'A diff, like the dashboard editor: send a question with its id to edit it, with id and delete: true to remove it, or without an id to add it. Options follow the same rules inside their question, and ids must belong to this exercise. Questions you leave out are unchanged. Deleting a question students have answered returns 409 unless force=true.'
+      ),
+    sections: z
+      .array(ZPublicApiUpdateExerciseSectionItem)
+      .max(MAX_SECTIONS)
+      .optional()
+      .describe(
+        "Same rules as questions. A new section may carry a UUID you generate, so new questions can reference it by exerciseSectionId. A removed section must not still hold questions or be another section's go_to_section target (409)."
+      ),
     sectionDisplayMode: z.enum(['one_question', 'all_questions']).optional(),
     completionPolicy: z.enum(['submitted', 'passed']).optional(),
     passThreshold: z.number().int().min(0).max(100).optional()
   })
   .refine((data) => Object.values(data).some((value) => value !== undefined), {
     message: 'Send at least one field to update'
-  });
+  })
+  .describe(
+    'Send only the fields to change. To change one question or one exercise section, use the /questions and /sections endpoints instead.'
+  );
 export type TPublicApiUpdateCourseExercise = z.infer<typeof ZPublicApiUpdateCourseExercise>;
 
 export const ZPublicApiExerciseQuestionParam = ZPublicApiCourseExerciseParam.extend({
@@ -314,7 +349,7 @@ export const ZPublicApiForceQuery = z.object({
     .default(false)
     .transform((value) => value === true || value === 'true')
     .describe(
-      'Also delete the answers students gave to the deleted questions; without it, deleting an answered question returns 409'
+      'Also delete the student work in what you delete (answers, submissions or lesson completions); without it, this returns 409 when there is any'
     )
 });
 export type TPublicApiForceQuery = z.infer<typeof ZPublicApiForceQuery>;

@@ -10,16 +10,19 @@ import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
 import { errorResponses, itemResponse, jsonResponse, paginatedResponse } from '@api/utils/openapi/responses';
-import { ORG_TEAM_RULE, PAGINATION_NOTE, TAG, forbiddenResponse, mcpRateLimitResponse } from './docs';
+import { ORG_TEAM_RULE, TAG, forbiddenResponse, mcpRateLimitResponse } from './docs';
 
 export const v1ExerciseTemplateRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List the built-in exercise templates (the same catalog for every organization). Filter by tag. Use a template's id as templateId in POST /courses/{courseId}/exercises. ${PAGINATION_NOTE} ${ORG_TEAM_RULE}`,
+      description: `List the built-in exercise templates, which are the same for every organization; ${ORG_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
-        200: jsonResponse('Templates returned successfully', paginatedResponse(ZPublicApiExerciseTemplateResponse)),
+        200: jsonResponse(
+          "Templates returned; pass a template's id as templateId to POST /courses/{courseId}/exercises",
+          paginatedResponse(ZPublicApiExerciseTemplateResponse)
+        ),
         400: errorResponses.badRequest,
         401: errorResponses.unauthorized,
         403: forbiddenResponse,
@@ -42,7 +45,7 @@ export const v1ExerciseTemplateRouter = new Hono()
   .get(
     '/:templateId',
     describeRoute({
-      description: `Get an exercise template with the questions it creates. ${ORG_TEAM_RULE}`,
+      description: `Get an exercise template with the questions it creates; ${ORG_TEAM_RULE}.`,
       tags: [TAG],
       responses: {
         200: jsonResponse('Template returned successfully', itemResponse(ZPublicApiExerciseTemplateDetailResponse)),

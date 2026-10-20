@@ -11,7 +11,7 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShapeCompat } from '@modelcontextprotocol/sdk/server/zod-compat.js';
 import type { ToolAnnotations } from '@modelcontextprotocol/sdk/types.js';
 
-const ORG_ADMIN_RULE = 'The API key creator must be an org admin, otherwise 403.';
+const ORG_ADMIN_RULE = 'the API key creator must be an org admin';
 
 const READ_ONLY: ToolAnnotations = { readOnlyHint: true, destructiveHint: false };
 const WRITE: ToolAnnotations = { readOnlyHint: false, destructiveHint: false };
@@ -41,7 +41,7 @@ const removeAudienceMemberShape = ZRemoveAudienceMemberToolInput.shape as unknow
 export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoApiClient) {
   server.tool(
     'list_audience_members',
-    `List the organization's audience (students), with invite state, enrollment counts and progress. Paginated, with search, sort and filters. Admins and tutors are listed by list_team_members. ${ORG_ADMIN_RULE}`,
+    `List the organization's audience (students), with invite state, enrollment counts and progress; ${ORG_ADMIN_RULE}. Admins and tutors are listed by list_team_members.`,
     listAudienceMembersShape,
     READ_ONLY,
     async (args) => {
@@ -53,7 +53,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'add_audience_member',
-    `Invite someone to the organization as a student by email, optionally enrolling them in courses. Sends an invite email unless sendEmail is false. ${ORG_ADMIN_RULE}`,
+    `Invite someone to the organization as a student by email, optionally enrolling them in courses; ${ORG_ADMIN_RULE}.`,
     addAudienceMemberShape,
     WRITE,
     async (args) => {
@@ -65,7 +65,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'assign_audience_courses',
-    `Enroll existing students (by profileId) in one or more courses or cohorts. Requires courseIds or cohortIds. Students already enrolled are skipped and counted. ${ORG_ADMIN_RULE}`,
+    `Enroll existing students (by profileId) in one or more courses or cohorts, skipping those already enrolled; ${ORG_ADMIN_RULE}.`,
     assignAudienceCoursesShape,
     WRITE,
     async (args) => {
@@ -77,7 +77,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'get_audience_member',
-    `Get a single student by their organization member id (from list_audience_members). ${ORG_ADMIN_RULE}`,
+    `Get a student by their organization member id (from list_audience_members); ${ORG_ADMIN_RULE}.`,
     getAudienceMemberShape,
     READ_ONLY,
     async (args) => {
@@ -89,7 +89,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'update_audience_member',
-    `Update a student. Send only the fields to change. email corrects the address of a member who has not accepted their invite yet and re-sends the invite (400 for a joined member). name sets the full name on a joined member's profile (400 for a pending member); the profile is shared, so the name changes in every organization the person belongs to. To change an admin's or tutor's role, use update_team_member. ${ORG_ADMIN_RULE}`,
+    `Correct a pending student's email or set a joined student's name; ${ORG_ADMIN_RULE}. To change an admin's or tutor's role, use update_team_member.`,
     updateAudienceMemberShape,
     WRITE,
     async (args) => {
@@ -101,7 +101,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'remove_audience_member',
-    `Remove a student from the organization. This is a hard delete of the organization membership and revokes their pending invites; the person keeps their account. ${ORG_ADMIN_RULE}`,
+    `Permanently remove a student from the organization and revoke their pending invites, leaving their account in place; ${ORG_ADMIN_RULE}.`,
     removeAudienceMemberShape,
     DESTRUCTIVE,
     async (args) => {

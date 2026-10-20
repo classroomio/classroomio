@@ -20,6 +20,9 @@ const ZPublicApiExternalVideo = z.object({
 export const ZPublicApiLessonVideo = z.discriminatedUnion('type', [ZPublicApiUploadVideo, ZPublicApiExternalVideo]);
 export type TPublicApiLessonVideo = z.infer<typeof ZPublicApiLessonVideo>;
 
+const VIDEOS_DESCRIPTION =
+  'Attach an uploaded video with { "type": "upload", "assetId": "…" }; attaching it completes the upload and queues thumbnailing and adaptive-bitrate encoding, plus transcription when the server has an OpenAI key. External videos use { "type": "youtube" | "vimeo" | "generic", "link": "…" } and are embedded rather than fetched.';
+
 export const ZPublicApiLessonParam = ZPublicApiCourseParam.extend({
   lessonId: z.string().uuid()
 });
@@ -34,21 +37,23 @@ export const ZPublicApiCreateLesson = z.object({
   order: z.number().int().min(1).describe(LESSON_ORDER_DESCRIPTION),
   isUnlocked: z.boolean().optional(),
   public: z.boolean().optional(),
-  videos: z.array(ZPublicApiLessonVideo).max(20).optional()
+  videos: z.array(ZPublicApiLessonVideo).max(20).optional().describe(VIDEOS_DESCRIPTION)
 });
 export type TPublicApiCreateLesson = z.infer<typeof ZPublicApiCreateLesson>;
 
-export const ZPublicApiUpdateLesson = z.object({
-  title: z.string().min(1).max(255).optional(),
-  order: z.number().int().min(1).optional().describe(LESSON_ORDER_DESCRIPTION),
-  isUnlocked: z.boolean().optional(),
-  public: z.boolean().optional(),
-  videos: z
-    .array(ZPublicApiLessonVideo)
-    .max(20)
-    .optional()
-    .describe('Replaces the lesson videos entirely. Omit to leave them unchanged.')
-});
+export const ZPublicApiUpdateLesson = z
+  .object({
+    title: z.string().min(1).max(255).optional(),
+    order: z.number().int().min(1).optional().describe(LESSON_ORDER_DESCRIPTION),
+    isUnlocked: z.boolean().optional(),
+    public: z.boolean().optional(),
+    videos: z
+      .array(ZPublicApiLessonVideo)
+      .max(20)
+      .optional()
+      .describe(`Replaces the lesson videos entirely; omit to leave them unchanged. ${VIDEOS_DESCRIPTION}`)
+  })
+  .describe('Send only the fields to change.');
 export type TPublicApiUpdateLesson = z.infer<typeof ZPublicApiUpdateLesson>;
 
 export const ZPublicApiLessonResponse = z.object({

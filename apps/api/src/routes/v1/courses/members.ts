@@ -33,11 +33,11 @@ export const v1CourseMembersRouter = new Hono()
   .get(
     '/',
     describeRoute({
-      description: `List everyone with access to a course (students and tutors), with role and progress. This is a superset of GET /courses/{courseId}/students, which returns only students. ${COURSE_TEAM_RULE}`,
+      description: `List everyone with access to a course, students and tutors alike, with role and progress; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         200: jsonResponse(
-          'Course members returned successfully',
+          'Course members returned; a superset of GET /courses/{courseId}/students, which returns only students',
           paginatedResponse(ZPublicApiCourseMemberListItemResponse)
         ),
         400: errorResponses.badRequest,
@@ -78,7 +78,7 @@ export const v1CourseMembersRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Give someone access to this course, the same as adding a member in the dashboard. The profileId or email must belong to someone already in your organization; an email is linked to that person's profile. To onboard someone new, use the invites endpoints. Added tutors/admins with an email and name get a welcome email. ${COURSE_TEAM_RULE}`,
+      description: `Give someone already in your organization access to a course, the same as adding a member in the dashboard; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         201: jsonResponse('Course member added successfully', MemberResponse),
@@ -115,7 +115,7 @@ export const v1CourseMembersRouter = new Hono()
   .get(
     '/:memberId',
     describeRoute({
-      description: `Get a single course member's detail. ${COURSE_TEAM_RULE}`,
+      description: `Get a course member's detail; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         200: jsonResponse('Course member returned successfully', itemResponse(ZPublicApiCourseMemberDetailResponse)),
@@ -149,7 +149,7 @@ export const v1CourseMembersRouter = new Hono()
   .put(
     '/:memberId',
     describeRoute({
-      description: `Change a course member's role or email. Send only the fields to change. ${COURSE_TEAM_RULE}`,
+      description: `Change a course member's role or email; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         200: jsonResponse('Course member updated successfully', MemberResponse),
@@ -186,7 +186,7 @@ export const v1CourseMembersRouter = new Hono()
   .delete(
     '/:memberId',
     describeRoute({
-      description: `Remove someone's access to the course. This permanently deletes the course membership; the person keeps their account and organization membership. ${COURSE_TEAM_RULE}`,
+      description: `Permanently remove someone's access to a course, leaving their account and organization membership in place; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         200: jsonResponse('Course member removed successfully', MemberResponse),
@@ -220,7 +220,7 @@ export const v1CourseMembersRouter = new Hono()
   .post(
     '/:memberId/reset-progress',
     describeRoute({
-      description: `Clear a student's completion progress while keeping them enrolled. This cannot be undone. Only student members can have their progress reset. ${COURSE_TEAM_RULE}`,
+      description: `Clear a student's completion progress while keeping them enrolled, which cannot be undone; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         200: jsonResponse(
@@ -257,7 +257,7 @@ export const v1CourseMembersRouter = new Hono()
   .get(
     '/:memberId/analytics',
     describeRoute({
-      description: `Fetch a student's progress and grade analytics for the course. Only student members have analytics. ${COURSE_TEAM_RULE}`,
+      description: `Get a student's progress and grade analytics for a course; ${COURSE_TEAM_RULE}.`,
       tags: ['Course Members'],
       responses: {
         200: jsonResponse(

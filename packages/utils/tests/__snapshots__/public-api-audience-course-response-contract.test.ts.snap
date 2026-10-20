@@ -147,9 +147,11 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           "type": "null",
         },
       ],
+      "description": "null when nothing is stored.",
     },
     "design": {
       "additionalProperties": false,
+      "description": "The default design when nothing is stored.",
       "properties": {
         "accentColor": {
           "pattern": "^#[0-9a-fA-F]{6}$",
@@ -257,6 +259,7 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           "type": "null",
         },
       ],
+      "description": "null when nothing is stored.",
     },
     "exerciseMinScorePercent": {
       "anyOf": [
@@ -267,9 +270,11 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           "type": "null",
         },
       ],
+      "description": "When nothing is stored: 100 (or the compliance passing score) if a required exercise is set, null otherwise.",
     },
     "isDownloadable": {
       "default": false,
+      "description": "Controls learner downloads only; the download endpoint works either way.",
       "type": "boolean",
     },
     "requiredExerciseId": {
@@ -283,8 +288,10 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
           "type": "null",
         },
       ],
+      "description": "null when nothing is stored.",
     },
     "theme": {
+      "description": "Falls back to design.templateId when nothing is stored.",
       "type": "string",
     },
     "threshold": {
@@ -3750,6 +3757,7 @@ exports[`public API audience and course response contract > ZPublicApiCourseStru
                 "type": "string",
               },
               "videos": {
+                "description": "Lesson videos as { type, link }, where type is youtube, vimeo, generic, upload or google_drive. Add new videos as youtube, vimeo or generic with a hosted URL, and keep any upload or google_drive entries already in the draft unchanged.",
                 "items": {
                   "additionalProperties": false,
                   "properties": {

@@ -5,9 +5,11 @@ exports[`public API cohort request contract > ZPublicApiAddCohortMembers keeps i
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "members": {
+      "description": "People to add, each with a profileId or an email that appears only once per request. No invitation email or organization invite is sent; use POST /cohorts/{cohortId}/invite for the dashboard's invite flow. When the cohort has courses, students with a profile are also added to your organization and to those courses.",
       "items": {
         "properties": {
           "email": {
+            "description": "Linked to its existing profile if there is one; otherwise the membership is stored against the email alone.",
             "format": "email",
             "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$",
             "type": "string",
@@ -16,6 +18,7 @@ exports[`public API cohort request contract > ZPublicApiAddCohortMembers keeps i
             "type": "string",
           },
           "profileId": {
+            "description": "Must belong to someone already in your organization.",
             "format": "uuid",
             "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
             "type": "string",
@@ -31,6 +34,7 @@ exports[`public API cohort request contract > ZPublicApiAddCohortMembers keeps i
                 "type": "number",
               },
             ],
+            "description": "2 = tutor, 3 = student",
           },
         },
         "required": [
@@ -71,6 +75,7 @@ exports[`public API cohort request contract > ZPublicApiAssignStudentsToCohort k
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "profileIds": {
+      "description": "Profiles that are already students in your organization, as in the dashboard's "assign existing" option. Any other profileId (including one from another organization) is skipped and not counted.",
       "items": {
         "format": "uuid",
         "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
@@ -82,6 +87,7 @@ exports[`public API cohort request contract > ZPublicApiAssignStudentsToCohort k
     },
     "sendEmail": {
       "default": true,
+      "description": "Queue a cohort welcome email for each newly assigned student. Default: true.",
       "type": "boolean",
     },
   },
@@ -97,10 +103,12 @@ exports[`public API cohort request contract > ZPublicApiCohortNewsfeedQuery keep
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "cursor": {
+      "description": "Pass data.nextCursor from the previous page to get the next one.",
       "type": "string",
     },
     "limit": {
       "default": 10,
+      "description": "Posts per page, 1-50. Default: 10.",
       "maximum": 50,
       "minimum": 1,
       "type": "integer",
@@ -140,6 +148,7 @@ exports[`public API cohort request contract > ZPublicApiCreateCohortGoal keeps i
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "courseIds": {
+      "description": "At least one course, each already linked to the cohort.",
       "items": {
         "format": "uuid",
         "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
@@ -162,6 +171,7 @@ exports[`public API cohort request contract > ZPublicApiCreateCohortGoal keeps i
     },
     "deadlineKind": {
       "default": "none",
+      "description": "absolute needs deadlineDate, relative_to_join needs relativeDays, recurring needs recurringMonths (with deadlineDate as the current cycle). Default: none.",
       "enum": [
         "absolute",
         "relative_to_join",
@@ -260,6 +270,7 @@ exports[`public API cohort request contract > ZPublicApiCreateCohortGoal keeps i
       "type": "string",
     },
     "type": {
+      "description": "complete_all needs nothing extra, n_of_m needs requiredCount (at most the number of courses), score needs scoreThreshold, pass_rate needs scoreThreshold and teamPassRateThreshold, and readiness needs nothing extra but cannot have a deadline.",
       "enum": [
         "complete_all",
         "n_of_m",
@@ -319,12 +330,14 @@ exports[`public API cohort request contract > ZPublicApiInviteStudentsToCohort k
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "recipientCsv": {
+      "description": "CSV of emails, optionally with names. An email not yet in your organization gets an organization invite (valid for 7 days) that joins this cohort when accepted; an existing student is enrolled directly; staff (admins/tutors) are skipped. Seat limits apply.",
       "maxLength": 25000,
       "minLength": 1,
       "type": "string",
     },
     "sendEmail": {
       "default": true,
+      "description": "Queue invite and welcome emails. Default: true.",
       "type": "boolean",
     },
   },
@@ -340,6 +353,7 @@ exports[`public API cohort request contract > ZPublicApiSetCohortInviteLinkRevok
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "properties": {
     "isRevoked": {
+      "description": "true disables the link, false re-enables it. The link keeps the same URL.",
       "type": "boolean",
     },
   },
@@ -369,6 +383,7 @@ exports[`public API cohort request contract > ZPublicApiSetCohortReaction keeps 
           "type": "null",
         },
       ],
+      "description": "The key creator's reaction; null removes it. Other members' reactions are untouched, and setting the same value again is a no-op, so retries are safe.",
     },
   },
   "required": [
@@ -392,6 +407,7 @@ exports[`public API cohort request contract > ZPublicApiUpdateCohort keeps its p
           "type": "null",
         },
       ],
+      "description": "Send null to clear it.",
     },
     "description": {
       "anyOf": [
@@ -403,6 +419,7 @@ exports[`public API cohort request contract > ZPublicApiUpdateCohort keeps its p
           "type": "null",
         },
       ],
+      "description": "Send null to clear it.",
     },
     "name": {
       "maxLength": 255,
@@ -549,6 +566,7 @@ exports[`public API cohort request contract > ZPublicApiUpdateCohortGoal keeps i
       "type": "string",
     },
     "type": {
+      "description": "Omitted fields keep their current values; the updated goal must still satisfy the create rules.",
       "enum": [
         "complete_all",
         "n_of_m",
@@ -578,6 +596,7 @@ exports[`public API cohort request contract > ZPublicApiUpdateCohortMember keeps
           "type": "number",
         },
       ],
+      "description": "2 = tutor, 3 = student",
     },
   },
   "required": [
