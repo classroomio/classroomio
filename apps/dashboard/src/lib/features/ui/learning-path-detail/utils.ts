@@ -1,6 +1,7 @@
 import type { AccountOrg, PublicOrg } from '$features/app/types';
 import { normalizeLandingPageSettings } from '$features/org/utils/landing-page';
 import { t } from '$lib/utils/functions/translations';
+import { isPathPaid } from '@cio/utils/validation/learning-path';
 import type {
   LearningPathDetail,
   LearningPathLandingPageLabels,
@@ -97,18 +98,21 @@ export function buildLearningPathLandingPageProps(
   }
 ): LearningPathLandingPageProps {
   const landing = normalizeLandingPageSettings(org.landingpage);
-  const isFree = detail.cost === 0;
+  // Display cost honors the explicit payment switch: a path with payment
+  // disabled reads as free even when a stale amount is still stored.
+  const displayCost = isPathPaid(detail.cost, { paymentEnabled: detail.paymentEnabled }) ? detail.cost : 0;
+  const isFree = displayCost === 0;
 
   const primaryActionLabel = isFree
     ? t.get('public_learning_paths.detail.enroll_free')
-    : t.get('public_learning_paths.detail.enroll_label', { cost: detail.cost, currency: detail.currency });
+    : t.get('public_learning_paths.detail.enroll_label', { cost: displayCost, currency: detail.currency });
 
   const showDiscount = Boolean(detail.metadata?.discount && detail.metadata?.showDiscount);
 
   const computedOriginalCost =
     detail.pricing?.originalCost ??
     (detail.metadata?.discount ? Math.round(detail.cost / (1 - detail.metadata.discount / 100)) : undefined);
-  const originalCost = showDiscount ? computedOriginalCost : undefined;
+  const originalCost = displayCost > 0 && showDiscount ? computedOriginalCost : undefined;
   const heroTotals = pathHeroTotals(detail);
 
   return {
@@ -122,7 +126,7 @@ export function buildLearningPathLandingPageProps(
       heading: detail.title,
       subheading: detail.description,
       primaryAction: { label: primaryActionLabel, href: options.enrollHref },
-      cost: detail.cost,
+      cost: displayCost,
       currency: detail.currency,
       originalCost,
       courseCount: detail.courseCount,
@@ -147,7 +151,7 @@ export function buildLearningPathLandingPageProps(
     faq: detail.faq,
     pricing: detail.pricing
       ? {
-          cost: detail.cost,
+          cost: displayCost,
           currency: detail.currency,
           originalCost,
           discount: detail.metadata?.discount,

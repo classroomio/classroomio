@@ -54,6 +54,13 @@
       ? false
       : data.path?.allowSelfEnrollment !== false && data.path?.status === 'ACTIVE' && Boolean(data.path?.isPublished)
   );
+
+  let membershipChecked = $state(false);
+  const enrolledJourney = $derived(
+    learnerPathStore.selectedJourney && learnerPathStore.selectedJourney.path.id === data.path?.id
+      ? learnerPathStore.selectedJourney
+      : null
+  );
   const isPreparingEnrollment = $derived(
     isLoggedIn &&
       canJoinPath &&
@@ -132,6 +139,11 @@
   }
 
   async function handleSubmit() {
+    if (enrolledJourney) {
+      await goto(resolve(`/lms/paths/${data.path.publicId}`, {}));
+      return;
+    }
+
     if (!canJoinPath) {
       snackbar.error(getBlockedMessage());
       return;
@@ -162,6 +174,7 @@
       !sessionReady ||
       !isLoggedIn ||
       !canJoinPath ||
+      enrolledJourney ||
       enrollmentInFlight ||
       loading ||
       enrollmentSucceeded ||
@@ -175,6 +188,14 @@
     }
 
     void completeEnrollment();
+  });
+
+  $effect(() => {
+    if (!sessionReady || !isLoggedIn || !data.path?.id || membershipChecked) return;
+    if (!appInitApi.isInitializedAndReady) return;
+
+    membershipChecked = true;
+    void learnerPathStore.ensureSelectedPath(data.path.id);
   });
 
   $effect(() => {
@@ -203,7 +224,11 @@
   <div class="mt-0 w-full">
     <h3 class="mt-0 mb-4 text-center text-lg font-medium dark:text-white">{data.path?.name}</h3>
     <p class="text-center text-sm font-light dark:text-white">{data.path?.description}</p>
-    {#if enrolledPendingVerification}
+    {#if enrolledJourney}
+      <p class="ui:text-primary mt-3 text-center text-sm font-medium">
+        {$t('course.navItem.landing_page.enroll_page.enrolled_success')}
+      </p>
+    {:else if enrolledPendingVerification}
       <p class="ui:text-primary mt-3 text-center text-sm font-medium">
         {$t('course.navItem.landing_page.enroll_page.enrolled_success')}
       </p>
@@ -234,9 +259,19 @@
 
   {#if !enrolledPendingVerification}
     <div class="my-4 flex w-full items-center justify-center">
-      <Button type="submit" disabled={!canJoinPath || joinButtonLoading} loading={joinButtonLoading}>
-        {$t('learningPath.detail.enroll')}
-      </Button>
+      {#if enrolledJourney}
+        <Button
+          type="button"
+          onclick={() => goto(resolve(`/lms/paths/${data.path.publicId}`, {}))}
+          disabled={joinButtonLoading}
+        >
+          {$t('learningPath.hero.continue_learning')}
+        </Button>
+      {:else}
+        <Button type="submit" disabled={!canJoinPath || joinButtonLoading} loading={joinButtonLoading}>
+          {$t('learningPath.detail.enroll')}
+        </Button>
+      {/if}
     </div>
   {/if}
 </AuthUI>

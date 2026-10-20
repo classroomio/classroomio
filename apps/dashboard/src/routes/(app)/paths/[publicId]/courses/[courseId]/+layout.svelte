@@ -86,18 +86,24 @@
     }
   });
 
-  // Path-visit access: warm the journey for the URL path, then enforce the
-  // locked rules (no access -> My Learning, locked course -> path hub).
-  let journeyRequestedFor = $state<string | null>(null);
+  // Path-visit access: warm the journey for the URL path and course, then
+  // enforce the locked rules (no access -> My Learning, locked course -> path
+  // hub). Keying on the course too refreshes selectedJourney when moving
+  // between courses in the same path, so the guard never reads a snapshot
+  // fetched before the previous course was completed.
+  let journeyRequestKey = $state<string | null>(null);
   let journeySettled = $state(false);
 
   $effect(() => {
-    if (!data.publicId || journeyRequestedFor === data.publicId) return;
+    if (!data.publicId || !data.courseId) return;
 
-    journeyRequestedFor = data.publicId;
+    const requestKey = `${data.publicId}:${data.courseId}`;
+    if (journeyRequestKey === requestKey) return;
+
+    journeyRequestKey = requestKey;
     journeySettled = false;
     void learnerPathStore.ensureSelectedPath(data.publicId).finally(() => {
-      if (journeyRequestedFor === data.publicId) journeySettled = true;
+      if (journeyRequestKey === requestKey) journeySettled = true;
     });
   });
 

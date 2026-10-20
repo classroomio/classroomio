@@ -194,15 +194,17 @@
             </span>
           </div>
 
-          <div class="ui:flex ui:flex-col">
-            <span class="ui:text-2xl ui:font-semibold ui:text-[var(--landing-fg)] ui:flex ui:items-center ui:gap-1">
-              <StarIcon class="ui:size-5 ui:fill-amber-400 ui:text-amber-400" />
-              <span>{hero.rating ?? 4.7}</span>
-            </span>
-            <span class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:uppercase ui:tracking-wider ui:mt-0.5">
-              {labels?.statReviewsLabel?.(hero.reviewsCount ?? 213) ?? `${hero.reviewsCount ?? 213} reviews`}
-            </span>
-          </div>
+          {#if (hero.reviewsCount ?? 0) > 0}
+            <div class="ui:flex ui:flex-col">
+              <span class="ui:text-2xl ui:font-semibold ui:text-[var(--landing-fg)] ui:flex ui:items-center ui:gap-1">
+                <StarIcon class="ui:size-5 ui:fill-amber-400 ui:text-amber-400" />
+                <span>{hero.rating ?? 4.7}</span>
+              </span>
+              <span class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:uppercase ui:tracking-wider ui:mt-0.5">
+                {labels?.statReviewsLabel?.(hero.reviewsCount ?? 213) ?? `${hero.reviewsCount ?? 213} reviews`}
+              </span>
+            </div>
+          {/if}
         </div>
       </div>
 
@@ -251,8 +253,12 @@
               {labels?.enrollPathLabel ?? 'Enroll in this path'}
             </a>
             <p class="ui:text-xs ui:text-[var(--landing-fg-muted)] ui:text-center">
-              {labels?.socialProofLabel?.(hero.totalStudents ?? 942, hero.rating ?? 4.7, hero.reviewsCount ?? 213) ??
-                `${hero.totalStudents ?? 942} already enrolled · ${hero.rating ?? 4.7} ★ from ${hero.reviewsCount ?? 213} reviews`}
+              {#if (hero.reviewsCount ?? 0) > 0}
+                {labels?.socialProofLabel?.(hero.totalStudents ?? 942, hero.rating ?? 4.7, hero.reviewsCount ?? 213) ??
+                  `${hero.totalStudents ?? 942} already enrolled · ${hero.rating ?? 4.7} ★ from ${hero.reviewsCount ?? 213} reviews`}
+              {:else}
+                {hero.totalStudents ?? 0} {labels?.statEnrolledLabel ?? 'enrolled'}
+              {/if}
             </p>
           </div>
         </div>

@@ -276,19 +276,17 @@ export const lessonRouter = new Hono()
           // Record completion before syncing paths: a course counts as done
           // on a path by its recorded completion, so the sync must see the
           // write above.
-          void recordCourseCompletionFromProgress(courseId, user.id)
-            .catch((certError) => {
-              console.error('Failed to evaluate course certification after lesson completion:', certError);
-            })
-            .finally(() => {
-              void syncCourseProgressInLearningPaths(courseId, user.id).catch((syncError) => {
-                console.error('Failed to sync learning path progress after lesson completion:', syncError);
-              });
-            });
-        } else {
-          void syncCourseProgressInLearningPaths(courseId, user.id).catch((syncError) => {
-            console.error('Failed to sync learning path progress after lesson completion:', syncError);
-          });
+          try {
+            await recordCourseCompletionFromProgress(courseId, user.id);
+          } catch (certError) {
+            console.error('Failed to evaluate course certification after lesson completion:', certError);
+          }
+        }
+
+        try {
+          await syncCourseProgressInLearningPaths(courseId, user.id);
+        } catch (syncError) {
+          console.error('Failed to sync learning path progress after lesson completion:', syncError);
         }
 
         return c.json({ success: true, data: completion }, 200);
@@ -349,15 +347,17 @@ export const lessonRouter = new Hono()
           // Record completion before syncing paths: a course counts as done
           // on a path by its recorded completion, so the sync must see the
           // write above. Same ordering as the lesson toggle.
-          void recordCourseCompletionFromProgress(courseId, user.id)
-            .catch((certError) => {
-              console.error('Failed to evaluate course certification after video watch:', certError);
-            })
-            .finally(() => {
-              void syncCourseProgressInLearningPaths(courseId, user.id).catch((syncError) => {
-                console.error('Failed to sync learning path progress after video watch:', syncError);
-              });
-            });
+          try {
+            await recordCourseCompletionFromProgress(courseId, user.id);
+          } catch (certError) {
+            console.error('Failed to evaluate course certification after video watch:', certError);
+          }
+
+          try {
+            await syncCourseProgressInLearningPaths(courseId, user.id);
+          } catch (syncError) {
+            console.error('Failed to sync learning path progress after video watch:', syncError);
+          }
         }
 
         return c.json({ success: true, data: watchProgress }, 200);

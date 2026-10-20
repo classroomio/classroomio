@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { Badge, type BadgeVariant } from '../../base/badge';
   import { Button } from '../../base/button';
   import LearningPathBadge from './learning-path-badge.svelte';
   import LearningPathProgress from './learning-path-progress.svelte';
@@ -102,7 +101,6 @@
   const offersCertificate = $derived(surface === 'certificate' || (surface === 'lms' && done));
   const showCertificateBadge = $derived(offersCertificate && certificateEarned);
   const showProgress = $derived(surface === 'lms');
-  const showStatusBadge = $derived(surface === 'admin');
   const showEarnedAt = $derived(surface === 'certificate' && !!certificateEarnedAt);
 
   const isExploreClickable = $derived(surface === 'explore' && !!onExploreClick);
@@ -128,14 +126,6 @@
 
   const showCtaArrow = $derived(surface !== 'lms');
   const showCta = $derived(!offersCertificate || certificateEarned);
-
-  const statusBadgeLabel = $derived(
-    status === 'DRAFT' ? labels.statusDraft : status === 'ACTIVE' ? labels.statusActive : labels.statusArchived
-  );
-
-  const statusBadgeVariant = $derived<BadgeVariant>(
-    status === 'ACTIVE' ? 'success' : status === 'DRAFT' ? 'warning' : 'secondary'
-  );
 
   function handleCardClick(event: MouseEvent) {
     if (!isExploreClickable) return;
@@ -261,27 +251,12 @@
         </div>
       {/if}
 
+      {#if footer}
+        <div class="ui:relative ui:z-10 ui:mt-2">{@render footer()}</div>
+      {/if}
+
       <div class="ui:relative ui:z-10 ui:mt-1 ui:flex ui:flex-1 ui:items-end">
-        {#if showStatusBadge}
-          <div class="ui:flex ui:w-full ui:items-center ui:justify-between ui:gap-2">
-            <Badge variant={statusBadgeVariant} class="ui:shrink-0">{statusBadgeLabel}</Badge>
-            <Button
-              href={isExploreClickable ? undefined : ctaHref}
-              variant={ctaVariant}
-              size="sm"
-              onclick={isExploreClickable
-                ? (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onExploreClick?.();
-                  }
-                : undefined}
-            >
-              {ctaLabelText}
-              {#if showCtaArrow}<ArrowRightIcon class="ui:size-4" />{/if}
-            </Button>
-          </div>
-        {:else if showCta}
+        {#if showCta}
           <Button
             href={isExploreClickable ? undefined : ctaHref}
             variant={ctaVariant}
@@ -300,9 +275,6 @@
           </Button>
         {/if}
       </div>
-      {#if footer}
-        <div class="ui:relative ui:z-10 ui:mt-2">{@render footer()}</div>
-      {/if}
     </div>
   </div>
 </div>

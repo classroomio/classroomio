@@ -6,6 +6,10 @@
 
   let { data } = $props();
 
+  $effect(() => {
+    console.log('I am in learning path landing page');
+  });
+
   const orgName = $derived(data.org?.name ?? 'ClassroomIO');
 
   const learningPathJsonLd = $derived.by(() => {

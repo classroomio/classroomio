@@ -87,6 +87,8 @@ export type LearningPathDetail = {
   reviews: LearningPathReviewItem[];
   faq: LearningPathFaqItem[];
   pricing?: LearningPathPricingInfo;
+  /** Explicit payment switch from the landing content. Undefined keeps the legacy cost-only behavior. */
+  paymentEnabled?: boolean;
   metadata?: {
     discount?: number;
     showDiscount?: boolean;
