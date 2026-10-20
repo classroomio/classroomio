@@ -168,7 +168,9 @@ function attrFalse(node: unknown, name: string): boolean {
     return !raw;
   }
 
-  return textOf(raw).toLowerCase() === 'false';
+  const value = textOf(raw).toLowerCase();
+
+  return value === 'false' || value === '0';
 }
 
 function detectFormat(manifest: Record<string, unknown>): ScormPackageFormat {
@@ -220,6 +222,24 @@ function detectFormat(manifest: Record<string, unknown>): ScormPackageFormat {
 
 function isAbsoluteUrl(href: string): boolean {
   return /^(?:[a-zA-Z][a-zA-Z0-9+.-]*:|\/\/)/.test(href);
+}
+
+const PACKAGE_BASE_ORIGIN = 'https://scorm-package.invalid';
+
+function resolveRelativeHref(base: string, href: string): string {
+  if (!href) return base;
+  if (isAbsoluteUrl(href)) return href;
+  if (!base) return href;
+
+  try {
+    const resolved = new URL(href, new URL(base, PACKAGE_BASE_ORIGIN));
+
+    if (resolved.origin !== PACKAGE_BASE_ORIGIN) return resolved.href;
+
+    return `${resolved.pathname.replace(/^\//, '')}${resolved.search}${resolved.hash}`;
+  } catch {
+    return `${base}${href}`;
+  }
 }
 
 function splitHrefSuffix(href: string): { path: string; suffix: string } {
@@ -408,11 +428,12 @@ function collectUnits(
       const unitType = readScormType(resource);
       const resourceHref = readAttrText(resource, 'href');
       const resourceBase = readAttrText(resource, 'xml:base');
-      const combinedHref = isAbsoluteUrl(resourceHref) ? resourceHref : `${xmlBase}${resourceBase}${resourceHref}`;
 
       if (!resourceHref) {
         throw new PackageError('missing_launch', { identifier, identifierref });
       }
+
+      const combinedHref = resolveRelativeHref(resolveRelativeHref(xmlBase, resourceBase), resourceHref);
 
       if (isAbsoluteUrl(combinedHref)) {
         throw new PackageError('external_launch', { identifier, href: combinedHref });
@@ -538,7 +559,9 @@ export function parseScormManifest(xml: string, files: string[], prefix = ''): P
 
   const collector: UnitCollector = { units: [], warnings: new Set(), hrefCaseFixed: false, hasPrerequisites: false };
   const rootItems = organization ? asArray(organization['item'] as unknown) : [];
-  const xmlBase = `${readAttrText(manifest, 'xml:base')}${readAttrText(resourcesNode ?? {}, 'xml:base')}`;
+  const manifestBase = readAttrText(manifest, 'xml:base');
+  const resourcesBase = readAttrText(resourcesNode ?? {}, 'xml:base');
+  const xmlBase = resolveRelativeHref(manifestBase, resourcesBase);
 
   collectUnits(rootItems, resources, files, prefix, xmlBase, null, collector, format);
 

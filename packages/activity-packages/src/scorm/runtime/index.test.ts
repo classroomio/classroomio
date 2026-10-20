@@ -313,6 +313,9 @@ describe('mergeCmi and normalizeCommitCmi', () => {
     });
     expect(mergeCmi({ list: ['a', 'b'] }, { list: { '1': 'c' } })).toEqual({ list: ['a', 'c'] });
     expect(mergeCmi({ list: ['a', 'b'] }, { list: { other: 'c' } })).toEqual({ list: { other: 'c' } });
+    expect(mergeCmi({ list: ['a', 'b'] }, { list: { '4294967294': 'c' } })).toEqual({
+      list: { '4294967294': 'c' }
+    });
   });
 
   it('rejects a non-numeric segment once a container is an array', () => {

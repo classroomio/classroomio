@@ -223,6 +223,16 @@ describe('parseScormManifest structure', () => {
     expect(parsed.units[0].href).toBe('tenant/pkg/sco.html');
   });
 
+  it('resolves an xml:base that points at a file', () => {
+    const withBase = readSource('scorm12-minimal').replace(
+      'href="sco.html"',
+      'xml:base="content/base.xml" href="sco.html"'
+    );
+    const parsed = parseScormManifest(withBase, ['content/sco.html']);
+
+    expect(parsed.units[0].href).toBe('content/sco.html');
+  });
+
   it('fixes launch case with a warning', () => {
     const cased = readSource('scorm12-minimal').replace(/sco\.html/g, 'SCO.HTML');
     const parsed = parseScormManifest(cased, ['sco.html']);
@@ -327,6 +337,12 @@ describe('parseScormManifest structure', () => {
       '<adlcp:completionThreshold adlcp:minProgressMeasure="0.6"/>'
     );
     expect(parseScormManifest(onElement, ['sco.html']).units[0].completionThreshold).toBe(0.6);
+
+    const disabled = manifestWith(
+      '<schemaversion>2004 4th Edition</schemaversion>',
+      '<adlcp:completionThreshold adlcp:completedByMeasure="0" adlcp:minProgressMeasure="0.8"/>'
+    );
+    expect(parseScormManifest(disabled, ['sco.html']).units[0].completionThreshold).toBeNull();
   });
 
   it('flags packages that declare prerequisites', () => {

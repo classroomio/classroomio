@@ -29,6 +29,7 @@ export interface ScormCommit {
 }
 
 export const MAX_COMMIT_JSON_BYTES = 524288;
+const MAX_CMI_INDEX = 1000;
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -63,7 +64,7 @@ function setPath(target: Record<string, unknown>, path: string, value: unknown):
     if (isUnsafeSegment(segment)) throw new PackageError('invalid_commit', { reason: 'unsafe_key' });
     if (/^\d+$/.test(segment)) {
       const pos = Number(segment);
-      if (!Number.isSafeInteger(pos) || pos < 0 || pos > 1000) {
+      if (!Number.isSafeInteger(pos) || pos < 0 || pos > MAX_CMI_INDEX) {
         throw new PackageError('invalid_commit', { reason: 'index_out_of_bounds' });
       }
     }
@@ -222,17 +223,17 @@ function interactionSummaryOf(entry: unknown, index: number): ScormInteractionSu
   const record = (entry ?? {}) as Record<string, unknown>;
   const response = record['student_response'] ?? record['learner_response'];
   const patterns = correctPatternsOf(record['correct_responses']);
+  const id = interactionText(record['id']);
+  const type = interactionText(record['type']);
+  const rawStudentResponse = typeof response === 'object' ? JSON.stringify(response) : response;
+  const studentResponse = interactionText(rawStudentResponse);
+  const rawResult = typeof record['result'] === 'object' ? JSON.stringify(record['result']) : record['result'];
+  const result = interactionText(rawResult);
+  const latency = interactionText(record['latency'] ?? record['timestamp']);
+  const description = interactionText(record['description']);
+  const correctResponse = patterns.length === 0 ? null : patterns.join(', ');
 
-  return {
-    index,
-    id: interactionText(record['id']),
-    type: interactionText(record['type']),
-    studentResponse: interactionText(typeof response === 'object' ? JSON.stringify(response) : response),
-    result: interactionText(typeof record['result'] === 'object' ? JSON.stringify(record['result']) : record['result']),
-    latency: interactionText(record['latency'] ?? record['timestamp']),
-    description: interactionText(record['description']),
-    correctResponse: patterns.length === 0 ? null : patterns.join(', ')
-  };
+  return { index, id, type, studentResponse, result, latency, description, correctResponse };
 }
 
 /**
@@ -256,7 +257,7 @@ export function summarizeInteractions(cmi: ScormCmi): ScormInteractionSummary[] 
 }
 
 function isIndexKey(key: string): boolean {
-  return /^\d+$/.test(key);
+  return /^\d+$/.test(key) && Number(key) <= MAX_CMI_INDEX;
 }
 
 function mergeIntoArray(stored: unknown[], entries: Array<[number, unknown]>): unknown[] {
@@ -356,12 +357,10 @@ export function normalizeCommitCmi(commit: unknown): ScormCommit {
     throw new PackageError('invalid_commit', { reason: 'bad_beacon' });
   }
 
-  const normalized: ScormCommit = {
-    seq,
-    cmi: normalizeCmiShape(commit['cmi']),
-    terminate: terminate === true,
-    ...(beacon === true ? { beacon: true as const } : {})
-  };
+  const cmi = normalizeCmiShape(commit['cmi']);
+  const terminateFlag = terminate === true;
+  const beaconField = beacon === true ? { beacon: true as const } : {};
+  const normalized: ScormCommit = { seq, cmi, terminate: terminateFlag, ...beaconField };
 
   if (new TextEncoder().encode(JSON.stringify(normalized)).length > MAX_COMMIT_JSON_BYTES) {
     throw new PackageError('invalid_commit', { reason: 'too_large', maxBytes: MAX_COMMIT_JSON_BYTES });

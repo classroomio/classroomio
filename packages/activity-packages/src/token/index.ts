@@ -145,6 +145,8 @@ export async function mintLaunchToken(
   secret: string,
   nowMs: number = Date.now()
 ): Promise<string> {
+  const ancestors = [...input.anc].sort();
+  const expiresAt = Math.floor(nowMs / 1000) + LAUNCH_TOKEN_TTL_SECONDS;
   const claims: ActivityLaunchClaims = {
     org: input.org,
     act: input.act,
@@ -153,8 +155,8 @@ export async function mintLaunchToken(
     unit: input.unit,
     fmt: input.fmt,
     mode: input.mode,
-    anc: [...input.anc].sort(),
-    exp: Math.floor(nowMs / 1000) + LAUNCH_TOKEN_TTL_SECONDS,
+    anc: ancestors,
+    exp: expiresAt,
     typ: 'launch'
   };
 
@@ -208,11 +210,13 @@ export async function mintContentToken(
   secret: string,
   nowMs: number = Date.now()
 ): Promise<string> {
+  const ancestors = [...input.anc].sort();
+  const weekIndex = isoWeekIndex(new Date(nowMs));
   const claims: ContentTokenClaims = {
     org: input.org,
     p: input.prefix,
-    anc: [...input.anc].sort(),
-    wk: isoWeekIndex(new Date(nowMs)),
+    anc: ancestors,
+    wk: weekIndex,
     typ: 'content'
   };
 
