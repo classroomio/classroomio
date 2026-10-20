@@ -2,6 +2,7 @@ import type { TCourse, TCourseActivity, TCourseSection, TExercise, TLesson, TLes
 import type { DbOrTxClient } from '@db/drizzle';
 import { db } from '@db/drizzle';
 import {
+  closeOpenAttemptsForActivity,
   countSubmissionsByExerciseIds,
   createActivities,
   createCourseSections,
@@ -11,6 +12,7 @@ import {
   createLessons,
   createOptions,
   createQuestions,
+  deleteAssetUsagesByTarget,
   deleteExerciseChildren,
   getActivitiesByCourseId,
   getActivityScormByActivityId,
@@ -128,6 +130,22 @@ function bumpOrders<T extends { order: number }>(items: T[], fromOrder: number) 
   }
 }
 
+/**
+ * Every top-level item a section holds, in the one 1-based order sequence
+ * they share. New sections insert against the whole list so a pulled item
+ * lands where the template places it relative to lessons, exercises and
+ * activities alike.
+ */
+function sectionOrderEntries(graph: SyncGraph, sectionId: string | null) {
+  if (!sectionId) return [];
+
+  return [
+    ...graph.lessons.filter((item) => item.sectionId === sectionId),
+    ...graph.exercises.filter((item) => item.sectionId === sectionId),
+    ...graph.activities.filter((item) => item.sectionId === sectionId)
+  ];
+}
+
 async function claimSectionLessonOrder(
   templateLessons: TLesson[],
   courseGraph: SyncGraph,
@@ -137,20 +155,12 @@ async function claimSectionLessonOrder(
   client: DbOrTxClient
 ) {
   const templateSiblings = templateLessons.filter((sibling) => sibling.sectionId === lesson.sectionId);
-  const placed = courseGraph.lessons.filter((sibling) => sibling.sectionId === parentId);
-  const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(placed), placed);
+  const sectionEntries = sectionOrderEntries(courseGraph, parentId);
+  const order = insertionOrder(templateSiblings, lesson.id, sourceOrders(sectionEntries), sectionEntries);
   await shiftLessonOrders(courseId, parentId, order, client);
   await shiftExerciseOrders(courseId, { sectionId: parentId }, order, client);
   await shiftActivityOrders(courseId, parentId, order, client);
-  bumpOrders(placed, order);
-  bumpOrders(
-    courseGraph.exercises.filter((sibling) => sibling.sectionId === parentId),
-    order
-  );
-  bumpOrders(
-    courseGraph.activities.filter((sibling) => sibling.sectionId === parentId),
-    order
-  );
+  bumpOrders(sectionEntries, order);
 
   return order;
 }
@@ -164,20 +174,12 @@ async function claimSectionActivityOrder(
   client: DbOrTxClient
 ) {
   const templateSiblings = templateActivities.filter((sibling) => sibling.sectionId === activity.sectionId);
-  const placed = courseGraph.activities.filter((sibling) => sibling.sectionId === parentId);
-  const order = insertionOrder(templateSiblings, activity.id, sourceOrders(placed), placed);
+  const sectionEntries = sectionOrderEntries(courseGraph, parentId);
+  const order = insertionOrder(templateSiblings, activity.id, sourceOrders(sectionEntries), sectionEntries);
   await shiftLessonOrders(courseId, parentId, order, client);
   await shiftExerciseOrders(courseId, { sectionId: parentId }, order, client);
   await shiftActivityOrders(courseId, parentId, order, client);
-  bumpOrders(placed, order);
-  bumpOrders(
-    courseGraph.lessons.filter((sibling) => sibling.sectionId === parentId),
-    order
-  );
-  bumpOrders(
-    courseGraph.exercises.filter((sibling) => sibling.sectionId === parentId),
-    order
-  );
+  bumpOrders(sectionEntries, order);
 
   return order;
 }
@@ -200,7 +202,8 @@ async function claimNestedExerciseOrder(
       ? sibling.sectionId === parent.sectionId
       : sibling.lessonId === parent.lessonId && !sibling.sectionId
   );
-  const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(placed), placed);
+  const sectionEntries = parent.lessonId ? placed : sectionOrderEntries(courseGraph, parent.sectionId);
+  const order = insertionOrder(templateSiblings, exercise.id, sourceOrders(sectionEntries), sectionEntries);
   await shiftExerciseOrders(
     courseId,
     { sectionId: parent.sectionId, lessonId: parent.sectionId ? null : parent.lessonId },
@@ -210,16 +213,10 @@ async function claimNestedExerciseOrder(
   if (!parent.lessonId) {
     await shiftLessonOrders(courseId, parent.sectionId, order, client);
     await shiftActivityOrders(courseId, parent.sectionId, order, client);
-    bumpOrders(
-      courseGraph.lessons.filter((sibling) => (sibling.sectionId ?? null) === parent.sectionId),
-      order
-    );
-    bumpOrders(
-      courseGraph.activities.filter((sibling) => (sibling.sectionId ?? null) === parent.sectionId),
-      order
-    );
+    bumpOrders(sectionEntries, order);
+  } else {
+    bumpOrders(placed, order);
   }
-  bumpOrders(placed, order);
 
   return order;
 }
@@ -618,57 +615,71 @@ async function pullActivityDetails(
   client: DbOrTxClient
 ) {
   const templateDetails = await getActivityScormByActivityId(templateActivityId, client);
-  if (!templateDetails) return;
-
   const courseDetails = await getActivityScormByActivityId(courseActivityId, client);
+
+  if (!templateDetails) {
+    if (!courseDetails) return;
+
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: null }, client);
+    await deleteAssetUsagesByTarget('activity', courseActivityId, client);
+    return;
+  }
+
+  const settings = {
+    completionRule: templateDetails.completionRule,
+    minScorePercent: templateDetails.minScorePercent,
+    allowRetakes: templateDetails.allowRetakes,
+    moduleOrder: templateDetails.moduleOrder,
+    completionModules: templateDetails.completionModules
+  };
   const crossOrg = Boolean(templateOrgId && courseOrgId && templateOrgId !== courseOrgId);
 
-  if (!courseDetails?.assetId && templateDetails.assetId) {
-    if (!crossOrg) {
+  if (!templateDetails.assetId) {
+    if (!courseDetails) return;
+
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: null, ...settings }, client);
+    await deleteAssetUsagesByTarget('activity', courseActivityId, client);
+    return;
+  }
+
+  if (!crossOrg) {
+    if (courseDetails?.assetId === templateDetails.assetId) {
       await upsertActivityScorm(
-        {
-          activityId: courseActivityId,
-          assetId: templateDetails.assetId,
-          completionRule: templateDetails.completionRule,
-          minScorePercent: templateDetails.minScorePercent,
-          allowRetakes: templateDetails.allowRetakes,
-          moduleOrder: templateDetails.moduleOrder
-        },
+        { activityId: courseActivityId, assetId: templateDetails.assetId, ...settings },
         client
       );
-
-      if (courseOrgId) {
-        await createAssetUsage(
-          {
-            organizationId: courseOrgId,
-            assetId: templateDetails.assetId,
-            targetType: 'activity',
-            targetId: courseActivityId,
-            slotType: ACTIVITY_PACKAGE_SLOT,
-            createdByProfileId: userId
-          },
-          client
-        );
-      }
-
       return;
     }
 
+    if (courseDetails?.assetId) {
+      await closeOpenAttemptsForActivity(courseActivityId, 'replaced', client);
+    }
+    await deleteAssetUsagesByTarget('activity', courseActivityId, client);
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: templateDetails.assetId, ...settings }, client);
+
+    if (courseOrgId) {
+      await createAssetUsage(
+        {
+          organizationId: courseOrgId,
+          assetId: templateDetails.assetId,
+          targetType: 'activity',
+          targetId: courseActivityId,
+          slotType: ACTIVITY_PACKAGE_SLOT,
+          createdByProfileId: userId
+        },
+        client
+      );
+    }
+
+    return;
+  }
+
+  if (!courseDetails?.assetId) {
     const templateAsset = await getAssetById(templateDetails.assetId, templateOrgId ?? undefined);
     if (!templateAsset || !courseOrgId) return;
 
     const transfer = await transferScormPackageAsset(templateAsset, courseOrgId, userId, client);
-    await upsertActivityScorm(
-      {
-        activityId: courseActivityId,
-        assetId: transfer.asset.id,
-        completionRule: templateDetails.completionRule,
-        minScorePercent: templateDetails.minScorePercent,
-        allowRetakes: templateDetails.allowRetakes,
-        moduleOrder: templateDetails.moduleOrder
-      },
-      client
-    );
+    await upsertActivityScorm({ activityId: courseActivityId, assetId: transfer.asset.id, ...settings }, client);
     await createAssetUsage(
       {
         organizationId: courseOrgId,
@@ -684,20 +695,9 @@ async function pullActivityDetails(
     return;
   }
 
-  await upsertActivityScorm(
-    {
-      activityId: courseActivityId,
-      assetId: courseDetails?.assetId ?? templateDetails.assetId,
-      completionRule: templateDetails.completionRule,
-      minScorePercent: templateDetails.minScorePercent,
-      allowRetakes: templateDetails.allowRetakes,
-      moduleOrder: templateDetails.moduleOrder
-    },
-    client
-  );
+  await upsertActivityScorm({ activityId: courseActivityId, assetId: courseDetails.assetId, ...settings }, client);
 
-  if (!crossOrg || !templateDetails.assetId || !courseDetails?.assetId) return;
-  if (templateDetails.assetId === courseDetails.assetId || !courseOrgId) return;
+  if (!templateDetails.assetId || templateDetails.assetId === courseDetails.assetId || !courseOrgId) return;
 
   const [templateCurrent, courseCurrent] = await Promise.all([
     getCurrentPackageVersion(templateDetails.assetId, client),

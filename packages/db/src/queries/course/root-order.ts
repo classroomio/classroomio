@@ -4,10 +4,10 @@ import { and, eq, gte, isNull, max, ne, sql } from 'drizzle-orm';
 import { db, type DbOrTxClient } from '@db/drizzle';
 
 /**
- * Which entries share one run of positions. `outline`: sections plus lessons and exercises outside any section, the
- * top level of a grouped course. `items`: every lesson and exercise, the list of a course with grouping off.
- * `sections`: sections alone, which a course with grouping off does not show. Exercises inside a lesson are never
- * counted.
+ * Which entries share one run of positions. `outline`: sections plus lessons, exercises and activities outside any
+ * section, the top level of a grouped course. `items`: every lesson, exercise and activity, the list of a course with
+ * grouping off. `sections`: sections alone, which a course with grouping off does not show. Exercises inside a lesson
+ * are never counted.
  */
 export type CourseOrderScope = 'outline' | 'items' | 'sections';
 
@@ -55,8 +55,21 @@ export async function getLastCourseRootOrder(
             )
           )
       : [];
+    const [activityRow] = hasItems
+      ? await dbClient
+          .select({ value: max(schema.courseActivity.order) })
+          .from(schema.courseActivity)
+          .where(
+            and(
+              eq(schema.courseActivity.courseId, courseId),
+              hasSectionItems ? undefined : isNull(schema.courseActivity.sectionId)
+            )
+          )
+      : [];
 
-    const lastOrders = [sectionRow?.value, lessonRow?.value, exerciseRow?.value].map((value) => Number(value ?? 0));
+    const lastOrders = [sectionRow?.value, lessonRow?.value, exerciseRow?.value, activityRow?.value].map((value) =>
+      Number(value ?? 0)
+    );
 
     return Math.max(0, ...lastOrders);
   } catch (error) {
@@ -119,8 +132,22 @@ export async function isCourseRootOrderTaken(
           )
           .limit(1)
       : [];
+    const activities = hasItems
+      ? await dbClient
+          .select({ id: schema.courseActivity.id })
+          .from(schema.courseActivity)
+          .where(
+            and(
+              eq(schema.courseActivity.courseId, courseId),
+              hasSectionItems ? undefined : isNull(schema.courseActivity.sectionId),
+              eq(schema.courseActivity.order, order),
+              excludeId ? ne(schema.courseActivity.id, excludeId) : undefined
+            )
+          )
+          .limit(1)
+      : [];
 
-    return sections.length + lessons.length + exercises.length > 0;
+    return sections.length + lessons.length + exercises.length + activities.length > 0;
   } catch (error) {
     console.error('isCourseRootOrderTaken error:', error);
     throw new Error(`Failed to check top-level order: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -168,8 +195,45 @@ export async function shiftCourseRootOrders(
           gte(schema.exercise.order, fromOrder)
         )
       );
+    await dbClient
+      .update(schema.courseActivity)
+      .set({ order: sql`${schema.courseActivity.order} + 1` })
+      .where(
+        and(
+          eq(schema.courseActivity.courseId, courseId),
+          hasSectionItems ? undefined : isNull(schema.courseActivity.sectionId),
+          gte(schema.courseActivity.order, fromOrder)
+        )
+      );
   } catch (error) {
     console.error('shiftCourseRootOrders error:', error);
     throw new Error(`Failed to shift top-level order: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Highest order among the entries one section holds, or 0 when it is empty.
+ */
+export async function getLastSectionItemOrder(sectionId: string, dbClient: DbOrTxClient = db) {
+  try {
+    const [lessonRow] = await dbClient
+      .select({ value: max(schema.lesson.order) })
+      .from(schema.lesson)
+      .where(eq(schema.lesson.sectionId, sectionId));
+    const [exerciseRow] = await dbClient
+      .select({ value: max(schema.exercise.order) })
+      .from(schema.exercise)
+      .where(eq(schema.exercise.sectionId, sectionId));
+    const [activityRow] = await dbClient
+      .select({ value: max(schema.courseActivity.order) })
+      .from(schema.courseActivity)
+      .where(eq(schema.courseActivity.sectionId, sectionId));
+
+    const lastOrders = [lessonRow?.value, exerciseRow?.value, activityRow?.value].map((value) => Number(value ?? 0));
+
+    return Math.max(0, ...lastOrders);
+  } catch (error) {
+    console.error('getLastSectionItemOrder error:', error);
+    throw new Error(`Failed to read section order: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

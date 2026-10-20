@@ -161,7 +161,7 @@ function toLaunchModule(
   };
 }
 
-function launchableUnits(units: TContentPackageUnit[]): TContentPackageUnit[] {
+export function launchableUnits(units: TContentPackageUnit[]): TContentPackageUnit[] {
   return units
     .filter((unit) => unit.unitType === 'sco' && unit.isVisible !== false)
     .sort((left, right) => left.position - right.position);

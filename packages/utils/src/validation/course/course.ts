@@ -1,6 +1,5 @@
 import * as z from 'zod';
 
-import { ContentType } from '@cio/utils/constants/content';
 import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
@@ -153,7 +152,7 @@ export type TCourseDownloadPresignedUrl = z.infer<typeof ZCourseDownloadPresigne
 
 export const ZCourseContentUpdateItem = z.object({
   id: z.string().min(1),
-  type: z.enum([ContentType.Lesson, ContentType.Exercise, ContentType.Activity]),
+  type: z.enum(['LESSON', 'EXERCISE', 'ACTIVITY']),
   isUnlocked: z.boolean().optional(),
   order: z.number().int().min(1).optional(),
   sectionId: z.string().nullable().optional()
@@ -259,7 +258,7 @@ export type TCourseContentReorder = z.infer<typeof ZCourseContentReorder>;
 
 export const ZCourseContentDeleteItem = z.object({
   id: z.string().min(1),
-  type: z.enum([ContentType.Lesson, ContentType.Exercise, ContentType.Activity])
+  type: z.enum(['LESSON', 'EXERCISE', 'ACTIVITY'])
 });
 export type TCourseContentDeleteItem = z.infer<typeof ZCourseContentDeleteItem>;
 

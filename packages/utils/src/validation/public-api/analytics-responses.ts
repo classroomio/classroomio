@@ -150,7 +150,9 @@ export const ZPublicApiLearnerAnalyticsResponse = z.object({
     avatarUrl: z.string(),
     lastSeen: nullableTimestamp
   }),
-  overallCourseProgress: z.number().describe('Percentage of lessons and exercises completed across all courses'),
+  overallCourseProgress: z
+    .number()
+    .describe('Percentage of lessons, exercises and activities completed across all courses'),
   overallAverageGrade: z.number().nullable().describe('Average of per-course grades; null when nothing is graded'),
   courses: z.array(
     z.object({
@@ -181,7 +183,9 @@ export const ZPublicApiCourseAnalyticsSummaryResponse = z.object({
   totalLessons: z.number(),
   totalExercises: z.number(),
   totalActivities: z.number(),
-  averageProgress: z.number().describe('Average per-student progress (lessons and exercises), as a percentage'),
+  averageProgress: z
+    .number()
+    .describe('Average per-student progress (lessons, exercises and activities), as a percentage'),
   averageExerciseCompletion: z.number().describe('Average share of exercises submitted per student, as a percentage'),
   averageGrade: z.number().describe('Average per-student grade, as a percentage')
 });

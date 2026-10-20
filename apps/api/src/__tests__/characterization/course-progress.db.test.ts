@@ -50,15 +50,15 @@ async function createProgressFixture(suffix: string): Promise<ProgressFixture> {
     .returning();
   const [lessonOne] = await db
     .insert(schema.lesson)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson one', order: 1 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson one', slug: 'lesson-one', order: 1 })
     .returning();
   const [lessonTwo] = await db
     .insert(schema.lesson)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson two', order: 2 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson two', slug: 'lesson-two', order: 2 })
     .returning();
   const [exercise] = await db
     .insert(schema.exercise)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Quiz', order: 3 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Quiz', slug: 'quiz', order: 3 })
     .returning();
 
   async function createStudent(tag: string) {

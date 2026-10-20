@@ -80,7 +80,14 @@ async function createServiceFixture(
     .returning();
   const [lessonOne] = await db
     .insert(schema.lesson)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson one', order: 1, note: '<p>One.</p>' })
+    .values({
+      courseId: course.id,
+      sectionId: section.id,
+      title: 'Lesson one',
+      slug: 'lesson-one',
+      order: 1,
+      note: '<p>One.</p>'
+    })
     .returning();
   const [lessonTwo] = await db
     .insert(schema.lesson)
@@ -88,6 +95,7 @@ async function createServiceFixture(
       courseId: course.id,
       sectionId: section.id,
       title: 'Lesson two',
+      slug: 'lesson-two',
       order: 2,
       note: '<p>Two.</p>',
       isUnlocked: !secondLocked
@@ -95,7 +103,7 @@ async function createServiceFixture(
     .returning();
   const [exercise] = await db
     .insert(schema.exercise)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Quiz', order: 3 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Quiz', slug: 'quiz', order: 3 })
     .returning();
 
   async function createMember(tag: string, roleId: number) {
@@ -362,7 +370,7 @@ describe.skipIf(!hasDatabase)('characterization: sections (zero activities)', ()
     const fixture = await createServiceFixture(suffix());
     const [ungrouped] = await db
       .insert(schema.lesson)
-      .values({ courseId: fixture.courseId, sectionId: null, title: 'Stray lesson', order: 9 })
+      .values({ courseId: fixture.courseId, sectionId: null, title: 'Stray lesson', slug: 'stray-lesson', order: 9 })
       .returning();
     try {
       const { promoteUngroupedSection } = await import('@cio/core/services/course/section');
@@ -588,12 +596,14 @@ describe.skipIf(!hasDatabase)('characterization: clone and templates (zero activ
       courseId: template.id,
       sectionId: templateSection.id,
       title: 'Template lesson',
+      slug: 'template-lesson',
       order: 1
     });
     await db.insert(schema.exercise).values({
       courseId: template.id,
       sectionId: templateSection.id,
       title: 'Template quiz',
+      slug: 'template-quiz',
       order: 2
     });
     try {

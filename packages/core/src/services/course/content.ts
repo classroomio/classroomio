@@ -10,7 +10,11 @@ import {
   getCourseSectionsByCourseId
 } from '@cio/db/queries/course';
 import { OperationalQueryError } from '@cio/db/queries/query-errors';
-import { countContentStudentWork, getCourseContentItems, type CourseContentItemRow } from '@cio/db/queries/course/content';
+import {
+  countContentStudentWork,
+  getCourseContentItems,
+  type CourseContentItemRow
+} from '@cio/db/queries/course/content';
 import { deleteLesson } from '@cio/db/queries/lesson';
 import { deleteAssetUsagesByTarget } from '@cio/db/queries/assets';
 import { countActivitiesInCourse, deleteActivity, getActivityById } from '@cio/db/queries/activity';
@@ -38,18 +42,32 @@ function buildContentKey(item: { id: string; type: string }) {
  * Throws when content of the kind cannot be added to the course. Single-activity courses
  * hold exactly one activity and refuse everything else.
  */
-export async function assertCourseAcceptsContent(courseId: string, contentType: ContentType): Promise<void> {
-  const [course] = await getCourseById(courseId);
+export async function assertCourseAcceptsContent(
+  courseId: string,
+  contentType: ContentType,
+  dbClient: DbOrTxClient = db
+): Promise<void> {
+  const [course] = await getCourseById(courseId, dbClient);
   if (!course || course.format !== 'single_activity') return;
 
   if (contentType === ContentType.Activity) {
-    if ((await countActivitiesInCourse(courseId)) === 0) return;
+    if ((await countActivitiesInCourse(courseId, dbClient)) === 0) return;
 
     throw new AppError('A single-activity course holds exactly one package', ErrorCodes.VALIDATION_ERROR, 400);
   }
 
   throw new AppError(
     'Single-activity courses hold a single package. Convert to a standard course to add sections, lessons or exercises.',
+    ErrorCodes.VALIDATION_ERROR,
+    400
+  );
+}
+
+export function assertActivityDeletionAllowed(course: { format: string } | null | undefined): void {
+  if (course?.format !== 'single_activity') return;
+
+  throw new AppError(
+    'The package in a single-activity course cannot be deleted. Replace the package or convert to a standard course.',
     ErrorCodes.VALIDATION_ERROR,
     400
   );
@@ -127,7 +145,6 @@ async function assertCourseContentItems(courseId: string, items: TCourseContentU
         case ContentType.Activity:
           throw new AppError('Activity does not belong to this course', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
         default: {
-          const exhaustive: never = item.type;
           throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
         }
       }
@@ -304,6 +321,9 @@ async function deleteActivityWithProvider(activityId: string, tx: DbOrTxClient):
     throw new AppError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
   }
 
+  const [course] = await getCourseById(activity.courseId, tx);
+  assertActivityDeletionAllowed(course);
+
   const provider = (ACTIVITY_PROVIDERS as Partial<Record<TActivityKind, (typeof ACTIVITY_PROVIDERS)[TActivityKind]>>)[
     activity.kind as TActivityKind
   ];
@@ -325,7 +345,7 @@ export type CourseContentDeleteResult = {
 
 /**
  * Deletes a section's content (and the section) or the given lessons, exercises and activities in one transaction, and
- * returns what was deleted. Without `force`, throws 409 when any lesson or exercise holds student work.
+ * returns what was deleted. Without `force`, throws 409 when any lesson, exercise or activity holds student work.
  */
 export async function deleteCourseContent(
   courseId: string,
@@ -356,14 +376,17 @@ export async function deleteCourseContent(
           )
         )
       : normalizeDeleteItems(payload.items ?? []);
+
     const lessonIds = itemsToDelete.filter((item) => item.type === ContentType.Lesson).map((item) => item.id);
     const exerciseIds = itemsToDelete.filter((item) => item.type === ContentType.Exercise).map((item) => item.id);
+    const activityIds = itemsToDelete.filter((item) => item.type === ContentType.Activity).map((item) => item.id);
 
     const studentWork = await db.transaction(async (tx) => {
-      const work = await countContentStudentWork(lessonIds, exerciseIds, tx);
-      if (!options.force && work.submissions + work.lessonCompletions > 0) {
+      const work = await countContentStudentWork(lessonIds, exerciseIds, activityIds, tx);
+      const totalWork = work.submissions + work.lessonCompletions + work.activityCompletions + work.activityAttempts;
+      if (!options.force && totalWork > 0) {
         throw new AppError(
-          `Students have work here (${work.submissions} submissions, ${work.lessonCompletions} lesson completions). Pass force=true to delete it with their work`,
+          `Students have work here (${work.submissions} submissions, ${work.lessonCompletions} lesson completions, ${work.activityCompletions} activity completions, ${work.activityAttempts} activity attempts). Pass force=true to delete it with their work`,
           ErrorCodes.CONFLICT,
           409
         );
@@ -392,7 +415,6 @@ export async function deleteCourseContent(
             continue;
           }
           default: {
-            const exhaustive: never = item.type;
             throw new AppError('Invalid content type', ErrorCodes.VALIDATION_ERROR, 400);
           }
         }

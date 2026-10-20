@@ -7,6 +7,11 @@ import type { TActivityKind } from '@cio/utils/constants/activity';
 import type { TScormResultsQuery } from '@cio/utils/validation/activity/report';
 import type { TScormSettings } from '@cio/utils/validation/activity/scorm';
 
+/** Learners a settings change completed, for side effects after the save commits. */
+export interface ActivitySettingsUpdate {
+  newlyCompletedProfileIds: string[];
+}
+
 export interface ActivityProvider {
   kind: TActivityKind;
   licenseFeature: LicenseFeatureId;
@@ -16,7 +21,7 @@ export interface ActivityProvider {
   /** Returns the kind's editor data: package, versions, settings, warnings. */
   getEditorData(activityId: string): Promise<ActivityEditorData>;
   /** Validates and saves kind settings. Throws AppError on invalid input. */
-  updateSettings(activityId: string, input: unknown, tx: DbOrTxClient): Promise<void>;
+  updateSettings(activityId: string, input: unknown, tx: DbOrTxClient): Promise<ActivitySettingsUpdate>;
   /** Resolves what a launch opens: the player URL, mode and modules. Never writes completion. */
   launch(context: ActivityLaunchContext): Promise<ActivityLaunchResult>;
   /** The learner's module menu as it stands, without opening or writing anything. */

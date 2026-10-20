@@ -17,6 +17,7 @@ type AgentFixture = {
   orgId: string;
   groupId: string;
   courseId: string;
+  sectionId: string;
   activityId: string;
   otherCourseId: string;
 };
@@ -75,6 +76,7 @@ async function createAgentFixture(suffix: string): Promise<AgentFixture> {
     orgId: organization.id,
     groupId: group.id,
     courseId: course.id,
+    sectionId: section.id,
     activityId: activity.id,
     otherCourseId: otherCourse.id
   };
@@ -232,7 +234,13 @@ describe.skipIf(!hasDatabase)('agent reorder execution with activities', () => {
 
       const [second] = await db
         .insert(schema.courseActivity)
-        .values({ courseId: fixture.courseId, kind: 'scorm', title: 'Second package', order: 2 })
+        .values({
+          courseId: fixture.courseId,
+          sectionId: fixture.sectionId,
+          kind: 'scorm',
+          title: 'Second package',
+          order: 2
+        })
         .returning();
 
       const tools = buildAgentTools(fixture.orgId, crypto.randomUUID(), fixture.courseId, []);
@@ -265,16 +273,19 @@ describe.skipIf(!hasDatabase)('student agent tools with activities', () => {
       const { buildStudentAgentTools } = await import('@api/services/agent/student-tools');
 
       const tools = buildStudentAgentTools(fixture.orgId, crypto.randomUUID(), fixture.courseId, {} as never);
-      const outline = (await tools.list_course_outline?.execute?.(
+      const result = (await tools.list_course_outline?.execute?.(
         {},
         {
           toolCallId: 'char-student-1',
           messages: []
         }
-      )) as unknown as { activities: { id: string; title: string }[] };
+      )) as unknown as { outline: Array<{ kind: string; items?: Array<{ type: string; id: string; title: string }> }> };
 
-      expect(outline.activities.map((activity) => activity.id)).toEqual([fixture.activityId]);
-      expect(outline.activities[0].title).toBe('Safety package');
+      const section = result.outline.find((entry) => entry.kind === 'section');
+      const activities = section?.items?.filter((item) => item.type === ContentType.Activity) ?? [];
+
+      expect(activities.map((activity) => activity.id)).toEqual([fixture.activityId]);
+      expect(activities[0]?.title).toBe('Safety package');
     } finally {
       await cleanupAgentFixture(fixture);
     }

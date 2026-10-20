@@ -5,7 +5,6 @@ import {
   createCourse as createCourseQuery,
   deleteCourse as deleteCourseQuery,
   getCourseById,
-  getCourseContentItems,
   getCourseProgress as getCourseProgressQuery,
   getCourseWithRelations,
   getOrgIdByCourseId,
@@ -47,8 +46,7 @@ import { db } from '@cio/db/drizzle';
 import * as schema from '@cio/db/schema';
 import { and, eq } from 'drizzle-orm';
 import { skipRemovedOffsetReminderDeliveries } from '@cio/db/queries/course/live-session-reminder';
-import { updateExercise, updateExercisesSectionId } from '@cio/db/queries/exercise/exercise';
-import { updateActivitiesSectionId } from '@cio/db/queries/activity';
+import { updateExercise } from '@cio/db/queries/exercise/exercise';
 import { getProfileById } from '@cio/db/queries/auth';
 import {
   countActiveStudents,
@@ -70,8 +68,6 @@ export interface UpdateCourseResult {
   course: TCourse;
   conversionOffenders?: NonAutoGradableQuestionOffender[] | null;
 }
-
-const DEFAULT_SECTION_TITLE = 'First Section [edit me]';
 
 /**
  * Whether a *new* student would be turned away from this org right now
@@ -549,56 +545,6 @@ export async function updateCourse(
       await skipRemovedOffsetReminderDeliveries(courseId, keptOffsets, dbClient);
     }
 
-    const isContentGroupingEnabled = (updated.metadata?.isContentGroupingEnabled ?? DEFAULT_CONTENT_GROUPING) === true;
-
-    if (isContentGroupingEnabled) {
-      const courseWithRelations = dbClient === db ? await getCourseWithRelations(courseId) : null;
-      const contentItems =
-        dbClient === db
-          ? courseWithRelations?.contentItems
-          : await getCourseContentItems(courseId, undefined, dbClient);
-
-      if (contentItems) {
-        const hasSections = contentItems.some((item) => item.type === ContentType.Section);
-        const hasUngroupedItems = contentItems.some(
-          (item) =>
-            (item.type === ContentType.Lesson ||
-              item.type === ContentType.Exercise ||
-              item.type === ContentType.Activity) &&
-            item.sectionId === null
-        );
-
-        if (!hasSections && hasUngroupedItems) {
-          const createSectionAndMoveContent = async (transactionClient: DbOrTxClient) => {
-            const [section] = await createCourseSections(
-              [
-                {
-                  title: DEFAULT_SECTION_TITLE,
-                  order: 1,
-                  courseId
-                }
-              ],
-              transactionClient
-            );
-
-            if (!section) {
-              throw new AppError('Failed to create course section', ErrorCodes.COURSE_SECTION_NOT_FOUND, 500);
-            }
-
-            await updateLessonsSectionId(courseId, section.id, transactionClient);
-            await updateExercisesSectionId(courseId, section.id, transactionClient);
-            await updateActivitiesSectionId(courseId, section.id, transactionClient);
-          };
-
-          if (dbClient === db) {
-            await db.transaction((tx) => createSectionAndMoveContent(tx));
-          } else {
-            await createSectionAndMoveContent(dbClient);
-          }
-        }
-      }
-    }
-
     if (data.status !== undefined) {
       const statsOrgId = await getOrgIdByCourseId(courseId, dbClient);
       await invalidateOrgStats(statsOrgId);
@@ -910,15 +856,14 @@ export async function getUserCourseAnalytics(
     const averageGrade = totalPoints > 0 ? Math.round((totalEarnedPoints / totalPoints) * 100) : null;
 
     const completedLessons = lessons.filter((lesson) => lesson.completed);
+    const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
+    const totalExercises = courseProgress.exercises_count || 0;
     const activitiesCompleted = courseProgress.activities_completed || 0;
     const activitiesCount = courseProgress.activities_count || 0;
     const progressPercentage = calcPercentageWithRounding(
-      completedLessons.length + activitiesCompleted,
-      lessons.length + activitiesCount
+      completedLessons.length + completedExercises + activitiesCompleted,
+      lessons.length + totalExercises + activitiesCount
     );
-
-    const completedExercises = userExercisesStats.filter((exercise) => exercise.isCompleted).length;
-    const totalExercises = courseProgress.exercises_count || 0;
 
     const lessonsCompleted = courseProgress.lessons_completed || 0;
     const lessonsCount = courseProgress.lessons_count || 0;

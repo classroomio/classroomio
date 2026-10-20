@@ -12,13 +12,15 @@ import {
   createPackageVersion,
   getCurrentPackageVersion,
   getNextPackageVersionNumber,
-  getPackageVersionById
+  getPackageVersionById,
+  lockAssetRow
 } from '@cio/db/queries/activity/package-version';
 import type { TAsset, TContentPackageVersion } from '@cio/db/types';
 import type { TAssetStorageCleanupPayload } from '@cio/jobs';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
 
 import { getS3Client, getStorageConfig } from '../../config/storage';
+import { scormContentPrefix, scormUploadKey } from '../activity/packages';
 import { purgeAssetStorage } from './assets';
 
 export type TAssetTransfer = {
@@ -51,7 +53,11 @@ async function copyObject(bucket: string, sourceKey: string, targetKey: string) 
 async function copyInParallel(jobs: Array<() => Promise<unknown>>, limit = 8): Promise<void> {
   for (let index = 0; index < jobs.length; index += limit) {
     const batch = jobs.slice(index, index + limit);
-    await Promise.all(batch.map((job) => job()));
+    const results = await Promise.allSettled(batch.map((job) => job()));
+
+    for (const result of results) {
+      if (result.status === 'rejected') throw result.reason;
+    }
   }
 }
 
@@ -168,14 +174,6 @@ export async function transferUploadedAsset(
   return transfer;
 }
 
-function scormUploadKey(assetId: string, versionNumber: number) {
-  return `scorm/${assetId}/v${versionNumber}.zip`;
-}
-
-function scormContentPrefix(assetId: string, versionNumber: number) {
-  return `scorm/${assetId}/v${versionNumber}`;
-}
-
 function isMissingKeyError(error: unknown): boolean {
   const name = (error as { name?: string })?.name;
   const code = (error as { Code?: string })?.Code;
@@ -266,6 +264,16 @@ export async function transferScormPackageAsset(
 
   if (current) {
     const storage = await copyScormVersionStorage(current, assetId, 1);
+    const config = getStorageConfig();
+    transferScope.getStore()?.copied.push({
+      assetId,
+      organizationId,
+      prefixes: [{ bucket: config.bucketScorm, prefix: `${storage.contentPrefix}/` }],
+      keys: [
+        { bucket: config.bucketScorm, key: storage.uploadKey },
+        { bucket: config.bucketScorm, key: `${storage.contentPrefix}.index.json` }
+      ]
+    });
     const createdVersion = await createPackageVersion(
       {
         assetId,
@@ -280,6 +288,7 @@ export async function transferScormPackageAsset(
         error: current.error,
         uploadKey: storage.uploadKey,
         contentPrefix: storage.contentPrefix,
+        contentSha256: current.contentSha256,
         zipBytes: current.zipBytes,
         extractedBytes: current.extractedBytes,
         fileCount: current.fileCount,
@@ -332,15 +341,21 @@ export async function copyPackageVersionToAsset(
   const source = await getPackageVersionById(sourceVersionId, dbClient);
   if (!source) throw new AppError('Package version not found', ErrorCodes.NOT_FOUND, 404);
 
+  await lockAssetRow(targetAssetId, dbClient);
   const versionNumber = await getNextPackageVersionNumber(targetAssetId, dbClient);
-  const storage = await copyScormVersionStorage(source, targetAssetId, versionNumber);
   const config = getStorageConfig();
+  const uploadKey = scormUploadKey(targetAssetId, versionNumber);
+  const contentPrefix = scormContentPrefix(targetAssetId, versionNumber);
   transferScope.getStore()?.copied.push({
     assetId: targetAssetId,
     organizationId: targetOrganizationId,
-    prefixes: [{ bucket: config.bucketScorm, prefix: `${storage.contentPrefix}/` }],
-    keys: [{ bucket: config.bucketScorm, key: storage.uploadKey }]
+    prefixes: [{ bucket: config.bucketScorm, prefix: `${contentPrefix}/` }],
+    keys: [
+      { bucket: config.bucketScorm, key: uploadKey },
+      { bucket: config.bucketScorm, key: `${contentPrefix}.index.json` }
+    ]
   });
+  const storage = await copyScormVersionStorage(source, targetAssetId, versionNumber);
 
   const created = await createPackageVersion(
     {
@@ -355,6 +370,7 @@ export async function copyPackageVersionToAsset(
       error: source.error,
       uploadKey: storage.uploadKey,
       contentPrefix: storage.contentPrefix,
+      contentSha256: source.contentSha256,
       zipBytes: source.zipBytes,
       extractedBytes: source.extractedBytes,
       fileCount: source.fileCount,

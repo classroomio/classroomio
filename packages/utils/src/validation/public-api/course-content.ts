@@ -6,7 +6,7 @@ const MAX_ITEMS = 500;
 
 const ZContentItemRef = z.object({
   id: z.string().uuid(),
-  type: z.enum(['LESSON', 'EXERCISE'])
+  type: z.enum(['LESSON', 'EXERCISE', 'ACTIVITY'])
 });
 
 function rejectDuplicateItems(data: { items?: Array<{ id: string; type: string }> }, ctx: z.RefinementCtx) {

@@ -302,7 +302,7 @@ describe.skipIf(!hasDatabase)('characterization: course content structure (zero 
         profileId: ids.profileId
       });
 
-      expect(summary).toMatchObject({
+      expect(summary.summary).toMatchObject({
         lessonCompletion: 1,
         submissions: 1,
         lessonComments: 0,
@@ -372,9 +372,8 @@ describe.skipIf(!hasDatabase)('characterization: course content structure (zero 
     try {
       const { db } = await import('@db/drizzle');
       const schema = await import('@db/schema');
-      const { shiftCourseSectionOrders, shiftLessonOrders, shiftExerciseOrders } = await import(
-        '@db/queries/course/template-sync'
-      );
+      const { shiftCourseRootOrders } = await import('@db/queries/course/root-order');
+      const { shiftLessonOrders, shiftExerciseOrders } = await import('@db/queries/course/template-sync');
 
       await shiftLessonOrders(ids.courseId, ids.sectionId, 2, db);
       const lessons = await db
@@ -394,7 +393,7 @@ describe.skipIf(!hasDatabase)('characterization: course content structure (zero 
         .where(eq(schema.exercise.id, ids.exerciseId));
       expect(exercise.order).toBe(4);
 
-      await shiftCourseSectionOrders(ids.courseId, 1, db);
+      await shiftCourseRootOrders(ids.courseId, 1, db, 'sections');
       const [section] = await db
         .select({ order: schema.courseSection.order })
         .from(schema.courseSection)
