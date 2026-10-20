@@ -1,4 +1,5 @@
 import type { TCourseType } from '@cio/db/types';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import type { TCourseCallout } from '@cio/utils/validation/course';
 import { writable } from 'svelte/store';
 
@@ -16,7 +17,7 @@ type CourseSettings = {
   allowMarkdownExport: boolean;
   isPublished: boolean;
   isContentGroupingEnabled: boolean;
-  progressionMode: 'free' | 'sequential';
+  progressionMode: CourseProgressionMode;
   commentsEnabled: boolean;
   callout: TCourseCallout | null;
   welcomeEmailMessage: string;

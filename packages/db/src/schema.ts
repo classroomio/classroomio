@@ -25,6 +25,7 @@ import {
 
 import type { AnswerData } from '@cio/question-types';
 import { COURSE_TYPE_VALUES } from '@cio/utils/constants/course-type';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { EMAIL_LOCALES } from '@cio/utils/email';
 import { LESSON_VERSION_KIND_VALUES } from '@cio/utils/constants/lesson-version';
 import {
@@ -760,7 +761,7 @@ export const course = pgTable(
       sectionDisplay?: Record<string, boolean>;
       isContentGroupingEnabled?: boolean;
       /** `free` = all unlocked content is accessible; `sequential` = prior items must be complete. */
-      progressionMode?: 'free' | 'sequential';
+      progressionMode?: CourseProgressionMode;
       /** Course-wide switch for lesson comments. Missing legacy values are treated as enabled. */
       commentsEnabled?: boolean;
       /** Per-course AI tutor override; missing fields inherit from org defaults. */

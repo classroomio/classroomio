@@ -9,7 +9,6 @@
   import * as Select from '@cio/ui/base/select';
   import RotateCcwIcon from '@lucide/svelte/icons/rotate-ccw';
   import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
-  import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
   import XIcon from '@lucide/svelte/icons/x';
 
   import ReorderMaterialTabs from '$features/course/components/reorder-material-tabs.svelte';
@@ -25,6 +24,7 @@
   } from '$features/course/utils/live-session-reminder-utils';
   import { resolveLiveSessionReminderOffsets } from '@cio/utils/constants/live-session-reminder';
   import { publicConversionFlow } from '$features/course/store/public-conversion.svelte';
+  import { BackButton } from '@cio/ui/custom/back-button';
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
@@ -848,18 +848,15 @@
       title={$t('course.navItem.settings.completion_rules_card_title')}
       description={$t('course.navItem.settings.completion_rules_card_desc')}
     >
-      <Field.Group>
+      <Field.Group class="gap-4">
         {#if cameFromCertificateSettings && certificateSettingsHref}
-          <div>
-            <Button
-              variant="ghost"
-              size="sm"
+          <div class="-my-2">
+            <BackButton
               href={certificateSettingsHref}
+              label={$t('course.navItem.settings.back_to_certificate_settings')}
+              class="px-2! py-2!"
               testId="course-settings-back-to-certificate-settings"
-            >
-              <ArrowLeftIcon />
-              {$t('course.navItem.settings.back_to_certificate_settings')}
-            </Button>
+            />
           </div>
         {/if}
 

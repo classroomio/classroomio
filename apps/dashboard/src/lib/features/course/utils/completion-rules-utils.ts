@@ -1,9 +1,11 @@
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
+
 import type { Course } from './types';
 
 type CompletionRulesCourse = Pick<Course, 'certificate' | 'metadata'>;
 
 export type CompletionRulesSummary = {
-  progressionMode: 'free' | 'sequential';
+  progressionMode: CourseProgressionMode;
   deadline: string | null;
 };
 

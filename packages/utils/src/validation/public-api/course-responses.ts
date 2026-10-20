@@ -1,6 +1,7 @@
 import * as z from 'zod';
 
 import { COURSE_TYPE_VALUES } from '../../constants/course-type';
+import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { ZCourseImportDraftPayload } from '../course-import/course-import';
 
 // Response shapes for OpenAPI docs only; handlers don't validate against them. Timestamps are Postgres text, not strict ISO.
@@ -55,7 +56,7 @@ const ZCourseMetadata = z
     liveSessionReminderOffsetsMinutes: z.array(z.number()).optional(),
     sectionDisplay: z.record(z.string(), z.boolean()).optional(),
     isContentGroupingEnabled: z.boolean().optional(),
-    progressionMode: z.enum(['free', 'sequential']).optional(),
+    progressionMode: z.enum(COURSE_PROGRESSION_MODES).optional(),
     commentsEnabled: z.boolean().optional(),
     aiTutor: z.record(z.string(), z.unknown()).optional().describe('Per-course AI tutor overrides')
   })

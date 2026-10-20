@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
 import { isSelfEnrollmentAllowed } from '../../functions/course-enrollment';
+import type { CourseProgressionMode } from '../../functions/course-progression';
 
 export const SYNCABLE_SETTING_KEYS = [
   'description',
@@ -75,7 +76,7 @@ export type SettingMetadata = {
   welcomeEmailMessage?: string | null;
   lessonTabsOrder?: unknown;
   isContentGroupingEnabled?: boolean;
-  progressionMode?: 'free' | 'sequential';
+  progressionMode?: CourseProgressionMode;
   commentsEnabled?: boolean;
   allowSelfEnrollment?: boolean | null;
   allowNewStudent?: boolean | null;

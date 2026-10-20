@@ -4,6 +4,10 @@ import { ContentType } from '../constants/content';
 /** A certificate requires every lesson and exercise in the course to be complete. */
 export const REQUIRED_COURSE_COMPLETION_PERCENT = 100;
 
+export const COURSE_PROGRESSION_MODES = ['free', 'sequential'] as const;
+
+export type CourseProgressionMode = (typeof COURSE_PROGRESSION_MODES)[number];
+
 export type ProgressionLockReason = 'teacher_locked' | 'progression_blocked';
 
 type NavigableCourseContent<T extends { order?: number | null }> = {
@@ -75,7 +79,7 @@ type CourseProgressionItem = {
 
 type ComputeProgressionAccessParams<T extends CourseProgressionItem> = {
   navigableItems: T[];
-  progressionMode: 'free' | 'sequential';
+  progressionMode: CourseProgressionMode;
   isComplete?: (item: T) => boolean;
   getCompletionPolicy?: (item: T) => string | null | undefined;
   getIsUnlocked?: (item: T) => boolean;

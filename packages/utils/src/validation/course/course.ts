@@ -1,5 +1,6 @@
 import * as z from 'zod';
 
+import { COURSE_PROGRESSION_MODES } from '../../functions/course-progression';
 import { toFiniteNumber } from '../../functions/number';
 import { ALLOWED_CONTENT_TYPES } from '../constants';
 import { ZCourseCalloutInput } from './callout';
@@ -416,7 +417,7 @@ const ZCourseMetadataFields = z.object({
   liveSessionReminderOffsetsMinutes: ZLiveSessionReminderOffsets.optional(),
   sectionDisplay: z.record(z.string(), z.boolean()).optional(),
   isContentGroupingEnabled: z.boolean().optional(),
-  progressionMode: z.enum(['free', 'sequential']).optional(),
+  progressionMode: z.enum(COURSE_PROGRESSION_MODES).optional(),
   commentsEnabled: z.boolean().optional()
 });
 

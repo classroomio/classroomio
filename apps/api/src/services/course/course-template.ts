@@ -20,6 +20,7 @@ import { generateUniqueCourseSlug } from '@cio/core/services/course/landing-page
 import { env } from '@cio/core/config/env';
 import { getActiveOrganizationPlan } from '@cio/db/queries/organization';
 import { isSelfEnrollmentAllowed } from '@cio/utils/functions';
+import type { CourseProgressionMode } from '@cio/utils/functions/course-progression';
 import { getPlanLimit } from '@cio/utils/plans';
 import { slugifyTitle } from '@cio/utils/validation';
 
@@ -92,7 +93,7 @@ function templatePreviewSettings(template: {
     deadline?: string | null;
   } | null;
   metadata: {
-    progressionMode?: 'free' | 'sequential';
+    progressionMode?: CourseProgressionMode;
     grading?: boolean;
     commentsEnabled?: boolean;
     lessonDownload?: boolean;
