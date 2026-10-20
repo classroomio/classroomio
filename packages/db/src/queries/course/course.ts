@@ -736,13 +736,12 @@ export async function getCourseProgress(
   }
 }
 
-/** Course + org fields needed for certification email and threshold rules */
+/** Course + org fields needed for certification email and completion rules */
 export type TCourseCertificationRow = {
   certificate: {
     isDownloadable?: boolean;
     theme?: string;
     deadline?: string | null;
-    threshold?: number;
     emailMessage?: string | null;
   } | null;
   title: string;

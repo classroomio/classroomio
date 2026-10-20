@@ -1,6 +1,9 @@
 import { UNGROUPED_SECTION_KEY } from './course-content';
 import { ContentType } from '../constants/content';
 
+/** A certificate requires every lesson and exercise in the course to be complete. */
+export const REQUIRED_COURSE_COMPLETION_PERCENT = 100;
+
 export type ProgressionLockReason = 'teacher_locked' | 'progression_blocked';
 
 type NavigableCourseContent<T extends { order?: number | null }> = {

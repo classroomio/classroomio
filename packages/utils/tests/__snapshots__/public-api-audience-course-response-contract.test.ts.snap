@@ -270,17 +270,12 @@ exports[`public API audience and course response contract > ZPublicApiCertificat
       "description": "Falls back to design.templateId when nothing is stored.",
       "type": "string",
     },
-    "threshold": {
-      "default": 100,
-      "type": "number",
-    },
   },
   "required": [
     "isDownloadable",
     "theme",
     "design",
     "deadline",
-    "threshold",
     "emailMessage",
   ],
   "type": "object",
@@ -510,9 +505,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseDeta
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -1890,9 +1882,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseList
               "description": "Deprecated; use design.templateId",
               "type": "string",
             },
-            "threshold": {
-              "type": "number",
-            },
           },
           "type": "object",
         },
@@ -2551,9 +2540,6 @@ exports[`public API audience and course response contract > ZPublicApiCourseResp
             "theme": {
               "description": "Deprecated; use design.templateId",
               "type": "string",
-            },
-            "threshold": {
-              "type": "number",
             },
           },
           "type": "object",
@@ -4084,9 +4070,6 @@ exports[`public API audience and course response contract > ZPublicApiCreateCour
                 "theme": {
                   "description": "Deprecated; use design.templateId",
                   "type": "string",
-                },
-                "threshold": {
-                  "type": "number",
                 },
               },
               "type": "object",

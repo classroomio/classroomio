@@ -196,11 +196,6 @@ exports[`public certificate contract > keeps the ZPublicApiUpdateCourseCertifica
       "minLength": 1,
       "type": "string",
     },
-    "threshold": {
-      "maximum": 100,
-      "minimum": 0,
-      "type": "integer",
-    },
   },
   "type": "object",
 }

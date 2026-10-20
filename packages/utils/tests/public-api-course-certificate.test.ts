@@ -31,7 +31,6 @@ const fullPayload = {
   theme: 'noir',
   design: fullDesign,
   deadline: '2026-12-31T23:59:59Z',
-  threshold: 80,
   emailMessage: 'Well done'
 };
 
@@ -74,20 +73,16 @@ describe('ZPublicApiUpdateCourseCertificate', () => {
   });
 
   it('rejects null for fields that cannot be cleared', () => {
-    for (const field of ['isDownloadable', 'theme', 'design', 'threshold']) {
+    for (const field of ['isDownloadable', 'theme', 'design']) {
       expect(ZPublicApiUpdateCourseCertificate.safeParse({ [field]: null }).success).toBe(false);
     }
-  });
-
-  it('rejects a threshold out of range', () => {
-    expect(ZPublicApiUpdateCourseCertificate.safeParse({ threshold: 101 }).success).toBe(false);
   });
 });
 
 describe('public certificate contract', () => {
   it('exposes exactly the documented settings fields', () => {
     expect([...PUBLIC_API_CERTIFICATE_FIELDS].sort()).toEqual(
-      ['deadline', 'design', 'emailMessage', 'isDownloadable', 'theme', 'threshold'].sort()
+      ['deadline', 'design', 'emailMessage', 'isDownloadable', 'theme'].sort()
     );
   });
 

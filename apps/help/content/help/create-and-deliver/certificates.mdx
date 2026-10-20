@@ -3,7 +3,7 @@ title: Create Certificates
 description: Configure certificate rules for a course, set completion requirements, and let students download their certificates.
 ---
 
-Certificates recognize students for completing a course. You configure the rules on a per-course basis — how much of the course must be completed and when certificates expire. Students can then download their certificate from the **Certificates** tab in the LMS.
+Certificates recognize students for completing a course. You configure the rules on a per-course basis — what students must complete and when certificates expire. Students can then download their certificate from the **Certificates** tab in the LMS.
 
 :::warning[Paid plan required]
 Certificate features require a paid plan. The controls are visible on free plans but disabled.
@@ -25,7 +25,7 @@ tab is a separate item in the course menu. The table below says which one each o
 | ----------------------------------- | ------------------------------------------ |
 | Allow students download certificate | **Certificates > Settings**                |
 | Email Message                       | **Certificates > Settings**                |
-| Minimum completion (%)              | Course **Settings** > **Completion rules** |
+| Student progression                 | Course **Settings** > **Completion rules** |
 | Course Completion Deadline          | Course **Settings** > **Completion rules** |
 
 ### On the Certificates tab
@@ -42,9 +42,9 @@ earn their certificate record when this is off, but they cannot download the cer
 
 #### 2. Check the completion rules
 
-Under **Completion rules**, a short summary lists the minimum completion and the deadline the course currently
-requires. Click **Edit completion rules** to open the course **Settings** tab with the rules highlighted. On a free
-plan the button is disabled.
+Under **Completion rules**, a short summary lists student progression and the deadline the course currently uses. Click
+**Edit completion rules** to open the course **Settings** tab with the rules highlighted. On a free plan the button is
+disabled.
 
 #### 3. Add a custom email message (optional)
 
@@ -56,22 +56,24 @@ Click **Edit completion rules** on **Certificates > Settings**, or open the cour
 the **Completion rules** section. When you arrive from the Certificates tab, **Back to certificate settings** at the top
 of the section takes you back.
 
-![Course Settings page showing the Completion rules section with the deadline and minimum completion fields](/help/certificates-completion-rule.webp)
+![Course Settings page showing the Completion rules section with student progression and the deadline field](/help/certificates-completion-rule.webp)
 
-#### 1. Set a completion threshold
+Certificates always require every lesson and exercise in the course to be complete, so there is no completion percentage to set.
 
-Enter a percentage in **Minimum completion (%)**. This is combined lesson _and_ exercise progress, and it defaults to 100%.
+#### 1. Choose student progression
 
-#### 2. Require a specific exercise to be passed (optional)
+Pick **Free** or **Sequential** under **Student progression**. Sequential progression makes students finish each item
+before the next one unlocks. Either mode still requires every item to be complete before the certificate is issued.
 
-To make one exercise count toward the certificate, open that exercise's settings and set its completion rule to
-**Passed**, then choose the minimum passing score. The exercise stays incomplete until the student submits an attempt
-that reaches that score, so it does not count toward the completion percentage until then. The student's best attempt
-counts.
+#### 2. Require a passing score on an exercise (optional)
+
+Every exercise counts toward completion. To require a minimum score on one, open that exercise's settings, set its
+completion rule to **Passed**, then choose the passing score. The exercise stays incomplete until the student submits an
+attempt that reaches that score. The student's best attempt counts.
 
 #### 3. Set a deadline (optional)
 
-Enter a date and time in **Course Completion Deadline**. Students must meet the completion percentage at or before this datetime, in local time. A student who finishes exactly on the deadline still qualifies. Leave it empty for no deadline.
+Enter a date and time in **Course Completion Deadline**. Students must complete every lesson and exercise at or before this datetime, in local time. A student who finishes exactly on the deadline still qualifies. Leave it empty for no deadline.
 
 ## Customize the design and add signatures
 

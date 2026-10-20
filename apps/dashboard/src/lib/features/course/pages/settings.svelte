@@ -28,7 +28,6 @@
   import { IconButton } from '@cio/ui/custom/icon-button';
   import { TextareaField } from '@cio/ui/custom/textarea-field';
   import { InputField } from '@cio/ui/custom/input-field';
-  import { NumberField } from '@cio/ui/custom/number-field';
   import { Input } from '@cio/ui/base/input';
   import * as Field from '@cio/ui/base/field';
   import {
@@ -294,8 +293,7 @@
         callout: $settings.type === 'PUBLIC' ? sanitizeCalloutForSave($settings.callout) : null,
         certificate: {
           ...(courseApi.course.certificate ?? {}),
-          deadline: $settings.certificate.deadline,
-          threshold: $settings.certificate.threshold
+          deadline: $settings.certificate.deadline
         }
       };
 
@@ -387,8 +385,7 @@
           createReminderRow
         ),
         certificate: {
-          deadline: course.certificate?.deadline ?? null,
-          threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100
+          deadline: course.certificate?.deadline ?? null
         }
       });
     });
@@ -870,6 +867,37 @@
           <UpgradeBanner>{$t('course.certification.completion_rules_upgrade')}</UpgradeBanner>
         {/if}
 
+        <Field.Field id="progression-mode" class="scroll-mt-24">
+          <Field.Label>
+            <a href="#progression-mode" class="hover:underline"
+              >{$t('course.navItem.settings.progression_mode_title')}</a
+            >
+          </Field.Label>
+          <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
+          <RadioGroup.Root
+            value={$settings.progressionMode}
+            onValueChange={(value) => {
+              if (value === 'free' || value === 'sequential') {
+                $settings.progressionMode = value;
+                hasUnsavedChanges = true;
+              }
+            }}
+          >
+            <div class="flex flex-col gap-3">
+              <div class="flex items-center gap-2">
+                <RadioGroup.Item value="free" id="progression-free" />
+                <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
+              </div>
+              <div class="flex items-center gap-2">
+                <RadioGroup.Item value="sequential" id="progression-sequential" />
+                <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
+              </div>
+            </div>
+          </RadioGroup.Root>
+        </Field.Field>
+
+        <SettingsSeparator />
+
         <AttentionHighlight
           id={ROUTE_SECTIONS[ROUTE_NAME.COURSE_SETTINGS].COMPLETION_DEADLINE}
           trigger={completionDeadlineTrigger}
@@ -895,30 +923,6 @@
             {/if}
           </Field.Field>
         </AttentionHighlight>
-
-        <Field.Field id="completion-threshold" class="scroll-mt-24">
-          <Field.Label for="course-completion-threshold">
-            <a href="#completion-threshold" class="hover:underline">{$t('course.certification.threshold_label')}</a>
-          </Field.Label>
-          <NumberField
-            name="course-completion-threshold"
-            integer
-            min={0}
-            max={100}
-            className="w-full"
-            value={$settings.certificate.threshold ?? 100}
-            onValueChange={(next) => {
-              $settings.certificate.threshold = next ?? 100;
-              courseApi.clearError('certificate.threshold');
-              hasUnsavedChanges = true;
-            }}
-            isDisabled={areCompletionRulesLocked}
-          />
-          <Field.Description>{$t('course.certification.threshold_helper')}</Field.Description>
-          {#if courseApi.errors['certificate.threshold']}
-            <Field.Error>{courseApi.errors['certificate.threshold']}</Field.Error>
-          {/if}
-        </Field.Field>
       </Field.Group>
     </SettingsCard>
   </AttentionHighlight>
@@ -977,35 +981,6 @@
             hasUnsavedChanges = true;
           }}
         />
-      </Field.Field>
-
-      <SettingsSeparator />
-
-      <Field.Field id="progression-mode" class="scroll-mt-24">
-        <Field.Label>
-          <a href="#progression-mode" class="hover:underline">{$t('course.navItem.settings.progression_mode_title')}</a>
-        </Field.Label>
-        <Field.Description>{$t('course.navItem.settings.progression_mode_description')}</Field.Description>
-        <RadioGroup.Root
-          value={$settings.progressionMode}
-          onValueChange={(value) => {
-            if (value === 'free' || value === 'sequential') {
-              $settings.progressionMode = value;
-              hasUnsavedChanges = true;
-            }
-          }}
-        >
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-2">
-              <RadioGroup.Item value="free" id="progression-free" />
-              <Label for="progression-free">{$t('course.navItem.settings.progression_mode_free')}</Label>
-            </div>
-            <div class="flex items-center gap-2">
-              <RadioGroup.Item value="sequential" id="progression-sequential" />
-              <Label for="progression-sequential">{$t('course.navItem.settings.progression_mode_sequential')}</Label>
-            </div>
-          </div>
-        </RadioGroup.Root>
       </Field.Field>
 
       <SettingsSeparator />

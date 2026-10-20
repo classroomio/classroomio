@@ -40,7 +40,14 @@
     class="ui:text-muted-foreground list-disc space-y-1 pl-5 text-sm"
     data-testid="certificate-completion-rules-summary"
   >
-    <li>{$t('course.certification.completion_rules_threshold', { percent: summary.threshold })}</li>
+    <li>
+      {$t('course.navItem.settings.progression_mode_title')}:
+      {$t(
+        summary.progressionMode === 'sequential'
+          ? 'course.navItem.settings.progression_mode_sequential'
+          : 'course.navItem.settings.progression_mode_free'
+      )}
+    </li>
     <li>
       {#if deadlineLabel}
         {$t('course.certification.completion_rules_deadline', { date: deadlineLabel })}

@@ -272,7 +272,7 @@
       "idx": 38,
       "version": "7",
       "when": 1792497761466,
-      "tag": "0038_remove_final_exercise",
+      "tag": "0038_remove_final_exercise_and_completion_threshold",
       "breakpoints": true
     }
   ]

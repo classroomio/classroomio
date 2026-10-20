@@ -23,7 +23,6 @@ type CourseSettings = {
   liveSessionReminders: LiveSessionReminderRow[];
   certificate: {
     deadline: string | null;
-    threshold: number;
   };
 };
 
@@ -50,7 +49,6 @@ export const settings = writable<CourseSettings>({
   welcomeEmailMessage: '',
   liveSessionReminders: [],
   certificate: {
-    deadline: null,
-    threshold: 100
+    deadline: null
   }
 });

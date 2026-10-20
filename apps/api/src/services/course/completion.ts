@@ -4,6 +4,7 @@ import {
   isBeforeOrEqualDeadline,
   scheduleCertificationCompletionWork
 } from '@api/utils/course-completion';
+import { REQUIRED_COURSE_COMPLETION_PERCENT } from '@cio/utils/functions/course-progression';
 import {
   getCourseById,
   getCourseCertificationRow,
@@ -24,8 +25,6 @@ export type CertificationBlocker = {
 
 export type CourseCompletionEvaluation = {
   progressPercent: number;
-  certificationThreshold: number;
-  meetsThreshold: boolean;
   eligibleForCertificate: boolean;
   certificateEarnedAt: string | null;
   blockers: CertificationBlocker[];
@@ -40,7 +39,6 @@ async function buildCertificationEvaluation(
   const progress = progressArg ?? (await getCourseProgressQuery(courseId, profileId));
   const certificate = courseRow.certificate ?? {};
 
-  const threshold = certificate.threshold ?? 100;
   const progressPercent = calcCourseProgressPercent({
     lessonsCompleted: progress.lessonsCompleted,
     totalLessons: progress.lessonsCount,
@@ -49,31 +47,31 @@ async function buildCertificationEvaluation(
   });
 
   const now = new Date();
-  const meetsThreshold = progressPercent >= threshold;
+  const totalContentCount = progress.lessonsCount + progress.exercisesCount;
+  const completedContentCount = progress.lessonsCompleted + progress.exercisesCompleted;
+  const hasContent = totalContentCount > 0;
+  const hasCompletedAllContent = hasContent && completedContentCount >= totalContentCount;
   const withinDeadline = isBeforeOrEqualDeadline(certificate.deadline, now);
-  const hasContent = progress.lessonsCount + progress.exercisesCount > 0;
 
   const blockers: CertificationBlocker[] = [];
 
   if (!withinDeadline) {
     blockers.push({ code: 'CERT_DEADLINE_PASSED' });
   }
-  if (!meetsThreshold) {
+  if (!hasCompletedAllContent) {
     blockers.push({
       code: 'CERT_PROGRESS',
-      params: { current: progressPercent, required: threshold }
+      params: { current: progressPercent, required: REQUIRED_COURSE_COMPLETION_PERCENT }
     });
   }
   if (!hasContent) {
     blockers.push({ code: 'CERT_NO_CONTENT' });
   }
 
-  const eligibleForCertificate = !!progress.groupMemberId && meetsThreshold && hasContent && withinDeadline;
+  const eligibleForCertificate = !!progress.groupMemberId && hasCompletedAllContent && withinDeadline;
 
   return {
     progressPercent,
-    certificationThreshold: threshold,
-    meetsThreshold,
     eligibleForCertificate,
     certificateEarnedAt: progress.certificateEarnedAt,
     blockers

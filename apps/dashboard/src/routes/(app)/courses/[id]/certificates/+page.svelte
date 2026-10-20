@@ -54,7 +54,6 @@
         theme: parseCertificateThemeId(course.certificate?.theme),
         design: course.certificate?.design ?? null,
         deadline: course.certificate?.deadline ?? null,
-        threshold: typeof course.certificate?.threshold === 'number' ? course.certificate.threshold : 100,
         emailMessage: course.certificate?.emailMessage ?? null
       }
     };
@@ -100,8 +99,6 @@
         theme: certificateTheme || 'classique',
         design: courseApi.course.certificate?.design,
         deadline: courseApi.course.certificate?.deadline ?? null,
-        threshold:
-          typeof courseApi.course.certificate?.threshold === 'number' ? courseApi.course.certificate.threshold : 100,
         emailMessage: courseApi.course.certificate?.emailMessage ?? null
       }
     };

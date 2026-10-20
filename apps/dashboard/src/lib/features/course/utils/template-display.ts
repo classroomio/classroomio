@@ -56,13 +56,6 @@ export function templatePreviewSettingRows(settings: CourseTemplatePreview['sett
     }
   }
 
-  if (settings.threshold !== null) {
-    rows.push({
-      key: 'threshold',
-      label: translate('course_templates.preview.threshold', { percent: settings.threshold })
-    });
-  }
-
   if (settings.sequential) {
     rows.push({ key: 'sequential', label: translate('course_templates.preview.sequential') });
   }
@@ -121,10 +114,6 @@ function truncate(text: string) {
   return `${text.slice(0, SETTING_TEXT_MAX_LENGTH).trimEnd()}…`;
 }
 
-function formatPercent(value: number) {
-  return new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 0 }).format(value / 100);
-}
-
 function formatPrice(pricing: Record<string, unknown>, translate: Translate) {
   const cost = typeof pricing.cost === 'number' ? pricing.cost : 0;
   if (cost <= 0) return translate('course_templates.sync.value.no_price');
@@ -165,10 +154,6 @@ export function templateSettingDisplay(key: string, value: unknown, translate: T
 
   if (key === 'progression' && (value === 'free' || value === 'sequential')) {
     return { kind: 'text', text: translate(`course_templates.sync.value.${value}`) };
-  }
-
-  if (key === 'completionThreshold' && typeof value === 'number') {
-    return { kind: 'text', text: formatPercent(value) };
   }
 
   if (key === 'completionDeadline' && typeof value === 'string') {

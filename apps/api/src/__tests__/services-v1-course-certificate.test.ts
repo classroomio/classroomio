@@ -108,7 +108,6 @@ const effectiveStored = {
   theme: 'classique',
   design: { ...storedDesign, descriptionOverride: undefined },
   deadline: null,
-  threshold: 100,
   emailMessage: 'Well done'
 };
 
@@ -269,7 +268,6 @@ describe('services/v1/courses/certificates', () => {
         theme: DEFAULT_CERTIFICATE_DESIGN.templateId,
         design: { ...DEFAULT_CERTIFICATE_DESIGN, descriptionOverride: undefined },
         deadline: null,
-        threshold: 100,
         emailMessage: null
       });
       expect(toEffectiveCertificateSettings(course({}))).toEqual(toEffectiveCertificateSettings(course(null)));
@@ -379,7 +377,7 @@ describe('services/v1/courses/certificates', () => {
         stored = data.certificate;
         return { course: { ...storedCourse, certificate: data.certificate } } as unknown as TUpdateCourseResult;
       });
-      const payload = { threshold: 80, emailMessage: null };
+      const payload = { emailMessage: null };
 
       const first = await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, payload);
       const second = await updatePublicApiCourseCertificateService(ORG_ID, ACTOR_ID, params, payload);

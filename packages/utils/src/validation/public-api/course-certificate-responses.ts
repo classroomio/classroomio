@@ -11,7 +11,6 @@ export const ZPublicApiCertificateSettingsResponse = z.object({
   theme: z.string().describe('Falls back to design.templateId when nothing is stored.'),
   design: ZPublicApiCertificateDesign.describe('The default design when nothing is stored.'),
   deadline: z.iso.datetime({ offset: true }).nullable().describe('null when nothing is stored.'),
-  threshold: z.number().default(100),
   emailMessage: z.string().nullable().describe('null when nothing is stored.')
 });
 

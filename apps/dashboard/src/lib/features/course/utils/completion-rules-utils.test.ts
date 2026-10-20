@@ -5,40 +5,42 @@ import type { Course } from './types';
 
 type CourseOverrides = {
   certificate?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown> | null;
 };
 
 function buildCourse(overrides: CourseOverrides = {}): Course {
   return {
     certificate: null,
+    metadata: null,
     ...overrides
   } as unknown as Course;
 }
 
 describe('getCompletionRulesSummary', () => {
-  it('fills in the API defaults when nothing is stored', () => {
+  it('defaults to free progression and no deadline when nothing is stored', () => {
     expect(getCompletionRulesSummary(buildCourse())).toEqual({
-      threshold: 100,
+      progressionMode: 'free',
       deadline: null
     });
   });
 
   it('summarizes stored rules', () => {
     const course = buildCourse({
+      metadata: { progressionMode: 'sequential' },
       certificate: {
-        threshold: 80,
         deadline: '2026-12-31T17:00:00.000Z'
       }
     });
 
     expect(getCompletionRulesSummary(course)).toEqual({
-      threshold: 80,
+      progressionMode: 'sequential',
       deadline: '2026-12-31T17:00:00.000Z'
     });
   });
 
   it('handles a missing course', () => {
     expect(getCompletionRulesSummary(null)).toEqual({
-      threshold: 100,
+      progressionMode: 'free',
       deadline: null
     });
   });

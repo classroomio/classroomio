@@ -211,7 +211,6 @@ const customerOnboarding: LaunchTemplateFixture = {
   },
   certificate: {
     isDownloadable: true,
-    threshold: 100,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -1428,7 +1427,6 @@ const chatgptWork: LaunchTemplateFixture = {
   },
   certificate: {
     isDownloadable: true,
-    threshold: 100,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -1906,7 +1904,6 @@ const aiFluency: LaunchTemplateFixture = {
   },
   certificate: {
     isDownloadable: true,
-    threshold: 100,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -2469,7 +2466,6 @@ const hubspotSalesHub: LaunchTemplateFixture = {
   },
   certificate: {
     isDownloadable: true,
-    threshold: 100,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',
@@ -2905,7 +2901,6 @@ const salesforceCpq: LaunchTemplateFixture = {
   },
   certificate: {
     isDownloadable: true,
-    threshold: 100,
     design: {
       templateId: 'minimal',
       accentColor: '#111111',

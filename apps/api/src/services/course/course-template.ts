@@ -90,7 +90,6 @@ function templatePreviewSettings(template: {
   certificate: {
     isDownloadable?: boolean;
     deadline?: string | null;
-    threshold?: number;
   } | null;
   metadata: {
     progressionMode?: 'free' | 'sequential';
@@ -120,7 +119,6 @@ function templatePreviewSettings(template: {
   return {
     certificate: certificateOn,
     deadline: certificate.deadline ?? null,
-    threshold: certificateOn ? (typeof certificate.threshold === 'number' ? certificate.threshold : 100) : null,
     sequential: metadata.progressionMode === 'sequential',
     grading: metadata.grading === true,
     commentsOff: metadata.commentsEnabled === false,

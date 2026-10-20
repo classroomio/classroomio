@@ -809,7 +809,6 @@ export const course = pgTable(
         idFormat?: string;
       };
       deadline?: string | null;
-      threshold?: number;
       emailMessage?: string | null;
     }>(),
     compliance: jsonb().$type<{

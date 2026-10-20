@@ -83,7 +83,6 @@ const ZCourseCertificate = z
       })
       .optional(),
     deadline: z.string().nullable().optional(),
-    threshold: z.number().optional(),
     emailMessage: z.string().nullable().optional()
   })
   .catchall(z.unknown());

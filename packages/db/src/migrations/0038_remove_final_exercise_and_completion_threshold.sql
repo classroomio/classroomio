@@ -28,14 +28,14 @@ FROM final_exercises f
 WHERE e."id" = f.exercise_id
 	AND e."course_id" = f.course_id;--> statement-breakpoint
 
---> Drop the obsolete certificate keys now that the exercise rules carry the requirement.
+--> Drop obsolete certificate keys. Completion now always requires every lesson and exercise.
 UPDATE "course"
-SET "certificate" = "certificate" - 'requiredExerciseId' - 'exerciseMinScorePercent'
-WHERE "certificate" ?| ARRAY['requiredExerciseId', 'exerciseMinScorePercent'];--> statement-breakpoint
+SET "certificate" = "certificate" - 'requiredExerciseId' - 'exerciseMinScorePercent' - 'threshold'
+WHERE "certificate" ?| ARRAY['requiredExerciseId', 'exerciseMinScorePercent', 'threshold'];--> statement-breakpoint
 
---> The final-exercise sync setting no longer exists, so its per-course markers are dead rows.
+--> Settings removed from the certificate rules leave dead per-course sync markers.
 DELETE FROM "course_template_setting_sync"
-WHERE "setting_key" = 'finalExercise';--> statement-breakpoint
+WHERE "setting_key" IN ('finalExercise', 'completionThreshold');--> statement-breakpoint
 
 --> The compliance passing score only fed the removed final-exercise fallback.
 UPDATE "course"

@@ -39,7 +39,6 @@ const ZPublicApiCertificateSettingsFields = z.object({
   deadline: ZPublicApiCertificateDeadline.nullable()
     .optional()
     .describe('ISO 8601 datetime with a timezone, for example 2026-12-31T23:59:59Z. Send null to clear it.'),
-  threshold: z.number().int().min(0).max(100).optional(),
   emailMessage: z.string().max(5000).nullable().optional().describe('Send null to clear it.')
 });
 

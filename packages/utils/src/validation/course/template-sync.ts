@@ -7,7 +7,6 @@ export const SYNCABLE_SETTING_KEYS = [
   'bannerImage',
   'welcomeEmail',
   'completionDeadline',
-  'completionThreshold',
   'lessonTabsOrder',
   'contentGrouping',
   'progression',
@@ -98,7 +97,6 @@ export type SettingMetadata = {
 
 export type SettingCertificate = {
   deadline?: string | null;
-  threshold?: number;
   theme?: string;
   design?: unknown;
   isDownloadable?: boolean;
@@ -402,8 +400,6 @@ export function readSettingValue(course: SettingCarrier, key: SyncableSettingKey
       return fields.welcomeEmailMessage ?? null;
     case 'completionDeadline':
       return rules.deadline ?? null;
-    case 'completionThreshold':
-      return rules.threshold ?? null;
     case 'lessonTabsOrder':
       return fields.lessonTabsOrder ?? null;
     case 'contentGrouping':
@@ -493,10 +489,6 @@ export function applySettingChanges(
         break;
       case 'completionDeadline':
         nextCertificate.deadline = templateCertificate.deadline ?? null;
-        certificateChanged = true;
-        break;
-      case 'completionThreshold':
-        nextCertificate.threshold = templateCertificate.threshold;
         certificateChanged = true;
         break;
       case 'lessonTabsOrder':

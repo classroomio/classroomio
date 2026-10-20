@@ -1,8 +1,6 @@
 import type { TCourse } from '@cio/db/types';
 import { resolveCertificateDesign } from '@api/utils/certificate';
 
-const DEFAULT_THRESHOLD = 100;
-
 type TCertificateCourse = Pick<TCourse, 'certificate'>;
 
 /**
@@ -17,7 +15,6 @@ export function toEffectiveCertificateSettings(course: TCertificateCourse) {
     theme: stored.theme ?? design.templateId,
     design,
     deadline: stored.deadline ?? null,
-    threshold: stored.threshold ?? DEFAULT_THRESHOLD,
     emailMessage: stored.emailMessage ?? null
   };
 }

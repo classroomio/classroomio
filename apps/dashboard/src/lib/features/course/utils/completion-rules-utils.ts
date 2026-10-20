@@ -1,21 +1,16 @@
 import type { Course } from './types';
 
-const DEFAULT_THRESHOLD = 100;
-
-type CompletionRulesCourse = Pick<Course, 'certificate'>;
+type CompletionRulesCourse = Pick<Course, 'certificate' | 'metadata'>;
 
 export type CompletionRulesSummary = {
-  threshold: number;
+  progressionMode: 'free' | 'sequential';
   deadline: string | null;
 };
 
 /** The completion rules as the API applies them, for read-only display outside the course Settings tab. */
 export function getCompletionRulesSummary(course: CompletionRulesCourse | null): CompletionRulesSummary {
-  const certificate = course?.certificate;
-  const storedThreshold = certificate?.threshold;
-
   return {
-    threshold: typeof storedThreshold === 'number' ? storedThreshold : DEFAULT_THRESHOLD,
-    deadline: certificate?.deadline ?? null
+    progressionMode: course?.metadata?.progressionMode === 'sequential' ? 'sequential' : 'free',
+    deadline: course?.certificate?.deadline ?? null
   };
 }
