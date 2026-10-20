@@ -469,6 +469,60 @@ describe.skipIf(!hasDatabase)('scorm launch and run-time', () => {
     }
   });
 
+  it('does not complete a new compliance cycle from an attempt opened in the previous one', async () => {
+    const fixture = await createRuntimeFixture(suffix(), {
+      units: [{ identifier: 'mod-1', title: 'Module one', href: 'mod1.html' }],
+      courseType: 'COMPLIANCE',
+      certificate: { deadline: '2027-12-31T23:59:00.000Z', requiredExerciseId: null, isDownloadable: false },
+      compliance: { retakeIntervalMonths: 12 }
+    });
+    try {
+      const context = { profileId: fixture.studentId, organizationId: fixture.orgId, isPreview: false };
+      const launched = await launchActivity(fixture.courseId, fixture.activityId, {}, context);
+      if (!launched.available) throw new Error('launch unavailable');
+      const token = launchTokenOf(launched.playerUrl);
+
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const attempts = await listAttempts(fixture.activityId, fixture.studentId);
+      expect(attempts).toHaveLength(1);
+
+      const attemptStartedAt = new Date(Date.now() - 10 * 86_400_000).toISOString();
+      await db
+        .update(schema.scormAttempt)
+        .set({ startedAt: attemptStartedAt })
+        .where(eq(schema.scormAttempt.id, attempts[0]!.id));
+      const [member] = await db
+        .select()
+        .from(schema.groupmember)
+        .where(eq(schema.groupmember.profileId, fixture.studentId));
+      await db.insert(schema.courseCompletionRecord).values({
+        courseId: fixture.courseId,
+        groupMemberId: member!.id,
+        profileId: fixture.studentId,
+        cycleNumber: 2,
+        status: 'in_progress',
+        dueDate: new Date(Date.now() + 30 * 86_400_000).toISOString(),
+        createdAt: new Date(Date.now() - 86_400_000).toISOString()
+      });
+
+      const result = await commitScormAttempt(token, {
+        commitSequence: 1,
+        cmi: { 'core.lesson_status': 'completed', 'core.session_time': '00:06:00' },
+        terminate: true
+      });
+
+      expect(result).toMatchObject({ saved: true, completedActivity: false });
+      const completions = await db
+        .select()
+        .from(schema.activityCompletion)
+        .where(eq(schema.activityCompletion.profileId, fixture.studentId));
+      expect(completions).toHaveLength(0);
+    } finally {
+      await cleanupRuntimeFixture(fixture);
+    }
+  });
+
   it('reports a module tick mid-session without relaunching', async () => {
     const fixture = await createRuntimeFixture(suffix(), {
       format: 'scorm2004_4',
