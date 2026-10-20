@@ -5,6 +5,7 @@ import {
   ZPublicApiCreateAudience,
   ZPublicApiUpdateAudience
 } from '@cio/utils/validation/public-api';
+import { AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
 
 import type { ClassroomIoApiClient } from '../api-client';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -53,7 +54,7 @@ export function registerAudienceTools(server: McpServer, apiClient: ClassroomIoA
 
   server.tool(
     'add_audience_member',
-    `Invite one student (email) or up to 1000 (emails) to the organization, optionally enrolling them in courses. Returns what happened to each address. Sends invite emails unless sendEmail is false. ${ORG_ADMIN_RULE}`,
+    `Invite one student (email) or up to ${AUDIENCE_IMPORT_MAX_ROWS} (emails) to the organization, optionally enrolling them in courses. Returns what happened to each address. Sends invite emails unless sendEmail is false. ${ORG_ADMIN_RULE}`,
     addAudienceMemberShape,
     WRITE,
     async (args) => {

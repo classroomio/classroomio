@@ -19,6 +19,7 @@ import {
   updateAudienceService
 } from '@api/services/v1/audience';
 
+import { AUDIENCE_IMPORT_MAX_ROWS } from '@cio/utils/validation/organization';
 import { Hono } from '@api/utils/hono';
 import { handlePublicApiError } from '@api/utils/errors';
 import { describeRoute, validator } from 'hono-openapi';
@@ -88,7 +89,7 @@ export const v1AudienceRouter = new Hono()
   .post(
     '/',
     describeRoute({
-      description: `Invite one person (email) or up to 1000 (emails) to the organization as students. ${ORG_ADMIN_RULE}`,
+      description: `Invite one person (email) or up to ${AUDIENCE_IMPORT_MAX_ROWS} (emails) to the organization as students. ${ORG_ADMIN_RULE}`,
       tags: ['Audience'],
       responses: {
         201: jsonResponse(

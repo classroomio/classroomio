@@ -264,8 +264,8 @@ export async function listActiveOrganizationRoles(
  * @param data Array of organization member creation data
  * @returns Array of created members
  */
-export const createOrganizationMembers = async (data: TNewOrganizationmember[]) => {
-  const members = await db.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
+export const createOrganizationMembers = async (data: TNewOrganizationmember[], dbClient: DbOrTxClient = db) => {
+  const members = await dbClient.insert(schema.organizationmember).values(data).onConflictDoNothing().returning();
 
   return members;
 };

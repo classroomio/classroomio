@@ -25,7 +25,7 @@ export type TPublicApiAudienceQuery = z.infer<typeof ZPublicApiAudienceQuery>;
 
 export const ZPublicApiCreateAudience = z
   .object({
-    email: z.string().email().optional().describe('One person to invite. Send this or emails, not both'),
+    email: z.string().trim().email().optional().describe('One person to invite. Send this or emails, not both'),
     emails: z
       .array(z.string().trim().max(320))
       .min(1)

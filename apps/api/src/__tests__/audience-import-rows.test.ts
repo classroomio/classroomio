@@ -59,17 +59,28 @@ vi.mock('@api/services/jobs', () => ({
 vi.mock('@api/services/organization/student-limit', () => ({
   assertStudentCapacityOrThrow: vi.fn().mockResolvedValue(null),
   getRemainingStudentSeats: vi.fn().mockResolvedValue(Number.POSITIVE_INFINITY),
-  notifyStudentMilestone: vi.fn()
+  notifyStudentMilestone: vi.fn().mockResolvedValue(undefined)
+}));
+
+const TX = { tx: true };
+vi.mock('@cio/db/drizzle', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@cio/db/drizzle')>()),
+  db: { transaction: vi.fn((run: (tx: unknown) => unknown) => run(TX)) }
 }));
 
 import {
   createOrganizationInvites,
+  createOrganizationMembers,
   getOrganizationById,
   getOrganizationMembersByNormalizedEmails
 } from '@cio/db/queries/organization';
 import { getCohortsByOrg } from '@cio/db/queries/cohort';
 import { enqueueTransactionalEmail } from '@api/services/jobs';
-import { getRemainingStudentSeats } from '@api/services/organization/student-limit';
+import {
+  assertStudentCapacityOrThrow,
+  getRemainingStudentSeats,
+  notifyStudentMilestone
+} from '@api/services/organization/student-limit';
 import { importAudienceMembers } from '@api/services/organization/audience';
 import { ROLE } from '@cio/utils/constants';
 
@@ -146,6 +157,27 @@ describe('importAudienceMembers — one bad row does not fail the batch', () => 
     expect(result.imported).toBe(0);
     expect(result.rows.every((row) => row.status === 'invalid_email')).toBe(true);
   });
+
+  it('returns every result field when nothing is importable', async () => {
+    const result = await importAudienceMembers(
+      ORG,
+      { recipients: [{ email: 'broken' }], allCourses: false, allCohorts: false, sendEmail: false } as never,
+      ACTOR
+    );
+
+    expect(result).toEqual({
+      imported: 0,
+      enrolled: 0,
+      emailsSent: 0,
+      emailsFailed: 0,
+      rows: [{ email: 'broken', name: undefined, status: 'invalid_email' }],
+      assigned: 0,
+      alreadyEnrolledInCourses: 0,
+      alreadyEnrolledInCohorts: 0,
+      pendingInvitesRenewed: 0,
+      truncated: 0
+    });
+  });
 });
 
 describe('importAudienceMembers — seat limit', () => {
@@ -169,6 +201,44 @@ describe('importAudienceMembers — seat limit', () => {
 
     expect(result.imported).toBe(0);
     expect(result.rows.every((row) => row.status === 'over_seat_limit')).toBe(true);
+  });
+
+  it('adds only the free seats from a 1000-address list', async () => {
+    vi.mocked(getRemainingStudentSeats).mockResolvedValue(20);
+    const recipients = Array.from({ length: 1000 }, (_, i) => ({ email: `s${i}@test.dev` }));
+
+    const result = await importAudienceMembers(
+      ORG,
+      { recipients, allCourses: false, allCohorts: false, sendEmail: false } as never,
+      ACTOR
+    );
+
+    expect(result.imported).toBe(20);
+    expect(result.rows.filter((row) => row.status === 'ready')).toHaveLength(20);
+    expect(result.rows.filter((row) => row.status === 'over_seat_limit')).toHaveLength(980);
+  });
+
+  it('checks capacity and inserts members in the same transaction', async () => {
+    await importAudienceMembers(ORG, csv('email', 'a@test.dev', 'b@test.dev'), ACTOR);
+
+    expect(assertStudentCapacityOrThrow).toHaveBeenCalledWith(ORG, 2, TX, { deferNotification: true });
+    expect(createOrganizationMembers).toHaveBeenCalledWith(expect.any(Array), TX);
+  });
+
+  it('sends the seat milestone email only after the members are saved', async () => {
+    const milestone = { orgId: ORG, milestone: 'reached' } as never;
+    vi.mocked(assertStudentCapacityOrThrow).mockResolvedValueOnce(milestone);
+
+    await importAudienceMembers(ORG, csv('email', 'a@test.dev'), ACTOR);
+
+    expect(notifyStudentMilestone).toHaveBeenCalledWith(milestone);
+  });
+
+  it('adds nobody when a concurrent import fills the last seats first', async () => {
+    vi.mocked(assertStudentCapacityOrThrow).mockRejectedValueOnce(new Error('UPGRADE_REQUIRED'));
+
+    await expect(importAudienceMembers(ORG, csv('email', 'a@test.dev'), ACTOR)).rejects.toThrow('UPGRADE_REQUIRED');
+    expect(createOrganizationMembers).not.toHaveBeenCalled();
   });
 });
 

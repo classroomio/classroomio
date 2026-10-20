@@ -70,6 +70,10 @@ describe('public API team and audience update contract', () => {
     expect(ZPublicApiCreateAudience.safeParse({ email: 'broken' }).success).toBe(false);
   });
 
+  it('trims the single email the same way as the list', () => {
+    expect(ZPublicApiCreateAudience.parse({ email: ' a@example.com ' }).email).toBe('a@example.com');
+  });
+
   it('invites a list, leaving bad addresses for the per-row result', () => {
     expect(ZPublicApiCreateAudience.parse({ emails: [' a@example.com ', 'broken'] })).toEqual({
       emails: ['a@example.com', 'broken'],

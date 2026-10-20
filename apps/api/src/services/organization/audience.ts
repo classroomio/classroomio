@@ -41,7 +41,9 @@ import { updateOrganizationAudienceMember } from '@cio/db/queries/organization';
 import { ROLE } from '@cio/utils/constants';
 import crypto from 'node:crypto';
 import { getDashboardBaseUrl } from '@cio/core/config/dashboard-url';
-import { assertStudentCapacityOrThrow, getRemainingStudentSeats } from './student-limit';
+import { assertStudentCapacityOrThrow, getRemainingStudentSeats, notifyStudentMilestone } from './student-limit';
+import type { StudentMilestoneNotification } from './student-limit';
+import { db } from '@cio/db/drizzle';
 import { getProfilesByEmails } from '@cio/db/queries/auth';
 import { ensureComplianceEnrollmentRecordsForProfiles } from '../course/compliance';
 import { getWelcomeSessionIcs } from '../course/session-invite';
@@ -488,7 +490,14 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   if (candidateEmails.length === 0) {
     // Nothing importable at all is still a successful call with per-row
     // reasons, so the UI can show which rows failed and why.
-    return buildImportResult(rows, { imported: 0, enrolled: 0, emailsSent: 0, emailsFailed: 0 });
+    return {
+      ...buildImportResult(rows, { imported: 0, enrolled: 0, emailsSent: 0, emailsFailed: 0 }),
+      assigned: 0,
+      alreadyEnrolledInCourses: 0,
+      alreadyEnrolledInCohorts: 0,
+      pendingInvitesRenewed: 0,
+      truncated: parsed.truncated
+    };
   }
 
   const memberRows = await getOrganizationMembersByNormalizedEmails(orgId, candidateEmails);
@@ -565,18 +574,27 @@ export async function importAudienceMembers(orgId: string, data: TImportAudience
   let importEmailsFailed = 0;
 
   if (newEmails.length > 0) {
-    // Capacity was already resolved above; this keeps the milestone emails
-    // firing and guards against a concurrent import filling the last seats.
-    await assertStudentCapacityOrThrow(orgId, newEmails.length);
+    const newMemberRows = newEmails.map((email) => ({
+      organizationId: orgId,
+      email,
+      roleId: ROLE.STUDENT,
+      verified: false
+    }));
 
-    await createOrganizationMembers(
-      newEmails.map((email) => ({
-        organizationId: orgId,
-        email,
-        roleId: ROLE.STUDENT,
-        verified: false
-      }))
-    );
+    let studentMilestoneNotification: StudentMilestoneNotification | null = null;
+
+    await db.transaction(async (tx) => {
+      studentMilestoneNotification = await assertStudentCapacityOrThrow(orgId, newEmails.length, tx, {
+        deferNotification: true
+      });
+      await createOrganizationMembers(newMemberRows, tx);
+    });
+
+    if (studentMilestoneNotification) {
+      notifyStudentMilestone(studentMilestoneNotification).catch((error) => {
+        console.error('notifyStudentMilestone error:', error);
+      });
+    }
 
     if (courseIds.length > 0) {
       const courseGroupMappings = await getCourseGroupIds(courseIds);
