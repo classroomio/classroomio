@@ -154,6 +154,46 @@ describe.skipIf(!hasDatabase)('course import activities', () => {
     }
   });
 
+  it('keeps root activities at their course order', { timeout: 30000 }, async () => {
+    const suffix = `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
+    const ids = await createImportCourse(suffix, { lessons: 0, activities: [], sections: 0 });
+    try {
+      const { db } = await import('@db/drizzle');
+      const schema = await import('@db/schema');
+      const [activity] = await db
+        .insert(schema.courseActivity)
+        .values({ courseId: ids.courseId, kind: 'scorm', title: 'Package', order: 1 })
+        .returning();
+      const [lesson] = await db
+        .insert(schema.lesson)
+        .values({
+          courseId: ids.courseId,
+          title: 'Lesson',
+          slug: `root-lesson-${suffix}`,
+          note: '<p>Lesson.</p>',
+          order: 2
+        })
+        .returning();
+
+      const { getCourseImportStructureService } = await import('@api/services/course-import/course-import');
+      const snapshot = await getCourseImportStructureService(ids.orgId, ids.courseId);
+      const syntheticSection = snapshot.draft.sections[0];
+
+      expect(snapshot.draft.sections).toHaveLength(1);
+      expect(syntheticSection).toMatchObject({ title: 'Ungrouped', order: 1 });
+      expect(snapshot.draft.lessons).toEqual([expect.objectContaining({ externalId: lesson!.id, order: 2 })]);
+      expect(snapshot.draft.activities).toEqual([
+        {
+          existingActivityId: activity!.id,
+          sectionExternalId: syntheticSection!.externalId,
+          order: 1
+        }
+      ]);
+    } finally {
+      await cleanupImportCourse(ids);
+    }
+  });
+
   it('snapshots an activity-only course without lessons', async () => {
     const suffix = `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
     const ids = await createImportCourse(suffix, { lessons: 0, activities: [{ section: 0, order: 1 }] });

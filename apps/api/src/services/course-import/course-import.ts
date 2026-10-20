@@ -464,11 +464,11 @@ function buildExercisePublishPayload(
   };
 }
 
-type SnapshotRootKind = 'section' | 'lesson' | 'exercise';
+type SnapshotRootKind = 'section' | 'lesson' | 'exercise' | 'activity';
 
 type SnapshotExercise = Awaited<ReturnType<typeof getExercise>>;
 
-const ROOT_KIND_RANK: Record<SnapshotRootKind, number> = { section: 0, lesson: 1, exercise: 2 };
+const ROOT_KIND_RANK: Record<SnapshotRootKind, number> = { section: 0, lesson: 1, exercise: 2, activity: 3 };
 
 /**
  * Numbers top-level entries 1..n by stored order, breaking ties the way the mixed-outline migration does.
@@ -574,7 +574,10 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     ...lessons.filter(isRootLesson).map((lesson) => ({ kind: 'lesson' as const, id: lesson.id, order: lesson.order })),
     ...exercises
       .filter(isRootExercise)
-      .map((exercise) => ({ kind: 'exercise' as const, id: exercise.id, order: exercise.order }))
+      .map((exercise) => ({ kind: 'exercise' as const, id: exercise.id, order: exercise.order })),
+    ...activities
+      .filter(isRootActivity)
+      .map((activity) => ({ kind: 'activity' as const, id: activity.id, order: activity.order }))
   ]);
 
   const SECTION_ITEM_KIND = { lesson: 0, exercise: 1, activity: 2 } as const;
@@ -617,28 +620,31 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     );
     entries.forEach((entry, index) => sectionItemOrders.set(entry.key, index + 1));
   }
-  const normalizedSections = outlineSections
-    .map((section) => ({
-      externalId: section.id,
-      title: section.title ?? 'Untitled Section',
-      order: rootOrders.get(`section:${section.id}`)!
-    }))
-    .sort((a, b) => a.order - b.order);
+  const normalizedSections = outlineSections.map((section) => ({
+    externalId: section.id,
+    title: section.title ?? 'Untitled Section',
+    order: rootOrders.get(`section:${section.id}`)!
+  }));
+  const rootActivitySectionIds = new Map<string, string>();
 
-  let sectionReferenceMap = new Map(normalizedSections.map((section) => [section.externalId, section.externalId]));
-  if (activities.some(isRootActivity)) {
-    const syntheticSectionId = `synthetic:${courseId}:ungrouped`;
-    const nextOrder = rootOrders.size + 1;
+  for (const activity of activities.filter(isRootActivity)) {
+    const externalId = `synthetic:${courseId}:activity:${activity.id}`;
+    rootActivitySectionIds.set(activity.id, externalId);
     normalizedSections.push({
-      externalId: syntheticSectionId,
+      externalId,
       title: 'Ungrouped',
-      order: nextOrder
+      order: rootOrders.get(`activity:${activity.id}`)!
     });
-    sectionReferenceMap = new Map(normalizedSections.map((section) => [section.externalId, section.externalId]));
+  }
+
+  normalizedSections.sort((a, b) => a.order - b.order);
+  const sectionReferenceMap = new Map(normalizedSections.map((section) => [section.externalId, section.externalId]));
+
+  if (rootActivitySectionIds.size > 0) {
     warnings.push(
       ZCourseImportWarning.parse({
         code: 'UNGROUPED_CONTENT_NORMALIZED',
-        message: 'Some packages were ungrouped. A synthetic section was added to the draft.',
+        message: 'Some packages were ungrouped. A synthetic section was added for each package.',
         severity: 'warning'
       })
     );
@@ -758,7 +764,7 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     const sectionExternalId =
       activity.sectionId && sectionReferenceMap.has(activity.sectionId)
         ? activity.sectionId
-        : normalizedSections[normalizedSections.length - 1]!.externalId;
+        : rootActivitySectionIds.get(activity.id)!;
     const sharedOrder = sectionItemOrders.get(`activity:${activity.id}`);
     const nextActivityOrder = sharedOrder ?? (maxOrderBySection.get(sectionExternalId) ?? 0) + 1;
     if (sharedOrder === undefined) maxOrderBySection.set(sectionExternalId, nextActivityOrder);
