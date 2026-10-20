@@ -1,7 +1,7 @@
 import { Context, Next } from 'hono';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 
 const COHORT_PATH = /^(?:\/public-api\/v1)?\/cohorts(?:\/|$)/;
@@ -69,7 +69,7 @@ export function getPublicApiRouteScope(method: string, path: string): TOrganizat
 }
 
 // public_api:* opens every route; a route-level scope opens only the routes mapped above.
-export const publicApiScopesMiddleware = async (c: Context, next: Next) => {
+export const publicApiScopesMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   const automationKey = c.get('automationKey');
 
   if (!automationKey) {

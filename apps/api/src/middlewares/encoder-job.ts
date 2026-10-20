@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { verifyEncoderJobToken } from '@cio/core/services/assets/encoder-token';
 
 /**
@@ -8,7 +8,7 @@ import { verifyEncoderJobToken } from '@cio/core/services/assets/encoder-token';
  * organization, so the handlers never take either from the request — an encoder
  * cannot reach an asset its token was not minted for.
  */
-export const encoderJobMiddleware = async (c: Context, next: Next) => {
+export const encoderJobMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   const header = c.req.header('Authorization');
   if (!header?.startsWith('Bearer ')) {
     return c.json({ success: false, error: 'Unauthorized', code: ErrorCodes.UNAUTHORIZED }, 401);

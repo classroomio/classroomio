@@ -54,7 +54,7 @@ async function createMixedFixture(suffix: string): Promise<MixedFixture> {
     .returning();
   const [lessonOne] = await db
     .insert(schema.lesson)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson one', order: 1 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson one', slug: 'lesson-one', order: 1 })
     .returning();
   const [activityOne] = await db
     .insert(schema.courseActivity)
@@ -62,7 +62,7 @@ async function createMixedFixture(suffix: string): Promise<MixedFixture> {
     .returning();
   const [lessonTwo] = await db
     .insert(schema.lesson)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson two', order: 3 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson two', slug: 'lesson-two', order: 3 })
     .returning();
   const [activityTwo] = await db
     .insert(schema.courseActivity)
@@ -361,7 +361,7 @@ describe.skipIf(!hasDatabase)('compliance follows activity-driven certification'
       .returning();
     const [lesson] = await db
       .insert(schema.lesson)
-      .values({ courseId: course.id, title: 'Policy', order: 1 })
+      .values({ courseId: course.id, title: 'Policy', slug: 'policy', order: 1 })
       .returning();
     const [activity] = await db
       .insert(schema.courseActivity)

@@ -19,6 +19,12 @@ vi.mock('@api/middlewares/org-team-member', () => ({
   }
 }));
 
+vi.mock('@api/middlewares/org-admin', () => ({
+  orgAdminMiddleware: async (_c: unknown, next: () => Promise<void>) => {
+    await next();
+  }
+}));
+
 vi.mock('@api/services/activity/plan', () => ({
   assertActivityKindAllowed: vi.fn().mockResolvedValue(undefined)
 }));
@@ -278,15 +284,23 @@ describe.skipIf(!hasDatabase)('createCoursesFromPackages', () => {
       const ready = await createPackageFixture(organization.id, userId, 'Ready package');
       const processing = await createPackageFixture(organization.id, userId, 'Processing package', 'processing');
 
-      const before = await db.select({ id: schema.course.id }).from(schema.course);
+      const countOrgCourses = async () => {
+        const rows = await db
+          .select({ id: schema.course.id })
+          .from(schema.course)
+          .innerJoin(schema.group, eq(schema.course.groupId, schema.group.id))
+          .where(eq(schema.group.organizationId, organization.id));
+        return rows.length;
+      };
+      const before = await countOrgCourses();
       await expect(
         createReal(organization.id, userId, {
           assetIds: [ready.asset.id, processing.asset.id],
           courseType: 'SELF_PACED'
         })
       ).rejects.toThrow(/ready version/);
-      const after = await db.select({ id: schema.course.id }).from(schema.course);
-      expect(after.length).toBe(before.length);
+      const after = await countOrgCourses();
+      expect(after).toBe(before);
     } finally {
       const { db: cleanDb } = await import('@db/drizzle');
       const cleanSchema = await import('@db/schema');

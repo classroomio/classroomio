@@ -4,8 +4,8 @@ import { ACTIVITY_PROVIDERS } from '@cio/core/services/activity/providers';
 import { LICENSE_FEATURE } from '@cio/utils/license';
 import { PLAN } from '@cio/utils/plans';
 import type { TActivityKind } from '@cio/utils/constants/activity';
+import { isFeatureLicensed } from '@cio/core/services/license';
 import { AppError, ErrorCodes } from '@api/utils/errors';
-import { isFeatureLicensed } from '@api/services/license';
 
 /**
  * Throws when the organization may not author activities of the kind.

@@ -251,8 +251,13 @@ describe.skipIf(!hasDatabase)('scorm commit event gating', () => {
       const token = launchTokenOf(launched.playerUrl);
       await getScormRuntimeState(token, null);
 
-      const rows = await db.select({ id: schema.scormScoAttempt.id }).from(schema.scormScoAttempt).limit(1);
-      const tryId = rows[0]?.id;
+      const [tryRow] = await db
+        .select({ id: schema.scormScoAttempt.id })
+        .from(schema.scormScoAttempt)
+        .innerJoin(schema.scormAttempt, eq(schema.scormScoAttempt.attemptId, schema.scormAttempt.id))
+        .where(eq(schema.scormAttempt.activityId, fixture.activityId))
+        .limit(1);
+      const tryId = tryRow?.id;
       if (!tryId) throw new Error('missing module try');
 
       await expect(recordScormSessionEvent(tryId, 'commit', { blob: 'x'.repeat(2048) }, null)).rejects.toThrow();

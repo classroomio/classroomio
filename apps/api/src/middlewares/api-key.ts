@@ -1,5 +1,7 @@
 import { Context, Next } from 'hono';
 
+import type { ApiErrorResponse } from '@api/utils/errors';
+
 import { env } from '@cio/core/config/env';
 
 /**
@@ -7,7 +9,7 @@ import { env } from '@cio/core/config/env';
  * Checks for Authorization: Bearer <api-key> header
  * Used for server-to-server communication (webhooks, dashboard SSR, etc.)
  */
-export const apiKeyMiddleware = async (c: Context, next: Next) => {
+export const apiKeyMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const authHeader = c.req.header('Authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {

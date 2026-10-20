@@ -11,7 +11,6 @@ import {
   markActivityCompleteOnce,
   updateActivity
 } from '@cio/db/queries/activity';
-import { getCourseContentItems } from '@cio/db/queries/course/content';
 import { getCourseById, getCourseSectionById } from '@cio/db/queries/course/course';
 import type { TCourseActivity } from '@cio/db/types';
 import type { TActivityKind } from '@cio/utils/constants/activity';
@@ -25,22 +24,14 @@ import type {
   ActivityEditorData,
   ActivityLearnerDetail,
   ActivityLearnerSummary,
-  ActivityResultsSummary
+  ActivityResultsSummary,
+  ActivitySettingsUpdate
 } from './providers';
 import { assertCourseAllowsActivities } from '../course/public-course-guard';
 import { ContentType } from '@cio/utils/constants';
-import { assertCourseAcceptsContent } from '../course/content';
+import { assertActivityDeletionAllowed, assertCourseAcceptsContent } from '../course/content';
+import { claimActivityOrder } from '../course/root-order';
 import { resolveItemSlug } from '../course/slug';
-
-async function nextActivityOrder(courseId: string, sectionId: string | null): Promise<number> {
-  const items = await getCourseContentItems(courseId);
-
-  const orders = items
-    .filter((item) => (item.sectionId ?? null) === (sectionId ?? null))
-    .map((item) => item.order ?? 0);
-
-  return orders.length === 0 ? 1 : Math.max(...orders) + 1;
-}
 
 /**
  * Creates an activity of a kind in a section. Throws when the course is PUBLIC.
@@ -51,7 +42,6 @@ export async function createActivity(
   profileId?: string
 ): Promise<TCourseActivity> {
   await assertCourseAllowsActivities(courseId);
-  await assertCourseAcceptsContent(courseId, ContentType.Activity);
 
   if (input.sectionId) {
     const section = await getCourseSectionById(input.sectionId);
@@ -61,10 +51,11 @@ export async function createActivity(
   }
 
   const title = input.title ?? '';
-  const slug = await resolveItemSlug({ courseId, title });
-  const order = await nextActivityOrder(courseId, input.sectionId ?? null);
 
   return db.transaction(async (tx) => {
+    const order = await claimActivityOrder(courseId, input.sectionId ?? null, tx);
+    await assertCourseAcceptsContent(courseId, ContentType.Activity, tx);
+    const slug = await resolveItemSlug({ courseId, title, dbClient: tx });
     const [activity] = await createActivities(
       [
         {
@@ -150,18 +141,21 @@ export async function getActivityForStudent(
 }
 
 /**
- * Validates and saves kind settings for an activity.
+ * Validates and saves kind settings for an activity. Returns the learners the
+ * new settings completed.
  */
-export async function updateActivitySettings(courseId: string, activityId: string, input: unknown): Promise<void> {
+export async function updateActivitySettings(
+  courseId: string,
+  activityId: string,
+  input: unknown
+): Promise<ActivitySettingsUpdate> {
   const activity = await getActivity(courseId, activityId);
   const provider = (ACTIVITY_PROVIDERS as Partial<Record<TActivityKind, (typeof ACTIVITY_PROVIDERS)[TActivityKind]>>)[
     activity.kind as TActivityKind
   ];
   if (!provider) throw new AppError('Activity not found', ErrorCodes.ACTIVITY_NOT_FOUND, 404);
 
-  await db.transaction(async (tx) => {
-    await provider.updateSettings(activityId, input, tx);
-  });
+  return db.transaction((tx) => provider.updateSettings(activityId, input, tx));
 }
 
 /**
@@ -243,13 +237,7 @@ export async function updateActivityService(
 export async function deleteActivityService(courseId: string, activityId: string): Promise<TCourseActivity> {
   const activity = await getActivity(courseId, activityId);
   const [course] = await getCourseById(courseId);
-  if (course?.format === 'single_activity') {
-    throw new AppError(
-      'The package in a single-activity course cannot be deleted. Replace the package or convert to a standard course.',
-      ErrorCodes.VALIDATION_ERROR,
-      400
-    );
-  }
+  assertActivityDeletionAllowed(course);
 
   return db.transaction(async (tx) => {
     const provider = (ACTIVITY_PROVIDERS as Partial<Record<TActivityKind, (typeof ACTIVITY_PROVIDERS)[TActivityKind]>>)[

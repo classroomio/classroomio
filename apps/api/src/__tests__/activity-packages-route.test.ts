@@ -53,7 +53,7 @@ const HEADERS = {
   'cio-org-id': ORG_ID
 };
 
-describe('activity packages routes (PR 6)', () => {
+describe('activity packages routes', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -98,27 +98,26 @@ describe('activity packages routes (PR 6)', () => {
     const response = await app.request('/activity/packages/asset-1/versions', {
       method: 'POST',
       headers: HEADERS,
-      body: JSON.stringify({})
+      body: JSON.stringify({ fileSize: 1024 })
     });
 
     expect(response.status).toBe(201);
     const json = (await response.json()) as { success: boolean; data: typeof payload };
     expect(json.success).toBe(true);
     expect(json.data.version.versionNumber).toBe(2);
-    expect(createScormPackageVersion).toHaveBeenCalledWith(ORG_ID, 'asset-1', 'user-1', {});
+    expect(createScormPackageVersion).toHaveBeenCalledWith(ORG_ID, 'asset-1', 'user-1', { fileSize: 1024 });
   });
 
-  it('POST /activity/packages/:assetId/versions accepts a request without a body', async () => {
+  it('POST /activity/packages/:assetId/versions rejects a request without fileSize', async () => {
     const app = buildApp();
-    vi.mocked(createScormPackageVersion).mockResolvedValue({ unchanged: false } as never);
 
     const response = await app.request('/activity/packages/asset-1/versions', {
       method: 'POST',
       headers: { 'cio-org-id': ORG_ID }
     });
 
-    expect(response.status).toBe(201);
-    expect(createScormPackageVersion).toHaveBeenCalledWith(ORG_ID, 'asset-1', 'user-1', {});
+    expect(response.status).toBe(400);
+    expect(createScormPackageVersion).not.toHaveBeenCalled();
   });
 
   it('POST /activity/packages/:assetId/versions returns 200 when the declared digest is unchanged', async () => {
@@ -130,11 +129,12 @@ describe('activity packages routes (PR 6)', () => {
     const response = await app.request('/activity/packages/asset-1/versions', {
       method: 'POST',
       headers: HEADERS,
-      body: JSON.stringify({ contentSha256: digest })
+      body: JSON.stringify({ fileSize: 1024, contentSha256: digest })
     });
 
     expect(response.status).toBe(200);
     expect(createScormPackageVersion).toHaveBeenCalledWith(ORG_ID, 'asset-1', 'user-1', {
+      fileSize: 1024,
       contentSha256: digest.toLowerCase()
     });
   });

@@ -151,8 +151,8 @@ describe.skipIf(!hasDatabase)('activity reset and lifecycle', () => {
         { resetActivityLearnerState }
       );
 
-      expect(summary.activityCompletions).toBe(1);
-      expect(summary.lessonCompletion).toBe(1);
+      expect(summary.summary.activityCompletions).toBe(1);
+      expect(summary.summary.lessonCompletion).toBe(1);
 
       const remaining = await db
         .select()

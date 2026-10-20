@@ -100,7 +100,6 @@ export const packagesRouter = new Hono()
     try {
       const orgId = c.req.header('cio-org-id')!;
       const { assetId } = c.req.valid('param');
-      await assertActivityKindAllowed(orgId, 'scorm');
       const result = await getScormPackageDownloadUrl(orgId, assetId);
 
       return c.json({ success: true, data: result }, 200);

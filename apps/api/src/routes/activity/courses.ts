@@ -5,13 +5,13 @@ import { assertActivityKindAllowed } from '@api/services/activity/plan';
 import { Hono } from '@api/utils/hono';
 import { authMiddleware } from '@api/middlewares/auth';
 import { handleError } from '@api/utils/errors';
-import { orgTeamMemberMiddleware } from '@api/middlewares/org-team-member';
+import { orgAdminMiddleware } from '@api/middlewares/org-admin';
 import { zValidator } from '@hono/zod-validator';
 
 export const activityCoursesRouter = new Hono().post(
   '/',
   authMiddleware,
-  orgTeamMemberMiddleware,
+  orgAdminMiddleware,
   zValidator('json', ZActivityCoursesCreate),
   async (c) => {
     try {

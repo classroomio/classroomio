@@ -1,13 +1,13 @@
 import { Context, Next } from 'hono';
 import type { TOrganizationApiKeyScope } from '@cio/utils/validation/organization';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 import { organizationApiKeyHasScopes } from '@api/services/organization/automation-key';
 
 export const orgAdminOrAutomationKeyMiddleware =
   (requiredScopes: readonly TOrganizationApiKeyScope[] = []) =>
-  async (c: Context, next: Next) => {
+  async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
     try {
       const automationKey = c.get('automationKey');
 

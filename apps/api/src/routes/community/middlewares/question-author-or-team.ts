@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { getQuestionAuthorAndCourse } from '@cio/db/queries/community';
 import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
 
@@ -9,7 +9,7 @@ import { isCourseTeamMemberOrOrgAdmin } from '@cio/db/queries/group';
  * Requires authMiddleware to be applied first
  * Expects question ID in route params as 'id'
  */
-export const questionAuthorOrTeamMiddleware = async (c: Context, next: Next) => {
+export const questionAuthorOrTeamMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const user = c.get('user');
     if (!user) {

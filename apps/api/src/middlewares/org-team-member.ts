@@ -1,6 +1,6 @@
 import { Context, Next } from 'hono';
 
-import { ErrorCodes } from '@api/utils/errors';
+import { type ApiErrorResponse, ErrorCodes } from '@api/utils/errors';
 import { ROLE } from '@cio/utils/constants';
 
 /**
@@ -11,7 +11,7 @@ import { ROLE } from '@cio/utils/constants';
  * Requires authMiddleware to be applied first.
  * Expects orgId in the 'cio-org-id' header.
  */
-export const orgTeamMemberMiddleware = async (c: Context, next: Next) => {
+export const orgTeamMemberMiddleware = async (c: Context, next: Next): Promise<void | ApiErrorResponse> => {
   try {
     const user = c.get('user');
     if (!user) {

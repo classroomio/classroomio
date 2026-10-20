@@ -2,9 +2,6 @@ import { deleteScormSessionEventsOlderThan } from '@cio/db/queries/scorm/session
 
 export interface ScormRetentionResult {
   eventsDeleted: number;
-  versionsDeleted: number;
-  versionsArchived: number;
-  objectsDeleted: number;
 }
 
 function cutoffIso(days: number, nowMs: number): string {
@@ -21,5 +18,5 @@ export async function runScormRetention(
 ): Promise<ScormRetentionResult> {
   const eventsDeleted = await deleteScormSessionEventsOlderThan(cutoffIso(eventOlderThanDays, nowMs));
 
-  return { eventsDeleted, versionsDeleted: 0, versionsArchived: 0, objectsDeleted: 0 };
+  return { eventsDeleted };
 }
