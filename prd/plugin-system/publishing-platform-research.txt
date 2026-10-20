@@ -1,27 +1,17 @@
 ClassroomIO Plugin Publishing Research
 =======================================
 
-Decision status
----------------
-
-The earlier quarantine-upload recommendation in this research was superseded
-by the PR-first release model. ClassroomIO now reviews plugin source through
-pull requests to the official `classroomio-plugins` repository. Only protected
-post-merge CI may build production artifacts, upload immutable assets, and
-register a catalog release. Contributors do not receive upload credentials or
-a `plugin:publish` token.
-
 Purpose
 -------
 
 This document compares the publishing and review workflows used by Figma,
-Shopify, Moodle, Visual Studio Code, and Google Chrome. It then maps the
-patterns to the proposed ClassroomIO plugin marketplace workflow.
+Shopify, Moodle, Visual Studio Code, and Google Chrome. It explains how
+ClassroomIO applies the relevant supply-chain and review controls through its
+PR-first plugin release workflow.
 
-The central conclusion is that developers generally submit a built artifact
-through a platform API or dashboard. A GitHub repository is usually optional
-or used for source transparency and automation; it is not normally the public
-marketplace submission mechanism.
+Most platforms accept a built artifact through a dashboard or API. ClassroomIO
+uses a source-first model: contributors submit source through the official
+plugin repository, and protected CI creates the only production artifact.
 
 
 Executive comparison
@@ -356,12 +346,11 @@ bucket. The platform hides storage behind a UI or API. The effective flow is:
        -> production storage/CDN -> user installation
 
 Moodle exposes the ZIP concept directly and VS Code exposes the VSIX concept.
-Figma and Shopify abstract the artifact storage more completely. All four
-patterns are compatible with a private quarantine bucket internally.
+Figma and Shopify abstract artifact storage more completely.
 
 
-Adopted ClassroomIO model
--------------------------
+ClassroomIO plugin release model
+--------------------------------
 
 Public/community plugin flow
 
@@ -448,8 +437,8 @@ Local development requires:
   - An organization administrator
 
 There is no contributor-facing publish command, public upload credential,
-quarantine bucket, reviewer queue, submission endpoint, or `plugin:publish`
-scope in the adopted model.
+reviewer queue, submission endpoint, or `plugin:publish` scope in the
+ClassroomIO model.
 
 
 Bottom line
