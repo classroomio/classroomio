@@ -27,7 +27,7 @@ export const ZPublicApiCreateAudience = z
   .object({
     email: z.string().trim().email().optional().describe('One person to invite. Send this or emails, not both'),
     emails: z
-      .array(z.string().trim().max(320))
+      .array(z.string().trim())
       .min(1)
       .max(AUDIENCE_IMPORT_MAX_ROWS)
       .optional()

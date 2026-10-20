@@ -191,7 +191,6 @@ exports[`public API team and audience update contract > ZPublicApiCreateAudience
     "emails": {
       "description": "Up to 1000 people to invite in one request. An address that is not valid comes back as an invalid_email row instead of failing the request. Names are not taken here; set one with PUT /audience/{memberId} after the person joins",
       "items": {
-        "maxLength": 320,
         "type": "string",
       },
       "maxItems": 1000,

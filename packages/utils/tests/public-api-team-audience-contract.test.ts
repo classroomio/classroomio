@@ -81,6 +81,12 @@ describe('public API team and audience update contract', () => {
     });
   });
 
+  it('leaves an overlong address for the per-row result instead of failing the request', () => {
+    expect(
+      ZPublicApiCreateAudience.safeParse({ emails: ['a@example.com', `${'x'.repeat(400)}@example.com`] }).success
+    ).toBe(true);
+  });
+
   it('takes email or emails, not both and not neither', () => {
     expect(ZPublicApiCreateAudience.safeParse({}).success).toBe(false);
     expect(ZPublicApiCreateAudience.safeParse({ email: 'a@example.com', emails: ['b@example.com'] }).success).toBe(
