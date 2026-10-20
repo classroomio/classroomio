@@ -16,6 +16,7 @@ import {
 } from '@cio/db/queries/course/compliance';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
+import { getExerciseMaxPoints, getStudentExerciseSubmissions } from '@cio/db/queries/course/exercise-results';
 
 import { ROLE } from '@cio/utils/constants';
 import type {
@@ -169,6 +170,33 @@ function getCurrentIncompleteRecord(record: TCourseCompletionRecord | undefined 
   return record;
 }
 
+async function getComplianceExerciseSnapshot(exerciseId: string, groupMemberId: string) {
+  const [maxPoints, submissions] = await Promise.all([
+    getExerciseMaxPoints(exerciseId),
+    getStudentExerciseSubmissions(groupMemberId, exerciseId)
+  ]);
+  const completedSubmissions = submissions.filter((submission) => submission.gradingState === 'completed');
+
+  if (completedSubmissions.length === 0 || maxPoints <= 0) {
+    return {
+      score: null,
+      attempts: submissions.length
+    };
+  }
+
+  const bestScorePercent = completedSubmissions.reduce((highestPercent, submission) => {
+    const totalPoints = Number(submission.total ?? 0);
+    const nextPercent = Math.round((totalPoints / maxPoints) * 100);
+
+    return Math.max(highestPercent, nextPercent);
+  }, 0);
+
+  return {
+    score: bestScorePercent,
+    attempts: submissions.length
+  };
+}
+
 async function ensureComplianceEnrollmentRecordForLearner(
   courseId: string,
   groupMemberId: string,
@@ -250,7 +278,11 @@ export async function ensureComplianceEnrollmentRecordsForProfiles(
   };
 }
 
-export async function syncComplianceProgressFromSubmission(courseId: string, groupMemberId: string) {
+export async function syncComplianceProgressFromSubmission(
+  courseId: string,
+  groupMemberId: string,
+  exerciseId: string
+) {
   const [course] = await getCourseById(courseId);
 
   if (!course || course.type !== 'COMPLIANCE') {
@@ -304,6 +336,7 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
 
   const completedAt = new Date().toISOString();
   const validUntil = addMonths(completedAt, course.compliance?.retakeIntervalMonths ?? 0);
+  const completionSnapshot = await getComplianceExerciseSnapshot(exerciseId, groupMemberId);
 
   await db.transaction(async (tx) => {
     await updateCourseCompletionRecord(
@@ -312,7 +345,9 @@ export async function syncComplianceProgressFromSubmission(courseId: string, gro
         status: 'compliant',
         startedAt: latestRecord.startedAt ?? completedAt,
         completedAt,
-        validUntil
+        validUntil,
+        score: completionSnapshot.score,
+        attempts: completionSnapshot.attempts
       },
       tx
     );

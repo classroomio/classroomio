@@ -5,6 +5,7 @@ export * from './root-order';
 export * from './template-access';
 export * from './template-assets';
 export * from './compliance';
+export * from './exercise-results';
 export * from './content';
 export * from './progression';
 export * from './content-batch';
