@@ -13,12 +13,12 @@
       <title>ClassroomIO SCORM 1.2 mastery fixture</title>
       <item identifier="ITEM-1" identifierref="RES-1">
         <title>Mastery quiz</title>
+        <adlcp:masteryscore>80</adlcp:masteryscore>
       </item>
     </organization>
   </organizations>
   <resources>
     <resource identifier="RES-1" type="webcontent" adlcp:scormtype="sco" href="quiz.html">
-      <adlcp:masteryscore>80</adlcp:masteryscore>
       <file href="quiz.html"/>
     </resource>
   </resources>

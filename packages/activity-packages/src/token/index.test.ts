@@ -68,7 +68,7 @@ describe('launch tokens', () => {
     }
   });
 
-  it('rejects foreign token types but honors pre-type tokens', async () => {
+  it('rejects foreign or missing token types', async () => {
     const foreign = await signToken(
       {
         org: 'o1',
@@ -91,7 +91,7 @@ describe('launch tokens', () => {
       expect((error as PackageError).code).toBe('invalid_token');
     }
 
-    const legacy = await signToken(
+    const untyped = await signToken(
       {
         org: 'o1',
         act: 'a1',
@@ -105,7 +105,12 @@ describe('launch tokens', () => {
       SECRET
     );
 
-    expect((await verifyLaunchToken(legacy, SECRET, NOW)).sub).toBe('p1');
+    try {
+      await verifyLaunchToken(untyped, SECRET, NOW);
+      expect.unreachable();
+    } catch (error) {
+      expect((error as PackageError).code).toBe('invalid_token');
+    }
   });
 });
 
@@ -175,6 +180,15 @@ describe('content tokens', () => {
 
     try {
       await verifyContentToken(launchToken, SECRET, { org: 'o1', prefix: 'p' }, NOW);
+      expect.unreachable();
+    } catch (error) {
+      expect((error as PackageError).code).toBe('invalid_token');
+    }
+
+    const untyped = await signToken({ org: 'o1', p: 'p', anc: [], wk: isoWeekIndex(new Date(NOW)) }, SECRET);
+
+    try {
+      await verifyContentToken(untyped, SECRET, { org: 'o1', prefix: 'p' }, NOW);
       expect.unreachable();
     } catch (error) {
       expect((error as PackageError).code).toBe('invalid_token');

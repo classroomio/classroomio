@@ -119,6 +119,10 @@ export function normalizeCmiShape(raw: unknown): ScormCmi {
 
 function normalizeValue(value: unknown): unknown {
   if (Array.isArray(value)) {
+    if (value.length > MAX_CMI_INDEX + 1) {
+      throw new PackageError('invalid_commit', { reason: 'index_out_of_bounds' });
+    }
+
     return value.map((item) => normalizeValue(item));
   }
 
@@ -130,6 +134,10 @@ function normalizeValue(value: unknown): unknown {
 
   for (const [key, entry] of Object.entries(value)) {
     if (isUnsafeSegment(key)) throw new PackageError('invalid_commit', { reason: 'unsafe_key' });
+
+    if (/^\d+$/.test(key) && Number(key) > MAX_CMI_INDEX) {
+      throw new PackageError('invalid_commit', { reason: 'index_out_of_bounds' });
+    }
 
     if (key.includes('.')) {
       setPath(out, key, normalizeValue(entry));
@@ -225,9 +233,10 @@ function interactionSummaryOf(entry: unknown, index: number): ScormInteractionSu
   const patterns = correctPatternsOf(record['correct_responses']);
   const id = interactionText(record['id']);
   const type = interactionText(record['type']);
-  const rawStudentResponse = typeof response === 'object' ? JSON.stringify(response) : response;
+  const rawStudentResponse = response !== null && typeof response === 'object' ? JSON.stringify(response) : response;
   const studentResponse = interactionText(rawStudentResponse);
-  const rawResult = typeof record['result'] === 'object' ? JSON.stringify(record['result']) : record['result'];
+  const resultValue = record['result'];
+  const rawResult = resultValue !== null && typeof resultValue === 'object' ? JSON.stringify(resultValue) : resultValue;
   const result = interactionText(rawResult);
   const latency = interactionText(record['latency'] ?? record['timestamp']);
   const description = interactionText(record['description']);
@@ -256,8 +265,14 @@ export function summarizeInteractions(cmi: ScormCmi): ScormInteractionSummary[] 
   return [];
 }
 
-function isIndexKey(key: string): boolean {
-  return /^\d+$/.test(key) && Number(key) <= MAX_CMI_INDEX;
+function indexKeyValue(key: string): number {
+  const index = Number(key);
+
+  if (!/^\d+$/.test(key) || !Number.isSafeInteger(index) || index > MAX_CMI_INDEX) {
+    throw new PackageError('invalid_commit', { reason: 'index_out_of_bounds' });
+  }
+
+  return index;
 }
 
 function mergeIntoArray(stored: unknown[], entries: Array<[number, unknown]>): unknown[] {
@@ -296,11 +311,15 @@ function mergeValues(stored: unknown, incoming: unknown): unknown {
     );
   }
 
-  if (isPlainObject(incoming) && Array.isArray(stored) && Object.keys(incoming).every(isIndexKey)) {
-    return mergeIntoArray(
-      stored,
-      Object.entries(incoming).map(([key, value]): [number, unknown] => [Number(key), value])
-    );
+  if (isPlainObject(incoming) && Array.isArray(stored)) {
+    const keys = Object.keys(incoming);
+
+    if (keys.every((key) => /^\d+$/.test(key))) {
+      return mergeIntoArray(
+        stored,
+        keys.map((key): [number, unknown] => [indexKeyValue(key), incoming[key]])
+      );
+    }
   }
 
   if (isPlainObject(incoming) && isPlainObject(stored)) {

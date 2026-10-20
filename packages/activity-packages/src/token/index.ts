@@ -12,7 +12,7 @@ export interface ActivityLaunchClaims {
   mode: LaunchMode;
   anc: string[];
   exp: number;
-  typ?: string;
+  typ: 'launch';
 }
 
 export interface ContentTokenClaims {
@@ -20,7 +20,7 @@ export interface ContentTokenClaims {
   p: string;
   anc: string[];
   wk: number;
-  typ?: string;
+  typ: 'content';
 }
 
 export const LAUNCH_TOKEN_TTL_SECONDS = 12 * 60 * 60;
@@ -165,10 +165,8 @@ export async function mintLaunchToken(
 
 /**
  * Verifies a launch token and returns its claims. Throws `expired_token`
- * past expiry, `invalid_token` otherwise — including a present-but-foreign
- * `typ`, so launch tokens can never pass as another token kind. Tokens
- * minted before the type claim existed carry no `typ` and stay valid until
- * they expire naturally.
+ * past expiry, `invalid_token` otherwise — including a missing or foreign
+ * `typ`, so launch tokens can never pass as another token kind.
  */
 export async function verifyLaunchToken(
   token: string,
@@ -181,7 +179,7 @@ export async function verifyLaunchToken(
     throw new PackageError('expired_token');
   }
 
-  if (claims.typ !== undefined && claims.typ !== 'launch') {
+  if (claims.typ !== 'launch') {
     throw new PackageError('invalid_token', { reason: 'wrong_type' });
   }
 
@@ -244,7 +242,7 @@ export async function verifyContentToken(
     throw new PackageError('invalid_token', { reason: 'wrong_scope' });
   }
 
-  if (claims.typ !== undefined && claims.typ !== 'content') {
+  if (claims.typ !== 'content') {
     throw new PackageError('invalid_token', { reason: 'wrong_type' });
   }
 

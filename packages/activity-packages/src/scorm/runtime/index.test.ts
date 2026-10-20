@@ -313,15 +313,20 @@ describe('mergeCmi and normalizeCommitCmi', () => {
     });
     expect(mergeCmi({ list: ['a', 'b'] }, { list: { '1': 'c' } })).toEqual({ list: ['a', 'c'] });
     expect(mergeCmi({ list: ['a', 'b'] }, { list: { other: 'c' } })).toEqual({ list: { other: 'c' } });
-    expect(mergeCmi({ list: ['a', 'b'] }, { list: { '4294967294': 'c' } })).toEqual({
-      list: { '4294967294': 'c' }
-    });
+
+    try {
+      mergeCmi({ list: ['a', 'b'] }, { list: { '4294967294': 'c' } });
+      expect.unreachable();
+    } catch (error) {
+      expect((error as PackageError).code).toBe('invalid_commit');
+    }
   });
 
   it('rejects a non-numeric segment once a container is an array', () => {
     for (const cmi of [
       { 'interactions.0.id': 'q1', 'interactions.foo.id': 'q2' },
-      { 'interactions.0.id': 'q1', 'interactions.foo': 'q2' }
+      { 'interactions.0.id': 'q1', 'interactions.foo': 'q2' },
+      { interactions: { '1001': { id: 'q1' } } }
     ]) {
       try {
         normalizeCommitCmi({ seq: 1, cmi });
@@ -645,6 +650,15 @@ describe('summarizeInteractions', () => {
   it('returns nothing for empty or count-only interactions', () => {
     expect(summarizeInteractions({})).toEqual([]);
     expect(summarizeInteractions({ interactions: { _count: '2' } })).toEqual([]);
+  });
+
+  it('keeps null responses and results null', () => {
+    const [summarized] = summarizeInteractions({
+      interactions: [{ id: 'Q1', student_response: null, result: null }]
+    });
+
+    expect(summarized.studentResponse).toBeNull();
+    expect(summarized.result).toBeNull();
   });
 });
 

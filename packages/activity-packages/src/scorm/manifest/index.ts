@@ -52,6 +52,7 @@ const manifestParser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: '@_',
   parseAttributeValue: false,
+  parseTagValue: false,
   trimValues: true,
   processEntities: true,
   htmlEntities: true

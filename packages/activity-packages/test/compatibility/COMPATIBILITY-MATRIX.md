@@ -21,7 +21,7 @@ Run every row below in Chrome, Edge, Firefox, Safari on macOS and iOS, and Chrom
 | Articulate Rise 360 | Yes | Yes | Responsive layout, many small files; launch file `indexapi.html` | Synthetic `vendor-rise-style` fixture automated; full vendor export manual, local-only |
 | iSpring Suite | Yes | Yes | Slide conversions | Manual, local-only vendor export |
 | Elucidat | Yes | 2nd to 4th | The default export streams content from Elucidat | Manual, local-only vendor export |
-| Adobe Captivate | Yes | Check | Quizzes, interactions, mastery score | Manual, local-only vendor export |
+| Adobe Captivate | Yes | 4th (manual) | Quizzes, interactions, mastery score | Manual, local-only vendor export (SCORM 2004 4th edition) |
 
 Hand-written baselines live in `test/fixtures/README.md`. Rustici attribution lives in `test/fixtures/ATTRIBUTION.md`. Vendor setup lives in `test/fixtures/vendor/README.md`.
 
@@ -40,7 +40,7 @@ When a package misbehaves, run it in SCORM Cloud. If it fails there too, the pac
 
 ## Load testing
 
-Load bullets from the same plan section are covered by `test/load/scorm-load.test.ts` (1,000 simulated learners committing every 30 seconds against the pure commit pipeline, plus the 64 KiB beacon budget and the 500 MB limit math), `apps/tenant-router/src/activity-content-load.test.ts` (200 learners opening the same package in one minute from the edge cache), and `apps/jobs/src/processors/activity-package/process-scorm-load.test.ts` (500 MB package with video processed through streaming uploads with flat memory).
+At this layer, load bullets from the same plan section are covered by `test/load/scorm-load.test.ts` (1,000 simulated learners committing every 30 seconds against the pure commit pipeline, plus the 64 KiB beacon budget and the 500 MB limit math). The tenant-router edge-cache load test and the jobs 500 MB streaming test land with the runtime and infrastructure PRs.
 
 Two checks stay out of CI by design and run as one-command scripts instead:
 

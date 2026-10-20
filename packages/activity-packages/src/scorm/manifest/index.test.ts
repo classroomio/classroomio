@@ -78,6 +78,15 @@ describe('parseScormManifest fixtures', () => {
     expect(parsed.units[0].formatDetails).toEqual({ format: 'scorm12' });
   });
 
+  it('preserves numeric-looking manifest text', () => {
+    const parsed = parseScormManifest(
+      manifestWith('<schemaversion>1.2</schemaversion>', '<adlcp:datafromlms>0012</adlcp:datafromlms>'),
+      ['sco.html']
+    );
+
+    expect(parsed.units[0].launchData).toBe('0012');
+  });
+
   it('parses a SCO with outbound references without warnings', () => {
     const parsed = parseScormManifest(readSource('scorm12-external-refs'), ['sco.html']);
 
