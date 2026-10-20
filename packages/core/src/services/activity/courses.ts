@@ -129,7 +129,8 @@ async function createPackageCourse(
   );
 
   const activity = await createCourseActivity(newCourse, ready.title, profileId, tx);
-  const sequenced = ((ready.version.warnings ?? []) as string[]).includes('has_sequencing');
+  const packageWarnings = (ready.version.warnings ?? []) as string[];
+  const sequenced = packageWarnings.includes('has_sequencing') || packageWarnings.includes('has_prerequisites');
   await upsertActivityScorm(
     { activityId: activity.id, assetId: ready.asset.id, moduleOrder: sequenced ? 'sequential' : 'free' },
     tx

@@ -533,6 +533,18 @@ export async function commitScormAttempt(
       tx
     );
 
+    if (chain.attempt.closeReason === 'replaced') {
+      return {
+        saved: true,
+        completedActivity: false,
+        progressChanged,
+        activityId,
+        profileId,
+        rejected: false as const,
+        shouldRecord
+      };
+    }
+
     const details = await getActivityScormByActivityId(activityId, tx);
     if (!details)
       return {
