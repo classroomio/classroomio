@@ -308,11 +308,21 @@ export function finishRunningModule(adapter: ScormAdapter, format: ScormFormat):
 }
 
 /**
- * Saves unsent state when the page closes. Returns a function that stops
- * watching, for a module that ends while the page stays open.
+ * Saves unsent state when the page closes. A page kept for back navigation
+ * stays alive, so it commits without terminating the package. Returns a
+ * function that stops watching, for a module that ends while the page stays
+ * open.
  */
 export function flushOnPageHide(adapter: ScormAdapter, format: ScormFormat): () => void {
-  const flush = () => finishRunningModule(adapter, format);
+  const flush = (event?: PageTransitionEvent) => {
+    if (event?.persisted) {
+      commitRunningModule(adapter, format);
+      return;
+    }
+
+    finishRunningModule(adapter, format);
+  };
+
   window.addEventListener('pagehide', flush);
 
   return () => window.removeEventListener('pagehide', flush);

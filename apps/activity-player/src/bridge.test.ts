@@ -24,9 +24,9 @@ interface FakeTarget {
 interface FakeWindow {
   opener: FakeTarget | null;
   parent: FakeTarget | object | null;
-  listeners: Map<string, Array<() => void>>;
-  addEventListener: (type: string, callback: () => void) => void;
-  removeEventListener: (type: string, callback: () => void) => void;
+  listeners: Map<string, Array<(event?: PageTransitionEvent) => void>>;
+  addEventListener: (type: string, callback: (event?: PageTransitionEvent) => void) => void;
+  removeEventListener: (type: string, callback: (event?: PageTransitionEvent) => void) => void;
   setTimeout: (callback: () => void, ms: number) => unknown;
   clearTimeout: (id: unknown) => void;
 }
@@ -41,12 +41,12 @@ function installWindow(opener: FakeTarget | null, parent: FakeTarget | object | 
     opener,
     parent,
     listeners,
-    addEventListener: (type: string, callback: () => void) => {
+    addEventListener: (type: string, callback: (event?: PageTransitionEvent) => void) => {
       const existing = listeners.get(type) ?? [];
       existing.push(callback);
       listeners.set(type, existing);
     },
-    removeEventListener: (type: string, callback: () => void) => {
+    removeEventListener: (type: string, callback: (event?: PageTransitionEvent) => void) => {
       listeners.set(
         type,
         (listeners.get(type) ?? []).filter((registered) => registered !== callback)
@@ -309,8 +309,10 @@ describe('did-not-connect', () => {
 });
 
 describe('pagehide flush', () => {
-  function pagehide(fakeWindow: FakeWindow) {
-    for (const callback of fakeWindow.listeners.get('pagehide') ?? []) callback();
+  function pagehide(fakeWindow: FakeWindow, persisted = false) {
+    for (const callback of fakeWindow.listeners.get('pagehide') ?? []) {
+      callback({ persisted } as PageTransitionEvent);
+    }
   }
 
   it('does nothing before initialization', () => {
@@ -346,6 +348,20 @@ describe('pagehide flush', () => {
     pagehide(fakeWindow);
 
     expect(terminate).toHaveBeenCalledTimes(1);
+  });
+
+  it('commits without terminating when the browser keeps the page for back navigation', () => {
+    const fakeWindow = installWindow(null, fakeTarget());
+    const adapter = create12();
+    const commit = vi.spyOn(adapter, 'LMSCommit');
+    const finish = vi.spyOn(adapter, 'LMSFinish');
+
+    flushOnPageHide(adapter, 'scorm12');
+    adapter.LMSInitialize('');
+    pagehide(fakeWindow, true);
+
+    expect(commit).toHaveBeenCalledTimes(1);
+    expect(finish).not.toHaveBeenCalled();
   });
 
   it('does nothing once the module already terminated', () => {

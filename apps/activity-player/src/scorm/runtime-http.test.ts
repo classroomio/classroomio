@@ -175,6 +175,51 @@ describe('createRuntimeHttpService', () => {
     expect(sent[1].contentType).toBe('application/json');
   });
 
+  it('queues quick saves so each diff starts from the last acknowledged state', async () => {
+    let releaseFirst: (() => void) | undefined;
+    const firstGate = new Promise<void>((resolve) => {
+      releaseFirst = resolve;
+    });
+    let requestCount = 0;
+
+    vi.stubGlobal('fetch', async (url: string, init?: RequestInit) => {
+      const bodyStr = String(init?.body ?? '{}');
+      const headers = init?.headers as Record<string, string> | undefined;
+      sent.push({
+        url,
+        async: true,
+        contentType: headers?.['Content-Type'] ?? null,
+        body: JSON.parse(bodyStr)
+      });
+      requestCount += 1;
+
+      if (requestCount === 1) await firstGate;
+
+      return {
+        status: 200,
+        text: async () => '{"result":true,"errorCode":0}'
+      } as Response;
+    });
+
+    const service = createRuntimeHttpService({ isPageUnloading: () => false });
+
+    service.processHttpRequest('/commit', commit({ core: { lesson_location: 'page-1' } }, 1), false, vi.fn(), vi.fn());
+    await flushMicrotasks();
+
+    service.processHttpRequest('/commit', commit({ core: { lesson_location: 'page-2' } }, 2), false, vi.fn(), vi.fn());
+    service.processHttpRequest('/commit', commit({ core: { lesson_location: 'page-1' } }, 3), false, vi.fn(), vi.fn());
+    await flushMicrotasks();
+
+    expect(sent).toHaveLength(1);
+
+    releaseFirst?.();
+    await flushMicrotasks();
+
+    expect(sent).toHaveLength(3);
+    expect(sent[1].body.cmi).toEqual({ core: { lesson_location: 'page-2' } });
+    expect(sent[2].body.cmi).toEqual({ core: { lesson_location: 'page-1' } });
+  });
+
   it('re-sends changes the server refused', async () => {
     const service = createRuntimeHttpService({ isPageUnloading: () => false });
 
