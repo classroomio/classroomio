@@ -1,6 +1,7 @@
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   getLastCourseRootOrder,
+  getLastSectionItemOrder,
   isCourseRootOrderTaken,
   lockCourseForUpdate,
   shiftCourseRootOrders,
@@ -38,9 +39,9 @@ async function lockCourseGrouping(courseId: string, dbClient: DbOrTxClient) {
 /**
  * Returns the order a section should take, and frees that position. With no requested order the section goes last.
  * A requested order held by another entry moves that entry and every later one down one. In a grouped course
- * sections share positions with lessons and exercises outside any section; with grouping off, only with other
- * sections. `excludeId` is the section being moved. Locks the course row, so pass the transaction that writes the
- * section to keep other writers out until it commits.
+ * sections share positions with lessons, exercises and activities outside any section; with grouping off, only
+ * with other sections. `excludeId` is the section being moved. Locks the course row, so pass the transaction that
+ * writes the section to keep other writers out until it commits.
  */
 export async function claimSectionOrder(
   courseId: string,
@@ -69,4 +70,24 @@ export async function claimItemOrder<TOrder extends number | null | undefined>(
   if (placement.lessonId || (isGrouped && placement.sectionId)) return requestedOrder;
 
   return claimOrder(courseId, requestedOrder, excludeId, isGrouped ? 'outline' : 'items', dbClient);
+}
+
+/**
+ * Returns the order an activity should take, and frees that position. Activities are items, so one outside a section
+ * in a grouped course, or any activity with grouping off, takes the next position in the course's shared list. One in
+ * a section keeps the section's own numbering, so it goes after the section's last entry. Locks the course row, so
+ * pass the transaction that writes the activity.
+ */
+export async function claimActivityOrder(
+  courseId: string,
+  sectionId: string | null,
+  dbClient: DbOrTxClient = db
+): Promise<number> {
+  const isGrouped = await lockCourseGrouping(courseId, dbClient);
+  if (isGrouped && sectionId) {
+    const lastOrder = await getLastSectionItemOrder(sectionId, dbClient);
+    return lastOrder + 1;
+  }
+
+  return claimOrder(courseId, undefined, null, isGrouped ? 'outline' : 'items', dbClient);
 }

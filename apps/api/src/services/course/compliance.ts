@@ -3,6 +3,7 @@ import {
   createCourseCertificateIssue,
   createCourseCompletionNotificationEvent,
   createCourseCompletionRecord,
+  getComplianceCycleStartIso,
   getCourseComplianceHistoryRows,
   getCourseCurrentComplianceRows,
   getLatestComplianceRecordsByProfiles,
@@ -16,6 +17,8 @@ import {
 } from '@cio/db/queries/course/compliance';
 import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import { getCourseById } from '@cio/db/queries/course';
+import { deleteActivityCompletions, getActivitiesByCourseId } from '@cio/db/queries/activity/activity';
+import { getScormActivityStatsForProfile } from '@cio/db/queries/scorm/report';
 
 import { ROLE } from '@cio/utils/constants';
 import type {
@@ -172,7 +175,43 @@ function getCurrentIncompleteRecord(record: TCourseCompletionRecord | undefined 
   return record;
 }
 
-async function getComplianceExerciseSnapshot(exerciseId: string, groupMemberId: string) {
+async function getComplianceCompletionSnapshot(params: {
+  groupMemberId: string;
+  profileId: string;
+  course: { id: string; format: string };
+  exerciseId?: string | null;
+}): Promise<{ score: number | null; attempts: number | null; minutes?: number | null }> {
+  const { groupMemberId, exerciseId } = params;
+
+  if (!exerciseId) {
+    const activities = await getActivitiesByCourseId(params.course.id);
+    if (activities.length > 0) {
+      const activityIds = activities.map((activity) => activity.id);
+      const sinceIso = await getComplianceCycleStartIso(params.course.id, params.profileId);
+      const stats = await getScormActivityStatsForProfile(activityIds, params.profileId, db, sinceIso);
+      if (stats.length > 0) {
+        const scored = stats.filter((stat) => stat.bestScorePercent !== null);
+        const avgScore =
+          scored.length > 0
+            ? Math.round(scored.reduce((total, stat) => total + (stat.bestScorePercent ?? 0), 0) / scored.length)
+            : null;
+        const totalAttempts = stats.reduce((total, stat) => total + stat.attempts, 0);
+        const totalMinutes = Math.floor(stats.reduce((total, stat) => total + stat.timeSpentSeconds, 0) / 60);
+
+        return {
+          score: avgScore,
+          attempts: totalAttempts,
+          minutes: totalMinutes
+        };
+      }
+    }
+
+    return {
+      score: null,
+      attempts: null
+    };
+  }
+
   const [maxPoints, submissions] = await Promise.all([
     getExerciseMaxPoints(exerciseId),
     getStudentExerciseSubmissions(groupMemberId, exerciseId)
@@ -364,10 +403,13 @@ export async function syncComplianceProgressForMember(
 
   const completedAt = new Date().toISOString();
   const validUntil = addMonths(completedAt, course.compliance?.retakeIntervalMonths ?? 0);
-  const completionSnapshot = exerciseId
-    ? await getComplianceExerciseSnapshot(exerciseId, groupMemberId)
-    : { score: null, attempts: null };
-  const finalMinutes = suppliedMinutes ?? latestRecord.timeSpentMinutes;
+  const completionSnapshot = await getComplianceCompletionSnapshot({
+    groupMemberId,
+    profileId,
+    course,
+    exerciseId
+  });
+  const finalMinutes = suppliedMinutes ?? completionSnapshot.minutes ?? latestRecord.timeSpentMinutes;
   const finalScore = completionSnapshot.score ?? latestRecord.score;
   const finalAttempts = completionSnapshot.attempts ?? latestRecord.attempts;
   const finalStartedAt = latestRecord.startedAt ?? completedAt;
@@ -505,10 +547,17 @@ export async function resetCourseCompliance(courseId: string, payload: TCourseCo
   let updatedCount = 0;
 
   await db.transaction(async (tx) => {
+    const activities = await getActivitiesByCourseId(courseId, tx);
+    const activityIds = activities.map((activity) => activity.id);
+
     for (const student of students) {
       const profileId = student.member.profileId;
       if (!profileId) {
         continue;
+      }
+
+      if (activityIds.length > 0) {
+        await deleteActivityCompletions(activityIds, profileId, tx);
       }
 
       const existingRecord = recordByProfileId.get(profileId);
@@ -588,12 +637,13 @@ export async function extendCourseCompliance(courseId: string, payload: TCourseC
           continue;
         }
 
+        const nextCycleNumber = latestRecord ? latestRecord.cycleNumber + 1 : 1;
         await createCourseCompletionRecord(
           {
             courseId,
             groupMemberId: student.member.id,
             profileId,
-            cycleNumber: latestRecord ? latestRecord.cycleNumber + 1 : 1,
+            cycleNumber: nextCycleNumber,
             status: 'not_started',
             dueDate: payload.dueDate,
             attempts: 0,
@@ -601,6 +651,15 @@ export async function extendCourseCompliance(courseId: string, payload: TCourseC
           },
           tx
         );
+
+        if (nextCycleNumber > 1) {
+          const activities = await getActivitiesByCourseId(courseId, tx);
+          if (activities.length > 0) {
+            const activityIds = activities.map((activity) => activity.id);
+            await deleteActivityCompletions(activityIds, profileId, tx);
+          }
+        }
+
         createdCount += 1;
         continue;
       }
@@ -724,6 +783,12 @@ export async function runComplianceExpiryCheck() {
 
       processedCount += 1;
       if (created) {
+        const activities = await getActivitiesByCourseId(record.courseId, tx);
+        if (activities.length > 0) {
+          const activityIds = activities.map((activity) => activity.id);
+          await deleteActivityCompletions(activityIds, record.profileId, tx);
+        }
+
         createdCycleCount += 1;
       } else {
         skippedCount += 1;

@@ -1,5 +1,5 @@
 /**
- * Characterization fixtures for the SCORM activity platform (PR 0c).
+ * Characterization fixtures for the SCORM activity platform.
  *
  * Builders for five courses with no activities, plus two students with
  * partial progress and one student with a certificate. All outputs below

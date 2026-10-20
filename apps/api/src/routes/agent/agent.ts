@@ -81,6 +81,8 @@ import { getActivityCourseBinding } from '@cio/db/queries/agent/chat-resource';
 import { buildAgentTools, filterToolsForChatMode } from '@cio/core/services/agent/chat-tools';
 import { buildModelContextMessages } from '@cio/core/services/agent/model-context';
 import { summarizeConversation } from '@cio/core/services/agent/summarize';
+import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
+import { ContentType } from '@cio/utils/constants';
 import { agentHistoryRouter } from './history';
 import { agentRunsRouter } from './runs';
 
@@ -495,11 +497,19 @@ const agentCoreRouter = new Hono()
       if (context?.activityId) {
         try {
           await verifyActivityBelongsToCourse(context.activityId, courseId);
+          if (role === AgentRole.STUDENT) {
+            await assertEnrolledStudentContentAccess({
+              courseId,
+              profileId: user.id,
+              contentId: context.activityId,
+              type: ContentType.Activity
+            });
+          }
           const activity = await getActivityCourseBinding(context.activityId);
           activityTitle = activity?.title ?? undefined;
           activityInstructions = activity?.instructions ?? undefined;
         } catch {
-          // Activity not found or doesn't belong — continue without activity context
+          // Activity not found, locked, or doesn't belong — continue without activity context
         }
       }
 

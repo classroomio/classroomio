@@ -69,11 +69,11 @@ async function createActivityProgressFixture(suffix: string): Promise<ActivityPr
     .returning();
   const [lesson] = await db
     .insert(schema.lesson)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson one', order: 1 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Lesson one', slug: 'lesson-one', order: 1 })
     .returning();
   const [exercise] = await db
     .insert(schema.exercise)
-    .values({ courseId: course.id, sectionId: section.id, title: 'Quiz', order: 2 })
+    .values({ courseId: course.id, sectionId: section.id, title: 'Quiz', slug: 'quiz', order: 2 })
     .returning();
   const [activityOne] = await db
     .insert(schema.courseActivity)
@@ -385,7 +385,7 @@ describe.skipIf(!hasDatabase)('progress queries with activities present', () => 
       expect(userAnalytics).toMatchObject({
         activitiesCompleted: 1,
         activitiesCount: 2,
-        progressPercentage: 67
+        progressPercentage: 75
       });
     } finally {
       await cleanupActivityProgressFixture(fixture);

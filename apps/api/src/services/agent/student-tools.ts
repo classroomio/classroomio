@@ -5,12 +5,14 @@ import { z } from 'zod';
 import { db } from '@cio/db';
 import * as schema from '@cio/db/schema';
 import type { AiTutorSettings } from '@cio/ai-assistant';
+import { ContentType } from '@cio/utils/constants';
 
 import { getLesson } from '@cio/core/services/lesson/lesson';
 import { getLessonVideoTranscript } from '@cio/core/services/agent/lesson-transcript';
 import { getExercise } from '@cio/core/services/exercise/exercise';
 import { getCourseOutlineSummary } from '@cio/core/services/course/outline';
 import { getStudentSubmissionReview } from '@api/services/submission/student-submission';
+import { assertEnrolledStudentContentAccess } from '@api/services/course/access';
 import { AppError } from '@api/utils/errors';
 import { AgentEvent, trackAgentEvent } from '@cio/core/utils/tinybird';
 import {
@@ -240,7 +242,7 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
 
     search_course: tool({
       description:
-        'Search this course for lessons, exercises and activities whose title or body contains the query. Returns up to `limit` ranked snippets with ids you can pass to read_lesson / read_exercise.',
+        'Search this course for lessons, exercises and activities whose title or body contains the query. Returns up to `limit` ranked snippets with ids you can pass to read_lesson / read_exercise. Activity results are informational only; there is no read tool for activities.',
       inputSchema: searchCourseParam,
       execute: async (args) => {
         return executeStudentTool('search_course', { orgId, userId, courseId, args }, async () => {
@@ -296,6 +298,21 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
               .limit(limit)
           ]);
 
+          const accessibleActivityMatches: typeof activityMatches = [];
+          for (const activityMatch of activityMatches) {
+            try {
+              await assertEnrolledStudentContentAccess({
+                courseId,
+                profileId: userId,
+                contentId: activityMatch.id,
+                type: ContentType.Activity
+              });
+              accessibleActivityMatches.push(activityMatch);
+            } catch {
+              continue;
+            }
+          }
+
           const lessonsResult = lessonMatches.map((lm) => ({
             type: 'lesson' as const,
             id: lm.id,
@@ -310,7 +327,7 @@ export function buildStudentAgentTools(orgId: string, userId: string, courseId: 
             snippet: makeSnippet(em.description ?? em.title ?? '', args.query)
           }));
 
-          const activitiesResult = activityMatches.map((am) => ({
+          const activitiesResult = accessibleActivityMatches.map((am) => ({
             type: 'activity' as const,
             id: am.id,
             title: am.title,

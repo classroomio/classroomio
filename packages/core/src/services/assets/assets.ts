@@ -681,19 +681,18 @@ export async function selectAssetThumbnailService(orgId: string, assetId: string
 async function buildAssetStorageCleanupPayload(asset: TAsset): Promise<TAssetStorageCleanupPayload> {
   const config = getStorageConfig();
 
-  const prefixes: TAssetStorageCleanupPayload['prefixes'] = [
-    { bucket: config.bucketVideos, prefix: `${asset.id}/` },
-    { bucket: config.bucketMedia, prefix: `thumbnails/${asset.id}/` },
-    { bucket: config.bucketMedia, prefix: `audio/${asset.id}/` },
-    { bucket: config.bucketMedia, prefix: `transcripts/${asset.id}/` }
-  ];
-
-  if (asset.kind === 'scorm') {
-    prefixes.push({ bucket: config.bucketScorm, prefix: `scorm/${asset.id}/` });
-  }
+  const prefixes: TAssetStorageCleanupPayload['prefixes'] =
+    asset.kind === 'scorm'
+      ? [{ bucket: config.bucketScorm, prefix: `scorm/${asset.id}/` }]
+      : [
+          { bucket: config.bucketVideos, prefix: `${asset.id}/` },
+          { bucket: config.bucketMedia, prefix: `thumbnails/${asset.id}/` },
+          { bucket: config.bucketMedia, prefix: `audio/${asset.id}/` },
+          { bucket: config.bucketMedia, prefix: `transcripts/${asset.id}/` }
+        ];
 
   const keys: TAssetStorageCleanupPayload['keys'] = [];
-  if (asset.provider === 'upload' && asset.storageKey) {
+  if (asset.kind !== 'scorm' && asset.provider === 'upload' && asset.storageKey) {
     const bucket = asset.kind === 'document' ? config.bucketDocuments : config.bucketVideos;
     keys.push({ bucket, key: asset.storageKey });
   }
@@ -889,6 +888,11 @@ export async function attachAssetService(orgId: string, assetId: string, profile
 export async function detachAssetService(orgId: string, assetId: string, input: TAssetDetach) {
   try {
     await getAssetService(orgId, assetId);
+
+    if (input.slotType === ACTIVITY_PACKAGE_SLOT) {
+      throw new AppError('Detach a package through the activity service', ErrorCodes.VALIDATION_ERROR, 400);
+    }
+
     const detached = await deleteAssetUsage(orgId, assetId, input);
     if (!detached) {
       throw new AppError('Asset usage not found', ErrorCodes.ASSET_USAGE_NOT_FOUND, 404);

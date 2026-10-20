@@ -255,11 +255,11 @@ export const ZCourseImportDraftPayload = z
     }
     for (const [, orders] of lessonsBySection) {
       const sorted = [...orders].sort((a, b) => a - b);
-      if (sorted.some((order, i) => order !== i + 1)) {
+      if (sorted.some((order, index) => index > 0 && order === sorted[index - 1])) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['lessons'],
-          message: 'Lesson orders within each section must be a contiguous 1-based sequence (1, 2, 3, ...)'
+          message: 'Lesson orders within a section must be unique'
         });
       }
     }
@@ -356,40 +356,50 @@ export const ZCourseImportDraftPayload = z
       }
       for (const [, orders] of exercisesByGroup) {
         const sorted = [...orders].sort((a, b) => a - b);
-        if (sorted.some((order, i) => order !== i + 1)) {
+        if (sorted.some((order, index) => index > 0 && order === sorted[index - 1])) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             path: ['exercises'],
-            message: 'Exercise orders within each group must be a contiguous 1-based sequence (1, 2, 3, ...)'
+            message: 'Exercise orders within a group must be unique'
           });
         }
       }
     }
 
-    const sharedOrdersBySection = new Map<string, { section: string; orders: number[] }>();
-    const pushSharedOrder = (sectionExternalId: string | undefined, order: number) => {
+    const sharedOrdersBySection = new Map<
+      string,
+      { section: string; orders: number[]; ordersByType: Map<string, number[]> }
+    >();
+    const pushSharedOrder = (sectionExternalId: string | undefined, order: number, type: string) => {
       if (!sectionExternalId || !sectionIds.has(sectionExternalId)) {
         return;
       }
 
-      const entry = sharedOrdersBySection.get(sectionExternalId) ?? { section: sectionExternalId, orders: [] };
+      const entry = sharedOrdersBySection.get(sectionExternalId) ?? {
+        section: sectionExternalId,
+        orders: [],
+        ordersByType: new Map<string, number[]>()
+      };
       entry.orders.push(order);
+      const typeOrders = entry.ordersByType.get(type) ?? [];
+      typeOrders.push(order);
+      entry.ordersByType.set(type, typeOrders);
       sharedOrdersBySection.set(sectionExternalId, entry);
     };
     const sectionOfLesson = new Map(value.lessons.map((lesson) => [lesson.externalId, lesson.sectionExternalId]));
     for (const lesson of value.lessons) {
-      pushSharedOrder(lesson.sectionExternalId, lesson.order);
+      pushSharedOrder(lesson.sectionExternalId, lesson.order, 'lesson');
     }
     for (const exercise of value.exercises ?? []) {
       const sectionExternalId = exercise.lessonExternalId
         ? sectionOfLesson.get(exercise.lessonExternalId)
         : exercise.sectionExternalId;
-      pushSharedOrder(sectionExternalId, exercise.order);
+      pushSharedOrder(sectionExternalId, exercise.order, 'exercise');
     }
     for (const activity of value.activities ?? []) {
-      pushSharedOrder(activity.sectionExternalId, activity.order);
+      pushSharedOrder(activity.sectionExternalId, activity.order, 'activity');
     }
-    for (const { section, orders } of sharedOrdersBySection.values()) {
+    for (const { section, orders, ordersByType } of sharedOrdersBySection.values()) {
       const sorted = [...orders].sort((a, b) => a - b);
       if (sorted.some((order, i) => order > i + 1)) {
         ctx.addIssue({
@@ -397,6 +407,17 @@ export const ZCourseImportDraftPayload = z
           path: ['activities'],
           message: `Content orders in section "${section}" must not leave gaps across lessons, exercises and activities`
         });
+      }
+
+      for (const [type, typeOrders] of ordersByType) {
+        const uniqueOrders = new Set(typeOrders);
+        if (uniqueOrders.size !== typeOrders.length) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['activities'],
+            message: `Content orders in section "${section}" must be unique per ${type}`
+          });
+        }
       }
     }
   });

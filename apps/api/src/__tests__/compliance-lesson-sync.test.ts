@@ -21,6 +21,7 @@ vi.mock('@cio/db/queries/course/compliance', () => ({
   createCourseCertificateIssue: vi.fn(),
   createCourseCompletionNotificationEvent: vi.fn(),
   createCourseCompletionRecord: vi.fn(),
+  getComplianceCycleStartIso: vi.fn().mockResolvedValue(null),
   getCourseComplianceHistoryRows: vi.fn(),
   getCourseCurrentComplianceRows: vi.fn(),
   getLatestComplianceRecordsByProfiles: vi.fn(),
@@ -35,6 +36,15 @@ vi.mock('@cio/db/queries/course/compliance', () => ({
 vi.mock('@cio/db/queries/course/certification-exercise', () => ({
   getExerciseTitleAndMaxPoints: vi.fn(),
   getStudentSubmissionsForExercise: vi.fn()
+}));
+
+vi.mock('@cio/db/queries/activity/activity', () => ({
+  getActivitiesByCourseId: vi.fn().mockResolvedValue([]),
+  deleteActivityCompletions: vi.fn().mockResolvedValue(0)
+}));
+
+vi.mock('@cio/db/queries/scorm/report', () => ({
+  getScormActivityStatsForProfile: vi.fn().mockResolvedValue([])
 }));
 
 vi.mock('@cio/db/drizzle', () => ({
@@ -173,6 +183,37 @@ describe('syncComplianceProgressForMember', () => {
 
     expect(result).toMatchObject({ completed: true });
     expect(db.transaction).not.toHaveBeenCalled();
+  });
+
+  it('captures SCORM activity score, attempts, and minutes when no exercise is required', async () => {
+    const { getActivitiesByCourseId } = await import('@cio/db/queries/activity/activity');
+    const { getScormActivityStatsForProfile } = await import('@cio/db/queries/scorm/report');
+    vi.mocked(getActivitiesByCourseId).mockResolvedValue([{ id: 'act-1' }] as never);
+    vi.mocked(getScormActivityStatsForProfile).mockResolvedValue([
+      {
+        activityId: 'act-1',
+        attempts: 2,
+        scorePercent: 85,
+        bestScorePercent: 90,
+        timeSpentSeconds: 1800,
+        completed: true,
+        lastLaunchedAt: null
+      }
+    ]);
+
+    const result = await syncComplianceProgressForMember('course-1', 'profile-1', 'activity');
+
+    expect(result).toMatchObject({ status: 'compliant', completed: true });
+    expect(updateCourseCompletionRecord).toHaveBeenCalledWith(
+      'record-1',
+      expect.objectContaining({
+        status: 'compliant',
+        score: 90,
+        attempts: 2,
+        timeSpentMinutes: 30
+      }),
+      expect.anything()
+    );
   });
 });
 

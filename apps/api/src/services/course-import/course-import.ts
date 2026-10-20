@@ -387,15 +387,11 @@ async function resolveDraftActivities(
 ): Promise<Map<string, TCourseActivity>> {
   const byId = new Map<string, TCourseActivity>();
 
-  if (!activities || activities.length === 0) {
-    return byId;
-  }
-
   for (const activity of await getActivitiesByCourseId(courseId)) {
     byId.set(activity.id, activity);
   }
 
-  for (const reference of activities) {
+  for (const reference of activities ?? []) {
     if (!byId.has(reference.existingActivityId)) {
       throw new AppError(
         `Activity "${reference.existingActivityId}" does not belong to this course`,
@@ -498,7 +494,8 @@ async function listSnapshotExercises(courseId: string): Promise<SnapshotExercise
 function buildDraftExercisesSnapshot(
   exercises: SnapshotExercise[],
   isRootExercise: (exercise: SnapshotExercise) => boolean,
-  rootOrders: Map<string, number>
+  rootOrders: Map<string, number>,
+  sectionItemOrders: Map<string, number>
 ): TCourseImportDraftPayload['exercises'] {
   const exerciseOrderCounters = new Map<string, number>();
 
@@ -506,9 +503,10 @@ function buildDraftExercisesSnapshot(
     const isRoot = isRootExercise(exercise);
     const groupKey = exercise.lessonId ?? exercise.sectionId ?? '';
     const nextOrder = (exerciseOrderCounters.get(groupKey) ?? 0) + 1;
-    if (!isRoot) exerciseOrderCounters.set(groupKey, nextOrder);
+    const sharedOrder = isRoot ? undefined : sectionItemOrders.get(`exercise:${exercise.id}`);
+    if (!isRoot && sharedOrder === undefined) exerciseOrderCounters.set(groupKey, nextOrder);
 
-    const order = isRoot ? rootOrders.get(`exercise:${exercise.id}`)! : nextOrder;
+    const order = isRoot ? rootOrders.get(`exercise:${exercise.id}`)! : (sharedOrder ?? nextOrder);
 
     return {
       externalId: exercise.id,
@@ -578,6 +576,47 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
       .filter(isRootExercise)
       .map((exercise) => ({ kind: 'exercise' as const, id: exercise.id, order: exercise.order }))
   ]);
+
+  const SECTION_ITEM_KIND = { lesson: 0, exercise: 1, activity: 2 } as const;
+  const lessonById = new Map(lessons.map((lesson) => [lesson.id, lesson]));
+  const sectionItemOrders = new Map<string, number>();
+  const orderedItemsBySection = new Map<string, { key: string; kind: number; id: string; order: number }[]>();
+  const trackSectionItem = (
+    sectionId: string | null | undefined,
+    kind: number,
+    key: string,
+    id: string,
+    order: unknown
+  ) => {
+    if (!sectionId || !outlineSectionIds.has(sectionId)) return;
+
+    const entries = orderedItemsBySection.get(sectionId) ?? [];
+    entries.push({ key, kind, id, order: Number(order) || 0 });
+    orderedItemsBySection.set(sectionId, entries);
+  };
+
+  for (const lesson of lessons) {
+    trackSectionItem(lesson.sectionId, SECTION_ITEM_KIND.lesson, `lesson:${lesson.id}`, lesson.id, lesson.order);
+  }
+  for (const exercise of exercises) {
+    const sectionId = exercise.lessonId ? lessonById.get(exercise.lessonId)?.sectionId : exercise.sectionId;
+    trackSectionItem(sectionId, SECTION_ITEM_KIND.exercise, `exercise:${exercise.id}`, exercise.id, exercise.order);
+  }
+  for (const activity of activities) {
+    trackSectionItem(
+      activity.sectionId,
+      SECTION_ITEM_KIND.activity,
+      `activity:${activity.id}`,
+      activity.id,
+      activity.order
+    );
+  }
+  for (const entries of orderedItemsBySection.values()) {
+    entries.sort(
+      (left, right) => left.order - right.order || left.kind - right.kind || left.id.localeCompare(right.id)
+    );
+    entries.forEach((entry, index) => sectionItemOrders.set(entry.key, index + 1));
+  }
   const normalizedSections = outlineSections
     .map((section) => ({
       externalId: section.id,
@@ -589,7 +628,7 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
   let sectionReferenceMap = new Map(normalizedSections.map((section) => [section.externalId, section.externalId]));
   if (activities.some(isRootActivity)) {
     const syntheticSectionId = `synthetic:${courseId}:ungrouped`;
-    const nextOrder = normalizedSections.length > 0 ? Math.max(...normalizedSections.map((s) => s.order)) + 1 : 1;
+    const nextOrder = rootOrders.size + 1;
     normalizedSections.push({
       externalId: syntheticSectionId,
       title: 'Ungrouped',
@@ -606,14 +645,12 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
   }
 
   const sortedLessons = [...lessons].sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
-  const lessonOrderCounters = new Map<string, number>();
   let droppedVideoCount = 0;
   const normalizedLessons = sortedLessons.map((lesson) => {
     const sectionExternalId = isRootLesson(lesson) ? undefined : lesson.sectionId!;
-    const nextLessonOrder = sectionExternalId ? (lessonOrderCounters.get(sectionExternalId) ?? 0) + 1 : 0;
-    if (sectionExternalId) lessonOrderCounters.set(sectionExternalId, nextLessonOrder);
-
-    const order = sectionExternalId ? nextLessonOrder : rootOrders.get(`lesson:${lesson.id}`)!;
+    const order = sectionExternalId
+      ? (sectionItemOrders.get(`lesson:${lesson.id}`) ?? 0)
+      : rootOrders.get(`lesson:${lesson.id}`)!;
 
     const storedVideos = Array.isArray(lesson.videos) ? lesson.videos : [];
     const parsedVideos = storedVideos.map((video) => ZLessonVideoItem.safeParse(video));
@@ -693,14 +730,17 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
     );
   }
 
-  const normalizedExercises = buildDraftExercisesSnapshot(exercises, isRootExercise, rootOrders);
+  const normalizedExercises = buildDraftExercisesSnapshot(exercises, isRootExercise, rootOrders, sectionItemOrders);
 
   const sortedActivities = [...activities].sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
   const maxOrderBySection = new Map<string, number>();
   for (const lesson of normalizedLessons) {
+    const lessonSectionExternalId = lesson.sectionExternalId;
+    if (!lessonSectionExternalId) continue;
+
     maxOrderBySection.set(
-      lesson.sectionExternalId,
-      Math.max(maxOrderBySection.get(lesson.sectionExternalId) ?? 0, lesson.order)
+      lessonSectionExternalId,
+      Math.max(maxOrderBySection.get(lessonSectionExternalId) ?? 0, lesson.order)
     );
   }
   const lessonSectionByExternalId = new Map(
@@ -719,8 +759,9 @@ async function buildCourseStructureSnapshot(orgId: string, courseId: string): Pr
       activity.sectionId && sectionReferenceMap.has(activity.sectionId)
         ? activity.sectionId
         : normalizedSections[normalizedSections.length - 1]!.externalId;
-    const nextActivityOrder = (maxOrderBySection.get(sectionExternalId) ?? 0) + 1;
-    maxOrderBySection.set(sectionExternalId, nextActivityOrder);
+    const sharedOrder = sectionItemOrders.get(`activity:${activity.id}`);
+    const nextActivityOrder = sharedOrder ?? (maxOrderBySection.get(sectionExternalId) ?? 0) + 1;
+    if (sharedOrder === undefined) maxOrderBySection.set(sectionExternalId, nextActivityOrder);
 
     return {
       existingActivityId: activity.id,
@@ -1153,6 +1194,9 @@ export async function publishCourseImportDraftToExistingCourseService(
     const courseCompliance = overrides.compliance ?? draft.course.compliance;
     const preferredLocale = draft.course.locale as TLocale;
     const bannerImageUrl = await resolvePublishBannerImage(courseTitle, overrides);
+    const draftExistingActivityIds = new Set(
+      (draft.activities ?? []).map((activity) => activity.existingActivityId).filter((id): id is string => Boolean(id))
+    );
 
     if (syncMode === 'replace') {
       const [preSections, preActivities] = await Promise.all([
@@ -1162,7 +1206,10 @@ export async function publishCourseImportDraftToExistingCourseService(
       const draftSectionIds = new Set(draft.sections.map((section) => section.externalId));
       const removedWithPackages = preSections.filter(
         (section) =>
-          !draftSectionIds.has(section.id) && preActivities.some((activity) => activity.sectionId === section.id)
+          !draftSectionIds.has(section.id) &&
+          preActivities.some(
+            (activity) => activity.sectionId === section.id && !draftExistingActivityIds.has(activity.id)
+          )
       );
 
       if (removedWithPackages.length > 0) {
@@ -1189,7 +1236,10 @@ export async function publishCourseImportDraftToExistingCourseService(
       listCourseSections(course.id),
       listLessons(course.id)
     ]);
-    const existingExercises = await listExercises(course.id);
+    const [existingExercises, placedActivities] = await Promise.all([
+      listExercises(course.id),
+      getActivitiesByCourseId(course.id)
+    ]);
     const existingActivities = [...activityById.values()];
     const existingSectionIds = new Set(existingSections.map((section) => section.id));
     const existingLessonIds = new Set(existingLessons.map((lesson) => lesson.id));
@@ -1245,21 +1295,30 @@ export async function publishCourseImportDraftToExistingCourseService(
     let createdLessons = 0;
     let updatedLessons = 0;
 
-    const nextLessonOrderBySection = new Map<string, number>();
-    for (const existingLesson of existingLessons) {
-      if (!existingLesson.sectionId) {
-        continue;
+    const maxOrderBySection = new Map<string, number>();
+    const trackOrder = (sectionId: string | null | undefined, order: unknown) => {
+      if (!sectionId) {
+        return;
       }
 
-      const current = nextLessonOrderBySection.get(existingLesson.sectionId) ?? 0;
-      nextLessonOrderBySection.set(existingLesson.sectionId, Math.max(current, Number(existingLesson.order) || 0));
+      const numeric = Number(order) || 0;
+      maxOrderBySection.set(sectionId, Math.max(maxOrderBySection.get(sectionId) ?? 0, numeric));
+    };
+    for (const existingLesson of existingLessons) {
+      trackOrder(existingLesson.sectionId, existingLesson.order);
+    }
+    for (const existingExercise of existingExercises) {
+      trackOrder(existingExercise.sectionId, existingExercise.order);
+    }
+    for (const existingActivity of existingActivities) {
+      trackOrder(existingActivity.sectionId, existingActivity.order);
     }
 
-    const claimNextLessonOrder = (sectionId: string | undefined, externalId: string) => {
+    const claimNextSectionOrder = (sectionId: string | undefined, externalId: string) => {
       if (!sectionId) return mergeRootOrders.get(`lesson:${externalId}`) ?? ++nextRootOrder;
 
-      const nextOrder = (nextLessonOrderBySection.get(sectionId) ?? 0) + 1;
-      nextLessonOrderBySection.set(sectionId, nextOrder);
+      const nextOrder = (maxOrderBySection.get(sectionId) ?? 0) + 1;
+      maxOrderBySection.set(sectionId, nextOrder);
 
       return nextOrder;
     };
@@ -1280,7 +1339,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         let mergedOrder: number | undefined;
         if (isMerge) {
           if (sectionChanged) {
-            mergedOrder = claimNextLessonOrder(sectionId, lesson.externalId);
+            mergedOrder = claimNextSectionOrder(sectionId, lesson.externalId);
           }
         } else {
           mergedOrder = draftOrder;
@@ -1305,7 +1364,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         continue;
       }
 
-      const nextLessonOrder = claimNextLessonOrder(sectionId, lesson.externalId);
+      const nextLessonOrder = claimNextSectionOrder(sectionId, lesson.externalId);
       const createdLesson = await createLesson(course.id, {
         courseId: course.id,
         title: lesson.title,
@@ -1318,25 +1377,6 @@ export async function publishCourseImportDraftToExistingCourseService(
       });
       lessonIdMap.set(lesson.externalId, createdLesson.id);
       createdLessons += 1;
-    }
-
-    const maxOrderBySection = new Map<string, number>();
-    const trackOrder = (sectionId: string | null | undefined, order: unknown) => {
-      if (!sectionId) {
-        return;
-      }
-
-      const numeric = Number(order) || 0;
-      maxOrderBySection.set(sectionId, Math.max(maxOrderBySection.get(sectionId) ?? 0, numeric));
-    };
-    for (const existingLesson of existingLessons) {
-      trackOrder(existingLesson.sectionId, existingLesson.order);
-    }
-    for (const existingExercise of existingExercises) {
-      trackOrder(existingExercise.sectionId, existingExercise.order);
-    }
-    for (const existingActivity of existingActivities) {
-      trackOrder(existingActivity.sectionId, existingActivity.order);
     }
 
     let updatedActivities = 0;
@@ -1413,22 +1453,39 @@ export async function publishCourseImportDraftToExistingCourseService(
     let createdExercises = 0;
     let updatedExercises = 0;
 
-    const nextExerciseOrderByGroup = new Map<string, number>();
+    const nextLessonExerciseOrderByGroup = new Map<string, number>();
     const groupKeyForExercise = (lessonId: string | null | undefined, sectionId: string | null | undefined) =>
       lessonId || sectionId || 'ungrouped';
     for (const existingExercise of existingExercises) {
-      const groupKey = groupKeyForExercise(existingExercise.lessonId, existingExercise.sectionId);
-      const current = nextExerciseOrderByGroup.get(groupKey) ?? 0;
-      nextExerciseOrderByGroup.set(groupKey, Math.max(current, Number(existingExercise.order) || 0));
+      if (!existingExercise.lessonId) continue;
+
+      const current = nextLessonExerciseOrderByGroup.get(existingExercise.lessonId) ?? 0;
+      nextLessonExerciseOrderByGroup.set(
+        existingExercise.lessonId,
+        Math.max(current, Number(existingExercise.order) || 0)
+      );
     }
 
-    const claimNextExerciseOrder = (groupKey: string, externalId: string) => {
-      if (groupKey === 'ungrouped') return mergeRootOrders.get(`exercise:${externalId}`) ?? ++nextRootOrder;
+    const claimNextExerciseOrder = (
+      lessonId: string | undefined,
+      sectionId: string | undefined,
+      externalId: string
+    ) => {
+      if (lessonId) {
+        const nextOrder = (nextLessonExerciseOrderByGroup.get(lessonId) ?? 0) + 1;
+        nextLessonExerciseOrderByGroup.set(lessonId, nextOrder);
 
-      const nextOrder = (nextExerciseOrderByGroup.get(groupKey) ?? 0) + 1;
-      nextExerciseOrderByGroup.set(groupKey, nextOrder);
+        return nextOrder;
+      }
 
-      return nextOrder;
+      if (sectionId) {
+        const nextOrder = (maxOrderBySection.get(sectionId) ?? 0) + 1;
+        maxOrderBySection.set(sectionId, nextOrder);
+
+        return nextOrder;
+      }
+
+      return mergeRootOrders.get(`exercise:${externalId}`) ?? ++nextRootOrder;
     };
 
     const exerciseIdMap = new Map<string, string>();
@@ -1449,7 +1506,7 @@ export async function publishCourseImportDraftToExistingCourseService(
         let exerciseOrder: number | undefined;
         if (isMerge) {
           if (groupChanged) {
-            exerciseOrder = claimNextExerciseOrder(destGroupKey, exercise.externalId);
+            exerciseOrder = claimNextExerciseOrder(payload.lessonId, payload.sectionId, exercise.externalId);
           }
         } else {
           exerciseOrder = payload.order;
@@ -1471,8 +1528,9 @@ export async function publishCourseImportDraftToExistingCourseService(
         continue;
       }
 
-      const groupKey = groupKeyForExercise(payload.lessonId, payload.sectionId);
-      const exerciseOrder = isMerge ? claimNextExerciseOrder(groupKey, exercise.externalId) : payload.order;
+      const exerciseOrder = isMerge
+        ? claimNextExerciseOrder(payload.lessonId, payload.sectionId, exercise.externalId)
+        : payload.order;
 
       const createdExercise = await createExercise({
         courseId: course.id,
@@ -1496,8 +1554,7 @@ export async function publishCourseImportDraftToExistingCourseService(
     const referencedExerciseIds = new Set(
       (draft.exercises ?? []).map((exercise) => exercise.externalId).filter((id) => existingExerciseIds.has(id))
     );
-    const referencedActivityIds = new Set((draft.activities ?? []).map((activity) => activity.existingActivityId));
-    const placedActivities = await getActivitiesByCourseId(course.id);
+    const referencedActivityIds = draftExistingActivityIds;
     let deletedLessonLanguages = 0;
     let deletedExercises = 0;
     let deletedLessons = 0;
@@ -1507,7 +1564,9 @@ export async function publishCourseImportDraftToExistingCourseService(
       const removedSectionsWithActivities = existingSections.filter(
         (section) =>
           !referencedSectionIds.has(section.id) &&
-          placedActivities.some((activity) => activity.sectionId === section.id)
+          placedActivities.some(
+            (activity) => activity.sectionId === section.id && !referencedActivityIds.has(activity.id)
+          )
       );
 
       if (removedSectionsWithActivities.length > 0) {
@@ -1624,7 +1683,7 @@ export async function publishCourseImportDraftToExistingCourseService(
       untouchedSections: Math.max(existingSections.length - referencedSectionIds.size - deletedSections, 0),
       untouchedLessons: Math.max(existingLessons.length - referencedLessonIds.size - deletedLessons, 0),
       untouchedExercises: Math.max(existingExercises.length - referencedExerciseIds.size - deletedExercises, 0),
-      untouchedActivities: Math.max(existingActivities.length - referencedActivityIds.size, 0),
+      untouchedActivities: Math.max(placedActivities.length - referencedActivityIds.size, 0),
       localeCount: new Set(draft.lessonLanguages.map((item) => item.locale)).size
     };
   } catch (error) {

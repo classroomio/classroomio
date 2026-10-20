@@ -213,8 +213,14 @@ export async function getCourseContentItems(
 export async function countContentStudentWork(
   lessonIds: string[],
   exerciseIds: string[],
+  activityIds: string[],
   dbClient: DbOrTxClient = db
-): Promise<{ submissions: number; lessonCompletions: number }> {
+): Promise<{
+  submissions: number;
+  lessonCompletions: number;
+  activityCompletions: number;
+  activityAttempts: number;
+}> {
   try {
     const [submissionRow] =
       exerciseIds.length > 0
@@ -230,8 +236,27 @@ export async function countContentStudentWork(
             .from(schema.lessonCompletion)
             .where(inArray(schema.lessonCompletion.lessonId, lessonIds))
         : [{ total: 0 }];
+    const [activityCompletionRow] =
+      activityIds.length > 0
+        ? await dbClient
+            .select({ total: count() })
+            .from(schema.activityCompletion)
+            .where(inArray(schema.activityCompletion.activityId, activityIds))
+        : [{ total: 0 }];
+    const [activityAttemptRow] =
+      activityIds.length > 0
+        ? await dbClient
+            .select({ total: count() })
+            .from(schema.scormAttempt)
+            .where(inArray(schema.scormAttempt.activityId, activityIds))
+        : [{ total: 0 }];
 
-    return { submissions: submissionRow?.total ?? 0, lessonCompletions: completionRow?.total ?? 0 };
+    return {
+      submissions: submissionRow?.total ?? 0,
+      lessonCompletions: completionRow?.total ?? 0,
+      activityCompletions: activityCompletionRow?.total ?? 0,
+      activityAttempts: activityAttemptRow?.total ?? 0
+    };
   } catch (error) {
     console.error('countContentStudentWork error:', error);
     throw new Error(`Failed to count student work: ${error instanceof Error ? error.message : 'Unknown error'}`);

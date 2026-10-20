@@ -2,11 +2,14 @@ import { db, type DbOrTxClient } from '@cio/db/drizzle';
 import {
   clearActivityCompletions,
   getActivityById,
+  getActivityCompletionsByProfile,
   markActivityCompleteOnce,
-  updateActivity
+  updateActivity,
+  upsertActivityCompletion
 } from '@cio/db/queries/activity';
 import { deleteAssetUsagesByTarget, createAssetUsage, getAssetById } from '@cio/db/queries/assets';
-import { getOrgIdByCourseId } from '@cio/db/queries/course';
+import { getCourseById, getOrgIdByCourseId } from '@cio/db/queries/course';
+import { getComplianceCycleStartIso } from '@cio/db/queries/course/compliance';
 import { transferScormPackageAsset } from '../../../assets/asset-transfer';
 import {
   getCurrentPackageVersion,
@@ -19,7 +22,9 @@ import {
   closeOpenAttemptsForActivity,
   getActivityOpenAttemptCounts,
   getLatestScormAttempt,
-  listAttemptProfileIdsByActivity
+  listAttemptProfileIdsByActivity,
+  listScormAttemptsForProfile,
+  updateScormAttempt
 } from '@cio/db/queries/scorm/attempt';
 import { listLatestScoAttemptsByAttempt } from '@cio/db/queries/scorm/sco-attempt';
 import { AppError, ErrorCodes } from '@cio/utils/errors';
@@ -27,7 +32,13 @@ import { LICENSE_FEATURE } from '@cio/utils/license';
 import { ACTIVITY_PACKAGE_SLOT } from '@cio/utils/validation/assets/assets';
 import { ZScormSettings, type TScormSettings } from '@cio/utils/validation/activity/scorm';
 import { isScormRuleMet } from '@cio/activity-packages';
-import { attemptModuleOutcomes, getScormModuleProgress, launchScormActivity, packageFormat } from './launch';
+import {
+  attemptModuleOutcomes,
+  getScormModuleProgress,
+  launchScormActivity,
+  launchableUnits,
+  packageFormat
+} from './launch';
 import {
   getComplianceSnapshot as fetchComplianceSnapshot,
   getLearnerDetail as fetchLearnerDetail,
@@ -48,6 +59,7 @@ import type {
   ActivityProgressContext,
   ActivityProvider,
   ActivityResultsSummary,
+  ActivitySettingsUpdate,
   GoLiveBlocker,
   ScormLaunchModule
 } from '../types';
@@ -153,42 +165,80 @@ async function resolvePackagePayload(assetId: string) {
 
 /**
  * Re-evaluates every learner's latest attempt against new completion settings
- * and flips their activity completion to match, so the table, badges and
- * summary agree after a rule change. Learners whose attempt version is gone
- * keep their flag. Course-level compliance records are untouched.
+ * and flips their activity completion to match. Attempts started before a
+ * learner's current compliance cycle are left alone, and a current-cycle
+ * attempt that meets the rule refreshes a completion carried over from an
+ * earlier cycle. Returns the learners who became complete, so the caller can
+ * run course-level side effects once the transaction commits.
  */
 async function recomputeActivityCompletions(
   activityId: string,
   settings: TScormSettings,
   tx: DbOrTxClient
-): Promise<void> {
+): Promise<ActivitySettingsUpdate> {
   const rule = {
     rule: settings.completionRule,
     minScorePercent: settings.minScorePercent,
     completionModules: settings.completionModules
   };
+  const activity = await getActivityById(activityId, tx);
+  const [course] = activity ? await getCourseById(activity.courseId, tx) : [];
+  const isCompliance = course?.type === 'COMPLIANCE';
   const profileIds = await listAttemptProfileIdsByActivity(activityId, tx);
+  const newlyCompletedProfileIds: string[] = [];
 
   for (const profileId of profileIds) {
-    const latest = await getLatestScormAttempt(activityId, profileId, tx);
-    if (!latest) continue;
+    const attempts = await listScormAttemptsForProfile(activityId, profileId, tx);
+    if (attempts.length === 0) continue;
 
-    const version = await getPackageVersionById(latest.packageVersionId, tx);
-    if (!version) continue;
+    const cycleStart = isCompliance && course ? await getComplianceCycleStartIso(course.id, profileId, tx) : null;
+    const cycleAttempts = cycleStart !== null ? attempts.filter((a) => a.startedAt >= cycleStart) : attempts;
+    if (cycleAttempts.length === 0) continue;
 
-    const format = packageFormat(version.format);
-    const units = await listPackageUnitsByVersion(version.id, tx);
-    const tries = await listLatestScoAttemptsByAttempt(latest.id, tx);
-    const triesByUnit = new Map(tries.map((row) => [row.unitId, row]));
-    const outcomes = attemptModuleOutcomes(units, triesByUnit, format);
-    if (outcomes.length === 0) continue;
+    let anyAttemptMetRule = false;
 
-    if (isScormRuleMet(rule, outcomes)) {
-      await markActivityCompleteOnce(activityId, profileId, tx);
-    } else {
-      await clearActivityCompletions([activityId], profileId, tx);
+    for (const attempt of cycleAttempts) {
+      const version = await getPackageVersionById(attempt.packageVersionId, tx);
+      if (!version) continue;
+
+      const format = packageFormat(version.format);
+      const units = await listPackageUnitsByVersion(version.id, tx);
+      const tries = await listLatestScoAttemptsByAttempt(attempt.id, tx);
+      const triesByUnit = new Map(tries.map((row) => [row.unitId, row]));
+      const outcomes = attemptModuleOutcomes(units, triesByUnit, format);
+      if (outcomes.length === 0) continue;
+
+      if (isScormRuleMet(rule, outcomes)) {
+        anyAttemptMetRule = true;
+        break;
+      }
     }
+
+    const latest = cycleAttempts[0];
+
+    if (!anyAttemptMetRule) {
+      await clearActivityCompletions([activityId], profileId, tx);
+      if (latest && latest.closedAt !== null && latest.closeReason === 'finished') {
+        await updateScormAttempt(latest.id, { closedAt: null, closeReason: null }, tx);
+      }
+      continue;
+    }
+
+    if (await markActivityCompleteOnce(activityId, profileId, tx)) {
+      newlyCompletedProfileIds.push(profileId);
+      continue;
+    }
+
+    if (cycleStart === null) continue;
+
+    const completedThisCycle = await getActivityCompletionsByProfile([activityId], profileId, tx, cycleStart);
+    if (completedThisCycle.length > 0) continue;
+
+    await upsertActivityCompletion({ activityId, profileId, isComplete: true }, tx);
+    newlyCompletedProfileIds.push(profileId);
   }
+
+  return { newlyCompletedProfileIds };
 }
 
 export const scormProvider: ActivityProvider = {
@@ -239,7 +289,7 @@ export const scormProvider: ActivityProvider = {
       package: { asset, versions, currentVersion, units, versionStats, attemptCounts }
     };
   },
-  async updateSettings(activityId: string, input: unknown, tx: DbOrTxClient): Promise<void> {
+  async updateSettings(activityId: string, input: unknown, tx: DbOrTxClient): Promise<ActivitySettingsUpdate> {
     const parsed = ZScormSettings.safeParse(input);
     if (!parsed.success) throw new AppError('Invalid SCORM settings', ErrorCodes.VALIDATION_ERROR, 400);
 
@@ -255,7 +305,7 @@ export const scormProvider: ActivityProvider = {
       tx
     );
     await updateActivity(activityId, {}, tx);
-    await recomputeActivityCompletions(activityId, parsed.data, tx);
+    return recomputeActivityCompletions(activityId, parsed.data, tx);
   },
   async launch(context: ActivityLaunchContext): Promise<ActivityLaunchResult> {
     return launchScormActivity(context);

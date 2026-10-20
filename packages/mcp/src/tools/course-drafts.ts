@@ -97,18 +97,6 @@ export function registerCourseDraftTools(server: McpServer, apiClient: Classroom
   );
 
   server.tool(
-    'reorder_course_content',
-    'Batch reorder live course sections and lesson, exercise or activity content without creating a draft. Use this for section ordering or moving/reordering lessons, exercises and activities between sections. For items, pass type as LESSON, EXERCISE or ACTIVITY and use sectionId to move between sections or null for ungrouped content.',
-    reorderCourseContentShape,
-    async (args) => {
-      const { courseId, ...rawPayload } = ZReorderCourseContentToolInput.parse(args);
-      const payload = ZCourseContentReorder.parse(rawPayload);
-      const result = await apiClient.reorderCourseContent(courseId, payload);
-      return jsonContent(result);
-    }
-  );
-
-  server.tool(
     'create_course_draft',
     `Create an unpublished course draft from structured course JSON, before the first publish. ${DRAFT_VIDEO_HINT}`,
     createCourseDraftShape,
