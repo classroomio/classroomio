@@ -96,7 +96,8 @@ export async function startSession(launchToken: string, hooks: SessionHooks): Pr
       launchToken,
       state.debug,
       () => notifyCompleted(channel),
-      () => notifyProgress(channel)
+      () => notifyProgress(channel),
+      state.cmi
     )
   );
 

@@ -1,6 +1,6 @@
 import './../bootstrap';
 
-import { Worker } from 'bullmq';
+import { UnrecoverableError, Worker } from 'bullmq';
 
 import { recordDeadLetterJob, updateMediaJob, updatePackageVersion } from '@cio/db/queries';
 import { JOB_NAMES, QUEUE_NAMES, createRedisConnection } from '@cio/jobs';
@@ -48,7 +48,8 @@ worker.on('failed', async (job, err) => {
     error: errorMessage(err)
   });
 
-  const isFinalAttempt = job.attemptsMade >= (job.opts.attempts ?? 1);
+  const isUnrecoverable = err instanceof UnrecoverableError;
+  const isFinalAttempt = isUnrecoverable || job.attemptsMade >= (job.opts.attempts ?? 1);
   if (!isFinalAttempt) return;
 
   const data = job.data as {
@@ -66,10 +67,11 @@ worker.on('failed', async (job, err) => {
   }
 
   if (data?.packageVersionId && data?.mediaJobId) {
+    const processedAt = new Date().toISOString();
     await updatePackageVersion(data.packageVersionId, {
       status: 'failed',
       error: { code: 'WORKER_EXHAUSTED_RETRIES', message: errorMessage(err) },
-      processedAt: new Date().toISOString()
+      processedAt
     });
   }
 

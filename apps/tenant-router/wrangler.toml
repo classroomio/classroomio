@@ -39,8 +39,10 @@ binding = "ASSETS_BUCKET"
 bucket_name = "assets"
 
 # Private SCORM package files (extracted per version under `{prefix}/...`).
-# Created by the activity-package worker (PR 6). The bucket stays private;
+# Created by the activity-package worker. The bucket stays private;
 # the Worker reads it after verifying the per-version content token.
+# `bucket_name` must match OBJECT_STORAGE_BUCKET_SCORM on the API and jobs
+# services; change both together or the Worker serves an empty bucket.
 [[r2_buckets]]
 binding = "SCORM_BUCKET"
 bucket_name = "scorm"

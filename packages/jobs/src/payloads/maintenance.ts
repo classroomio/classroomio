@@ -48,13 +48,12 @@ export const ZDeadLetterCleanupPayload = z.object({
 export type TDeadLetterCleanupPayload = z.infer<typeof ZDeadLetterCleanupPayload>;
 
 /**
- * SCORM retention windows. Diagnostic session events age out, and replaced
- * package versions lose their extracted files plus rows once no attempt
- * references them. Original ZIPs are always kept for reprocessing.
+ * SCORM retention window. Only diagnostic session events age out; replaced
+ * package versions, their extracted files and original ZIPs are kept until an
+ * admin deletes the package, matching other asset kinds.
  */
 export const ZScormRetentionPayload = z.object({
-  eventOlderThanDays: z.number().int().positive().default(90),
-  unpinnedVersionDays: z.number().int().positive().default(30)
+  eventOlderThanDays: z.number().int().positive().default(90)
 });
 export type TScormRetentionPayload = z.infer<typeof ZScormRetentionPayload>;
 

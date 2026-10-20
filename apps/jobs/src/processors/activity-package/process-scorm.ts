@@ -26,6 +26,7 @@ import {
   deletePackageVersionsByIds,
   getAssetById,
   getCurrentPackageVersion,
+  getMediaJobById,
   getPackageVersionById,
   setCurrentPackageVersion,
   updateAsset,
@@ -50,8 +51,8 @@ import { log } from '../../utils/logger';
 
 const SCORM_CONTENT_CACHE_CONTROL = 'public, max-age=604800, immutable';
 const MANIFEST_MAX_BYTES = 10 * 1024 * 1024;
-const LMS_API_SCAN_MAX_FILES = 100;
-const LMS_API_SCAN_MAX_BYTES = 512 * 1024;
+const LMS_API_SCAN_MAX_FILES = 500;
+const LMS_API_SCAN_MAX_BYTES = 5 * 1024 * 1024;
 const LMS_API_PATTERN = /LMSInitialize|API_1484_11|pipwerks/i;
 const ZIP_MAGIC_LOCAL_FILE = [0x50, 0x4b, 0x03, 0x04];
 const ZIP_MAGIC_EMPTY_ARCHIVE = [0x50, 0x4b, 0x05, 0x06];
@@ -191,9 +192,16 @@ async function collectArchiveEntries(zipPath: string): Promise<CollectedArchive>
   const entries: ZipEntryInfo[] = [];
   const names: string[] = [];
   const fileEntries: Entry[] = [];
+  const maxEntries = SCORM_ZIP_LIMITS.maxEntries;
+  let entryCount = 0;
 
   try {
     for await (const entry of zipfile.eachEntry()) {
+      entryCount += 1;
+      if (entryCount > maxEntries) {
+        throw new PackageError('too_many_entries', { count: entryCount, max: maxEntries });
+      }
+
       if (entry.fileName.endsWith('/')) {
         normalizeZipPath(entry.fileName);
         continue;
@@ -212,6 +220,10 @@ async function collectArchiveEntries(zipPath: string): Promise<CollectedArchive>
       });
     }
   } catch (error) {
+    try {
+      await zipfile.close();
+    } catch {}
+
     if (error instanceof PackageError) throw error;
     throw new PackageError('unsafe_path', { reason: errorMessage(error) });
   }
@@ -220,10 +232,11 @@ async function collectArchiveEntries(zipPath: string): Promise<CollectedArchive>
 }
 
 async function failVersion(mediaJobId: string, versionId: string, code: string, message: string): Promise<void> {
+  const processedAt = new Date().toISOString();
   await updatePackageVersion(versionId, {
     status: 'failed',
     error: { code, message },
-    processedAt: new Date().toISOString()
+    processedAt
   });
   await updateMediaJob(mediaJobId, {
     status: 'failed',
@@ -285,12 +298,18 @@ async function discardDuplicateVersion(
   version: TContentPackageVersion,
   currentVersion: TContentPackageVersion
 ): Promise<ProcessScormResult> {
-  await deletePackageVersionsByIds([version.id]);
-  await updateMediaJob(mediaJobId, {
-    status: 'completed',
-    stage: 'unchanged',
-    progressPercent: 100,
-    result: { unchanged: true, versionId: currentVersion.id }
+  await db.transaction(async (tx) => {
+    await deletePackageVersionsByIds([version.id], tx);
+    await updateMediaJob(
+      mediaJobId,
+      {
+        status: 'completed',
+        stage: 'unchanged',
+        progressPercent: 100,
+        result: { unchanged: true, versionId: currentVersion.id }
+      },
+      tx
+    );
   });
 
   try {
@@ -318,6 +337,11 @@ async function discardDuplicateVersion(
 export async function processScormPackage(rawData: unknown): Promise<ProcessScormResult> {
   const payload: TActivityPackagePayload = ZActivityPackagePayload.parse(rawData);
   const { mediaJobId, assetId, packageVersionId } = payload;
+
+  const existingJob = await getMediaJobById(mediaJobId);
+  if (existingJob?.status === 'completed' && existingJob.result) {
+    return existingJob.result as unknown as ProcessScormResult;
+  }
 
   const version = await getPackageVersionById(packageVersionId);
   if (!version || version.assetId !== assetId)
@@ -450,9 +474,6 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
     await throwIfCancelRequested(mediaJobId);
     await updateMediaJob(mediaJobId, { stage: 'reading manifest', progressPercent: 90 });
 
-    await throwIfCancelRequested(mediaJobId);
-    await updateMediaJob(mediaJobId, { stage: 'reading manifest', progressPercent: 90 });
-
     const unitRows = mapUnitsToRows(parsed.units, version.id);
     const scanDir = extractDir ?? '';
     const launchPaths = parsed.units.map((unit) => unit.href);
@@ -461,6 +482,7 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
 
     await db.transaction(async (tx) => {
       await bulkInsertPackageUnits(unitRows, tx);
+      const processedAt = new Date().toISOString();
       await updatePackageVersion(
         version.id,
         {
@@ -481,7 +503,7 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
           extractedBytes,
           fileCount: archive.fileEntries.length,
           processingJobId: mediaJobId,
-          processedAt: new Date().toISOString()
+          processedAt
         },
         tx
       );
@@ -490,8 +512,6 @@ export async function processScormPackage(rawData: unknown): Promise<ProcessScor
       if (!current) {
         await setCurrentPackageVersion(version.id, tx);
         await updateAsset(assetId, asset.organizationId, { status: 'active', byteSize: zipBytes }, tx);
-      } else {
-        await updateAsset(assetId, asset.organizationId, { byteSize: zipBytes }, tx);
       }
 
       await updateMediaJob(

@@ -26,6 +26,7 @@ import {
 import { createNotice } from './notice';
 import { readablePackageWindow } from './package-frame';
 import { reportRuntimeEvent } from './runtime-event';
+import { watchPageUnload } from './scorm/runtime-http';
 import { startSession, type PlayerSession, type SessionHooks } from './session';
 import { applyTheme, createToolbar } from './toolbar';
 
@@ -58,6 +59,7 @@ function errorMessage(error: unknown): string {
 
 function boot(): void {
   installLargeBeaconFetchFallback();
+  watchPageUnload();
 
   const frame = requireElement<HTMLIFrameElement>('package-frame');
   const loading = requireElement<HTMLElement>('loading');

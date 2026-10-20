@@ -57,6 +57,8 @@ function postMessage(message: PlayerOutboundMessage, target: ParentTarget): void
 
 /**
  * Posts UI events to the exact parent origin. Never exposes run-time state.
+ * Saves as soon as the package reports a module completed or passed, so the
+ * embedder learns about completion without waiting for the next autosave.
  */
 export function connectParentBridge(
   adapter: ScormAdapter,
@@ -88,7 +90,54 @@ export function connectParentBridge(
     postMessage({ type: 'initialized' }, parentOrigin);
   });
 
+  let commitQueued = false;
+  const triggerCommitOnCompletion = (value: unknown) => {
+    if (typeof value !== 'string' || commitQueued) return;
+
+    const normalized = value.trim().toLowerCase();
+    if (normalized !== 'completed' && normalized !== 'passed') return;
+
+    commitQueued = true;
+    window.setTimeout(() => {
+      commitQueued = false;
+      commitRunningModule(adapter, format);
+    }, 0);
+  };
+
+  if (format === 'scorm12') {
+    adapter.on('LMSSetValue.cmi.core.lesson_status', (_element: string, value: unknown) => {
+      triggerCommitOnCompletion(value);
+    });
+  } else {
+    adapter.on('SetValue.cmi.completion_status', (_element: string, value: unknown) => {
+      triggerCommitOnCompletion(value);
+    });
+    adapter.on('SetValue.cmi.success_status', (_element: string, value: unknown) => {
+      triggerCommitOnCompletion(value);
+    });
+  }
+
   postMessage({ type: 'ready' }, parentOrigin);
+}
+
+/**
+ * Commits a running module immediately, saving unsent state. No-ops before
+ * initialization and once the module terminated.
+ */
+export function commitRunningModule(adapter: ScormAdapter, format: ScormFormat): void {
+  if (!adapter.isInitialized() || adapter.isTerminated()) {
+    return;
+  }
+
+  try {
+    if (format === 'scorm12') {
+      (adapter as Scorm12API).LMSCommit('');
+    } else {
+      (adapter as Scorm2004API).Commit('');
+    }
+  } catch {
+    return;
+  }
 }
 
 export function notifyCompleted(parentOrigin: ParentTarget): void {
@@ -218,6 +267,24 @@ export function watchForConnection(
   });
 }
 
+function defaultExitToSuspend(adapter: ScormAdapter, format: ScormFormat): void {
+  try {
+    if (format === 'scorm12') {
+      const current = (adapter as Scorm12API).LMSGetValue('cmi.core.exit');
+      if (!current || current === '') {
+        (adapter as Scorm12API).LMSSetValue('cmi.core.exit', 'suspend');
+      }
+    } else {
+      const current = (adapter as Scorm2004API).GetValue('cmi.exit');
+      if (!current || current === '') {
+        (adapter as Scorm2004API).SetValue('cmi.exit', 'suspend');
+      }
+    }
+  } catch {
+    return;
+  }
+}
+
 /**
  * Finishes a module the package left running, which commits its unsent data.
  * No-ops before initialization and once the module terminated.
@@ -226,6 +293,8 @@ export function finishRunningModule(adapter: ScormAdapter, format: ScormFormat):
   if (!adapter.isInitialized() || adapter.isTerminated()) {
     return;
   }
+
+  defaultExitToSuspend(adapter, format);
 
   try {
     if (format === 'scorm12') {

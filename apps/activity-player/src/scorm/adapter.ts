@@ -1,6 +1,8 @@
 import { Scorm12API } from 'scorm-again/scorm12';
 import { Scorm2004API } from 'scorm-again/scorm2004';
 
+import { createRuntimeHttpService } from './runtime-http';
+
 export type ScormFormat = 'scorm12' | 'scorm2004';
 
 export type ScormAdapter = Scorm12API | Scorm2004API;
@@ -36,58 +38,20 @@ export function buildAdapterSettings(
   launchToken: string,
   debug: boolean,
   onCompleted?: () => void,
-  onProgress?: () => void
+  onProgress?: () => void,
+  initialCmi?: unknown
 ): AdapterSettings {
   return {
     autocommit: true,
     autocommitSeconds: 30,
-    lmsCommitUrl: `/activity/scorm/runtime/${launchToken}/commit`,
+    lmsCommitUrl: `/activity/scorm/runtime/${encodeURIComponent(launchToken)}/commit`,
     sendFullCommit: false,
     includeCommitSequence: true,
     terminateCommitPayloadField: 'terminate',
     selfReportSessionTime: false,
     logLevel: debug ? 1 : 4,
-    xhrResponseHandler: (xhr: XMLHttpRequest) => readCommitResponse(xhr, onCompleted, onProgress),
+    httpService: createRuntimeHttpService({ onCompleted, onProgress, initialCmi }),
     ...CLIENT_LMS_RULE_FLAGS
-  };
-}
-
-// scorm-again only forwards result and errorCode, so the completion and progress flags are observed here.
-function readCommitResponse(
-  xhr: XMLHttpRequest,
-  onCompleted?: () => void,
-  onProgress?: () => void
-): { result: string | boolean; errorCode: number } {
-  if (typeof xhr === 'undefined' || xhr.status < 200 || xhr.status > 299) {
-    return { result: false, errorCode: 101 };
-  }
-
-  let parsed: unknown = null;
-
-  try {
-    parsed = JSON.parse(xhr.responseText) as unknown;
-  } catch {
-    parsed = null;
-  }
-
-  if (parsed === null || typeof parsed !== 'object' || !('result' in parsed)) {
-    return { result: true, errorCode: 0 };
-  }
-
-  const body = parsed as {
-    result: string | boolean;
-    errorCode?: unknown;
-    completedActivity?: unknown;
-    progressChanged?: unknown;
-  };
-
-  if (body.completedActivity === true) onCompleted?.();
-  else if (body.progressChanged === true) onProgress?.();
-
-  return {
-    result: body.result,
-    errorCode:
-      typeof body.errorCode === 'number' ? body.errorCode : body.result === true || body.result === 'true' ? 0 : 101
   };
 }
 

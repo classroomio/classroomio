@@ -16,7 +16,7 @@ On self-hosted, set one hostname under your existing domain plus one DNS record,
    | --- | --- | --- |
    | A (or CNAME) | `content.yourdomain.com` | your ClassroomIO server or reverse proxy |
 
-2. Route that hostname to the `api` container (same as the dashboard, on its internal port). The API serves the player, package files, and run-time on that host.
+2. Route that hostname to the `api` container on its internal port (`3081` in the bundled compose stack). The dashboard listens on `3082`; the content host must reach the API.
 
 3. Set the environment:
 
@@ -29,6 +29,8 @@ LICENSE_KEY=<your enterprise license key with scorm>
 ```
 
 `ACTIVITY_SIGNING_SECRET` signs activity launch and content tokens. Generate one with `openssl rand -hex 32` and keep it secret — `./classroomio.sh` generates it for Docker installs when it is missing. `OBJECT_STORAGE_BUCKET_SCORM` defaults to `scorm` and holds each version's ZIP plus extracted files in the private bucket. `UPLOAD_MAX_SCORM_MB` defaults to 500.
+
+Using external storage (R2 or S3) instead of the bundled SeaweedFS? Create the private bucket named by `OBJECT_STORAGE_BUCKET_SCORM` before the first upload. The bundled `storage-init` service only creates buckets in SeaweedFS, so nothing creates it for you on external storage and uploads fail until it exists.
 
 4. Restart the stack with `./classroomio.sh restart` (this recreates the `api` container so it picks up the new values).
 
@@ -43,6 +45,7 @@ On the content host, only these paths serve. Everything else returns 404:
 - `GET /activity/content/:contentToken/*` — package files with Range and `Cache-Control: public, max-age=604800, immutable`
 - `GET /activity/scorm/runtime/:launchToken/state` — saved run-time state
 - `POST /activity/scorm/runtime/:launchToken/commit` — numbered commits (JSON, or `text/plain` beacons)
+- `POST /activity/scorm/runtime/:launchToken/event` — diagnostic telemetry and player lifecycle events
 
 Package versions are immutable, so file URLs are stable per package version for a week. Any CDN in front of the content hostname can cache them.
 
@@ -66,12 +69,12 @@ A lapsed license, or the license server being unreachable for an hour (failures 
 
 - Package files live in the private `scorm` bucket in the object storage the app already uses (bundled SeaweedFS by default, or R2 or S3). The bucket is never public.
 - `UPLOAD_MAX_SCORM_MB` defaults to 500. The worker checks the real object size; the browser's figure is advisory only. Set the same value on both `api` and `dashboard`, and raise your reverse-proxy body-size limit to match.
-- Unpinned package versions are deleted 30 days after replacement. Diagnostic events are deleted after 90 days. The original ZIP of each version is kept for reprocessing.
+- Package versions remain stored so historical learner attempts stay intact and can be reviewed. Diagnostic events are retained for auditing. The original ZIP of each version is kept for reprocessing.
 - Storage cards include SCORM packages: all versions' ZIPs plus extracted files.
 
 ## Compatibility
 
-SCORM 1.2 and SCORM 2004 (2nd to 4th editions) are supported. SCORM 2004 sequencing rules (forced order, pre-tests, rollup rules) are ignored with a visible warning — ClassroomIO's own course progression settings apply instead.
+SCORM 1.2 and SCORM 2004 (2nd to 4th editions) are supported. For multi-module packages, ClassroomIO supports sequential unlocking when **Module order** is set to **In sequence**. Note that advanced SCORM 2004 sequencing rules (such as objective rollups, branching logic, and pre-tests) are ignored — ClassroomIO does not run a full IMS Simple Sequencing engine.
 
 | Source | SCORM 1.2 | SCORM 2004 | Notes |
 | --- | --- | --- | --- |

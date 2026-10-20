@@ -3,6 +3,7 @@ import { Scorm12API } from 'scorm-again/scorm12';
 import { Scorm2004API } from 'scorm-again/scorm2004';
 import {
   DID_NOT_CONNECT_MS,
+  commitRunningModule,
   connectParentBridge,
   finishRunningModule,
   flushOnPageHide,
@@ -463,5 +464,62 @@ describe('module sessions', () => {
     finishRunningModule(adapter, 'scorm2004');
 
     expect(terminate).toHaveBeenCalledTimes(1);
+  });
+
+  it('commits a running module on demand, ignoring uninitialized or terminated modules', () => {
+    installWindow(null, fakeTarget());
+    const adapter = create12();
+    const commit = vi.spyOn(adapter, 'LMSCommit');
+
+    commitRunningModule(adapter, 'scorm12');
+    adapter.LMSInitialize('');
+    commitRunningModule(adapter, 'scorm12');
+    adapter.LMSFinish('');
+    commitRunningModule(adapter, 'scorm12');
+
+    expect(commit).toHaveBeenCalledTimes(1);
+  });
+
+  it('saves right after SCORM 1.2 reports completed or passed, once per burst', () => {
+    vi.useFakeTimers();
+    installWindow(null, fakeTarget());
+    const adapter = create12();
+    const commit = vi.spyOn(adapter, 'LMSCommit');
+
+    connectParentBridge(adapter, 'scorm12', 'https://app.test');
+    adapter.LMSInitialize('');
+    adapter.LMSSetValue('cmi.core.lesson_status', 'incomplete');
+    vi.runAllTimers();
+    expect(commit).not.toHaveBeenCalled();
+
+    adapter.LMSSetValue('cmi.core.lesson_status', 'completed');
+    adapter.LMSSetValue('cmi.core.lesson_status', 'passed');
+    expect(commit).not.toHaveBeenCalled();
+
+    vi.runAllTimers();
+    expect(commit).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
+  it('saves right after SCORM 2004 reports completion or success', () => {
+    vi.useFakeTimers();
+    installWindow(null, fakeTarget());
+    const adapter = create2004();
+    const commit = vi.spyOn(adapter, 'Commit');
+
+    connectParentBridge(adapter, 'scorm2004', 'https://app.test');
+    adapter.Initialize('');
+    adapter.SetValue('cmi.completion_status', 'incomplete');
+    vi.runAllTimers();
+    expect(commit).not.toHaveBeenCalled();
+
+    adapter.SetValue('cmi.completion_status', 'completed');
+    vi.runAllTimers();
+    expect(commit).toHaveBeenCalledTimes(1);
+
+    adapter.SetValue('cmi.success_status', 'passed');
+    vi.runAllTimers();
+    expect(commit).toHaveBeenCalledTimes(2);
+    vi.useRealTimers();
   });
 });
