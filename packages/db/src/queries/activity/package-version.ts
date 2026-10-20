@@ -175,9 +175,11 @@ export async function setCurrentPackageVersion(
   dbClient?: TxClient
 ): Promise<TContentPackageVersion> {
   const run = async (client: TxClient): Promise<TContentPackageVersion> => {
-    const version = await getPackageVersionById(versionId, client);
-    if (!version) throw new Error(`Package version "${versionId}" not found`);
-    await lockAssetRow(version.assetId, client);
+    const candidate = await getPackageVersionById(versionId, client);
+    if (!candidate) throw new Error(`Package version "${versionId}" not found`);
+
+    await lockAssetRow(candidate.assetId, client);
+    const version = candidate;
     if (version.status !== 'ready') throw new Error(`Package version "${versionId}" is not ready`);
 
     const now = new Date().toISOString();
@@ -284,6 +286,21 @@ export async function listCurrentPackageVersionsForActivities(
   }
 }
 
+export async function lockPackageVersionRow(versionId: string, dbClient: DbOrTxClient): Promise<void> {
+  try {
+    await dbClient
+      .select({ id: schema.contentPackageVersion.id })
+      .from(schema.contentPackageVersion)
+      .where(eq(schema.contentPackageVersion.id, versionId))
+      .for('update');
+  } catch (error) {
+    console.error('lockPackageVersionRow error:', error);
+    throw new Error(
+      `Failed to lock package version "${versionId}": ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
+  }
+}
+
 export interface VersionDueForRetention {
   id: string;
   assetId: string;
@@ -303,7 +320,8 @@ export interface VersionDueForRetention {
  */
 export async function listVersionsDueForRetention(
   cutoffIso: string,
-  dbClient: DbOrTxClient = db
+  dbClient: DbOrTxClient = db,
+  versionId?: string
 ): Promise<VersionDueForRetention[]> {
   try {
     const result = await dbClient.execute(sql`
@@ -315,6 +333,7 @@ export async function listVersionsDueForRetention(
         AND v.replaced_at IS NOT NULL
         AND v.replaced_at < ${cutoffIso}
         AND v.status != 'archived'
+        AND ${versionId ? sql`v.id = ${versionId}` : sql`true`}
       ORDER BY v.replaced_at ASC`);
 
     return (result as unknown as Array<Record<string, unknown>>).map((row) => {

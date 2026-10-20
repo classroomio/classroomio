@@ -47,12 +47,9 @@ export const ZDeadLetterCleanupPayload = z.object({
 });
 export type TDeadLetterCleanupPayload = z.infer<typeof ZDeadLetterCleanupPayload>;
 
-/**
- * SCORM retention window. Only diagnostic session events age out; replaced
- * package versions, their extracted files and original ZIPs are kept until an
- * admin deletes the package, matching other asset kinds.
- */
+/** Retention windows for diagnostic events and replaced package versions. */
 export const ZScormRetentionPayload = z.object({
+  unpinnedVersionDays: z.number().int().positive().default(30),
   eventOlderThanDays: z.number().int().positive().default(90)
 });
 export type TScormRetentionPayload = z.infer<typeof ZScormRetentionPayload>;
