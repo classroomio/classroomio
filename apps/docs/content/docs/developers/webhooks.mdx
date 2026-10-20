@@ -80,7 +80,7 @@ Every event uses the same envelope. The shape of `data` depends on the event typ
 
 ## Event reference
 
-Every event uses the envelope shown above. This section lists the `data` object for each event. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`), `course` (`id`, `title`, `slug`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
+Every event uses the envelope shown above. This section shows the full payload for each event, envelope included. Fields are always present; a field that does not apply is `null`. Alongside each ID, events carry readable details: `student` and `actor` (`id`, `name`, `email`), `course` (`id`, `title`, `slug`), `exercise` and `lesson` (`id`, `title`), and a `role` label next to `roleId`. These details are a snapshot read when the event is recorded, moments after it happens, so a later rename does not change an event you already received. A detail is `null` when the record no longer exists, for example after a course is deleted. IDs are UUIDs and timestamps are ISO 8601 in UTC.
 
 ### Team invites
 
@@ -90,14 +90,25 @@ A team invite is sent.
 
 ```json
 {
-  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
-  "email": "tutor@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "reason": null,
-  "actor": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Sam Rivera",
-    "email": "sam@example.com"
+  "id": "evt_3aca79eb72f5a8f381ee7b475e0c7117",
+  "type": "organization.invite.created",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
+  },
+  "data": {
+    "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+    "email": "tutor@example.com",
+    "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+    "reason": null,
+    "actor": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Sam Rivera",
+      "email": "sam@example.com"
+    }
   }
 }
 ```
@@ -110,14 +121,25 @@ A team invite is accepted.
 
 ```json
 {
-  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
-  "email": "tutor@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "reason": null,
-  "actor": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Sam Rivera",
-    "email": "sam@example.com"
+  "id": "evt_400f56e851adbea1af025bbe132498f2",
+  "type": "organization.invite.accepted",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
+  },
+  "data": {
+    "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+    "email": "tutor@example.com",
+    "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+    "reason": null,
+    "actor": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Sam Rivera",
+      "email": "sam@example.com"
+    }
   }
 }
 ```
@@ -128,14 +150,25 @@ A team invite is revoked or replaced.
 
 ```json
 {
-  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
-  "email": "tutor@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "reason": "revoked",
-  "actor": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Sam Rivera",
-    "email": "sam@example.com"
+  "id": "evt_11afa9792ddb4e37c4cd8a4c3dadf9d9",
+  "type": "organization.invite.revoked",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
+  },
+  "data": {
+    "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+    "email": "tutor@example.com",
+    "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+    "reason": "revoked",
+    "actor": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Sam Rivera",
+      "email": "sam@example.com"
+    }
   }
 }
 ```
@@ -148,19 +181,30 @@ A student invite is created.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
-  "email": "student@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_54b5a3441cd84445938d8b8808336878",
+  "type": "course.invite.created",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "actor": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Sam Rivera",
-    "email": "sam@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+    "email": "student@example.com",
+    "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "actor": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Sam Rivera",
+      "email": "sam@example.com"
+    }
   }
 }
 ```
@@ -173,19 +217,30 @@ A student accepts an invite and enrolls.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
-  "email": "student@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_6b93fed7936f85a2c401367bb0840878",
+  "type": "course.invite.accepted",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "actor": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+    "email": "student@example.com",
+    "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "actor": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    }
   }
 }
 ```
@@ -198,19 +253,30 @@ A student invite is revoked.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "inviteId": "000000e1-0000-4000-8000-0000000000e1",
-  "email": "student@example.com",
-  "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_12b32af74c178d2d23e62fbf50f01e2f",
+  "type": "course.invite.revoked",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "actor": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Sam Rivera",
-    "email": "sam@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "inviteId": "000000e1-0000-4000-8000-0000000000e1",
+    "email": "student@example.com",
+    "actorProfileId": "000000b1-0000-4000-8000-0000000000b1",
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "actor": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Sam Rivera",
+      "email": "sam@example.com"
+    }
   }
 }
 ```
@@ -223,22 +289,33 @@ A member is added to a course, by an admin or by accepting an invite.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "memberId": "000000d1-0000-4000-8000-0000000000d1",
-  "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "email": "student@example.com",
-  "roleId": 3,
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_77f535c37ff9eed5658d64f027754b1f",
+  "type": "course.member.added",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "student": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
-  },
-  "role": "student"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "memberId": "000000d1-0000-4000-8000-0000000000d1",
+    "profileId": "000000b1-0000-4000-8000-0000000000b1",
+    "email": "student@example.com",
+    "roleId": 3,
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "student": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    },
+    "role": "student"
+  }
 }
 ```
 
@@ -250,22 +327,33 @@ A member is removed from a course.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "memberId": "000000d1-0000-4000-8000-0000000000d1",
-  "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "email": "student@example.com",
-  "roleId": 3,
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_d85677760d1c7e5aad5ac2861ab84277",
+  "type": "course.member.removed",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "student": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
-  },
-  "role": "student"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "memberId": "000000d1-0000-4000-8000-0000000000d1",
+    "profileId": "000000b1-0000-4000-8000-0000000000b1",
+    "email": "student@example.com",
+    "roleId": 3,
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "student": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    },
+    "role": "student"
+  }
 }
 ```
 
@@ -277,19 +365,30 @@ A student completes a course and earns its certificate. Requires certificates to
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "memberId": "000000d1-0000-4000-8000-0000000000d1",
-  "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "completedAt": "2026-10-13T12:15:30.000Z",
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_47d4e29a1c4572c9ab3129f8a0cc9717",
+  "type": "course.completed",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "student": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "memberId": "000000d1-0000-4000-8000-0000000000d1",
+    "profileId": "000000b1-0000-4000-8000-0000000000b1",
+    "completedAt": "2026-10-13T12:15:30.000Z",
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "student": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    }
   }
 }
 ```
@@ -300,19 +399,30 @@ A certificate is earned. Sent together with `course.completed`.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "memberId": "000000d1-0000-4000-8000-0000000000d1",
-  "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "completedAt": "2026-10-13T12:15:30.000Z",
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_61d1af85936c37c72242f01ab7acc6eb",
+  "type": "course.certificate.issued",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "student": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "memberId": "000000d1-0000-4000-8000-0000000000d1",
+    "profileId": "000000b1-0000-4000-8000-0000000000b1",
+    "completedAt": "2026-10-13T12:15:30.000Z",
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "student": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    }
   }
 }
 ```
@@ -325,27 +435,38 @@ An exercise submission is created.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "submissionId": "000000f1-0000-4000-8000-0000000000f1",
-  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
-  "memberId": "000000d1-0000-4000-8000-0000000000d1",
-  "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "statusId": 1,
-  "gradingState": "queued",
-  "total": null,
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_02f73155a3d50beedb8e2042ee171b61",
+  "type": "course.submission.created",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "exercise": {
-    "id": "000000f2-0000-4000-8000-0000000000f2",
-    "title": "Week 1 quiz"
-  },
-  "student": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "submissionId": "000000f1-0000-4000-8000-0000000000f1",
+    "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+    "memberId": "000000d1-0000-4000-8000-0000000000d1",
+    "profileId": "000000b1-0000-4000-8000-0000000000b1",
+    "statusId": 1,
+    "gradingState": "queued",
+    "total": null,
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "exercise": {
+      "id": "000000f2-0000-4000-8000-0000000000f2",
+      "title": "Week 1 quiz"
+    },
+    "student": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    }
   }
 }
 ```
@@ -358,29 +479,40 @@ A submission status or grading state changes, for example when it is graded.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "submissionId": "000000f1-0000-4000-8000-0000000000f1",
-  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
-  "memberId": "000000d1-0000-4000-8000-0000000000d1",
-  "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "statusId": 3,
-  "gradingState": "completed",
-  "total": 8,
-  "previousStatusId": 2,
-  "previousGradingState": "awaiting_manual",
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_c474bc8a0cd36891a21dd3d40f20815d",
+  "type": "course.submission.status_changed",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "exercise": {
-    "id": "000000f2-0000-4000-8000-0000000000f2",
-    "title": "Week 1 quiz"
-  },
-  "student": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "submissionId": "000000f1-0000-4000-8000-0000000000f1",
+    "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+    "memberId": "000000d1-0000-4000-8000-0000000000d1",
+    "profileId": "000000b1-0000-4000-8000-0000000000b1",
+    "statusId": 3,
+    "gradingState": "completed",
+    "total": 8,
+    "previousStatusId": 2,
+    "previousGradingState": "awaiting_manual",
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "exercise": {
+      "id": "000000f2-0000-4000-8000-0000000000f2",
+      "title": "Week 1 quiz"
+    },
+    "student": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    }
   }
 }
 ```
@@ -395,23 +527,34 @@ A lesson is marked complete, or reset when an admin resets a student's progress.
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "lessonId": "000000f3-0000-4000-8000-0000000000f3",
-  "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "isComplete": true,
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_bfd2539d83d8453ffde1218fca86d87e",
+  "type": "lesson.completion.updated",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "lesson": {
-    "id": "000000f3-0000-4000-8000-0000000000f3",
-    "title": "Getting started"
-  },
-  "student": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "lessonId": "000000f3-0000-4000-8000-0000000000f3",
+    "profileId": "000000b1-0000-4000-8000-0000000000b1",
+    "isComplete": true,
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "lesson": {
+      "id": "000000f3-0000-4000-8000-0000000000f3",
+      "title": "Getting started"
+    },
+    "student": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    }
   }
 }
 ```
@@ -422,29 +565,66 @@ An exercise is completed, meeting any passing grade it requires, or reset by an 
 
 ```json
 {
-  "courseId": "000000c1-0000-4000-8000-0000000000c1",
-  "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
-  "memberId": "000000d1-0000-4000-8000-0000000000d1",
-  "profileId": "000000b1-0000-4000-8000-0000000000b1",
-  "isComplete": true,
-  "course": {
-    "id": "000000c1-0000-4000-8000-0000000000c1",
-    "title": "Intro to Data Science",
-    "slug": "intro-to-data-science"
+  "id": "evt_65025775bdf6ca15d68cf489cd548026",
+  "type": "exercise.completion.updated",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
   },
-  "exercise": {
-    "id": "000000f2-0000-4000-8000-0000000000f2",
-    "title": "Week 1 quiz"
-  },
-  "student": {
-    "id": "000000b1-0000-4000-8000-0000000000b1",
-    "name": "Alex Johnson",
-    "email": "student@example.com"
+  "data": {
+    "courseId": "000000c1-0000-4000-8000-0000000000c1",
+    "exerciseId": "000000f2-0000-4000-8000-0000000000f2",
+    "memberId": "000000d1-0000-4000-8000-0000000000d1",
+    "profileId": "000000b1-0000-4000-8000-0000000000b1",
+    "isComplete": true,
+    "course": {
+      "id": "000000c1-0000-4000-8000-0000000000c1",
+      "title": "Intro to Data Science",
+      "slug": "intro-to-data-science"
+    },
+    "exercise": {
+      "id": "000000f2-0000-4000-8000-0000000000f2",
+      "title": "Week 1 quiz"
+    },
+    "student": {
+      "id": "000000b1-0000-4000-8000-0000000000b1",
+      "name": "Alex Johnson",
+      "email": "student@example.com"
+    }
   }
 }
 ```
 
 `memberId` is the course membership id of the student.
+
+### Test events
+
+#### `webhook.test`
+
+Sent only when you select **Send test event**. It goes to that one webhook, whatever events it subscribes to, and is never retried.
+
+```json
+{
+  "id": "evt_5b0e9a3c7d214f6e8a9b0c1d2e3f4a5b",
+  "type": "webhook.test",
+  "createdAt": "2026-10-13T12:15:30.000Z",
+  "apiVersion": "2026-10-13",
+  "organization": {
+    "id": "1a1dcddd-1abc-4f72-b644-0bd18191a289",
+    "name": "Acme Academy",
+    "siteName": "acme"
+  },
+  "data": {
+    "message": "This is a test event from ClassroomIO.",
+    "webhookId": "000000a9-0000-4000-8000-0000000000a9"
+  }
+}
+```
+
+`webhookId` is the webhook the test was sent to.
 
 ## Verify the signature
 

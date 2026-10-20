@@ -2,14 +2,26 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 import { describe, expect, it } from 'vitest';
+import * as z from 'zod';
 
-import { WEBHOOK_EVENT_TYPES } from '@cio/utils/constants/webhook';
+import { WEBHOOK_API_VERSION, WEBHOOK_EVENT_TYPES } from '@cio/utils/constants/webhook';
 import { ZWebhookEventData } from '@cio/utils/validation/webhook';
 
 const docs = readFileSync(
   fileURLToPath(new URL('../../../docs/content/docs/developers/webhooks.mdx', import.meta.url)),
   'utf8'
 );
+
+const ZDocumentedEnvelope = z
+  .object({
+    id: z.string().regex(/^evt_[0-9a-f]{32}$/),
+    type: z.string(),
+    createdAt: z.string().datetime(),
+    apiVersion: z.literal(WEBHOOK_API_VERSION),
+    organization: z.object({ id: z.string(), name: z.string().nullable(), siteName: z.string().nullable() }).strict(),
+    data: z.record(z.string(), z.unknown())
+  })
+  .strict();
 
 function extractExample(eventType: string): unknown {
   const sectionStart = docs.indexOf(`#### \`${eventType}\``);
@@ -32,6 +44,10 @@ describe('webhook event contract', () => {
     const example = extractExample(eventType);
 
     expect(example, `${eventType} is missing from the event reference`).toBeDefined();
-    expect(() => ZWebhookEventData[eventType].parse(example)).not.toThrow();
+
+    const envelope = ZDocumentedEnvelope.parse(example);
+
+    expect(envelope.type).toBe(eventType);
+    expect(() => ZWebhookEventData[eventType].parse(envelope.data)).not.toThrow();
   });
 });
