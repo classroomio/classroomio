@@ -177,7 +177,8 @@ export async function listScormUnitSummariesForActivities(
         and(
           inArray(schema.activityScorm.activityId, activityIds),
           eq(schema.contentPackageVersion.isCurrent, true),
-          eq(schema.contentPackageUnit.unitType, 'sco')
+          eq(schema.contentPackageUnit.unitType, 'sco'),
+          eq(schema.contentPackageUnit.isVisible, true)
         )
       )
       .orderBy(asc(schema.contentPackageUnit.position));
